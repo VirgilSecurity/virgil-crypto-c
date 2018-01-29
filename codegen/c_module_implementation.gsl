@@ -1,0 +1,390 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Create module with 'Implementation Lifecycle API', which includes:
+#       - definitions for implemented interface(s) as included headers;
+#       - lifecycle functions;
+#       - dependency management functions.
+#
+#   Private function prefix is: Z19.
+# ---------------------------------------------------------------------------
+#   This is a code generator helper built using the iMatix GSL code
+#   generation language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+
+gsl from "common.gsl"
+gsl from "module.gsl"
+
+gsl from "c_resolver.gsl"
+
+
+function _Z19_add_includes (implementation, module, meta)
+    check_argument (my, "implementation")
+    check_argument (my, "module")
+    check_argument (my, "meta")
+
+    my.names = meta_names (my.meta)
+
+    new require to my.module
+        .module = my.names.module_library
+    endnew
+
+    new require to my.module
+        .module = my.names.module_implementation_private
+        .scope = "private"
+    endnew
+
+    for my.implementation.interface
+        new require to my.module
+            .module = my.names.module_implemented_$(make_id (interface.name))
+            .scope = "private"
+        endnew
+    endfor
+
+    new require to my.module
+        .module = my.names.module_impl_private
+        .scope = "private"
+    endnew
+endfunction
+
+
+function _Z19_add_interface_api_instances (implementation, module, source, meta)
+    check_argument (my, "implementation")
+    check_argument (my, "module")
+    check_argument (my, "source")
+    check_argument (my, "meta")
+
+    for my.implementation.interface as implemented
+        meta_add_active_entity (my.meta, implemented.name)
+
+        my.names = meta_names (my.meta)
+        my.refs = meta_refs (my.meta)
+
+        my.interface_api = module_find_struct (my.source, my.names.module_interface_api, "")
+
+        new object to my.module
+            . = my.interface_api. ?
+            .name = my.names.class_interface_api
+            .type = my.refs.interface_struct_api
+            .scope = "private"
+
+            for my.interface_api.property
+                my.implemented_id = make_id (implemented.name, property.name)
+                new value to object
+                    . = property. ?
+                    if is_true (property.is_api_tag)
+                        .value = my.refs.interface_constant_tag
+
+                    elsif is_true (property.is_constant)
+                        .value = my.refs.implemented_constant_$(my.implemented_id)
+
+                    elsif is_true (property.is_callback)
+                        .value = my.refs.implemented_method_$(my.implemented_id)
+                        .type = my.refs.implemented_method_callback_$(my.implemented_id)
+
+                    elsif is_true (property.is_object)
+                        .value = my.refs.implementation_object_$(make_id (property.name))
+                    else
+                        my.property_dump = property.string()
+                        echo_fatal ("Unsupported interface api property: $(my.property_dump:).", my)
+                    endif
+                endnew
+            endfor
+        endnew
+
+        meta_remove_active_entity (my.meta, implemented.name)
+    endfor
+endfunction
+
+
+function _Z19_add_interface_api_array_instances (implementation, module, impl_info, meta)
+    check_argument (my, "implementation")
+    check_argument (my, "module")
+    check_argument (my, "impl_info")
+    check_argument (my, "meta")
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    my.property_api_array = item_find_named (\
+            my.impl_info, "property", my.names.property_api_array, my)
+
+    new object to my.module
+        . = my.property_api_array. ?
+        .name = my.names.implementation_object_api_array
+        .type = my.property_api_array.type
+        .scope = "private"
+
+        for my.implementation.interface as implemented
+            new value to object
+                .value = my.refs.implementation_object_$(make_id (implemented.name))_api
+            endnew
+        endfor
+
+        new value to object
+            .value = "NULL"
+        endnew
+    endnew
+endfunction
+
+function _Z19_add_info_instance (implementation, module, impl_info, meta)
+    check_argument (my, "implementation")
+    check_argument (my, "impl_info")
+    check_argument (my, "module")
+    check_argument (my, "meta")
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new object to my.module
+        . = "Compile-time known information about '$(my.implementation.ref_name:)' implementation."
+        .name = my.names.implementation_object_impl_info
+        .type = my.refs.class_impl_struct_info
+        .scope = "private"
+
+        for my.impl_info.property
+            new value to object
+                . = property. ?
+                if is_true (property.is_impl_tag)
+                    .value = my.refs.implementation_constant_tag
+
+                elsif is_true (property.is_api_array)
+                    .value = my.refs.implementation_object_api_array
+
+                elsif is_true (property.is_self_cleanup_cb)
+                    .value = my.refs.implementation_method_self_cleanup
+
+                elsif is_true (property.is_self_destroy_cb)
+                    .value = my.refs.implementation_method_self_destroy
+
+                else
+                    my.property_dump = property.string()
+                    echo_fatal ("Unsupported impl info property: $(my.property_dump:).", my)
+                endif
+            endnew
+        endfor
+    endnew
+endfunction
+
+
+function _Z19_add_self_tag (implementation, enum, meta)
+    check_argument (my, "implementation")
+    check_argument (my, "enum")
+    check_argument (my, "meta")
+
+    my.names = meta_names (my.meta)
+
+    my.insertion_position = my.enum->value (name = my.names.enum_value_end) ?
+    if ! defined (my.insertion_position)
+        echo_fatal ("Enum '$(my.enum.name:)' does not contain value '$(my.names.enum_value_end:)'.", my)
+    endif
+
+    new value before my.insertion_position
+        .name = my.implementation.name
+    endnew
+endfunction
+
+
+function _Z19_add_self_type (implementation, module, meta)
+    check_argument (my, "implementation")
+    check_argument (my, "module")
+    check_argument (my, "meta")
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new struct to my.module
+        . = "This type contains implementation details."
+        .name = ""
+        .scope = "opaque"
+
+        new property to struct
+            . = "Compile-time known information about this implementation."
+            .name = my.names.property_info
+            .type = my.refs.class_impl_struct_info
+            .is_object = 1
+        endnew
+
+        for my.implementation.require where defined (interface)
+            meta_add_active_entity (my.meta, require.interface)
+            my.refs = meta_refs (my.meta)
+
+            new property to struct
+                . = "Dependency to the interface '$(require.interface:)'."
+                .name = my.names.property_dependency_$(make_id (require.interface))
+                .type = my.refs.class_impl_struct
+                .is_object = 1
+                .is_mutable = 1
+            endnew
+
+            meta_remove_active_entity (my.meta, require.interface)
+        endfor
+
+        new property to struct
+            . = "Interface implementation specific context."
+            .name = my.names.property_context
+            .type = my.refs.implementation_struct_context
+        endnew
+
+        for my.implementation.require where defined (interface)
+            new property to struct
+                . = "Ownership status of the to the interface '$(require.interface:)' dependency."
+                .name = my.names.property_dependency_$(make_id (require.interface))_ownership
+                .type = "size"
+                .bits = 1
+            endnew
+        endfor
+    endnew
+endfunction
+
+
+function _Z19_add_lifecycle_methods (implementation, module, meta)
+    check_argument (my, "implementation")
+    check_argument (my, "module")
+    check_argument (my, "meta")
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.module
+        .name = my.names.method_cleanup
+        new c_implementation
+            . = "//TODO: Implement me."
+        endnew
+    endnew
+
+    new method to my.module
+        .name = my.names.method_destroy
+        new c_implementation
+            . = "//TODO: Implement me."
+        endnew
+    endnew
+endfunction
+
+
+function _Z19_add_dependency_management_methods (implementation, module, meta)
+    check_argument (my, "implementation")
+    check_argument (my, "module")
+    check_argument (my, "meta")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create 'Implementation Lifecycle API' module for each 'implementation'
+#   within given source and put it to the destination.
+# ---------------------------------------------------------------------------
+function c_module_implementation_create (source, destination, meta)
+    check_argument (my, "source")
+    check_argument (my, "destination")
+    check_argument (my, "meta")
+
+    for my.source.implementation
+        meta_reset_active_entity (my.meta, implementation.full_name)
+
+        my.names = meta_names (my.meta)
+        my.refs = meta_refs (my.meta)
+
+        my.impl_enum_tag = module_find_enum (my.source, my.names.module_impl, my.names.enum_tag)
+        _Z19_add_self_tag (implementation, my.impl_enum_tag, my.meta)
+
+        new module to my.destination
+            . = "\
+            This module contains '$(my.refs.c_implementation_struct)' object management.
+            It includes:
+                - lifecycle functions;
+                - dependency management functions;
+                - RTTI functions.
+            "
+
+            .name = my.names.module_implementation
+            .class = my.names.class_implementation
+
+            my.impl_info = module_find_struct (my.source, \
+                        my.names.module_impl_private, my.names.struct_info)
+
+            _Z19_add_includes (implementation, module, my.meta)
+            _Z19_add_interface_api_instances (implementation, module, my.source, my.meta)
+            _Z19_add_interface_api_array_instances (implementation, module, my.impl_info, my.meta)
+            _Z19_add_info_instance (implementation, module, my.impl_info, my.meta)
+            _Z19_add_self_type (implementation, module, my.meta)
+            #_Z19_add_rtti_methods (implementation, module, my.meta)
+            _Z19_add_lifecycle_methods (implementation, module, my.meta)
+            #_Z19_add_dependency_management_methods (implementation, module, my.meta)
+            #_Z19_add_context_access_methods (implementation, module, my.meta)
+        endnew
+    endfor
+
+endfunction
+
+
+# ###########################################################################
+#   !!!!!                   SCRATCH START                               !!!!!
+# ###########################################################################
+
+
+
+function _E19_add_interface_api_array (implementation, module)
+    check_argument (my, "implementation")
+    check_argument (my, "module")
+
+    new object to my.module
+        for my.module.object as api_object where is_true (is_interface_api)
+            object.name = instance_api_list
+            object.type = "any"
+            object.is_instance = 1
+            object.is_object = 1
+            object.is_const_array = 1
+            object.scope = "private"
+
+            new value to object
+                .value = "&$(api_object.name:)"
+            endnew
+        endfor
+
+        new value to object
+            .value = "NULL"
+        endnew
+    endnew
+endfunction
+
+# ###########################################################################
+#   !!!!!                   SCRATCH END                                 !!!!!
+# ###########################################################################
+
+
+.endtemplate

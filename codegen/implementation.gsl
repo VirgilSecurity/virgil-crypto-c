@@ -1,0 +1,172 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   This module contains functions processing component 'implementation'.
+#   Private function prefix is: P14.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+
+gsl from "common.gsl"
+gsl from "interface.gsl"
+
+
+function _P14_resolve_attributes (implementation)
+    check_argument (my, "implementation")
+
+    my.implementation.full_name = cat (my.implementation.provider, my.implementation.name)
+    my.implementation.ref_name = \
+            my.implementation.is_default ?? my.implementation.name ? my.full_name
+endfunction
+
+
+function _P14_check_interface_inheritance (implementation, interface, source)
+    check_argument (my, "implementation")
+    check_argument (my, "interface")
+    check_argument (my, "source")
+
+    for my.interface.inherit
+        if count (my.implementation.interface, name = inherit.interface) = 0
+            echo_fatal ("Interface '$(inherit.interface:)' implementation is \
+                    required by interface '$(my.interface.name)' \
+                    within: <$(name (my.implementation)) name = \"$(my.implementation.name)\"/>")
+        endif
+
+        my.inherited_interface = interface_find (inherit.interface, my.source)
+        _P14_check_interface_inheritance (my.implementation, my.inherited_interface, my.source)
+    endfor
+endfunction
+
+
+function _P14_check_interfaces (implementation, source)
+    check_argument (my, "implementation")
+    check_argument (my, "source")
+
+    for my.implementation.interface as implemented
+        my.interface = interface_find (implemented.name, my.source)
+        _P14_check_interface_inheritance (my.implementation, my.interface, my.source)
+    else
+        echo_fatal ("Nothing to be implemented, within: \
+                <$(name (my.implementation)) name = \"$(my.implementation.name)\"/>")
+    endfor
+endfunction
+
+
+function _P14_resolve_interface_constants (implementation, implemented, interface)
+    check_argument (my, "implementation")
+    check_argument (my, "implemented")
+    check_argument (my, "interface")
+
+    for my.interface.constant as interface_constant
+        my.implemented_constant = \
+                my.implemented->constant (name = interface_constant.name) ?
+
+        if ! defined (my.implemented_constant)
+            echo_fatal ("Constant '$(interface_constant.name:)'" + \
+                    " required by interface '$(my.interface.name)'" + \
+                    ", is not implemented within implementation '$(my.implementation.name)'.", my)
+        endif
+
+        my.implemented_constant. ?= interface_constant. ?
+        my.implemented_constant.visibility ?= interface_constant.visibility ? "public"
+    endfor
+endfunction
+
+function _P14_resolve_interface_methods (implementation, implemented, interface)
+    check_argument (my, "implementation")
+    check_argument (my, "implemented")
+    check_argument (my, "interface")
+
+    for my.interface.method as interface_method
+        my.implemented_method = item_copy_to (interface_method, my.implemented)
+        my.method_specification = my.implemented->method (name = interface_method.name) ?
+        my.implemented_method.is_stateless = my.method_specification.is_stateless ?
+    endfor
+endfunction
+
+function _P14_resolve_interfaces (implementation, source)
+    check_argument (my, "implementation")
+    check_argument (my, "source")
+
+    for my.implementation.interface as implemented
+        my.interface = interface_find (implemented.name, my.source)
+        _P14_resolve_interface_constants (my.implementation, implemented, my.interface)
+        _P14_resolve_interface_methods (my.implementation, implemented, my.interface)
+    endfor
+endfunction
+
+function implementation_resolve (implementation, source, project)
+    check_argument (my, "implementation")
+    check_argument (my, "source")
+    check_argument (my, "project")
+
+    assert_attribute (my.implementation, "provider")
+
+    echo_trace ("Resolving implementation: \
+            $(my.implementation.provider:)/$(my.implementation.name:)", my)
+
+
+    _P14_resolve_attributes (my.implementation)
+    _P14_check_interfaces (my.implementation, my.source)
+    _P14_resolve_interfaces (my.implementation, my.source)
+endfunction
+
+function foreach_implementation_resolve (source, project)
+    check_argument (my, "source")
+    check_argument (my, "project")
+
+    for my.source.implementation
+        implementation_resolve (implementation, my.source, my.project)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create 'meta entity' for each implementation within source.
+# ---------------------------------------------------------------------------
+function foreach_implementation_update_meta (source, meta)
+    check_argument (my, "source")
+    check_argument (my, "meta")
+
+    for my.source.implementation
+        meta_add_implementation (my.meta, implementation)
+    endfor
+endfunction
+
+.endtemplate

@@ -1,0 +1,11 @@
+<interface name = "kdf">
+    Provides interface to the key derivation function (KDF) algorithms.
+
+    <method name = "derive">
+        Calculate hash over given data.
+
+        <argument name = "data" type = "buffer" />
+
+        <return name = "key" type = "buffer" const_size = ""/>
+    </method>
+</interface>

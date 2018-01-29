@@ -1,0 +1,188 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Create module with 'Interface Implementation API', which includes:
+#       - set of constant that correspond one specifc interface;
+#       - set of functions that implement one specifc interface.
+#
+#   Private function prefix is: E19.
+# ---------------------------------------------------------------------------
+#   This is a code generator helper built using the iMatix GSL code
+#   generation language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+
+gsl from "c_module_impl.gsl"
+gsl from "c_module_impl_private.gsl"
+gsl from "c_module_interface.gsl"
+gsl from "c_module_interface_api.gsl"
+
+gsl from "c_resolver.gsl"
+gsl from "c_names_config.gsl"
+
+
+function _E19_add_includes (implementation, interface, module, meta)
+    check_argument (my, "implementation")
+    check_argument (my, "interface")
+    check_argument (my, "module")
+    check_argument (my, "meta")
+
+    my.names = meta_names (my.meta)
+
+    new require to my.module
+        .module = my.names.module_library
+    endnew
+
+    if count (my.interface.method, is_false (is_stateless)) > 0
+        new require to module
+            .module = my.names.module_implementation
+        endnew
+
+        new require to module
+            .module = my.names.module_implementation_private
+            .scope = "private"
+        endnew
+    endif
+
+    for my.implementation.c_include
+        copy c_include to my.module
+    endfor
+endfunction
+
+
+function _E19_add_interface_constants (implementation, interface, module, meta)
+    check_argument (my, "implementation")
+    check_argument (my, "interface")
+    check_argument (my, "module")
+    check_argument (my, "meta")
+
+    new enum to my.module
+        . = "Public constants required by interface: '$(my.interface.name:)'."
+        .scope = "public"
+        my.public_constants = enum
+    endnew
+
+    new enum to my.module
+        . = "Private constants required by interface: '$(my.interface.name:)'."
+        .scope = "private"
+        my.private_constants = enum
+    endnew
+
+    my.implemented_interface = my.implementation->interface (name = my.interface.name)
+    assert_attribute (my, "implemented_interface", my)
+
+    for my.implemented_interface.constant where visibility = "public"
+        new value to my.public_constants
+            . = constant. ?
+            .name = constant.name
+            .value = constant.value
+        endnew
+    else
+        delete my.public_constants
+    endfor
+
+    for my.implemented_interface.constant where visibility = "private"
+        new value to my.private_constants
+            . = constant. ?
+            .name = constant.name
+            .value = constant.value
+        endnew
+    else
+        delete my.private_constants
+    endfor
+endfunction
+
+
+function _E19_add_interface_methods (implementation, interface, module, meta)
+    check_argument (my, "implementation")
+    check_argument (my, "interface")
+    check_argument (my, "module")
+    check_argument (my, "meta")
+
+    my.refs = meta_refs (my.meta)
+
+    for my.interface.method
+        my.impl_method = item_copy_to (method, my.module)
+
+        if is_false (method.is_stateless)
+            c_method_add_argument_impl (my.impl_method, my.refs.implementation_struct)
+        endif
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create 'Implemented Interface API' module for each 'implementation'
+#   within given source and put it to the destination.
+# ---------------------------------------------------------------------------
+function c_module_implemented_interface_create (source, destination, meta)
+    check_argument (my, "source")
+    check_argument (my, "destination")
+    check_argument (my, "meta")
+
+    for my.source.implementation
+        meta_reset_active_entity (my.meta, implementation.full_name)
+
+        for implementation.interface as implemented_interface
+
+            my.interface = c_module_interface_find (implemented_interface.name, my.source)
+            meta_add_active_entity (my.meta, my.interface.name)
+
+            my.names = meta_names (my.meta)
+
+            new module to my.destination
+                . = "\
+                    Implementaion of the interface '$(implemented_interface.name:)'.
+                    $(my.interface.:)
+                "
+
+                .name = my.names.module_implemented_$(make_id (implemented_interface.name))
+                .class = my.names.class_implemented_$(make_id (implemented_interface.name))
+
+                _E19_add_includes (implementation, my.interface, module, my.meta)
+                _E19_add_interface_constants (implementation, my.interface, module, my.meta)
+                _E19_add_interface_methods (implementation, my.interface, module, my.meta)
+            endnew
+
+            meta_remove_active_entity (my.meta, my.interface.name)
+        endfor
+
+    endfor
+endfunction
+
+.endtemplate

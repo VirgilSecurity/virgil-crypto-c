@@ -1,0 +1,243 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   This is root GSL file which sequentially run all necessary operations to
+#   generate code from the module files.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+gsl from "project.gsl"
+gsl from "module.gsl"
+gsl from "interface.gsl"
+gsl from "implementation.gsl"
+gsl from "provider.gsl"
+
+gsl from "meta.gsl"
+gsl from "c_module_api.gsl"
+gsl from "c_module_api_private.gsl"
+gsl from "c_module_impl.gsl"
+gsl from "c_module_impl_private.gsl"
+
+gsl from "c_module_interface.gsl"
+gsl from "c_module_interface_api.gsl"
+gsl from "c_module_implementation.gsl"
+gsl from "c_module_implemented_interface.gsl"
+gsl from "c_module_implementation_private.gsl"
+
+gsl from "c_gmodule.gsl"
+gsl from "c_gmodule_codegen.gsl"
+
+
+
+# ###########################################################################
+#   Context resolution.
+# ###########################################################################
+
+# ---------------------------------------------------------------------------
+#   Read source file tehn inject variables from the context and store result
+#   to the destination file.
+#   Context defines variables as key-value pairs defined as attributes.
+# ---------------------------------------------------------------------------
+.macro main_inject_context (context, source_file, destination_file)
+.   my.default_gsl_substitute = [gsl].substitute
+.   my.default_gsl_ignorecase = [gsl].ignorecase
+.   [gsl].substitute = ".("
+.   [gsl].ignorecase = "0"
+.   output my.destination_file
+.       scope root->context
+.           gsl from my.source_file
+.       endscope
+.   close
+.   [gsl].substitute = my.default_gsl_substitute
+.   [gsl].ignorecase = my.default_gsl_ignorecase
+.endmacro
+
+# ---------------------------------------------------------------------------
+#   Inject context variables to the 'gmodule'.
+# ---------------------------------------------------------------------------
+function main_inject_gmodule_context (gmodule, context, work_dir)
+    check_argument (my, "gmodule")
+    check_argument (my, "context")
+    check_argument (my, "work_dir")
+
+    echo_trace ("Resolving gmodule: $(my.gmodule.name:)", my)
+
+    my.unresolved_gmodule_file_path = \
+            "$(my.work_dir?:)c_gmodule_$(my.gmodule.name:)_unresolved.xml"
+
+    my.resolved_gmodule_file_path = \
+            "$(my.work_dir?:)c_gmodule_$(my.gmodule.name:).xml"
+
+
+    item_save_to_file (my.gmodule, my.unresolved_gmodule_file_path)
+
+    main_inject_context (root->context, my.unresolved_gmodule_file_path, my.resolved_gmodule_file_path)
+
+    return item_load_from_file (my.resolved_gmodule_file_path)
+endfunction
+
+
+# ###########################################################################
+#   Main data processing.
+# ###########################################################################
+
+# ---------------------------------------------------------------------------
+#   Load and return all hight level models from known XML files.
+# ---------------------------------------------------------------------------
+function main_load_all (destination)
+    check_argument (my, "destination")
+
+    item_load_from_file ("project.xml", my.destination)
+    item_load_from_file_pattern ("^module\.+xml$", my.destination, ".")
+    item_load_from_file_pattern ("^interface\.+xml$", my.destination, ".")
+    item_load_from_file_pattern ("^provider\.+xml$", my.destination, ".")
+endfunction
+
+function root_dump (root)
+    check_argument (my, "root")
+
+    assert_item (my.root, "project", my)
+    assert_attribute (my.root->project, "work_path")
+
+    item_save_to_file (my.root, "root.xml", my.root->project.work_path)
+endfunction
+
+function context_dump (root)
+    check_argument (my, "root")
+
+    assert_item (my.root, "context", my)
+    assert_item (my.root, "project", my)
+    assert_attribute (my.root->project, "work_path")
+
+    item_save_to_file (my.root->context, "context.xml", my.root->project.work_path)
+endfunction
+
+function foreach_module_dump (root)
+    check_argument (my, "root")
+
+    assert_item (my.root, "project", my)
+    assert_attribute (my.root->project, "work_path")
+
+    for my.root.module
+        item_save_to_file (module, "module_$(module.name:lower,c).xml", \
+                my.root->project.work_path)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Entrypoint.
+# ---------------------------------------------------------------------------
+function run_main ()
+    root = XML.new ("root")
+
+    main.echo_level ?= "fatal"
+
+    new context to root
+    endnew
+
+    #   Load all components, including project.
+    main_load_all (root)
+
+    #   Process project.
+    project_resolve (root->project)
+    project_generate_structure (root->project)
+    project_update_context (root->project, root->context)
+
+    #   Process Interface / Implementation.
+    foreach_interface_resolve (root, root->project)
+    foreach_provider_resolve (root, root->project)
+    foreach_implementation_resolve (root, root->project)
+
+    #   Create meta informtation about high level entities.
+    my.meta = meta_create ()
+    foreach_interface_update_meta (root, my.meta)
+    foreach_implementation_update_meta (root, my.meta)
+    item_save_to_file (my.meta, "meta.xml", root->project.work_path)
+
+    #   Create modules.
+    c_module_api_create (root, my.meta)
+    c_module_api_private_create (root, my.meta)
+
+    c_module_impl_create (root, my.meta)
+    c_module_impl_private_create (root, my.meta)
+
+    c_module_interface_create (root, root, my.meta)
+    c_module_interface_api_create (root, root, my.meta)
+
+    c_module_implemented_interface_create (root, root, my.meta)
+
+    c_module_implementation_create (root, root, my.meta)
+    c_module_implementation_private_create (root, root, my.meta)
+
+    #   Process modules.
+    foreach_module_resolve (root, root->project)
+    foreach_module_update_context (root, root->context)
+    foreach_module_dump (root)
+
+    # At this point context is resolved.
+    context_dump (root)
+
+    #   Create gmodules.
+    c_gmodule_create (root, root, root->project)
+
+    #   Process gmodules.
+    c_gmodule_resolve (root)
+
+#    # At this point all elements are created and resolved.
+    root_dump (root)
+#
+#    #   Generate code.
+    for root.c_gmodule
+        my.c_gmodule_resolved = \
+                main_inject_gmodule_context (c_gmodule, root->context, root->project.work_path)
+        move my.c_gmodule_resolved before c_gmodule
+        delete c_gmodule
+    endfor
+    c_gmodule_generate_sources (root)
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate bloat code. Make life easier.
+# ---------------------------------------------------------------------------
+run_main ()
+
+.endtemplate

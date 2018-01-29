@@ -1,0 +1,825 @@
+#   Copyright (c) 2015-2017 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+
+# ---------------------------------------------------------------------------
+#   GSL generation helpers.
+# ---------------------------------------------------------------------------
+#   This is a code generator helper built using the iMatix GSL code
+#   generation language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+#   Abort if argument with given name is not defined.
+# ---------------------------------------------------------------------------
+function check_argument (argument_scope, argument_name, caller)
+    if ! defined (my.argument_scope)
+        abort "check_argument: argument_scope is not defined."
+    endif
+
+    if ! defined (my.argument_name)
+        abort "check_argument: argument_name is not defined."
+    endif
+
+    if ! defined (my.argument_scope.$(my.argument_name))
+        abort "[$("FATAL":upper,block%-8s)]\
+            $("Argument '$(my.argument_name:)' is not defined":no,block%-120s) \
+            $(name (my.caller ? my.argument_scope):block) ()"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Retrun true if given value is defined and non zero.
+# ---------------------------------------------------------------------------
+function is_true (x)
+    return defined (my.x) & my.x <> 0
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Retrun true if both values are defined and non zero.
+# ---------------------------------------------------------------------------
+function is_true_both (x, y)
+    return is_true (my.x) & is_true (my.y)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Retrun true if given value is not defined or is zero.
+# ---------------------------------------------------------------------------
+function is_false (x)
+    return ! defined (my.x) | my.x = 0
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Retrun true if both values are not defined or are zeroes.
+# ---------------------------------------------------------------------------
+function is_false_both (x, y)
+    return is_false (my.x) & is_false (my.y)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true value if given string is empty after triming.
+# ---------------------------------------------------------------------------
+function string_empty (str)
+    return ! defined (my.str) | (string.length (string.trim (my.str)) = 0)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true value if given string is defined
+#   and not empty after triming.
+# ---------------------------------------------------------------------------
+function string_defined (str)
+    return defined (my.str) & (string.length (string.trim (my.str)) > 0)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Retrun true if both string are defined and equal.
+# ---------------------------------------------------------------------------
+function string_equal (str1, str2)
+    return defined (my.str1) & defined (my.str2) & (string.lexcmp(my.str1, my.str2) = 0)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true if given string is in the list.
+#   List is as a comma separated alphanum strings.
+#   i.e "public, private".
+#   Note, comparison is case insensitive.
+# ---------------------------------------------------------------------------
+function string_in (str, list)
+    check_argument (my, "str")
+    check_argument (my, "list")
+
+    if ! regexp.match ("\\w", my.list)
+        abort "$(name (my):): list is not defined or empty."
+    endif
+
+    #   Remove spaces.
+    my.list = string.replace (my.list, " |")
+
+    #   Convert to regex pattern.
+    my.list = string.convch (my.list, ",", "|")
+    my.list_pattern = "^($(my.list:lower))$"
+
+    #   Compare.
+    return regexp.match (my.list_pattern, my.str)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true if given XML item name is in the list.
+#   List is as a comma separated string with an item names.
+#   i.e "public, private".
+#   Note, comparison is case insensitive.
+# ---------------------------------------------------------------------------
+function item_in (item, list)
+    check_argument (my, "item")
+    check_argument (my, "list")
+
+    return string_in (name (my.item) ? "", my.list)
+endfunction
+
+# ---------------------------------------------------------------------------
+#
+# ---------------------------------------------------------------------------
+function string_multiline (str)
+    check_argument (my, "str")
+
+    return string.cntch (my.str, terminator) > 0
+endfunction
+# ---------------------------------------------------------------------------
+#   Return true if given element is XML item, not value.
+# ---------------------------------------------------------------------------
+function is_item (element)
+    return class (my.element) = "XML item"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Retrun true given ele,emt contains description.
+# ---------------------------------------------------------------------------
+function has_description (element)
+    return defined (my.element) & string_defined (my.element.)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Transform number of tabs to correspond spaces.
+# ---------------------------------------------------------------------------
+function tabs (tab_count, tab_size)
+    my.tab_count ?= 0
+    my.tab_size ?= 4
+    return " " * (my.tab_count * my.tab_size)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Collapse spaces between words to 1 space in the string.
+#   Expected one-line string.
+# ---------------------------------------------------------------------------
+function string_collapse_spaces (str)
+    if string_empty (my.str)
+        return my.str ?
+    endif
+
+    while regexp.match ("(\\w+[ ]{2,}\\w+)", my.str, my.char_spaces_char)
+        #   Replace 2 or more spaces with one space.
+        regexp.match ("([ ]{2,})", my.char_spaces_char, my.spaces)
+        my.replacement = string.search_replace (my.char_spaces_char, my.spaces, " ")
+        my.str = string.search_replace (my.str, my.char_spaces_char, my.replacement)
+    endwhile
+
+    return my.str
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return trimmed string indented with a given tab count.
+# ---------------------------------------------------------------------------
+function string_indent (str, tab_count, tab_size)
+    my.str ?= ""
+    my.str = "$(my.str:left, no)"
+    my.str = string_trim (my.str)
+    my.indent = tabs (my.tab_count, my.tab_size)
+    return my.indent + string.replace (my.str, "$(terminator)|$(terminator)$(my.indent)")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Remove trailing whitespaces for each line of multi-line string.
+# ---------------------------------------------------------------------------
+function string_multi_rtrim (str)
+    while 1
+        my.new_str = string.replace (my.str, " $(terminator)|$(terminator)")
+        if my.new_str = my.str
+            last
+        endif
+        my.str = my.new_str
+    endwhile
+    return my.str
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Remove spaces and new lines left to the string.
+# ---------------------------------------------------------------------------
+function string_ltrim (str)
+    check_argument (my, "str")
+
+    if regexp.match ("^(.*)", my.str, my.first_line)
+        regexp.match ("^\\s*(.*)", my.first_line, my.trimmed_first_string)
+        return string.search_replace (my.str, my.first_line, my.trimmed_first_string)
+    endif
+
+    return ""
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Remove spaces and new lines right to the string.
+# ---------------------------------------------------------------------------
+function string_rtrim (str)
+    check_argument (my, "str")
+
+    return string.trim (my.str)
+endfunction
+
+function string_trim (str)
+    check_argument (my, "str")
+
+    return string_ltrim (string_rtrim (my.str))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Collapse spaces between words to 1 space in the code.
+#   Note, do not collapse spaces in macro formatting.
+#   Note, work for both single line and multiline strings.
+# ---------------------------------------------------------------------------
+function code_collapse_spaces (str)
+    if string_empty (my.str)
+        return my.str ?
+    endif
+
+    while regexp.match ("([^\\s#\\/][ ]{2,}\\S+)", my.str, my.char_spaces_char)
+        #   Replace 2 or more spaces with one space.
+        regexp.match ("([ ]{2,})", my.char_spaces_char, my.spaces)
+        my.replacement = string.search_replace (my.char_spaces_char, my.spaces, " ")
+        my.str = string.search_replace (my.str, my.char_spaces_char, my.replacement)
+    endwhile
+
+    return my.str
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true if message with given level shoud be printed.
+#   Allowed levels are (lower level activates all apper levels):
+#       - fatal
+#       - error
+#       - warning
+#       - info
+#       - trace
+# ---------------------------------------------------------------------------
+function _C23_echo_is_level_active (level)
+    check_argument (my, "level")
+
+    return ("$(my.level)" = "fatal"   & string_in (main.echo_level, "debug, trace, info, warning, error, fatal")) | \
+           ("$(my.level)" = "error"   & string_in (main.echo_level, "debug, trace, info, warning, error")) | \
+           ("$(my.level)" = "warning" & string_in (main.echo_level, "debug, trace, info, warning")) | \
+           ("$(my.level)" = "info"    & string_in (main.echo_level, "debug, trace, info")) | \
+           ("$(my.level)" = "trace"   & string_in (main.echo_level, "debug, trace")) | \
+           ("$(my.level)" = "debug"   & string_in (main.echo_level, "debug"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Print given text if next precondition are satisfied:
+#       - text is defined;
+#       - echo_level is active - see _C23_echo_is_level_active() finction.
+#   Argument 'caller' is a function, that call this function.
+# ---------------------------------------------------------------------------
+function _C23_echo (text, level, caller)
+    check_argument (my, "level")
+
+    if ! defined (my.text)
+        return
+    endif
+
+    if ! _C23_echo_is_level_active (my.level)
+        return
+    endif
+
+    my.text = code_collapse_spaces (my.text)
+
+    my.caller_echo_str = defined (my.caller) ?? "$(name (my.caller)) ()" ? ""
+
+    if string.length (my.text) > 120 | string_multiline (my.text)
+        my.echo_text = "[$(my.level:upper,block%-8s)]$(" ":no,block%-124s)$(my.caller_echo_str:block)"
+        my.echo_text += terminator + string_indent (my.text, 21, 1)
+    else
+        my.echo_text = "[$(my.level:upper,block%-8s)]\
+            $(my.text:no,block%-120s) \
+            $(my.caller_echo_str:no,block)"
+    endif
+
+    echo string_rtrim (my.echo_text)
+endfunction
+
+function _C23_echo_item (item, level, caller)
+    check_argument (my, "level")
+
+    if ! defined (my.item) | ! is_item (my.item)
+        return
+    endif
+
+    if ! _C23_echo_is_level_active (my.level)
+        return
+    endif
+
+    my.caller_echo_str = defined (my.caller) ?? "$(name (my.caller)) ()" ? ""
+
+    my.echo_text = "[$(my.level:upper,block%-8s)]\
+        $("Dump item <$(name (my.item))/>...":no,block%-120s) \
+        $(my.caller_echo_str:no,block)"
+
+    my.item_name = name (my.item)
+    my.item_file = my.item_name + ".xml"
+    my.item.save (my.item_file)
+    xml_file_remove_prolog (my.item_file)
+    my.item_text = file.slurp (my.item_file)
+    file.delete (my.item_file)
+    my.echo_text += terminator + string_indent (my.item_text, 6)
+
+    echo string_rtrim (my.echo_text)
+
+endfunction
+
+function echo_fatal (text, caller)
+    _C23_echo (my.text, "fatal", my.caller)
+    abort
+endfunction
+
+function echo_error (text, caller)
+    _C23_echo (my.text, "error", my.caller)
+endfunction
+
+function echo_warning (text, caller)
+    _C23_echo (my.text, "warning", my.caller)
+endfunction
+
+function echo_info (text, caller)
+    _C23_echo (my.text, "info", my.caller)
+endfunction
+
+function echo_trace (text, caller)
+    _C23_echo (my.text, "trace", my.caller)
+endfunction
+
+function echo_debug (text, caller)
+    _C23_echo (my.text, "debug", my.caller)
+endfunction
+
+function echo_debug_item (item, caller)
+    _C23_echo_item (my.item, "debug", my.caller)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Abort if attribute with given name is not defined within given scope.
+# ---------------------------------------------------------------------------
+function assert_attribute (attribute_scope, variable_name, caller)
+    check_argument (my, "attribute_scope")
+    check_argument (my, "variable_name")
+
+    if ! defined (my.attribute_scope.$(my.variable_name))
+        echo_fatal ("Attribute '$(my.variable_name:)' is not defined \
+                within <$(name (my.attribute_scope))/>", my.caller)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Abort if there is no elements with given name within given scope.
+# ---------------------------------------------------------------------------
+function assert_item (item_scope, item_name, caller)
+    check_argument (my, "item_scope")
+    check_argument (my, "item_name")
+
+    my.item_count = count (my.item_scope.$(my.item_name))
+    if my.item_count > 0
+        echo_debug ("Item '$(name (my.item_scope))->$(my.item_name:)' count is $(my.item_count).", my.caller)
+    else
+        echo_fatal ("Item '$(name (my.item_scope))->$(my.item_name:)' is not defined.", my.caller)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Abort if given argument has type that differs from given.
+# ---------------------------------------------------------------------------
+function assert_argument_type (argument, type, caller)
+    check_argument (my, "argument")
+    check_argument (my, "type")
+
+    my.actual_type = name (my.argument) ?
+
+    if ! defined (my.actual_type)
+        echo_fatal ("Argument is not a type, but '$(class (my.argument))'", my.caller ? my)
+    endif
+
+    if my.actual_type <> my.type
+        echo_fatal ("Argument has wrong type. \
+                Was given <$(my.actual_type:)/>, expected <$(my.type)/>", my.caller ? my)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Change spaces balance in the code: remove redundant spaces.
+# ---------------------------------------------------------------------------
+function code_format (code)
+    if string_empty (my.code)
+        return my.code ?
+    endif
+    #   Remove spaces after parentheses.
+    while regexp.match ("(\\( +)", my.code, my.spaces)
+        my.code = string.replace (my.code, "$(my.spaces:)|(")
+    endwhile
+    #   Remove spaces before parentheses.
+    while regexp.match ("( +\\))", my.code, my.spaces)
+        my.code = string.replace (my.code, "$(my.spaces:)|)")
+    endwhile
+    #   Remove all spaces in macros function between name and parentheses.
+    while regexp.match ("#\\s*define\\s+(\\w+\\s+\\()", my.code, my.macros_name_space_parentheses)
+        #   Remove all spaces between name and parentheses.
+        regexp.match ("(\\s+)", my.macros_name_space_parentheses, my.spaces)
+        my.replacement = string.search_replace (my.macros_name_space_parentheses, my.spaces, "")
+        my.code = string.search_replace (my.code, my.macros_name_space_parentheses, my.replacement)
+    endwhile
+    #   Remove all spaces before and after '->' symbol.
+    while regexp.match ("((\\s+->)|(->\\s+))", my.code, my.pointer_access_symbol)
+        #   Remove all spaces between name and parentheses.
+        my.code = string.search_replace (my.code, my.pointer_access_symbol, "->")
+    endwhile
+    return my.code
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert given content as is to the current output.
+#   If content is not defined new line is inserted.
+# ---------------------------------------------------------------------------
+.macro out (content)
+.if ! defined (my.content)
+.   return
+.endif
+$(my.content:)
+.endmacro
+
+# ---------------------------------------------------------------------------
+#   Insert new line to the current output.
+# ---------------------------------------------------------------------------
+function newline (count)
+    my.count ?= 1
+    while my.count > 0
+        out ("")
+        my.count = my.count - 1
+    endwhile
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert new line if given condition is true.
+# ---------------------------------------------------------------------------
+function newline_if (condition, count)
+    if is_true (my.condition)
+        newline (my.count)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Read content between '@license ... @end' section and '@generated' line
+#       and store it to 'context.content_before' attribute.
+#   Read content between '@generated...@end' section and '@footer' line and
+#       and store it to 'context.content_after' attribute.
+# ---------------------------------------------------------------------------
+function read_non_generated_content (source_file, context)
+    if ! file.exists (my.source_file)
+        return
+    endif
+
+    my.file_error = # undefined
+    my.file_handle = file.open (my.source_file, "r", my.file_error)
+    if defined (my.file_error)
+        echo_fatal ("Can not open file '$(my.source_file:)'. " + my.file_error, my)
+    endif
+
+    my.empty_content = ""
+    my.content_before = ""
+    my.content_after = ""
+    my.state = "init" # init ->
+                      # found_license -> found_license_end ->
+                      # found_generated -> found_generated_end ->
+                      # found_footer -> found_end
+    while defined (my.file_handle)
+        my.line = my.file_handle.read (my.error)? ""
+        if defined (my.error)
+            # end of file
+            my.content_before = string_trim (my.content_before)
+            my.content_after = string_trim (my.content_after)
+            last
+        elsif my.state = "init" & regexp.match ("//\\s*@license", my.line)
+            my.state = "found_license"
+        elsif my.state = "found_license" & regexp.match ("//\\s*@end", my.line)
+            my.state = "found_license_end"
+        elsif my.state = "found_license_end"
+            if regexp.match ("//\\s*@generated", my.line)
+                my.state = "found_generated"
+            else
+                my.content_before += my.line
+            endif
+        elsif my.state = "found_generated" & regexp.match ("//\\s*@end", my.line)
+            my.state = "found_generated_end"
+        elsif my.state = "found_generated_end"
+            if regexp.match ("//\\s*@footer", my.line)
+                my.state = "found_footer"
+            else
+                my.content_after += my.line
+            endif
+        elsif my.state = "found_footer" & regexp.match ("//\\s*@end", my.line)
+            my.state = "found_end"
+        endif
+    endwhile
+    file.close (my.file_handle)
+    my.context.content_before = my.content_before
+    my.context.content_after = my.content_after
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Eliminate spaces that appears during code formatting within GSL scripts.
+# ---------------------------------------------------------------------------
+function code_remove_side_effects (code)
+    my.code = "$(my.code:left,no)"
+    my.code = string_trim (my.code)
+    my.code = code_collapse_spaces (my.code)
+    my.code = code_format (my.code)
+    return my.code
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert given multiline code.
+# ---------------------------------------------------------------------------
+function format_code (body, tab_count)
+    check_argument (my, "body")
+
+    my.body = code_remove_side_effects (my.body)
+    my.body = string_indent (my.body, my.tab_count)
+    my.body = string_rtrim (my.body)
+
+    return my.body
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert given multiline code.
+# ---------------------------------------------------------------------------
+function insert_code (body, tab_count)
+    check_argument (my, "body")
+
+    out (format_code (my.body, my.tab_count))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return given title if it is new or differs from the previous one.
+#   Function state is stored within 'context':
+#       - context.previous_title
+#       - context.current_title
+# ---------------------------------------------------------------------------
+function title_if_new (title, context)
+    check_argument (my, "title")
+    check_argument (my, "context")
+
+    my.context.previous_title = my.context.current_title ?
+    my.context.current_title = my.title
+
+    my.is_new_title_detected = \
+            ! defined (my.context.previous_title) | \
+            ! string_equal (my.context.current_title, my.context.previous_title)
+
+    return my.is_new_title_detected ?? my.context.current_title ?
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return adjusted string according to rules:
+#       - remove all trailing and leading spaces and newlines;
+#       - prefix each line (if string is multiline) with given 'prefix';
+#       - tab each line (if string is multiline) with given 'tabs';
+#       - add new line before string;
+#       - add new line after string;
+#       - tab next line after string with given 'next tabs'.
+# ---------------------------------------------------------------------------
+function xml_string_adjust (str, tab_count, next_tab_count, prefix, tab_size)
+    if string_empty (my.str)
+        echo_debug ("Do nothing - given string is empty.", my)
+        return
+    endif
+    my.tab_count ?= 0
+    my.next_tab_count ?= 0
+    my.prefix ?= ""
+    my.str = "$(my.str:left, no)"
+    my.str = string_trim (my.str)
+    my.str = "$(my.prefix:)$(my.str:block, no)$(terminator)"
+    my.str = string_trim (my.str)
+    my.str = string_multi_rtrim (my.str)
+    my.indent = tabs (my.tab_count, my.tab_size)
+    my.str = string.replace (my.str, "$(terminator)|$(terminator)$(my.indent)")
+    if my.next_tab_count < 0
+        return terminator + my.indent + my.str
+    else
+        my.next_indent = tabs (my.next_tab_count, my.tab_size)
+        return terminator + my.indent + my.str + terminator + my.next_indent
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Remove XML Prolog from the given file.
+#   This action is required if given XML file acts as GSL model.
+# ---------------------------------------------------------------------------
+function xml_file_remove_prolog (file_name)
+    if ! file.exists (my.file_name)
+        abort "xml_file_remove_prolog: file does not exists: " + my.file_name
+    endif
+    my.content = file.slurp (my.file_name)
+    while regexp.match ("(<[?].*[?]>)", my.content, my.prolog)
+        my.content = string.replace (my.content, "$(my.prolog:)|")
+    endwhile
+    output my.file_name
+        out (string_trim (my.content))
+    close
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Prepend new component with given a 'name' to the 'parent_data'.
+# ---------------------------------------------------------------------------
+function item_prepend_new (name, parent_data)
+    check_argument (my, "name")
+    check_argument (my, "parent_data")
+
+    if count (my.parent_data.$(my.name:)) > 0
+        new $(my.name:) before my.parent_data->$(my.name:)
+            return $(my.name:)
+        endnew
+    else
+        new $(my.name:) to my.parent_data
+            return $(my.name:)
+        endnew
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Replacement for GSL built-in '.copy <from-scope> to <parent-data>'.
+#   Return refrence to the copied element.
+# ---------------------------------------------------------------------------
+function item_copy_to (item, destination, alias)
+    check_argument (my, "item")
+    check_argument (my, "destination")
+
+    my.temp_parent_data = XML.new ()
+
+    if string_defined (my.alias)
+        copy my.item to my.temp_parent_data as $(my.alias:)
+    else
+        copy my.item to my.temp_parent_data
+    endif
+
+    for my.temp_parent_data. as data
+        my.item_ref = data
+        move my.item_ref to my.destination
+        return my.item_ref
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return XML model loaded from the file, if success.
+#   In any error - abort.
+# ---------------------------------------------------------------------------
+function item_load_from_file (file_name, destination, dir_path)
+    check_argument (my, "file_name")
+
+    my.file_path = "$(my.dir_path?:)$(my.file_name:)"
+
+    echo_trace ("Loading file: $(my.file_path:)", my)
+
+    if ! file.exists (my.file_path)
+        echo_fatal ("File does not exist: $(my.file_path:).", my)
+    endif
+
+    my.model = XML.load_file (my.file_path, my.error) ?
+    if defined (my.error)
+        echo_fatal ("Error loading file: $(my.file_path:). " + my.error, my)
+    endif
+
+    if defined (my.destination)
+        move my.model to my.destination
+    endif
+
+    return my.model
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Save XML model to file.
+#   In any error - abort.
+# ---------------------------------------------------------------------------
+function item_save_to_file (model, file_name, dir_path)
+    check_argument (my, "model")
+    check_argument (my, "file_name")
+
+    my.file_path = "$(my.dir_path?:)$(my.file_name:)"
+
+    my.model_name = name (my.model)
+    if string_defined (my.model.name)
+        my.model_name += " name = \"$(my.model.name:)\""
+    endif
+
+    echo_trace ("Saving <$(my.model_name)/> to the file: $(my.file_path:)", my)
+
+    my.model.save (my.file_path, my.error)
+
+    if defined (my.error)
+        echo_fatal ("Error saving file: $(my.file_path:). " + my.error, my)
+    endif
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Load XML models loaded from files loacated within 'dir_path'
+#   and matched given pattern to the 'destination'.
+# ---------------------------------------------------------------------------
+function item_load_from_file_pattern (pattern, destination, dir_path)
+    check_argument (my, "pattern")
+    check_argument (my, "destination")
+    check_argument (my, "dir_path")
+
+    my.dir = directory.open (my.dir_path, my.error) ?
+    if defined (my.error)
+        echo_fatal ("Error open directory: " + my.error, my)
+    endif
+
+    for my.dir.file as f where regexp.match (my.pattern, f.name)
+        my.model = item_load_from_file (f.name)
+        move my.model to my.destination
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return item with a given type and name that is found within source.
+# ---------------------------------------------------------------------------
+function item_find_named (source, type, name, caller)
+    check_argument (my, "source")
+    check_argument (my, "type")
+    check_argument (my, "name")
+
+    my.item = my.source->$(my.type:) (name = my.name) ?
+    if ! defined (my.item)
+        echo_fatal ("Item <$(my.type:) name = \"$(my.name:)\"> \
+                is not found within <$(name (my.source))/>", my.caller ? my)
+    endif
+
+    return my.item
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name constructed by parts concatenation.
+# ---------------------------------------------------------------------------
+function cat (part1, part2, part3, part4, part5, part6, part7, part8)
+    my.result = "$(my.part1 ?:) $(my.part2 ?:) $(my.part3 ?:) $(my.part4 ?:) " + \
+                "$(my.part5 ?:) $(my.part6 ?:) $(my.part7 ?:) $(my.part8 ?:)"
+    my.result = string_trim (my.result)
+    my.result = string_collapse_spaces (my.result)
+    return "$(my.result:)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return 'uid' as concatinated C like string.
+# ---------------------------------------------------------------------------
+function make_id (part1, part2, part3, part4, part5, part6, part7, part8)
+    return "$(cat (\
+            my.part1, my.part2, my.part3, my.part4, \
+            my.part5, my.part6, my.part7, my.part8):c, lower)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Wrapes given UID as 'Reference UID'.
+#   Argument 'spec' is concatinated to UID if given.
+# ---------------------------------------------------------------------------
+function ref (uid, spec)
+    check_argument (my, "uid")
+
+    if string_defined (my.spec)
+        return ".($(my.uid:c,lower)_$(my.spec:c, lower))"
+    else
+        return ".($(my.uid:c,lower))"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Wrapes given UID as 'Reference UID' specific for C language.
+#   Argument 'spec' is concatinated to UID if given.
+# ---------------------------------------------------------------------------
+function c_ref (uid, spec)
+    check_argument (my, "uid")
+
+    return ref ("c_" + my.uid, my.spec)
+endfunction

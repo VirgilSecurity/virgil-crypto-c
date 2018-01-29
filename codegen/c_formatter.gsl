@@ -1,0 +1,165 @@
+#   Copyright (c) 2015-2017 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+
+# ---------------------------------------------------------------------------
+#   Helpers for C language code generation.
+# ---------------------------------------------------------------------------
+#   This is a code generator helper built using the iMatix GSL code
+#   generation language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+
+
+# ---------------------------------------------------------------------------
+#   Return formatted name constructed by parts concatenation.
+# ---------------------------------------------------------------------------
+function c_format_name (part1, part2, part3, part4, part5, part6, part7, part8)
+    return "$(cat (\
+            my.part1, my.part2, my.part3, my.part4, \
+            my.part5, my.part6, my.part7, my.part8):c, lower)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return macros formatted name constructed by parts concatenation.
+#   Macros name format: UPPERCASE, UNDERSCORE.
+# ---------------------------------------------------------------------------
+function c_format_macros_name (part1, part2, part3, part4)
+    my.result = c_format_name (my.part1, my.part2, my.part3, my.part4)
+    return "$(my.RESULT)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return callback formatted name constructed by parts concatenation.
+#   C name format: UPPERCASE, UNDERSCORE.
+# ---------------------------------------------------------------------------
+function c_format_callback_name (part1, part2, part3, part4, part5, part6, part7, part8)
+    my.result = c_format_name (\
+            my.part1, my.part2, my.part3, my.part4, \
+            my.part5, my.part6, my.part7, my.part8)
+
+    return "$(my.result:)_cb"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted value from type and name.
+#   Formats: 'type name', 'type *name', 'type **name'.
+# ---------------------------------------------------------------------------
+function c_format_value (type, name)
+    check_argument (my, "type")
+    check_argument (my, "name")
+
+    my.optional_space = string.cntch (my.type, "*") ?? "" ? " "
+
+    return my.type + my.optional_space + my.name
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted multiline commented string.
+# ---------------------------------------------------------------------------
+function c_format_comment_string (str)
+    if ! defined (my.str)
+        echo_fatal ("Argument 'str' is not defined.", my)
+    endif
+
+    my.str = string_indent (my.str)
+    my.str = "//  $(my.str:left, block, no)$(terminator)"
+    my.str = string_rtrim (my.str)
+
+    return my.str
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Format method arguments.
+# ---------------------------------------------------------------------------
+function c_format_arguments (method, beginning, ending, tab_count, line_limit)
+    my.ending ?= ""
+    my.ending = ")" + my.ending
+    my.tab_count ?= 0
+    my.line_limit ?= 100
+    my.line = "("
+    my.result = ""
+    my.indent = tabs (my.tab_count)
+    for my.method.c_argument as argument
+        my.adding_line = ""
+        my.adding_line += argument.value
+        if ! last ()
+            my.adding_line += ","
+        else
+            my.adding_line += my.ending
+        endif
+        my.new_line_length = string.length (my.beginning + my.line + my.adding_line)
+        if (my.new_line_length < my.line_limit) & is_false (argument.has_size)
+            my.line += (first() ?? "" ? " ") + my.adding_line
+        else
+            my.result += my.line
+            my.line = terminator + tabs (2 + my.tab_count) + my.adding_line
+            my.beginning = my.indent
+        endif
+    endfor
+    if ! string_empty (my.line)
+        my.result += my.line
+    endif
+    return my.result
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Format object's visibility options to the single line.
+#   Note, last space is also included.
+# ---------------------------------------------------------------------------
+function c_format_visibility (c_object)
+    my.visibility = ""
+    for my.c_object.c_visibility
+        my.visibility += c_visibility.value + " "
+    endfor
+    return my.visibility
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return adjusted string according to rules:
+#       - remove all trailing and leading spaces and newlines;
+#       - prefix each line (if string is multiline) with given 'prefix';
+#       - tab each line (if string is multiline) with given 'tabs';
+#       - add new line before string;
+#       - add new line after string;
+#       - tab next line after string with given 'next tabs'.
+# ---------------------------------------------------------------------------
+function c_xml_format_comment (str, tab_count, next_tab_count, tab_size)
+    if string_empty (my.str)
+        return
+    endif
+    #   Transform substitution first.
+    while regexp.match ("\\.\\((?:(?!c_))(\\w+)\\)", my.str, my.match)
+        my.str = string.replace (my.str, "$(my.match:)|c_$(my.match:)")
+    endwhile
+    return xml_string_adjust (my.str, my.tab_count, my.next_tab_count, "//  ", my.tab_size)
+endfunction
