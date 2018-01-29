@@ -2,6 +2,7 @@
 build*/
 install*/
 .depends_cache/
+codegen/generated/
 
 #####
 # OS X temporary files that should never be committed

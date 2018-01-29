@@ -1,0 +1,415 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Generate C header or source file based on the 'common' gmodule.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "c_codegen.gsl"
+
+
+# ---------------------------------------------------------------------------
+#   Function that fully defines cxomponent marks.
+#
+#   Table below defines if specific mark CAN be possibly resolved to true
+#   for component or not.
+#   If 'X' is set - it means that component in the column CAN has mark
+#           with a name from the row set to the 'true'.
+#   If 'X' is not set - it means that component in the column has mark
+#          with a name from the row ALWAYS set to the 'false'.
+#
+#   |                         | c_method | c_macros | c_struct | c_enum | c_callback | c_type | c_object |
+#   |-------------------------|----------|----------|----------|--------|------------|--------|----------|
+#   | mark_public             | X        |          | X        | X      |            | X      |          |
+#   | mark_private            | X        |          | X        | X      |            | X      |          |
+#   | mark_header_declaration | X        |          | X        |        |            | X      |          |
+#   | mark_header_definition  |          | X        | X        | X      | X          | X      |          |
+#   | mark_source_declaration | X        |          | X        |        |            |        |          |
+#   | mark_source_definition  | X        | X        | X        | X      | X          | X      | X        |
+#   | mark_type               |          |          | X        | X      | X          | X      |          |
+#   | mark_object             |          |          |          |        |            |        | X        |
+#   | mark_struct             |          |          | X        |        |            |        |          |
+#   | mark_enum               |          |          |          | X      |            |        |          |
+#   | mark_enum_constant      |          |          |          | X      |            |        |          |
+#   | mark_enum_type          |          |          |          | X      |            |        |          |
+#   | mark_macros             |          | X        |          |        |            |        |          |
+#   | mark_macros_constant    |          | X        |          |        |            |        |          |
+#   | mark_macros_method      |          | X        |          |        |            |        |          |
+#   | mark_method             | X        |          |          |        |            |        |          |
+#   | mark_callback_type      |          |          |          |        | X          |        |          |
+#
+#   Attribute 'scope' represents 'source visibility'
+#
+#       | source visibility | decalaration | definition |
+#       |-------------------|--------------|------------|
+#       | public            | header       | header     |
+#       | opaque            | header       | source     |
+#       | external          | header       |            |
+#       | private           | source       | source     |
+#
+#   Attribute 'visibility' represents 'binary visibility'.
+#
+#       | binary visibility |
+#       |-------------------|
+#       | public            |
+#       | private           |
+# ---------------------------------------------------------------------------
+function c_gmodule_mark_component (component)
+    check_argument (my, "component")
+
+    scope my.component as c
+        .mark_public             = string_in (0.visibility ? "", "public")
+        .mark_private            = string_in (0.visibility ? "", "private")
+        .mark_header_declaration = string_in (0.scope ? "", "public, opaque, external")
+        .mark_header_definition  = string_in (0.scope ? "", "public")
+        .mark_source_declaration = string_in (0.scope ? "", "private")
+        .mark_source_definition  = string_in (0.scope ? "", "opaque, private")
+        .mark_type               = item_in (c, "c_struct, c_type, c_enum, c_callback") & \
+                                       string_defined (0.name)
+        .mark_object             = item_in (c, "c_object")
+        .mark_struct             = item_in (c, "c_struct")
+        .mark_enum               = item_in (c, "c_enum")
+        .mark_enum_constant      = item_in (c, "c_enum") & string_empty (0.name)
+        .mark_enum_type          = item_in (c, "c_enum") & string_defined (0.name)
+        .mark_macros             = item_in (c, "c_macros")
+        .mark_macros_constant    = item_in (c, "c_macros") & is_false (0.is_method)
+        .mark_macros_method      = item_in (c, "c_macros") & is_true (0.is_method)
+        .mark_method             = item_in (c, "c_method")
+        .mark_callback_type      = item_in (c, "c_callback")
+        .mark_implemented_method = item_in (c, "c_method") & count (0.c_implementation)
+    endscope
+endfunction
+
+
+# ###########################################################################
+#   Functions that routes component insertion.
+# ###########################################################################
+
+
+# ---------------------------------------------------------------------------
+#   Compose name for function that make insertion of specific component,
+#   and check it's existence.
+#   First check for specialization version, if fails, then - generic version.
+#
+#   Function name examples:
+#       - c_insert_method - generic version;
+#       - c_insert_method_declaration - specialized version.
+#   Where:
+#       - "c_method", is 'component_name';
+#       - "method", is 'target';
+#       - "declaration", is 'specialization'.
+# ---------------------------------------------------------------------------
+function c_find_component_insert_function (component_name, target, specialization)
+    check_argument (my, "component_name")
+    check_argument (my, "target")
+
+    my.c_insert_fn = c_format_name ("c_insert", my.target, my.specialization)
+
+    if ! macro (my.c_insert_fn)
+        echo_info ("Check route function $(my.c_insert_fn:)() \
+                for component: $(my.component_name:).", my)
+
+        if string_defined (my.specialization)
+            echo_warning ("Function $(my.c_insert_fn:)() not exist, \
+                    fallback to a generic version", my)
+            return c_find_component_insert_function (my.component_name, my.target)
+        else
+            echo_fatal ("Component '$(my.component_name:)' has no insertion function.", my)
+        endif
+    endif
+
+    return my.c_insert_fn
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Route component insertion to the specific implementation according to
+#   its type and specializtion.
+#
+#   For instance,
+#       c_insert_component (my.c_method, my, "definition")
+#   routes call to
+#       c_insert_method_definition (my.c_method).
+# ---------------------------------------------------------------------------
+function c_insert_component (component, context, specialization)
+    check_argument (my, "component")
+    check_argument (my, "context")
+
+    my.component_name = name (my.component)
+
+    if ! regexp.match ("^c_(\\w+)$", my.component_name, my.target)
+        echo_fatal ("Invalid component name '$(my.component_name:)'." + \
+                " Expected format: '^c_(\\w+)$'.", my)
+    endif
+
+
+    my.title = c_title_if_differs (my.component->c_section.title, my.context) ?
+    c_insert_section_if_title (my.title ?)
+
+    my.c_insert_specific_component_fn = \
+            c_find_component_insert_function (my.component_name, my.target, my.specialization)
+
+    newline ()
+    $(my.c_insert_specific_component_fn:) (my.component)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Shortcut for 'c_insert_component' with explicit specialization,
+#   which is 'declaration'.
+# ---------------------------------------------------------------------------
+function c_insert_component_declaration (component, context)
+    c_insert_component (my.component, my.context, "declaration")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Shortcut for 'c_insert_component' with explicit specialization,
+#   which is 'definition'.
+# ---------------------------------------------------------------------------
+function c_insert_component_definition (component, context)
+    c_insert_component (my.component, my.context, "definition")
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Accomplish sequence of c_insert_component () by cleanup everything.
+#   Mostly cleanup.
+# ---------------------------------------------------------------------------
+function c_finalize_component_insertion (context)
+    check_argument (my, "context")
+    c_title_cleanup_context (my.context)
+endfunction
+
+
+# ###########################################################################
+#   Functions that help sort, filter, and detect attributes and components.
+# ###########################################################################
+
+
+# ---------------------------------------------------------------------------
+#   Return given title as-is if it differs from the previous one,
+#   otherwise return empty string.
+#   Each invocation modifies next attributes:
+#       - context.previous_title
+#       - context.current_title
+# ---------------------------------------------------------------------------
+function c_title_if_differs (title, context)
+    check_argument (my, "context")
+
+    my.context.previous_title = my.context.current_title ?
+    my.context.current_title = my.title ?
+
+    if string_empty (my.context.current_title)
+        return ""
+    endif
+
+    my.is_new_title = \
+            ! defined (my.context.previous_title) | \
+            ! string_equal ( \
+                    my.context.current_title, \
+                    my.context.previous_title)
+
+    return my.is_new_title ?? my.context.current_title ? ""
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Cleanup footprint of function c_title_if_differs ().
+# ---------------------------------------------------------------------------
+function c_title_cleanup_context (context)
+    check_argument (my, "context")
+
+    my.context.previous_title = # undefined
+    my.context.current_title = # undefined
+endfunction
+
+
+# ###########################################################################
+#   Functions that generate whole file.
+# ###########################################################################
+
+
+# ---------------------------------------------------------------------------
+#   Generate C header.
+# ---------------------------------------------------------------------------
+function c_gmodule_generate_header (gmodule)
+    check_argument (my, "gmodule")
+
+    echo_info ("Generate header file: $(my.gmodule.header_file:)", my)
+
+    read_non_generated_content (my.gmodule.header_file, my)
+    output my.gmodule.header_file
+
+    #   Start generation.
+    c_insert_header_prologue (my.gmodule, my.content_before)
+    c_insert_section_generated_start ()
+
+    for my.gmodule. as c where is_item (c) & mark_header_definition & mark_enum_constant
+        c_insert_category_if ("Constants.", first ())
+        c_insert_component (c, my)
+    endfor
+    c_finalize_component_insertion (my)
+
+    for my.gmodule. as c where is_item (c) & mark_header_definition & mark_macros
+        c_insert_category_if ("Macros constants & macros functions.", first ())
+        c_insert_component_definition (c, my)
+    endfor
+    c_finalize_component_insertion (my)
+
+    for my.gmodule. as c where is_item (c) & mark_header_definition & mark_type
+        c_insert_category_if ("Full defined types.", first ())
+        c_insert_component (c, my)
+    endfor
+    c_finalize_component_insertion (my)
+
+    for my.gmodule. as c where is_item (c) & \
+            mark_header_declaration & ! mark_header_definition & mark_type
+        c_insert_category_if ("Opaque types.", first ())
+        c_insert_component_declaration (c, my)
+    endfor
+    c_finalize_component_insertion (my)
+
+    for my.gmodule. as c where is_item (c) & mark_public & mark_header_declaration & mark_method
+        c_insert_category_if ("Public Functions.", first ())
+        c_insert_component_declaration (c, my)
+    endfor
+    c_finalize_component_insertion (my)
+
+    for my.gmodule. as c where is_item (c) & mark_private & mark_header_declaration & mark_method
+        c_insert_category_if ("Private functions.", first ())
+        c_insert_component_declaration (c, my)
+    endfor
+    c_finalize_component_insertion (my)
+
+    c_insert_section_generated_end ()
+    c_insert_header_epilogue (my.gmodule, my.content_after)
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate C source.
+# ---------------------------------------------------------------------------
+function c_gmodule_generate_source (gmodule)
+    check_argument (my, "gmodule")
+
+    echo_info ("Generate source file: $(my.gmodule.source_file:)", my)
+
+    read_non_generated_content (my.gmodule.source_file, my)
+    output my.gmodule.source_file
+
+    c_insert_source_prologue (my.gmodule, my.content_before)
+
+    #   Start generation.
+    c_insert_section_generated_start ()
+
+
+    for my.gmodule. as c where is_item (c) & mark_private & mark_method & \
+            ! mark_header_declaration & mark_source_definition
+        c_insert_category_if ("Private functions.", first ())
+        c_insert_component_declaration (c, my)
+    endfor
+    c_finalize_component_insertion (my)
+
+    for my.gmodule. as c where is_item (c) & mark_source_definition & mark_enum_constant
+        c_insert_category_if ("Private constants.", first ())
+        c_insert_component_definition (c, my)
+    endfor
+    c_finalize_component_insertion (my)
+
+    for my.gmodule. as c where is_item (c) & mark_source_definition & mark_object
+        c_insert_category_if ("Objects.", first ())
+        c_insert_component_definition (c, my)
+    endfor
+    c_finalize_component_insertion (my)
+
+    for my.gmodule. as c where is_item (c) & mark_source_definition & mark_type
+        c_insert_category_if ("Types.", first ())
+        c_insert_component (c, my)
+    endfor
+    c_finalize_component_insertion (my)
+
+    for my.gmodule. as c where is_item (c) & mark_implemented_method
+        c_insert_category_if ("Generated functions.", first ())
+        c_insert_component_definition (c, my)
+    endfor
+    c_finalize_component_insertion (my)
+
+    #   Accomplish generation.
+    c_insert_section_generated_end ()
+
+    if string_defined (my.content_after)
+        newline (2)
+        out (my.content_after)
+    else
+        for my.gmodule. as c where is_item (c) & mark_method & ! mark_implemented_method
+            c_insert_category_if ("Functions to be implemented.", first ())
+            c_insert_component_definition (c, my)
+        endfor
+        c_finalize_component_insertion (my)
+    endif
+endfunction
+
+
+# ###########################################################################
+#   Generation entry point.
+# ###########################################################################
+
+
+# ---------------------------------------------------------------------------
+#   Generate header and source files for each 'c_gmodule' within source.
+# ---------------------------------------------------------------------------
+function c_gmodule_generate_sources (source)
+    check_argument (my, "source")
+
+    for my.source.c_gmodule
+        echo_trace ("Generate files from <$(name (c_gmodule)) name = \"$(c_gmodule.name:)/>\"", my)
+
+        for c_gmodule. as c where defined (name (c) ?)
+            c_gmodule_mark_component (c)
+        endfor
+
+        if string_defined (c_gmodule.header_file)
+            c_gmodule_generate_header (c_gmodule)
+        endif
+
+        if string_defined (c_gmodule.source_file)
+            c_gmodule_generate_source (c_gmodule)
+        endif
+    endfor
+endfunction
+
+.endtemplate

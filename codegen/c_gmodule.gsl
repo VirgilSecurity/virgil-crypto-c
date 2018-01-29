@@ -1,0 +1,565 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Create language "C" specific 'c_gmodule' components from the generic
+#   'component' components.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "c_formatter.gsl"
+gsl from "c_resolver.gsl"
+
+
+# ###########################################################################
+#   Functions that create 'c_gmodule' components from the 'component' components.
+# ###########################################################################
+
+
+# ---------------------------------------------------------------------------
+#   Copy known attributes if defined.
+# ---------------------------------------------------------------------------
+function c_gmodule_copy_attributes (component, c_component)
+    check_argument (my, "component")
+    check_argument (my, "c_component")
+
+    my.c_component.visibility ?= my.component.visibility ?
+    my.c_component.scope ?= my.component.scope ?
+    my.c_component.is_multiline ?= my.component.is_multiline ?
+    my.c_component.is_system ?= my.component.is_system ?
+    my.c_component.is_method ?= my.component.is_method ?
+    my.c_component.is_object ?= my.component.is_object ?
+    my.c_component.is_instance ?= my.component.is_instance ?
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add 'c_license' to 'c_gmodule'.
+# ---------------------------------------------------------------------------
+function c_gmodule_add_license (project, c_gmodule)
+    check_argument (my, "project")
+    check_argument (my, "c_gmodule")
+
+    scope my.c_gmodule
+        new c_license
+            . = c_xml_format_comment (my.project->license., 2, 1)
+        endnew
+    endscope
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'c_caution' to 'c_gmodule'.
+# ---------------------------------------------------------------------------
+function c_gmodule_add_caution (component, c_gmodule)
+    check_argument (my, "component")
+    check_argument (my, "c_gmodule")
+
+    scope my.c_gmodule
+        new c_caution
+            . = c_xml_format_comment ("\
+                This file is partially generated.
+                Generated blocks are enclosed between tags [@<tag>, @end].
+                User's code can be added between tags [@end, @<tag>].
+            ", 2, 1)
+        endnew
+    endscope
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'c_include' to 'c_gmodule'.
+# ---------------------------------------------------------------------------
+function c_gmodule_add_includes (component, project, c_gmodule)
+    check_argument (my, "component")
+    check_argument (my, "project")
+    check_argument (my, "c_gmodule")
+
+    scope my.c_gmodule
+        new c_include
+            .file = c_gmodule.c_include_file
+            .is_system = 0
+            .scope = "private"
+        endnew
+    endscope
+
+    for my.component.c_include as source
+        my.c_include = item_copy_to (source, my.c_gmodule)
+        my.c_include.scope ?= "public"
+    endfor
+
+    for my.component.require
+        new c_include to my.c_gmodule
+            .scope = require.scope ? "public"
+            if defined (require.module)
+                .file = c_ref ("module_$(require.module:c,lower)") + ".h"
+                .is_system = 0
+            endif
+        endnew
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'c_visibility' to 'c_method' and define correspond attributes.
+# ---------------------------------------------------------------------------
+function c_gmodule_add_visbility (method, c_method)
+    check_argument (my, "method")
+    check_argument (my, "c_method")
+
+    scope my.c_method
+        if string_equal (0.visibility, "public")
+            new c_visibility
+                .value = ".(c_global_macros_public)"
+            endnew
+        endif
+
+        if string_equal (0.visibility, "private")
+            new c_visibility
+                .value = ".(c_global_macros_private)"
+            endnew
+        endif
+    endscope
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'c_section' to component.
+# ---------------------------------------------------------------------------
+function c_gmodule_add_section (component, c_component)
+    check_argument (my, "component")
+    check_argument (my, "c_component")
+
+    for my.component.section
+        copy section to my.c_component as c_section
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'c_return' to 'c_method'.
+# ---------------------------------------------------------------------------
+function c_gmodule_add_return (method, c_method)
+    check_argument (my, "method")
+    check_argument (my, "c_method")
+
+    scope my.c_method
+        new c_return
+            .value = my.method->return.c_type
+        endnew
+    endscope
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Convert string representation of the logical operation to the symbols.
+# ---------------------------------------------------------------------------
+function c_gmodule_symbolise_operation (operation)
+    check_argument (my, "operation")
+
+    if my.operation = "greater_then"
+        return ">"
+    elsif my.operation = "greater_or_equal_to"
+        return ">="
+    elsif my.operation = "less_then"
+        return "<"
+    elsif my.operation = "less_or_equal_to"
+        return "<="
+    elsif my.operation = "equal_to"
+        return "=="
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'c_precondition' to 'c_method'.
+# ---------------------------------------------------------------------------
+function c_gmodule_add_preconditions (method, c_method)
+    check_argument (my, "method")
+    check_argument (my, "c_method")
+
+    for my.method.precondition
+        my.operation = 0.unary ? 0.binary
+
+        for precondition. as term where is_item (term)
+            if term.name () = "argument"
+                my.target_argument = my.method->argument (name = term.name)
+                my.uid$(index ()) = ref (my.target_argument.uid)
+            elsif term.name () = "uid"
+                my.uid$(index ()) = term.name
+            else
+                echo_fatal ("Forbidden term '<$(name (term))>' within '<precondition>'.", my)
+            endif
+            my.uid$(index ()) = string.replace (my.uid$(index ()), ".(|.(c_")
+        endfor
+
+
+        new c_precondition to my.c_method
+            .is_default = precondition.is_default ?
+            if my.operation = "not_null_obj"
+                . = "\
+                $(ref ("c_class_assert_macros")) ($(my.uid1:));
+                "
+            elsif my.operation = "not_null_ref"
+                . = "\
+                $(ref ("c_class_assert_macros")) ($(my.uid1:));
+                $(ref ("c_class_assert_macros")) (*$(my.uid1:));
+                "
+            elsif defined (precondition.binary)
+                my.operation_symbol = c_gmodule_symbolise_operation (my.operation)
+                . = "\
+                $(ref ("c_class_assert_macros")) ($(my.uid1:) $(my.operation_symbol:) $(my.uid2));
+                "
+            else
+                echo_fatal ("Unsupported precondition operation: $(my.operation:)", my)
+            endif
+
+        endnew
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'c_argument' to 'c_method'
+# ---------------------------------------------------------------------------
+function c_gmodule_add_arguments (method, c_method)
+    check_argument (my, "method")
+    check_argument (my, "c_method")
+
+    for my.method.argument
+        new c_argument to my.c_method
+            .name = argument.c_name
+            .type = argument.c_type
+            .value = c_format_value (.type, .name)
+            .has_size = argument.has_size ?
+            .is_mutable = argument.is_mutable ?
+            .is_object = argument.is_object ?
+            .is_reference = argument.is_reference ?
+            .is_callback = argument.is_callback ?
+        endnew
+    endfor
+
+    if count (my.c_method.c_argument) = 0
+        #   C language requires to specify void argument
+        #   if function has no arguments.
+        new c_argument to my.c_method
+            .type = "void"
+            .value = "void"
+        endnew
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'c_implementation' to 'c_method'.
+# ---------------------------------------------------------------------------
+function c_gmodule_add_implementation (method, c_method)
+    check_argument (my, "method")
+    check_argument (my, "c_method")
+
+    for my.method.c_implementation
+        copy c_implementation to my.c_method
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'c_callback' to 'c_gmodule'.
+# ---------------------------------------------------------------------------
+function c_gmodule_add_callbacks (component, c_gmodule)
+    check_argument (my, "component")
+    check_argument (my, "c_gmodule")
+
+    for my.component.callback
+        new c_callback to my.c_gmodule
+            . = c_xml_format_comment (callback., 2, 2) ?
+
+            .name = callback.c_name
+
+            c_gmodule_add_section (callback, c_callback)
+            c_gmodule_copy_attributes (callback, c_callback)
+            c_gmodule_add_return (callback, c_callback)
+            c_gmodule_add_arguments (callback, c_callback)
+        endnew
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'c_method' to 'c_gmodule'.
+# ---------------------------------------------------------------------------
+function c_gmodule_add_methods (component, c_gmodule)
+    check_argument (my, "component")
+    check_argument (my, "c_gmodule")
+
+    for my.component.method
+        new c_method to my.c_gmodule
+            . = c_xml_format_comment (method., 2, 2) ?
+
+            .name = method.c_name
+
+            c_gmodule_add_section (method, c_method)
+            c_gmodule_copy_attributes (method, c_method)
+            c_gmodule_add_return (method, c_method)
+            c_gmodule_add_visbility (method, c_method)
+            c_gmodule_add_arguments (method, c_method)
+            c_gmodule_add_preconditions (method, c_method)
+            c_gmodule_add_implementation (method, c_method)
+        endnew
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'c_value' to 'c_object'.
+# ---------------------------------------------------------------------------
+function c_gmodule_add_object_values (object, c_object)
+    check_argument (my, "object")
+    check_argument (my, "c_object")
+
+    for my.object.value
+        if ! defined (value.value)
+            echo_fatal ("One of the object's values is not defined.", my)
+        endif
+        new c_value to my.c_object
+            . = c_xml_format_comment (value., 2, 2) ?
+            .value = c_resolve_ref (value.value)
+            .type = c_resolve_ref (value.type) ?
+        endnew
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'c_object' to 'c_gmodule'.
+# ---------------------------------------------------------------------------
+function c_gmodule_add_objects (component, c_gmodule)
+    check_argument (my, "component")
+    check_argument (my, "c_gmodule")
+
+    for my.component.object
+        new c_object to my.c_gmodule
+            . = c_xml_format_comment (object., 2, 2) ?
+
+            .name = object.c_name
+            .type = object.c_type
+
+            c_gmodule_add_section (object, c_object)
+            c_gmodule_copy_attributes (object, c_object)
+            c_gmodule_add_object_values (object, c_object)
+        endnew
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'c_value' to 'c_enum'.
+# ---------------------------------------------------------------------------
+function c_gmodule_add_enum_values (enum, c_enum)
+    check_argument (my, "enum")
+    check_argument (my, "c_enum")
+
+    for my.enum.value
+        new c_value to my.c_enum
+            . = c_xml_format_comment (value., 2, 2) ?
+            .name = value.c_name
+            .value = value.value ?
+        endnew
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'c_enum' to 'c_gmodule'.
+# ---------------------------------------------------------------------------
+function c_gmodule_add_enums (component, c_gmodule)
+    check_argument (my, "component")
+    check_argument (my, "c_gmodule")
+
+    for my.component.enum
+        new c_enum to my.c_gmodule
+            . = c_xml_format_comment (enum., 2, 2) ?
+
+            .name = enum.c_name ?
+            .type = enum.c_type ?
+
+            c_gmodule_add_section (enum, c_enum)
+            c_gmodule_copy_attributes (enum, c_enum)
+            c_gmodule_add_enum_values (enum, c_enum)
+        endnew
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'c_poperty' to 'c_struct'.
+# ---------------------------------------------------------------------------
+function c_gmodule_add_struct_properties (struct, c_struct)
+    check_argument (my, "struct")
+    check_argument (my, "c_struct")
+
+    for my.struct.property
+        new c_property to my.c_struct
+            . = c_xml_format_comment (property., 2, 2) ?
+
+            .name = property.c_name
+            .is_callback = property.is_callback ?
+            .bits = property.bits ?
+
+            if is_true (property.is_callback)
+                c_gmodule_copy_attributes (property, c_property)
+                c_gmodule_add_return (property, c_property)
+                c_gmodule_add_arguments (property, c_property)
+            else
+                .type = property.c_type
+                .value = c_format_value (.type, .name)
+                if defined (.bits)
+                    .value += ":" + .bits
+                endif
+            endif
+        endnew
+    endfor
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add 'c_struct' to 'c_gmodule'.
+# ---------------------------------------------------------------------------
+function c_gmodule_add_structs (component, c_gmodule)
+    check_argument (my, "component")
+    check_argument (my, "c_gmodule")
+
+    for my.component.struct
+        new c_struct to my.c_gmodule
+            . = c_xml_format_comment (struct., 2, 2) ?
+
+            .name = struct.c_name ?
+            .type = struct.c_type ?
+
+            c_gmodule_add_section (struct, c_struct)
+            c_gmodule_copy_attributes (struct, c_struct)
+            c_gmodule_add_struct_properties (struct, c_struct)
+        endnew
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'c_macros' to 'c_gmodule'.
+# ---------------------------------------------------------------------------
+function c_gmodule_add_macroses (component, c_gmodule)
+    check_argument (my, "component")
+    check_argument (my, "c_gmodule")
+    for my.component.macros
+        new c_macros to my.c_gmodule
+            . = c_xml_format_comment (macros., 2, 2) ?
+
+            .name = macros.c_name ?
+
+            c_gmodule_add_section (macros, c_macros)
+            c_gmodule_copy_attributes (macros, c_macros)
+            c_gmodule_add_implementation (macros, c_macros)
+        endnew
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'c_type' to 'c_gmodule'
+# ---------------------------------------------------------------------------
+function c_gmodule_add_types (component, c_gmodule)
+    check_argument (my, "component")
+    check_argument (my, "c_gmodule")
+
+    for my.component.type
+        new c_type to my.c_gmodule
+            . = c_xml_format_comment (type., 2, 2) ?
+
+            .name = type.c_name
+            .alias_of = type.alias_of
+
+            c_gmodule_copy_attributes (type, c_type)
+        endnew
+    endfor
+endfunction
+
+
+# ###########################################################################
+#   Root component functions.
+# ###########################################################################
+
+# ---------------------------------------------------------------------------
+#   For each 'module' component create 'c_gmodule'.
+# ---------------------------------------------------------------------------
+function c_gmodule_create (source, destination, project)
+    check_argument (my, "source")
+    check_argument (my, "destination")
+    check_argument (my, "project")
+
+    for my.source.module
+        assert_attribute (module, "name")
+        assert_attribute (module, "class")
+
+        echo_trace ("Createing <c_gmodule/> from \
+                <$(name (module)) name = \"$(module.name:)/>\"", my)
+
+        new c_gmodule to my.destination
+            .lang = "C"
+            .name = c_format_name (module.name)
+            .class = c_format_name (module.class)
+
+            my.resolved_header_path = string_in (module.scope, "public") ?? \
+                     my.project.inc_path ? my.project.src_path
+
+            .c_include_file = "$(module.c_name).h"
+            .c_source_file = "$(module.c_name).c"
+            .header_file = my.resolved_header_path + 0.c_include_file
+            .source_file = my.project.src_path + 0.c_source_file
+            .once_guard = c_format_name (0.c_include_file, "included")
+
+            . = c_xml_format_comment (module., 1, 1) ?
+
+            c_gmodule_copy_attributes (module, c_gmodule)
+            c_gmodule_add_license (my.project, c_gmodule)
+            c_gmodule_add_caution (module, c_gmodule)
+            c_gmodule_add_includes (module, my.project, c_gmodule)
+            c_gmodule_add_callbacks (module, c_gmodule)
+            c_gmodule_add_enums (module, c_gmodule)
+            c_gmodule_add_structs (module, c_gmodule)
+            c_gmodule_add_methods (module, c_gmodule)
+            c_gmodule_add_objects (module, c_gmodule)
+            c_gmodule_add_macroses (module, c_gmodule)
+            c_gmodule_add_types (module, c_gmodule)
+        endnew
+    else
+        echo_warning ("Source does not contain any <module/> item", my)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Function that resolves undefined properties within 'c_gmodule'.
+# ---------------------------------------------------------------------------
+function c_gmodule_resolve (source)
+    #   Components are created already resolved at this moment,
+    #   but this can be chnged in the future, so keep this function alive.
+endfunction
+
+.endtemplate

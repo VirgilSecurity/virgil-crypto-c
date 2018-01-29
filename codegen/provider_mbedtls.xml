@@ -1,0 +1,23 @@
+<provider name = "mbedtls" is_default = "1">
+    Provide implementation based on the library ARM mbedTLS.
+
+    <require library = "mbedTLS" />
+
+    <implementation name = "sha256">
+        This is MbedTLS implementation of SHA256.
+
+        <c_include file = "mbedtls/sha256.h" is_system = "1" scope = "private" />
+
+        <interface name = "hash info">
+            <constant name = "digest size" value = "32" />
+        </interface>
+
+        <interface name = "hash">
+        </interface>
+
+        <interface name = "hash stream">
+            <context name = "hash ctx" c_type = "mbedtls_sha256_context" />
+        </interface>
+
+    </implementation>
+</provider>

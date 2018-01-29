@@ -1,0 +1,130 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   This file contains common resolver functions specific to the C language.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+
+gsl from "common.gsl"
+gsl from "meta.gsl"
+
+# ---------------------------------------------------------------------------
+#   Add method default preconditions.
+# ---------------------------------------------------------------------------
+function c_method_add_preconditions (method)
+    check_argument (my, "method")
+
+    for my.method.argument
+        if is_true (argument.is_object) & is_true (is_reference)
+            new precondition to my.method
+                .unary = "not_null_ref"
+                .is_default = 1
+                new argument as arg
+                    arg.name = argument.name
+                endnew
+            endnew
+        elsif is_true (argument.is_object) | is_true (is_reference)
+            new precondition to my.method
+                .unary = "not_null_obj"
+                .is_default = 1
+                new argument as arg
+                    arg.name = argument.name
+                endnew
+            endnew
+        endif
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'impl' parameter to the method with given name and type.
+# ---------------------------------------------------------------------------
+function c_method_add_argument_impl (method, specific_type)
+    check_argument (my, "method")
+
+    my.meta = meta_create ()
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    my.argument = item_prepend_new ("argument", my.method)
+    my.argument.name = my.names.argument_impl
+    my.argument.type = my.specific_type ? my.refs.class_impl_struct
+    my.argument.is_mutable = 1
+    my.argument.is_object = 1
+    my.argument.c_name = my.refs.argument_impl
+endfunction
+
+
+function c_enum_add_value_begin (enum)
+    check_argument (my, "enum")
+
+    new value to my.enum
+        .name = "begin"
+        .value = 0
+
+        return value
+    endnew
+endfunction
+
+
+function c_enum_add_value_end (enum)
+    check_argument (my, "enum")
+
+    new value to my.enum
+        .name = "end"
+
+        return value
+    endnew
+endfunction
+
+
+function c_resolve_ref (maybe_ref)
+    if ! defined (my.maybe_ref)
+        return
+    endif
+
+    if string.prefixed (my.maybe_ref, ".(")
+        return ".(c_$(string.substr (my.maybe_ref, 2))"
+    else
+        return my.maybe_ref
+    endif
+endfunction
+
+.endtemplate

@@ -1,0 +1,13 @@
+<interface name = "hash">
+    Provides interface to the stateless hashing (messege digest) algorithms.
+
+    <inherit interface = "hash info" />
+
+    <method name = "hash">
+        Calculate hash over given data.
+
+        <argument name = "data" type = "buffer" />
+
+        <return name = "digest" type = "buffer" const_size = "digest size"/>
+    </method>
+</interface>
