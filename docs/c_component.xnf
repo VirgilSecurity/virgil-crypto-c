@@ -1,0 +1,304 @@
+<?xml version="1.0"?>
+<!--
+    Copyright (C) 2015-2018 Virgil Security Inc.
+
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+        (1) Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer.
+
+        (2) Redistributions in binary form must reproduce the above copyright
+        notice, this list of conditions and the following disclaimer in
+        the documentation and/or other materials provided with the
+        distribution.
+
+        (3) Neither the name of the copyright holder nor the names of its
+        contributors may be used to endorse or promote products derived from
+        this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+    IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+    INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+    HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+    IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+
+    Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+-->
+
+
+<entity name="c_alias">
+    Define synonym for the given type.
+
+    <attr name="name" required="1">
+        Alias name.
+    </attr>
+
+    <attr name="type" required="1">
+        Alias type.
+    </attr>
+</entity>
+
+
+<entity name="c_enum">
+    Defines enumeration type.
+
+    <attr name="name">
+        Enumeration name. Can be ommited if it is used to define named constants.
+    </attr>
+
+    <inherit entity="scope"/>
+    <inherit entity="visibility"/>
+
+    <allow entity = "c_enum_value" occurs = "1+"/>
+</entity>
+
+
+<entity name="c_enum_value">
+    Define enumeration value.
+
+    <attr name="name">
+        Value name.
+    </attr>
+
+    <attr name="value">
+        Integral enumeration value.
+    </attr>
+</entity>
+
+
+<entity name="c_struct">
+    Define structure type.
+
+    <attr name="name">
+        Structure name.
+    </attr>
+
+    <allow entity = "c_struct_property" occurs = "1+"/>
+</entity>
+
+
+<entity name="c_struct_property">
+    Define property of the structure type.
+
+    <attr name="name" required="1">
+        Property name.
+    </attr>
+
+    <attr name="formatted">
+        Formatted name and type.
+    </attr>
+
+    <allow entity="c_type" occurs="0/1"/>
+    <allow entity="c_return" occurs="0/1"/>
+    <allow entity="c_argument" occurs="0+"/>
+</entity>
+
+
+<entity name="c_method">
+    Define method signature and implementation (optional).
+
+    <attr name="name" required="1">
+        Method name.
+    </attr>
+
+    <inherit entity="scope"/>
+    <inherit entity="visibility"/>
+
+    <allow entity="c_modifier" occurs="0+"/>
+    <allow entity="c_return" occurs="0/1"/>
+    <allow entity="c_argument" occurs="0+"/>
+    <allow entity="c_precondition" occurs="0+"/>
+</entity>
+
+
+<entity name="c_callback">
+    Define callback type.
+
+    <attr name="name" required="1">
+        Method name.
+    </attr>
+
+    <inherit entity="scope"/>
+    <inherit entity="visibility"/>
+
+    <allow entity="c_return" occurs="0/1"/>
+    <allow entity="c_argument" occurs="0+"/>
+</entity>
+
+
+<entity name="c_macros">
+    Define macros, that can represent a constant or a method.
+
+    <attr name="is_method" default="0">
+        <restrict value="0">
+            Macros is a constannt.
+        </restrict>
+
+        <restrict value="1">
+            Macros is a method.
+        </restrict>
+    </attr>
+
+    <inherit entity="scope"/>
+
+    <allow entity="c_implementation" occurs="0/1"/>
+</entity>
+
+
+<entity name="c_object">
+    Define global object.
+
+    <attr name="name" required="1">
+        Object name.
+    </attr>
+
+    <attr name="type" required="1">
+        Object type.
+    </attr>
+
+    <inherit entity="scope"/>
+    <inherit entity="visibility"/>
+
+    <allow entity="c_object_value" occurs="1+"/>
+    <allow entity="c_modifier" occurs="0+"/>
+</entity>
+
+
+<entity name="c_object_value">
+    Defines one of the object values.
+
+    <attr name="value" required="1">
+        Specific value.
+        If 'c_type' is given then value will be casted to it.
+    </attr>
+
+    <attr name="formatted">
+        Formatted object name and type.
+    </attr>
+
+    <allow entity="c_type" occurs="0/1"/>
+    <allow entity="c_modifier" occurs="0+"/>
+</entity>
+
+
+<entity name="c_type">
+    Defines a type of outer component.
+
+    <attr name="base" required="1">
+        Type without any modifiers.
+    </attr>
+
+    <attr name="is_callback" default="0">
+        Mark type as callback.
+
+        <restrict value="0">
+            Just a type.
+        </restrict>
+
+        <restrict value="1">
+            Callback type.
+        </restrict>
+    </attr>
+
+    <attr name="kind" default="value">
+        Defines a kind of the type.
+
+        <restrict value="value">
+            Value type, i.e. 'int'
+        </restrict>
+
+        <restrict value="pointer">
+            Pointer type, i.e. 'int *'
+        </restrict>
+
+        <restrict value="reference">
+            Pointer to pointer type, i.e. 'int **'
+        </restrict>
+    </attr>
+
+    <attr name="array">
+        <restrict value="var">
+            Null-terminated array, or array with a given size, i.e. 'int *'.
+        </restrict>
+
+        <restrict value="fixed">
+            Array with a fixed size, i.e. 'int [32]'.
+        </restrict>
+
+        <restrict value="derived">
+            Array with a derived size, i.e. 'int []'.
+        </restrict>
+    </attr>
+
+    <attr name="is_const_type">
+        Defines constness of a type.
+    </attr>
+
+    <attr name="is_const_pointer">
+        Defines constness of a pointer.
+    </attr>
+
+    <attr name="is_const_array">
+        Defines constness of an array.
+    </attr>
+
+    <attr name="is_const_reference">
+        Defines constness of a reference.
+    </attr>
+
+</entity>
+
+<entity name="c_return">
+    Defines return type.
+
+    <allow entity="c_type" occurs="1"/>
+</entity>
+
+
+<entity name="c_argument">
+    Defines method or callback argument.
+
+    <attr name="name" required="1">
+        Argument name.
+    </attr>
+
+    <attr name="formatted">
+        Formatted argument name and type.
+    </attr>
+
+    <allow entity="c_type" occurs="1"/>
+</entity>
+
+
+<entity name="c_implementation">
+    Defines method or macros implementation.
+</entity>
+
+
+<entity name="c_modifier">
+    Defines object and methods modifiers.
+
+    <attr name="value">
+        Modifier itself.
+    </attr>
+</entity>
+
+
+<entity name="c_precondition">
+    Defines method precondition.
+    All preconditions are sorted by position ascending.
+
+    <attr name="position" default="0">
+        Number that defines precondition position.
+    </attr>
+</entity>
