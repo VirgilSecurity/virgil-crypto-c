@@ -59,6 +59,7 @@
 #include "vsf_impl_private.h"
 //  @end
 
+#include "vsf_asn1_reader_api.h"
 
 //  @generated
 // --------------------------------------------------------------------------

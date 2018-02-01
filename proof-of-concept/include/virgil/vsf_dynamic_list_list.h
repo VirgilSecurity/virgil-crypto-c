@@ -59,6 +59,9 @@
 //  @end
 
 
+#include "vsf_buffer_api.h"
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif

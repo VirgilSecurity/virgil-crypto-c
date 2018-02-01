@@ -57,6 +57,10 @@
 //  @end
 
 
+#include "vsf_cms_api.h"
+#include <stdbool.h>
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
