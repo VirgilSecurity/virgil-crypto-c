@@ -357,6 +357,9 @@ function component_add_types (component)
         elsif 0.type = "buffer"
             .c_type = "byte"
             .is_object ?= 1
+        elsif 0.type = "vsf_buffer"
+            .c_type = "vsf_buffer_t"
+            .is_object ?= 1
         elsif 0.type = "integer"
             .c_type = "int"
         elsif 0.type = "boolean"
