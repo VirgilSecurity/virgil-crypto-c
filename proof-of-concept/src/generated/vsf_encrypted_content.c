@@ -59,6 +59,7 @@
 #include "vsf_impl_private.h"
 //  @end
 
+#include "vsf_cms_api.h"
 
 //  @generated
 // --------------------------------------------------------------------------

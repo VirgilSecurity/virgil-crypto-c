@@ -90,7 +90,7 @@ VSF_PUBLIC void
 vsf_assert_abort (const char *message, const char *file, int line) {
 
     printf ("Assertion failed: %s, file %s, line %d\n",
-            msg, vsf_assert_path_basename (file), line);
+            message, vsf_assert_path_basename (file), line);
     printf ("Abort");
     abort ();
 }

@@ -52,7 +52,6 @@
 // --------------------------------------------------------------------------
 
 #include <mbedtls/asn1.h>
-#include <mbedtls/asn1reader.h>
 
 #include "vsf_asn1_rd_asn1_reader.h"
 #include "vsf_asn1_rd_private.h"

@@ -60,6 +60,10 @@
 //  @end
 
 
+#include "vsf_asn1_writer_api.h"
+#include "vsf_api_private.h"
+
+
 //  @generated
 // --------------------------------------------------------------------------
 //  Generated section start.

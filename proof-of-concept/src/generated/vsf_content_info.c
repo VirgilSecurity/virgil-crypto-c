@@ -60,6 +60,10 @@
 //  @end
 
 
+#include "vsf_api_private.h"
+#include "vsf_cms_api.h"
+
+
 //  @generated
 // --------------------------------------------------------------------------
 //  Generated section start.

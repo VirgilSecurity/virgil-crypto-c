@@ -53,7 +53,6 @@
 #define VSF_ASN1_RD_PRIVATE_H_INCLUDED
 
 #include <mbedtls/asn1.h>
-#include <mbedtls/asn1reader.h>
 
 #include "vsf_library.h"
 #include "vsf_asn1_rd.h"
