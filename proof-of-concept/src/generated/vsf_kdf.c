@@ -52,6 +52,10 @@
 #include "vsf_kdf.h"
 //  @end
 
+#include <stdbool.h>
+#include "vsf_impl_private.h"
+#include "vsf_kdf_api.h"
+#include "vsf_assert.h"
 
 //  @generated
 // --------------------------------------------------------------------------

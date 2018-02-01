@@ -59,6 +59,7 @@
 #include "vsf_impl_private.h"
 //  @end
 
+#include "vsf_cms_api.h"
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -85,8 +86,8 @@ static vsf_cms_api_t cms_api = {
 
 //  NULL terminated array of the implementaed interfaces.
 //  MUST be second in the structure.
-static vsf_api_t api_array = {
-    cms_api,
+static const void * const api_array[] = {
+    &cms_api,
     NULL,
 };
 

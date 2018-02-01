@@ -113,8 +113,8 @@ static vsf_asn1_reader_api_t asn1_reader_api = {
 
 //  NULL terminated array of the implementaed interfaces.
 //  MUST be second in the structure.
-static vsf_api_t api_array = {
-    asn1_reader_api,
+static const void * const api_array[] = {
+    &asn1_reader_api,
     NULL,
 };
 

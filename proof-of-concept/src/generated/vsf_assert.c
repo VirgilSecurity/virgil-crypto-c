@@ -76,7 +76,7 @@ VSF_PUBLIC void
 vsf_assert_change_handler (vsf_assert_handler_fn handler_cb) {
 
     VSF_ASSERT (handler_cb);
-    active_handler = handler_cb;
+//    active_handler = handler_cb;
 }
 
 

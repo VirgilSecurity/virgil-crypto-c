@@ -116,8 +116,8 @@ static vsf_list_api_t list_api = {
 
 //  NULL terminated array of the implementaed interfaces.
 //  MUST be second in the structure.
-static vsf_api_t api_array = {
-    list_api,
+static const void * const api_array[] = {
+    &list_api,
     NULL,
 };
 

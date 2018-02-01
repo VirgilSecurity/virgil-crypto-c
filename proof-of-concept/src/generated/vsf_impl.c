@@ -54,6 +54,8 @@
 #include "vsf_api_private.h"
 //  @end
 
+#include "vsf_assert.h"
+#include "vsf_impl_private.h"
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -85,7 +87,7 @@ vsf_impl_api (vsf_impl_t *impl, vsf_api_tag_t api_tag) {
     for (const vsf_api_t * const *api_array = impl->info->api_array; *api_array != NULL; ++api_array) {
         const vsf_api_t* api = *api_array;
 
-        if (api->api_tag == api_tag)
+        if (api->api_tag == api_tag) {
             return api;
         }
     }

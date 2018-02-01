@@ -56,6 +56,9 @@
 #include "vsf_api.h"
 //  @end
 
+#include "vsf_impl_private.h"
+#include "vsf_kdf_api.h"
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -86,8 +86,8 @@ static vsf_cms_api_t cms_api = {
 
 //  NULL terminated array of the implementaed interfaces.
 //  MUST be second in the structure.
-static vsf_api_t api_array = {
-    cms_api,
+static const void * const api_array[] = {
+    &cms_api,
     NULL,
 };
 

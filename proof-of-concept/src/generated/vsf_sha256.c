@@ -61,6 +61,9 @@
 #include "vsf_impl_private.h"
 //  @end
 
+#include "vsf_hash_api.h"
+#include "vsf_hash_info_api.h"
+#include "vsf_hash_stream_api.h"
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -89,7 +92,7 @@ static vsf_hash_api_t hash_api = {
     vsf_api_tag_HASH,
 
     //  Link to the inherited interface API 'hash info'.
-    hash_info_api,
+    &hash_info_api,
 
     //  Calculate hash over given data.
     (vsf_hash_api_hash_fn) vsf_sha256_hash_hash,
@@ -102,7 +105,7 @@ static vsf_hash_stream_api_t hash_stream_api = {
     vsf_api_tag_HASH_STREAM,
 
     //  Link to the inherited interface API 'hash'.
-    hash_api,
+    &hash_api,
 
     //  Start a new hashing.
     (vsf_hash_stream_api_start_fn) vsf_sha256_hash_stream_start,
@@ -116,10 +119,10 @@ static vsf_hash_stream_api_t hash_stream_api = {
 
 //  NULL terminated array of the implementaed interfaces.
 //  MUST be second in the structure.
-static vsf_api_t api_array = {
-    hash_info_api,
-    hash_api,
-    hash_stream_api,
+static const void * const api_array[] = {
+    &hash_info_api,
+    &hash_api,
+    &hash_stream_api,
     NULL,
 };
 
