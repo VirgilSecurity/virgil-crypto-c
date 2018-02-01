@@ -74,7 +74,7 @@ function _A12_add_struct_info (destination, meta)
 
         new property
             . = "\
-            NULL terminated array of the implementaed interfaces.
+            NULL terminated array of the implemented interfaces.
             MUST be second in the structure.
             "
             .name = my.names.property_api_array
