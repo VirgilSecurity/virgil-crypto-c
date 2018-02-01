@@ -32,9 +32,11 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include "vsf.h"
+//#include "vsf.h"
 
 #include <stdio.h>
+#include "vsf_dynamic_list.h"
+#include "vsf_buffer_api.h"
 
 
 static void print_buf(const char *title, const unsigned char *buf, size_t buf_len)
@@ -48,29 +50,30 @@ static void print_buf(const char *title, const unsigned char *buf, size_t buf_le
 }
 
 static void test_list() {
-    vsf_dynamic_list_t *list = vsf_alloc (sizeof(vsf_dynamic_list_t));
-    vsf_dynamic_list_init (list);
-
-    vsf_buffer_t str[5];
-    vsf_zeroize(str, sizeof(vsf_buffer_t) * 5);
-
-    vsf_buffer_use_test (&str[0], (byte *)"Hello", strlen("Hello") + 1);
-    vsf_buffer_use_test (&str[1], (byte *)" ", strlen(" ") + 1);
-    vsf_buffer_use_test (&str[2], (byte *)"World", strlen("World") + 1);
-    vsf_buffer_use_test (&str[3], (byte *)" ", strlen(" ") + 1);
-    vsf_buffer_use_test (&str[4], (byte *)"!!!", strlen("!!!") + 1);
-
-    vsf_dynamic_list_add_last (list, &str[0]);
-    vsf_dynamic_list_add_last (list, &str[1]);
-    vsf_dynamic_list_add_last (list, &str[2]);
-    vsf_dynamic_list_add_last (list, &str[3]);
-    vsf_dynamic_list_add_last (list, &str[4]);
-
-    vsf_dynamic_list_display_strings(list);
-
-    vsf_dynamic_list_remove_first (list);
-
-    vsf_dealloc (list);
+//    vsf_dynamic_list_t *list =
+//    vsf_dynamic_list_t *list = vsf_alloc (sizeof(vsf_dynamic_list_t));
+//    vsf_dynamic_list_init (list);
+//
+//    vsf_buffer_t str[5];
+//    vsf_zeroize(str, sizeof(vsf_buffer_t) * 5);
+//
+//    vsf_buffer_use_test (&str[0], (byte *)"Hello", strlen("Hello") + 1);
+//    vsf_buffer_use_test (&str[1], (byte *)" ", strlen(" ") + 1);
+//    vsf_buffer_use_test (&str[2], (byte *)"World", strlen("World") + 1);
+//    vsf_buffer_use_test (&str[3], (byte *)" ", strlen(" ") + 1);
+//    vsf_buffer_use_test (&str[4], (byte *)"!!!", strlen("!!!") + 1);
+//
+//    vsf_dynamic_list_add_last (list, &str[0]);
+//    vsf_dynamic_list_add_last (list, &str[1]);
+//    vsf_dynamic_list_add_last (list, &str[2]);
+//    vsf_dynamic_list_add_last (list, &str[3]);
+//    vsf_dynamic_list_add_last (list, &str[4]);
+//
+//    vsf_dynamic_list_display_strings(list);
+//
+//    vsf_dynamic_list_remove_first (list);
+//
+//    vsf_dealloc (list);
 }
 
 static void test_asn1_writer() {

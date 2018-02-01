@@ -52,6 +52,9 @@
 #include "vsf_hash_stream.h"
 //  @end
 
+#include "vsf_impl_private.h"
+#include "vsf_hash_stream_api.h"
+#include <stdbool.h>
 
 //  @generated
 // --------------------------------------------------------------------------

@@ -56,6 +56,10 @@
 #include "vsf_api.h"
 //  @end
 
+#include "vsf_api.h"
+#include "vsf_impl.h"
+#include "vsf_hash_api.h"
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {

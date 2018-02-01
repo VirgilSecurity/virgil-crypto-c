@@ -57,6 +57,8 @@
 #include "vsf_impl.h"
 //  @end
 
+#include "vsf_hash_stream_api.h"
+#include "vsf_hash_api.h"
 
 #ifdef __cplusplus
 extern "C" {

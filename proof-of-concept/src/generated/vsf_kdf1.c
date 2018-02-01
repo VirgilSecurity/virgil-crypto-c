@@ -59,6 +59,7 @@
 #include "vsf_impl_private.h"
 //  @end
 
+#include "vsf_kdf_api.h"
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -82,8 +83,8 @@ static vsf_kdf_api_t kdf_api = {
 
 //  NULL terminated array of the implementaed interfaces.
 //  MUST be second in the structure.
-static vsf_api_t api_array = {
-    kdf_api,
+static const void * const api_array[] = {
+    &kdf_api,
     NULL,
 };
 
