@@ -4,20 +4,20 @@
     <method name = "add">
         Add item to any position
 
-        <argument name = "item" type = "buffer"  io = "in" />
+        <argument name = "item" type = "vsf_buffer"  io = "in" />
         <argument name = "pos" type = "integer"  io = "in" />
     </method>
     
     <method name = "add_first">
         Add item to head
         
-        <argument name = "item" type = "buffer" io = "in" />
+        <argument name = "item" type = "vsf_buffer" io = "in" />
     </method>
     
     <method name = "add_last">
         Add item to tail
         
-        <argument name = "item" type = "buffer" io = "in" />
+        <argument name = "item" type = "vsf_buffer" io = "in" />
     </method>
     
     <method name = "get">
@@ -25,19 +25,19 @@
         
         <argument name = "pos" type = "integer" io = "in" />
         
-        <return name = "res" type = "buffer" />
+        <return name = "res" type = "vsf_buffer" />
     </method>
     
     <method name = "get_first">
         Get item from head
         
-        <return name = "res" type = "buffer" />
+        <return name = "res" type = "vsf_buffer" />
     </method>
     
     <method name = "get_last">
         Get item from tail
         
-        <return name = "res" type = "buffer" />
+        <return name = "res" type = "vsf_buffer" />
     </method>
     
     <method name = "remove">
@@ -45,19 +45,19 @@
         
         <argument name = "pos" type = "integer" io = "in" />
         
-        <return name = "res" type = "buffer" />
+        <return name = "res" type = "vsf_buffer" />
     </method>
 
     <method name = "remove_first">
         Get and remove item from head
         
-        <return name = "res" type = "buffer" io = "in" />
+        <return name = "res" type = "vsf_buffer" io = "in" />
     </method>
 
     <method name = "remove_last">
         Get and remove item from tail
     
-        <return name = "res" type = "buffer" />
+        <return name = "res" type = "vsf_buffer" />
     </method>
     
     <method name = "display">
