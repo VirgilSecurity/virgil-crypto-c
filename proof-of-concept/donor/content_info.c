@@ -88,5 +88,5 @@ vsf_content_info_cms_write (vsf_content_info_t *impl) {
 	CHECK_RES (vsf_asn1_writer_write_int (writer, ANS1_CONTENT_INFO_VERSION, &len));
 	CHECK_RES (vsf_asn1_writer_write_sequence (writer, len?, &len);
 
-    return len + childWrittenBytes;
+    return len;
 }
