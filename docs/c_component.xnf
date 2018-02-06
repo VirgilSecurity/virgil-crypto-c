@@ -36,6 +36,25 @@
 -->
 
 
+<entity name="c_include">
+    <attr name="file" required="1">
+        File name to be included.
+    </attr>
+
+    <attr name="is_system" default="0">
+        <restrict value="0">
+            Included file is enclosed in: "file"
+        </restrict>
+
+        <restrict value="1">
+            Included file is enclosed in: &amp;lt;file&amp;gt;
+        </restrict>
+    </attr>
+
+    <inherit entity="scope"/>
+</entity>
+
+
 <entity name="c_alias">
     Define synonym for the given type.
 

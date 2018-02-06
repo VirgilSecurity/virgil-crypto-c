@@ -1,0 +1,272 @@
+<?xml version="1.0"?>
+<!--
+    Copyright (C) 2015-2018 Virgil Security Inc.
+
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+        (1) Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer.
+
+        (2) Redistributions in binary form must reproduce the above copyright
+        notice, this list of conditions and the following disclaimer in
+        the documentation and/or other materials provided with the
+        distribution.
+
+        (3) Neither the name of the copyright holder nor the names of its
+        contributors may be used to endorse or promote products derived from
+        this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+    IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+    INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+    HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+    IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+
+    Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+-->
+
+
+<entity name="uid" abstract="1">
+    <attr name="uid">
+        Unique component identifier represents name that uniquely identifies
+        component within modules hierarchy.
+    </attr>
+</entity>
+
+
+<entity name="component" abstract="1">
+    Groups common attributes for the component.
+
+    <inherit entity="scope"/>
+    <inherit entity="uid"/>
+    <inherit entity="class"/>
+</entity>
+
+
+<entity name="type" abstract="1">
+    Defines attributes that related to the instance type.
+
+    <attr name="type" required="1">
+        Defines type of the instance, argument, struct property, object.
+
+        <restrict value="nothing">
+            The same as a C void type.
+        </restrict>
+
+        <restrict value="any">
+            Value of any can be passed.
+        </restrict>
+
+        <restrict value="boolean">
+            True / False type.
+        </restrict>
+
+        <restrict value="integer">
+            Signed integral type.
+        </restrict>
+
+        <restrict value="size">
+            Unsigned integral type for size difinition.
+        </restrict>
+
+        <restrict value="byte">
+            Unsigned 8-bit integral type.
+        </restrict>
+
+        <restrict value="string">
+            Self contained string.
+            In the C context it is represented as a null-terminated string.
+        </restrict>
+
+        <restrict value="data">
+            Shortcut for the byte array.
+        </restrict>
+
+        <restrict value="buffer">
+            Special type that refers to the class "buffer".
+        </restrict>
+
+        <restrict value="impl">
+            Special type that refers to the universal implementation type.
+        </restrict>
+    </attr>
+
+    <attr name="is_array" default="0">
+        Defines whether given type is an array.
+
+        <restrict value="0">
+            Regular type.
+        </restrict>
+
+        <restrict value="1">
+            Array type.
+        </restrict>
+    </attr>
+
+    <attr name="io">
+        Defines type purposes.
+
+        <restrict value="in">
+            Value of the given type is readonly.
+        </restrict>
+
+        <restrict value="out">
+            Value of the given type is always re-written.
+        </restrict>
+
+        <restrict value="inout">
+            Value of the given type can be read and then be re-written.
+        </restrict>
+
+        <restrict value="release">
+            Ownership of the given value is transferred to someone else, so
+            client can not use this value anymore.
+        </restrict>
+    </attr>
+</entity>
+
+
+<entity name="require">
+    Defines module that current module depends on.
+
+    <attr name="module" required="1">
+        Module name that current module depends on.
+    </attr>
+
+    <inherit entity="scope"/>
+</entity>
+
+
+<entity name="object">
+    Defines global object.
+
+    <attr name="name" required="1">
+        Object name.
+    </attr>
+
+    <inherit entity="component"/>
+    <inherit entity="visibility"/>
+    <inherit entity="type"/>
+    <allow entity="c_type"/>
+</entity>
+
+
+<entity name="enum">
+    Defines enumeration type.
+
+    <attr name="name">
+        Object name.
+    </attr>
+
+    <inherit entity="component"/>
+    <inherit entity="visibility"/>
+
+    <allow entity="enum_value" occurs="0+"/>
+</entity>
+
+
+<entity name="enum_value">
+    Defines enumeration value.
+
+    <attr name="name" required="1">
+        Enumeration value name.
+    </attr>
+
+    <attr name="value">
+        Enumeration value constant.
+    </attr>
+</entity>
+
+
+<entity name="struct">
+    Defines struct type.
+
+    <attr name="name" required="1">
+        Structure name.
+    </attr>
+
+    <inherit entity="component"/>
+    <inherit entity="visibility"/>
+
+    <allow entity="struct_property"/>
+</entity>
+
+
+<entity name="struct_property">
+    Defines struct property.
+
+    <attr name="name" required="1">
+        Property name.
+    </attr>
+
+    <attr name="is_callback">
+        Defines if property defines a callback.
+
+        <restrict value="0">
+            Field.
+        </restrict>
+
+        <restrict value="1">
+            Callback.
+        </restrict>
+    </attr>
+
+    <inherit entity="uid"/>
+    <inherit entity="type"/>
+
+    <allow entity="argument"/>
+    <allow entity="return"/>
+    <allow entity="c_type"/>
+</entity>
+
+
+<entity name="method">
+    Defines the method signature and optionally implementaiton.
+
+    <attr name="name" required="1">
+        Method name.
+    </attr>
+
+    <inherit entity="component"/>
+    <inherit entity="visibility"/>
+
+    <allow entity="return" occurs="0/1"/>
+    <allow entity="argument" occurs="0+"/>
+    <allow entity="c_implementation" occurs="0/1"/>
+</entity>
+
+
+<entity name="callback">
+    <inherit entity="method"/>
+</entity>
+
+
+<entity name="argument">
+    Defines argument as name, type, and usage information.
+
+    <attr name="name" required="1">
+        Argument name.
+    </attr>
+
+    <inherit entity="type"/>
+    <inherit entity="uid"/>
+    <allow entity="c_type"/>
+</entity>
+
+
+<entity name="return">
+    Defines return type.
+
+    <inherit entity="type"/>
+    <allow entity="c_type"/>
+</entity>
