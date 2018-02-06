@@ -35,66 +35,38 @@
     Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 -->
 
-<entity name="scope" abstract="1">
+<xnf name = "module" script = "xnf_gen.gsl" version = "1.0a1">
+    Module groups high level logical components within one phisical
+    component.
 
-    <attr name="scope" default="public">
-        Defines component visibility.
+    <produce filename = "module.md" type = "gurudoc" />
 
-        <restrict value="public">
-            Component is visible for outside world.
-        </restrict>
+    <entity name = "module">
+        Module groups high level logical components within one phisical
+        component. Phisical component is a source file, plus header file for
+        C/C++. Logical component is representation of a constant, type,
+        enumeration, method, etc.
 
-        <restrict value="private">
-            Component is visible only within library or a specific source file.
-        </restrict>
-    </attr>
+        Module represents C components in a language agnostic way. This makes
+        possible to generate wrappers for high level languakes like C#, Java,
+        Python, etc.
 
-</entity>
+        <attr name="name" required="1">
+            Short module name.
+        </attr>
 
+        <inherit entity="component"/>
 
-<entity name="definition" abstract="1">
+        <allow entity="require"/>
+        <allow entity="enum"/>
+        <allow entity="object"/>
+        <allow entity="struct"/>
+        <allow entity="callback"/>
+        <allow entity="method"/>
 
-    <attr name="definition" default="private">
-        Defines where component will be defined.
+    </entity>
 
-        <restrict value="public">
-            Component definition is visible for outside world.
-        </restrict>
-
-        <restrict value="private">
-            Component definition is hidden in a correspond source file.
-        </restrict>
-
-        <restrict value="external">
-            Component definition is located somewhere.
-        </restrict>
-    </attr>
-
-</entity>
-
-
-<entity name="visibility" abstract="1">
-
-    <attr name="visibility" default="public">
-        Defines symbol binary visibility.
-
-        <restrict value="public">
-            Symbols of the types and methods are visible in a binary file.
-        </restrict>
-
-        <restrict value="private">
-            Symbols of the types and methods are hidden in a binary file.
-        </restrict>
-    </attr>
-
-</entity>
-
-
-<entity name="class">
-
-    <attr name="class">
-        Short class name that is implmeneted in this module.
-        This attributes is used for inner components name resolution.
-    </attr>
-
-</entity>
+    <include filename="common.xnf"/>
+    <include filename="component.xnf"/>
+    <include filename="c_component.xnf"/>
+</xnf>

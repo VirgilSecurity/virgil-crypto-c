@@ -47,11 +47,6 @@
             Short module name.
         </attr>
 
-        <attr name="class">
-            Short class name that is implmeneted in this module.
-            This attributes is used for inner components name resolution.
-        </attr>
-
         <attr name="header_file" required="1">
             Name of the generated header file without path.
         </attr>
@@ -72,20 +67,10 @@
             String that is used as C header guard.
         </attr>
 
-        <attr name="scope" default="public">
-            Defines whether this module be accessible for the library clients.
+        <inherit entity="scope"/>
+        <inherit entity="class"/>
 
-            <restrict value = "public">
-                Module is visible for outside world.
-                Header is copied to the public section.
-            </restrict>
-
-            <restrict value = "private">
-                Module is visible only within library.
-                Header is copied to the private section.
-            </restrict>
-        </attr>
-
+        <allow entity="c_include"/>
         <allow entity="c_alias"/>
         <allow entity="c_enum"/>
         <allow entity="c_struct"/>

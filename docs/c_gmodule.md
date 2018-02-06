@@ -7,8 +7,9 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <c_gmodule name output_source_file header_file source_file output_header_file once_guard
+    <c_gmodule output_source_file once_guard name header_file source_file output_header_file
          [class] [scope]>
+       <c_include file [scope] [is_system]/>
        <c_alias name type/>
        <c_enum [visibility] [scope] [name]>
           <c_enum_value [name] [value]/>
@@ -57,15 +58,16 @@ The 'c_gmodule' item
 Base model for C language code generation.
 
     <c_gmodule
-        name = "..."
         output_source_file = "..."
+        once_guard = "..."
+        name = "..."
         header_file = "..."
         source_file = "..."
         output_header_file = "..."
-        once_guard = "..."
       [ class = "..." ]
       [ scope = "public | private"  ("public") ]
         >
+        <c_include>
         <c_alias>
         <c_enum>
         <c_struct>
@@ -76,13 +78,21 @@ Base model for C language code generation.
 
 The c_gmodule item can have these attributes:
 
-name:
-    Short module name. The name attribute is required.
-
 class:
     Short class name that is implmeneted in this module. This attributes is
     used for inner components name resolution. The class attribute is      
     optional.                                                              
+
+scope:
+    Defines component visibility. The scope attribute is optional. Its 
+    default value is "public". It can take one of the following values:
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible only within library or a specific source file.
+
+name:
+    Short module name. The name attribute is required.
 
 header_file:
     Name of the generated header file without path. The header_file attribute
@@ -104,14 +114,38 @@ once_guard:
     String that is used as C header guard. The once_guard attribute is
     required.                                                         
 
+
+The 'c_include' item
+--------------------
+
+
+
+    <c_include
+        file = "..."
+      [ scope = "public | private"  ("public") ]
+      [ is_system = "0 | 1"  ("0") ]
+        />
+
+The c_include item can have these attributes:
+
 scope:
-    Defines whether this module be accessible for the library clients. The 
-    scope attribute is optional. Its default value is "public". It can take
-    one of the following values:                                           
+    Defines component visibility. The scope attribute is optional. Its 
+    default value is "public". It can take one of the following values:
 
 Value: Meaning:
-public: Module is visible for outside world. Header is copied to the public section.
-private: Module is visible only within library. Header is copied to the private section.
+public: Component is visible for outside world.
+private: Component is visible only within library or a specific source file.
+
+file:
+    File name to be included. The file attribute is required.
+
+is_system:
+    The is_system attribute is optional. Its default value is "0". It can
+    take one of the following values:                                    
+
+Value: Meaning:
+0: Included file is enclosed in: "file"
+1: Included file is enclosed in: &lt;file&gt;
 
 
 The 'c_alias' item
@@ -140,7 +174,7 @@ Defines enumeration type.
 
     <c_enum
       [ visibility = "public | private"  ("public") ]
-      [ scope = "public | private | opqaue | external"  ("public") ]
+      [ scope = "public | private"  ("public") ]
       [ name = "..." ]
         >
         <c_enum_value>, 1 or more
@@ -149,22 +183,20 @@ Defines enumeration type.
 The c_enum item can have these attributes:
 
 visibility:
-    Defines symbol visibility. The visibility attribute is optional. Its
-    default value is "public". It can take one of the following values: 
+    Defines symbol binary visibility. The visibility attribute is optional.
+    Its default value is "public". It can take one of the following values:
 
 Value: Meaning:
 public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
 
 scope:
-    Defines module visibility. The scope attribute is optional. Its default
-    value is "public". It can take one of the following values:            
+    Defines component visibility. The scope attribute is optional. Its 
+    default value is "public". It can take one of the following values:
 
 Value: Meaning:
 public: Component is visible for outside world.
 private: Component is visible only within library or a specific source file.
-opqaue: Component declaration is visible for outside world. Component definition is hidden in a correspond source file.
-external: Component declaration is visible for outside world. Component definition is located somewhere.
 
 name:
     Enumeration name. Can be ommited if it is used to define named constants.
@@ -331,7 +363,7 @@ Define global object.
     <c_object
         type = "..."
         name = "..."
-      [ scope = "public | private | opqaue | external"  ("public") ]
+      [ scope = "public | private"  ("public") ]
       [ visibility = "public | private"  ("public") ]
         >
         <c_object_value>, 1 or more
@@ -341,22 +373,20 @@ Define global object.
 The c_object item can have these attributes:
 
 visibility:
-    Defines symbol visibility. The visibility attribute is optional. Its
-    default value is "public". It can take one of the following values: 
+    Defines symbol binary visibility. The visibility attribute is optional.
+    Its default value is "public". It can take one of the following values:
 
 Value: Meaning:
 public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
 
 scope:
-    Defines module visibility. The scope attribute is optional. Its default
-    value is "public". It can take one of the following values:            
+    Defines component visibility. The scope attribute is optional. Its 
+    default value is "public". It can take one of the following values:
 
 Value: Meaning:
 public: Component is visible for outside world.
 private: Component is visible only within library or a specific source file.
-opqaue: Component declaration is visible for outside world. Component definition is hidden in a correspond source file.
-external: Component declaration is visible for outside world. Component definition is located somewhere.
 
 name:
     Object name. The name attribute is required.
@@ -410,7 +440,7 @@ Define method signature and implementation (optional).
 
     <c_method
         name = "..."
-      [ scope = "public | private | opqaue | external"  ("public") ]
+      [ scope = "public | private"  ("public") ]
       [ visibility = "public | private"  ("public") ]
         >
         <c_modifier>
@@ -422,22 +452,20 @@ Define method signature and implementation (optional).
 The c_method item can have these attributes:
 
 visibility:
-    Defines symbol visibility. The visibility attribute is optional. Its
-    default value is "public". It can take one of the following values: 
+    Defines symbol binary visibility. The visibility attribute is optional.
+    Its default value is "public". It can take one of the following values:
 
 Value: Meaning:
 public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
 
 scope:
-    Defines module visibility. The scope attribute is optional. Its default
-    value is "public". It can take one of the following values:            
+    Defines component visibility. The scope attribute is optional. Its 
+    default value is "public". It can take one of the following values:
 
 Value: Meaning:
 public: Component is visible for outside world.
 private: Component is visible only within library or a specific source file.
-opqaue: Component declaration is visible for outside world. Component definition is hidden in a correspond source file.
-external: Component declaration is visible for outside world. Component definition is located somewhere.
 
 name:
     Method name. The name attribute is required.
@@ -466,7 +494,7 @@ The 'c_macros' item
 Define macros, that can represent a constant or a method.
 
     <c_macros
-      [ scope = "public | private | opqaue | external"  ("public") ]
+      [ scope = "public | private"  ("public") ]
       [ is_method = "0 | 1"  ("0") ]
         >
         <c_implementation>, optional
@@ -475,14 +503,12 @@ Define macros, that can represent a constant or a method.
 The c_macros item can have these attributes:
 
 scope:
-    Defines module visibility. The scope attribute is optional. Its default
-    value is "public". It can take one of the following values:            
+    Defines component visibility. The scope attribute is optional. Its 
+    default value is "public". It can take one of the following values:
 
 Value: Meaning:
 public: Component is visible for outside world.
 private: Component is visible only within library or a specific source file.
-opqaue: Component declaration is visible for outside world. Component definition is hidden in a correspond source file.
-external: Component declaration is visible for outside world. Component definition is located somewhere.
 
 is_method:
     The is_method attribute is optional. Its default value is "0". It can
