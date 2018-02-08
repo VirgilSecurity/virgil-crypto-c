@@ -36,48 +36,15 @@
 
 cmake_minimum_required(VERSION 3.8)
 
-project(vsf VERSION 1.0 LANGUAGES C)
+# Define variables
+set (VIRGIL_VSF_LIB_NAME vsf)
+set (TEST_RUNNER test_runner)
 
-set(CMAKE_C_STANDARD 99)
+aux_source_directory (${CMAKE_CURRENT_SOURCE_DIR} SRC_LIST)
+add_executable(${TEST_RUNNER} ${SRC_LIST})
+target_link_libraries (${TEST_RUNNER} ${VIRGIL_VSF_LIB_NAME})
 
-set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-
-file(GLOB VSF_SRC
-        "src/generated/*.h"
-        "src/generated/*.c"
-        )
-
-file(GLOB VSF_INCLUDE
-        "include/virgil/*.h"
-        )
-
-add_library(vsf ${VSF_SRC} ${VSF_INCLUDE})
-
-target_include_directories (vsf
-    PUBLIC
-    $<BUILD_INTERFACE:${vsf_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${vsf_SOURCE_DIR}/include/virgil>
-    $<BUILD_INTERFACE:${vsf_SOURCE_DIR}/src/generated>
-    $<BUILD_INTERFACE:${vsf_BINARY_DIR}/include>
-    $<INSTALL_INTERFACE:include>
+add_test (
+    NAME ${TEST_RUNNER}
+    COMMAND "${CMAKE_CURRENT_BINARY_DIR}/${TEST_RUNNER}"
 )
-
-include (virgil_depends)
-
-virgil_depends (
-    PACKAGE_NAME "MbedTLS"
-    CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs_ext/mbedtls"
-    CMAKE_ARGS "${CMAKE_ARGS}" "${MBEDTLS_CMAKE_ARGS}"
-)
-virgil_find_package (MbedTLS 2.2)
-
-target_link_libraries(vsf PUBLIC mbedtls::mbedcrypto)
-
-add_executable(main src/main.c)
-target_link_libraries(main vsf)
-
-# Unit tests
-#if (ENABLE_TESTING)
-    enable_testing ()
-    add_subdirectory (test)
-#endif (ENABLE_TESTING)
