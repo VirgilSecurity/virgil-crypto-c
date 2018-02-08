@@ -26,21 +26,19 @@ cms_parsing() {
     int i;
 
     for (i = 0; i < test_elements_cnt; ++i) {
-        bool res = false;
         switch(test_elements[i].type) {
             case SINGLE_KEY_RECIPIENT:
-                res = __parse_one_key_recipient (&test_elements[i]);
+                TEST_CHECK_ (__parse_one_key_recipient (&test_elements[i]),
+                             "%s", test_elements[i].name);
                 break;
             case MULTIPLE_KEY_RECIPIENT:
-                res = __parse_multiple_key_recipients (&test_elements[i]);
+                TEST_CHECK_ (__parse_multiple_key_recipients (&test_elements[i]),
+                             "%s", test_elements[i].name);
                 break;
             case PASSWORD_KEY_RECIPIENT:
-                res = __parse_password_recipient (&test_elements[i]);
+                TEST_CHECK_ (__parse_password_recipient (&test_elements[i]),
+                             "%s", test_elements[i].name);
                 break;
-        }
-
-        if (!TEST_CHECK (res)) {
-            TEST_MSG("%s\n\n", test_elements[i].name);
         }
     }
 }
@@ -62,17 +60,9 @@ __multiple_keys_encryption () {
 
 static void
 cms_write() {
-    if (!TEST_CHECK (__password_encryption ())) {
-        TEST_MSG("Password encryption\n\n");
-    }
-
-    if (!TEST_CHECK (__single_key_encryption ())) {
-        TEST_MSG("Single key encryption\n\n");
-    }
-
-    if (!TEST_CHECK (__multiple_keys_encryption ())) {
-        TEST_MSG("Multiple keys encryption\n\n");
-    }
+    TEST_CHECK_ (__password_encryption (), "Password encryption");
+    TEST_CHECK_ (__single_key_encryption (), "Single key encryption");
+    TEST_CHECK_ (__multiple_keys_encryption (), "Multiple keys encryption");
 }
 
 TEST_LIST = {
