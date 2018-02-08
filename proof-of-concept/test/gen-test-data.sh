@@ -92,7 +92,8 @@ function password_encryption() {
 function create_test_file() {
 	echo "Generate C file with test data."
 	
-	echo " " > "${C_DATA_FILE}"
+	echo '#include "test-data.h"' > "${C_DATA_FILE}"
+	echo ' ' >> "${C_DATA_FILE}"
 	
 	pushd "${TEST_DIR}"
 		for i in *.enc; do
@@ -100,6 +101,24 @@ function create_test_file() {
 			xxd -i "${i}" >> "${C_DATA_FILE}"
 			echo " " >> "${C_DATA_FILE}"
 		done
+		
+		echo "" >> "${C_DATA_FILE}"
+		
+		IFS=$'\n'
+		array=($(cat ${C_DATA_FILE} | grep _pub_enc_len | awk -F " " '{ print $3 }' | rev | cut -c5- | rev))
+		
+		echo "unsigned int test_elements_cnt = ${#array[@]} + 2;" >> "${C_DATA_FILE}"
+		echo "" >> "${C_DATA_FILE}"
+		echo "test_data_element_t test_elements[] = {" >> "${C_DATA_FILE}"
+		
+		echo "    { password_enc, sizeof(password_enc), \"Password encryption\", PASSWORD_KEY_RECIPIENT }, " >> "${C_DATA_FILE}"
+		for EL in "${array[@]}"; do
+			CURVE=$(echo ${EL} | awk -F "_" '{ print $1 }')
+			echo "    { ${EL}, sizeof(${EL}), \"Single encryption. Curve : ${CURVE}\", SINGLE_KEY_RECIPIENT }," >> "${C_DATA_FILE}"
+		done
+		echo "    { multiple_enc, sizeof(multiple_enc), \"Multiple recipients encryption\", MULTIPLE_KEY_RECIPIENT} " >> "${C_DATA_FILE}"
+		
+		echo "};" >> "${C_DATA_FILE}"		
 	popd
 }
 
