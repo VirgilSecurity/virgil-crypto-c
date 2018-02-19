@@ -32,8 +32,7 @@
 
         <macros name = "make version" is_method = "1">
             <c_implementation>
-                #define .(c_global_macros_make_version) (major, minor, patch)
-                        ((major) * 10000 + (minor) * 100 + (patch))
+                #define .(c_global_macros_make_version) (major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
             </c_implementation>
         </macros>
 
