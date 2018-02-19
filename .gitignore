@@ -15,3 +15,4 @@ profile
 #####
 # CLion
 .idea
+cmake-build-*/

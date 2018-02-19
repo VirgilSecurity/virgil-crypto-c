@@ -1,0 +1,97 @@
+<interface name = "asn1_writer">
+    Provides interface to the ASN.1 writer.
+    
+    <method name = "reset">
+        Reset all internal states and prepare to new ASN.1 writing operations.
+
+        <argument name = "capacity" type = "size" io = "in" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+
+    <method name = "finish">
+        Returns the result ASN.1 structure.
+        
+        <return name = "res" type = "buffer" />
+    </method>
+    
+    <method name = "write_int">
+        Write ASN.1 type: INTEGER.
+        
+        <argument name = "val" type = "integer" io = "in" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+    
+    <method name = "write_bool">
+        Write ASN.1 type: BOOLEAN.
+        
+        <argument name = "val" type = "integer" io = "in" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+    
+    <method name = "write_null">
+        Write ASN.1 type: NULL.
+        
+        <return name = "res" type = "integer" />
+    </method>
+    
+    <method name = "write_octet_string">
+        Write ASN.1 type: OCTET STRING.
+        
+        <argument name = "data" type = "buffer" io = "in" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+    
+    <method name = "write_utf8_string">
+        Write ASN.1 type: UTF8String.
+        
+        <argument name = "data" type = "buffer" io = "in" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+    
+    <method name = "write_tag">
+        Write ASN.1 type: UTF8String.
+        
+        <argument name = "tag" type = "size" io = "in" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+    
+    <method name = "write_data">
+        Write preformatted ASN.1 structure.
+        
+        <argument name = "data" type = "buffer" io = "in" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+    
+    <method name = "write_oid">
+        Write ASN.1 type: OID.
+        
+        <argument name = "oid" type = "buffer" io = "in" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+    
+    <method name = "write_sequence">
+        Write ASN.1 type: SEQUENCE.
+        
+        <argument name = "data" type = "buffer" io = "in" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+    
+    <method name = "write_set">
+        Write ASN.1 type: SET OF ANY.
+        
+        <argument name = "ar" type = "buffer" io = "in" />
+        <argument name = "ar_sz" type = "size" io = "in" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+
+</interface>
