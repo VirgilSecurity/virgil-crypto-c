@@ -76,8 +76,7 @@ target_link_libraries(vsf PUBLIC mbedtls::mbedcrypto)
 add_executable(main src/main.c)
 target_link_libraries(main vsf)
 
-# Unit tests
-#if (ENABLE_TESTING)
-    enable_testing ()
+include(CTest)
+if(BUILD_TESTING)
     add_subdirectory (test)
-#endif (ENABLE_TESTING)
+endif()
