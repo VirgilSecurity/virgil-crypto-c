@@ -163,7 +163,7 @@ function _L24_add_method_get_api (destination, meta)
                         *$(my.refs.c_property_api_array);
 
                 if ($(my.names.class_api:c)->$(my.refs.c_property_api_tag) == \
-                        $(my.refs.c_argument_api_tag))
+                        $(my.refs.c_argument_api_tag)) {
                     return  $(my.names.class_api:c);
                 }
             }
