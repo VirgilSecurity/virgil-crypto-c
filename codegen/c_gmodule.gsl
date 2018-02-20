@@ -59,7 +59,6 @@ function c_gmodule_copy_attributes (component, c_component)
 
     my.c_component.visibility ?= my.component.visibility ?
     my.c_component.scope ?= my.component.scope ?
-    my.c_component.is_multiline ?= my.component.is_multiline ?
     my.c_component.is_system ?= my.component.is_system ?
     my.c_component.is_method ?= my.component.is_method ?
     my.c_component.is_object ?= my.component.is_object ?
