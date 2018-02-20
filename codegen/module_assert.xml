@@ -17,6 +17,7 @@
             name = "active handler"
             type = ".(class_assert_callback_handler)"
             visibility = "private"
+            scope = "private"
             >
         Active handler for assertion failback.
         <value value = ".(class_assert_method_abort)" />
@@ -42,7 +43,9 @@
             <argument name = "line" type = "integer" />
             <c_implementation>
                 printf (&quot;Assertion failed: %s, file %s, line %d\\n&quot;,
-                        msg, .(c_class_assert_method_path_basename) (file), line);
+                        .(c_argument_message), \
+                        .(c_class_assert_method_path_basename) (.(c_argument_file)), \
+                        .(c_argument_line));
                 printf (&quot;Abort&quot;);
                 abort ();
             </c_implementation>
