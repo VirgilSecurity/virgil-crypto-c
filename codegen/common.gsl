@@ -568,7 +568,7 @@ function format_code (body, tab_count)
 
     my.body = code_remove_side_effects (my.body)
     my.body = string_indent (my.body, my.tab_count)
-    my.body = string_rtrim (my.body)
+    my.body = string_multi_rtrim (my.body)
 
     return my.body
 endfunction
