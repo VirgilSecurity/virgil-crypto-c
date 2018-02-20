@@ -59,8 +59,10 @@
 #include "vsf_impl_private.h"
 //  @end
 
+
 #include "vsf_cms_api.h"
 #include "vsf_api_private.h"
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -85,7 +87,7 @@ static vsf_cms_api_t cms_api = {
     (vsf_cms_api_write_fn) vsf_encrypted_content_cms_write,
 };
 
-//  NULL terminated array of the implementaed interfaces.
+//  NULL terminated array of the implemented interfaces.
 //  MUST be second in the structure.
 static const void * const api_array[] = {
     &cms_api,
@@ -97,7 +99,7 @@ static vsf_impl_info_t impl_info = {
     //  Implementation unique identifier, MUST be first in the structure.
     vsf_impl_tag_ENCRYPTED_CONTENT,
 
-    //  NULL terminated array of the implementaed interfaces.
+    //  NULL terminated array of the implemented interfaces.
     //  MUST be second in the structure.
     api_array,
 

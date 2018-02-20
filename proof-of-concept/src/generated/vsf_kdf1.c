@@ -59,7 +59,9 @@
 #include "vsf_impl_private.h"
 //  @end
 
+
 #include "vsf_kdf_api.h"
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -81,7 +83,7 @@ static vsf_kdf_api_t kdf_api = {
     (vsf_kdf_api_derive_fn) vsf_kdf1_kdf_derive,
 };
 
-//  NULL terminated array of the implementaed interfaces.
+//  NULL terminated array of the implemented interfaces.
 //  MUST be second in the structure.
 static const void * const api_array[] = {
     &kdf_api,
@@ -93,7 +95,7 @@ static vsf_impl_info_t impl_info = {
     //  Implementation unique identifier, MUST be first in the structure.
     vsf_impl_tag_KDF1,
 
-    //  NULL terminated array of the implementaed interfaces.
+    //  NULL terminated array of the implemented interfaces.
     //  MUST be second in the structure.
     api_array,
 

@@ -61,9 +61,11 @@
 #include "vsf_impl_private.h"
 //  @end
 
+
 #include "vsf_hash_api.h"
 #include "vsf_hash_info_api.h"
 #include "vsf_hash_stream_api.h"
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -117,7 +119,7 @@ static vsf_hash_stream_api_t hash_stream_api = {
     (vsf_hash_stream_api_finish_fn) vsf_sha256_hash_stream_finish,
 };
 
-//  NULL terminated array of the implementaed interfaces.
+//  NULL terminated array of the implemented interfaces.
 //  MUST be second in the structure.
 static const void * const api_array[] = {
     &hash_info_api,
@@ -131,7 +133,7 @@ static vsf_impl_info_t impl_info = {
     //  Implementation unique identifier, MUST be first in the structure.
     vsf_impl_tag_SHA256,
 
-    //  NULL terminated array of the implementaed interfaces.
+    //  NULL terminated array of the implemented interfaces.
     //  MUST be second in the structure.
     api_array,
 

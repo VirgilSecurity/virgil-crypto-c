@@ -57,6 +57,7 @@
 #include "vsf_impl.h"
 //  @end
 
+
 #include "vsf_hash_info_api.h"
 
 #ifdef __cplusplus
