@@ -212,14 +212,12 @@ endfunction
 #   Remove trailing whitespaces for each line of multi-line string.
 # ---------------------------------------------------------------------------
 function string_multi_rtrim (str)
-    while 1
-        my.new_str = string.replace (my.str, " $(terminator)|$(terminator)")
-        if my.new_str = my.str
-            last
-        endif
-        my.str = my.new_str
+    while regexp.match ("(.*[ ]+$(terminator))", my.str, my.raw_line)
+        regexp.match ("(.*)[ ]+$(terminator)", my.str, my.replacement)
+        my.str = string.search_replace (my.str, my.raw_line, my.replacement + terminator)
     endwhile
-    return my.str
+
+    return string_rtrim (my.str)
 endfunction
 
 
