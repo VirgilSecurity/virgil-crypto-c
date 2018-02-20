@@ -83,7 +83,7 @@ struct vsf_impl_info_t {
     //  Implementation unique identifier, MUST be first in the structure.
     vsf_impl_tag_t impl_tag;
 
-    //  NULL terminated array of the implementaed interfaces.
+    //  NULL terminated array of the implemented interfaces.
     //  MUST be second in the structure.
     const vsf_api_t *const *const api_array;
 

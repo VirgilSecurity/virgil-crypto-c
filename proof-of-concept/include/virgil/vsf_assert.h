@@ -58,6 +58,7 @@
 #include "vsf_library.h"
 //  @end
 
+
 #include <stdbool.h>
 
 #ifdef __cplusplus
@@ -76,11 +77,11 @@ extern "C" {
 // ==========================================================================
 
 //  Asserts always.
-#define VSF_ASSERT_ASSERT(X) \
-    do { \
-        if (!(X)) { \
+#define VSF_ASSERT_ASSERT(X)                             \
+    do {                                                 \
+        if (!(X)) {                                      \
             vsf_assert_trigger (#X, __FILE__, __LINE__); \
-        } \
+        }                                                \
     } while (false)
 
 //  Asserts even in optimized mode.

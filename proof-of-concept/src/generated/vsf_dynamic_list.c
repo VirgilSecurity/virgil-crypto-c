@@ -114,7 +114,7 @@ static vsf_list_api_t list_api = {
     (vsf_list_api_display_strings_fn) vsf_dynamic_list_list_display_strings,
 };
 
-//  NULL terminated array of the implementaed interfaces.
+//  NULL terminated array of the implemented interfaces.
 //  MUST be second in the structure.
 static const void * const api_array[] = {
     &list_api,
@@ -126,7 +126,7 @@ static vsf_impl_info_t impl_info = {
     //  Implementation unique identifier, MUST be first in the structure.
     vsf_impl_tag_DYNAMIC_LIST,
 
-    //  NULL terminated array of the implementaed interfaces.
+    //  NULL terminated array of the implemented interfaces.
     //  MUST be second in the structure.
     api_array,
 

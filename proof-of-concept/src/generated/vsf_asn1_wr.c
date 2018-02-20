@@ -117,7 +117,7 @@ static vsf_asn1_writer_api_t asn1_writer_api = {
     (vsf_asn1_writer_api_write_set_fn) vsf_asn1_wr_asn1_writer_write_set,
 };
 
-//  NULL terminated array of the implementaed interfaces.
+//  NULL terminated array of the implemented interfaces.
 //  MUST be second in the structure.
 static const void * const api_array[] = {
     &asn1_writer_api,
@@ -129,7 +129,7 @@ static vsf_impl_info_t impl_info = {
     //  Implementation unique identifier, MUST be first in the structure.
     vsf_impl_tag_ASN1_WR,
 
-    //  NULL terminated array of the implementaed interfaces.
+    //  NULL terminated array of the implemented interfaces.
     //  MUST be second in the structure.
     api_array,
 

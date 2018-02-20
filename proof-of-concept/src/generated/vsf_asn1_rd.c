@@ -59,7 +59,9 @@
 #include "vsf_impl_private.h"
 //  @end
 
+
 #include "vsf_asn1_reader_api.h"
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -111,7 +113,7 @@ static vsf_asn1_reader_api_t asn1_reader_api = {
     (vsf_asn1_reader_api_read_set_fn) vsf_asn1_rd_asn1_reader_read_set,
 };
 
-//  NULL terminated array of the implementaed interfaces.
+//  NULL terminated array of the implemented interfaces.
 //  MUST be second in the structure.
 static const void * const api_array[] = {
     &asn1_reader_api,
@@ -123,7 +125,7 @@ static vsf_impl_info_t impl_info = {
     //  Implementation unique identifier, MUST be first in the structure.
     vsf_impl_tag_ASN1_RD,
 
-    //  NULL terminated array of the implementaed interfaces.
+    //  NULL terminated array of the implemented interfaces.
     //  MUST be second in the structure.
     api_array,
 
