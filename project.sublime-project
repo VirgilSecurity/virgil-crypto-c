@@ -1,0 +1,23 @@
+{
+	"build_systems":
+	[
+		{
+			"name": "codegen",
+			"shell_cmd": "./codegen.sh",
+			"working_dir": "${project_path}",
+			"file_patterns": ["*.gsl", "*.xml"]
+		},
+		{
+			"name": "docgen",
+			"shell_cmd": "./docgen.sh",
+			"working_dir": "${project_path}",
+			"file_patterns": ["*.xnf"]
+		}
+	],
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	]
+}
