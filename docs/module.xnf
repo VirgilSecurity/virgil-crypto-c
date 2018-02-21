@@ -63,6 +63,7 @@
         <allow entity="struct"/>
         <allow entity="callback"/>
         <allow entity="method"/>
+        <allow entity="macros"/>
 
     </entity>
 

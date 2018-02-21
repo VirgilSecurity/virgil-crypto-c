@@ -270,3 +270,16 @@
     <inherit entity="type"/>
     <allow entity="c_type"/>
 </entity>
+
+
+<entity name="macros">
+    Defines the macros name and optionally implementaiton.
+
+    <attr name="name" required="1">
+        Macros name.
+    </attr>
+
+    <inherit entity="component"/>
+
+    <allow entity="c_implementation" occurs="0/1"/>
+</entity>
