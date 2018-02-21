@@ -38,6 +38,9 @@ attribute names are case-sensitive and we use only lower-case names.
           <argument .../>
           <c_implementation .../>
        </method>
+       <macros name [uid] [scope] [class]>
+          <c_implementation .../>
+       </macros>
     </module>
 
 Detailed specifications
@@ -70,6 +73,7 @@ generate wrappers for high level languakes like C#, Java, Python, etc.
         <struct>
         <callback>
         <method>
+        <macros>
     </module>
 
 The module item can have these attributes:
@@ -84,8 +88,9 @@ uid:
     component within modules hierarchy. The uid attribute is optional.  
 
 scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
+    Defines component visibility within scope. The scope attribute is        
+    optional. Its default value is "public". It can take one of the following
+    values:                                                                  
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -108,8 +113,9 @@ Defines module that current module depends on.
 The require item can have these attributes:
 
 scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
+    Defines component visibility within scope. The scope attribute is        
+    optional. Its default value is "public". It can take one of the following
+    values:                                                                  
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -155,8 +161,9 @@ uid:
     component within modules hierarchy. The uid attribute is optional.  
 
 scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
+    Defines component visibility within scope. The scope attribute is        
+    optional. Its default value is "public". It can take one of the following
+    values:                                                                  
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -259,8 +266,9 @@ uid:
     component within modules hierarchy. The uid attribute is optional.  
 
 scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
+    Defines component visibility within scope. The scope attribute is        
+    optional. Its default value is "public". It can take one of the following
+    values:                                                                  
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -366,8 +374,9 @@ uid:
     component within modules hierarchy. The uid attribute is optional.  
 
 scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
+    Defines component visibility within scope. The scope attribute is        
+    optional. Its default value is "public". It can take one of the following
+    values:                                                                  
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -599,8 +608,9 @@ uid:
     component within modules hierarchy. The uid attribute is optional.  
 
 scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
+    Defines component visibility within scope. The scope attribute is        
+    optional. Its default value is "public". It can take one of the following
+    values:                                                                  
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -657,8 +667,9 @@ uid:
     component within modules hierarchy. The uid attribute is optional.  
 
 scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
+    Defines component visibility within scope. The scope attribute is        
+    optional. Its default value is "public". It can take one of the following
+    values:                                                                  
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -666,4 +677,43 @@ private: Component is visible only within library or a specific source file.
 
 name:
     Method name. The name attribute is required.
+
+
+The 'macros' item
+-----------------
+
+Groups common attributes for the component. Defines the macros name and
+optionally implementaiton.                                             
+
+    <macros
+        name = "..."
+      [ uid = "..." ]
+      [ scope = "public | private"  ("public") ]
+      [ class = "..." ]
+        >
+        <c_implementation>, optional
+    </macros>
+
+The macros item can have these attributes:
+
+class:
+    Short class name that is implmeneted in this module. This attributes is
+    used for inner components name resolution. The class attribute is      
+    optional.                                                              
+
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within modules hierarchy. The uid attribute is optional.  
+
+scope:
+    Defines component visibility within scope. The scope attribute is        
+    optional. Its default value is "public". It can take one of the following
+    values:                                                                  
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible only within library or a specific source file.
+
+name:
+    Macros name. The name attribute is required.
 

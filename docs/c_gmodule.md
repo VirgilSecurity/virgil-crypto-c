@@ -84,8 +84,9 @@ class:
     optional.                                                              
 
 scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
+    Defines component visibility within scope. The scope attribute is        
+    optional. Its default value is "public". It can take one of the following
+    values:                                                                  
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -129,8 +130,9 @@ The 'c_include' item
 The c_include item can have these attributes:
 
 scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
+    Defines component visibility within scope. The scope attribute is        
+    optional. Its default value is "public". It can take one of the following
+    values:                                                                  
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -191,8 +193,9 @@ public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
 
 scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
+    Defines component visibility within scope. The scope attribute is        
+    optional. Its default value is "public". It can take one of the following
+    values:                                                                  
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -381,8 +384,9 @@ public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
 
 scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
+    Defines component visibility within scope. The scope attribute is        
+    optional. Its default value is "public". It can take one of the following
+    values:                                                                  
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -460,8 +464,9 @@ public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
 
 scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
+    Defines component visibility within scope. The scope attribute is        
+    optional. Its default value is "public". It can take one of the following
+    values:                                                                  
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -503,8 +508,9 @@ Define macros, that can represent a constant or a method.
 The c_macros item can have these attributes:
 
 scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
+    Defines component visibility within scope. The scope attribute is        
+    optional. Its default value is "public". It can take one of the following
+    values:                                                                  
 
 Value: Meaning:
 public: Component is visible for outside world.
