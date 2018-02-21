@@ -6,8 +6,11 @@
     <method name = "hash">
         Calculate hash over given data.
 
-        <argument name = "data" type = "buffer" />
+        <argument name = "data" type = "data" size = "given" />
 
-        <return name = "digest" type = "buffer" const_size = "digest size"/>
+        <argument name = "digest" type = "data" size = "known" mode = "return">
+            <size source = "hash info" constant = "digest size" />
+        </argument>
+
     </method>
 </interface>

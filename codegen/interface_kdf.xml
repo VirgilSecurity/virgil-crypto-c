@@ -4,8 +4,8 @@
     <method name = "derive">
         Calculate hash over given data.
 
-        <argument name = "data" type = "buffer" />
+        <argument name = "data" type = "data" />
 
-        <return name = "key" type = "buffer" const_size = ""/>
+        <argument name = "key" type = "data" io = "out" />
     </method>
 </interface>

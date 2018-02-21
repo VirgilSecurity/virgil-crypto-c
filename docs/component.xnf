@@ -147,6 +147,21 @@
 </entity>
 
 
+<entity name="constant">
+    Defines intergral constant.
+
+    <attr name="name" required="1">
+        Constant name.
+    </attr>
+
+    <attr name="value" required="1">
+        Constant value.
+    </attr>
+
+    <inherit entity="component"/>
+</entity>
+
+
 <entity name="object">
     Defines global object.
 

@@ -58,6 +58,7 @@
         <inherit entity="component"/>
 
         <allow entity="require"/>
+        <allow entity="constant"/>
         <allow entity="enum"/>
         <allow entity="object"/>
         <allow entity="struct"/>

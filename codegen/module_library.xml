@@ -11,6 +11,10 @@
     <c_include file = "string.h" is_system = "1" />
     <c_include file = "stdlib.h" is_system = "1" />
 
+    <c_alias name = "byte" type = "uint8_t" is_cross_domain = "1" scope = "public">
+        //  Portable representation of the byte.
+    </c_alias>
+
     <section title = "Version.">
         <macros name = "version major">
             <c_implementation>
@@ -90,10 +94,6 @@
             Pointer size in bytes.
         </value>
     </enum>
-
-    <type name = "byte" alias_of = "uint8_t" is_cross_domain = "1">
-        Portable representation of the byte.
-    </type>
 
     <callback name = "alloc">
         Generic allocation function type.
