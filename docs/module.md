@@ -10,6 +10,7 @@ attribute names are case-sensitive and we use only lower-case names.
 
     <module name [uid] [scope] [class]>
        <require module [scope]/>
+       <constant value name [scope] [uid] [class]/>
        <enum [visibility] [class] [uid] [scope] [name]>
           <enum_value name [value]/>
        </enum>
@@ -68,6 +69,7 @@ generate wrappers for high level languakes like C#, Java, Python, etc.
       [ class = "..." ]
         >
         <require>
+        <constant>
         <enum>
         <object>
         <struct>
@@ -124,6 +126,46 @@ private: Component is visible only within library or a specific source file.
 module:
     Module name that current module depends on. The module attribute is
     required.                                                          
+
+
+The 'constant' item
+-------------------
+
+Groups common attributes for the component. Defines intergral constant.
+
+    <constant
+        value = "..."
+        name = "..."
+      [ scope = "public | private"  ("public") ]
+      [ uid = "..." ]
+      [ class = "..." ]
+        />
+
+The constant item can have these attributes:
+
+class:
+    Short class name that is implmeneted in this module. This attributes is
+    used for inner components name resolution. The class attribute is      
+    optional.                                                              
+
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within modules hierarchy. The uid attribute is optional.  
+
+scope:
+    Defines component visibility within scope. The scope attribute is        
+    optional. Its default value is "public". It can take one of the following
+    values:                                                                  
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible only within library or a specific source file.
+
+name:
+    Constant name. The name attribute is required.
+
+value:
+    Constant value. The value attribute is required.
 
 
 The 'enum' item

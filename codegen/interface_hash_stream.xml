@@ -10,12 +10,14 @@
     <method name = "update">
         Add given data to the hash.
 
-        <argument name = "data" type = "buffer"/>
+        <argument name = "data" type = "data"/>
     </method>
 
     <method name = "finish">
         Accompilsh hashing and return the it's result (a message digest).
 
-        <return name = "digest" type = "buffer" const_size = "digest size" />
+        <argument name = "digest" type = "data" size = "known" io = "out">
+            <size source = "hash info" constant = "digest size" />
+        </argument>
     </method>
 </interface>
