@@ -38,7 +38,7 @@
 <entity name="scope" abstract="1">
 
     <attr name="scope" default="public">
-        Defines component visibility.
+        Defines component visibility within scope.
 
         <restrict value="public">
             Component is visible for outside world.
