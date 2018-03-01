@@ -173,8 +173,15 @@
         </restrict>
 
         <restrict value="disown">
-            Ownership of the given value is transferred to someone else, so
-            client can not use this value anymore.
+            Ownership of the given class object is transferred.
+
+            If object is passed via argument to method, then client can not
+            use object after method return.
+
+            If object is returned from method, then client is responsible for
+            object destruction.
+
+            Note, primitive type can not be disowned.
         </restrict>
     </attr>
 </entity>
@@ -185,6 +192,7 @@
         Define possible size types for instances and array of instances.
 
         <!-- For primitive type and enumeration -->
+        <!-- CURRENTLY IS NOT SUPPORTED -->
         <restrict value="1">
             Size of the type is one byte.
         </restrict>

@@ -336,7 +336,7 @@ Value: Meaning:
 readonly: Value of the given type is can be modified.
 writeonly: Value of the given type will be modified.
 readwrite: Value of the given type can be read and then modified.
-disown: Ownership of the given value is transferred to someone else, so client can not use this value anymore.
+disown: Ownership of the given class object is transferred. If object is passed via argument to method, then client can not use object after method return. If object is returned from method, then client is responsible for object destruction. Note, primitive type can not be disowned.
 
 type:
     Defines instance primitive type. The type attribute is optional. It can
@@ -455,7 +455,7 @@ Value: Meaning:
 readonly: Value of the given type is can be modified.
 writeonly: Value of the given type will be modified.
 readwrite: Value of the given type can be read and then modified.
-disown: Ownership of the given value is transferred to someone else, so client can not use this value anymore.
+disown: Ownership of the given class object is transferred. If object is passed via argument to method, then client can not use object after method return. If object is returned from method, then client is responsible for object destruction. Note, primitive type can not be disowned.
 
 size:
     For fixed size array it defines number of elements as integral constant.
@@ -576,7 +576,7 @@ Value: Meaning:
 readonly: Value of the given type is can be modified.
 writeonly: Value of the given type will be modified.
 readwrite: Value of the given type can be read and then modified.
-disown: Ownership of the given value is transferred to someone else, so client can not use this value anymore.
+disown: Ownership of the given class object is transferred. If object is passed via argument to method, then client can not use object after method return. If object is returned from method, then client is responsible for object destruction. Note, primitive type can not be disowned.
 
 type:
     Defines instance primitive type. The type attribute is optional. It can
@@ -665,7 +665,7 @@ Value: Meaning:
 readonly: Value of the given type is can be modified.
 writeonly: Value of the given type will be modified.
 readwrite: Value of the given type can be read and then modified.
-disown: Ownership of the given value is transferred to someone else, so client can not use this value anymore.
+disown: Ownership of the given class object is transferred. If object is passed via argument to method, then client can not use object after method return. If object is returned from method, then client is responsible for object destruction. Note, primitive type can not be disowned.
 
 type:
     Defines instance primitive type. The type attribute is optional. It can
@@ -747,7 +747,7 @@ Value: Meaning:
 readonly: Value of the given type is can be modified.
 writeonly: Value of the given type will be modified.
 readwrite: Value of the given type can be read and then modified.
-disown: Ownership of the given value is transferred to someone else, so client can not use this value anymore.
+disown: Ownership of the given class object is transferred. If object is passed via argument to method, then client can not use object after method return. If object is returned from method, then client is responsible for object destruction. Note, primitive type can not be disowned.
 
 type:
     Defines instance primitive type. The type attribute is optional. It can
