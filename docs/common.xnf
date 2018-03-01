@@ -39,6 +39,7 @@
 
     <attr name="scope" default="public">
         Defines component visibility within scope.
+        This attribute can be inherited.
 
         <restrict value="public">
             Component is visible for outside world.
@@ -56,6 +57,7 @@
 
     <attr name="definition" default="private">
         Defines where component will be defined.
+        This attribute must not be inherited.
 
         <restrict value="public">
             Component definition is visible for outside world.
@@ -77,6 +79,7 @@
 
     <attr name="visibility" default="public">
         Defines symbol binary visibility.
+        This attribute must not be inherited.
 
         <restrict value="public">
             Symbols of the types and methods are visible in a binary file.

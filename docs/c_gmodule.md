@@ -84,9 +84,9 @@ class:
     optional.                                                              
 
 scope:
-    Defines component visibility within scope. The scope attribute is        
-    optional. Its default value is "public". It can take one of the following
-    values:                                                                  
+    Defines component visibility within scope. This attribute can be
+    inherited. The scope attribute is optional. Its default value is
+    "public". It can take one of the following values:              
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -130,9 +130,9 @@ The 'c_include' item
 The c_include item can have these attributes:
 
 scope:
-    Defines component visibility within scope. The scope attribute is        
-    optional. Its default value is "public". It can take one of the following
-    values:                                                                  
+    Defines component visibility within scope. This attribute can be
+    inherited. The scope attribute is optional. Its default value is
+    "public". It can take one of the following values:              
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -185,17 +185,18 @@ Defines enumeration type.
 The c_enum item can have these attributes:
 
 visibility:
-    Defines symbol binary visibility. The visibility attribute is optional.
-    Its default value is "public". It can take one of the following values:
+    Defines symbol binary visibility. This attribute must not be inherited.
+    The visibility attribute is optional. Its default value is "public". It
+    can take one of the following values:                                  
 
 Value: Meaning:
 public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
 
 scope:
-    Defines component visibility within scope. The scope attribute is        
-    optional. Its default value is "public". It can take one of the following
-    values:                                                                  
+    Defines component visibility within scope. This attribute can be
+    inherited. The scope attribute is optional. Its default value is
+    "public". It can take one of the following values:              
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -376,17 +377,18 @@ Define global object.
 The c_object item can have these attributes:
 
 visibility:
-    Defines symbol binary visibility. The visibility attribute is optional.
-    Its default value is "public". It can take one of the following values:
+    Defines symbol binary visibility. This attribute must not be inherited.
+    The visibility attribute is optional. Its default value is "public". It
+    can take one of the following values:                                  
 
 Value: Meaning:
 public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
 
 scope:
-    Defines component visibility within scope. The scope attribute is        
-    optional. Its default value is "public". It can take one of the following
-    values:                                                                  
+    Defines component visibility within scope. This attribute can be
+    inherited. The scope attribute is optional. Its default value is
+    "public". It can take one of the following values:              
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -456,17 +458,18 @@ Define method signature and implementation (optional).
 The c_method item can have these attributes:
 
 visibility:
-    Defines symbol binary visibility. The visibility attribute is optional.
-    Its default value is "public". It can take one of the following values:
+    Defines symbol binary visibility. This attribute must not be inherited.
+    The visibility attribute is optional. Its default value is "public". It
+    can take one of the following values:                                  
 
 Value: Meaning:
 public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
 
 scope:
-    Defines component visibility within scope. The scope attribute is        
-    optional. Its default value is "public". It can take one of the following
-    values:                                                                  
+    Defines component visibility within scope. This attribute can be
+    inherited. The scope attribute is optional. Its default value is
+    "public". It can take one of the following values:              
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -508,9 +511,9 @@ Define macros, that can represent a constant or a method.
 The c_macros item can have these attributes:
 
 scope:
-    Defines component visibility within scope. The scope attribute is        
-    optional. Its default value is "public". It can take one of the following
-    values:                                                                  
+    Defines component visibility within scope. This attribute can be
+    inherited. The scope attribute is optional. Its default value is
+    "public". It can take one of the following values:              
 
 Value: Meaning:
 public: Component is visible for outside world.
