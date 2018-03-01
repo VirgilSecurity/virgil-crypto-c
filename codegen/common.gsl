@@ -58,6 +58,17 @@ function check_argument (argument_scope, argument_name, caller)
     endif
 endfunction
 
+function check_arguments (argument_scope, argument_list, caller)
+    check_argument (my, "argument_scope", my.caller)
+    check_argument (my, "argument_list", my.caller)
+
+    #   Remove spaces.
+    while regexp.match ("([\\w]+)", my.argument_list, my.argument_name)
+        my.argument_list = string.search_replace (my.argument_list, my.argument_name, "")
+        check_argument (my.argument_scope, my.argument_name, my.caller)
+    endwhile
+endfunction
+
 # ---------------------------------------------------------------------------
 #   Retrun true if given value is defined and non zero.
 # ---------------------------------------------------------------------------
@@ -115,8 +126,10 @@ endfunction
 #   Note, comparison is case insensitive.
 # ---------------------------------------------------------------------------
 function string_in (str, list)
-    check_argument (my, "str")
-    check_argument (my, "list")
+
+    if ! defined (my.str) | ! defined (my.list)
+        return 0
+    endif
 
     if ! regexp.match ("\\w", my.list)
         abort "$(name (my):): list is not defined or empty."
@@ -282,12 +295,14 @@ endfunction
 function _C23_echo_is_level_active (level)
     check_argument (my, "level")
 
-    return ("$(my.level)" = "fatal"   & string_in (main.echo_level, "debug, trace, info, warning, error, fatal")) | \
-           ("$(my.level)" = "error"   & string_in (main.echo_level, "debug, trace, info, warning, error")) | \
-           ("$(my.level)" = "warning" & string_in (main.echo_level, "debug, trace, info, warning")) | \
-           ("$(my.level)" = "info"    & string_in (main.echo_level, "debug, trace, info")) | \
-           ("$(my.level)" = "trace"   & string_in (main.echo_level, "debug, trace")) | \
-           ("$(my.level)" = "debug"   & string_in (main.echo_level, "debug"))
+    my.echo_level = main.echo_level ? test.echo_level ? "debug"
+
+    return ("$(my.level)" = "fatal"   & string_in (my.echo_level, "debug, trace, info, warning, error, fatal")) | \
+           ("$(my.level)" = "error"   & string_in (my.echo_level, "debug, trace, info, warning, error")) | \
+           ("$(my.level)" = "warning" & string_in (my.echo_level, "debug, trace, info, warning")) | \
+           ("$(my.level)" = "info"    & string_in (my.echo_level, "debug, trace, info")) | \
+           ("$(my.level)" = "trace"   & string_in (my.echo_level, "debug, trace")) | \
+           ("$(my.level)" = "debug"   & string_in (my.echo_level, "debug"))
 endfunction
 
 # ---------------------------------------------------------------------------
