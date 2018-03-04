@@ -109,7 +109,6 @@
 
         <restrict value="data">
             Shortcut for the byte array.
-            Note, 'size' attribute is interpreted as an 'array.size' attribute.
         </restrict>
     </attr>
 
@@ -129,8 +128,6 @@
                resolution step.
             2. Any other value will be used as-is. So one third party type
                can be used.
-
-        Note, for class 'string' attribute 'size' is interpreted as an 'array.size' attribute.
     </attr>
 
     <attr name="enum">
@@ -153,9 +150,30 @@
            can be used.
     </attr>
 
+    <attr name="size">
+        Define size of the primitive type or enum in bytes.
+
+        <restrict value="1">
+            Size of the type is one byte.
+        </restrict>
+
+        <restrict value="2">
+            Size of the type is two bytes.
+        </restrict>
+
+        <restrict value="4">
+            Size of the type is three bytes.
+        </restrict>
+
+        <restrict value="8">
+            Size of the type is four bytes.
+        </restrict>
+    </attr>
+
     <inherit entity="access"/>
-    <inherit entity="size"/>
-    <allow entity="array"/>
+
+    <allow entity="string" occurs="0/1"/>
+    <allow entity="array" occurs="0/1"/>
 </entity>
 
 
@@ -190,58 +208,54 @@
 </entity>
 
 
-<entity name="size">
-    <attr name="size">
-        Define possible size types for instances and array of instances.
+<entity name="string">
+    Defines restrictions to the special class 'string'.
 
-        <!-- For primitive type and enumeration -->
-        <!-- CURRENTLY IS NOT SUPPORTED -->
-        <restrict value="1">
-            Size of the type is one byte.
-        </restrict>
+    <attr name="length" default="null_terminated">
+        Defines string length.
 
-        <restrict value="2">
-            Size of the type is two bytes.
-        </restrict>
-
-        <restrict value="4">
-            Size of the type is three bytes.
-        </restrict>
-
-        <restrict value="8">
-            Size of the type is four bytes.
-        </restrict>
-
-        <!-- For string and array -->
         <restrict value="null_terminated">
-            String size or array size is defined by distance from the first
-            to the termination symbol.
+            String length is defined by distance from the first character
+            up to the termination symbol (aka '\0').
         </restrict>
 
         <restrict value="given">
-            String size or array size is defined by the client.
-        </restrict>
-
-        <restrict value="known">
-            Array size is known at compile time or during runtime, so it can
-            be obtained by the client side and passed to the method as argument.
-        </restrict>
-
-        <restrict value="fixed">
-            Array size is known at compile time so it can be checked.
-        </restrict>
-
-        <restrict value="derived">
-            Array size can be statically derived during array initialization.
+            String length is given from the client.
         </restrict>
     </attr>
 </entity>
 
-
 <entity name="array">
-    Defines parent instance as an array.
+    Turn parent instance to the array of instances.
 
-    <attr name="size">
+    <attr name="length">
+        Defines array length.
+
+        <restrict value="null_terminated">
+            Array length is defined by distance from the first element
+            up to the empty element (aka NULL).
+        </restrict>
+
+        <restrict value="given">
+            Array length is defined from the client.
+        </restrict>
+
+        <restrict value="known">
+            Array length is defined from the client.
+            Also client can obtained this value from a constant or a method.
+        </restrict>
+
+        <restrict value="fixed">
+            Array length is known at compile time, so it can be substituted
+            automatically.
+        </restrict>
+
+        <restrict value="derived">
+            Array length can be statically derived during array initialization.
+        </restrict>
+    </attr>
+
+    <attr name="length_constant">
         For fixed size array it defines number of elements as integral constant.
     </attr>
 
@@ -292,14 +306,12 @@
 </entity>
 
 
-<entity name="variable_value">
+<entity name="value">
     Initialization variable value.
 
     <attr name="value" required="1">
         Initialization value.
     </attr>
-
-    <inherit entity="uid"/>
 </entity>
 
 
@@ -402,6 +414,18 @@
 
     <attr name="name" required="1">
         Macros name.
+    </attr>
+
+    <attr name="is_method" default="0">
+        Defines whether macros if it can accept argument(s).
+
+        <restrict value="0">
+            Macros is a constant.
+        </restrict>
+
+        <restrict value="1">
+            Macros is a method.
+        </restrict>
     </attr>
 
     <inherit entity="component"/>
