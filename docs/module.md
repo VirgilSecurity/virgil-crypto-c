@@ -12,23 +12,27 @@ attribute names are case-sensitive and we use only lower-case names.
        <require module [scope]/>
        <constant name value [uid] [scope] [c_prefix] [class]/>
        <enum [definition] [visibility] [c_prefix] [class] [uid] [scope] [name]>
-          <enum_value name [class] [uid] [scope] [c_prefix] [value]/>
+          <constant .../>
        </enum>
-       <object name [access] [size] [enum] [callback] [definition] [visibility] [c_prefix]
-            [class] [uid] [scope] [type]>
-          <object_value value [uid]/>
-          <array [access] [size]/>
-       </object>
+       <variable name [type] [access] [callback] [size] [definition] [visibility] [c_prefix]
+            [class] [uid] [scope] [enum]>
+          <variable_value value [uid]/>
+          <string [length]/>
+          <array [access] [length] [length_constant]/>
+       </variable>
        <struct name [definition] [c_prefix] [class] [uid] [scope] [visibility]>
-          <struct_property name [uid] [access] [type] [class] [enum] [callback] [size]>
-             <argument name [uid] [access] [type] [class] [enum] [callback] [size]>
+          <property name [uid] [type] [class] [enum] [callback] [size] [access]>
+             <argument name [uid] [type] [class] [enum] [callback] [size] [access]>
+                <string .../>
                 <array .../>
              </argument>
-             <return [size] [access] [type] [class] [enum] [callback]>
+             <return [access] [type] [class] [enum] [callback] [size]>
+                <string .../>
                 <array .../>
              </return>
+             <string .../>
              <array .../>
-          </struct_property>
+          </property>
        </struct>
        <callback name [class] [uid] [scope] [c_prefix]>
           <return .../>
@@ -72,7 +76,7 @@ generate wrappers for high level languakes like C#, Java, Python, etc.
         <require>
         <constant>
         <enum>
-        <object>
+        <variable>
         <struct>
         <callback>
         <method>
@@ -192,7 +196,7 @@ Groups common attributes for the component. Defines enumeration type.
       [ scope = "public | private"  ("public") ]
       [ name = "..." ]
         >
-        <enum_value>
+        <constant>
     </enum>
 
 The enum item can have these attributes:
@@ -242,91 +246,32 @@ name:
     Object name. The name attribute is optional.
 
 
-The 'enum_value' item
----------------------
-
-Groups common attributes for the component. Defines enumeration value.
-
-    <enum_value
-        name = "..."
-      [ class = "..." ]
-      [ uid = "..." ]
-      [ scope = "public | private"  ("public") ]
-      [ c_prefix = "..." ]
-      [ value = "..." ]
-        />
-
-The enum_value item can have these attributes:
-
-c_prefix:
-    Prefix that is used for C name resolution. The c_prefix attribute is
-    optional.                                                           
-
-class:
-    Short class name that is implmeneted in this module. This attributes is
-    used for inner components name resolution. The class attribute is      
-    optional.                                                              
-
-uid:
-    Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
-
-scope:
-    Defines component visibility within scope. This attribute can be
-    inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:              
-
-Value: Meaning:
-public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
-
-name:
-    Enumeration value name. The name attribute is required.
-
-value:
-    Enumeration value constant. The value attribute is optional.
-
-
-The 'object' item
------------------
+The 'variable' item
+-------------------
 
 Defines attributes that related to the instance type. Groups common
-attributes for the component. Defines global object.               
+attributes for the component. Defines global variable.             
 
-    <object
+    <variable
         name = "..."
+      [ type = "nothing | boolean | integer | size | byte | data" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ size = "1 | 2 | 4 | 8 | null_terminated | given | known | fixed | derived" ]
-      [ enum = "..." ]
       [ callback = "..." ]
+      [ size = "1 | 2 | 4 | 8" ]
       [ definition = "public | private | external"  ("private") ]
       [ visibility = "public | private"  ("public") ]
       [ c_prefix = "..." ]
       [ class = "..." ]
       [ uid = "..." ]
       [ scope = "public | private"  ("public") ]
-      [ type = "nothing | boolean | integer | size | byte | data" ]
+      [ enum = "..." ]
         >
-        <object_value>, 1 or more
-        <array>
-    </object>
+        <variable_value>, 1 or more
+        <string>, optional
+        <array>, optional
+    </variable>
 
-The object item can have these attributes:
-
-size:
-    Define possible size types for instances and array of instances. The size
-    attribute is optional. It can take one of the following values:          
-
-Value: Meaning:
-1: Size of the type is one byte.
-2: Size of the type is two bytes.
-4: Size of the type is three bytes.
-8: Size of the type is four bytes.
-null_terminated: String size or array size is defined by distance from the first to the termination symbol.
-given: String size or array size is defined by the client.
-known: Array size is known at compile time or during runtime, so it can be obtained by the client side and passed to the method as argument.
-fixed: Array size is known at compile time so it can be checked.
-derived: Array size can be statically derived during array initialization.
+The variable item can have these attributes:
 
 access:
     Defines access rights to the instance and/or array of instances. The  
@@ -361,6 +306,16 @@ callback:
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
     one third party type can be used. The callback attribute is optional.    
+
+size:
+    Define size of the primitive type or enum in bytes. The size attribute is
+    optional. It can take one of the following values:                       
+
+Value: Meaning:
+1: Size of the type is one byte.
+2: Size of the type is two bytes.
+4: Size of the type is three bytes.
+8: Size of the type is four bytes.
 
 definition:
     Defines where component will be defined. This attribute must not be  
@@ -415,17 +370,17 @@ name:
     Object name. The name attribute is required.
 
 
-The 'object_value' item
------------------------
+The 'variable_value' item
+-------------------------
 
-Initialization object value.
+Initialization variable value.
 
-    <object_value
+    <variable_value
         value = "..."
       [ uid = "..." ]
         />
 
-The object_value item can have these attributes:
+The variable_value item can have these attributes:
 
 uid:
     Unique component identifier represents name that uniquely identifies
@@ -435,14 +390,35 @@ value:
     Initialization value. The value attribute is required.
 
 
+The 'string' item
+-----------------
+
+Defines restrictions to the special class 'string'.
+
+    <string
+      [ length = "null_terminated | given"  ("null_terminated") ]
+        />
+
+The string item has this single attribute:
+
+length:
+    Defines string length. The length attribute is optional. Its default
+    value is "null_terminated". It can take one of the following values:
+
+Value: Meaning:
+null_terminated: String length is defined by distance from the first character up to the termination symbol (aka '\0').
+given: String length is given from the client.
+
+
 The 'array' item
 ----------------
 
-Defines parent instance as an array.
+Turn parent instance to the array of instances.
 
     <array
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ size = "..." ]
+      [ length = "null_terminated | given | known | fixed | derived" ]
+      [ length_constant = "..." ]
         />
 
 The array item can have these attributes:
@@ -457,9 +433,20 @@ writeonly: Value of the given type will be modified.
 readwrite: Value of the given type can be read and then modified.
 disown: Ownership of the given class object is transferred. If object is passed via argument to method, then client can not use object after method return. If object is returned from method, then client is responsible for object destruction. Note, primitive type can not be disowned.
 
-size:
+length:
+    Defines array length. The length attribute is optional. It can take one
+    of the following values:                                               
+
+Value: Meaning:
+null_terminated: Array length is defined by distance from the first element up to the empty element (aka NULL).
+given: Array length is defined from the client.
+known: Array length is defined from the client. Also client can obtained this value from a constant or a method.
+fixed: Array length is known at compile time, so it can be substituted automatically.
+derived: Array length can be statically derived during array initialization.
+
+length_constant:
     For fixed size array it defines number of elements as integral constant.
-    The size attribute is optional.                                         
+    The length_constant attribute is optional.                              
 
 
 The 'struct' item
@@ -476,7 +463,7 @@ Groups common attributes for the component. Defines struct type.
       [ scope = "public | private"  ("public") ]
       [ visibility = "public | private"  ("public") ]
         >
-        <struct_property>
+        <property>
     </struct>
 
 The struct item can have these attributes:
@@ -526,47 +513,33 @@ name:
     Structure name. The name attribute is required.
 
 
-The 'struct_property' item
---------------------------
+The 'property' item
+-------------------
 
 Defines attributes that related to the instance type. Defines struct
 property.                                                           
 
-    <struct_property
+    <property
         name = "..."
       [ uid = "..." ]
-      [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | size | byte | data" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
-      [ size = "1 | 2 | 4 | 8 | null_terminated | given | known | fixed | derived" ]
+      [ size = "1 | 2 | 4 | 8" ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
         >
         <argument>
         <return>
-        <array>
-    </struct_property>
+        <string>, optional
+        <array>, optional
+    </property>
 
-The struct_property item can have these attributes:
+The property item can have these attributes:
 
 uid:
     Unique component identifier represents name that uniquely identifies
     component within modules hierarchy. The uid attribute is optional.  
-
-size:
-    Define possible size types for instances and array of instances. The size
-    attribute is optional. It can take one of the following values:          
-
-Value: Meaning:
-1: Size of the type is one byte.
-2: Size of the type is two bytes.
-4: Size of the type is three bytes.
-8: Size of the type is four bytes.
-null_terminated: String size or array size is defined by distance from the first to the termination symbol.
-given: String size or array size is defined by the client.
-known: Array size is known at compile time or during runtime, so it can be obtained by the client side and passed to the method as argument.
-fixed: Array size is known at compile time so it can be checked.
-derived: Array size can be statically derived during array initialization.
 
 access:
     Defines access rights to the instance and/or array of instances. The  
@@ -612,6 +585,16 @@ callback:
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
     one third party type can be used. The callback attribute is optional.    
+
+size:
+    Define size of the primitive type or enum in bytes. The size attribute is
+    optional. It can take one of the following values:                       
+
+Value: Meaning:
+1: Size of the type is one byte.
+2: Size of the type is two bytes.
+4: Size of the type is three bytes.
+8: Size of the type is four bytes.
 
 name:
     Property name. The name attribute is required.
@@ -626,14 +609,15 @@ name, type, and usage information.
     <argument
         name = "..."
       [ uid = "..." ]
-      [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | size | byte | data" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
-      [ size = "1 | 2 | 4 | 8 | null_terminated | given | known | fixed | derived" ]
+      [ size = "1 | 2 | 4 | 8" ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
         >
-        <array>
+        <string>, optional
+        <array>, optional
     </argument>
 
 The argument item can have these attributes:
@@ -641,21 +625,6 @@ The argument item can have these attributes:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within modules hierarchy. The uid attribute is optional.  
-
-size:
-    Define possible size types for instances and array of instances. The size
-    attribute is optional. It can take one of the following values:          
-
-Value: Meaning:
-1: Size of the type is one byte.
-2: Size of the type is two bytes.
-4: Size of the type is three bytes.
-8: Size of the type is four bytes.
-null_terminated: String size or array size is defined by distance from the first to the termination symbol.
-given: String size or array size is defined by the client.
-known: Array size is known at compile time or during runtime, so it can be obtained by the client side and passed to the method as argument.
-fixed: Array size is known at compile time so it can be checked.
-derived: Array size can be statically derived during array initialization.
 
 access:
     Defines access rights to the instance and/or array of instances. The  
@@ -701,6 +670,16 @@ callback:
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
     one third party type can be used. The callback attribute is optional.    
+
+size:
+    Define size of the primitive type or enum in bytes. The size attribute is
+    optional. It can take one of the following values:                       
+
+Value: Meaning:
+1: Size of the type is one byte.
+2: Size of the type is two bytes.
+4: Size of the type is three bytes.
+8: Size of the type is four bytes.
 
 name:
     Argument name. The name attribute is required.
@@ -712,32 +691,18 @@ The 'return' item
 Defines attributes that related to the instance type. Defines return type.
 
     <return
-      [ size = "1 | 2 | 4 | 8 | null_terminated | given | known | fixed | derived" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | size | byte | data" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
+      [ size = "1 | 2 | 4 | 8" ]
         >
-        <array>
+        <string>, optional
+        <array>, optional
     </return>
 
 The return item can have these attributes:
-
-size:
-    Define possible size types for instances and array of instances. The size
-    attribute is optional. It can take one of the following values:          
-
-Value: Meaning:
-1: Size of the type is one byte.
-2: Size of the type is two bytes.
-4: Size of the type is three bytes.
-8: Size of the type is four bytes.
-null_terminated: String size or array size is defined by distance from the first to the termination symbol.
-given: String size or array size is defined by the client.
-known: Array size is known at compile time or during runtime, so it can be obtained by the client side and passed to the method as argument.
-fixed: Array size is known at compile time so it can be checked.
-derived: Array size can be statically derived during array initialization.
 
 access:
     Defines access rights to the instance and/or array of instances. The  
@@ -783,6 +748,16 @@ callback:
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
     one third party type can be used. The callback attribute is optional.    
+
+size:
+    Define size of the primitive type or enum in bytes. The size attribute is
+    optional. It can take one of the following values:                       
+
+Value: Meaning:
+1: Size of the type is one byte.
+2: Size of the type is two bytes.
+4: Size of the type is three bytes.
+8: Size of the type is four bytes.
 
 
 The 'callback' item
