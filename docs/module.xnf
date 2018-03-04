@@ -60,7 +60,7 @@
         <allow entity="require"/>
         <allow entity="constant"/>
         <allow entity="enum"/>
-        <allow entity="object"/>
+        <allow entity="variable"/>
         <allow entity="struct"/>
         <allow entity="callback"/>
         <allow entity="method"/>
