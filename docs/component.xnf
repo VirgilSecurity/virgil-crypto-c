@@ -314,24 +314,8 @@
     <inherit entity="visibility"/>
     <inherit entity="definition"/>
 
-    <allow entity="enum_value" occurs="0+"/>
+    <allow entity="constant" occurs="0+"/>
 </entity>
-
-
-<entity name="enum_value">
-    Defines enumeration value.
-
-    <attr name="name" required="1">
-        Enumeration value name.
-    </attr>
-
-    <attr name="value">
-        Enumeration value constant.
-    </attr>
-
-    <inherit entity="component"/>
-</entity>
-
 
 <entity name="struct">
     Defines struct type.
