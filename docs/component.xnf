@@ -109,6 +109,7 @@
 
         <restrict value="data">
             Shortcut for the byte array.
+            Note, 'size' attribute is interpreted as an 'array.size' attribute.
         </restrict>
     </attr>
 
@@ -128,6 +129,8 @@
                resolution step.
             2. Any other value will be used as-is. So one third party type
                can be used.
+
+        Note, for class 'string' attribute 'size' is interpreted as an 'array.size' attribute.
     </attr>
 
     <attr name="enum">
