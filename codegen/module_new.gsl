@@ -1,0 +1,121 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Perform resolution for item 'module' and all children.
+#
+#   Resolution includes several steps:
+#       1. Validate - check that required attributes and items are defined.
+#       2. Define default values to the optional component attributes.
+#       3. Append optional items.
+#
+#    Private function prefix is: K24.
+#
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+gsl from "component_new.gsl"
+
+
+# ---------------------------------------------------------------------------
+#   Resolve component: section.
+#
+#   The principle: for each component inside section embed 'section' as
+#   a component's child.
+# ---------------------------------------------------------------------------
+function module_embed_sections (module)
+    check_argument (my, "module")
+
+    for my.module.section as parent_section
+        for parent_section. as component where defined (name (component) ?)
+            new section to component
+                .title = parent_section.title
+            endnew
+            move component before parent_section
+        endfor
+        delete parent_section
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: module.
+# ---------------------------------------------------------------------------
+function module_resolve (module, project)
+    check_arguments (my, "module, project", my)
+
+    echo_trace ("Resolving module: $(my.module.name:)", my)
+
+    assert_attribute (my.module, "name", my)
+
+    module_embed_sections (my.module)
+
+    my.module.class ?= my.module.name
+    my.module.c_prefix ?= my.project.name
+
+    foreach_component_resolve (my.module)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve all 'module' entries within 'source'
+# ---------------------------------------------------------------------------
+function foreach_module_resolve (source, project)
+    check_arguments (my, "source, project", my)
+
+    for my.source.module
+        module_resolve (module, my.project)
+    endfor
+endfunction
+
+
+# ###########################################################################
+#   Tests.
+# ###########################################################################
+
+function module_test (test)
+    check_argument (my, "test", my)
+
+    foreach_module_resolve (my.test, my.test->project)
+
+    item_save_to_file (my.test, "test_$(make_id (my.test.name))_result.xml", "generated/")
+endfunction
+
+if defined(test) & test.name = "module"
+    module_test (test)
+endif
+
+.endtemplate
