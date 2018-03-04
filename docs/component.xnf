@@ -344,11 +344,11 @@
     <inherit entity="visibility"/>
     <inherit entity="definition"/>
 
-    <allow entity="struct_property"/>
+    <allow entity="property"/>
 </entity>
 
 
-<entity name="struct_property">
+<entity name="property">
     Defines struct property.
 
     <attr name="name" required="1">
