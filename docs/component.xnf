@@ -275,8 +275,8 @@
 </entity>
 
 
-<entity name="object">
-    Defines global object.
+<entity name="variable">
+    Defines global variable.
 
     <attr name="name" required="1">
         Object name.
@@ -287,13 +287,13 @@
     <inherit entity="definition"/>
     <inherit entity="instance"/>
 
-    <!-- Bracer initializer is used for multiple object_value's -->
-    <allow entity="object_value" occurs="1+" />
+    <!-- Bracer initializer is used for multiple variable_value's -->
+    <allow entity="variable_value" occurs="1+" />
 </entity>
 
 
-<entity name="object_value">
-    Initialization object value.
+<entity name="variable_value">
+    Initialization variable value.
 
     <attr name="value" required="1">
         Initialization value.
