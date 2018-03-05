@@ -74,8 +74,9 @@
         <allow entity="c_alias"/>
         <allow entity="c_enum"/>
         <allow entity="c_struct"/>
-        <allow entity="c_object"/>
+        <allow entity="c_variable"/>
         <allow entity="c_method"/>
+        <allow entity="c_callback"/>
         <allow entity="c_macros"/>
     </entity>
 
