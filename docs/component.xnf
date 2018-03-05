@@ -302,7 +302,7 @@
     <inherit entity="instance"/>
 
     <!-- Bracer initializer is used for multiple variable_value's -->
-    <allow entity="variable_value" occurs="1+" />
+    <allow entity="value" occurs="1+" />
 </entity>
 
 
