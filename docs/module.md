@@ -16,7 +16,7 @@ attribute names are case-sensitive and we use only lower-case names.
        </enum>
        <variable name [type] [access] [callback] [size] [definition] [visibility] [c_prefix]
             [class] [uid] [scope] [enum]>
-          <variable_value value [uid]/>
+          <value value/>
           <string [length]/>
           <array [access] [length] [length_constant]/>
        </variable>
@@ -43,7 +43,7 @@ attribute names are case-sensitive and we use only lower-case names.
           <argument .../>
           <c_implementation/>
        </method>
-       <macros name [class] [uid] [scope] [c_prefix]>
+       <macros name [class] [uid] [scope] [c_prefix] [is_method]>
           <c_implementation .../>
        </macros>
     </module>
@@ -266,7 +266,7 @@ attributes for the component. Defines global variable.
       [ scope = "public | private"  ("public") ]
       [ enum = "..." ]
         >
-        <variable_value>, 1 or more
+        <value>, 1 or more
         <string>, optional
         <array>, optional
     </variable>
@@ -370,21 +370,16 @@ name:
     Object name. The name attribute is required.
 
 
-The 'variable_value' item
--------------------------
+The 'value' item
+----------------
 
 Initialization variable value.
 
-    <variable_value
+    <value
         value = "..."
-      [ uid = "..." ]
         />
 
-The variable_value item can have these attributes:
-
-uid:
-    Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
+The value item has this single attribute:
 
 value:
     Initialization value. The value attribute is required.
@@ -892,6 +887,7 @@ optionally implementation.
       [ uid = "..." ]
       [ scope = "public | private"  ("public") ]
       [ c_prefix = "..." ]
+      [ is_method = "0 | 1"  ("0") ]
         >
         <c_implementation>, optional
     </macros>
@@ -922,4 +918,13 @@ private: Component is visible only within library or a specific source file.
 
 name:
     Macros name. The name attribute is required.
+
+is_method:
+    Defines whether macros if it can accept argument(s). The is_method     
+    attribute is optional. Its default value is "0". It can take one of the
+    following values:                                                      
+
+Value: Meaning:
+0: Macros is a constant.
+1: Macros is a method.
 
