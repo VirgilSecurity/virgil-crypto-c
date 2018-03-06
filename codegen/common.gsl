@@ -411,6 +411,22 @@ function assert_attribute (attribute_scope, attribute_name, caller)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Abort if attribute with given name is not defined within given scope or
+#   attribute is not a number.
+# ---------------------------------------------------------------------------
+function assert_attribute_number (attribute_scope, attribute_name, caller)
+    check_argument (my, "attribute_scope")
+    check_argument (my, "attribute_name")
+
+    assert_attribute (my.attribute_scope, my.attribute_name, my.caller)
+
+    if ! regexp.match ("^\\d+$")
+        echo_fatal ("Attribute '$(my.attribute_name:)' defined" + \
+                " within <$(name (my.attribute_scope)) $(my.name:)/> is not a number", my.caller)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Abort if there is no elements with given name within given scope.
 # ---------------------------------------------------------------------------
 function assert_item (item_scope, item_name, caller)
@@ -746,7 +762,7 @@ function item_save_to_file (model, file_name, dir_path)
 
     my.model_name = name (my.model)
     if string_defined (my.model.name)
-        my.model_name += " name = \"$(my.model.name:)\""
+        my.model_name += " name=\"$(my.model.name:)\""
     endif
 
     echo_trace ("Saving <$(my.model_name)/> to the file: $(my.file_path:)", my)
@@ -789,7 +805,7 @@ function item_find_named (source, type, name, caller)
 
     my.item = my.source->$(my.type:) (name = my.name) ?
     if ! defined (my.item)
-        echo_fatal ("Item <$(my.type:) name = \"$(my.name:)\"> \
+        echo_fatal ("Item <$(my.type:) name=\"$(my.name:)\"> \
                 is not found within <$(name (my.source))/>", my.caller ? my)
     endif
 

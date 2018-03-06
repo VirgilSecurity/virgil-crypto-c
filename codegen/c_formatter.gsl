@@ -43,6 +43,65 @@ gsl from "common.gsl"
 
 
 # ---------------------------------------------------------------------------
+#   Return formatted instance type with all modifiers.
+# ---------------------------------------------------------------------------
+function c_derive_instance_type (instance)
+    check_argument (my, "instance", my)
+
+    #   Grab base type
+    my.type = my.instance.type
+
+    #   Define modifiers
+    my.value_modifiers = my.instance.is_const_value ?? "const " ? ""
+    my.pointer_modifiers = my.instance.is_const_pointer ?? " *const" ? ""
+    my.reference_modifiers = my.instance.is_const_refence ?? " *const" ? ""
+    my.array_modifiers = my.instance.is_const_array ?? " *const" ? ""
+
+    #   Apply type modifiers
+    if my.instance.kind = "pointer"
+        my.type = my.value_modifiers + my.type + my.pointer_modifiers
+    elsif my.instance.kind = "reference"
+        my.type = my.value_modifiers + my.type + my.pointer_modifiers + my.reference_modifiers
+    endif
+
+    #   Apply array modifiers
+    if string_in (my.instance.array ?, "null_terminated, given"
+        #   One more star required
+        my.type += my.array_modifiers
+    endif
+
+    return my.type
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Return formatted instance declaration name.
+#   Array name is suffixed with square brackets in a declaration, when used
+#   array if fixed size or derived size.
+# ---------------------------------------------------------------------------
+function c_derive_instance_declaration_name (instance)
+    check_argument (my, "instance", my)
+
+    if string_in (my.instance.array, "derived")
+        return my.instance.name + "[]"
+    elsif string_in (my.instance.array, "fixed")
+        return my.instance.name + "[$(my.instance.length:)]"
+    endif
+
+    return my.instance.name
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted argument declaration (type + name)
+# ---------------------------------------------------------------------------
+function c_derive_instance_declaration (instance)
+    check_argument (my, "instance", my)
+
+    return c_format_instance_type (my.argument) + " " + \
+            c_format_instance_declaration_name (my.argument)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return formatted name constructed by parts concatenation.
 # ---------------------------------------------------------------------------
 function c_format_name (part1, part2, part3, part4, part5, part6, part7, part8)
@@ -61,6 +120,15 @@ function c_format_macros_name (part1, part2, part3, part4)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return constant formatted name constructed by parts concatenation.
+#   Constant name format: UPPERCASE, UNDERSCORE.
+# ---------------------------------------------------------------------------
+function c_format_constant_name (part1, part2, part3, part4)
+    my.result = c_format_name (my.part1, my.part2, my.part3, my.part4)
+    return "$(my.RESULT)"
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return callback formatted name constructed by parts concatenation.
 #   C name format: UPPERCASE, UNDERSCORE.
 # ---------------------------------------------------------------------------
@@ -72,32 +140,33 @@ function c_format_callback_name (part1, part2, part3, part4, part5, part6, part7
     return "$(my.result:)_cb"
 endfunction
 
-# ---------------------------------------------------------------------------
-#   Return formatted value from type and name.
-#   Formats: 'type name', 'type *name', 'type **name'.
-# ---------------------------------------------------------------------------
-function c_format_value (type, name)
-    check_argument (my, "type")
-    check_argument (my, "name")
-
-    my.optional_space = string.cntch (my.type, "*") ?? "" ? " "
-
-    return my.type + my.optional_space + my.name
-endfunction
 
 # ---------------------------------------------------------------------------
 #   Return formatted multiline commented string.
 # ---------------------------------------------------------------------------
 function c_format_comment_string (str)
-    if ! defined (my.str)
-        echo_fatal ("Argument 'str' is not defined.", my)
-    endif
+    check_argument (my, "str", my)
 
     my.str = string_indent (my.str)
     my.str = "//  $(my.str:left, block, no)$(terminator)"
     my.str = string_rtrim (my.str)
 
     return my.str
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted multiline commented string.
+# ---------------------------------------------------------------------------
+function c_format_comment (str)
+    if ! defined (my.str)
+        return
+    endif
+
+    my.str = string_indent (my.str)
+    my.str = "//  $(my.str:left, block, no)$(terminator)"
+    my.str = string_multi_rtrim (my.str)
+
+    return terminator + my.str + terminator
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -111,16 +180,20 @@ function c_format_arguments (method, beginning, ending, tab_count, line_limit)
     my.line = "("
     my.result = ""
     my.indent = tabs (my.tab_count)
-    for my.method.c_argument as argument
+    for my.method.c_argument
         my.adding_line = ""
-        my.adding_line += argument.value
+        my.adding_line += c_derive_instance_declaration (c_argument)
         if ! last ()
             my.adding_line += ","
         else
             my.adding_line += my.ending
         endif
+
         my.new_line_length = string.length (my.beginning + my.line + my.adding_line)
-        if (my.new_line_length < my.line_limit) & is_false (argument.has_size)
+        my.is_next_paired = \
+                count (c_argument.array) & string_in (c_argument->array.length, "given, known")
+
+        if (my.new_line_length < my.line_limit) & ! my.is_next_paired
             my.line += (first() ?? "" ? " ") + my.adding_line
         else
             my.result += my.line
