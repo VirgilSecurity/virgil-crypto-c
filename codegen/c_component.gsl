@@ -1,0 +1,294 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   This module provides functionality, that transforms 'component' models to
+#   the 'c_component' models.
+#
+#   Note, all 'component' passed models mused be already resolved.
+#
+#   Private function prefix is: X11.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+
+gsl from "common.gsl"
+gsl from "componen_new.gsl"
+gsl from "c_formatter.gsl"
+
+
+# ###########################################################################
+#   Attribute derivation functions
+# ###########################################################################
+
+
+# ---------------------------------------------------------------------------
+#   Derive C style in-project constant name (full name).
+# ---------------------------------------------------------------------------
+function c_derive_constant_name (constant)
+    check_argument (my, "constant", my)
+
+    component_require_linage (my.constant, my)
+
+    my.ancestors = ""
+    for my.constant.ancestor where ! string_in (id, "project, module")
+        my.ancestors = cat (my.ancestors, ancestor.name)
+    endfor
+
+    return c_format_constant_name ( \
+            my.constant.c_prefix, my.constant.class, my.ancestors, my.constant.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Derive C style in-project enum name (full name).
+# ---------------------------------------------------------------------------
+function c_derive_enum_name (enum)
+    check_argument (my, "enum", my)
+
+    component_require_linage (my.enum, my)
+
+    return c_format_name (my.enum.c_prefix, my.enum.class, my.enum.name, "t")
+endfunction
+
+# ###########################################################################
+#   Validate or check attribute
+# ###########################################################################
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: file.
+# ---------------------------------------------------------------------------
+function c_component_require_attr_file (c_component, caller)
+    check_argument (my, "c_component", my)
+
+    assert_attribute (my.c_component, "file", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: name.
+# ---------------------------------------------------------------------------
+function c_component_require_attr_name (c_component, caller)
+    check_argument (my, "c_component", my)
+
+    assert_attribute (my.c_component, "name", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: type.
+# ---------------------------------------------------------------------------
+function c_component_require_attr_type (c_component, caller)
+    check_argument (my, "c_component", my)
+
+    assert_attribute (my.c_component, "type", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: value.
+# ---------------------------------------------------------------------------
+function c_component_require_attr_value (c_component, caller)
+    check_argument (my, "c_component", my)
+
+    assert_attribute (my.c_component, "value", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check optional integral attribute: value.
+# ---------------------------------------------------------------------------
+function c_component_optional_integral_attr_value (c_component)
+    check_argument (my, "c_component", my)
+
+    if defined (my.component.value)
+        assert_attribute_number (my.c_component, "value", my.caller ? my)
+    endif
+endfunction
+
+# ###########################################################################
+#   Attribute resolution functions
+# ###########################################################################
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: scope.
+# ---------------------------------------------------------------------------
+functions c_component_resolve_attr_scope (c_component)
+    check_argument (my, "c_component", my)
+
+    my.c_component.scope ?= "public"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: visibility.
+# ---------------------------------------------------------------------------
+functions c_component_resolve_attr_visibility (c_component)
+    check_argument (my, "c_component", my)
+
+    my.c_component.visibility ?= "public"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: definition.
+# ---------------------------------------------------------------------------
+function c_component_resolve_attr_definition (c_component)
+    check_argument (my, "c_component", my)
+
+    my.c_component.definition ?= "private"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: is_system.
+# ---------------------------------------------------------------------------
+functions c_component_resolve_attr_is_system (c_component)
+    check_argument (my, "c_component", my)
+
+    my.c_component.is_system ?= "0"
+endfunction
+
+
+# ###########################################################################
+#   Item resolution functions
+# ###########################################################################
+
+# ---------------------------------------------------------------------------
+#   Resolve component: c_include.
+# ---------------------------------------------------------------------------
+function c_component_resolve_include (c_include)
+    check_argument (my, "c_include", my)
+
+    c_component_require_attr_file (my.c_include, my)
+    c_component_resolve_attr_scope (my.c_include)
+    c_component_resolve_attr_is_system (my.c_include)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: c_alias.
+# ---------------------------------------------------------------------------
+function c_component_resolve_alias (c_alias)
+    check_argument (my, "c_alias", my)
+
+    c_component_require_attr_name (my.c_alias, my)
+    c_component_require_attr_type (my.c_alias, my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: c_constant.
+# ---------------------------------------------------------------------------
+function c_component_resolve_constant (c_constant)
+    check_argument (my, "c_constant", my)
+
+    c_component_require_attr_name (my.c_constant, my)
+    c_component_optional_integral_attr_value (my.c_constant, my)
+    c_component_resolve_attr_scope (my.c_constant)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: c_enum.
+# ---------------------------------------------------------------------------
+function c_component_resolve_enum (c_enum)
+    check_argument (my, "c_enum", my)
+
+    c_component_resolve_attr_scope (my.c_enum, my)
+    c_component_resolve_attr_visibility (my.c_enum, my)
+    c_component_resolve_attr_definition (my.c_enum, my)
+
+    for my.c_enum.c_constant
+        c_component_resolve_constant (c_constant)
+    endfor
+endfunction
+
+
+# ###########################################################################
+#   Functions to creation new c_component(s)
+# ###########################################################################
+
+# ---------------------------------------------------------------------------
+#   Create 'c_include' from 'require'.
+# ---------------------------------------------------------------------------
+function c_component_create_include (require, destination)
+    check_arguments (my, "require, destination")
+
+    new c_include to my.destination
+        .file = c_ref ("module_$(make_id (my.require.module))" + ".h"
+        .scope = require.scope ?
+        .is_system = "0"
+
+        c_component_resolve_include (c_include)
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create 'c_constant' from 'constant'.
+#   Note, enumeration constant do not require explicit value.
+# ---------------------------------------------------------------------------
+function c_component_create_constant (constant, destination)
+    check_arguments (my, "constant, destination")
+
+    if ! item_in (my.destination ?, "c_enum")
+        component_require_attr_value (my.constant, my)
+    endif
+
+    new c_constant to my.destination
+        .name = c_derive_constant_name (my.constant.name)
+        .value = my.constant.value
+        .scope = my.constant.scope ?
+
+        c_component_resolve_constant (c_constant)
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create 'c_enum' from 'enum'.
+# ---------------------------------------------------------------------------
+function c_component_create_enum (enum, destination)
+    check_arguments (my, "enum, destination")
+
+    component_require_attr_name (my.enum)
+
+    new c_enum to my.destination
+        . = c_format_comment (my.enum. ?) ?
+        .name = c_derive_enum_name (my.enum)
+        .scope = my.enum.scope ?
+        .visibility = my.enum.visibility ?
+        .definition = my.enum.definition ?
+
+        #   Should be before 'c_constant' to avoid double resolve processing
+        c_component_resolve_enum (c_enum)
+
+        for my.enum.constant
+            c_component_create_enum_constant (constant, c_enum)
+        endfor
+    endnew
+endfunction
+
+.endtemplate
