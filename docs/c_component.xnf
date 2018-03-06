@@ -72,6 +72,9 @@
     </attr>
 
     <attr name="array">
+        Defines array length type.
+        If given, parent instance becomes an array.
+
         <restrict value="null_terminated">
             Null-terminated array.
         </restrict>
@@ -87,6 +90,11 @@
         <restrict value="derived">
             Array with a derived length, i.e. 'int []'.
         </restrict>
+    </attr>
+
+    <attr name="length">
+        Defines length constant for the fixed array.
+        Note, this attribute is ignored for other arrays.
     </attr>
 
     <attr name="is_const_type">
@@ -148,6 +156,7 @@
 
     <inherit entity="scope"/>
     <inherit entity="visibility"/>
+    <inherit entity="definition"/>
 
     <allow entity = "c_constant" occurs = "1+"/>
 </entity>
@@ -160,9 +169,11 @@
         Constant name.
     </attr>
 
-    <attr name="value" required="1">
+    <attr name="value">
         Constant value.
     </attr>
+
+    <inherit entity="scope"/>
 </entity>
 
 
