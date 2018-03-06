@@ -281,8 +281,9 @@
         Constant name.
     </attr>
 
-    <attr name="value" required="1">
+    <attr name="value">
         Constant value.
+        Optional for enumerated constant.
     </attr>
 
     <inherit entity="component"/>
