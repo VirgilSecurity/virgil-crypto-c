@@ -35,12 +35,12 @@
     Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 -->
 
-<xnf name = "c_gmodule" script = "xnf_gen.gsl" version = "1.0a1">
+<xnf name = "c_module" script = "xnf_gen.gsl" version = "1.0a1">
     Base model for C language code generation.
 
-    <produce filename = "c_gmodule.md" type = "gurudoc" />
+    <produce filename = "c_module.md" type = "gurudoc" />
 
-    <entity name = "c_gmodule">
+    <entity name = "c_module">
         Base model for C language code generation.
 
         <attr name="name" required="1">

@@ -7,28 +7,28 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <c_gmodule output_source_file once_guard name header_file source_file output_header_file
+    <c_module output_source_file once_guard name header_file source_file output_header_file
          [class] [scope]>
        <c_include file [scope] [is_system]/>
        <c_alias name type/>
-       <c_enum [visibility] [scope] [name]>
-          <c_constant name value/>
+       <c_enum [definition] [visibility] [scope] [name]>
+          <c_constant name [scope] [value]/>
        </c_enum>
        <c_struct name>
-          <c_property type name [kind] [array] [is_const_type] [is_const_pointer] [is_const_array]
-               [is_const_reference] [is_callback]/>
+          <c_property type name [is_callback] [kind] [array] [length] [is_const_type] [is_const_pointer]
+               [is_const_array] [is_const_reference] [is_string]/>
        </c_struct>
-       <c_variable type name [is_callback] [array] [is_const_type] [is_const_pointer] [is_const_array]
-            [is_const_reference] [visibility] [scope] [kind]>
+       <c_variable type name [is_callback] [kind] [array] [length] [is_const_type] [is_const_pointer]
+            [is_const_array] [is_const_reference] [visibility] [scope] [is_string]>
           <c_value value [cast]/>
           <c_modifier [value]/>
        </c_variable>
-       <c_method name [scope] [visibility]>
+       <c_method name [visibility] [scope] [definition]>
           <c_modifier .../>
-          <c_return type [is_callback] [kind] [array] [is_const_type] [is_const_pointer] [is_const_array]
-               [is_const_reference]/>
-          <c_argument type name [kind] [array] [is_const_type] [is_const_pointer] [is_const_array]
-               [is_const_reference] [is_callback]/>
+          <c_return type [is_callback] [is_string] [kind] [array] [length] [is_const_type] [is_const_pointer]
+               [is_const_array] [is_const_reference]/>
+          <c_argument type name [is_callback] [kind] [array] [length] [is_const_type] [is_const_pointer]
+               [is_const_array] [is_const_reference] [is_string]/>
           <c_precondition [position]/>
        </c_method>
        <c_callback name [scope] [visibility]>
@@ -38,7 +38,7 @@ attribute names are case-sensitive and we use only lower-case names.
        <c_macros [scope] [is_method]>
           <c_implementation/>
        </c_macros>
-    </c_gmodule>
+    </c_module>
 
 Detailed specifications
 =======================
@@ -48,12 +48,12 @@ any specific limits unless otherwise specified.  The same tag may occur
 at different levels with different meanings, and in such cases will be
 detailed more than once here.
 
-The 'c_gmodule' item
---------------------
+The 'c_module' item
+-------------------
 
 Base model for C language code generation.
 
-    <c_gmodule
+    <c_module
         output_source_file = "..."
         once_guard = "..."
         name = "..."
@@ -71,9 +71,9 @@ Base model for C language code generation.
         <c_method>
         <c_callback>
         <c_macros>
-    </c_gmodule>
+    </c_module>
 
-The c_gmodule item can have these attributes:
+The c_module item can have these attributes:
 
 class:
     Short class name that is implmeneted in this module. This attributes is
@@ -172,6 +172,7 @@ The 'c_enum' item
 Defines enumeration type.
 
     <c_enum
+      [ definition = "public | private | external"  ("private") ]
       [ visibility = "public | private"  ("public") ]
       [ scope = "public | private"  ("public") ]
       [ name = "..." ]
@@ -180,6 +181,16 @@ Defines enumeration type.
     </c_enum>
 
 The c_enum item can have these attributes:
+
+definition:
+    Defines where component will be defined. This attribute must not be  
+    inherited. The definition attribute is optional. Its default value is
+    "private". It can take one of the following values:                  
+
+Value: Meaning:
+public: Component definition is visible for outside world.
+private: Component definition is hidden in a correspond source file.
+external: Component definition is located somewhere.
 
 visibility:
     Defines symbol binary visibility. This attribute must not be inherited.
@@ -211,16 +222,26 @@ Defines integral constant.
 
     <c_constant
         name = "..."
-        value = "..."
+      [ scope = "public | private"  ("public") ]
+      [ value = "..." ]
         />
 
 The c_constant item can have these attributes:
+
+scope:
+    Defines component visibility within scope. This attribute can be
+    inherited. The scope attribute is optional. Its default value is
+    "public". It can take one of the following values:              
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible only within library or a specific source file.
 
 name:
     Constant name. The name attribute is required.
 
 value:
-    Constant value. The value attribute is required.
+    Constant value. The value attribute is optional.
 
 
 The 'c_struct' item
@@ -248,13 +269,15 @@ Defines a type of outer component. Define property of the structure type.
     <c_property
         type = "..."
         name = "..."
+      [ is_callback = "0 | 1"  ("0") ]
       [ kind = "value | pointer | reference"  ("value") ]
       [ array = "null_terminated | given | fixed | derived" ]
+      [ length = "..." ]
       [ is_const_type = "..." ]
       [ is_const_pointer = "..." ]
       [ is_const_array = "..." ]
       [ is_const_reference = "..." ]
-      [ is_callback = "0 | 1"  ("0") ]
+      [ is_string = "0 | 1" ]
         />
 
 The c_property item can have these attributes:
@@ -270,6 +293,14 @@ Value: Meaning:
 0: Just a type.
 1: Callback type.
 
+is_string:
+    Mark type as a string - specal class. The is_string attribute is
+    optional. It can take one of the following values:              
+
+Value: Meaning:
+0: User defined type.
+1: String.
+
 kind:
     Defines instance kind of the type. The kind attribute is optional. Its
     default value is "value". It can take one of the following values:    
@@ -280,6 +311,7 @@ pointer: Pointer type, i.e. 'int *'
 reference: Pointer to pointer type, i.e. 'int **'
 
 array:
+    Defines array length type. If given, parent instance becomes an array.   
     The array attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -288,19 +320,23 @@ given: Array with a given length, i.e. 'int *'.
 fixed: Array with a fixed length, i.e. 'int [32]'.
 derived: Array with a derived length, i.e. 'int []'.
 
+length:
+    Defines length constant for the fixed array. Note, this attribute is
+    ignored for other arrays. The length attribute is optional.         
+
 is_const_type:
-    Defines constness of a type. The is_const_type attribute is optional.
+    Defines type constness. The is_const_type attribute is optional.
 
 is_const_pointer:
-    Defines constness of a pointer. The is_const_pointer attribute is
-    optional.                                                        
+    Defines pointer constness. TODO: Define if this attribute is useless. The
+    is_const_pointer attribute is optional.                                  
 
 is_const_array:
-    Defines constness of an array. The is_const_array attribute is optional.
+    Defines array constness . The is_const_array attribute is optional.
 
 is_const_reference:
-    Defines constness of a reference. The is_const_reference attribute is
-    optional.                                                            
+    Defines reference constness. TODO: Define if this attribute is useless.
+    The is_const_reference attribute is optional.                          
 
 name:
     Property name. The name attribute is required.
@@ -315,14 +351,16 @@ Defines a type of outer component. Define global variable.
         type = "..."
         name = "..."
       [ is_callback = "0 | 1"  ("0") ]
+      [ kind = "value | pointer | reference"  ("value") ]
       [ array = "null_terminated | given | fixed | derived" ]
+      [ length = "..." ]
       [ is_const_type = "..." ]
       [ is_const_pointer = "..." ]
       [ is_const_array = "..." ]
       [ is_const_reference = "..." ]
       [ visibility = "public | private"  ("public") ]
       [ scope = "public | private"  ("public") ]
-      [ kind = "value | pointer | reference"  ("value") ]
+      [ is_string = "0 | 1" ]
         >
         <c_value>, 1 or more
         <c_modifier>
@@ -341,6 +379,14 @@ Value: Meaning:
 0: Just a type.
 1: Callback type.
 
+is_string:
+    Mark type as a string - specal class. The is_string attribute is
+    optional. It can take one of the following values:              
+
+Value: Meaning:
+0: User defined type.
+1: String.
+
 kind:
     Defines instance kind of the type. The kind attribute is optional. Its
     default value is "value". It can take one of the following values:    
@@ -351,6 +397,7 @@ pointer: Pointer type, i.e. 'int *'
 reference: Pointer to pointer type, i.e. 'int **'
 
 array:
+    Defines array length type. If given, parent instance becomes an array.   
     The array attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -359,19 +406,23 @@ given: Array with a given length, i.e. 'int *'.
 fixed: Array with a fixed length, i.e. 'int [32]'.
 derived: Array with a derived length, i.e. 'int []'.
 
+length:
+    Defines length constant for the fixed array. Note, this attribute is
+    ignored for other arrays. The length attribute is optional.         
+
 is_const_type:
-    Defines constness of a type. The is_const_type attribute is optional.
+    Defines type constness. The is_const_type attribute is optional.
 
 is_const_pointer:
-    Defines constness of a pointer. The is_const_pointer attribute is
-    optional.                                                        
+    Defines pointer constness. TODO: Define if this attribute is useless. The
+    is_const_pointer attribute is optional.                                  
 
 is_const_array:
-    Defines constness of an array. The is_const_array attribute is optional.
+    Defines array constness . The is_const_array attribute is optional.
 
 is_const_reference:
-    Defines constness of a reference. The is_const_reference attribute is
-    optional.                                                            
+    Defines reference constness. TODO: Define if this attribute is useless.
+    The is_const_reference attribute is optional.                          
 
 visibility:
     Defines symbol binary visibility. This attribute must not be inherited.
@@ -436,8 +487,9 @@ Define method signature and implementation (optional).
 
     <c_method
         name = "..."
-      [ scope = "public | private"  ("public") ]
       [ visibility = "public | private"  ("public") ]
+      [ scope = "public | private"  ("public") ]
+      [ definition = "public | private | external"  ("private") ]
         >
         <c_modifier>
         <c_return>, optional
@@ -446,6 +498,16 @@ Define method signature and implementation (optional).
     </c_method>
 
 The c_method item can have these attributes:
+
+definition:
+    Defines where component will be defined. This attribute must not be  
+    inherited. The definition attribute is optional. Its default value is
+    "private". It can take one of the following values:                  
+
+Value: Meaning:
+public: Component definition is visible for outside world.
+private: Component definition is hidden in a correspond source file.
+external: Component definition is located somewhere.
 
 visibility:
     Defines symbol binary visibility. This attribute must not be inherited.
@@ -477,8 +539,10 @@ Defines a type of outer component. Defines return type.
     <c_return
         type = "..."
       [ is_callback = "0 | 1"  ("0") ]
+      [ is_string = "0 | 1" ]
       [ kind = "value | pointer | reference"  ("value") ]
       [ array = "null_terminated | given | fixed | derived" ]
+      [ length = "..." ]
       [ is_const_type = "..." ]
       [ is_const_pointer = "..." ]
       [ is_const_array = "..." ]
@@ -498,6 +562,14 @@ Value: Meaning:
 0: Just a type.
 1: Callback type.
 
+is_string:
+    Mark type as a string - specal class. The is_string attribute is
+    optional. It can take one of the following values:              
+
+Value: Meaning:
+0: User defined type.
+1: String.
+
 kind:
     Defines instance kind of the type. The kind attribute is optional. Its
     default value is "value". It can take one of the following values:    
@@ -508,6 +580,7 @@ pointer: Pointer type, i.e. 'int *'
 reference: Pointer to pointer type, i.e. 'int **'
 
 array:
+    Defines array length type. If given, parent instance becomes an array.   
     The array attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -516,19 +589,23 @@ given: Array with a given length, i.e. 'int *'.
 fixed: Array with a fixed length, i.e. 'int [32]'.
 derived: Array with a derived length, i.e. 'int []'.
 
+length:
+    Defines length constant for the fixed array. Note, this attribute is
+    ignored for other arrays. The length attribute is optional.         
+
 is_const_type:
-    Defines constness of a type. The is_const_type attribute is optional.
+    Defines type constness. The is_const_type attribute is optional.
 
 is_const_pointer:
-    Defines constness of a pointer. The is_const_pointer attribute is
-    optional.                                                        
+    Defines pointer constness. TODO: Define if this attribute is useless. The
+    is_const_pointer attribute is optional.                                  
 
 is_const_array:
-    Defines constness of an array. The is_const_array attribute is optional.
+    Defines array constness . The is_const_array attribute is optional.
 
 is_const_reference:
-    Defines constness of a reference. The is_const_reference attribute is
-    optional.                                                            
+    Defines reference constness. TODO: Define if this attribute is useless.
+    The is_const_reference attribute is optional.                          
 
 
 The 'c_argument' item
@@ -539,13 +616,15 @@ Defines a type of outer component. Defines method or callback argument.
     <c_argument
         type = "..."
         name = "..."
+      [ is_callback = "0 | 1"  ("0") ]
       [ kind = "value | pointer | reference"  ("value") ]
       [ array = "null_terminated | given | fixed | derived" ]
+      [ length = "..." ]
       [ is_const_type = "..." ]
       [ is_const_pointer = "..." ]
       [ is_const_array = "..." ]
       [ is_const_reference = "..." ]
-      [ is_callback = "0 | 1"  ("0") ]
+      [ is_string = "0 | 1" ]
         />
 
 The c_argument item can have these attributes:
@@ -561,6 +640,14 @@ Value: Meaning:
 0: Just a type.
 1: Callback type.
 
+is_string:
+    Mark type as a string - specal class. The is_string attribute is
+    optional. It can take one of the following values:              
+
+Value: Meaning:
+0: User defined type.
+1: String.
+
 kind:
     Defines instance kind of the type. The kind attribute is optional. Its
     default value is "value". It can take one of the following values:    
@@ -571,6 +658,7 @@ pointer: Pointer type, i.e. 'int *'
 reference: Pointer to pointer type, i.e. 'int **'
 
 array:
+    Defines array length type. If given, parent instance becomes an array.   
     The array attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -579,19 +667,23 @@ given: Array with a given length, i.e. 'int *'.
 fixed: Array with a fixed length, i.e. 'int [32]'.
 derived: Array with a derived length, i.e. 'int []'.
 
+length:
+    Defines length constant for the fixed array. Note, this attribute is
+    ignored for other arrays. The length attribute is optional.         
+
 is_const_type:
-    Defines constness of a type. The is_const_type attribute is optional.
+    Defines type constness. The is_const_type attribute is optional.
 
 is_const_pointer:
-    Defines constness of a pointer. The is_const_pointer attribute is
-    optional.                                                        
+    Defines pointer constness. TODO: Define if this attribute is useless. The
+    is_const_pointer attribute is optional.                                  
 
 is_const_array:
-    Defines constness of an array. The is_const_array attribute is optional.
+    Defines array constness . The is_const_array attribute is optional.
 
 is_const_reference:
-    Defines constness of a reference. The is_const_reference attribute is
-    optional.                                                            
+    Defines reference constness. TODO: Define if this attribute is useless.
+    The is_const_reference attribute is optional.                          
 
 name:
     Argument name. The name attribute is required.
