@@ -10,7 +10,7 @@ attribute names are case-sensitive and we use only lower-case names.
 
     <module name [class] [uid] [scope] [c_prefix]>
        <require module [scope]/>
-       <constant name value [uid] [scope] [c_prefix] [class]/>
+       <constant name [class] [uid] [scope] [c_prefix] [value]/>
        <enum [definition] [visibility] [c_prefix] [class] [uid] [scope] [name]>
           <constant .../>
        </enum>
@@ -144,11 +144,11 @@ Groups common attributes for the component. Defines integral constant.
 
     <constant
         name = "..."
-        value = "..."
+      [ class = "..." ]
       [ uid = "..." ]
       [ scope = "public | private"  ("public") ]
       [ c_prefix = "..." ]
-      [ class = "..." ]
+      [ value = "..." ]
         />
 
 The constant item can have these attributes:
@@ -179,7 +179,8 @@ name:
     Constant name. The name attribute is required.
 
 value:
-    Constant value. The value attribute is required.
+    Constant value. Optional for enumerated constant. The value attribute is
+    optional.                                                               
 
 
 The 'enum' item
