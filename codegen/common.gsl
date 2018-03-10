@@ -755,8 +755,7 @@ endfunction
 #   In any error - abort.
 # ---------------------------------------------------------------------------
 function item_save_to_file (model, file_name, dir_path)
-    check_argument (my, "model")
-    check_argument (my, "file_name")
+    check_arguments (my, "model, file_name", my)
 
     my.file_path = "$(my.dir_path?:)$(my.file_name:)"
 
@@ -790,7 +789,7 @@ function item_load_from_file_pattern (pattern, destination, dir_path)
     endif
 
     for my.dir.file as f where regexp.match (my.pattern, f.name)
-        my.model = item_load_from_file (f.name)
+        my.model = item_load_from_file (f.name, , my.dir_path)
         move my.model to my.destination
     endfor
 endfunction
@@ -864,4 +863,16 @@ function c_ref (uid, spec)
     check_argument (my, "uid")
 
     return ref ("c_" + my.uid, my.spec)
+endfunction
+
+# ###########################################################################
+#   Debug helpers
+# ###########################################################################
+
+function foreach_dump (item_name, source, destination_dir)
+    check_arguments (my, "item_name, source, destination_dir", my)
+
+    for my.source.$(my.item_name) as item
+        item_save_to_file (item, make_id (my.item_name, item.name?) + ".xml", my.destination_dir)
+    endfor
 endfunction
