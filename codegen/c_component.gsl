@@ -47,7 +47,7 @@
 
 
 gsl from "common.gsl"
-gsl from "componen_new.gsl"
+gsl from "component_new.gsl"
 gsl from "c_formatter.gsl"
 
 
@@ -82,6 +82,17 @@ function c_derive_enum_name (enum)
     component_require_linage (my.enum, my)
 
     return c_format_name (my.enum.c_prefix, my.enum.class, my.enum.name, "t")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Derive C style in-project method name (full name).
+# ---------------------------------------------------------------------------
+function c_derive_method_name (method)
+    check_argument (my, "method", my)
+
+    component_require_linage (my.method, my)
+
+    return c_format_name (my.method.c_prefix, my.method.class, my.method.name)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -273,7 +284,6 @@ endfunction
 # ---------------------------------------------------------------------------
 function c_component_map_instance_kind (c_instance, instance)
     check_arguments (my, "c_instance, instance", my)
-
 
     if (defined (my.instance.type) & my.instance.access = "readonly") | \
             (defined (my.instance.enum) & my.instance.access = "readonly") | \
@@ -537,7 +547,7 @@ function c_component_create_method (method, destination)
         endfor
 
         if count (my.method.return)
-            c_component_create_return (my.method.return, c_method)
+            c_component_create_return (my.method->return, c_method)
         else
             c_component_create_void_return (c_method)
         endif

@@ -520,6 +520,7 @@ function component_resolve_return (return, parent)
     my.return.type ?= "nothing"
 
     component_add_lineage (my.return, my.parent)
+    component_resolve_instance (my.return, my.parent)
 endfunction
 
 # ---------------------------------------------------------------------------

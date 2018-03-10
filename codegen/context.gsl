@@ -34,71 +34,53 @@
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 # ---------------------------------------------------------------------------
-#   Perform resolution for item 'module' and all children.
-#
-#   Resolution includes several steps:
-#       1. Validate - check that required attributes and items are defined.
-#       2. Define default values to the optional component attributes.
-#       3. Append optional items.
-#
-#    Private function prefix is: K24.
-#
+#   Context resolution
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
 #   language. See https://github.com/imatix/gsl for details.
 # ---------------------------------------------------------------------------
 
-gsl from "common.gsl"
-gsl from "component_new.gsl"
-
 
 # ---------------------------------------------------------------------------
-#   Resolve component: section.
-#
-#   The principle: for each component inside section embed 'section' as
-#   a component's child.
+#   Read source file tehn inject variables from the context and store result
+#   to the destination file.
+#   Context defines variables as key-value pairs defined as attributes.
 # ---------------------------------------------------------------------------
-function module_embed_sections (module)
-    check_argument (my, "module")
-
-    for my.module.section as parent_section
-        for parent_section. as component where defined (name (component) ?)
-            new section to component
-                .title = parent_section.title
-            endnew
-            move component before parent_section
-        endfor
-        delete parent_section
-    endfor
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Resolve component: module.
-# ---------------------------------------------------------------------------
-function module_resolve (module, project)
-    check_arguments (my, "module, project", my)
-
-    echo_trace ("Resolving module: $(my.module.name:)", my)
-
-    assert_attribute (my.module, "name", my)
-
-    module_embed_sections (my.module)
-
-    my.module.class ?= my.module.name
-    my.module.c_prefix ?= my.project.name
-
-    foreach_component_resolve (my.module)
-endfunction
+.macro context_inject (context, source_file, destination_file)
+.   my.default_gsl_substitute = [gsl].substitute
+.   my.default_gsl_ignorecase = [gsl].ignorecase
+.   [gsl].substitute = ".("
+.   [gsl].ignorecase = "0"
+.   output my.destination_file
+.       scope my.context
+.           gsl from my.source_file
+.       endscope
+.   close
+.   [gsl].substitute = my.default_gsl_substitute
+.   [gsl].ignorecase = my.default_gsl_ignorecase
+.endmacro
 
 # ---------------------------------------------------------------------------
-#   Resolve all 'module' entries within 'source'
+#   Inject context variables to the '<lang>_module'.
+#   Note, this function create temporary files in the work dir.
 # ---------------------------------------------------------------------------
-function foreach_module_resolve (source, project)
-    check_arguments (my, "source, project", my)
+function context_inject_to_lang_module (context, lang_module, work_dir)
+    check_arguments (my, "lang_module, context, work_dir", my)
 
-    for my.source.module
-        module_resolve (module, my.project)
-    endfor
+    echo_trace ("Resolving lang_module: $(my.lang_module.name:)", my)
+
+    my.init_module_file_path = \
+            "$(my.work_dir?:)c_module_$(my.lang_module.name:)_unresolved.xml"
+
+    my.final_module_file_path = \
+            "$(my.work_dir?:)c_module_$(my.lang_module.name:).xml"
+
+
+    item_save_to_file (my.lang_module, my.init_module_file_path)
+
+    context_inject (my.context, my.init_module_file_path, my.final_module_file_path)
+
+    return item_load_from_file (my.final_module_file_path)
 endfunction
 
 .endtemplate
