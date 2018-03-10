@@ -55,6 +55,18 @@
         </restrict>
     </attr>
 
+    <attr name="is_string">
+        Mark type as a string - specal class.
+
+        <restrict value="0">
+            User defined type.
+        </restrict>
+
+        <restrict value="1">
+            String.
+        </restrict>
+    </attr>
+
     <attr name="kind" default="value">
         Defines instance kind of the type.
 
@@ -98,19 +110,21 @@
     </attr>
 
     <attr name="is_const_type">
-        Defines constness of a type.
+        Defines type constness.
     </attr>
 
     <attr name="is_const_pointer">
-        Defines constness of a pointer.
+        Defines pointer constness.
+        TODO: Define if this attribute is useless.
     </attr>
 
     <attr name="is_const_array">
-        Defines constness of an array.
+        Defines array constness .
     </attr>
 
     <attr name="is_const_reference">
-        Defines constness of a reference.
+        Defines reference constness.
+        TODO: Define if this attribute is useless.
     </attr>
 </entity>
 
@@ -208,6 +222,7 @@
 
     <inherit entity="scope"/>
     <inherit entity="visibility"/>
+    <inherit entity="definition"/>
 
     <allow entity="c_modifier" occurs="0+"/>
     <allow entity="c_return" occurs="0/1"/>
