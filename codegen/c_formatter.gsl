@@ -65,7 +65,7 @@ function c_derive_instance_type (instance)
     endif
 
     #   Apply array modifiers
-    if string_in (my.instance.array ?, "null_terminated, given"
+    if string_in (my.instance.array ?, "null_terminated, given")
         #   One more star required
         my.type += my.array_modifiers
     endif
