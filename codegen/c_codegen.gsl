@@ -374,13 +374,13 @@ endfunction
 function c_insert_method_argument_check (c_method)
     check_argument (my, "c_method")
 
-    for my.c_method.c_argument where is_true (is_object)
+    for my.c_method.c_argument where kind = "pointer"
         insert_code (" \
             .(c_class_assert_macros) ($(c_argument.name:));
         ", 1)
     endfor
 
-    for my.c_method.c_argument where is_true (is_reference)
+    for my.c_method.c_argument where kind = "reference"
         insert_code (" \
             .(c_class_assert_macros) ($(c_argument.name:));
             .(c_class_assert_macros) (*$(c_argument.name:));
@@ -513,7 +513,7 @@ function c_insert_struct_property (property, tab_count)
     check_argument (my, "property")
     assert_attribute (my.property, "value", my)
 
-    insert_code (my.property.value + ";", my.tab_count)
+    insert_code (c_derive_instance_declaration (my.property) + ";", my.tab_count)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -637,14 +637,15 @@ function c_insert_object_definition (c_object)
 
     c_insert_description (my.c_object)
 
-    my.array_braces = is_true (my.c_object.is_array) ?? "[]" ? ""
+    my.array_braces = is_true (my.c_object.is_fixed_array) ?? "[]" ? ""
     my.beginning = "static $(my.c_object.type:) $(my.c_object.name:)$(my.array_braces:) = "
 
     for my.c_object.c_value
         my.type_cast = string_defined (c_value.type) ?? "($(c_value.type:)) " ? ""
+        my.value_cast = is_true (c_value.is_pointer) ?? "&" ? ""
         if count (my.c_object.c_value) = 1
             #   Single value initializing
-            insert_code (my.beginning + my.type_cast + c_value.value + ";")
+            insert_code (my.beginning + my.type_cast + my.value_cast + c_value.value + ";")
         else
             #   Bracers initializing.
             if first ()
@@ -653,7 +654,7 @@ function c_insert_object_definition (c_object)
                 newline_if (has_description (c_value))
             endif
             c_insert_description (c_value, 1)
-            insert_code (my.type_cast + c_value.value + ",", 1)
+            insert_code (my.type_cast + my.value_cast + c_value.value + ",", 1)
             if last ()
                 insert_code ("};")
             endif
@@ -663,21 +664,21 @@ endfunction
 
 
 # ###########################################################################
-#   Code generation for type: type.
+#   Code generation for aliases.
 # ###########################################################################
 
 
 # ---------------------------------------------------------------------------
 #   Insert type alias, by default it's typedef.
 # ---------------------------------------------------------------------------
-function c_insert_type (c_type)
-    check_argument (my, "c_type")
+function c_insert_alias (c_alias)
+    check_argument (my, "c_alias")
 
-    my.definition_guard = c_format_macros_name (my.c_type.name, "defined")
+    my.definition_guard = c_format_macros_name (my.c_alias.name, "defined")
     insert_code ("#ifndef " + my.definition_guard)
     insert_code ("#define " + my.definition_guard)
-    c_insert_description (my.c_type, 1)
-    insert_code ("typedef $(my.c_type.alias_of:) $(my.c_type.name:);", 1)
+    c_insert_description (my.c_alias, 1)
+    insert_code ("typedef $(my.c_alias.type:) $(my.c_alias.name:);", 1)
     insert_code ("#endif // " + my.definition_guard)
 endfunction
 

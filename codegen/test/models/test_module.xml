@@ -1,0 +1,5 @@
+<module name="foo">
+    <method name="do stuff">
+        Make some usefull calculations.
+    </method>
+ </module>
