@@ -832,6 +832,16 @@ function make_id (part1, part2, part3, part4, part5, part6, part7, part8)
             my.part5, my.part6, my.part7, my.part8):c, lower)"
 endfunction
 
+
+# ---------------------------------------------------------------------------
+#   Reurn true if given value is uid reference in format: .(<uid>)
+# ---------------------------------------------------------------------------
+function is_ref (maybe_ref)
+    check_argument (my, "maybe_ref", my)
+
+    return regexp.match ("^\.\(.+\)$")
+endfunction
+
 # ---------------------------------------------------------------------------
 #   Wrapes given UID as 'Reference UID'.
 #   Argument 'spec' is concatinated to UID if given.
