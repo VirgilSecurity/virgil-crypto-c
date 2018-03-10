@@ -12,6 +12,11 @@
 			"shell_cmd": "./docgen.sh",
 			"working_dir": "${project_path}",
 			"file_patterns": ["*.xnf"]
+		},
+		{
+			"name": "test",
+			"shell_cmd": "gsl test.xml",
+			"working_dir": "${project_path}/codegen",
 		}
 	],
 	"folders":
