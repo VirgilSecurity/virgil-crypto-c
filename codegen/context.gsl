@@ -67,7 +67,7 @@
 function context_inject_to_lang_module (context, lang_module, work_dir)
     check_arguments (my, "lang_module, context, work_dir", my)
 
-    echo_trace ("Resolving lang_module: $(my.lang_module.name:)", my)
+    echo_trace ("Inject context to <$(name (my.lang_module)) name=\"$(my.lang_module.name:)\"/>", my)
 
     my.init_module_file_path = \
             "$(my.work_dir?:)c_module_$(my.lang_module.name:)_unresolved.xml"

@@ -88,6 +88,8 @@ function module_resolve (module, project)
     my.module.c_prefix ?= my.project.name
     my.module.uid = make_id (name (my.module), my.module.name)
 
+    component_resolve_attr_scope (my.module)
+
     foreach_component_resolve (my.module)
 endfunction
 
