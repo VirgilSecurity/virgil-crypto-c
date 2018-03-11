@@ -74,6 +74,7 @@ function run_test ()
 
     test.echo_level ?= "fatal"
 
+    #   Create empty resolution context.
     new context to root
     endnew
 
@@ -100,22 +101,23 @@ function run_test ()
     foreach_module_resolve (root, root->project)
     foreach_dump ("module", root, root->project.work_path)
 
-    # At this point context is resolved.
-    item_save_to_file (root->context, "context.xml", root->project.work_path)
-
     #   Create lang_modules.
     c_module_create (root, root, root->project)
 
     #   Process lang_modules.
     c_module_resolve (root)
 
-    # At this point all elements are created and resolved.
+    #   At this point all elements are created and resolved.
     item_save_to_file (root, "root.xml", root->project.work_path)
+
+    #   Fullfil context with models name.
+    context_append_hierarchy (root->context, root)
+    item_save_to_file (root->context, "context.xml", root->project.work_path)
 
     #   Generate code.
     for root.c_module
         my.c_module_resolved = \
-                context_inject_lang_module (root->context, c_module, root->project.work_path)
+                context_inject_to_lang_module (root->context, c_module, root->project.work_path)
         move my.c_module_resolved before c_module
         delete c_module
     endfor

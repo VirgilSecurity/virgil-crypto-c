@@ -140,20 +140,6 @@ function c_format_callback_name (part1, part2, part3, part4, part5, part6, part7
     return "$(my.result:)_cb"
 endfunction
 
-
-# ---------------------------------------------------------------------------
-#   Return formatted multiline commented string.
-# ---------------------------------------------------------------------------
-function c_format_comment_string (str)
-    check_argument (my, "str", my)
-
-    my.str = string_indent (my.str)
-    my.str = "//  $(my.str:left, block, no)$(terminator)"
-    my.str = string_rtrim (my.str)
-
-    return my.str
-endfunction
-
 # ---------------------------------------------------------------------------
 #   Return formatted multiline commented string.
 # ---------------------------------------------------------------------------
@@ -166,7 +152,7 @@ function c_format_comment (str)
     my.str = "//  $(my.str:left, block, no)$(terminator)"
     my.str = string_multi_rtrim (my.str)
 
-    return terminator + my.str + terminator
+    return my.str
 endfunction
 
 # ---------------------------------------------------------------------------
