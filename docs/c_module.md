@@ -11,31 +11,32 @@ attribute names are case-sensitive and we use only lower-case names.
          [class] [scope]>
        <c_include file [scope] [is_system]/>
        <c_alias name type/>
-       <c_enum [definition] [visibility] [scope] [name]>
-          <c_constant name [scope] [value]/>
+       <c_enum [uid] [definition] [visibility] [scope] [name]>
+          <c_constant name [scope] [uid] [value]/>
        </c_enum>
-       <c_struct name>
+       <c_struct name [uid]>
           <c_property type name [is_callback] [kind] [array] [length] [is_const_type] [is_const_pointer]
-               [is_const_array] [is_const_reference] [is_string]/>
+               [is_const_array] [is_const_reference] [uid] [is_string]/>
        </c_struct>
        <c_variable type name [is_callback] [kind] [array] [length] [is_const_type] [is_const_pointer]
-            [is_const_array] [is_const_reference] [visibility] [scope] [is_string]>
+            [is_const_array] [is_const_reference] [uid] [visibility] [scope]
+            [is_string]>
           <c_value value [cast]/>
           <c_modifier [value]/>
        </c_variable>
-       <c_method name [visibility] [scope] [definition]>
+       <c_method name [definition] [visibility] [scope] [uid]>
           <c_modifier .../>
           <c_return type [is_callback] [is_string] [kind] [array] [length] [is_const_type] [is_const_pointer]
                [is_const_array] [is_const_reference]/>
           <c_argument type name [is_callback] [kind] [array] [length] [is_const_type] [is_const_pointer]
-               [is_const_array] [is_const_reference] [is_string]/>
+               [is_const_array] [is_const_reference] [uid] [is_string]/>
           <c_precondition [position]/>
        </c_method>
-       <c_callback name [scope] [visibility]>
+       <c_callback name [visibility] [scope] [uid]>
           <c_return .../>
           <c_argument .../>
        </c_callback>
-       <c_macros [scope] [is_method]>
+       <c_macros [uid] [scope] [is_method]>
           <c_implementation/>
        </c_macros>
     </c_module>
@@ -172,6 +173,7 @@ The 'c_enum' item
 Defines enumeration type.
 
     <c_enum
+      [ uid = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ visibility = "public | private"  ("public") ]
       [ scope = "public | private"  ("public") ]
@@ -181,6 +183,10 @@ Defines enumeration type.
     </c_enum>
 
 The c_enum item can have these attributes:
+
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.   
 
 definition:
     Defines where component will be defined. This attribute must not be  
@@ -223,10 +229,15 @@ Defines integral constant.
     <c_constant
         name = "..."
       [ scope = "public | private"  ("public") ]
+      [ uid = "..." ]
       [ value = "..." ]
         />
 
 The c_constant item can have these attributes:
+
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.   
 
 scope:
     Defines component visibility within scope. This attribute can be
@@ -251,11 +262,16 @@ Define structure type.
 
     <c_struct
         name = "..."
+      [ uid = "..." ]
         >
         <c_property>, 1 or more
     </c_struct>
 
-The c_struct item has this single attribute:
+The c_struct item can have these attributes:
+
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.   
 
 name:
     Structure name. The name attribute is required.
@@ -277,6 +293,7 @@ Defines a type of outer component. Define property of the structure type.
       [ is_const_pointer = "..." ]
       [ is_const_array = "..." ]
       [ is_const_reference = "..." ]
+      [ uid = "..." ]
       [ is_string = "0 | 1" ]
         />
 
@@ -338,6 +355,10 @@ is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
     The is_const_reference attribute is optional.                          
 
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.   
+
 name:
     Property name. The name attribute is required.
 
@@ -358,6 +379,7 @@ Defines a type of outer component. Define global variable.
       [ is_const_pointer = "..." ]
       [ is_const_array = "..." ]
       [ is_const_reference = "..." ]
+      [ uid = "..." ]
       [ visibility = "public | private"  ("public") ]
       [ scope = "public | private"  ("public") ]
       [ is_string = "0 | 1" ]
@@ -424,6 +446,10 @@ is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
     The is_const_reference attribute is optional.                          
 
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.   
+
 visibility:
     Defines symbol binary visibility. This attribute must not be inherited.
     The visibility attribute is optional. Its default value is "public". It
@@ -487,9 +513,10 @@ Define method signature and implementation (optional).
 
     <c_method
         name = "..."
+      [ definition = "public | private | external"  ("private") ]
       [ visibility = "public | private"  ("public") ]
       [ scope = "public | private"  ("public") ]
-      [ definition = "public | private | external"  ("private") ]
+      [ uid = "..." ]
         >
         <c_modifier>
         <c_return>, optional
@@ -498,6 +525,10 @@ Define method signature and implementation (optional).
     </c_method>
 
 The c_method item can have these attributes:
+
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.   
 
 definition:
     Defines where component will be defined. This attribute must not be  
@@ -624,6 +655,7 @@ Defines a type of outer component. Defines method or callback argument.
       [ is_const_pointer = "..." ]
       [ is_const_array = "..." ]
       [ is_const_reference = "..." ]
+      [ uid = "..." ]
       [ is_string = "0 | 1" ]
         />
 
@@ -685,6 +717,10 @@ is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
     The is_const_reference attribute is optional.                          
 
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.   
+
 name:
     Argument name. The name attribute is required.
 
@@ -713,14 +749,19 @@ Define callback type.
 
     <c_callback
         name = "..."
-      [ scope = "public | private"  ("public") ]
       [ visibility = "public | private"  ("public") ]
+      [ scope = "public | private"  ("public") ]
+      [ uid = "..." ]
         >
         <c_return>, optional
         <c_argument>
     </c_callback>
 
 The c_callback item can have these attributes:
+
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.   
 
 visibility:
     Defines symbol binary visibility. This attribute must not be inherited.
@@ -750,6 +791,7 @@ The 'c_macros' item
 Define macros, that can represent a constant or a method.
 
     <c_macros
+      [ uid = "..." ]
       [ scope = "public | private"  ("public") ]
       [ is_method = "0 | 1"  ("0") ]
         >
@@ -757,6 +799,10 @@ Define macros, that can represent a constant or a method.
     </c_macros>
 
 The c_macros item can have these attributes:
+
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.   
 
 scope:
     Defines component visibility within scope. This attribute can be

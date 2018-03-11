@@ -723,6 +723,24 @@ function item_copy_to (item, destination, alias)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Tab body to the depth level.
+# ---------------------------------------------------------------------------
+function item_format_body (item, depth)
+    check_arguments (my, "item", my)
+
+    my.depth ?= 1
+
+    if defined (my.item.)
+        my.item. = terminator + string_indent (my.item., my.depth) + \
+                terminator + tabs (my.depth - 1)
+    endif
+
+    for my.item. as child_item where is_item (child_item)
+        item_format_body (child_item, my.depth + 1)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return XML model loaded from the file, if success.
 #   In any error - abort.
 # ---------------------------------------------------------------------------
@@ -766,6 +784,7 @@ function item_save_to_file (model, file_name, dir_path)
 
     echo_trace ("Saving <$(my.model_name)/> to the file: $(my.file_path:)", my)
 
+    item_format_body (my.model)
     my.model.save (my.file_path, my.error)
 
     if defined (my.error)

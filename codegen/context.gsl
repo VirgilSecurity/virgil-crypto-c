@@ -83,4 +83,23 @@ function context_inject_to_lang_module (context, lang_module, work_dir)
     return item_load_from_file (my.final_module_file_path)
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Foreach item in the hierarchy extract 'uid' and 'name' to the context.
+# ---------------------------------------------------------------------------
+function context_append_hierarchy (context, item)
+    check_arguments (my, "context, item", my)
+
+    #   Extract uid and name for current item
+    if defined (my.item.uid)
+        assert_attribute (my.item, "name", my)
+
+        my.context.$(my.item.uid) = my.item.name
+    endif
+
+    #   Dive in recursion
+    for my.item. as child_item where is_item (child_item)
+        context_append_hierarchy (my.context, child_item)
+    endfor
+endfunction
+
 .endtemplate

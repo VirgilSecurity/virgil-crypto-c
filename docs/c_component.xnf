@@ -171,6 +171,7 @@
     <inherit entity="scope"/>
     <inherit entity="visibility"/>
     <inherit entity="definition"/>
+    <inherit entity="uid"/>
 
     <allow entity = "c_constant" occurs = "1+"/>
 </entity>
@@ -188,6 +189,7 @@
     </attr>
 
     <inherit entity="scope"/>
+    <inherit entity="uid"/>
 </entity>
 
 
@@ -197,6 +199,8 @@
     <attr name="name" required="1">
         Structure name.
     </attr>
+
+    <inherit entity="uid"/>
 
     <allow entity = "c_property" occurs = "1+"/>
 </entity>
@@ -209,6 +213,7 @@
         Property name.
     </attr>
 
+    <inherit entity="uid"/>
     <inherit entity="c_instance"/>
 </entity>
 
@@ -223,6 +228,7 @@
     <inherit entity="scope"/>
     <inherit entity="visibility"/>
     <inherit entity="definition"/>
+    <inherit entity="uid"/>
 
     <allow entity="c_modifier" occurs="0+"/>
     <allow entity="c_return" occurs="0/1"/>
@@ -240,6 +246,7 @@
 
     <inherit entity="scope"/>
     <inherit entity="visibility"/>
+    <inherit entity="uid"/>
 
     <allow entity="c_return" occurs="0/1"/>
     <allow entity="c_argument" occurs="0+"/>
@@ -260,6 +267,7 @@
     </attr>
 
     <inherit entity="scope"/>
+    <inherit entity="uid"/>
 
     <allow entity="c_implementation" occurs="0/1"/>
 </entity>
@@ -274,6 +282,7 @@
 
     <inherit entity="scope"/>
     <inherit entity="visibility"/>
+    <inherit entity="uid"/>
     <inherit entity="c_instance"/>
 
     <allow entity="c_value" occurs="1+"/>
@@ -308,6 +317,7 @@
         Argument name.
     </attr>
 
+    <inherit entity="uid"/>
     <inherit entity="c_instance"/>
 </entity>
 

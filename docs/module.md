@@ -96,7 +96,7 @@ class:
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
+    component within models hierarchy. The uid attribute is optional.   
 
 scope:
     Defines component visibility within scope. This attribute can be
@@ -164,7 +164,7 @@ class:
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
+    component within models hierarchy. The uid attribute is optional.   
 
 scope:
     Defines component visibility within scope. This attribute can be
@@ -232,7 +232,7 @@ class:
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
+    component within models hierarchy. The uid attribute is optional.   
 
 scope:
     Defines component visibility within scope. This attribute can be
@@ -356,7 +356,7 @@ class:
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
+    component within models hierarchy. The uid attribute is optional.   
 
 scope:
     Defines component visibility within scope. This attribute can be
@@ -494,7 +494,7 @@ class:
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
+    component within models hierarchy. The uid attribute is optional.   
 
 scope:
     Defines component visibility within scope. This attribute can be
@@ -535,7 +535,7 @@ The property item can have these attributes:
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
+    component within models hierarchy. The uid attribute is optional.   
 
 access:
     Defines access rights to the instance and/or array of instances. The  
@@ -620,7 +620,7 @@ The argument item can have these attributes:
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
+    component within models hierarchy. The uid attribute is optional.   
 
 access:
     Defines access rights to the instance and/or array of instances. The  
@@ -785,7 +785,7 @@ class:
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
+    component within models hierarchy. The uid attribute is optional.   
 
 scope:
     Defines component visibility within scope. This attribute can be
@@ -852,7 +852,7 @@ class:
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
+    component within models hierarchy. The uid attribute is optional.   
 
 scope:
     Defines component visibility within scope. This attribute can be
@@ -906,7 +906,7 @@ class:
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
+    component within models hierarchy. The uid attribute is optional.   
 
 scope:
     Defines component visibility within scope. This attribute can be

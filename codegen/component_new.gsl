@@ -157,6 +157,42 @@ function component_require_attr_callback (component, caller)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Check required attribute: uid.
+# ---------------------------------------------------------------------------
+function component_require_attr_uid (component, caller)
+    check_argument (my, "component", my)
+
+    assert_attribute (my.component, "uid", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: definition.
+# ---------------------------------------------------------------------------
+function component_require_attr_definition (component, caller)
+    check_argument (my, "component", my)
+
+    assert_attribute (my.component, "definition", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: visibility.
+# ---------------------------------------------------------------------------
+function component_require_attr_visibility (component, caller)
+    check_argument (my, "component", my)
+
+    assert_attribute (my.component, "visibility", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: scope.
+# ---------------------------------------------------------------------------
+function component_require_attr_scope (component, caller)
+    check_argument (my, "component", my)
+
+    assert_attribute (my.component, "scope", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Check required item: linage.
 # ---------------------------------------------------------------------------
 function component_require_linage (component, caller)

@@ -57,13 +57,6 @@
 </entity>
 
 
-<entity name="uid" abstract="1">
-    <attr name="uid">
-        Unique component identifier represents name that uniquely identifies
-        component within modules hierarchy.
-    </attr>
-</entity>
-
 <entity name="c_prefix" abstract="1">
     <attr name="c_prefix">
         Prefix that is used for C name resolution.
