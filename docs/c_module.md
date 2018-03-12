@@ -8,15 +8,15 @@ required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
     <c_module output_source_file once_guard name header_file source_file output_header_file
-         [class] [scope]>
+         [of_class] [scope]>
        <c_include file [scope] [is_system]/>
        <c_alias name type/>
        <c_enum [uid] [definition] [visibility] [scope] [name]>
           <c_constant name [scope] [uid] [value]/>
        </c_enum>
        <c_struct name [uid]>
-          <c_property type name [is_callback] [kind] [array] [length] [is_const_type] [is_const_pointer]
-               [is_const_array] [is_const_reference] [uid] [is_string]/>
+          <c_property type name [is_string] [kind] [array] [length] [is_const_type] [is_const_pointer]
+               [is_const_array] [is_const_reference] [uid] [is_callback] [bits]/>
        </c_struct>
        <c_variable type name [is_callback] [kind] [array] [length] [is_const_type] [is_const_pointer]
             [is_const_array] [is_const_reference] [uid] [visibility] [scope]
@@ -61,7 +61,7 @@ Base model for C language code generation.
         header_file = "..."
         source_file = "..."
         output_header_file = "..."
-      [ class = "..." ]
+      [ of_class = "..." ]
       [ scope = "public | private"  ("public") ]
         >
         <c_include>
@@ -76,10 +76,9 @@ Base model for C language code generation.
 
 The c_module item can have these attributes:
 
-class:
-    Short class name that is implmeneted in this module. This attributes is
-    used for inner components name resolution. The class attribute is      
-    optional.                                                              
+of_class:
+    Defines class name that a component belongs to. This attributes is used  
+    for inner components name resolution. The of_class attribute is optional.
 
 scope:
     Defines component visibility within scope. This attribute can be
@@ -285,7 +284,7 @@ Defines a type of outer component. Define property of the structure type.
     <c_property
         type = "..."
         name = "..."
-      [ is_callback = "0 | 1"  ("0") ]
+      [ is_string = "0 | 1" ]
       [ kind = "value | pointer | reference"  ("value") ]
       [ array = "null_terminated | given | fixed | derived" ]
       [ length = "..." ]
@@ -294,7 +293,8 @@ Defines a type of outer component. Define property of the structure type.
       [ is_const_array = "..." ]
       [ is_const_reference = "..." ]
       [ uid = "..." ]
-      [ is_string = "0 | 1" ]
+      [ is_callback = "0 | 1"  ("0") ]
+      [ bits = "..." ]
         />
 
 The c_property item can have these attributes:
@@ -361,6 +361,10 @@ uid:
 
 name:
     Property name. The name attribute is required.
+
+bits:
+    Define number of bits occupied by the property with integral type. The
+    bits attribute is optional.                                           
 
 
 The 'c_variable' item

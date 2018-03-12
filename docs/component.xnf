@@ -69,7 +69,7 @@
 
     <inherit entity="scope"/>
     <inherit entity="uid"/>
-    <inherit entity="class"/>
+    <inherit entity="of_class"/>
     <inherit entity="c_prefix"/>
 </entity>
 
@@ -344,6 +344,10 @@
 
     <attr name="name" required="1">
         Property name.
+    </attr>
+
+    <attr name="bits">
+        Define number of bits occupied by the property with integral type.
     </attr>
 
     <inherit entity="instance"/>

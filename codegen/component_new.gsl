@@ -52,6 +52,23 @@ gsl from "common.gsl"
 
 
 # ---------------------------------------------------------------------------
+#   Return component as shortened XML string with required attributes.
+# ---------------------------------------------------------------------------
+function _B23_component_dump (component)
+    check_argument (my, "component")
+
+    my.component_info = ""
+    my.component_info += " name=\"$(my.component.name)\"" ? ""
+    my.component_info += " of_class=\"$(my.component.of_class)\"" ? ""
+    my.component_info += " scope=\"$(my.component.scope)\"" ? ""
+    my.component_info += " visibility=\"$(my.component.visibility)\"" ? ""
+    my.component_info += " definition=\"$(my.component.definition)\"" ? ""
+    my.component_dump = "<$(name (my.component))$(my.component_info)/>"
+
+    return my.component_dump
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return instance as shortened XML string with required attributes.
 # ---------------------------------------------------------------------------
 function _B23_instance_dump (instance)
@@ -61,6 +78,7 @@ function _B23_instance_dump (instance)
     my.instance_info += " name=\"$(my.instance.name)\"" ? ""
     my.instance_info += " type=\"$(my.instance.type)\"" ? ""
     my.instance_info += " class=\"$(my.instance.class)\"" ? ""
+    my.instance_info += " bits=\"$(my.instance.bits)\"" ? ""
     my.instance_dump = "<$(name (my.instance))$(my.instance_info)/>"
 
     return my.instance_dump
@@ -109,6 +127,15 @@ function component_require_attr_name (component, caller)
     check_argument (my, "component", my)
 
     assert_attribute (my.component, "name", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: of_class.
+# ---------------------------------------------------------------------------
+function component_require_attr_of_class (component, caller)
+    check_argument (my, "component", my)
+
+    assert_attribute (my.component, "of_class", my.caller ? my)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -195,7 +222,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Check required item: linage.
 # ---------------------------------------------------------------------------
-function component_require_linage (component, caller)
+function component_require_lineage (component, caller)
     check_argument (my, "component", my)
 
     assert_item (my.component, "lineage", my.caller ? my)
@@ -207,7 +234,7 @@ endfunction
 function component_is_global (component)
     check_argument (my, "component", my)
 
-    return (my.component.class ? my.component->lineage.class ? "global") = "global"
+    return (my.component.of_class ? my.component->lineage.of_class ? "global") = "global"
 endfunction
 
 
@@ -224,7 +251,7 @@ endfunction
 function component_derive_uid (component)
     check_argument (my, "component", my)
 
-    component_require_linage (my.component, my)
+    component_require_lineage (my.component, my)
 
     #   Define parents uid
     for my.component->lineage.ancestor
@@ -242,7 +269,7 @@ function component_derive_uid (component)
     if component_is_global (my.component)
         my.uid_scope = "global"
     else
-        my.uid_scope = make_id ("class", my.component.class ? my.component->lineage.class)
+        my.uid_scope = make_id ("class", my.component.of_class ? my.component->lineage.of_class)
     endif
 
     #   Put it together
@@ -261,10 +288,10 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Resolve attribute: class.
 # ---------------------------------------------------------------------------
-function component_resolve_attr_class (component, parent)
+function component_resolve_attr_of_class (component, parent)
     check_arguments (my, "component, parent", my)
 
-    my.component.class ?= my.parent.class
+    my.component.of_class ?= my.parent.of_class
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -302,6 +329,14 @@ function component_resolve_attr_definition (component, parent)
     check_argument (my, "component", my)
 
     my.component.definition ?= "private" #  is not inherited
+
+    my.valid_definitions = "public, private, external"
+    if ! string_in (my.component.definition, my.valid_definitions)
+        my.component_dump = _B23_component_dump (my.component)
+
+        echo_fatal ("Invalid component definition '$(my.component_dump:)'. " + \
+                    "Expected {$(my.valid_definitions)}")
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -316,7 +351,7 @@ function component_resolve_instance_attr_type (instance, parent)
     if ! string_in (my.instance.type, my.valid_types)
         my.instance_dump = _B23_instance_dump (my.instance)
 
-        echo_fatal ("Invalid instance type '<$(my.instance_dump:)'. " + \
+        echo_fatal ("Invalid instance type '$(my.instance_dump:)'. " + \
                     "Expected {$(my.valid_types)}")
     endif
 
@@ -327,7 +362,7 @@ function component_resolve_instance_attr_type (instance, parent)
 
         my.array = component_get_instance_array (my.instance)
         my.array.length ?= "given"
-        my.array.access ?= my.instance.access
+        my.array.access ?= "readwrite"
     endif
 endfunction
 
@@ -444,7 +479,7 @@ endfunction
 function component_resolve_array_attr_access (array, parent)
     check_arguments (my, "array, parent", my)
 
-    my.array.access ?= "readonly"
+    my.array.access ?= "readwrite"
 
     my.valid_access_argument = "readonly, writeonly, readwrite, disown"
     my.valid_access_variable = "readonly, readwrite"
@@ -495,6 +530,25 @@ function component_resolve_macros_attr_is_method (macros, parent)
     my.macros.is_method ?= "0"
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Resolve attribute: property.bits.
+# ---------------------------------------------------------------------------
+function component_resolve_property_attr_bits (property, parent)
+    check_arguments (my, "property, parent", my)
+
+    if ! defined (my.property.bits)
+        return
+    endif
+
+    if ! defined (my.property.type) | ! string_in (my.property.type, "integer, size")
+        my.instance_dump = _B23_instance_dump (my.property)
+        echo_fatal ("Attribute 'bits' is allowed only for integral types" + \
+                ", but found in $(my.instance_dump:)", my)
+    endif
+
+    assert_attribute_number (my.property, "bits", my)
+endfunction
+
 # ###########################################################################
 #   Per component resolution.
 # ###########################################################################
@@ -523,7 +577,7 @@ function component_add_lineage (component, parent)
         endnew
     endif
 
-    my.component->lineage.class = my.parent.class
+    my.component->lineage.of_class = my.parent.of_class
 
     #   Add parent as ancestor
     new ancestor to my.component->lineage
@@ -566,7 +620,7 @@ function component_resolve_component (component, parent)
     check_arguments (my, "component, parent", my)
 
     component_resolve_attr_scope (my.component, my.parent)
-    component_resolve_attr_class (my.component, my.parent)
+    component_resolve_attr_of_class (my.component, my.parent)
     component_resolve_attr_c_prefix (my.component, my.parent)
     component_resolve_attr_uid (my.component, my.parent)
 endfunction
@@ -669,9 +723,11 @@ function component_resolve_property (property, parent)
     check_arguments (my, "property, parent", my)
 
     component_require_attr_name (my.property, my)
-    component_require_linage (my.parent, my)
+    component_require_lineage (my.parent, my)
 
     component_add_lineage (my.property, my.parent)
+
+    component_resolve_property_attr_bits (my.property, my.parent)
 
     component_resolve_instance (my.property, my.parent)
     component_resolve_attr_uid (my.property, my.parent)
@@ -733,7 +789,7 @@ function component_resolve_argument (argument, parent)
     check_arguments (my, "argument, parent", my)
 
     component_require_attr_name (my.argument, my)
-    component_require_linage (my.parent, my)
+    component_require_lineage (my.parent, my)
 
     component_add_lineage (my.argument, my.parent)
 

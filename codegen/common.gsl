@@ -153,8 +153,7 @@ endfunction
 #   Note, comparison is case insensitive.
 # ---------------------------------------------------------------------------
 function item_in (item, list)
-    check_argument (my, "item")
-    check_argument (my, "list")
+    check_arguments (my, "list", my)
 
     return string_in (name (my.item) ? "", my.list)
 endfunction
@@ -420,7 +419,7 @@ function assert_attribute_number (attribute_scope, attribute_name, caller)
 
     assert_attribute (my.attribute_scope, my.attribute_name, my.caller)
 
-    if ! regexp.match ("^\\d+$")
+    if ! regexp.match ("^\\d+$", my.attribute_scope.$(my.attribute_name))
         echo_fatal ("Attribute '$(my.attribute_name:)' defined" + \
                 " within <$(name (my.attribute_scope)) $(my.name:)/> is not a number", my.caller)
     endif
@@ -430,8 +429,7 @@ endfunction
 #   Abort if there is no elements with given name within given scope.
 # ---------------------------------------------------------------------------
 function assert_item (item_scope, item_name, caller)
-    check_argument (my, "item_scope")
-    check_argument (my, "item_name")
+    check_arguments (my, "item_scope, item_name", my.caller ? my)
 
     my.item_count = count (my.item_scope.$(my.item_name))
     if my.item_count > 0
@@ -831,7 +829,8 @@ function item_find_named (source, type, name, caller)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return formatted name constructed by parts concatenation.
+#   Return formatted string constructed by concatenating parts separated by
+#   spaces.
 # ---------------------------------------------------------------------------
 function cat (part1, part2, part3, part4, part5, part6, part7, part8)
     my.result = "$(my.part1 ?:) $(my.part2 ?:) $(my.part3 ?:) $(my.part4 ?:) " + \
@@ -839,6 +838,17 @@ function cat (part1, part2, part3, part4, part5, part6, part7, part8)
     my.result = string_trim (my.result)
     my.result = string_collapse_spaces (my.result)
     return "$(my.result:)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return union of two strings.
+# ---------------------------------------------------------------------------
+function union (str1, str2)
+    if defined (my.str1) & defined (my.str2) & string_equal (my.str1, my.str2)
+        return my.str1
+    endif
+
+    cat (my.str1, my.str2)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -857,7 +867,7 @@ endfunction
 function is_ref (maybe_ref)
     check_argument (my, "maybe_ref", my)
 
-    return regexp.match ("^\.\(.+\)$")
+    return regexp.match ("^\\.\\(.+\\)$", my.maybe_ref)
 endfunction
 
 # ---------------------------------------------------------------------------

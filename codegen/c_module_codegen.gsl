@@ -34,86 +34,13 @@
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 # ---------------------------------------------------------------------------
-#   Generate C header or source file based on the 'common' gmodule.
+#   Generate C header or source file based on the 'common' c_module.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
 #   language. See https://github.com/imatix/gsl for details.
 # ---------------------------------------------------------------------------
 
 gsl from "c_codegen.gsl"
-
-
-# ---------------------------------------------------------------------------
-#   Function that fully defines cxomponent marks.
-#
-#   Table below defines if specific mark CAN be possibly resolved to true
-#   for component or not.
-#   If 'X' is set - it means that component in the column CAN has mark
-#           with a name from the row set to the 'true'.
-#   If 'X' is not set - it means that component in the column has mark
-#          with a name from the row ALWAYS set to the 'false'.
-#
-#   |                         | c_method | c_macros | c_struct | c_enum | c_callback | c_type | c_object |
-#   |-------------------------|----------|----------|----------|--------|------------|--------|----------|
-#   | mark_public             | X        |          | X        | X      |            | X      |          |
-#   | mark_private            | X        |          | X        | X      |            | X      |          |
-#   | mark_header_declaration | X        |          | X        |        |            | X      |          |
-#   | mark_header_definition  |          | X        | X        | X      | X          | X      |          |
-#   | mark_source_declaration | X        |          | X        |        |            |        |          |
-#   | mark_source_definition  | X        | X        | X        | X      | X          | X      | X        |
-#   | mark_type               |          |          | X        | X      | X          | X      |          |
-#   | mark_object             |          |          |          |        |            |        | X        |
-#   | mark_struct             |          |          | X        |        |            |        |          |
-#   | mark_enum               |          |          |          | X      |            |        |          |
-#   | mark_enum_constant      |          |          |          | X      |            |        |          |
-#   | mark_enum_type          |          |          |          | X      |            |        |          |
-#   | mark_macros             |          | X        |          |        |            |        |          |
-#   | mark_macros_constant    |          | X        |          |        |            |        |          |
-#   | mark_macros_method      |          | X        |          |        |            |        |          |
-#   | mark_method             | X        |          |          |        |            |        |          |
-#   | mark_callback_type      |          |          |          |        | X          |        |          |
-#
-#   Attribute 'scope' represents 'source visibility'
-#
-#       | source visibility | decalaration | definition |
-#       |-------------------|--------------|------------|
-#       | public            | header       | header     |
-#       | opaque            | header       | source     |
-#       | external          | header       |            |
-#       | private           | source       | source     |
-#
-#   Attribute 'visibility' represents 'binary visibility'.
-#
-#       | binary visibility |
-#       |-------------------|
-#       | public            |
-#       | private           |
-# ---------------------------------------------------------------------------
-function c_module_mark_component (component)
-    check_argument (my, "component")
-
-    scope my.component as c
-        .mark_public             = string_in (0.visibility ? "", "public")
-        .mark_private            = string_in (0.visibility ? "", "private")
-        .mark_header_declaration = string_in (0.scope ? "", "public, opaque, external")
-        .mark_header_definition  = string_in (0.scope ? "", "public")
-        .mark_source_declaration = string_in (0.scope ? "", "private")
-        .mark_source_definition  = string_in (0.scope ? "", "opaque, private")
-        .mark_type               = item_in (c, "c_struct, c_alias, c_enum, c_callback") & \
-                                       string_defined (0.name)
-        .mark_object             = item_in (c, "c_object")
-        .mark_struct             = item_in (c, "c_struct")
-        .mark_enum               = item_in (c, "c_enum")
-        .mark_enum_constant      = item_in (c, "c_enum") & string_empty (0.name)
-        .mark_enum_type          = item_in (c, "c_enum") & string_defined (0.name)
-        .mark_macros             = item_in (c, "c_macros")
-        .mark_macros_constant    = item_in (c, "c_macros") & is_false (0.is_method)
-        .mark_macros_method      = item_in (c, "c_macros") & is_true (0.is_method)
-        .mark_method             = item_in (c, "c_method")
-        .mark_callback_type      = item_in (c, "c_callback")
-        .mark_implemented_method = item_in (c, "c_method") & count (0.c_implementation)
-    endscope
-endfunction
 
 
 # ###########################################################################
@@ -182,6 +109,8 @@ function c_insert_component (component, context, specialization)
 
     my.c_insert_specific_component_fn = \
             c_find_component_insert_function (my.component_name, my.target, my.specialization)
+
+    echo_trace ("Redirect call from $(name (my))() to $(my.c_insert_specific_component_fn)()")
 
     newline ()
     $(my.c_insert_specific_component_fn:) (my.component)
@@ -264,107 +193,119 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Generate C header.
 # ---------------------------------------------------------------------------
-function c_module_generate_header (gmodule)
-    check_argument (my, "gmodule")
+function c_module_generate_header (c_module)
+    check_argument (my, "c_module")
 
-    echo_info ("Generate header file: $(my.gmodule.header_file:)", my)
+    echo_info ("Generate header file: $(my.c_module.header_file:)", my)
 
-    read_non_generated_content (my.gmodule.header_file, my)
-    output my.gmodule.header_file
+    read_non_generated_content (my.c_module.header_file, my)
+    output my.c_module.header_file
 
     #   Start generation.
-    c_insert_header_prologue (my.gmodule, my.content_before)
+    c_insert_header_prologue (my.c_module, my.content_before)
     c_insert_section_generated_start ()
 
-    for my.gmodule. as c where is_item (c) & mark_header_definition & mark_type
-        c_insert_category_if ("Full defined types.", first ())
-        c_insert_component (c, my)
+
+    for my.c_module.c_alias where scope = "public"
+        newline ()
+        c_insert_alias (c_alias)
+    endfor
+
+    for my.c_module.c_macros where scope = "public"
+        newline ()
+        c_insert_macros (c_macros)
+    endfor
+
+    for my.c_module.c_enum where scope = "public" & definition = "public"
+        newline ()
+        c_insert_enum (c_enum)
+    endfor
+
+    for my.c_module.c_enum where scope = "public" & definition <> "public"
+        newline ()
+        c_insert_enum_declaration (c_enum)
+    endfor
+
+    for my.c_module.c_struct where scope = "public" & definition = "public"
+        newline ()
+        c_insert_struct (c_struct)
+    endfor
+
+    for my.c_module.c_struct where scope = "public" & definition <> "public"
+        newline ()
+        c_insert_struct_declaration (c_struct)
+    endfor
+
+#
+#    for my.c_module. as c where is_item (c) & mark_header_definition & mark_macros
+#        c_insert_category_if ("Macros constants & macros functions.", first ())
+#        c_insert_component_definition (c, my)
+#    endfor
+#    c_finalize_component_insertion (my)
+#
+
+    for my.c_module.c_method where scope = "public" & visibility = "public"
+        c_insert_component_declaration (c_method, my)
     endfor
     c_finalize_component_insertion (my)
 
-    for my.gmodule. as c where is_item (c) & mark_header_definition & mark_enum_constant
-        c_insert_category_if ("Constants.", first ())
-        c_insert_component (c, my)
-    endfor
-    c_finalize_component_insertion (my)
-
-    for my.gmodule. as c where is_item (c) & mark_header_definition & mark_macros
-        c_insert_category_if ("Macros constants & macros functions.", first ())
-        c_insert_component_definition (c, my)
-    endfor
-    c_finalize_component_insertion (my)
-
-    for my.gmodule. as c where is_item (c) & \
-            mark_header_declaration & ! mark_header_definition & mark_type
-        c_insert_category_if ("Opaque types.", first ())
-        c_insert_component_declaration (c, my)
-    endfor
-    c_finalize_component_insertion (my)
-
-    for my.gmodule. as c where is_item (c) & mark_public & mark_header_declaration & mark_method
-        c_insert_category_if ("Public Functions.", first ())
-        c_insert_component_declaration (c, my)
-    endfor
-    c_finalize_component_insertion (my)
-
-    for my.gmodule. as c where is_item (c) & mark_private & mark_header_declaration & mark_method
-        c_insert_category_if ("Private functions.", first ())
-        c_insert_component_declaration (c, my)
+    for my.c_module.c_method where scope = "public" & visibility = "private"
+        c_insert_component_declaration (c_method, my)
     endfor
     c_finalize_component_insertion (my)
 
     c_insert_section_generated_end ()
-    c_insert_header_epilogue (my.gmodule, my.content_after)
+    c_insert_header_epilogue (my.c_module, my.content_after)
 
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Generate C source.
 # ---------------------------------------------------------------------------
-function c_module_generate_source (gmodule)
-    check_argument (my, "gmodule")
+function c_module_generate_source (c_module)
+    check_argument (my, "c_module")
 
-    echo_info ("Generate source file: $(my.gmodule.source_file:)", my)
+    echo_info ("Generate source file: $(my.c_module.source_file:)", my)
 
-    read_non_generated_content (my.gmodule.source_file, my)
-    output my.gmodule.source_file
+    read_non_generated_content (my.c_module.source_file, my)
+    output my.c_module.source_file
 
-    c_insert_source_prologue (my.gmodule, my.content_before)
+    c_insert_source_prologue (my.c_module, my.content_before)
 
     #   Start generation.
     c_insert_section_generated_start ()
 
 
-    for my.gmodule. as c where is_item (c) & mark_private & mark_method & \
-            ! mark_header_declaration & mark_source_definition
-        c_insert_category_if ("Private functions.", first ())
-        c_insert_component_declaration (c, my)
-    endfor
-    c_finalize_component_insertion (my)
-
-    for my.gmodule. as c where is_item (c) & mark_source_definition & mark_enum_constant
-        c_insert_category_if ("Private constants.", first ())
-        c_insert_component_definition (c, my)
-    endfor
-    c_finalize_component_insertion (my)
-
-    for my.gmodule. as c where is_item (c) & mark_source_definition & mark_object
-        c_insert_category_if ("Objects.", first ())
-        c_insert_component_definition (c, my)
-    endfor
-    c_finalize_component_insertion (my)
-
-    for my.gmodule. as c where is_item (c) & mark_source_definition & mark_type
-        c_insert_category_if ("Types.", first ())
-        c_insert_component (c, my)
-    endfor
-    c_finalize_component_insertion (my)
-
-    for my.gmodule. as c where is_item (c) & mark_implemented_method
-        c_insert_category_if ("Generated functions.", first ())
-        c_insert_component_definition (c, my)
-    endfor
-    c_finalize_component_insertion (my)
+#    for my.c_module. as c where is_item (c) & mark_private & mark_method & \
+#            ! mark_header_declaration & mark_source_definition
+#        c_insert_category_if ("Private functions.", first ())
+#        c_insert_component_declaration (c, my)
+#    endfor
+#    c_finalize_component_insertion (my)
+#
+#    for my.c_module. as c where is_item (c) & mark_source_definition & mark_enum_constant
+#        c_insert_category_if ("Private constants.", first ())
+#        c_insert_component_definition (c, my)
+#    endfor
+#    c_finalize_component_insertion (my)
+#
+#    for my.c_module. as c where is_item (c) & mark_source_definition & mark_object
+#        c_insert_category_if ("Objects.", first ())
+#        c_insert_component_definition (c, my)
+#    endfor
+#    c_finalize_component_insertion (my)
+#
+#    for my.c_module. as c where is_item (c) & mark_source_definition & mark_type
+#        c_insert_category_if ("Types.", first ())
+#        c_insert_component (c, my)
+#    endfor
+#    c_finalize_component_insertion (my)
+#
+#    for my.c_module. as c where is_item (c) & mark_implemented_method
+#        c_insert_category_if ("Generated functions.", first ())
+#        c_insert_component_definition (c, my)
+#    endfor
+#    c_finalize_component_insertion (my)
 
     #   Accomplish generation.
     c_insert_section_generated_end ()
@@ -373,9 +314,9 @@ function c_module_generate_source (gmodule)
         newline (2)
         out (my.content_after)
     else
-        for my.gmodule. as c where is_item (c) & mark_method & ! mark_implemented_method
-            c_insert_category_if ("Functions to be implemented.", first ())
-            c_insert_component_definition (c, my)
+        for my.c_module.c_method where count (c_method.c_implementation) = 0
+            c_insert_category_if ("Functions to be implemented manually.", first ())
+            c_insert_component_definition (c_method, my)
         endfor
         c_finalize_component_insertion (my)
     endif
@@ -388,24 +329,20 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-#   Generate header and source files for each 'c_gmodule' within source.
+#   Generate header and source files for each 'c_module' within source.
 # ---------------------------------------------------------------------------
 function c_module_generate_sources (source)
     check_argument (my, "source")
 
-    for my.source.c_gmodule
-        echo_trace ("Generate files from <$(name (c_gmodule)) name = \"$(c_gmodule.name:)/>\"", my)
+    for my.source.c_module
+        echo_trace ("Generate files from <$(name (c_module)) name = \"$(c_module.name:)/>\"", my)
 
-        for c_gmodule. as c where defined (name (c) ?)
-            c_module_mark_component (c)
-        endfor
-
-        if string_defined (c_gmodule.header_file)
-            c_module_generate_header (c_gmodule)
+        if string_defined (c_module.header_file)
+            c_module_generate_header (c_module)
         endif
 
-        if string_defined (c_gmodule.source_file)
-            c_module_generate_source (c_gmodule)
+        if string_defined (c_module.source_file)
+            c_module_generate_source (c_module)
         endif
     endfor
 endfunction

@@ -213,6 +213,10 @@
         Property name.
     </attr>
 
+    <attr name="bits">
+        Define number of bits occupied by the property with integral type.
+    </attr>
+
     <inherit entity="uid"/>
     <inherit entity="c_instance"/>
 </entity>

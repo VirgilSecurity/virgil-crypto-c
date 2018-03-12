@@ -93,10 +93,10 @@
 </entity>
 
 
-<entity name="class">
+<entity name="of_class">
 
-    <attr name="class">
-        Short class name that is implmeneted in this module.
+    <attr name="of_class">
+        Defines class name that a component belongs to.
         This attributes is used for inner components name resolution.
     </attr>
 

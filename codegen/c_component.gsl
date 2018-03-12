@@ -57,42 +57,69 @@ gsl from "c_formatter.gsl"
 
 
 # ---------------------------------------------------------------------------
-#   Derive C style in-project constant name (full name).
+#   Derive C style in-project constant full name.
 # ---------------------------------------------------------------------------
 function c_derive_constant_name (constant)
     check_argument (my, "constant", my)
 
-    component_require_linage (my.constant, my)
+    component_require_lineage (my.constant, my)
 
     my.ancestors = ""
-    for my.constant.ancestor where ! string_in (id, "project, module")
+    for my.constant->lineage.ancestor where ! string_in (id, "project, module")
         my.ancestors = cat (my.ancestors, ancestor.name)
     endfor
 
     return c_format_constant_name ( \
-            my.constant.c_prefix, my.constant.class, my.ancestors, my.constant.name)
+            my.constant.c_prefix, union (my.constant.of_class, my.ancestors), my.constant.name)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Derive C style in-project enum name (full name).
+#   Derive C style in-project enum full name.
 # ---------------------------------------------------------------------------
 function c_derive_enum_name (enum)
     check_argument (my, "enum", my)
 
-    component_require_linage (my.enum, my)
+    component_require_lineage (my.enum, my)
 
-    return c_format_name (my.enum.c_prefix, my.enum.class, my.enum.name, "t")
+    return c_format_name (my.enum.c_prefix, union (my.enum.of_class, my.enum.name), "t")
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Derive C style in-project method name (full name).
+#   Derive C style in-project method full name.
 # ---------------------------------------------------------------------------
 function c_derive_method_name (method)
     check_argument (my, "method", my)
 
-    component_require_linage (my.method, my)
+    component_require_lineage (my.method, my)
 
-    return c_format_name (my.method.c_prefix, my.method.class, my.method.name)
+    return c_format_name (my.method.c_prefix, my.method.of_class, my.method.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Derive C style in-project struct full name.
+# ---------------------------------------------------------------------------
+function c_derive_struct_name (struct)
+    check_argument (my, "struct", my)
+
+    component_require_lineage (my.struct, my)
+
+    return c_format_name (my.struct.c_prefix, union (my.struct.of_class, my.struct.name), "t")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Derive C style in-project full name of the argument, property, variable.
+# ---------------------------------------------------------------------------
+function c_derive_instance_name (instance)
+    check_argument (my, "instance", my)
+
+    component_require_lineage (my.instance, my)
+    component_require_attr_name (my.instance, my)
+
+    if defined (my.instance.callback)
+        return c_format_name (my.instance.name, "cb")
+    else
+        return c_format_name (my.instance.name)
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -172,7 +199,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Check optional integral attribute: value.
 # ---------------------------------------------------------------------------
-function c_component_optional_integral_attr_value (c_component)
+function c_component_optional_integral_attr_value (c_component, caller)
     check_argument (my, "c_component", my)
 
     if defined (my.component.value)
@@ -263,9 +290,9 @@ endfunction
 function c_component_resolve_enum (c_enum)
     check_argument (my, "c_enum", my)
 
-    c_component_resolve_attr_scope (my.c_enum, my)
-    c_component_resolve_attr_visibility (my.c_enum, my)
-    c_component_resolve_attr_definition (my.c_enum, my)
+    c_component_resolve_attr_scope (my.c_enum)
+    c_component_resolve_attr_visibility (my.c_enum)
+    c_component_resolve_attr_definition (my.c_enum)
 
     for my.c_enum.c_constant
         c_component_resolve_constant (c_constant)
@@ -332,7 +359,9 @@ function c_component_map_instance_kind (c_instance, instance)
 
     if (defined (my.instance.type) & my.instance.access = "readonly") | \
             (defined (my.instance.enum) & my.instance.access = "readonly") | \
-        my.instance.kind = "value"
+            (defined (my.instance.type) & count (my.instance.array)) | \
+            (defined (my.instance.enum) & count (my.instance.array))
+        my.c_instance.kind = "value"
 
     elsif (defined (my.instance.callback)) | \
             (defined (my.instance.type) & string.match (my.instance.access, "write")) | \
@@ -380,22 +409,23 @@ function c_component_map_instance_type (c_instance, instance)
             my.c_instance.is_string = "1"
 
         elsif my.instance.class = "buffer"
-            my.c_instance.type = ".(class_buffer)"
+            my.c_instance.type = ".(c_class_buffer_struct_buffer)"
 
         elsif my.instance.class = "impl"
-            my.c_instance.type = ".(class_impl)"
+            my.c_instance.type = ".(c_class_impl_struct_impl)"
 
         else
             my.c_instance.type = c_component_wrap_uid (my.instance.class)
         endif
 
     elsif defined (my.instance.enum)
-            my.c_instance.type = c_component_wrap_uid (my.instance.enum)
+        my.c_instance.type = c_component_wrap_uid (my.instance.enum)
 
     elsif defined (my.instance.callback)
-            my.c_instance.type = c_component_wrap_uid (my.instance.callback)
-            my.c_instance.is_callback = "1"
+        my.c_instance.type = c_component_wrap_uid (my.instance.callback)
     endif
+
+    my.c_instance.is_callback = defined (my.instance.callback)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -426,7 +456,7 @@ function c_component_map_instance_arrayness (c_instance, instance)
         my.c_instance.array = my.instance->array.length
 
         if my.instance->array.length = "fixed"
-            my.c_instance.length = c_component_wrap_uid (my.instance->length_constant)
+            my.c_instance.length = c_component_wrap_uid (my.instance->array.length_constant)
         endif
     else
         my.c_instance.array = # undefined
@@ -456,6 +486,16 @@ function c_component_map_implementation (c_component, component)
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Define attribute 'bits' within 'c_property', if it is defined within
+#   'property'.
+# ---------------------------------------------------------------------------
+function c_component_map_property_attr_bits (c_property, property)
+    check_arguments (my, "c_property, property", my)
+
+    my.c_property.bits = my.property.bits ?
+endfunction
+
 
 # ###########################################################################
 #   Functions to creation new c_component(s)
@@ -483,13 +523,15 @@ endfunction
 function c_component_create_constant (constant, destination)
     check_arguments (my, "constant, destination", my)
 
+
     if ! item_in (my.destination ?, "c_enum")
         component_require_attr_value (my.constant, my)
     endif
 
     new c_constant to my.destination
-        .name = c_derive_constant_name (my.constant.name)
-        .value = my.constant.value
+        . = c_format_description (my.constant.) ?
+        .name = c_derive_constant_name (my.constant)
+        .value = my.constant.value ?
 
         c_component_map_attr_scope (c_constant, my.constant)
         c_component_map_attr_uid (c_constant, my.constant)
@@ -507,7 +549,7 @@ function c_component_create_enum (enum, destination)
     component_require_attr_name (my.enum)
 
     new c_enum to my.destination
-        . = c_format_comment (my.enum.) ?
+        . = c_format_description (my.enum.) ?
         .name = c_derive_enum_name (my.enum)
 
         c_component_map_attr_scope (c_enum, my.enum)
@@ -533,7 +575,7 @@ function c_component_create_argument (argument, destination)
     component_require_attr_name (my.argument)
 
     new c_argument to my.destination
-        .name = c_derive_argument_name (my.argument)
+        .name = c_derive_instance_name (my.argument)
 
         c_component_map_instance (c_argument, my.argument)
         c_component_map_attr_uid (c_argument, my.argument)
@@ -549,6 +591,7 @@ function c_component_create_void_argument (destination)
     new c_argument to my.destination
         .type = "void"
         .kind = "value"
+        .is_callback = "0"
     endnew
 endfunction
 
@@ -572,6 +615,7 @@ function c_component_create_void_return (destination)
     new c_return to my.destination
         .type = "void"
         .kind = "value"
+        .is_callback = "0"
     endnew
 endfunction
 
@@ -584,7 +628,7 @@ function c_component_create_method (method, destination)
     component_require_attr_name (my.method)
 
     new c_method to my.destination
-        . = c_format_comment (my.method.) ?
+        . = c_format_description (my.method.) ?
         .name = c_derive_method_name (my.method)
 
         c_component_map_attr_scope (c_method, my.method)
@@ -607,5 +651,47 @@ function c_component_create_method (method, destination)
         c_component_map_implementation (c_method, my.method)
     endnew
 endfunction
+
+# ---------------------------------------------------------------------------
+#   Create 'c_property' from 'property'.
+# ---------------------------------------------------------------------------
+function c_component_create_property (property, destination)
+    check_arguments (my, "property, destination", my)
+
+    component_require_attr_name (my.property)
+
+    new c_property to my.destination
+        . = c_format_description (my.property.) ?
+        .name = c_derive_instance_name (my.property)
+
+        c_component_map_instance (c_property, my.property)
+        c_component_map_attr_uid (c_property, my.property)
+        c_component_map_property_attr_bits (c_property, my.property)
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create 'c_struct' from 'struct'.
+# ---------------------------------------------------------------------------
+function c_component_create_struct (struct, destination)
+    check_arguments (my, "struct, destination", my)
+
+    component_require_attr_name (my.struct)
+
+    new c_struct to my.destination
+        . = c_format_description (my.struct.) ?
+        .name = c_derive_struct_name (my.struct)
+
+        c_component_map_attr_scope (c_struct, my.struct)
+        c_component_map_attr_visibility (c_struct, my.struct)
+        c_component_map_attr_definition (c_struct, my.struct)
+        c_component_map_attr_uid (c_struct, my.struct)
+
+        for my.struct.property
+            c_component_create_property (property, c_struct)
+        endfor
+    endnew
+endfunction
+
 
 .endtemplate

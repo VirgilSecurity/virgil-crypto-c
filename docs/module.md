@@ -8,20 +8,20 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <module name [class] [uid] [scope] [c_prefix]>
+    <module name [of_class] [uid] [scope] [c_prefix]>
        <require module [scope]/>
-       <constant name [class] [uid] [scope] [c_prefix] [value]/>
-       <enum [definition] [visibility] [c_prefix] [class] [uid] [scope] [name]>
+       <constant name [of_class] [uid] [scope] [c_prefix] [value]/>
+       <enum [definition] [visibility] [c_prefix] [of_class] [uid] [scope] [name]>
           <constant .../>
        </enum>
-       <variable name [type] [access] [callback] [size] [definition] [visibility] [c_prefix]
-            [class] [uid] [scope] [enum]>
+       <variable name [type] [access] [enum] [callback] [size] [definition] [visibility] [c_prefix]
+            [of_class] [uid] [scope] [class]>
           <value value/>
           <string [length]/>
           <array [access] [length] [length_constant]/>
        </variable>
-       <struct name [definition] [c_prefix] [class] [uid] [scope] [visibility]>
-          <property name [uid] [type] [class] [enum] [callback] [size] [access]>
+       <struct name [definition] [c_prefix] [of_class] [uid] [scope] [visibility]>
+          <property name [access] [type] [class] [enum] [callback] [size] [uid] [bits]>
              <argument name [uid] [type] [class] [enum] [callback] [size] [access]>
                 <string .../>
                 <array .../>
@@ -34,16 +34,16 @@ attribute names are case-sensitive and we use only lower-case names.
              <array .../>
           </property>
        </struct>
-       <callback name [class] [uid] [scope] [c_prefix]>
+       <callback name [of_class] [uid] [scope] [c_prefix]>
           <return .../>
           <argument .../>
        </callback>
-       <method name [definition] [c_prefix] [class] [uid] [scope] [visibility]>
+       <method name [definition] [c_prefix] [of_class] [uid] [scope] [visibility]>
           <return .../>
           <argument .../>
           <c_implementation/>
        </method>
-       <macros name [class] [uid] [scope] [c_prefix] [is_method]>
+       <macros name [of_class] [uid] [scope] [c_prefix] [is_method]>
           <c_implementation .../>
        </macros>
     </module>
@@ -68,7 +68,7 @@ generate wrappers for high level languakes like C#, Java, Python, etc.
 
     <module
         name = "..."
-      [ class = "..." ]
+      [ of_class = "..." ]
       [ uid = "..." ]
       [ scope = "public | private"  ("public") ]
       [ c_prefix = "..." ]
@@ -89,10 +89,9 @@ c_prefix:
     Prefix that is used for C name resolution. The c_prefix attribute is
     optional.                                                           
 
-class:
-    Short class name that is implmeneted in this module. This attributes is
-    used for inner components name resolution. The class attribute is      
-    optional.                                                              
+of_class:
+    Defines class name that a component belongs to. This attributes is used  
+    for inner components name resolution. The of_class attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
@@ -144,7 +143,7 @@ Groups common attributes for the component. Defines integral constant.
 
     <constant
         name = "..."
-      [ class = "..." ]
+      [ of_class = "..." ]
       [ uid = "..." ]
       [ scope = "public | private"  ("public") ]
       [ c_prefix = "..." ]
@@ -157,10 +156,9 @@ c_prefix:
     Prefix that is used for C name resolution. The c_prefix attribute is
     optional.                                                           
 
-class:
-    Short class name that is implmeneted in this module. This attributes is
-    used for inner components name resolution. The class attribute is      
-    optional.                                                              
+of_class:
+    Defines class name that a component belongs to. This attributes is used  
+    for inner components name resolution. The of_class attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
@@ -192,7 +190,7 @@ Groups common attributes for the component. Defines enumeration type.
       [ definition = "public | private | external"  ("private") ]
       [ visibility = "public | private"  ("public") ]
       [ c_prefix = "..." ]
-      [ class = "..." ]
+      [ of_class = "..." ]
       [ uid = "..." ]
       [ scope = "public | private"  ("public") ]
       [ name = "..." ]
@@ -225,10 +223,9 @@ c_prefix:
     Prefix that is used for C name resolution. The c_prefix attribute is
     optional.                                                           
 
-class:
-    Short class name that is implmeneted in this module. This attributes is
-    used for inner components name resolution. The class attribute is      
-    optional.                                                              
+of_class:
+    Defines class name that a component belongs to. This attributes is used  
+    for inner components name resolution. The of_class attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
@@ -257,15 +254,16 @@ attributes for the component. Defines global variable.
         name = "..."
       [ type = "nothing | boolean | integer | size | byte | data" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
+      [ enum = "..." ]
       [ callback = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ definition = "public | private | external"  ("private") ]
       [ visibility = "public | private"  ("public") ]
       [ c_prefix = "..." ]
-      [ class = "..." ]
+      [ of_class = "..." ]
       [ uid = "..." ]
       [ scope = "public | private"  ("public") ]
-      [ enum = "..." ]
+      [ class = "..." ]
         >
         <value>, 1 or more
         <string>, optional
@@ -295,6 +293,17 @@ integer: Signed integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
+
+class:
+    Defines instance class. Possible values are: * any - Defines instance of 
+    any class. * string - String class. Have a special meaning in the C      
+    context, it is represented a null-terminated array of characters. *      
+    buffer - Special class "buffer" that is used as an output byte array. *  
+    impl - Universal implementation class. If value differs from the listed  
+    above then next algorithm applied: 1. If value in a format .(uid), then  
+    it treated as a reference to the in-project class and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The class attribute is optional.       
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -341,18 +350,9 @@ c_prefix:
     Prefix that is used for C name resolution. The c_prefix attribute is
     optional.                                                           
 
-class:
-    Defines instance class. Possible values are: * any - Defines instance of 
-    any class. * string - String class. Have a special meaning in the C      
-    context, it is represented a null-terminated array of characters. *      
-    buffer - Special class "buffer" that is used as an output byte array. *  
-    impl - Universal implementation class. If value differs from the listed  
-    above then next algorithm applied: 1. If value in a format .(uid), then  
-    it treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. Short class name that is implmeneted in
-    this module. This attributes is used for inner components name           
-    resolution. The class attribute is optional.                             
+of_class:
+    Defines class name that a component belongs to. This attributes is used  
+    for inner components name resolution. The of_class attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
@@ -454,7 +454,7 @@ Groups common attributes for the component. Defines struct type.
         name = "..."
       [ definition = "public | private | external"  ("private") ]
       [ c_prefix = "..." ]
-      [ class = "..." ]
+      [ of_class = "..." ]
       [ uid = "..." ]
       [ scope = "public | private"  ("public") ]
       [ visibility = "public | private"  ("public") ]
@@ -487,10 +487,9 @@ c_prefix:
     Prefix that is used for C name resolution. The c_prefix attribute is
     optional.                                                           
 
-class:
-    Short class name that is implmeneted in this module. This attributes is
-    used for inner components name resolution. The class attribute is      
-    optional.                                                              
+of_class:
+    Defines class name that a component belongs to. This attributes is used  
+    for inner components name resolution. The of_class attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
@@ -517,13 +516,14 @@ property.
 
     <property
         name = "..."
-      [ uid = "..." ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | size | byte | data" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ uid = "..." ]
+      [ bits = "..." ]
         >
         <argument>
         <return>
@@ -594,6 +594,10 @@ Value: Meaning:
 
 name:
     Property name. The name attribute is required.
+
+bits:
+    Define number of bits occupied by the property with integral type. The
+    bits attribute is optional.                                           
 
 
 The 'argument' item
@@ -763,7 +767,7 @@ Groups common attributes for the component. Defines the callback signature.
 
     <callback
         name = "..."
-      [ class = "..." ]
+      [ of_class = "..." ]
       [ uid = "..." ]
       [ scope = "public | private"  ("public") ]
       [ c_prefix = "..." ]
@@ -778,10 +782,9 @@ c_prefix:
     Prefix that is used for C name resolution. The c_prefix attribute is
     optional.                                                           
 
-class:
-    Short class name that is implmeneted in this module. This attributes is
-    used for inner components name resolution. The class attribute is      
-    optional.                                                              
+of_class:
+    Defines class name that a component belongs to. This attributes is used  
+    for inner components name resolution. The of_class attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
@@ -810,7 +813,7 @@ and optionally implementation.
         name = "..."
       [ definition = "public | private | external"  ("private") ]
       [ c_prefix = "..." ]
-      [ class = "..." ]
+      [ of_class = "..." ]
       [ uid = "..." ]
       [ scope = "public | private"  ("public") ]
       [ visibility = "public | private"  ("public") ]
@@ -845,10 +848,9 @@ c_prefix:
     Prefix that is used for C name resolution. The c_prefix attribute is
     optional.                                                           
 
-class:
-    Short class name that is implmeneted in this module. This attributes is
-    used for inner components name resolution. The class attribute is      
-    optional.                                                              
+of_class:
+    Defines class name that a component belongs to. This attributes is used  
+    for inner components name resolution. The of_class attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
@@ -884,7 +886,7 @@ optionally implementation.
 
     <macros
         name = "..."
-      [ class = "..." ]
+      [ of_class = "..." ]
       [ uid = "..." ]
       [ scope = "public | private"  ("public") ]
       [ c_prefix = "..." ]
@@ -899,10 +901,9 @@ c_prefix:
     Prefix that is used for C name resolution. The c_prefix attribute is
     optional.                                                           
 
-class:
-    Short class name that is implmeneted in this module. This attributes is
-    used for inner components name resolution. The class attribute is      
-    optional.                                                              
+of_class:
+    Defines class name that a component belongs to. This attributes is used  
+    for inner components name resolution. The of_class attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
