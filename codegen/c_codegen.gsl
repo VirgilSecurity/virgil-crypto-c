@@ -251,9 +251,8 @@ endfunction
 # ---------------------------------------------------------------------------
 function c_insert_category (title)
     newline (2)
-    c_insert_double_line ()
+    c_insert_line ()
     c_insert_line_comment (my.title)
-    c_insert_double_line ()
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -351,9 +350,11 @@ endfunction
 function c_insert_method_signature (c_method, ending)
     check_argument (my, "c_method")
 
+    insert_code (cat ( \
+        c_derive_component_modifiers (my.c_method), \
+        c_derive_instance_type (my.c_method->c_return)))
+
     my.beginning = my.c_method.name + " "
-    my.visibility = c_format_visibility (my.c_method)
-    insert_code ("$(my.visibility:) $(my.c_method->c_return.value:)")
     insert_code (my.beginning + c_format_arguments (my.c_method, my.beginning, my.ending))
 endfunction
 
@@ -397,14 +398,17 @@ function c_insert_method_definition (c_method)
 
     c_insert_description (my.c_method)
     c_insert_method_signature (my.c_method, " {")
+
     for my.c_method.c_precondition where is_true (is_default)
         newline_if (first ())
         insert_code (c_precondition., 1)
     endfor
+
     for my.c_method.c_precondition where is_false (is_default)
         newline_if (first ())
         insert_code (c_precondition., 1)
     endfor
+
     if count (my.c_method.c_implementation)
         newline ()
         insert_code (my.c_method->c_implementation., 1)
@@ -458,13 +462,13 @@ function c_insert_enum_definition (c_enum, no_description)
 
     insert_code ("enum $(my.name ?:) {")
 
-    for my.c_enum.c_value
-        c_insert_description (c_value, 1)
+    for my.c_enum.c_constant
+        c_insert_description (c_constant, 1)
 
-        my.enum_entry = c_value.name
+        my.enum_entry = c_constant.name
 
-        if defined (c_value.value)
-            my.enum_entry += " = $(c_value.value:)"
+        if defined (c_constant.value)
+            my.enum_entry += " = $(c_constant.value:)"
         endif
 
         if ! last ()
@@ -493,28 +497,6 @@ endfunction
 # ###########################################################################
 #   Code generation for type: struct.
 # ###########################################################################
-
-
-# ---------------------------------------------------------------------------
-#   Insert entry of type: callback, within type: struct.
-#   Use component: c_method.
-# ---------------------------------------------------------------------------
-function c_insert_struct_callback (cb, tab_count)
-    my.beginning = tabs (my.tab_count) + "$(my.cb->c_return.value:) (*$(my.cb.name:)) "
-    insert_code (my.beginning + \
-            c_format_arguments (my.cb, my.beginning, ";", my.tab_count), my.tab_count)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Insert entry of type: property, within type: struct.
-#   Use component: c_property.
-# ---------------------------------------------------------------------------
-function c_insert_struct_property (property, tab_count)
-    check_argument (my, "property")
-    assert_attribute (my.property, "value", my)
-
-    insert_code (c_derive_instance_declaration (my.property) + ";", my.tab_count)
-endfunction
 
 # ---------------------------------------------------------------------------
 #   Insert declaration for type: struct.
@@ -554,13 +536,12 @@ function c_insert_struct_definition (c_struct, no_description)
     insert_code ("struct $(my.name ?:) {")
 
     for my.c_struct.c_property
-        newline_if (is_true (my.is_not_first) & has_description (c_property))
+        newline_if (is_true (my.is_not_first) & ! has_description (c_property))
         c_insert_description (c_property, 1)
-        if is_true (c_property.is_callback)
-            c_insert_struct_callback (c_property, 1)
-        else
-            c_insert_struct_property (c_property, 1)
-        endif
+
+        insert_code ( \
+                c_derive_instance_declaration (c_property) + (":$(c_property.bits)" ? "") + ";", 1)
+
         my.is_not_first ?= 1
     endfor
 
@@ -583,7 +564,6 @@ endfunction
 # ###########################################################################
 #   Code generation for macros.
 # ###########################################################################
-
 
 # ---------------------------------------------------------------------------
 #   Insert given multiline macro.

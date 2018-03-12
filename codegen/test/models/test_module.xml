@@ -1,5 +1,142 @@
 <module name="foo">
-    <method name="do stuff">
-        Make some usefull calculations.
+
+    <!-- SPECIAL TYPES -->
+    <struct name="impl" of_class="impl" definition="external"/>
+    <struct name="buffer" of_class="buffer" definition="external"/>
+
+    <!-- TYPE ALIASES -->
+    <c_alias name="byte" type="uint8_t" scope="public">
+        //  Portable representation of the byte.
+    </c_alias>
+
+    <!-- ENUMERATIONS -->
+    <enum name="tag" definition="public">
+        Enumeration type with public definition.
+
+        <constant name="simple" value="1">
+            Simple comment.
+        </constant>
+
+        <constant name="complex">
+            Complex comment.
+            Too complex.
+        </constant>
+    </enum>
+
+    <enum name="bag" definition="private">
+        Enumeration type with private definition.
+
+        <constant name="one" value="1"/>
+        <constant name="two"/>
+    </enum>
+
+    <!-- STRUCTURES -->
+    <struct name="context" definition="public">
+        Structure with a public definition.
+
+        <property name="number" type="integer">
+            Integral type.
+        </property>
+
+        <property name="number 1 byte" type="integer" size="1">
+            Integral type 8 bits.
+        </property>
+
+        <property name="number 2 bytes" type="integer" size="2">
+            Integral type 16 bits.
+        </property>
+
+        <property name="number 4 bytes" type="integer" size="4">
+            Integral type 32 bits.
+        </property>
+
+        <property name="number 8 bytes" type="integer" size="8">
+            Integral type 64 bits.
+        </property>
+
+        <property name="flag without description" type="boolean">
+            <!-- Boolean type. -->
+        </property>
+
+        <property name="bitfield" type="integer" bits="1">
+            Bitfield type.
+        </property>
+
+        <property name="one byte" type="byte">
+            One byte.
+        </property>
+
+        <property name="call me" callback="some_callback_fn">
+            Callback type.
+        </property>
+
+        <property name="some tag" enum="some_enum_type_t">
+            Enumeration type.
+        </property>
+
+        <property name="any" class="any" access="readwrite">
+            Any type is a power of the C language.
+        </property>
+
+        <property name="impl" class="impl" access="readwrite">
+            Special class impl.
+        </property>
+
+        <property name="buffer" class="buffer" access="readwrite">
+            Special class buffer.
+        </property>
+
+        <property name="readwrite str" class="string" access="readwrite">
+            Null-terminated string.
+        </property>
+
+        <property name="readonly str" class="string" access="readonly">
+            Null-terminated readonly string.
+        </property>
+
+        <property name="readonly bytes" type="data">
+            Readonly byte array.
+        </property>
+
+        <property name="readwrite bytes" type="data" access="readwrite">
+            Modifiable byte array.
+        </property>
+
+        <property name="fixed byte array" type="byte" access="readwrite">
+            <array length="fixed" length_constant="32"/>
+            Fixed size array.
+        </property>
+
+        <property name="derived byte array" type="byte" access="readwrite">
+            <array length="derived"/>
+            Derived size array.
+        </property>
+
+        <property name="array of classes" class="impl" access="readwrite">
+            <array length="null_terminated"/>
+            Null-terminated array of classes.
+        </property>
+
+        <property name="fixed array of classes" class="impl" access="readwrite">
+            <array length="fixed" length_constant="32"/>
+            Fixed size array of classes.
+        </property>
+    </struct>
+
+    <struct name="secret" definition="private">
+        Structure with a private definition.
+
+        <property name="any" class="any">
+            Any type is the power of C language.
+        </property>
+    </struct>
+
+    <!-- METHODS -->
+    <method name="do public">
+        Public visibility.
+    </method>
+
+    <method name="do private" visibility="private">
+        Private visibility
     </method>
  </module>

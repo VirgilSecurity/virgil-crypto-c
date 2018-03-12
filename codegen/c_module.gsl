@@ -338,7 +338,7 @@ endfunction
 #   Add 'c_enum' to destination.
 # ---------------------------------------------------------------------------
 function c_module_add_enums (component, c_module)
-    check_argument (my, "component")
+    check_arguments (my, "component, c_module")
     check_argument (my, "c_module")
 
     for my.component.enum
@@ -425,19 +425,6 @@ function c_module_add_macroses (component, c_module)
     endfor
 endfunction
 
-# ---------------------------------------------------------------------------
-#   Add 'c_alias' to destination
-# ---------------------------------------------------------------------------
-function c_module_add_aliases (module, destination)
-    check_arguments (my, "module, destination", my)
-
-    for my.module.c_alias
-        my.copied_c_alias = iyem_copy_to (c_alias, my.c_module)
-        c_component_resolve_alias (c_alias)
-    endfor
-endfunction
-
-
 # ###########################################################################
 #   Root component functions.
 # ###########################################################################
@@ -449,8 +436,8 @@ function c_module_create (source, destination, project)
     check_arguments (my, "source, destination, project", my)
 
     for my.source.module
-        assert_attribute (module, "name")
-        assert_attribute (module, "class")
+        component_require_attr_name (module, my)
+        component_require_attr_of_class (module, my)
 
         echo_trace ("Createing <c_module/> from \
                 <$(name (module)) name = \"$(module.name:)/>\"", my)
@@ -482,10 +469,20 @@ function c_module_create (source, destination, project)
             c_module_add_license (my.project, c_module)
             c_module_add_caution (module, c_module)
             c_module_add_includes (module, c_module)
-            c_module_add_aliases (module, c_module)
+
+            for module.c_alias
+                copy c_alias to c_module
+            endfor
+
             #c_module_add_callbacks (module, c_module)
-            #c_module_add_enums (module, c_module)
-            #c_module_add_structs (module, c_module)
+            for module.enum
+                c_component_create_enum (enum, c_module)
+            endfor
+
+            for module.struct
+                c_component_create_struct (struct, c_module)
+            endfor
+
             for module.method
                 c_component_create_method (method, c_module)
             endfor

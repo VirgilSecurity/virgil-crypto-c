@@ -84,7 +84,7 @@ function module_resolve (module, project)
 
     module_embed_sections (my.module)
 
-    my.module.class ?= my.module.name
+    my.module.of_class ?= my.module.name
     my.module.c_prefix ?= my.project.name
     my.module.uid = make_id (name (my.module), my.module.name)
 
