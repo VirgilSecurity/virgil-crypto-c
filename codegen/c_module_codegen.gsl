@@ -216,6 +216,11 @@ function c_module_generate_header (c_module)
         c_insert_macros (c_macros)
     endfor
 
+    for my.c_module.c_macroses where scope = "public"
+        newline ()
+        c_insert_macros (c_macroses)
+    endfor
+
     for my.c_module.c_enum where scope = "public" & definition = "public"
         newline ()
         c_insert_enum (c_enum)

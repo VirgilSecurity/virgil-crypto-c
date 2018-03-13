@@ -887,6 +887,20 @@ function component_resolve_macros (macros, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve component: macroses.
+# ---------------------------------------------------------------------------
+function component_resolve_macroses (macroses, parent)
+    check_arguments (my, "macroses, parent", my)
+
+    for my.macroses.macros
+        component_resolve_attr_scope (macroses, my.parent)
+        component_resolve_attr_of_class (macroses, my.parent)
+        component_resolve_attr_of_class (macros, my.macroses)
+        component_resolve_macros (macros, my.parent)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Traverse known components within module and perform complete resolution.
 # ---------------------------------------------------------------------------
 function foreach_component_resolve (module)
@@ -922,6 +936,10 @@ function foreach_component_resolve (module)
 
     for my.module.macros
         component_resolve_macros (macros, my.module)
+    endfor
+
+    for my.module.macroses
+        component_resolve_macroses (macroses, my.module)
     endfor
 endfunction
 
