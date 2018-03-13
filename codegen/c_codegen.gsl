@@ -573,10 +573,12 @@ function c_insert_macros (c_macros)
     check_argument (my, "c_macros")
 
     c_insert_description (my.c_macros)
+
     my.body = my.c_macros->c_implementation.
     my.body = code_remove_side_effects (my.body)
     my.body = "$(my.body:left, no)"
     my.body = string_trim (my.body)
+
     if string_multiline (my.body)
         #   1. Adjust body as block, so whitespaces will be added to the end of the each line
         #   2. Put backslash to the end of the each line wich ends with new line
@@ -587,6 +589,7 @@ function c_insert_macros (c_macros)
         my.body = string.replace (my.body, "\\$(terminator)#| $(terminator)#")
         my.body = string_multi_rtrim (my.body)
     endif
+
     out (my.body)
 endfunction
 

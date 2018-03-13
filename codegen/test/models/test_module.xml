@@ -9,6 +9,13 @@
         //  Portable representation of the byte.
     </c_alias>
 
+    <!-- MACROSES -->
+    <macros name="pi" of_class="global">
+        <c_implementation>
+            #define .(c_global_macros_pi) 3.1415
+        </c_implementation>
+    </macros>
+
     <!-- ENUMERATIONS -->
     <enum name="tag" definition="public">
         Enumeration type with public definition.

@@ -64,13 +64,7 @@ function c_derive_constant_name (constant)
 
     component_require_lineage (my.constant, my)
 
-    my.ancestors = ""
-    for my.constant->lineage.ancestor where ! string_in (id, "project, module")
-        my.ancestors = cat (my.ancestors, ancestor.name)
-    endfor
-
-    return c_format_constant_name ( \
-            my.constant.c_prefix, union (my.constant.of_class, my.ancestors), my.constant.name)
+    return c_format_constant_name (my.constant.c_prefix, component_derive_full_name (my.constant))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -81,7 +75,7 @@ function c_derive_enum_name (enum)
 
     component_require_lineage (my.enum, my)
 
-    return c_format_name (my.enum.c_prefix, union (my.enum.of_class, my.enum.name), "t")
+    return c_format_name (my.enum.c_prefix, component_derive_full_name (my.enum), "t")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -92,7 +86,7 @@ function c_derive_method_name (method)
 
     component_require_lineage (my.method, my)
 
-    return c_format_name (my.method.c_prefix, my.method.of_class, my.method.name)
+    return c_format_name (my.method.c_prefix, component_derive_full_name (my.method))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -103,7 +97,7 @@ function c_derive_struct_name (struct)
 
     component_require_lineage (my.struct, my)
 
-    return c_format_name (my.struct.c_prefix, union (my.struct.of_class, my.struct.name), "t")
+    return c_format_name (my.struct.c_prefix, component_derive_full_name (my.struct), "t")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -120,6 +114,17 @@ function c_derive_instance_name (instance)
     else
         return c_format_name (my.instance.name)
     endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Derive C style in-project macros full name.
+# ---------------------------------------------------------------------------
+function c_derive_macros_name (macros)
+    check_argument (my, "macros", my)
+
+    component_require_lineage (my.macros, my)
+
+    return c_format_macros_name (my.macros.c_prefix, component_derive_full_name (my.macros))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -476,7 +481,7 @@ function c_component_map_instance (c_instance, instance)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Copy 'c_implementation' from component to c_component, if defined.
+#   Map 'c_implementation' from component to c_component, if defined.
 # ---------------------------------------------------------------------------
 function c_component_map_implementation (c_component, component)
     check_arguments (my, "c_component, component", my)
@@ -496,6 +501,16 @@ function c_component_map_property_attr_bits (c_property, property)
     my.c_property.bits = my.property.bits ?
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Map attribute 'is_method' from 'macros' to 'c_macros'.
+# ---------------------------------------------------------------------------
+function c_component_map_macros_attr_is_method (c_macros, macros)
+    check_arguments (my, "c_macros, macros", my)
+
+    component_require_macros_attr_is_method (my.macros, my)
+
+    my.c_macros.is_method ?= my.macros.is_method
+endfunction
 
 # ###########################################################################
 #   Functions to creation new c_component(s)
@@ -693,5 +708,24 @@ function c_component_create_struct (struct, destination)
     endnew
 endfunction
 
+
+# ---------------------------------------------------------------------------
+#   Create 'c_macros' from 'macros'.
+# ---------------------------------------------------------------------------
+function c_component_create_macros (macros, destination)
+    check_arguments (my, "macros, destination", my)
+
+    component_require_attr_name (my.macros)
+
+    new c_macros to my.destination
+        . = c_format_description (my.macros.) ?
+        .name = c_derive_macros_name (my.macros)
+
+        c_component_map_attr_scope (c_macros, my.macros)
+        c_component_map_attr_uid (c_macros, my.macros)
+        c_component_map_macros_attr_is_method (c_macros, my.macros)
+        c_component_map_implementation (c_macros, my.macros)
+    endnew
+endfunction
 
 .endtemplate

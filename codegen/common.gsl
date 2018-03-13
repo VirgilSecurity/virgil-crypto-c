@@ -840,16 +840,6 @@ function cat (part1, part2, part3, part4, part5, part6, part7, part8)
     return "$(my.result:)"
 endfunction
 
-# ---------------------------------------------------------------------------
-#   Return union of two strings.
-# ---------------------------------------------------------------------------
-function union (str1, str2)
-    if defined (my.str1) & defined (my.str2) & string_equal (my.str1, my.str2)
-        return my.str1
-    endif
-
-    cat (my.str1, my.str2)
-endfunction
 
 # ---------------------------------------------------------------------------
 #   Return 'uid' as concatinated C like string.
