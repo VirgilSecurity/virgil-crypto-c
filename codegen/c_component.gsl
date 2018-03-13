@@ -728,4 +728,22 @@ function c_component_create_macros (macros, destination)
     endnew
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Create 'c_macros' from 'macroses'.
+# ---------------------------------------------------------------------------
+function c_component_create_macroses (macroses, destination)
+    check_arguments (my, "macroses, destination", my)
+
+    new c_macroses to my.destination
+        . = c_format_description (my.macroses.) ?
+
+        c_component_map_attr_scope (c_macroses, my.macroses)
+        c_component_map_implementation (c_macroses, my.macroses)
+
+        for my.macroses.macros
+            c_component_create_macros (macros, c_macroses)
+        endfor
+    endnew
+endfunction
+
 .endtemplate

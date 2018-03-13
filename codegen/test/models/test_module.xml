@@ -11,10 +11,72 @@
 
     <!-- MACROSES -->
     <macros name="pi" of_class="global">
+        Macros as a global constant .
         <c_implementation>
             #define .(c_global_macros_pi) 3.1415
         </c_implementation>
     </macros>
+
+    <macros name="magic constant">
+        Macros as a local constant.
+        <c_implementation>
+            #define .(c_class_foo_macros_magic_constant) 777.25
+        </c_implementation>
+    </macros>
+
+    <macros name="do magic" is_method="1">
+        Macros as a method.
+        <c_implementation>
+            #define .(c_class_foo_macros_do_magic) (a) !(~(a))
+        </c_implementation>
+    </macros>
+
+    <macros name="do multiline" is_method="1">
+        Macros as a multiline method.
+        <c_implementation>
+            #define .(c_class_foo_macros_do_multiline) (x)
+                do {
+                    x += 1;
+                    x *= 2;
+                } while (0)
+        </c_implementation>
+    </macros>
+
+    <macroses of_class="global">
+        Define several macros constants in a one implementation.
+
+        <macros name="static"/>
+        <macros name="public"/>
+        <macros name="private"/>
+        <macros name="publics"/>
+        <macros name="internal build"/>
+        <c_implementation>
+            #if defined (__WINDOWS__)
+            #   if defined .(c_global_macros_static)
+            #       define .(c_global_macros_public)
+            #   elif defined .(c_global_macros_internal_build)
+            #       if defined DLL_PUBLIC
+            #           define .(c_global_macros_public) __declspec(dllexport)
+            #       else
+            #           define .(c_global_macros_public)
+            #       endif
+            #   elif defined .(c_global_macros_publics)
+            #       define .(c_global_macros_public) __declspec(dllexport)
+            #   else
+            #       define .(c_global_macros_public) __declspec(dllimport)
+            #   endif
+            #   define .(c_global_macros_private)
+            #else
+            #   if (defined __GNUC__ &amp;&amp; __GNUC__ >= 4) || defined __INTEL_COMPILER
+            #       define .(c_global_macros_public)  __attribute__ ((visibility ("default")))
+            #       define .(c_global_macros_private) __attribute__ ((visibility ("hidden")))
+            #   else
+            #       define .(c_global_macros_public)
+            #       define .(c_global_macros_private)
+            #   endif
+            #endif
+        </c_implementation>
+    </macroses>
 
     <!-- ENUMERATIONS -->
     <enum name="tag" definition="public">
