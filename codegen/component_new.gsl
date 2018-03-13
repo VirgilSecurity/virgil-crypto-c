@@ -228,6 +228,21 @@ function component_require_lineage (component, caller)
     assert_item (my.component, "lineage", my.caller ? my)
 endfunction
 
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: macros.is_method.
+# ---------------------------------------------------------------------------
+function component_require_macros_attr_is_method (macros, caller)
+    check_argument (my, "macros", my)
+
+    assert_attribute (my.macros, "is_method", my.caller ? my)
+endfunction
+
+
+# ###########################################################################
+#   Attribute resolution.
+# ###########################################################################
+
 # ---------------------------------------------------------------------------
 #   Return true if given component does not belong to any class.
 # ---------------------------------------------------------------------------
@@ -236,11 +251,6 @@ function component_is_global (component)
 
     return (my.component.of_class ? my.component->lineage.of_class ? "global") = "global"
 endfunction
-
-
-# ###########################################################################
-#   Attribute resolution.
-# ###########################################################################
 
 # ---------------------------------------------------------------------------
 #   Derive uid for given module or it's children.
@@ -274,6 +284,35 @@ function component_derive_uid (component)
 
     #   Put it together
     return make_id (my.uid_scope, my.parent_uid, my.self_uid)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return component's full name: class name + ancestors + self name.
+#   Rules:
+#       - class name is ommited if class is 'global';
+#       - class name is ommited if component's name equals to the class name.
+# ---------------------------------------------------------------------------
+function component_derive_full_name (component)
+    check_argument (my, "component", my)
+
+    component_require_attr_name (my.component, my)
+    component_require_attr_of_class (my.component, my)
+    component_require_lineage (my.component, my)
+
+    my.ancestors = ""
+    for my.component->lineage.ancestor where ! string_in (id, "project, module")
+        my.ancestors = cat (my.ancestors, ancestor.name)
+    endfor
+
+    if component_is_global (my.component)
+        return cat (my.ancestors, my.component.name)
+
+    elsif string_equal (my.component.of_class, my.component.name)
+        return cat (my.ancestors, my.component.name)
+
+    else
+        return cat (my.component.of_class, my.ancestors, my.component.name)
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------

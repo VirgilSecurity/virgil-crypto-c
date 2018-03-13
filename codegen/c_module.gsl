@@ -474,6 +474,10 @@ function c_module_create (source, destination, project)
                 copy c_alias to c_module
             endfor
 
+            for module.macros
+                c_component_create_macros (macros, c_module)
+            endfor
+
             #c_module_add_callbacks (module, c_module)
             for module.enum
                 c_component_create_enum (enum, c_module)

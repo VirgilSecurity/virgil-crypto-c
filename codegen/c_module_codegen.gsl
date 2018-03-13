@@ -236,14 +236,6 @@ function c_module_generate_header (c_module)
         c_insert_struct_declaration (c_struct)
     endfor
 
-#
-#    for my.c_module. as c where is_item (c) & mark_header_definition & mark_macros
-#        c_insert_category_if ("Macros constants & macros functions.", first ())
-#        c_insert_component_definition (c, my)
-#    endfor
-#    c_finalize_component_insertion (my)
-#
-
     for my.c_module.c_method where scope = "public" & visibility = "public"
         c_insert_component_declaration (c_method, my)
     endfor
