@@ -729,10 +729,12 @@ function c_component_create_macros (macros, destination)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create 'c_macros' from 'macroses'.
+#   Create 'c_macroses' from 'macroses'.
 # ---------------------------------------------------------------------------
 function c_component_create_macroses (macroses, destination)
     check_arguments (my, "macroses, destination", my)
+
+    component_require_c_implementation (my.macroses)
 
     new c_macroses to my.destination
         . = c_format_description (my.macroses.) ?

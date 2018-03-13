@@ -32,13 +32,17 @@ attribute names are case-sensitive and we use only lower-case names.
                [is_const_array] [is_const_reference] [uid] [is_string]/>
           <c_precondition [position]/>
        </c_method>
-       <c_callback name [visibility] [scope] [uid]>
+       <c_callback name [scope] [uid]>
           <c_return .../>
           <c_argument .../>
        </c_callback>
        <c_macros [uid] [scope] [is_method]>
           <c_implementation/>
        </c_macros>
+       <c_macroses [scope]>
+          <c_macros .../>
+          <c_implementation .../>
+       </c_macroses>
     </c_module>
 
 Detailed specifications
@@ -72,6 +76,7 @@ Base model for C language code generation.
         <c_method>
         <c_callback>
         <c_macros>
+        <c_macroses>
     </c_module>
 
 The c_module item can have these attributes:
@@ -753,7 +758,6 @@ Define callback type.
 
     <c_callback
         name = "..."
-      [ visibility = "public | private"  ("public") ]
       [ scope = "public | private"  ("public") ]
       [ uid = "..." ]
         >
@@ -766,15 +770,6 @@ The c_callback item can have these attributes:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.   
-
-visibility:
-    Defines symbol binary visibility. This attribute must not be inherited.
-    The visibility attribute is optional. Its default value is "public". It
-    can take one of the following values:                                  
-
-Value: Meaning:
-public: Symbols of the types and methods are visible in a binary file.
-private: Symbols of the types and methods are hidden in a binary file.
 
 scope:
     Defines component visibility within scope. This attribute can be
@@ -833,4 +828,28 @@ Defines method or macros implementation.
 
     <c_implementation>
 
+
+
+The 'c_macroses' item
+---------------------
+
+Define set of macroses in the one implemenatation.
+
+    <c_macroses
+      [ scope = "public | private"  ("public") ]
+        >
+        <c_macros>, 1 or more
+        <c_implementation>, optional
+    </c_macroses>
+
+The c_macroses item has this single attribute:
+
+scope:
+    Defines component visibility within scope. This attribute can be
+    inherited. The scope attribute is optional. Its default value is
+    "public". It can take one of the following values:              
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible only within library or a specific source file.
 

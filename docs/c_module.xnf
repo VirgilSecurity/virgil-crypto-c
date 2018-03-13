@@ -78,6 +78,7 @@
         <allow entity="c_method"/>
         <allow entity="c_callback"/>
         <allow entity="c_macros"/>
+        <allow entity="c_macroses"/>
     </entity>
 
     <include filename="common.xnf"/>

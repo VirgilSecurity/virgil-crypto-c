@@ -431,3 +431,12 @@
 
     <allow entity="c_implementation" occurs="0/1"/>
 </entity>
+
+<entity name="macroses">
+    Group a set of macroses with common implemenatation.
+
+    <inherit entity="scope"/>
+
+    <allow entity="macros" occurs="1+"/>
+    <allow entity="c_implementation" occurs="1"/>
+</entity>
