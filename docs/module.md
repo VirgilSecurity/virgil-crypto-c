@@ -46,6 +46,10 @@ attribute names are case-sensitive and we use only lower-case names.
        <macros name [of_class] [uid] [scope] [c_prefix] [is_method]>
           <c_implementation .../>
        </macros>
+       <macroses [scope]>
+          <macros .../>
+          <c_implementation .../>
+       </macroses>
     </module>
 
 Detailed specifications
@@ -81,6 +85,7 @@ generate wrappers for high level languakes like C#, Java, Python, etc.
         <callback>
         <method>
         <macros>
+        <macroses>
     </module>
 
 The module item can have these attributes:
@@ -929,4 +934,28 @@ is_method:
 Value: Meaning:
 0: Macros is a constant.
 1: Macros is a method.
+
+
+The 'macroses' item
+-------------------
+
+Group a set of macroses with common implemenatation.
+
+    <macroses
+      [ scope = "public | private"  ("public") ]
+        >
+        <macros>, 1 or more
+        <c_implementation>, required
+    </macroses>
+
+The macroses item has this single attribute:
+
+scope:
+    Defines component visibility within scope. This attribute can be
+    inherited. The scope attribute is optional. Its default value is
+    "public". It can take one of the following values:              
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible only within library or a specific source file.
 

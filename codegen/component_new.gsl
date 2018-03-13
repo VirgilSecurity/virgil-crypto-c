@@ -228,6 +228,15 @@ function component_require_lineage (component, caller)
     assert_item (my.component, "lineage", my.caller ? my)
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Check required item: c_implementation.
+# ---------------------------------------------------------------------------
+function component_require_c_implementation (component, caller)
+    check_argument (my, "component", my)
+
+    assert_item (my.component, "c_implementation", my.caller ? my)
+endfunction
+
 
 # ---------------------------------------------------------------------------
 #   Check required attribute: macros.is_method.
@@ -892,9 +901,12 @@ endfunction
 function component_resolve_macroses (macroses, parent)
     check_arguments (my, "macroses, parent", my)
 
+    component_require_c_implementation (my.macroses, my)
+
+    component_resolve_attr_scope (my.macroses, my.parent)
+    component_resolve_attr_of_class (my.macroses, my.parent)
+
     for my.macroses.macros
-        component_resolve_attr_scope (macroses, my.parent)
-        component_resolve_attr_of_class (macroses, my.parent)
         component_resolve_attr_of_class (macros, my.macroses)
         component_resolve_macros (macros, my.parent)
     endfor

@@ -249,7 +249,6 @@
     </attr>
 
     <inherit entity="scope"/>
-    <inherit entity="visibility"/>
     <inherit entity="uid"/>
 
     <allow entity="c_return" occurs="0/1"/>
@@ -273,6 +272,16 @@
     <inherit entity="scope"/>
     <inherit entity="uid"/>
 
+    <allow entity="c_implementation" occurs="0/1"/>
+</entity>
+
+
+<entity name="c_macroses">
+    Define set of macroses in the one implemenatation.
+
+    <inherit entity="scope"/>
+
+    <allow entity="c_macros" occurs="1+"/>
     <allow entity="c_implementation" occurs="0/1"/>
 </entity>
 
