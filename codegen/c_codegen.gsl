@@ -334,13 +334,15 @@ endfunction
 #   Insert callback type declaration for type: function.
 #   Use component: c_method.
 # ---------------------------------------------------------------------------
-function c_insert_callback (cb, prefix)
-    check_argument (my, "cb")
+function c_insert_callback (c_callback, prefix)
+    check_argument (my, "c_callback", my)
 
-    c_insert_description (my.cb)
+    c_insert_description (my.c_callback)
 
-    my.beginning = "typedef $(my.cb->c_return.value:) (*$(my.prefix ?:)$(my.cb.name:)) "
-    insert_code (my.beginning + c_format_arguments (my.cb, my.beginning, ";"))
+    my.c_callback_return_type = c_derive_instance_type (my.c_callback->c_return)
+    my.beginning = "typedef $(my.c_callback_return_type:) (*$(my.c_callback.name)) "
+
+    insert_code (my.beginning + c_format_arguments (my.c_callback, my.beginning, ";"))
 endfunction
 
 # ---------------------------------------------------------------------------

@@ -128,6 +128,17 @@ function c_derive_macros_name (macros)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Derive C style in-project callback full name.
+# ---------------------------------------------------------------------------
+function c_derive_callback_name (callback)
+    check_argument (my, "callback", my)
+
+    component_require_lineage (my.callback, my)
+
+    return c_format_name (my.callback.c_prefix, component_derive_full_name (my.callback), "fn")
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Derive C integer type correspond to it's size.
 #   Size: {1, 2, 4, 8}.
 # ---------------------------------------------------------------------------
@@ -745,6 +756,35 @@ function c_component_create_macroses (macroses, destination)
         for my.macroses.macros
             c_component_create_macros (macros, c_macroses)
         endfor
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create 'c_callback' from 'callback'.
+# ---------------------------------------------------------------------------
+function c_component_create_callback (callback, destination)
+    check_arguments (my, "callback, destination", my)
+
+    component_require_attr_name (my.callback)
+
+    new c_callback to my.destination
+        . = c_format_description (my.callback.) ?
+        .name = c_derive_callback_name (my.callback)
+
+        c_component_map_attr_scope (c_callback, my.callback)
+        c_component_map_attr_uid (c_callback, my.callback)
+
+        for my.callback.argument
+            c_component_create_argument (argument, c_callback)
+        else
+            c_component_create_void_argument (c_callback)
+        endfor
+
+        if count (my.callback.return)
+            c_component_create_return (my.callback->return, c_callback)
+        else
+            c_component_create_void_return (c_callback)
+        endif
     endnew
 endfunction
 

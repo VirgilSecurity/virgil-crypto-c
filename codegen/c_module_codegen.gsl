@@ -241,15 +241,15 @@ function c_module_generate_header (c_module)
         c_insert_struct_declaration (c_struct)
     endfor
 
-    for my.c_module.c_method where scope = "public" & visibility = "public"
-        c_insert_component_declaration (c_method, my)
+    for my.c_module.c_callback where scope = "public"
+        newline ()
+        c_insert_callback (c_callback)
     endfor
-    c_finalize_component_insertion (my)
 
-    for my.c_module.c_method where scope = "public" & visibility = "private"
-        c_insert_component_declaration (c_method, my)
+    for my.c_module.c_method where scope = "public"
+        newline ()
+        c_insert_method_declaration (c_method)
     endfor
-    c_finalize_component_insertion (my)
 
     c_insert_section_generated_end ()
     c_insert_header_epilogue (my.c_module, my.content_after)

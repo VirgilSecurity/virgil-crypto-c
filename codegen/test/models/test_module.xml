@@ -99,6 +99,12 @@
         <constant name="two"/>
     </enum>
 
+    <!-- CALLBACKS -->
+    <callback name="destroy">
+        Class self destruction callback type.
+        <argument name="impl" class="impl" access="disown"/>
+    </callback>
+
     <!-- STRUCTURES -->
     <struct name="context" definition="public">
         Structure with a public definition.
