@@ -474,6 +474,30 @@ function c_module_create (source, destination, project)
                 copy c_alias to c_module
             endfor
 
+            new c_enum to c_module
+                .= c_format_description ("Public integral constants")
+                .scope = "public"
+                .definition = "public"
+
+                for module.constant where scope = "public"
+                    c_component_create_constant (constant, c_enum)
+                else
+                    delete c_enum
+                endfor
+            endnew
+
+            new c_enum to c_module
+                .= c_format_description ("Private integral constants")
+                .scope = "private"
+                .definition = "private"
+
+                for module.constant where scope = "private"
+                    c_component_create_constant (constant, c_enum)
+                else
+                    delete c_enum
+                endfor
+            endnew
+
             for module.macros
                 c_component_create_macros (macros, c_module)
             endfor
