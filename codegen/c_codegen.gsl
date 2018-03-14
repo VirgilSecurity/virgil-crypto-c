@@ -597,38 +597,41 @@ endfunction
 
 
 # ###########################################################################
-#   Code generation for objects.
+#   Code generation for variables.
 # ###########################################################################
 
 
 # ---------------------------------------------------------------------------
-#   Insert object declaration.
-#   Use component: c_object.
+#   Insert variable declaration.
+#   Use component: c_variable.
 # ---------------------------------------------------------------------------
-function c_insert_object_declaration (c_object)
-    check_argument (my, "c_object")
+function c_insert_variable_declaration (c_variable)
+    check_argument (my, "c_variable", my)
 
-    c_insert_description (my.c_object)
-    insert_code (c_format_visibility(my.c_object) + \
-            " export $(my.c_object.type:) $(my.c_object.name:);")
+    c_insert_description (my.c_variable)
+
+    insert_code (cat ( \
+        c_derive_component_modifiers (my.c_variable), "extern", \
+        c_derive_instance_type (my.c_variable), "$(my.c_variable.name:);"))
+
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Insert object definition.
-#   Use component: c_object.
+#   Insert variable definition.
+#   Use component: c_variable.
 # ---------------------------------------------------------------------------
-function c_insert_object_definition (c_object)
-    check_argument (my, "c_object")
+function c_insert_variable_definition (c_variable)
+    check_argument (my, "c_variable")
 
-    c_insert_description (my.c_object)
+    c_insert_description (my.c_variable)
 
-    my.array_braces = is_true (my.c_object.is_fixed_array) ?? "[]" ? ""
-    my.beginning = "static $(my.c_object.type:) $(my.c_object.name:)$(my.array_braces:) = "
+    my.array_braces = is_true (my.c_variable.is_fixed_array) ?? "[]" ? ""
+    my.beginning = "static $(my.c_variable.type:) $(my.c_variable.name:)$(my.array_braces:) = "
 
-    for my.c_object.c_value
+    for my.c_variable.c_value
         my.type_cast = string_defined (c_value.type) ?? "($(c_value.type:)) " ? ""
         my.value_cast = is_true (c_value.is_pointer) ?? "&" ? ""
-        if count (my.c_object.c_value) = 1
+        if count (my.c_variable.c_value) = 1
             #   Single value initializing
             insert_code (my.beginning + my.type_cast + my.value_cast + c_value.value + ";")
         else

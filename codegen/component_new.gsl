@@ -650,30 +650,6 @@ function component_add_return (component)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve component: return.
-# ---------------------------------------------------------------------------
-function component_resolve_return (return, parent)
-    check_arguments (my, "return, parent", my)
-
-    my.return.type ?= "nothing"
-
-    component_add_lineage (my.return, my.parent)
-    component_resolve_instance (my.return, my.parent)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Resolve component: component.
-# ---------------------------------------------------------------------------
-function component_resolve_component (component, parent)
-    check_arguments (my, "component, parent", my)
-
-    component_resolve_attr_scope (my.component, my.parent)
-    component_resolve_attr_of_class (my.component, my.parent)
-    component_resolve_attr_c_prefix (my.component, my.parent)
-    component_resolve_attr_uid (my.component, my.parent)
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Resolve abstract component: string
 # ---------------------------------------------------------------------------
 function component_resolve_string (string, parent)
@@ -691,7 +667,6 @@ function component_resolve_array (array, parent)
     component_resolve_array_attr_access (my.array, my.parent)
     component_resolve_array_attr_length (my.array, my.parent)
 endfunction
-
 
 # ---------------------------------------------------------------------------
 #   Resolve abstract component: instance
@@ -726,6 +701,30 @@ function component_resolve_instance (instance, parent)
     if count (my.instance.array)
         component_resolve_array (my.instance->array, my.instance)
     endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: return.
+# ---------------------------------------------------------------------------
+function component_resolve_return (return, parent)
+    check_arguments (my, "return, parent", my)
+
+    my.return.type ?= "nothing"
+
+    component_add_lineage (my.return, my.parent)
+    component_resolve_instance (my.return, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: component.
+# ---------------------------------------------------------------------------
+function component_resolve_component (component, parent)
+    check_arguments (my, "component, parent", my)
+
+    component_resolve_attr_scope (my.component, my.parent)
+    component_resolve_attr_of_class (my.component, my.parent)
+    component_resolve_attr_c_prefix (my.component, my.parent)
+    component_resolve_attr_uid (my.component, my.parent)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -808,6 +807,7 @@ function component_resolve_value (value, parent)
     check_arguments (my, "value, parent", my)
 
     component_require_attr_value (my.value, my)
+    component_resolve_instance (my.value)
 endfunction
 
 # ---------------------------------------------------------------------------

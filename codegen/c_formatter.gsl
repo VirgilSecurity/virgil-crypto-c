@@ -54,12 +54,12 @@ function c_derive_instance_type (c_instance)
     #   Define modifiers
     my.value_modifiers = my.c_instance.is_const_type ?? "const " ? ""
     my.pointer_modifiers = my.c_instance.is_const_pointer ?? " *const" ? "*"
-    my.reference_modifiers = my.c_instance.is_const_refence ?? " *const" ? "*"
+    my.reference_modifiers = my.c_instance.is_const_reference ?? " *const" ? "*"
     my.array_modifiers = my.c_instance.is_const_array ?? " *const" ? "*"
 
     if my.c_instance.is_callback
         #   Callback type is a pointer itself.
-        my.pointer_modifiers = string.replace (my.pointer_modifiers, "*|")
+        my.pointer_modifiers = ""
     endif
 
     #   Apply type modifiers
@@ -76,6 +76,8 @@ function c_derive_instance_type (c_instance)
         #   One more star required
         my.type += my.array_modifiers
     endif
+
+    my.type = string.replace (my.type, "const*|const *")
 
     return my.type
 endfunction
