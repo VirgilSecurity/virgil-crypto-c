@@ -80,11 +80,15 @@
 
     <!-- CONSTANTS -->
     <constant name="integral a" value="25">
-        Constant that is defined out of the typed enum.
+        Constant that is defined out of a typed enum.
     </constant>
 
     <constant name="integral b" value="111">
-        Constant that is defined out of the typed enum.
+        Constant that is defined out of a typed enum.
+    </constant>
+
+    <constant name="integral c" value="777" scope="private">
+        Constant that is defined out of a typed enum.
     </constant>
 
     <!-- ENUMERATIONS -->
@@ -211,18 +215,55 @@
         Structure with a private definition.
 
         <property name="any" class="any">
-            Any type is the power of C language.
+            Any type is a power of the C language.
         </property>
     </struct>
 
     <!-- VARIABLES -->
     <variable name="features" class="string" access="readonly">
-        Global variable that conatins null-terminated array of strings.
+        Global variable that conatins derived size array of strings.
+
+        <array length="derived" access="readonly"/>
+
+        <value value="This is a string 1" class="string"/>
+        <value value="This is a string 2" class="string"/>
+    </variable>
+
+    <variable
+        name="external features"
+        class="string"
+        access="readonly"
+        scope="private"
+        definition="external">
+
+        Global variable that conatins array of strings.
+        And defined somewhere else.
+
+        <array length="derived" access="readonly"/>
+
+    </variable>
+
+    <variable name="private api" class="any" access="readonly" scope="private">
+        Global variable that conatins array of any class.
 
         <array length="derived" access="readonly"/>
     </variable>
 
+    <variable name="self api" class="any" access="readonly" scope="private">
+        Global variable that conatins any class.
+
+        <value value=".(class_foo_variable_private_api)[0]"/>
+    </variable>
+
     <!-- METHODS -->
+    <method name="do nothing">
+        Just do nothing.
+
+        <c_implementation>
+            //  Boo.
+        </c_implementation>
+    </method>
+
     <method name="do public">
         Public visibility.
     </method>

@@ -116,12 +116,35 @@ endfunction
 function c_derive_component_modifiers (component)
     check_argument (my, "component", my)
 
-    #   TODO: Replace hardcoded values by UIDs
+    #   TODO: Replace hard-coded values by UIDs
     if my.component.visibility = "public"
         return "VSF_PUBLIC"
     else
         return "VSF_PRIVATE"
     endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted string of instance as value.
+#   For instance:
+#       - (const char *)byte_arr
+#       - "String literal"
+#       - (const byte*).(class_some_variable_byte_array)
+# ---------------------------------------------------------------------------
+function c_derive_instance_value (c_value)
+    check_argument (my, "c_value", my)
+
+    if count (my.c_value.c_cast)
+        my.type = "($(c_derive_instance_type (my.c_value->c_cast)))"
+    endif
+
+    if is_true (my.c_value.is_string) & my.c_value.value <> "NULL"
+        my.value = quote_string (my.c_value.value)
+    endif
+
+    my.value ?= my.c_value.value
+
+    return cat (my.type?, my.value)
 endfunction
 
 # ---------------------------------------------------------------------------

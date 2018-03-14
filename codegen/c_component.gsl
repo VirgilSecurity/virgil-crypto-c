@@ -75,7 +75,11 @@ function c_derive_variable_name (variable)
 
     component_require_lineage (my.variable, my)
 
-    return c_format_name (my.variable.c_prefix, component_derive_full_name (my.variable))
+    if my.variable.scope = "public" | my.variable.definition = "external"
+        return c_format_name (my.variable.c_prefix, component_derive_full_name (my.variable))
+    else
+        return c_format_name (my.variable.name)
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -180,7 +184,7 @@ endfunction
 function c_component_wrap_uid (value)
     check_argument (my, "value", my)
 
-    return is_ref (my.value) ?? c_ref (my.value) ? my.value
+    return c_lang_ref (my.value)
 endfunction
 
 # ###########################################################################
@@ -800,6 +804,17 @@ function c_component_create_callback (callback, destination)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Create 'c_cast' from 'cast'
+# ---------------------------------------------------------------------------
+function c_component_create_cast (cast, destination)
+    check_arguments (my, "cast, destination", my)
+
+    new c_cast to my.destination
+        c_component_map_instance (c_cast, my.cast)
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create 'c_value' from 'value'
 # ---------------------------------------------------------------------------
 function c_component_create_value (value, destination)
@@ -811,6 +826,23 @@ function c_component_create_value (value, destination)
         .value = c_component_wrap_uid (my.value.value)
 
         c_component_map_instance (c_value, my.value)
+
+        for my.value.cast
+            c_component_create_cast (cast, c_value)
+        endfor
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create 'c_value' with NULL termination literal.
+# ---------------------------------------------------------------------------
+function c_component_create_null_value (destination)
+    check_arguments (my, "destination", my)
+
+    new c_value to my.destination
+        .value = "NULL"
+        .kind = "pointer"
+        .type = "void"
     endnew
 endfunction
 
@@ -829,11 +861,16 @@ function c_component_create_variable (variable, destination)
         c_component_map_attr_scope (c_variable, my.variable)
         c_component_map_attr_uid (c_variable, my.variable)
         c_component_map_attr_visibility (c_variable, my.variable)
+        c_component_map_attr_definition (c_variable, my.variable)
         c_component_map_instance (c_variable, my.variable)
 
         for my.variable.value
-            c_module_create_value (value, c_variable)
+            c_component_create_value (value, c_variable)
         endfor
+
+        if count (my.variable.array) & my.variable->array.length = "null_terminated"
+            c_component_create_null_value (c_variable)
+        endif
     endnew
 endfunction
 

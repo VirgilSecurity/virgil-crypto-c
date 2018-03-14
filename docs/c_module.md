@@ -18,10 +18,13 @@ attribute names are case-sensitive and we use only lower-case names.
           <c_property type name [is_string] [kind] [array] [length] [is_const_type] [is_const_pointer]
                [is_const_array] [is_const_reference] [uid] [is_callback] [bits]/>
        </c_struct>
-       <c_variable type name [is_callback] [kind] [array] [length] [is_const_type] [is_const_pointer]
-            [is_const_array] [is_const_reference] [uid] [visibility] [scope]
-            [is_string]>
-          <c_value value [cast]/>
+       <c_variable type name [is_string] [is_callback] [array] [length] [is_const_type] [is_const_pointer]
+            [is_const_array] [is_const_reference] [uid] [definition] [visibility]
+            [scope] [kind]>
+          <c_value value>
+             <c_cast type [is_callback] [is_string] [kind] [array] [length] [is_const_type] [is_const_pointer]
+                  [is_const_array] [is_const_reference]/>
+          </c_value>
           <c_modifier [value]/>
        </c_variable>
        <c_method name [definition] [visibility] [scope] [uid]>
@@ -380,8 +383,8 @@ Defines a type of outer component. Define global variable.
     <c_variable
         type = "..."
         name = "..."
+      [ is_string = "0 | 1" ]
       [ is_callback = "0 | 1"  ("0") ]
-      [ kind = "value | pointer | reference"  ("value") ]
       [ array = "null_terminated | given | fixed | derived" ]
       [ length = "..." ]
       [ is_const_type = "..." ]
@@ -389,9 +392,10 @@ Defines a type of outer component. Define global variable.
       [ is_const_array = "..." ]
       [ is_const_reference = "..." ]
       [ uid = "..." ]
+      [ definition = "public | private | external"  ("private") ]
       [ visibility = "public | private"  ("public") ]
       [ scope = "public | private"  ("public") ]
-      [ is_string = "0 | 1" ]
+      [ kind = "value | pointer | reference"  ("value") ]
         >
         <c_value>, 1 or more
         <c_modifier>
@@ -459,6 +463,16 @@ uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.   
 
+definition:
+    Defines where component will be defined. This attribute must not be  
+    inherited. The definition attribute is optional. Its default value is
+    "private". It can take one of the following values:                  
+
+Value: Meaning:
+public: Component definition is visible for outside world.
+private: Component definition is hidden in a correspond source file.
+external: Component definition is located somewhere.
+
 visibility:
     Defines symbol binary visibility. This attribute must not be inherited.
     The visibility attribute is optional. Its default value is "public". It
@@ -488,16 +502,92 @@ Defines specific variable value.
 
     <c_value
         value = "..."
-      [ cast = "..." ]
-        />
+        >
+        <c_cast>, optional
+    </c_value>
 
-The c_value item can have these attributes:
+The c_value item has this single attribute:
 
 value:
     Specific value. The value attribute is required.
 
-cast:
-    Cast a value to the given type. The cast attribute is optional.
+
+The 'c_cast' item
+-----------------
+
+Defines a type of outer component. Cast parent instance type to the type
+defined in this entity.                                                 
+
+    <c_cast
+        type = "..."
+      [ is_callback = "0 | 1"  ("0") ]
+      [ is_string = "0 | 1" ]
+      [ kind = "value | pointer | reference"  ("value") ]
+      [ array = "null_terminated | given | fixed | derived" ]
+      [ length = "..." ]
+      [ is_const_type = "..." ]
+      [ is_const_pointer = "..." ]
+      [ is_const_array = "..." ]
+      [ is_const_reference = "..." ]
+        />
+
+The c_cast item can have these attributes:
+
+type:
+    Type without any modifiers. The type attribute is required.
+
+is_callback:
+    Mark type as callback. The is_callback attribute is optional. Its default
+    value is "0". It can take one of the following values:                   
+
+Value: Meaning:
+0: Just a type.
+1: Callback type.
+
+is_string:
+    Mark type as a string - specal class. The is_string attribute is
+    optional. It can take one of the following values:              
+
+Value: Meaning:
+0: User defined type.
+1: String.
+
+kind:
+    Defines instance kind of the type. The kind attribute is optional. Its
+    default value is "value". It can take one of the following values:    
+
+Value: Meaning:
+value: Value type, i.e. 'int'
+pointer: Pointer type, i.e. 'int *'
+reference: Pointer to pointer type, i.e. 'int **'
+
+array:
+    Defines array length type. If given, parent instance becomes an array.   
+    The array attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+null_terminated: Null-terminated array.
+given: Array with a given length, i.e. 'int *'.
+fixed: Array with a fixed length, i.e. 'int [32]'.
+derived: Array with a derived length, i.e. 'int []'.
+
+length:
+    Defines length constant for the fixed array. Note, this attribute is
+    ignored for other arrays. The length attribute is optional.         
+
+is_const_type:
+    Defines type constness. The is_const_type attribute is optional.
+
+is_const_pointer:
+    Defines pointer constness. TODO: Define if this attribute is useless. The
+    is_const_pointer attribute is optional.                                  
+
+is_const_array:
+    Defines array constness . The is_const_array attribute is optional.
+
+is_const_reference:
+    Defines reference constness. TODO: Define if this attribute is useless.
+    The is_const_reference attribute is optional.                          
 
 
 The 'c_modifier' item

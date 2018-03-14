@@ -263,6 +263,15 @@ function string_trim (str)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Add double quotes to the given string.
+# ---------------------------------------------------------------------------
+function quote_string (str)
+    check_argument (my, "str", my)
+
+    return "\"$(my.str:)\""
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Collapse spaces between words to 1 space in the code.
 #   Note, do not collapse spaces in macro formatting.
 #   Note, work for both single line and multiline strings.
@@ -861,6 +870,15 @@ function is_ref (maybe_ref)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Reurn true if given value contains uid reference of format: .(<uid>)
+# ---------------------------------------------------------------------------
+function has_ref (maybe_ref)
+    check_argument (my, "maybe_ref", my)
+
+    return regexp.match ("\\.\\(.+\\)", my.maybe_ref)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Wrapes given UID as 'Reference UID'.
 #   Argument 'spec' is concatinated to UID if given.
 # ---------------------------------------------------------------------------
@@ -883,6 +901,46 @@ function c_ref (uid, spec)
 
     return ref ("c_" + my.uid, my.spec)
 endfunction
+
+# ---------------------------------------------------------------------------
+#   If given first parameter contains universal ref of foramt .(<uid>), then
+#   return language specific ref of format .(<lang>_<uid>).
+# ---------------------------------------------------------------------------
+function lang_ref (maybe_ref, lang)
+    check_arguments (my, "maybe_ref, lang", my)
+
+    my.valid_langs = "c, java, csharp"
+
+    if ! string_in (my.lang, my.valid_langs)
+        echo_fatal ("Attempt to resolve reference for invalid language '$(my.lang:)'." + \
+                " Supported languages are {$(my.valid_langs:)}", my)
+    endif
+
+    if regexp.match ("\\.\\(([^_]+)(.+)?\\)", my.maybe_ref, my.maybe_lang, my.uid_tail)
+        if defined (my.uid_tail) & my.maybe_lang = my.lang
+            #   Already prefixed with requested language
+            return my.maybe_ref
+        elsif string_in (my.maybe_lang, my.valid_langs)
+            echo_fatal ("Attempt to resolve already resolved reference for another language", my)
+        else
+            my.base_uid = my.maybe_lang + (my.uid_tail ? "")
+            my.lang_uid = make_id (my.lang, my.base_uid)
+            return string.search_replace (my.maybe_ref, my.base_uid, my.lang_uid)
+        endif
+    endif
+
+    return my.maybe_ref
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Shortcut for lang_ref (my.maybe_ref, "c")
+# ---------------------------------------------------------------------------
+function c_lang_ref (maybe_ref)
+    check_argument (my, "maybe_ref", my)
+
+    return lang_ref (my.maybe_ref, "c")
+endfunction
+
 
 # ###########################################################################
 #   Debug helpers

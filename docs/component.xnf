@@ -309,8 +309,16 @@
     </attr>
 
     <inherit entity="instance"/>
+
+    <allow entity="cast" occurs="0/1"/>
 </entity>
 
+
+<entity name="cast">
+    Cast parent instance type to the type defined in this entity.
+
+    <inherit entity="instance"/>
+</entity>
 
 <entity name="enum">
     Defines enumeration type.

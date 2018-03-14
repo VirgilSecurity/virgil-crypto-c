@@ -43,153 +43,6 @@
 gsl from "c_codegen.gsl"
 
 
-# ###########################################################################
-#   Functions that routes component insertion.
-# ###########################################################################
-
-
-# ---------------------------------------------------------------------------
-#   Compose name for function that make insertion of specific component,
-#   and check it's existence.
-#   First check for specialization version, if fails, then - generic version.
-#
-#   Function name examples:
-#       - c_insert_method - generic version;
-#       - c_insert_method_declaration - specialized version.
-#   Where:
-#       - "c_method", is 'component_name';
-#       - "method", is 'target';
-#       - "declaration", is 'specialization'.
-# ---------------------------------------------------------------------------
-function c_find_component_insert_function (component_name, target, specialization)
-    check_argument (my, "component_name")
-    check_argument (my, "target")
-
-    my.c_insert_fn = c_format_name ("c_insert", my.target, my.specialization)
-
-    if ! macro (my.c_insert_fn)
-        echo_info ("Check route function $(my.c_insert_fn:)() \
-                for component: $(my.component_name:).", my)
-
-        if string_defined (my.specialization)
-            echo_warning ("Function $(my.c_insert_fn:)() not exist, \
-                    fallback to a generic version", my)
-            return c_find_component_insert_function (my.component_name, my.target)
-        else
-            echo_fatal ("Component '$(my.component_name:)' has no insertion function.", my)
-        endif
-    endif
-
-    return my.c_insert_fn
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Route component insertion to the specific implementation according to
-#   its type and specializtion.
-#
-#   For instance,
-#       c_insert_component (my.c_method, my, "definition")
-#   routes call to
-#       c_insert_method_definition (my.c_method).
-# ---------------------------------------------------------------------------
-function c_insert_component (component, context, specialization)
-    check_argument (my, "component")
-    check_argument (my, "context")
-
-    my.component_name = name (my.component)
-
-    if ! regexp.match ("^c_(\\w+)$", my.component_name, my.target)
-        echo_fatal ("Invalid component name '$(my.component_name:)'." + \
-                " Expected format: '^c_(\\w+)$'.", my)
-    endif
-
-
-    my.title = c_title_if_differs (my.component->c_section.title, my.context) ?
-    c_insert_section_if_title (my.title ?)
-
-    my.c_insert_specific_component_fn = \
-            c_find_component_insert_function (my.component_name, my.target, my.specialization)
-
-    echo_trace ("Redirect call from $(name (my))() to $(my.c_insert_specific_component_fn)()")
-
-    newline ()
-    $(my.c_insert_specific_component_fn:) (my.component)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Shortcut for 'c_insert_component' with explicit specialization,
-#   which is 'declaration'.
-# ---------------------------------------------------------------------------
-function c_insert_component_declaration (component, context)
-    c_insert_component (my.component, my.context, "declaration")
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Shortcut for 'c_insert_component' with explicit specialization,
-#   which is 'definition'.
-# ---------------------------------------------------------------------------
-function c_insert_component_definition (component, context)
-    c_insert_component (my.component, my.context, "definition")
-endfunction
-
-
-# ---------------------------------------------------------------------------
-#   Accomplish sequence of c_insert_component () by cleanup everything.
-#   Mostly cleanup.
-# ---------------------------------------------------------------------------
-function c_finalize_component_insertion (context)
-    check_argument (my, "context")
-    c_title_cleanup_context (my.context)
-endfunction
-
-
-# ###########################################################################
-#   Functions that help sort, filter, and detect attributes and components.
-# ###########################################################################
-
-
-# ---------------------------------------------------------------------------
-#   Return given title as-is if it differs from the previous one,
-#   otherwise return empty string.
-#   Each invocation modifies next attributes:
-#       - context.previous_title
-#       - context.current_title
-# ---------------------------------------------------------------------------
-function c_title_if_differs (title, context)
-    check_argument (my, "context")
-
-    my.context.previous_title = my.context.current_title ?
-    my.context.current_title = my.title ?
-
-    if string_empty (my.context.current_title)
-        return ""
-    endif
-
-    my.is_new_title = \
-            ! defined (my.context.previous_title) | \
-            ! string_equal ( \
-                    my.context.current_title, \
-                    my.context.previous_title)
-
-    return my.is_new_title ?? my.context.current_title ? ""
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Cleanup footprint of function c_title_if_differs ().
-# ---------------------------------------------------------------------------
-function c_title_cleanup_context (context)
-    check_argument (my, "context")
-
-    my.context.previous_title = # undefined
-    my.context.current_title = # undefined
-endfunction
-
-
-# ###########################################################################
-#   Functions that generate whole file.
-# ###########################################################################
-
-
 # ---------------------------------------------------------------------------
 #   Generate C header.
 # ---------------------------------------------------------------------------
@@ -278,36 +131,55 @@ function c_module_generate_source (c_module)
     c_insert_section_generated_start ()
 
 
-#    for my.c_module. as c where is_item (c) & mark_private & mark_method & \
-#            ! mark_header_declaration & mark_source_definition
-#        c_insert_category_if ("Private functions.", first ())
-#        c_insert_component_declaration (c, my)
-#    endfor
-#    c_finalize_component_insertion (my)
-#
-#    for my.c_module. as c where is_item (c) & mark_source_definition & mark_enum_constant
-#        c_insert_category_if ("Private constants.", first ())
-#        c_insert_component_definition (c, my)
-#    endfor
-#    c_finalize_component_insertion (my)
-#
-#    for my.c_module. as c where is_item (c) & mark_source_definition & mark_object
-#        c_insert_category_if ("Objects.", first ())
-#        c_insert_component_definition (c, my)
-#    endfor
-#    c_finalize_component_insertion (my)
-#
-#    for my.c_module. as c where is_item (c) & mark_source_definition & mark_type
-#        c_insert_category_if ("Types.", first ())
-#        c_insert_component (c, my)
-#    endfor
-#    c_finalize_component_insertion (my)
-#
-#    for my.c_module. as c where is_item (c) & mark_implemented_method
-#        c_insert_category_if ("Generated functions.", first ())
-#        c_insert_component_definition (c, my)
-#    endfor
-#    c_finalize_component_insertion (my)
+    for my.c_module.c_alias where scope = "private"
+        newline ()
+        c_insert_alias (c_alias)
+    endfor
+
+    for my.c_module.c_macros where scope = "private"
+        newline ()
+        c_insert_macros (c_macros)
+    endfor
+
+    for my.c_module.c_macroses where scope = "private"
+        newline ()
+        c_insert_macros (c_macroses)
+    endfor
+
+    for my.c_module.c_enum where definition = "private"
+        newline ()
+        c_insert_enum (c_enum)
+    endfor
+
+    for my.c_module.c_struct where definition = "private"
+        newline ()
+        c_insert_struct (c_struct)
+    endfor
+
+    for my.c_module.c_callback where scope = "private"
+        newline ()
+        c_insert_callback (c_callback)
+    endfor
+
+    for my.c_module.c_method where scope = "private"
+        newline ()
+        c_insert_method_declaration (c_method)
+    endfor
+
+    for my.c_module.c_variable where scope="private" & definition = "external"
+        newline ()
+        c_insert_variable_declaration (c_variable)
+    endfor
+
+    for my.c_module.c_variable where definition <> "external"
+        newline ()
+        c_insert_variable_definition (c_variable)
+    endfor
+
+    for my.c_module.c_method where definition <> "external" & count (c_implementation)
+        newline ()
+        c_insert_method_definition (c_method)
+    endfor
 
     #   Accomplish generation.
     c_insert_section_generated_end ()
@@ -316,19 +188,13 @@ function c_module_generate_source (c_module)
         newline (2)
         out (my.content_after)
     else
-        for my.c_module.c_method where count (c_method.c_implementation) = 0
-            c_insert_category_if ("Functions to be implemented manually.", first ())
-            c_insert_component_definition (c_method, my)
+        for my.c_module.c_method where definition <> "external" & count (c_implementation) = 0
+            newline ()
+            c_insert_method_definition (c_method)
         endfor
         c_finalize_component_insertion (my)
     endif
 endfunction
-
-
-# ###########################################################################
-#   Generation entry point.
-# ###########################################################################
-
 
 # ---------------------------------------------------------------------------
 #   Generate header and source files for each 'c_module' within source.
