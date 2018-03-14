@@ -610,9 +610,10 @@ function c_insert_variable_declaration (c_variable)
 
     c_insert_description (my.c_variable)
 
+
     insert_code (cat ( \
         c_derive_component_modifiers (my.c_variable), "extern", \
-        c_derive_instance_type (my.c_variable), "$(my.c_variable.name:);"))
+        c_derive_instance_declaration (my.c_variable) + ";"))
 
 endfunction
 
@@ -625,28 +626,33 @@ function c_insert_variable_definition (c_variable)
 
     c_insert_description (my.c_variable)
 
-    my.array_braces = is_true (my.c_variable.is_fixed_array) ?? "[]" ? ""
-    my.beginning = "static $(my.c_variable.type:) $(my.c_variable.name:)$(my.array_braces:) = "
+    my.maybe_static = (my.c_variable.scope = "private") ?? "static " ? ""
+
+    my.code = "$(my.maybe_static:)$(c_derive_instance_declaration (my.c_variable))"
 
     for my.c_variable.c_value
-        my.type_cast = string_defined (c_value.type) ?? "($(c_value.type:)) " ? ""
-        my.value_cast = is_true (c_value.is_pointer) ?? "&" ? ""
-        if count (my.c_variable.c_value) = 1
-            #   Single value initializing
-            insert_code (my.beginning + my.type_cast + my.value_cast + c_value.value + ";")
-        else
-            #   Bracers initializing.
+
+        my.code += " = "
+
+        if defined (my.c_variable.array)
+            #   Array initialization
             if first ()
-                insert_code (my.beginning + "{")
-            else
-                newline_if (has_description (c_value))
+                insert_code (my.code + "{")
             endif
-            c_insert_description (c_value, 1)
-            insert_code (my.type_cast + my.value_cast + c_value.value + ",", 1)
+
+            my.separator = ! last () ?? "," ? ""
+
+            insert_code (c_derive_instance_value (c_value) + my.separator, 1)
+
             if last ()
                 insert_code ("};")
             endif
+        else
+            #   Single value initialization
+            insert_code (my.code + c_derive_instance_value (c_value) + ";")
         endif
+    else
+        insert_code (my.code + ";")
     endfor
 endfunction
 

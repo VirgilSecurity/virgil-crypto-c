@@ -17,8 +17,12 @@ attribute names are case-sensitive and we use only lower-case names.
        <variable name [type] [access] [enum] [callback] [size] [definition] [visibility] [c_prefix]
             [of_class] [uid] [scope] [class]>
           <value value [access] [class] [enum] [callback] [size] [type]>
-             <string [length]/>
-             <array [access] [length] [length_constant]/>
+             <cast [access] [type] [class] [enum] [callback] [size]>
+                <string [length]/>
+                <array [access] [length] [length_constant]/>
+             </cast>
+             <string .../>
+             <array .../>
           </value>
           <string .../>
           <array .../>
@@ -394,6 +398,7 @@ variable value.
       [ size = "1 | 2 | 4 | 8" ]
       [ type = "nothing | boolean | integer | size | byte | data" ]
         >
+        <cast>, optional
         <string>, optional
         <array>, optional
     </value>
@@ -457,6 +462,82 @@ Value: Meaning:
 
 value:
     Initialization value. The value attribute is required.
+
+
+The 'cast' item
+---------------
+
+Defines attributes that related to the instance type. Cast parent instance
+type to the type defined in this entity.                                  
+
+    <cast
+      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ type = "nothing | boolean | integer | size | byte | data" ]
+      [ class = "..." ]
+      [ enum = "..." ]
+      [ callback = "..." ]
+      [ size = "1 | 2 | 4 | 8" ]
+        >
+        <string>, optional
+        <array>, optional
+    </cast>
+
+The cast item can have these attributes:
+
+access:
+    Defines access rights to the instance and/or array of instances. The  
+    access attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+readonly: Value of the given type is can be modified.
+writeonly: Value of the given type will be modified.
+readwrite: Value of the given type can be read and then modified.
+disown: Ownership of the given class object is transferred. If object is passed via argument to method, then client can not use object after method return. If object is returned from method, then client is responsible for object destruction. Note, primitive type can not be disowned.
+
+type:
+    Defines instance primitive type. The type attribute is optional. It can
+    take one of the following values:                                      
+
+Value: Meaning:
+nothing: The same as a C void type.
+boolean: True / False type.
+integer: Signed integral type.
+size: Unsigned integral type for size definition.
+byte: Unsigned 8-bit integral type.
+data: Shortcut for the byte array.
+
+class:
+    Defines instance class. Possible values are: * any - Defines instance of 
+    any class. * string - String class. Have a special meaning in the C      
+    context, it is represented a null-terminated array of characters. *      
+    buffer - Special class "buffer" that is used as an output byte array. *  
+    impl - Universal implementation class. If value differs from the listed  
+    above then next algorithm applied: 1. If value in a format .(uid), then  
+    it treated as a reference to the in-project class and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The class attribute is optional.       
+
+enum:
+    Defines enumeration type. 1. If value in a format .(uid), then it treated
+    as a reference to the in-project enumeration and will be substituted     
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The enum attribute is optional.        
+
+callback:
+    Defines instance as a callback. 1. If value in a format .(uid), then it  
+    treated as a reference to the in-project callback and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The callback attribute is optional.    
+
+size:
+    Define size of the primitive type or enum in bytes. The size attribute is
+    optional. It can take one of the following values:                       
+
+Value: Meaning:
+1: Size of the type is one byte.
+2: Size of the type is two bytes.
+4: Size of the type is three bytes.
+8: Size of the type is four bytes.
 
 
 The 'string' item

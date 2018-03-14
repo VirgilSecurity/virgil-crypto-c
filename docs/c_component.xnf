@@ -295,6 +295,7 @@
 
     <inherit entity="scope"/>
     <inherit entity="visibility"/>
+    <inherit entity="definition"/>
     <inherit entity="uid"/>
     <inherit entity="c_instance"/>
 
@@ -310,9 +311,14 @@
         Specific value.
     </attr>
 
-    <attr name="cast">
-        Cast a value to the given type.
-    </attr>
+    <allow entity="c_cast" occurs="0/1"/>
+</entity>
+
+
+<entity name="c_cast">
+    Cast parent instance type to the type defined in this entity.
+
+    <inherit entity="c_instance"/>
 </entity>
 
 

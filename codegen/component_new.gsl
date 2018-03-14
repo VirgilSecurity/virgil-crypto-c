@@ -704,6 +704,29 @@ function component_resolve_instance (instance, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Inherit parent 'instance' attributes.
+#   Note, parent mast also be an 'instance'.
+# ---------------------------------------------------------------------------
+function component_inherit_parent_instance (instance, parent)
+    check_arguments (my, "instance, parent", my)
+
+    my.instance.type ?= my.parent.type ?
+    my.instance.class ?= my.parent.class ?
+    my.instance.enum ?= my.parent.enum ?
+    my.instance.callback ?= my.parent.callback ?
+    my.instance.size ?= my.parent.size ?
+    my.instance.access ?= my.parent.access ?
+
+    if count (my.parent.string)
+        copy my.parent->string to my.instance
+    endif
+
+    if count (my.parent.array)
+        copy my.parent->array to my.instance
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve component: return.
 # ---------------------------------------------------------------------------
 function component_resolve_return (return, parent)
@@ -801,13 +824,28 @@ function component_resolve_struct (struct, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve component: cast.
+# ---------------------------------------------------------------------------
+function component_resolve_cast (cast, parent)
+    check_arguments (my, "cast, parent", my)
+
+    component_resolve_instance (my.cast, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve component: value.
 # ---------------------------------------------------------------------------
 function component_resolve_value (value, parent)
     check_arguments (my, "value, parent", my)
 
+    component_inherit_parent_instance (my.value, my.parent)
+
     component_require_attr_value (my.value, my)
-    component_resolve_instance (my.value)
+    component_resolve_instance (my.value, my.parent)
+
+    for my.value.cast
+        component_resolve_cast (cast, my.value)
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
