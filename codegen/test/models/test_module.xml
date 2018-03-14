@@ -78,6 +78,15 @@
         </c_implementation>
     </macroses>
 
+    <!-- CONSTANTS -->
+    <constant name="integral a" value="25">
+        Constant that is defined out of the typed enum.
+    </constant>
+
+    <constant name="integral b" value="111">
+        Constant that is defined out of the typed enum.
+    </constant>
+
     <!-- ENUMERATIONS -->
     <enum name="tag" definition="public">
         Enumeration type with public definition.
