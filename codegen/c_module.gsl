@@ -518,10 +518,13 @@ function c_module_create (source, destination, project)
                 c_component_create_struct (struct, c_module)
             endfor
 
+            for module.variable
+                c_component_create_variable (variable, c_module)
+            endfor
+
             for module.method
                 c_component_create_method (method, c_module)
             endfor
-            #c_module_add_variables (module, c_module)
         endnew
     else
         echo_warning ("Source does not contain any <module/> item", my)

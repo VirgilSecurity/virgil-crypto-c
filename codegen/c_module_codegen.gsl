@@ -246,6 +246,11 @@ function c_module_generate_header (c_module)
         c_insert_callback (c_callback)
     endfor
 
+    for my.c_module.c_variable where scope = "public"
+        newline ()
+        c_insert_variable_declaration (c_variable)
+    endfor
+
     for my.c_module.c_method where scope = "public"
         newline ()
         c_insert_method_declaration (c_method)

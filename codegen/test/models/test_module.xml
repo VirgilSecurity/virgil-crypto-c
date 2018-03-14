@@ -215,6 +215,13 @@
         </property>
     </struct>
 
+    <!-- VARIABLES -->
+    <variable name="features" class="string" access="readonly">
+        Global variable that conatins null-terminated array of strings.
+
+        <array length="derived" access="readonly"/>
+    </variable>
+
     <!-- METHODS -->
     <method name="do public">
         Public visibility.

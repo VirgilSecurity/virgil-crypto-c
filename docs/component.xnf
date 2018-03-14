@@ -307,6 +307,8 @@
     <attr name="value" required="1">
         Initialization value.
     </attr>
+
+    <inherit entity="instance"/>
 </entity>
 
 

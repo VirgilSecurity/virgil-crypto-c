@@ -68,6 +68,17 @@ function c_derive_constant_name (constant)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Derive C style in-project global variable full name.
+# ---------------------------------------------------------------------------
+function c_derive_variable_name (variable)
+    check_argument (my, "variable", my)
+
+    component_require_lineage (my.variable, my)
+
+    return c_format_name (my.variable.c_prefix, component_derive_full_name (my.variable))
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Derive C style in-project enum full name.
 # ---------------------------------------------------------------------------
 function c_derive_enum_name (enum)
@@ -458,7 +469,7 @@ function c_component_map_instance_constness (c_instance, instance)
     endif
 
     if count (my.instance.array) & my.instance->array.access = "readonly"
-        my.c_instance.is_const_array = "1"
+        my.c_instance.is_const_pointer = "1"
     endif
 endfunction
 
@@ -785,6 +796,44 @@ function c_component_create_callback (callback, destination)
         else
             c_component_create_void_return (c_callback)
         endif
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create 'c_value' from 'value'
+# ---------------------------------------------------------------------------
+function c_component_create_value (value, destination)
+    check_arguments (my, "value, destination", my)
+
+    component_require_attr_value (my.value)
+
+    new c_value to my.destination
+        .value = c_component_wrap_uid (my.value.value)
+
+        c_component_map_instance (c_value, my.value)
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create 'c_variable' from 'variable'
+# ---------------------------------------------------------------------------
+function c_component_create_variable (variable, destination)
+    check_arguments (my, "variable, destination", my)
+
+    component_require_attr_name (my.variable)
+
+    new c_variable to my.destination
+        . = c_format_description (my.variable.) ?
+        .name = c_derive_variable_name (my.variable)
+
+        c_component_map_attr_scope (c_variable, my.variable)
+        c_component_map_attr_uid (c_variable, my.variable)
+        c_component_map_attr_visibility (c_variable, my.variable)
+        c_component_map_instance (c_variable, my.variable)
+
+        for my.variable.value
+            c_module_create_value (value, c_variable)
+        endfor
     endnew
 endfunction
 
