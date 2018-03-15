@@ -67,39 +67,39 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-
-// ==========================================================================
-//  Full defined types.
-// ==========================================================================
-
-//  Erase inner state in a secure manner.
-typedef void (*vsf_impl_info_self_cleanup_fn) (vsf_impl_t *impl);
-
-//  Self destruction, according to destruction policy.
-typedef void (*vsf_impl_info_self_destroy_fn) (vsf_impl_t *impl);
-
+//
 //  Contains common properties for any 'API' implementation object.
+//
 struct vsf_impl_info_t {
+    //
     //  Implementation unique identifier, MUST be first in the structure.
+    //
     vsf_impl_tag_t impl_tag;
-
+    //
     //  NULL terminated array of the implemented interfaces.
     //  MUST be second in the structure.
-    const vsf_api_t *const *const api_array;
-
+    //
+    const vsf_api_t** api_array;
+    //
     //  Erase inner state in a secure manner.
-    void (*self_cleanup_cb) (vsf_impl_t *impl);
-
+    //
+    vsf_impl_cleanup_fn self_cleanup_cb;
+    //
     //  Self destruction, according to destruction policy.
-    void (*self_destroy_cb) (vsf_impl_t *impl);
+    //
+    vsf_impl_destroy_fn self_destroy_cb;
 };
 typedef struct vsf_impl_info_t vsf_impl_info_t;
 
+//
 //  Contains header of any 'API' implementation structure.
 //  It is used for runtime type casting and checking.
+//
 struct vsf_impl_t {
+    //
     //  Compile-time known information.
-    const vsf_impl_info_t *info;
+    //
+    const vsf_impl_info_t* info;
 };
 typedef struct vsf_impl_t vsf_impl_t;
 

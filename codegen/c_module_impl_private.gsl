@@ -43,32 +43,29 @@
 
 gsl from "common.gsl"
 
-gsl from "c_resolver.gsl"
-gsl from "c_names_config.gsl"
-
 
 # ---------------------------------------------------------------------------
 #   Add implementation structure: info.
 # ---------------------------------------------------------------------------
-function _A12_add_struct_info (destination, meta)
-    check_argument (my, "destination")
-    check_argument (my, "meta")
+function _A12_add_struct_info (meta, destination)
+    check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
 
     new struct to my.destination
         . = "\
         Contains common properties for any 'API' implementation object.
         "
         .name = my.names.struct_info
+        .scope = "public"
+        .definition = "public"
 
         new property
             . = "\
             Implementation unique identifier, MUST be first in the structure.
             "
             .name = my.names.property_impl_tag
-            .type = my.refs.class_impl_enum_tag
+            .enum = ".(class_impl_enum_tag)"
             .is_impl_tag = 1
         endnew
 
@@ -77,29 +74,28 @@ function _A12_add_struct_info (destination, meta)
             NULL terminated array of the implemented interfaces.
             MUST be second in the structure.
             "
+
             .name = my.names.property_api_array
-            .type = my.refs.class_api_struct
-            .is_object = 1
-            .is_const_array = 1
+            .class = ".(class_api_struct_api)"
             .is_api_array = 1
+
+            new array to property
+                .length = "null_terminated"
+            endnew
         endnew
 
         new property
             . = "Erase inner state in a secure manner."
-            .name = my.names.property_self_cleanup
-            .is_callback = 1
-            .is_self_cleanup_cb = 1
 
-            c_method_add_argument_impl (property)
+            .name = my.names.property_self_cleanup
+            .callback = ".(class_impl_callback_cleanup)"
         endnew
 
         new property
             . = "Self destruction, according to destruction policy."
-            .name = my.names.property_self_destroy
-            .is_callback = 1
-            .is_self_destroy_cb = 1
 
-            c_method_add_argument_impl (property)
+            .name = my.names.property_self_destroy
+            .callback = ".(class_impl_callback_destroy)"
         endnew
     endnew
 endfunction
@@ -107,27 +103,26 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add implementation structure: header.
 # ---------------------------------------------------------------------------
-function  _A12_add_type_self (destination, meta)
-    check_argument (my, "destination")
-    check_argument (my, "meta")
+function  _A12_add_type_self (meta, destination)
+    check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
 
     new struct to my.destination
         . = "\
         Contains header of any 'API' implementation structure.
         It is used for runtime type casting and checking.
         "
-        .name = ""
+        .name = my.names.class_impl
+        .scope = "public"
+        .definition = "public"
 
         new property
             . = "\
             Compile-time known information.
             "
             .name = my.names.property_info
-            .type = my.refs.class_impl_struct_info
-            .is_object = 1
+            .class = ".(class_impl_struct_info)"
         endnew
     endnew
 endfunction
@@ -136,9 +131,8 @@ endfunction
 #   Create module with private functionality common for all
 #   'implementation' objects.
 # ---------------------------------------------------------------------------
-function c_module_impl_private_create (destination, meta)
-    check_argument (my, "destination")
-    check_argument (my, "meta")
+function c_module_impl_private_create (meta, destination)
+    check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
 
@@ -146,20 +140,23 @@ function c_module_impl_private_create (destination, meta)
         . = "\
         This module contains Private API common for all 'implementation' objects.
         "
+
         .name = my.names.module_impl_private
-        .class = my.names.class_impl
+        .of_class = my.names.class_impl
         .scope = "private"
 
         new require
             .module = my.names.module_library
+            .scope = "public"
         endnew
 
         new require
             .module = my.names.module_impl
+            .scope = "public"
         endnew
 
-        _A12_add_struct_info (module, my.meta)
-        _A12_add_type_self (module, my.meta)
+        _A12_add_struct_info (my.meta, module)
+        _A12_add_type_self (my.meta, module)
     endnew
 endfunction
 
