@@ -34,32 +34,15 @@
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 # ---------------------------------------------------------------------------
-#   Perform resolution over known common components.
+#   Perform resolution for item 'module' and all children.
 #
 #   Resolution includes several steps:
-#       1. Add default items to the component.
-#       2. Set default values to the component attributes.
-#       3. Define 'uid' for components that can be belong to the
-#          category 'language_component'.
-#       4. Define next attribute for components that belongs to the category
-#          'language_component' and related to the name and type derivation:
-#               - c_project_prefix;
-#               - c_class_prefix;
-#               - c_prefix;
-#               - c_name - if defined attribute 'name';
-#               - c_type - if defined attribute 'type'.
+#       1. Validate - check that required attributes and items are defined.
+#       2. Define default values to the optional component attributes.
+#       3. Append optional items.
 #
-#   Category 'language_component' includes:
-#       - method;
-#       - struct;
-#       - enum;
-#       - macros;
-#       - argument;
-#       - property;
-#       - constant;
-#       - callback;
-#       - type;
-#       - return.
+#    Private function prefix is: B23.
+#
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
 #   language. See https://github.com/imatix/gsl for details.
@@ -67,526 +50,974 @@
 
 gsl from "common.gsl"
 
-gsl from "c_formatter.gsl"
-gsl from "c_resolver.gsl"
-
-
-# ###########################################################################
-#   C specific resolution functions.
-# ###########################################################################
-
-
-# ###########################################################################
-#   Component inspection.
-# ###########################################################################
-
 
 # ---------------------------------------------------------------------------
-#   Return true if given component is 'enum'.
+#   Return component as shortened XML string with required attributes.
 # ---------------------------------------------------------------------------
-function component_is_entry_enum (component)
+function component_dump (component)
     check_argument (my, "component")
 
-    return item_in (my.component,  "enum")
+    my.component_info = ""
+    my.component_info += " name=\"$(my.component.name)\"" ? ""
+    my.component_info += " of_class=\"$(my.component.of_class)\"" ? ""
+    my.component_info += " scope=\"$(my.component.scope)\"" ? ""
+    my.component_info += " visibility=\"$(my.component.visibility)\"" ? ""
+    my.component_info += " definition=\"$(my.component.definition)\"" ? ""
+    my.component_dump = "<$(name (my.component))$(my.component_info)/>"
+
+    return my.component_dump
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return true if given component is 'struct'.
+#   Return instance as shortened XML string with required attributes.
 # ---------------------------------------------------------------------------
-function component_is_entry_struct (component)
-    check_argument (my, "component")
+function component_instance_dump (instance)
+    check_argument (my, "instance")
 
-    return item_in (my.component,  "struct")
+    my.instance_info = ""
+    my.instance_info += " name=\"$(my.instance.name)\"" ? ""
+    my.instance_info += " type=\"$(my.instance.type)\"" ? ""
+    my.instance_info += " class=\"$(my.instance.class)\"" ? ""
+    my.instance_info += " callback=\"$(my.instance.callback)\"" ? ""
+    my.instance_info += " bits=\"$(my.instance.bits)\"" ? ""
+    my.instance_info += " access=\"$(my.instance.access)\"" ? ""
+    my.instance_dump = "<$(name (my.instance))$(my.instance_info)/>"
+
+    return my.instance_dump
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return true if given component is 'macros'.
+#   Return new or existent item 'string' of the given instance component.
+#   Note, newly created string is not resolved.
 # ---------------------------------------------------------------------------
-function component_is_entry_macros (component)
-    check_argument (my, "component")
+function component_get_instance_string (instance)
+    check_argument (my, "instance", my)
 
-    return item_in (my.component,  "macros")
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return true if given component is 'method'.
-# ---------------------------------------------------------------------------
-function component_is_entry_method (component)
-    check_argument (my, "component")
-
-    return item_in (my.component,  "method")
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return true if given component is 'callback'.
-# ---------------------------------------------------------------------------
-function component_is_entry_callback (component)
-    check_argument (my, "component")
-
-    return item_in (my.component,  "callback")
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return true if given component is 'type'.
-# ---------------------------------------------------------------------------
-function component_is_entry_type (component)
-    check_argument (my, "component")
-
-    return item_in (my.component,  "type")
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return true if given component represents instance.
-# ---------------------------------------------------------------------------
-function component_is_instance (component)
-    check_argument (my, "component")
-
-    return item_in (my.component,  "(object, argument, property)")
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return true if given component represent self confident lamguage entry.
-# ---------------------------------------------------------------------------
-function component_is_entry (component)
-    check_argument (my, "component")
-
-    return item_in (my.component, "method, macros, callback, enum, struct, type, object")
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return true if given component is part of the type component.
-# ---------------------------------------------------------------------------
-function component_is_entry_infant (component)
-    check_argument (my, "component")
-
-    return item_in (my.component, "argument, value, property, return")
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return true if given component is part of the type component.
-# ---------------------------------------------------------------------------
-function component_is_entry_enum_infant (component, parent)
-    check_argument (my, "component")
-
-    return defined (my.parent) & item_in (my.parent, "enum") & item_in (my.component, "value")
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return true if given component can be represented as some programming
-#   language construct.
-# ---------------------------------------------------------------------------
-function component_is_language_construct (component)
-    check_argument (my, "component")
-
-    return component_is_entry (my.component) | \
-            component_is_entry_infant (my.component)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return true if given component must have a unique UID.
-# ---------------------------------------------------------------------------
-function component_uid_is_unique (component, parent)
-    check_argument (my, "component")
-
-    return component_is_entry (my.component) | \
-            component_is_entry_enum_infant (my.component, my.parent)
-endfunction
-
-# ###########################################################################
-#   Add default component item(s).
-# ###########################################################################
-
-# ---------------------------------------------------------------------------
-#   For each callback property within 'struct' creates correspond type,
-#   and add it to the 'destination'.
-# ---------------------------------------------------------------------------
-function component_add_struct_default_callbacks (struct, destination)
-    check_argument (my, "struct")
-    check_argument (my, "destination")
-
-    for my.struct.property where is_true (is_callback)
-        my.callback_name = struct.name + " " + property.name
-
-        if count (my.destination.callback, callback.name = my.callback_name)
-            next #  Already added.
-        endif
-
-        my.callback = item_copy_to (property, my.destination, "callback")
-        my.callback.name = my.callback_name
-    endfor
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Add default component 'return' if missed within 'method' or 'callback.
-#   Note, default return type is 'nothing'.
-# ---------------------------------------------------------------------------
-function component_add_default_return (component)
-    check_argument (my, "component")
-
-    if count (my.component.return) = 0
-        new return to my.component
-            .type = "nothing"
+    if count (my.instance.string)
+        return my.instance->string
+    else
+        new string to my.instance
+            return string
         endnew
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Return new or existent item 'array' of the given instance component.
+#   Note, newly created array is not resolved.
+# ---------------------------------------------------------------------------
+function component_get_instance_array (instance)
+    check_argument (my, "instance", my)
+
+    if count (my.instance.array)
+        return my.instance->array
+    else
+        new array to my.instance
+            return array
+        endnew
+    endif
+endfunction
 
 # ###########################################################################
-#   Set default values to component attributes.
+#   Validate or check attribute.
 # ###########################################################################
 
 # ---------------------------------------------------------------------------
-#   Add attributes that are common for all components.
+#   Check required attribute: name.
 # ---------------------------------------------------------------------------
-function component_add_common_attributes (component, parent)
-    check_argument (my, "component")
+function component_require_attr_name (component, caller)
+    check_argument (my, "component", my)
 
-    my.component.visibility ?= "public"
-    my.component.scope ?= "public"
-    my.component.class ?= my.parent.class ?
+    assert_attribute (my.component, "name", my.caller ? my)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Add attributes:
-#       * c_project_prefix - project prefix is used to avoid name
-#               collision across projects;
-#       * c_class_prefix - module level prefix is used to avoid name
-#               collision within project;
-#       * c_prefix - all-in-one prefix, that makes component name unique,
-#               it is combination of 'c_project_prefix' and 'c_class_prefix'.
+#   Check required attribute: of_class.
 # ---------------------------------------------------------------------------
-function component_add_prefixes (component, parent, project)
-    check_argument (my, "component")
-    check_argument (my, "project")
+function component_require_attr_of_class (component, caller)
+    check_argument (my, "component", my)
 
-    if ! component_is_entry (my.component)
-        echo_debug ("Do nothing for component: $(name (my.component)).", my)
+    assert_attribute (my.component, "of_class", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: value.
+# ---------------------------------------------------------------------------
+function component_require_attr_value (component, caller)
+    check_argument (my, "component", my)
+
+    assert_attribute (my.component, "value", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: type.
+# ---------------------------------------------------------------------------
+function component_require_attr_type (component, caller)
+    check_argument (my, "component", my)
+
+    assert_attribute (my.component, "type", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: class.
+# ---------------------------------------------------------------------------
+function component_require_attr_class (component, caller)
+    check_argument (my, "component", my)
+
+    assert_attribute (my.component, "class", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: enum.
+# ---------------------------------------------------------------------------
+function component_require_attr_enum (component, caller)
+    check_argument (my, "component", my)
+
+    assert_attribute (my.component, "enum", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: callback.
+# ---------------------------------------------------------------------------
+function component_require_attr_callback (component, caller)
+    check_argument (my, "component", my)
+
+    assert_attribute (my.component, "callback", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: uid.
+# ---------------------------------------------------------------------------
+function component_require_attr_uid (component, caller)
+    check_argument (my, "component", my)
+
+    assert_attribute (my.component, "uid", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: definition.
+# ---------------------------------------------------------------------------
+function component_require_attr_definition (component, caller)
+    check_argument (my, "component", my)
+
+    assert_attribute (my.component, "definition", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: visibility.
+# ---------------------------------------------------------------------------
+function component_require_attr_visibility (component, caller)
+    check_argument (my, "component", my)
+
+    assert_attribute (my.component, "visibility", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: scope.
+# ---------------------------------------------------------------------------
+function component_require_attr_scope (component, caller)
+    check_argument (my, "component", my)
+
+    assert_attribute (my.component, "scope", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: module.
+# ---------------------------------------------------------------------------
+function component_require_attr_module (component, caller)
+    check_argument (my, "component", my)
+
+    assert_attribute (my.component, "module", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required item: linage.
+# ---------------------------------------------------------------------------
+function component_require_lineage (component, caller)
+    check_argument (my, "component", my)
+
+    assert_item (my.component, "lineage", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required item: c_implementation.
+# ---------------------------------------------------------------------------
+function component_require_c_implementation (component, caller)
+    check_argument (my, "component", my)
+
+    assert_item (my.component, "c_implementation", my.caller ? my)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: macros.is_method.
+# ---------------------------------------------------------------------------
+function component_require_macros_attr_is_method (macros, caller)
+    check_argument (my, "macros", my)
+
+    assert_attribute (my.macros, "is_method", my.caller ? my)
+endfunction
+
+
+# ###########################################################################
+#   Attribute resolution.
+# ###########################################################################
+
+# ---------------------------------------------------------------------------
+#   Return true if given component does not belong to any class.
+# ---------------------------------------------------------------------------
+function component_is_global (component)
+    check_argument (my, "component", my)
+
+    return (my.component.of_class ? my.component->lineage.of_class ? "global") = "global"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Derive uid for given module or it's children.
+#
+#   Note, given component must be resolved, it means that component contains
+#   information about all ancestors within item 'lineage'.
+# ---------------------------------------------------------------------------
+function component_derive_uid (component)
+    check_argument (my, "component", my)
+
+    component_require_lineage (my.component, my)
+
+    #   Define parents uid
+    for my.component->lineage.ancestor
+        if string_in (ancestor.id, "project, module")
+            #   Skip ancestors that add excess uniqueness
+            next
+        endif
+        my.parent_uid = make_id (my.parent_uid, ancestor.id, ancestor.name)
+    endfor
+
+    #   Define self uid
+    my.self_uid = make_id (name (my.component), my.component.name)
+
+    #   Define uid scope: class or global
+    if component_is_global (my.component)
+        my.uid_scope = "global"
+    else
+        my.uid_scope = make_id ("class", my.component.of_class ? my.component->lineage.of_class)
     endif
 
-    scope my.component
-        .c_project_prefix = c_format_name (my.project.prefix)
-        .c_class_prefix = c_format_name (0.class ? my.parent.class ?)
-
-        if is_true (0.is_cross_domain)
-            .c_prefix = ""
-        else
-            .c_prefix = c_format_name (0.c_project_prefix, 0.c_class_prefix)
-        endif
-    endscope
+    #   Put it together
+    return make_id (my.uid_scope, my.parent_uid, my.self_uid)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Define attribute 'uid' for given component.
-#   'uid' - is a unique name that can be used to reference this component.
-#   'uid' is used within name resolution context as context a key.
+#   Return component's full name: class name + ancestors + self name.
+#   Rules:
+#       - class name is ommited if class is 'global';
+#       - class name is ommited if component's name equals to the class name.
 # ---------------------------------------------------------------------------
-function component_add_uid (component, parent)
-    check_argument (my, "component")
+function component_derive_full_name (component)
+    check_argument (my, "component", my)
 
-    if component_is_entry_infant (my.component)
-        check_argument (my, "parent")
+    component_require_attr_name (my.component, my)
+    component_require_attr_of_class (my.component, my)
+    component_require_lineage (my.component, my)
+
+    my.ancestors = ""
+    for my.component->lineage.ancestor where ! string_in (id, "project, module")
+        my.ancestors = cat (my.ancestors, ancestor.name)
+    endfor
+
+    if component_is_global (my.component)
+        return cat (my.ancestors, my.component.name)
+
+    elsif string_equal (my.component.of_class, my.component.name)
+        return cat (my.ancestors, my.component.name)
+
+    else
+        return cat (my.component.of_class, my.ancestors, my.component.name)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: scope.
+# ---------------------------------------------------------------------------
+function component_resolve_attr_scope (component, parent)
+    check_argument (my, "component", my)
+
+    my.component.scope ?= my.parent.scope ? "public" #  can be inherited
+
+    my.valid_scopes = "public, private"
+    if ! string_in (my.component.scope, my.valid_scopes)
+        my.component_dump = component_dump (my.component)
+
+        echo_fatal ("Invalid instance scope '$(my.component_dump:)'. " + \
+                    "Expected {$(my.valid_scopes)}", my)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: class.
+# ---------------------------------------------------------------------------
+function component_resolve_attr_of_class (component, parent)
+    check_arguments (my, "component, parent", my)
+
+    my.component.of_class ?= my.parent.of_class
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: c_prefix.
+# ---------------------------------------------------------------------------
+function component_resolve_attr_c_prefix (component, parent)
+    check_argument (my, "component", my)
+
+    my.component.c_prefix ?= my.parent.c_prefix
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: uid.
+# ---------------------------------------------------------------------------
+function component_resolve_attr_uid (component, parent)
+    check_argument (my, "component", my)
+    assert_item (my.component, "lineage", my)
+
+    my.component.uid = component_derive_uid (my.component)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: visibility.
+# ---------------------------------------------------------------------------
+function component_resolve_attr_visibility (component, parent)
+    check_argument (my, "component", my)
+
+    my.component.visibility ?= "public" #   is not inherited
+
+    my.valid_visibilities = "public, private"
+    if ! string_in (my.component.visibility, my.valid_visibilities)
+        my.component_dump = component_dump (my.component)
+
+        echo_fatal ("Invalid instance visibility '$(my.component_dump:)'. " + \
+                    "Expected {$(my.valid_visibilities)}", my)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: definition.
+# ---------------------------------------------------------------------------
+function component_resolve_attr_definition (component, parent)
+    check_argument (my, "component", my)
+
+    my.component.definition ?= "private" #  is not inherited
+
+    my.valid_definitions = "public, private, external"
+    if ! string_in (my.component.definition, my.valid_definitions)
+        my.component_dump = component_dump (my.component)
+
+        echo_fatal ("Invalid component definition '$(my.component_dump:)'. " + \
+                    "Expected {$(my.valid_definitions)}", my)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: type.
+# ---------------------------------------------------------------------------
+function component_resolve_instance_attr_type (instance, parent)
+    check_arguments (my, "instance, parent")
+
+    component_require_attr_type (my.instance, my)
+
+    my.valid_types = "nothing, boolean, integer, size, byte, data"
+    if ! string_in (my.instance.type, my.valid_types)
+        my.instance_dump = component_instance_dump (my.instance)
+
+        echo_fatal ("Invalid instance type '$(my.instance_dump:)'. " + \
+                    "Expected {$(my.valid_types)}", my)
     endif
 
-    if component_is_entry (my.component)
-        my.prefix = string_defined (my.component.class) ?? \
-                "class $(my.component.class:)" ? "global"
-    elsif component_uid_is_unique (my.component, my.parent)
-        my.prefix = my.parent.uid
+    #   Resolve type shortcuts
+    if my.instance.type = "data"
+        my.instance.type = "byte"
+        my.instance.access ?= "readonly"
+
+        my.array = component_get_instance_array (my.instance)
+        my.array.length ?= "given"
+        my.array.access ?= "readwrite"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: class.
+# ---------------------------------------------------------------------------
+function component_resolve_instance_attr_class (instance, parent)
+    check_arguments (my, "instance, parent")
+
+    component_require_attr_class (my.instance, my)
+
+    if my.instance.class = "string"
+        my.string = component_get_instance_string (my.instance)
+        my.string.length ?= "null_terminated"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: enum.
+# ---------------------------------------------------------------------------
+function component_resolve_instance_attr_enum (instance, parent)
+    check_arguments (my, "instance, parent")
+
+    component_require_attr_enum (my.instance, my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: callback.
+# ---------------------------------------------------------------------------
+function component_resolve_instance_attr_callback (instance, parent)
+    check_arguments (my, "instance, parent")
+
+    component_require_attr_callback (my.instance, my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: access.
+# ---------------------------------------------------------------------------
+function component_resolve_instance_attr_access (instance, parent)
+    check_arguments (my, "instance, parent")
+
+    my.instance.access ?= "readonly"
+
+    my.valid_access_argument = "readonly, writeonly, readwrite, disown"
+    my.valid_access_variable = "readonly, readwrite"
+    my.valid_access_return = "readonly, readwrite, disown"
+
+    if item_in (my.instance, "argument") & \
+            ! string_in (my.instance.access, my.valid_access_argument)
+
+        echo_fatal ( \
+            "Invalid value '$(my.instance.access)' of attribute '$(name (my.instance)).access'." + \
+            " Expected {$(my.valid_access_argument)}")
+
+    elsif item_in (my.instance, "variable, property") & \
+            ! string_in (my.instance.access, my.valid_access_variable)
+
+        echo_fatal ( \
+            "Invalid value '$(my.instance.access)' of attribute '$(name (my.instance)).access'." + \
+            " Expected {$(my.valid_access_variable)}")
+
+    elsif item_in (my.instance, "return") & \
+            ! string_in (my.instance.access, my.valid_access_return)
+
+        echo_fatal ( \
+            "Invalid value '$(my.instance.access)' of attribute '$(name (my.instance)).access'." + \
+            " Expected {$(my.valid_access_return)}")
     endif
 
-    my.component.uid = c_format_name (my.prefix ?, name (my.component) ?,  my.component.name ?)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Define attribute 'c_name'.
+#   Resolve attribute: instance.size.
 # ---------------------------------------------------------------------------
-function component_add_names (component, parent)
-    check_argument (my, "component")
+function component_resolve_instance_attr_size (instance, parent)
+    check_arguments (my, "instance, parent")
 
-    scope my.component as component
-        if ! defined (0.name)
-            return
+    if defined (my.instance.size)
+        my.instance_dump = component_instance_dump (my.instance)
+
+        my.valid_instance_type = "integer, size"
+        if ! string_in (my.instance.type ?, my.valid_instance_type)
+            echo_fatal ("Illegal attribute 'size' for instance $(my.instance_dump)." + \
+                        " Only allowed for instance with type={$(my.valid_instance_type)}", my)
         endif
 
-        if component_is_instance (component)
-            if is_true (0.is_reference)
-                .c_name = c_format_name (0.name, "ref")
-            elsif is_true (0.is_callback)
-                .c_name = c_format_name (0.name, "cb")
-            else
-                .c_name = c_format_name (0.name)
-            endif
-        elsif component_is_entry_struct (component) | component_is_entry_enum (component)
-            .c_name = c_format_name (0.c_prefix, 0.name, "t")
-        elsif component_is_entry_callback (component)
-            .c_name = c_format_name (0.c_prefix, 0.name, "fn")
-        elsif component_is_entry_enum_infant (component, my.parent)
-            .c_name = c_format_name (my.parent.c_prefix, my.parent.name) + \
-                    "_" + c_format_macros_name (0.name)
-        elsif component_is_entry_macros (component)
-            .c_name = c_format_macros_name (0.c_prefix, 0.name)
-        elsif component_is_entry_method (component)
-            .c_name = c_format_name (0.c_prefix, 0.name)
-        elsif component_is_entry_type (component)
-            .c_name = c_format_name (0.c_prefix, 0.name)
-        elsif defined (0.name)
-            .c_name = c_format_name (0.c_project_prefix, 0.name)
-        else
-            echo_fatal ("Unexpected component $(name (my.component) ?)", my)
+        my.valid_sizes = "1, 2, 4, 8"
+        if ! string_in (my.instance.size, my.valid_sizes)
+            echo_fatal ("Illegal attribute 'size' for instance $(my.instance_dump)." + \
+                        " Expected {$(my.valid_sizes)}", my)
         endif
-    endscope
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Define attribute: 'c_type' that is type for C instances such as argument,
-#   global varibale, constant, return value.
+#   Resolve attribute: string.length.
 # ---------------------------------------------------------------------------
-function component_add_types (component)
-    check_argument (my, "component")
+function component_resolve_string_attr_length (string, parent)
+    check_arguments (my, "string, parent", my)
 
-    scope my.component
-        if ! defined (0.type)
-            return
-        endif
+    my.string.length ?= "null_terminated"
 
-        if 0.type = "size"
-            .c_type = "size_t"
-        elsif 0.type = "string"
-            .c_type = "char"
-            .is_object ?= 1
-        elsif 0.type = "buffer"
-            .c_type = "byte"
-            .is_object ?= 1
-        elsif 0.type = "vsf_buffer"
-            .c_type = "vsf_buffer_t"
-            .is_object ?= 1
-        elsif 0.type = "integer"
-            .c_type = "int"
-        elsif 0.type = "boolean"
-            .c_type = "bool"
-        elsif 0.type = "byte"
-            .c_type = "byte"
-        elsif 0.type = "nothing" | string_empty (0.type)
-            .c_type = "void"
-        elsif 0.type = "any"
-            .c_type = "void"
-            .is_object ?= 1
-        else
-            .c_type = c_resolve_ref (0.type)
-        endif
+    my.valid_length = "null_terminated, given"
 
-        if is_true (0.is_object) & is_false (0.is_instance)
-            .c_type += " *"
-        endif
-
-        if is_true (0.is_object) & is_false (0.is_mutable) & is_false (0.is_reference)
-            .c_type = "const " + .c_type
-        endif
-
-        if is_false (0.is_object) & is_true (0.is_mutable)
-            .c_type += " *"
-        endif
-
-        if is_true (0.is_object) & is_true (0.is_const_array)
-            .c_type += "const *const "
-        endif
-
-        if is_true (0.is_object) & is_true (0.is_reference)
-            .c_type += "*"
-        endif
-
-    endscope
-endfunction
-
-
-# ###########################################################################
-#   Recursive changes in a component hierarchy.
-# ###########################################################################
-
-# ---------------------------------------------------------------------------
-#   Traverse known components within parent and add default infant
-#   components to it.
-#   See, component_add_struct_default_callbacks ().
-#   See, component_add_default_return ().
-# ---------------------------------------------------------------------------
-function foreach_component_add_default_items (parent)
-    check_argument (my, "parent")
-
-    for my.parent.struct
-        for struct.property where is_true (is_callback)
-            component_add_default_return (property)
-        endfor
-
-        component_add_struct_default_callbacks (struct, my.parent)
-    endfor
-
-    for my.parent.callback
-        component_add_default_return (callback)
-    endfor
-
-    for my.parent.method
-        component_add_default_return (method)
-    endfor
+    if ! string_in (my.string.length, my.valid_length)
+        echo_fatal ("Invalid string attribute length=\"$(my.string.length:)\"." + \
+                    " Expected {$(my.valid_length)}", my)
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Traverse known components within parent and add default attributes.
-#   See, component_add_common_attributes ().
+#   Resolve attribute: array.access.
 # ---------------------------------------------------------------------------
-function foreach_component_add_default_attributes (parent)
-    check_argument (my, "parent")
+function component_resolve_array_attr_access (array, parent)
+    check_arguments (my, "array, parent", my)
 
-    for my.parent. as component where component_is_entry (component)
-        component_add_common_attributes (component, my.parent)
-    endfor
+    my.array.access ?= "readwrite"
+
+    my.valid_access_argument = "readonly, writeonly, readwrite, disown"
+    my.valid_access_variable = "readonly, readwrite"
+    my.valid_access_return = "readonly, disown"
+
+    if item_in (my.parent, "argument") & \
+            ! string_in (my.array.access, my.valid_access_argument)
+
+        echo_fatal ( \
+            "Invalid value '$(my.array.access)' " + \
+            "of attribute '$(name (my.parent))->array.access'." + \
+            " Expected {$(my.valid_access_argument)}")
+
+    elsif item_in (my.parent, "variable, property") & \
+            ! string_in (my.array.access, my.valid_access_variable)
+
+        echo_fatal ( \
+            "Invalid value '$(my.array.access)' " + \
+            "of attribute '$(name (my.parent))->array.access'." + \
+            " Expected {$(my.valid_access_variable)}")
+
+    elsif item_in (my.parent, "return") & \
+            ! string_in (my.array.access, my.valid_access_return)
+
+        echo_fatal ( \
+            "Invalid value '$(my.array.access)' " + \
+            "of attribute '$(name (my.parent))->array.access'." + \
+            " Expected {$(my.valid_access_return)}")
+    endif
+
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Traverse known components within parent and add prefixes.
-#   See, component_add_prefixes ().
+#   Resolve attribute: array.length.
 # ---------------------------------------------------------------------------
-function foreach_component_add_prefixes (parent, project)
-    check_argument (my, "parent")
-    check_argument (my, "project")
+function component_resolve_array_attr_length (array, parent)
+    check_arguments (my, "array, parent", my)
 
-    for my.parent. as component where component_is_entry (component)
-        component_add_prefixes (component, my.parent, my.project)
-        foreach_component_add_prefixes (component, my.project)
-    endfor
+    my.array.length ?= "given"
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Traverse known components within parent and add uid.
-#   See, component_add_uid ().
+#   Resolve attribute: macros.is_method.
 # ---------------------------------------------------------------------------
-function foreach_component_add_uid (parent)
-    check_argument (my, "parent")
+function component_resolve_macros_attr_is_method (macros, parent)
+    check_arguments (my, "macros, parent", my)
 
-    for my.parent. as component where component_is_language_construct (component)
-        component_add_uid (component, my.parent)
-        foreach_component_add_uid (component)
-    endfor
+    my.macros.is_method ?= "0"
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Traverse known components within parent and add name.
-#   See, component_add_names ().
+#   Resolve attribute: property.bits.
 # ---------------------------------------------------------------------------
-function foreach_component_add_names (parent)
-    check_argument (my, "parent")
+function component_resolve_property_attr_bits (property, parent)
+    check_arguments (my, "property, parent", my)
 
-    for my.parent. as component where component_is_language_construct (component)
-        component_add_names (component, my.parent)
-        foreach_component_add_names (component)
-    endfor
+    if ! defined (my.property.bits)
+        return
+    endif
+
+    if ! defined (my.property.type) | ! string_in (my.property.type, "integer, size")
+        my.instance_dump = component_instance_dump (my.property)
+        echo_fatal ("Attribute 'bits' is allowed only for integral types" + \
+                ", but found in $(my.instance_dump:)", my)
+    endif
+
+    assert_attribute_number (my.property, "bits", my)
 endfunction
 
-# ---------------------------------------------------------------------------
-#   Traverse known components within parent and add name.
-#   See, component_add_types ().
-# ---------------------------------------------------------------------------
-function foreach_component_add_types (parent)
-    check_argument (my, "parent")
+function component_resolve_attr_module (component, parent)
+    check_arguments (my, "component, parent", my)
 
-    for my.parent. as component where component_is_language_construct (component)
-        component_add_types (component)
-        foreach_component_add_types (component)
-    endfor
+    component_require_attr_module (my.component, my)
 endfunction
-
-# ---------------------------------------------------------------------------
-#   Traverse known components within parent and perform complete resolution.
-# ---------------------------------------------------------------------------
-function foreach_component_resolve (parent, project)
-    check_argument (my, "parent")
-    check_argument (my, "project")
-
-    foreach_component_add_default_items (my.parent)
-    foreach_component_add_default_attributes (my.parent)
-    foreach_component_add_prefixes (my.parent, my.project)
-    foreach_component_add_uid (my.parent)
-    foreach_component_add_names (my.parent)
-    foreach_component_add_types (my.parent)
-endfunction
-
 
 # ###########################################################################
 #   Per component resolution.
 # ###########################################################################
 
 # ---------------------------------------------------------------------------
-#   Resolve component: 'method'.
+#   Add 'lineage' to the component.
 # ---------------------------------------------------------------------------
-function component_resolve_method (method, parent, project)
-    check_argument (my, "method")
-    check_argument (my, "parent")
-    check_argument (my, "project")
+function component_add_lineage (component, parent)
+    check_arguments (my, "component, parent", my)
 
-    component_add_common_attributes (my.method)
-    component_add_default_return (my.method)
-    component_add_prefixes (my.method, my.parent, my.project)
-    component_add_uid (my.method, my.parent)
-    component_add_names (my.method, my.parent)
+    if item_in (my.parent, "section")
+        echo_fatal ("Section must be already embedded as a component's property", my)
+    endif
 
-    foreach_component_resolve (my.method, my.project)
-endfunction
-
-
-# ###########################################################################
-#   Context.
-# ###########################################################################
-
-
-# ---------------------------------------------------------------------------
-#   Collect all attributes with suffix '_name' within component and write
-#   them to the context.
-#   Written key-pair pattern:
-#       <name_prefix>_<component.uid> = component.<name_prefix>_name
-#   Supported values for <name_prefix>:
-#       { c, cpp, java, csharp }.
-# ---------------------------------------------------------------------------
-function component_update_context (component, context)
-    check_argument (my, "component")
-    check_argument (my, "context")
-
-    if string_empty (my.component.uid)
+    if count (my.component.lineage)
+        #   Already there
         return
     endif
 
-    if component_is_instance (my.component)
-        if is_true (my.component.is_callback)
-            my.uid_suffix = c_format_name (my.uid_suffix, "cb")
-        endif
-
-        if is_true (my.component.is_reference)
-            my.uid_suffix = c_format_name (my.uid_suffix, "ref")
-        endif
-
-        if defined (my.uid_suffix)
-            my.uid_suffix = "_" + my.uid_suffix
-        endif
+    if count (my.parent.lineage)
+        #   Use parent's lineage
+        copy my.parent->lineage to my.component
+    else
+        #   Create new lineage
+        new lineage to my.component
+        endnew
     endif
 
-    scope my.component
-        my.context.$(0.uid:)$(my.uid_suffix ?:) = 0.name ?
-        my.context.c_$(0.uid:)$(my.uid_suffix ?:) = 0.c_name ?
-        my.context.cpp_$(0.uid:)$(my.uid_suffix ?:) = 0.cpp_name ?
-        my.context.java_$(0.uid:)$(my.uid_suffix ?:) = 0.java_name ?
-        my.context.csharp_$(0.uid:)$(my.uid_suffix ?:) = 0.csharp_name ?
-    endscope
+    my.component->lineage.of_class = my.parent.of_class
+
+    #   Add parent as ancestor
+    new ancestor to my.component->lineage
+        .id = name (my.parent)
+        .name = my.parent.name
+    endnew
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Update context with data from each 'module' within source.
+#   Resolve component: require
 # ---------------------------------------------------------------------------
-function foreach_component_update_context (source, context)
-    check_argument (my, "source")
-    check_argument (my, "context")
+function component_resolve_require (require, parent)
+    check_arguments (my, "require, parent")
 
-    for my.source. as component where is_item (component)
-        component_update_context (component, my.context)
+    component_resolve_attr_module (my.require, my.parent)
+    component_resolve_attr_scope (my.require, my.parent)
+endfunction
 
-        foreach_component_update_context (component, my.context)
+# ---------------------------------------------------------------------------
+#   Resolve component: string
+# ---------------------------------------------------------------------------
+function component_resolve_string (string, parent)
+    check_arguments (my, "string, parent")
+
+    component_resolve_string_attr_length (my.string, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: array
+# ---------------------------------------------------------------------------
+function component_resolve_array (array, parent)
+    check_arguments (my, "array, parent")
+
+    component_resolve_array_attr_access (my.array, my.parent)
+    component_resolve_array_attr_length (my.array, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve abstract component: instance
+# ---------------------------------------------------------------------------
+function component_resolve_instance (instance, parent)
+    check_arguments (my, "instance, parent", my)
+
+    if defined (my.instance.type)
+        component_resolve_instance_attr_type (my.instance, my.parent)
+
+    elsif defined (my.instance.class)
+        component_resolve_instance_attr_class (my.instance, my.parent)
+
+    elsif defined (my.instance.enum)
+        component_resolve_instance_attr_enum (my.instance, my.parent)
+
+    elsif defined (my.instance.callback)
+        component_resolve_instance_attr_callback (my.instance, my.parent)
+
+    else
+        echo_fatal ("Component that inherit 'instance' must define one" + \
+                    " of the attribute {type, class, enum, callback}")
+    endif
+
+    component_resolve_instance_attr_access (my.instance, my.parent)
+    component_resolve_instance_attr_size (my.instance, my.parent)
+
+    if count (my.instance.string)
+        component_resolve_string (my.instance->string, my.instance)
+    endif
+
+    if count (my.instance.array)
+        component_resolve_array (my.instance->array, my.instance)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Inherit parent 'instance' attributes.
+#   Note, parent mast also be an 'instance'.
+# ---------------------------------------------------------------------------
+function component_inherit_parent_instance (instance, parent)
+    check_arguments (my, "instance, parent", my)
+
+    my.instance.type ?= my.parent.type ?
+    my.instance.class ?= my.parent.class ?
+    my.instance.enum ?= my.parent.enum ?
+    my.instance.callback ?= my.parent.callback ?
+    my.instance.size ?= my.parent.size ?
+    my.instance.access ?= my.parent.access ?
+
+    if count (my.parent.string)
+        copy my.parent->string to my.instance
+    endif
+
+    if count (my.parent.array)
+        copy my.parent->array to my.instance
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: return.
+# ---------------------------------------------------------------------------
+function component_resolve_return (return, parent)
+    check_arguments (my, "return, parent", my)
+
+    component_add_lineage (my.return, my.parent)
+    component_resolve_instance (my.return, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: component.
+# ---------------------------------------------------------------------------
+function component_resolve_component (component, parent)
+    check_arguments (my, "component, parent", my)
+
+    component_resolve_attr_scope (my.component, my.parent)
+    component_resolve_attr_of_class (my.component, my.parent)
+    component_resolve_attr_c_prefix (my.component, my.parent)
+    component_resolve_attr_uid (my.component, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: constant.
+# ---------------------------------------------------------------------------
+function component_resolve_constant (constant, parent)
+    check_argument (my, "constant", my)
+
+    component_require_attr_name (my.constant, my)
+
+    if ! item_in (my.parent ?, "enum")
+        component_require_attr_value (my.constant, my)
+    endif
+
+    component_add_lineage (my.constant, my.parent)
+
+    component_resolve_component (my.constant, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: enum.
+# ---------------------------------------------------------------------------
+function component_resolve_enum (enum, parent)
+    check_argument (my, "enum", my)
+
+    component_require_attr_name (my.enum, my)
+
+    component_add_lineage (my.enum, my.parent)
+
+    component_resolve_component (my.enum, my.parent)
+    component_resolve_attr_visibility (my.enum, my.parent)
+    component_resolve_attr_definition (my.enum, my.parent)
+
+    for my.enum.constant
+        component_resolve_constant (constant, my.enum)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: property.
+# ---------------------------------------------------------------------------
+function component_resolve_property (property, parent)
+    check_arguments (my, "property, parent", my)
+
+    component_require_attr_name (my.property, my)
+    component_require_lineage (my.parent, my)
+
+    component_add_lineage (my.property, my.parent)
+
+    component_resolve_property_attr_bits (my.property, my.parent)
+
+    component_resolve_instance (my.property, my.parent)
+    component_resolve_attr_uid (my.property, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: struct.
+# ---------------------------------------------------------------------------
+function component_resolve_struct (struct, parent)
+    check_arguments (my, "struct, parent", my)
+
+    component_require_attr_name (my.struct, my)
+
+    component_add_lineage (my.struct, my.parent)
+
+    component_resolve_component (my.struct, my.parent)
+    component_resolve_attr_visibility (my.struct, my.parent)
+    component_resolve_attr_definition (my.struct, my.parent)
+
+    for my.struct.property
+        component_resolve_property (property, my.struct)
+    endfor
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: cast.
+# ---------------------------------------------------------------------------
+function component_resolve_cast (cast, parent)
+    check_arguments (my, "cast, parent", my)
+
+    component_resolve_instance (my.cast, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: value.
+# ---------------------------------------------------------------------------
+function component_resolve_value (value, parent)
+    check_arguments (my, "value, parent", my)
+
+    component_inherit_parent_instance (my.value, my.parent)
+
+    component_require_attr_value (my.value, my)
+    component_resolve_instance (my.value, my.parent)
+
+    for my.value.cast
+        component_resolve_cast (cast, my.value)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: variable.
+# ---------------------------------------------------------------------------
+function component_resolve_variable (variable, parent)
+    check_arguments (my, "variable, parent", my)
+
+    component_require_attr_name (my.variable, my)
+
+    component_add_lineage (my.variable, my.parent)
+
+    component_resolve_component (my.variable, my.parent)
+    component_resolve_instance (my.variable, my.parent)
+    component_resolve_attr_visibility (my.variable, my.parent)
+    component_resolve_attr_definition (my.variable, my.parent)
+
+    for my.variable.value
+        component_resolve_value (value, my.variable)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: argument.
+# ---------------------------------------------------------------------------
+function component_resolve_argument (argument, parent)
+    check_arguments (my, "argument, parent", my)
+
+    component_require_attr_name (my.argument, my)
+    component_require_lineage (my.parent, my)
+
+    component_add_lineage (my.argument, my.parent)
+
+    component_resolve_instance (my.argument, my.parent)
+    component_resolve_attr_uid (my.argument, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: method.
+# ---------------------------------------------------------------------------
+function component_resolve_method (method, parent)
+    check_arguments (my, "method, parent", my)
+
+    component_add_lineage (my.method, my.parent)
+
+    component_resolve_component (my.method, my.parent)
+    component_resolve_attr_visibility (my.method, my.parent)
+    component_resolve_attr_definition (my.method, my.parent)
+
+    for my.method.argument
+        component_resolve_argument (argument, my.method)
+    endfor
+
+    for my.method.return
+        component_resolve_return (return, my.method)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: callback.
+# ---------------------------------------------------------------------------
+function component_resolve_callback (callback, parent)
+    check_arguments (my, "callback, parent", my)
+
+    component_add_lineage (my.callback, my.parent)
+
+    component_resolve_component (my.callback, my.parent)
+
+    for my.callback.argument
+        component_resolve_argument (argument, my.callback)
+    endfor
+
+    for my.callback.return
+        component_resolve_return (return, my.callback)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: macros.
+# ---------------------------------------------------------------------------
+function component_resolve_macros (macros, parent)
+    check_arguments (my, "macros, parent", my)
+
+    component_add_lineage (my.macros, my.parent)
+
+    component_resolve_component (my.macros, my.parent)
+    component_resolve_macros_attr_is_method (my.macros, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: macroses.
+# ---------------------------------------------------------------------------
+function component_resolve_macroses (macroses, parent)
+    check_arguments (my, "macroses, parent", my)
+
+    component_require_c_implementation (my.macroses, my)
+
+    component_resolve_attr_scope (my.macroses, my.parent)
+    component_resolve_attr_of_class (my.macroses, my.parent)
+
+    for my.macroses.macros
+        component_resolve_attr_of_class (macros, my.macroses)
+        component_resolve_macros (macros, my.parent)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Traverse known components within module and perform complete resolution.
+# ---------------------------------------------------------------------------
+function foreach_component_resolve (module)
+    check_argument (my, "module", my)
+
+    for my.module.require
+        component_resolve_require (require, my.module)
+    endfor
+
+    for my.module.constant
+        component_resolve_constant (constant, my.module)
+    endfor
+
+    for my.module.enum
+        component_resolve_enum (enum, my.module)
+    endfor
+
+    for my.module.variable
+        component_resolve_variable (variable, my.module)
+    endfor
+
+    for my.module.struct
+        component_resolve_struct (struct, my.module)
+    endfor
+
+    for my.module.callback
+        component_resolve_callback (callback, my.module)
+    endfor
+
+    for my.module.method
+        component_resolve_method (method, my.module)
+    endfor
+
+    for my.module.macros
+        component_resolve_macros (macros, my.module)
+    endfor
+
+    for my.module.macroses
+        component_resolve_macroses (macroses, my.module)
     endfor
 endfunction
 

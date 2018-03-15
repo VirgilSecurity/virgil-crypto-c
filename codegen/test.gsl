@@ -42,7 +42,7 @@
 
 gsl from "common.gsl"
 gsl from "project.gsl"
-gsl from "module_new.gsl"
+gsl from "module.gsl"
 gsl from "interface.gsl"
 gsl from "implementation.gsl"
 gsl from "provider.gsl"

@@ -34,12 +34,15 @@
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 # ---------------------------------------------------------------------------
-#   Module is a XML element that groups functions, structures, constants,
-#   enumerations, macroses, etc., that can belong to a different logical
-#   components within one physical component.
+#   Perform resolution for item 'module' and all children.
 #
-#   Model for source file generation of base C language as well as for all
-#   wrapped languages, i.e. Java, C#, GoLang, etc.
+#   Resolution includes several steps:
+#       1. Validate - check that required attributes and items are defined.
+#       2. Define default values to the optional component attributes.
+#       3. Append optional items.
+#
+#    Private function prefix is: K24.
+#
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
 #   language. See https://github.com/imatix/gsl for details.
@@ -47,21 +50,15 @@
 
 gsl from "common.gsl"
 gsl from "component.gsl"
-gsl from "c_formatter.gsl"
 
-function module_add_default_attributes (module)
-    check_argument (my, "module")
-
-    my.module.class ?= my.module.name
-    my.module.state ?= "draft"
-    my.module.scope ?= "public"
-endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolution function for component 'section'.
-#   The principle: inject 'section' component to the children.
+#   Resolve component: section.
+#
+#   The principle: for each component inside section embed 'section' as
+#   a component's child.
 # ---------------------------------------------------------------------------
-function module_extract_sections (module)
+function module_embed_sections (module)
     check_argument (my, "module")
 
     for my.module.section as parent_section
@@ -76,80 +73,35 @@ function module_extract_sections (module)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolution entrypoint for component 'module'.
+#   Resolve component: module.
 # ---------------------------------------------------------------------------
 function module_resolve (module, project)
-    check_argument (my, "module")
-    check_argument (my, "project")
-
-    assert_attribute (my.module, "name", my)
+    check_arguments (my, "module, project", my)
 
     echo_trace ("Resolving module: $(my.module.name:)", my)
 
-    module_extract_sections (my.module)
+    assert_attribute (my.module, "name", my)
 
-    module_add_default_attributes (my.module)
+    module_embed_sections (my.module)
 
-    component_add_uid (my.module)
-    component_add_prefixes (my.module, my.empty_parent, my.project)
-    component_add_names (my.module)
+    my.module.of_class ?= my.module.name
+    my.module.c_prefix ?= my.project.name
+    my.module.uid = make_id (name (my.module), my.module.name)
 
-    foreach_component_resolve (my.module, my.project)
+    component_resolve_attr_scope (my.module)
+
+    foreach_component_resolve (my.module)
 endfunction
 
-
 # ---------------------------------------------------------------------------
-#   Resolve all 'module' entries within 'source'.
+#   Resolve all 'module' entries within 'source'
 # ---------------------------------------------------------------------------
 function foreach_module_resolve (source, project)
-    check_argument (my, "source")
-    check_argument (my, "project")
+    check_arguments (my, "source, project", my)
 
     for my.source.module
         module_resolve (module, my.project)
     endfor
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Update context with data from each 'module' within source.
-# ---------------------------------------------------------------------------
-function foreach_module_update_context (source, context)
-    check_argument (my, "source")
-    check_argument (my, "context")
-
-    for my.source.module
-        component_update_context (module, my.context)
-
-        foreach_component_update_context (module, my.context)
-    endfor
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Find module's struct with a given name.
-# ---------------------------------------------------------------------------
-function module_find_struct (source, module_name, struct_name)
-    check_argument (my, "source")
-    check_argument (my, "module_name")
-    check_argument (my, "struct_name")
-
-    my.module = item_find_named (my.source, "module", my.module_name, my)
-    my.struct = item_find_named (my.module, "struct", my.struct_name, my)
-
-    return my.struct
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Find module's enum with a given name.
-# ---------------------------------------------------------------------------
-function module_find_enum (source, module_name, enum_name)
-    check_argument (my, "source")
-    check_argument (my, "module_name")
-    check_argument (my, "enum_name")
-
-    my.module = item_find_named (my.source, "module", my.module_name, my)
-    my.enum = item_find_named (my.module, "enum", my.enum_name, my)
-
-    return my.enum
 endfunction
 
 .endtemplate
