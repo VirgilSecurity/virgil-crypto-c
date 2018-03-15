@@ -46,53 +46,55 @@ gsl from "meta.gsl"
 
 gsl from "c_resolver.gsl"
 
-function _C12_add_type_self (module, meta)
-    check_argument (my, "module")
-    check_argument (my, "meta")
+function _C12_add_type_self (meta, destination)
+    check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
-    new struct to my.module
+    new struct to my.destination
         . = "\
         This structure contains common part of any 'API' interface structure.
         It is used for runtime type casting and checking.
         "
-        .name = ""
+        .name = my.names.module_api
+        .scope = "public"
+        .definition = "public"
 
         new property
             . = "\
             Interface unique identifier.
             "
             .name = my.names.property_api_tag
-            .type = my.refs.class_api_enum_tag
+            .enum = my.refs.class_api_enum_tag
         endnew
     endnew
 endfunction
 
 
-function c_module_api_private_create (destination, meta)
-    check_argument (my, "destination")
-    check_argument (my, "meta")
+function c_module_api_private_create (meta, destination)
+    check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
 
     new module to my.destination
         . = "Interface Private API."
+
         .name = my.names.module_api_private
-        .class = my.names.class_api
-        .visibility = "private"
+        .of_class = my.names.class_api
         .scope = "private"
 
         new require
             .module = my.names.module_library
+            .scope = "public"
         endnew
 
         new require
             .module = my.names.module_api
+            .scope = "public"
         endnew
 
-        _C12_add_type_self (module, my.meta)
+        _C12_add_type_self (my.meta, module)
     endnew
 endfunction
 
