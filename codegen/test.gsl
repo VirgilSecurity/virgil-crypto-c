@@ -122,7 +122,6 @@ function run_test ()
         delete c_module
     endfor
     c_module_generate_sources (root)
-
 endfunction
 
 # ---------------------------------------------------------------------------
