@@ -71,75 +71,59 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-
-// ==========================================================================
-//  Macros constants & macros functions.
-// ==========================================================================
-
+//
 //  Asserts always.
-#define VSF_ASSERT_ASSERT(X)                             \
+//
+#define VSF_ASSERT_INTERNAL(X)                           \
     do {                                                 \
         if (!(X)) {                                      \
             vsf_assert_trigger (#X, __FILE__, __LINE__); \
         }                                                \
     } while (false)
 
+//
 //  Asserts even in optimized mode.
-#define VSF_ASSERT_OPT(X) VSF_ASSERT_ASSERT (X)
+//
+#define VSF_ASSERT_OPT(X) VSF_ASSERT_INTERNAL (X)
 
+//
 //  Default assert, that is enabled in debug mode.
-#define VSF_ASSERT(X) VSF_ASSERT_ASSERT (X)
+//
+#define VSF_ASSERT(X) VSF_ASSERT_INTERNAL (X)
 
+//
 //  Heavy assert, that is enabled in a special (safe) cases.
-#define VSF_ASSERT_SAFE(X) VSF_ASSERT_ASSERT (X)
+//
+#define VSF_ASSERT_SAFE(X) VSF_ASSERT_INTERNAL (X)
 
+//
 //  Asserts during compilation. Has no runtime impact.
+//
 #define VSF_ASSERT_STATIC(X) (void) sizeof(char[(X) ? 1 : -1])
 
-
-// ==========================================================================
-//  Full defined types.
-// ==========================================================================
-
+//
 //  Assertion handler callback type.
-typedef void (*vsf_assert_handler_fn) (const char *message, const char *file, int line);
+//
+typedef void (*vsf_assert_handler_fn) (const char* message, const char* file, int line);
 
-
-// ==========================================================================
-//  Public Functions.
-// ==========================================================================
-
-
-// --------------------------------------------------------------------------
-//  Configuration.
-// --------------------------------------------------------------------------
-
+//
 //  Change active assertion handler.
+//
 VSF_PUBLIC void
 vsf_assert_change_handler (vsf_assert_handler_fn handler_cb);
 
-
-// --------------------------------------------------------------------------
-//  Action.
-// --------------------------------------------------------------------------
-
+//
 //  Assertion handler, that print given information and abort program.
 //  This is default handler.
+//
 VSF_PUBLIC void
-vsf_assert_abort (const char *message, const char *file, int line);
+vsf_assert_abort (const char* message, const char* file, int line);
 
+//
 //  Trigger active assertion handler.
+//
 VSF_PUBLIC void
-vsf_assert_trigger (const char *message, const char *file, int line);
-
-
-// ==========================================================================
-//  Private functions.
-// ==========================================================================
-
-//  Return pointer to the last component in the path.
-VSF_PRIVATE const char *
-vsf_assert_path_basename (const char *path);
+vsf_assert_trigger (const char* message, const char* file, int line);
 
 
 // --------------------------------------------------------------------------

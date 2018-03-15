@@ -74,26 +74,11 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-
-// ==========================================================================
-//  Constants.
-// ==========================================================================
-
-//  System introspection.
-enum {
-    //  Pointer size in bytes.
-    vsf_POINTER_SIZE = sizeof (void *)
-};
-
-
-// ==========================================================================
-//  Macros constants & macros functions.
-// ==========================================================================
-
-
-// --------------------------------------------------------------------------
-//  Version.
-// --------------------------------------------------------------------------
+#ifndef BYTE_DEFINED
+#define BYTE_DEFINED
+    //  Portable representation of the byte.
+    typedef uint8_t byte;
+#endif // BYTE_DEFINED
 
 #define VSF_VERSION_MAJOR 5
 
@@ -101,18 +86,13 @@ enum {
 
 #define VSF_VERSION_PATCH 0
 
-#define VSF_MAKE_VERSION(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
+#define VSF_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
 
 #define VSF_VERSION                \
-        VSF_MAKE_VERSION (         \
+        VSF_VERSION_MAKE (         \
                 VSF_VERSION_MAJOR, \
                 VSF_VERSION_MINOR, \
                 VSF_VERSION_PATCH)
-
-
-// --------------------------------------------------------------------------
-//  Visibility.
-// --------------------------------------------------------------------------
 
 //  TDOD: Review with approach: https://gcc.gnu.org/wiki/Visibility
 #if defined (__WINDOWS__)
@@ -140,22 +120,25 @@ enum {
 #   endif
 #endif
 
+//
+//  Public integral constants.
+//
+enum {
+    //
+    //  Pointer size in bytes.
+    //
+    VSF_POINTER_SIZE = sizeof (void *)
+};
 
-// ==========================================================================
-//  Full defined types.
-// ==========================================================================
-
+//
 //  Generic allocation function type.
-typedef void * (*vsf_alloc_fn) (size_t size);
+//
+typedef void* (*vsf_alloc_fn) (size_t size);
 
+//
 //  Generic de-allocation function type.
-typedef void (*vsf_dealloc_fn) (void *mem);
-
-#ifndef BYTE_DEFINED
-#define BYTE_DEFINED
-    //  Portable representation of the byte.
-    typedef uint8_t byte;
-#endif // BYTE_DEFINED
+//
+typedef void (*vsf_dealloc_fn) (void* mem);
 
 
 // --------------------------------------------------------------------------

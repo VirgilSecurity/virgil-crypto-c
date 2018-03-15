@@ -397,11 +397,15 @@ function c_component_map_instance_kind (c_instance, instance)
     elsif (defined (my.instance.callback)) | \
             (defined (my.instance.type) & string.match (my.instance.access, "write")) | \
             (defined (my.instance.enum) & string.match (my.instance.access, "write")) | \
+            (defined (my.instance.class) & name (my.c_instance) = "c_return") | \
             (defined (my.instance.class) & my.instance.access <> "disown")
         my.c_instance.kind = "pointer"
 
     elsif defined (my.instance.class) & my.instance.access = "disown"
         my.c_instance.kind = "reference"
+    else
+        my.instance_dump = component_instance_dump (my.instance)
+        echo_fatal ("Can not resolve instance $(my.instance_dump:)", my)
     endif
 endfunction
 

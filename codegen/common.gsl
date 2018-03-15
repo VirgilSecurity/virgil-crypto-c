@@ -754,6 +754,7 @@ endfunction
 function item_load_from_file (file_name, destination, dir_path)
     check_argument (my, "file_name")
 
+    my.dir_path = directory.resolve (my.dir_path) ?
     my.file_path = "$(my.dir_path?:)$(my.file_name:)"
 
     echo_trace ("Loading file: $(my.file_path:)", my)
@@ -774,7 +775,6 @@ function item_load_from_file (file_name, destination, dir_path)
     return my.model
 endfunction
 
-
 # ---------------------------------------------------------------------------
 #   Save XML model to file.
 #   In any error - abort.
@@ -782,6 +782,7 @@ endfunction
 function item_save_to_file (model, file_name, dir_path)
     check_arguments (my, "model, file_name", my)
 
+    my.dir_path = directory.resolve (my.dir_path) ?
     my.file_path = "$(my.dir_path?:)$(my.file_name:)"
 
     my.model_name = name (my.model)

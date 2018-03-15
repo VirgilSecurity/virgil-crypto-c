@@ -192,7 +192,6 @@ function c_module_generate_source (c_module)
             newline ()
             c_insert_method_definition (c_method)
         endfor
-        c_finalize_component_insertion (my)
     endif
 endfunction
 
