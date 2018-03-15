@@ -96,7 +96,6 @@ function _L24_add_method_get_api (meta, destination)
     check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
 
     new method to my.destination
         . = "\
@@ -108,14 +107,14 @@ function _L24_add_method_get_api (meta, destination)
         .name = my.names.class_api
 
         new return
-            .class = my.refs.class_api_struct_api
+            .class = ".(class_api_struct_api)"
         endnew
 
         component_create_argument_impl (method)
 
         new argument
             .name = my.names.argument_api_tag
-            .enum = my.refs.class_api_enum_tag
+            .enum = ".(class_api_enum_tag)"
         endnew
 
         new c_implementation
@@ -127,10 +126,10 @@ function _L24_add_method_get_api (meta, destination)
                 return NULL;
             }
 
-            for (const $(my.refs.c_class_api_struct_api) *const * api_array = \
+            for (const .(c_class_api_struct_api) *const * api_array = \
                     impl->info->api_array; \ *api_array != NULL; ++api_array) {
 
-                const $(my.refs.c_class_api_struct_api)* api = *api_array;
+                const .(c_class_api_struct_api)* api = *api_array;
 
                 if (api->api_tag == api_tag) {
                     return api;
@@ -150,7 +149,6 @@ function _L24_add_method_get_tag (meta, destination)
     check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
 
     new method to my.destination
         . = "\Return unique 'Implementation TAG'."
@@ -158,7 +156,7 @@ function _L24_add_method_get_tag (meta, destination)
         .name = my.names.enum_tag
 
         new return
-            .enum = my.refs.class_impl_enum_tag
+            .enum = ".(class_impl_enum_tag)"
         endnew
 
         component_create_argument_impl (method)
@@ -181,7 +179,6 @@ function _L24_add_method_cleanup (meta, destination)
     check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
 
     new method to my.destination
         . = "$(my.names.method_cleanup:Neat) implementation object and it's dependencies."
@@ -208,7 +205,6 @@ function _L24_add_method_destroy (meta, destination)
     check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
 
     new method to my.destination
         . = "
@@ -224,7 +220,7 @@ function _L24_add_method_destroy (meta, destination)
             . = "\
             VSF_ASSERT (impl_ref);
 
-            $(my.refs.c_class_impl_struct_impl)* impl = *impl_ref
+            \.(c_class_impl_struct_impl)* impl = *impl_ref
             *impl_ref = NULL;
 
             if (impl) {
