@@ -196,6 +196,7 @@ function _L24_add_method_cleanup (meta, destination)
             "
         endnew
     endnew
+
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -230,6 +231,42 @@ function _L24_add_method_destroy (meta, destination)
             "
         endnew
     endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Define callback 'cleanup'
+# ---------------------------------------------------------------------------
+function _L24_add_callback_cleanup (meta, destination)
+    check_arguments (my, "meta, destination", my)
+
+    my.names = meta_names (my.meta)
+
+    new callback to my.destination
+        . = "Callback type for $(my.names.method_cleanup) action."
+
+        .name = my.names.method_cleanup
+
+        component_create_argument_impl (callback)
+    endnew
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Define callback 'destroy'
+# ---------------------------------------------------------------------------
+function _L24_add_callback_destroy (meta, destination)
+    check_arguments (my, "meta, destination", my)
+
+    my.names = meta_names (my.meta)
+
+    new callback to my.destination
+        . = "Callback type for $(my.names.method_destroy) action."
+
+        .name = my.names.method_destroy
+
+        component_create_argument_impl_ref (callback)
+    endnew
+
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -272,6 +309,8 @@ function c_module_impl_create (meta, destination)
         _L24_add_method_get_tag (my.meta, module)
         _L24_add_method_cleanup (my.meta, module)
         _L24_add_method_destroy (my.meta, module)
+        _L24_add_callback_cleanup (my.meta, module)
+        _L24_add_callback_destroy (my.meta, module)
     endnew
 endfunction
 
