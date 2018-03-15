@@ -83,6 +83,16 @@ typedef enum vsf_impl_tag_t vsf_impl_tag_t;
 typedef struct vsf_impl_t vsf_impl_t;
 
 //
+//  Callback type for cleanup action.
+//
+typedef void (*vsf_impl_cleanup_fn) (vsf_impl_t* impl);
+
+//
+//  Callback type for destroy action.
+//
+typedef void (*vsf_impl_destroy_fn) (vsf_impl_t** impl_ref);
+
+//
 //  Return 'API' object that is fulfiled with a meta information
 //  specific to the given implementation object.
 //  Or NULL if object does not implement requested 'API'.
