@@ -1033,4 +1033,63 @@ function foreach_component_resolve (module)
     endfor
 endfunction
 
+# ###########################################################################
+#   Function for creation widely used components
+# ###########################################################################
+
+# ---------------------------------------------------------------------------
+#   Add 'impl' argument to the destination with 'readwrite' access.
+# ---------------------------------------------------------------------------
+function component_create_argument_impl (destination)
+    check_arguments (my, "destination", my)
+
+    new argument to my.destination
+        .name = "impl"
+        .class = "impl"
+        .access = "readwrite"
+        return argument
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'impl' argument to the destination with 'disown' access.
+# ---------------------------------------------------------------------------
+function component_create_argument_impl_ref (destination)
+    check_arguments (my, "destination", my)
+
+    new argument to my.destination
+        .name = "impl"
+        .class = "impl"
+        .access = "disown"
+        return argument
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add constant 'begin' to the destination with optional value, default 0.
+# ---------------------------------------------------------------------------
+function component_create_constant_begin (destination, value)
+    check_arguments (my, "destination", my)
+
+    new constant to my.destination
+        .name = "begin"
+        .value = my.value ? "0"
+
+        return constant
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add constant 'end' to the destination.
+# ---------------------------------------------------------------------------
+function component_create_constant_end (destination)
+    check_arguments (my, "destination", my)
+
+    new constant to my.destination
+        .name = "end"
+
+        return constant
+    endnew
+endfunction
+
 .endtemplate

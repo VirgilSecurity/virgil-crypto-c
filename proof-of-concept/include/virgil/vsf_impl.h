@@ -68,60 +68,46 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-
-// ==========================================================================
-//  Full defined types.
-// ==========================================================================
-
+//
 //  Enumerates all possible implementations within crypto library.
+//
 enum vsf_impl_tag_t {
     vsf_impl_tag_BEGIN = 0,
-    vsf_impl_tag_SHA256,
-    vsf_impl_tag_ASN1_WR,
-    vsf_impl_tag_ASN1_RD,
-    vsf_impl_tag_KDF1,
-    vsf_impl_tag_DYNAMIC_LIST,
-    vsf_impl_tag_PASSWORD_RECIPIENT,
-    vsf_impl_tag_KEY_TRANS_RECIPIENT,
-    vsf_impl_tag_ENVELOPED_DATA,
-    vsf_impl_tag_ENCRYPTED_CONTENT,
-    vsf_impl_tag_CONTENT,
-    vsf_impl_tag_CONTENT_INFO,
     vsf_impl_tag_END
 };
 typedef enum vsf_impl_tag_t vsf_impl_tag_t;
 
-
-// ==========================================================================
-//  Opaque types.
-// ==========================================================================
-
+//
 //  Generic type for any 'implementation'.
+//
 typedef struct vsf_impl_t vsf_impl_t;
 
-
-// ==========================================================================
-//  Public Functions.
-// ==========================================================================
-
+//
 //  Return 'API' object that is fulfiled with a meta information
 //  specific to the given implementation object.
 //  Or NULL if object does not implement requested 'API'.
-VSF_PUBLIC const vsf_api_t *
-vsf_impl_api (vsf_impl_t *impl, vsf_api_tag_t api_tag);
+//
+VSF_PUBLIC const vsf_api_t*
+vsf_impl_api (vsf_impl_t* impl, vsf_api_tag_t api_tag);
 
+//
 //  Return unique 'Implementation TAG'.
+//
 VSF_PUBLIC vsf_impl_tag_t
-vsf_impl_tag (vsf_impl_t *impl);
+vsf_impl_tag (vsf_impl_t* impl);
 
+//
 //  Cleanup implementation object and it's dependencies.
+//
 VSF_PUBLIC void
-vsf_impl_cleanup (vsf_impl_t *impl);
+vsf_impl_cleanup (vsf_impl_t* impl);
 
+//
 //  Destroy implementation object and it's dependencies.
 //  Note, do 'cleanup' before 'destroy'.
+//
 VSF_PUBLIC void
-vsf_impl_destroy (vsf_impl_t *impl);
+vsf_impl_destroy (vsf_impl_t** impl_ref);
 
 
 // --------------------------------------------------------------------------
