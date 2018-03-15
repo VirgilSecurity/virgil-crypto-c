@@ -52,11 +52,8 @@
 
 #include "vsf_impl.h"
 #include "vsf_api_private.h"
-//  @end
-
-
 #include "vsf_assert.h"
-#include "vsf_impl_private.h"
+//  @end
 
 
 //  @generated
@@ -64,29 +61,23 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-
-// ==========================================================================
-//  Generated functions.
-// ==========================================================================
-
+//
 //  Return 'API' object that is fulfiled with a meta information
 //  specific to the given implementation object.
 //  Or NULL if object does not implement requested 'API'.
-VSF_PUBLIC const vsf_api_t *
-vsf_impl_api (vsf_impl_t *impl, vsf_api_tag_t api_tag) {
+//
+VSF_PUBLIC const vsf_api_t*
+vsf_impl_api (vsf_impl_t* impl, vsf_api_tag_t api_tag) {
 
     VSF_ASSERT (impl);
-
-    VSF_ASSERT (vsf_api_tag_BEGIN < api_tag);
-    VSF_ASSERT (api_tag < vsf_api_tag_END);
-
     VSF_ASSERT (impl->info);
 
-    if (impl->info->api_array == NULL) {
+    if (impl->info->api_array) == NULL)
         return NULL;
     }
 
-    for (const vsf_api_t * const *api_array = impl->info->api_array; *api_array != NULL; ++api_array) {
+    for (const vsf_api_t *const * api_array = impl->info->api_array; *api_array != NULL; ++api_array) {
+
         const vsf_api_t* api = *api_array;
 
         if (api->api_tag == api_tag) {
@@ -97,40 +88,46 @@ vsf_impl_api (vsf_impl_t *impl, vsf_api_tag_t api_tag) {
     return NULL;
 }
 
+//
 //  Return unique 'Implementation TAG'.
+//
 VSF_PUBLIC vsf_impl_tag_t
-vsf_impl_tag (vsf_impl_t *impl) {
+vsf_impl_tag (vsf_impl_t* impl) {
 
     VSF_ASSERT (impl);
-
     VSF_ASSERT (impl->info);
 
-    return impl->info->impl_tag;
+    return impl->info->tag;
 }
 
+//
 //  Cleanup implementation object and it's dependencies.
+//
 VSF_PUBLIC void
-vsf_impl_cleanup (vsf_impl_t *impl) {
+vsf_impl_cleanup (vsf_impl_t* impl) {
 
     VSF_ASSERT (impl);
-
-    VSF_ASSERT (impl->info);
     VSF_ASSERT (impl->info->self_cleanup_cb);
 
-    impl->info->self_cleanup_cb (impl);
+    impl->info->self_cleanup_cb (impl)
 }
 
+//
 //  Destroy implementation object and it's dependencies.
 //  Note, do 'cleanup' before 'destroy'.
+//
 VSF_PUBLIC void
-vsf_impl_destroy (vsf_impl_t *impl) {
+vsf_impl_destroy (vsf_impl_t** impl_ref) {
 
-    VSF_ASSERT (impl);
+    VSF_ASSERT (impl_ref);
 
-    VSF_ASSERT (impl->info);
-    VSF_ASSERT (impl->info->self_destroy_cb);
+    vsf_impl_t* impl = *impl_ref
+    *impl_ref = NULL;
 
-    impl->info->self_destroy_cb (impl);
+    if (impl) {
+        VSF_ASSERT (impl->info->self_destroy_cb);
+        impl->info->self_destroy_cb (&impl);
+    }
 }
 
 

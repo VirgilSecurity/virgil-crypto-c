@@ -55,7 +55,7 @@ gsl from "c_module_codegen.gsl"
 
 gsl from "c_module_api.gsl"
 gsl from "c_module_api_private.gsl"
-#gsl from "c_module_impl.gsl"
+gsl from "c_module_impl.gsl"
 #gsl from "c_module_impl_private.gsl"
 #
 #gsl from "c_module_interface.gsl"
@@ -117,8 +117,8 @@ function run_main ()
     #   Create modules.
     c_module_api_create (my.meta, root)
     c_module_api_private_create (my.meta, root)
-#
-#    c_module_impl_create (root, my.meta)
+
+    c_module_impl_create (my.meta, root)
 #    c_module_impl_private_create (root, my.meta)
 #
 #    c_module_interface_create (root, root, my.meta)

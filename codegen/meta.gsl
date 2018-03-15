@@ -132,6 +132,7 @@ function _X17_add_entity_common (meta)
         .is_active = 1
 
         _X17_add_smart_linked_name (entity, "module", "library")
+        _X17_add_smart_linked_name (entity, "module", "assert")
 
         _X17_add_smart_name (entity, "struct", "info")
         _X17_add_smart_name (entity, "struct", "context")
@@ -173,7 +174,7 @@ function _X17_add_entity_api (meta)
         _X17_add_smart_linked_name (entity, "property", "api tag")
         _X17_add_smart_linked_name (entity, "property", "api array")
 
-        _X17_add_smart_link (entity, "class api struct")
+        _X17_add_smart_link (entity, "class api struct api")
         _X17_add_smart_link (entity, "class api enum tag")
         _X17_add_smart_link (entity, "class api enum tag value begin")
         _X17_add_smart_link (entity, "class api enum tag value end")
@@ -209,7 +210,7 @@ function _X17_add_entity_impl (meta)
         _X17_add_smart_link (entity, "property self cleanup cb")
         _X17_add_smart_link (entity, "property self destroy cb")
 
-        _X17_add_smart_link (entity, "class impl struct")
+        _X17_add_smart_link (entity, "class impl struct impl")
         _X17_add_smart_link (entity, "class impl struct info")
         _X17_add_smart_link (entity, "class impl enum tag")
         _X17_add_smart_link (entity, "class impl enum tag value begin")
