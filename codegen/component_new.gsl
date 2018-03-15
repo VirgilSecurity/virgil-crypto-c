@@ -54,7 +54,7 @@ gsl from "common.gsl"
 # ---------------------------------------------------------------------------
 #   Return component as shortened XML string with required attributes.
 # ---------------------------------------------------------------------------
-function _B23_component_dump (component)
+function component_dump (component)
     check_argument (my, "component")
 
     my.component_info = ""
@@ -71,14 +71,16 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return instance as shortened XML string with required attributes.
 # ---------------------------------------------------------------------------
-function _B23_instance_dump (instance)
+function component_instance_dump (instance)
     check_argument (my, "instance")
 
     my.instance_info = ""
     my.instance_info += " name=\"$(my.instance.name)\"" ? ""
     my.instance_info += " type=\"$(my.instance.type)\"" ? ""
     my.instance_info += " class=\"$(my.instance.class)\"" ? ""
+    my.instance_info += " callback=\"$(my.instance.callback)\"" ? ""
     my.instance_info += " bits=\"$(my.instance.bits)\"" ? ""
+    my.instance_info += " access=\"$(my.instance.access)\"" ? ""
     my.instance_dump = "<$(name (my.instance))$(my.instance_info)/>"
 
     return my.instance_dump
@@ -220,6 +222,15 @@ function component_require_attr_scope (component, caller)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Check required attribute: module.
+# ---------------------------------------------------------------------------
+function component_require_attr_module (component, caller)
+    check_argument (my, "component", my)
+
+    assert_attribute (my.component, "module", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Check required item: linage.
 # ---------------------------------------------------------------------------
 function component_require_lineage (component, caller)
@@ -331,6 +342,14 @@ function component_resolve_attr_scope (component, parent)
     check_argument (my, "component", my)
 
     my.component.scope ?= my.parent.scope ? "public" #  can be inherited
+
+    my.valid_scopes = "public, private"
+    if ! string_in (my.component.scope, my.valid_scopes)
+        my.component_dump = component_dump (my.component)
+
+        echo_fatal ("Invalid instance scope '$(my.component_dump:)'. " + \
+                    "Expected {$(my.valid_scopes)}", my)
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -368,6 +387,14 @@ function component_resolve_attr_visibility (component, parent)
     check_argument (my, "component", my)
 
     my.component.visibility ?= "public" #   is not inherited
+
+    my.valid_visibilities = "public, private"
+    if ! string_in (my.component.visibility, my.valid_visibilities)
+        my.component_dump = component_dump (my.component)
+
+        echo_fatal ("Invalid instance visibility '$(my.component_dump:)'. " + \
+                    "Expected {$(my.valid_visibilities)}", my)
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -380,10 +407,10 @@ function component_resolve_attr_definition (component, parent)
 
     my.valid_definitions = "public, private, external"
     if ! string_in (my.component.definition, my.valid_definitions)
-        my.component_dump = _B23_component_dump (my.component)
+        my.component_dump = component_dump (my.component)
 
         echo_fatal ("Invalid component definition '$(my.component_dump:)'. " + \
-                    "Expected {$(my.valid_definitions)}")
+                    "Expected {$(my.valid_definitions)}", my)
     endif
 endfunction
 
@@ -397,10 +424,10 @@ function component_resolve_instance_attr_type (instance, parent)
 
     my.valid_types = "nothing, boolean, integer, size, byte, data"
     if ! string_in (my.instance.type, my.valid_types)
-        my.instance_dump = _B23_instance_dump (my.instance)
+        my.instance_dump = component_instance_dump (my.instance)
 
         echo_fatal ("Invalid instance type '$(my.instance_dump:)'. " + \
-                    "Expected {$(my.valid_types)}")
+                    "Expected {$(my.valid_types)}", my)
     endif
 
     #   Resolve type shortcuts
@@ -489,7 +516,7 @@ function component_resolve_instance_attr_size (instance, parent)
     check_arguments (my, "instance, parent")
 
     if defined (my.instance.size)
-        my.instance_dump = _B23_instance_dump (my.instance)
+        my.instance_dump = component_instance_dump (my.instance)
 
         my.valid_instance_type = "integer, size"
         if ! string_in (my.instance.type ?, my.valid_instance_type)
@@ -589,12 +616,18 @@ function component_resolve_property_attr_bits (property, parent)
     endif
 
     if ! defined (my.property.type) | ! string_in (my.property.type, "integer, size")
-        my.instance_dump = _B23_instance_dump (my.property)
+        my.instance_dump = component_instance_dump (my.property)
         echo_fatal ("Attribute 'bits' is allowed only for integral types" + \
                 ", but found in $(my.instance_dump:)", my)
     endif
 
     assert_attribute_number (my.property, "bits", my)
+endfunction
+
+function component_resolve_attr_module (component, parent)
+    check_arguments (my, "component, parent", my)
+
+    component_require_attr_module (my.component, my)
 endfunction
 
 # ###########################################################################
@@ -635,22 +668,17 @@ function component_add_lineage (component, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Add 'lineage' to the component.
+#   Resolve component: require
 # ---------------------------------------------------------------------------
-function component_add_return (component)
-    check_arguments (my, "component", my)
+function component_resolve_require (require, parent)
+    check_arguments (my, "require, parent")
 
-    if count (my.component.return)
-        #   Already there
-        return
-    endif
-
-    new return to my.component
-    endnew
+    component_resolve_attr_module (my.require, my.parent)
+    component_resolve_attr_scope (my.require, my.parent)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve abstract component: string
+#   Resolve component: string
 # ---------------------------------------------------------------------------
 function component_resolve_string (string, parent)
     check_arguments (my, "string, parent")
@@ -659,7 +687,7 @@ function component_resolve_string (string, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve abstract component: array
+#   Resolve component: array
 # ---------------------------------------------------------------------------
 function component_resolve_array (array, parent)
     check_arguments (my, "array, parent")
@@ -731,8 +759,6 @@ endfunction
 # ---------------------------------------------------------------------------
 function component_resolve_return (return, parent)
     check_arguments (my, "return, parent", my)
-
-    my.return.type ?= "nothing"
 
     component_add_lineage (my.return, my.parent)
     component_resolve_instance (my.return, my.parent)
@@ -899,8 +925,9 @@ function component_resolve_method (method, parent)
         component_resolve_argument (argument, my.method)
     endfor
 
-    component_add_return (my.method)
-    component_resolve_return (my.method->return, my.method)
+    for my.method.return
+        component_resolve_return (return, my.method)
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -917,8 +944,9 @@ function component_resolve_callback (callback, parent)
         component_resolve_argument (argument, my.callback)
     endfor
 
-    component_add_return (my.callback)
-    component_resolve_return (my.callback->return, my.callback)
+    for my.callback.return
+        component_resolve_return (return, my.callback)
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------

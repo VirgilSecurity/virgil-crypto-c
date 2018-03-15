@@ -84,7 +84,7 @@ function c_module_add_includes (module, destination)
     endfor
 
     for my.module.require
-        c_component_create_include (require, my.c_module)
+        c_component_create_include (require, my.destination)
     endfor
 endfunction
 

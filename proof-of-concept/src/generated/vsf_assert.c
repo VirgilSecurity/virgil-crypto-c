@@ -61,25 +61,20 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Return pointer to the last component in the path.
+//
+VSF_PRIVATE static const char*
+vsf_assert_path_basename (const char* path);
 
-// ==========================================================================
-//  Objects.
-// ==========================================================================
-
+//
 //  Active handler for assertion failback.
+//
 static vsf_assert_handler_fn active_handler = vsf_assert_abort;
 
-
-// ==========================================================================
-//  Generated functions.
-// ==========================================================================
-
-
-// --------------------------------------------------------------------------
-//  Configuration.
-// --------------------------------------------------------------------------
-
+//
 //  Change active assertion handler.
+//
 VSF_PUBLIC void
 vsf_assert_change_handler (vsf_assert_handler_fn handler_cb) {
 
@@ -87,40 +82,46 @@ vsf_assert_change_handler (vsf_assert_handler_fn handler_cb) {
     active_handler = handler_cb;
 }
 
-
-// --------------------------------------------------------------------------
-//  Action.
-// --------------------------------------------------------------------------
-
+//
 //  Assertion handler, that print given information and abort program.
 //  This is default handler.
+//
 VSF_PUBLIC void
-vsf_assert_abort (const char *message, const char *file, int line) {
+vsf_assert_abort (const char* message, const char* file, int line) {
 
     printf ("Assertion failed: %s, file %s, line %d\n",
             message, vsf_assert_path_basename (file), line);
+
     printf ("Abort");
+
     abort ();
 }
 
+//
 //  Trigger active assertion handler.
+//
 VSF_PUBLIC void
-vsf_assert_trigger (const char *message, const char *file, int line) {
+vsf_assert_trigger (const char* message, const char* file, int line) {
 
     active_handler (message, file, line);
 }
 
+//
 //  Return pointer to the last component in the path.
-VSF_PRIVATE const char *
-vsf_assert_path_basename (const char *path) {
+//
+VSF_PRIVATE static const char*
+vsf_assert_path_basename (const char* path) {
 
     const char *result = path;
     for (const char *symbol = path; *symbol != '\0' && (symbol - path < 255); ++symbol) {
+
         const char *next_symbol = symbol + 1;
+
         if (*next_symbol != '\0' && (*symbol == '\\' || *symbol == '/')) {
             result = next_symbol;
         }
     }
+
     return result;
 }
 

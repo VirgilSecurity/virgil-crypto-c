@@ -352,8 +352,10 @@ endfunction
 function c_insert_method_signature (c_method, ending)
     check_argument (my, "c_method")
 
+    my.maybe_static = (my.c_method.scope = "private") ?? "static " ? ""
+
     insert_code (cat ( \
-        c_derive_component_modifiers (my.c_method), \
+        c_derive_component_modifiers (my.c_method), my.maybe_static ?, \
         c_derive_instance_type (my.c_method->c_return)))
 
     my.beginning = my.c_method.name + " "
