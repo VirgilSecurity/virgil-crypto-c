@@ -44,7 +44,6 @@
 gsl from "common.gsl"
 gsl from "meta.gsl"
 
-gsl from "c_resolver.gsl"
 
 function _C12_add_type_self (meta, destination)
     check_arguments (my, "meta, destination", my)
