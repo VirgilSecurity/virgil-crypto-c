@@ -48,15 +48,15 @@ gsl from "module.gsl"
 # ---------------------------------------------------------------------------
 #   Add declaration for generic API type.
 # ---------------------------------------------------------------------------
-function _N24_add_type_self (module, names)
-    check_arguments (my, "module, names", my)
+function _N24_add_type_self (meta, destination)
+    check_arguments (my, "meta, destination", my)
 
-    component_require_attr_name (my.module, my)
+    my.names = meta_names (my.meta)
 
-    new struct to my.module
+    new struct to my.destination
         . = "Generic type for any 'API' object."
 
-        .name = my.module.name
+        .name = my.names.module_api
         .definition = "external"
     endnew
 endfunction
@@ -64,10 +64,12 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add type that enumerates all possible interfaces within crypto.
 # ---------------------------------------------------------------------------
-function _N24_add_enum_tag (module, names)
-    check_arguments (my, "module, names", my)
+function _N24_add_enum_tag (meta, destination)
+    check_arguments (my, "meta, destination", my)
 
-    new enum to my.module
+    my.names = meta_names (my.meta)
+
+    new enum to my.destination
         . = "Enumerates all possible interfaces within crypto library."
 
         .name = my.names.enum_tag
@@ -107,8 +109,8 @@ function c_module_api_create (meta, destination)
             .module = my.names.module_library
         endnew
 
-        _N24_add_type_self (module, my.names)
-        _N24_add_enum_tag (module, my.names)
+        _N24_add_type_self (my.meta, module)
+        _N24_add_enum_tag (my.meta, module)
     endnew
 endfunction
 
