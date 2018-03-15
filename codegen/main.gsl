@@ -53,7 +53,7 @@ gsl from "meta.gsl"
 gsl from "c_module.gsl"
 gsl from "c_module_codegen.gsl"
 
-#gsl from "c_module_api.gsl"
+gsl from "c_module_api.gsl"
 #gsl from "c_module_api_private.gsl"
 #gsl from "c_module_impl.gsl"
 #gsl from "c_module_impl_private.gsl"
@@ -109,13 +109,13 @@ function run_main ()
 #    foreach_implementation_resolve (root, root->project)
 
     #   Create meta informtation about high level entities.
-#    my.meta = meta_create ()
+    my.meta = meta_create ()
 #    foreach_interface_update_meta (root, my.meta)
 #    foreach_implementation_update_meta (root, my.meta)
 #    item_save_to_file (my.meta, "meta.xml", root->project.work_path)
 #
     #   Create modules.
-#    c_module_api_create (root, my.meta)
+    c_module_api_create (my.meta, root)
 #    c_module_api_private_create (root, my.meta)
 #
 #    c_module_impl_create (root, my.meta)

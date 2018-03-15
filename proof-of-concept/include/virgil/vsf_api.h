@@ -67,32 +67,18 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-
-// ==========================================================================
-//  Full defined types.
-// ==========================================================================
-
+//
 //  Enumerates all possible interfaces within crypto library.
+//
 enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_ASN1_READER,
-    vsf_api_tag_HASH,
-    vsf_api_tag_KDF,
-    vsf_api_tag_CMS,
-    vsf_api_tag_ASN1_WRITER,
-    vsf_api_tag_LIST,
-    vsf_api_tag_END
+    VSF_API_TAG_BEGIN = 0,
+    VSF_API_TAG_END
 };
 typedef enum vsf_api_tag_t vsf_api_tag_t;
 
-
-// ==========================================================================
-//  Opaque types.
-// ==========================================================================
-
+//
 //  Generic type for any 'API' object.
+//
 typedef struct vsf_api_t vsf_api_t;
 
 
