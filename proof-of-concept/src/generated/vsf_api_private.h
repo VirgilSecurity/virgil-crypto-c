@@ -67,15 +67,14 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-
-// ==========================================================================
-//  Full defined types.
-// ==========================================================================
-
+//
 //  This structure contains common part of any 'API' interface structure.
 //  It is used for runtime type casting and checking.
+//
 struct vsf_api_t {
+    //
     //  Interface unique identifier.
+    //
     vsf_api_tag_t api_tag;
 };
 typedef struct vsf_api_t vsf_api_t;
