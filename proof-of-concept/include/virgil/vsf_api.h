@@ -71,8 +71,8 @@ extern "C" {
 //  Enumerates all possible interfaces within crypto library.
 //
 enum vsf_api_tag_t {
-    VSF_API_TAG_BEGIN = 0,
-    VSF_API_TAG_END
+    vsf_api_tag_BEGIN = 0,
+    vsf_api_tag_END
 };
 typedef enum vsf_api_tag_t vsf_api_tag_t;
 
