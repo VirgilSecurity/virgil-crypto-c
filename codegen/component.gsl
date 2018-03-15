@@ -307,12 +307,12 @@ function component_derive_uid (component)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return component's full name: class name + ancestors + self name.
+#   Return component's name prefix: class name + ancestors.
 #   Rules:
 #       - class name is ommited if class is 'global';
 #       - class name is ommited if component's name equals to the class name.
 # ---------------------------------------------------------------------------
-function component_derive_full_name (component)
+function component_derive_name_prefix (component)
     check_argument (my, "component", my)
 
     component_require_attr_name (my.component, my)
@@ -325,14 +325,26 @@ function component_derive_full_name (component)
     endfor
 
     if component_is_global (my.component)
-        return cat (my.ancestors, my.component.name)
+        return cat (my.ancestors)
 
     elsif string_equal (my.component.of_class, my.component.name)
-        return cat (my.ancestors, my.component.name)
+        return cat (my.ancestors)
 
     else
-        return cat (my.component.of_class, my.ancestors, my.component.name)
+        return cat (my.component.of_class, my.ancestors)
     endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return component's full name: class name + ancestors + self name.
+#   Rules:
+#       - class name is ommited if class is 'global';
+#       - class name is ommited if component's name equals to the class name.
+# ---------------------------------------------------------------------------
+function component_derive_full_name (component)
+     check_argument (my, "component", my)
+
+     return cat (component_derive_name_prefix (my.component), my.component.name)
 endfunction
 
 # ---------------------------------------------------------------------------

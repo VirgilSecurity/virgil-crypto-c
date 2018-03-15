@@ -64,7 +64,7 @@ function c_derive_constant_name (constant)
 
     component_require_lineage (my.constant, my)
 
-    return c_format_constant_name (my.constant.c_prefix, component_derive_full_name (my.constant))
+return c_format_constant_name (my.constant.c_prefix, component_derive_name_prefix (my.constant), my.constant.name)
 endfunction
 
 # ---------------------------------------------------------------------------

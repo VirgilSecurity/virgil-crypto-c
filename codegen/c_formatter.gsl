@@ -167,11 +167,12 @@ endfunction
 
 # ---------------------------------------------------------------------------
 #   Return constant formatted name constructed by parts concatenation.
-#   Constant name format: UPPERCASE, UNDERSCORE.
+#   Constant name format: LOWERCASE (prefix, ancestrors), UPPERCASE (name), UNDERSCORE.
 # ---------------------------------------------------------------------------
-function c_format_constant_name (part1, part2, part3, part4)
-    my.result = c_format_name (my.part1, my.part2, my.part3, my.part4)
-    return "$(my.RESULT)"
+function c_format_constant_name (prefix, ancestors, name)
+    check_arguments (my, "prefix, ancestors, name")
+
+    return "$(my.prefix:lower,c)_$(my.ancestors:lower,c)_$(my.name:upper,c)"
 endfunction
 
 # ---------------------------------------------------------------------------
