@@ -47,7 +47,7 @@
 
 
 gsl from "common.gsl"
-gsl from "component_new.gsl"
+gsl from "component.gsl"
 gsl from "c_formatter.gsl"
 
 
