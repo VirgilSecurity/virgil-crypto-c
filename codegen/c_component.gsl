@@ -125,10 +125,16 @@ function c_derive_instance_name (instance)
     component_require_attr_name (my.instance, my)
 
     if defined (my.instance.callback)
-        return c_format_name (my.instance.name, "cb")
+        my.name = c_format_name (my.instance.name, "cb")
     else
-        return c_format_name (my.instance.name)
+        my.name = c_format_name (my.instance.name)
     endif
+
+    if my.instance.access = "disown"
+        my.name += "_ref"
+    endif
+
+    return my.name
 endfunction
 
 # ---------------------------------------------------------------------------
