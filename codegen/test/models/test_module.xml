@@ -12,34 +12,34 @@
     <!-- MACROSES -->
     <macros name="pi" of_class="global">
         Macros as a global constant .
-        <c_implementation>
+        <implementation lang="c">
             #define .(c_global_macros_pi) 3.1415
-        </c_implementation>
+        </implementation>
     </macros>
 
     <macros name="magic constant">
         Macros as a local constant.
-        <c_implementation>
+        <implementation lang="c">
             #define .(c_class_foo_macros_magic_constant) 777.25
-        </c_implementation>
+        </implementation>
     </macros>
 
     <macros name="do magic" is_method="1">
         Macros as a method.
-        <c_implementation>
+        <implementation lang="c">
             #define .(c_class_foo_macros_do_magic) (a) !(~(a))
-        </c_implementation>
+        </implementation>
     </macros>
 
     <macros name="do multiline" is_method="1">
         Macros as a multiline method.
-        <c_implementation>
+        <implementation lang="c">
             #define .(c_class_foo_macros_do_multiline) (x)
                 do {
                     x += 1;
                     x *= 2;
                 } while (0)
-        </c_implementation>
+        </implementation>
     </macros>
 
     <macroses of_class="global">
@@ -50,7 +50,7 @@
         <macros name="private"/>
         <macros name="publics"/>
         <macros name="internal build"/>
-        <c_implementation>
+        <implementation lang="c">
             #if defined (__WINDOWS__)
             #   if defined .(c_global_macros_static)
             #       define .(c_global_macros_public)
@@ -75,7 +75,7 @@
             #       define .(c_global_macros_private)
             #   endif
             #endif
-        </c_implementation>
+        </implementation>
     </macroses>
 
     <!-- CONSTANTS -->
@@ -259,9 +259,9 @@
     <method name="do nothing">
         Just do nothing.
 
-        <c_implementation>
+        <implementation lang="c">
             //  Boo.
-        </c_implementation>
+        </implementation>
     </method>
 
     <method name="do public">

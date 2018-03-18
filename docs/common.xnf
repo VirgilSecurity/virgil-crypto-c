@@ -49,7 +49,6 @@
             Component is visible only within library or a specific source file.
         </restrict>
     </attr>
-
 </entity>
 
 
@@ -71,7 +70,6 @@
             Component definition is located somewhere.
         </restrict>
     </attr>
-
 </entity>
 
 
@@ -89,7 +87,6 @@
             Symbols of the types and methods are hidden in a binary file.
         </restrict>
     </attr>
-
 </entity>
 
 
@@ -99,7 +96,6 @@
         Defines class name that a component belongs to.
         This attributes is used for inner components name resolution.
     </attr>
-
 </entity>
 
 
@@ -108,4 +104,32 @@
         Unique component identifier represents name that uniquely identifies
         component within models hierarchy.
     </attr>
+</entity>
+
+
+<entity name="lang" abstract="1">
+
+    <attr name="lang" default="c">
+        Defines target language this entity is applied to.
+
+        <restrict value="c">
+            C langauge.
+        </restrict>
+
+        <restrict value="java">
+            Java langauge.
+        </restrict>
+
+        <restrict value="csharp">
+            C# langauge.
+        </restrict>
+    </attr>
+</entity>
+
+
+<entity name="implementation">
+    Contains language specific implementation body.
+    For instance, method implementation body for C language.
+
+    <inherit entity="lang"/>
 </entity>

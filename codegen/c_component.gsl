@@ -517,17 +517,6 @@ function c_component_map_instance (c_instance, instance)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Map 'c_implementation' from component to c_component, if defined.
-# ---------------------------------------------------------------------------
-function c_component_map_implementation (c_component, component)
-    check_arguments (my, "c_component, component", my)
-
-    if count (my.component.c_implementation)
-        copy my.component->c_implementation to my.c_component
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Define attribute 'bits' within 'c_property', if it is defined within
 #   'property'.
 # ---------------------------------------------------------------------------
@@ -551,6 +540,22 @@ endfunction
 # ###########################################################################
 #   Functions to creation new c_component(s)
 # ###########################################################################
+
+# ---------------------------------------------------------------------------
+#   Create 'c_implementation' from 'implementation'.
+# ---------------------------------------------------------------------------
+function c_component_create_implementation (implementation, destination)
+    check_arguments (my, "implementation, destination", my)
+
+    if my.implementation.lang <> "c"
+        echo_fatal ("Require lang=\"c\" for given implementation, " + \
+                "but found \"$(my.implementation.lang:)\"", my)
+    endif
+
+    new c_implementation to my.destination
+        . = my.implementation.
+    endnew
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Create 'c_include' from 'require'.
@@ -699,7 +704,9 @@ function c_component_create_method (method, destination)
             c_component_create_void_return (c_method)
         endif
 
-        c_component_map_implementation (c_method, my.method)
+        for my.method.implementation where lang = "c"
+            c_component_create_implementation (implementation, c_method)
+        endfor
     endnew
 endfunction
 
@@ -760,7 +767,10 @@ function c_component_create_macros (macros, destination)
         c_component_map_attr_scope (c_macros, my.macros)
         c_component_map_attr_uid (c_macros, my.macros)
         c_component_map_macros_attr_is_method (c_macros, my.macros)
-        c_component_map_implementation (c_macros, my.macros)
+
+        for my.macros.implementation where lang = "c"
+            c_component_create_implementation (implementation, c_macros)
+        endfor
     endnew
 endfunction
 
@@ -770,16 +780,17 @@ endfunction
 function c_component_create_macroses (macroses, destination)
     check_arguments (my, "macroses, destination", my)
 
-    component_require_c_implementation (my.macroses)
-
     new c_macroses to my.destination
         . = c_format_description (my.macroses.) ?
 
         c_component_map_attr_scope (c_macroses, my.macroses)
-        c_component_map_implementation (c_macroses, my.macroses)
 
         for my.macroses.macros
             c_component_create_macros (macros, c_macroses)
+        endfor
+
+        for my.macroses.implementation where lang = "c"
+            c_component_create_implementation (implementation, c_macroses)
         endfor
     endnew
 endfunction

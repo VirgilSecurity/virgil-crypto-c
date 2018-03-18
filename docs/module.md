@@ -48,14 +48,14 @@ attribute names are case-sensitive and we use only lower-case names.
        <method name [definition] [c_prefix] [of_class] [uid] [scope] [visibility]>
           <return .../>
           <argument .../>
-          <c_implementation/>
+          <implementation [lang]/>
        </method>
        <macros name [of_class] [uid] [scope] [c_prefix] [is_method]>
-          <c_implementation .../>
+          <implementation .../>
        </macros>
        <macroses [scope]>
           <macros .../>
-          <c_implementation .../>
+          <implementation .../>
        </macroses>
     </module>
 
@@ -974,7 +974,7 @@ and optionally implementation.
         >
         <return>, optional
         <argument>
-        <c_implementation>, optional
+        <implementation>, optional
     </method>
 
 The method item can have these attributes:
@@ -1023,13 +1023,27 @@ name:
     Method name. The name attribute is required.
 
 
-The 'c_implementation' item
----------------------------
+The 'implementation' item
+-------------------------
 
-Defines method or macros implementation.
+Contains language specific implementation body. For instance, method
+implementation body for C language.                                 
 
-    <c_implementation>
+    <implementation
+      [ lang = "c | java | csharp"  ("c") ]
+        />
 
+The implementation item has this single attribute:
+
+lang:
+    Defines target language this entity is applied to. The lang attribute is
+    optional. Its default value is "c". It can take one of the following    
+    values:                                                                 
+
+Value: Meaning:
+c: C langauge.
+java: Java langauge.
+csharp: C# langauge.
 
 
 The 'macros' item
@@ -1046,7 +1060,7 @@ optionally implementation.
       [ c_prefix = "..." ]
       [ is_method = "0 | 1"  ("0") ]
         >
-        <c_implementation>, optional
+        <implementation>, optional
     </macros>
 
 The macros item can have these attributes:
@@ -1094,7 +1108,7 @@ Group a set of macroses with common implemenatation.
       [ scope = "public | private"  ("public") ]
         >
         <macros>, 1 or more
-        <c_implementation>, required
+        <implementation>, required
     </macroses>
 
 The macroses item has this single attribute:

@@ -252,7 +252,7 @@ typedef struct vsf_foo_secret_t vsf_foo_secret_t;
 //
 //  Class self destruction callback type.
 //
-typedef void (*vsf_foo_destroy_fn) (vsf_impl_t** impl);
+typedef void (*vsf_foo_destroy_fn) (vsf_impl_t** impl_ref);
 
 //
 //  Global variable that conatins derived size array of strings.
