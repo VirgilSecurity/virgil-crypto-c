@@ -381,7 +381,7 @@
 
     <allow entity="return" occurs="0/1"/>
     <allow entity="argument" occurs="0+"/>
-    <allow entity="c_implementation" occurs="0/1"/>
+    <allow entity="implementation" occurs="0/1"/>
 </entity>
 
 
@@ -439,7 +439,7 @@
 
     <inherit entity="component"/>
 
-    <allow entity="c_implementation" occurs="0/1"/>
+    <allow entity="implementation" occurs="0/1"/>
 </entity>
 
 <entity name="macroses">
@@ -448,5 +448,5 @@
     <inherit entity="scope"/>
 
     <allow entity="macros" occurs="1+"/>
-    <allow entity="c_implementation" occurs="1"/>
+    <allow entity="implementation" occurs="1"/>
 </entity>

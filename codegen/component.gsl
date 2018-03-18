@@ -59,6 +59,7 @@ function component_dump (component)
 
     my.component_info = ""
     my.component_info += " name=\"$(my.component.name)\"" ? ""
+    my.component_info += " lang=\"$(my.component.lang)\"" ? ""
     my.component_info += " of_class=\"$(my.component.of_class)\"" ? ""
     my.component_info += " scope=\"$(my.component.scope)\"" ? ""
     my.component_info += " visibility=\"$(my.component.visibility)\"" ? ""
@@ -240,12 +241,12 @@ function component_require_lineage (component, caller)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Check required item: c_implementation.
+#   Check required item: implementation.
 # ---------------------------------------------------------------------------
-function component_require_c_implementation (component, caller)
+function component_require_implementation (component, caller)
     check_argument (my, "component", my)
 
-    assert_item (my.component, "c_implementation", my.caller ? my)
+    assert_item (my.component, "implementation", my.caller ? my)
 endfunction
 
 
@@ -345,6 +346,24 @@ function component_derive_full_name (component)
      check_argument (my, "component", my)
 
      return cat (component_derive_name_prefix (my.component), my.component.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: lang.
+# ---------------------------------------------------------------------------
+function component_resolve_attr_lang (component, parent)
+    check_argument (my, "component", my)
+
+    my.component.lang ?= my.parent.lang ? "c"
+
+    my.valid_langs = "c, java, csharp"
+
+    if ! string_in (my.component.lang, my.valid_langs)
+        my.component_dump = component_dump (my.component)
+
+        echo_fatal ("Invalid component attribute lang '$(my.component_dump:)'. " + \
+                    "Expected {$(my.valid_langs)}", my)
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -680,6 +699,15 @@ function component_add_lineage (component, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve component: implementation
+# ---------------------------------------------------------------------------
+function component_resolve_implementation (implementation, parent)
+    check_arguments (my, "implementation, parent")
+
+    component_resolve_attr_lang (my.implementation, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve component: require
 # ---------------------------------------------------------------------------
 function component_resolve_require (require, parent)
@@ -940,6 +968,10 @@ function component_resolve_method (method, parent)
     for my.method.return
         component_resolve_return (return, my.method)
     endfor
+
+    for my.method.implementation
+        component_resolve_implementation (implementation, my.method)
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -971,6 +1003,10 @@ function component_resolve_macros (macros, parent)
 
     component_resolve_component (my.macros, my.parent)
     component_resolve_macros_attr_is_method (my.macros, my.parent)
+
+    for my.macros.implementation
+        component_resolve_implementation (implementation, my.macros)
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -979,7 +1015,7 @@ endfunction
 function component_resolve_macroses (macroses, parent)
     check_arguments (my, "macroses, parent", my)
 
-    component_require_c_implementation (my.macroses, my)
+    component_require_implementation (my.macroses, my)
 
     component_resolve_attr_scope (my.macroses, my.parent)
     component_resolve_attr_of_class (my.macroses, my.parent)
@@ -987,6 +1023,10 @@ function component_resolve_macroses (macroses, parent)
     for my.macroses.macros
         component_resolve_attr_of_class (macros, my.macroses)
         component_resolve_macros (macros, my.parent)
+    endfor
+
+    for my.macroses.implementation
+        component_resolve_implementation (implementation, my.macroses)
     endfor
 endfunction
 
