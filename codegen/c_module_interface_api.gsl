@@ -42,62 +42,51 @@
 # ---------------------------------------------------------------------------
 
 gsl from "common.gsl"
-gsl from "c_resolver.gsl"
-gsl from "c_names_config.gsl"
 
 
-function _B25_add_interface_api_type (interface, module, meta)
-    check_argument (my, "interface")
-    check_argument (my, "module")
-    check_argument (my, "meta")
+function _B25_add_interface_api_type (interface, destination, meta)
+    check_arguments (my, "interface, destination, meta", my)
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
-    new struct to my.module
-        . = my.module.
-        .name = ""
-        .class = my.names.class_interface_api
-        .interface = my.interface.name
-        .is_interface_api = 1
+    new struct to my.destination
+        . = "Handles constants and callbacks of the interface '$(interface.name:)'."
+        .name = my.names.class_interface_api
+        .visibility = "public"
+        .definition = "public"
+        .scope = "public"
 
         new property to struct
             . = "\
                 API's unique identifier, MUST be first in the structure.
                 For interface '$(my.interface.name:c)' MUST be equal to the \
-                '$(my.refs.interface_constant_tag)'."
+                '$(my.refs.c_interface_constant_tag)'."
 
             .name = my.names.property_api_tag
-            .type = my.refs.class_api_enum_tag
+            .enum = my.refs.class_api_enum_tag
             .value = my.refs.interface_constant_tag
-            .is_api_tag = 1
         endnew
 
         for my.interface.inherit
             assert_attribute (inherit, "interface", my)
 
-            c_names_update_with_inherited_interface (my.names, inherit)
-
-            my.inherited_refs = c_refs_create (my.names)
-
             new property to struct
                 . = "Link to the inherited interface API '$(inherit.interface:)'."
-                .name = my.names.property_inherited_interface
-                .type = my.inherited_refs.type_inherited_interface
-                .is_object = 1
+                .name = my.names.property_inherited_$(make_id(inherit.interface))_api
+                .class = my.refs.class_inherited_$(make_id(inherit.interface))_api
             endnew
         endfor
 
         for my.interface.method
-            my.property = item_copy_to (method, struct, "property")
-            my.property.is_callback = 1
-
-            c_method_add_argument_impl (my.property)
+            new property to struct
+                .name = method.name
+                .callback = "this_is_callback"
+            endnew
         endfor
 
         for my.interface.constant
             my.property = item_copy_to (constant, struct, "property")
-            my.property.is_constant = 1
         endfor
     endnew
 
@@ -107,10 +96,7 @@ endfunction
 #   Entrypoint. Create module with 'Interface API'.
 # ---------------------------------------------------------------------------
 function c_module_interface_api_create (source, destination, meta)
-    check_argument (my, "source")
-    check_argument (my, "destination")
-    check_argument (my, "meta")
-
+    check_arguments (my, "source, destination, meta", my)
 
     for my.source.interface
         meta_reset_active_entity (my.meta, interface.name)
@@ -119,6 +105,7 @@ function c_module_interface_api_create (source, destination, meta)
 
         new module to my.destination
             . = "Interface '$(interface.name:)' API."
+            .scope = "private"
 
             new require
                 .module = my.names.module_library
@@ -147,15 +134,16 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-#   Return 'module' that contains 'Interface Private API'.
+#   Return 'module' that contains 'Interface API type'.
 # ---------------------------------------------------------------------------
-function c_module_interface_api_find (name, source)
-    check_argument (my, "name")
-    check_argument (my, "source")
+function c_module_interface_api_find (name, source, meta)
+    check_arguments (my, "name, source, meta", my)
+
+    meta_reset_active_entity (my.meta, my.name)
+    my.names = meta_names (my.meta)
 
     for my.source.module
-        my.api_type = module->struct ( \
-                is_true (struct.is_interface_api) & (struct.interface = my.name)) ?
+        my.api_type = module->struct (struct.name = my.names.class_interface_api) ?
 
         if defined (my.api_type)
             return module
@@ -167,17 +155,18 @@ function c_module_interface_api_find (name, source)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return 'struct' that describes 'Interface Private API'.
+#   Return 'struct' that describes 'Interface API type'.
 # ---------------------------------------------------------------------------
-function c_module_interface_api_find_type (name, source)
-    check_argument (my, "name")
-    check_argument (my, "source")
+function c_module_interface_api_find_type (name, source, meta)
+    check_arguments (my, "name, source, meta", my)
 
-    my.interface_api_module = c_module_interface_api_find (my.name, my.source)
+    meta_reset_active_entity (my.meta, my.name)
+    my.names = meta_names (my.meta)
+
+    my.interface_api_module = c_module_interface_api_find (my.name, my.source, my.meta)
     assert_attribute (my, "interface_api_module", my)
 
-    my.api_type = my.interface_api_module->struct ( \
-            is_true (is_interface_api) & (interface = my.name)) ?
+    my.api_type = my.interface_api_module->struct (struct.name = my.names.class_interface_api) ?
 
     assert_attribute (my, "api_type", my)
 
