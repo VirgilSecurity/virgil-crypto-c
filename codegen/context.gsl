@@ -40,6 +40,7 @@
 #   language. See https://github.com/imatix/gsl for details.
 # ---------------------------------------------------------------------------
 
+gsl from "common.gsl"
 
 # ---------------------------------------------------------------------------
 #   Read source file tehn inject variables from the context and store result
@@ -47,6 +48,7 @@
 #   Context defines variables as key-value pairs defined as attributes.
 # ---------------------------------------------------------------------------
 .macro context_inject (context, source_file, destination_file)
+.   check_arguments (my, "context, source_file, destination_file", my)
 .   my.default_gsl_substitute = [gsl].substitute
 .   my.default_gsl_ignorecase = [gsl].ignorecase
 .   [gsl].substitute = ".("
@@ -59,6 +61,29 @@
 .   [gsl].substitute = my.default_gsl_substitute
 .   [gsl].ignorecase = my.default_gsl_ignorecase
 .endmacro
+
+# ---------------------------------------------------------------------------
+#   Replace shorten refs, i.e. '.(_argument_impl)' with fully qualified ref.
+# ---------------------------------------------------------------------------
+function context_resolve_refs (context, model, lang, hierarchy_uid)
+    check_arguments (my, "context, model")
+
+    my.lang ?= my.model.lang ?
+
+    my.hierarchy_uid = my.model.uid ? my.hierarchy_uid ?
+
+    if defined (my.model.) & defined (my.hierarchy_uid)
+        while regexp.match ("(\\.\\(_([\\w]+)\\))", my.model., my.shorten_ref, my.shorten_uid)
+            my.full_uid = make_id (my.hierarchy_uid, my.shorten_uid)
+            my.full_ref = my.lang ?? lang_ref (my.full_uid, my.lang) ? ref (my.full_uid)
+            my.model. = string.replace (my.model., "$(my.shorten_ref:)|$(my.full_ref)")
+        endwhile
+    endif
+
+    for my.model. as item where is_item (item)
+        context_resolve_refs (my.context, item, my.lang, my.hierarchy_uid)
+    endfor
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Inject context variables to the '<lang>_module'.
