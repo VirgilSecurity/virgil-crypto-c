@@ -71,5 +71,7 @@ target_include_directories(vsf
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/private>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
-        )
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>)
+
+set_target_properties(vsf PROPERTIES DEBUG_POSTFIX "_d")
+
