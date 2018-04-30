@@ -146,14 +146,14 @@ function _L23_add_stateful_methods (interface, destination, meta)
     for my.interface.method where context = "impl"
         my.proxy_method = item_copy_to (method, my.destination)
 
-        component_create_argument_impl (my.proxy_method)
-
         my.api_name = my.names.c_interface_struct_api
         my.api_type = my.refs.c_interface_struct_api
 
         my.has_return = count (method.[return], defined (type) & type <> "nothing")
         my.callback = "$(my.api_name:)->$(c_format_callback_name (method.name))"
         my.callback_parameters = _L23_format_proxy_arguments (my.proxy_method, string_indent (my.callback, 1), ";")
+
+        component_create_argument_impl (my.proxy_method)
 
         new implementation to my.proxy_method
             . = "\
@@ -325,7 +325,17 @@ function c_module_interface_create (source, destination, meta)
             endnew
 
             new require
+                .module = my.names.module_assert
+                .scope = "private"
+            endnew
+
+            new require
                 .module = my.names.module_impl
+            endnew
+
+            new require
+                .module = my.names.module_interface_api
+                .scope = "private"
             endnew
 
             my.enum_tag = c_module_api_find_enum_tag (my.destination, my.meta)

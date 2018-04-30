@@ -6,6 +6,7 @@
 
     <require module="library" scope="public" />
 
+    <c_include file="stdio.h" scope="private" is_system="1" />
 
     <callback name="handler">
         Assertion handler callback type.

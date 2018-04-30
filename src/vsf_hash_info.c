@@ -50,6 +50,8 @@
 // --------------------------------------------------------------------------
 
 #include "vsf_hash_info.h"
+#include "vsf_assert.h"
+#include "vsf_hash_info_api.h"
 //  @end
 
 

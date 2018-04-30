@@ -52,6 +52,7 @@
 
 #include "vsf_impl.h"
 #include "vsf_api_private.h"
+#include "vsf_impl_private.h"
 #include "vsf_assert.h"
 //  @end
 
@@ -72,7 +73,7 @@ vsf_impl_api (vsf_impl_t* impl, vsf_api_tag_t api_tag) {
     VSF_ASSERT (impl);
     VSF_ASSERT (impl->info);
 
-    if (impl->info->api_array) == NULL)
+    if (impl->info->api_array == NULL) {
         return NULL;
     }
 
@@ -97,7 +98,7 @@ vsf_impl_tag (vsf_impl_t* impl) {
     VSF_ASSERT (impl);
     VSF_ASSERT (impl->info);
 
-    return impl->info->tag;
+    return impl->info->impl_tag;
 }
 
 //
@@ -121,7 +122,7 @@ vsf_impl_destroy (vsf_impl_t** impl_ref) {
 
     VSF_ASSERT (impl_ref);
 
-    vsf_impl_t* impl = *impl_ref
+    vsf_impl_t* impl = *impl_ref;
     *impl_ref = NULL;
 
     if (impl) {
