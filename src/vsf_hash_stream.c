@@ -50,6 +50,8 @@
 // --------------------------------------------------------------------------
 
 #include "vsf_hash_stream.h"
+#include "vsf_assert.h"
+#include "vsf_hash_stream_api.h"
 //  @end
 
 
@@ -68,7 +70,7 @@ vsf_hash_stream_start (vsf_impl_t* impl) {
     VSF_ASSERT (hash_stream_api);
 
     VSF_ASSERT (hash_stream_api->start_cb);
-    hash_stream_api->start_cb (impl);
+    hash_stream_api->start_cb ();
 }
 
 //
@@ -81,7 +83,7 @@ vsf_hash_stream_update (vsf_impl_t* impl, const byte* data, size_t data_len) {
     VSF_ASSERT (hash_stream_api);
 
     VSF_ASSERT (hash_stream_api->update_cb);
-    hash_stream_api->update_cb (impl, data, data_len);
+    hash_stream_api->update_cb (data, data_len);
 }
 
 //
@@ -94,7 +96,7 @@ vsf_hash_stream_finish (vsf_impl_t* impl, byte* digest, size_t digest_len) {
     VSF_ASSERT (hash_stream_api);
 
     VSF_ASSERT (hash_stream_api->finish_cb);
-    hash_stream_api->finish_cb (impl, digest, digest_len);
+    hash_stream_api->finish_cb (digest, digest_len);
 }
 
 //

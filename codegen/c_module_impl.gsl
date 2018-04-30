@@ -122,7 +122,7 @@ function _L24_add_method_get_api (meta, destination)
             VSF_ASSERT (impl);
             VSF_ASSERT (impl->info);
 
-            if (impl->info->api_array) == NULL)
+            if (impl->info->api_array == NULL) {
                 return NULL;
             }
 
@@ -166,7 +166,7 @@ function _L24_add_method_get_tag (meta, destination)
             VSF_ASSERT (impl);
             VSF_ASSERT (impl->info);
 
-            return impl->info->tag;
+            return impl->info->impl_tag;
             "
         endnew
     endnew
@@ -221,7 +221,7 @@ function _L24_add_method_destroy (meta, destination)
             . = "\
             VSF_ASSERT (impl_ref);
 
-            \.(c_class_impl_struct_impl)* impl = *impl_ref
+            \.(c_class_impl_struct_impl)* impl = *impl_ref;
             *impl_ref = NULL;
 
             if (impl) {
@@ -295,6 +295,11 @@ function c_module_impl_create (meta, destination)
 
         new require
             .module = my.names.module_api_private
+            .scope = "private"
+        endnew
+
+        new require
+            .module = my.names.module_impl_private
             .scope = "private"
         endnew
 

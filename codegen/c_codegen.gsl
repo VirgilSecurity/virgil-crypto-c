@@ -135,13 +135,13 @@ endfunction
 # ---------------------------------------------------------------------------
 function c_insert_public_includes (component)
     for my.component.c_include \
-                where string_equal (0.scope ?, "public") & is_true (is_system)
+                where string_equal (0.scope ?, "public") & is_false (is_system)
         newline_if (first () & is_true (my.was_inserted))
         c_insert_include (c_include)
         my.was_inserted = 1
     endfor
     for my.component.c_include \
-                where string_equal (0.scope ?, "public") & is_false (is_system)
+                where string_equal (0.scope ?, "public") & is_true (is_system)
         newline_if (first () & is_true (my.was_inserted))
         c_insert_include (c_include)
         my.was_inserted = 1
@@ -153,13 +153,13 @@ endfunction
 # ---------------------------------------------------------------------------
 function c_insert_private_includes (component)
     for my.component.c_include \
-                where string_equal (0.scope ?, "private") & is_true (is_system)
+                where string_equal (0.scope ?, "private") & is_false (is_system)
         newline_if (first () & is_true (my.was_inserted))
         c_insert_include (c_include)
         my.was_inserted = 1
     endfor
     for my.component.c_include \
-                where string_equal (0.scope ?, "private") & is_false (is_system)
+                where string_equal (0.scope ?, "private") & is_true (is_system)
         newline_if (first () & is_true (my.was_inserted))
         c_insert_include (c_include)
         my.was_inserted = 1

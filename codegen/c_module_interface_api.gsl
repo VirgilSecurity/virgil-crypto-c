@@ -110,17 +110,23 @@ function c_module_interface_api_create (source, destination, meta)
             . = "Interface '$(interface.name:)' API."
             .scope = "private"
 
-            new require
+            new require to module
                 .module = my.names.module_library
             endnew
 
-            new require
+            new require to module
                 .module = my.names.module_api
             endnew
 
-            new require
+            new require to module
                 .module = my.names.module_impl
             endnew
+
+            for interface.inherit
+                new require to module
+                    .module = cat (inherit.interface, my.names.module_api)
+                endnew
+            endfor
 
             .name = my.names.module_interface_api
             .class = my.names.class_interface_api

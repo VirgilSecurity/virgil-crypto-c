@@ -55,6 +55,7 @@
 #include "vsf_library.h"
 #include "vsf_api.h"
 #include "vsf_impl.h"
+#include "vsf_hash_info_api.h"
 //  @end
 
 
