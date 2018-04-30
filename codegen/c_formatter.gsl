@@ -72,7 +72,7 @@ function c_derive_instance_type (c_instance)
     endif
 
     #   Apply array modifiers
-    if string_in (my.c_instance.array ?, "null_terminated, given")
+    if string_in (my.c_instance.array ?, "null_terminated, given, known")
         #   One more star required
         my.type += my.array_modifiers
     endif
@@ -253,36 +253,4 @@ function c_format_arguments (method, beginning, ending, tab_count, line_limit)
         my.result += my.line
     endif
     return my.result
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Format object's visibility options to the single line.
-#   Note, last space is also included.
-# ---------------------------------------------------------------------------
-function c_format_visibility (c_object)
-    my.visibility = ""
-    for my.c_object.c_visibility
-        my.visibility += c_visibility.value + " "
-    endfor
-    return my.visibility
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return adjusted string according to rules:
-#       - remove all trailing and leading spaces and newlines;
-#       - prefix each line (if string is multiline) with given 'prefix';
-#       - tab each line (if string is multiline) with given 'tabs';
-#       - add new line before string;
-#       - add new line after string;
-#       - tab next line after string with given 'next tabs'.
-# ---------------------------------------------------------------------------
-function c_xml_format_comment (str, tab_count, next_tab_count, tab_size)
-    if string_empty (my.str)
-        return
-    endif
-    #   Transform substitution first.
-    while regexp.match ("\\.\\((?:(?!c_))(\\w+)\\)", my.str, my.match)
-        my.str = string.replace (my.str, "$(my.match:)|c_$(my.match:)")
-    endwhile
-    return xml_string_adjust (my.str, my.tab_count, my.next_tab_count, "//  ", my.tab_size)
 endfunction
