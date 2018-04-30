@@ -46,6 +46,10 @@
         </restrict>
 
         <restrict value="private">
+            Component is visible for outside world via private interface.
+        </restrict>
+
+        <restrict value="internal">
             Component is visible only within library or a specific source file.
         </restrict>
     </attr>
