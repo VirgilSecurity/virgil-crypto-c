@@ -17,3 +17,7 @@ profile
 # CLion
 .idea
 cmake-build-*/
+
+####
+# Sublime Text 3
+*.sublime-workspace
