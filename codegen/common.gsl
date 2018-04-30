@@ -910,6 +910,7 @@ endfunction
 function lang_ref (maybe_ref, lang)
     check_arguments (my, "maybe_ref, lang", my)
 
+    my.lang = "$(my.lang:lower)"
     my.valid_langs = "c, java, csharp"
 
     if ! string_in (my.lang, my.valid_langs)
