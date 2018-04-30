@@ -111,6 +111,7 @@ function run_test ()
     item_save_to_file (root, "root.xml", root->project.work_path)
 
     #   Fullfil context with models name.
+    context_resolve_refs (root->context, root)
     context_append_hierarchy (root->context, root)
     item_save_to_file (root->context, "context.xml", root->project.work_path)
 

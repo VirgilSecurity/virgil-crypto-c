@@ -33,10 +33,10 @@
 
         <argument name="handler" callback=".(class_assert_callback_handler)" />
 
-        <c_implementation>
+        <implementation lang="c">
             .(c_class_assert_macros_assert) (handler_cb);
             .(c_class_assert_variable_active_handler) = handler_cb;
-        </c_implementation>
+        </implementation>
     </method>
 
 
@@ -47,14 +47,14 @@
         <argument name="message" class="string" />
         <argument name="file" class="string" />
         <argument name="line" type="integer" />
-        <c_implementation>
+        <implementation lang="c">
             printf (&quot;Assertion failed: %s, file %s, line %d\\n&quot;,
                     message, .(c_class_assert_method_path_basename) (file), line);
 
             printf (&quot;Abort&quot;);
 
             abort ();
-        </c_implementation>
+        </implementation>
     </method>
 
 
@@ -64,9 +64,9 @@
         <argument name="message" class="string" />
         <argument name="file" class="string" />
         <argument name="line" type="integer" />
-        <c_implementation>
+        <implementation lang="c">
              .(c_class_assert_variable_active_handler) (message, file, line);
-        </c_implementation>
+        </implementation>
     </method>
 
 
@@ -77,7 +77,7 @@
 
         <argument name="path" class="string" />
 
-        <c_implementation>
+        <implementation lang="c">
             const char *result = path;
             for ( \
                     const char *symbol = path; \
@@ -93,56 +93,56 @@
             }
 
             return result;
-        </c_implementation>
+        </implementation>
     </method>
 
 
     <macros name="internal" is_method="1">
         Asserts always.
 
-        <c_implementation>
+        <implementation lang="c">
             #define .(c_class_assert_macros_internal) (X)
                 do {
                     if (!(X)) {
                         .(c_class_assert_method_trigger) (#X, __FILE__, __LINE__);
                     }
                 } while (false)
-        </c_implementation>
+        </implementation>
     </macros>
 
 
     <macros name="opt" is_method="1">
         Asserts even in optimized mode.
 
-        <c_implementation>
+        <implementation lang="c">
             #define .(c_class_assert_macros_opt) (X) .(c_class_assert_macros_internal) (X)
-        </c_implementation>
+        </implementation>
     </macros>
 
 
     <macros name="assert" is_method="1">
         Default assert, that is enabled in debug mode.
 
-        <c_implementation>
+        <implementation lang="c">
             #define .(c_class_assert_macros_assert) (X) .(c_class_assert_macros_internal) (X)
-        </c_implementation>
+        </implementation>
     </macros>
 
 
     <macros name="safe" is_method="1">
         Heavy assert, that is enabled in a special (safe) cases.
 
-        <c_implementation>
+        <implementation lang="c">
             #define .(c_class_assert_macros_safe) (X) .(c_class_assert_macros_internal) (X)
-        </c_implementation>
+        </implementation>
     </macros>
 
 
     <macros name="static" is_method="1">
         Asserts during compilation. Has no runtime impact.
 
-        <c_implementation>
+        <implementation lang="c">
             #define .(c_class_assert_macros_static) (X) (void) sizeof(char[(X) ? 1 : -1])
-        </c_implementation>
+        </implementation>
     </macros>
  </module>

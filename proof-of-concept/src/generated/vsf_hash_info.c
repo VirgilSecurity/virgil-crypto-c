@@ -53,52 +53,39 @@
 //  @end
 
 
-#include "vsf_hash_info_api.h"
-
-
 //  @generated
 // --------------------------------------------------------------------------
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-
-// ==========================================================================
-//  Generated functions.
-// ==========================================================================
-
-//  Size of the digest (hashing output).
+//
+//  Returns constant 'digest size'.
+//
 VSF_PUBLIC size_t
-vsf_hash_info_digest_size (vsf_impl_t *impl) {
-
-    VSF_ASSERT (impl);
-
-    const vsf_hash_info_api_t *hash_info_api = vsf_hash_info_api (impl);
-    VSF_ASSERT (hash_info_api);
-
-    return hash_info_api->digest_size;
-}
-
-//  Size of the digest (hashing output).
-VSF_PUBLIC size_t
-vsf_hash_info_api_digest_size (const vsf_hash_info_api_t *hash_info_api) {
+vsf_hash_info_digest_size (const vsf_hash_info_api_t* hash_info_api) {
 
     VSF_ASSERT (hash_info_api);
 
     return hash_info_api->digest_size;
 }
 
+//
 //  Return hash info API, or NULL if it is not implemented.
-VSF_PUBLIC const vsf_hash_info_api_t *
-vsf_hash_info_api (vsf_impl_t *impl) {
+//
+VSF_PUBLIC const vsf_hash_info_api_t*
+vsf_hash_info_api (vsf_impl_t* impl) {
 
     VSF_ASSERT (impl);
 
-    return (vsf_hash_info_api_t *) vsf_impl_api (impl, vsf_api_tag_HASH_INFO);
+    const vsf_api_t *api = vsf_impl_api (impl, vsf_api_tag_HASH_INFO);
+    return (const vsf_hash_info_api_t *) api;
 }
 
+//
 //  Check if given object implements interface 'hash info'.
+//
 VSF_PUBLIC bool
-vsf_hash_info_is_implemented (vsf_impl_t *impl) {
+vsf_hash_info_is_implemented (vsf_impl_t* impl) {
 
     VSF_ASSERT (impl);
 

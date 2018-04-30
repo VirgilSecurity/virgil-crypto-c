@@ -77,12 +77,12 @@ function _N24_add_enum_tag (meta, destination)
         .definition = "public"
 
         new constant
-            .name = my.names.enum_value_begin
+            .name = my.names.enum_constant_begin
             .value = "0"
         endnew
 
         new constant
-            .name = my.names.enum_value_end
+            .name = my.names.enum_constant_end
         endnew
     endnew
 endfunction
@@ -118,7 +118,7 @@ endfunction
 #   Return enumeration type for 'api' within given source.
 # ---------------------------------------------------------------------------
 function c_module_api_find_enum_tag (source, meta)
-    check_argument (my, "source, meta", my)
+    check_arguments (my, "source, meta", my)
 
     my.names = meta_names (my.meta)
 
@@ -130,7 +130,7 @@ function c_module_api_find_enum_tag (source, meta)
 
     my.enum = my.module->enum (name = my.names.enum_tag) ?
     if ! defined (my.enum)
-        echo_fatal ("Enum '$(my.names.enum_tag:)' \
+        echo_fatal ("Enum '$(my.names.enum_tag)' \
                 is not found within module '$(my.names.module_api:)'.", my)
     endif
 

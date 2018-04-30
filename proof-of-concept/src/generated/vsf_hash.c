@@ -58,37 +58,36 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-
-// ==========================================================================
-//  Generated functions.
-// ==========================================================================
-
+//
 //  Calculate hash over given data.
-VSF_PUBLIC const byte *
-vsf_hash_hash (vsf_impl_t *impl, const byte *data) {
+//
+VSF_PUBLIC void
+vsf_hash (const vsf_hash_api_t* hash_api, const byte* data, size_t data_len, byte* digest,
+        size_t digest_len) {
 
-    VSF_ASSERT (impl);
-    VSF_ASSERT (data);
+    VSF_ASSERT (hash_api);
 
-    const vsf_hash_api_t *hash = vsf_hash_api (impl);
-    VSF_ASSERT (hash);
-
-    VSF_ASSERT (hash->hash_cb);
-    return hash->hash_cb (impl, data);
+    VSF_ASSERT (hash_api->hash_cb);
+    hash_api->hash_cb (data, data_len, digest, digest_len);
 }
 
+//
 //  Return hash API, or NULL if it is not implemented.
-VSF_PUBLIC const vsf_hash_api_t *
-vsf_hash_api (vsf_impl_t *impl) {
+//
+VSF_PUBLIC const vsf_hash_api_t*
+vsf_hash_api (vsf_impl_t* impl) {
 
     VSF_ASSERT (impl);
 
-    return (vsf_hash_api_t *) vsf_impl_api (impl, vsf_api_tag_HASH);
+    const vsf_api_t *api = vsf_impl_api (impl, vsf_api_tag_HASH);
+    return (const vsf_hash_api_t *) api;
 }
 
+//
 //  Check if given object implements interface 'hash'.
+//
 VSF_PUBLIC bool
-vsf_hash_is_implemented (vsf_impl_t *impl) {
+vsf_hash_is_implemented (vsf_impl_t* impl) {
 
     VSF_ASSERT (impl);
 

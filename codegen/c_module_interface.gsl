@@ -37,8 +37,8 @@
 #   Transform abstract 'interface' declaration to the C language components.
 #
 #   Interfaces in C is has custom implementation, because of C does not have
-#   native support for it. In two words, interface in C is represented with
-#   three APIs: 'Shared API', 'Usage API' and 'Implementation API'.
+#   native support for it. In two words, interface in the C is represented
+#   with three APIs: 'Shared API', 'Usage API' and 'Implementation API'.
 #   'Shared API' is fully generated module that contains enumeration of all
 #   possibly available interfaces in the crypto library and related helpers.
 #   'Usage API' is fully generated module which contains functions that
@@ -58,14 +58,14 @@
 gsl from "common.gsl"
 
 gsl from "c_resolver.gsl"
-gsl from "c_names_config.gsl"
 gsl from "c_formatter.gsl"
+gsl from "c_component.gsl"
 
 # ---------------------------------------------------------------------------
 #   Format method parameters.
 #   Precondition: 'method' must be resolved.
 # ---------------------------------------------------------------------------
-function _L23_format_parameters (method, beginning, ending, tab_count, line_limit)
+function _L23_format_proxy_arguments (method, beginning, ending, tab_count, line_limit)
     check_argument (my, "method")
     check_argument (my, "beginning")
 
@@ -78,20 +78,13 @@ function _L23_format_parameters (method, beginning, ending, tab_count, line_limi
     my.indent = tabs (my.tab_count)
     for my.method.argument
         my.adding_line = ""
-        my.adding_line += argument.c_name
+        my.adding_line += ref ("_argument", argument.name)
         if ! last ()
             my.adding_line += ","
         else
             my.adding_line += my.ending
         endif
-        my.new_line_length = string.length (my.beginning + my.line + my.adding_line)
-        if (my.new_line_length < my.line_limit)
-            my.line += (first() ?? "" ? " ") + my.adding_line
-        else
-            my.result += my.line
-            my.line = terminator + tabs (2 + my.tab_count) + my.adding_line
-            my.beginning = my.indent
-        endif
+        my.line += (first() ?? "" ? " ") + my.adding_line
     else
         my.line += my.ending
     endfor
@@ -102,196 +95,140 @@ function _L23_format_parameters (method, beginning, ending, tab_count, line_limi
 endfunction
 
 
-function _L23_resolve_method_preconditions (method, meta)
-    check_argument (my, "method")
-    check_argument (my, "meta")
-
-    my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
-
-    for my.method.precondition
-        for precondition.constant
-            new uid before constant
-                .name = "$(my.names.class_interface:c)->" + my.refs.constant_interface_tag
-            endnew
-            delete constant
-        endfor
-    endfor
-endfunction
-
-
+# ---------------------------------------------------------------------------
+#   Add constant correspond to this interface type.
+# ---------------------------------------------------------------------------
 function _L23_add_self_tag (interface, enum, meta)
-    check_argument (my, "interface")
-    check_argument (my, "enum")
-    check_argument (my, "meta")
+    check_arguments (my, "interface, enum, meta", my)
 
     my.names = meta_names (my.meta)
 
-    my.end = my.enum->value (name = my.names.enum_value_end)
+    my.end = my.enum->constant (name = my.names.enum_constant_end)
     if ! defined (my.end)
-        echo_fatal ("Enum '$(my.enum.name:)' does not contain value '$(enum_value_end:)'.", my)
+        echo_fatal ("Enum '$(my.enum.name:)' does not contain constant '$(enum_constant_end:)'.", my)
     endif
 
-    new value before my.end
+    new constant before my.end
         .name = my.interface.name
     endnew
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Add self opaque type
+# ---------------------------------------------------------------------------
+function _L23_add_self_opaque_type (interface, destination, meta)
+    check_arguments (my, "interface, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+
+    new struct to my.destination
+        . = "Opaque type of the interface '$(my.interface.name:)' API."
+        .name = my.names.class_interface_api
+        .of_class = my.names.class_interface_api
+        .scope="public"
+        .visibility="public"
+        .definition="external"
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
 #   Add interface stateFUL methods to the destination.
-#   Stateful method always accept object that implements this interface and
-#   handles state as first argument.
+#   Stateful method always accept object as first argument that implements
+#   this interface and handles state.
 # ---------------------------------------------------------------------------
 function _L23_add_stateful_methods (interface, destination, meta)
-    check_argument (my, "interface")
-    check_argument (my, "destination")
+    check_arguments (my, "interface, destination, meta", my)
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
-    for my.interface.method where is_false (is_stateless)
+    for my.interface.method where context = "impl"
         my.proxy_method = item_copy_to (method, my.destination)
 
-        c_method_add_argument_impl (my.proxy_method)
+        component_create_argument_impl (my.proxy_method)
 
-        _L23_resolve_method_preconditions (my.proxy_method, my.meta)
+        my.api_name = my.names.c_interface_struct_api
+        my.api_type = my.refs.c_interface_struct_api
 
-        #   Add C implementation.
-        new c_implementation to my.proxy_method
+        my.has_return = count (method.[return], defined (type) & type <> "nothing")
+        my.callback = "$(my.api_name:)->$(c_format_callback_name (method.name))"
+        my.callback_parameters = _L23_format_proxy_arguments (my.proxy_method, string_indent (my.callback, 1), ";")
+
+        new implementation to my.proxy_method
             . = "\
-            const $(my.refs.c_interface_struct_api) *$(my.names.class_interface:c) = \
-                    $(my.refs.c_interface_method_api) ($(my.refs.c_argument_impl));
-            $(c_ref ("class_assert_macros")) ($(my.names.class_interface:c));
-            "
+            const $(my.api_type:) *$(my.api_name:) = $(my.refs.c_interface_method_api) (.(_argument_impl));
+            .(c_class_assert_macros_assert) ($(my.api_name:));
 
-            my.has_return = count (method.[return], defined (type) & type <> "nothing")
-
-            my.callback = "$(my.names.class_interface:c)-> \
-                    $(c_format_callback_name (method.name))"
-
-            my.callback_parameters = \
-                    _L23_format_parameters (my.proxy_method, string_indent (my.callback, 1), ";")
-
-            . += "
-            $(c_ref ("class_assert_macros")) ($(my.callback));
-            $(my.has_return ?? "return " ?)$(my.callback) $(my.callback_parameters)
+            .(c_class_assert_macros_assert) ($(my.callback:));
+            $(my.has_return ?? "return " ?)$(my.callback:) $(my.callback_parameters:)
             "
         endnew
     endfor
 endfunction
 
 # ---------------------------------------------------------------------------
-#   TODO: Remove if not used!!! Now it is deprecated.
-#   TODO: When remove, also remove all occurences of 'is_stateless'.
 #   Add interface sateLESS methods to the destination.
 #   Stateless method always accept constant object that handles interface
 #   implementation callbacks.
 # ---------------------------------------------------------------------------
 function _L23_add_stateless_methods (interface, destination, meta)
-    check_argument (my, "interface")
-    check_argument (my, "destination")
-    check_argument (my, "meta")
+    check_arguments (my, "interface, destination, meta", my)
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
-    for my.interface.method where is_true (is_stateless)
+    for my.interface.method where context = "api"
         my.proxy_method = item_copy_to (method, my.destination)
 
-        #   Add stateLESS argument.
-        my.argument = item_prepend_new ("argument", my.proxy_method)
-        my.argument.name = my.names.argument_interface_api
-        my.argument.type = my.refs.interface_struct_api
-        my.argument.is_object = 1
+        my.api_name = ".(_argument_$(my.names.c_interface_struct_api:))"
+        my.api_type = my.refs.c_interface_struct_api
 
-        _L23_resolve_method_preconditions (my.proxy_method, my.meta)
+        my.has_return = count (method.[return], defined (type) & type <> "nothing")
+        my.callback = "$(my.api_name:)->$(c_format_callback_name (method.name))"
+        my.callback_parameters = _L23_format_proxy_arguments (my.proxy_method, string_indent (my.callback, 1), ";")
 
-        #   Add C implementation.
-        new c_implementation to my.proxy_method
-            my.has_return = count (method.[return], defined (type) & type <> "nothing")
+        interface_create_api_argument (my.interface, my.proxy_method, my.meta)
 
-            my.callback = "$(my.refs.c_argument_interface_api)->\
-                    $(c_format_callback_name (method.name))"
+        new implementation to my.proxy_method
+            . = "\
+            .(c_class_assert_macros_assert) ($(my.api_name:));
 
-            my.callback_parameters = \
-                    _L23_format_parameters (method, string_indent (my.callback, 1), ";")
-
-            . = "
-            $(c_ref ("class_assert_macros")) ($(my.callback));
-            $(my.has_return ?? "return " ?)$(my.callback) $(my.callback_parameters)
+            .(c_class_assert_macros_assert) ($(my.callback:));
+            $(my.has_return ?? "return " ?)$(my.callback:) $(my.callback_parameters:)
             "
         endnew
     endfor
 endfunction
 
-# ---------------------------------------------------------------------------
-#   For each 'constant' add 'get' accessors to the destination.
-# ---------------------------------------------------------------------------
-function _L23_add_stateful_getters (interface, module, meta)
-    check_argument (my, "interface")
-    check_argument (my, "module")
-    check_argument (my, "meta")
-
-    my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
-
-    for my.interface.constant
-        new method to my.module
-            . = constant. ?
-
-            .name = constant.name
-            .class = my.names.class_interface
-
-            c_method_add_argument_impl (method)
-
-            new return
-                .type = constant.type
-            endnew
-
-            new c_implementation
-                . = "\
-                const $(my.refs.c_interface_struct_api) *$(my.refs.c_argument_interface_api) = \
-                        $(my.refs.c_interface_method_api) ($(my.refs.c_argument_impl));
-                $(c_ref ("class_assert_macros")) ($(my.refs.c_argument_interface_api));
-
-                return $(my.refs.c_argument_interface_api)->$(c_format_name (constant.name));
-                "
-            endnew
-        endnew
-    endfor
-endfunction
 
 # ---------------------------------------------------------------------------
 #   For each 'constant' add 'get' accessors to the destination.
 # ---------------------------------------------------------------------------
 function _L23_add_stateless_getters (interface, destination, meta)
-    check_argument (my, "interface")
-    check_argument (my, "destination")
-    check_argument (my, "meta")
+    check_arguments (my, "interface, destination, meta", my)
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
     for my.interface.constant
         new method to my.destination
-            . = constant. ?
-
+            . = "Returns constant '$(constant.name:)'."
             .name = constant.name
-            .class = my.names.class_interface_api
 
-            new argument
-                .name = my.names.argument_interface_api
-                .type = my.refs.interface_struct_api
-                .is_object = 1
+            interface_create_api_argument (my.interface, method, my.meta)
+
+            new return to method
+                .type = "size"
             endnew
 
-            new return
-                .type = constant.type
-            endnew
-
-            new c_implementation
+            my.api_name = ".(_argument_$(my.names.c_interface_struct_api:))"
+            my.constant_name = my.names.c_interface_constant_$(make_id (constant.name))
+            new implementation to method
                 . = "\
-                return $(my.refs.c_argument_interface_api)->$(c_format_name (constant.name));
+                .(c_class_assert_macros_assert) ($(my.api_name:));
+
+                return $(my.api_name:)->$(my.constant_name:);
                 "
             endnew
         endnew
@@ -302,9 +239,7 @@ endfunction
 #   Add method that returns 'API' object.
 # ---------------------------------------------------------------------------
 function _L23_add_method_get_api (interface, destination, meta)
-    check_argument (my, "interface")
-    check_argument (my, "destination")
-    check_argument (my, "meta")
+    check_arguments (my, "interface, destination, meta")
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
@@ -312,20 +247,24 @@ function _L23_add_method_get_api (interface, destination, meta)
     new method to my.destination
         . = "Return $(my.interface.name:) API, or NULL if it is not implemented."
 
-        .name = my.names.method_api
+        .name = my.names.class_api
 
-        c_method_add_argument_impl (method)
+        component_create_argument_impl (method)
 
         new return
-            .type = my.refs.interface_struct_api
-            .is_object = 1
+            .class = my.refs.interface_struct_api
         endnew
 
-        new c_implementation
+        my.api_name = my.names.c_interface_struct_api
+        my.api_type = my.refs.c_interface_struct_api
+
+        new implementation
             . = "\
-            return ($(my.refs.c_interface_struct_api) *) \
-                    $(my.refs.c_class_impl_method_api) ($(my.refs.c_argument_impl), \
-                    $(my.refs.c_interface_constant_tag));
+            .(c_class_assert_macros_assert) (.(_argument_impl));
+
+            const .(c_class_api_struct_api) *api = \
+                    .(c_class_impl_method_api) (.(_argument_impl), $(my.refs.c_interface_constant_tag));
+            return (const $(my.api_type:) *) api;
             "
         endnew
     endnew
@@ -335,9 +274,7 @@ endfunction
 #   Add method that check if 'API' is implemented.
 # ---------------------------------------------------------------------------
 function _L23_add_method_check_api (interface, destination, meta)
-    check_argument (my, "interface")
-    check_argument (my, "destination")
-    check_argument (my, "meta")
+    check_arguments (my, "interface. destination, meta")
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
@@ -347,16 +284,19 @@ function _L23_add_method_check_api (interface, destination, meta)
 
         .name = "is implemented"
 
+       component_create_argument_impl (method)
+
         new return
             .type = "boolean"
         endnew
 
-        c_method_add_argument_impl (method)
+        my.api_name = my.names.c_interface_struct_api
 
-        new c_implementation
+        new implementation
             . = "\
-            return $(my.refs.c_class_impl_method_api) ($(my.refs.c_argument_impl),  \
-                    $(my.refs.c_interface_constant_tag)) != NULL;
+            .(c_class_assert_macros_assert) (.(_argument_impl));
+
+            return .(c_class_impl_method_api) (.(_argument_impl), $(my.refs.c_interface_constant_tag)) != NULL;
             "
         endnew
     endnew
@@ -367,9 +307,7 @@ endfunction
 #   Entrypoint. Create module with 'Interface Public API'.
 # ---------------------------------------------------------------------------
 function c_module_interface_create (source, destination, meta)
-    check_argument (my, "source")
-    check_argument (my, "destination")
-    check_argument (my, "meta")
+    check_arguments (my, "source, destination, meta", my)
 
     for my.source.interface
         meta_reset_active_entity (my.meta, interface.name)
@@ -379,7 +317,7 @@ function c_module_interface_create (source, destination, meta)
         new module to my.destination
             . = interface. ?
             .name = my.names.module_interface
-            .class = my.names.class_interface
+            .of_class = my.names.class_interface
             .interface = interface.name
 
             new require
@@ -387,13 +325,14 @@ function c_module_interface_create (source, destination, meta)
             endnew
 
             new require
-                .module = my.names.module_api
+                .module = my.names.module_impl
             endnew
 
             my.enum_tag = c_module_api_find_enum_tag (my.destination, my.meta)
             _L23_add_self_tag (interface, my.enum_tag, my.meta)
+            _L23_add_self_opaque_type (interface, module, my.meta)
             _L23_add_stateful_methods (interface, module, my.meta)
-            _L23_add_stateful_getters (interface, module, my.meta)
+            _L23_add_stateless_methods (interface, module, my.meta)
             _L23_add_stateless_getters (interface, module, my.meta)
             _L23_add_method_get_api (interface, module, my.meta)
             _L23_add_method_check_api (interface, module, my.meta)
@@ -409,8 +348,7 @@ endfunction
 #   Return 'module' that contains 'Interface Private API'.
 # ---------------------------------------------------------------------------
 function c_module_interface_find (name, source)
-    check_argument (my, "name")
-    check_argument (my, "source")
+    check_arguments (my, "name, source", my)
 
     my.interface = my.source->interface (name = my.name)
 

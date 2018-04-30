@@ -16,37 +16,37 @@
     </c_alias>
 
     <macros name="major" of_class="version">
-        <c_implementation>
+        <implementation lang="c">
             #define .(c_class_version_macros_major) .(project_version_major)
-        </c_implementation>
+        </implementation>
     </macros>
 
     <macros name="minor" of_class="version">
-        <c_implementation>
+        <implementation lang="c">
             #define .(c_class_version_macros_minor) .(project_version_minor)
-        </c_implementation>
+        </implementation>
     </macros>
 
     <macros name="patch" of_class="version">
-        <c_implementation>
+        <implementation lang="c">
             #define .(c_class_version_macros_patch) .(project_version_patch)
-        </c_implementation>
+        </implementation>
     </macros>
 
     <macros name="make" is_method="1" of_class="version">
-        <c_implementation>
+        <implementation lang="c">
             #define .(c_class_version_macros_make) (major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
-        </c_implementation>
+        </implementation>
     </macros>
 
     <macros name="version" of_class="version">
-        <c_implementation>
+        <implementation lang="c">
             #define .(c_class_version_macros_version)
                     .(c_class_version_macros_make) (
                             .(c_class_version_macros_major),
                             .(c_class_version_macros_minor),
                             .(c_class_version_macros_patch))
-        </c_implementation>
+        </implementation>
     </macros>
 
     <macroses>
@@ -55,7 +55,7 @@
         <macros name="private" />
         <macros name="publics" />  <!-- move to appropriate place -->
         <macros name="internal build" /> <!-- move to appropriate place -->
-        <c_implementation>
+        <implementation lang="c">
             //  TDOD: Review with approach: https://gcc.gnu.org/wiki/Visibility
             #if defined (__WINDOWS__)
             #   if defined .(c_global_macros_static)
@@ -81,7 +81,7 @@
             #       define .(c_global_macros_private)
             #   endif
             #endif
-        </c_implementation>
+        </implementation>
     </macroses>
 
 
