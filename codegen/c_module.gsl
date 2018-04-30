@@ -108,8 +108,13 @@ function c_module_create (source, destination, project)
 
             c_component_map_attr_uid (c_module, module)
 
-            my.resolved_header_path = string_in (module.scope, "public") ?? \
-                     my.project.inc_path ? my.project.src_path
+            if module.scope = "public"
+                my.resolved_header_path = my.project.inc_path
+            elsif module.scope = "private"
+                my.resolved_header_path = my.project.inc_private_path
+            else
+                my.resolved_header_path = my.project.src_path
+            endif
 
             . = c_format_comment (module.) ?
 
