@@ -85,13 +85,13 @@ Base model for C language code generation.
 The c_module item can have these attributes:
 
 of_class:
-    Defines class name that a component belongs to. This attributes is used  
+    Defines class name that a component belongs to. This attributes is used
     for inner components name resolution. The of_class attribute is optional.
 
 scope:
-    Defines component visibility within scope. This attribute can be
+    Defines component visibility within scope. This attribute must not be
     inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:              
+    "public". It can take one of the following values:
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -102,23 +102,23 @@ name:
 
 header_file:
     Name of the generated header file without path. The header_file attribute
-    is required.                                                             
+    is required.
 
 source_file:
     Name of the generated source file without path. The source_file attribute
-    is required.                                                             
+    is required.
 
 output_header_file:
     Path to the header file that will be generated. The output_header_file
-    attribute is required.                                                
+    attribute is required.
 
 output_source_file:
     Path to the source file that will be generated. The output_source_file
-    attribute is required.                                                
+    attribute is required.
 
 once_guard:
     String that is used as C header guard. The once_guard attribute is
-    required.                                                         
+    required.
 
 
 The 'c_include' item
@@ -135,9 +135,9 @@ The 'c_include' item
 The c_include item can have these attributes:
 
 scope:
-    Defines component visibility within scope. This attribute can be
+    Defines component visibility within scope. This attribute must not be
     inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:              
+    "public". It can take one of the following values:
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -148,7 +148,7 @@ file:
 
 is_system:
     The is_system attribute is optional. Its default value is "0". It can
-    take one of the following values:                                    
+    take one of the following values:
 
 Value: Meaning:
 0: Included file is enclosed in: "file"
@@ -193,12 +193,12 @@ The c_enum item can have these attributes:
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within models hierarchy. The uid attribute is optional.   
+    component within models hierarchy. The uid attribute is optional.
 
 definition:
-    Defines where component will be defined. This attribute must not be  
+    Defines where component will be defined. This attribute must not be
     inherited. The definition attribute is optional. Its default value is
-    "private". It can take one of the following values:                  
+    "private". It can take one of the following values:
 
 Value: Meaning:
 public: Component definition is visible for outside world.
@@ -208,16 +208,16 @@ external: Component definition is located somewhere.
 visibility:
     Defines symbol binary visibility. This attribute must not be inherited.
     The visibility attribute is optional. Its default value is "public". It
-    can take one of the following values:                                  
+    can take one of the following values:
 
 Value: Meaning:
 public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
 
 scope:
-    Defines component visibility within scope. This attribute can be
+    Defines component visibility within scope. This attribute must not be
     inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:              
+    "public". It can take one of the following values:
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -225,7 +225,7 @@ private: Component is visible only within library or a specific source file.
 
 name:
     Enumeration name. Can be omitted if it is used to define named constants.
-    The name attribute is optional.                                          
+    The name attribute is optional.
 
 
 The 'c_constant' item
@@ -244,12 +244,12 @@ The c_constant item can have these attributes:
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within models hierarchy. The uid attribute is optional.   
+    component within models hierarchy. The uid attribute is optional.
 
 scope:
-    Defines component visibility within scope. This attribute can be
+    Defines component visibility within scope. This attribute must not be
     inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:              
+    "public". It can take one of the following values:
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -278,7 +278,7 @@ The c_struct item can have these attributes:
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within models hierarchy. The uid attribute is optional.   
+    component within models hierarchy. The uid attribute is optional.
 
 name:
     Structure name. The name attribute is required.
@@ -312,7 +312,7 @@ type:
 
 is_callback:
     Mark type as callback. The is_callback attribute is optional. Its default
-    value is "0". It can take one of the following values:                   
+    value is "0". It can take one of the following values:
 
 Value: Meaning:
 0: Just a type.
@@ -320,7 +320,7 @@ Value: Meaning:
 
 is_string:
     Mark type as a string - specal class. The is_string attribute is
-    optional. It can take one of the following values:              
+    optional. It can take one of the following values:
 
 Value: Meaning:
 0: User defined type.
@@ -328,7 +328,7 @@ Value: Meaning:
 
 kind:
     Defines instance kind of the type. The kind attribute is optional. Its
-    default value is "value". It can take one of the following values:    
+    default value is "value". It can take one of the following values:
 
 Value: Meaning:
 value: Value type, i.e. 'int'
@@ -336,7 +336,7 @@ pointer: Pointer type, i.e. 'int *'
 reference: Pointer to pointer type, i.e. 'int **'
 
 array:
-    Defines array length type. If given, parent instance becomes an array.   
+    Defines array length type. If given, parent instance becomes an array.
     The array attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -347,32 +347,32 @@ derived: Array with a derived length, i.e. 'int []'.
 
 length:
     Defines length constant for the fixed array. Note, this attribute is
-    ignored for other arrays. The length attribute is optional.         
+    ignored for other arrays. The length attribute is optional.
 
 is_const_type:
     Defines type constness. The is_const_type attribute is optional.
 
 is_const_pointer:
     Defines pointer constness. TODO: Define if this attribute is useless. The
-    is_const_pointer attribute is optional.                                  
+    is_const_pointer attribute is optional.
 
 is_const_array:
     Defines array constness . The is_const_array attribute is optional.
 
 is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
-    The is_const_reference attribute is optional.                          
+    The is_const_reference attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within models hierarchy. The uid attribute is optional.   
+    component within models hierarchy. The uid attribute is optional.
 
 name:
     Property name. The name attribute is required.
 
 bits:
     Define number of bits occupied by the property with integral type. The
-    bits attribute is optional.                                           
+    bits attribute is optional.
 
 
 The 'c_variable' item
@@ -408,7 +408,7 @@ type:
 
 is_callback:
     Mark type as callback. The is_callback attribute is optional. Its default
-    value is "0". It can take one of the following values:                   
+    value is "0". It can take one of the following values:
 
 Value: Meaning:
 0: Just a type.
@@ -416,7 +416,7 @@ Value: Meaning:
 
 is_string:
     Mark type as a string - specal class. The is_string attribute is
-    optional. It can take one of the following values:              
+    optional. It can take one of the following values:
 
 Value: Meaning:
 0: User defined type.
@@ -424,7 +424,7 @@ Value: Meaning:
 
 kind:
     Defines instance kind of the type. The kind attribute is optional. Its
-    default value is "value". It can take one of the following values:    
+    default value is "value". It can take one of the following values:
 
 Value: Meaning:
 value: Value type, i.e. 'int'
@@ -432,7 +432,7 @@ pointer: Pointer type, i.e. 'int *'
 reference: Pointer to pointer type, i.e. 'int **'
 
 array:
-    Defines array length type. If given, parent instance becomes an array.   
+    Defines array length type. If given, parent instance becomes an array.
     The array attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -443,30 +443,30 @@ derived: Array with a derived length, i.e. 'int []'.
 
 length:
     Defines length constant for the fixed array. Note, this attribute is
-    ignored for other arrays. The length attribute is optional.         
+    ignored for other arrays. The length attribute is optional.
 
 is_const_type:
     Defines type constness. The is_const_type attribute is optional.
 
 is_const_pointer:
     Defines pointer constness. TODO: Define if this attribute is useless. The
-    is_const_pointer attribute is optional.                                  
+    is_const_pointer attribute is optional.
 
 is_const_array:
     Defines array constness . The is_const_array attribute is optional.
 
 is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
-    The is_const_reference attribute is optional.                          
+    The is_const_reference attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within models hierarchy. The uid attribute is optional.   
+    component within models hierarchy. The uid attribute is optional.
 
 definition:
-    Defines where component will be defined. This attribute must not be  
+    Defines where component will be defined. This attribute must not be
     inherited. The definition attribute is optional. Its default value is
-    "private". It can take one of the following values:                  
+    "private". It can take one of the following values:
 
 Value: Meaning:
 public: Component definition is visible for outside world.
@@ -476,16 +476,16 @@ external: Component definition is located somewhere.
 visibility:
     Defines symbol binary visibility. This attribute must not be inherited.
     The visibility attribute is optional. Its default value is "public". It
-    can take one of the following values:                                  
+    can take one of the following values:
 
 Value: Meaning:
 public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
 
 scope:
-    Defines component visibility within scope. This attribute can be
+    Defines component visibility within scope. This attribute must not be
     inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:              
+    "public". It can take one of the following values:
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -516,7 +516,7 @@ The 'c_cast' item
 -----------------
 
 Defines a type of outer component. Cast parent instance type to the type
-defined in this entity.                                                 
+defined in this entity.
 
     <c_cast
         type = "..."
@@ -538,7 +538,7 @@ type:
 
 is_callback:
     Mark type as callback. The is_callback attribute is optional. Its default
-    value is "0". It can take one of the following values:                   
+    value is "0". It can take one of the following values:
 
 Value: Meaning:
 0: Just a type.
@@ -546,7 +546,7 @@ Value: Meaning:
 
 is_string:
     Mark type as a string - specal class. The is_string attribute is
-    optional. It can take one of the following values:              
+    optional. It can take one of the following values:
 
 Value: Meaning:
 0: User defined type.
@@ -554,7 +554,7 @@ Value: Meaning:
 
 kind:
     Defines instance kind of the type. The kind attribute is optional. Its
-    default value is "value". It can take one of the following values:    
+    default value is "value". It can take one of the following values:
 
 Value: Meaning:
 value: Value type, i.e. 'int'
@@ -562,7 +562,7 @@ pointer: Pointer type, i.e. 'int *'
 reference: Pointer to pointer type, i.e. 'int **'
 
 array:
-    Defines array length type. If given, parent instance becomes an array.   
+    Defines array length type. If given, parent instance becomes an array.
     The array attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -573,21 +573,21 @@ derived: Array with a derived length, i.e. 'int []'.
 
 length:
     Defines length constant for the fixed array. Note, this attribute is
-    ignored for other arrays. The length attribute is optional.         
+    ignored for other arrays. The length attribute is optional.
 
 is_const_type:
     Defines type constness. The is_const_type attribute is optional.
 
 is_const_pointer:
     Defines pointer constness. TODO: Define if this attribute is useless. The
-    is_const_pointer attribute is optional.                                  
+    is_const_pointer attribute is optional.
 
 is_const_array:
     Defines array constness . The is_const_array attribute is optional.
 
 is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
-    The is_const_reference attribute is optional.                          
+    The is_const_reference attribute is optional.
 
 
 The 'c_modifier' item
@@ -627,12 +627,12 @@ The c_method item can have these attributes:
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within models hierarchy. The uid attribute is optional.   
+    component within models hierarchy. The uid attribute is optional.
 
 definition:
-    Defines where component will be defined. This attribute must not be  
+    Defines where component will be defined. This attribute must not be
     inherited. The definition attribute is optional. Its default value is
-    "private". It can take one of the following values:                  
+    "private". It can take one of the following values:
 
 Value: Meaning:
 public: Component definition is visible for outside world.
@@ -642,16 +642,16 @@ external: Component definition is located somewhere.
 visibility:
     Defines symbol binary visibility. This attribute must not be inherited.
     The visibility attribute is optional. Its default value is "public". It
-    can take one of the following values:                                  
+    can take one of the following values:
 
 Value: Meaning:
 public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
 
 scope:
-    Defines component visibility within scope. This attribute can be
+    Defines component visibility within scope. This attribute must not be
     inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:              
+    "public". It can take one of the following values:
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -686,7 +686,7 @@ type:
 
 is_callback:
     Mark type as callback. The is_callback attribute is optional. Its default
-    value is "0". It can take one of the following values:                   
+    value is "0". It can take one of the following values:
 
 Value: Meaning:
 0: Just a type.
@@ -694,7 +694,7 @@ Value: Meaning:
 
 is_string:
     Mark type as a string - specal class. The is_string attribute is
-    optional. It can take one of the following values:              
+    optional. It can take one of the following values:
 
 Value: Meaning:
 0: User defined type.
@@ -702,7 +702,7 @@ Value: Meaning:
 
 kind:
     Defines instance kind of the type. The kind attribute is optional. Its
-    default value is "value". It can take one of the following values:    
+    default value is "value". It can take one of the following values:
 
 Value: Meaning:
 value: Value type, i.e. 'int'
@@ -710,7 +710,7 @@ pointer: Pointer type, i.e. 'int *'
 reference: Pointer to pointer type, i.e. 'int **'
 
 array:
-    Defines array length type. If given, parent instance becomes an array.   
+    Defines array length type. If given, parent instance becomes an array.
     The array attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -721,21 +721,21 @@ derived: Array with a derived length, i.e. 'int []'.
 
 length:
     Defines length constant for the fixed array. Note, this attribute is
-    ignored for other arrays. The length attribute is optional.         
+    ignored for other arrays. The length attribute is optional.
 
 is_const_type:
     Defines type constness. The is_const_type attribute is optional.
 
 is_const_pointer:
     Defines pointer constness. TODO: Define if this attribute is useless. The
-    is_const_pointer attribute is optional.                                  
+    is_const_pointer attribute is optional.
 
 is_const_array:
     Defines array constness . The is_const_array attribute is optional.
 
 is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
-    The is_const_reference attribute is optional.                          
+    The is_const_reference attribute is optional.
 
 
 The 'c_argument' item
@@ -765,7 +765,7 @@ type:
 
 is_callback:
     Mark type as callback. The is_callback attribute is optional. Its default
-    value is "0". It can take one of the following values:                   
+    value is "0". It can take one of the following values:
 
 Value: Meaning:
 0: Just a type.
@@ -773,7 +773,7 @@ Value: Meaning:
 
 is_string:
     Mark type as a string - specal class. The is_string attribute is
-    optional. It can take one of the following values:              
+    optional. It can take one of the following values:
 
 Value: Meaning:
 0: User defined type.
@@ -781,7 +781,7 @@ Value: Meaning:
 
 kind:
     Defines instance kind of the type. The kind attribute is optional. Its
-    default value is "value". It can take one of the following values:    
+    default value is "value". It can take one of the following values:
 
 Value: Meaning:
 value: Value type, i.e. 'int'
@@ -789,7 +789,7 @@ pointer: Pointer type, i.e. 'int *'
 reference: Pointer to pointer type, i.e. 'int **'
 
 array:
-    Defines array length type. If given, parent instance becomes an array.   
+    Defines array length type. If given, parent instance becomes an array.
     The array attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -800,25 +800,25 @@ derived: Array with a derived length, i.e. 'int []'.
 
 length:
     Defines length constant for the fixed array. Note, this attribute is
-    ignored for other arrays. The length attribute is optional.         
+    ignored for other arrays. The length attribute is optional.
 
 is_const_type:
     Defines type constness. The is_const_type attribute is optional.
 
 is_const_pointer:
     Defines pointer constness. TODO: Define if this attribute is useless. The
-    is_const_pointer attribute is optional.                                  
+    is_const_pointer attribute is optional.
 
 is_const_array:
     Defines array constness . The is_const_array attribute is optional.
 
 is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
-    The is_const_reference attribute is optional.                          
+    The is_const_reference attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within models hierarchy. The uid attribute is optional.   
+    component within models hierarchy. The uid attribute is optional.
 
 name:
     Argument name. The name attribute is required.
@@ -828,7 +828,7 @@ The 'c_precondition' item
 -------------------------
 
 Defines method precondition. All preconditions are sorted by position
-ascending.                                                           
+ascending.
 
     <c_precondition
       [ position = "..."  ("0") ]
@@ -838,7 +838,7 @@ The c_precondition item has this single attribute:
 
 position:
     Position's weight of the precondition. The position attribute is
-    optional. Its default value is "0".                             
+    optional. Its default value is "0".
 
 
 The 'c_callback' item
@@ -859,12 +859,12 @@ The c_callback item can have these attributes:
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within models hierarchy. The uid attribute is optional.   
+    component within models hierarchy. The uid attribute is optional.
 
 scope:
-    Defines component visibility within scope. This attribute can be
+    Defines component visibility within scope. This attribute must not be
     inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:              
+    "public". It can take one of the following values:
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -891,12 +891,12 @@ The c_macros item can have these attributes:
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within models hierarchy. The uid attribute is optional.   
+    component within models hierarchy. The uid attribute is optional.
 
 scope:
-    Defines component visibility within scope. This attribute can be
+    Defines component visibility within scope. This attribute must not be
     inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:              
+    "public". It can take one of the following values:
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -904,7 +904,7 @@ private: Component is visible only within library or a specific source file.
 
 is_method:
     The is_method attribute is optional. Its default value is "0". It can
-    take one of the following values:                                    
+    take one of the following values:
 
 Value: Meaning:
 0: Macros is a constant.
@@ -935,9 +935,9 @@ Define set of macroses in the one implemenatation.
 The c_macroses item has this single attribute:
 
 scope:
-    Defines component visibility within scope. This attribute can be
+    Defines component visibility within scope. This attribute must not be
     inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:              
+    "public". It can take one of the following values:
 
 Value: Meaning:
 public: Component is visible for outside world.

@@ -84,11 +84,6 @@ function c_module_generate_header (c_module)
         c_insert_enum_declaration (c_enum)
     endfor
 
-    for my.c_module.c_struct where scope = "public" & definition = "public"
-        newline ()
-        c_insert_struct (c_struct)
-    endfor
-
     for my.c_module.c_struct where scope = "public" & definition <> "public"
         newline ()
         c_insert_struct_declaration (c_struct)
@@ -97,6 +92,11 @@ function c_module_generate_header (c_module)
     for my.c_module.c_callback where scope = "public"
         newline ()
         c_insert_callback (c_callback)
+    endfor
+
+    for my.c_module.c_struct where scope = "public" & definition = "public"
+        newline ()
+        c_insert_struct (c_struct)
     endfor
 
     for my.c_module.c_variable where scope = "public"
@@ -151,14 +151,14 @@ function c_module_generate_source (c_module)
         c_insert_enum (c_enum)
     endfor
 
-    for my.c_module.c_struct where definition = "private"
-        newline ()
-        c_insert_struct (c_struct)
-    endfor
-
     for my.c_module.c_callback where scope = "private"
         newline ()
         c_insert_callback (c_callback)
+    endfor
+
+    for my.c_module.c_struct where definition = "private"
+        newline ()
+        c_insert_struct (c_struct)
     endfor
 
     for my.c_module.c_method where scope = "private"

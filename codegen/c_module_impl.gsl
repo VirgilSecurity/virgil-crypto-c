@@ -79,12 +79,12 @@ function _L24_add_enum_tag (meta, destination)
         .definition = "public"
 
         new constant
-            .name = my.names.enum_value_begin
+            .name = my.names.enum_constant_begin
             .value = "0"
         endnew
 
         new constant
-            .name = my.names.enum_value_end
+            .name = my.names.enum_constant_end
         endnew
     endnew
 endfunction
@@ -117,7 +117,7 @@ function _L24_add_method_get_api (meta, destination)
             .enum = ".(class_api_enum_tag)"
         endnew
 
-        new c_implementation
+        new implementation
             . = "\
             VSF_ASSERT (impl);
             VSF_ASSERT (impl->info);
@@ -161,7 +161,7 @@ function _L24_add_method_get_tag (meta, destination)
 
         component_create_argument_impl (method)
 
-        new c_implementation
+        new implementation
             . = "
             VSF_ASSERT (impl);
             VSF_ASSERT (impl->info);
@@ -187,12 +187,12 @@ function _L24_add_method_cleanup (meta, destination)
 
         component_create_argument_impl (method)
 
-        new c_implementation
+        new implementation
             . = "\
             VSF_ASSERT (impl);
             VSF_ASSERT (impl->info->self_cleanup_cb);
 
-            impl->info->self_cleanup_cb (impl)
+            impl->info->self_cleanup_cb (impl);
             "
         endnew
     endnew
@@ -217,7 +217,7 @@ function _L24_add_method_destroy (meta, destination)
 
         component_create_argument_impl_ref (method)
 
-        new c_implementation
+        new implementation
             . = "\
             VSF_ASSERT (impl_ref);
 

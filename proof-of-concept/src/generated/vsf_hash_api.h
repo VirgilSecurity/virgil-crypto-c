@@ -70,25 +70,27 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Callback. Calculate hash over given data.
+//
+typedef void (*vsf_hash_api_hash_fn) (const byte* data, size_t data_len, byte* digest,
+        size_t digest_len);
 
-// ==========================================================================
-//  Full defined types.
-// ==========================================================================
-
-//  Calculate hash over given data.
-typedef const byte * (*vsf_hash_api_hash_fn) (vsf_impl_t *impl, const byte *data);
-
-//  Interface 'hash' API.
+//
+//  Handles constants and callbacks of the interface 'hash'.
+//
 struct vsf_hash_api_t {
+    //
     //  API's unique identifier, MUST be first in the structure.
     //  For interface 'hash' MUST be equal to the 'vsf_api_tag_HASH'.
+    //
     vsf_api_tag_t api_tag;
-
+    //
     //  Link to the inherited interface API 'hash info'.
-    const vsf_hash_info_api_t *hash_info_api;
+    //
+    const vsf_hash_info_api_t* hash_info_api;
 
-    //  Calculate hash over given data.
-    const byte * (*hash_cb) (vsf_impl_t *impl, const byte *data);
+    vsf_hash_api_hash_fn hash_cb;
 };
 typedef struct vsf_hash_api_t vsf_hash_api_t;
 

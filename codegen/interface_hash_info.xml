@@ -1,7 +1,7 @@
-<interface name = "hash info">
+<interface name="hash info">
     Provide details about implemented hash algorithm.
 
-    <constant name = "digest size" type = "size">
+    <constant name="digest size" type="size">
         Size of the digest (hashing output).
     </constant>
 </interface>

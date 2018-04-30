@@ -68,18 +68,18 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-
-// ==========================================================================
-//  Full defined types.
-// ==========================================================================
-
-//  Interface 'hash info' API.
+//
+//  Handles constants and callbacks of the interface 'hash info'.
+//
 struct vsf_hash_info_api_t {
+    //
     //  API's unique identifier, MUST be first in the structure.
     //  For interface 'hash_info' MUST be equal to the 'vsf_api_tag_HASH_INFO'.
+    //
     vsf_api_tag_t api_tag;
-
+    //
     //  Size of the digest (hashing output).
+    //
     size_t digest_size;
 };
 typedef struct vsf_hash_info_api_t vsf_hash_info_api_t;

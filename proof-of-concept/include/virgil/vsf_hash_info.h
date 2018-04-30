@@ -53,13 +53,9 @@
 #define VSF_HASH_INFO_H_INCLUDED
 
 #include "vsf_library.h"
-#include "vsf_api.h"
+#include "vsf_impl.h"
 //  @end
 
-
-#include "vsf_impl_private.h"
-#include "vsf_hash_info_api.h"
-#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -71,26 +67,28 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Opaque type of the interface 'hash info' API.
+//
+typedef struct vsf_hash_info_api_t vsf_hash_info_api_t;
 
-// ==========================================================================
-//  Public Functions.
-// ==========================================================================
-
-//  Size of the digest (hashing output).
+//
+//  Returns constant 'digest size'.
+//
 VSF_PUBLIC size_t
-vsf_hash_info_digest_size (vsf_impl_t *impl);
+vsf_hash_info_digest_size (const vsf_hash_info_api_t* hash_info_api);
 
-//  Size of the digest (hashing output).
-VSF_PUBLIC size_t
-vsf_hash_info_api_digest_size (const vsf_hash_info_api_t *hash_info_api);
-
+//
 //  Return hash info API, or NULL if it is not implemented.
-VSF_PUBLIC const vsf_hash_info_api_t *
-vsf_hash_info_api (vsf_impl_t *impl);
+//
+VSF_PUBLIC const vsf_hash_info_api_t*
+vsf_hash_info_api (vsf_impl_t* impl);
 
+//
 //  Check if given object implements interface 'hash info'.
+//
 VSF_PUBLIC bool
-vsf_hash_info_is_implemented (vsf_impl_t *impl);
+vsf_hash_info_is_implemented (vsf_impl_t* impl);
 
 
 // --------------------------------------------------------------------------

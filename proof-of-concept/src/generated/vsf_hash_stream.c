@@ -63,63 +63,62 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-
-// ==========================================================================
-//  Generated functions.
-// ==========================================================================
-
+//
 //  Start a new hashing.
+//
 VSF_PUBLIC void
-vsf_hash_stream_start (vsf_impl_t *impl) {
+vsf_hash_stream_start (vsf_impl_t* impl) {
 
-    VSF_ASSERT (impl);
+    const vsf_hash_stream_api_t *hash_stream_api = vsf_hash_stream_api (impl);
+    VSF_ASSERT (hash_stream_api);
 
-    const vsf_hash_stream_api_t *hash_stream = vsf_hash_stream_api (impl);
-    VSF_ASSERT (hash_stream);
-
-    VSF_ASSERT (hash_stream->start_cb);
-    hash_stream->start_cb (impl);
+    VSF_ASSERT (hash_stream_api->start_cb);
+    hash_stream_api->start_cb (impl);
 }
 
+//
 //  Add given data to the hash.
+//
 VSF_PUBLIC void
-vsf_hash_stream_update (vsf_impl_t *impl, const byte *data) {
+vsf_hash_stream_update (vsf_impl_t* impl, const byte* data, size_t data_len) {
 
-    VSF_ASSERT (impl);
-    VSF_ASSERT (data);
+    const vsf_hash_stream_api_t *hash_stream_api = vsf_hash_stream_api (impl);
+    VSF_ASSERT (hash_stream_api);
 
-    const vsf_hash_stream_api_t *hash_stream = vsf_hash_stream_api (impl);
-    VSF_ASSERT (hash_stream);
-
-    VSF_ASSERT (hash_stream->update_cb);
-    hash_stream->update_cb (impl, data);
+    VSF_ASSERT (hash_stream_api->update_cb);
+    hash_stream_api->update_cb (impl, data, data_len);
 }
 
-//  Accompilsh hashing and return the it's result (a message digest).
-VSF_PUBLIC const byte *
-vsf_hash_stream_finish (vsf_impl_t *impl) {
+//
+//  Accompilsh hashing and return it's result (a message digest).
+//
+VSF_PUBLIC void
+vsf_hash_stream_finish (vsf_impl_t* impl, byte* digest, size_t digest_len) {
 
-    VSF_ASSERT (impl);
+    const vsf_hash_stream_api_t *hash_stream_api = vsf_hash_stream_api (impl);
+    VSF_ASSERT (hash_stream_api);
 
-    const vsf_hash_stream_api_t *hash_stream = vsf_hash_stream_api (impl);
-    VSF_ASSERT (hash_stream);
-
-    VSF_ASSERT (hash_stream->finish_cb);
-    return hash_stream->finish_cb (impl);
+    VSF_ASSERT (hash_stream_api->finish_cb);
+    hash_stream_api->finish_cb (impl, digest, digest_len);
 }
 
+//
 //  Return hash stream API, or NULL if it is not implemented.
-VSF_PUBLIC const vsf_hash_stream_api_t *
-vsf_hash_stream_api (vsf_impl_t *impl) {
+//
+VSF_PUBLIC const vsf_hash_stream_api_t*
+vsf_hash_stream_api (vsf_impl_t* impl) {
 
     VSF_ASSERT (impl);
 
-    return (vsf_hash_stream_api_t *) vsf_impl_api (impl, vsf_api_tag_HASH_STREAM);
+    const vsf_api_t *api = vsf_impl_api (impl, vsf_api_tag_HASH_STREAM);
+    return (const vsf_hash_stream_api_t *) api;
 }
 
+//
 //  Check if given object implements interface 'hash stream'.
+//
 VSF_PUBLIC bool
-vsf_hash_stream_is_implemented (vsf_impl_t *impl) {
+vsf_hash_stream_is_implemented (vsf_impl_t* impl) {
 
     VSF_ASSERT (impl);
 

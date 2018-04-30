@@ -39,7 +39,7 @@
 
     <attr name="scope" default="public">
         Defines component visibility within scope.
-        This attribute can be inherited.
+        This attribute must not be inherited.
 
         <restrict value="public">
             Component is visible for outside world.

@@ -58,9 +58,6 @@
 //  @end
 
 
-#include "vsf_hash_stream_api.h"
-#include "vsf_hash_api.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -71,37 +68,40 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Callback. Start a new hashing.
+//
+typedef void (*vsf_hash_stream_api_start_fn) (void);
 
-// ==========================================================================
-//  Full defined types.
-// ==========================================================================
+//
+//  Callback. Add given data to the hash.
+//
+typedef void (*vsf_hash_stream_api_update_fn) (const byte* data, size_t data_len);
 
-//  Start a new hashing.
-typedef void (*vsf_hash_stream_api_start_fn) (vsf_impl_t *impl);
+//
+//  Callback. Accompilsh hashing and return it's result (a message digest).
+//
+typedef void (*vsf_hash_stream_api_finish_fn) (byte* digest, size_t digest_len);
 
-//  Add given data to the hash.
-typedef void (*vsf_hash_stream_api_update_fn) (vsf_impl_t *impl, const byte *data);
-
-//  Accompilsh hashing and return the it's result (a message digest).
-typedef const byte * (*vsf_hash_stream_api_finish_fn) (vsf_impl_t *impl);
-
-//  Interface 'hash stream' API.
+//
+//  Handles constants and callbacks of the interface 'hash stream'.
+//
 struct vsf_hash_stream_api_t {
+    //
     //  API's unique identifier, MUST be first in the structure.
     //  For interface 'hash_stream' MUST be equal to the 'vsf_api_tag_HASH_STREAM'.
+    //
     vsf_api_tag_t api_tag;
+    //
+    //  Link to the inherited interface API 'hash info'.
+    //
+    const vsf_hash_info_api_t* hash_info_api;
 
-    //  Link to the inherited interface API 'hash'.
-    const vsf_hash_api_t *hash_api;
+    vsf_hash_stream_api_start_fn start_cb;
 
-    //  Start a new hashing.
-    void (*start_cb) (vsf_impl_t *impl);
+    vsf_hash_stream_api_update_fn update_cb;
 
-    //  Add given data to the hash.
-    void (*update_cb) (vsf_impl_t *impl, const byte *data);
-
-    //  Accompilsh hashing and return the it's result (a message digest).
-    const byte * (*finish_cb) (vsf_impl_t *impl);
+    vsf_hash_stream_api_finish_fn finish_cb;
 };
 typedef struct vsf_hash_stream_api_t vsf_hash_stream_api_t;
 

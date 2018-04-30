@@ -109,7 +109,7 @@ vsf_impl_cleanup (vsf_impl_t* impl) {
     VSF_ASSERT (impl);
     VSF_ASSERT (impl->info->self_cleanup_cb);
 
-    impl->info->self_cleanup_cb (impl)
+    impl->info->self_cleanup_cb (impl);
 }
 
 //

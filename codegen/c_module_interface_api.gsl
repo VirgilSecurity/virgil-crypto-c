@@ -51,7 +51,7 @@ function _B25_add_interface_api_type (interface, destination, meta)
     my.refs = meta_refs (my.meta)
 
     new struct to my.destination
-        . = "Handles constants and callbacks of the interface '$(interface.name:)'."
+        . = "Handles constants and callbacks of the interface '$(my.interface.name:)'."
         .name = my.names.class_interface_api
         .visibility = "public"
         .definition = "public"
@@ -81,8 +81,11 @@ function _B25_add_interface_api_type (interface, destination, meta)
         for my.interface.method
             new property to struct
                 .name = method.name
-                .callback = "this_is_callback"
+                .callback = my.refs.interface_callback_$(make_id (method.name))
             endnew
+
+            my.callback = item_copy_to (method, my.destination, "callback")
+            my.callback. = ("Callback. " + string_trim(my.callback.)) ?
         endfor
 
         for my.interface.constant
