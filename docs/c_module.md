@@ -69,7 +69,7 @@ Base model for C language code generation.
         source_file = "..."
         output_header_file = "..."
       [ of_class = "..." ]
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
         >
         <c_include>
         <c_alias>
@@ -95,7 +95,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Short module name. The name attribute is required.
@@ -128,7 +129,7 @@ The 'c_include' item
 
     <c_include
         file = "..."
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ is_system = "0 | 1"  ("0") ]
         />
 
@@ -141,7 +142,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 file:
     File name to be included. The file attribute is required.
@@ -183,7 +185,7 @@ Defines enumeration type.
       [ uid = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ visibility = "public | private"  ("public") ]
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ name = "..." ]
         >
         <c_constant>, 1 or more
@@ -221,7 +223,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Enumeration name. Can be omitted if it is used to define named constants.
@@ -235,7 +238,7 @@ Defines integral constant.
 
     <c_constant
         name = "..."
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ uid = "..." ]
       [ value = "..." ]
         />
@@ -253,7 +256,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Constant name. The name attribute is required.
@@ -394,7 +398,7 @@ Defines a type of outer component. Define global variable.
       [ uid = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ visibility = "public | private"  ("public") ]
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ kind = "value | pointer | reference"  ("value") ]
         >
         <c_value>, 1 or more
@@ -489,7 +493,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Object name. The name attribute is required.
@@ -614,7 +619,7 @@ Define method signature and implementation (optional).
         name = "..."
       [ definition = "public | private | external"  ("private") ]
       [ visibility = "public | private"  ("public") ]
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ uid = "..." ]
         >
         <c_modifier>
@@ -655,7 +660,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Method name. The name attribute is required.
@@ -848,7 +854,7 @@ Define callback type.
 
     <c_callback
         name = "..."
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ uid = "..." ]
         >
         <c_return>, optional
@@ -868,7 +874,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Method name. The name attribute is required.
@@ -881,7 +888,7 @@ Define macros, that can represent a constant or a method.
 
     <c_macros
       [ uid = "..." ]
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ is_method = "0 | 1"  ("0") ]
         >
         <c_implementation>, optional
@@ -900,7 +907,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 is_method:
     The is_method attribute is optional. Its default value is "0". It can
@@ -926,7 +934,7 @@ The 'c_macroses' item
 Define set of macroses in the one implemenatation.
 
     <c_macroses
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
         >
         <c_macros>, 1 or more
         <c_implementation>, optional
@@ -941,5 +949,6 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
