@@ -44,111 +44,103 @@
 
 gsl from "common.gsl"
 gsl from "interface.gsl"
+gsl from "component.gsl"
+gsl from "c_component.gsl"
 
+# ---------------------------------------------------------------------------
+#   Check that all interfaces are implemented explicitly.
+# ---------------------------------------------------------------------------
+function implementation_check_interface_hierarchy (interface, implementation, source)
+    check_arguments (my, "interface, implementation, source", my)
 
-function _P14_resolve_attributes (implementation)
-    check_argument (my, "implementation")
+    my.interface_definition = interface_find (my.interface.name, my.source)
 
-    my.implementation.full_name = cat (my.implementation.implementor, my.implementation.name)
-    my.implementation.ref_name = \
-            my.implementation.is_default ?? my.implementation.name ? my.full_name
-endfunction
-
-
-function _P14_check_interface_inheritance (implementation, interface, source)
-    check_argument (my, "implementation")
-    check_argument (my, "interface")
-    check_argument (my, "source")
-
-    for my.interface.inherit
+    for my.interface_definition.inherit
         if count (my.implementation.interface, name = inherit.interface) = 0
-            echo_fatal ("Interface '$(inherit.interface:)' implementation is \
+            echo_fatal ("Implementation of the '$(inherit.interface:)' interface \
                     required by interface '$(my.interface.name)' \
-                    within: <$(name (my.implementation)) name = \"$(my.implementation.name)\"/>")
+                    within <$(name (my.implementation)) name=\"$(my.implementation.name)\"/>")
         endif
 
         my.inherited_interface = interface_find (inherit.interface, my.source)
-        _P14_check_interface_inheritance (my.implementation, my.inherited_interface, my.source)
+        implementation_check_interface_hierarchy (my.inherited_interface, my.implementation, my.source)
     endfor
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Resolve model: implementation.c_include.
+# ---------------------------------------------------------------------------
+function implementation_resolve_c_include (c_include, parent)
+    check_arguments (my, "c_include, parent", my)
 
-function _P14_check_interfaces (implementation, source)
-    check_argument (my, "implementation")
-    check_argument (my, "source")
+    c_component_require_attr_file (my.c_include, my)
+endfunction
 
-    for my.implementation.interface as implemented
-        my.interface = interface_find (implemented.name, my.source)
-        _P14_check_interface_inheritance (my.implementation, my.interface, my.source)
+# ---------------------------------------------------------------------------
+#   Resolve model: implementation.interface.context.
+# ---------------------------------------------------------------------------
+function implementation_resolve_interface_context (context, parent)
+    check_arguments (my, "context, parent", my)
+
+    component_require_attr_name (my.context, my)
+    assert_attribute (my.context, "c_type", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve model: implementation.interface.constant.
+# ---------------------------------------------------------------------------
+function implementation_resolve_interface_constant (constant, parent)
+    check_arguments (my, "constant, parent", my)
+
+    component_require_attr_name (my.constant)
+    component_require_attr_value (my.constant)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve model: implementation.interface.
+# ---------------------------------------------------------------------------
+function implementation_resolve_interface (interface, parent)
+    check_arguments (my, "interface, parent", my)
+
+    component_require_attr_name (my.interface, my)
+
+    for my.interface.context
+        implementation_resolve_interface_context (context, my.interface)
+    endfor
+
+    for my.interface.constant
+        implementation_resolve_interface_constant (constant, my.interface)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve model: implementation.
+# ---------------------------------------------------------------------------
+function implementation_resolve (implementation, parent, project)
+    check_arguments (my, "implementation, parent, project", my)
+
+    component_require_attr_name (my.implementation, my)
+
+    echo_trace ("Resolving implementation: $(my.implementation.name:)", my)
+
+    for my.implementation.c_include
+        implementation_resolve_c_include (c_include, my.implementation)
+    endfor
+
+    for my.implementation.interface as implemented_interface
+        implementation_resolve_interface (implemented_interface, my.implementation)
+        implementation_check_interface_hierarchy (implemented_interface, my.implementation, my.parent)
     else
-        echo_fatal ("Nothing to be implemented, within: \
-                <$(name (my.implementation)) name = \"$(my.implementation.name)\"/>")
+        echo_fatal ("Implementation '$(my.implementation.name)' does not implement any interface.", my)
     endfor
+
 endfunction
 
-
-function _P14_resolve_interface_constants (implementation, implemented, interface)
-    check_argument (my, "implementation")
-    check_argument (my, "implemented")
-    check_argument (my, "interface")
-
-    for my.interface.constant as interface_constant
-        my.implemented_constant = \
-                my.implemented->constant (name = interface_constant.name) ?
-
-        if ! defined (my.implemented_constant)
-            echo_fatal ("Constant '$(interface_constant.name:)'" + \
-                    " required by interface '$(my.interface.name)'" + \
-                    ", is not implemented within implementation '$(my.implementation.name)'.", my)
-        endif
-
-        my.implemented_constant. ?= interface_constant. ?
-        my.implemented_constant.visibility ?= interface_constant.visibility ? "public"
-    endfor
-endfunction
-
-function _P14_resolve_interface_methods (implementation, implemented, interface)
-    check_argument (my, "implementation")
-    check_argument (my, "implemented")
-    check_argument (my, "interface")
-
-    for my.interface.method as interface_method
-        my.implemented_method = item_copy_to (interface_method, my.implemented)
-        my.method_specification = my.implemented->method (name = interface_method.name) ?
-        my.implemented_method.is_stateless = my.method_specification.is_stateless ?
-    endfor
-endfunction
-
-function _P14_resolve_interfaces (implementation, source)
-    check_argument (my, "implementation")
-    check_argument (my, "source")
-
-    for my.implementation.interface as implemented
-        my.interface = interface_find (implemented.name, my.source)
-        _P14_resolve_interface_constants (my.implementation, implemented, my.interface)
-        _P14_resolve_interface_methods (my.implementation, implemented, my.interface)
-    endfor
-endfunction
-
-function implementation_resolve (implementation, source, project)
-    check_argument (my, "implementation")
-    check_argument (my, "source")
-    check_argument (my, "project")
-
-    assert_attribute (my.implementation, "implementor")
-
-    echo_trace ("Resolving implementation: \
-            $(my.implementation.implementor:)/$(my.implementation.name:)", my)
-
-
-    _P14_resolve_attributes (my.implementation)
-    _P14_check_interfaces (my.implementation, my.source)
-    _P14_resolve_interfaces (my.implementation, my.source)
-endfunction
-
+# ---------------------------------------------------------------------------
+#   Traverse implementations within source and perform complete resolution.
+# ---------------------------------------------------------------------------
 function foreach_implementation_resolve (source, project)
-    check_argument (my, "source")
-    check_argument (my, "project")
+    check_arguments (my, "source, project", my)
 
     for my.source.implementation
         implementation_resolve (implementation, my.source, my.project)
@@ -159,8 +151,7 @@ endfunction
 #   Create 'meta entity' for each implementation within source.
 # ---------------------------------------------------------------------------
 function foreach_implementation_update_meta (source, meta)
-    check_argument (my, "source")
-    check_argument (my, "meta")
+    check_arguments (my, "source, meta", my)
 
     for my.source.implementation
         meta_add_implementation (my.meta, implementation)

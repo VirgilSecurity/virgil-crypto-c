@@ -69,12 +69,8 @@
     <entity name="implementation">
         Defines set of the implemented interfaces in a one module.
 
-        <attr name="implementor" required="1">
-            Implementor name - underlying library name that is used for implementation.
-        </attr>
-
-        <attr name="is_default" default="0">
-            Injected attribute from the implementor.
+        <attr name="name" required="1">
+            Implementation name.
         </attr>
 
         <allow entity="c_include" occurs="0+"/>
