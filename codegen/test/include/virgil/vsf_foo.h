@@ -151,6 +151,20 @@ typedef enum vsf_foo_tag_t vsf_foo_tag_t;
 //
 typedef enum vsf_foo_bag_t vsf_foo_bag_t;
 
+typedef struct vsf_impl_t vsf_impl_t;
+
+typedef struct vsf_buffer_t vsf_buffer_t;
+
+//
+//  Structure with a private definition.
+//
+typedef struct vsf_foo_secret_t vsf_foo_secret_t;
+
+//
+//  Class self destruction callback type.
+//
+typedef void (*vsf_foo_destroy_fn) (vsf_impl_t** impl_ref);
+
 //
 //  Structure with a public definition.
 //
@@ -239,20 +253,6 @@ struct vsf_foo_context_t {
     vsf_impl_t* fixed_array_of_classes[32];
 };
 typedef struct vsf_foo_context_t vsf_foo_context_t;
-
-typedef struct vsf_impl_t vsf_impl_t;
-
-typedef struct vsf_buffer_t vsf_buffer_t;
-
-//
-//  Structure with a private definition.
-//
-typedef struct vsf_foo_secret_t vsf_foo_secret_t;
-
-//
-//  Class self destruction callback type.
-//
-typedef void (*vsf_foo_destroy_fn) (vsf_impl_t** impl_ref);
 
 //
 //  Global variable that conatins derived size array of strings.
