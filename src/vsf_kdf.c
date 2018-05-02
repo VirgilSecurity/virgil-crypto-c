@@ -36,6 +36,12 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Provides interface to the key derivation function (KDF) algorithms.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,23 +49,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
-// --------------------------------------------------------------------------
-
-#ifndef VSF_API_H_INCLUDED
-#define VSF_API_H_INCLUDED
-
-#include "vsf_library.h"
+#include "vsf_kdf.h"
+#include "vsf_assert.h"
+#include "vsf_kdf_api.h"
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -68,35 +61,43 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Calculate hash over given data.
 //
-enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_HASH,
-    vsf_api_tag_KDF,
-    vsf_api_tag_END
-};
-typedef enum vsf_api_tag_t vsf_api_tag_t;
+VSF_PUBLIC void
+vsf_kdf_derive (const vsf_kdf_api_t* kdf_api, const byte* data, size_t data_len, byte* key,
+        size_t key_len) {
+
+    VSF_ASSERT (kdf_api);
+
+    VSF_ASSERT (kdf_api->derive_cb);
+    kdf_api->derive_cb (data, data_len, key, key_len);
+}
 
 //
-//  Generic type for any 'API' object.
+//  Return kdf API, or NULL if it is not implemented.
 //
-typedef struct vsf_api_t vsf_api_t;
+VSF_PUBLIC const vsf_kdf_api_t*
+vsf_kdf_api (vsf_impl_t* impl) {
+
+    VSF_ASSERT (impl);
+
+    const vsf_api_t *api = vsf_impl_api (impl, vsf_api_tag_KDF);
+    return (const vsf_kdf_api_t *) api;
+}
+
+//
+//  Check if given object implements interface 'kdf'.
+//
+VSF_PUBLIC bool
+vsf_kdf_is_implemented (vsf_impl_t* impl) {
+
+    VSF_ASSERT (impl);
+
+    return vsf_impl_api (impl, vsf_api_tag_KDF) != NULL;
+}
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSF_API_H_INCLUDED
 //  @end

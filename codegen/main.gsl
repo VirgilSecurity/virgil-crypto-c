@@ -80,7 +80,7 @@ function main_load_all (destination)
 
     item_load_from_file_pattern ("^module\.+xml$", my.destination, ".")
     item_load_from_file_pattern ("^interface_hash\.+xml$", my.destination, ".")
-    #item_load_from_file_pattern ("^provider\.+xml$", my.destination, ".")
+    item_load_from_file_pattern ("^interface_kdf\.+xml$", my.destination, ".")
 endfunction
 
 # ---------------------------------------------------------------------------
