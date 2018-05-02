@@ -372,7 +372,7 @@ endfunction
 function component_resolve_attr_scope (component, parent)
     check_argument (my, "component", my)
 
-    my.component.scope ?= "public" ? #  must not be inherited
+    my.component.scope ?= "public" #   must not be inherited
 
     my.valid_scopes = "public, private"
     if ! string_in (my.component.scope, my.valid_scopes)
@@ -434,7 +434,7 @@ endfunction
 function component_resolve_attr_definition (component, parent)
     check_argument (my, "component", my)
 
-    my.component.definition ?= "private" #  must not be inherited
+    my.component.definition ?= "private" #   must not be inherited
 
     my.valid_definitions = "public, private, external"
     if ! string_in (my.component.definition, my.valid_definitions)
