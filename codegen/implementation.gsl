@@ -49,7 +49,7 @@ gsl from "interface.gsl"
 function _P14_resolve_attributes (implementation)
     check_argument (my, "implementation")
 
-    my.implementation.full_name = cat (my.implementation.provider, my.implementation.name)
+    my.implementation.full_name = cat (my.implementation.implementor, my.implementation.name)
     my.implementation.ref_name = \
             my.implementation.is_default ?? my.implementation.name ? my.full_name
 endfunction
@@ -135,10 +135,10 @@ function implementation_resolve (implementation, source, project)
     check_argument (my, "source")
     check_argument (my, "project")
 
-    assert_attribute (my.implementation, "provider")
+    assert_attribute (my.implementation, "implementor")
 
     echo_trace ("Resolving implementation: \
-            $(my.implementation.provider:)/$(my.implementation.name:)", my)
+            $(my.implementation.implementor:)/$(my.implementation.name:)", my)
 
 
     _P14_resolve_attributes (my.implementation)
