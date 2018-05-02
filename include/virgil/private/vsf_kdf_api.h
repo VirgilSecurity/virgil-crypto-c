@@ -46,14 +46,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Interface 'kdf' API.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_API_H_INCLUDED
-#define VSF_API_H_INCLUDED
+#ifndef VSF_KDF_API_H_INCLUDED
+#define VSF_KDF_API_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_api.h"
+#include "vsf_impl.h"
 //  @end
 
 
@@ -68,22 +69,24 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Callback. Calculate hash over given data.
 //
-enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_HASH,
-    vsf_api_tag_KDF,
-    vsf_api_tag_END
-};
-typedef enum vsf_api_tag_t vsf_api_tag_t;
+typedef void (*vsf_kdf_api_derive_fn) (const byte* data, size_t data_len, byte* key,
+        size_t key_len);
 
 //
-//  Generic type for any 'API' object.
+//  Handles constants and callbacks of the interface 'kdf'.
 //
-typedef struct vsf_api_t vsf_api_t;
+struct vsf_kdf_api_t {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'kdf' MUST be equal to the 'vsf_api_tag_KDF'.
+    //
+    vsf_api_tag_t api_tag;
+
+    vsf_kdf_api_derive_fn derive_cb;
+};
+typedef struct vsf_kdf_api_t vsf_kdf_api_t;
 
 
 // --------------------------------------------------------------------------
@@ -98,5 +101,5 @@ typedef struct vsf_api_t vsf_api_t;
 
 
 //  @footer
-#endif // VSF_API_H_INCLUDED
+#endif // VSF_KDF_API_H_INCLUDED
 //  @end

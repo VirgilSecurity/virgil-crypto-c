@@ -45,6 +45,7 @@ target_sources(vsf
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_hash_info.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_hash_stream.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_impl.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_kdf.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_library.h"
 
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_api_private.h"
@@ -52,6 +53,7 @@ target_sources(vsf
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_hash_info_api.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_hash_stream_api.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_impl_private.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_kdf_api.h"
 
         PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_api.c"
@@ -65,6 +67,8 @@ target_sources(vsf
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_hash_stream_api.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_impl.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_impl_private.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf_api.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_library.c")
 
 target_include_directories(vsf
