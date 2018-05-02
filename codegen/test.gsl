@@ -45,7 +45,7 @@ gsl from "project.gsl"
 gsl from "module.gsl"
 gsl from "interface.gsl"
 gsl from "implementation.gsl"
-gsl from "provider.gsl"
+gsl from "implementor.gsl"
 gsl from "context.gsl"
 gsl from "meta.gsl"
 
@@ -88,7 +88,7 @@ function run_test ()
 
     #   Process Interface / Implementation.
     foreach_interface_resolve (root, root->project)
-    foreach_provider_resolve (root, root->project)
+    foreach_implementor_resolve (root, root->project)
     foreach_implementation_resolve (root, root->project)
 
     #   Create meta informtation about high level entities.

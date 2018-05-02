@@ -45,8 +45,8 @@ gsl from "common.gsl"
 gsl from "project.gsl"
 gsl from "module.gsl"
 gsl from "interface.gsl"
-#gsl from "implementation.gsl"
-#gsl from "provider.gsl"
+gsl from "implementor.gsl"
+gsl from "implementation.gsl"
 gsl from "context.gsl"
 gsl from "meta.gsl"
 
@@ -60,9 +60,8 @@ gsl from "c_module_impl_private.gsl"
 
 gsl from "c_module_interface.gsl"
 gsl from "c_module_interface_api.gsl"
-#gsl from "c_module_implementation.gsl"
-#gsl from "c_module_implemented_interface.gsl"
-#gsl from "c_module_implementation_private.gsl"
+gsl from "c_module_implementation.gsl"
+#gsl from "c_module_implementation_api.gsl"
 
 
 
@@ -81,6 +80,7 @@ function main_load_all (destination)
     item_load_from_file_pattern ("^module\.+xml$", my.destination, ".")
     item_load_from_file_pattern ("^interface_hash\.+xml$", my.destination, ".")
     item_load_from_file_pattern ("^interface_kdf\.+xml$", my.destination, ".")
+    item_load_from_file_pattern ("^implementor\.+xml$", my.destination, ".")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -105,15 +105,15 @@ function run_main ()
 
     #   Process Interface / Implementation.
     foreach_interface_resolve (root, root->project)
-#    foreach_provider_resolve (root, root->project)
-#    foreach_implementation_resolve (root, root->project)
+    foreach_implementor_resolve (root, root->project)
+    foreach_implementation_resolve (root, root->project)
 
     #   Create meta informtation about high level entities.
     my.meta = meta_create ()
     foreach_interface_update_meta (root, my.meta)
-#    foreach_implementation_update_meta (root, my.meta)
+    foreach_implementation_update_meta (root, my.meta)
     item_save_to_file (my.meta, "meta.xml", root->project.work_path)
-#
+
     #   Create modules.
     c_module_api_create (my.meta, root)
     c_module_api_private_create (my.meta, root)
@@ -124,8 +124,6 @@ function run_main ()
     c_module_interface_create (root, root, my.meta)
     c_module_interface_api_create (root, root, my.meta)
 
-#    c_module_implemented_interface_create (root, root, my.meta)
-#
 #    c_module_implementation_create (root, root, my.meta)
 #    c_module_implementation_private_create (root, root, my.meta)
 
