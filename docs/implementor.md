@@ -9,7 +9,7 @@ required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
     <implementor name [is_default]>
-       <implementation>
+       <implementation implementor [is_default]>
           <c_include file/>
           <interface name>
              <context name c_type/>
@@ -46,8 +46,9 @@ name:
     implementations. The name attribute is required.
 
 is_default:
-    The is_default attribute is optional. Its default value is "0". It can
-    take one of the following values:
+    Defines whether implementor is default in the library. The is_default
+    attribute is optional. Its default value is "0". It can take one of the
+    following values:
 
 Value: Meaning:
 0: Implementor is not default, so it's name will be prefixed to types and functions.
@@ -59,11 +60,23 @@ The 'implementation' item
 
 Defines set of the implemented interfaces in a one module.
 
-    <implementation>
+    <implementation
+        implementor = "..."
+      [ is_default = "..."  ("0") ]
+        >
         <c_include>
         <interface>, 1 or more
     </implementation>
 
+The implementation item can have these attributes:
+
+implementor:
+    Implementor name - underlying library name that is used for
+    implementation. The implementor attribute is required.
+
+is_default:
+    Injected attribute from the implementor. The is_default attribute is
+    optional. Its default value is "0".
 
 
 The 'c_include' item

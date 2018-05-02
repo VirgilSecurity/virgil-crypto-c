@@ -50,6 +50,8 @@
         </attr>
 
         <attr name="is_default" default="0">
+            Defines whether implementor is default in the library.
+
             <restrict value="0">
                 Implementor is not default, so it's name will be prefixed to types and functions.
             </restrict>
@@ -66,6 +68,14 @@
 
     <entity name="implementation">
         Defines set of the implemented interfaces in a one module.
+
+        <attr name="implementor" required="1">
+            Implementor name - underlying library name that is used for implementation.
+        </attr>
+
+        <attr name="is_default" default="0">
+            Injected attribute from the implementor.
+        </attr>
 
         <allow entity="c_include" occurs="0+"/>
         <allow entity="interface" occurs="1+"/>
