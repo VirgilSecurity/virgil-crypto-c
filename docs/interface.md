@@ -64,7 +64,7 @@ Groups common attributes for the component. Defines integral constant.
         name = "..."
       [ of_class = "..." ]
       [ uid = "..." ]
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ c_prefix = "..." ]
       [ value = "..." ]
         />
@@ -90,7 +90,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Constant name. The name attribute is required.
@@ -112,7 +113,7 @@ and optionally implementation.
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ definition = "public | private | external"  ("private") ]
       [ context = "none | api | impl"  ("none") ]
         >
@@ -162,7 +163,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Method name. The name attribute is required.
@@ -415,7 +417,7 @@ attributes for the component. Defines global variable.
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ class = "..." ]
         >
         <value>, 1 or more
@@ -518,7 +520,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Object name. The name attribute is required.
