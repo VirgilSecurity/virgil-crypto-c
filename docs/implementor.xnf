@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<!--
+    Copyright (C) 2015-2018 Virgil Security Inc.
+
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+        (1) Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer.
+
+        (2) Redistributions in binary form must reproduce the above copyright
+        notice, this list of conditions and the following disclaimer in
+        the documentation and/or other materials provided with the
+        distribution.
+
+        (3) Neither the name of the copyright holder nor the names of its
+        contributors may be used to endorse or promote products derived from
+        this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+    IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+    INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+    HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+    IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+
+    Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+-->
+
+<xnf name="implementor" script="xnf_gen.gsl" version="1.0a1">
+    Defines different implementations that is based on the same underlying library.
+
+
+    <produce filename="implementor.md" type="gurudoc"/>
+
+
+    <entity name="implementor">
+        Defines different implementations that is based on the same underlying library
+
+        <attr name="name" required="1">
+            Implementor name - underlying library name that is used for implementations.
+        </attr>
+
+        <attr name="is_default" default="0">
+            <restrict value="0">
+                Implementor is not default, so it's name will be prefixed to types and functions.
+            </restrict>
+
+            <restrict value="1">
+                Implementor is not default, so it's name will will be prefixed as usual.
+            </restrict>
+        </attr>
+
+
+        <allow entity="implementation" occurs="1+"/>
+    </entity>
+
+
+    <entity name="implementation">
+        Defines set of the implemented interfaces in a one module.
+
+        <allow entity="c_include" occurs="0+"/>
+        <allow entity="interface" occurs="1+"/>
+    </entity>
+
+
+    <entity name="interface">
+        Provide information about implemented interface.
+
+        <attr name="name" required="1">
+            Name of the implemented interface.
+        </attr>
+
+        <allow entity="context"/>
+        <allow entity="constant"/>
+    </entity>
+
+
+    <entity name="context">
+        Defines specific underlying implementation context.
+
+        <attr name="name" required="1">
+            Name of the context.
+        </attr>
+
+        <attr name="c_type" required="1">
+            C type of the underlying context.
+        </attr>
+    </entity>
+
+
+    <entity name="constant">
+        Defines specific value for interface constant.
+
+        <attr name="name" required="1">
+            Name of the interface constant.
+        </attr>
+
+        <attr name="value" required="1">
+            Value of the interface constant.
+            Note, value must be integral.
+        </attr>
+    </entity>
+
+
+    <entity name="c_include">
+        Defines C header file that is used for implementation.
+
+        <attr name="file" required="1">
+            File name to be included.
+        </attr>
+    </entity>
+</xnf>
+
