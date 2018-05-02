@@ -5,6 +5,7 @@
             namespace = "virgil"
             prefix = "vsf"
             inc_path = "test/include/virgil/"
+            inc_private_path = "test/include/virgil/private"
             src_path = "test/src/"
             work_path = "test/gsl/"
             TODO = "Next attributes must be resolved via GSL."
