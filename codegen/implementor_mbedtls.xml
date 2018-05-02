@@ -1,4 +1,4 @@
-<provider name = "mbedtls" is_default = "1">
+<implementor name = "mbedtls" is_default = "1">
     Provide implementation based on the library ARM mbedTLS.
 
     <require library = "mbedTLS" />
@@ -40,4 +40,4 @@
         <interface name = "asn1_reader" />
 
     </implementation>
-</provider>
+</implementor>
