@@ -82,7 +82,7 @@ generate wrappers for high level languakes like C#, Java, Python, etc.
         name = "..."
       [ of_class = "..." ]
       [ uid = "..." ]
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ c_prefix = "..." ]
         >
         <require>
@@ -117,7 +117,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Short module name. The name attribute is required.
@@ -130,7 +131,7 @@ Defines module that current module depends on.
 
     <require
         module = "..."
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
         />
 
 The require item can have these attributes:
@@ -142,7 +143,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 module:
     Module name that current module depends on. The module attribute is
@@ -158,7 +160,7 @@ Groups common attributes for the component. Defines integral constant.
         name = "..."
       [ of_class = "..." ]
       [ uid = "..." ]
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ c_prefix = "..." ]
       [ value = "..." ]
         />
@@ -184,7 +186,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Constant name. The name attribute is required.
@@ -205,7 +208,7 @@ Groups common attributes for the component. Defines enumeration type.
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ name = "..." ]
         >
         <constant>
@@ -251,7 +254,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Object name. The name attribute is optional.
@@ -275,7 +279,7 @@ attributes for the component. Defines global variable.
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ class = "..." ]
         >
         <value>, 1 or more
@@ -378,7 +382,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Object name. The name attribute is required.
@@ -611,7 +616,7 @@ Groups common attributes for the component. Defines struct type.
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ visibility = "public | private"  ("public") ]
         >
         <property>
@@ -657,7 +662,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Structure name. The name attribute is required.
@@ -924,7 +930,7 @@ Groups common attributes for the component. Defines the callback signature.
         name = "..."
       [ of_class = "..." ]
       [ uid = "..." ]
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ c_prefix = "..." ]
         >
         <return>, optional
@@ -952,7 +958,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Method name. The name attribute is required.
@@ -970,7 +977,7 @@ and optionally implementation.
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ definition = "public | private | external"  ("private") ]
       [ context = "none | api | impl"  ("none") ]
         >
@@ -1020,7 +1027,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Method name. The name attribute is required.
@@ -1069,7 +1077,7 @@ optionally implementation.
         name = "..."
       [ of_class = "..." ]
       [ uid = "..." ]
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ c_prefix = "..." ]
       [ is_method = "0 | 1"  ("0") ]
         >
@@ -1097,7 +1105,8 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Macros name. The name attribute is required.
@@ -1118,7 +1127,7 @@ The 'macroses' item
 Group a set of macroses with common implemenatation.
 
     <macroses
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
         >
         <macros>, 1 or more
         <implementation>, required
@@ -1133,5 +1142,6 @@ scope:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
