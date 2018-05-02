@@ -46,25 +46,35 @@
 
 gsl from "common.gsl"
 
-function implementor_resolve (implementor, parent, project)
-    check_arguments (my, "implementor, parent, project", my)
+# ---------------------------------------------------------------------------
+#   Resolve model: implementor.
+#   Note. after resolution, all resolved implementations are moved to the
+#   same source as the implementor, and then implementor is deleted.
+# ---------------------------------------------------------------------------
+function implementor_resolve (implementor, destination, project)
+    check_arguments (my, "implementor, destination, project", my)
 
     echo_trace ("Resolving implementor: $(my.implementor.name:)", my)
 
     for my.implementor.implementation
-        my.resolved_implementation = item_copy_to (implementation, my.parent)
-        scope my.resolved_implementation
-            .implementor = my.implementor.name
-            .is_default = my.implementor.is_default ?
-        endscope
+        if ! my.implementor.is_default
+            implementation.name = cat (my.implementor.name, implementation.name)
+        endif
+
+        move implementation to my.destination
     endfor
+
+    delete my.implementor
 endfunction
 
-function foreach_implementor_resolve (parent, project)
-    check_arguments (my, "parent, project", my)
+# ---------------------------------------------------------------------------
+#   Traverse implementors within source and perform complete resolution.
+# ---------------------------------------------------------------------------
+function foreach_implementor_resolve (source, project)
+    check_arguments (my, "source, project", my)
 
-    for my.parent.implementor
-        implementor_resolve (implementor, my.parent, my.project)
+    for my.source.implementor
+        implementor_resolve (implementor, my.source, my.project)
     endfor
 endfunction
 

@@ -317,7 +317,7 @@ function _X17_add_entity_implementation (meta, implementation)
         .id = my.id
 
         #   Public
-        my.name = my.implementation.ref_name
+        my.name = my.implementation.name
 
         _X17_add_name (entity, "class implementation", my.name)
 
