@@ -34,7 +34,10 @@
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 # ---------------------------------------------------------------------------
-#   Provide base processing of the element 'provider'.
+#   Provide base processing of the element 'implementor'.
+#
+#   Private functions
+#   Private function prefix is: K16.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
 #   language. See https://github.com/imatix/gsl for details.
@@ -43,29 +46,25 @@
 
 gsl from "common.gsl"
 
-function provider_resolve (provider, parent, project)
-    check_argument (my, "provider")
-    check_argument (my, "parent")
-    check_argument (my, "project")
+function implementor_resolve (implementor, parent, project)
+    check_arguments (my, "implementor, parent, project", my)
 
-    echo_trace ("Resolving provider: $(my.provider.name:)", my)
+    echo_trace ("Resolving implementor: $(my.implementor.name:)", my)
 
-    for my.provider.implementation
+    for my.implementor.implementation
         my.resolved_implementation = item_copy_to (implementation, my.parent)
         scope my.resolved_implementation
-            .provider = my.provider.name ?
-            .is_default = my.provider.is_default ?
-            #   Process <require library />
+            .implementor = my.implementor.name
+            .is_default = my.implementor.is_default ?
         endscope
     endfor
 endfunction
 
-function foreach_provider_resolve (parent, project)
-    check_argument (my, "parent")
-    check_argument (my, "project")
+function foreach_implementor_resolve (parent, project)
+    check_arguments (my, "parent, project", my)
 
-    for my.parent.provider
-        provider_resolve (provider, my.parent, my.project)
+    for my.parent.implementor
+        implementor_resolve (implementor, my.parent, my.project)
     endfor
 endfunction
 
