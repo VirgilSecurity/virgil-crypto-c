@@ -20,7 +20,7 @@
         </interface>
 
     </implementation>
-
+<!--
     <implementation name = "asn1_wr">
         This is MbedTLS implementation of ASN.1 writer.
 
@@ -40,4 +40,5 @@
         <interface name = "asn1_reader" />
 
     </implementation>
+-->
 </implementor>

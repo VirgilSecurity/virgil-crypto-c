@@ -9,7 +9,7 @@
         <require interface = "hash" />
 
     </implementation>
-
+<!--
     <implementation name = "dynamic_list">
         Virgil Security implementation of dynamic list.
 
@@ -58,5 +58,5 @@
         <interface name = "cms" />
 
     </implementation>
-
+-->
 </implementor>
