@@ -57,7 +57,6 @@
 
 gsl from "common.gsl"
 
-gsl from "c_resolver.gsl"
 gsl from "c_formatter.gsl"
 gsl from "c_component.gsl"
 
@@ -346,10 +345,6 @@ function c_module_interface_create (source, destination, meta)
             _L23_add_stateless_getters (interface, module, my.meta)
             _L23_add_method_get_api (interface, module, my.meta)
             _L23_add_method_check_api (interface, module, my.meta)
-
-            for module.method
-                c_method_add_preconditions (method)
-            endfor
         endnew
     endfor
 endfunction
