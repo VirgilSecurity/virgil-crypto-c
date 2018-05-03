@@ -86,6 +86,15 @@ vsf_hash_api (vsf_impl_t* impl) {
 }
 
 //
+//  Return size of 'vsf_hash_api_t' type.
+//
+VSF_PUBLIC size_t
+vsf_hash_api_size (void) {
+
+    return sizeof(vsf_hash_api_t);
+}
+
+//
 //  Check if given object implements interface 'hash'.
 //
 VSF_PUBLIC bool

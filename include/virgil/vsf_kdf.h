@@ -86,6 +86,12 @@ VSF_PUBLIC const vsf_kdf_api_t*
 vsf_kdf_api (vsf_impl_t* impl);
 
 //
+//  Return size of 'vsf_kdf_api_t' type.
+//
+VSF_PUBLIC size_t
+vsf_kdf_api_size (void);
+
+//
 //  Check if given object implements interface 'kdf'.
 //
 VSF_PUBLIC bool
