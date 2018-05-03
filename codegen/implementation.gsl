@@ -68,6 +68,19 @@ function implementation_check_interface_hierarchy (interface, implementation, so
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Copy interface methods to the implemented interface.
+# ---------------------------------------------------------------------------
+function implementation_copy_interface_methods (interface, implementation, source)
+    check_arguments (my, "interface, implementation, source", my)
+
+    my.interface_definition = interface_find (my.interface.name, my.source)
+
+    for my.interface_definition.method
+        copy method to my.interface
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve model: implementation.c_include.
 # ---------------------------------------------------------------------------
 function implementation_resolve_c_include (c_include, parent)
@@ -130,6 +143,7 @@ function implementation_resolve (implementation, parent, project)
     for my.implementation.interface as implemented_interface
         implementation_resolve_interface (implemented_interface, my.implementation)
         implementation_check_interface_hierarchy (implemented_interface, my.implementation, my.parent)
+        implementation_copy_interface_methods (implemented_interface, my.implementation, my.parent)
     else
         echo_fatal ("Implementation '$(my.implementation.name)' does not implement any interface.", my)
     endfor
