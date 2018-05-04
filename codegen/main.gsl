@@ -61,8 +61,6 @@ gsl from "c_module_impl_private.gsl"
 gsl from "c_module_interface.gsl"
 gsl from "c_module_interface_api.gsl"
 gsl from "c_module_implementation.gsl"
-#gsl from "c_module_implementation_api.gsl"
-
 
 
 # ###########################################################################
@@ -124,8 +122,7 @@ function run_main ()
     c_module_interface_create (root, root, my.meta)
     c_module_interface_api_create (root, root, my.meta)
 
-#    c_module_implementation_create (root, root, my.meta)
-#    c_module_implementation_private_create (root, root, my.meta)
+    c_module_implementation_create (root, root, my.meta)
 
     #   Process modules.
     foreach_module_resolve (root, root->project)

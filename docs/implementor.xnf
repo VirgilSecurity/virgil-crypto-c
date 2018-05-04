@@ -75,6 +75,7 @@
 
         <allow entity="c_include" occurs="0+"/>
         <allow entity="interface" occurs="1+"/>
+        <allow entity="require" occurs="0+"/>
     </entity>
 
 
@@ -122,6 +123,27 @@
 
         <attr name="file" required="1">
             File name to be included.
+        </attr>
+    </entity>
+
+
+    <entity name="require">
+        Defines implementation dependency.
+
+        <attr name="name" required="1">
+            Dependency name.
+        </attr>
+
+        <attr name="type" default="interface api">
+            Dependency type.
+
+            <restrict value="interface">
+                Dependency is an implementation object to the interface.
+            </restrict>
+
+            <restrict value="interface api">
+                Dependency is an interface API object.
+            </restrict>
         </attr>
     </entity>
 </xnf>

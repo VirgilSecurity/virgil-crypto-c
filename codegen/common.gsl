@@ -689,13 +689,18 @@ function xml_file_remove_prolog (file_name)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Prepend new component with given a 'name' to the 'parent_data'.
+#   Prepend new component with given a 'name' to the 'parent_data', or
+#   insert after given component if it is defined.
 # ---------------------------------------------------------------------------
-function item_prepend_new (name, parent_data)
+function item_prepend_new (name, parent_data, after_item)
     check_argument (my, "name")
     check_argument (my, "parent_data")
 
-    if count (my.parent_data.$(my.name:)) > 0
+    if defined (my.after_item)
+        new $(my.name:) after my.after_item
+            return $(my.name:)
+        endnew
+    elsif count (my.parent_data.$(my.name:)) > 0
         new $(my.name:) before my.parent_data->$(my.name:)
             return $(my.name:)
         endnew

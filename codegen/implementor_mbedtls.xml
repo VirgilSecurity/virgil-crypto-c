@@ -16,7 +16,7 @@
         </interface>
 
         <interface name = "hash stream">
-            <context name = "hash ctx" c_type = "mbedtls_sha256_context" />
+            <context name = "hash ctx" c_type = "void *" />
         </interface>
 
     </implementation>
