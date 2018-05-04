@@ -126,6 +126,30 @@ function implementation_resolve_interface (interface, parent)
     endfor
 endfunction
 
+function implementation_resolve_attr_require_type (require, parent)
+    check_arguments (my, "require", my)
+
+    my.require.type ?= "api"
+
+    my.valid_types = "api, interface"
+
+    if ! string_in (my.require.type, my.valid_types)
+        my.require_dump = "<$(name (my.require)) name=\"$(my.require.name:)\" type=\"$(my.require.type)\")"
+
+        echo_fatal ("Invalid attribute require.type '$(my.require_dump:)'. Expected {$(my.valid_types)}", my)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve model: implementation.require.
+# ---------------------------------------------------------------------------
+function implementation_resolve_require (require, parent)
+    check_arguments (my, "require, parent", my)
+
+    component_require_attr_name (my.require)
+    implementation_resolve_attr_require_type (my.require)
+endfunction
+
 # ---------------------------------------------------------------------------
 #   Resolve model: implementation.
 # ---------------------------------------------------------------------------
@@ -146,6 +170,10 @@ function implementation_resolve (implementation, parent, project)
         implementation_copy_interface_methods (implemented_interface, my.implementation, my.parent)
     else
         echo_fatal ("Implementation '$(my.implementation.name)' does not implement any interface.", my)
+    endfor
+
+    for my.implementation.require
+        implementation_resolve_require (require, my.implementation)
     endfor
 
 endfunction

@@ -143,6 +143,10 @@ function _X17_add_entity_common (meta)
         _X17_add_smart_name (entity, "method", "api")
         _X17_add_smart_name (entity, "method", "cleanup")
         _X17_add_smart_name (entity, "method", "destroy")
+        _X17_add_smart_name (entity, "method", "init")
+        _X17_add_smart_name (entity, "method", "new")
+        _X17_add_smart_name (entity, "method", "use")
+        _X17_add_smart_name (entity, "method", "take")
 
         _X17_add_smart_name (entity, "enum", "tag")
         _X17_add_smart_name (entity, "enum constant", "begin")
@@ -303,11 +307,11 @@ endfunction
 #   Add item '<entity id = "implementation name plceholder">'.
 # ---------------------------------------------------------------------------
 function _X17_add_entity_implementation (meta, implementation)
-    check_argument (my, "meta")
+    check_arguments (my, "meta")
     assert_argument_type (my.meta, "meta", my)
     check_argument (my, "implementation")
 
-    my.id = make_id (my.implementation.full_name)
+    my.id = make_id (my.implementation.name)
 
     if count (my.meta.entity, id = my.id)
         return my.conetxt->entity (id = my.id)
@@ -319,13 +323,13 @@ function _X17_add_entity_implementation (meta, implementation)
         #   Public
         my.name = my.implementation.name
 
-        _X17_add_name (entity, "class implementation", my.name)
+        _X17_add_name (entity, "implementation class", my.name)
 
-        _X17_add_name (entity, "module implementation", my.name)
-        _X17_add_link (entity, "module implementation", make_id ("module", my.name))
+        _X17_add_name (entity, "implementation module", my.name)
+        _X17_add_link (entity, "implementation module", make_id ("module", my.name))
 
-        _X17_add_name (entity, "implementation struct", my.name)
-        _X17_add_link (entity, "implementation struct", make_id ("class", my.name, "struct"))
+        _X17_add_name (entity, "implementation struct impl", cat (my.name, "impl"))
+        _X17_add_link (entity, "implementation struct impl", make_id ("class", my.name, "struct", "impl"))
 
         _X17_add_name (entity, "implementation struct context", "context")
         _X17_add_link (entity, "implementation struct context", \
@@ -349,10 +353,14 @@ function _X17_add_entity_implementation (meta, implementation)
                 make_id ("class", my.name, "method destroy"))
 
         #   Private
-        _X17_add_name (entity, "class implementation private", my.name)
-        _X17_add_name (entity, "module implementation private", make_id (my.name, "private"))
-        _X17_add_link (entity, "module implementation private", make_id ("module", my.name, "private"))
+        _X17_add_name (entity, "implementation class private", my.name)
+        _X17_add_name (entity, "implementation module private", make_id (my.name, "private"))
+        _X17_add_link (entity, "implementation module private", make_id ("module", my.name, "private"))
 
+        #   Types
+        _X17_add_name (entity, "implementation class types", my.name)
+        _X17_add_name (entity, "implementation module types", make_id (my.name, "types"))
+        _X17_add_link (entity, "implementation module types", make_id ("module", my.name, "types"))
 
         #   Implemented interface
         for my.implementation.interface as implemented

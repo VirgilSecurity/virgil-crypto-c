@@ -15,6 +15,7 @@ attribute names are case-sensitive and we use only lower-case names.
              <context name c_type/>
              <constant name value/>
           </interface>
+          <require name [type]/>
        </implementation>
     </implementor>
 
@@ -65,6 +66,7 @@ Defines set of the implemented interfaces in a one module.
         >
         <c_include>
         <interface>, 1 or more
+        <require>
     </implementation>
 
 The implementation item has this single attribute:
@@ -143,4 +145,28 @@ name:
 value:
     Value of the interface constant. Note, value must be integral. The value
     attribute is required.
+
+
+The 'require' item
+------------------
+
+Defines implementation dependency.
+
+    <require
+        name = "..."
+      [ type = "interface | interface api"  ("interface api") ]
+        />
+
+The require item can have these attributes:
+
+name:
+    Dependency name. The name attribute is required.
+
+type:
+    Dependency type. The type attribute is optional. Its default value is
+    "interface api". It can take one of the following values:
+
+Value: Meaning:
+interface: Dependency is an implementation object to the interface.
+interface_api: Dependency is an interface API object.
 
