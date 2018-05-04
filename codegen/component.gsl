@@ -374,7 +374,7 @@ function component_resolve_attr_scope (component, parent)
 
     my.component.scope ?= "public" #   must not be inherited
 
-    my.valid_scopes = "public, private"
+    my.valid_scopes = "public, private, internal"
     if ! string_in (my.component.scope, my.valid_scopes)
         my.component_dump = component_dump (my.component)
 
