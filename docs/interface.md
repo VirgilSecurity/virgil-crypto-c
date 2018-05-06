@@ -11,7 +11,7 @@ attribute names are case-sensitive and we use only lower-case names.
        <constant name [of_class] [uid] [scope] [c_prefix] [value]/>
        <method name [visibility] [c_prefix] [of_class] [uid] [scope] [definition] [context]>
           <return [access] [type] [class] [enum] [callback] [size]>
-             <string [length]/>
+             <string [access] [length]/>
              <array [access] [length] [length_constant]/>
           </return>
           <argument name [uid] [type] [class] [enum] [callback] [size] [access]>
@@ -187,7 +187,7 @@ Defines attributes that related to the instance type. Defines return type.
 
     <return
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | size | byte | data" ]
+      [ type = "nothing | boolean | integer | size | byte | data | any | string" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -220,17 +220,17 @@ integer: Signed integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
+any: Defines instance of an any type.
+string: Shortcut for the char array.
 
 class:
-    Defines instance class. Possible values are: * any - Defines instance of
-    any class. * string - String class. Have a special meaning in the C
-    context, it is represented a null-terminated array of characters. *
-    buffer - Special class "buffer" that is used as an output byte array. *
-    impl - Universal implementation class. If value differs from the listed
-    above then next algorithm applied: 1. If value in a format .(uid), then
-    it treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The class attribute is optional.
+    Defines instance class. Possible values are: * buffer - Special class
+    "buffer" that is used as an output byte array. * impl - Universal
+    implementation class. If value differs from the listed above then next
+    algorithm applied: 1. If value in a format .(uid), then it treated as a
+    reference to the in-project class and will be substituted during context
+    resolution step. 2. Any other value will be used as-is. So one third
+    party type can be used. The class attribute is optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -261,10 +261,21 @@ The 'string' item
 Defines restrictions to the special class 'string'.
 
     <string
-      [ length = "null_terminated | given"  ("null_terminated") ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ length = "null_terminated | given | fixed | derived"  ("null_terminated") ]
         />
 
-The string item has this single attribute:
+The string item can have these attributes:
+
+access:
+    Defines access rights to the instance and/or array of instances. The
+    access attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+readonly: Value of the given type is can be modified.
+writeonly: Value of the given type will be modified.
+readwrite: Value of the given type can be read and then modified.
+disown: Ownership of the given class object is transferred. If object is passed via argument to method, then client can not use object after method return. If object is returned from method, then client is responsible for object destruction. Note, primitive type can not be disowned.
 
 length:
     Defines string length. The length attribute is optional. Its default
@@ -273,6 +284,8 @@ length:
 Value: Meaning:
 null_terminated: String length is defined by distance from the first character up to the termination symbol (aka '\0').
 given: String length is given from the client.
+fixed: String length is known at compile time, so it can be substituted automatically.
+derived: String length can be statically derived during string initialization.
 
 
 The 'array' item
@@ -323,7 +336,7 @@ name, type, and usage information.
     <argument
         name = "..."
       [ uid = "..." ]
-      [ type = "nothing | boolean | integer | size | byte | data" ]
+      [ type = "nothing | boolean | integer | size | byte | data | any | string" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -361,17 +374,17 @@ integer: Signed integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
+any: Defines instance of an any type.
+string: Shortcut for the char array.
 
 class:
-    Defines instance class. Possible values are: * any - Defines instance of
-    any class. * string - String class. Have a special meaning in the C
-    context, it is represented a null-terminated array of characters. *
-    buffer - Special class "buffer" that is used as an output byte array. *
-    impl - Universal implementation class. If value differs from the listed
-    above then next algorithm applied: 1. If value in a format .(uid), then
-    it treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The class attribute is optional.
+    Defines instance class. Possible values are: * buffer - Special class
+    "buffer" that is used as an output byte array. * impl - Universal
+    implementation class. If value differs from the listed above then next
+    algorithm applied: 1. If value in a format .(uid), then it treated as a
+    reference to the in-project class and will be substituted during context
+    resolution step. 2. Any other value will be used as-is. So one third
+    party type can be used. The class attribute is optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -407,7 +420,7 @@ attributes for the component. Defines global variable.
 
     <variable
         name = "..."
-      [ type = "nothing | boolean | integer | size | byte | data" ]
+      [ type = "nothing | boolean | integer | size | byte | data | any | string" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -448,17 +461,17 @@ integer: Signed integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
+any: Defines instance of an any type.
+string: Shortcut for the char array.
 
 class:
-    Defines instance class. Possible values are: * any - Defines instance of
-    any class. * string - String class. Have a special meaning in the C
-    context, it is represented a null-terminated array of characters. *
-    buffer - Special class "buffer" that is used as an output byte array. *
-    impl - Universal implementation class. If value differs from the listed
-    above then next algorithm applied: 1. If value in a format .(uid), then
-    it treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The class attribute is optional.
+    Defines instance class. Possible values are: * buffer - Special class
+    "buffer" that is used as an output byte array. * impl - Universal
+    implementation class. If value differs from the listed above then next
+    algorithm applied: 1. If value in a format .(uid), then it treated as a
+    reference to the in-project class and will be substituted during context
+    resolution step. 2. Any other value will be used as-is. So one third
+    party type can be used. The class attribute is optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -540,7 +553,7 @@ variable value.
       [ enum = "..." ]
       [ callback = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ type = "nothing | boolean | integer | size | byte | data" ]
+      [ type = "nothing | boolean | integer | size | byte | data | any | string" ]
         >
         <cast>, optional
         <string>, optional
@@ -570,17 +583,17 @@ integer: Signed integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
+any: Defines instance of an any type.
+string: Shortcut for the char array.
 
 class:
-    Defines instance class. Possible values are: * any - Defines instance of
-    any class. * string - String class. Have a special meaning in the C
-    context, it is represented a null-terminated array of characters. *
-    buffer - Special class "buffer" that is used as an output byte array. *
-    impl - Universal implementation class. If value differs from the listed
-    above then next algorithm applied: 1. If value in a format .(uid), then
-    it treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The class attribute is optional.
+    Defines instance class. Possible values are: * buffer - Special class
+    "buffer" that is used as an output byte array. * impl - Universal
+    implementation class. If value differs from the listed above then next
+    algorithm applied: 1. If value in a format .(uid), then it treated as a
+    reference to the in-project class and will be substituted during context
+    resolution step. 2. Any other value will be used as-is. So one third
+    party type can be used. The class attribute is optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -616,7 +629,7 @@ type to the type defined in this entity.
 
     <cast
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | size | byte | data" ]
+      [ type = "nothing | boolean | integer | size | byte | data | any | string" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -649,17 +662,17 @@ integer: Signed integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
+any: Defines instance of an any type.
+string: Shortcut for the char array.
 
 class:
-    Defines instance class. Possible values are: * any - Defines instance of
-    any class. * string - String class. Have a special meaning in the C
-    context, it is represented a null-terminated array of characters. *
-    buffer - Special class "buffer" that is used as an output byte array. *
-    impl - Universal implementation class. If value differs from the listed
-    above then next algorithm applied: 1. If value in a format .(uid), then
-    it treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The class attribute is optional.
+    Defines instance class. Possible values are: * buffer - Special class
+    "buffer" that is used as an output byte array. * impl - Universal
+    implementation class. If value differs from the listed above then next
+    algorithm applied: 1. If value in a format .(uid), then it treated as a
+    reference to the in-project class and will be substituted during context
+    resolution step. 2. Any other value will be used as-is. So one third
+    party type can be used. The class attribute is optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated

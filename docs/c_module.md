@@ -15,23 +15,26 @@ attribute names are case-sensitive and we use only lower-case names.
           <c_constant name [scope] [uid] [value]/>
        </c_enum>
        <c_struct name [uid]>
-          <c_property type name [accessed_by] [array] [length] [is_const_type] [is_const_pointer]
-               [is_const_array] [is_const_reference] [uid] [type_is] [bits]/>
+          <c_property type type_is name [array] [accessed_by] [length] [is_const_type] [is_const_pointer]
+               [is_const_array] [is_const_string] [is_const_reference] [uid]
+               [string] [bits]/>
        </c_struct>
-       <c_variable type name [type_is] [array] [length] [is_const_type] [is_const_pointer] [is_const_array]
-            [is_const_reference] [uid] [definition] [visibility] [scope] [accessed_by]>
+       <c_variable type type_is name [accessed_by] [string] [length] [is_const_type] [is_const_pointer]
+            [is_const_array] [is_const_string] [is_const_reference] [uid] [definition]
+            [visibility] [scope] [array]>
           <c_value value>
-             <c_cast type [type_is] [accessed_by] [array] [length] [is_const_type] [is_const_pointer]
-                  [is_const_array] [is_const_reference]/>
+             <c_cast type type_is [accessed_by] [array] [string] [length] [is_const_type] [is_const_pointer]
+                  [is_const_array] [is_const_string] [is_const_reference]/>
           </c_value>
           <c_modifier [value]/>
        </c_variable>
        <c_method name [definition] [visibility] [scope] [uid]>
           <c_modifier .../>
-          <c_return type [type_is] [accessed_by] [array] [length] [is_const_type] [is_const_pointer]
-               [is_const_array] [is_const_reference]/>
-          <c_argument type name [type_is] [array] [length] [is_const_type] [is_const_pointer] [is_const_array]
-               [is_const_reference] [uid] [accessed_by]/>
+          <c_return type type_is [accessed_by] [array] [string] [length] [is_const_type] [is_const_pointer]
+               [is_const_array] [is_const_string] [is_const_reference]/>
+          <c_argument type type_is name [array] [string] [length] [is_const_type] [is_const_pointer]
+               [is_const_array] [is_const_string] [is_const_reference] [uid]
+               [accessed_by]/>
           <c_precondition [position]/>
        </c_method>
        <c_callback name [scope] [uid]>
@@ -294,16 +297,18 @@ Defines a type of outer component. Define property of the structure type.
 
     <c_property
         type = "..."
+        type_is = "primitive | class | callback | any"
         name = "..."
-      [ accessed_by = "value | pointer | reference"  ("value") ]
       [ array = "null_terminated | given | fixed | derived" ]
+      [ accessed_by = "value | pointer | reference"  ("value") ]
       [ length = "..." ]
       [ is_const_type = "..." ]
       [ is_const_pointer = "..." ]
       [ is_const_array = "..." ]
+      [ is_const_string = "..." ]
       [ is_const_reference = "..." ]
       [ uid = "..." ]
-      [ type_is = "primitive | string | callback | class | enum"  ("primitive") ]
+      [ string = "null_terminated | given | fixed | derived" ]
       [ bits = "..." ]
         />
 
@@ -313,16 +318,14 @@ type:
     Type without any modifiers. The type attribute is required.
 
 type_is:
-    Define nature of the instance type. The type_is attribute is optional.
-    Its default value is "primitive". It can take one of the following
-    values:
+    Define type kind. The type_is attribute is required. It can take one of
+    the following values:
 
 Value: Meaning:
-primitive: Instance of a primitive type.
-string: Instance of a string.
-callback: Instance of a callback.
-class: Instance of an object.
-enum: Instance of an enum.
+primitive: Type is primitive.
+class: Type is class.
+callback: Type is class.
+any: Any type.
 
 accessed_by:
     Defines how instance is accessed. The accessed_by attribute is optional.
@@ -343,9 +346,20 @@ given: Array with a given length, i.e. 'int *'.
 fixed: Array with a fixed length, i.e. 'int [32]'.
 derived: Array with a derived length, i.e. 'int []'.
 
+string:
+    Defines string length type. If given, parent instance becomes a string.
+    The string attribute is optional. It can take one of the following
+    values:
+
+Value: Meaning:
+null_terminated: Null-terminated string, 'char *'
+given: String whith a given length, i.e. 'char *'.
+fixed: String with a Fixed length, i.e. 'char [32]'.
+derived: String with a derived length, i.e. 'char []'.
+
 length:
-    Defines length constant for the fixed array. Note, this attribute is
-    ignored for other arrays. The length attribute is optional.
+    Defines length constant for the fixed array or fixed string. Note, this
+    attribute is used where appropriate. The length attribute is optional.
 
 is_const_type:
     Defines type constness. The is_const_type attribute is optional.
@@ -355,7 +369,10 @@ is_const_pointer:
     is_const_pointer attribute is optional.
 
 is_const_array:
-    Defines array constness . The is_const_array attribute is optional.
+    Defines array constness. The is_const_array attribute is optional.
+
+is_const_string:
+    Defines string constness. The is_const_string attribute is optional.
 
 is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
@@ -380,19 +397,21 @@ Defines a type of outer component. Define global variable.
 
     <c_variable
         type = "..."
+        type_is = "primitive | class | callback | any"
         name = "..."
-      [ type_is = "primitive | string | callback | class | enum"  ("primitive") ]
-      [ array = "null_terminated | given | fixed | derived" ]
+      [ accessed_by = "value | pointer | reference"  ("value") ]
+      [ string = "null_terminated | given | fixed | derived" ]
       [ length = "..." ]
       [ is_const_type = "..." ]
       [ is_const_pointer = "..." ]
       [ is_const_array = "..." ]
+      [ is_const_string = "..." ]
       [ is_const_reference = "..." ]
       [ uid = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ visibility = "public | private"  ("public") ]
       [ scope = "public | private | internal"  ("public") ]
-      [ accessed_by = "value | pointer | reference"  ("value") ]
+      [ array = "null_terminated | given | fixed | derived" ]
         >
         <c_value>, 1 or more
         <c_modifier>
@@ -404,16 +423,14 @@ type:
     Type without any modifiers. The type attribute is required.
 
 type_is:
-    Define nature of the instance type. The type_is attribute is optional.
-    Its default value is "primitive". It can take one of the following
-    values:
+    Define type kind. The type_is attribute is required. It can take one of
+    the following values:
 
 Value: Meaning:
-primitive: Instance of a primitive type.
-string: Instance of a string.
-callback: Instance of a callback.
-class: Instance of an object.
-enum: Instance of an enum.
+primitive: Type is primitive.
+class: Type is class.
+callback: Type is class.
+any: Any type.
 
 accessed_by:
     Defines how instance is accessed. The accessed_by attribute is optional.
@@ -434,9 +451,20 @@ given: Array with a given length, i.e. 'int *'.
 fixed: Array with a fixed length, i.e. 'int [32]'.
 derived: Array with a derived length, i.e. 'int []'.
 
+string:
+    Defines string length type. If given, parent instance becomes a string.
+    The string attribute is optional. It can take one of the following
+    values:
+
+Value: Meaning:
+null_terminated: Null-terminated string, 'char *'
+given: String whith a given length, i.e. 'char *'.
+fixed: String with a Fixed length, i.e. 'char [32]'.
+derived: String with a derived length, i.e. 'char []'.
+
 length:
-    Defines length constant for the fixed array. Note, this attribute is
-    ignored for other arrays. The length attribute is optional.
+    Defines length constant for the fixed array or fixed string. Note, this
+    attribute is used where appropriate. The length attribute is optional.
 
 is_const_type:
     Defines type constness. The is_const_type attribute is optional.
@@ -446,7 +474,10 @@ is_const_pointer:
     is_const_pointer attribute is optional.
 
 is_const_array:
-    Defines array constness . The is_const_array attribute is optional.
+    Defines array constness. The is_const_array attribute is optional.
+
+is_const_string:
+    Defines string constness. The is_const_string attribute is optional.
 
 is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
@@ -514,13 +545,15 @@ defined in this entity.
 
     <c_cast
         type = "..."
-      [ type_is = "primitive | string | callback | class | enum"  ("primitive") ]
+        type_is = "primitive | class | callback | any"
       [ accessed_by = "value | pointer | reference"  ("value") ]
       [ array = "null_terminated | given | fixed | derived" ]
+      [ string = "null_terminated | given | fixed | derived" ]
       [ length = "..." ]
       [ is_const_type = "..." ]
       [ is_const_pointer = "..." ]
       [ is_const_array = "..." ]
+      [ is_const_string = "..." ]
       [ is_const_reference = "..." ]
         />
 
@@ -530,16 +563,14 @@ type:
     Type without any modifiers. The type attribute is required.
 
 type_is:
-    Define nature of the instance type. The type_is attribute is optional.
-    Its default value is "primitive". It can take one of the following
-    values:
+    Define type kind. The type_is attribute is required. It can take one of
+    the following values:
 
 Value: Meaning:
-primitive: Instance of a primitive type.
-string: Instance of a string.
-callback: Instance of a callback.
-class: Instance of an object.
-enum: Instance of an enum.
+primitive: Type is primitive.
+class: Type is class.
+callback: Type is class.
+any: Any type.
 
 accessed_by:
     Defines how instance is accessed. The accessed_by attribute is optional.
@@ -560,9 +591,20 @@ given: Array with a given length, i.e. 'int *'.
 fixed: Array with a fixed length, i.e. 'int [32]'.
 derived: Array with a derived length, i.e. 'int []'.
 
+string:
+    Defines string length type. If given, parent instance becomes a string.
+    The string attribute is optional. It can take one of the following
+    values:
+
+Value: Meaning:
+null_terminated: Null-terminated string, 'char *'
+given: String whith a given length, i.e. 'char *'.
+fixed: String with a Fixed length, i.e. 'char [32]'.
+derived: String with a derived length, i.e. 'char []'.
+
 length:
-    Defines length constant for the fixed array. Note, this attribute is
-    ignored for other arrays. The length attribute is optional.
+    Defines length constant for the fixed array or fixed string. Note, this
+    attribute is used where appropriate. The length attribute is optional.
 
 is_const_type:
     Defines type constness. The is_const_type attribute is optional.
@@ -572,7 +614,10 @@ is_const_pointer:
     is_const_pointer attribute is optional.
 
 is_const_array:
-    Defines array constness . The is_const_array attribute is optional.
+    Defines array constness. The is_const_array attribute is optional.
+
+is_const_string:
+    Defines string constness. The is_const_string attribute is optional.
 
 is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
@@ -658,13 +703,15 @@ Defines a type of outer component. Defines return type.
 
     <c_return
         type = "..."
-      [ type_is = "primitive | string | callback | class | enum"  ("primitive") ]
+        type_is = "primitive | class | callback | any"
       [ accessed_by = "value | pointer | reference"  ("value") ]
       [ array = "null_terminated | given | fixed | derived" ]
+      [ string = "null_terminated | given | fixed | derived" ]
       [ length = "..." ]
       [ is_const_type = "..." ]
       [ is_const_pointer = "..." ]
       [ is_const_array = "..." ]
+      [ is_const_string = "..." ]
       [ is_const_reference = "..." ]
         />
 
@@ -674,16 +721,14 @@ type:
     Type without any modifiers. The type attribute is required.
 
 type_is:
-    Define nature of the instance type. The type_is attribute is optional.
-    Its default value is "primitive". It can take one of the following
-    values:
+    Define type kind. The type_is attribute is required. It can take one of
+    the following values:
 
 Value: Meaning:
-primitive: Instance of a primitive type.
-string: Instance of a string.
-callback: Instance of a callback.
-class: Instance of an object.
-enum: Instance of an enum.
+primitive: Type is primitive.
+class: Type is class.
+callback: Type is class.
+any: Any type.
 
 accessed_by:
     Defines how instance is accessed. The accessed_by attribute is optional.
@@ -704,9 +749,20 @@ given: Array with a given length, i.e. 'int *'.
 fixed: Array with a fixed length, i.e. 'int [32]'.
 derived: Array with a derived length, i.e. 'int []'.
 
+string:
+    Defines string length type. If given, parent instance becomes a string.
+    The string attribute is optional. It can take one of the following
+    values:
+
+Value: Meaning:
+null_terminated: Null-terminated string, 'char *'
+given: String whith a given length, i.e. 'char *'.
+fixed: String with a Fixed length, i.e. 'char [32]'.
+derived: String with a derived length, i.e. 'char []'.
+
 length:
-    Defines length constant for the fixed array. Note, this attribute is
-    ignored for other arrays. The length attribute is optional.
+    Defines length constant for the fixed array or fixed string. Note, this
+    attribute is used where appropriate. The length attribute is optional.
 
 is_const_type:
     Defines type constness. The is_const_type attribute is optional.
@@ -716,7 +772,10 @@ is_const_pointer:
     is_const_pointer attribute is optional.
 
 is_const_array:
-    Defines array constness . The is_const_array attribute is optional.
+    Defines array constness. The is_const_array attribute is optional.
+
+is_const_string:
+    Defines string constness. The is_const_string attribute is optional.
 
 is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
@@ -730,13 +789,15 @@ Defines a type of outer component. Defines method or callback argument.
 
     <c_argument
         type = "..."
+        type_is = "primitive | class | callback | any"
         name = "..."
-      [ type_is = "primitive | string | callback | class | enum"  ("primitive") ]
       [ array = "null_terminated | given | fixed | derived" ]
+      [ string = "null_terminated | given | fixed | derived" ]
       [ length = "..." ]
       [ is_const_type = "..." ]
       [ is_const_pointer = "..." ]
       [ is_const_array = "..." ]
+      [ is_const_string = "..." ]
       [ is_const_reference = "..." ]
       [ uid = "..." ]
       [ accessed_by = "value | pointer | reference"  ("value") ]
@@ -748,16 +809,14 @@ type:
     Type without any modifiers. The type attribute is required.
 
 type_is:
-    Define nature of the instance type. The type_is attribute is optional.
-    Its default value is "primitive". It can take one of the following
-    values:
+    Define type kind. The type_is attribute is required. It can take one of
+    the following values:
 
 Value: Meaning:
-primitive: Instance of a primitive type.
-string: Instance of a string.
-callback: Instance of a callback.
-class: Instance of an object.
-enum: Instance of an enum.
+primitive: Type is primitive.
+class: Type is class.
+callback: Type is class.
+any: Any type.
 
 accessed_by:
     Defines how instance is accessed. The accessed_by attribute is optional.
@@ -778,9 +837,20 @@ given: Array with a given length, i.e. 'int *'.
 fixed: Array with a fixed length, i.e. 'int [32]'.
 derived: Array with a derived length, i.e. 'int []'.
 
+string:
+    Defines string length type. If given, parent instance becomes a string.
+    The string attribute is optional. It can take one of the following
+    values:
+
+Value: Meaning:
+null_terminated: Null-terminated string, 'char *'
+given: String whith a given length, i.e. 'char *'.
+fixed: String with a Fixed length, i.e. 'char [32]'.
+derived: String with a derived length, i.e. 'char []'.
+
 length:
-    Defines length constant for the fixed array. Note, this attribute is
-    ignored for other arrays. The length attribute is optional.
+    Defines length constant for the fixed array or fixed string. Note, this
+    attribute is used where appropriate. The length attribute is optional.
 
 is_const_type:
     Defines type constness. The is_const_type attribute is optional.
@@ -790,7 +860,10 @@ is_const_pointer:
     is_const_pointer attribute is optional.
 
 is_const_array:
-    Defines array constness . The is_const_array attribute is optional.
+    Defines array constness. The is_const_array attribute is optional.
+
+is_const_string:
+    Defines string constness. The is_const_string attribute is optional.
 
 is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.

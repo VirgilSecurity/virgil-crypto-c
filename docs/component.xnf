@@ -103,15 +103,20 @@
         <restrict value="data">
             Shortcut for the byte array.
         </restrict>
+
+        <restrict value="any">
+            Defines instance of an any type.
+        </restrict>
+
+        <restrict value="string">
+            Shortcut for the char array.
+        </restrict>
     </attr>
 
     <attr name="class">
         Defines instance class.
 
         Possible values are:
-            * any    - Defines instance of any class.
-            * string - String class. Have a special meaning in the C context,
-                       it is represented a null-terminated array of characters.
             * buffer - Special class "buffer" that is used as an output byte array.
             * impl   - Universal implementation class.
 
@@ -215,7 +220,18 @@
         <restrict value="given">
             String length is given from the client.
         </restrict>
+
+       <restrict value="fixed">
+            String length is known at compile time, so it can be substituted
+            automatically.
+        </restrict>
+
+        <restrict value="derived">
+            String length can be statically derived during string initialization.
+        </restrict>
     </attr>
+
+    <inherit entity="access"/>
 </entity>
 
 

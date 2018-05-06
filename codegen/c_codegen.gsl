@@ -634,17 +634,19 @@ function c_insert_variable_definition (c_variable)
 
     for my.c_variable.c_value
 
-        my.code += " = "
+        if first()
+            my.code += " = "
+        endif
 
-        if defined (my.c_variable.array)
-            #   Array initialization
+        if defined (my.c_variable.array) | my.c_variable.type_is = "class"
+            #   Array or object initialization
             if first ()
-                insert_code (my.code + "{")
+                insert_code (my.code + "{" + terminator)
             endif
 
             my.separator = ! last () ?? "," ? ""
 
-            insert_code (c_derive_instance_value (c_value) + my.separator, 1)
+            insert_code (c_derive_instance_value (c_value) + my.separator + terminator, 1)
 
             if last ()
                 insert_code ("};")

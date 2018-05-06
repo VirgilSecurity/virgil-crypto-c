@@ -453,7 +453,7 @@ function component_resolve_instance_attr_type (instance, parent)
 
     component_require_attr_type (my.instance, my)
 
-    my.valid_types = "nothing, boolean, integer, size, byte, data"
+    my.valid_types = "nothing, boolean, integer, size, byte, data, string, any"
     if ! string_in (my.instance.type, my.valid_types)
         my.instance_dump = component_instance_dump (my.instance)
 
@@ -470,6 +470,15 @@ function component_resolve_instance_attr_type (instance, parent)
         my.array.length ?= "given"
         my.array.access ?= "readwrite"
     endif
+
+    if my.instance.type = "string"
+        my.instance.type = "char"
+        my.instance.access ?= "readonly"
+
+        my.string = component_get_instance_string (my.instance)
+        my.string.length ?= "null_terminated"
+        my.string.access ?= "readwrite"
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -479,11 +488,6 @@ function component_resolve_instance_attr_class (instance, parent)
     check_arguments (my, "instance, parent")
 
     component_require_attr_class (my.instance, my)
-
-    if my.instance.class = "string"
-        my.string = component_get_instance_string (my.instance)
-        my.string.length ?= "null_terminated"
-    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -571,7 +575,7 @@ function component_resolve_string_attr_length (string, parent)
 
     my.string.length ?= "null_terminated"
 
-    my.valid_length = "null_terminated, given"
+    my.valid_length = "null_terminated, given, fixed, derived"
 
     if ! string_in (my.string.length, my.valid_length)
         echo_fatal ("Invalid string attribute length=\"$(my.string.length:)\"." + \

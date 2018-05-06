@@ -43,27 +43,23 @@
         Type without any modifiers.
     </attr>
 
-    <attr name="type_is" default="primitive">
-        Define nature of the instance type.
+    <attr name="type_is" required="1">
+        Define type kind.
 
         <restrict value="primitive">
-            Instance of a primitive type.
-        </restrict>
-
-        <restrict value="string">
-            Instance of a string.
-        </restrict>
-
-        <restrict value="callback">
-            Instance of a callback.
+            Type is primitive.
         </restrict>
 
         <restrict value="class">
-            Instance of an object.
+            Type is class.
         </restrict>
 
-        <restrict value="enum">
-            Instance of an enum.
+        <restrict value="callback">
+            Type is class.
+        </restrict>
+
+        <restrict value="any">
+            Any type.
         </restrict>
     </attr>
 
@@ -104,9 +100,30 @@
         </restrict>
     </attr>
 
+    <attr name="string">
+        Defines string length type.
+        If given, parent instance becomes a string.
+
+        <restrict value="null_terminated">
+            Null-terminated string, 'char *'
+        </restrict>
+
+        <restrict value="given">
+            String whith a given length, i.e. 'char *'.
+        </restrict>
+
+        <restrict value="fixed">
+            String with a Fixed length, i.e. 'char [32]'.
+        </restrict>
+
+        <restrict value="derived">
+            String with a derived length, i.e. 'char []'.
+        </restrict>
+    </attr>
+
     <attr name="length">
-        Defines length constant for the fixed array.
-        Note, this attribute is ignored for other arrays.
+        Defines length constant for the fixed array or fixed string.
+        Note, this attribute is used where appropriate.
     </attr>
 
     <attr name="is_const_type">
@@ -119,7 +136,11 @@
     </attr>
 
     <attr name="is_const_array">
-        Defines array constness .
+        Defines array constness.
+    </attr>
+
+    <attr name="is_const_string">
+        Defines string constness.
     </attr>
 
     <attr name="is_const_reference">

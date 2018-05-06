@@ -380,49 +380,17 @@ function c_component_map_attr_uid (c_component, component)
     my.c_component.uid = make_id ("c", my.component.uid)
 endfunction
 
-
-# ---------------------------------------------------------------------------
-#   Define c_instance.accessed_by:
-#       * value - if instance is a type or enum with readonly access;
-#
-#       * pointer - if instance is a callback,
-#                   if instance is a type or enum with write access,
-#                   if instance is a class with any access except disown;
-#
-#       * reference - if instance is a class with disown access.
-# ---------------------------------------------------------------------------
-function c_component_map_instance_accessed_by (c_instance, instance)
-    check_arguments (my, "c_instance, instance", my)
-
-    if (defined (my.instance.type) & my.instance.access = "readonly") | \
-            (defined (my.instance.enum) & my.instance.access = "readonly") | \
-            (defined (my.instance.type) & count (my.instance.array)) | \
-            (defined (my.instance.enum) & count (my.instance.array))
-        my.c_instance.accessed_by = "value"
-
-    elsif (defined (my.instance.callback)) | \
-            (defined (my.instance.type) & string.match (my.instance.access, "write")) | \
-            (defined (my.instance.enum) & string.match (my.instance.access, "write")) | \
-            (defined (my.instance.class) & name (my.c_instance) = "c_return") | \
-            (defined (my.instance.class) & my.instance.access <> "disown")
-        my.c_instance.accessed_by = "pointer"
-
-    elsif defined (my.instance.class) & my.instance.access = "disown"
-        my.c_instance.accessed_by = "reference"
-    else
-        my.instance_dump = component_instance_dump (my.instance)
-        echo_fatal ("Can not resolve instance $(my.instance_dump:)", my)
-    endif
-endfunction
-
 # ---------------------------------------------------------------------------
 #   Define attribute: c_instance.type.
 # ---------------------------------------------------------------------------
-function c_component_map_instance_type (c_instance, instance)
+function c_component_map_instance_attr_type (c_instance, instance)
     check_arguments (my, "c_instance, instance", my)
 
     if defined (my.instance.type)
         if my.instance.type = "nothing"
+            my.c_instance.type = "void"
+
+        elsif my.instance.type = "any"
             my.c_instance.type = "void"
 
         elsif my.instance.type = "boolean"
@@ -437,18 +405,16 @@ function c_component_map_instance_type (c_instance, instance)
         elsif my.instance.type = "size"
             my.c_instance.type = "size_t"
 
+        elsif my.instance.type = "char"
+            my.c_instance.type = "char"
+
         else
             echo_fatal ("Unsupported instance type '$(my.instance.type)' for C language.", my)
         endif
 
     elsif defined (my.instance.class)
-        if my.instance.class = "any"
-            my.c_instance.type = "void"
 
-        elsif my.instance.class = "string"
-            my.c_instance.type = "char"
-
-        elsif my.instance.class = "buffer"
+        if my.instance.class = "buffer"
             my.c_instance.type = ".(c_class_buffer_struct_buffer)"
 
         elsif my.instance.class = "impl"
@@ -466,22 +432,17 @@ function c_component_map_instance_type (c_instance, instance)
     endif
 endfunction
 
-
 # ---------------------------------------------------------------------------
 #   Define attribute: c_instance.type_is.
 # ---------------------------------------------------------------------------
-function c_component_map_instance_type_is (c_instance, instance)
+function c_component_map_instance_attr_type_is (c_instance, instance)
     check_arguments (my, "c_instance, instance", my)
 
-    if defined (my.instance.type)
-        if my.instance.type = "string"
-            my.c_instance.type_is = "string"
-        else
-            my.c_instance.type_is = "primitive"
-        endif
+    if defined (my.instance.type) & my.instance.type = "any"
+        my.c_instance.type_is = "any"
 
-    elsif defined (my.instance.enum)
-        my.c_instance.type_is = "enum"
+    elsif defined (my.instance.type) | defined (my.instance.enum)
+        my.c_instance.type_is = "primitive"
 
     elsif defined (my.instance.callback)
         my.c_instance.type_is = "callback"
@@ -491,32 +452,56 @@ function c_component_map_instance_type_is (c_instance, instance)
 
     else
         my.instance_dump = component_instance_dump (my.instance)
-        echo_fatal ("Missed mapping for instance: $(my.instance_dump:)", my)
+        echo_fatal ("Attribute 'type_is' can not be resolved for instance: $(my.instance_dump)", my)
     endif
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Define 'c_instance' attributes that are responsible for constness.
+#   Define c_instance.accessed_by:
+#       * value - if instance is a type or enum with readonly access;
+#               - if instance is a class variable;
+#               - if instance is a callback with readonly access;
+#               - if instance is a string or array of primitive types.
+#
+#       * pointer - if instance is of any type;
+#                 - if instance is a type or enum with write access;
+#                 - if instance is a class with any access except disown;
+#                 - if return a class with any access.
+#
+#       * reference - if instance is a class with disown access.
 # ---------------------------------------------------------------------------
-function c_component_map_instance_constness (c_instance, instance)
+function c_component_map_instance_attr_accessed_by (c_instance, instance)
     check_arguments (my, "c_instance, instance", my)
 
-    if my.instance.access = "readonly" & (\
-            (defined (my.instance.class)) | \
+    if ((defined (my.instance.class) & name (my.c_instance) = "c_variable") | \
+            (defined (my.instance.callback) & my.instance.access = "readonly") | \
+            (defined (my.instance.type) & my.instance.access = "readonly") | \
+            (defined (my.instance.enum) & my.instance.access = "readonly") | \
             (defined (my.instance.type) & count (my.instance.array)) | \
+            (defined (my.instance.type) & count (my.instance.string)) | \
             (defined (my.instance.enum) & count (my.instance.array)))
-        my.c_instance.is_const_type = "1"
-    endif
+        my.c_instance.accessed_by = "value"
 
-    if count (my.instance.array) & my.instance->array.access = "readonly"
-        my.c_instance.is_const_pointer = "1"
+    elsif ((defined (my.instance.type) & my.instance.type = "any") | \
+            (defined (my.instance.class) & name (my.c_instance) = "c_return") | \
+            (defined (my.instance.class) & my.instance.access <> "disown") | \
+            (defined (my.instance.type) & string.match (my.instance.access, "write")) | \
+            (defined (my.instance.enum) & string.match (my.instance.access, "write")))
+
+        my.c_instance.accessed_by = "pointer"
+
+    elsif defined (my.instance.class) & my.instance.access = "disown"
+        my.c_instance.accessed_by = "reference"
+    else
+        my.instance_dump = component_instance_dump (my.instance)
+        echo_fatal ("Can not resolve instance $(my.instance_dump:)", my)
     endif
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Define 'c_instance.array' attribute.
+#   Define attribute: c_instance.array.
 # ---------------------------------------------------------------------------
-function c_component_map_instance_arrayness (c_instance, instance)
+function c_component_map_instance_attr_array (c_instance, instance)
     check_arguments (my, "c_instance, instance", my)
 
     if count (my.instance.array)
@@ -531,16 +516,58 @@ function c_component_map_instance_arrayness (c_instance, instance)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Define attribute: c_instance.string.
+# ---------------------------------------------------------------------------
+function c_component_map_instance_attr_string (c_instance, instance)
+    check_arguments (my, "c_instance, instance", my)
+
+    if count (my.instance.string)
+        my.c_instance.string = my.instance->string.length
+
+        if my.instance->string.length = "fixed"
+            my.c_instance.length = c_component_wrap_uid (my.instance->string.length_constant)
+        endif
+    else
+        my.c_instance.string = # undefined
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Define 'c_instance' attributes that are responsible for constness.
+# ---------------------------------------------------------------------------
+function c_component_map_instance_attr_is_const (c_instance, instance)
+    check_arguments (my, "c_instance, instance", my)
+
+    if my.instance.access = "readonly" & (\
+            (defined (my.instance.class)) | \
+            (count (my.instance.string)) | \
+            (defined (my.instance.type) & count (my.instance.array)) | \
+            (defined (my.instance.enum) & count (my.instance.array)))
+        my.c_instance.is_const_type = "1"
+    endif
+
+    if count (my.instance.array) & my.instance->array.access = "readonly"
+        my.c_instance.is_const_array = "1"
+    endif
+
+    if count (my.instance.string) & my.instance->string.access = "readonly"
+        my.c_instance.is_const_string = "1"
+    endif
+endfunction
+
+
+# ---------------------------------------------------------------------------
 #   Define 'c_instance' from 'instance'.
 # ---------------------------------------------------------------------------
 function c_component_map_instance (c_instance, instance)
     check_arguments (my, "c_instance, instance")
 
-    c_component_map_instance_accessed_by (my.c_instance, my.instance)
-    c_component_map_instance_type (my.c_instance, my.instance)
-    c_component_map_instance_type_is (my.c_instance, my.instance)
-    c_component_map_instance_arrayness (my.c_instance, my.instance)
-    c_component_map_instance_constness (my.c_instance, my.instance)
+    c_component_map_instance_attr_accessed_by (my.c_instance, my.instance)
+    c_component_map_instance_attr_type (my.c_instance, my.instance)
+    c_component_map_instance_attr_type_is (my.c_instance, my.instance)
+    c_component_map_instance_attr_array (my.c_instance, my.instance)
+    c_component_map_instance_attr_string (my.c_instance, my.instance)
+    c_component_map_instance_attr_is_const (my.c_instance, my.instance)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -674,7 +701,6 @@ function c_component_create_void_argument (destination)
     new c_argument to my.destination
         .type = "void"
         .accessed_by = "value"
-        .type_is = "primitive"
     endnew
 endfunction
 
@@ -698,7 +724,6 @@ function c_component_create_void_return (destination)
     new c_return to my.destination
         .type = "void"
         .accessed_by = "value"
-        .type_is = "primitive"
     endnew
 endfunction
 
