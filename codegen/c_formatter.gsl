@@ -56,19 +56,21 @@ function c_derive_instance_type (c_instance)
     my.pointer_modifiers = my.c_instance.is_const_pointer ?? " *const" ? "*"
     my.reference_modifiers = my.c_instance.is_const_reference ?? " *const" ? "*"
     my.array_modifiers = my.c_instance.is_const_array ?? " *const" ? "*"
-
-    if my.c_instance.type_is = "callback"
-        #   Callback type is a pointer itself.
-        my.pointer_modifiers = ""
-    endif
+    my.string_modifiers = my.c_instance.is_const_string ?? " *const" ? "*"
 
     #   Apply type modifiers
-    if my.c_instance.accessed_by = "value" & defined (my.c_instance.array)
+    if my.c_instance.accessed_by = "value"
         my.type = my.value_modifiers + my.type
     elsif my.c_instance.accessed_by = "pointer"
         my.type = my.value_modifiers + my.type + my.pointer_modifiers
     elsif my.c_instance.accessed_by = "reference"
         my.type = my.value_modifiers + my.type + my.pointer_modifiers + my.reference_modifiers
+    endif
+
+    #   Apply string modifiers
+    if string_in (my.c_instance.string ?, "null_terminated, given")
+        #   One more star required
+        my.type += my.string_modifiers
     endif
 
     #   Apply array modifiers
@@ -138,7 +140,7 @@ function c_derive_instance_value (c_value)
         my.type = "($(c_derive_instance_type (my.c_value->c_cast)))"
     endif
 
-    if is_true (my.c_value.is_string) & my.c_value.value <> "NULL"
+    if defined(my.c_value.string) & my.c_value.value <> "NULL"
         my.value = quote_string (my.c_value.value)
     endif
 

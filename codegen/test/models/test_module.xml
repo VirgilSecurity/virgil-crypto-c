@@ -162,7 +162,7 @@
             Enumeration type.
         </property>
 
-        <property name="any" class="any" access="readwrite">
+        <property name="any" type="any" access="readwrite">
             Any type is a power of the C language.
         </property>
 
@@ -174,11 +174,11 @@
             Special class buffer.
         </property>
 
-        <property name="readwrite str" class="string" access="readwrite">
+        <property name="readwrite str" type="string" access="readwrite">
             Null-terminated string.
         </property>
 
-        <property name="readonly str" class="string" access="readonly">
+        <property name="readonly str" type="string" access="readonly">
             Null-terminated readonly string.
         </property>
 
@@ -214,24 +214,25 @@
     <struct name="secret" definition="private">
         Structure with a private definition.
 
-        <property name="any" class="any">
+        <property name="any" type="any">
             Any type is a power of the C language.
         </property>
     </struct>
 
     <!-- VARIABLES -->
-    <variable name="features" class="string" access="readonly">
+    <variable name="features" type="string" access="readonly">
         Global variable that conatins derived size array of strings.
 
         <array length="derived" access="readonly"/>
+        <string access="readonly"/>
 
-        <value value="This is a string 1" class="string"/>
-        <value value="This is a string 2" class="string"/>
+        <value value="This is a string 1" type="string"/>
+        <value value="This is a string 2" type="string"/>
     </variable>
 
     <variable
         name="external features"
-        class="string"
+        type="string"
         access="readonly"
         scope="private"
         definition="external">
@@ -240,20 +241,30 @@
         And defined somewhere else.
 
         <array length="derived" access="readonly"/>
+        <string access="readonly"/>
 
     </variable>
 
-    <variable name="private api" class="any" access="readonly" scope="private">
-        Global variable that conatins array of any class.
+    <variable name="private api" type="any" access="readonly" scope="private">
+        Global variable that conatins array of any type.
 
         <array length="derived" access="readonly"/>
     </variable>
 
-    <variable name="self api" class="any" access="readonly" scope="private">
+    <variable name="self api" type="any" access="readonly" scope="private">
         Global variable that conatins any class.
 
         <value value=".(class_foo_variable_private_api)[0]"/>
     </variable>
+
+    <variable name="foo_context_inst" class=".(class_foo_struct_context)" access="readonly" scope="private">
+        Private instantiation if the structure '.(c_class_foo_struct_context)'
+
+        <value value="1"/> <!-- Integral type -->
+        <value value="255"/> <!-- Integral type 8 bits. -->
+        <value value="255"/> <!-- Integral type 16 bits. -->
+    </variable>
+
 
     <!-- METHODS -->
     <method name="do nothing">

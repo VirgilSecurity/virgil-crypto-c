@@ -148,16 +148,19 @@ endfunction
 function c_module_interface_api_find (name, source, meta)
     check_arguments (my, "name, source, meta", my)
 
-    meta_reset_active_entity (my.meta, my.name)
+    meta_activate_entity (my.meta, my.name)
     my.names = meta_names (my.meta)
 
     for my.source.module
         my.api_type = module->struct (struct.name = my.names.class_interface_api) ?
 
         if defined (my.api_type)
+            meta_deactivate_entity (my.meta, my.name)
             return module
         endif
     endfor
+
+    meta_deactivate_entity (my.meta, my.name)
 
     echo_fatal ("API type of the interface '$(my.name)'" + \
             " is not found within given scope.", my)
@@ -169,7 +172,7 @@ endfunction
 function c_module_interface_api_find_type (name, source, meta)
     check_arguments (my, "name, source, meta", my)
 
-    meta_reset_active_entity (my.meta, my.name)
+    meta_activate_entity (my.meta, my.name)
     my.names = meta_names (my.meta)
 
     my.interface_api_module = c_module_interface_api_find (my.name, my.source, my.meta)
@@ -178,6 +181,8 @@ function c_module_interface_api_find_type (name, source, meta)
     my.api_type = my.interface_api_module->struct (struct.name = my.names.class_interface_api) ?
 
     assert_attribute (my, "api_type", my)
+
+    meta_deactivate_entity (my.meta, my.name)
 
     return my.api_type
 endfunction

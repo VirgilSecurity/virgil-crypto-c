@@ -11,8 +11,8 @@
     <callback name="handler">
         Assertion handler callback type.
 
-        <argument name="message" class="string" />
-        <argument name="file" class="string" />
+        <argument name="message" type="string" />
+        <argument name="file" type="string" />
         <argument name="line" type="integer" />
     </callback>
 
@@ -45,8 +45,8 @@
         Assertion handler, that print given information and abort program.
         This is default handler.
 
-        <argument name="message" class="string" />
-        <argument name="file" class="string" />
+        <argument name="message" type="string" />
+        <argument name="file" type="string" />
         <argument name="line" type="integer" />
         <implementation lang="c">
             printf (&quot;Assertion failed: %s, file %s, line %d\\n&quot;,
@@ -62,8 +62,8 @@
     <method name="trigger">
         Trigger active assertion handler.
 
-        <argument name="message" class="string" />
-        <argument name="file" class="string" />
+        <argument name="message" type="string" />
+        <argument name="file" type="string" />
         <argument name="line" type="integer" />
         <implementation lang="c">
              .(c_class_assert_variable_active_handler) (message, file, line);
@@ -74,9 +74,9 @@
     <method name="path basename" scope="private" visibility="private">
         Return pointer to the last component in the path.
 
-        <return class="string" />
+        <return type="string" />
 
-        <argument name="path" class="string" />
+        <argument name="path" type="string" />
 
         <implementation lang="c">
             const char *result = path;

@@ -48,72 +48,30 @@
 
 
 gsl from "common.gsl"
+gsl from "c_module_interface_api.gsl"
 
 
-function _E19_add_interface_methods (implementation, interface, module, meta)
-    check_argument (my, "implementation")
-    check_argument (my, "interface")
-    check_argument (my, "module")
-    check_argument (my, "meta")
+function _Z19_add_interface_api_instance (impl, interface_api, destination, meta)
+    check_arguments (my, "impl, interface_api, destination, meta", my)
 
+    my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
-    for my.interface.method
-        my.impl_method = item_copy_to (method, my.module)
+    new variable to my.destination
+        . = "Configuration of the interface API '$(my.interface_api.name:)'."
+        .name = my.interface_api.name
+        .class = ref (make_id ("class", my.interface_api.name, "struct", my.interface_api.name))
+        .scope = "private"
 
-        if is_false (method.is_stateless)
-            c_method_add_argument_impl (my.impl_method, my.refs.implementation_struct)
-        endif
-    endfor
-endfunction
-
-
-function _Z19_add_interface_api_instances (implementation, module, source, meta)
-    check_argument (my, "implementation")
-    check_argument (my, "module")
-    check_argument (my, "source")
-    check_argument (my, "meta")
-
-    for my.implementation.interface as implemented
-        meta_activate_entity (my.meta, implemented.name)
-
-        my.names = meta_names (my.meta)
-        my.refs = meta_refs (my.meta)
-
-        my.interface_api = module_find_struct (my.source, my.names.module_interface_api, "")
-
-        new object to my.module
-            . = my.interface_api. ?
-            .name = my.names.class_interface_api
-            .type = my.refs.interface_struct_api
-            .scope = "private"
-
-            for my.interface_api.property
-                my.implemented_id = make_id (implemented.name, property.name)
-                new value to object
-                    . = property. ?
-                    if is_true (property.is_api_tag)
-                        .value = my.refs.interface_constant_tag
-
-                    elsif is_true (property.is_constant)
-                        .value = my.refs.implemented_constant_$(my.implemented_id)
-
-                    elsif is_true (property.is_callback)
-                        .value = my.refs.implemented_method_$(my.implemented_id)
-                        .type = my.refs.implemented_method_callback_$(my.implemented_id)
-
-                    elsif is_true (property.is_object)
-                        .value = my.refs.implementation_object_$(make_id (property.name))
-                    else
-                        my.property_dump = property.string()
-                        echo_fatal ("Unsupported interface api property: $(my.property_dump:).", my)
-                    endif
-                endnew
-            endfor
+        new value to variable
+            .value = "5"
         endnew
 
-        meta_deactivate_entity (my.meta, implemented.name)
-    endfor
+        new value to variable
+            .value = "5"
+        endnew
+
+    endnew
 endfunction
 
 
@@ -132,7 +90,7 @@ function _Z19_add_interface_api_array_instances (implementation, module, impl_in
     new object to my.module
         . = my.property_api_array. ?
         .name = my.names.implementation_object_api_array
-        .type = my.property_api_array.type
+        .class = my.property_api_array.type
         .scope = "private"
 
         for my.implementation.interface as implemented
@@ -610,6 +568,22 @@ function _Z19_add_dependency_methods (impl, definition, destination, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Add next instances:
+#       - implemented interface api instance
+#       - implemented interface api instances as array
+#       - implementation info instance
+#       - implementation instance
+# ---------------------------------------------------------------------------
+function _Z19_add_instances (impl, source, destination, meta)
+    check_arguments (my, "impl, source, destination, meta", my)
+
+    for my.impl.interface
+        my.interface_api = c_module_interface_api_find_type (interface.name, my.source, my.meta)
+        _Z19_add_interface_api_instance (my.impl, my.interface_api, my.destination, my.meta)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create module with:
 #       - opaque declaration of the Implementation API type
 #       - constants that required by interfaces
@@ -692,8 +666,8 @@ endfunction
 #       - function that cast implementation type to the common
 #         implementation type - definition only
 # ---------------------------------------------------------------------------
-function c_module_implementation_create_internal_module (impl, destination, meta)
-    check_arguments (my, "impl, destination, meta", my)
+function c_module_implementation_create_internal_module (impl, source, destination, meta)
+    check_arguments (my, "impl, source, destination, meta", my)
 
     my.names = meta_names (my.meta)
 
@@ -716,6 +690,7 @@ function c_module_implementation_create_internal_module (impl, destination, meta
             endnew
         endif
 
+        _Z19_add_instances (my.impl, my.source, module, my.meta)
         _Z19_add_self_type_size_method (my.impl, "private", "private", module, my.meta)
         _Z19_add_self_type_cast_method (my.impl, "private", "private", module, my.meta)
     endnew
@@ -739,7 +714,7 @@ function c_module_implementation_create (source, destination, meta)
 
         c_module_implementation_create_public_module (implementation, my.enum_impl_tag, my.destination, my.meta)
         c_module_implementation_create_types_module (implementation, my.destination, my.meta)
-        c_module_implementation_create_internal_module (implementation, my.destination, my.meta)
+        c_module_implementation_create_internal_module (implementation, my.source, my.destination, my.meta)
     endfor
 endfunction
 
