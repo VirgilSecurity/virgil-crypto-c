@@ -371,8 +371,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add function that returns size of implementation context type.
 # ---------------------------------------------------------------------------
-function _Z19_add_self_type_size_method (impl, definition, destination, meta)
-    check_arguments (my, "impl, definition, destination, meta", my)
+function _Z19_add_self_type_size_method (impl, [scope], definition, destination, meta)
+    check_arguments (my, "impl, scope, definition, destination, meta", my)
 
     if ! _Z19_has_methods_with_context_impl (my.impl)
         return
@@ -387,6 +387,7 @@ function _Z19_add_self_type_size_method (impl, definition, destination, meta)
         "
         .name = cat (my.names.class_impl, "size")
         .definition = my.definition
+        .[scope] = my.[scope]
 
         new return
             .type = "size"
@@ -404,8 +405,8 @@ endfunction
 #   Add function that cast specific implementation context type to the
 #   common implementation context type.
 # ---------------------------------------------------------------------------
-function _Z19_add_self_type_cast_method (impl, definition, destination, meta)
-    check_arguments (my, "impl, definition, destination, meta", my)
+function _Z19_add_self_type_cast_method (impl, [scope], definition, destination, meta)
+    check_arguments (my, "impl, scope, definition, destination, meta", my)
 
     if ! _Z19_has_methods_with_context_impl (my.impl)
         return
@@ -419,6 +420,7 @@ function _Z19_add_self_type_cast_method (impl, definition, destination, meta)
         "
         .name = my.names.class_impl
         .definition = my.definition
+        .[scope] = my.[scope]
 
         _Z19_add_argument_impl (method, my.meta)
 
@@ -634,8 +636,8 @@ function c_module_implementation_create_public_module (impl, enum_impl_tag, dest
         _Z19_add_public_includes (my.impl, module, my.meta)
         _Z19_add_self_tag (my.impl, my.enum_impl_tag, my.meta)
         _Z19_add_self_type (my.impl, "external", module, my.meta)
-        _Z19_add_self_type_size_method (my.impl, "external", module, my.meta)
-        _Z19_add_self_type_cast_method (my.impl, "external", module, my.meta)
+        _Z19_add_self_type_size_method (my.impl, "public", "external", module, my.meta)
+        _Z19_add_self_type_cast_method (my.impl, "public", "external", module, my.meta)
         _Z19_add_interface_constants (my.impl, module, my.meta)
         _Z19_add_interface_methods (my.impl, "public", module, my.meta)
         _Z19_add_lifecycle_methods (my.impl, "external", module, my.meta)
@@ -714,18 +716,8 @@ function c_module_implementation_create_internal_module (impl, destination, meta
             endnew
         endif
 
-        my.size_method = _Z19_add_self_type_size_method (my.impl, "private", module, my.meta) ?
-        if defined (my.size_method)
-            my.size_method.definition = "private"
-            my.size_method.scope = "private"
-        endif
-
-        my.cast_method = _Z19_add_self_type_cast_method (my.impl, "private", module, my.meta) ?
-        if defined (my.cast_method)
-            my.cast_method.definition = "private"
-            my.cast_method.scope = "private"
-        endif
-
+        _Z19_add_self_type_size_method (my.impl, "private", "private", module, my.meta)
+        _Z19_add_self_type_cast_method (my.impl, "private", "private", module, my.meta)
     endnew
 endfunction
 
