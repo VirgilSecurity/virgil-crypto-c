@@ -43,32 +43,32 @@
         Type without any modifiers.
     </attr>
 
-    <attr name="is_callback" default="0">
-        Mark type as callback.
+    <attr name="type_is" default="primitive">
+        Define nature of the instance type.
 
-        <restrict value="0">
-            Just a type.
+        <restrict value="primitive">
+            Instance of a primitive type.
         </restrict>
 
-        <restrict value="1">
-            Callback type.
+        <restrict value="string">
+            Instance of a string.
+        </restrict>
+
+        <restrict value="callback">
+            Instance of a callback.
+        </restrict>
+
+        <restrict value="class">
+            Instance of an object.
+        </restrict>
+
+        <restrict value="enum">
+            Instance of an enum.
         </restrict>
     </attr>
 
-    <attr name="is_string">
-        Mark type as a string - specal class.
-
-        <restrict value="0">
-            User defined type.
-        </restrict>
-
-        <restrict value="1">
-            String.
-        </restrict>
-    </attr>
-
-    <attr name="kind" default="value">
-        Defines instance kind of the type.
+    <attr name="accessed_by" default="value">
+        Defines how instance is accessed.
 
         <restrict value="value">
             Value type, i.e. 'int'

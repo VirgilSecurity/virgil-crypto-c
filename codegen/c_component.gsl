@@ -382,7 +382,7 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-#   Define c_instance.kind:
+#   Define c_instance.accessed_by:
 #       * value - if instance is a type or enum with readonly access;
 #
 #       * pointer - if instance is a callback,
@@ -391,24 +391,24 @@ endfunction
 #
 #       * reference - if instance is a class with disown access.
 # ---------------------------------------------------------------------------
-function c_component_map_instance_kind (c_instance, instance)
+function c_component_map_instance_accessed_by (c_instance, instance)
     check_arguments (my, "c_instance, instance", my)
 
     if (defined (my.instance.type) & my.instance.access = "readonly") | \
             (defined (my.instance.enum) & my.instance.access = "readonly") | \
             (defined (my.instance.type) & count (my.instance.array)) | \
             (defined (my.instance.enum) & count (my.instance.array))
-        my.c_instance.kind = "value"
+        my.c_instance.accessed_by = "value"
 
     elsif (defined (my.instance.callback)) | \
             (defined (my.instance.type) & string.match (my.instance.access, "write")) | \
             (defined (my.instance.enum) & string.match (my.instance.access, "write")) | \
             (defined (my.instance.class) & name (my.c_instance) = "c_return") | \
             (defined (my.instance.class) & my.instance.access <> "disown")
-        my.c_instance.kind = "pointer"
+        my.c_instance.accessed_by = "pointer"
 
     elsif defined (my.instance.class) & my.instance.access = "disown"
-        my.c_instance.kind = "reference"
+        my.c_instance.accessed_by = "reference"
     else
         my.instance_dump = component_instance_dump (my.instance)
         echo_fatal ("Can not resolve instance $(my.instance_dump:)", my)
@@ -416,7 +416,7 @@ function c_component_map_instance_kind (c_instance, instance)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Define c_instance.type and related attributes: is_string, is_callback.
+#   Define attribute: c_instance.type.
 # ---------------------------------------------------------------------------
 function c_component_map_instance_type (c_instance, instance)
     check_arguments (my, "c_instance, instance", my)
@@ -447,7 +447,6 @@ function c_component_map_instance_type (c_instance, instance)
 
         elsif my.instance.class = "string"
             my.c_instance.type = "char"
-            my.c_instance.is_string = "1"
 
         elsif my.instance.class = "buffer"
             my.c_instance.type = ".(c_class_buffer_struct_buffer)"
@@ -465,8 +464,35 @@ function c_component_map_instance_type (c_instance, instance)
     elsif defined (my.instance.callback)
         my.c_instance.type = c_component_wrap_uid (my.instance.callback)
     endif
+endfunction
 
-    my.c_instance.is_callback = defined (my.instance.callback)
+
+# ---------------------------------------------------------------------------
+#   Define attribute: c_instance.type_is.
+# ---------------------------------------------------------------------------
+function c_component_map_instance_type_is (c_instance, instance)
+    check_arguments (my, "c_instance, instance", my)
+
+    if defined (my.instance.type)
+        if my.instance.type = "string"
+            my.c_instance.type_is = "string"
+        else
+            my.c_instance.type_is = "primitive"
+        endif
+
+    elsif defined (my.instance.enum)
+        my.c_instance.type_is = "enum"
+
+    elsif defined (my.instance.callback)
+        my.c_instance.type_is = "callback"
+
+    elsif defined (my.instance.class)
+        my.c_instance.type_is = "class"
+
+    else
+        my.instance_dump = component_instance_dump (my.instance)
+        echo_fatal ("Missed mapping for instance: $(my.instance_dump:)", my)
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -510,8 +536,9 @@ endfunction
 function c_component_map_instance (c_instance, instance)
     check_arguments (my, "c_instance, instance")
 
-    c_component_map_instance_kind (my.c_instance, my.instance)
+    c_component_map_instance_accessed_by (my.c_instance, my.instance)
     c_component_map_instance_type (my.c_instance, my.instance)
+    c_component_map_instance_type_is (my.c_instance, my.instance)
     c_component_map_instance_arrayness (my.c_instance, my.instance)
     c_component_map_instance_constness (my.c_instance, my.instance)
 endfunction
@@ -646,8 +673,8 @@ function c_component_create_void_argument (destination)
 
     new c_argument to my.destination
         .type = "void"
-        .kind = "value"
-        .is_callback = "0"
+        .accessed_by = "value"
+        .type_is = "primitive"
     endnew
 endfunction
 
@@ -670,8 +697,8 @@ function c_component_create_void_return (destination)
 
     new c_return to my.destination
         .type = "void"
-        .kind = "value"
-        .is_callback = "0"
+        .accessed_by = "value"
+        .type_is = "primitive"
     endnew
 endfunction
 
@@ -862,7 +889,7 @@ function c_component_create_null_value (destination)
 
     new c_value to my.destination
         .value = "NULL"
-        .kind = "pointer"
+        .accessed_by = "pointer"
         .type = "void"
     endnew
 endfunction
