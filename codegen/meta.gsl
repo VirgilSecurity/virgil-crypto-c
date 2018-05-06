@@ -352,15 +352,13 @@ function _X17_add_entity_implementation (meta, implementation)
         _X17_add_link (entity, "implementation method self destroy", \
                 make_id ("class", my.name, "method destroy"))
 
-        #   Private
-        _X17_add_name (entity, "implementation class private", my.name)
-        _X17_add_name (entity, "implementation module private", make_id (my.name, "private"))
-        _X17_add_link (entity, "implementation module private", make_id ("module", my.name, "private"))
-
         #   Types
-        _X17_add_name (entity, "implementation class types", my.name)
         _X17_add_name (entity, "implementation module types", make_id (my.name, "types"))
         _X17_add_link (entity, "implementation module types", make_id ("module", my.name, "types"))
+
+        #   Internal
+        _X17_add_name (entity, "implementation module internal", make_id (my.name, "internal"))
+        _X17_add_link (entity, "implementation module internal", make_id ("module", my.name, "internal"))
 
         #   Implemented interface
         for my.implementation.interface as implemented

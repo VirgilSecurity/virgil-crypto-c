@@ -72,16 +72,22 @@ target_sources(vsf
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_impl_private.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf1.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf1_internal.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf1_internal.h"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf_api.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_library.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256_types.c")
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256_internal.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256_internal.h"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256_types.c"
+        )
 
 target_include_directories(vsf
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/private>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>)
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
+        )
 
 set_target_properties(vsf PROPERTIES DEBUG_POSTFIX "_d")
 

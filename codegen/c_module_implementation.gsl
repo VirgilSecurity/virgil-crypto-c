@@ -192,7 +192,9 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-function _Z19_add_includes (impl, destination, meta)
+#   Add require includes to the implementation public module.
+# ---------------------------------------------------------------------------
+function _Z19_add_public_includes (impl, destination, meta)
     check_arguments (my, "impl, destination, meta", my)
 
     my.names = meta_names (my.meta)
@@ -207,7 +209,7 @@ function _Z19_add_includes (impl, destination, meta)
         endnew
     endfor
 
-    if count (my.impl.require, type = "interface")
+    if count (my.impl.require, type = "interface") | _Z19_has_methods_with_context_impl (my.impl)
         new require to my.destination
             .module = my.names.module_impl
         endnew
@@ -393,6 +395,43 @@ function _Z19_add_self_type_size_method (impl, definition, destination, meta)
         new implementation to method
             . = "return sizeof ($(my.refs.c_implementation_struct_impl));"
         endnew
+
+        return method
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add function that cast specific implementation context type to the
+#   common implementation context type.
+# ---------------------------------------------------------------------------
+function _Z19_add_self_type_cast_method (impl, definition, destination, meta)
+    check_arguments (my, "impl, definition, destination, meta", my)
+
+    if ! _Z19_has_methods_with_context_impl (my.impl)
+        return
+    endif
+
+    my.names = meta_names (my.meta)
+
+    new method to my.destination
+        . = "\
+        Cast to the '.(c_class_impl_struct_impl)' type.
+        "
+        .name = my.names.class_impl
+        .definition = my.definition
+
+        _Z19_add_argument_impl (method, my.meta)
+
+        new return
+            .class = ".(c_class_impl_struct_impl)"
+            .access = "readwrite"
+        endnew
+
+        new implementation to method
+            . = "return (.(c_class_impl_struct_impl) *) (.(_argument_$(make_id (my.names.implementation_struct_impl))));"
+        endnew
+
+        return method
     endnew
 endfunction
 
@@ -576,6 +615,8 @@ endfunction
 #       - functions that implements interface
 #       - dependency management functions - declaration only
 #       - function that returns implementation type size - declaration only
+#       - function that cast implementation type to the common
+#         implementation type - declaration only
 # ---------------------------------------------------------------------------
 function c_module_implementation_create_public_module (impl, enum_impl_tag, destination, meta)
     check_arguments (my, "impl, enum_impl_tag, destination, meta", my)
@@ -590,10 +631,11 @@ function c_module_implementation_create_public_module (impl, enum_impl_tag, dest
         .name = my.names.implementation_module
         .class = my.names.implementation_class
 
-        _Z19_add_includes (my.impl, module, my.meta)
+        _Z19_add_public_includes (my.impl, module, my.meta)
         _Z19_add_self_tag (my.impl, my.enum_impl_tag, my.meta)
         _Z19_add_self_type (my.impl, "external", module, my.meta)
         _Z19_add_self_type_size_method (my.impl, "external", module, my.meta)
+        _Z19_add_self_type_cast_method (my.impl, "external", module, my.meta)
         _Z19_add_interface_constants (my.impl, module, my.meta)
         _Z19_add_interface_methods (my.impl, "public", module, my.meta)
         _Z19_add_lifecycle_methods (my.impl, "external", module, my.meta)
@@ -645,8 +687,46 @@ endfunction
 #       - lifecycle functions - definition only
 #       - dependency management functions - definition only
 #       - function that returns implementation type size - definition only
+#       - function that cast implementation type to the common
+#         implementation type - definition only
 # ---------------------------------------------------------------------------
 function c_module_implementation_create_internal_module (impl, destination, meta)
+    check_arguments (my, "impl, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+
+    new module to my.destination
+        . = "\
+        "
+
+        .name = my.names.implementation_module_internal
+        .of_class = my.names.implementation_class
+        .scope = "internal"
+
+        new require to module
+            .module = my.names.module_library
+        endnew
+
+        if _Z19_has_methods_with_context_impl (my.impl)
+            new require to module
+                .module = my.names.implementation_module_types
+                .scope = "private"
+            endnew
+        endif
+
+        my.size_method = _Z19_add_self_type_size_method (my.impl, "private", module, my.meta) ?
+        if defined (my.size_method)
+            my.size_method.definition = "private"
+            my.size_method.scope = "private"
+        endif
+
+        my.cast_method = _Z19_add_self_type_cast_method (my.impl, "private", module, my.meta) ?
+        if defined (my.cast_method)
+            my.cast_method.definition = "private"
+            my.cast_method.scope = "private"
+        endif
+
+    endnew
 endfunction
 
 # ---------------------------------------------------------------------------
