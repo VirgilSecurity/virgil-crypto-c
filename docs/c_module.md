@@ -15,24 +15,23 @@ attribute names are case-sensitive and we use only lower-case names.
           <c_constant name [scope] [uid] [value]/>
        </c_enum>
        <c_struct name [uid]>
-          <c_property type name [is_string] [kind] [array] [length] [is_const_type] [is_const_pointer]
-               [is_const_array] [is_const_reference] [uid] [is_callback] [bits]/>
+          <c_property type name [accessed_by] [array] [length] [is_const_type] [is_const_pointer]
+               [is_const_array] [is_const_reference] [uid] [type_is] [bits]/>
        </c_struct>
-       <c_variable type name [is_string] [is_callback] [array] [length] [is_const_type] [is_const_pointer]
-            [is_const_array] [is_const_reference] [uid] [definition] [visibility]
-            [scope] [kind]>
+       <c_variable type name [type_is] [array] [length] [is_const_type] [is_const_pointer] [is_const_array]
+            [is_const_reference] [uid] [definition] [visibility] [scope] [accessed_by]>
           <c_value value>
-             <c_cast type [is_callback] [is_string] [kind] [array] [length] [is_const_type] [is_const_pointer]
+             <c_cast type [type_is] [accessed_by] [array] [length] [is_const_type] [is_const_pointer]
                   [is_const_array] [is_const_reference]/>
           </c_value>
           <c_modifier [value]/>
        </c_variable>
        <c_method name [definition] [visibility] [scope] [uid]>
           <c_modifier .../>
-          <c_return type [is_callback] [is_string] [kind] [array] [length] [is_const_type] [is_const_pointer]
+          <c_return type [type_is] [accessed_by] [array] [length] [is_const_type] [is_const_pointer]
                [is_const_array] [is_const_reference]/>
-          <c_argument type name [is_callback] [kind] [array] [length] [is_const_type] [is_const_pointer]
-               [is_const_array] [is_const_reference] [uid] [is_string]/>
+          <c_argument type name [type_is] [array] [length] [is_const_type] [is_const_pointer] [is_const_array]
+               [is_const_reference] [uid] [accessed_by]/>
           <c_precondition [position]/>
        </c_method>
        <c_callback name [scope] [uid]>
@@ -296,8 +295,7 @@ Defines a type of outer component. Define property of the structure type.
     <c_property
         type = "..."
         name = "..."
-      [ is_string = "0 | 1" ]
-      [ kind = "value | pointer | reference"  ("value") ]
+      [ accessed_by = "value | pointer | reference"  ("value") ]
       [ array = "null_terminated | given | fixed | derived" ]
       [ length = "..." ]
       [ is_const_type = "..." ]
@@ -305,7 +303,7 @@ Defines a type of outer component. Define property of the structure type.
       [ is_const_array = "..." ]
       [ is_const_reference = "..." ]
       [ uid = "..." ]
-      [ is_callback = "0 | 1"  ("0") ]
+      [ type_is = "primitive | string | callback | class | enum"  ("primitive") ]
       [ bits = "..." ]
         />
 
@@ -314,25 +312,21 @@ The c_property item can have these attributes:
 type:
     Type without any modifiers. The type attribute is required.
 
-is_callback:
-    Mark type as callback. The is_callback attribute is optional. Its default
-    value is "0". It can take one of the following values:
+type_is:
+    Define nature of the instance type. The type_is attribute is optional.
+    Its default value is "primitive". It can take one of the following
+    values:
 
 Value: Meaning:
-0: Just a type.
-1: Callback type.
+primitive: Instance of a primitive type.
+string: Instance of a string.
+callback: Instance of a callback.
+class: Instance of an object.
+enum: Instance of an enum.
 
-is_string:
-    Mark type as a string - specal class. The is_string attribute is
-    optional. It can take one of the following values:
-
-Value: Meaning:
-0: User defined type.
-1: String.
-
-kind:
-    Defines instance kind of the type. The kind attribute is optional. Its
-    default value is "value". It can take one of the following values:
+accessed_by:
+    Defines how instance is accessed. The accessed_by attribute is optional.
+    Its default value is "value". It can take one of the following values:
 
 Value: Meaning:
 value: Value type, i.e. 'int'
@@ -387,8 +381,7 @@ Defines a type of outer component. Define global variable.
     <c_variable
         type = "..."
         name = "..."
-      [ is_string = "0 | 1" ]
-      [ is_callback = "0 | 1"  ("0") ]
+      [ type_is = "primitive | string | callback | class | enum"  ("primitive") ]
       [ array = "null_terminated | given | fixed | derived" ]
       [ length = "..." ]
       [ is_const_type = "..." ]
@@ -399,7 +392,7 @@ Defines a type of outer component. Define global variable.
       [ definition = "public | private | external"  ("private") ]
       [ visibility = "public | private"  ("public") ]
       [ scope = "public | private | internal"  ("public") ]
-      [ kind = "value | pointer | reference"  ("value") ]
+      [ accessed_by = "value | pointer | reference"  ("value") ]
         >
         <c_value>, 1 or more
         <c_modifier>
@@ -410,25 +403,21 @@ The c_variable item can have these attributes:
 type:
     Type without any modifiers. The type attribute is required.
 
-is_callback:
-    Mark type as callback. The is_callback attribute is optional. Its default
-    value is "0". It can take one of the following values:
+type_is:
+    Define nature of the instance type. The type_is attribute is optional.
+    Its default value is "primitive". It can take one of the following
+    values:
 
 Value: Meaning:
-0: Just a type.
-1: Callback type.
+primitive: Instance of a primitive type.
+string: Instance of a string.
+callback: Instance of a callback.
+class: Instance of an object.
+enum: Instance of an enum.
 
-is_string:
-    Mark type as a string - specal class. The is_string attribute is
-    optional. It can take one of the following values:
-
-Value: Meaning:
-0: User defined type.
-1: String.
-
-kind:
-    Defines instance kind of the type. The kind attribute is optional. Its
-    default value is "value". It can take one of the following values:
+accessed_by:
+    Defines how instance is accessed. The accessed_by attribute is optional.
+    Its default value is "value". It can take one of the following values:
 
 Value: Meaning:
 value: Value type, i.e. 'int'
@@ -525,9 +514,8 @@ defined in this entity.
 
     <c_cast
         type = "..."
-      [ is_callback = "0 | 1"  ("0") ]
-      [ is_string = "0 | 1" ]
-      [ kind = "value | pointer | reference"  ("value") ]
+      [ type_is = "primitive | string | callback | class | enum"  ("primitive") ]
+      [ accessed_by = "value | pointer | reference"  ("value") ]
       [ array = "null_terminated | given | fixed | derived" ]
       [ length = "..." ]
       [ is_const_type = "..." ]
@@ -541,25 +529,21 @@ The c_cast item can have these attributes:
 type:
     Type without any modifiers. The type attribute is required.
 
-is_callback:
-    Mark type as callback. The is_callback attribute is optional. Its default
-    value is "0". It can take one of the following values:
+type_is:
+    Define nature of the instance type. The type_is attribute is optional.
+    Its default value is "primitive". It can take one of the following
+    values:
 
 Value: Meaning:
-0: Just a type.
-1: Callback type.
+primitive: Instance of a primitive type.
+string: Instance of a string.
+callback: Instance of a callback.
+class: Instance of an object.
+enum: Instance of an enum.
 
-is_string:
-    Mark type as a string - specal class. The is_string attribute is
-    optional. It can take one of the following values:
-
-Value: Meaning:
-0: User defined type.
-1: String.
-
-kind:
-    Defines instance kind of the type. The kind attribute is optional. Its
-    default value is "value". It can take one of the following values:
+accessed_by:
+    Defines how instance is accessed. The accessed_by attribute is optional.
+    Its default value is "value". It can take one of the following values:
 
 Value: Meaning:
 value: Value type, i.e. 'int'
@@ -674,9 +658,8 @@ Defines a type of outer component. Defines return type.
 
     <c_return
         type = "..."
-      [ is_callback = "0 | 1"  ("0") ]
-      [ is_string = "0 | 1" ]
-      [ kind = "value | pointer | reference"  ("value") ]
+      [ type_is = "primitive | string | callback | class | enum"  ("primitive") ]
+      [ accessed_by = "value | pointer | reference"  ("value") ]
       [ array = "null_terminated | given | fixed | derived" ]
       [ length = "..." ]
       [ is_const_type = "..." ]
@@ -690,25 +673,21 @@ The c_return item can have these attributes:
 type:
     Type without any modifiers. The type attribute is required.
 
-is_callback:
-    Mark type as callback. The is_callback attribute is optional. Its default
-    value is "0". It can take one of the following values:
+type_is:
+    Define nature of the instance type. The type_is attribute is optional.
+    Its default value is "primitive". It can take one of the following
+    values:
 
 Value: Meaning:
-0: Just a type.
-1: Callback type.
+primitive: Instance of a primitive type.
+string: Instance of a string.
+callback: Instance of a callback.
+class: Instance of an object.
+enum: Instance of an enum.
 
-is_string:
-    Mark type as a string - specal class. The is_string attribute is
-    optional. It can take one of the following values:
-
-Value: Meaning:
-0: User defined type.
-1: String.
-
-kind:
-    Defines instance kind of the type. The kind attribute is optional. Its
-    default value is "value". It can take one of the following values:
+accessed_by:
+    Defines how instance is accessed. The accessed_by attribute is optional.
+    Its default value is "value". It can take one of the following values:
 
 Value: Meaning:
 value: Value type, i.e. 'int'
@@ -752,8 +731,7 @@ Defines a type of outer component. Defines method or callback argument.
     <c_argument
         type = "..."
         name = "..."
-      [ is_callback = "0 | 1"  ("0") ]
-      [ kind = "value | pointer | reference"  ("value") ]
+      [ type_is = "primitive | string | callback | class | enum"  ("primitive") ]
       [ array = "null_terminated | given | fixed | derived" ]
       [ length = "..." ]
       [ is_const_type = "..." ]
@@ -761,7 +739,7 @@ Defines a type of outer component. Defines method or callback argument.
       [ is_const_array = "..." ]
       [ is_const_reference = "..." ]
       [ uid = "..." ]
-      [ is_string = "0 | 1" ]
+      [ accessed_by = "value | pointer | reference"  ("value") ]
         />
 
 The c_argument item can have these attributes:
@@ -769,25 +747,21 @@ The c_argument item can have these attributes:
 type:
     Type without any modifiers. The type attribute is required.
 
-is_callback:
-    Mark type as callback. The is_callback attribute is optional. Its default
-    value is "0". It can take one of the following values:
+type_is:
+    Define nature of the instance type. The type_is attribute is optional.
+    Its default value is "primitive". It can take one of the following
+    values:
 
 Value: Meaning:
-0: Just a type.
-1: Callback type.
+primitive: Instance of a primitive type.
+string: Instance of a string.
+callback: Instance of a callback.
+class: Instance of an object.
+enum: Instance of an enum.
 
-is_string:
-    Mark type as a string - specal class. The is_string attribute is
-    optional. It can take one of the following values:
-
-Value: Meaning:
-0: User defined type.
-1: String.
-
-kind:
-    Defines instance kind of the type. The kind attribute is optional. Its
-    default value is "value". It can take one of the following values:
+accessed_by:
+    Defines how instance is accessed. The accessed_by attribute is optional.
+    Its default value is "value". It can take one of the following values:
 
 Value: Meaning:
 value: Value type, i.e. 'int'

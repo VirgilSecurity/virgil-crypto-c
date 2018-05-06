@@ -57,17 +57,17 @@ function c_derive_instance_type (c_instance)
     my.reference_modifiers = my.c_instance.is_const_reference ?? " *const" ? "*"
     my.array_modifiers = my.c_instance.is_const_array ?? " *const" ? "*"
 
-    if my.c_instance.is_callback
+    if my.c_instance.type_is = "callback"
         #   Callback type is a pointer itself.
         my.pointer_modifiers = ""
     endif
 
     #   Apply type modifiers
-    if my.c_instance.kind = "value" & defined (my.c_instance.array)
+    if my.c_instance.accessed_by = "value" & defined (my.c_instance.array)
         my.type = my.value_modifiers + my.type
-    elsif my.c_instance.kind = "pointer"
+    elsif my.c_instance.accessed_by = "pointer"
         my.type = my.value_modifiers + my.type + my.pointer_modifiers
-    elsif my.c_instance.kind = "reference"
+    elsif my.c_instance.accessed_by = "reference"
         my.type = my.value_modifiers + my.type + my.pointer_modifiers + my.reference_modifiers
     endif
 
