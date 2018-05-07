@@ -473,7 +473,8 @@ endfunction
 function c_component_map_instance_attr_accessed_by (c_instance, instance)
     check_arguments (my, "c_instance, instance", my)
 
-    if (((defined (my.instance.class) & name (my.c_instance) = "c_variable") & my.instance.class <> "any" ) | \
+    if (((defined (my.instance.class) & name (my.c_instance) = "c_variable") & \
+                    my.instance.class <> "any" & ! count (my.instance.array)) | \
             (defined (my.instance.callback) & my.instance.access = "readonly") | \
             (defined (my.instance.type) & my.instance.access = "readonly") | \
             (defined (my.instance.enum) & my.instance.access = "readonly") | \

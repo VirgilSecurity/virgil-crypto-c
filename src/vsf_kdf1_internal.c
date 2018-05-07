@@ -74,6 +74,14 @@ static const vsf_kdf_api_t kdf_api = {
     (vsf_kdf_api_derive_fn) vsf_kdf1_derive
 };
 
+//
+//  Null-terminated array of the implemented 'Interface API' instances
+//
+static const vsf_api_t* api_array[] = {
+    (const vsf_api_t*) &kdf_api,
+    NULL
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -812,14 +812,6 @@ function component_inherit_parent_instance (instance, parent)
 
     my.instance.size ?= my.parent.size ?
     my.instance.access ?= my.parent.access ?
-
-    if count (my.parent.string)
-        copy my.parent->string to my.instance
-    endif
-
-    if count (my.parent.array)
-        copy my.parent->array to my.instance
-    endif
 endfunction
 
 # ---------------------------------------------------------------------------
