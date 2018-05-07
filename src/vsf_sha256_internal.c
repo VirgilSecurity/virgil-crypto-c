@@ -72,6 +72,30 @@ VSF_PUBLIC static vsf_impl_t*
 vsf_sha256_impl (vsf_sha256_impl_t* sha256_impl);
 
 //
+//  Configuration of the interface API 'hash info api'.
+//
+static const vsf_hash_info_api_t hash_info_api = {
+    5,
+    5
+};
+
+//
+//  Configuration of the interface API 'hash api'.
+//
+static const vsf_hash_api_t hash_api = {
+    5,
+    5
+};
+
+//
+//  Configuration of the interface API 'hash stream api'.
+//
+static const vsf_hash_stream_api_t hash_stream_api = {
+    5,
+    5
+};
+
+//
 //  Return size of 'vsf_sha256_impl_t' type.
 //
 VSF_PUBLIC static size_t

@@ -58,6 +58,14 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Configuration of the interface API 'kdf api'.
+//
+static const vsf_kdf_api_t kdf_api = {
+    5,
+    5
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

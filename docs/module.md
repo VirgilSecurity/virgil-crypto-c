@@ -269,7 +269,7 @@ attributes for the component. Defines global variable.
 
     <variable
         name = "..."
-      [ type = "nothing | boolean | integer | size | byte | data | any | string" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -310,17 +310,16 @@ integer: Signed integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
-any: Defines instance of an any type.
 string: Shortcut for the char array.
 
 class:
-    Defines instance class. Possible values are: * buffer - Special class
-    "buffer" that is used as an output byte array. * impl - Universal
-    implementation class. If value differs from the listed above then next
-    algorithm applied: 1. If value in a format .(uid), then it treated as a
-    reference to the in-project class and will be substituted during context
-    resolution step. 2. Any other value will be used as-is. So one third
-    party type can be used. The class attribute is optional.
+    Defines instance class. Possible values are: * any - Any class or type. *
+    buffer - Special class "buffer" that is used as an output byte array. *
+    impl - Universal implementation class. If value differs from the listed
+    above then next algorithm applied: 1. If value in a format .(uid), then
+    it treated as a reference to the in-project class and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The class attribute is optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -402,7 +401,7 @@ variable value.
       [ enum = "..." ]
       [ callback = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ type = "nothing | boolean | integer | size | byte | data | any | string" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string" ]
         >
         <cast>, optional
         <string>, optional
@@ -432,17 +431,16 @@ integer: Signed integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
-any: Defines instance of an any type.
 string: Shortcut for the char array.
 
 class:
-    Defines instance class. Possible values are: * buffer - Special class
-    "buffer" that is used as an output byte array. * impl - Universal
-    implementation class. If value differs from the listed above then next
-    algorithm applied: 1. If value in a format .(uid), then it treated as a
-    reference to the in-project class and will be substituted during context
-    resolution step. 2. Any other value will be used as-is. So one third
-    party type can be used. The class attribute is optional.
+    Defines instance class. Possible values are: * any - Any class or type. *
+    buffer - Special class "buffer" that is used as an output byte array. *
+    impl - Universal implementation class. If value differs from the listed
+    above then next algorithm applied: 1. If value in a format .(uid), then
+    it treated as a reference to the in-project class and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The class attribute is optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -478,7 +476,7 @@ type to the type defined in this entity.
 
     <cast
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | size | byte | data | any | string" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -511,17 +509,16 @@ integer: Signed integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
-any: Defines instance of an any type.
 string: Shortcut for the char array.
 
 class:
-    Defines instance class. Possible values are: * buffer - Special class
-    "buffer" that is used as an output byte array. * impl - Universal
-    implementation class. If value differs from the listed above then next
-    algorithm applied: 1. If value in a format .(uid), then it treated as a
-    reference to the in-project class and will be substituted during context
-    resolution step. 2. Any other value will be used as-is. So one third
-    party type can be used. The class attribute is optional.
+    Defines instance class. Possible values are: * any - Any class or type. *
+    buffer - Special class "buffer" that is used as an output byte array. *
+    impl - Universal implementation class. If value differs from the listed
+    above then next algorithm applied: 1. If value in a format .(uid), then
+    it treated as a reference to the in-project class and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The class attribute is optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -691,7 +688,7 @@ property.
     <property
         name = "..."
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | size | byte | data | any | string" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -732,17 +729,16 @@ integer: Signed integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
-any: Defines instance of an any type.
 string: Shortcut for the char array.
 
 class:
-    Defines instance class. Possible values are: * buffer - Special class
-    "buffer" that is used as an output byte array. * impl - Universal
-    implementation class. If value differs from the listed above then next
-    algorithm applied: 1. If value in a format .(uid), then it treated as a
-    reference to the in-project class and will be substituted during context
-    resolution step. 2. Any other value will be used as-is. So one third
-    party type can be used. The class attribute is optional.
+    Defines instance class. Possible values are: * any - Any class or type. *
+    buffer - Special class "buffer" that is used as an output byte array. *
+    impl - Universal implementation class. If value differs from the listed
+    above then next algorithm applied: 1. If value in a format .(uid), then
+    it treated as a reference to the in-project class and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The class attribute is optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -783,7 +779,7 @@ name, type, and usage information.
     <argument
         name = "..."
       [ uid = "..." ]
-      [ type = "nothing | boolean | integer | size | byte | data | any | string" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -821,17 +817,16 @@ integer: Signed integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
-any: Defines instance of an any type.
 string: Shortcut for the char array.
 
 class:
-    Defines instance class. Possible values are: * buffer - Special class
-    "buffer" that is used as an output byte array. * impl - Universal
-    implementation class. If value differs from the listed above then next
-    algorithm applied: 1. If value in a format .(uid), then it treated as a
-    reference to the in-project class and will be substituted during context
-    resolution step. 2. Any other value will be used as-is. So one third
-    party type can be used. The class attribute is optional.
+    Defines instance class. Possible values are: * any - Any class or type. *
+    buffer - Special class "buffer" that is used as an output byte array. *
+    impl - Universal implementation class. If value differs from the listed
+    above then next algorithm applied: 1. If value in a format .(uid), then
+    it treated as a reference to the in-project class and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The class attribute is optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -866,7 +861,7 @@ Defines attributes that related to the instance type. Defines return type.
 
     <return
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | size | byte | data | any | string" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -899,17 +894,16 @@ integer: Signed integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
-any: Defines instance of an any type.
 string: Shortcut for the char array.
 
 class:
-    Defines instance class. Possible values are: * buffer - Special class
-    "buffer" that is used as an output byte array. * impl - Universal
-    implementation class. If value differs from the listed above then next
-    algorithm applied: 1. If value in a format .(uid), then it treated as a
-    reference to the in-project class and will be substituted during context
-    resolution step. 2. Any other value will be used as-is. So one third
-    party type can be used. The class attribute is optional.
+    Defines instance class. Possible values are: * any - Any class or type. *
+    buffer - Special class "buffer" that is used as an output byte array. *
+    impl - Universal implementation class. If value differs from the listed
+    above then next algorithm applied: 1. If value in a format .(uid), then
+    it treated as a reference to the in-project class and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The class attribute is optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated

@@ -162,7 +162,7 @@
             Enumeration type.
         </property>
 
-        <property name="any" type="any" access="readwrite">
+        <property name="any" class="any" access="readwrite">
             Any type is a power of the C language.
         </property>
 
@@ -214,7 +214,7 @@
     <struct name="secret" definition="private">
         Structure with a private definition.
 
-        <property name="any" type="any">
+        <property name="any" class="any">
             Any type is a power of the C language.
         </property>
     </struct>
@@ -245,13 +245,13 @@
 
     </variable>
 
-    <variable name="private api" type="any" access="readonly" scope="private">
+    <variable name="private api" class="any" access="readonly" scope="private">
         Global variable that conatins array of any type.
 
         <array length="derived" access="readonly"/>
     </variable>
 
-    <variable name="self api" type="any" access="readonly" scope="private">
+    <variable name="self api" class="any" access="readonly" scope="private">
         Global variable that conatins any class.
 
         <value value=".(class_foo_variable_private_api)[0]"/>
