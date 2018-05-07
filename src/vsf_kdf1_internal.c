@@ -50,6 +50,7 @@
 // --------------------------------------------------------------------------
 
 #include "vsf_kdf1_internal.h"
+#include "vsf_kdf_api.h"
 //  @end
 
 
@@ -62,8 +63,15 @@
 //  Configuration of the interface API 'kdf api'.
 //
 static const vsf_kdf_api_t kdf_api = {
-    5,
-    5
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'kdf' MUST be equal to the 'vsf_api_tag_KDF'.
+    //
+    vsf_api_tag_KDF,
+    //
+    //  Calculate hash over given data.
+    //
+    (vsf_kdf_api_derive_fn) vsf_kdf1_derive
 };
 
 

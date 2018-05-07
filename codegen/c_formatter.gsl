@@ -133,7 +133,7 @@ endfunction
 #       - "String literal"
 #       - (const byte*).(class_some_variable_byte_array)
 # ---------------------------------------------------------------------------
-function c_derive_instance_value (c_value)
+function c_derive_instance_value (c_value, parent)
     check_argument (my, "c_value", my)
 
     if count (my.c_value.c_cast)
@@ -144,7 +144,11 @@ function c_derive_instance_value (c_value)
         my.value = quote_string (my.c_value.value)
     endif
 
-    my.value ?= my.c_value.value
+    if defined (my.parent) & name (my.parent) = "c_variable" & my.c_value.type_is = "class"
+        my.derefence = "&"
+    endif
+
+    my.value ?= "$(my.derefence?:)$(my.c_value.value:)"
 
     return cat (my.type?, my.value)
 endfunction

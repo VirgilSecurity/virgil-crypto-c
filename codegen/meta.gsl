@@ -361,36 +361,27 @@ function _X17_add_entity_implementation (meta, implementation)
         _X17_add_link (entity, "implementation module internal", make_id ("module", my.name, "internal"))
 
         #   Implemented interface
-        for my.implementation.interface as implemented
-            my.implemented_name = cat (my.name, implemented.name)
-
-            _X17_add_name (entity, "class implemented $(implemented.name)", my.implemented_name)
-            _X17_add_link (entity, "class implemented $(implemented.name)", \
-                    make_id ("class", my.implemented_name, "struct"))
-
-            _X17_add_name (entity, "module implemented $(implemented.name)", my.implemented_name)
-            _X17_add_link (entity, "module implemented $(implemented.name)", \
-                    make_id ("module", my.implemented_name))
-
+        for my.implementation.interface
             _X17_add_link (entity, \
-                    "implementation object $(implemented.name) api", \
-                    make_id ("class", my.name, "object", implemented.name, "api"))
+                    "implementation variable $(interface.name) api", \
+                    make_id ("class", my.name, "variable", interface.name, "api"))
 
-            for implemented.constant
+            for interface.constant
                 _X17_add_link (entity, \
-                        "implemented constant $(cat (implemented.name, constant.name))", \
-                        make_id ("class", my.implemented_name, "enum constant", constant.name))
+                        "implementation constant $(constant.name)", \
+                        make_id ("class", my.name, "constant", constant.name))
             endfor
 
-            for implemented.method
+            for interface.method
                 _X17_add_link (entity, \
-                        "implemented method $(cat (implemented.name, method.name))", \
-                        make_id ("class", my.implemented_name, "method", method.name))
+                        "implementation method $(method.name)", \
+                        make_id ("class", my.name, "method", method.name))
 
                 _X17_add_link (entity, \
-                        "implemented method callback $(cat (implemented.name, method.name))", \
-                        make_id ("class", implemented.name, "api", "callback", method.name))
+                        "implementation callback $(method.name)", \
+                        make_id ("class", interface.name, "api", "callback", method.name))
             endfor
+
         endfor
 
         #   Dependencies

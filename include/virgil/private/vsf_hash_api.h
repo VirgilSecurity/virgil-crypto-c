@@ -88,7 +88,9 @@ struct vsf_hash_api_t {
     //  Link to the inherited interface API 'hash info'.
     //
     const vsf_hash_info_api_t* hash_info_api;
-
+    //
+    //  Calculate hash over given data.
+    //
     vsf_hash_api_hash_fn hash_cb;
 };
 typedef struct vsf_hash_api_t vsf_hash_api_t;

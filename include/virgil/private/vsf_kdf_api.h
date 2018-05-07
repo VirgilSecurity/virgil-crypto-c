@@ -83,7 +83,9 @@ struct vsf_kdf_api_t {
     //  For interface 'kdf' MUST be equal to the 'vsf_api_tag_KDF'.
     //
     vsf_api_tag_t api_tag;
-
+    //
+    //  Calculate hash over given data.
+    //
     vsf_kdf_api_derive_fn derive_cb;
 };
 typedef struct vsf_kdf_api_t vsf_kdf_api_t;

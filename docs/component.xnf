@@ -375,9 +375,6 @@
 
     <inherit entity="instance"/>
     <inherit entity="uid"/>
-
-    <allow entity="argument"/>
-    <allow entity="return"/>
 </entity>
 
 

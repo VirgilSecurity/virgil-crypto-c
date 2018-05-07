@@ -97,11 +97,17 @@ struct vsf_hash_stream_api_t {
     //  Link to the inherited interface API 'hash info'.
     //
     const vsf_hash_info_api_t* hash_info_api;
-
+    //
+    //  Start a new hashing.
+    //
     vsf_hash_stream_api_start_fn start_cb;
-
+    //
+    //  Add given data to the hash.
+    //
     vsf_hash_stream_api_update_fn update_cb;
-
+    //
+    //  Accompilsh hashing and return it's result (a message digest).
+    //
     vsf_hash_stream_api_finish_fn finish_cb;
 };
 typedef struct vsf_hash_stream_api_t vsf_hash_stream_api_t;

@@ -66,6 +66,7 @@ function _B25_add_interface_api_type (interface, destination, meta)
             .name = my.names.property_api_tag
             .enum = my.refs.class_api_enum_tag
             .value = my.refs.interface_constant_tag
+            .tag = "tag"
         endnew
 
         for my.interface.inherit
@@ -75,13 +76,16 @@ function _B25_add_interface_api_type (interface, destination, meta)
                 . = "Link to the inherited interface API '$(inherit.interface:)'."
                 .name = my.names.property_inherited_$(make_id(inherit.interface))_api
                 .class = my.refs.class_inherited_$(make_id(inherit.interface))_api
+                .tag = "api"
             endnew
         endfor
 
         for my.interface.method
             new property to struct
+                . = method. ?
                 .name = method.name
                 .callback = my.refs.interface_callback_$(make_id (method.name))
+                .tag = "method"
             endnew
 
             my.callback = item_copy_to (method, my.destination, "callback")
@@ -90,6 +94,7 @@ function _B25_add_interface_api_type (interface, destination, meta)
 
         for my.interface.constant
             my.property = item_copy_to (constant, struct, "property")
+            my.property.tag = "constant"
         endfor
     endnew
 
@@ -152,7 +157,7 @@ function c_module_interface_api_find (name, source, meta)
     my.names = meta_names (my.meta)
 
     for my.source.module
-        my.api_type = module->struct (struct.name = my.names.class_interface_api) ?
+        my.api_type = module->struct (struct.name = my.names.class_interface_api & struct.definition <> "external") ?
 
         if defined (my.api_type)
             meta_deactivate_entity (my.meta, my.name)

@@ -896,6 +896,7 @@ function c_component_create_value (value, destination)
     component_require_attr_value (my.value)
 
     new c_value to my.destination
+        . = c_format_description (my.value.) ?
         .value = c_component_wrap_uid (my.value.value)
 
         c_component_map_instance (c_value, my.value)
