@@ -53,6 +53,7 @@
 #define VSF_SHA256_INTERNAL_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_sha256.h"
 //  @end
 
 
@@ -65,6 +66,18 @@ extern "C" {
 // --------------------------------------------------------------------------
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Return size of 'vsf_sha256_impl_t' type.
+//
+VSF_PUBLIC size_t
+vsf_sha256_impl_size (void);
+
+//
+//  Cast to the 'vsf_impl_t' type.
+//
+VSF_PUBLIC vsf_impl_t*
+vsf_sha256_impl (vsf_sha256_impl_t* sha256_impl);
 
 
 // --------------------------------------------------------------------------

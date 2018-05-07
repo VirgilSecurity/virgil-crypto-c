@@ -51,6 +51,9 @@
 
 #include "vsf_sha256_internal.h"
 #include "vsf_sha256_types.h"
+#include "vsf_hash_info_api.h"
+#include "vsf_hash_api.h"
+#include "vsf_hash_stream_api.h"
 //  @end
 
 
@@ -60,45 +63,70 @@
 // --------------------------------------------------------------------------
 
 //
-//  Return size of 'vsf_sha256_impl_t' type.
-//
-VSF_PUBLIC static size_t
-vsf_sha256_impl_size (void);
-
-//
-//  Cast to the 'vsf_impl_t' type.
-//
-VSF_PUBLIC static vsf_impl_t*
-vsf_sha256_impl (vsf_sha256_impl_t* sha256_impl);
-
-//
 //  Configuration of the interface API 'hash info api'.
 //
 static const vsf_hash_info_api_t hash_info_api = {
-    5,
-    5
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'hash_info' MUST be equal to the 'vsf_api_tag_HASH_INFO'.
+    //
+    vsf_api_tag_HASH_INFO,
+    //
+    //  Size of the digest (hashing output).
+    //
+    vsf_sha256_DIGEST_SIZE
 };
 
 //
 //  Configuration of the interface API 'hash api'.
 //
 static const vsf_hash_api_t hash_api = {
-    5,
-    5
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'hash' MUST be equal to the 'vsf_api_tag_HASH'.
+    //
+    vsf_api_tag_HASH,
+    //
+    //  Link to the inherited interface API 'hash info'.
+    //
+    &hash_info_api,
+    //
+    //  Calculate hash over given data.
+    //
+    (vsf_hash_api_hash_fn) vsf_sha256_hash
 };
 
 //
 //  Configuration of the interface API 'hash stream api'.
 //
 static const vsf_hash_stream_api_t hash_stream_api = {
-    5,
-    5
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'hash_stream' MUST be equal to the 'vsf_api_tag_HASH_STREAM'.
+    //
+    vsf_api_tag_HASH_STREAM,
+    //
+    //  Link to the inherited interface API 'hash info'.
+    //
+    &hash_info_api,
+    //
+    //  Start a new hashing.
+    //
+    (vsf_hash_stream_api_start_fn) vsf_sha256_start,
+    //
+    //  Add given data to the hash.
+    //
+    (vsf_hash_stream_api_update_fn) vsf_sha256_update,
+    //
+    //  Accompilsh hashing and return it's result (a message digest).
+    //
+    (vsf_hash_stream_api_finish_fn) vsf_sha256_finish
 };
 
 //
 //  Return size of 'vsf_sha256_impl_t' type.
 //
-VSF_PUBLIC static size_t
+VSF_PUBLIC size_t
 vsf_sha256_impl_size (void) {
 
     return sizeof (vsf_sha256_impl_t);
@@ -107,7 +135,7 @@ vsf_sha256_impl_size (void) {
 //
 //  Cast to the 'vsf_impl_t' type.
 //
-VSF_PUBLIC static vsf_impl_t*
+VSF_PUBLIC vsf_impl_t*
 vsf_sha256_impl (vsf_sha256_impl_t* sha256_impl) {
 
     return (vsf_impl_t *) (sha256_impl);

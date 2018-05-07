@@ -800,10 +800,16 @@ endfunction
 function component_inherit_parent_instance (instance, parent)
     check_arguments (my, "instance, parent", my)
 
-    my.instance.type ?= my.parent.type ?
-    my.instance.class ?= my.parent.class ?
-    my.instance.enum ?= my.parent.enum ?
-    my.instance.callback ?= my.parent.callback ?
+    if ! defined (my.instance.type) & ! defined (my.instance.class) & \
+        ! defined (my.instance.enum) & ! defined (my.instance.callback)
+
+
+        my.instance.type ?= my.parent.type ?
+        my.instance.class ?= my.parent.class ?
+        my.instance.enum ?= my.parent.enum ?
+        my.instance.callback ?= my.parent.callback ?
+    endif
+
     my.instance.size ?= my.parent.size ?
     my.instance.access ?= my.parent.access ?
 

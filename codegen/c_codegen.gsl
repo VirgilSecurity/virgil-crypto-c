@@ -646,14 +646,15 @@ function c_insert_variable_definition (c_variable)
 
             my.separator = ! last () ?? "," ? ""
 
-            insert_code (c_derive_instance_value (c_value) + my.separator + terminator, 1)
+            c_insert_description (c_value, 1)
+            insert_code (c_derive_instance_value (c_value, my.c_variable) + my.separator + terminator, 1)
 
             if last ()
                 insert_code ("};")
             endif
         else
             #   Single value initialization
-            insert_code (my.code + c_derive_instance_value (c_value) + ";")
+            insert_code (my.code + c_derive_instance_value (c_value, my.c_variable) + ";")
         endif
     else
         insert_code (my.code + ";")
