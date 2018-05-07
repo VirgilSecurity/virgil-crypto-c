@@ -73,6 +73,8 @@ extern "C" {
 //
 enum vsf_impl_tag_t {
     vsf_impl_tag_BEGIN = 0,
+    vsf_impl_tag_SHA256,
+    vsf_impl_tag_KDF1,
     vsf_impl_tag_END
 };
 typedef enum vsf_impl_tag_t vsf_impl_tag_t;

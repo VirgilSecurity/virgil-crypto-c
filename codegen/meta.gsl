@@ -331,20 +331,8 @@ function _X17_add_entity_implementation (meta, implementation)
         _X17_add_name (entity, "implementation struct impl", cat (my.name, "impl"))
         _X17_add_link (entity, "implementation struct impl", make_id ("class", my.name, "struct", "impl"))
 
-        _X17_add_name (entity, "implementation struct context", "context")
-        _X17_add_link (entity, "implementation struct context", \
-                make_id ("class", my.name, "struct context"))
-
         _X17_add_link (entity, "implementation constant tag", \
                 make_id ("class impl enum tag constant", my.name))
-
-        _X17_add_name (entity, "implementation object impl info", "impl info")
-        _X17_add_link (entity, "implementation object impl info", \
-                make_id ("class", my.name, "object impl info"))
-
-        _X17_add_name (entity, "implementation object api array", "api array")
-        _X17_add_link (entity, "implementation object api array", \
-                make_id ("class", my.name, "object api array"))
 
         _X17_add_link (entity, "implementation method self cleanup", \
                 make_id ("class", my.name, "method cleanup"))
@@ -359,6 +347,14 @@ function _X17_add_entity_implementation (meta, implementation)
         #   Internal
         _X17_add_name (entity, "implementation module internal", make_id (my.name, "internal"))
         _X17_add_link (entity, "implementation module internal", make_id ("module", my.name, "internal"))
+
+        #   Private variables
+        _X17_add_smart_name (entity, "implementation variable", "api array")
+        _X17_add_link (entity, "implementation variable api array", make_id ("class", my.name, "variable", "api array"))
+
+        _X17_add_smart_name (entity, "implementation variable", "info")
+        _X17_add_link (entity, "implementation variable info", make_id ("class", my.name, "variable", "info"))
+
 
         #   Implemented interface
         for my.implementation.interface

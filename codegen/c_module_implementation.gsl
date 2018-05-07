@@ -50,55 +50,6 @@
 gsl from "common.gsl"
 gsl from "c_module_interface_api.gsl"
 
-
-
-
-
-
-
-function _Z19_add_info_instance (implementation, module, impl_info, meta)
-    check_argument (my, "implementation")
-    check_argument (my, "impl_info")
-    check_argument (my, "module")
-    check_argument (my, "meta")
-
-    my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
-
-    new object to my.module
-        . = "Compile-time known information about '$(my.implementation.name:)' implementation."
-        .name = my.names.implementation_object_impl_info
-        .type = my.refs.class_impl_struct_info
-        .scope = "private"
-
-        for my.impl_info.property
-            new value to object
-                . = property. ?
-                if is_true (property.is_impl_tag)
-                    .value = my.refs.implementation_constant_tag
-
-                elsif is_true (property.is_api_array)
-                    .value = my.refs.implementation_object_api_array
-
-                elsif is_true (property.is_self_cleanup_cb)
-                    .value = my.refs.implementation_method_self_cleanup
-
-                elsif is_true (property.is_self_destroy_cb)
-                    .value = my.refs.implementation_method_self_destroy
-
-                else
-                    my.property_dump = component_dump_instance (property)
-                    echo_fatal ("Unsupported impl info property: $(my.property_dump:).", my)
-                endif
-            endnew
-        endfor
-    endnew
-endfunction
-
-# ###########################################################################
-#   NEW
-# ###########################################################################
-
 # ---------------------------------------------------------------------------
 #   Add instance of 'Interface API' class.
 #   Instance is fulfilled with implementation constants, methods,
@@ -153,8 +104,8 @@ function _Z19_add_array_of_interface_api_instances (impl, destination, meta)
     my.refs = meta_refs (my.meta)
 
     new variable to my.destination
-        . = "Null-terminated array of the implemented 'Interface API' instances"
-        .name = "api array"
+        . = "Null-terminated array of the implemented 'Interface API' instances."
+        .name = my.names.implementation_variable_api_array
         .class = my.refs.class_api_struct_api
         .scope = "private"
 
@@ -179,6 +130,48 @@ function _Z19_add_array_of_interface_api_instances (impl, destination, meta)
         endnew
     endnew
 endfunction
+
+# ---------------------------------------------------------------------------
+#   Add instance of the 'Implementation Info' class.
+# ---------------------------------------------------------------------------
+function _Z19_add_implementation_info_instance (impl, impl_info, destination, meta)
+    check_arguments (my, "impl, impl_info, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new variable to my.destination
+        . = "Compile-time known information about '$(my.impl.name:)' implementation."
+        .name = my.names.implementation_variable_info
+        .class = my.refs.class_impl_struct_info
+        .scope = "private"
+
+        for my.impl_info.property
+            my.value = item_copy_to (property, variable, "value")
+            scope my.value
+                if property.tag = "tag"
+                    .value = my.refs.implementation_constant_tag
+
+                elsif property.tag = "api_array"
+                    .value = my.refs.implementation_variable_api_array
+
+                elsif property.tag = "self_cleanup"
+                    .value = my.refs.implementation_method_self_cleanup
+                    item_copy_to (property, value, "cast")
+
+                elsif property.tag = "self_destroy"
+                    .value = my.refs.implementation_method_self_destroy
+                    item_copy_to (property, value, "cast")
+
+                else
+                    my.property_dump = component_dump_instance (property)
+                    echo_fatal ("Unsupported impl info property: $(my.property_dump:).", my)
+                endif
+            endscope
+        endfor
+    endnew
+endfunction
+
 # ---------------------------------------------------------------------------
 #   Add require includes to the implementation public module.
 # ---------------------------------------------------------------------------
@@ -307,7 +300,7 @@ function _Z19_add_self_tag (implementation, enum, meta)
         echo_fatal ("Enum '$(my.enum.name:)' does not contain value '$(my.names.enum_constant_end:)'.", my)
     endif
 
-    new value before my.insertion_position
+    new constant before my.insertion_position
         .name = my.implementation.name
     endnew
 endfunction
@@ -463,8 +456,8 @@ endfunction
 #       - cleanup ()
 #       - destroy ()
 # ---------------------------------------------------------------------------
-function _Z19_add_lifecycle_methods (impl, definition, destination, meta)
-    check_arguments (my, "impl, definition, destination, meta", my)
+function _Z19_add_lifecycle_methods (impl, [scope], definition, destination, meta)
+    check_arguments (my, "impl, [scope], definition, destination, meta", my)
 
     if ! _Z19_has_methods_with_context_impl (my.impl)
         return
@@ -479,6 +472,7 @@ function _Z19_add_lifecycle_methods (impl, definition, destination, meta)
         "
         .name = my.names.method_init
         .definition = my.definition
+        .[scope] = my.[scope]
 
         _Z19_add_argument_impl (method, my.meta)
 
@@ -490,6 +484,7 @@ function _Z19_add_lifecycle_methods (impl, definition, destination, meta)
     new method to my.destination
         .name = my.names.method_new
         .definition = my.definition
+        .[scope] = my.[scope]
 
         . = "\
         Allocate implementation context and perform it's initialization.
@@ -506,6 +501,7 @@ function _Z19_add_lifecycle_methods (impl, definition, destination, meta)
     new method to my.destination
         .name = my.names.method_cleanup
         .definition = my.definition
+        .[scope] = my.[scope]
 
         . = "\
         Cleanup sensitive data within implementation context.
@@ -522,6 +518,7 @@ function _Z19_add_lifecycle_methods (impl, definition, destination, meta)
     new method to my.destination
         .name = my.names.method_destroy
         .definition = my.definition
+        .[scope] = my.[scope]
 
         . = "\
         Destroy given implementation context and it's dependencies.
@@ -585,8 +582,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add dependency management functions.
 # ---------------------------------------------------------------------------
-function _Z19_add_dependency_methods (impl, definition, destination, meta)
-    check_arguments (my, "impl, definition, destination, meta", my)
+function _Z19_add_dependency_methods (impl, [scope], definition, destination, meta)
+    check_arguments (my, "impl, [scope], definition, destination, meta", my)
 
     if ! _Z19_has_methods_with_context_impl (my.impl)
         return
@@ -601,6 +598,8 @@ function _Z19_add_dependency_methods (impl, definition, destination, meta)
             "
             .name = cat (my.names.method_use, require.name)
             .definition = my.definition
+            .[scope] = my.[scope]
+
 
             _Z19_add_argument_impl (method, my.meta)
 
@@ -616,6 +615,7 @@ function _Z19_add_dependency_methods (impl, definition, destination, meta)
                 "
                 .name = cat (my.names.method_take, require.name)
                 .definition = my.definition
+                .[scope] = my.[scope]
 
                 _Z19_add_argument_impl (method, my.meta)
 
@@ -638,12 +638,22 @@ endfunction
 function _Z19_add_instances (impl, source, destination, meta)
     check_arguments (my, "impl, source, destination, meta", my)
 
+    if ! _Z19_has_methods_with_context_impl (my.impl)
+        return
+    endif
+
+    my.names = meta_names (my.meta)
+
     for my.impl.interface
         my.interface_api = c_module_interface_api_find_type (interface.name, my.source, my.meta)
         _Z19_add_interface_api_instance (my.impl, my.interface_api, my.destination, my.meta)
     endfor
 
     _Z19_add_array_of_interface_api_instances (my.impl, my.destination, my.meta)
+
+    my.impl_info_module = my.source->module (name = my.names.module_impl_private)
+    my.impl_info = my.impl_info_module->struct (name = my.names.struct_info)
+    _Z19_add_implementation_info_instance (my.impl, my.impl_info, my.destination, my.meta)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -677,8 +687,8 @@ function c_module_implementation_create_public_module (impl, enum_impl_tag, dest
         _Z19_add_self_type_cast_method (my.impl, "public", "external", module, my.meta)
         _Z19_add_interface_constants (my.impl, module, my.meta)
         _Z19_add_interface_methods (my.impl, "public", module, my.meta)
-        _Z19_add_lifecycle_methods (my.impl, "external", module, my.meta)
-        _Z19_add_dependency_methods (my.impl, "external", module, my.meta)
+        _Z19_add_lifecycle_methods (my.impl, "public", "external", module, my.meta)
+        _Z19_add_dependency_methods (my.impl, "public", "external", module, my.meta)
     endnew
 endfunction
 
@@ -746,6 +756,7 @@ function c_module_implementation_create_internal_module (impl, source, destinati
         _Z19_add_instances (my.impl, my.source, module, my.meta)
         _Z19_add_self_type_size_method (my.impl, "public", "private", module, my.meta)
         _Z19_add_self_type_cast_method (my.impl, "public", "private", module, my.meta)
+        _Z19_add_lifecycle_methods (my.impl, "public", "private", module, my.meta)
     endnew
 endfunction
 
