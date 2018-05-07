@@ -146,7 +146,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add instance that is array of the implemented 'Interface API' instances.
 # ---------------------------------------------------------------------------
-function _Z19_add_interface_api_array_of_instance (impl, destination, meta)
+function _Z19_add_array_of_interface_api_instances (impl, destination, meta)
     check_arguments (my, "impl, destination, meta", my)
 
     my.names = meta_names (my.meta)
@@ -643,7 +643,7 @@ function _Z19_add_instances (impl, source, destination, meta)
         _Z19_add_interface_api_instance (my.impl, my.interface_api, my.destination, my.meta)
     endfor
 
-    _Z19_add_interface_api_array_of_instance (my.impl, my.destination, my.meta)
+    _Z19_add_array_of_interface_api_instances (my.impl, my.destination, my.meta)
 endfunction
 
 # ---------------------------------------------------------------------------
