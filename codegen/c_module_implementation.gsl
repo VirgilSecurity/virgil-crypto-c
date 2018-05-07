@@ -54,35 +54,7 @@ gsl from "c_module_interface_api.gsl"
 
 
 
-function _Z19_add_interface_api_array_instances (implementation, module, impl_info, meta)
-    check_argument (my, "implementation")
-    check_argument (my, "module")
-    check_argument (my, "impl_info")
-    check_argument (my, "meta")
 
-    my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
-
-    my.property_api_array = item_find_named (\
-            my.impl_info, "property", my.names.property_api_array, my)
-
-    new object to my.module
-        . = my.property_api_array. ?
-        .name = my.names.implementation_object_api_array
-        .class = my.property_api_array.type
-        .scope = "private"
-
-        for my.implementation.interface as implemented
-            new value to object
-                .value = my.refs.implementation_object_$(make_id (implemented.name))_api
-            endnew
-        endfor
-
-        new value to object
-            .value = "NULL"
-        endnew
-    endnew
-endfunction
 
 function _Z19_add_info_instance (implementation, module, impl_info, meta)
     check_argument (my, "implementation")
@@ -171,6 +143,42 @@ function _Z19_add_interface_api_instance (impl, interface_api, destination, meta
     endnew
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Add instance that is array of the implemented 'Interface API' instances.
+# ---------------------------------------------------------------------------
+function _Z19_add_interface_api_array_of_instance (impl, destination, meta)
+    check_arguments (my, "impl, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new variable to my.destination
+        . = "Null-terminated array of the implemented 'Interface API' instances"
+        .name = "api array"
+        .class = my.refs.class_api_struct_api
+        .scope = "private"
+
+        new array to variable
+            .length = "derived"
+            .access = "readonly"
+        endnew
+
+        for my.impl.interface
+            new value to variable
+                .value = my.refs.implementation_variable_$(make_id (interface.name))_api
+
+                new cast to value
+                    .class = my.refs.class_api_struct_api
+                    .access = "readonly"
+                endnew
+            endnew
+        endfor
+
+        new value to variable
+            .value = "NULL"
+        endnew
+    endnew
+endfunction
 # ---------------------------------------------------------------------------
 #   Add require includes to the implementation public module.
 # ---------------------------------------------------------------------------
@@ -634,6 +642,8 @@ function _Z19_add_instances (impl, source, destination, meta)
         my.interface_api = c_module_interface_api_find_type (interface.name, my.source, my.meta)
         _Z19_add_interface_api_instance (my.impl, my.interface_api, my.destination, my.meta)
     endfor
+
+    _Z19_add_interface_api_array_of_instance (my.impl, my.destination, my.meta)
 endfunction
 
 # ---------------------------------------------------------------------------

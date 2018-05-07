@@ -144,7 +144,10 @@ function c_derive_instance_value (c_value, parent)
         my.value = quote_string (my.c_value.value)
     endif
 
-    if defined (my.parent) & name (my.parent) = "c_variable" & my.c_value.type_is = "class"
+    if defined (my.parent) & name (my.parent) = "c_variable" & \
+            my.c_value.type_is = "class" & ! defined (my.c_value.array) & \
+            my.c_value.value <> "NULL"
+
         my.derefence = "&"
     endif
 

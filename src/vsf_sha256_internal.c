@@ -124,6 +124,16 @@ static const vsf_hash_stream_api_t hash_stream_api = {
 };
 
 //
+//  Null-terminated array of the implemented 'Interface API' instances
+//
+static const vsf_api_t* api_array[] = {
+    (const vsf_api_t*) &hash_info_api,
+    (const vsf_api_t*) &hash_api,
+    (const vsf_api_t*) &hash_stream_api,
+    NULL
+};
+
+//
 //  Return size of 'vsf_sha256_impl_t' type.
 //
 VSF_PUBLIC size_t
