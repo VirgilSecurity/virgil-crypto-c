@@ -104,10 +104,6 @@
             Shortcut for the byte array.
         </restrict>
 
-        <restrict value="any">
-            Defines instance of an any type.
-        </restrict>
-
         <restrict value="string">
             Shortcut for the char array.
         </restrict>
@@ -117,6 +113,7 @@
         Defines instance class.
 
         Possible values are:
+            * any    - Any class or type.
             * buffer - Special class "buffer" that is used as an output byte array.
             * impl   - Universal implementation class.
 

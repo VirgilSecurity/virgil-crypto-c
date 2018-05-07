@@ -95,7 +95,7 @@
 
         Generic allocation function type.
 
-        <return type="any" access="disown" />
+        <return class="any" access="disown" />
 
         <argument name="size" type="size" />
     </callback>
@@ -105,6 +105,6 @@
 
         Generic de-allocation function type.
 
-        <argument name="mem" type="any" access="writeonly" />
+        <argument name="mem" class="any" access="writeonly" />
     </callback>
 </module>

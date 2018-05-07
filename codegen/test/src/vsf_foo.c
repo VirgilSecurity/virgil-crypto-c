@@ -97,14 +97,23 @@ const char *const vsf_foo_features[] = {
 };
 
 //
-//  Global variable that conatins array of any class.
+//  Global variable that conatins array of any type.
 //
-static const void *const private_api[];
+static const void* private_api[];
 
 //
 //  Global variable that conatins any class.
 //
 static const void* self_api = private_api[0];
+
+//
+//  Private instantiation if the structure 'vsf_foo_context_t'
+//
+static const vsf_foo_context_t foo_context_inst = {
+    1,
+    255,
+    255
+};
 
 //
 //  Just do nothing.

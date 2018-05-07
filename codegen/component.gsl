@@ -453,7 +453,7 @@ function component_resolve_instance_attr_type (instance, parent)
 
     component_require_attr_type (my.instance, my)
 
-    my.valid_types = "nothing, boolean, integer, size, byte, data, string, any"
+    my.valid_types = "nothing, boolean, integer, size, byte, data, string"
     if ! string_in (my.instance.type, my.valid_types)
         my.instance_dump = component_instance_dump (my.instance)
 
