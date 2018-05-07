@@ -124,13 +124,36 @@ static const vsf_hash_stream_api_t hash_stream_api = {
 };
 
 //
-//  Null-terminated array of the implemented 'Interface API' instances
+//  Null-terminated array of the implemented 'Interface API' instances.
 //
 static const vsf_api_t* api_array[] = {
     (const vsf_api_t*) &hash_info_api,
     (const vsf_api_t*) &hash_api,
     (const vsf_api_t*) &hash_stream_api,
     NULL
+};
+
+//
+//  Compile-time known information about 'sha256' implementation.
+//
+static const vsf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vsf_impl_tag_SHA256,
+    //
+    //  NULL terminated array of the implemented interfaces.
+    //  MUST be second in the structure.
+    //
+    api_array,
+    //
+    //  Erase inner state in a secure manner.
+    //
+    (vsf_impl_cleanup_fn) vsf_sha256_cleanup,
+    //
+    //  Self destruction, according to destruction policy.
+    //
+    (vsf_impl_destroy_fn) vsf_sha256_destroy
 };
 
 //
@@ -156,3 +179,41 @@ vsf_sha256_impl (vsf_sha256_impl_t* sha256_impl) {
 //  Generated section end.
 // --------------------------------------------------------------------------
 //  @end
+
+
+//
+//  Perform initialization of preallocated implementation context.
+//
+VSF_PUBLIC void
+vsf_sha256_init (vsf_sha256_impl_t* sha256_impl) {
+    //  TODO: This is STUB. Implement me.
+}
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Return NULL if allocation fails.
+//
+VSF_PUBLIC vsf_sha256_impl_t*
+vsf_sha256_new (void) {
+    //  TODO: This is STUB. Implement me.
+}
+
+//
+//  Cleanup sensitive data within implementation context.
+//  Note, dependencies are cleaned up as well.
+//
+VSF_PUBLIC void
+vsf_sha256_cleanup (vsf_sha256_impl_t* sha256_impl) {
+    //  TODO: This is STUB. Implement me.
+}
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This function SHOULD be called even if context was statically allocated,
+//  because it automatically detect this fact for context itself and
+//  dependencies as well and destroy them appropriately.
+//
+VSF_PUBLIC void
+vsf_sha256_destroy (vsf_sha256_impl_t** sha256_impl_ref) {
+    //  TODO: This is STUB. Implement me.
+}
