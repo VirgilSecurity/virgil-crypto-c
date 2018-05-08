@@ -124,8 +124,8 @@ function _L23_add_self_opaque_type (interface, destination, meta)
         . = "Opaque type of the interface '$(my.interface.name:)' API."
         .name = my.names.class_interface_api
         .of_class = my.names.class_interface_api
-        .scope="public"
         .visibility="public"
+        .declaration="public"
         .definition="external"
     endnew
 endfunction

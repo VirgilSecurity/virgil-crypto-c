@@ -54,8 +54,8 @@ function _B25_add_interface_api_type (interface, destination, meta)
         . = "Handles constants and callbacks of the interface '$(my.interface.name:)'."
         .name = my.names.class_interface_api
         .visibility = "public"
+        .describes = "public"
         .definition = "public"
-        .scope = "public"
 
         new property to struct
             . = "\
@@ -113,6 +113,8 @@ function c_module_interface_api_create (source, destination, meta)
 
         new module to my.destination
             . = "Interface '$(interface.name:)' API."
+            .name = my.names.module_interface_api
+            .class = my.names.class_interface_api
             .scope = "private"
 
             new require to module
@@ -133,9 +135,6 @@ function c_module_interface_api_create (source, destination, meta)
                 endnew
             endfor
 
-            .name = my.names.module_interface_api
-            .class = my.names.class_interface_api
-            .scope = "private"
 
             _B25_add_interface_api_type (interface, module, my.meta)
 

@@ -75,7 +75,7 @@ function c_derive_variable_name (variable)
 
     component_require_lineage (my.variable, my)
 
-    if my.variable.scope = "public" | my.variable.definition = "external"
+    if my.variable.declaration = "public" | my.variable.definition = "external"
         return c_format_name (my.variable.c_prefix, component_derive_full_name (my.variable))
     else
         return c_format_name (my.variable.name)
@@ -267,6 +267,15 @@ function c_component_resolve_attr_visibility (c_component)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve attribute: declaration.
+# ---------------------------------------------------------------------------
+function c_component_resolve_attr_declaration (c_component)
+    check_argument (my, "c_component", my)
+
+    my.c_component.declaration ?= "public"
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve attribute: definition.
 # ---------------------------------------------------------------------------
 function c_component_resolve_attr_definition (c_component)
@@ -308,6 +317,7 @@ function c_component_resolve_alias (c_alias)
 
     c_component_require_attr_name (my.c_alias, my)
     c_component_require_attr_type (my.c_alias, my)
+    c_component_resolve_attr_declaration (my.c_alias)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -318,7 +328,7 @@ function c_component_resolve_constant (c_constant)
 
     c_component_require_attr_name (my.c_constant, my)
     c_component_optional_integral_attr_value (my.c_constant, my)
-    c_component_resolve_attr_scope (my.c_constant)
+    c_component_resolve_attr_definition (my.c_constant)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -327,8 +337,8 @@ endfunction
 function c_component_resolve_enum (c_enum)
     check_argument (my, "c_enum", my)
 
-    c_component_resolve_attr_scope (my.c_enum)
     c_component_resolve_attr_visibility (my.c_enum)
+    c_component_resolve_attr_declaration (my.c_enum)
     c_component_resolve_attr_definition (my.c_enum)
 
     for my.c_enum.c_constant
@@ -356,6 +366,17 @@ function c_component_map_attr_visibility (c_component, component)
     component_require_attr_visibility (my.component, my)
 
     my.c_component.visibility = my.component.visibility
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Copy attribute 'declaration' from 'component' ot 'c_component'.
+# ---------------------------------------------------------------------------
+function c_component_map_attr_declaration (c_component, component)
+    check_arguments (my, "c_component, component", my)
+
+    component_require_attr_declaration (my.component, my)
+
+    my.c_component.declaration = my.component.declaration
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -620,10 +641,10 @@ function c_component_create_include (require, destination)
 
     new c_include to my.destination
         .file = c_ref ("module_$(make_id (my.require.module))") + ".h"
-        .scope = require.scope ?
         .is_system = "0"
 
         c_component_resolve_include (c_include)
+        c_component_map_attr_scope (c_include, my.require)
     endnew
 endfunction
 
@@ -644,7 +665,7 @@ function c_component_create_constant (constant, destination)
         .name = c_derive_constant_name (my.constant)
         .value = my.constant.value ?
 
-        c_component_map_attr_scope (c_constant, my.constant)
+        c_component_map_attr_definition (c_constant, my.constant)
         c_component_map_attr_uid (c_constant, my.constant)
 
         c_component_resolve_constant (c_constant)
@@ -663,8 +684,8 @@ function c_component_create_enum (enum, destination)
         . = c_format_description (my.enum.) ?
         .name = c_derive_enum_name (my.enum)
 
-        c_component_map_attr_scope (c_enum, my.enum)
         c_component_map_attr_visibility (c_enum, my.enum)
+        c_component_map_attr_declaration (c_enum, my.enum)
         c_component_map_attr_definition (c_enum, my.enum)
         c_component_map_attr_uid (c_enum, my.enum)
 
@@ -740,8 +761,8 @@ function c_component_create_method (method, destination)
         . = c_format_description (my.method.) ?
         .name = c_derive_method_name (my.method)
 
-        c_component_map_attr_scope (c_method, my.method)
         c_component_map_attr_visibility (c_method, my.method)
+        c_component_map_attr_declaration (c_method, my.method)
         c_component_map_attr_definition (c_method, my.method)
         c_component_map_attr_uid (c_method, my.method)
 
@@ -793,8 +814,8 @@ function c_component_create_struct (struct, destination)
         . = c_format_description (my.struct.) ?
         .name = c_derive_struct_name (my.struct)
 
-        c_component_map_attr_scope (c_struct, my.struct)
         c_component_map_attr_visibility (c_struct, my.struct)
+        c_component_map_attr_declaration (c_struct, my.struct)
         c_component_map_attr_definition (c_struct, my.struct)
         c_component_map_attr_uid (c_struct, my.struct)
 
@@ -817,8 +838,8 @@ function c_component_create_macros (macros, destination)
         . = c_format_description (my.macros.) ?
         .name = c_derive_macros_name (my.macros)
 
-        c_component_map_attr_scope (c_macros, my.macros)
         c_component_map_attr_uid (c_macros, my.macros)
+        c_component_map_attr_definition (c_macros, my.macros)
         c_component_map_macros_attr_is_method (c_macros, my.macros)
 
         for my.macros.implementation where lang = "c"
@@ -836,7 +857,7 @@ function c_component_create_macroses (macroses, destination)
     new c_macroses to my.destination
         . = c_format_description (my.macroses.) ?
 
-        c_component_map_attr_scope (c_macroses, my.macroses)
+        c_component_map_attr_definition (c_macroses, my.macroses)
 
         for my.macroses.macros
             c_component_create_macros (macros, c_macroses)
@@ -860,8 +881,8 @@ function c_component_create_callback (callback, destination)
         . = c_format_description (my.callback.) ?
         .name = c_derive_callback_name (my.callback)
 
-        c_component_map_attr_scope (c_callback, my.callback)
         c_component_map_attr_uid (c_callback, my.callback)
+        c_component_map_attr_declaration (c_callback, my.callback)
 
         for my.callback.argument
             c_component_create_argument (argument, c_callback)
@@ -933,9 +954,9 @@ function c_component_create_variable (variable, destination)
         . = c_format_description (my.variable.) ?
         .name = c_derive_variable_name (my.variable)
 
-        c_component_map_attr_scope (c_variable, my.variable)
         c_component_map_attr_uid (c_variable, my.variable)
         c_component_map_attr_visibility (c_variable, my.variable)
+        c_component_map_attr_declaration (c_variable, my.variable)
         c_component_map_attr_definition (c_variable, my.variable)
         c_component_map_instance (c_variable, my.variable)
 

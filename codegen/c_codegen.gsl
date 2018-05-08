@@ -352,7 +352,7 @@ endfunction
 function c_insert_method_signature (c_method, ending)
     check_argument (my, "c_method")
 
-    my.maybe_static = (my.c_method.scope = "private") ?? "static " ? ""
+    my.maybe_static = (my.c_method.declaration = "private") ?? "static " ? ""
 
     insert_code (cat ( \
         c_derive_component_modifiers (my.c_method), my.maybe_static ?, \
@@ -628,7 +628,7 @@ function c_insert_variable_definition (c_variable)
 
     c_insert_description (my.c_variable)
 
-    my.maybe_static = (my.c_variable.scope = "private") ?? "static " ? ""
+    my.maybe_static = (my.c_variable.declaration = "private") ?? "static " ? ""
 
     my.code = "$(my.maybe_static:)$(c_derive_instance_declaration (my.c_variable))"
 

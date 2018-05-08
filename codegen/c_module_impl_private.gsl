@@ -57,7 +57,7 @@ function _A12_add_struct_info (meta, destination)
         Contains common properties for any 'API' implementation object.
         "
         .name = my.names.struct_info
-        .scope = "public"
+        .declaration = "public"
         .definition = "public"
 
         new property
@@ -116,7 +116,7 @@ function  _A12_add_type_self (meta, destination)
         It is used for runtime type casting and checking.
         "
         .name = my.names.class_impl
-        .scope = "public"
+        .declaration = "public"
         .definition = "public"
 
         new property
@@ -149,12 +149,10 @@ function c_module_impl_private_create (meta, destination)
 
         new require
             .module = my.names.module_library
-            .scope = "public"
         endnew
 
         new require
             .module = my.names.module_impl
-            .scope = "public"
         endnew
 
         _A12_add_struct_info (my.meta, module)

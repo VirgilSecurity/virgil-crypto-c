@@ -179,6 +179,8 @@
     <attr name="type" required="1">
         Alias type.
     </attr>
+
+    <inherit entity="declaration"/>
 </entity>
 
 
@@ -189,8 +191,8 @@
         Enumeration name. Can be omitted if it is used to define named constants.
     </attr>
 
-    <inherit entity="scope"/>
     <inherit entity="visibility"/>
+    <inherit entity="declaration"/>
     <inherit entity="definition"/>
     <inherit entity="uid"/>
 
@@ -209,7 +211,7 @@
         Constant value.
     </attr>
 
-    <inherit entity="scope"/>
+    <inherit entity="definition"/>
     <inherit entity="uid"/>
 </entity>
 
@@ -222,6 +224,8 @@
     </attr>
 
     <inherit entity="uid"/>
+    <inherit entity="declaration"/>
+    <inherit entity="definition"/>
 
     <allow entity = "c_property" occurs = "1+"/>
 </entity>
@@ -250,8 +254,8 @@
         Method name.
     </attr>
 
-    <inherit entity="scope"/>
     <inherit entity="visibility"/>
+    <inherit entity="declaration"/>
     <inherit entity="definition"/>
     <inherit entity="uid"/>
 
@@ -269,8 +273,8 @@
         Method name.
     </attr>
 
-    <inherit entity="scope"/>
     <inherit entity="uid"/>
+    <inherit entity="declaration"/>
 
     <allow entity="c_return" occurs="0/1"/>
     <allow entity="c_argument" occurs="0+"/>
@@ -290,8 +294,8 @@
         </restrict>
     </attr>
 
-    <inherit entity="scope"/>
     <inherit entity="uid"/>
+    <inherit entity="definition"/>
 
     <allow entity="c_implementation" occurs="0/1"/>
 </entity>
@@ -300,7 +304,7 @@
 <entity name="c_macroses">
     Define set of macroses in the one implemenatation.
 
-    <inherit entity="scope"/>
+    <inherit entity="definition"/>
 
     <allow entity="c_macros" occurs="1+"/>
     <allow entity="c_implementation" occurs="0/1"/>
@@ -314,10 +318,10 @@
         Object name.
     </attr>
 
-    <inherit entity="scope"/>
-    <inherit entity="visibility"/>
-    <inherit entity="definition"/>
     <inherit entity="uid"/>
+    <inherit entity="visibility"/>
+    <inherit entity="declaration"/>
+    <inherit entity="definition"/>
     <inherit entity="c_instance"/>
 
     <allow entity="c_value" occurs="1+"/>

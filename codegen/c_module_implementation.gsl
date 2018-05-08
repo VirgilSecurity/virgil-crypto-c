@@ -65,7 +65,8 @@ function _Z19_add_interface_api_instance (impl, interface_api, destination, meta
         . = "Configuration of the interface API '$(my.interface_api.name:)'."
         .name = my.interface_api.name
         .class = ref (make_id ("class", my.interface_api.name, "struct", my.interface_api.name))
-        .scope = "private"
+        .declaration = "private"
+        .definition = "private"
 
         for my.interface_api.property
             my.value = item_copy_to (property, variable, "value")
@@ -107,7 +108,8 @@ function _Z19_add_array_of_interface_api_instances (impl, destination, meta)
         . = "Null-terminated array of the implemented 'Interface API' instances."
         .name = my.names.implementation_variable_api_array
         .class = my.refs.class_api_struct_api
-        .scope = "private"
+        .declaration = "private"
+        .definition = "private"
 
         new array to variable
             .length = "derived"
@@ -144,7 +146,8 @@ function _Z19_add_implementation_info_instance (impl, impl_info, destination, me
         . = "Compile-time known information about '$(my.impl.name:)' implementation."
         .name = my.names.implementation_variable_info
         .class = my.refs.class_impl_struct_info
-        .scope = "private"
+        .declaration = "private"
+        .definition = "private"
 
         for my.impl_info.property
             my.value = item_copy_to (property, variable, "value")
@@ -383,8 +386,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add function that returns size of implementation context type.
 # ---------------------------------------------------------------------------
-function _Z19_add_self_type_size_method (impl, [scope], definition, destination, meta)
-    check_arguments (my, "impl, scope, definition, destination, meta", my)
+function _Z19_add_self_type_size_method (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
     if ! _Z19_has_methods_with_context_impl (my.impl)
         return
@@ -398,8 +401,8 @@ function _Z19_add_self_type_size_method (impl, [scope], definition, destination,
         Return size of '$(my.refs.c_implementation_struct_impl)' type.
         "
         .name = cat (my.names.class_impl, "size")
+        .declaration = my.declaration
         .definition = my.definition
-        .[scope] = my.[scope]
 
         new return
             .type = "size"
@@ -417,8 +420,8 @@ endfunction
 #   Add function that cast specific implementation context type to the
 #   common implementation context type.
 # ---------------------------------------------------------------------------
-function _Z19_add_self_type_cast_method (impl, [scope], definition, destination, meta)
-    check_arguments (my, "impl, scope, definition, destination, meta", my)
+function _Z19_add_self_type_cast_method (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
     if ! _Z19_has_methods_with_context_impl (my.impl)
         return
@@ -431,8 +434,8 @@ function _Z19_add_self_type_cast_method (impl, [scope], definition, destination,
         Cast to the '.(c_class_impl_struct_impl)' type.
         "
         .name = my.names.class_impl
+        .declaration = my.declaration
         .definition = my.definition
-        .[scope] = my.[scope]
 
         _Z19_add_argument_impl (method, my.meta)
 
@@ -456,8 +459,8 @@ endfunction
 #       - cleanup ()
 #       - destroy ()
 # ---------------------------------------------------------------------------
-function _Z19_add_lifecycle_methods (impl, [scope], definition, destination, meta)
-    check_arguments (my, "impl, [scope], definition, destination, meta", my)
+function _Z19_add_lifecycle_methods (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
     if ! _Z19_has_methods_with_context_impl (my.impl)
         return
@@ -471,8 +474,8 @@ function _Z19_add_lifecycle_methods (impl, [scope], definition, destination, met
         Perform initialization of preallocated implementation context.
         "
         .name = my.names.method_init
+        .declaration = my.declaration
         .definition = my.definition
-        .[scope] = my.[scope]
 
         _Z19_add_argument_impl (method, my.meta)
 
@@ -483,8 +486,8 @@ function _Z19_add_lifecycle_methods (impl, [scope], definition, destination, met
 
     new method to my.destination
         .name = my.names.method_new
+        .declaration = my.declaration
         .definition = my.definition
-        .[scope] = my.[scope]
 
         . = "\
         Allocate implementation context and perform it's initialization.
@@ -500,8 +503,8 @@ function _Z19_add_lifecycle_methods (impl, [scope], definition, destination, met
 
     new method to my.destination
         .name = my.names.method_cleanup
+        .declaration = my.declaration
         .definition = my.definition
-        .[scope] = my.[scope]
 
         . = "\
         Cleanup sensitive data within implementation context.
@@ -517,8 +520,8 @@ function _Z19_add_lifecycle_methods (impl, [scope], definition, destination, met
 
     new method to my.destination
         .name = my.names.method_destroy
+        .declaration = my.declaration
         .definition = my.definition
-        .[scope] = my.[scope]
 
         . = "\
         Destroy given implementation context and it's dependencies.
@@ -582,8 +585,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add dependency management functions.
 # ---------------------------------------------------------------------------
-function _Z19_add_dependency_methods (impl, [scope], definition, destination, meta)
-    check_arguments (my, "impl, [scope], definition, destination, meta", my)
+function _Z19_add_dependency_methods (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
     if ! _Z19_has_methods_with_context_impl (my.impl)
         return
@@ -598,7 +601,7 @@ function _Z19_add_dependency_methods (impl, [scope], definition, destination, me
             "
             .name = cat (my.names.method_use, require.name)
             .definition = my.definition
-            .[scope] = my.[scope]
+            .declaration = my.declaration
 
 
             _Z19_add_argument_impl (method, my.meta)
@@ -615,7 +618,7 @@ function _Z19_add_dependency_methods (impl, [scope], definition, destination, me
                 "
                 .name = cat (my.names.method_take, require.name)
                 .definition = my.definition
-                .[scope] = my.[scope]
+                .declaration = my.declaration
 
                 _Z19_add_argument_impl (method, my.meta)
 

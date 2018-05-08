@@ -10,25 +10,25 @@ attribute names are case-sensitive and we use only lower-case names.
     <c_module output_source_file once_guard name header_file source_file output_header_file
          [of_class] [scope]>
        <c_include file [scope] [is_system]/>
-       <c_alias name type/>
-       <c_enum [uid] [definition] [visibility] [scope] [name]>
-          <c_constant name [scope] [uid] [value]/>
+       <c_alias type name [declaration]/>
+       <c_enum [uid] [definition] [declaration] [visibility] [name]>
+          <c_constant name [definition] [uid] [value]/>
        </c_enum>
-       <c_struct name [uid]>
+       <c_struct name [declaration] [uid] [definition]>
           <c_property type type_is name [array] [accessed_by] [length] [is_const_type] [is_const_pointer]
                [is_const_array] [is_const_string] [is_const_reference] [uid]
                [string] [bits]/>
        </c_struct>
        <c_variable type type_is name [accessed_by] [string] [length] [is_const_type] [is_const_pointer]
-            [is_const_array] [is_const_string] [is_const_reference] [uid] [definition]
-            [visibility] [scope] [array]>
+            [is_const_array] [is_const_string] [is_const_reference] [definition]
+            [declaration] [visibility] [uid] [array]>
           <c_value value>
              <c_cast type type_is [accessed_by] [array] [string] [length] [is_const_type] [is_const_pointer]
                   [is_const_array] [is_const_string] [is_const_reference]/>
           </c_value>
           <c_modifier [value]/>
        </c_variable>
-       <c_method name [definition] [visibility] [scope] [uid]>
+       <c_method name [definition] [declaration] [visibility] [uid]>
           <c_modifier .../>
           <c_return type type_is [accessed_by] [array] [string] [length] [is_const_type] [is_const_pointer]
                [is_const_array] [is_const_string] [is_const_reference]/>
@@ -37,14 +37,14 @@ attribute names are case-sensitive and we use only lower-case names.
                [accessed_by]/>
           <c_precondition [position]/>
        </c_method>
-       <c_callback name [scope] [uid]>
+       <c_callback name [uid] [declaration]>
           <c_return .../>
           <c_argument .../>
        </c_callback>
-       <c_macros [uid] [scope] [is_method]>
+       <c_macros [definition] [uid] [is_method]>
           <c_implementation/>
        </c_macros>
-       <c_macroses [scope]>
+       <c_macroses [definition]>
           <c_macros .../>
           <c_implementation .../>
        </c_macroses>
@@ -92,8 +92,10 @@ of_class:
 
 scope:
     Defines component visibility within scope. This attribute must not be
-    inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:
+    inherited. Note, scope attribute can be used for components, that can not
+    be defined in terms of 'declaration' and 'definition'. The scope
+    attribute is optional. Its default value is "public". It can take one of
+    the following values:
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -139,8 +141,10 @@ The c_include item can have these attributes:
 
 scope:
     Defines component visibility within scope. This attribute must not be
-    inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:
+    inherited. Note, scope attribute can be used for components, that can not
+    be defined in terms of 'declaration' and 'definition'. The scope
+    attribute is optional. Its default value is "public". It can take one of
+    the following values:
 
 Value: Meaning:
 public: Component is visible for outside world.
@@ -165,11 +169,22 @@ The 'c_alias' item
 Define synonym for the given type.
 
     <c_alias
-        name = "..."
         type = "..."
+        name = "..."
+      [ declaration = "public | private | external"  ("public") ]
         />
 
 The c_alias item can have these attributes:
+
+declaration:
+    Defines where component will be declared. This attribute must not be
+    inherited. The declaration attribute is optional. Its default value is
+    "public". It can take one of the following values:
+
+Value: Meaning:
+public: Component declaration is visible for outside world.
+private: Component declaration is hidden in a correspond source file.
+external: Component declaration is located somewhere.
 
 name:
     Alias name. The name attribute is required.
@@ -186,8 +201,8 @@ Defines enumeration type.
     <c_enum
       [ uid = "..." ]
       [ definition = "public | private | external"  ("private") ]
+      [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
-      [ scope = "public | private | internal"  ("public") ]
       [ name = "..." ]
         >
         <c_constant>, 1 or more
@@ -209,6 +224,16 @@ public: Component definition is visible for outside world.
 private: Component definition is hidden in a correspond source file.
 external: Component definition is located somewhere.
 
+declaration:
+    Defines where component will be declared. This attribute must not be
+    inherited. The declaration attribute is optional. Its default value is
+    "public". It can take one of the following values:
+
+Value: Meaning:
+public: Component declaration is visible for outside world.
+private: Component declaration is hidden in a correspond source file.
+external: Component declaration is located somewhere.
+
 visibility:
     Defines symbol binary visibility. This attribute must not be inherited.
     The visibility attribute is optional. Its default value is "public". It
@@ -217,16 +242,6 @@ visibility:
 Value: Meaning:
 public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
-
-scope:
-    Defines component visibility within scope. This attribute must not be
-    inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:
-
-Value: Meaning:
-public: Component is visible for outside world.
-private: Component is visible for outside world via private interface.
-internal: Component is visible only within library or a specific source file.
 
 name:
     Enumeration name. Can be omitted if it is used to define named constants.
@@ -240,7 +255,7 @@ Defines integral constant.
 
     <c_constant
         name = "..."
-      [ scope = "public | private | internal"  ("public") ]
+      [ definition = "public | private | external"  ("private") ]
       [ uid = "..." ]
       [ value = "..." ]
         />
@@ -251,15 +266,15 @@ uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
 
-scope:
-    Defines component visibility within scope. This attribute must not be
-    inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:
+definition:
+    Defines where component will be defined. This attribute must not be
+    inherited. The definition attribute is optional. Its default value is
+    "private". It can take one of the following values:
 
 Value: Meaning:
-public: Component is visible for outside world.
-private: Component is visible for outside world via private interface.
-internal: Component is visible only within library or a specific source file.
+public: Component definition is visible for outside world.
+private: Component definition is hidden in a correspond source file.
+external: Component definition is located somewhere.
 
 name:
     Constant name. The name attribute is required.
@@ -275,12 +290,34 @@ Define structure type.
 
     <c_struct
         name = "..."
+      [ declaration = "public | private | external"  ("public") ]
       [ uid = "..." ]
+      [ definition = "public | private | external"  ("private") ]
         >
         <c_property>, 1 or more
     </c_struct>
 
 The c_struct item can have these attributes:
+
+definition:
+    Defines where component will be defined. This attribute must not be
+    inherited. The definition attribute is optional. Its default value is
+    "private". It can take one of the following values:
+
+Value: Meaning:
+public: Component definition is visible for outside world.
+private: Component definition is hidden in a correspond source file.
+external: Component definition is located somewhere.
+
+declaration:
+    Defines where component will be declared. This attribute must not be
+    inherited. The declaration attribute is optional. Its default value is
+    "public". It can take one of the following values:
+
+Value: Meaning:
+public: Component declaration is visible for outside world.
+private: Component declaration is hidden in a correspond source file.
+external: Component declaration is located somewhere.
 
 uid:
     Unique component identifier represents name that uniquely identifies
@@ -407,10 +444,10 @@ Defines a type of outer component. Define global variable.
       [ is_const_array = "..." ]
       [ is_const_string = "..." ]
       [ is_const_reference = "..." ]
-      [ uid = "..." ]
       [ definition = "public | private | external"  ("private") ]
+      [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
-      [ scope = "public | private | internal"  ("public") ]
+      [ uid = "..." ]
       [ array = "null_terminated | given | fixed | derived" ]
         >
         <c_value>, 1 or more
@@ -483,10 +520,6 @@ is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
     The is_const_reference attribute is optional.
 
-uid:
-    Unique component identifier represents name that uniquely identifies
-    component within models hierarchy. The uid attribute is optional.
-
 definition:
     Defines where component will be defined. This attribute must not be
     inherited. The definition attribute is optional. Its default value is
@@ -497,6 +530,16 @@ public: Component definition is visible for outside world.
 private: Component definition is hidden in a correspond source file.
 external: Component definition is located somewhere.
 
+declaration:
+    Defines where component will be declared. This attribute must not be
+    inherited. The declaration attribute is optional. Its default value is
+    "public". It can take one of the following values:
+
+Value: Meaning:
+public: Component declaration is visible for outside world.
+private: Component declaration is hidden in a correspond source file.
+external: Component declaration is located somewhere.
+
 visibility:
     Defines symbol binary visibility. This attribute must not be inherited.
     The visibility attribute is optional. Its default value is "public". It
@@ -506,15 +549,9 @@ Value: Meaning:
 public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
 
-scope:
-    Defines component visibility within scope. This attribute must not be
-    inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:
-
-Value: Meaning:
-public: Component is visible for outside world.
-private: Component is visible for outside world via private interface.
-internal: Component is visible only within library or a specific source file.
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.
 
 name:
     Object name. The name attribute is required.
@@ -647,8 +684,8 @@ Define method signature and implementation (optional).
     <c_method
         name = "..."
       [ definition = "public | private | external"  ("private") ]
+      [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
-      [ scope = "public | private | internal"  ("public") ]
       [ uid = "..." ]
         >
         <c_modifier>
@@ -673,6 +710,16 @@ public: Component definition is visible for outside world.
 private: Component definition is hidden in a correspond source file.
 external: Component definition is located somewhere.
 
+declaration:
+    Defines where component will be declared. This attribute must not be
+    inherited. The declaration attribute is optional. Its default value is
+    "public". It can take one of the following values:
+
+Value: Meaning:
+public: Component declaration is visible for outside world.
+private: Component declaration is hidden in a correspond source file.
+external: Component declaration is located somewhere.
+
 visibility:
     Defines symbol binary visibility. This attribute must not be inherited.
     The visibility attribute is optional. Its default value is "public". It
@@ -681,16 +728,6 @@ visibility:
 Value: Meaning:
 public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
-
-scope:
-    Defines component visibility within scope. This attribute must not be
-    inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:
-
-Value: Meaning:
-public: Component is visible for outside world.
-private: Component is visible for outside world via private interface.
-internal: Component is visible only within library or a specific source file.
 
 name:
     Method name. The name attribute is required.
@@ -901,8 +938,8 @@ Define callback type.
 
     <c_callback
         name = "..."
-      [ scope = "public | private | internal"  ("public") ]
       [ uid = "..." ]
+      [ declaration = "public | private | external"  ("public") ]
         >
         <c_return>, optional
         <c_argument>
@@ -910,19 +947,19 @@ Define callback type.
 
 The c_callback item can have these attributes:
 
-uid:
-    Unique component identifier represents name that uniquely identifies
-    component within models hierarchy. The uid attribute is optional.
-
-scope:
-    Defines component visibility within scope. This attribute must not be
-    inherited. The scope attribute is optional. Its default value is
+declaration:
+    Defines where component will be declared. This attribute must not be
+    inherited. The declaration attribute is optional. Its default value is
     "public". It can take one of the following values:
 
 Value: Meaning:
-public: Component is visible for outside world.
-private: Component is visible for outside world via private interface.
-internal: Component is visible only within library or a specific source file.
+public: Component declaration is visible for outside world.
+private: Component declaration is hidden in a correspond source file.
+external: Component declaration is located somewhere.
+
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.
 
 name:
     Method name. The name attribute is required.
@@ -934,8 +971,8 @@ The 'c_macros' item
 Define macros, that can represent a constant or a method.
 
     <c_macros
+      [ definition = "public | private | external"  ("private") ]
       [ uid = "..." ]
-      [ scope = "public | private | internal"  ("public") ]
       [ is_method = "0 | 1"  ("0") ]
         >
         <c_implementation>, optional
@@ -943,19 +980,19 @@ Define macros, that can represent a constant or a method.
 
 The c_macros item can have these attributes:
 
+definition:
+    Defines where component will be defined. This attribute must not be
+    inherited. The definition attribute is optional. Its default value is
+    "private". It can take one of the following values:
+
+Value: Meaning:
+public: Component definition is visible for outside world.
+private: Component definition is hidden in a correspond source file.
+external: Component definition is located somewhere.
+
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
-
-scope:
-    Defines component visibility within scope. This attribute must not be
-    inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:
-
-Value: Meaning:
-public: Component is visible for outside world.
-private: Component is visible for outside world via private interface.
-internal: Component is visible only within library or a specific source file.
 
 is_method:
     The is_method attribute is optional. Its default value is "0". It can
@@ -981,7 +1018,7 @@ The 'c_macroses' item
 Define set of macroses in the one implemenatation.
 
     <c_macroses
-      [ scope = "public | private | internal"  ("public") ]
+      [ definition = "public | private | external"  ("private") ]
         >
         <c_macros>, 1 or more
         <c_implementation>, optional
@@ -989,13 +1026,13 @@ Define set of macroses in the one implemenatation.
 
 The c_macroses item has this single attribute:
 
-scope:
-    Defines component visibility within scope. This attribute must not be
-    inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:
+definition:
+    Defines where component will be defined. This attribute must not be
+    inherited. The definition attribute is optional. Its default value is
+    "private". It can take one of the following values:
 
 Value: Meaning:
-public: Component is visible for outside world.
-private: Component is visible for outside world via private interface.
-internal: Component is visible only within library or a specific source file.
+public: Component definition is visible for outside world.
+private: Component definition is hidden in a correspond source file.
+external: Component definition is located somewhere.
 
