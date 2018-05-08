@@ -98,9 +98,7 @@
             Name of the context.
         </attr>
 
-        <attr name="c_type" required="1">
-            C type of the underlying context.
-        </attr>
+        <inherit entity="instance"/>
     </entity>
 
 
