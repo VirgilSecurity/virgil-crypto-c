@@ -346,8 +346,8 @@ function _X17_add_entity_implementation (meta, implementation)
                 make_id ("class", my.name, "method destroy"))
 
         #   Types
-        _X17_add_name (entity, "implementation module types", make_id (my.name, "types"))
-        _X17_add_link (entity, "implementation module types", make_id ("module", my.name, "types"))
+        _X17_add_name (entity, "implementation module impl", make_id (my.name, "impl"))
+        _X17_add_link (entity, "implementation module impl", make_id ("module", my.name, "impl"))
 
         #   Internal
         _X17_add_name (entity, "implementation module internal", make_id (my.name, "internal"))

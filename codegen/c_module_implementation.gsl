@@ -37,7 +37,7 @@
 #   Create 3 modules with 'Implementation API'.
 #   For details see functions description:
 #       - c_module_implementation_create_public_module ()
-#       - c_module_implementation_create_types_module ()
+#       - c_module_implementation_create_module_impl ()
 #       - c_module_implementation_create_internal_module ()
 #
 #   Private function prefix is: Z19.
@@ -205,6 +205,13 @@ function _Z19_add_public_module_includes (impl, destination, meta)
             .module = my.names.module_impl
         endnew
     endif
+
+    if _Z19_has_methods_with_context_impl (my.impl)
+        new require to my.destination
+            .module = my.names.implementation_module_impl
+            .scope = "private"
+        endnew
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -226,7 +233,7 @@ function _Z19_add_internal_module_includes (impl, destination, meta)
 
     if _Z19_has_methods_with_context_impl (my.impl)
         new require to my.destination
-            .module = my.names.implementation_module_types
+            .module = my.names.implementation_module_impl
             .scope = "private"
         endnew
     endif
@@ -316,34 +323,6 @@ function _Z19_add_self_tag (implementation, enum, meta)
     endnew
 endfunction
 
-
-# ---------------------------------------------------------------------------
-#   Add type that handles implementation details.
-# ---------------------------------------------------------------------------
-function _Z19_add_ctx_type (impl, definition, destination, meta)
-    check_arguments (my, "impl, definition, destination, meta", my)
-
-    if ! _Z19_has_methods_with_context_impl (my.impl)
-        return
-    endif
-
-    my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
-
-    new struct to my.destination
-        . = "Handles implementation context details."
-        .name = my.names.class_ctx
-        .definition = my.definition
-
-        for my.impl.interface
-            for interface.context
-                item_copy_to (context, struct, "property")
-            endfor
-        endfor
-    endnew
-endfunction
-
-
 # ---------------------------------------------------------------------------
 #   Add type that handles implementation details.
 # ---------------------------------------------------------------------------
@@ -385,17 +364,16 @@ function _Z19_add_impl_type (impl, definition, destination, meta)
             endnew
         endfor
 
-        new property to struct
-            . = "Interface implementation specific context."
-            .name = my.names.class_ctx
-            .class = my.refs.implementation_struct_ctx
-            .access = "readwrite"
-            .is_value = 1
-        endnew
+        for my.impl.interface
+            for interface.context
+                my.property = item_copy_to (context, struct, "property")
+                my.property. ?= "Interface implementation specific context."
+            endfor
+        endfor
 
         for my.impl.require where type = "interface"
             new property to struct
-                . = "Ownership status of the dependency to the interface '$(require.name:)' ."
+                . = "Ownership status of the dependency to the interface '$(require.name:)'."
                 .name = cat ("is", require.name, "owning")
                 .type = "size"
                 .bits = 1
@@ -664,6 +642,25 @@ function _Z19_add_dependency_methods (impl, declaration, definition, destination
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Add function that returns pointer to implementation specific context.
+# ---------------------------------------------------------------------------
+function _Z19_add_get_context_method (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
+
+    if ! _Z19_has_methods_with_context_impl (my.impl)
+        return
+    endif
+
+    return
+    new method to my.destination
+        . = "\
+        Returns implementation specific context.
+        Use this function to access context instead of usage private API.
+        "
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Add next instances:
 #       - implemented interface api instance
 #       - implemented interface api instances as array
@@ -729,9 +726,9 @@ endfunction
 
 # ---------------------------------------------------------------------------
 #   Creates module with:
-#       - Implementation API types definition
+#       - Implementation type definition.
 # ---------------------------------------------------------------------------
-function c_module_implementation_create_types_module (impl, destination, meta)
+function c_module_implementation_create_module_impl (impl, destination, meta)
     check_arguments (my, "impl, destination, meta", my)
 
     if ! _Z19_has_methods_with_context_impl (my.impl)
@@ -748,7 +745,7 @@ function c_module_implementation_create_types_module (impl, destination, meta)
         object in the stack memory.
         "
 
-        .name = my.names.implementation_module_types
+        .name = my.names.implementation_module_impl
         .of_class = my.names.implementation_class
         .scope = "private"
 
@@ -760,7 +757,6 @@ function c_module_implementation_create_types_module (impl, destination, meta)
             .module = my.names.module_impl_private
         endnew
 
-        _Z19_add_ctx_type (my.impl, "public", module, my.meta)
         _Z19_add_impl_type (my.impl, "public", module, my.meta)
     endnew
 endfunction
@@ -794,6 +790,7 @@ function c_module_implementation_create_internal_module (impl, source, destinati
         _Z19_add_impl_type_size_method (my.impl, "external", "private", module, my.meta)
         _Z19_add_impl_type_cast_method (my.impl, "external", "private", module, my.meta)
         _Z19_add_lifecycle_methods (my.impl, "external", "private", module, my.meta)
+        _Z19_add_get_context_method (my.impl, "public", "private", module, my.meta)
     endnew
 endfunction
 
@@ -814,7 +811,7 @@ function c_module_implementation_create (source, destination, meta)
         meta_reset_active_entity (my.meta, implementation.name)
 
         c_module_implementation_create_public_module (implementation, my.enum_impl_tag, my.destination, my.meta)
-        c_module_implementation_create_types_module (implementation, my.destination, my.meta)
+        c_module_implementation_create_module_impl (implementation, my.destination, my.meta)
         c_module_implementation_create_internal_module (implementation, my.source, my.destination, my.meta)
     endfor
 endfunction

@@ -52,7 +52,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsf_sha256_types.h"
+#include "vsf_sha256_impl.h"
 //  @end
 
 
