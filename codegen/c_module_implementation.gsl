@@ -642,25 +642,6 @@ function _Z19_add_dependency_methods (impl, declaration, definition, destination
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Add function that returns pointer to implementation specific context.
-# ---------------------------------------------------------------------------
-function _Z19_add_get_context_method (impl, declaration, definition, destination, meta)
-    check_arguments (my, "impl, declaration, definition, destination, meta", my)
-
-    if ! _Z19_has_methods_with_context_impl (my.impl)
-        return
-    endif
-
-    return
-    new method to my.destination
-        . = "\
-        Returns implementation specific context.
-        Use this function to access context instead of usage private API.
-        "
-    endnew
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Add next instances:
 #       - implemented interface api instance
 #       - implemented interface api instances as array
@@ -770,7 +751,6 @@ endfunction
 #       - function that returns implementation type size - definition only
 #       - function that cast implementation type to the common
 #         implementation type - definition only
-#       - function that returns pointer to implementation specific context
 # ---------------------------------------------------------------------------
 function c_module_implementation_create_internal_module (impl, source, destination, meta)
     check_arguments (my, "impl, source, destination, meta", my)
@@ -790,7 +770,6 @@ function c_module_implementation_create_internal_module (impl, source, destinati
         _Z19_add_impl_type_size_method (my.impl, "external", "private", module, my.meta)
         _Z19_add_impl_type_cast_method (my.impl, "external", "private", module, my.meta)
         _Z19_add_lifecycle_methods (my.impl, "external", "private", module, my.meta)
-        _Z19_add_get_context_method (my.impl, "public", "private", module, my.meta)
     endnew
 endfunction
 
