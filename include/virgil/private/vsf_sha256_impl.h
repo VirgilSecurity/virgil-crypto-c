@@ -52,8 +52,8 @@
 //  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_SHA256_TYPES_H_INCLUDED
-#define VSF_SHA256_TYPES_H_INCLUDED
+#ifndef VSF_SHA256_IMPL_H_INCLUDED
+#define VSF_SHA256_IMPL_H_INCLUDED
 
 #include "vsf_library.h"
 #include "vsf_impl_private.h"
@@ -71,14 +71,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation context details.
-//
-struct vsf_sha256_ctx_t {
-    void* hash_ctx;
-};
-typedef struct vsf_sha256_ctx_t vsf_sha256_ctx_t;
-
-//
 //  Handles implementation details.
 //
 struct vsf_sha256_impl_t {
@@ -89,7 +81,7 @@ struct vsf_sha256_impl_t {
     //
     //  Interface implementation specific context.
     //
-    vsf_sha256_ctx_t* ctx;
+    void* hash_ctx;
 };
 typedef struct vsf_sha256_impl_t vsf_sha256_impl_t;
 
@@ -106,5 +98,5 @@ typedef struct vsf_sha256_impl_t vsf_sha256_impl_t;
 
 
 //  @footer
-#endif // VSF_SHA256_TYPES_H_INCLUDED
+#endif // VSF_SHA256_IMPL_H_INCLUDED
 //  @end
