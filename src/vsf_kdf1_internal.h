@@ -53,7 +53,6 @@
 #define VSF_KDF1_INTERNAL_H_INCLUDED
 
 #include "vsf_library.h"
-#include "vsf_kdf1.h"
 //  @end
 
 

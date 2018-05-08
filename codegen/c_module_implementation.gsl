@@ -67,6 +67,7 @@ function _Z19_add_interface_api_instance (impl, interface_api, destination, meta
         .class = ref (make_id ("class", my.interface_api.name, "struct", my.interface_api.name))
         .declaration = "private"
         .definition = "private"
+        .is_reference = "0"
 
         for my.interface_api.property
             my.value = item_copy_to (property, variable, "value")
@@ -148,6 +149,7 @@ function _Z19_add_implementation_info_instance (impl, impl_info, destination, me
         .class = my.refs.class_impl_struct_info
         .declaration = "private"
         .definition = "private"
+        .is_reference = "0"
 
         for my.impl_info.property
             my.value = item_copy_to (property, variable, "value")
@@ -187,6 +189,11 @@ function _Z19_add_public_module_includes (impl, destination, meta)
         .module = my.names.module_library
     endnew
 
+    new require to my.destination
+        .module = my.names.module_assert
+        .scope = "private"
+    endnew
+
     for my.impl.require where type = "api" as interface_api
         new require to my.destination
             .module = interface_api.name
@@ -214,6 +221,7 @@ function _Z19_add_internal_module_includes (impl, destination, meta)
 
     new require to my.destination
         .module = my.names.implementation_module
+        .scope = "private"
     endnew
 
     if _Z19_has_methods_with_context_impl (my.impl)
@@ -312,7 +320,39 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add type that handles implementation details.
 # ---------------------------------------------------------------------------
-function _Z19_add_self_type (impl, definition, destination, meta)
+function _Z19_add_ctx_type (impl, definition, destination, meta)
+    check_arguments (my, "impl, definition, destination, meta", my)
+
+    if ! _Z19_has_methods_with_context_impl (my.impl)
+        return
+    endif
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new struct to my.destination
+        . = "Handles implementation context details."
+        .name = my.names.class_ctx
+        .definition = my.definition
+
+        for my.impl.interface
+            for interface.context
+                new property to struct
+                    . = context. ?
+                    .name = context.name
+                    .class = context.c_type
+                    .access = "readwrite"
+                endnew
+            endfor
+        endfor
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add type that handles implementation details.
+# ---------------------------------------------------------------------------
+function _Z19_add_impl_type (impl, definition, destination, meta)
     check_arguments (my, "impl, definition, destination, meta", my)
 
     if ! _Z19_has_methods_with_context_impl (my.impl)
@@ -350,16 +390,13 @@ function _Z19_add_self_type (impl, definition, destination, meta)
             endnew
         endfor
 
-        for my.impl.interface
-            for interface.context
-                new property to struct
-                    . = "Interface implementation specific context."
-                    .name = context.name
-                    .class = context.c_type
-                    .access = "readwrite"
-                endnew
-            endfor
-        endfor
+        new property to struct
+            . = "Interface implementation specific context."
+            .name = my.names.class_ctx
+            .class = my.refs.implementation_struct_ctx
+            .access = "readwrite"
+            .is_value = 1
+        endnew
 
         for my.impl.require where type = "interface"
             new property to struct
@@ -386,7 +423,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add function that returns size of implementation context type.
 # ---------------------------------------------------------------------------
-function _Z19_add_self_type_size_method (impl, declaration, definition, destination, meta)
+function _Z19_add_impl_type_size_method (impl, declaration, definition, destination, meta)
     check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
     if ! _Z19_has_methods_with_context_impl (my.impl)
@@ -420,7 +457,7 @@ endfunction
 #   Add function that cast specific implementation context type to the
 #   common implementation context type.
 # ---------------------------------------------------------------------------
-function _Z19_add_self_type_cast_method (impl, declaration, definition, destination, meta)
+function _Z19_add_impl_type_cast_method (impl, declaration, definition, destination, meta)
     check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
     if ! _Z19_has_methods_with_context_impl (my.impl)
@@ -685,9 +722,9 @@ function c_module_implementation_create_public_module (impl, enum_impl_tag, dest
 
         _Z19_add_public_module_includes (my.impl, module, my.meta)
         _Z19_add_self_tag (my.impl, my.enum_impl_tag, my.meta)
-        _Z19_add_self_type (my.impl, "external", module, my.meta)
-        _Z19_add_self_type_size_method (my.impl, "public", "external", module, my.meta)
-        _Z19_add_self_type_cast_method (my.impl, "public", "external", module, my.meta)
+        _Z19_add_impl_type (my.impl, "external", module, my.meta)
+        _Z19_add_impl_type_size_method (my.impl, "public", "external", module, my.meta)
+        _Z19_add_impl_type_cast_method (my.impl, "public", "external", module, my.meta)
         _Z19_add_interface_constants (my.impl, module, my.meta)
         _Z19_add_interface_methods (my.impl, "public", module, my.meta)
         _Z19_add_lifecycle_methods (my.impl, "public", "external", module, my.meta)
@@ -728,7 +765,8 @@ function c_module_implementation_create_types_module (impl, destination, meta)
             .module = my.names.module_impl_private
         endnew
 
-        _Z19_add_self_type (my.impl, "public", module, my.meta)
+        _Z19_add_ctx_type (my.impl, "public", module, my.meta)
+        _Z19_add_impl_type (my.impl, "public", module, my.meta)
     endnew
 endfunction
 
@@ -741,6 +779,7 @@ endfunction
 #       - function that returns implementation type size - definition only
 #       - function that cast implementation type to the common
 #         implementation type - definition only
+#       - function that returns pointer to implementation specific context
 # ---------------------------------------------------------------------------
 function c_module_implementation_create_internal_module (impl, source, destination, meta)
     check_arguments (my, "impl, source, destination, meta", my)
@@ -757,9 +796,9 @@ function c_module_implementation_create_internal_module (impl, source, destinati
 
         _Z19_add_internal_module_includes (my.impl, module, my.meta)
         _Z19_add_instances (my.impl, my.source, module, my.meta)
-        _Z19_add_self_type_size_method (my.impl, "public", "private", module, my.meta)
-        _Z19_add_self_type_cast_method (my.impl, "public", "private", module, my.meta)
-        _Z19_add_lifecycle_methods (my.impl, "public", "private", module, my.meta)
+        _Z19_add_impl_type_size_method (my.impl, "external", "private", module, my.meta)
+        _Z19_add_impl_type_cast_method (my.impl, "external", "private", module, my.meta)
+        _Z19_add_lifecycle_methods (my.impl, "external", "private", module, my.meta)
     endnew
 endfunction
 
