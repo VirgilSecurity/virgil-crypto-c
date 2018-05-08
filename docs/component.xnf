@@ -164,6 +164,22 @@
         </restrict>
     </attr>
 
+    <attr name="is_reference" required="1">
+        Defines whether instance is a 'reference' instance.
+        For 'type'     - default is '0'.
+        For 'enum'     - default is '0'.
+        For 'callback' - default is '0'.
+        For 'class'    - default is '1'.
+
+        <restrict value="0">
+            Instance is not a refernce.
+        </restrict>
+
+        <restrict value="1">
+            Instance is a reference to the other instance.
+        </restrict>
+    </attr>
+
     <inherit entity="access"/>
 
     <allow entity="string" occurs="0/1"/>

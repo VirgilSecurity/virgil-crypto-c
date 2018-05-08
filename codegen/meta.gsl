@@ -203,6 +203,8 @@ function _X17_add_entity_impl (meta)
         .id = my.id
         .is_active = 1
 
+        _X17_add_smart_name (entity, "class", "ctx")
+
         _X17_add_smart_linked_name (entity, "class", "impl")
         _X17_add_smart_linked_name (entity, "module", "impl")
         _X17_add_smart_linked_name (entity, "module", "impl private")
@@ -330,6 +332,9 @@ function _X17_add_entity_implementation (meta, implementation)
 
         _X17_add_name (entity, "implementation struct impl", cat (my.name, "impl"))
         _X17_add_link (entity, "implementation struct impl", make_id ("class", my.name, "struct", "impl"))
+
+        _X17_add_name (entity, "implementation struct ctx", cat (my.name, "ctx"))
+        _X17_add_link (entity, "implementation struct ctx", make_id ("class", my.name, "struct", "ctx"))
 
         _X17_add_link (entity, "implementation constant tag", \
                 make_id ("class impl enum tag constant", my.name))

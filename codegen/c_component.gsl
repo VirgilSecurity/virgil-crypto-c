@@ -478,46 +478,24 @@ function c_component_map_instance_attr_type_is (c_instance, instance)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Define c_instance.accessed_by:
-#       * value - if instance is a type or enum with readonly access;
-#               - if instance is a class variable;
-#               - if instance is a callback with readonly access;
-#               - if instance is a string or array of primitive types.
-#
-#       * pointer - if instance is of any type;
-#                 - if instance is a type or enum with write access;
-#                 - if instance is a class with any access except disown;
-#                 - if return a class with any access.
-#
-#       * reference - if instance is a class with disown access.
+#   Define attribute: c_instance.accessed_by
 # ---------------------------------------------------------------------------
 function c_component_map_instance_attr_accessed_by (c_instance, instance)
     check_arguments (my, "c_instance, instance", my)
 
-    if (((defined (my.instance.class) & name (my.c_instance) = "c_variable") & \
-                    my.instance.class <> "any" & ! count (my.instance.array)) | \
-            (defined (my.instance.callback) & my.instance.access = "readonly") | \
-            (defined (my.instance.type) & my.instance.access = "readonly") | \
-            (defined (my.instance.enum) & my.instance.access = "readonly") | \
-            (defined (my.instance.type) & count (my.instance.array)) | \
-            (defined (my.instance.type) & count (my.instance.string)) | \
-            (defined (my.instance.enum) & count (my.instance.array)))
-        my.c_instance.accessed_by = "value"
+    if is_true (my.instance.is_reference)
 
-    elsif ((defined (my.instance.type) & my.instance.class = "any") | \
-            (defined (my.instance.class) & name (my.c_instance) = "c_return") | \
-            (defined (my.instance.class) & my.instance.access <> "disown") | \
-            (defined (my.instance.type) & string.match (my.instance.access, "write")) | \
-            (defined (my.instance.enum) & string.match (my.instance.access, "write")))
+        if my.instance.access = "disown" & name (my.instance) <> "return"
+            my.c_instance.accessed_by = "reference"
 
-        my.c_instance.accessed_by = "pointer"
+        else
+            my.c_instance.accessed_by = "pointer"
+        endif
 
-    elsif defined (my.instance.class) & my.instance.access = "disown"
-        my.c_instance.accessed_by = "reference"
     else
-        my.instance_dump = component_instance_dump (my.instance)
-        echo_fatal ("Can not resolve instance $(my.instance_dump:)", my)
+        my.c_instance.accessed_by = "value"
     endif
+
 endfunction
 
 # ---------------------------------------------------------------------------

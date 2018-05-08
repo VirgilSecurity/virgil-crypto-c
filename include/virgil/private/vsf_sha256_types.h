@@ -71,6 +71,14 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Handles implementation context details.
+//
+struct vsf_sha256_ctx_t {
+    void* hash_ctx;
+};
+typedef struct vsf_sha256_ctx_t vsf_sha256_ctx_t;
+
+//
 //  Handles implementation details.
 //
 struct vsf_sha256_impl_t {
@@ -81,7 +89,7 @@ struct vsf_sha256_impl_t {
     //
     //  Interface implementation specific context.
     //
-    void ** hash_ctx;
+    vsf_sha256_ctx_t* ctx;
 };
 typedef struct vsf_sha256_impl_t vsf_sha256_impl_t;
 

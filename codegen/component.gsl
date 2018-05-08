@@ -599,6 +599,20 @@ function component_resolve_instance_attr_size (instance, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve attribute: instance.is_reference.
+#   Rules:
+#       For 'type'     - default is '0'.
+#       For 'enum'     - default is '0'.
+#       For 'callback' - default is '0'.
+#       For 'class'    - default is '1'.
+# ---------------------------------------------------------------------------
+function component_resolve_instance_attr_is_reference (instance, parent)
+    check_arguments (my, "instance, parent")
+
+    my.instance.is_reference ?= defined (my.instance.class)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve attribute: string.length.
 # ---------------------------------------------------------------------------
 function component_resolve_string_attr_length (string, parent)
@@ -814,6 +828,7 @@ function component_resolve_instance (instance, parent)
 
     component_resolve_instance_attr_access (my.instance, my.parent)
     component_resolve_instance_attr_size (my.instance, my.parent)
+    component_resolve_instance_attr_is_reference (my.instance, my.parent)
 
     if count (my.instance.string)
         component_resolve_string (my.instance->string, my.instance)

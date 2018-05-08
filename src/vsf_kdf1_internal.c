@@ -50,6 +50,7 @@
 // --------------------------------------------------------------------------
 
 #include "vsf_kdf1_internal.h"
+#include "vsf_kdf1.h"
 #include "vsf_kdf_api.h"
 //  @end
 
