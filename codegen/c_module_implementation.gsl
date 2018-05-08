@@ -454,8 +454,12 @@ function _Z19_add_impl_type_cast_method (impl, declaration, definition, destinat
             .access = "readwrite"
         endnew
 
+        my.impl = ".(_argument_$(make_id (my.names.implementation_struct_impl)))"
         new implementation to method
-            . = "return (.(c_class_impl_struct_impl) *) (.(_argument_$(make_id (my.names.implementation_struct_impl))));"
+            . = "\
+            .(c_class_assert_macros_assert) ($(my.impl));
+            return (.(c_class_impl_struct_impl) *) ($(my.impl));
+            "
         endnew
 
         return method
@@ -489,7 +493,7 @@ function _Z19_add_lifecycle_methods (impl, declaration, definition, destination,
 
         _Z19_add_argument_impl (method, my.meta)
 
-        new c_implementation
+        new implementation
             . = "//TODO: Implement me."
         endnew
     endnew
@@ -506,7 +510,7 @@ function _Z19_add_lifecycle_methods (impl, declaration, definition, destination,
 
         _Z19_add_return_impl (method, my.meta)
 
-        new c_implementation
+        new implementation
             . = "//TODO: Implement me."
         endnew
     endnew
@@ -523,7 +527,7 @@ function _Z19_add_lifecycle_methods (impl, declaration, definition, destination,
 
         _Z19_add_argument_impl (method, my.meta)
 
-        new c_implementation
+        new implementation
             . = "//TODO: Implement me."
         endnew
     endnew
@@ -542,7 +546,7 @@ function _Z19_add_lifecycle_methods (impl, declaration, definition, destination,
 
         _Z19_add_argument_impl (method, my.meta, "disown")
 
-        new c_implementation
+        new implementation
             . = "//TODO: Implement me."
         endnew
     endnew
@@ -767,9 +771,10 @@ function c_module_implementation_create_internal_module (impl, source, destinati
 
         _Z19_add_internal_module_includes (my.impl, module, my.meta)
         _Z19_add_instances (my.impl, my.source, module, my.meta)
+        _Z19_add_lifecycle_methods (my.impl, "external", "private", module, my.meta)
+        _Z19_add_dependency_methods (my.impl, "external", "private", module, my.meta)
         _Z19_add_impl_type_size_method (my.impl, "external", "private", module, my.meta)
         _Z19_add_impl_type_cast_method (my.impl, "external", "private", module, my.meta)
-        _Z19_add_lifecycle_methods (my.impl, "external", "private", module, my.meta)
     endnew
 endfunction
 
