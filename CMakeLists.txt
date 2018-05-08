@@ -48,6 +48,7 @@ target_sources(vsf
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_kdf.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_kdf1.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_library.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_memory.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_sha256.h"
 
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_api_private.h"
@@ -76,10 +77,11 @@ target_sources(vsf
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf1_internal.h"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf_api.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_library.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_memory.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256_impl.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256_internal.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256_internal.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256_impl.c"
         )
 
 target_include_directories(vsf
