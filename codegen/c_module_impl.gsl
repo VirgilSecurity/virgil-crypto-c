@@ -57,7 +57,7 @@ function _L24_add_type_self (meta, destination)
         . = "Generic type for any 'implementation'."
 
         .name = my.names.module_impl
-        .scope = "public"
+        .declaration = "public"
         .definition = "external"
     endnew
 endfunction

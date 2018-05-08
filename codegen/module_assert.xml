@@ -21,7 +21,8 @@
             name="active handler"
             callback=".(class_assert_callback_handler)"
             visibility="private"
-            scope="private">
+            declaration="private"
+            definition="private">
 
         Active handler for assertion failback.
 
@@ -71,7 +72,7 @@
     </method>
 
 
-    <method name="path basename" scope="private" visibility="private">
+    <method name="path basename" declaration="private" definition="private" visibility="private">
         Return pointer to the last component in the path.
 
         <return type="string" />

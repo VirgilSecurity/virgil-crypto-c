@@ -8,8 +8,8 @@ required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
     <interface>
-       <constant name [of_class] [uid] [scope] [c_prefix] [value]/>
-       <method name [visibility] [c_prefix] [of_class] [uid] [scope] [definition] [context]>
+       <constant name [c_prefix] [of_class] [uid] [definition] [value]/>
+       <method name [declaration] [visibility] [c_prefix] [of_class] [uid] [definition] [context]>
           <return [access] [type] [class] [enum] [callback] [size]>
              <string [access] [length]/>
              <array [access] [length] [length_constant]/>
@@ -18,8 +18,8 @@ attribute names are case-sensitive and we use only lower-case names.
              <string .../>
              <array .../>
           </argument>
-          <variable name [type] [access] [enum] [callback] [size] [definition] [visibility] [c_prefix]
-               [of_class] [uid] [scope] [class]>
+          <variable name [type] [access] [enum] [callback] [size] [definition] [declaration] [visibility]
+               [c_prefix] [of_class] [uid] [class]>
              <value value [access] [class] [enum] [callback] [size] [type]>
                 <cast [access] [type] [class] [enum] [callback] [size]>
                    <string .../>
@@ -62,14 +62,24 @@ Groups common attributes for the component. Defines integral constant.
 
     <constant
         name = "..."
+      [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
-      [ scope = "public | private | internal"  ("public") ]
-      [ c_prefix = "..." ]
+      [ definition = "public | private | external"  ("private") ]
       [ value = "..." ]
         />
 
 The constant item can have these attributes:
+
+definition:
+    Defines where component will be defined. This attribute must not be
+    inherited. The definition attribute is optional. Its default value is
+    "private". It can take one of the following values:
+
+Value: Meaning:
+public: Component definition is visible for outside world.
+private: Component definition is hidden in a correspond source file.
+external: Component definition is located somewhere.
 
 c_prefix:
     Prefix that is used for C name resolution. The c_prefix attribute is
@@ -82,16 +92,6 @@ of_class:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
-
-scope:
-    Defines component visibility within scope. This attribute must not be
-    inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:
-
-Value: Meaning:
-public: Component is visible for outside world.
-private: Component is visible for outside world via private interface.
-internal: Component is visible only within library or a specific source file.
 
 name:
     Constant name. The name attribute is required.
@@ -109,11 +109,11 @@ and optionally implementation.
 
     <method
         name = "..."
+      [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
-      [ scope = "public | private | internal"  ("public") ]
       [ definition = "public | private | external"  ("private") ]
       [ context = "none | api | impl"  ("none") ]
         >
@@ -135,6 +135,16 @@ public: Component definition is visible for outside world.
 private: Component definition is hidden in a correspond source file.
 external: Component definition is located somewhere.
 
+declaration:
+    Defines where component will be declared. This attribute must not be
+    inherited. The declaration attribute is optional. Its default value is
+    "public". It can take one of the following values:
+
+Value: Meaning:
+public: Component declaration is visible for outside world.
+private: Component declaration is hidden in a correspond source file.
+external: Component declaration is located somewhere.
+
 visibility:
     Defines symbol binary visibility. This attribute must not be inherited.
     The visibility attribute is optional. Its default value is "public". It
@@ -155,16 +165,6 @@ of_class:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
-
-scope:
-    Defines component visibility within scope. This attribute must not be
-    inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:
-
-Value: Meaning:
-public: Component is visible for outside world.
-private: Component is visible for outside world via private interface.
-internal: Component is visible only within library or a specific source file.
 
 name:
     Method name. The name attribute is required.
@@ -424,11 +424,11 @@ attributes for the component. Defines global variable.
       [ callback = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ definition = "public | private | external"  ("private") ]
+      [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
-      [ scope = "public | private | internal"  ("public") ]
       [ class = "..." ]
         >
         <value>, 1 or more
@@ -502,6 +502,16 @@ public: Component definition is visible for outside world.
 private: Component definition is hidden in a correspond source file.
 external: Component definition is located somewhere.
 
+declaration:
+    Defines where component will be declared. This attribute must not be
+    inherited. The declaration attribute is optional. Its default value is
+    "public". It can take one of the following values:
+
+Value: Meaning:
+public: Component declaration is visible for outside world.
+private: Component declaration is hidden in a correspond source file.
+external: Component declaration is located somewhere.
+
 visibility:
     Defines symbol binary visibility. This attribute must not be inherited.
     The visibility attribute is optional. Its default value is "public". It
@@ -522,16 +532,6 @@ of_class:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
-
-scope:
-    Defines component visibility within scope. This attribute must not be
-    inherited. The scope attribute is optional. Its default value is
-    "public". It can take one of the following values:
-
-Value: Meaning:
-public: Component is visible for outside world.
-private: Component is visible for outside world via private interface.
-internal: Component is visible only within library or a specific source file.
 
 name:
     Object name. The name attribute is required.

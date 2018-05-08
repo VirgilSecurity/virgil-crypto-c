@@ -67,7 +67,6 @@
 <entity name="component" abstract="1">
     Groups common attributes for the component.
 
-    <inherit entity="scope"/>
     <inherit entity="uid"/>
     <inherit entity="of_class"/>
     <inherit entity="c_prefix"/>
@@ -294,6 +293,7 @@
     </attr>
 
     <inherit entity="component"/>
+    <inherit entity="definition"/>
 </entity>
 
 
@@ -306,6 +306,7 @@
 
     <inherit entity="component"/>
     <inherit entity="visibility"/>
+    <inherit entity="declaration"/>
     <inherit entity="definition"/>
     <inherit entity="instance"/>
 
@@ -342,6 +343,7 @@
 
     <inherit entity="component"/>
     <inherit entity="visibility"/>
+    <inherit entity="declaration"/>
     <inherit entity="definition"/>
 
     <allow entity="constant" occurs="0+"/>
@@ -356,6 +358,7 @@
 
     <inherit entity="component"/>
     <inherit entity="visibility"/>
+    <inherit entity="declaration"/>
     <inherit entity="definition"/>
 
     <allow entity="property"/>
@@ -402,6 +405,7 @@
 
     <inherit entity="component"/>
     <inherit entity="visibility"/>
+    <inherit entity="declaration"/>
     <inherit entity="definition"/>
 
     <allow entity="return" occurs="0/1"/>
@@ -419,6 +423,7 @@
     </attr>
 
     <inherit entity="component"/>
+    <inherit entity="declaration"/>
 
     <allow entity="return" occurs="0/1"/>
     <allow entity="argument" occurs="0+"/>
@@ -464,6 +469,7 @@
     </attr>
 
     <inherit entity="component"/>
+    <inherit entity="definition"/>
 
     <allow entity="implementation" occurs="0/1"/>
 </entity>
@@ -471,7 +477,7 @@
 <entity name="macroses">
     Group a set of macroses with common implemenatation.
 
-    <inherit entity="scope"/>
+    <inherit entity="definition"/>
 
     <allow entity="macros" occurs="1+"/>
     <allow entity="implementation" occurs="1"/>

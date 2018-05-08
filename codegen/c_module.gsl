@@ -105,6 +105,7 @@ function c_module_create (source, destination, project)
             .lang = "C"
             .name = c_format_name (module.c_prefix, module.name)
             .class = c_format_name (module.class)
+            .scope = module.scope
 
             c_component_map_attr_uid (c_module, module)
 
@@ -140,10 +141,10 @@ function c_module_create (source, destination, project)
 
             new c_enum to c_module
                 .= c_format_description ("Public integral constants.")
-                .scope = "public"
+                .declaration = "public"
                 .definition = "public"
 
-                for module.constant where scope = "public"
+                for module.constant where definition = "public"
                     c_component_create_constant (constant, c_enum)
                 else
                     delete c_enum
@@ -152,10 +153,10 @@ function c_module_create (source, destination, project)
 
             new c_enum to c_module
                 .= c_format_description ("Private integral constants.")
-                .scope = "private"
+                .declaration = "private"
                 .definition = "private"
 
-                for module.constant where scope = "private"
+                for module.constant where definition = "private"
                     c_component_create_constant (constant, c_enum)
                 else
                     delete c_enum

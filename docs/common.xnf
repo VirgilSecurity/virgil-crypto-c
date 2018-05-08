@@ -40,6 +40,8 @@
     <attr name="scope" default="public">
         Defines component visibility within scope.
         This attribute must not be inherited.
+        Note, scope attribute can be used for components, that can not
+        be defined in terms of 'declaration' and 'definition'.
 
         <restrict value="public">
             Component is visible for outside world.
@@ -51,6 +53,27 @@
 
         <restrict value="internal">
             Component is visible only within library or a specific source file.
+        </restrict>
+    </attr>
+</entity>
+
+
+<entity name="declaration" abstract="1">
+
+    <attr name="declaration" default="public">
+        Defines where component will be declared.
+        This attribute must not be inherited.
+
+        <restrict value="public">
+            Component declaration is visible for outside world.
+        </restrict>
+
+        <restrict value="private">
+            Component declaration is hidden in a correspond source file.
+        </restrict>
+
+        <restrict value="external">
+            Component declaration is located somewhere.
         </restrict>
     </attr>
 </entity>

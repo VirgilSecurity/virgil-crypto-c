@@ -61,8 +61,9 @@ function component_dump (component)
     my.component_info += " name=\"$(my.component.name)\"" ? ""
     my.component_info += " lang=\"$(my.component.lang)\"" ? ""
     my.component_info += " of_class=\"$(my.component.of_class)\"" ? ""
-    my.component_info += " scope=\"$(my.component.scope)\"" ? ""
     my.component_info += " visibility=\"$(my.component.visibility)\"" ? ""
+    my.component_info += " scope=\"$(my.component.scope)\"" ? ""
+    my.component_info += " declaration=\"$(my.component.declaration)\"" ? ""
     my.component_info += " definition=\"$(my.component.definition)\"" ? ""
     my.component_dump = "<$(name (my.component))$(my.component_info)/>"
 
@@ -193,6 +194,15 @@ function component_require_attr_uid (component, caller)
     check_argument (my, "component", my)
 
     assert_attribute (my.component, "uid", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: declaration.
+# ---------------------------------------------------------------------------
+function component_require_attr_declaration (component, caller)
+    check_argument (my, "component", my)
+
+    assert_attribute (my.component, "declaration", my.caller ? my)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -429,12 +439,33 @@ function component_resolve_attr_visibility (component, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve attribute: declaration.
+# ---------------------------------------------------------------------------
+function component_resolve_attr_declaration (component, parent)
+    check_argument (my, "component", my)
+
+    my.component.declaration ?= "public" #   must not be inherited
+
+    my.valid_declarations = "public, private, external"
+    if ! string_in (my.component.declaration, my.valid_declarations)
+        my.component_dump = component_dump (my.component)
+
+        echo_fatal ("Invalid component declaration '$(my.component_dump:)'. " + \
+                    "Expected {$(my.valid_declarations)}", my)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve attribute: definition.
 # ---------------------------------------------------------------------------
 function component_resolve_attr_definition (component, parent)
     check_argument (my, "component", my)
 
-    my.component.definition ?= "private" #   must not be inherited
+    if string_in (name (my.component), "constant, macros, macroses")
+        my.component.definition ?= "public" #   must not be inherited
+    else
+        my.component.definition ?= "private" #   must not be inherited
+    endif
 
     my.valid_definitions = "public, private, external"
     if ! string_in (my.component.definition, my.valid_definitions)
@@ -830,7 +861,6 @@ endfunction
 function component_resolve_component (component, parent)
     check_arguments (my, "component, parent", my)
 
-    component_resolve_attr_scope (my.component, my.parent)
     component_resolve_attr_of_class (my.component, my.parent)
     component_resolve_attr_c_prefix (my.component, my.parent)
     component_resolve_attr_uid (my.component, my.parent)
@@ -851,6 +881,7 @@ function component_resolve_constant (constant, parent)
     component_add_lineage (my.constant, my.parent)
 
     component_resolve_component (my.constant, my.parent)
+    component_resolve_attr_definition (my.constant, my.parent)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -865,6 +896,7 @@ function component_resolve_enum (enum, parent)
 
     component_resolve_component (my.enum, my.parent)
     component_resolve_attr_visibility (my.enum, my.parent)
+    component_resolve_attr_declaration (my.enum, my.parent)
     component_resolve_attr_definition (my.enum, my.parent)
 
     for my.enum.constant
@@ -901,6 +933,7 @@ function component_resolve_struct (struct, parent)
 
     component_resolve_component (my.struct, my.parent)
     component_resolve_attr_visibility (my.struct, my.parent)
+    component_resolve_attr_declaration (my.struct, my.parent)
     component_resolve_attr_definition (my.struct, my.parent)
 
     for my.struct.property
@@ -947,6 +980,7 @@ function component_resolve_variable (variable, parent)
     component_resolve_component (my.variable, my.parent)
     component_resolve_instance (my.variable, my.parent)
     component_resolve_attr_visibility (my.variable, my.parent)
+    component_resolve_attr_declaration (my.variable, my.parent)
     component_resolve_attr_definition (my.variable, my.parent)
 
     for my.variable.value
@@ -979,6 +1013,7 @@ function component_resolve_method (method, parent)
 
     component_resolve_component (my.method, my.parent)
     component_resolve_attr_visibility (my.method, my.parent)
+    component_resolve_attr_declaration (my.method, my.parent)
     component_resolve_attr_definition (my.method, my.parent)
     component_resolve_method_attr_context (my.method, my.parent)
 
@@ -1004,6 +1039,7 @@ function component_resolve_callback (callback, parent)
     component_add_lineage (my.callback, my.parent)
 
     component_resolve_component (my.callback, my.parent)
+    component_resolve_attr_declaration (my.callback, my.parent)
 
     for my.callback.argument
         component_resolve_argument (argument, my.callback)
@@ -1023,6 +1059,7 @@ function component_resolve_macros (macros, parent)
     component_add_lineage (my.macros, my.parent)
 
     component_resolve_component (my.macros, my.parent)
+    component_resolve_attr_definition (my.macros, my.parent)
     component_resolve_macros_attr_is_method (my.macros, my.parent)
 
     for my.macros.implementation
@@ -1038,7 +1075,7 @@ function component_resolve_macroses (macroses, parent)
 
     component_require_implementation (my.macroses, my)
 
-    component_resolve_attr_scope (my.macroses, my.parent)
+    component_resolve_attr_definition (my.macroses, my.parent)
     component_resolve_attr_of_class (my.macroses, my.parent)
 
     for my.macroses.macros

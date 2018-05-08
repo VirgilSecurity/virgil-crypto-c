@@ -55,6 +55,7 @@
             Short module name.
         </attr>
 
+        <inherit entity="scope"/>
         <inherit entity="component"/>
 
         <allow entity="require"/>
