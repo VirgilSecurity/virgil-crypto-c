@@ -16,7 +16,7 @@
         </interface>
 
         <interface name = "hash stream">
-            <context name = "hash ctx" c_type = "void" />
+            <context name = "hash ctx" class = "void" access = "readwrite" />
         </interface>
 
     </implementation>

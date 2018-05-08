@@ -337,12 +337,7 @@ function _Z19_add_ctx_type (impl, definition, destination, meta)
 
         for my.impl.interface
             for interface.context
-                new property to struct
-                    . = context. ?
-                    .name = context.name
-                    .class = context.c_type
-                    .access = "readwrite"
-                endnew
+                item_copy_to (context, struct, "property")
             endfor
         endfor
     endnew

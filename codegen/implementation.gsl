@@ -96,7 +96,7 @@ function implementation_resolve_interface_context (context, parent)
     check_arguments (my, "context, parent", my)
 
     component_require_attr_name (my.context, my)
-    assert_attribute (my.context, "c_type", my)
+    component_resolve_instance (my.context, my.parent)
 endfunction
 
 # ---------------------------------------------------------------------------
