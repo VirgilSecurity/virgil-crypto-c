@@ -158,6 +158,47 @@ static const vsf_impl_info_t info = {
 };
 
 //
+//  Perform initialization of preallocated implementation context.
+//
+VSF_PUBLIC void
+vsf_sha256_init (vsf_sha256_impl_t* sha256_impl) {
+
+    //TODO: Implement me.
+}
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Return NULL if allocation fails.
+//
+VSF_PUBLIC vsf_sha256_impl_t*
+vsf_sha256_new (void) {
+
+    //TODO: Implement me.
+}
+
+//
+//  Cleanup sensitive data within implementation context.
+//  Note, dependencies are cleaned up as well.
+//
+VSF_PUBLIC void
+vsf_sha256_cleanup (vsf_sha256_impl_t* sha256_impl) {
+
+    //TODO: Implement me.
+}
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This function SHOULD be called even if context was statically allocated,
+//  because it automatically detect this fact for context itself and
+//  dependencies as well and destroy them appropriately.
+//
+VSF_PUBLIC void
+vsf_sha256_destroy (vsf_sha256_impl_t** sha256_impl_ref) {
+
+    //TODO: Implement me.
+}
+
+//
 //  Return size of 'vsf_sha256_impl_t' type.
 //
 VSF_PUBLIC size_t
@@ -172,6 +213,7 @@ vsf_sha256_impl_size (void) {
 VSF_PUBLIC vsf_impl_t*
 vsf_sha256_impl (vsf_sha256_impl_t* sha256_impl) {
 
+    VSF_ASSERT (sha256_impl);
     return (vsf_impl_t *) (sha256_impl);
 }
 
@@ -180,41 +222,3 @@ vsf_sha256_impl (vsf_sha256_impl_t* sha256_impl) {
 //  Generated section end.
 // --------------------------------------------------------------------------
 //  @end
-
-
-//
-//  Perform initialization of preallocated implementation context.
-//
-VSF_PUBLIC void
-vsf_sha256_init (vsf_sha256_impl_t* sha256_impl) {
-    //  TODO: This is STUB. Implement me.
-}
-
-//
-//  Allocate implementation context and perform it's initialization.
-//  Return NULL if allocation fails.
-//
-VSF_PUBLIC vsf_sha256_impl_t*
-vsf_sha256_new (void) {
-    //  TODO: This is STUB. Implement me.
-}
-
-//
-//  Cleanup sensitive data within implementation context.
-//  Note, dependencies are cleaned up as well.
-//
-VSF_PUBLIC void
-vsf_sha256_cleanup (vsf_sha256_impl_t* sha256_impl) {
-    //  TODO: This is STUB. Implement me.
-}
-
-//
-//  Destroy given implementation context and it's dependencies.
-//  This function SHOULD be called even if context was statically allocated,
-//  because it automatically detect this fact for context itself and
-//  dependencies as well and destroy them appropriately.
-//
-VSF_PUBLIC void
-vsf_sha256_destroy (vsf_sha256_impl_t** sha256_impl_ref) {
-    //  TODO: This is STUB. Implement me.
-}
