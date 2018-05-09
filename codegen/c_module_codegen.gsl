@@ -189,6 +189,7 @@ function c_module_generate_source (c_module)
         out (my.content_after)
     else
         for my.c_module.c_method where definition <> "external" & count (c_implementation) = 0
+            newline_if (first ())
             newline ()
             c_insert_method_definition (c_method)
         endfor
