@@ -50,6 +50,7 @@
 // --------------------------------------------------------------------------
 
 #include "vsf_sha256_internal.h"
+#include "vsf_assert.h"
 #include "vsf_sha256.h"
 #include "vsf_hash_info_api.h"
 #include "vsf_hash_api.h"
