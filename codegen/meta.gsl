@@ -133,6 +133,7 @@ function _X17_add_entity_common (meta)
 
         _X17_add_smart_linked_name (entity, "module", "library")
         _X17_add_smart_linked_name (entity, "module", "assert")
+        _X17_add_smart_linked_name (entity, "module", "memory")
 
         _X17_add_smart_name (entity, "struct", "info")
         _X17_add_smart_name (entity, "struct", "context")
@@ -225,6 +226,8 @@ function _X17_add_entity_impl (meta)
         _X17_add_smart_link (entity, "class impl enum tag constant end")
 
         _X17_add_smart_link (entity, "class impl method api")
+        _X17_add_smart_link (entity, "class impl method cleanup")
+        _X17_add_smart_link (entity, "class impl method destroy")
         return entity
     endnew
 endfunction
@@ -341,11 +344,15 @@ function _X17_add_entity_implementation (meta, implementation)
         _X17_add_link (entity, "implementation constant tag", \
                 make_id ("class impl enum tag constant", my.name))
 
-        _X17_add_link (entity, "implementation method self cleanup", \
-                make_id ("class", my.name, "method cleanup"))
 
-        _X17_add_link (entity, "implementation method self destroy", \
-                make_id ("class", my.name, "method destroy"))
+        _X17_add_link (entity, "implementation method init ctx", make_id ("class", my.name, "method", "init ctx"))
+        _X17_add_link (entity, "implementation method cleanup ctx", make_id ("class", my.name, "method", "cleanup ctx"))
+
+        _X17_add_link (entity, "implementation method init", make_id ("class", my.name, "method", "init"))
+        _X17_add_link (entity, "implementation method cleanup", make_id ("class", my.name, "method", "cleanup"))
+
+        _X17_add_link (entity, "implementation method new", make_id ("class", my.name, "method new"))
+        _X17_add_link (entity, "implementation method destroy", make_id ("class", my.name, "method destroy"))
 
         #   Types
         _X17_add_name (entity, "implementation module impl", make_id (my.name, "impl"))
@@ -388,10 +395,18 @@ function _X17_add_entity_implementation (meta, implementation)
         endfor
 
         #   Dependencies
-        for my.implementation.require where defined (interface)
-            my.dependency = require.interface
-            _X17_add_smart_linked_name (entity, "property dependency", my.dependency)
-            _X17_add_smart_linked_name (entity, "property dependency", cat (my.dependency, "ownership"))
+        for my.implementation.require
+            _X17_add_smart_name (entity, "implementation property dependency", require.name)
+            _X17_add_link (entity, "implementation property dependency $(require.name)", \
+                    make_id ("class", my.name, "struct", "impl", "property", require.name))
+
+            if require.type = "interface"
+                _X17_add_name (entity, "implementation property is owning dependency $(require.name)", \
+                    cat ("is owning", require.name))
+
+                _X17_add_link (entity, "implementation property is owning dependency $(require.name)", \
+                        make_id ("class", my.name, "struct", "impl", "property", "is owning", require.name))
+            endif
         endfor
 
         return entity

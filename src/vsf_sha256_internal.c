@@ -50,6 +50,7 @@
 // --------------------------------------------------------------------------
 
 #include "vsf_sha256_internal.h"
+#include "vsf_memory.h"
 #include "vsf_assert.h"
 #include "vsf_sha256.h"
 #include "vsf_hash_info_api.h"
@@ -163,17 +164,12 @@ static const vsf_impl_info_t info = {
 VSF_PUBLIC void
 vsf_sha256_init (vsf_sha256_impl_t* sha256_impl) {
 
-    //TODO: Implement me.
-}
+    VSF_ASSERT (sha256_impl);
+    VSF_ASSERT (sha256_impl->info == NULL);
 
-//
-//  Allocate implementation context and perform it's initialization.
-//  Return NULL if allocation fails.
-//
-VSF_PUBLIC vsf_sha256_impl_t*
-vsf_sha256_new (void) {
+    sha256_impl->info = &info;
 
-    //TODO: Implement me.
+    vsf_sha256_init_ctx (sha256_impl);
 }
 
 //
@@ -183,7 +179,30 @@ vsf_sha256_new (void) {
 VSF_PUBLIC void
 vsf_sha256_cleanup (vsf_sha256_impl_t* sha256_impl) {
 
-    //TODO: Implement me.
+    VSF_ASSERT (sha256_impl);
+
+    if (sha256_impl->info == NULL) {
+        return;
+    }
+
+    vsf_sha256_cleanup_ctx (sha256_impl);
+
+    sha256_impl->info = NULL;
+}
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
+//
+VSF_PUBLIC vsf_sha256_impl_t*
+vsf_sha256_new (void) {
+
+    vsf_sha256_impl_t *sha256_impl = (vsf_sha256_impl_t *) vsf_alloc (sizeof (vsf_sha256_impl_t));
+    VSF_ASSERT (sha256_impl);
+
+    vsf_sha256_init (sha256_impl);
+
+    return sha256_impl;
 }
 
 //
@@ -195,7 +214,15 @@ vsf_sha256_cleanup (vsf_sha256_impl_t* sha256_impl) {
 VSF_PUBLIC void
 vsf_sha256_destroy (vsf_sha256_impl_t** sha256_impl_ref) {
 
-    //TODO: Implement me.
+    VSF_ASSERT (sha256_impl_ref);
+
+    vsf_sha256_impl_t *sha256_impl = *sha256_impl_ref;
+    *sha256_impl_ref = NULL;
+
+    if (sha256_impl) {
+        vsf_sha256_cleanup (sha256_impl);
+        vsf_dealloc (sha256_impl);
+    }
 }
 
 //
