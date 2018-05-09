@@ -51,7 +51,6 @@
 
 #include "vsf_sha256_internal.h"
 #include "vsf_sha256.h"
-#include "vsf_sha256_impl.h"
 #include "vsf_hash_info_api.h"
 #include "vsf_hash_api.h"
 #include "vsf_hash_stream_api.h"

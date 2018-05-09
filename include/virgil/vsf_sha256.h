@@ -92,30 +92,6 @@ VSF_PUBLIC vsf_impl_t*
 vsf_sha256_impl (vsf_sha256_impl_t* sha256_impl);
 
 //
-//  Calculate hash over given data.
-//
-VSF_PUBLIC void
-vsf_sha256_hash (const byte* data, size_t data_len, byte* digest, size_t digest_len);
-
-//
-//  Start a new hashing.
-//
-VSF_PUBLIC void
-vsf_sha256_start (vsf_sha256_impl_t* sha256_impl);
-
-//
-//  Add given data to the hash.
-//
-VSF_PUBLIC void
-vsf_sha256_update (vsf_sha256_impl_t* sha256_impl, const byte* data, size_t data_len);
-
-//
-//  Accompilsh hashing and return it's result (a message digest).
-//
-VSF_PUBLIC void
-vsf_sha256_finish (vsf_sha256_impl_t* sha256_impl, byte* digest, size_t digest_len);
-
-//
 //  Perform initialization of preallocated implementation context.
 //
 VSF_PUBLIC void
@@ -143,6 +119,30 @@ vsf_sha256_cleanup (vsf_sha256_impl_t* sha256_impl);
 //
 VSF_PUBLIC void
 vsf_sha256_destroy (vsf_sha256_impl_t** sha256_impl_ref);
+
+//
+//  Calculate hash over given data.
+//
+VSF_PUBLIC void
+vsf_sha256_hash (const byte* data, size_t data_len, byte* digest, size_t digest_len);
+
+//
+//  Start a new hashing.
+//
+VSF_PUBLIC void
+vsf_sha256_start (vsf_sha256_impl_t* sha256_impl);
+
+//
+//  Add given data to the hash.
+//
+VSF_PUBLIC void
+vsf_sha256_update (vsf_sha256_impl_t* sha256_impl, const byte* data, size_t data_len);
+
+//
+//  Accompilsh hashing and return it's result (a message digest).
+//
+VSF_PUBLIC void
+vsf_sha256_finish (vsf_sha256_impl_t* sha256_impl, byte* digest, size_t digest_len);
 
 
 // --------------------------------------------------------------------------

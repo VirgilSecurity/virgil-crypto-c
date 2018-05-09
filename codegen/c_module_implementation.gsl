@@ -211,6 +211,11 @@ function _Z19_add_public_module_includes (impl, destination, meta)
             .module = my.names.implementation_module_impl
             .scope = "private"
         endnew
+
+        new require to my.destination
+            .module = my.names.implementation_module_internal
+            .scope = "private"
+        endnew
     endif
 endfunction
 
@@ -234,7 +239,7 @@ function _Z19_add_internal_module_includes (impl, destination, meta)
     if _Z19_has_methods_with_context_impl (my.impl)
         new require to my.destination
             .module = my.names.implementation_module_impl
-            .scope = "private"
+            .scope = "public"
         endnew
     endif
 
@@ -553,6 +558,41 @@ function _Z19_add_lifecycle_methods (impl, declaration, definition, destination,
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Add next methods if exists functions that require implementation context:
+#       - init_ctx ()
+#       - cleanup_ctx ()
+# ---------------------------------------------------------------------------
+function _Z19_add_ctx_lifecycle_methods (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
+
+    if ! _Z19_has_methods_with_context_impl (my.impl)
+        return
+    endif
+
+    my.names = meta_names (my.meta)
+
+    new method to my.destination
+        . = "Privides initialization of the implementation specific context."
+        .name = my.names.method_init_ctx
+        .declaration = my.declaration
+        .definition = my.definition
+        .visibility = "private"
+
+        _Z19_add_argument_impl (method, my.meta)
+    endnew
+
+    new method to my.destination
+        . = "Privides initialization of the implementation specific context."
+        .name = my.names.method_cleanup_ctx
+        .declaration = my.declaration
+        .definition = my.definition
+        .visibility = "private"
+
+        _Z19_add_argument_impl (method, my.meta)
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Define interface method that accept 'api' context.
 # ---------------------------------------------------------------------------
 function _Z19_define_interface_method_with_api_context (method, impl, meta)
@@ -703,8 +743,9 @@ function c_module_implementation_create_public_module (impl, enum_impl_tag, dest
         _Z19_add_impl_type_size_method (my.impl, "public", "external", module, my.meta)
         _Z19_add_impl_type_cast_method (my.impl, "public", "external", module, my.meta)
         _Z19_add_interface_constants (my.impl, module, my.meta)
-        _Z19_add_interface_methods (my.impl, "public", module, my.meta)
+        _Z19_add_ctx_lifecycle_methods (my.impl, "external", "private", module, my.meta)
         _Z19_add_lifecycle_methods (my.impl, "public", "external", module, my.meta)
+        _Z19_add_interface_methods (my.impl, "public", module, my.meta)
         _Z19_add_dependency_methods (my.impl, "public", "external", module, my.meta)
     endnew
 endfunction
@@ -771,6 +812,7 @@ function c_module_implementation_create_internal_module (impl, source, destinati
 
         _Z19_add_internal_module_includes (my.impl, module, my.meta)
         _Z19_add_instances (my.impl, my.source, module, my.meta)
+        _Z19_add_ctx_lifecycle_methods (my.impl, "public", "external", module, my.meta)
         _Z19_add_lifecycle_methods (my.impl, "external", "private", module, my.meta)
         _Z19_add_dependency_methods (my.impl, "external", "private", module, my.meta)
         _Z19_add_impl_type_size_method (my.impl, "external", "private", module, my.meta)
