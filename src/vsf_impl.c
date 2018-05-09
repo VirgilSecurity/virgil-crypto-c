@@ -108,6 +108,7 @@ VSF_PUBLIC void
 vsf_impl_cleanup (vsf_impl_t* impl) {
 
     VSF_ASSERT (impl);
+    VSF_ASSERT (impl->info);
     VSF_ASSERT (impl->info->self_cleanup_cb);
 
     impl->info->self_cleanup_cb (impl);
@@ -126,6 +127,7 @@ vsf_impl_destroy (vsf_impl_t** impl_ref) {
     *impl_ref = NULL;
 
     if (impl) {
+        VSF_ASSERT (impl->info);
         VSF_ASSERT (impl->info->self_destroy_cb);
         impl->info->self_destroy_cb (&impl);
     }

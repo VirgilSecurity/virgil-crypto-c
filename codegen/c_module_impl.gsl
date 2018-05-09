@@ -190,6 +190,7 @@ function _L24_add_method_cleanup (meta, destination)
         new implementation
             . = "\
             VSF_ASSERT (impl);
+            VSF_ASSERT (impl->info);
             VSF_ASSERT (impl->info->self_cleanup_cb);
 
             impl->info->self_cleanup_cb (impl);
@@ -225,6 +226,7 @@ function _L24_add_method_destroy (meta, destination)
             *impl_ref = NULL;
 
             if (impl) {
+                VSF_ASSERT (impl->info);
                 VSF_ASSERT (impl->info->self_destroy_cb);
                 impl->info->self_destroy_cb (&impl);
             }
