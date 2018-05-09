@@ -257,12 +257,16 @@
         <value value=".(class_foo_variable_private_api)[0]"/>
     </variable>
 
-    <variable name="foo_context_inst" class=".(class_foo_struct_context)" access="readonly" declaration="private">
+    <variable name="foo_context_inst"
+              class=".(class_foo_struct_context)"
+              access="readonly"
+              declaration="private"
+              is_reference="0">
         Private instantiation if the structure '.(c_class_foo_struct_context)'
 
-        <value value="1"/> <!-- Integral type -->
-        <value value="255"/> <!-- Integral type 8 bits. -->
-        <value value="255"/> <!-- Integral type 16 bits. -->
+        <value value="1" type="integer"/> <!-- Integral type -->
+        <value value="255" type="integer" size="1"/> <!-- Integral type 8 bits. -->
+        <value value="255" type="integer" size="2"/> <!-- Integral type 16 bits. -->
     </variable>
 
 
