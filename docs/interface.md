@@ -10,18 +10,18 @@ attribute names are case-sensitive and we use only lower-case names.
     <interface>
        <constant name [c_prefix] [of_class] [uid] [definition] [value]/>
        <method name [declaration] [visibility] [c_prefix] [of_class] [uid] [definition] [context]>
-          <return [access] [type] [class] [enum] [callback] [size]>
+          <return is_reference [access] [class] [enum] [callback] [size] [type]>
              <string [access] [length]/>
              <array [access] [length] [length_constant]/>
           </return>
-          <argument name [uid] [type] [class] [enum] [callback] [size] [access]>
+          <argument is_reference name [type] [class] [enum] [callback] [size] [uid] [access]>
              <string .../>
              <array .../>
           </argument>
-          <variable name [type] [access] [enum] [callback] [size] [definition] [declaration] [visibility]
-               [c_prefix] [of_class] [uid] [class]>
-             <value value [access] [class] [enum] [callback] [size] [type]>
-                <cast [access] [type] [class] [enum] [callback] [size]>
+          <variable is_reference name [type] [enum] [callback] [size] [access] [definition] [declaration]
+               [visibility] [c_prefix] [of_class] [uid] [class]>
+             <value is_reference value [class] [enum] [callback] [size] [access] [type]>
+                <cast is_reference [access] [class] [enum] [callback] [size] [type]>
                    <string .../>
                    <array .../>
                 </cast>
@@ -186,12 +186,13 @@ The 'return' item
 Defines attributes that related to the instance type. Defines return type.
 
     <return
+        is_reference = "0 | 1"
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | size | byte | data | string" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string" ]
         >
         <string>, optional
         <array>, optional
@@ -252,6 +253,16 @@ Value: Meaning:
 2: Size of the type is two bytes.
 4: Size of the type is three bytes.
 8: Size of the type is four bytes.
+
+is_reference:
+    Defines whether instance is a 'reference' instance. For 'type' - default
+    is '0'. For 'enum' - default is '0'. For 'callback' - default is '0'. For
+    'class' - default is '1'. The is_reference attribute is required. It can
+    take one of the following values:
+
+Value: Meaning:
+0: Instance is not a refernce.
+1: Instance is a reference to the other instance.
 
 
 The 'string' item
@@ -333,13 +344,14 @@ Defines attributes that related to the instance type. Defines argument as
 name, type, and usage information.
 
     <argument
+        is_reference = "0 | 1"
         name = "..."
-      [ uid = "..." ]
       [ type = "nothing | boolean | integer | size | byte | data | string" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
+      [ uid = "..." ]
       [ access = "readonly | writeonly | readwrite | disown" ]
         >
         <string>, optional
@@ -406,6 +418,16 @@ Value: Meaning:
 4: Size of the type is three bytes.
 8: Size of the type is four bytes.
 
+is_reference:
+    Defines whether instance is a 'reference' instance. For 'type' - default
+    is '0'. For 'enum' - default is '0'. For 'callback' - default is '0'. For
+    'class' - default is '1'. The is_reference attribute is required. It can
+    take one of the following values:
+
+Value: Meaning:
+0: Instance is not a refernce.
+1: Instance is a reference to the other instance.
+
 name:
     Argument name. The name attribute is required.
 
@@ -417,12 +439,13 @@ Defines attributes that related to the instance type. Groups common
 attributes for the component. Defines global variable.
 
     <variable
+        is_reference = "0 | 1"
         name = "..."
       [ type = "nothing | boolean | integer | size | byte | data | string" ]
-      [ access = "readonly | writeonly | readwrite | disown" ]
       [ enum = "..." ]
       [ callback = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
       [ definition = "public | private | external"  ("private") ]
       [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
@@ -492,6 +515,16 @@ Value: Meaning:
 4: Size of the type is three bytes.
 8: Size of the type is four bytes.
 
+is_reference:
+    Defines whether instance is a 'reference' instance. For 'type' - default
+    is '0'. For 'enum' - default is '0'. For 'callback' - default is '0'. For
+    'class' - default is '1'. The is_reference attribute is required. It can
+    take one of the following values:
+
+Value: Meaning:
+0: Instance is not a refernce.
+1: Instance is a reference to the other instance.
+
 definition:
     Defines where component will be defined. This attribute must not be
     inherited. The definition attribute is optional. Its default value is
@@ -544,12 +577,13 @@ Defines attributes that related to the instance type. Initialization
 variable value.
 
     <value
+        is_reference = "0 | 1"
         value = "..."
-      [ access = "readonly | writeonly | readwrite | disown" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | size | byte | data | string" ]
         >
         <cast>, optional
@@ -613,6 +647,16 @@ Value: Meaning:
 4: Size of the type is three bytes.
 8: Size of the type is four bytes.
 
+is_reference:
+    Defines whether instance is a 'reference' instance. For 'type' - default
+    is '0'. For 'enum' - default is '0'. For 'callback' - default is '0'. For
+    'class' - default is '1'. The is_reference attribute is required. It can
+    take one of the following values:
+
+Value: Meaning:
+0: Instance is not a refernce.
+1: Instance is a reference to the other instance.
+
 value:
     Initialization value. The value attribute is required.
 
@@ -624,12 +668,13 @@ Defines attributes that related to the instance type. Cast parent instance
 type to the type defined in this entity.
 
     <cast
+        is_reference = "0 | 1"
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | size | byte | data | string" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string" ]
         >
         <string>, optional
         <array>, optional
@@ -690,6 +735,16 @@ Value: Meaning:
 2: Size of the type is two bytes.
 4: Size of the type is three bytes.
 8: Size of the type is four bytes.
+
+is_reference:
+    Defines whether instance is a 'reference' instance. For 'type' - default
+    is '0'. For 'enum' - default is '0'. For 'callback' - default is '0'. For
+    'class' - default is '1'. The is_reference attribute is required. It can
+    take one of the following values:
+
+Value: Meaning:
+0: Instance is not a refernce.
+1: Instance is a reference to the other instance.
 
 
 The 'implementation' item
