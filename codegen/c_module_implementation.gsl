@@ -232,6 +232,11 @@ function _Z19_add_internal_module_includes (impl, destination, meta)
     endnew
 
     new require to my.destination
+        .module = my.names.module_assert
+        .scope = "private"
+    endnew
+
+    new require to my.destination
         .module = my.names.implementation_module
         .scope = "private"
     endnew
