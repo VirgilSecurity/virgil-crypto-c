@@ -36,9 +36,9 @@
 # ---------------------------------------------------------------------------
 #   Create 3 modules with 'Implementation API'.
 #   For details see functions description:
-#       - c_module_implementation_create_public_module ()
+#       - c_module_implementation_create_module_public ()
 #       - c_module_implementation_create_module_impl ()
-#       - c_module_implementation_create_internal_module ()
+#       - c_module_implementation_create_module_internal ()
 #
 #   Private function prefix is: Z19.
 # ---------------------------------------------------------------------------
@@ -51,11 +51,25 @@ gsl from "common.gsl"
 gsl from "c_module_interface_api.gsl"
 
 # ---------------------------------------------------------------------------
+function _Z19_has_methods_with_context_impl (impl)
+    check_argument (my, "impl", my)
+
+    for my.impl.interface
+        for interface.method where context = "impl"
+            return 1
+        endfor
+    endfor
+
+    return 0
+endfunction
+
+
+# ---------------------------------------------------------------------------
 #   Add instance of 'Interface API' class.
 #   Instance is fulfilled with implementation constants, methods,
 #   and dependencies.
 # ---------------------------------------------------------------------------
-function _Z19_add_interface_api_instance (impl, interface_api, destination, meta)
+function _Z19_add_instance_interface_api (impl, interface_api, destination, meta)
     check_arguments (my, "impl, interface_api, destination, meta", my)
 
     my.names = meta_names (my.meta)
@@ -99,7 +113,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add instance that is array of the implemented 'Interface API' instances.
 # ---------------------------------------------------------------------------
-function _Z19_add_array_of_interface_api_instances (impl, destination, meta)
+function _Z19_add_instance_array_of_interface_api (impl, destination, meta)
     check_arguments (my, "impl, destination, meta", my)
 
     my.names = meta_names (my.meta)
@@ -137,7 +151,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add instance of the 'Implementation Info' class.
 # ---------------------------------------------------------------------------
-function _Z19_add_implementation_info_instance (impl, impl_info, destination, meta)
+function _Z19_add_instance_impl_info (impl, impl_info, destination, meta)
     check_arguments (my, "impl, impl_info, destination, meta", my)
 
     my.names = meta_names (my.meta)
@@ -161,11 +175,11 @@ function _Z19_add_implementation_info_instance (impl, impl_info, destination, me
                     .value = my.refs.implementation_variable_api_array
 
                 elsif property.tag = "self_cleanup"
-                    .value = my.refs.implementation_method_self_cleanup
+                    .value = my.refs.implementation_method_cleanup
                     item_copy_to (property, value, "cast")
 
                 elsif property.tag = "self_destroy"
-                    .value = my.refs.implementation_method_self_destroy
+                    .value = my.refs.implementation_method_destroy
                     item_copy_to (property, value, "cast")
 
                 else
@@ -180,7 +194,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add require includes to the implementation public module.
 # ---------------------------------------------------------------------------
-function _Z19_add_public_module_includes (impl, destination, meta)
+function _Z19_add_includes_for_module_public (impl, destination, meta)
     check_arguments (my, "impl, destination, meta", my)
 
     my.names = meta_names (my.meta)
@@ -222,13 +236,18 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add require includes to the implementation public module.
 # ---------------------------------------------------------------------------
-function _Z19_add_internal_module_includes (impl, destination, meta)
+function _Z19_add_includes_for_module_internal (impl, destination, meta)
     check_arguments (my, "impl, destination, meta", my)
 
     my.names = meta_names (my.meta)
 
     new require to my.destination
         .module = my.names.module_library
+    endnew
+
+    new require to my.destination
+        .module = my.names.module_memory
+        .scope = "private"
     endnew
 
     new require to my.destination
@@ -305,19 +324,6 @@ function _Z19_define_dependency_argument (argument, require, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
-function _Z19_has_methods_with_context_impl (impl)
-    check_argument (my, "impl", my)
-
-    for my.impl.interface
-        for interface.method where context = "impl"
-            return 1
-        endfor
-    endfor
-
-    return 0
-endfunction
-
-# ---------------------------------------------------------------------------
 function _Z19_add_self_tag (implementation, enum, meta)
     check_arguments (my, "implementation, enum, meta", my)
 
@@ -336,12 +342,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add type that handles implementation details.
 # ---------------------------------------------------------------------------
-function _Z19_add_impl_type (impl, definition, destination, meta)
+function _Z19_add_type_impl (impl, definition, destination, meta)
     check_arguments (my, "impl, definition, destination, meta", my)
-
-    if ! _Z19_has_methods_with_context_impl (my.impl)
-        return
-    endif
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
@@ -360,7 +362,7 @@ function _Z19_add_impl_type (impl, definition, destination, meta)
         for my.impl.require where type = "interface"
             new property to struct
                 . = "Dependency to the interface '$(require.name:)'."
-                .name = require.name
+                .name = my.names.implementation_property_dependency_$(make_id (require.name))
                 .class = my.refs.class_impl_struct_impl
                 .access = "readwrite"
             endnew
@@ -369,7 +371,7 @@ function _Z19_add_impl_type (impl, definition, destination, meta)
         for my.impl.require where type = "api"
             new property to struct
                 . = "Dependency to the interface api '$(require.name:)'."
-                .name = require.name
+                .name = my.names.implementation_property_dependency_$(make_id (require.name))
                 .class = ".($(make_id ("class", require.name, "struct", require.name)))"
             endnew
         endfor
@@ -384,7 +386,7 @@ function _Z19_add_impl_type (impl, definition, destination, meta)
         for my.impl.require where type = "interface"
             new property to struct
                 . = "Ownership status of the dependency to the interface '$(require.name:)'."
-                .name = cat ("is", require.name, "owning")
+                .name = my.names.implementation_property_is_owning_dependency_$(make_id (require.name))
                 .type = "size"
                 .bits = 1
             endnew
@@ -406,12 +408,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add function that returns size of implementation context type.
 # ---------------------------------------------------------------------------
-function _Z19_add_impl_type_size_method (impl, declaration, definition, destination, meta)
+function _Z19_add_method_impl_type_size (impl, declaration, definition, destination, meta)
     check_arguments (my, "impl, declaration, definition, destination, meta", my)
-
-    if ! _Z19_has_methods_with_context_impl (my.impl)
-        return
-    endif
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
@@ -440,12 +438,8 @@ endfunction
 #   Add function that cast specific implementation context type to the
 #   common implementation context type.
 # ---------------------------------------------------------------------------
-function _Z19_add_impl_type_cast_method (impl, declaration, definition, destination, meta)
+function _Z19_add_method_impl_type_cast (impl, declaration, definition, destination, meta)
     check_arguments (my, "impl, declaration, definition, destination, meta", my)
-
-    if ! _Z19_has_methods_with_context_impl (my.impl)
-        return
-    endif
 
     my.names = meta_names (my.meta)
 
@@ -464,11 +458,11 @@ function _Z19_add_impl_type_cast_method (impl, declaration, definition, destinat
             .access = "readwrite"
         endnew
 
-        my.impl = ".(_argument_$(make_id (my.names.implementation_struct_impl)))"
+        my.arg_impl = ".(_argument_$(make_id (my.names.implementation_struct_impl)))"
         new implementation to method
             . = "\
-            .(c_class_assert_macros_assert) ($(my.impl));
-            return (.(c_class_impl_struct_impl) *) ($(my.impl));
+            .(c_class_assert_macros_assert) ($(my.arg_impl));
+            return (.(c_class_impl_struct_impl) *) ($(my.arg_impl));
             "
         endnew
 
@@ -476,19 +470,10 @@ function _Z19_add_impl_type_cast_method (impl, declaration, definition, destinat
     endnew
 endfunction
 
-# ---------------------------------------------------------------------------
-#   Add next methods if exists functions that require implementation context:
-#       - init ()
-#       - new ()
-#       - cleanup ()
-#       - destroy ()
-# ---------------------------------------------------------------------------
-function _Z19_add_lifecycle_methods (impl, declaration, definition, destination, meta)
-    check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
-    if ! _Z19_has_methods_with_context_impl (my.impl)
-        return
-    endif
+# ---------------------------------------------------------------------------
+function _Z19_add_method_init (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
@@ -503,29 +488,31 @@ function _Z19_add_lifecycle_methods (impl, declaration, definition, destination,
 
         _Z19_add_argument_impl (method, my.meta)
 
-        new implementation
-            . = "//TODO: Implement me."
+        new implementation to method
+            my.arg_impl = ".(_argument_$(make_id (my.names.implementation_struct_impl)))"
+
+            . = "\
+            .(c_class_assert_macros_assert) ($(my.arg_impl));
+            .(c_class_assert_macros_assert) ($(my.arg_impl)->$(my.names.c_property_info:) == NULL);
+
+            $(my.arg_impl)->$(my.names.c_property_info:) = &$(my.refs.c_implementation_variable_info);
+
+            $(my.refs.c_implementation_method_init_ctx) ($(my.arg_impl));
+            "
         endnew
     endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _Z19_add_method_cleanup (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
 
     new method to my.destination
-        .name = my.names.method_new
-        .declaration = my.declaration
-        .definition = my.definition
-
-        . = "\
-        Allocate implementation context and perform it's initialization.
-        Return NULL if allocation fails.
-        "
-
-        _Z19_add_return_impl (method, my.meta)
-
-        new implementation
-            . = "//TODO: Implement me."
-        endnew
-    endnew
-
-    new method to my.destination
+        .name = my.names.method_cleanup
         .name = my.names.method_cleanup
         .declaration = my.declaration
         .definition = my.definition
@@ -537,10 +524,113 @@ function _Z19_add_lifecycle_methods (impl, declaration, definition, destination,
 
         _Z19_add_argument_impl (method, my.meta)
 
-        new implementation
-            . = "//TODO: Implement me."
+        new implementation to method
+            my.arg_impl = ".(_argument_$(make_id (my.names.implementation_struct_impl)))"
+
+            my.impl_check_precondition = "\
+                .(c_class_assert_macros_assert) ($(my.arg_impl));
+
+                if ($(my.arg_impl)->$(my.names.c_property_info:) == NULL) {
+                    return;
+                }
+            "
+
+
+            for my.impl.require where type = "interface"
+                my.dependency = my.refs.c_implementation_property_dependency_$(make_id (require.name))
+                my.is_owning_dependency = my.refs.c_implementation_property_is_owning_dependency_$(make_id (require.name))
+
+                my.impl_cleanup_dependencies ?= ""
+                my.impl_cleanup_dependencies += "\
+
+                    //   Cleanup dependency: '$(require.name)'.
+                    if ($(my.arg_impl)->$(my.dependency)) {
+                        if ($(my.arg_impl)->$(my.is_owning_dependency)) {
+                            .(c_class_impl_method_destroy) (&$(my.arg_impl)->$(my.dependency));
+                        } else {
+                            .(c_class_impl_method_cleanup) ($(my.arg_impl)->$(my.dependency));
+                            $(my.arg_impl)->$(my.dependency) = NULL;
+                        }
+                    }
+                "
+            endfor
+
+            for my.impl.require where type = "api"
+                my.dependency = my.refs.c_implementation_property_dependency_$(make_id (require.name))
+
+                my.impl_cleanup_dependencies_api ?= ""
+                my.impl_cleanup_dependencies_api += "\
+
+                    //   Release dependency: '$(require.name)'.
+                    if ($(my.arg_impl)->$(my.dependency)) {
+                        $(my.arg_impl)->$(my.dependency) = NULL;
+                    }
+                "
+            endfor
+
+            my.impl_cleanup_ctx = "\
+                $(my.refs.c_implementation_method_cleanup_ctx) ($(my.arg_impl));
+            "
+
+            my.impl_cleanup_info = "\
+                $(my.arg_impl)->$(my.names.c_property_info:) = NULL;
+            "
+
+            my.method_body = ""
+            my.method_body += format_left (my.impl_check_precondition) + terminator
+            my.method_body += (format_left (my.impl_cleanup_dependencies) + terminator) ? ""
+            my.method_body += (format_left (my.impl_cleanup_dependencies_api) + terminator) ? ""
+            my.method_body += format_left (my.impl_cleanup_ctx) + terminator
+            my.method_body += format_left (my.impl_cleanup_info)
+
+            . = my.method_body
         endnew
     endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _Z19_add_method_new (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        .name = my.names.method_new
+        .declaration = my.declaration
+        .definition = my.definition
+
+        . = "\
+        Allocate implementation context and perform it's initialization.
+        Postcondition: check memory allocation result.
+        "
+
+        _Z19_add_return_impl (method, my.meta)
+
+        new implementation to method
+            my.type_impl = my.refs.c_implementation_struct_impl
+            my.arg_impl = my.names.c_implementation_struct_impl
+
+            . = "\
+            $(my.type_impl) *$(my.arg_impl:) = ($(my.type_impl) *) .(c_global_method_alloc) (sizeof ($(my.type_impl)));
+            .(c_class_assert_macros_assert) ($(my.arg_impl:));
+
+            $(my.refs.c_implementation_method_init) ($(my.arg_impl:));
+
+            return $(my.arg_impl:);
+            "
+        endnew
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _Z19_add_method_destroy (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
 
     new method to my.destination
         .name = my.names.method_destroy
@@ -557,22 +647,40 @@ function _Z19_add_lifecycle_methods (impl, declaration, definition, destination,
         _Z19_add_argument_impl (method, my.meta, "disown")
 
         new implementation
-            . = "//TODO: Implement me."
+            my.arg_impl_ref = ".(_argument_$(make_id (my.names.implementation_struct_impl)))"
+            my.arg_impl = my.names.c_implementation_struct_impl
+            my.type_impl = my.refs.c_implementation_struct_impl
+
+            . = "\
+            .(c_class_assert_macros_assert) ($(my.arg_impl_ref));
+
+            $(my.type_impl) *$(my.arg_impl:) = *$(my.arg_impl_ref);
+            *$(my.arg_impl_ref) = NULL;
+
+            if ($(my.arg_impl:)) {
+                $(my.refs.c_implementation_method_cleanup) ($(my.arg_impl:));
+                .(c_global_method_dealloc) ($(my.arg_impl:));
+            }
+            "
         endnew
     endnew
 endfunction
 
+
 # ---------------------------------------------------------------------------
-#   Add next methods if exists functions that require implementation context:
-#       - init_ctx ()
-#       - cleanup_ctx ()
-# ---------------------------------------------------------------------------
-function _Z19_add_ctx_lifecycle_methods (impl, declaration, definition, destination, meta)
+function _Z19_add_lifecycle_methods (impl, declaration, definition, destination, meta)
     check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
-    if ! _Z19_has_methods_with_context_impl (my.impl)
-        return
-    endif
+    _Z19_add_method_init (my.impl, my.declaration, my.definition, my.destination, my.meta)
+    _Z19_add_method_cleanup (my.impl, my.declaration, my.definition, my.destination, my.meta)
+    _Z19_add_method_new (my.impl, my.declaration, my.definition, my.destination, my.meta)
+    _Z19_add_method_destroy (my.impl, my.declaration, my.definition, my.destination, my.meta)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _Z19_add_method_init_ctx (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
     my.names = meta_names (my.meta)
 
@@ -585,6 +693,14 @@ function _Z19_add_ctx_lifecycle_methods (impl, declaration, definition, destinat
 
         _Z19_add_argument_impl (method, my.meta)
     endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _Z19_add_method_cleanup_ctx (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
+
+    my.names = meta_names (my.meta)
 
     new method to my.destination
         . = "Privides initialization of the implementation specific context."
@@ -595,6 +711,15 @@ function _Z19_add_ctx_lifecycle_methods (impl, declaration, definition, destinat
 
         _Z19_add_argument_impl (method, my.meta)
     endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _Z19_add_ctx_lifecycle_methods (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
+
+    _Z19_add_method_init_ctx (my.impl, my.declaration, my.definition, my.destination, my.meta)
+    _Z19_add_method_cleanup_ctx (my.impl, my.declaration, my.definition, my.destination, my.meta)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -641,51 +766,68 @@ function _Z19_add_interface_methods (impl, definition, destination, meta)
     endfor
 endfunction
 
+
+# ---------------------------------------------------------------------------
+function _Z19_add_method_use_dependency (require, declaration, definition, destination, meta)
+    check_arguments (my, "require, declaration, definition, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+
+    new method to my.destination
+        . = "\
+        Setup dependency '$(my.require.name)' and keep ownership.
+        "
+        .name = cat (my.names.method_use, my.require.name)
+        .definition = my.definition
+        .declaration = my.declaration
+
+
+        _Z19_add_argument_impl (method, my.meta)
+
+        new argument to method
+            _Z19_define_dependency_argument (argument, my.require, my.meta)
+        endnew
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _Z19_add_method_take_dependency (require, declaration, definition, destination, meta)
+    check_arguments (my, "require, declaration, definition, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+
+    new method to my.destination
+        . = "\
+        Setup dependency '$(my.require.name)' and transfer ownership.
+        "
+        .name = cat (my.names.method_take, my.require.name)
+        .definition = my.definition
+        .declaration = my.declaration
+
+        _Z19_add_argument_impl (method, my.meta)
+
+        new argument to method
+            _Z19_define_dependency_argument (argument, my.require, my.meta)
+            argument.access = "disown"
+        endnew
+    endnew
+endfunction
+
+
 # ---------------------------------------------------------------------------
 #   Add dependency management functions.
 # ---------------------------------------------------------------------------
 function _Z19_add_dependency_methods (impl, declaration, definition, destination, meta)
     check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
-    if ! _Z19_has_methods_with_context_impl (my.impl)
-        return
-    endif
-
     my.names = meta_names (my.meta)
 
     for my.impl.require
-        new method to my.destination
-            . = "\
-            Setup dependency '$(require.name)' and keep ownership.
-            "
-            .name = cat (my.names.method_use, require.name)
-            .definition = my.definition
-            .declaration = my.declaration
-
-
-            _Z19_add_argument_impl (method, my.meta)
-
-            new argument to method
-                _Z19_define_dependency_argument (argument, require, my.meta)
-            endnew
-        endnew
+        _Z19_add_method_use_dependency (require, my.declaration, my.definition, my.destination, my.meta)
 
         if require.type = "interface"
-            new method to my.destination
-                . = "\
-                Setup dependency '$(require.name)' and transfer ownership.
-                "
-                .name = cat (my.names.method_take, require.name)
-                .definition = my.definition
-                .declaration = my.declaration
-
-                _Z19_add_argument_impl (method, my.meta)
-
-                new argument to method
-                    _Z19_define_dependency_argument (argument, require, my.meta)
-                    argument.access = "disown"
-                endnew
-            endnew
+            _Z19_add_method_take_dependency (require, my.declaration, my.definition, my.destination, my.meta)
         endif
     endfor
 endfunction
@@ -700,22 +842,18 @@ endfunction
 function _Z19_add_instances (impl, source, destination, meta)
     check_arguments (my, "impl, source, destination, meta", my)
 
-    if ! _Z19_has_methods_with_context_impl (my.impl)
-        return
-    endif
-
     my.names = meta_names (my.meta)
 
     for my.impl.interface
         my.interface_api = c_module_interface_api_find_type (interface.name, my.source, my.meta)
-        _Z19_add_interface_api_instance (my.impl, my.interface_api, my.destination, my.meta)
+        _Z19_add_instance_interface_api (my.impl, my.interface_api, my.destination, my.meta)
     endfor
 
-    _Z19_add_array_of_interface_api_instances (my.impl, my.destination, my.meta)
+    _Z19_add_instance_array_of_interface_api (my.impl, my.destination, my.meta)
 
     my.impl_info_module = my.source->module (name = my.names.module_impl_private)
     my.impl_info = my.impl_info_module->struct (name = my.names.struct_info)
-    _Z19_add_implementation_info_instance (my.impl, my.impl_info, my.destination, my.meta)
+    _Z19_add_instance_impl_info (my.impl, my.impl_info, my.destination, my.meta)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -729,7 +867,7 @@ endfunction
 #       - function that cast implementation type to the common
 #         implementation type - declaration only
 # ---------------------------------------------------------------------------
-function c_module_implementation_create_public_module (impl, enum_impl_tag, destination, meta)
+function c_module_implementation_create_module_public (impl, enum_impl_tag, destination, meta)
     check_arguments (my, "impl, enum_impl_tag, destination, meta", my)
 
     my.names = meta_names (my.meta)
@@ -742,16 +880,20 @@ function c_module_implementation_create_public_module (impl, enum_impl_tag, dest
         .name = my.names.implementation_module
         .class = my.names.implementation_class
 
-        _Z19_add_public_module_includes (my.impl, module, my.meta)
+        _Z19_add_includes_for_module_public (my.impl, module, my.meta)
         _Z19_add_self_tag (my.impl, my.enum_impl_tag, my.meta)
-        _Z19_add_impl_type (my.impl, "external", module, my.meta)
-        _Z19_add_impl_type_size_method (my.impl, "public", "external", module, my.meta)
-        _Z19_add_impl_type_cast_method (my.impl, "public", "external", module, my.meta)
         _Z19_add_interface_constants (my.impl, module, my.meta)
-        _Z19_add_ctx_lifecycle_methods (my.impl, "external", "private", module, my.meta)
-        _Z19_add_lifecycle_methods (my.impl, "public", "external", module, my.meta)
+
+        if _Z19_has_methods_with_context_impl (my.impl)
+            _Z19_add_type_impl (my.impl, "external", module, my.meta)
+            _Z19_add_method_impl_type_size (my.impl, "public", "external", module, my.meta)
+            _Z19_add_method_impl_type_cast (my.impl, "public", "external", module, my.meta)
+            _Z19_add_ctx_lifecycle_methods (my.impl, "external", "private", module, my.meta)
+            _Z19_add_lifecycle_methods (my.impl, "public", "external", module, my.meta)
+            _Z19_add_dependency_methods (my.impl, "public", "external", module, my.meta)
+        endif
+
         _Z19_add_interface_methods (my.impl, "public", module, my.meta)
-        _Z19_add_dependency_methods (my.impl, "public", "external", module, my.meta)
     endnew
 endfunction
 
@@ -761,10 +903,6 @@ endfunction
 # ---------------------------------------------------------------------------
 function c_module_implementation_create_module_impl (impl, destination, meta)
     check_arguments (my, "impl, destination, meta", my)
-
-    if ! _Z19_has_methods_with_context_impl (my.impl)
-        return
-    endif
 
     my.names = meta_names (my.meta)
 
@@ -788,7 +926,13 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
             .module = my.names.module_impl_private
         endnew
 
-        _Z19_add_impl_type (my.impl, "public", module, my.meta)
+        for my.impl.require as dependency where type = "api"
+            new require to module
+                .module = dependency.name
+            endnew
+        endfor
+
+        _Z19_add_type_impl (my.impl, "public", module, my.meta)
     endnew
 endfunction
 
@@ -802,7 +946,7 @@ endfunction
 #       - function that cast implementation type to the common
 #         implementation type - definition only
 # ---------------------------------------------------------------------------
-function c_module_implementation_create_internal_module (impl, source, destination, meta)
+function c_module_implementation_create_module_internal (impl, source, destination, meta)
     check_arguments (my, "impl, source, destination, meta", my)
 
     my.names = meta_names (my.meta)
@@ -815,13 +959,14 @@ function c_module_implementation_create_internal_module (impl, source, destinati
         .of_class = my.names.implementation_class
         .scope = "internal"
 
-        _Z19_add_internal_module_includes (my.impl, module, my.meta)
+        _Z19_add_includes_for_module_internal (my.impl, module, my.meta)
         _Z19_add_instances (my.impl, my.source, module, my.meta)
         _Z19_add_ctx_lifecycle_methods (my.impl, "public", "external", module, my.meta)
         _Z19_add_lifecycle_methods (my.impl, "external", "private", module, my.meta)
         _Z19_add_dependency_methods (my.impl, "external", "private", module, my.meta)
-        _Z19_add_impl_type_size_method (my.impl, "external", "private", module, my.meta)
-        _Z19_add_impl_type_cast_method (my.impl, "external", "private", module, my.meta)
+        _Z19_add_method_impl_type_size (my.impl, "external", "private", module, my.meta)
+        _Z19_add_method_impl_type_cast (my.impl, "external", "private", module, my.meta)
+
     endnew
 endfunction
 
@@ -841,9 +986,12 @@ function c_module_implementation_create (source, destination, meta)
     for my.source.implementation
         meta_reset_active_entity (my.meta, implementation.name)
 
-        c_module_implementation_create_public_module (implementation, my.enum_impl_tag, my.destination, my.meta)
-        c_module_implementation_create_module_impl (implementation, my.destination, my.meta)
-        c_module_implementation_create_internal_module (implementation, my.source, my.destination, my.meta)
+        c_module_implementation_create_module_public (implementation, my.enum_impl_tag, my.destination, my.meta)
+
+        if _Z19_has_methods_with_context_impl (implementation)
+            c_module_implementation_create_module_impl (implementation, my.destination, my.meta)
+            c_module_implementation_create_module_internal (implementation, my.source, my.destination, my.meta)
+        endif
     endfor
 endfunction
 

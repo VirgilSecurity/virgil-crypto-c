@@ -410,6 +410,7 @@
         <restrict value="none">
             Method takes only data arguments (no context).
         </restrict>
+
         <restrict value="api">
             Method takes interface object as a first argument.
         </restrict>

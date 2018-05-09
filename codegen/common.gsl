@@ -210,17 +210,6 @@ function string_collapse_spaces (str)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return trimmed string indented with a given tab count.
-# ---------------------------------------------------------------------------
-function string_indent (str, tab_count, tab_size)
-    my.str ?= ""
-    my.str = "$(my.str:left, no)"
-    my.str = string_trim (my.str)
-    my.indent = tabs (my.tab_count, my.tab_size)
-    return my.indent + string.replace (my.str, "$(terminator)|$(terminator)$(my.indent)")
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Remove trailing whitespaces for each line of multi-line string.
 # ---------------------------------------------------------------------------
 function string_multi_rtrim (str)
@@ -260,6 +249,17 @@ function string_trim (str)
     check_argument (my, "str")
 
     return string_ltrim (string_rtrim (my.str))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return trimmed string indented with a given tab count.
+# ---------------------------------------------------------------------------
+function string_indent (str, tab_count, tab_size)
+    my.str ?= ""
+    my.str = "$(my.str:left, no)"
+    my.str = string_trim (my.str)
+    my.indent = tabs (my.tab_count, my.tab_size)
+    return my.indent + string.replace (my.str, "$(terminator)|$(terminator)$(my.indent)")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -608,6 +608,17 @@ function format_code (body, tab_count)
     my.body = string_multi_rtrim (my.body)
 
     return my.body
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Trim and adjust content to the leftmost.
+# ---------------------------------------------------------------------------
+function format_left (body)
+    if ! defined (my.body)
+        return
+    endif
+
+    return terminator + string_indent (my.body)
 endfunction
 
 # ---------------------------------------------------------------------------

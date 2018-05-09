@@ -98,18 +98,18 @@ VSF_PUBLIC void
 vsf_sha256_init (vsf_sha256_impl_t* sha256_impl);
 
 //
-//  Allocate implementation context and perform it's initialization.
-//  Return NULL if allocation fails.
-//
-VSF_PUBLIC vsf_sha256_impl_t*
-vsf_sha256_new (void);
-
-//
 //  Cleanup sensitive data within implementation context.
 //  Note, dependencies are cleaned up as well.
 //
 VSF_PUBLIC void
 vsf_sha256_cleanup (vsf_sha256_impl_t* sha256_impl);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
+//
+VSF_PUBLIC vsf_sha256_impl_t*
+vsf_sha256_new (void);
 
 //
 //  Destroy given implementation context and it's dependencies.
