@@ -147,6 +147,8 @@ function _X17_add_entity_common (meta)
         _X17_add_smart_name (entity, "method", "new")
         _X17_add_smart_name (entity, "method", "use")
         _X17_add_smart_name (entity, "method", "take")
+        _X17_add_smart_name (entity, "method", "init ctx")
+        _X17_add_smart_name (entity, "method", "cleanup ctx")
 
         _X17_add_smart_name (entity, "enum", "tag")
         _X17_add_smart_name (entity, "enum constant", "begin")

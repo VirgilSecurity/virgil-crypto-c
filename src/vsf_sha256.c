@@ -52,6 +52,7 @@
 #include "vsf_sha256.h"
 #include "vsf_assert.h"
 #include "vsf_sha256_impl.h"
+#include "vsf_sha256_internal.h"
 //  @end
 
 
@@ -66,6 +67,22 @@
 // --------------------------------------------------------------------------
 //  @end
 
+
+//
+//  Privides initialization of the implementation specific context.
+//
+VSF_PRIVATE void
+vsf_sha256_init_ctx (vsf_sha256_impl_t* sha256_impl) {
+    //  TODO: This is STUB. Implement me.
+}
+
+//
+//  Privides initialization of the implementation specific context.
+//
+VSF_PRIVATE void
+vsf_sha256_cleanup_ctx (vsf_sha256_impl_t* sha256_impl) {
+    //  TODO: This is STUB. Implement me.
+}
 
 //
 //  Calculate hash over given data.

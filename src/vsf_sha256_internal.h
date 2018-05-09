@@ -53,6 +53,7 @@
 #define VSF_SHA256_INTERNAL_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_sha256_impl.h"
 //  @end
 
 
@@ -65,6 +66,18 @@ extern "C" {
 // --------------------------------------------------------------------------
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Privides initialization of the implementation specific context.
+//
+VSF_PRIVATE void
+vsf_sha256_init_ctx (vsf_sha256_impl_t* sha256_impl);
+
+//
+//  Privides initialization of the implementation specific context.
+//
+VSF_PRIVATE void
+vsf_sha256_cleanup_ctx (vsf_sha256_impl_t* sha256_impl);
 
 
 // --------------------------------------------------------------------------
