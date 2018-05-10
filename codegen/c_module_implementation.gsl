@@ -291,6 +291,8 @@ function _Z19_add_argument_impl (destination, meta, access)
         .class = my.refs.implementation_struct_impl
         .access = my.access
     endscope
+
+    return my.argument
 endfunction
 
 
@@ -308,19 +310,25 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-function _Z19_define_dependency_argument (argument, require, meta)
-    check_arguments (my, "argument, require, meta", my)
+function _Z19_add_dependency_argument (require, destination, after_argument, meta)
+    check_arguments (my, "require, destination, meta", my)
 
     my.refs = meta_refs (my.meta)
 
-    my.argument.name = my.require.name
-    if my.require.type = "interface"
-        my.argument.class = my.refs.class_impl_struct_impl
-        my.argument.access = "readwrite"
-    elsif require.type = "api"
-        my.argument.class = ".($(make_id ("class", require.name, "struct", require.name)))"
-        my.argument.access = "readonly"
-    endif
+    my.argument = item_prepend_new ("argument", my.destination, my.after_argument)
+
+    scope my.argument
+        .name = my.require.name
+        if my.require.type = "interface"
+            .class = my.refs.class_impl_struct_impl
+            .access = "readwrite"
+        elsif require.type = "api"
+            .class = ".($(make_id ("class", require.name, "struct", require.name)))"
+            .access = "readonly"
+        endif
+    endscope
+
+    return my.argument
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -729,8 +737,7 @@ function _Z19_define_interface_method_with_api_context (method, impl, meta)
     check_arguments (my, "method, impl, meta", my)
 
     for my.impl.require
-        my.dependency_argument = item_prepend_new ("argument", my.method, my.dependency_argument)
-        _Z19_define_dependency_argument (my.dependency_argument, require, my.meta)
+        my.after_argument = _Z19_add_dependency_argument (require, my.method, my.after_argument, my.meta)
     endfor
 endfunction
 
@@ -782,11 +789,8 @@ function _Z19_add_method_use_dependency (require, declaration, definition, desti
         .declaration = my.declaration
 
 
-        _Z19_add_argument_impl (method, my.meta)
-
-        new argument to method
-            _Z19_define_dependency_argument (argument, my.require, my.meta)
-        endnew
+        my.arg_impl = _Z19_add_argument_impl (method, my.meta)
+        _Z19_add_dependency_argument (my.require, method, my.arg_impl, my.meta)
     endnew
 endfunction
 
@@ -805,12 +809,10 @@ function _Z19_add_method_take_dependency (require, declaration, definition, dest
         .definition = my.definition
         .declaration = my.declaration
 
-        _Z19_add_argument_impl (method, my.meta)
+        my.arg_impl = _Z19_add_argument_impl (method, my.meta)
 
-        new argument to method
-            _Z19_define_dependency_argument (argument, my.require, my.meta)
-            argument.access = "disown"
-        endnew
+        my.argument = _Z19_add_dependency_argument (my.require, method, my.arg_impl, my.meta)
+        my.argument.access = "disown"
     endnew
 endfunction
 
