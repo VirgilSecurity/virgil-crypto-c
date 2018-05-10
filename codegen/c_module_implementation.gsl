@@ -208,13 +208,13 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
         .scope = "private"
     endnew
 
-    for my.impl.require where type = "api" as interface_api
+    for my.impl.require_context where type = "api"
         new require to my.destination
-            .module = interface_api.name
+            .module = require_context.name
         endnew
     endfor
 
-    if count (my.impl.require, type = "interface") | _Z19_has_methods_with_context_impl (my.impl)
+    if count (my.impl.require_context, type = "impl") | _Z19_has_methods_with_context_impl (my.impl)
         new require to my.destination
             .module = my.names.module_impl
         endnew
@@ -230,7 +230,16 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
             .module = my.names.implementation_module_internal
             .scope = "private"
         endnew
+
     endif
+
+    for my.impl.require_include
+        new c_include to my.destination
+            .file = require_include.name
+            .scope = "private"
+            .is_system = "1"
+        endnew
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -319,11 +328,11 @@ function _Z19_add_dependency_argument (require, destination, after_argument, met
 
     scope my.argument
         .name = my.require.name
-        if my.require.type = "interface"
+        if my.require.type = "impl"
             .class = my.refs.class_impl_struct_impl
             .access = "readwrite"
-        elsif require.type = "api"
-            .class = ".($(make_id ("class", require.name, "struct", require.name)))"
+        elsif my.require.type = "api"
+            .class = ".($(make_id ("class", my.require.name, "struct", my.require.name)))"
             .access = "readonly"
         endif
     endscope
@@ -367,20 +376,20 @@ function _Z19_add_type_impl (impl, definition, destination, meta)
             .class = my.refs.class_impl_struct_info
         endnew
 
-        for my.impl.require where type = "interface"
+        for my.impl.require_context where type = "impl"
             new property to struct
-                . = "Dependency to the interface '$(require.name:)'."
-                .name = my.names.implementation_property_dependency_$(make_id (require.name))
+                . = "Dependency to the interface '$(require_context.name:)'."
+                .name = my.names.implementation_property_dependency_$(make_id (require_context.name))
                 .class = my.refs.class_impl_struct_impl
                 .access = "readwrite"
             endnew
         endfor
 
-        for my.impl.require where type = "api"
+        for my.impl.require_context where type = "api"
             new property to struct
-                . = "Dependency to the interface api '$(require.name:)'."
-                .name = my.names.implementation_property_dependency_$(make_id (require.name))
-                .class = ".($(make_id ("class", require.name, "struct", require.name)))"
+                . = "Dependency to the interface api '$(require_context.name:)'."
+                .name = my.names.implementation_property_dependency_$(make_id (require_context.name))
+                .class = ".($(make_id ("class", require_context.name, "struct", require_context.name)))"
             endnew
         endfor
 
@@ -391,10 +400,10 @@ function _Z19_add_type_impl (impl, definition, destination, meta)
             endfor
         endfor
 
-        for my.impl.require where type = "interface"
+        for my.impl.require_context where type = "impl"
             new property to struct
-                . = "Ownership status of the dependency to the interface '$(require.name:)'."
-                .name = my.names.implementation_property_is_owning_dependency_$(make_id (require.name))
+                . = "Ownership status of the dependency to the interface '$(require_context.name:)'."
+                .name = my.names.implementation_property_is_owning_dependency_$(make_id (require_context.name))
                 .type = "size"
                 .bits = 1
             endnew
@@ -546,14 +555,14 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
             "
 
 
-            for my.impl.require where type = "interface"
-                my.dependency = my.refs.c_implementation_property_dependency_$(make_id (require.name))
-                my.is_owning_dependency = my.refs.c_implementation_property_is_owning_dependency_$(make_id (require.name))
+            for my.impl.require_context where type = "impl"
+                my.dependency = my.refs.c_implementation_property_dependency_$(make_id (require_context.name))
+                my.is_owning_dependency = my.refs.c_implementation_property_is_owning_dependency_$(make_id (require_context.name))
 
                 my.impl_cleanup_dependencies ?= ""
                 my.impl_cleanup_dependencies += "\
 
-                    //   Cleanup dependency: '$(require.name)'.
+                    //   Cleanup dependency: '$(require_context.name)'.
                     if ($(my.arg_impl)->$(my.dependency)) {
 
                         if ($(my.arg_impl)->$(my.is_owning_dependency)) {
@@ -569,13 +578,13 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
                 "
             endfor
 
-            for my.impl.require where type = "api"
-                my.dependency = my.refs.c_implementation_property_dependency_$(make_id (require.name))
+            for my.impl.require_context where type = "api"
+                my.dependency = my.refs.c_implementation_property_dependency_$(make_id (require_context.name))
 
                 my.impl_cleanup_dependencies_api ?= ""
                 my.impl_cleanup_dependencies_api += "\
 
-                    //   Release dependency: '$(require.name)'.
+                    //   Release dependency: '$(require_context.name)'.
                     if ($(my.arg_impl)->$(my.dependency)) {
                         $(my.arg_impl)->$(my.dependency) = NULL;
                     }
@@ -742,8 +751,8 @@ endfunction
 function _Z19_define_interface_method_with_api_context (method, impl, meta)
     check_arguments (my, "method, impl, meta", my)
 
-    for my.impl.require
-        my.after_argument = _Z19_add_dependency_argument (require, my.method, my.after_argument, my.meta)
+    for my.impl.require_context
+        my.after_argument = _Z19_add_dependency_argument (require_context, my.method, my.after_argument, my.meta)
     endfor
 endfunction
 
@@ -815,7 +824,7 @@ function _Z19_add_method_use_dependency (require, declaration, definition, desti
                 $(my.dependency) = $(my.arg_dependency);
             "
 
-            if my.require.type = "interface"
+            if my.require.type = "impl"
                 my.property_is_owning_dependency = \
                         my.refs.c_implementation_property_is_owning_dependency_$(make_id (my.require.name))
 
@@ -879,7 +888,7 @@ function _Z19_add_method_take_dependency (require, declaration, definition, dest
                 $(my.dependency:) = $(my.arg_dependency);
             "
 
-            if my.require.type = "interface"
+            if my.require.type = "impl"
                 my.property_is_owning_dependency = \
                         my.refs.c_implementation_property_is_owning_dependency_$(make_id (my.require.name))
 
@@ -909,11 +918,11 @@ function _Z19_add_dependency_methods (impl, declaration, definition, destination
 
     my.names = meta_names (my.meta)
 
-    for my.impl.require
-        _Z19_add_method_use_dependency (require, my.declaration, my.definition, my.destination, my.meta)
+    for my.impl.require_context
+        _Z19_add_method_use_dependency (require_context, my.declaration, my.definition, my.destination, my.meta)
 
-        if require.type = "interface"
-            _Z19_add_method_take_dependency (require, my.declaration, my.definition, my.destination, my.meta)
+        if require_context.type = "impl"
+            _Z19_add_method_take_dependency (require_context, my.declaration, my.definition, my.destination, my.meta)
         endif
     endfor
 endfunction
@@ -1012,9 +1021,16 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
             .module = my.names.module_impl_private
         endnew
 
-        for my.impl.require as dependency where type = "api"
+        for my.impl.require_context where type = "api"
             new require to module
-                .module = dependency.name
+                .module = require_context.name
+            endnew
+        endfor
+
+        for my.impl.require_include where type = "context"
+            new c_include to module
+                .file = require_include.name
+                .is_system = "1"
             endnew
         endfor
 

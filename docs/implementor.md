@@ -12,10 +12,11 @@ attribute names are case-sensitive and we use only lower-case names.
        <implementation name>
           <c_include file/>
           <interface name>
-             <context name c_type/>
+             <context name/>
              <constant name value/>
           </interface>
-          <require name [type]/>
+          <require_context name [type]/>
+          <require_include name [type]/>
        </implementation>
     </implementor>
 
@@ -66,7 +67,8 @@ Defines set of the implemented interfaces in a one module.
         >
         <c_include>
         <interface>, 1 or more
-        <require>
+        <require_context>
+        <require_include>
     </implementation>
 
 The implementation item has this single attribute:
@@ -111,20 +113,17 @@ name:
 The 'context' item
 ------------------
 
-Defines specific underlying implementation context.
+The same instance as component's instance. Defines specific underlying
+implementation context.
 
     <context
         name = "..."
-        c_type = "..."
         />
 
-The context item can have these attributes:
+The context item has this single attribute:
 
 name:
     Name of the context. The name attribute is required.
-
-c_type:
-    C type of the underlying context. The c_type attribute is required.
 
 
 The 'constant' item
@@ -147,26 +146,50 @@ value:
     attribute is required.
 
 
-The 'require' item
-------------------
+The 'require_context' item
+--------------------------
 
 Defines implementation dependency.
 
-    <require
+    <require_context
         name = "..."
-      [ type = "interface | interface api"  ("interface api") ]
+      [ type = "api | impl"  ("api") ]
         />
 
-The require item can have these attributes:
+The require_context item can have these attributes:
 
 name:
     Dependency name. The name attribute is required.
 
 type:
     Dependency type. The type attribute is optional. Its default value is
-    "interface api". It can take one of the following values:
+    "api". It can take one of the following values:
 
 Value: Meaning:
-interface: Dependency is an implementation object to the interface.
-interface_api: Dependency is an interface API object.
+api: Dependency is an interface API object.
+impl: Dependency is an implementation object.
+
+
+The 'require_include' item
+--------------------------
+
+Define implementation dependecy to the thirdparty header file.
+
+    <require_include
+        name = "..."
+      [ type = "none | context"  ("none") ]
+        />
+
+The require_include item can have these attributes:
+
+name:
+    Dependency name. The name attribute is required.
+
+type:
+    Dependency type. The type attribute is optional. Its default value is
+    "none". It can take one of the following values:
+
+Value: Meaning:
+none: Header file is used for implmentation purposes only.
+context: Header file contains implementation context type definition.
 

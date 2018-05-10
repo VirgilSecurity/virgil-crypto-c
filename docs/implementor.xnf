@@ -75,7 +75,8 @@
 
         <allow entity="c_include" occurs="0+"/>
         <allow entity="interface" occurs="1+"/>
-        <allow entity="require" occurs="0+"/>
+        <allow entity="require_context" occurs="0+"/>
+        <allow entity="require_include" occurs="0+"/>
     </entity>
 
 
@@ -125,24 +126,49 @@
     </entity>
 
 
-    <entity name="require">
+    <entity name="require_context">
         Defines implementation dependency.
 
         <attr name="name" required="1">
             Dependency name.
         </attr>
 
-        <attr name="type" default="interface api">
+        <attr name="type" default="api">
             Dependency type.
 
-            <restrict value="interface">
-                Dependency is an implementation object to the interface.
-            </restrict>
-
-            <restrict value="interface api">
+            <restrict value="api">
                 Dependency is an interface API object.
             </restrict>
+
+            <restrict value="impl">
+                Dependency is an implementation object.
+            </restrict>
         </attr>
+    </entity>
+
+
+    <entity name="require_include">
+        Define implementation dependecy to the thirdparty header file.
+
+        <attr name="name" required="1">
+            Dependency name.
+        </attr>
+
+        <attr name="type" default="none">
+            Dependency type.
+
+            <restrict value="none">
+                Header file is used for implmentation purposes only.
+            </restrict>
+
+            <restrict value="context">
+                Header file contains implementation context type definition.
+            </restrict>
+        </attr>
+    </entity>
+
+    <entity name="instance">
+        The same instance as component's instance.
     </entity>
 </xnf>
 

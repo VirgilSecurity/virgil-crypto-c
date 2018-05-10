@@ -400,7 +400,7 @@ function _X17_add_entity_implementation (meta, implementation)
             _X17_add_link (entity, "implementation property dependency $(require.name)", \
                     make_id ("class", my.name, "struct", "impl", "property", require.name))
 
-            if require.type = "interface"
+            if require.type = "impl"
                 _X17_add_name (entity, "implementation property is owning dependency $(require.name)", \
                     cat ("is owning", require.name))
 

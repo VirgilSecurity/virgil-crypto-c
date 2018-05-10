@@ -6,7 +6,7 @@
     <implementation name = "sha256">
         This is MbedTLS implementation of SHA256.
 
-        <c_include file = "mbedtls/sha256.h" is_system = "1" scope = "private" />
+        <!-- <require_include name = "mbedtls/sha256.h" type = "context" /> -->
 
         <interface name = "hash info">
             <constant name = "digest size" value = "32" />
@@ -16,7 +16,7 @@
         </interface>
 
         <interface name = "hash stream">
-            <context name = "hash ctx" class = "void" access = "readwrite" />
+            <context name = "hash ctx" class = "void" access = "readwrite" is_reference="1"/>
         </interface>
 
     </implementation>
