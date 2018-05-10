@@ -6,7 +6,7 @@
 
         <interface name = "kdf" />
 
-        <require name = "hash" type = "interface" />
+        <require_context name = "hash" type = "impl" />
     </implementation>
 <!--
     <implementation name = "dynamic_list">
