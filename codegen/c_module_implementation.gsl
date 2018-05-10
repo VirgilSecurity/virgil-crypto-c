@@ -708,7 +708,7 @@ function _Z19_add_method_init_ctx (impl, declaration, definition, destination, m
     my.names = meta_names (my.meta)
 
     new method to my.destination
-        . = "Privides initialization of the implementation specific context."
+        . = "Provides initialization of the implementation specific context."
         .name = my.names.method_init_ctx
         .declaration = my.declaration
         .definition = my.definition
@@ -726,7 +726,7 @@ function _Z19_add_method_cleanup_ctx (impl, declaration, definition, destination
     my.names = meta_names (my.meta)
 
     new method to my.destination
-        . = "Privides initialization of the implementation specific context."
+        . = "Provides cleanup of the implementation specific context."
         .name = my.names.method_cleanup_ctx
         .declaration = my.declaration
         .definition = my.definition
