@@ -10,7 +10,6 @@ attribute names are case-sensitive and we use only lower-case names.
 
     <implementor name [is_default]>
        <implementation name>
-          <c_include file/>
           <interface name>
              <context name/>
              <constant name value/>
@@ -65,7 +64,6 @@ Defines set of the implemented interfaces in a one module.
     <implementation
         name = "..."
         >
-        <c_include>
         <interface>, 1 or more
         <require_context>
         <require_include>
@@ -75,21 +73,6 @@ The implementation item has this single attribute:
 
 name:
     Implementation name. The name attribute is required.
-
-
-The 'c_include' item
---------------------
-
-Defines C header file that is used for implementation.
-
-    <c_include
-        file = "..."
-        />
-
-The c_include item has this single attribute:
-
-file:
-    File name to be included. The file attribute is required.
 
 
 The 'interface' item
