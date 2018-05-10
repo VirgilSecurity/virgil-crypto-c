@@ -553,12 +553,16 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
 
                     //   Cleanup dependency: '$(require.name)'.
                     if ($(my.arg_impl)->$(my.dependency)) {
+
                         if ($(my.arg_impl)->$(my.is_owning_dependency)) {
                             .(c_class_impl_method_destroy) (&$(my.arg_impl)->$(my.dependency));
+
                         } else {
                             .(c_class_impl_method_cleanup) ($(my.arg_impl)->$(my.dependency));
                             $(my.arg_impl)->$(my.dependency) = NULL;
                         }
+
+                        $(my.arg_impl)->$(my.is_owning_dependency) = 0;
                     }
                 "
             endfor
@@ -779,6 +783,7 @@ function _Z19_add_method_use_dependency (require, declaration, definition, desti
     check_arguments (my, "require, declaration, definition, destination, meta", my)
 
     my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
 
     new method to my.destination
         . = "\
@@ -791,6 +796,41 @@ function _Z19_add_method_use_dependency (require, declaration, definition, desti
 
         my.arg_impl = _Z19_add_argument_impl (method, my.meta)
         _Z19_add_dependency_argument (my.require, method, my.arg_impl, my.meta)
+
+        new implementation to method
+            my.arg_impl = ".(_argument_$(make_id (my.names.implementation_struct_impl)))"
+            my.arg_dependency = ".(_argument_$(make_id (my.require.name)))"
+            my.property_dependency = my.refs.c_implementation_property_dependency_$(make_id (my.require.name))
+            my.dependency = "$(my.arg_impl)->$(my.property_dependency)"
+
+            my.impl_check_precondition = "\
+                .(c_class_assert_macros_assert) ($(my.arg_impl));
+                .(c_class_assert_macros_assert) ($(my.arg_dependency));
+                .(c_class_assert_macros_assert) ($(my.dependency) == NULL);
+            "
+
+            my.impl_setup_dependency = "\
+                $(my.dependency) = $(my.arg_dependency);
+            "
+
+            if my.require.type = "interface"
+                my.property_is_owning_dependency = \
+                        my.refs.c_implementation_property_is_owning_dependency_$(make_id (my.require.name))
+
+                my.is_owning_dependency = "$(my.arg_impl)->$(my.property_is_owning_dependency)"
+
+                my.impl_setup_dependency_ownage = "\
+                    $(my.is_owning_dependency) = 0;
+                "
+            endif
+
+            my.method_body = ""
+            my.method_body += format_left (my.impl_check_precondition) + terminator
+            my.method_body += format_left (my.impl_setup_dependency) + terminator
+            my.method_body += format_left (my.impl_setup_dependency_ownage) + terminator ? ""
+
+            . = my.method_body
+        endnew
     endnew
 endfunction
 
@@ -800,6 +840,7 @@ function _Z19_add_method_take_dependency (require, declaration, definition, dest
     check_arguments (my, "require, declaration, definition, destination, meta", my)
 
     my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
 
     new method to my.destination
         . = "\
@@ -813,6 +854,47 @@ function _Z19_add_method_take_dependency (require, declaration, definition, dest
 
         my.argument = _Z19_add_dependency_argument (my.require, method, my.arg_impl, my.meta)
         my.argument.access = "disown"
+
+        new implementation to method
+            my.arg_impl = ".(_argument_$(make_id (my.names.implementation_struct_impl)))"
+            my.arg_dependency_ref = ".(_argument_$(make_id (my.require.name)))"
+            my.type_dependency = my.refs.c_class_impl_struct_impl
+            my.arg_dependency = make_id (my.require.name)
+            my.property_dependency = my.refs.c_implementation_property_dependency_$(make_id (my.require.name))
+            my.dependency = "$(my.arg_impl)->$(my.property_dependency:)"
+
+            my.impl_check_precondition = "\
+                .(c_class_assert_macros_assert) ($(my.arg_impl));
+                .(c_class_assert_macros_assert) ($(my.arg_dependency_ref));
+                .(c_class_assert_macros_assert) ($(my.dependency:) == NULL);
+            "
+
+            my.impl_setup_dependency = "\
+                $(my.type_dependency) *$(my.arg_dependency) = *$(my.arg_dependency_ref);
+                *$(my.arg_dependency_ref) = NULL;
+                .(c_class_assert_macros_assert) ($(my.arg_dependency:));
+
+                $(my.dependency:) = $(my.arg_dependency);
+            "
+
+            if my.require.type = "interface"
+                my.property_is_owning_dependency = \
+                        my.refs.c_implementation_property_is_owning_dependency_$(make_id (my.require.name))
+
+                my.is_owning_dependency = "$(my.arg_impl)->$(my.property_is_owning_dependency)"
+
+                my.impl_setup_dependency_ownage = "\
+                    $(my.is_owning_dependency) = 1;
+                "
+            endif
+
+            my.method_body = ""
+            my.method_body += format_left (my.impl_check_precondition) + terminator
+            my.method_body += format_left (my.impl_setup_dependency) + terminator
+            my.method_body += format_left (my.impl_setup_dependency_ownage) + terminator ? ""
+
+            . = my.method_body
+        endnew
     endnew
 endfunction
 
