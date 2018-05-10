@@ -98,8 +98,10 @@ VSF_PUBLIC void
 vsf_sha256_init (vsf_sha256_impl_t* sha256_impl);
 
 //
-//  Cleanup sensitive data within implementation context.
-//  Note, dependencies are cleaned up as well.
+//  Cleanup implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_sha256_init ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
 vsf_sha256_cleanup (vsf_sha256_impl_t* sha256_impl);
@@ -113,9 +115,9 @@ vsf_sha256_new (void);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This function SHOULD be called even if context was statically allocated,
-//  because it automatically detect this fact for context itself and
-//  dependencies as well and destroy them appropriately.
+//  This is a reverse action of the function 'vsf_sha256_new ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
 vsf_sha256_destroy (vsf_sha256_impl_t** sha256_impl_ref);
