@@ -73,7 +73,6 @@
             Implementation name.
         </attr>
 
-        <allow entity="c_include" occurs="0+"/>
         <allow entity="interface" occurs="1+"/>
         <allow entity="require_context" occurs="0+"/>
         <allow entity="require_include" occurs="0+"/>
@@ -113,15 +112,6 @@
         <attr name="value" required="1">
             Value of the interface constant.
             Note, value must be integral.
-        </attr>
-    </entity>
-
-
-    <entity name="c_include">
-        Defines C header file that is used for implementation.
-
-        <attr name="file" required="1">
-            File name to be included.
         </attr>
     </entity>
 
