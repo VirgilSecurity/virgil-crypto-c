@@ -68,13 +68,13 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Privides initialization of the implementation specific context.
+//  Provides initialization of the implementation specific context.
 //
 VSF_PRIVATE void
 vsf_sha256_init_ctx (vsf_sha256_impl_t* sha256_impl);
 
 //
-//  Privides initialization of the implementation specific context.
+//  Provides cleanup of the implementation specific context.
 //
 VSF_PRIVATE void
 vsf_sha256_cleanup_ctx (vsf_sha256_impl_t* sha256_impl);
