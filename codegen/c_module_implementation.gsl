@@ -110,6 +110,21 @@ function _Z19_add_instance_interface_api (impl, interface_api, destination, meta
     endnew
 endfunction
 
+
+# ---------------------------------------------------------------------------
+#   Add instance for each implemented interface.
+# ---------------------------------------------------------------------------
+function _Z19_add_instances_of_interface_api (impl, source, destination, meta)
+    check_arguments (my, "impl, source, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+
+    for my.impl.interface
+        my.interface_api = c_module_interface_api_find_type (interface.name, my.source, my.meta)
+        _Z19_add_instance_interface_api (my.impl, my.interface_api, my.destination, my.meta)
+    endfor
+endfunction
+
 # ---------------------------------------------------------------------------
 #   Add instance that is array of the implemented 'Interface API' instances.
 # ---------------------------------------------------------------------------
@@ -148,14 +163,18 @@ function _Z19_add_instance_array_of_interface_api (impl, destination, meta)
     endnew
 endfunction
 
+
 # ---------------------------------------------------------------------------
 #   Add instance of the 'Implementation Info' class.
 # ---------------------------------------------------------------------------
-function _Z19_add_instance_impl_info (impl, impl_info, destination, meta)
-    check_arguments (my, "impl, impl_info, destination, meta", my)
+function _Z19_add_instance_impl_info (impl, source, destination, meta)
+    check_arguments (my, "impl, source, destination, meta", my)
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
+
+    my.impl_info_module = my.source->module (name = my.names.module_impl_private)
+    my.impl_info = my.impl_info_module->struct (name = my.names.struct_info)
 
     new variable to my.destination
         . = "Compile-time known information about '$(my.impl.name:)' implementation."
@@ -190,6 +209,23 @@ function _Z19_add_instance_impl_info (impl, impl_info, destination, meta)
         endfor
     endnew
 endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add next instances:
+#       - implemented interface api instance
+#       - implemented interface api instances as array
+#       - implementation info instance
+#       - implementation instance
+# ---------------------------------------------------------------------------
+function _Z19_add_instances (impl, source, destination, meta)
+    check_arguments (my, "impl, source, destination, meta", my)
+
+    _Z19_add_instances_of_interface_api (my.impl, my.source, my.destination, my.meta)
+    _Z19_add_instance_array_of_interface_api (my.impl, my.destination, my.meta)
+    _Z19_add_instance_impl_info (my.impl, my.source, my.destination, my.meta)
+endfunction
+
 
 # ---------------------------------------------------------------------------
 #   Add require includes to the implementation public module.
@@ -412,6 +448,7 @@ function _Z19_add_type_impl (impl, definition, destination, meta)
 endfunction
 
 
+# ---------------------------------------------------------------------------
 function _Z19_add_interface_constants (impl, destination, meta)
     check_arguments (my, "impl, destination, meta", my)
 
@@ -419,6 +456,30 @@ function _Z19_add_interface_constants (impl, destination, meta)
         for interface.constant
             copy constant to my.destination
         endfor
+    endfor
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _Z19_add_interface_types (impl, destination, meta)
+    check_arguments (my, "impl, destination, meta", my)
+
+    for my.impl.interface
+        meta_activate_entity (my.meta, interface.name)
+
+        my.names = meta_names (my.meta)
+
+        new struct to my.destination
+            . = "\
+            Handles implementation details of the interface '$(interface.name)'.
+            "
+            .name = my.names.interface_struct_api
+            .of_class = my.names.interface_struct_api
+            .declaration = "public"
+            .definition = "external"
+        endnew
+
+        meta_deactivate_entity (my.meta, interface.name)
     endfor
 endfunction
 
@@ -913,43 +974,44 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add dependency management functions.
 # ---------------------------------------------------------------------------
-function _Z19_add_dependency_methods (impl, declaration, definition, destination, meta)
+function _Z19_add_interface_api_methods (impl, declaration, definition, destination, meta)
     check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
-    my.names = meta_names (my.meta)
-
-    for my.impl.require_context
-        _Z19_add_method_use_dependency (require_context, my.declaration, my.definition, my.destination, my.meta)
-
-        if require_context.type = "impl"
-            _Z19_add_method_take_dependency (require_context, my.declaration, my.definition, my.destination, my.meta)
-        endif
-    endfor
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Add next instances:
-#       - implemented interface api instance
-#       - implemented interface api instances as array
-#       - implementation info instance
-#       - implementation instance
-# ---------------------------------------------------------------------------
-function _Z19_add_instances (impl, source, destination, meta)
-    check_arguments (my, "impl, source, destination, meta", my)
-
-    my.names = meta_names (my.meta)
-
     for my.impl.interface
-        my.interface_api = c_module_interface_api_find_type (interface.name, my.source, my.meta)
-        _Z19_add_instance_interface_api (my.impl, my.interface_api, my.destination, my.meta)
+        meta_activate_entity (my.meta, interface.name)
+
+        my.names = meta_names (my.meta)
+        my.refs = meta_refs (my.meta)
+
+        new method to my.destination
+            . = "Returns instance of the implemented interface '$(interface.name:)'."
+            .name = my.names.interface_struct_api
+            .declaration = my.declaration
+            .definition = my.definition
+
+            new return to method
+                .class = my.refs.interface_struct_api
+            endnew
+
+            new implementation to method
+                . = "\
+                    return &$(my.refs.c_implementation_variable_$(make_id (interface.name))_api);
+                "
+            endnew
+        endnew
+
+        meta_deactivate_entity (my.meta, interface.name)
     endfor
-
-    _Z19_add_instance_array_of_interface_api (my.impl, my.destination, my.meta)
-
-    my.impl_info_module = my.source->module (name = my.names.module_impl_private)
-    my.impl_info = my.impl_info_module->struct (name = my.names.struct_info)
-    _Z19_add_instance_impl_info (my.impl, my.impl_info, my.destination, my.meta)
 endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add dependency management functions.
+# ---------------------------------------------------------------------------
+function _Z19_add_dependency_methods (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
+endfunction
+
 
 # ---------------------------------------------------------------------------
 #   Create module with:
@@ -979,6 +1041,8 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
         _Z19_add_self_tag (my.impl, my.enum_impl_tag, my.meta)
         _Z19_add_interface_constants (my.impl, module, my.meta)
 
+        _Z19_add_interface_types (my.impl, module, my.meta)
+
         if _Z19_has_methods_with_context_impl (my.impl)
             _Z19_add_type_impl (my.impl, "external", module, my.meta)
             _Z19_add_method_impl_type_size (my.impl, "public", "external", module, my.meta)
@@ -988,6 +1052,7 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
             _Z19_add_dependency_methods (my.impl, "public", "external", module, my.meta)
         endif
 
+        _Z19_add_interface_api_methods (my.impl, "public", "external", module, my.meta)
         _Z19_add_interface_methods (my.impl, "public", module, my.meta)
     endnew
 endfunction
@@ -1055,20 +1120,30 @@ function c_module_implementation_create_module_internal (impl, source, destinati
 
     new module to my.destination
         . = "\
+        This module contains logic for interface/implementation architecture.
+        Do not use this module in any part of the code.
         "
 
         .name = my.names.implementation_module_internal
         .of_class = my.names.implementation_class
         .scope = "internal"
 
-        _Z19_add_includes_for_module_internal (my.impl, module, my.meta)
-        _Z19_add_instances (my.impl, my.source, module, my.meta)
-        _Z19_add_ctx_lifecycle_methods (my.impl, "public", "external", module, my.meta)
-        _Z19_add_lifecycle_methods (my.impl, "external", "private", module, my.meta)
-        _Z19_add_dependency_methods (my.impl, "external", "private", module, my.meta)
-        _Z19_add_method_impl_type_size (my.impl, "external", "private", module, my.meta)
-        _Z19_add_method_impl_type_cast (my.impl, "external", "private", module, my.meta)
+        if _Z19_has_methods_with_context_impl (my.impl)
 
+            _Z19_add_includes_for_module_internal (my.impl, module, my.meta)
+            _Z19_add_instances (my.impl, my.source, module, my.meta)
+            _Z19_add_ctx_lifecycle_methods (my.impl, "public", "external", module, my.meta)
+            _Z19_add_lifecycle_methods (my.impl, "external", "private", module, my.meta)
+            _Z19_add_interface_api_methods (my.impl, "external", "private", module, my.meta)
+            _Z19_add_dependency_methods (my.impl, "external", "private", module, my.meta)
+            _Z19_add_method_impl_type_size (my.impl, "external", "private", module, my.meta)
+            _Z19_add_method_impl_type_cast (my.impl, "external", "private", module, my.meta)
+
+        else
+            _Z19_add_includes_for_module_internal (my.impl, module, my.meta)
+            _Z19_add_instances_of_interface_api (my.impl, my.source, module, my.meta)
+            _Z19_add_interface_api_methods (my.impl, "external", "private", module, my.meta)
+        endif
     endnew
 endfunction
 
@@ -1089,11 +1164,12 @@ function c_module_implementation_create (source, destination, meta)
         meta_reset_active_entity (my.meta, implementation.name)
 
         c_module_implementation_create_module_public (implementation, my.enum_impl_tag, my.destination, my.meta)
+        c_module_implementation_create_module_internal (implementation, my.source, my.destination, my.meta)
 
         if _Z19_has_methods_with_context_impl (implementation)
             c_module_implementation_create_module_impl (implementation, my.destination, my.meta)
-            c_module_implementation_create_module_internal (implementation, my.source, my.destination, my.meta)
         endif
+
     endfor
 endfunction
 
