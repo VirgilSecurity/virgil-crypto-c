@@ -42,6 +42,7 @@
 # ---------------------------------------------------------------------------
 
 gsl from "common.gsl"
+gsl from "component.gsl"
 
 
 function _B25_add_interface_api_type (interface, destination, meta)
@@ -54,7 +55,7 @@ function _B25_add_interface_api_type (interface, destination, meta)
         . = "Handles constants and callbacks of the interface '$(my.interface.name:)'."
         .name = my.names.class_interface_api
         .visibility = "public"
-        .describes = "public"
+        .declaration = "public"
         .definition = "public"
 
         new property to struct
@@ -90,6 +91,10 @@ function _B25_add_interface_api_type (interface, destination, meta)
 
             my.callback = item_copy_to (method, my.destination, "callback")
             my.callback. = ("Callback. " + string_trim(my.callback.)) ?
+
+            if method.context = "impl"
+                component_create_argument_impl (my.callback)
+            endif
         endfor
 
         for my.interface.constant
