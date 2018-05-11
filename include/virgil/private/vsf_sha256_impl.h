@@ -57,6 +57,8 @@
 
 #include "vsf_library.h"
 #include "vsf_impl_private.h"
+
+#include <mbedtls/sha256.h>
 //  @end
 
 
@@ -81,9 +83,8 @@ struct vsf_sha256_impl_t {
     //
     //  Interface implementation specific context.
     //
-    void* hash_ctx;
+    mbedtls_sha256_context hash_ctx;
 };
-typedef struct vsf_sha256_impl_t vsf_sha256_impl_t;
 
 
 // --------------------------------------------------------------------------

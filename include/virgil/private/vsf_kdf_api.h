@@ -88,7 +88,6 @@ struct vsf_kdf_api_t {
     //
     vsf_kdf_api_derive_fn derive_cb;
 };
-typedef struct vsf_kdf_api_t vsf_kdf_api_t;
 
 
 // --------------------------------------------------------------------------

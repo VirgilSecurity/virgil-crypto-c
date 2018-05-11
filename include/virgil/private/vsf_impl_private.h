@@ -101,7 +101,6 @@ struct vsf_impl_t {
     //
     const vsf_impl_info_t* info;
 };
-typedef struct vsf_impl_t vsf_impl_t;
 
 
 // --------------------------------------------------------------------------

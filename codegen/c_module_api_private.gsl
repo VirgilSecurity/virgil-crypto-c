@@ -57,7 +57,7 @@ function _C12_add_type_self (meta, destination)
         It is used for runtime type casting and checking.
         "
         .name = my.names.module_api
-        .declaration = "public"
+        .declaration = "external"
         .definition = "public"
 
         new property

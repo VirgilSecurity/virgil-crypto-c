@@ -560,7 +560,10 @@ function c_insert_struct (c_struct)
 
     c_insert_description (my.c_struct)
     c_insert_struct_definition (my.c_struct, 1)
-    c_insert_struct_declaration (my.c_struct, 1)
+
+    if my.c_struct.declaration <> "external"
+        c_insert_struct_declaration (my.c_struct, 1)
+    endif
 endfunction
 
 

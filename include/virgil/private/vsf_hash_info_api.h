@@ -82,7 +82,6 @@ struct vsf_hash_info_api_t {
     //
     size_t digest_size;
 };
-typedef struct vsf_hash_info_api_t vsf_hash_info_api_t;
 
 
 // --------------------------------------------------------------------------

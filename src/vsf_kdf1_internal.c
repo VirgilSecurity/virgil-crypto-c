@@ -36,6 +36,13 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,23 +50,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Interface Private API.
-// --------------------------------------------------------------------------
-
-#ifndef VSF_API_PRIVATE_H_INCLUDED
-#define VSF_API_PRIVATE_H_INCLUDED
-
-#include "vsf_library.h"
-#include "vsf_api.h"
+#include "vsf_kdf1_internal.h"
+#include "vsf_memory.h"
+#include "vsf_assert.h"
+#include "vsf_kdf1.h"
+#include "vsf_kdf_api.h"
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -68,28 +64,31 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  This structure contains common part of any 'API' interface structure.
-//  It is used for runtime type casting and checking.
+//  Configuration of the interface API 'kdf api'.
 //
-struct vsf_api_t {
+static const vsf_kdf_api_t kdf_api = {
     //
-    //  Interface unique identifier.
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'kdf' MUST be equal to the 'vsf_api_tag_KDF'.
     //
-    vsf_api_tag_t api_tag;
+    vsf_api_tag_KDF,
+    //
+    //  Calculate hash over given data.
+    //
+    (vsf_kdf_api_derive_fn) vsf_kdf1_derive
 };
+
+//
+//  Returns instance of the implemented interface 'kdf'.
+//
+VSF_PUBLIC const vsf_kdf_api_t*
+vsf_kdf1_kdf_api (void) {
+
+    return &kdf_api;
+}
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSF_API_PRIVATE_H_INCLUDED
 //  @end

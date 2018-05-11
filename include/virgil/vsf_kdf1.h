@@ -54,6 +54,7 @@
 
 #include "vsf_library.h"
 #include "vsf_impl.h"
+#include "vsf_kdf.h"
 //  @end
 
 
@@ -66,6 +67,12 @@ extern "C" {
 // --------------------------------------------------------------------------
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Returns instance of the implemented interface 'kdf'.
+//
+VSF_PUBLIC const vsf_kdf_api_t*
+vsf_kdf1_kdf_api (void);
 
 //
 //  Calculate hash over given data.

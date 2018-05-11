@@ -66,7 +66,7 @@
 //
 //  Return pointer to the last component in the path.
 //
-VSF_PRIVATE static const char*
+static const char*
 vsf_assert_path_basename (const char* path);
 
 //
@@ -111,7 +111,7 @@ vsf_assert_trigger (const char* message, const char* file, int line) {
 //
 //  Return pointer to the last component in the path.
 //
-VSF_PRIVATE static const char*
+static const char*
 vsf_assert_path_basename (const char* path) {
 
     const char *result = path;

@@ -105,7 +105,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add implementation structure: header.
 # ---------------------------------------------------------------------------
-function  _A12_add_type_self (meta, destination)
+function  _A12_add_struct_impl (meta, destination)
     check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
@@ -116,7 +116,7 @@ function  _A12_add_type_self (meta, destination)
         It is used for runtime type casting and checking.
         "
         .name = my.names.class_impl
-        .declaration = "public"
+        .declaration = "external"
         .definition = "public"
 
         new property
@@ -156,7 +156,7 @@ function c_module_impl_private_create (meta, destination)
         endnew
 
         _A12_add_struct_info (my.meta, module)
-        _A12_add_type_self (my.meta, module)
+        _A12_add_struct_impl (my.meta, module)
     endnew
 endfunction
 

@@ -55,7 +55,7 @@
 #include "vsf_library.h"
 #include "vsf_api.h"
 #include "vsf_impl.h"
-#include "vsf_hash_info_api.h"
+#include "vsf_hash_info.h"
 //  @end
 
 
@@ -72,17 +72,17 @@ extern "C" {
 //
 //  Callback. Start a new hashing.
 //
-typedef void (*vsf_hash_stream_api_start_fn) (void);
+typedef void (*vsf_hash_stream_api_start_fn) (vsf_impl_t* impl);
 
 //
 //  Callback. Add given data to the hash.
 //
-typedef void (*vsf_hash_stream_api_update_fn) (const byte* data, size_t data_len);
+typedef void (*vsf_hash_stream_api_update_fn) (vsf_impl_t* impl, const byte* data, size_t data_len);
 
 //
 //  Callback. Accompilsh hashing and return it's result (a message digest).
 //
-typedef void (*vsf_hash_stream_api_finish_fn) (byte* digest, size_t digest_len);
+typedef void (*vsf_hash_stream_api_finish_fn) (vsf_impl_t* impl, byte* digest, size_t digest_len);
 
 //
 //  Handles constants and callbacks of the interface 'hash stream'.
@@ -110,7 +110,6 @@ struct vsf_hash_stream_api_t {
     //
     vsf_hash_stream_api_finish_fn finish_cb;
 };
-typedef struct vsf_hash_stream_api_t vsf_hash_stream_api_t;
 
 
 // --------------------------------------------------------------------------
