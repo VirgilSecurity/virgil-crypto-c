@@ -55,7 +55,7 @@
 #include "vsf_library.h"
 #include "vsf_api.h"
 #include "vsf_impl.h"
-#include "vsf_hash_info_api.h"
+#include "vsf_hash_info.h"
 //  @end
 
 
@@ -93,7 +93,6 @@ struct vsf_hash_api_t {
     //
     vsf_hash_api_hash_fn hash_cb;
 };
-typedef struct vsf_hash_api_t vsf_hash_api_t;
 
 
 // --------------------------------------------------------------------------

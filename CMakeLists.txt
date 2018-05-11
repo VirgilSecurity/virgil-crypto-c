@@ -32,9 +32,30 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(virgil-crypto-c VERSION 0.1.0 LANGUAGES C)
+
+# ---------------------------------------------------------------------------
+#   Options
+# ---------------------------------------------------------------------------
+option(ENABLE_TESTING "On/Off library integration tests." ON)
+
+#
+#   Dependencies / thirdparty libraries
+#
+add_subdirectory ("thirdparty/mbedtls")
+
+# ---------------------------------------------------------------------------
+#   Library
+# ---------------------------------------------------------------------------
+add_library(enable_pedantic_mode INTERFACE)
+
+target_compile_options(enable_pedantic_mode
+        INTERFACE
+        $<$<C_COMPILER_ID:GNU>:-Wall -Werror -pedantic>
+        $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>>:-Werror>
+        )
 
 add_library(vsf "")
 target_sources(vsf
@@ -73,6 +94,8 @@ target_sources(vsf
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_impl_private.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf1.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf1_internal.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf1_internal.h"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf_api.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_library.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_memory.c"
@@ -89,5 +112,24 @@ target_include_directories(vsf
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
         )
 
-set_target_properties(vsf PROPERTIES DEBUG_POSTFIX "_d")
+set_target_properties(vsf PROPERTIES
+        C_STANDARD "99"
+        DEBUG_POSTFIX "_d"
+        )
+
+target_link_libraries(vsf
+        PUBLIC
+        mbed::crypto
+
+        PRIVATE
+        enable_pedantic_mode
+        )
+
+# ---------------------------------------------------------------------------
+#   Integration tests
+# ---------------------------------------------------------------------------
+if(ENABLE_TESTING)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
 

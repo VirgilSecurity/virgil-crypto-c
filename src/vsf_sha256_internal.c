@@ -38,7 +38,8 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
 
@@ -53,6 +54,7 @@
 #include "vsf_memory.h"
 #include "vsf_assert.h"
 #include "vsf_sha256.h"
+#include "vsf_sha256_impl.h"
 #include "vsf_hash_info_api.h"
 #include "vsf_hash_api.h"
 #include "vsf_hash_stream_api.h"
@@ -225,6 +227,33 @@ vsf_sha256_destroy (vsf_sha256_impl_t** sha256_impl_ref) {
         vsf_sha256_cleanup (sha256_impl);
         vsf_dealloc (sha256_impl);
     }
+}
+
+//
+//  Returns instance of the implemented interface 'hash info'.
+//
+VSF_PUBLIC const vsf_hash_info_api_t*
+vsf_sha256_hash_info_api (void) {
+
+    return &hash_info_api;
+}
+
+//
+//  Returns instance of the implemented interface 'hash'.
+//
+VSF_PUBLIC const vsf_hash_api_t*
+vsf_sha256_hash_api (void) {
+
+    return &hash_api;
+}
+
+//
+//  Returns instance of the implemented interface 'hash stream'.
+//
+VSF_PUBLIC const vsf_hash_stream_api_t*
+vsf_sha256_hash_stream_api (void) {
+
+    return &hash_stream_api;
 }
 
 //

@@ -53,6 +53,8 @@
 #include "vsf_assert.h"
 #include "vsf_sha256_impl.h"
 #include "vsf_sha256_internal.h"
+
+#include <mbedtls/sha256.h>
 //  @end
 
 
@@ -73,7 +75,10 @@
 //
 VSF_PRIVATE void
 vsf_sha256_init_ctx (vsf_sha256_impl_t* sha256_impl) {
-    //  TODO: This is STUB. Implement me.
+
+    VSF_ASSERT (sha256_impl);
+
+    mbedtls_sha256_init (&sha256_impl->hash_ctx);
 }
 
 //
@@ -81,7 +86,10 @@ vsf_sha256_init_ctx (vsf_sha256_impl_t* sha256_impl) {
 //
 VSF_PRIVATE void
 vsf_sha256_cleanup_ctx (vsf_sha256_impl_t* sha256_impl) {
-    //  TODO: This is STUB. Implement me.
+
+    VSF_ASSERT (sha256_impl);
+
+    mbedtls_sha256_free (&sha256_impl->hash_ctx);
 }
 
 //
@@ -89,7 +97,13 @@ vsf_sha256_cleanup_ctx (vsf_sha256_impl_t* sha256_impl) {
 //
 VSF_PUBLIC void
 vsf_sha256_hash (const byte* data, size_t data_len, byte* digest, size_t digest_len) {
-    //  TODO: This is STUB. Implement me.
+
+    VSF_ASSERT (data);
+    VSF_ASSERT (digest);
+    VSF_ASSERT (digest_len >= vsf_sha256_DIGEST_SIZE);
+
+    const int is224 = 0;
+    mbedtls_sha256 (data, data_len, digest, is224);
 }
 
 //
@@ -97,7 +111,11 @@ vsf_sha256_hash (const byte* data, size_t data_len, byte* digest, size_t digest_
 //
 VSF_PUBLIC void
 vsf_sha256_start (vsf_sha256_impl_t* sha256_impl) {
-    //  TODO: This is STUB. Implement me.
+
+    VSF_ASSERT (sha256_impl);
+
+    const int is224 = 0;
+    mbedtls_sha256_starts (&sha256_impl->hash_ctx, is224);
 }
 
 //
@@ -105,7 +123,11 @@ vsf_sha256_start (vsf_sha256_impl_t* sha256_impl) {
 //
 VSF_PUBLIC void
 vsf_sha256_update (vsf_sha256_impl_t* sha256_impl, const byte* data, size_t data_len) {
-    //  TODO: This is STUB. Implement me.
+
+    VSF_ASSERT (sha256_impl);
+    VSF_ASSERT (data);
+
+    mbedtls_sha256_update (&sha256_impl->hash_ctx, data, data_len);
 }
 
 //
@@ -113,5 +135,10 @@ vsf_sha256_update (vsf_sha256_impl_t* sha256_impl, const byte* data, size_t data
 //
 VSF_PUBLIC void
 vsf_sha256_finish (vsf_sha256_impl_t* sha256_impl, byte* digest, size_t digest_len) {
-    //  TODO: This is STUB. Implement me.
+
+    VSF_ASSERT (sha256_impl);
+    VSF_ASSERT (digest);
+    VSF_ASSERT (digest_len >= vsf_sha256_DIGEST_SIZE);
+
+    mbedtls_sha256_finish (&sha256_impl->hash_ctx, digest);
 }

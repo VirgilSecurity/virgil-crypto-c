@@ -46,14 +46,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
 #ifndef VSF_SHA256_INTERNAL_H_INCLUDED
 #define VSF_SHA256_INTERNAL_H_INCLUDED
 
 #include "vsf_library.h"
-#include "vsf_sha256_impl.h"
+#include "vsf_sha256.h"
 //  @end
 
 

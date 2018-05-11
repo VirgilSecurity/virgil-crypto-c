@@ -54,6 +54,9 @@
 
 #include "vsf_library.h"
 #include "vsf_impl.h"
+#include "vsf_hash_info.h"
+#include "vsf_hash.h"
+#include "vsf_hash_stream.h"
 //  @end
 
 
@@ -121,6 +124,24 @@ vsf_sha256_new (void);
 //
 VSF_PUBLIC void
 vsf_sha256_destroy (vsf_sha256_impl_t** sha256_impl_ref);
+
+//
+//  Returns instance of the implemented interface 'hash info'.
+//
+VSF_PUBLIC const vsf_hash_info_api_t*
+vsf_sha256_hash_info_api (void);
+
+//
+//  Returns instance of the implemented interface 'hash'.
+//
+VSF_PUBLIC const vsf_hash_api_t*
+vsf_sha256_hash_api (void);
+
+//
+//  Returns instance of the implemented interface 'hash stream'.
+//
+VSF_PUBLIC const vsf_hash_stream_api_t*
+vsf_sha256_hash_stream_api (void);
 
 //
 //  Calculate hash over given data.

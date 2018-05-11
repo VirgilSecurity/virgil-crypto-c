@@ -94,7 +94,7 @@ function c_module_generate_header (c_module)
         c_insert_callback (c_callback)
     endfor
 
-    for my.c_module.c_struct where declaration = "public" & definition = "public"
+    for my.c_module.c_struct where definition = "public"
         newline ()
         c_insert_struct (c_struct)
     endfor

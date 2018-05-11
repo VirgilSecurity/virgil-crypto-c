@@ -256,6 +256,12 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
         endnew
     endif
 
+    for my.impl.interface
+        new require to my.destination
+            .module = interface.name
+        endnew
+    endfor
+
     if _Z19_has_methods_with_context_impl (my.impl)
         new require to my.destination
             .module = my.names.implementation_module_impl
@@ -307,8 +313,13 @@ function _Z19_add_includes_for_module_internal (impl, destination, meta)
 
     if _Z19_has_methods_with_context_impl (my.impl)
         new require to my.destination
-            .module = my.names.implementation_module_impl
+            .module = my.names.implementation_module
             .scope = "public"
+        endnew
+
+        new require to my.destination
+            .module = my.names.implementation_module_impl
+            .scope = "private"
         endnew
     endif
 
@@ -395,8 +406,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add type that handles implementation details.
 # ---------------------------------------------------------------------------
-function _Z19_add_type_impl (impl, definition, destination, meta)
-    check_arguments (my, "impl, definition, destination, meta", my)
+function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
@@ -404,6 +415,7 @@ function _Z19_add_type_impl (impl, definition, destination, meta)
     new struct to my.destination
         . = "Handles implementation details."
         .name = my.names.class_impl
+        .declaration = my.declaration
         .definition = my.definition
 
         new property to struct
@@ -459,29 +471,6 @@ function _Z19_add_interface_constants (impl, destination, meta)
     endfor
 endfunction
 
-
-# ---------------------------------------------------------------------------
-function _Z19_add_interface_types (impl, destination, meta)
-    check_arguments (my, "impl, destination, meta", my)
-
-    for my.impl.interface
-        meta_activate_entity (my.meta, interface.name)
-
-        my.names = meta_names (my.meta)
-
-        new struct to my.destination
-            . = "\
-            Handles implementation details of the interface '$(interface.name)'.
-            "
-            .name = my.names.interface_struct_api
-            .of_class = my.names.interface_struct_api
-            .declaration = "public"
-            .definition = "external"
-        endnew
-
-        meta_deactivate_entity (my.meta, interface.name)
-    endfor
-endfunction
 
 # ---------------------------------------------------------------------------
 #   Add function that returns size of implementation context type.
@@ -1041,10 +1030,8 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
         _Z19_add_self_tag (my.impl, my.enum_impl_tag, my.meta)
         _Z19_add_interface_constants (my.impl, module, my.meta)
 
-        _Z19_add_interface_types (my.impl, module, my.meta)
-
         if _Z19_has_methods_with_context_impl (my.impl)
-            _Z19_add_type_impl (my.impl, "external", module, my.meta)
+            _Z19_add_type_impl (my.impl, "public", "external", module, my.meta)
             _Z19_add_method_impl_type_size (my.impl, "public", "external", module, my.meta)
             _Z19_add_method_impl_type_cast (my.impl, "public", "external", module, my.meta)
             _Z19_add_ctx_lifecycle_methods (my.impl, "external", "private", module, my.meta)
@@ -1099,7 +1086,7 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
             endnew
         endfor
 
-        _Z19_add_type_impl (my.impl, "public", module, my.meta)
+        _Z19_add_type_impl (my.impl, "external", "public", module, my.meta)
     endnew
 endfunction
 

@@ -62,13 +62,13 @@
 //
 //  Default allocation function, that is configured during compilation.
 //
-VSF_PRIVATE static void*
+static void*
 vsf_default_alloc (size_t size);
 
 //
 //  Default de-allocation function, that is configured during compilation.
 //
-VSF_PRIVATE static void
+static void
 vsf_default_dealloc (void* mem);
 
 //
@@ -84,7 +84,7 @@ static vsf_dealloc_fn inner_dealloc = vsf_default_dealloc;
 //
 //  Default allocation function, that is configured during compilation.
 //
-VSF_PRIVATE static void*
+static void*
 vsf_default_alloc (size_t size) {
 
     return VSF_ALLOC_DEFAULT (size);
@@ -93,10 +93,10 @@ vsf_default_alloc (size_t size) {
 //
 //  Default de-allocation function, that is configured during compilation.
 //
-VSF_PRIVATE static void
+static void
 vsf_default_dealloc (void* mem) {
 
-    return VSF_DEALLOC_DEFAULT (mem);
+    VSF_DEALLOC_DEFAULT (mem);
 }
 
 //

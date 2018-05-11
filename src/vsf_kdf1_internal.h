@@ -46,14 +46,14 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface Private API.
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_API_PRIVATE_H_INCLUDED
-#define VSF_API_PRIVATE_H_INCLUDED
+#ifndef VSF_KDF1_INTERNAL_H_INCLUDED
+#define VSF_KDF1_INTERNAL_H_INCLUDED
 
 #include "vsf_library.h"
-#include "vsf_api.h"
 //  @end
 
 
@@ -66,17 +66,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  This structure contains common part of any 'API' interface structure.
-//  It is used for runtime type casting and checking.
-//
-struct vsf_api_t {
-    //
-    //  Interface unique identifier.
-    //
-    vsf_api_tag_t api_tag;
-};
 
 
 // --------------------------------------------------------------------------
@@ -91,5 +80,5 @@ struct vsf_api_t {
 
 
 //  @footer
-#endif // VSF_API_PRIVATE_H_INCLUDED
+#endif // VSF_KDF1_INTERNAL_H_INCLUDED
 //  @end

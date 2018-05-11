@@ -55,7 +55,7 @@ function _B25_add_interface_api_type (interface, destination, meta)
         . = "Handles constants and callbacks of the interface '$(my.interface.name:)'."
         .name = my.names.class_interface_api
         .visibility = "public"
-        .declaration = "public"
+        .declaration = "external"
         .definition = "public"
 
         new property to struct
@@ -136,7 +136,7 @@ function c_module_interface_api_create (source, destination, meta)
 
             for interface.inherit
                 new require to module
-                    .module = cat (inherit.interface, my.names.module_api)
+                    .module = inherit.interface
                 endnew
             endfor
 
