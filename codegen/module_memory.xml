@@ -70,7 +70,7 @@
         <argument name="mem" class="any" access="writeonly"/>
 
         <implementation>
-            return .(c_global_macros_dealloc_default) (.(_argument_mem));
+            .(c_global_macros_dealloc_default) (.(_argument_mem));
         </implementation>
     </method>
 
