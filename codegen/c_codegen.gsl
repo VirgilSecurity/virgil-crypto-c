@@ -493,7 +493,10 @@ function c_insert_enum (c_enum)
 
     c_insert_description (my.c_enum)
     c_insert_enum_definition (my.c_enum, 1)
-    c_insert_enum_declaration (my.c_enum, 1)
+
+    if my.c_enum.declaration <> "external"
+        c_insert_enum_declaration (my.c_enum, 1)
+    endif
 endfunction
 
 
