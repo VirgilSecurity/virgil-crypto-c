@@ -270,13 +270,13 @@ function _X17_add_entity_interface (meta, interface)
         #   Private
         my.api_name = cat (my.name, "api")
 
-        _X17_add_name (entity, "class interface api", my.api_name)
+        _X17_add_name (entity, "interface class api", my.api_name)
 
         _X17_add_name (entity, "interface struct api", my.api_name)
         _X17_add_link (entity, "interface struct api", make_id ("class", my.api_name, "struct", my.api_name))
 
-        _X17_add_name (entity, "module interface api", my.api_name)
-        _X17_add_link (entity, "module interface api", make_id ("module", my.api_name))
+        _X17_add_name (entity, "interface module api", my.api_name)
+        _X17_add_link (entity, "interface module api", make_id ("module", my.api_name))
 
         _X17_add_name (entity, "argument interface api", my.api_name)
         _X17_add_link (entity, "argument interface api", make_id ("argument", my.api_name))

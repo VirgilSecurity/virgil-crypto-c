@@ -95,7 +95,81 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-#   Add constant correspond to this interface type.
+#   Add interface API type with requirements to implementation.
+# ---------------------------------------------------------------------------
+function _L23_add_interface_api_type (interface, declaration, definition, destination, meta)
+    check_arguments (my, "interface, declaration, definition, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new struct to my.destination
+        . = "Contains API requirements of the interface '$(my.interface.name:)'."
+        .name = my.names.interface_struct_api
+        .of_class = my.names.interface_class_api
+
+        .declaration = my.declaration
+        .definition = my.definition
+
+        new property to struct
+            . = "\
+                API's unique identifier, MUST be first in the structure.
+                For interface '$(my.interface.name:c)' MUST be equal to the \
+                '$(my.refs.c_interface_constant_tag)'."
+
+            .name = my.names.property_api_tag
+            .enum = my.refs.class_api_enum_tag
+            .value = my.refs.interface_constant_tag
+            .tag = "tag"
+        endnew
+
+        for my.interface.inherit
+            assert_attribute (inherit, "interface", my)
+
+            new property to struct
+                . = "Link to the inherited interface API '$(inherit.interface:)'."
+                .name = my.names.property_inherited_$(make_id(inherit.interface))_api
+                .class = my.refs.class_inherited_$(make_id(inherit.interface))_api
+                .tag = "api"
+            endnew
+        endfor
+
+        for my.interface.method
+            new property to struct
+                . = method. ?
+                .name = method.name
+                .callback = my.refs.interface_callback_$(make_id (method.name))
+                .tag = "method"
+            endnew
+        endfor
+
+        for my.interface.constant
+            my.property = item_copy_to (constant, struct, "property")
+            my.property.tag = "constant"
+        endfor
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add calback type for each interface function.
+# ---------------------------------------------------------------------------
+function _L23_add_interface_api_callbacks (interface, destination, meta)
+    check_arguments (my, "interface, destination, meta", my)
+
+    for my.interface.method
+        my.callback = item_copy_to (method, my.destination, "callback")
+        my.callback. = ("Callback. " + string_trim(my.callback.)) ?
+
+        if method.context = "impl"
+            component_create_argument_impl (my.callback)
+        endif
+    endfor
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add interface tag to the common interfaces enumeration type.
 # ---------------------------------------------------------------------------
 function _L23_add_self_tag (interface, enum, meta)
     check_arguments (my, "interface, enum, meta", my)
@@ -109,24 +183,6 @@ function _L23_add_self_tag (interface, enum, meta)
 
     new constant before my.end
         .name = my.interface.name
-    endnew
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Add self opaque type
-# ---------------------------------------------------------------------------
-function _L23_add_self_opaque_type (interface, destination, meta)
-    check_arguments (my, "interface, destination, meta", my)
-
-    my.names = meta_names (my.meta)
-
-    new struct to my.destination
-        . = "Opaque type of the interface '$(my.interface.name:)' API."
-        .name = my.names.class_interface_api
-        .of_class = my.names.class_interface_api
-        .visibility="public"
-        .declaration="public"
-        .definition="external"
     endnew
 endfunction
 
@@ -167,6 +223,7 @@ function _L23_add_stateful_methods (interface, destination, meta)
         endnew
     endfor
 endfunction
+
 
 # ---------------------------------------------------------------------------
 #   Add interface sateLESS methods to the destination.
@@ -236,6 +293,7 @@ function _L23_add_stateless_getters (interface, destination, meta)
     endfor
 endfunction
 
+
 # ---------------------------------------------------------------------------
 #   Add method that returns 'API' object.
 # ---------------------------------------------------------------------------
@@ -271,6 +329,7 @@ function _L23_add_method_get_api (interface, destination, meta)
     endnew
 endfunction
 
+
 # ---------------------------------------------------------------------------
 #   Add method that returns size of 'API' type.
 # ---------------------------------------------------------------------------
@@ -296,6 +355,7 @@ function _L23_add_method_get_api_size (interface, destination, meta)
         endnew
     endnew
 endfunction
+
 
 # ---------------------------------------------------------------------------
 #   Add method that check if 'API' is implemented.
@@ -331,52 +391,108 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-#   Entrypoint. Create module with 'Interface Public API'.
+#   Create module with 'Interface Public API'.
+# ---------------------------------------------------------------------------
+function c_module_interface_create_module_public (interface, destination, meta)
+    check_arguments (my, "interface, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+
+    new module to my.destination
+        . = my.interface. ?
+        .name = my.names.module_interface
+        .of_class = my.names.class_interface
+        .interface = my.interface.name
+
+        new require
+            .module = my.names.module_library
+        endnew
+
+        new require
+            .module = my.names.module_assert
+            .scope = "private"
+        endnew
+
+        new require
+            .module = my.names.module_impl
+        endnew
+
+        new require
+            .module = my.names.interface_module_api
+            .scope = "private"
+        endnew
+
+        my.enum_tag = c_module_api_find_enum_tag (my.destination, my.meta)
+        _L23_add_self_tag (my.interface, my.enum_tag, my.meta)
+        _L23_add_interface_api_type (my.interface, "public", "external", module, my.meta)
+        _L23_add_stateful_methods (my.interface, module, my.meta)
+        _L23_add_stateless_methods (my.interface, module, my.meta)
+        _L23_add_stateless_getters (my.interface, module, my.meta)
+        _L23_add_method_get_api (my.interface, module, my.meta)
+        _L23_add_method_get_api_size (my.interface, module, my.meta)
+        _L23_add_method_check_api (my.interface, module, my.meta)
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Create module with 'Interface API' type definition.
+# ---------------------------------------------------------------------------
+function c_module_interface_create_module_api (interface, destination, meta)
+    check_arguments (my, "interface, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+
+    new module to my.destination
+        . = "Interface '$(my.interface.name:)' API."
+        .name = my.names.interface_module_api
+        .of_class = my.names.interface_class_api
+        .scope = "private"
+
+        new require to module
+            .module = my.names.module_library
+        endnew
+
+        new require to module
+            .module = my.names.module_api
+        endnew
+
+        new require to module
+            .module = my.names.module_impl
+        endnew
+
+        for my.interface.inherit
+            new require to module
+                .module = inherit.interface
+            endnew
+        endfor
+
+        _L23_add_interface_api_type (my.interface, "external", "public", module, my.meta)
+        _L23_add_interface_api_callbacks (my.interface, module, my.meta)
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Entrypoint. Create 2 modules with:
+#       - interface public API
+#       - interface API type definition
 # ---------------------------------------------------------------------------
 function c_module_interface_create (source, destination, meta)
     check_arguments (my, "source, destination, meta", my)
 
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
     for my.source.interface
         meta_reset_active_entity (my.meta, interface.name)
 
-        my.names = meta_names (my.meta)
-
-        new module to my.destination
-            . = interface. ?
-            .name = my.names.module_interface
-            .of_class = my.names.class_interface
-            .interface = interface.name
-
-            new require
-                .module = my.names.module_library
-            endnew
-
-            new require
-                .module = my.names.module_assert
-                .scope = "private"
-            endnew
-
-            new require
-                .module = my.names.module_impl
-            endnew
-
-            new require
-                .module = my.names.module_interface_api
-                .scope = "private"
-            endnew
-
-            my.enum_tag = c_module_api_find_enum_tag (my.destination, my.meta)
-            _L23_add_self_tag (interface, my.enum_tag, my.meta)
-            _L23_add_self_opaque_type (interface, module, my.meta)
-            _L23_add_stateful_methods (interface, module, my.meta)
-            _L23_add_stateless_methods (interface, module, my.meta)
-            _L23_add_stateless_getters (interface, module, my.meta)
-            _L23_add_method_get_api (interface, module, my.meta)
-            _L23_add_method_get_api_size (interface, module, my.meta)
-            _L23_add_method_check_api (interface, module, my.meta)
-        endnew
+        c_module_interface_create_module_public (interface, my.destination, my.meta)
+        c_module_interface_create_module_api (interface, my.destination, my.meta)
     endfor
+
 endfunction
+
 
 # ---------------------------------------------------------------------------
 #   Return 'module' that contains 'Interface Private API'.
@@ -391,6 +507,27 @@ function c_module_interface_find (name, source)
     endif
 
     echo_fatal ("Interface '$(my.name:)' is not found within given source.", my)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Return 'struct' that describes 'Interface API type'.
+# ---------------------------------------------------------------------------
+function c_module_interface_find_api_type (name, source, meta)
+    check_arguments (my, "name, source, meta", my)
+
+    meta_activate_entity (my.meta, my.name)
+    my.names = meta_names (my.meta)
+
+    my.interface_api_module = my.source->module (name = my.names.interface_module_api) ?
+    assert_attribute (my, "interface_api_module", my)
+
+    my.api_type = my.interface_api_module->struct (struct.name = my.names.interface_class_api) ?
+    assert_attribute (my, "api_type", my)
+
+    meta_deactivate_entity (my.meta, my.name)
+
+    return my.api_type
 endfunction
 
 .endtemplate

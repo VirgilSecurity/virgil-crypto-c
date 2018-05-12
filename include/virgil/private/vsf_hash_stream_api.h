@@ -85,7 +85,7 @@ typedef void (*vsf_hash_stream_api_update_fn) (vsf_impl_t* impl, const byte* dat
 typedef void (*vsf_hash_stream_api_finish_fn) (vsf_impl_t* impl, byte* digest, size_t digest_len);
 
 //
-//  Handles constants and callbacks of the interface 'hash stream'.
+//  Contains API requirements of the interface 'hash stream'.
 //
 struct vsf_hash_stream_api_t {
     //

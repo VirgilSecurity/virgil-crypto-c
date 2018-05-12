@@ -75,7 +75,7 @@ typedef void (*vsf_kdf_api_derive_fn) (const byte* data, size_t data_len, byte* 
         size_t key_len);
 
 //
-//  Handles constants and callbacks of the interface 'kdf'.
+//  Contains API requirements of the interface 'kdf'.
 //
 struct vsf_kdf_api_t {
     //

@@ -68,7 +68,7 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Opaque type of the interface 'kdf' API.
+//  Contains API requirements of the interface 'kdf'.
 //
 typedef struct vsf_kdf_api_t vsf_kdf_api_t;
 
