@@ -215,9 +215,9 @@ function _L23_add_stateful_methods (interface, destination, meta)
         new implementation to my.proxy_method
             . = "\
             const $(my.api_type:) *$(my.api_name:) = $(my.refs.c_interface_method_api) (.(_argument_impl));
-            .(c_class_assert_macros_assert) ($(my.api_name:));
+            .(c_class_assert_macros_ptr) ($(my.api_name:));
 
-            .(c_class_assert_macros_assert) ($(my.callback:));
+            .(c_class_assert_macros_ptr) ($(my.callback:));
             $(my.has_return ?? "return " ?)$(my.callback:) $(my.callback_parameters:)
             "
         endnew
@@ -250,9 +250,9 @@ function _L23_add_stateless_methods (interface, destination, meta)
 
         new implementation to my.proxy_method
             . = "\
-            .(c_class_assert_macros_assert) ($(my.api_name:));
+            .(c_class_assert_macros_ptr) ($(my.api_name:));
 
-            .(c_class_assert_macros_assert) ($(my.callback:));
+            .(c_class_assert_macros_ptr) ($(my.callback:));
             $(my.has_return ?? "return " ?)$(my.callback:) $(my.callback_parameters:)
             "
         endnew
@@ -284,7 +284,7 @@ function _L23_add_stateless_getters (interface, destination, meta)
             my.constant_name = my.names.c_interface_constant_$(make_id (constant.name))
             new implementation to method
                 . = "\
-                .(c_class_assert_macros_assert) ($(my.api_name:));
+                .(c_class_assert_macros_ptr) ($(my.api_name:));
 
                 return $(my.api_name:)->$(my.constant_name:);
                 "
@@ -319,7 +319,7 @@ function _L23_add_method_get_api (interface, destination, meta)
 
         new implementation
             . = "\
-            .(c_class_assert_macros_assert) (.(_argument_impl));
+            .(c_class_assert_macros_ptr) (.(_argument_impl));
 
             const .(c_class_api_struct_api) *api = \
                     .(c_class_impl_method_api) (.(_argument_impl), $(my.refs.c_interface_constant_tag));
@@ -381,7 +381,7 @@ function _L23_add_method_check_api (interface, destination, meta)
 
         new implementation
             . = "\
-            .(c_class_assert_macros_assert) (.(_argument_impl));
+            .(c_class_assert_macros_ptr) (.(_argument_impl));
 
             return .(c_class_impl_method_api) (.(_argument_impl), $(my.refs.c_interface_constant_tag)) != NULL;
             "

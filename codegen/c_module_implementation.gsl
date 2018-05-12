@@ -528,7 +528,7 @@ function _Z19_add_method_impl_type_cast (impl, declaration, definition, destinat
         my.arg_impl = ".(_argument_$(make_id (my.names.implementation_struct_impl)))"
         new implementation to method
             . = "\
-            .(c_class_assert_macros_assert) ($(my.arg_impl));
+            .(c_class_assert_macros_ptr) ($(my.arg_impl));
             return (.(c_class_impl_struct_impl) *) ($(my.arg_impl));
             "
         endnew
@@ -559,8 +559,8 @@ function _Z19_add_method_init (impl, declaration, definition, destination, meta)
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_struct_impl)))"
 
             . = "\
-            .(c_class_assert_macros_assert) ($(my.arg_impl));
-            .(c_class_assert_macros_assert) ($(my.arg_impl)->$(my.names.c_property_info:) == NULL);
+            .(c_class_assert_macros_ptr) ($(my.arg_impl));
+            .(c_class_assert_macros_ptr) ($(my.arg_impl)->$(my.names.c_property_info:) == NULL);
 
             $(my.arg_impl)->$(my.names.c_property_info:) = &$(my.refs.c_implementation_variable_info);
 
@@ -597,7 +597,7 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_struct_impl)))"
 
             my.impl_check_precondition = "\
-                .(c_class_assert_macros_assert) ($(my.arg_impl));
+                .(c_class_assert_macros_ptr) ($(my.arg_impl));
 
                 if ($(my.arg_impl)->$(my.names.c_property_info:) == NULL) {
                     return;
@@ -687,7 +687,7 @@ function _Z19_add_method_new (impl, declaration, definition, destination, meta)
 
             . = "\
             $(my.type_impl) *$(my.arg_impl:) = ($(my.type_impl) *) .(c_global_method_alloc) (sizeof ($(my.type_impl)));
-            .(c_class_assert_macros_assert) ($(my.arg_impl:));
+            .(c_class_assert_macros_ptr) ($(my.arg_impl:));
 
             $(my.refs.c_implementation_method_init) ($(my.arg_impl:));
 
@@ -725,7 +725,7 @@ function _Z19_add_method_destroy (impl, declaration, definition, destination, me
             my.type_impl = my.refs.c_implementation_struct_impl
 
             . = "\
-            .(c_class_assert_macros_assert) ($(my.arg_impl_ref));
+            .(c_class_assert_macros_ptr) ($(my.arg_impl_ref));
 
             $(my.type_impl) *$(my.arg_impl:) = *$(my.arg_impl_ref);
             *$(my.arg_impl_ref) = NULL;
@@ -865,9 +865,9 @@ function _Z19_add_method_use_dependency (require, declaration, definition, desti
             my.dependency = "$(my.arg_impl)->$(my.property_dependency)"
 
             my.impl_check_precondition = "\
-                .(c_class_assert_macros_assert) ($(my.arg_impl));
-                .(c_class_assert_macros_assert) ($(my.arg_dependency));
-                .(c_class_assert_macros_assert) ($(my.dependency) == NULL);
+                .(c_class_assert_macros_ptr) ($(my.arg_impl));
+                .(c_class_assert_macros_ptr) ($(my.arg_dependency));
+                .(c_class_assert_macros_ptr) ($(my.dependency) == NULL);
             "
 
             my.impl_setup_dependency = "\
@@ -925,15 +925,15 @@ function _Z19_add_method_take_dependency (require, declaration, definition, dest
             my.dependency = "$(my.arg_impl)->$(my.property_dependency:)"
 
             my.impl_check_precondition = "\
-                .(c_class_assert_macros_assert) ($(my.arg_impl));
-                .(c_class_assert_macros_assert) ($(my.arg_dependency_ref));
-                .(c_class_assert_macros_assert) ($(my.dependency:) == NULL);
+                .(c_class_assert_macros_ptr) ($(my.arg_impl));
+                .(c_class_assert_macros_ptr) ($(my.arg_dependency_ref));
+                .(c_class_assert_macros_ptr) ($(my.dependency:) == NULL);
             "
 
             my.impl_setup_dependency = "\
                 $(my.type_dependency) *$(my.arg_dependency) = *$(my.arg_dependency_ref);
                 *$(my.arg_dependency_ref) = NULL;
-                .(c_class_assert_macros_assert) ($(my.arg_dependency:));
+                .(c_class_assert_macros_ptr) ($(my.arg_dependency:));
 
                 $(my.dependency:) = $(my.arg_dependency);
             "

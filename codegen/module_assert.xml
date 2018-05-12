@@ -147,4 +147,17 @@
             #define .(c_class_assert_macros_static) (X) (void) sizeof(char[(X) ? 1 : -1])
         </implementation>
     </macros>
+
+    <macros name="ptr" is_method="1">
+        Assert that given pointer is not NULL. It is enabled in debug mode.
+
+        <implementation lang="c">
+            #define .(c_class_assert_macros_ptr) (X)
+                do {
+                    if (!(X)) {
+                        .(c_class_assert_method_trigger) (#X" != NULL", __FILE__, __LINE__);
+                    }
+                } while (false)
+        </implementation>
+    </macros>
  </module>

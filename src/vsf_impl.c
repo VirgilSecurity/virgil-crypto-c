@@ -70,8 +70,8 @@
 VSF_PUBLIC const vsf_api_t*
 vsf_impl_api (vsf_impl_t* impl, vsf_api_tag_t api_tag) {
 
-    VSF_ASSERT (impl);
-    VSF_ASSERT (impl->info);
+    VSF_ASSERT_PTR (impl);
+    VSF_ASSERT_PTR (impl->info);
 
     if (impl->info->api_array == NULL) {
         return NULL;
@@ -95,8 +95,8 @@ vsf_impl_api (vsf_impl_t* impl, vsf_api_tag_t api_tag) {
 VSF_PUBLIC vsf_impl_tag_t
 vsf_impl_tag (vsf_impl_t* impl) {
 
-    VSF_ASSERT (impl);
-    VSF_ASSERT (impl->info);
+    VSF_ASSERT_PTR (impl);
+    VSF_ASSERT_PTR (impl->info);
 
     return impl->info->impl_tag;
 }
@@ -107,9 +107,9 @@ vsf_impl_tag (vsf_impl_t* impl) {
 VSF_PUBLIC void
 vsf_impl_cleanup (vsf_impl_t* impl) {
 
-    VSF_ASSERT (impl);
-    VSF_ASSERT (impl->info);
-    VSF_ASSERT (impl->info->self_cleanup_cb);
+    VSF_ASSERT_PTR (impl);
+    VSF_ASSERT_PTR (impl->info);
+    VSF_ASSERT_PTR (impl->info->self_cleanup_cb);
 
     impl->info->self_cleanup_cb (impl);
 }
@@ -121,14 +121,14 @@ vsf_impl_cleanup (vsf_impl_t* impl) {
 VSF_PUBLIC void
 vsf_impl_destroy (vsf_impl_t** impl_ref) {
 
-    VSF_ASSERT (impl_ref);
+    VSF_ASSERT_PTR (impl_ref);
 
     vsf_impl_t* impl = *impl_ref;
     *impl_ref = NULL;
 
     if (impl) {
-        VSF_ASSERT (impl->info);
-        VSF_ASSERT (impl->info->self_destroy_cb);
+        VSF_ASSERT_PTR (impl->info);
+        VSF_ASSERT_PTR (impl->info->self_destroy_cb);
         impl->info->self_destroy_cb (&impl);
     }
 }
