@@ -68,7 +68,7 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Opaque type of the interface 'hash stream' API.
+//  Contains API requirements of the interface 'hash stream'.
 //
 typedef struct vsf_hash_stream_api_t vsf_hash_stream_api_t;
 

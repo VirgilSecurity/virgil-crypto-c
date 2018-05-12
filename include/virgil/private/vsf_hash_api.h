@@ -76,7 +76,7 @@ typedef void (*vsf_hash_api_hash_fn) (const byte* data, size_t data_len, byte* d
         size_t digest_len);
 
 //
-//  Handles constants and callbacks of the interface 'hash'.
+//  Contains API requirements of the interface 'hash'.
 //
 struct vsf_hash_api_t {
     //

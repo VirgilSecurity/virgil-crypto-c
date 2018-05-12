@@ -69,7 +69,7 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles constants and callbacks of the interface 'hash info'.
+//  Contains API requirements of the interface 'hash info'.
 //
 struct vsf_hash_info_api_t {
     //

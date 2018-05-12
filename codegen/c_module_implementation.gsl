@@ -48,7 +48,7 @@
 
 
 gsl from "common.gsl"
-gsl from "c_module_interface_api.gsl"
+gsl from "c_module_interface.gsl"
 
 # ---------------------------------------------------------------------------
 function _Z19_has_methods_with_context_impl (impl)
@@ -120,7 +120,7 @@ function _Z19_add_instances_of_interface_api (impl, source, destination, meta)
     my.names = meta_names (my.meta)
 
     for my.impl.interface
-        my.interface_api = c_module_interface_api_find_type (interface.name, my.source, my.meta)
+        my.interface_api = c_module_interface_find_api_type (interface.name, my.source, my.meta)
         _Z19_add_instance_interface_api (my.impl, my.interface_api, my.destination, my.meta)
     endfor
 endfunction
