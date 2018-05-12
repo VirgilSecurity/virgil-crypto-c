@@ -67,9 +67,9 @@ VSF_PUBLIC void
 vsf_hash_stream_start (vsf_impl_t* impl) {
 
     const vsf_hash_stream_api_t *hash_stream_api = vsf_hash_stream_api (impl);
-    VSF_ASSERT (hash_stream_api);
+    VSF_ASSERT_PTR (hash_stream_api);
 
-    VSF_ASSERT (hash_stream_api->start_cb);
+    VSF_ASSERT_PTR (hash_stream_api->start_cb);
     hash_stream_api->start_cb (impl);
 }
 
@@ -80,9 +80,9 @@ VSF_PUBLIC void
 vsf_hash_stream_update (vsf_impl_t* impl, const byte* data, size_t data_len) {
 
     const vsf_hash_stream_api_t *hash_stream_api = vsf_hash_stream_api (impl);
-    VSF_ASSERT (hash_stream_api);
+    VSF_ASSERT_PTR (hash_stream_api);
 
-    VSF_ASSERT (hash_stream_api->update_cb);
+    VSF_ASSERT_PTR (hash_stream_api->update_cb);
     hash_stream_api->update_cb (impl, data, data_len);
 }
 
@@ -93,9 +93,9 @@ VSF_PUBLIC void
 vsf_hash_stream_finish (vsf_impl_t* impl, byte* digest, size_t digest_len) {
 
     const vsf_hash_stream_api_t *hash_stream_api = vsf_hash_stream_api (impl);
-    VSF_ASSERT (hash_stream_api);
+    VSF_ASSERT_PTR (hash_stream_api);
 
-    VSF_ASSERT (hash_stream_api->finish_cb);
+    VSF_ASSERT_PTR (hash_stream_api->finish_cb);
     hash_stream_api->finish_cb (impl, digest, digest_len);
 }
 
@@ -105,7 +105,7 @@ vsf_hash_stream_finish (vsf_impl_t* impl, byte* digest, size_t digest_len) {
 VSF_PUBLIC const vsf_hash_stream_api_t*
 vsf_hash_stream_api (vsf_impl_t* impl) {
 
-    VSF_ASSERT (impl);
+    VSF_ASSERT_PTR (impl);
 
     const vsf_api_t *api = vsf_impl_api (impl, vsf_api_tag_HASH_STREAM);
     return (const vsf_hash_stream_api_t *) api;
@@ -126,7 +126,7 @@ vsf_hash_stream_api_size (void) {
 VSF_PUBLIC bool
 vsf_hash_stream_is_implemented (vsf_impl_t* impl) {
 
-    VSF_ASSERT (impl);
+    VSF_ASSERT_PTR (impl);
 
     return vsf_impl_api (impl, vsf_api_tag_HASH_STREAM) != NULL;
 }

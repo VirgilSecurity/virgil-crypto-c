@@ -119,8 +119,8 @@ function _L24_add_method_get_api (meta, destination)
 
         new implementation
             . = "\
-            VSF_ASSERT (impl);
-            VSF_ASSERT (impl->info);
+            .(c_class_assert_macros_ptr) (impl);
+            .(c_class_assert_macros_ptr) (impl->info);
 
             if (impl->info->api_array == NULL) {
                 return NULL;
@@ -163,8 +163,8 @@ function _L24_add_method_get_tag (meta, destination)
 
         new implementation
             . = "
-            VSF_ASSERT (impl);
-            VSF_ASSERT (impl->info);
+            .(c_class_assert_macros_ptr) (impl);
+            .(c_class_assert_macros_ptr) (impl->info);
 
             return impl->info->impl_tag;
             "
@@ -189,9 +189,9 @@ function _L24_add_method_cleanup (meta, destination)
 
         new implementation
             . = "\
-            VSF_ASSERT (impl);
-            VSF_ASSERT (impl->info);
-            VSF_ASSERT (impl->info->self_cleanup_cb);
+            .(c_class_assert_macros_ptr) (impl);
+            .(c_class_assert_macros_ptr) (impl->info);
+            .(c_class_assert_macros_ptr) (impl->info->self_cleanup_cb);
 
             impl->info->self_cleanup_cb (impl);
             "
@@ -220,14 +220,14 @@ function _L24_add_method_destroy (meta, destination)
 
         new implementation
             . = "\
-            VSF_ASSERT (impl_ref);
+            .(c_class_assert_macros_ptr) (impl_ref);
 
             \.(c_class_impl_struct_impl)* impl = *impl_ref;
             *impl_ref = NULL;
 
             if (impl) {
-                VSF_ASSERT (impl->info);
-                VSF_ASSERT (impl->info->self_destroy_cb);
+                .(c_class_assert_macros_ptr) (impl->info);
+                .(c_class_assert_macros_ptr) (impl->info->self_destroy_cb);
                 impl->info->self_destroy_cb (&impl);
             }
             "

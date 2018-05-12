@@ -100,6 +100,16 @@ extern "C" {
 #define VSF_ASSERT_STATIC(X) (void) sizeof(char[(X) ? 1 : -1])
 
 //
+//  Assert that given pointer is not NULL. It is enabled in debug mode.
+//
+#define VSF_ASSERT_PTR(X)                                          \
+    do {                                                           \
+        if (!(X)) {                                                \
+            vsf_assert_trigger (#X" != NULL", __FILE__, __LINE__); \
+        }                                                          \
+    } while (false)
+
+//
 //  Assertion handler callback type.
 //
 typedef void (*vsf_assert_handler_fn) (const char* message, const char* file, int line);

@@ -124,8 +124,8 @@ vsf_dealloc (void* mem) {
 VSF_PUBLIC void
 vsf_set_allocators (vsf_alloc_fn alloc_cb, vsf_dealloc_fn dealloc_cb) {
 
-    VSF_ASSERT (alloc_cb);
-    VSF_ASSERT (dealloc_cb);
+    VSF_ASSERT_PTR (alloc_cb);
+    VSF_ASSERT_PTR (dealloc_cb);
 
     inner_alloc = alloc_cb;
     inner_dealloc = dealloc_cb;
@@ -139,7 +139,7 @@ vsf_set_allocators (vsf_alloc_fn alloc_cb, vsf_dealloc_fn dealloc_cb) {
 VSF_PUBLIC void
 vsf_zeroize (void* mem, size_t size) {
 
-    VSF_ASSERT (mem);
+    VSF_ASSERT_PTR (mem);
     memset (mem, 0, size);
 }
 
@@ -150,7 +150,7 @@ vsf_zeroize (void* mem, size_t size) {
 VSF_PUBLIC void
 vsf_erase (void* mem, size_t size) {
 
-    VSF_ASSERT (mem);
+    VSF_ASSERT_PTR (mem);
 
     volatile uint8_t* p = (uint8_t*)mem;
     while (size--) { *p++ = 0; }

@@ -107,8 +107,8 @@
         <argument name="dealloc" callback=".(global_callback_dealloc)"/>
 
         <implementation>
-            .(c_class_assert_macros_assert) (.(_argument_alloc));
-            .(c_class_assert_macros_assert) (.(_argument_dealloc));
+            .(c_class_assert_macros_ptr) (.(_argument_alloc));
+            .(c_class_assert_macros_ptr) (.(_argument_dealloc));
 
             .(c_class_memory_variable_inner_alloc) = .(_argument_alloc);
             .(c_class_memory_variable_inner_dealloc) = .(_argument_dealloc);
@@ -125,7 +125,7 @@
         <argument name="size" type="size"/>
 
         <implementation>
-            .(c_class_assert_macros_assert) (.(_argument_mem));
+            .(c_class_assert_macros_ptr) (.(_argument_mem));
             memset (.(_argument_mem), 0, .(_argument_size));
         </implementation>
     </method>
@@ -139,7 +139,7 @@
         <argument name="size" type="size"/>
 
         <implementation>
-            .(c_class_assert_macros_assert) (.(_argument_mem));
+            .(c_class_assert_macros_ptr) (.(_argument_mem));
 
             volatile uint8_t* p = (uint8_t*).(_argument_mem);
             while (.(_argument_size)--) { *p++ = 0; }

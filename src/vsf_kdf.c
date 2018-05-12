@@ -67,9 +67,9 @@ VSF_PUBLIC void
 vsf_kdf_derive (const vsf_kdf_api_t* kdf_api, const byte* data, size_t data_len, byte* key,
         size_t key_len) {
 
-    VSF_ASSERT (kdf_api);
+    VSF_ASSERT_PTR (kdf_api);
 
-    VSF_ASSERT (kdf_api->derive_cb);
+    VSF_ASSERT_PTR (kdf_api->derive_cb);
     kdf_api->derive_cb (data, data_len, key, key_len);
 }
 
@@ -79,7 +79,7 @@ vsf_kdf_derive (const vsf_kdf_api_t* kdf_api, const byte* data, size_t data_len,
 VSF_PUBLIC const vsf_kdf_api_t*
 vsf_kdf_api (vsf_impl_t* impl) {
 
-    VSF_ASSERT (impl);
+    VSF_ASSERT_PTR (impl);
 
     const vsf_api_t *api = vsf_impl_api (impl, vsf_api_tag_KDF);
     return (const vsf_kdf_api_t *) api;
@@ -100,7 +100,7 @@ vsf_kdf_api_size (void) {
 VSF_PUBLIC bool
 vsf_kdf_is_implemented (vsf_impl_t* impl) {
 
-    VSF_ASSERT (impl);
+    VSF_ASSERT_PTR (impl);
 
     return vsf_impl_api (impl, vsf_api_tag_KDF) != NULL;
 }

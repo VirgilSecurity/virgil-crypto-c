@@ -166,8 +166,8 @@ static const vsf_impl_info_t info = {
 VSF_PUBLIC void
 vsf_sha256_init (vsf_sha256_impl_t* sha256_impl) {
 
-    VSF_ASSERT (sha256_impl);
-    VSF_ASSERT (sha256_impl->info == NULL);
+    VSF_ASSERT_PTR (sha256_impl);
+    VSF_ASSERT_PTR (sha256_impl->info == NULL);
 
     sha256_impl->info = &info;
 
@@ -183,7 +183,7 @@ vsf_sha256_init (vsf_sha256_impl_t* sha256_impl) {
 VSF_PUBLIC void
 vsf_sha256_cleanup (vsf_sha256_impl_t* sha256_impl) {
 
-    VSF_ASSERT (sha256_impl);
+    VSF_ASSERT_PTR (sha256_impl);
 
     if (sha256_impl->info == NULL) {
         return;
@@ -202,7 +202,7 @@ VSF_PUBLIC vsf_sha256_impl_t*
 vsf_sha256_new (void) {
 
     vsf_sha256_impl_t *sha256_impl = (vsf_sha256_impl_t *) vsf_alloc (sizeof (vsf_sha256_impl_t));
-    VSF_ASSERT (sha256_impl);
+    VSF_ASSERT_PTR (sha256_impl);
 
     vsf_sha256_init (sha256_impl);
 
@@ -218,7 +218,7 @@ vsf_sha256_new (void) {
 VSF_PUBLIC void
 vsf_sha256_destroy (vsf_sha256_impl_t** sha256_impl_ref) {
 
-    VSF_ASSERT (sha256_impl_ref);
+    VSF_ASSERT_PTR (sha256_impl_ref);
 
     vsf_sha256_impl_t *sha256_impl = *sha256_impl_ref;
     *sha256_impl_ref = NULL;
@@ -271,7 +271,7 @@ vsf_sha256_impl_size (void) {
 VSF_PUBLIC vsf_impl_t*
 vsf_sha256_impl (vsf_sha256_impl_t* sha256_impl) {
 
-    VSF_ASSERT (sha256_impl);
+    VSF_ASSERT_PTR (sha256_impl);
     return (vsf_impl_t *) (sha256_impl);
 }
 

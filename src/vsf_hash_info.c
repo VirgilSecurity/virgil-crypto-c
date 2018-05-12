@@ -66,7 +66,7 @@
 VSF_PUBLIC size_t
 vsf_hash_info_digest_size (const vsf_hash_info_api_t* hash_info_api) {
 
-    VSF_ASSERT (hash_info_api);
+    VSF_ASSERT_PTR (hash_info_api);
 
     return hash_info_api->digest_size;
 }
@@ -77,7 +77,7 @@ vsf_hash_info_digest_size (const vsf_hash_info_api_t* hash_info_api) {
 VSF_PUBLIC const vsf_hash_info_api_t*
 vsf_hash_info_api (vsf_impl_t* impl) {
 
-    VSF_ASSERT (impl);
+    VSF_ASSERT_PTR (impl);
 
     const vsf_api_t *api = vsf_impl_api (impl, vsf_api_tag_HASH_INFO);
     return (const vsf_hash_info_api_t *) api;
@@ -98,7 +98,7 @@ vsf_hash_info_api_size (void) {
 VSF_PUBLIC bool
 vsf_hash_info_is_implemented (vsf_impl_t* impl) {
 
-    VSF_ASSERT (impl);
+    VSF_ASSERT_PTR (impl);
 
     return vsf_impl_api (impl, vsf_api_tag_HASH_INFO) != NULL;
 }
