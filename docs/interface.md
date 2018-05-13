@@ -31,7 +31,7 @@ attribute names are case-sensitive and we use only lower-case names.
              <string .../>
              <array .../>
           </variable>
-          <implementation [lang]/>
+          <implementation [lang] [body]/>
        </method>
     </interface>
 
@@ -755,9 +755,10 @@ implementation body for C language.
 
     <implementation
       [ lang = "c | java | csharp"  ("c") ]
+      [ body = "stub | generated | handwritten"  ("generated") ]
         />
 
-The implementation item has this single attribute:
+The implementation item can have these attributes:
 
 lang:
     Defines target language this entity is applied to. The lang attribute is
@@ -765,7 +766,17 @@ lang:
     values:
 
 Value: Meaning:
-c: C langauge.
-java: Java langauge.
-csharp: C# langauge.
+c: C language.
+java: Java language.
+csharp: C# language.
+
+body:
+    Defines implementation body originator. The body attribute is optional.
+    Its default value is "generated". It can take one of the following
+    values:
+
+Value: Meaning:
+stub: Implementation is just a stub, so method must be implemented by developer.
+generated: Implementation is fully generated, so it must no be modified within source code.
+handwritten: Implementation was written by developer, so it can be extracted and reused during generation phase. In this way comments and/or entity signature can be changed, but implementation will be untouched.
 
