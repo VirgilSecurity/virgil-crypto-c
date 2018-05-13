@@ -176,7 +176,7 @@ function c_module_generate_source (c_module)
         c_insert_variable_definition (c_variable)
     endfor
 
-    for my.c_module.c_method where definition <> "external" & count (c_implementation)
+    for my.c_module.c_method where definition <> "external" & c_method->c_implementation.body = "generated"
         newline ()
         c_insert_method_definition (c_method)
     endfor
@@ -188,7 +188,9 @@ function c_module_generate_source (c_module)
         newline (2)
         out (my.content_after)
     else
-        for my.c_module.c_method where definition <> "external" & count (c_implementation) = 0
+        for my.c_module.c_method where definition <> "external" & \
+                string_in (c_method->c_implementation.body, "stub, handwritten")
+
             newline_if (first ())
             newline ()
             c_insert_method_definition (c_method)

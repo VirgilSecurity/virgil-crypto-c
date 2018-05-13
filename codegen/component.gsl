@@ -727,6 +727,22 @@ function component_resolve_method_attr_context (method, parent)
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Resolve attribute: implementation.body.
+# ---------------------------------------------------------------------------
+function component_resolve_implementation_attr_body (implementation, parent)
+    check_arguments (my, "implementation, parent", my)
+
+    my.implementation.body ?= "generated"
+
+    my.valid_body = "stub, generated, handwritten"
+
+    if ! string_in (my.implementation.body, my.valid_body)
+        echo_fatal ("Invalid implementation attribute body=\"$(my.implementation.body:)\"." + \
+                    " Expected {$(my.valid_body)}", my)
+    endif
+endfunction
+
 # ###########################################################################
 #   Per component resolution.
 # ###########################################################################
@@ -771,6 +787,7 @@ function component_resolve_implementation (implementation, parent)
     check_arguments (my, "implementation, parent")
 
     component_resolve_attr_lang (my.implementation, my.parent)
+    component_resolve_implementation_attr_body (my.implementation, my.parent)
 endfunction
 
 # ---------------------------------------------------------------------------

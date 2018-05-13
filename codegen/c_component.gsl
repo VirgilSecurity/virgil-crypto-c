@@ -606,9 +606,7 @@ function c_component_create_implementation (implementation, destination)
                 "but found \"$(my.implementation.lang:)\"", my)
     endif
 
-    new c_implementation to my.destination
-        . = my.implementation.
-    endnew
+    copy implementation to my.destination as c_implementation
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -728,6 +726,21 @@ function c_component_create_void_return (destination)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Create subbed 'c_implementation'.
+# ---------------------------------------------------------------------------
+function c_component_create_stub_implementation (destination)
+    check_arguments (my, "destination", my)
+
+    new c_implementation to my.destination
+        .lang = "c"
+        .body = "stub"
+        . = "\
+        //  TODO: This is STUB. Implement me.
+        "
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create 'c_method' from 'method'.
 # ---------------------------------------------------------------------------
 function c_component_create_method (method, destination)
@@ -758,6 +771,8 @@ function c_component_create_method (method, destination)
 
         for my.method.implementation where lang = "c"
             c_component_create_implementation (implementation, c_method)
+        else
+            c_component_create_stub_implementation (c_method)
         endfor
     endnew
 endfunction
