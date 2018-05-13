@@ -412,12 +412,10 @@ function c_insert_method_definition (c_method)
         insert_code (c_precondition., 1)
     endfor
 
-    if count (my.c_method.c_implementation)
-        newline ()
-        insert_code (my.c_method->c_implementation., 1)
-    else
-        insert_code ("//  TODO: This is STUB. Implement me.", 1)
-    endif
+    assert_item (my.c_method, "c_implementation", my)
+
+    newline ()
+    insert_code (my.c_method->c_implementation., 1)
     insert_code ("}")
 endfunction
 
