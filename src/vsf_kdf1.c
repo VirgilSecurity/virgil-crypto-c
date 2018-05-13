@@ -71,5 +71,6 @@
 //
 VSF_PUBLIC void
 vsf_kdf1_derive (vsf_impl_t* hash, const byte* data, size_t data_len, byte* key, size_t key_len) {
+
     //  TODO: This is STUB. Implement me.
 }
