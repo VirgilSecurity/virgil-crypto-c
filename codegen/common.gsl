@@ -586,6 +586,97 @@ function read_non_generated_content (source_file, context)
     my.context.content_after = my.content_after
 endfunction
 
+
+# ---------------------------------------------------------------------------
+#   Parse content after the block '@generated...@end' and collects functions
+#   names and corresponding implementation body to the dictionary which then
+#   returns:
+#       <entities>
+#           <entity name="..." body="..."/>
+#       </entities>
+# ---------------------------------------------------------------------------
+function parse_handwritten_content (content)
+    assert_attribute (my, "content", my)
+
+    my.file_temp = "temp.file"
+
+    my.file_error = # undefined
+
+    my.file_handle = file.open (my.file_temp, "w", my.file_error)
+    if defined (my.file_error)
+        echo_fatal ("Can not open file for write '$(my.source_file:)'. " + my.file_error, my)
+    endif
+
+    file.write (my.file_handle, my.content, my.file_error)
+    if defined (my.file_error)
+        echo_fatal ("Can not write to file '$(my.source_file:)'. " + my.file_error, my)
+    endif
+
+    file.close (my.file_handle, my.file_error)
+    if defined (my.file_error)
+        echo_fatal ("Can not close file '$(my.source_file:)'. " + my.file_error, my)
+    endif
+
+    my.file_handle = file.open (my.file_temp, "r", my.file_error)
+    if defined (my.file_error)
+        echo_fatal ("Can not open file for read '$(my.source_file:)'. " + my.file_error, my)
+    endif
+
+
+    my.entities = XML.new ("entities")
+    my.state = "find_name"
+    my.function_name_pattern = "(\\w+)\\s?[(]"
+    my.braces_counter = "0"
+    my.function_body = ""
+
+    while defined (my.file_handle)
+        my.line = my.file_handle.read (my.error) ? ""
+
+        if defined (my.error)
+            last
+        endif
+
+        if my.state = "find_name" & string.prefixed (my.line, "//")
+            next
+        endif
+
+        my.braces_counter += string.cntch (my.line, "{")
+        my.braces_counter -= string.cntch (my.line, "}")
+
+        if my.state = "find_name" & regexp.match (my.function_name_pattern, my.line, my.function_name)
+            my.state = "name_found"
+        endif
+
+        if my.state = "name_found" & my.braces_counter = "1"
+            my.state = "body_start_found"
+
+        elsif my.state = "body_start_found" & my.braces_counter > "0"
+            my.function_body += my.line
+
+        elsif my.state = "body_start_found" & my.braces_counter = "0"
+            my.state = "body_end_found"
+        endif
+
+        if my.state = "body_end_found"
+            new entity to my.entities
+                .name = my.function_name
+                .body = my.function_body
+            endnew
+
+            my.function_name = # Undefine
+            my.function_body = ""
+            my.state = "find_name"
+        endif
+    endwhile
+
+
+    file.close (my.file_handle)
+    file.delete (my.file_temp)
+
+
+    return my.entities
+endfunction
+
 # ---------------------------------------------------------------------------
 #   Eliminate spaces that appears during code formatting within GSL scripts.
 # ---------------------------------------------------------------------------

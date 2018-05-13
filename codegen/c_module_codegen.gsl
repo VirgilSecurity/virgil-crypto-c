@@ -185,17 +185,25 @@ function c_module_generate_source (c_module)
     c_insert_section_generated_end ()
 
     if string_defined (my.content_after)
-        newline (2)
-        out (my.content_after)
-    else
-        for my.c_module.c_method where definition <> "external" & \
-                string_in (c_method->c_implementation.body, "stub, handwritten")
+        my.entities = parse_handwritten_content (my.content_after)
 
-            newline_if (first ())
-            newline ()
-            c_insert_method_definition (c_method)
+        for my.c_module.c_method where definition <> "external" & c_method->c_implementation.body = "stub"
+            my.handwritten_implementation = my.entities->entity (name = c_method.name) ?
+
+            if defined (my.handwritten_implementation)
+                c_method->c_implementation. = my.handwritten_implementation.body
+                c_method->c_implementation.body = "handwritten"
+            endif
         endfor
     endif
+
+    for my.c_module.c_method where definition <> "external" & \
+            string_in (c_method->c_implementation.body, "stub, handwritten")
+
+        newline_if (first ())
+        newline ()
+        c_insert_method_definition (c_method)
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
