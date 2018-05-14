@@ -39,7 +39,7 @@ project(virgil_crypto_c_integration_tests VERSION 0.1.0 LANGUAGES C)
 add_subdirectory(unity)
 
 macro(_add_test test)
-    add_executable(${test} ${test}.c)
+    add_executable(${test} ${test}.c test_utils.c)
     target_link_libraries(${test} unity vsf)
     add_test (NAME ${test} COMMAND ${test})
 endmacro()
