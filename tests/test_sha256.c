@@ -39,67 +39,7 @@
 #include "vsf_hash_stream.h"
 #include "vsf_sha256.h"
 
-#include <assert.h>
-#include <string.h>
-
-
-static size_t unhexify(const char *ibuf, byte *obuf)
-{
-    byte c, c2;
-    size_t len = strlen( ibuf ) / 2;
-    assert( strlen( ibuf ) % 2 == 0 ); /* must be even number of bytes */
-
-    while( *ibuf != 0 )
-    {
-        c = *ibuf++;
-        if( c >= '0' && c <= '9' )
-            c -= '0';
-        else if( c >= 'a' && c <= 'f' )
-            c -= 'a' - 10;
-        else if( c >= 'A' && c <= 'F' )
-            c -= 'A' - 10;
-        else
-            assert( 0 );
-
-        c2 = *ibuf++;
-        if( c2 >= '0' && c2 <= '9' )
-            c2 -= '0';
-        else if( c2 >= 'a' && c2 <= 'f' )
-            c2 -= 'a' - 10;
-        else if( c2 >= 'A' && c2 <= 'F' )
-            c2 -= 'A' - 10;
-        else
-            assert( 0 );
-
-        *obuf++ = ( c << 4 ) | c2;
-    }
-
-    return len;
-}
-
-static void hexify(const byte *ibuf, size_t len, char *obuf)
-{
-   byte l, h;
-
-    while( len != 0 )
-    {
-        h = *ibuf / 16;
-        l = *ibuf % 16;
-
-        if( h < 10 )
-            *obuf++ = '0' + h;
-        else
-            *obuf++ = 'a' + h - 10;
-
-        if( l < 10 )
-            *obuf++ = '0' + l;
-        else
-            *obuf++ = 'a' + l - 10;
-
-        ++ibuf;
-        len--;
-    }
-}
+#include "test_utils.h"
 
 
 static void test_interface_hash (const char *expected_digest_hex, const char *data_hex) {
@@ -136,13 +76,13 @@ static void test_interface_hash_stream (const char *expected_digest_hex, const c
 }
 
 
-void test_interface_hash_with_vector_RFC1321_1 (void) {
+void test_interface_hash_over_sha256 (void) {
     test_interface_hash ("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "");
     test_interface_hash ("68325720aabd7c82f30f554b313d0570c95accbb7dc4b5aae11204c08ffe732b", "bd");
     test_interface_hash ("7c4fbf484498d21b487b9d61de8914b2eadaf2698712936d47c3ada2558f6788", "5fd4");
 }
 
-void test_interface_hash_stream_with_vector_RFC1321_1 (void) {
+void test_interface_hash_stream_over_sha256 (void) {
     test_interface_hash_stream ("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "");
     test_interface_hash_stream ("68325720aabd7c82f30f554b313d0570c95accbb7dc4b5aae11204c08ffe732b", "bd");
     test_interface_hash_stream ("7c4fbf484498d21b487b9d61de8914b2eadaf2698712936d47c3ada2558f6788", "5fd4");
@@ -152,8 +92,8 @@ void test_interface_hash_stream_with_vector_RFC1321_1 (void) {
 int main() {
     UNITY_BEGIN();
 
-    RUN_TEST(test_interface_hash_with_vector_RFC1321_1);
-    RUN_TEST(test_interface_hash_stream_with_vector_RFC1321_1);
+    RUN_TEST(test_interface_hash_over_sha256);
+    RUN_TEST(test_interface_hash_stream_over_sha256);
 
     return UNITY_END();
 }
