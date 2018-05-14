@@ -1,0 +1,30 @@
+language: c
+
+dist: trusty
+sudo: required
+
+compiler:
+  - clang
+  - gcc
+
+install:
+  - wget -O https://cmake.org/files/v3.11/cmake-3.11.1-Linux-x86_64.sh
+  - sudo ./cmake-3.11.1-Linux-x86_64.sh --skip-license --exclude-subdir
+
+after_install:
+  - ${CC} --version
+  - cmake --version
+
+jobs:
+  include:
+    - stage: compile
+      script: cmake -H. -Bbuild -DCMAKE_INSTALL_PREFIX=install && cmake --build build -- -j8
+    - stage: test
+      script: cd build && ctest --verbose && cd -
+    - stage: benchmark
+      script: echo "Benchmark is not ready yet."
+
+stages:
+  - compile
+  - test
+  - benchmark
