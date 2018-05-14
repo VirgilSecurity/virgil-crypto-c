@@ -48,24 +48,26 @@ size_t unhexify(const char *hex_str, byte *data) {
 
     while (*hex_str != 0) {
         c = *hex_str++;
-        if (c >= '0' && c <= '9')
+        if (c >= '0' && c <= '9') {
             c -= '0';
-        else if (c >= 'a' && c <= 'f')
+        } else if (c >= 'a' && c <= 'f') {
             c -= 'a' - 10;
-        else if (c >= 'A' && c <= 'F')
+        } else if (c >= 'A' && c <= 'F') {
             c -= 'A' - 10;
-        else
+        } else {
             assert(0);
+        }
 
         c2 = *hex_str++;
-        if (c2 >= '0' && c2 <= '9')
+        if (c2 >= '0' && c2 <= '9') {
             c2 -= '0';
-        else if (c2 >= 'a' && c2 <= 'f')
+        } else if (c2 >= 'a' && c2 <= 'f') {
             c2 -= 'a' - 10;
-        else if (c2 >= 'A' && c2 <= 'F')
+        } else if (c2 >= 'A' && c2 <= 'F') {
             c2 -= 'A' - 10;
-        else
+        } else {
             assert(0);
+        }
 
         *data++ = (c << 4) | c2;
     }
@@ -80,15 +82,17 @@ void hexify(const byte *data, size_t data_len, char *hex_str) {
         h = *data / 16;
         l = *data % 16;
 
-        if (h < 10)
+        if (h < 10) {
             *hex_str++ = '0' + h;
-        else
+        } else {
             *hex_str++ = 'a' + h - 10;
+        }
 
-        if (l < 10)
+        if (l < 10) {
             *hex_str++ = '0' + l;
-        else
+        } else {
             *hex_str++ = 'a' + l - 10;
+        }
 
         ++hex_str;
         data_len--;
