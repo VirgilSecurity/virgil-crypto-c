@@ -1,21 +1,30 @@
-<interface name = "hash stream">
+<interface name="hash stream">
     Provide interface to calculate hash (message digest) over a stream.
 
-    <inherit interface = "hash" />
+    <inherit interface="hash info" />
 
-    <method name = "start">
+
+    <method name="start">
         Start a new hashing.
     </method>
 
-    <method name = "update">
+
+    <method name="update">
         Add given data to the hash.
 
-        <argument name = "data" type = "buffer"/>
+        <argument name="data" type="data"/>
+
+        <argument name="data len" type="size"/>
     </method>
 
-    <method name = "finish">
-        Accompilsh hashing and return the it's result (a message digest).
 
-        <return name = "digest" type = "buffer" const_size = "digest size" />
-    </method>
+    <method name="finish">
+        Accompilsh hashing and return it's result (a message digest).
+
+        <argument name="digest" type="data" access="writeonly">
+            <array length="known" length_constant="hash info digest size" />
+        </argument>
+
+        <argument name="digest len" type="size"/>
+   </method>
 </interface>

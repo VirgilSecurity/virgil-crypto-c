@@ -75,10 +75,12 @@ function project_generate_structure (project)
     check_argument (my, "project")
 
     assert_attribute (my.project, "inc_path", my)
+    assert_attribute (my.project, "inc_private_path", my)
     assert_attribute (my.project, "src_path", my)
     assert_attribute (my.project, "work_path", my)
 
     directory.create (my.project.inc_path)
+    directory.create (my.project.inc_private_path)
     directory.create (my.project.src_path)
     directory.create (my.project.work_path)
 endfunction

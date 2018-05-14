@@ -1,123 +1,163 @@
-<module name = "assert" class = "assert">
+<module name="assert">
     Implements custom assert mechanism, which:
         - allows to choose assertion handler from predefined set,
           or provide custom assertion handler;
         - allows to choose which assertion leave in production build.
 
-    <require module = "library" visibility = "public" />
+    <require module="library" scope="public" />
 
-    <callback name = "handler">
+    <c_include file="stdio.h" scope="private" is_system="1" />
+
+    <callback name="handler">
         Assertion handler callback type.
-        <argument name = "message" type = "string" />
-        <argument name = "file" type = "string" />
-        <argument name = "line" type = "integer" />
+
+        <argument name="message" type="string" />
+        <argument name="file" type="string" />
+        <argument name="line" type="integer" />
     </callback>
 
-    <object
-            name = "active handler"
-            type = ".(class_assert_callback_handler)"
-            visibility = "private"
-            >
+
+    <variable
+            name="active handler"
+            callback=".(class_assert_callback_handler)"
+            visibility="private"
+            declaration="private"
+            definition="private">
+
         Active handler for assertion failback.
-        <value value = ".(class_assert_method_abort)" />
-    </object>
 
-    <section title = "Configuration.">
-        <method name = "change handler">
-            Change active assertion handler.
-            <argument name = "handler" type = ".(class_assert_callback_handler)" is_callback = "1" />
-            <c_implementation>
-                .(c_class_assert_macros) (.(c_argument_handler_cb));
-                .(c_class_assert_object_active_handler) = .(c_argument_handler_cb);
-            </c_implementation>
-        </method>
-    </section>
+        <value value=".(class_assert_method_abort)" />
+    </variable>
 
-    <section title = "Action.">
-        <method name = "abort">
-            Assertion handler, that print given information and abort program.
-            This is default handler.
-            <argument name = "message" type = "string" />
-            <argument name = "file" type = "string" />
-            <argument name = "line" type = "integer" />
-            <c_implementation>
-                printf (&quot;Assertion failed: %s, file %s, line %d\\n&quot;,
-                        msg, .(c_class_assert_method_path_basename) (file), line);
-                printf (&quot;Abort&quot;);
-                abort ();
-            </c_implementation>
-        </method>
 
-        <method name = "trigger">
-            Trigger active assertion handler.
-            <argument name = "message" type = "string" />
-            <argument name = "file" type = "string" />
-            <argument name = "line" type = "integer" />
-            <c_implementation>
-                 .(c_class_assert_object_active_handler) ( \
-                        .(c_argument_message), .(c_argument_file), .(c_argument_line));
-            </c_implementation>
-        </method>
-    </section>
+    <method name="change handler">
+        Change active assertion handler.
 
-    <method name = "path basename" visibility = "private">
+        <argument name="handler" callback=".(class_assert_callback_handler)" />
+
+        <implementation lang="c">
+            .(c_class_assert_macros_assert) (handler_cb);
+            .(c_class_assert_variable_active_handler) = handler_cb;
+        </implementation>
+    </method>
+
+
+    <method name="abort">
+        Assertion handler, that print given information and abort program.
+        This is default handler.
+
+        <argument name="message" type="string" />
+        <argument name="file" type="string" />
+        <argument name="line" type="integer" />
+        <implementation lang="c">
+            printf (&quot;Assertion failed: %s, file %s, line %d\\n&quot;,
+                    message, .(c_class_assert_method_path_basename) (file), line);
+
+            printf (&quot;Abort&quot;);
+
+            abort ();
+        </implementation>
+    </method>
+
+
+    <method name="trigger">
+        Trigger active assertion handler.
+
+        <argument name="message" type="string" />
+        <argument name="file" type="string" />
+        <argument name="line" type="integer" />
+        <implementation lang="c">
+             .(c_class_assert_variable_active_handler) (message, file, line);
+        </implementation>
+    </method>
+
+
+    <method name="path basename" declaration="private" definition="private" visibility="private">
         Return pointer to the last component in the path.
-        <return type = "string" />
-        <argument name = "path" type = "string" />
 
-        <c_implementation>
-            const char *result = .(c_argument_path);
+        <return type="string" />
+
+        <argument name="path" type="string" />
+
+        <implementation lang="c">
+            const char *result = path;
             for ( \
-                    const char *symbol = .(c_argument_path); \
+                    const char *symbol = path; \
                     *symbol != '\\0' &amp;&amp; \
-                    (symbol - .(c_argument_path) &lt; 255); \
+                    (symbol - path &lt; 255); \
                     ++symbol) {
+
                 const char *next_symbol = symbol + 1;
+
                 if (*next_symbol != '\\0' &amp;&amp; (*symbol == '\\\\' || *symbol == '/')) {
                     result = next_symbol;
                 }
             }
+
             return result;
-        </c_implementation>
+        </implementation>
     </method>
 
-    <macros name = "assert" is_method = "1">
+
+    <macros name="internal" is_method="1">
         Asserts always.
-        <c_implementation>
-            #define .(c_class_assert_macros_assert) (X)
+
+        <implementation lang="c">
+            #define .(c_class_assert_macros_internal) (X)
                 do {
                     if (!(X)) {
                         .(c_class_assert_method_trigger) (#X, __FILE__, __LINE__);
                     }
                 } while (false)
-        </c_implementation>
+        </implementation>
     </macros>
 
-    <macros name = "opt" is_method = "1">
+
+    <macros name="opt" is_method="1">
         Asserts even in optimized mode.
-        <c_implementation>
-            #define .(c_class_assert_macros_opt) (X) .(c_class_assert_macros_assert) (X)
-        </c_implementation>
+
+        <implementation lang="c">
+            #define .(c_class_assert_macros_opt) (X) .(c_class_assert_macros_internal) (X)
+        </implementation>
     </macros>
 
-    <macros name = "" is_method = "1">
+
+    <macros name="assert" is_method="1">
         Default assert, that is enabled in debug mode.
-        <c_implementation>
-            #define .(c_class_assert_macros) (X) .(c_class_assert_macros_assert) (X)
-        </c_implementation>
+
+        <implementation lang="c">
+            #define .(c_class_assert_macros_assert) (X) .(c_class_assert_macros_internal) (X)
+        </implementation>
     </macros>
 
-    <macros name = "safe" is_method = "1">
+
+    <macros name="safe" is_method="1">
         Heavy assert, that is enabled in a special (safe) cases.
-        <c_implementation>
-            #define .(c_class_assert_macros_safe) (X) .(c_class_assert_macros_assert) (X)
-        </c_implementation>
+
+        <implementation lang="c">
+            #define .(c_class_assert_macros_safe) (X) .(c_class_assert_macros_internal) (X)
+        </implementation>
     </macros>
 
-    <macros name = "static" is_method = "1">
+
+    <macros name="static" is_method="1">
         Asserts during compilation. Has no runtime impact.
-        <c_implementation>
+
+        <implementation lang="c">
             #define .(c_class_assert_macros_static) (X) (void) sizeof(char[(X) ? 1 : -1])
-        </c_implementation>
+        </implementation>
     </macros>
-</module>
+
+    <macros name="ptr" is_method="1">
+        Assert that given pointer is not NULL. It is enabled in debug mode.
+
+        <implementation lang="c">
+            #define .(c_class_assert_macros_ptr) (X)
+                do {
+                    if (!(X)) {
+                        .(c_class_assert_method_trigger) (#X" != NULL", __FILE__, __LINE__);
+                    }
+                } while (false)
+        </implementation>
+    </macros>
+ </module>

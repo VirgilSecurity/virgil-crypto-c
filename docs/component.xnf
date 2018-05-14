@@ -36,10 +36,30 @@
 -->
 
 
-<entity name="uid" abstract="1">
-    <attr name="uid">
-        Unique component identifier represents name that uniquely identifies
-        component within modules hierarchy.
+ <entity name="lineage">
+    Keep hierarchical information about parents.
+    Lower component is a child relative to the upper component.
+
+    <allow entity="ancestor" occurs="1+"/>
+</entity>
+
+
+<entity name="ancestor">
+    Handles information about component ancestor.
+
+    <attr name="id" required="1">
+        Ancestor component name
+    </attr>
+
+    <attr name="name" required="1">
+        Ancestor name
+    </attr>
+</entity>
+
+
+<entity name="c_prefix" abstract="1">
+    <attr name="c_prefix">
+        Prefix that is used for C name resolution.
     </attr>
 </entity>
 
@@ -47,24 +67,20 @@
 <entity name="component" abstract="1">
     Groups common attributes for the component.
 
-    <inherit entity="scope"/>
     <inherit entity="uid"/>
-    <inherit entity="class"/>
+    <inherit entity="of_class"/>
+    <inherit entity="c_prefix"/>
 </entity>
 
 
-<entity name="type" abstract="1">
+<entity name="instance" abstract="1">
     Defines attributes that related to the instance type.
 
-    <attr name="type" required="1">
-        Defines type of the instance, argument, struct property, object.
+    <attr name="type">
+        Defines instance primitive type.
 
         <restrict value="nothing">
             The same as a C void type.
-        </restrict>
-
-        <restrict value="any">
-            Value of any can be passed.
         </restrict>
 
         <restrict value="boolean">
@@ -76,63 +92,196 @@
         </restrict>
 
         <restrict value="size">
-            Unsigned integral type for size difinition.
+            Unsigned integral type for size definition.
         </restrict>
 
         <restrict value="byte">
             Unsigned 8-bit integral type.
         </restrict>
 
-        <restrict value="string">
-            Self contained string.
-            In the C context it is represented as a null-terminated string.
-        </restrict>
-
         <restrict value="data">
             Shortcut for the byte array.
         </restrict>
 
-        <restrict value="buffer">
-            Special type that refers to the class "buffer".
-        </restrict>
-
-        <restrict value="impl">
-            Special type that refers to the universal implementation type.
+        <restrict value="string">
+            Shortcut for the char array.
         </restrict>
     </attr>
 
-    <attr name="is_array" default="0">
-        Defines whether given type is an array.
+    <attr name="class">
+        Defines instance class.
+
+        Possible values are:
+            * any    - Any class or type.
+            * buffer - Special class "buffer" that is used as an output byte array.
+            * impl   - Universal implementation class.
+
+        If value differs from the listed above then next algorithm applied:
+            1. If value in a format .(uid), then it treated as a reference to
+               the in-project class and will be substituted during context
+               resolution step.
+            2. Any other value will be used as-is. So one third party type
+               can be used.
+    </attr>
+
+    <attr name="enum">
+        Defines enumeration type.
+
+        1. If value in a format .(uid), then it treated as a reference to
+           the in-project enumeration and will be substituted during context
+           resolution step.
+        2. Any other value will be used as-is. So one third party type
+           can be used.
+    </attr>
+
+    <attr name="callback">
+        Defines instance as a callback.
+
+        1. If value in a format .(uid), then it treated as a reference to
+           the in-project callback and will be substituted during context
+           resolution step.
+        2. Any other value will be used as-is. So one third party type
+           can be used.
+    </attr>
+
+    <attr name="size">
+        Define size of the primitive type or enum in bytes.
+
+        <restrict value="1">
+            Size of the type is one byte.
+        </restrict>
+
+        <restrict value="2">
+            Size of the type is two bytes.
+        </restrict>
+
+        <restrict value="4">
+            Size of the type is three bytes.
+        </restrict>
+
+        <restrict value="8">
+            Size of the type is four bytes.
+        </restrict>
+    </attr>
+
+    <attr name="is_reference" required="1">
+        Defines whether instance is a 'reference' instance.
+        For 'type'     - default is '0'.
+        For 'enum'     - default is '0'.
+        For 'callback' - default is '0'.
+        For 'class'    - default is '1'.
 
         <restrict value="0">
-            Regular type.
+            Instance is not a refernce.
         </restrict>
 
         <restrict value="1">
-            Array type.
+            Instance is a reference to the other instance.
         </restrict>
     </attr>
 
-    <attr name="io">
-        Defines type purposes.
+    <inherit entity="access"/>
 
-        <restrict value="in">
-            Value of the given type is readonly.
+    <allow entity="string" occurs="0/1"/>
+    <allow entity="array" occurs="0/1"/>
+</entity>
+
+
+<entity name="access">
+    <attr name="access">
+        Defines access rights to the instance and/or array of instances.
+
+        <restrict value="readonly">
+            Value of the given type is can be modified.
         </restrict>
 
-        <restrict value="out">
-            Value of the given type is always re-written.
+        <restrict value="writeonly">
+            Value of the given type will be modified.
         </restrict>
 
-        <restrict value="inout">
-            Value of the given type can be read and then be re-written.
+        <restrict value="readwrite">
+            Value of the given type can be read and then modified.
         </restrict>
 
-        <restrict value="release">
-            Ownership of the given value is transferred to someone else, so
-            client can not use this value anymore.
+        <restrict value="disown">
+            Ownership of the given class object is transferred.
+
+            If object is passed via argument to method, then client can not
+            use object after method return.
+
+            If object is returned from method, then client is responsible for
+            object destruction.
+
+            Note, primitive type can not be disowned.
         </restrict>
     </attr>
+</entity>
+
+
+<entity name="string">
+    Defines restrictions to the special class 'string'.
+
+    <attr name="length" default="null_terminated">
+        Defines string length.
+
+        <restrict value="null_terminated">
+            String length is defined by distance from the first character
+            up to the termination symbol (aka '\0').
+        </restrict>
+
+        <restrict value="given">
+            String length is given from the client.
+        </restrict>
+
+       <restrict value="fixed">
+            String length is known at compile time, so it can be substituted
+            automatically.
+        </restrict>
+
+        <restrict value="derived">
+            String length can be statically derived during string initialization.
+        </restrict>
+    </attr>
+
+    <inherit entity="access"/>
+</entity>
+
+
+<entity name="array">
+    Turn parent instance to the array of instances.
+
+    <attr name="length">
+        Defines array length.
+
+        <restrict value="null_terminated">
+            Array length is defined by distance from the first element
+            up to the empty element (aka NULL).
+        </restrict>
+
+        <restrict value="given">
+            Array length is defined from the client.
+        </restrict>
+
+        <restrict value="known">
+            Array length is defined from the client.
+            Also client can obtained this value from a constant or a method.
+        </restrict>
+
+        <restrict value="fixed">
+            Array length is known at compile time, so it can be substituted
+            automatically.
+        </restrict>
+
+        <restrict value="derived">
+            Array length can be statically derived during array initialization.
+        </restrict>
+    </attr>
+
+    <attr name="length_constant">
+        For fixed size array it defines number of elements as integral constant.
+    </attr>
+
+    <inherit entity="access"/>
 </entity>
 
 
@@ -147,8 +296,25 @@
 </entity>
 
 
-<entity name="object">
-    Defines global object.
+<entity name="constant">
+    Defines integral constant.
+
+    <attr name="name" required="1">
+        Constant name.
+    </attr>
+
+    <attr name="value">
+        Constant value.
+        Optional for enumerated constant.
+    </attr>
+
+    <inherit entity="component"/>
+    <inherit entity="definition"/>
+</entity>
+
+
+<entity name="variable">
+    Defines global variable.
 
     <attr name="name" required="1">
         Object name.
@@ -156,10 +322,33 @@
 
     <inherit entity="component"/>
     <inherit entity="visibility"/>
-    <inherit entity="type"/>
-    <allow entity="c_type"/>
+    <inherit entity="declaration"/>
+    <inherit entity="definition"/>
+    <inherit entity="instance"/>
+
+    <!-- Bracer initializer is used for multiple variable_value's -->
+    <allow entity="value" occurs="1+" />
 </entity>
 
+
+<entity name="value">
+    Initialization variable value.
+
+    <attr name="value" required="1">
+        Initialization value.
+    </attr>
+
+    <inherit entity="instance"/>
+
+    <allow entity="cast" occurs="0/1"/>
+</entity>
+
+
+<entity name="cast">
+    Cast parent instance type to the type defined in this entity.
+
+    <inherit entity="instance"/>
+</entity>
 
 <entity name="enum">
     Defines enumeration type.
@@ -170,23 +359,11 @@
 
     <inherit entity="component"/>
     <inherit entity="visibility"/>
+    <inherit entity="declaration"/>
+    <inherit entity="definition"/>
 
-    <allow entity="enum_value" occurs="0+"/>
+    <allow entity="constant" occurs="0+"/>
 </entity>
-
-
-<entity name="enum_value">
-    Defines enumeration value.
-
-    <attr name="name" required="1">
-        Enumeration value name.
-    </attr>
-
-    <attr name="value">
-        Enumeration value constant.
-    </attr>
-</entity>
-
 
 <entity name="struct">
     Defines struct type.
@@ -197,57 +374,76 @@
 
     <inherit entity="component"/>
     <inherit entity="visibility"/>
+    <inherit entity="declaration"/>
+    <inherit entity="definition"/>
 
-    <allow entity="struct_property"/>
+    <allow entity="property"/>
 </entity>
 
 
-<entity name="struct_property">
+<entity name="property">
     Defines struct property.
 
     <attr name="name" required="1">
         Property name.
     </attr>
 
-    <attr name="is_callback">
-        Defines if property defines a callback.
-
-        <restrict value="0">
-            Field.
-        </restrict>
-
-        <restrict value="1">
-            Callback.
-        </restrict>
+    <attr name="bits">
+        Define number of bits occupied by the property with integral type.
     </attr>
 
+    <inherit entity="instance"/>
     <inherit entity="uid"/>
-    <inherit entity="type"/>
-
-    <allow entity="argument"/>
-    <allow entity="return"/>
-    <allow entity="c_type"/>
 </entity>
 
 
 <entity name="method">
-    Defines the method signature and optionally implementaiton.
+    Defines the method signature and optionally implementation.
+
+    <attr name="name" required="1">
+        Method name.
+    </attr>
+
+    <attr name="context" default="none">
+        Context meta information about method's first argument.
+
+        <restrict value="none">
+            Method takes only data arguments (no context).
+        </restrict>
+
+        <restrict value="api">
+            Method takes interface object as a first argument.
+        </restrict>
+
+        <restrict value="impl">
+            Method takes implementation object as a first argument.
+        </restrict>
+    </attr>
+
+    <inherit entity="component"/>
+    <inherit entity="visibility"/>
+    <inherit entity="declaration"/>
+    <inherit entity="definition"/>
+
+    <allow entity="return" occurs="0/1"/>
+    <allow entity="argument" occurs="0+"/>
+    <allow entity="variable" occurs="0+"/>
+    <allow entity="implementation" occurs="0/1"/>
+</entity>
+
+
+<entity name="callback">
+    Defines the callback signature.
 
     <attr name="name" required="1">
         Method name.
     </attr>
 
     <inherit entity="component"/>
-    <inherit entity="visibility"/>
+    <inherit entity="declaration"/>
 
     <allow entity="return" occurs="0/1"/>
     <allow entity="argument" occurs="0+"/>
-    <allow entity="c_implementation" occurs="0/1"/>
-</entity>
-
-
-<entity name="callback">
-    <inherit entity="method"/>
 </entity>
 
 
@@ -258,15 +454,48 @@
         Argument name.
     </attr>
 
-    <inherit entity="type"/>
+    <inherit entity="instance"/>
     <inherit entity="uid"/>
-    <allow entity="c_type"/>
 </entity>
 
 
 <entity name="return">
     Defines return type.
 
-    <inherit entity="type"/>
-    <allow entity="c_type"/>
+    <inherit entity="instance"/>
+</entity>
+
+
+<entity name="macros">
+    Defines the macros name and optionally implementation.
+
+    <attr name="name" required="1">
+        Macros name.
+    </attr>
+
+    <attr name="is_method" default="0">
+        Defines whether macros if it can accept argument(s).
+
+        <restrict value="0">
+            Macros is a constant.
+        </restrict>
+
+        <restrict value="1">
+            Macros is a method.
+        </restrict>
+    </attr>
+
+    <inherit entity="component"/>
+    <inherit entity="definition"/>
+
+    <allow entity="implementation" occurs="0/1"/>
+</entity>
+
+<entity name="macroses">
+    Group a set of macroses with common implemenatation.
+
+    <inherit entity="definition"/>
+
+    <allow entity="macros" occurs="1+"/>
+    <allow entity="implementation" occurs="1"/>
 </entity>

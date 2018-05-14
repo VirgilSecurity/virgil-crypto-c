@@ -38,17 +38,44 @@
 <entity name="scope" abstract="1">
 
     <attr name="scope" default="public">
-        Defines component visibility.
+        Defines component visibility within scope.
+        This attribute must not be inherited.
+        Note, scope attribute can be used for components, that can not
+        be defined in terms of 'declaration' and 'definition'.
 
         <restrict value="public">
             Component is visible for outside world.
         </restrict>
 
         <restrict value="private">
+            Component is visible for outside world via private interface.
+        </restrict>
+
+        <restrict value="internal">
             Component is visible only within library or a specific source file.
         </restrict>
     </attr>
+</entity>
 
+
+<entity name="declaration" abstract="1">
+
+    <attr name="declaration" default="public">
+        Defines where component will be declared.
+        This attribute must not be inherited.
+
+        <restrict value="public">
+            Component declaration is visible for outside world.
+        </restrict>
+
+        <restrict value="private">
+            Component declaration is hidden in a correspond source file.
+        </restrict>
+
+        <restrict value="external">
+            Component declaration is located somewhere.
+        </restrict>
+    </attr>
 </entity>
 
 
@@ -56,6 +83,7 @@
 
     <attr name="definition" default="private">
         Defines where component will be defined.
+        This attribute must not be inherited.
 
         <restrict value="public">
             Component definition is visible for outside world.
@@ -69,7 +97,6 @@
             Component definition is located somewhere.
         </restrict>
     </attr>
-
 </entity>
 
 
@@ -77,6 +104,7 @@
 
     <attr name="visibility" default="public">
         Defines symbol binary visibility.
+        This attribute must not be inherited.
 
         <restrict value="public">
             Symbols of the types and methods are visible in a binary file.
@@ -86,15 +114,70 @@
             Symbols of the types and methods are hidden in a binary file.
         </restrict>
     </attr>
-
 </entity>
 
 
-<entity name="class">
+<entity name="of_class">
 
-    <attr name="class">
-        Short class name that is implmeneted in this module.
+    <attr name="of_class">
+        Defines class name that a component belongs to.
         This attributes is used for inner components name resolution.
     </attr>
+</entity>
 
+
+<entity name="uid" abstract="1">
+    <attr name="uid">
+        Unique component identifier represents name that uniquely identifies
+        component within models hierarchy.
+    </attr>
+</entity>
+
+
+<entity name="lang" abstract="1">
+
+    <attr name="lang" default="c">
+        Defines target language this entity is applied to.
+
+        <restrict value="c">
+            C language.
+        </restrict>
+
+        <restrict value="java">
+            Java language.
+        </restrict>
+
+        <restrict value="csharp">
+            C# language.
+        </restrict>
+    </attr>
+</entity>
+
+
+<entity name="implementation">
+    Contains language specific implementation body.
+    For instance, method implementation body for C language.
+
+    <attr name="body" default="generated">
+        Defines implementation body originator.
+
+        <restrict value="stub">
+            Implementation is just a stub, so method must be implemented by
+            developer.
+        </restrict>
+
+        <restrict value="generated">
+            Implementation is fully generated, so it must no be modified
+            within source code.
+        </restrict>
+
+        <restrict value="handwritten">
+            Implementation was written by developer, so it can be extracted
+            and reused during generation phase. In this way comments and/or
+            entity signature can be changed, but implementation will be
+            untouched.
+        </restrict>
+    </attr>
+
+    <inherit entity="lang"/>
 </entity>

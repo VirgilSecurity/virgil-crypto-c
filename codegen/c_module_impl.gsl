@@ -44,20 +44,21 @@
 gsl from "common.gsl"
 gsl from "meta.gsl"
 
-gsl from "c_resolver.gsl"
 
 # ---------------------------------------------------------------------------
 #   Add opaque declaration for generic 'implementation' type.
 # ---------------------------------------------------------------------------
-function _L24_add_type_self (module, meta)
-    check_argument (my, "module")
-    check_argument (my, "meta")
+function _L24_add_type_self (meta, destination)
+    check_arguments (my, "meta, destination", my)
 
-    new struct to my.module
+    my.names = meta_names (my.meta)
+
+    new struct to my.destination
         . = "Generic type for any 'implementation'."
-        .name = ""
-        .visibility = "public"
-        .scope = "external"
+
+        .name = my.names.module_impl
+        .declaration = "public"
+        .definition = "external"
     endnew
 endfunction
 
@@ -65,9 +66,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add type that enumerates all possible implementations within crypto.
 # ---------------------------------------------------------------------------
-function _L24_add_enum_tag (destination, meta)
-    check_argument (my, "destination")
-    check_argument (my, "meta")
+function _L24_add_enum_tag (meta, destination)
+    check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
 
@@ -75,15 +75,16 @@ function _L24_add_enum_tag (destination, meta)
         . = "Enumerates all possible implementations within crypto library."
 
         .name = my.names.enum_tag
-        .class = my.names.class_impl
+        .of_class = my.names.class_impl
+        .definition = "public"
 
-        new value
-            .name = my.names.enum_value_begin
-            .value = 0
+        new constant
+            .name = my.names.enum_constant_begin
+            .value = "0"
         endnew
 
-        new value
-            .name = my.names.enum_value_end
+        new constant
+            .name = my.names.enum_constant_end
         endnew
     endnew
 endfunction
@@ -91,12 +92,10 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add method that return 'API' with implementation's meta information.
 # ---------------------------------------------------------------------------
-function _L24_add_method_get_api (destination, meta)
-    check_argument (my, "destination")
-    check_argument (my, "meta")
+function _L24_add_method_get_api (meta, destination)
+    check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
 
     new method to my.destination
         . = "\
@@ -108,63 +107,32 @@ function _L24_add_method_get_api (destination, meta)
         .name = my.names.class_api
 
         new return
-            .type = my.refs.class_api_struct
-            .is_object = 1
+            .class = ".(class_api_struct_api)"
         endnew
 
-        c_method_add_argument_impl (method)
+        component_create_argument_impl (method)
 
         new argument
             .name = my.names.argument_api_tag
-            .type = my.refs.class_api_enum_tag
+            .enum = ".(class_api_enum_tag)"
         endnew
 
-        new precondition
-            .binary = "less_then"
-            new uid
-                .name = my.refs.class_api_enum_tag_value_begin
-            endnew
-
-            new argument
-                .name = my.names.argument_api_tag
-            endnew
-        endnew
-
-        new precondition
-            .binary = "less_then"
-            new argument
-                .name = my.names.argument_api_tag
-            endnew
-
-            new uid
-                .name = my.refs.class_api_enum_tag_value_end
-            endnew
-        endnew
-
-        new c_implementation
+        new implementation
             . = "\
-            $(c_ref ("class_assert_macros")) \
-                    ($(my.refs.c_argument_impl)->$(my.refs.c_property_info));
+            .(c_class_assert_macros_ptr) (impl);
+            .(c_class_assert_macros_ptr) (impl->info);
 
-            if ($(my.refs.c_argument_impl)-> \
-                    $(my.refs.c_property_info)-> \
-                    $(my.refs.c_property_api_array) == NULL) {
+            if (impl->info->api_array == NULL) {
                 return NULL;
             }
 
-            for (const $(my.refs.c_class_api_struct) * const *$(my.refs.c_property_api_array) = \
-                    $(my.refs.c_argument_impl)-> \
-                    $(my.refs.c_property_info)-> \
-                    $(my.refs.c_property_api_array); \
-                    *$(my.refs.c_property_api_array) != NULL; \
-                    ++$(my.refs.c_property_api_array)) { \
+            for (const .(c_class_api_struct_api) *const * api_array = \
+                    impl->info->api_array; \ *api_array != NULL; ++api_array) {
 
-                const $(my.refs.c_class_api_struct)* $(my.names.class_api:c) = \
-                        *$(my.refs.c_property_api_array);
+                const .(c_class_api_struct_api)* api = *api_array;
 
-                if ($(my.names.class_api:c)->$(my.refs.c_property_api_tag) == \
-                        $(my.refs.c_argument_api_tag))
-                    return  $(my.names.class_api:c);
+                if (api->api_tag == api_tag) {
+                    return api;
                 }
             }
 
@@ -177,12 +145,10 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add method that return unique 'Implementation TAG'.
 # ---------------------------------------------------------------------------
-function _L24_add_method_get_tag (destination, meta)
-    check_argument (my, "destination")
-    check_argument (my, "meta")
+function _L24_add_method_get_tag (meta, destination)
+    check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
 
     new method to my.destination
         . = "\Return unique 'Implementation TAG'."
@@ -190,22 +156,17 @@ function _L24_add_method_get_tag (destination, meta)
         .name = my.names.enum_tag
 
         new return
-            .type = my.refs.class_impl_enum_tag
+            .enum = ".(class_impl_enum_tag)"
         endnew
 
-        c_method_add_argument_impl (method)
+        component_create_argument_impl (method)
 
-        new precondition
-            .unary = "not_null_obj"
-            new uid
-                .name = "$(my.refs.argument_impl)->$(my.refs.property_info)"
-            endnew
-        endnew
-
-        new c_implementation
+        new implementation
             . = "
-            return $(my.refs.c_argument_impl)->\
-                    $(my.refs.c_property_info)->$(my.refs.c_property_impl_tag);
+            .(c_class_assert_macros_ptr) (impl);
+            .(c_class_assert_macros_ptr) (impl->info);
+
+            return impl->info->impl_tag;
             "
         endnew
     endnew
@@ -214,46 +175,38 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add function that proxy 'cleanup' action to the implementation object.
 # ---------------------------------------------------------------------------
-function _L24_add_method_cleanup (destination, meta)
-    check_argument (my, "destination")
-    check_argument (my, "meta")
+function _L24_add_method_cleanup (meta, destination)
+    check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
 
     new method to my.destination
         . = "$(my.names.method_cleanup:Neat) implementation object and it's dependencies."
 
         .name = my.names.method_cleanup
 
-        c_method_add_argument_impl (method)
+        component_create_argument_impl (method)
 
-        new c_implementation
+        new implementation
             . = "\
-            $(c_ref ("class_assert_macros")) \
-                    ($(my.refs.c_argument_impl)->$(my.refs.c_property_info));
-            $(c_ref ("class_assert_macros")) \
-                    ($(my.refs.c_argument_impl)-> \
-                    $(my.refs.c_property_info)-> \
-                    $(my.refs.c_property_self_cleanup_cb));
+            .(c_class_assert_macros_ptr) (impl);
+            .(c_class_assert_macros_ptr) (impl->info);
+            .(c_class_assert_macros_ptr) (impl->info->self_cleanup_cb);
 
-            $(my.refs.c_argument_impl)-> \
-                    $(my.refs.c_property_info)-> \
-                    $(my.refs.c_property_self_cleanup_cb) ($(my.refs.c_argument_impl));
+            impl->info->self_cleanup_cb (impl);
             "
         endnew
     endnew
+
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Add function that proxy 'destroy' action to the implementation object.
 # ---------------------------------------------------------------------------
-function _L24_add_method_destroy (destination, meta)
-    check_argument (my, "destination")
-    check_argument (my, "meta")
+function _L24_add_method_destroy (meta, destination)
+    check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
 
     new method to my.destination
         . = "
@@ -263,31 +216,66 @@ function _L24_add_method_destroy (destination, meta)
 
         .name = my.names.method_destroy
 
-        c_method_add_argument_impl (method)
+        component_create_argument_impl_ref (method)
 
-        new c_implementation
+        new implementation
             . = "\
-            $(c_ref ("class_assert_macros")) \
-                    ($(my.refs.c_argument_impl)->$(my.refs.c_property_info));
-            $(c_ref ("class_assert_macros")) \
-                    ($(my.refs.c_argument_impl)-> \
-                    $(my.refs.c_property_info)-> \
-                    $(my.refs.c_property_self_destroy_cb));
+            .(c_class_assert_macros_ptr) (impl_ref);
 
-            $(my.refs.c_argument_impl)-> \
-                    $(my.refs.c_property_info)-> \
-                    $(my.refs.c_property_self_destroy_cb) ($(my.refs.c_argument_impl));
+            \.(c_class_impl_struct_impl)* impl = *impl_ref;
+            *impl_ref = NULL;
+
+            if (impl) {
+                .(c_class_assert_macros_ptr) (impl->info);
+                .(c_class_assert_macros_ptr) (impl->info->self_destroy_cb);
+                impl->info->self_destroy_cb (&impl);
+            }
             "
         endnew
     endnew
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Define callback 'cleanup'
+# ---------------------------------------------------------------------------
+function _L24_add_callback_cleanup (meta, destination)
+    check_arguments (my, "meta, destination", my)
+
+    my.names = meta_names (my.meta)
+
+    new callback to my.destination
+        . = "Callback type for $(my.names.method_cleanup) action."
+
+        .name = my.names.method_cleanup
+
+        component_create_argument_impl (callback)
+    endnew
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Define callback 'destroy'
+# ---------------------------------------------------------------------------
+function _L24_add_callback_destroy (meta, destination)
+    check_arguments (my, "meta, destination", my)
+
+    my.names = meta_names (my.meta)
+
+    new callback to my.destination
+        . = "Callback type for $(my.names.method_destroy) action."
+
+        .name = my.names.method_destroy
+
+        component_create_argument_impl_ref (callback)
+    endnew
+
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create module with functionality common for all 'implementation' objects.
 # ---------------------------------------------------------------------------
-function c_module_impl_create (destination, meta)
-    check_argument (my, "destination")
-    check_argument (my, "meta")
+function c_module_impl_create (meta, destination)
+    check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
 
@@ -312,32 +300,39 @@ function c_module_impl_create (destination, meta)
             .scope = "private"
         endnew
 
-        _L24_add_type_self (module, my.meta)
-        _L24_add_enum_tag (module, my.meta)
-        _L24_add_method_get_api (module, my.meta)
-        _L24_add_method_get_tag (module, my.meta)
-        _L24_add_method_cleanup (module, my.meta)
-        _L24_add_method_destroy (module, my.meta)
+        new require
+            .module = my.names.module_impl_private
+            .scope = "private"
+        endnew
 
-        for module.method
-            c_method_add_preconditions (method)
-        endfor
+        new require
+            .module = my.names.module_assert
+            .scope = "private"
+        endnew
+
+        _L24_add_type_self (my.meta, module)
+        _L24_add_enum_tag (my.meta, module)
+        _L24_add_method_get_api (my.meta, module)
+        _L24_add_method_get_tag (my.meta, module)
+        _L24_add_method_cleanup (my.meta, module)
+        _L24_add_method_destroy (my.meta, module)
+        _L24_add_callback_cleanup (my.meta, module)
+        _L24_add_callback_destroy (my.meta, module)
     endnew
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return enumeration type for implementations within given destination.
+#   Return enumeration type for implementations within given source.
 # ---------------------------------------------------------------------------
-function c_module_impl_find_enum_tag (destination, meta)
-    check_argument (my, "destination")
-    check_argument (my, "meta")
+function c_module_impl_find_enum_tag (source, meta)
+    check_arguments (my, "source, meta", my)
 
     my.names = meta_names (my.meta)
 
-    my.module = my.destination->module (name = my.names.module_impl) ?
+    my.module = my.source->module (name = my.names.module_impl) ?
     if ! defined (my.module)
         echo_fatal ("Module '$(my.names.module_impl:)' \
-                is not found within given destination.", my)
+                is not found within given source.", my)
     endif
 
     my.enum = my.module->enum (name = my.names.enum_tag) ?

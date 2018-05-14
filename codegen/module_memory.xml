@@ -1,0 +1,149 @@
+<module name="memory" of_class="global">
+    Provides configurable memory management model.
+
+    <require module="library" scope="public"/>
+    <require module="assert" scope="private"/>
+
+
+    <macros name="alloc default" is_method="1">
+        Compile-time configuration of the default alloc function.
+
+        <implementation>
+            #ifndef .(c_global_macros_alloc_default)
+            #   define  .(c_global_macros_alloc_default) (size) calloc (1, (size))
+            #endif
+        </implementation>
+    </macros>
+
+
+    <macros name="dealloc default" is_method="1">
+        Compile-time configuration of the default dealloc function.
+
+        <implementation>
+            #ifndef .(c_global_macros_dealloc_default)
+            #   define  .(c_global_macros_dealloc_default) (mem) free ((mem))
+            #endif
+        </implementation>
+    </macros>
+
+
+    <variable name="inner alloc"
+              callback=".(global_callback_alloc)"
+              of_class="memory"
+              declaration="private"
+              definition="private">
+
+        Current allocation function.
+
+        <value value=".(c_global_method_default_alloc)"/>
+    </variable>
+
+
+    <variable name="inner dealloc"
+              callback=".(global_callback_dealloc)"
+              of_class="memory"
+              declaration="private"
+              definition="private">
+
+        Current de-allocation function.
+
+        <value value=".(c_global_method_default_dealloc)"/>
+    </variable>
+
+
+    <method name="default alloc" declaration="private" definition="private" visibility="private">
+        Default allocation function, that is configured during compilation.
+
+        <argument name="size" type="size"/>
+
+        <return class="any" access="disown"/>
+
+        <implementation>
+            return .(c_global_macros_alloc_default) (.(_argument_size));
+        </implementation>
+    </method>
+
+
+    <method name="default dealloc" declaration="private" definition="private" visibility="private">
+        Default de-allocation function, that is configured during compilation.
+
+        <argument name="mem" class="any" access="writeonly"/>
+
+        <implementation>
+            .(c_global_macros_dealloc_default) (.(_argument_mem));
+        </implementation>
+    </method>
+
+
+    <method name="alloc">
+        Allocate required amount of memory by usging current allocation function.
+        Returns NULL if memory allocation fails.
+
+        <argument name="size" type="size"/>
+
+        <return class="any"/>
+
+        <implementation>
+            return .(c_class_memory_variable_inner_alloc) (.(_argument_size));
+        </implementation>
+    </method>
+
+
+    <method name="dealloc">
+        Deallocate given memory by usging current de-allocation function.
+
+        <argument name="mem" class="any" access="writeonly"/>
+
+        <implementation>
+            .(c_class_memory_variable_inner_dealloc) (.(_argument_mem));
+        </implementation>
+    </method>
+
+
+    <method name="set_allocators">
+        Change current used memory functions in the runtime.
+
+        <argument name="alloc" callback=".(global_callback_alloc)"/>
+        <argument name="dealloc" callback=".(global_callback_dealloc)"/>
+
+        <implementation>
+            .(c_class_assert_macros_ptr) (.(_argument_alloc));
+            .(c_class_assert_macros_ptr) (.(_argument_dealloc));
+
+            .(c_class_memory_variable_inner_alloc) = .(_argument_alloc);
+            .(c_class_memory_variable_inner_dealloc) = .(_argument_dealloc);
+        </implementation>
+    </method>
+
+
+    <method name="zeroize">
+        Zeroize memory.
+        Note, this function can be reduced by compiler during optimization step.
+        For sensitive data erasing use .(c_global_method_erase) ().
+
+        <argument name="mem" class="any" access="writeonly"/>
+        <argument name="size" type="size"/>
+
+        <implementation>
+            .(c_class_assert_macros_ptr) (.(_argument_mem));
+            memset (.(_argument_mem), 0, .(_argument_size));
+        </implementation>
+    </method>
+
+
+    <method name="erase">
+        Zeroize memory in a secure manner.
+        Compiler can not reduce this function during optimization step.
+
+        <argument name="mem" class="any" access="writeonly"/>
+        <argument name="size" type="size"/>
+
+        <implementation>
+            .(c_class_assert_macros_ptr) (.(_argument_mem));
+
+            volatile uint8_t* p = (uint8_t*).(_argument_mem);
+            while (.(_argument_size)--) { *p++ = 0; }
+        </implementation>
+    </method>
+
+</module>

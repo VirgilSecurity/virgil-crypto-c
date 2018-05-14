@@ -1,0 +1,44 @@
+<implementor name = "mbedtls" is_default = "1">
+    Provide implementation based on the library ARM mbedTLS.
+
+    <require library = "mbedTLS" />
+
+    <implementation name = "sha256">
+        This is MbedTLS implementation of SHA256.
+
+        <require_include name = "mbedtls/sha256.h" type = "context" />
+
+        <interface name = "hash info">
+            <constant name = "digest size" value = "32" />
+        </interface>
+
+        <interface name = "hash">
+        </interface>
+
+        <interface name = "hash stream">
+            <context name = "hash ctx" class = "mbedtls_sha256_context" access = "readwrite" is_reference="0"/>
+        </interface>
+
+    </implementation>
+<!--
+    <implementation name = "asn1_wr">
+        This is MbedTLS implementation of ASN.1 writer.
+
+        <c_include file = "mbedtls/asn1.h" is_system = "1" scope = "private" />
+        <c_include file = "mbedtls/asn1write.h" is_system = "1" scope = "private" />
+
+
+        <interface name = "asn1_writer" />
+
+    </implementation>
+
+    <implementation name = "asn1_rd">
+        This is MbedTLS implementation of ASN.1 reader.
+
+        <c_include file = "mbedtls/asn1.h" is_system = "1" scope = "private" />
+
+        <interface name = "asn1_reader" />
+
+    </implementation>
+-->
+</implementor>

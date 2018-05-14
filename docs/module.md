@@ -1,5 +1,5 @@
 Module groups high level logical components within one phisical
-component.                                                     
+component.
 
 Summary of language
 ===================
@@ -8,36 +8,54 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <module name [uid] [scope] [class]>
+    <module name [of_class] [uid] [scope] [c_prefix]>
        <require module [scope]/>
-       <enum [visibility] [class] [uid] [scope] [name]>
-          <enum_value name [value]/>
+       <constant name [c_prefix] [of_class] [uid] [definition] [value]/>
+       <enum [definition] [declaration] [visibility] [c_prefix] [of_class] [uid] [name]>
+          <constant .../>
        </enum>
-       <object type name [io] [visibility] [class] [uid] [scope] [is_array]>
-          <c_type base [is_callback] [kind] [array] [is_const_type] [is_const_pointer] [is_const_array]
-               [is_const_reference]/>
-       </object>
-       <struct name [class] [uid] [scope] [visibility]>
-          <struct_property type name [io] [uid] [is_array] [is_callback]>
-             <argument name type [is_array] [io] [uid]>
-                <c_type .../>
-             </argument>
-             <return type [is_array] [io]>
-                <c_type .../>
-             </return>
-             <c_type .../>
-          </struct_property>
+       <variable is_reference name [type] [enum] [callback] [size] [access] [definition] [declaration]
+            [visibility] [c_prefix] [of_class] [uid] [class]>
+          <value is_reference value [class] [enum] [callback] [size] [access] [type]>
+             <cast is_reference [access] [class] [enum] [callback] [size] [type]>
+                <string [access] [length]/>
+                <array [access] [length] [length_constant]/>
+             </cast>
+             <string .../>
+             <array .../>
+          </value>
+          <string .../>
+          <array .../>
+       </variable>
+       <struct name [definition] [visibility] [c_prefix] [of_class] [uid] [declaration]>
+          <property is_reference name [type] [class] [enum] [callback] [size] [uid] [access] [bits]>
+             <string .../>
+             <array .../>
+          </property>
        </struct>
-       <callback name [class] [uid] [scope] [visibility]>
-          <return .../>
-          <argument .../>
-          <c_implementation/>
+       <callback name [c_prefix] [of_class] [uid] [declaration]>
+          <return is_reference [access] [class] [enum] [callback] [size] [type]>
+             <string .../>
+             <array .../>
+          </return>
+          <argument is_reference name [type] [class] [enum] [callback] [size] [uid] [access]>
+             <string .../>
+             <array .../>
+          </argument>
        </callback>
-       <method name [class] [uid] [scope] [visibility]>
+       <method name [declaration] [visibility] [c_prefix] [of_class] [uid] [definition] [context]>
           <return .../>
           <argument .../>
-          <c_implementation .../>
+          <variable .../>
+          <implementation [lang] [body]/>
        </method>
+       <macros name [c_prefix] [of_class] [uid] [definition] [is_method]>
+          <implementation .../>
+       </macros>
+       <macroses [definition]>
+          <macros .../>
+          <implementation .../>
+       </macroses>
     </module>
 
 Detailed specifications
@@ -51,45 +69,56 @@ detailed more than once here.
 The 'module' item
 -----------------
 
-Groups common attributes for the component. Module groups high level      
-logical components within one phisical component. Phisical component is a 
-source file, plus header file for C/C++. Logical component is             
-representation of a constant, type, enumeration, method, etc. Module      
+Groups common attributes for the component. Module groups high level
+logical components within one phisical component. Phisical component is a
+source file, plus header file for C/C++. Logical component is
+representation of a constant, type, enumeration, method, etc. Module
 represents C components in a language agnostic way. This makes possible to
-generate wrappers for high level languakes like C#, Java, Python, etc.    
+generate wrappers for high level languakes like C#, Java, Python, etc.
 
     <module
         name = "..."
+      [ of_class = "..." ]
       [ uid = "..." ]
-      [ scope = "public | private"  ("public") ]
-      [ class = "..." ]
+      [ scope = "public | private | internal"  ("public") ]
+      [ c_prefix = "..." ]
         >
         <require>
+        <constant>
         <enum>
-        <object>
+        <variable>
         <struct>
         <callback>
         <method>
+        <macros>
+        <macroses>
     </module>
 
 The module item can have these attributes:
 
-class:
-    Short class name that is implmeneted in this module. This attributes is
-    used for inner components name resolution. The class attribute is      
-    optional.                                                              
+c_prefix:
+    Prefix that is used for C name resolution. The c_prefix attribute is
+    optional.
+
+of_class:
+    Defines class name that a component belongs to. This attributes is used
+    for inner components name resolution. The of_class attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
+    component within models hierarchy. The uid attribute is optional.
 
 scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
+    Defines component visibility within scope. This attribute must not be
+    inherited. Note, scope attribute can be used for components, that can not
+    be defined in terms of 'declaration' and 'definition'. The scope
+    attribute is optional. Its default value is "public". It can take one of
+    the following values:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Short module name. The name attribute is required.
@@ -102,22 +131,72 @@ Defines module that current module depends on.
 
     <require
         module = "..."
-      [ scope = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
         />
 
 The require item can have these attributes:
 
 scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
+    Defines component visibility within scope. This attribute must not be
+    inherited. Note, scope attribute can be used for components, that can not
+    be defined in terms of 'declaration' and 'definition'. The scope
+    attribute is optional. Its default value is "public". It can take one of
+    the following values:
 
 Value: Meaning:
 public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 module:
     Module name that current module depends on. The module attribute is
-    required.                                                          
+    required.
+
+
+The 'constant' item
+-------------------
+
+Groups common attributes for the component. Defines integral constant.
+
+    <constant
+        name = "..."
+      [ c_prefix = "..." ]
+      [ of_class = "..." ]
+      [ uid = "..." ]
+      [ definition = "public | private | external"  ("private") ]
+      [ value = "..." ]
+        />
+
+The constant item can have these attributes:
+
+definition:
+    Defines where component will be defined. This attribute must not be
+    inherited. The definition attribute is optional. Its default value is
+    "private". It can take one of the following values:
+
+Value: Meaning:
+public: Component definition is visible for outside world.
+private: Component definition is hidden in a correspond source file.
+external: Component definition is located somewhere.
+
+c_prefix:
+    Prefix that is used for C name resolution. The c_prefix attribute is
+    optional.
+
+of_class:
+    Defines class name that a component belongs to. This attributes is used
+    for inner components name resolution. The of_class attribute is optional.
+
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.
+
+name:
+    Constant name. The name attribute is required.
+
+value:
+    Constant value. Optional for enumerated constant. The value attribute is
+    optional.
 
 
 The 'enum' item
@@ -126,209 +205,449 @@ The 'enum' item
 Groups common attributes for the component. Defines enumeration type.
 
     <enum
+      [ definition = "public | private | external"  ("private") ]
+      [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
-      [ class = "..." ]
+      [ c_prefix = "..." ]
+      [ of_class = "..." ]
       [ uid = "..." ]
-      [ scope = "public | private"  ("public") ]
       [ name = "..." ]
         >
-        <enum_value>
+        <constant>
     </enum>
 
 The enum item can have these attributes:
 
+definition:
+    Defines where component will be defined. This attribute must not be
+    inherited. The definition attribute is optional. Its default value is
+    "private". It can take one of the following values:
+
+Value: Meaning:
+public: Component definition is visible for outside world.
+private: Component definition is hidden in a correspond source file.
+external: Component definition is located somewhere.
+
+declaration:
+    Defines where component will be declared. This attribute must not be
+    inherited. The declaration attribute is optional. Its default value is
+    "public". It can take one of the following values:
+
+Value: Meaning:
+public: Component declaration is visible for outside world.
+private: Component declaration is hidden in a correspond source file.
+external: Component declaration is located somewhere.
+
 visibility:
-    Defines symbol binary visibility. The visibility attribute is optional.
-    Its default value is "public". It can take one of the following values:
+    Defines symbol binary visibility. This attribute must not be inherited.
+    The visibility attribute is optional. Its default value is "public". It
+    can take one of the following values:
 
 Value: Meaning:
 public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
 
-class:
-    Short class name that is implmeneted in this module. This attributes is
-    used for inner components name resolution. The class attribute is      
-    optional.                                                              
+c_prefix:
+    Prefix that is used for C name resolution. The c_prefix attribute is
+    optional.
+
+of_class:
+    Defines class name that a component belongs to. This attributes is used
+    for inner components name resolution. The of_class attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
-
-scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
-
-Value: Meaning:
-public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+    component within models hierarchy. The uid attribute is optional.
 
 name:
     Object name. The name attribute is optional.
 
 
-The 'enum_value' item
----------------------
-
-Defines enumeration value.
-
-    <enum_value
-        name = "..."
-      [ value = "..." ]
-        />
-
-The enum_value item can have these attributes:
-
-name:
-    Enumeration value name. The name attribute is required.
-
-value:
-    Enumeration value constant. The value attribute is optional.
-
-
-The 'object' item
------------------
+The 'variable' item
+-------------------
 
 Defines attributes that related to the instance type. Groups common
-attributes for the component. Defines global object.               
+attributes for the component. Defines global variable.
 
-    <object
-        type = "nothing | any | boolean | integer | size | byte | string | data | buffer | impl"
+    <variable
+        is_reference = "0 | 1"
         name = "..."
-      [ io = "in | out | inout | release" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string" ]
+      [ enum = "..." ]
+      [ callback = "..." ]
+      [ size = "1 | 2 | 4 | 8" ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ definition = "public | private | external"  ("private") ]
+      [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
-      [ class = "..." ]
+      [ c_prefix = "..." ]
+      [ of_class = "..." ]
       [ uid = "..." ]
-      [ scope = "public | private"  ("public") ]
-      [ is_array = "0 | 1"  ("0") ]
+      [ class = "..." ]
         >
-        <c_type>
-    </object>
+        <value>, 1 or more
+        <string>, optional
+        <array>, optional
+    </variable>
 
-The object item can have these attributes:
+The variable item can have these attributes:
+
+access:
+    Defines access rights to the instance and/or array of instances. The
+    access attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+readonly: Value of the given type is can be modified.
+writeonly: Value of the given type will be modified.
+readwrite: Value of the given type can be read and then modified.
+disown: Ownership of the given class object is transferred. If object is passed via argument to method, then client can not use object after method return. If object is returned from method, then client is responsible for object destruction. Note, primitive type can not be disowned.
 
 type:
-    Defines type of the instance, argument, struct property, object. The type
-    attribute is required. It can take one of the following values:          
+    Defines instance primitive type. The type attribute is optional. It can
+    take one of the following values:
 
 Value: Meaning:
 nothing: The same as a C void type.
-any: Value of any can be passed.
 boolean: True / False type.
 integer: Signed integral type.
-size: Unsigned integral type for size difinition.
+size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
-string: Self contained string. In the C context it is represented as a null-terminated string.
 data: Shortcut for the byte array.
-buffer: Special type that refers to the class "buffer".
-impl: Special type that refers to the universal implementation type.
+string: Shortcut for the char array.
 
-is_array:
-    Defines whether given type is an array. The is_array attribute is   
-    optional. Its default value is "0". It can take one of the following
-    values:                                                             
+class:
+    Defines instance class. Possible values are: * any - Any class or type. *
+    buffer - Special class "buffer" that is used as an output byte array. *
+    impl - Universal implementation class. If value differs from the listed
+    above then next algorithm applied: 1. If value in a format .(uid), then
+    it treated as a reference to the in-project class and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The class attribute is optional.
+
+enum:
+    Defines enumeration type. 1. If value in a format .(uid), then it treated
+    as a reference to the in-project enumeration and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The enum attribute is optional.
+
+callback:
+    Defines instance as a callback. 1. If value in a format .(uid), then it
+    treated as a reference to the in-project callback and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The callback attribute is optional.
+
+size:
+    Define size of the primitive type or enum in bytes. The size attribute is
+    optional. It can take one of the following values:
 
 Value: Meaning:
-0: Regular type.
-1: Array type.
+1: Size of the type is one byte.
+2: Size of the type is two bytes.
+4: Size of the type is three bytes.
+8: Size of the type is four bytes.
 
-io:
-    Defines type purposes. The io attribute is optional. It can take one of
-    the following values:                                                  
+is_reference:
+    Defines whether instance is a 'reference' instance. For 'type' - default
+    is '0'. For 'enum' - default is '0'. For 'callback' - default is '0'. For
+    'class' - default is '1'. The is_reference attribute is required. It can
+    take one of the following values:
 
 Value: Meaning:
-in: Value of the given type is readonly.
-out: Value of the given type is always re-written.
-inout: Value of the given type can be read and then be re-written.
-release: Ownership of the given value is transferred to someone else, so client can not use this value anymore.
+0: Instance is not a refernce.
+1: Instance is a reference to the other instance.
+
+definition:
+    Defines where component will be defined. This attribute must not be
+    inherited. The definition attribute is optional. Its default value is
+    "private". It can take one of the following values:
+
+Value: Meaning:
+public: Component definition is visible for outside world.
+private: Component definition is hidden in a correspond source file.
+external: Component definition is located somewhere.
+
+declaration:
+    Defines where component will be declared. This attribute must not be
+    inherited. The declaration attribute is optional. Its default value is
+    "public". It can take one of the following values:
+
+Value: Meaning:
+public: Component declaration is visible for outside world.
+private: Component declaration is hidden in a correspond source file.
+external: Component declaration is located somewhere.
 
 visibility:
-    Defines symbol binary visibility. The visibility attribute is optional.
-    Its default value is "public". It can take one of the following values:
+    Defines symbol binary visibility. This attribute must not be inherited.
+    The visibility attribute is optional. Its default value is "public". It
+    can take one of the following values:
 
 Value: Meaning:
 public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
 
-class:
-    Short class name that is implmeneted in this module. This attributes is
-    used for inner components name resolution. The class attribute is      
-    optional.                                                              
+c_prefix:
+    Prefix that is used for C name resolution. The c_prefix attribute is
+    optional.
+
+of_class:
+    Defines class name that a component belongs to. This attributes is used
+    for inner components name resolution. The of_class attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
-
-scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
-
-Value: Meaning:
-public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+    component within models hierarchy. The uid attribute is optional.
 
 name:
     Object name. The name attribute is required.
 
 
-The 'c_type' item
+The 'value' item
+----------------
+
+Defines attributes that related to the instance type. Initialization
+variable value.
+
+    <value
+        is_reference = "0 | 1"
+        value = "..."
+      [ class = "..." ]
+      [ enum = "..." ]
+      [ callback = "..." ]
+      [ size = "1 | 2 | 4 | 8" ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string" ]
+        >
+        <cast>, optional
+        <string>, optional
+        <array>, optional
+    </value>
+
+The value item can have these attributes:
+
+access:
+    Defines access rights to the instance and/or array of instances. The
+    access attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+readonly: Value of the given type is can be modified.
+writeonly: Value of the given type will be modified.
+readwrite: Value of the given type can be read and then modified.
+disown: Ownership of the given class object is transferred. If object is passed via argument to method, then client can not use object after method return. If object is returned from method, then client is responsible for object destruction. Note, primitive type can not be disowned.
+
+type:
+    Defines instance primitive type. The type attribute is optional. It can
+    take one of the following values:
+
+Value: Meaning:
+nothing: The same as a C void type.
+boolean: True / False type.
+integer: Signed integral type.
+size: Unsigned integral type for size definition.
+byte: Unsigned 8-bit integral type.
+data: Shortcut for the byte array.
+string: Shortcut for the char array.
+
+class:
+    Defines instance class. Possible values are: * any - Any class or type. *
+    buffer - Special class "buffer" that is used as an output byte array. *
+    impl - Universal implementation class. If value differs from the listed
+    above then next algorithm applied: 1. If value in a format .(uid), then
+    it treated as a reference to the in-project class and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The class attribute is optional.
+
+enum:
+    Defines enumeration type. 1. If value in a format .(uid), then it treated
+    as a reference to the in-project enumeration and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The enum attribute is optional.
+
+callback:
+    Defines instance as a callback. 1. If value in a format .(uid), then it
+    treated as a reference to the in-project callback and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The callback attribute is optional.
+
+size:
+    Define size of the primitive type or enum in bytes. The size attribute is
+    optional. It can take one of the following values:
+
+Value: Meaning:
+1: Size of the type is one byte.
+2: Size of the type is two bytes.
+4: Size of the type is three bytes.
+8: Size of the type is four bytes.
+
+is_reference:
+    Defines whether instance is a 'reference' instance. For 'type' - default
+    is '0'. For 'enum' - default is '0'. For 'callback' - default is '0'. For
+    'class' - default is '1'. The is_reference attribute is required. It can
+    take one of the following values:
+
+Value: Meaning:
+0: Instance is not a refernce.
+1: Instance is a reference to the other instance.
+
+value:
+    Initialization value. The value attribute is required.
+
+
+The 'cast' item
+---------------
+
+Defines attributes that related to the instance type. Cast parent instance
+type to the type defined in this entity.
+
+    <cast
+        is_reference = "0 | 1"
+      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ class = "..." ]
+      [ enum = "..." ]
+      [ callback = "..." ]
+      [ size = "1 | 2 | 4 | 8" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string" ]
+        >
+        <string>, optional
+        <array>, optional
+    </cast>
+
+The cast item can have these attributes:
+
+access:
+    Defines access rights to the instance and/or array of instances. The
+    access attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+readonly: Value of the given type is can be modified.
+writeonly: Value of the given type will be modified.
+readwrite: Value of the given type can be read and then modified.
+disown: Ownership of the given class object is transferred. If object is passed via argument to method, then client can not use object after method return. If object is returned from method, then client is responsible for object destruction. Note, primitive type can not be disowned.
+
+type:
+    Defines instance primitive type. The type attribute is optional. It can
+    take one of the following values:
+
+Value: Meaning:
+nothing: The same as a C void type.
+boolean: True / False type.
+integer: Signed integral type.
+size: Unsigned integral type for size definition.
+byte: Unsigned 8-bit integral type.
+data: Shortcut for the byte array.
+string: Shortcut for the char array.
+
+class:
+    Defines instance class. Possible values are: * any - Any class or type. *
+    buffer - Special class "buffer" that is used as an output byte array. *
+    impl - Universal implementation class. If value differs from the listed
+    above then next algorithm applied: 1. If value in a format .(uid), then
+    it treated as a reference to the in-project class and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The class attribute is optional.
+
+enum:
+    Defines enumeration type. 1. If value in a format .(uid), then it treated
+    as a reference to the in-project enumeration and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The enum attribute is optional.
+
+callback:
+    Defines instance as a callback. 1. If value in a format .(uid), then it
+    treated as a reference to the in-project callback and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The callback attribute is optional.
+
+size:
+    Define size of the primitive type or enum in bytes. The size attribute is
+    optional. It can take one of the following values:
+
+Value: Meaning:
+1: Size of the type is one byte.
+2: Size of the type is two bytes.
+4: Size of the type is three bytes.
+8: Size of the type is four bytes.
+
+is_reference:
+    Defines whether instance is a 'reference' instance. For 'type' - default
+    is '0'. For 'enum' - default is '0'. For 'callback' - default is '0'. For
+    'class' - default is '1'. The is_reference attribute is required. It can
+    take one of the following values:
+
+Value: Meaning:
+0: Instance is not a refernce.
+1: Instance is a reference to the other instance.
+
+
+The 'string' item
 -----------------
 
-Defines a type of outer component.
+Defines restrictions to the special class 'string'.
 
-    <c_type
-        base = "..."
-      [ is_callback = "0 | 1"  ("0") ]
-      [ kind = "value | pointer | reference"  ("value") ]
-      [ array = "var | fixed | derived" ]
-      [ is_const_type = "..." ]
-      [ is_const_pointer = "..." ]
-      [ is_const_array = "..." ]
-      [ is_const_reference = "..." ]
+    <string
+      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ length = "null_terminated | given | fixed | derived"  ("null_terminated") ]
         />
 
-The c_type item can have these attributes:
+The string item can have these attributes:
 
-base:
-    Type without any modifiers. The base attribute is required.
-
-is_callback:
-    Mark type as callback. The is_callback attribute is optional. Its default
-    value is "0". It can take one of the following values:                   
+access:
+    Defines access rights to the instance and/or array of instances. The
+    access attribute is optional. It can take one of the following values:
 
 Value: Meaning:
-0: Just a type.
-1: Callback type.
+readonly: Value of the given type is can be modified.
+writeonly: Value of the given type will be modified.
+readwrite: Value of the given type can be read and then modified.
+disown: Ownership of the given class object is transferred. If object is passed via argument to method, then client can not use object after method return. If object is returned from method, then client is responsible for object destruction. Note, primitive type can not be disowned.
 
-kind:
-    Defines a kind of the type. The kind attribute is optional. Its default
-    value is "value". It can take one of the following values:             
-
-Value: Meaning:
-value: Value type, i.e. 'int'
-pointer: Pointer type, i.e. 'int *'
-reference: Pointer to pointer type, i.e. 'int **'
-
-array:
-    The array attribute is optional. It can take one of the following values:
+length:
+    Defines string length. The length attribute is optional. Its default
+    value is "null_terminated". It can take one of the following values:
 
 Value: Meaning:
-var: Null-terminated array, or array with a given size, i.e. 'int *'.
-fixed: Array with a fixed size, i.e. 'int [32]'.
-derived: Array with a derived size, i.e. 'int []'.
+null_terminated: String length is defined by distance from the first character up to the termination symbol (aka '\0').
+given: String length is given from the client.
+fixed: String length is known at compile time, so it can be substituted automatically.
+derived: String length can be statically derived during string initialization.
 
-is_const_type:
-    Defines constness of a type. The is_const_type attribute is optional.
 
-is_const_pointer:
-    Defines constness of a pointer. The is_const_pointer attribute is
-    optional.                                                        
+The 'array' item
+----------------
 
-is_const_array:
-    Defines constness of an array. The is_const_array attribute is optional.
+Turn parent instance to the array of instances.
 
-is_const_reference:
-    Defines constness of a reference. The is_const_reference attribute is
-    optional.                                                            
+    <array
+      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ length = "null_terminated | given | known | fixed | derived" ]
+      [ length_constant = "..." ]
+        />
+
+The array item can have these attributes:
+
+access:
+    Defines access rights to the instance and/or array of instances. The
+    access attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+readonly: Value of the given type is can be modified.
+writeonly: Value of the given type will be modified.
+readwrite: Value of the given type can be read and then modified.
+disown: Ownership of the given class object is transferred. If object is passed via argument to method, then client can not use object after method return. If object is returned from method, then client is responsible for object destruction. Note, primitive type can not be disowned.
+
+length:
+    Defines array length. The length attribute is optional. It can take one
+    of the following values:
+
+Value: Meaning:
+null_terminated: Array length is defined by distance from the first element up to the empty element (aka NULL).
+given: Array length is defined from the client.
+known: Array length is defined from the client. Also client can obtained this value from a constant or a method.
+fixed: Array length is known at compile time, so it can be substituted automatically.
+derived: Array length can be statically derived during array initialization.
+
+length_constant:
+    For fixed size array it defines number of elements as integral constant.
+    The length_constant attribute is optional.
 
 
 The 'struct' item
@@ -338,176 +657,205 @@ Groups common attributes for the component. Defines struct type.
 
     <struct
         name = "..."
-      [ class = "..." ]
-      [ uid = "..." ]
-      [ scope = "public | private"  ("public") ]
+      [ definition = "public | private | external"  ("private") ]
       [ visibility = "public | private"  ("public") ]
+      [ c_prefix = "..." ]
+      [ of_class = "..." ]
+      [ uid = "..." ]
+      [ declaration = "public | private | external"  ("public") ]
         >
-        <struct_property>
+        <property>
     </struct>
 
 The struct item can have these attributes:
 
+definition:
+    Defines where component will be defined. This attribute must not be
+    inherited. The definition attribute is optional. Its default value is
+    "private". It can take one of the following values:
+
+Value: Meaning:
+public: Component definition is visible for outside world.
+private: Component definition is hidden in a correspond source file.
+external: Component definition is located somewhere.
+
+declaration:
+    Defines where component will be declared. This attribute must not be
+    inherited. The declaration attribute is optional. Its default value is
+    "public". It can take one of the following values:
+
+Value: Meaning:
+public: Component declaration is visible for outside world.
+private: Component declaration is hidden in a correspond source file.
+external: Component declaration is located somewhere.
+
 visibility:
-    Defines symbol binary visibility. The visibility attribute is optional.
-    Its default value is "public". It can take one of the following values:
+    Defines symbol binary visibility. This attribute must not be inherited.
+    The visibility attribute is optional. Its default value is "public". It
+    can take one of the following values:
 
 Value: Meaning:
 public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
 
-class:
-    Short class name that is implmeneted in this module. This attributes is
-    used for inner components name resolution. The class attribute is      
-    optional.                                                              
+c_prefix:
+    Prefix that is used for C name resolution. The c_prefix attribute is
+    optional.
+
+of_class:
+    Defines class name that a component belongs to. This attributes is used
+    for inner components name resolution. The of_class attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
-
-scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
-
-Value: Meaning:
-public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+    component within models hierarchy. The uid attribute is optional.
 
 name:
     Structure name. The name attribute is required.
 
 
-The 'struct_property' item
---------------------------
+The 'property' item
+-------------------
 
 Defines attributes that related to the instance type. Defines struct
-property.                                                           
+property.
 
-    <struct_property
-        type = "nothing | any | boolean | integer | size | byte | string | data | buffer | impl"
+    <property
+        is_reference = "0 | 1"
         name = "..."
-      [ io = "in | out | inout | release" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string" ]
+      [ class = "..." ]
+      [ enum = "..." ]
+      [ callback = "..." ]
+      [ size = "1 | 2 | 4 | 8" ]
       [ uid = "..." ]
-      [ is_array = "0 | 1"  ("0") ]
-      [ is_callback = "0 | 1" ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ bits = "..." ]
         >
-        <argument>
-        <return>
-        <c_type>
-    </struct_property>
+        <string>, optional
+        <array>, optional
+    </property>
 
-The struct_property item can have these attributes:
-
-type:
-    Defines type of the instance, argument, struct property, object. The type
-    attribute is required. It can take one of the following values:          
-
-Value: Meaning:
-nothing: The same as a C void type.
-any: Value of any can be passed.
-boolean: True / False type.
-integer: Signed integral type.
-size: Unsigned integral type for size difinition.
-byte: Unsigned 8-bit integral type.
-string: Self contained string. In the C context it is represented as a null-terminated string.
-data: Shortcut for the byte array.
-buffer: Special type that refers to the class "buffer".
-impl: Special type that refers to the universal implementation type.
-
-is_array:
-    Defines whether given type is an array. The is_array attribute is   
-    optional. Its default value is "0". It can take one of the following
-    values:                                                             
-
-Value: Meaning:
-0: Regular type.
-1: Array type.
-
-io:
-    Defines type purposes. The io attribute is optional. It can take one of
-    the following values:                                                  
-
-Value: Meaning:
-in: Value of the given type is readonly.
-out: Value of the given type is always re-written.
-inout: Value of the given type can be read and then be re-written.
-release: Ownership of the given value is transferred to someone else, so client can not use this value anymore.
+The property item can have these attributes:
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
+    component within models hierarchy. The uid attribute is optional.
+
+access:
+    Defines access rights to the instance and/or array of instances. The
+    access attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+readonly: Value of the given type is can be modified.
+writeonly: Value of the given type will be modified.
+readwrite: Value of the given type can be read and then modified.
+disown: Ownership of the given class object is transferred. If object is passed via argument to method, then client can not use object after method return. If object is returned from method, then client is responsible for object destruction. Note, primitive type can not be disowned.
+
+type:
+    Defines instance primitive type. The type attribute is optional. It can
+    take one of the following values:
+
+Value: Meaning:
+nothing: The same as a C void type.
+boolean: True / False type.
+integer: Signed integral type.
+size: Unsigned integral type for size definition.
+byte: Unsigned 8-bit integral type.
+data: Shortcut for the byte array.
+string: Shortcut for the char array.
+
+class:
+    Defines instance class. Possible values are: * any - Any class or type. *
+    buffer - Special class "buffer" that is used as an output byte array. *
+    impl - Universal implementation class. If value differs from the listed
+    above then next algorithm applied: 1. If value in a format .(uid), then
+    it treated as a reference to the in-project class and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The class attribute is optional.
+
+enum:
+    Defines enumeration type. 1. If value in a format .(uid), then it treated
+    as a reference to the in-project enumeration and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The enum attribute is optional.
+
+callback:
+    Defines instance as a callback. 1. If value in a format .(uid), then it
+    treated as a reference to the in-project callback and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The callback attribute is optional.
+
+size:
+    Define size of the primitive type or enum in bytes. The size attribute is
+    optional. It can take one of the following values:
+
+Value: Meaning:
+1: Size of the type is one byte.
+2: Size of the type is two bytes.
+4: Size of the type is three bytes.
+8: Size of the type is four bytes.
+
+is_reference:
+    Defines whether instance is a 'reference' instance. For 'type' - default
+    is '0'. For 'enum' - default is '0'. For 'callback' - default is '0'. For
+    'class' - default is '1'. The is_reference attribute is required. It can
+    take one of the following values:
+
+Value: Meaning:
+0: Instance is not a refernce.
+1: Instance is a reference to the other instance.
 
 name:
     Property name. The name attribute is required.
 
-is_callback:
-    Defines if property defines a callback. The is_callback attribute is
-    optional. It can take one of the following values:                  
-
-Value: Meaning:
-0: Field.
-1: Callback.
+bits:
+    Define number of bits occupied by the property with integral type. The
+    bits attribute is optional.
 
 
-The 'argument' item
+The 'callback' item
 -------------------
 
-Defines attributes that related to the instance type. Defines argument as
-name, type, and usage information.                                       
+Groups common attributes for the component. Defines the callback signature.
 
-    <argument
+    <callback
         name = "..."
-        type = "nothing | any | boolean | integer | size | byte | string | data | buffer | impl"
-      [ is_array = "0 | 1"  ("0") ]
-      [ io = "in | out | inout | release" ]
+      [ c_prefix = "..." ]
+      [ of_class = "..." ]
       [ uid = "..." ]
+      [ declaration = "public | private | external"  ("public") ]
         >
-        <c_type>
-    </argument>
+        <return>, optional
+        <argument>
+    </callback>
 
-The argument item can have these attributes:
+The callback item can have these attributes:
+
+declaration:
+    Defines where component will be declared. This attribute must not be
+    inherited. The declaration attribute is optional. Its default value is
+    "public". It can take one of the following values:
+
+Value: Meaning:
+public: Component declaration is visible for outside world.
+private: Component declaration is hidden in a correspond source file.
+external: Component declaration is located somewhere.
+
+c_prefix:
+    Prefix that is used for C name resolution. The c_prefix attribute is
+    optional.
+
+of_class:
+    Defines class name that a component belongs to. This attributes is used
+    for inner components name resolution. The of_class attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
-
-type:
-    Defines type of the instance, argument, struct property, object. The type
-    attribute is required. It can take one of the following values:          
-
-Value: Meaning:
-nothing: The same as a C void type.
-any: Value of any can be passed.
-boolean: True / False type.
-integer: Signed integral type.
-size: Unsigned integral type for size difinition.
-byte: Unsigned 8-bit integral type.
-string: Self contained string. In the C context it is represented as a null-terminated string.
-data: Shortcut for the byte array.
-buffer: Special type that refers to the class "buffer".
-impl: Special type that refers to the universal implementation type.
-
-is_array:
-    Defines whether given type is an array. The is_array attribute is   
-    optional. Its default value is "0". It can take one of the following
-    values:                                                             
-
-Value: Meaning:
-0: Regular type.
-1: Array type.
-
-io:
-    Defines type purposes. The io attribute is optional. It can take one of
-    the following values:                                                  
-
-Value: Meaning:
-in: Value of the given type is readonly.
-out: Value of the given type is always re-written.
-inout: Value of the given type can be read and then be re-written.
-release: Ownership of the given value is transferred to someone else, so client can not use this value anymore.
+    component within models hierarchy. The uid attribute is optional.
 
 name:
-    Argument name. The name attribute is required.
+    Method name. The name attribute is required.
 
 
 The 'return' item
@@ -516,154 +864,368 @@ The 'return' item
 Defines attributes that related to the instance type. Defines return type.
 
     <return
-        type = "nothing | any | boolean | integer | size | byte | string | data | buffer | impl"
-      [ is_array = "0 | 1"  ("0") ]
-      [ io = "in | out | inout | release" ]
+        is_reference = "0 | 1"
+      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ class = "..." ]
+      [ enum = "..." ]
+      [ callback = "..." ]
+      [ size = "1 | 2 | 4 | 8" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string" ]
         >
-        <c_type>
+        <string>, optional
+        <array>, optional
     </return>
 
 The return item can have these attributes:
 
+access:
+    Defines access rights to the instance and/or array of instances. The
+    access attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+readonly: Value of the given type is can be modified.
+writeonly: Value of the given type will be modified.
+readwrite: Value of the given type can be read and then modified.
+disown: Ownership of the given class object is transferred. If object is passed via argument to method, then client can not use object after method return. If object is returned from method, then client is responsible for object destruction. Note, primitive type can not be disowned.
+
 type:
-    Defines type of the instance, argument, struct property, object. The type
-    attribute is required. It can take one of the following values:          
+    Defines instance primitive type. The type attribute is optional. It can
+    take one of the following values:
 
 Value: Meaning:
 nothing: The same as a C void type.
-any: Value of any can be passed.
 boolean: True / False type.
 integer: Signed integral type.
-size: Unsigned integral type for size difinition.
+size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
-string: Self contained string. In the C context it is represented as a null-terminated string.
 data: Shortcut for the byte array.
-buffer: Special type that refers to the class "buffer".
-impl: Special type that refers to the universal implementation type.
-
-is_array:
-    Defines whether given type is an array. The is_array attribute is   
-    optional. Its default value is "0". It can take one of the following
-    values:                                                             
-
-Value: Meaning:
-0: Regular type.
-1: Array type.
-
-io:
-    Defines type purposes. The io attribute is optional. It can take one of
-    the following values:                                                  
-
-Value: Meaning:
-in: Value of the given type is readonly.
-out: Value of the given type is always re-written.
-inout: Value of the given type can be read and then be re-written.
-release: Ownership of the given value is transferred to someone else, so client can not use this value anymore.
-
-
-The 'callback' item
--------------------
-
-Groups common attributes for the component. Defines the method signature
-and optionally implementaiton.                                          
-
-    <callback
-        name = "..."
-      [ class = "..." ]
-      [ uid = "..." ]
-      [ scope = "public | private"  ("public") ]
-      [ visibility = "public | private"  ("public") ]
-        >
-        <return>, optional
-        <argument>
-        <c_implementation>, optional
-    </callback>
-
-The callback item can have these attributes:
-
-visibility:
-    Defines symbol binary visibility. The visibility attribute is optional.
-    Its default value is "public". It can take one of the following values:
-
-Value: Meaning:
-public: Symbols of the types and methods are visible in a binary file.
-private: Symbols of the types and methods are hidden in a binary file.
+string: Shortcut for the char array.
 
 class:
-    Short class name that is implmeneted in this module. This attributes is
-    used for inner components name resolution. The class attribute is      
-    optional.                                                              
+    Defines instance class. Possible values are: * any - Any class or type. *
+    buffer - Special class "buffer" that is used as an output byte array. *
+    impl - Universal implementation class. If value differs from the listed
+    above then next algorithm applied: 1. If value in a format .(uid), then
+    it treated as a reference to the in-project class and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The class attribute is optional.
+
+enum:
+    Defines enumeration type. 1. If value in a format .(uid), then it treated
+    as a reference to the in-project enumeration and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The enum attribute is optional.
+
+callback:
+    Defines instance as a callback. 1. If value in a format .(uid), then it
+    treated as a reference to the in-project callback and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The callback attribute is optional.
+
+size:
+    Define size of the primitive type or enum in bytes. The size attribute is
+    optional. It can take one of the following values:
+
+Value: Meaning:
+1: Size of the type is one byte.
+2: Size of the type is two bytes.
+4: Size of the type is three bytes.
+8: Size of the type is four bytes.
+
+is_reference:
+    Defines whether instance is a 'reference' instance. For 'type' - default
+    is '0'. For 'enum' - default is '0'. For 'callback' - default is '0'. For
+    'class' - default is '1'. The is_reference attribute is required. It can
+    take one of the following values:
+
+Value: Meaning:
+0: Instance is not a refernce.
+1: Instance is a reference to the other instance.
+
+
+The 'argument' item
+-------------------
+
+Defines attributes that related to the instance type. Defines argument as
+name, type, and usage information.
+
+    <argument
+        is_reference = "0 | 1"
+        name = "..."
+      [ type = "nothing | boolean | integer | size | byte | data | string" ]
+      [ class = "..." ]
+      [ enum = "..." ]
+      [ callback = "..." ]
+      [ size = "1 | 2 | 4 | 8" ]
+      [ uid = "..." ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
+        >
+        <string>, optional
+        <array>, optional
+    </argument>
+
+The argument item can have these attributes:
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
+    component within models hierarchy. The uid attribute is optional.
 
-scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
+access:
+    Defines access rights to the instance and/or array of instances. The
+    access attribute is optional. It can take one of the following values:
 
 Value: Meaning:
-public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+readonly: Value of the given type is can be modified.
+writeonly: Value of the given type will be modified.
+readwrite: Value of the given type can be read and then modified.
+disown: Ownership of the given class object is transferred. If object is passed via argument to method, then client can not use object after method return. If object is returned from method, then client is responsible for object destruction. Note, primitive type can not be disowned.
+
+type:
+    Defines instance primitive type. The type attribute is optional. It can
+    take one of the following values:
+
+Value: Meaning:
+nothing: The same as a C void type.
+boolean: True / False type.
+integer: Signed integral type.
+size: Unsigned integral type for size definition.
+byte: Unsigned 8-bit integral type.
+data: Shortcut for the byte array.
+string: Shortcut for the char array.
+
+class:
+    Defines instance class. Possible values are: * any - Any class or type. *
+    buffer - Special class "buffer" that is used as an output byte array. *
+    impl - Universal implementation class. If value differs from the listed
+    above then next algorithm applied: 1. If value in a format .(uid), then
+    it treated as a reference to the in-project class and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The class attribute is optional.
+
+enum:
+    Defines enumeration type. 1. If value in a format .(uid), then it treated
+    as a reference to the in-project enumeration and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The enum attribute is optional.
+
+callback:
+    Defines instance as a callback. 1. If value in a format .(uid), then it
+    treated as a reference to the in-project callback and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The callback attribute is optional.
+
+size:
+    Define size of the primitive type or enum in bytes. The size attribute is
+    optional. It can take one of the following values:
+
+Value: Meaning:
+1: Size of the type is one byte.
+2: Size of the type is two bytes.
+4: Size of the type is three bytes.
+8: Size of the type is four bytes.
+
+is_reference:
+    Defines whether instance is a 'reference' instance. For 'type' - default
+    is '0'. For 'enum' - default is '0'. For 'callback' - default is '0'. For
+    'class' - default is '1'. The is_reference attribute is required. It can
+    take one of the following values:
+
+Value: Meaning:
+0: Instance is not a refernce.
+1: Instance is a reference to the other instance.
 
 name:
-    Method name. The name attribute is required.
-
-
-The 'c_implementation' item
----------------------------
-
-Defines method or macros implementation.
-
-    <c_implementation>
-
+    Argument name. The name attribute is required.
 
 
 The 'method' item
 -----------------
 
 Groups common attributes for the component. Defines the method signature
-and optionally implementaiton.                                          
+and optionally implementation.
 
     <method
         name = "..."
-      [ class = "..." ]
-      [ uid = "..." ]
-      [ scope = "public | private"  ("public") ]
+      [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
+      [ c_prefix = "..." ]
+      [ of_class = "..." ]
+      [ uid = "..." ]
+      [ definition = "public | private | external"  ("private") ]
+      [ context = "none | api | impl"  ("none") ]
         >
         <return>, optional
         <argument>
-        <c_implementation>, optional
+        <variable>
+        <implementation>, optional
     </method>
 
 The method item can have these attributes:
 
+definition:
+    Defines where component will be defined. This attribute must not be
+    inherited. The definition attribute is optional. Its default value is
+    "private". It can take one of the following values:
+
+Value: Meaning:
+public: Component definition is visible for outside world.
+private: Component definition is hidden in a correspond source file.
+external: Component definition is located somewhere.
+
+declaration:
+    Defines where component will be declared. This attribute must not be
+    inherited. The declaration attribute is optional. Its default value is
+    "public". It can take one of the following values:
+
+Value: Meaning:
+public: Component declaration is visible for outside world.
+private: Component declaration is hidden in a correspond source file.
+external: Component declaration is located somewhere.
+
 visibility:
-    Defines symbol binary visibility. The visibility attribute is optional.
-    Its default value is "public". It can take one of the following values:
+    Defines symbol binary visibility. This attribute must not be inherited.
+    The visibility attribute is optional. Its default value is "public". It
+    can take one of the following values:
 
 Value: Meaning:
 public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
 
-class:
-    Short class name that is implmeneted in this module. This attributes is
-    used for inner components name resolution. The class attribute is      
-    optional.                                                              
+c_prefix:
+    Prefix that is used for C name resolution. The c_prefix attribute is
+    optional.
+
+of_class:
+    Defines class name that a component belongs to. This attributes is used
+    for inner components name resolution. The of_class attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
-    component within modules hierarchy. The uid attribute is optional.  
-
-scope:
-    Defines component visibility. The scope attribute is optional. Its 
-    default value is "public". It can take one of the following values:
-
-Value: Meaning:
-public: Component is visible for outside world.
-private: Component is visible only within library or a specific source file.
+    component within models hierarchy. The uid attribute is optional.
 
 name:
     Method name. The name attribute is required.
+
+context:
+    Context meta information about method's first argument. The context
+    attribute is optional. Its default value is "none". It can take one of
+    the following values:
+
+Value: Meaning:
+none: Method takes only data arguments (no context).
+api: Method takes interface object as a first argument.
+impl: Method takes implementation object as a first argument.
+
+
+The 'implementation' item
+-------------------------
+
+Contains language specific implementation body. For instance, method
+implementation body for C language.
+
+    <implementation
+      [ lang = "c | java | csharp"  ("c") ]
+      [ body = "stub | generated | handwritten"  ("generated") ]
+        />
+
+The implementation item can have these attributes:
+
+lang:
+    Defines target language this entity is applied to. The lang attribute is
+    optional. Its default value is "c". It can take one of the following
+    values:
+
+Value: Meaning:
+c: C language.
+java: Java language.
+csharp: C# language.
+
+body:
+    Defines implementation body originator. The body attribute is optional.
+    Its default value is "generated". It can take one of the following
+    values:
+
+Value: Meaning:
+stub: Implementation is just a stub, so method must be implemented by developer.
+generated: Implementation is fully generated, so it must no be modified within source code.
+handwritten: Implementation was written by developer, so it can be extracted and reused during generation phase. In this way comments and/or entity signature can be changed, but implementation will be untouched.
+
+
+The 'macros' item
+-----------------
+
+Groups common attributes for the component. Defines the macros name and
+optionally implementation.
+
+    <macros
+        name = "..."
+      [ c_prefix = "..." ]
+      [ of_class = "..." ]
+      [ uid = "..." ]
+      [ definition = "public | private | external"  ("private") ]
+      [ is_method = "0 | 1"  ("0") ]
+        >
+        <implementation>, optional
+    </macros>
+
+The macros item can have these attributes:
+
+definition:
+    Defines where component will be defined. This attribute must not be
+    inherited. The definition attribute is optional. Its default value is
+    "private". It can take one of the following values:
+
+Value: Meaning:
+public: Component definition is visible for outside world.
+private: Component definition is hidden in a correspond source file.
+external: Component definition is located somewhere.
+
+c_prefix:
+    Prefix that is used for C name resolution. The c_prefix attribute is
+    optional.
+
+of_class:
+    Defines class name that a component belongs to. This attributes is used
+    for inner components name resolution. The of_class attribute is optional.
+
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.
+
+name:
+    Macros name. The name attribute is required.
+
+is_method:
+    Defines whether macros if it can accept argument(s). The is_method
+    attribute is optional. Its default value is "0". It can take one of the
+    following values:
+
+Value: Meaning:
+0: Macros is a constant.
+1: Macros is a method.
+
+
+The 'macroses' item
+-------------------
+
+Group a set of macroses with common implemenatation.
+
+    <macroses
+      [ definition = "public | private | external"  ("private") ]
+        >
+        <macros>, 1 or more
+        <implementation>, required
+    </macroses>
+
+The macroses item has this single attribute:
+
+definition:
+    Defines where component will be defined. This attribute must not be
+    inherited. The definition attribute is optional. Its default value is
+    "private". It can take one of the following values:
+
+Value: Meaning:
+public: Component definition is visible for outside world.
+private: Component definition is hidden in a correspond source file.
+external: Component definition is located somewhere.
 

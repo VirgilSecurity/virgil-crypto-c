@@ -1,0 +1,228 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Generate C header or source file based on the 'common' c_module.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "c_codegen.gsl"
+
+
+# ---------------------------------------------------------------------------
+#   Generate C header.
+# ---------------------------------------------------------------------------
+function c_module_generate_header (c_module)
+    check_argument (my, "c_module")
+
+    echo_info ("Generate header file: $(my.c_module.header_file:)", my)
+
+    read_non_generated_content (my.c_module.header_file, my)
+    output my.c_module.header_file
+
+    #   Start generation.
+    c_insert_header_prologue (my.c_module, my.content_before)
+    c_insert_section_generated_start ()
+
+
+    for my.c_module.c_alias where declaration = "public"
+        newline ()
+        c_insert_alias (c_alias)
+    endfor
+
+    for my.c_module.c_macros where definition = "public"
+        newline ()
+        c_insert_macros (c_macros)
+    endfor
+
+    for my.c_module.c_macroses where definition = "public"
+        newline ()
+        c_insert_macros (c_macroses)
+    endfor
+
+    for my.c_module.c_enum where declaration = "public" & definition = "public"
+        newline ()
+        c_insert_enum (c_enum)
+    endfor
+
+    for my.c_module.c_enum where declaration = "public" & definition <> "public"
+        newline ()
+        c_insert_enum_declaration (c_enum)
+    endfor
+
+    for my.c_module.c_struct where declaration = "public" & definition <> "public"
+        newline ()
+        c_insert_struct_declaration (c_struct)
+    endfor
+
+    for my.c_module.c_callback where declaration = "public"
+        newline ()
+        c_insert_callback (c_callback)
+    endfor
+
+    for my.c_module.c_struct where definition = "public"
+        newline ()
+        c_insert_struct (c_struct)
+    endfor
+
+    for my.c_module.c_variable where declaration = "public"
+        newline ()
+        c_insert_variable_declaration (c_variable)
+    endfor
+
+    for my.c_module.c_method where declaration = "public"
+        newline ()
+        c_insert_method_declaration (c_method)
+    endfor
+
+    c_insert_section_generated_end ()
+    c_insert_header_epilogue (my.c_module, my.content_after)
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate C source.
+# ---------------------------------------------------------------------------
+function c_module_generate_source (c_module)
+    check_argument (my, "c_module")
+
+    echo_info ("Generate source file: $(my.c_module.source_file:)", my)
+
+    read_non_generated_content (my.c_module.source_file, my)
+    output my.c_module.source_file
+
+    c_insert_source_prologue (my.c_module, my.content_before)
+
+    #   Start generation.
+    c_insert_section_generated_start ()
+
+
+    for my.c_module.c_alias where declaration = "private"
+        newline ()
+        c_insert_alias (c_alias)
+    endfor
+
+    for my.c_module.c_macros where definition = "private"
+        newline ()
+        c_insert_macros (c_macros)
+    endfor
+
+    for my.c_module.c_macroses where definition = "private"
+        newline ()
+        c_insert_macros (c_macroses)
+    endfor
+
+    for my.c_module.c_enum where definition = "private"
+        newline ()
+        c_insert_enum (c_enum)
+    endfor
+
+    for my.c_module.c_callback where declaration = "private"
+        newline ()
+        c_insert_callback (c_callback)
+    endfor
+
+    for my.c_module.c_struct where definition = "private"
+        newline ()
+        c_insert_struct (c_struct)
+    endfor
+
+    for my.c_module.c_method where declaration = "private"
+        newline ()
+        c_insert_method_declaration (c_method)
+    endfor
+
+    for my.c_module.c_variable where declaration="private" & definition = "external"
+        newline ()
+        c_insert_variable_declaration (c_variable)
+    endfor
+
+    for my.c_module.c_variable where definition <> "external"
+        newline ()
+        c_insert_variable_definition (c_variable)
+    endfor
+
+    for my.c_module.c_method where definition <> "external" & c_method->c_implementation.body = "generated"
+        newline ()
+        c_insert_method_definition (c_method)
+    endfor
+
+    #   Accomplish generation.
+    c_insert_section_generated_end ()
+
+    if string_defined (my.content_after)
+        my.entities = parse_handwritten_content (my.content_after)
+
+        for my.c_module.c_method where definition <> "external" & c_method->c_implementation.body = "stub"
+            my.handwritten_implementation = my.entities->entity (name = c_method.name) ?
+
+            if defined (my.handwritten_implementation)
+                c_method->c_implementation. = my.handwritten_implementation.body
+                c_method->c_implementation.body = "handwritten"
+            endif
+        endfor
+    endif
+
+    for my.c_module.c_method where definition <> "external" & \
+            string_in (c_method->c_implementation.body, "stub, handwritten")
+
+        newline_if (first ())
+        newline ()
+        c_insert_method_definition (c_method)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate header and source files for each 'c_module' within source.
+# ---------------------------------------------------------------------------
+function c_module_generate_sources (source)
+    check_argument (my, "source")
+
+    for my.source.c_module
+        echo_trace ("Generate files from <$(name (c_module)) name = \"$(c_module.name:)/>\"", my)
+
+        if string_defined (c_module.header_file)
+            c_module_generate_header (c_module)
+        endif
+
+        if string_defined (c_module.source_file)
+            c_module_generate_source (c_module)
+        endif
+    endfor
+endfunction
+
+.endtemplate

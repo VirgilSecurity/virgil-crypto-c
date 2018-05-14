@@ -66,6 +66,34 @@ vsf_buffer_used_size (void *impl) {
     return buffer->used_size;
 }
 
+VSF_PUBLIC void
+vsf_buffer_use_test (void *impl, byte* data, size_t data_size) {
+    vsf_buffer_t *buffer = (vsf_buffer_t *)impl;
+    VSF_ASSERT (buffer);
+    VSF_ASSERT (buffer->data == NULL);
+    VSF_ASSERT (data);
+    VSF_ASSERT (data_size > 0);
+
+    buffer->data = data;
+    buffer->size = data_size;
+    buffer->used_size = 0;
+    buffer->dealloc_fn = NULL;
+}
+
+VSF_PUBLIC void
+vsf_buffer_use_owned_test (void *impl, byte* data, size_t data_size, vsf_dealloc_fn dealloc_fn) {
+    vsf_buffer_t *buffer = (vsf_buffer_t *)impl;
+    VSF_ASSERT (buffer);
+    VSF_ASSERT (buffer->data == NULL);
+    VSF_ASSERT (data);
+    VSF_ASSERT (data_size > 0);
+
+    buffer->data = data;
+    buffer->size = data_size;
+    buffer->used_size = 0;
+    buffer->dealloc_fn = dealloc_fn;
+}
+
 //  Setup new buffer and keep ownership.
 //  Precondition: object has no buffer.
 VSF_PUBLIC void

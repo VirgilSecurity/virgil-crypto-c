@@ -1,0 +1,207 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Create language "C" specific 'c_module' components from the generic
+#   'component' components.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+gsl from "c_component.gsl"
+gsl from "c_formatter.gsl"
+
+
+# ---------------------------------------------------------------------------
+#   Add 'c_license' to destination.
+# ---------------------------------------------------------------------------
+function c_module_add_license (project, destination)
+    check_arguments (my, "project, destination", my)
+
+    new c_license to my.destination
+        . = c_format_comment (my.project->license.)
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'c_caution' to destination.
+# ---------------------------------------------------------------------------
+function c_module_add_caution (module, destination)
+    check_arguments (my, "module, destination", my)
+
+    new c_caution to my.destination
+        . = c_format_comment ("\
+            This file is partially generated.
+            Generated blocks are enclosed between tags [@<tag>, @end].
+            User's code can be added between tags [@end, @<tag>].
+        ")
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'c_include' to destination.
+# ---------------------------------------------------------------------------
+function c_module_add_includes (module, destination)
+    check_arguments (my, "module, destination", my)
+
+    for my.module.c_include as source
+        my.c_include = item_copy_to (source, my.destination)
+        c_component_resolve_include (my.c_include)
+    endfor
+
+    for my.module.require
+        c_component_create_include (require, my.destination)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   For each 'module' component create 'c_module'.
+# ---------------------------------------------------------------------------
+function c_module_create (source, destination, project)
+    check_arguments (my, "source, destination, project", my)
+
+    for my.source.module
+        component_require_attr_name (module, my)
+        component_require_attr_of_class (module, my)
+
+        echo_trace ("Createing <c_module/> from \
+                <$(name (module)) name = \"$(module.name:)/>\"", my)
+
+        new c_module to my.destination
+            .lang = "C"
+            .name = c_format_name (module.c_prefix, module.name)
+            .class = c_format_name (module.class)
+            .scope = module.scope
+
+            c_component_map_attr_uid (c_module, module)
+
+            if module.scope = "public"
+                my.resolved_header_path = my.project.inc_path
+            elsif module.scope = "private"
+                my.resolved_header_path = my.project.inc_private_path
+            else
+                my.resolved_header_path = my.project.src_path
+            endif
+
+            . = c_format_comment (module.) ?
+
+            .c_include_file = 0.name + ".h"
+            .c_source_file = 0.name + ".c"
+            .header_file = my.resolved_header_path + 0.c_include_file
+            .source_file = my.project.src_path + 0.c_source_file
+            .once_guard = c_format_name (0.c_include_file, "included")
+
+            new c_include
+                .file = .c_include_file
+                .is_system = "0"
+                .scope = "private"
+            endnew
+
+            c_module_add_license (my.project, c_module)
+            c_module_add_caution (module, c_module)
+            c_module_add_includes (module, c_module)
+
+            for module.c_alias
+                copy c_alias to c_module
+            endfor
+
+            new c_enum to c_module
+                .= c_format_description ("Public integral constants.")
+                .declaration = "public"
+                .definition = "public"
+
+                for module.constant where definition = "public"
+                    c_component_create_constant (constant, c_enum)
+                else
+                    delete c_enum
+                endfor
+            endnew
+
+            new c_enum to c_module
+                .= c_format_description ("Private integral constants.")
+                .declaration = "private"
+                .definition = "private"
+
+                for module.constant where definition = "private"
+                    c_component_create_constant (constant, c_enum)
+                else
+                    delete c_enum
+                endfor
+            endnew
+
+            for module.macros
+                c_component_create_macros (macros, c_module)
+            endfor
+
+            for module.macroses
+                c_component_create_macroses (macroses, c_module)
+            endfor
+
+            for module.callback
+                c_component_create_callback (callback, c_module)
+            endfor
+
+            for module.enum
+                c_component_create_enum (enum, c_module)
+            endfor
+
+            for module.struct
+                c_component_create_struct (struct, c_module)
+            endfor
+
+            for module.variable
+                c_component_create_variable (variable, c_module)
+            endfor
+
+            for module.method
+                c_component_create_method (method, c_module)
+            endfor
+        endnew
+    else
+        echo_warning ("Source does not contain any <module/> item", my)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Function that resolves undefined properties within 'c_module'.
+# ---------------------------------------------------------------------------
+function c_module_resolve (source)
+    #   Components are created already resolved at this moment,
+    #   but this can be chnged in the future, so keep this function alive.
+endfunction
+
+.endtemplate

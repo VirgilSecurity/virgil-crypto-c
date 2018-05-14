@@ -1,0 +1,90 @@
+<interface name = "asn1_reader">
+    Provides interface to the ASN.1 reader.
+    
+    <method name = "reset">
+        Reset all internal states and prepare to new ASN.1 reading operations.
+
+        <argument name = "item" type = "vsf_buffer" io = "in" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+
+    <method name = "read_int">
+        Read ASN.1 type: INTEGER.
+        
+        <argument name = "val" type = "integer" is_mutable = "1" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+
+    <method name = "read_bool">
+        Read ASN.1 type: BOOLEAN.
+        
+        <argument name = "val" type = "integer" is_mutable = "1" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+    
+    <method name = "read_null">
+        Read ASN.1 type: NULL.
+        
+        <return name = "res" type = "integer" />
+    </method>
+    
+    <method name = "read_octet_str">
+        Read ASN.1 type: OCTET STRING.
+        
+        <argument name = "val" type = "vsf_buffer" is_mutable = "1" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+    
+    <method name = "read_utf8_str">
+        Read ASN.1 type: UTF8String.
+        
+        <argument name = "val" type = "vsf_buffer" io = "out" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+    
+    <method name = "read">
+        Read preformatted ASN.1 structure.
+        
+        <argument name = "val" type = "vsf_buffer" io = "out" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+    
+    <method name = "read_tag">
+        Read ASN.1 type: TAG.
+        
+        <argument name = "val" type = "size" io = "ref" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+    
+    <method name = "read_oid">
+        Read ASN.1 type: OID.
+        
+        <argument name = "val" type = "vsf_buffer" io = "out" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+    
+    <method name = "read_sequence">
+        Read ASN.1 type: SEQUENCE.
+        
+        <argument name = "val" type = "size" io = "out" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+    
+    <method name = "read_set">
+        Read ASN.1 type: SET.
+        
+        <argument name = "val" type = "size" io = "out" />
+        
+        <return name = "res" type = "integer" />
+    </method>
+
+</interface>
