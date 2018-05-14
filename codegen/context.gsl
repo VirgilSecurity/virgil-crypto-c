@@ -1,0 +1,130 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Context resolution
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+
+# ---------------------------------------------------------------------------
+#   Read source file tehn inject variables from the context and store result
+#   to the destination file.
+#   Context defines variables as key-value pairs defined as attributes.
+# ---------------------------------------------------------------------------
+.macro context_inject (context, source_file, destination_file)
+.   check_arguments (my, "context, source_file, destination_file", my)
+.   my.default_gsl_substitute = [gsl].substitute
+.   my.default_gsl_ignorecase = [gsl].ignorecase
+.   [gsl].substitute = ".("
+.   [gsl].ignorecase = "0"
+.   output my.destination_file
+.       scope my.context
+.           gsl from my.source_file
+.       endscope
+.   close
+.   [gsl].substitute = my.default_gsl_substitute
+.   [gsl].ignorecase = my.default_gsl_ignorecase
+.endmacro
+
+# ---------------------------------------------------------------------------
+#   Replace shorten refs, i.e. '.(_argument_impl)' with fully qualified ref.
+# ---------------------------------------------------------------------------
+function context_resolve_refs (context, model, lang, hierarchy_uid)
+    check_arguments (my, "context, model")
+
+    my.lang ?= my.model.lang ?
+
+    my.hierarchy_uid = my.model.uid ? my.hierarchy_uid ?
+
+    if defined (my.model.) & defined (my.hierarchy_uid)
+        while regexp.match ("(\\.\\(_([\\w]+)\\))", my.model., my.shorten_ref, my.shorten_uid)
+            my.full_uid = make_id (my.hierarchy_uid, my.shorten_uid)
+            my.full_ref = my.lang ?? lang_ref (my.full_uid, my.lang) ? ref (my.full_uid)
+            my.model. = string.replace (my.model., "$(my.shorten_ref:)|$(my.full_ref)")
+        endwhile
+    endif
+
+    for my.model. as item where is_item (item)
+        context_resolve_refs (my.context, item, my.lang, my.hierarchy_uid)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Inject context variables to the '<lang>_module'.
+#   Note, this function create temporary files in the work dir.
+# ---------------------------------------------------------------------------
+function context_inject_to_lang_module (context, lang_module, work_dir)
+    check_arguments (my, "lang_module, context, work_dir", my)
+
+    echo_trace ("Inject context to <$(name (my.lang_module)) name=\"$(my.lang_module.name:)\"/>", my)
+
+    my.init_module_file_path = \
+            "$(my.work_dir?:)c_module_$(my.lang_module.name:)_unresolved.xml"
+
+    my.final_module_file_path = \
+            "$(my.work_dir?:)c_module_$(my.lang_module.name:).xml"
+
+
+    item_save_to_file (my.lang_module, my.init_module_file_path)
+
+    context_inject (my.context, my.init_module_file_path, my.final_module_file_path)
+
+    return item_load_from_file (my.final_module_file_path)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Foreach item in the hierarchy extract 'uid' and 'name' to the context.
+# ---------------------------------------------------------------------------
+function context_append_hierarchy (context, item)
+    check_arguments (my, "context, item", my)
+
+    #   Extract uid and name for current item
+    if defined (my.item.uid)
+        assert_attribute (my.item, "name", my)
+
+        my.context.$(my.item.uid) = my.item.name
+    endif
+
+    #   Dive in recursion
+    for my.item. as child_item where is_item (child_item)
+        context_append_hierarchy (my.context, child_item)
+    endfor
+endfunction
+
+.endtemplate

@@ -36,6 +36,120 @@
 -->
 
 
+<entity name="c_instance" abstract="1">
+    Defines a type of outer component.
+
+    <attr name="type" required="1">
+        Type without any modifiers.
+    </attr>
+
+    <attr name="type_is" required="1">
+        Define type kind.
+
+        <restrict value="primitive">
+            Type is primitive.
+        </restrict>
+
+        <restrict value="class">
+            Type is class.
+        </restrict>
+
+        <restrict value="callback">
+            Type is class.
+        </restrict>
+
+        <restrict value="any">
+            Any type.
+        </restrict>
+    </attr>
+
+    <attr name="accessed_by" default="value">
+        Defines how instance is accessed.
+
+        <restrict value="value">
+            Value type, i.e. 'int'
+        </restrict>
+
+        <restrict value="pointer">
+            Pointer type, i.e. 'int *'
+        </restrict>
+
+        <restrict value="reference">
+            Pointer to pointer type, i.e. 'int **'
+        </restrict>
+    </attr>
+
+    <attr name="array">
+        Defines array length type.
+        If given, parent instance becomes an array.
+
+        <restrict value="null_terminated">
+            Null-terminated array.
+        </restrict>
+
+        <restrict value="given">
+            Array with a given length, i.e. 'int *'.
+        </restrict>
+
+        <restrict value="fixed">
+            Array with a fixed length, i.e. 'int [32]'.
+        </restrict>
+
+        <restrict value="derived">
+            Array with a derived length, i.e. 'int []'.
+        </restrict>
+    </attr>
+
+    <attr name="string">
+        Defines string length type.
+        If given, parent instance becomes a string.
+
+        <restrict value="null_terminated">
+            Null-terminated string, 'char *'
+        </restrict>
+
+        <restrict value="given">
+            String whith a given length, i.e. 'char *'.
+        </restrict>
+
+        <restrict value="fixed">
+            String with a Fixed length, i.e. 'char [32]'.
+        </restrict>
+
+        <restrict value="derived">
+            String with a derived length, i.e. 'char []'.
+        </restrict>
+    </attr>
+
+    <attr name="length">
+        Defines length constant for the fixed array or fixed string.
+        Note, this attribute is used where appropriate.
+    </attr>
+
+    <attr name="is_const_type">
+        Defines type constness.
+    </attr>
+
+    <attr name="is_const_pointer">
+        Defines pointer constness.
+        TODO: Define if this attribute is useless.
+    </attr>
+
+    <attr name="is_const_array">
+        Defines array constness.
+    </attr>
+
+    <attr name="is_const_string">
+        Defines string constness.
+    </attr>
+
+    <attr name="is_const_reference">
+        Defines reference constness.
+        TODO: Define if this attribute is useless.
+    </attr>
+</entity>
+
+
 <entity name="c_include">
     <attr name="file" required="1">
         File name to be included.
@@ -65,6 +179,8 @@
     <attr name="type" required="1">
         Alias type.
     </attr>
+
+    <inherit entity="declaration"/>
 </entity>
 
 
@@ -72,54 +188,62 @@
     Defines enumeration type.
 
     <attr name="name">
-        Enumeration name. Can be ommited if it is used to define named constants.
+        Enumeration name. Can be omitted if it is used to define named constants.
     </attr>
 
-    <inherit entity="scope"/>
     <inherit entity="visibility"/>
+    <inherit entity="declaration"/>
+    <inherit entity="definition"/>
+    <inherit entity="uid"/>
 
-    <allow entity = "c_enum_value" occurs = "1+"/>
+    <allow entity = "c_constant" occurs = "1+"/>
 </entity>
 
 
-<entity name="c_enum_value">
-    Define enumeration value.
+<entity name="c_constant">
+    Defines integral constant.
 
-    <attr name="name">
-        Value name.
+    <attr name="name" required="1">
+        Constant name.
     </attr>
 
     <attr name="value">
-        Integral enumeration value.
+        Constant value.
     </attr>
+
+    <inherit entity="definition"/>
+    <inherit entity="uid"/>
 </entity>
 
 
 <entity name="c_struct">
     Define structure type.
 
-    <attr name="name">
+    <attr name="name" required="1">
         Structure name.
     </attr>
 
-    <allow entity = "c_struct_property" occurs = "1+"/>
+    <inherit entity="uid"/>
+    <inherit entity="declaration"/>
+    <inherit entity="definition"/>
+
+    <allow entity = "c_property" occurs = "1+"/>
 </entity>
 
 
-<entity name="c_struct_property">
+<entity name="c_property">
     Define property of the structure type.
 
     <attr name="name" required="1">
         Property name.
     </attr>
 
-    <attr name="formatted">
-        Formatted name and type.
+    <attr name="bits">
+        Define number of bits occupied by the property with integral type.
     </attr>
 
-    <allow entity="c_type" occurs="0/1"/>
-    <allow entity="c_return" occurs="0/1"/>
-    <allow entity="c_argument" occurs="0+"/>
+    <inherit entity="uid"/>
+    <inherit entity="c_instance"/>
 </entity>
 
 
@@ -130,8 +254,10 @@
         Method name.
     </attr>
 
-    <inherit entity="scope"/>
     <inherit entity="visibility"/>
+    <inherit entity="declaration"/>
+    <inherit entity="definition"/>
+    <inherit entity="uid"/>
 
     <allow entity="c_modifier" occurs="0+"/>
     <allow entity="c_return" occurs="0/1"/>
@@ -147,8 +273,8 @@
         Method name.
     </attr>
 
-    <inherit entity="scope"/>
-    <inherit entity="visibility"/>
+    <inherit entity="uid"/>
+    <inherit entity="declaration"/>
 
     <allow entity="c_return" occurs="0/1"/>
     <allow entity="c_argument" occurs="0+"/>
@@ -160,7 +286,7 @@
 
     <attr name="is_method" default="0">
         <restrict value="0">
-            Macros is a constannt.
+            Macros is a constant.
         </restrict>
 
         <restrict value="1">
@@ -168,119 +294,63 @@
         </restrict>
     </attr>
 
-    <inherit entity="scope"/>
+    <inherit entity="uid"/>
+    <inherit entity="definition"/>
 
     <allow entity="c_implementation" occurs="0/1"/>
 </entity>
 
 
-<entity name="c_object">
-    Define global object.
+<entity name="c_macroses">
+    Define set of macroses in the one implemenatation.
+
+    <inherit entity="definition"/>
+
+    <allow entity="c_macros" occurs="1+"/>
+    <allow entity="c_implementation" occurs="0/1"/>
+</entity>
+
+
+<entity name="c_variable">
+    Define global variable.
 
     <attr name="name" required="1">
         Object name.
     </attr>
 
-    <attr name="type" required="1">
-        Object type.
-    </attr>
-
-    <inherit entity="scope"/>
+    <inherit entity="uid"/>
     <inherit entity="visibility"/>
+    <inherit entity="declaration"/>
+    <inherit entity="definition"/>
+    <inherit entity="c_instance"/>
 
-    <allow entity="c_object_value" occurs="1+"/>
+    <allow entity="c_value" occurs="1+"/>
     <allow entity="c_modifier" occurs="0+"/>
 </entity>
 
 
-<entity name="c_object_value">
-    Defines one of the object values.
+<entity name="c_value">
+    Defines specific variable value.
 
     <attr name="value" required="1">
         Specific value.
-        If 'c_type' is given then value will be casted to it.
     </attr>
 
-    <attr name="formatted">
-        Formatted object name and type.
-    </attr>
-
-    <allow entity="c_type" occurs="0/1"/>
-    <allow entity="c_modifier" occurs="0+"/>
+    <allow entity="c_cast" occurs="0/1"/>
 </entity>
 
 
-<entity name="c_type">
-    Defines a type of outer component.
+<entity name="c_cast">
+    Cast parent instance type to the type defined in this entity.
 
-    <attr name="base" required="1">
-        Type without any modifiers.
-    </attr>
-
-    <attr name="is_callback" default="0">
-        Mark type as callback.
-
-        <restrict value="0">
-            Just a type.
-        </restrict>
-
-        <restrict value="1">
-            Callback type.
-        </restrict>
-    </attr>
-
-    <attr name="kind" default="value">
-        Defines a kind of the type.
-
-        <restrict value="value">
-            Value type, i.e. 'int'
-        </restrict>
-
-        <restrict value="pointer">
-            Pointer type, i.e. 'int *'
-        </restrict>
-
-        <restrict value="reference">
-            Pointer to pointer type, i.e. 'int **'
-        </restrict>
-    </attr>
-
-    <attr name="array">
-        <restrict value="var">
-            Null-terminated array, or array with a given size, i.e. 'int *'.
-        </restrict>
-
-        <restrict value="fixed">
-            Array with a fixed size, i.e. 'int [32]'.
-        </restrict>
-
-        <restrict value="derived">
-            Array with a derived size, i.e. 'int []'.
-        </restrict>
-    </attr>
-
-    <attr name="is_const_type">
-        Defines constness of a type.
-    </attr>
-
-    <attr name="is_const_pointer">
-        Defines constness of a pointer.
-    </attr>
-
-    <attr name="is_const_array">
-        Defines constness of an array.
-    </attr>
-
-    <attr name="is_const_reference">
-        Defines constness of a reference.
-    </attr>
-
+    <inherit entity="c_instance"/>
 </entity>
+
 
 <entity name="c_return">
     Defines return type.
 
-    <allow entity="c_type" occurs="1"/>
+    <inherit entity="c_instance"/>
 </entity>
 
 
@@ -291,11 +361,8 @@
         Argument name.
     </attr>
 
-    <attr name="formatted">
-        Formatted argument name and type.
-    </attr>
-
-    <allow entity="c_type" occurs="1"/>
+    <inherit entity="uid"/>
+    <inherit entity="c_instance"/>
 </entity>
 
 
@@ -305,7 +372,7 @@
 
 
 <entity name="c_modifier">
-    Defines object and methods modifiers.
+    Defines variable or methods modifiers, i.e. visibility, static, etc.
 
     <attr name="value">
         Modifier itself.
@@ -318,6 +385,6 @@
     All preconditions are sorted by position ascending.
 
     <attr name="position" default="0">
-        Number that defines precondition position.
+        Position's weight of the precondition.
     </attr>
 </entity>

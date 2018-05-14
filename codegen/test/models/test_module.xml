@@ -1,0 +1,289 @@
+<module name="foo">
+
+    <!-- SPECIAL TYPES -->
+    <struct name="impl" of_class="impl" definition="external"/>
+    <struct name="buffer" of_class="buffer" definition="external"/>
+
+    <!-- TYPE ALIASES -->
+    <c_alias name="byte" type="uint8_t" declaration="public">
+        //  Portable representation of the byte.
+    </c_alias>
+
+    <!-- MACROSES -->
+    <macros name="pi" of_class="global">
+        Macros as a global constant .
+        <implementation lang="c">
+            #define .(c_global_macros_pi) 3.1415
+        </implementation>
+    </macros>
+
+    <macros name="magic constant">
+        Macros as a local constant.
+        <implementation lang="c">
+            #define .(c_class_foo_macros_magic_constant) 777.25
+        </implementation>
+    </macros>
+
+    <macros name="do magic" is_method="1">
+        Macros as a method.
+        <implementation lang="c">
+            #define .(c_class_foo_macros_do_magic) (a) !(~(a))
+        </implementation>
+    </macros>
+
+    <macros name="do multiline" is_method="1">
+        Macros as a multiline method.
+        <implementation lang="c">
+            #define .(c_class_foo_macros_do_multiline) (x)
+                do {
+                    x += 1;
+                    x *= 2;
+                } while (0)
+        </implementation>
+    </macros>
+
+    <macroses of_class="global">
+        Define several macros constants in a one implementation.
+
+        <macros name="static"/>
+        <macros name="public"/>
+        <macros name="private"/>
+        <macros name="publics"/>
+        <macros name="internal build"/>
+        <implementation lang="c">
+            #if defined (__WINDOWS__)
+            #   if defined .(c_global_macros_static)
+            #       define .(c_global_macros_public)
+            #   elif defined .(c_global_macros_internal_build)
+            #       if defined DLL_PUBLIC
+            #           define .(c_global_macros_public) __declspec(dllexport)
+            #       else
+            #           define .(c_global_macros_public)
+            #       endif
+            #   elif defined .(c_global_macros_publics)
+            #       define .(c_global_macros_public) __declspec(dllexport)
+            #   else
+            #       define .(c_global_macros_public) __declspec(dllimport)
+            #   endif
+            #   define .(c_global_macros_private)
+            #else
+            #   if (defined __GNUC__ &amp;&amp; __GNUC__ >= 4) || defined __INTEL_COMPILER
+            #       define .(c_global_macros_public)  __attribute__ ((visibility ("default")))
+            #       define .(c_global_macros_private) __attribute__ ((visibility ("hidden")))
+            #   else
+            #       define .(c_global_macros_public)
+            #       define .(c_global_macros_private)
+            #   endif
+            #endif
+        </implementation>
+    </macroses>
+
+    <!-- CONSTANTS -->
+    <constant name="integral a" value="25">
+        Constant that is defined out of a typed enum.
+    </constant>
+
+    <constant name="integral b" value="111">
+        Constant that is defined out of a typed enum.
+    </constant>
+
+    <constant name="integral c" value="777" definition="private">
+        Constant that is defined out of a typed enum.
+    </constant>
+
+    <!-- ENUMERATIONS -->
+    <enum name="tag" definition="public">
+        Enumeration type with public definition.
+
+        <constant name="simple" value="1">
+            Simple comment.
+        </constant>
+
+        <constant name="complex">
+            Complex comment.
+            Too complex.
+        </constant>
+    </enum>
+
+    <enum name="bag" definition="private">
+        Enumeration type with private definition.
+
+        <constant name="one" value="1"/>
+        <constant name="two"/>
+    </enum>
+
+    <!-- CALLBACKS -->
+    <callback name="destroy">
+        Class self destruction callback type.
+        <argument name="impl" class="impl" access="disown"/>
+    </callback>
+
+    <!-- STRUCTURES -->
+    <struct name="context" definition="public">
+        Structure with a public definition.
+
+        <property name="number" type="integer">
+            Integral type.
+        </property>
+
+        <property name="number 1 byte" type="integer" size="1">
+            Integral type 8 bits.
+        </property>
+
+        <property name="number 2 bytes" type="integer" size="2">
+            Integral type 16 bits.
+        </property>
+
+        <property name="number 4 bytes" type="integer" size="4">
+            Integral type 32 bits.
+        </property>
+
+        <property name="number 8 bytes" type="integer" size="8">
+            Integral type 64 bits.
+        </property>
+
+        <property name="flag without description" type="boolean">
+            <!-- Boolean type. -->
+        </property>
+
+        <property name="bitfield" type="integer" bits="1">
+            Bitfield type.
+        </property>
+
+        <property name="one byte" type="byte">
+            One byte.
+        </property>
+
+        <property name="call me" callback="some_callback_fn">
+            Callback type.
+        </property>
+
+        <property name="some tag" enum="some_enum_type_t">
+            Enumeration type.
+        </property>
+
+        <property name="any" class="any" access="readwrite">
+            Any type is a power of the C language.
+        </property>
+
+        <property name="impl" class="impl" access="readwrite">
+            Special class impl.
+        </property>
+
+        <property name="buffer" class="buffer" access="readwrite">
+            Special class buffer.
+        </property>
+
+        <property name="readwrite str" type="string" access="readwrite">
+            Null-terminated string.
+        </property>
+
+        <property name="readonly str" type="string" access="readonly">
+            Null-terminated readonly string.
+        </property>
+
+        <property name="readonly bytes" type="data">
+            Readonly byte array.
+        </property>
+
+        <property name="readwrite bytes" type="data" access="readwrite">
+            Modifiable byte array.
+        </property>
+
+        <property name="fixed byte array" type="byte" access="readwrite">
+            <array length="fixed" length_constant="32"/>
+            Fixed size array.
+        </property>
+
+        <property name="derived byte array" type="byte" access="readwrite">
+            <array length="derived"/>
+            Derived size array.
+        </property>
+
+        <property name="array of classes" class="impl" access="readwrite">
+            <array length="null_terminated"/>
+            Null-terminated array of classes.
+        </property>
+
+        <property name="fixed array of classes" class="impl" access="readwrite">
+            <array length="fixed" length_constant="32"/>
+            Fixed size array of classes.
+        </property>
+    </struct>
+
+    <struct name="secret" definition="private">
+        Structure with a private definition.
+
+        <property name="any" class="any">
+            Any type is a power of the C language.
+        </property>
+    </struct>
+
+    <!-- VARIABLES -->
+    <variable name="features" type="string" access="readonly">
+        Global variable that conatins derived size array of strings.
+
+        <array length="derived" access="readonly"/>
+        <string access="readonly"/>
+
+        <value value="This is a string 1" type="string"/>
+        <value value="This is a string 2" type="string"/>
+    </variable>
+
+    <variable
+        name="external features"
+        type="string"
+        access="readonly"
+        declaration="private"
+        definition="external">
+
+        Global variable that conatins array of strings.
+        And defined somewhere else.
+
+        <array length="derived" access="readonly"/>
+        <string access="readonly"/>
+
+    </variable>
+
+    <variable name="private api" class="any" access="readonly" declaration="private">
+        Global variable that conatins array of any type.
+
+        <array length="derived" access="readonly"/>
+    </variable>
+
+    <variable name="self api" class="any" access="readonly" declaration="private">
+        Global variable that conatins any class.
+
+        <value value=".(class_foo_variable_private_api)[0]"/>
+    </variable>
+
+    <variable name="foo_context_inst"
+              class=".(class_foo_struct_context)"
+              access="readonly"
+              declaration="private"
+              is_reference="0">
+        Private instantiation if the structure '.(c_class_foo_struct_context)'
+
+        <value value="1" type="integer"/> <!-- Integral type -->
+        <value value="255" type="integer" size="1"/> <!-- Integral type 8 bits. -->
+        <value value="255" type="integer" size="2"/> <!-- Integral type 16 bits. -->
+    </variable>
+
+
+    <!-- METHODS -->
+    <method name="do nothing">
+        Just do nothing.
+
+        <implementation lang="c">
+            //  Boo.
+        </implementation>
+    </method>
+
+    <method name="do public">
+        Public visibility.
+    </method>
+
+    <method name="do private" visibility="private">
+        Private visibility
+    </method>
+ </module>

@@ -42,33 +42,22 @@ set(CMAKE_C_STANDARD 99)
 
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
-set(SOURCE_FILES
-    include/vsf.h
-    include/vsf_assert.h
-    include/vsf_library.h
-    include/vsf_api.h
-    include/vsf_api_info.h
-    include/vsf_buffer.h
-    include/vsf_buffer_api.h
-    include/vsf_hash.h
-    include/vsf_hash_api.h
-    include/vsf_impl.h
-    include/vsf_impl_info.h
-    include/vsf_sha256.h
-    include/vsf_memory.h
-    include/vsf_library.h
-    src/vsf_assert.c
-    src/vsf_buffer.c
-    src/vsf_hash.c
-    src/vsf_impl.c
-    src/vsf_memory.c
-    src/vsf_sha256.c)
+file(GLOB VSF_SRC
+        "src/generated/*.h"
+        "src/generated/*.c"
+        )
 
-add_library(vsf ${SOURCE_FILES})
+file(GLOB VSF_INCLUDE
+        "include/virgil/*.h"
+        )
+
+add_library(vsf ${VSF_SRC} ${VSF_INCLUDE})
 
 target_include_directories (vsf
     PUBLIC
     $<BUILD_INTERFACE:${vsf_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${vsf_SOURCE_DIR}/include/virgil>
+    $<BUILD_INTERFACE:${vsf_SOURCE_DIR}/src/generated>
     $<BUILD_INTERFACE:${vsf_BINARY_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
@@ -86,3 +75,8 @@ target_link_libraries(vsf PUBLIC mbedtls::mbedcrypto)
 
 add_executable(main src/main.c)
 target_link_libraries(main vsf)
+
+include(CTest)
+if(BUILD_TESTING)
+    add_subdirectory (test)
+endif()

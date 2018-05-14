@@ -1,110 +1,110 @@
-<module name = "library" class = "">
+<module name="library" of_class="global">
     This module contains:
         - library version;
         - portable API visibility attributes;
         - common constants;
         - common types;
 
-    <c_include file = "stdint.h" is_system = "1" />
-    <c_include file = "stddef.h" is_system = "1" />
-    <c_include file = "assert.h" is_system = "1" />
-    <c_include file = "string.h" is_system = "1" />
-    <c_include file = "stdlib.h" is_system = "1" />
+    <c_include file="stdint.h" is_system="1" />
+    <c_include file="stddef.h" is_system="1" />
+    <c_include file="assert.h" is_system="1" />
+    <c_include file="string.h" is_system="1" />
+    <c_include file="stdlib.h" is_system="1" />
+    <c_include file="stdbool.h" is_system="1" />
 
-    <section title = "Version.">
-        <macros name = "version major">
-            <c_implementation>
-                #define .(c_global_macros_version_major) .(project_version_major)
-            </c_implementation>
-        </macros>
+    <c_alias name="byte" type="uint8_t" declaration="public">
+        //  Portable representation of the byte.
+    </c_alias>
 
-        <macros name = "version minor">
-            <c_implementation>
-                #define .(c_global_macros_version_minor) .(project_version_minor)
-            </c_implementation>
-        </macros>
+    <macros name="major" of_class="version">
+        <implementation lang="c">
+            #define .(c_class_version_macros_major) .(project_version_major)
+        </implementation>
+    </macros>
 
-        <macros name = "version patch">
-            <c_implementation>
-                #define .(c_global_macros_version_patch) .(project_version_patch)
-            </c_implementation>
-        </macros>
+    <macros name="minor" of_class="version">
+        <implementation lang="c">
+            #define .(c_class_version_macros_minor) .(project_version_minor)
+        </implementation>
+    </macros>
 
-        <macros name = "make version" is_method = "1">
-            <c_implementation>
-                #define .(c_global_macros_make_version) (major, minor, patch)
-                        ((major) * 10000 + (minor) * 100 + (patch))
-            </c_implementation>
-        </macros>
+    <macros name="patch" of_class="version">
+        <implementation lang="c">
+            #define .(c_class_version_macros_patch) .(project_version_patch)
+        </implementation>
+    </macros>
 
-        <macros name = "version" is_multiline = "1">
-            <c_implementation>
-                #define .(c_global_macros_version)
-                        .(c_global_macros_make_version) (
-                                .(c_global_macros_version_major),
-                                .(c_global_macros_version_minor),
-                                .(c_global_macros_version_patch))
-            </c_implementation>
-        </macros>
-    </section>
+    <macros name="make" is_method="1" of_class="version">
+        <implementation lang="c">
+            #define .(c_class_version_macros_make) (major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
+        </implementation>
+    </macros>
 
-    <section title = "Visibility.">
-        <macros>
-            <macros name = "static" />
-            <macros name = "public" />
-            <macros name = "private" />
-            <macros name = "publics" />  <!-- move to appropriate place -->
-            <macros name = "internal build" /> <!-- move to appropriate place -->
-            <c_implementation>
-                //  TDOD: Review with approach: https://gcc.gnu.org/wiki/Visibility
-                #if defined (__WINDOWS__)
-                #   if defined .(c_global_macros_static)
-                #       define .(c_global_macros_public)
-                #   elif defined .(c_global_macros_internal_build)
-                #       if defined DLL_PUBLIC
-                #           define .(c_global_macros_public) __declspec(dllexport)
-                #       else
-                #           define .(c_global_macros_public)
-                #       endif
-                #   elif defined .(c_global_macros_publics)
-                #       define .(c_global_macros_public) __declspec(dllexport)
-                #   else
-                #       define .(c_global_macros_public) __declspec(dllimport)
-                #   endif
-                #   define .(c_global_macros_private)
-                #else
-                #   if (defined __GNUC__ &amp;&amp; __GNUC__ >= 4) || defined __INTEL_COMPILER
-                #       define .(c_global_macros_public)  __attribute__ ((visibility ("default")))
-                #       define .(c_global_macros_private) __attribute__ ((visibility ("hidden")))
-                #   else
-                #       define .(c_global_macros_public)
-                #       define .(c_global_macros_private)
-                #   endif
-                #endif
-            </c_implementation>
-        </macros>
-    </section>
+    <macros name="version" of_class="version">
+        <implementation lang="c">
+            #define .(c_class_version_macros_version)
+                    .(c_class_version_macros_make) (
+                            .(c_class_version_macros_major),
+                            .(c_class_version_macros_minor),
+                            .(c_class_version_macros_patch))
+        </implementation>
+    </macros>
 
-    <enum>
-        System introspection.
-        <value name = "pointer size" value = "sizeof (void *)">
-            Pointer size in bytes.
-        </value>
-    </enum>
+    <macroses>
+        <macros name="static" />
+        <macros name="public" />
+        <macros name="private" />
+        <macros name="publics" />  <!-- move to appropriate place -->
+        <macros name="internal build" /> <!-- move to appropriate place -->
+        <implementation lang="c">
+            //  TDOD: Review with approach: https://gcc.gnu.org/wiki/Visibility
+            #if defined (__WINDOWS__)
+            #   if defined .(c_global_macros_static)
+            #       define .(c_global_macros_public)
+            #   elif defined .(c_global_macros_internal_build)
+            #       if defined DLL_PUBLIC
+            #           define .(c_global_macros_public) __declspec(dllexport)
+            #       else
+            #           define .(c_global_macros_public)
+            #       endif
+            #   elif defined .(c_global_macros_publics)
+            #       define .(c_global_macros_public) __declspec(dllexport)
+            #   else
+            #       define .(c_global_macros_public) __declspec(dllimport)
+            #   endif
+            #   define .(c_global_macros_private)
+            #else
+            #   if (defined __GNUC__ &amp;&amp; __GNUC__ >= 4) || defined __INTEL_COMPILER
+            #       define .(c_global_macros_public)  __attribute__ ((visibility ("default")))
+            #       define .(c_global_macros_private) __attribute__ ((visibility ("hidden")))
+            #   else
+            #       define .(c_global_macros_public)
+            #       define .(c_global_macros_private)
+            #   endif
+            #endif
+        </implementation>
+    </macroses>
 
-    <type name = "byte" alias_of = "uint8_t" is_cross_domain = "1">
-        Portable representation of the byte.
-    </type>
 
-    <callback name = "alloc">
+    <constant name="pointer size" value="sizeof (void *)">
+        Pointer size in bytes.
+    </constant>
+
+
+    <callback name="alloc">
+
         Generic allocation function type.
-        <return type = "any" is_mutable = "1" />
-        <argument name = "size" type = "size" />
+
+        <return class="any" access="disown" />
+
+        <argument name="size" type="size" />
     </callback>
 
-    <callback name = "dealloc">
+
+    <callback name="dealloc">
+
         Generic de-allocation function type.
-        <argument name = "mem" type = "any" is_mutable = "1" />
-    </callback>
 
+        <argument name="mem" class="any" access="writeonly" />
+    </callback>
 </module>

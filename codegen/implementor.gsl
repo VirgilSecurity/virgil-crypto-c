@@ -1,0 +1,82 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Provide base processing of the element 'implementor'.
+#
+#   Private functions
+#   Private function prefix is: K16.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+
+gsl from "common.gsl"
+
+# ---------------------------------------------------------------------------
+#   Resolve model: implementor.
+#   Note. after resolution, all resolved implementations are moved to the
+#   same source as the implementor, and then implementor is deleted.
+# ---------------------------------------------------------------------------
+function implementor_resolve (implementor, destination, project)
+    check_arguments (my, "implementor, destination, project", my)
+
+    echo_trace ("Resolving implementor: $(my.implementor.name:)", my)
+
+    for my.implementor.implementation
+        if ! my.implementor.is_default
+            implementation.name = cat (my.implementor.name, implementation.name)
+        endif
+
+        move implementation to my.destination
+    endfor
+
+    delete my.implementor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Traverse implementors within source and perform complete resolution.
+# ---------------------------------------------------------------------------
+function foreach_implementor_resolve (source, project)
+    check_arguments (my, "source, project", my)
+
+    for my.source.implementor
+        implementor_resolve (implementor, my.source, my.project)
+    endfor
+endfunction
+
+
+.endtemplate

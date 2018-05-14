@@ -43,6 +43,120 @@ gsl from "common.gsl"
 
 
 # ---------------------------------------------------------------------------
+#   Return formatted c_instance type with all modifiers.
+# ---------------------------------------------------------------------------
+function c_derive_instance_type (c_instance)
+    check_argument (my, "c_instance", my)
+
+    #   Grab base type
+    my.type = my.c_instance.type
+
+    #   Define modifiers
+    my.value_modifiers = my.c_instance.is_const_type ?? "const " ? ""
+    my.pointer_modifiers = my.c_instance.is_const_pointer ?? " *const" ? "*"
+    my.reference_modifiers = my.c_instance.is_const_reference ?? " *const" ? "*"
+    my.array_modifiers = my.c_instance.is_const_array ?? " *const" ? "*"
+    my.string_modifiers = my.c_instance.is_const_string ?? " *const" ? "*"
+
+    #   Apply type modifiers
+    if my.c_instance.accessed_by = "value"
+        my.type = my.value_modifiers + my.type
+    elsif my.c_instance.accessed_by = "pointer"
+        my.type = my.value_modifiers + my.type + my.pointer_modifiers
+    elsif my.c_instance.accessed_by = "reference"
+        my.type = my.value_modifiers + my.type + my.pointer_modifiers + my.reference_modifiers
+    endif
+
+    #   Apply string modifiers
+    if string_in (my.c_instance.string ?, "null_terminated, given")
+        #   One more star required
+        my.type += my.string_modifiers
+    endif
+
+    #   Apply array modifiers
+    if string_in (my.c_instance.array ?, "null_terminated, given, known")
+        #   One more star required
+        my.type += my.array_modifiers
+    endif
+
+    my.type = string.replace (my.type, "const*|const *")
+
+    return my.type
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Return formatted c_instance declaration name.
+#   Array name is suffixed with square brackets in a declaration, when used
+#   array if fixed size or derived size.
+# ---------------------------------------------------------------------------
+function c_derive_instance_declaration_name (c_instance)
+    check_argument (my, "c_instance", my)
+
+    if string_in (my.c_instance.array, "derived")
+        return my.c_instance.name + "[]"
+    elsif string_in (my.c_instance.array, "fixed")
+        return my.c_instance.name + "[$(my.c_instance.length:)]"
+    endif
+
+    return my.c_instance.name
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted c_instance declaration (type + name)
+# ---------------------------------------------------------------------------
+function c_derive_instance_declaration (c_instance)
+    check_argument (my, "c_instance", my)
+
+    return cat (c_derive_instance_type (my.c_instance), \
+            c_derive_instance_declaration_name (my.c_instance))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted string with a component binary visibility modifiers.
+# ---------------------------------------------------------------------------
+function c_derive_component_modifiers (component)
+    check_argument (my, "component", my)
+
+    #   TODO: Replace hard-coded values by UIDs
+    if my.component.visibility = "public"
+        return "VSF_PUBLIC"
+    else
+        return "VSF_PRIVATE"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted string of instance as value.
+#   For instance:
+#       - (const char *)byte_arr
+#       - "String literal"
+#       - (const byte*).(class_some_variable_byte_array)
+# ---------------------------------------------------------------------------
+function c_derive_instance_value (c_value, parent)
+    check_argument (my, "c_value", my)
+
+    if count (my.c_value.c_cast)
+        my.type = "($(c_derive_instance_type (my.c_value->c_cast)))"
+    endif
+
+    if defined(my.c_value.string) & my.c_value.value <> "NULL"
+        my.value = quote_string (my.c_value.value)
+    endif
+
+    if defined (my.parent) & name (my.parent) = "c_variable" & \
+            my.c_value.type_is = "class" & ! defined (my.c_value.array) & \
+            my.c_value.value <> "NULL"
+
+        my.derefence = "&"
+    endif
+
+    my.value ?= "$(my.derefence?:)$(my.c_value.value:)"
+
+    return cat (my.type?, my.value)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return formatted name constructed by parts concatenation.
 # ---------------------------------------------------------------------------
 function c_format_name (part1, part2, part3, part4, part5, part6, part7, part8)
@@ -61,6 +175,16 @@ function c_format_macros_name (part1, part2, part3, part4)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return constant formatted name constructed by parts concatenation.
+#   Constant name format: LOWERCASE (prefix, ancestrors), UPPERCASE (name), UNDERSCORE.
+# ---------------------------------------------------------------------------
+function c_format_constant_name (prefix, ancestors, name)
+    check_arguments (my, "prefix, ancestors, name")
+
+    return "$(my.prefix:lower,c)_$(my.ancestors:lower,c)_$(my.name:upper,c)"
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return callback formatted name constructed by parts concatenation.
 #   C name format: UPPERCASE, UNDERSCORE.
 # ---------------------------------------------------------------------------
@@ -73,29 +197,31 @@ function c_format_callback_name (part1, part2, part3, part4, part5, part6, part7
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return formatted value from type and name.
-#   Formats: 'type name', 'type *name', 'type **name'.
+#   Return formatted multiline commented string.
 # ---------------------------------------------------------------------------
-function c_format_value (type, name)
-    check_argument (my, "type")
-    check_argument (my, "name")
+function c_format_comment (str)
+    if ! defined (my.str)
+        return
+    endif
 
-    my.optional_space = string.cntch (my.type, "*") ?? "" ? " "
+    my.str = string_indent (my.str)
+    my.str = "//  $(my.str:left, block, no)$(terminator)"
+    my.str = string_multi_rtrim (my.str)
 
-    return my.type + my.optional_space + my.name
+    return my.str
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Return formatted multiline commented string.
 # ---------------------------------------------------------------------------
-function c_format_comment_string (str)
+function c_format_description (str)
     if ! defined (my.str)
-        echo_fatal ("Argument 'str' is not defined.", my)
+        return
     endif
 
     my.str = string_indent (my.str)
     my.str = "//  $(my.str:left, block, no)$(terminator)"
-    my.str = string_rtrim (my.str)
+    my.str = "//" + terminator + string_multi_rtrim (my.str) + terminator + "//"
 
     return my.str
 endfunction
@@ -111,16 +237,20 @@ function c_format_arguments (method, beginning, ending, tab_count, line_limit)
     my.line = "("
     my.result = ""
     my.indent = tabs (my.tab_count)
-    for my.method.c_argument as argument
+    for my.method.c_argument
         my.adding_line = ""
-        my.adding_line += argument.value
+        my.adding_line += c_derive_instance_declaration (c_argument)
         if ! last ()
             my.adding_line += ","
         else
             my.adding_line += my.ending
         endif
+
         my.new_line_length = string.length (my.beginning + my.line + my.adding_line)
-        if (my.new_line_length < my.line_limit) & is_false (argument.has_size)
+        my.is_next_paired = \
+                count (c_argument.array) & string_in (c_argument->array.length, "given, known")
+
+        if (my.new_line_length < my.line_limit) & ! my.is_next_paired
             my.line += (first() ?? "" ? " ") + my.adding_line
         else
             my.result += my.line
@@ -132,36 +262,4 @@ function c_format_arguments (method, beginning, ending, tab_count, line_limit)
         my.result += my.line
     endif
     return my.result
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Format object's visibility options to the single line.
-#   Note, last space is also included.
-# ---------------------------------------------------------------------------
-function c_format_visibility (c_object)
-    my.visibility = ""
-    for my.c_object.c_visibility
-        my.visibility += c_visibility.value + " "
-    endfor
-    return my.visibility
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return adjusted string according to rules:
-#       - remove all trailing and leading spaces and newlines;
-#       - prefix each line (if string is multiline) with given 'prefix';
-#       - tab each line (if string is multiline) with given 'tabs';
-#       - add new line before string;
-#       - add new line after string;
-#       - tab next line after string with given 'next tabs'.
-# ---------------------------------------------------------------------------
-function c_xml_format_comment (str, tab_count, next_tab_count, tab_size)
-    if string_empty (my.str)
-        return
-    endif
-    #   Transform substitution first.
-    while regexp.match ("\\.\\((?:(?!c_))(\\w+)\\)", my.str, my.match)
-        my.str = string.replace (my.str, "$(my.match:)|c_$(my.match:)")
-    endwhile
-    return xml_string_adjust (my.str, my.tab_count, my.next_tab_count, "//  ", my.tab_size)
 endfunction

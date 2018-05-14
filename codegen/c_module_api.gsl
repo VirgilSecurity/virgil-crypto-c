@@ -43,44 +43,46 @@
 
 gsl from "common.gsl"
 
-gsl from "c_resolver.gsl"
-
+gsl from "module.gsl"
 
 # ---------------------------------------------------------------------------
 #   Add declaration for generic API type.
 # ---------------------------------------------------------------------------
-function _N24_add_type_self (module, names)
-    check_argument (my, "module")
-    check_argument (my, "names")
+function _N24_add_type_self (meta, destination)
+    check_arguments (my, "meta, destination", my)
 
-    new struct to my.module
+    my.names = meta_names (my.meta)
+
+    new struct to my.destination
         . = "Generic type for any 'API' object."
-        .name = ""
-        .visibility = "public"
-        .scope = "external"
+
+        .name = my.names.module_api
+        .definition = "external"
     endnew
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Add type that enumerates all possible interfaces within crypto.
 # ---------------------------------------------------------------------------
-function _N24_add_enum_tag (module, names)
-    check_argument (my, "module")
-    check_argument (my, "names")
+function _N24_add_enum_tag (meta, destination)
+    check_arguments (my, "meta, destination", my)
 
-    new enum to my.module
+    my.names = meta_names (my.meta)
+
+    new enum to my.destination
         . = "Enumerates all possible interfaces within crypto library."
 
         .name = my.names.enum_tag
-        .class = my.names.class_api
+        .of_class = my.names.class_api
+        .definition = "public"
 
-        new value
-            .name = my.names.enum_value_begin
-            .value = 0
+        new constant
+            .name = my.names.enum_constant_begin
+            .value = "0"
         endnew
 
-        new value
-            .name = my.names.enum_value_end
+        new constant
+            .name = my.names.enum_constant_end
         endnew
     endnew
 endfunction
@@ -89,9 +91,8 @@ endfunction
 #   Create public module with functionality common for all 'api' objects.
 #   It is also enumerate all available interfaces within crypto libary.
 # ---------------------------------------------------------------------------
-function c_module_api_create (destination, meta)
-    check_argument (my, "destination")
-    check_argument (my, "meta")
+function c_module_api_create (meta, destination)
+    check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
 
@@ -102,35 +103,34 @@ function c_module_api_create (destination, meta)
         "
 
         .name = my.names.module_api
-        .class = my.names.class_api
+        .of_class = my.names.class_api
 
         new require
             .module = my.names.module_library
         endnew
 
-        _N24_add_type_self (module, my.names)
-        _N24_add_enum_tag (module, my.names)
+        _N24_add_type_self (my.meta, module)
+        _N24_add_enum_tag (my.meta, module)
     endnew
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return enumeration type for 'api' within given destination.
+#   Return enumeration type for 'api' within given source.
 # ---------------------------------------------------------------------------
-function c_module_api_find_enum_tag (destination, meta)
-    check_argument (my, "destination")
-    check_argument (my, "meta")
+function c_module_api_find_enum_tag (source, meta)
+    check_arguments (my, "source, meta", my)
 
     my.names = meta_names (my.meta)
 
-    my.module = my.destination->module (name = my.names.module_api) ?
+    my.module = my.source->module (name = my.names.module_api) ?
     if ! defined (my.module)
         echo_fatal ("Module '$(my.names.module_api:)' \
-                is not found within given destination.", my)
+                is not found within given source.", my)
     endif
 
     my.enum = my.module->enum (name = my.names.enum_tag) ?
     if ! defined (my.enum)
-        echo_fatal ("Enum '$(my.names.enum_tag:)' \
+        echo_fatal ("Enum '$(my.names.enum_tag)' \
                 is not found within module '$(my.names.module_api:)'.", my)
     endif
 

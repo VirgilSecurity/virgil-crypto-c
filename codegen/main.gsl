@@ -45,72 +45,21 @@ gsl from "common.gsl"
 gsl from "project.gsl"
 gsl from "module.gsl"
 gsl from "interface.gsl"
+gsl from "implementor.gsl"
 gsl from "implementation.gsl"
-gsl from "provider.gsl"
-
+gsl from "context.gsl"
 gsl from "meta.gsl"
+
+gsl from "c_module.gsl"
+gsl from "c_module_codegen.gsl"
+
 gsl from "c_module_api.gsl"
 gsl from "c_module_api_private.gsl"
 gsl from "c_module_impl.gsl"
 gsl from "c_module_impl_private.gsl"
 
 gsl from "c_module_interface.gsl"
-gsl from "c_module_interface_api.gsl"
 gsl from "c_module_implementation.gsl"
-gsl from "c_module_implemented_interface.gsl"
-gsl from "c_module_implementation_private.gsl"
-
-gsl from "c_gmodule.gsl"
-gsl from "c_gmodule_codegen.gsl"
-
-
-
-# ###########################################################################
-#   Context resolution.
-# ###########################################################################
-
-# ---------------------------------------------------------------------------
-#   Read source file tehn inject variables from the context and store result
-#   to the destination file.
-#   Context defines variables as key-value pairs defined as attributes.
-# ---------------------------------------------------------------------------
-.macro main_inject_context (context, source_file, destination_file)
-.   my.default_gsl_substitute = [gsl].substitute
-.   my.default_gsl_ignorecase = [gsl].ignorecase
-.   [gsl].substitute = ".("
-.   [gsl].ignorecase = "0"
-.   output my.destination_file
-.       scope root->context
-.           gsl from my.source_file
-.       endscope
-.   close
-.   [gsl].substitute = my.default_gsl_substitute
-.   [gsl].ignorecase = my.default_gsl_ignorecase
-.endmacro
-
-# ---------------------------------------------------------------------------
-#   Inject context variables to the 'gmodule'.
-# ---------------------------------------------------------------------------
-function main_inject_gmodule_context (gmodule, context, work_dir)
-    check_argument (my, "gmodule")
-    check_argument (my, "context")
-    check_argument (my, "work_dir")
-
-    echo_trace ("Resolving gmodule: $(my.gmodule.name:)", my)
-
-    my.unresolved_gmodule_file_path = \
-            "$(my.work_dir?:)c_gmodule_$(my.gmodule.name:)_unresolved.xml"
-
-    my.resolved_gmodule_file_path = \
-            "$(my.work_dir?:)c_gmodule_$(my.gmodule.name:).xml"
-
-
-    item_save_to_file (my.gmodule, my.unresolved_gmodule_file_path)
-
-    main_inject_context (root->context, my.unresolved_gmodule_file_path, my.resolved_gmodule_file_path)
-
-    return item_load_from_file (my.resolved_gmodule_file_path)
-endfunction
 
 
 # ###########################################################################
@@ -124,40 +73,11 @@ function main_load_all (destination)
     check_argument (my, "destination")
 
     item_load_from_file ("project.xml", my.destination)
+
     item_load_from_file_pattern ("^module\.+xml$", my.destination, ".")
-    item_load_from_file_pattern ("^interface\.+xml$", my.destination, ".")
-    item_load_from_file_pattern ("^provider\.+xml$", my.destination, ".")
-endfunction
-
-function root_dump (root)
-    check_argument (my, "root")
-
-    assert_item (my.root, "project", my)
-    assert_attribute (my.root->project, "work_path")
-
-    item_save_to_file (my.root, "root.xml", my.root->project.work_path)
-endfunction
-
-function context_dump (root)
-    check_argument (my, "root")
-
-    assert_item (my.root, "context", my)
-    assert_item (my.root, "project", my)
-    assert_attribute (my.root->project, "work_path")
-
-    item_save_to_file (my.root->context, "context.xml", my.root->project.work_path)
-endfunction
-
-function foreach_module_dump (root)
-    check_argument (my, "root")
-
-    assert_item (my.root, "project", my)
-    assert_attribute (my.root->project, "work_path")
-
-    for my.root.module
-        item_save_to_file (module, "module_$(module.name:lower,c).xml", \
-                my.root->project.work_path)
-    endfor
+    item_load_from_file_pattern ("^interface_hash\.+xml$", my.destination, ".")
+    item_load_from_file_pattern ("^interface_kdf\.+xml$", my.destination, ".")
+    item_load_from_file_pattern ("^implementor\.+xml$", my.destination, ".")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -168,6 +88,7 @@ function run_main ()
 
     main.echo_level ?= "fatal"
 
+    #   Create empty resolution context.
     new context to root
     endnew
 
@@ -181,7 +102,7 @@ function run_main ()
 
     #   Process Interface / Implementation.
     foreach_interface_resolve (root, root->project)
-    foreach_provider_resolve (root, root->project)
+    foreach_implementor_resolve (root, root->project)
     foreach_implementation_resolve (root, root->project)
 
     #   Create meta informtation about high level entities.
@@ -191,46 +112,41 @@ function run_main ()
     item_save_to_file (my.meta, "meta.xml", root->project.work_path)
 
     #   Create modules.
-    c_module_api_create (root, my.meta)
-    c_module_api_private_create (root, my.meta)
+    c_module_api_create (my.meta, root)
+    c_module_api_private_create (my.meta, root)
 
-    c_module_impl_create (root, my.meta)
-    c_module_impl_private_create (root, my.meta)
+    c_module_impl_create (my.meta, root)
+    c_module_impl_private_create (my.meta, root)
 
     c_module_interface_create (root, root, my.meta)
-    c_module_interface_api_create (root, root, my.meta)
-
-    c_module_implemented_interface_create (root, root, my.meta)
-
     c_module_implementation_create (root, root, my.meta)
-    c_module_implementation_private_create (root, root, my.meta)
 
     #   Process modules.
     foreach_module_resolve (root, root->project)
-    foreach_module_update_context (root, root->context)
-    foreach_module_dump (root)
+    foreach_dump ("module", root, root->project.work_path)
 
-    # At this point context is resolved.
-    context_dump (root)
+    #   Create lang_modules.
+    c_module_create (root, root, root->project)
 
-    #   Create gmodules.
-    c_gmodule_create (root, root, root->project)
+    #   Process lang_modules.
+    c_module_resolve (root)
 
-    #   Process gmodules.
-    c_gmodule_resolve (root)
+    #   At this point all elements are created and resolved.
+    item_save_to_file (root, "root.xml", root->project.work_path)
 
-#    # At this point all elements are created and resolved.
-    root_dump (root)
-#
-#    #   Generate code.
-    for root.c_gmodule
-        my.c_gmodule_resolved = \
-                main_inject_gmodule_context (c_gmodule, root->context, root->project.work_path)
-        move my.c_gmodule_resolved before c_gmodule
-        delete c_gmodule
+    #   Fullfil context with models name.
+    context_resolve_refs (root->context, root)
+    context_append_hierarchy (root->context, root)
+    item_save_to_file (root->context, "context.xml", root->project.work_path)
+
+    #   Generate code.
+    for root.c_module
+        my.c_module_resolved = \
+                context_inject_to_lang_module (root->context, c_module, root->project.work_path)
+        move my.c_module_resolved before c_module
+        delete c_module
     endfor
-    c_gmodule_generate_sources (root)
-
+    c_module_generate_sources (root)
 endfunction
 
 # ---------------------------------------------------------------------------
