@@ -32,48 +32,40 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef TEST_UTILS_H_INCLUDED
-#define TEST_UTILS_H_INCLUDED
 
-#include <vsf_library.h>
+#include "unity.h"
 
-// --------------------------------------------------------------------------
-//  Takes string with HEX data and converts to the byte array.
-//  Return data length.
-//  Precondition: string length must be even.
-//  Precondition: data length must be at least half of the hex string length.
-// --------------------------------------------------------------------------
-size_t unhexify(const char *hex_str, byte *data);
+#include "vsf_hash_info.h"
+#include "vsf_hash_info_api.h"
+#include "vsf_sha256.h"
 
 // --------------------------------------------------------------------------
-//  Takes byte array and represents it as HEX string.
-//  Precondition: string length must be at least doubled of the data length.
+//  Over implementation: 'sha256'.
 // --------------------------------------------------------------------------
-void hexify(const byte *data, size_t data_len, char *hex_str);
+
+void test__digest_size__sha256__returns_32 (void) {
+    TEST_ASSERT_EQUAL (32, vsf_hash_info_digest_size (vsf_sha256_hash_info_api ()));
+}
+
+void test__api__sha256__returns_not_null (void) {
+    TEST_ASSERT_NOT_NULL (vsf_sha256_hash_info_api());
+}
+
+void test__api_tag__sha256__equals_api_tag_HASH_INFO (void) {
+    TEST_ASSERT_EQUAL (vsf_api_tag_HASH_INFO, vsf_sha256_hash_info_api()->api_tag);
+}
+
 
 // --------------------------------------------------------------------------
-//  Handles assertion info.
+//  Entrypoint
 // --------------------------------------------------------------------------
-typedef struct {
-    bool handled;
-    const char* message;
-    const char* file;
-    int line;
-} mock_assert_result_t;
 
-// --------------------------------------------------------------------------
-//  Global object that handles assertion info.
-// --------------------------------------------------------------------------
-extern mock_assert_result_t g_mock_assert_result;
+int main (void) {
+    UNITY_BEGIN ();
 
-// --------------------------------------------------------------------------
-//  Mock assertion handler.
-// --------------------------------------------------------------------------
-void mock_assert (void);
+    RUN_TEST (test__digest_size__sha256__returns_32);
+    RUN_TEST (test__api__sha256__returns_not_null);
+    RUN_TEST (test__api_tag__sha256__equals_api_tag_HASH_INFO);
 
-// --------------------------------------------------------------------------
-//  Restore default assertion handler.
-// --------------------------------------------------------------------------
-void unmock_assert (void);
-
-#endif // TEST_UTILS_H_INCLUDED
+    return UNITY_END ();
+}

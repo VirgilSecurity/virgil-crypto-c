@@ -38,6 +38,8 @@
 
 #include "test_utils.h"
 
+#include "vsf_assert.h"
+
 #include <assert.h>
 #include <string.h>
 
@@ -97,4 +99,26 @@ void hexify(const byte *data, size_t data_len, char *hex_str) {
         ++hex_str;
         data_len--;
     }
+}
+
+mock_assert_result_t g_mock_assert_result = {false, NULL, NULL, 0};
+
+static void mocked_assert_handler (const char* message, const char* file, int line) {
+    g_mock_assert_result.handled = true;
+    g_mock_assert_result.message = message;
+    g_mock_assert_result.file = file;
+    g_mock_assert_result.line = line;
+}
+
+void mock_assert (void) {
+    g_mock_assert_result.handled = false;
+    g_mock_assert_result.message = NULL;
+    g_mock_assert_result.file = NULL;
+    g_mock_assert_result.line = 0;
+
+    vsf_assert_change_handler (mocked_assert_handler);
+}
+
+void unmock_assert (void) {
+    vsf_assert_change_handler (vsf_assert_abort);
 }

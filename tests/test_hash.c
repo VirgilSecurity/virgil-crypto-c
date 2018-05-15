@@ -32,48 +32,74 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef TEST_UTILS_H_INCLUDED
-#define TEST_UTILS_H_INCLUDED
 
-#include <vsf_library.h>
+#include "unity.h"
 
-// --------------------------------------------------------------------------
-//  Takes string with HEX data and converts to the byte array.
-//  Return data length.
-//  Precondition: string length must be even.
-//  Precondition: data length must be at least half of the hex string length.
-// --------------------------------------------------------------------------
-size_t unhexify(const char *hex_str, byte *data);
+#include "vsf_hash.h"
+#include "vsf_hash_api.h"
+#include "vsf_sha256.h"
+
+#include "data_sha256.h"
+
 
 // --------------------------------------------------------------------------
-//  Takes byte array and represents it as HEX string.
-//  Precondition: string length must be at least doubled of the data length.
+//  Over implementation: 'sha256'.
 // --------------------------------------------------------------------------
-void hexify(const byte *data, size_t data_len, char *hex_str);
+
+void test__api__sha256__returns_not_null (void) {
+    TEST_ASSERT_NOT_NULL (vsf_sha256_hash_api());
+}
+
+void test__api_tag__sha256__equals_api_tag_HASH (void) {
+    TEST_ASSERT_EQUAL (vsf_api_tag_HASH, vsf_sha256_hash_api()->api_tag);
+}
+
+void test__hash__sha256_vector_1__success (void) {
+
+    byte digest[vsf_sha256_DIGEST_SIZE] = { 0x00 };
+
+    vsf_hash (vsf_sha256_hash_api (),
+            test_sha256_VECTOR_1_INPUT, test_sha256_VECTOR_1_INPUT_LEN,
+            digest, vsf_sha256_DIGEST_SIZE);
+
+    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha256_VECTOR_1_DIGEST, digest, test_sha256_VECTOR_1_DIGEST_LEN);
+}
+
+void test__hash__sha256_vector_2__success (void) {
+
+    byte digest[vsf_sha256_DIGEST_SIZE] = { 0x00 };
+
+    vsf_hash (vsf_sha256_hash_api (),
+            test_sha256_VECTOR_2_INPUT, test_sha256_VECTOR_2_INPUT_LEN,
+            digest, vsf_sha256_DIGEST_SIZE);
+
+    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha256_VECTOR_2_DIGEST, digest, test_sha256_VECTOR_2_DIGEST_LEN);
+}
+
+void test__hash__sha256_vector_3__success (void) {
+
+    byte digest[vsf_sha256_DIGEST_SIZE] = { 0x00 };
+
+    vsf_hash (vsf_sha256_hash_api (),
+            test_sha256_VECTOR_3_INPUT, test_sha256_VECTOR_3_INPUT_LEN,
+            digest, vsf_sha256_DIGEST_SIZE);
+
+    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha256_VECTOR_3_DIGEST, digest, test_sha256_VECTOR_3_DIGEST_LEN);
+}
 
 // --------------------------------------------------------------------------
-//  Handles assertion info.
+//  Entrypoint.
 // --------------------------------------------------------------------------
-typedef struct {
-    bool handled;
-    const char* message;
-    const char* file;
-    int line;
-} mock_assert_result_t;
 
-// --------------------------------------------------------------------------
-//  Global object that handles assertion info.
-// --------------------------------------------------------------------------
-extern mock_assert_result_t g_mock_assert_result;
+int main (void) {
+    UNITY_BEGIN ();
 
-// --------------------------------------------------------------------------
-//  Mock assertion handler.
-// --------------------------------------------------------------------------
-void mock_assert (void);
+    RUN_TEST (test__api__sha256__returns_not_null);
+    RUN_TEST (test__api_tag__sha256__equals_api_tag_HASH);
 
-// --------------------------------------------------------------------------
-//  Restore default assertion handler.
-// --------------------------------------------------------------------------
-void unmock_assert (void);
+    RUN_TEST (test__hash__sha256_vector_1__success);
+    RUN_TEST (test__hash__sha256_vector_2__success);
+    RUN_TEST (test__hash__sha256_vector_3__success);
 
-#endif // TEST_UTILS_H_INCLUDED
+    return UNITY_END ();
+}
