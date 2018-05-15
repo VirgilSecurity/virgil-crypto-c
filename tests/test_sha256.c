@@ -35,66 +35,169 @@
 
 #include "unity.h"
 
+#include "vsf_hash_info.h"
 #include "vsf_hash.h"
 #include "vsf_hash_stream.h"
 #include "vsf_sha256.h"
+#include "vsf_assert.h"
 
 #include "test_utils.h"
+#include "data_sha256.h"
 
 
-static void test_interface_hash (const char *expected_digest_hex, const char *data_hex) {
+// --------------------------------------------------------------------------
+// Test implementation helpers & lifecycle functions.
+// --------------------------------------------------------------------------
+
+void test__impl__valid_arg__returns_not_null (void) {
+    vsf_sha256_impl_t *sha256_impl = vsf_sha256_new();
+    vsf_impl_t *impl = vsf_sha256_impl (sha256_impl);
+
+    TEST_ASSERT_NOT_NULL (impl);
+
+    vsf_sha256_destroy (&sha256_impl);
+}
+
+void test__impl__null_arg__call_assert (void) {
+
+    mock_assert ();
+
+    vsf_impl_t *impl = vsf_sha256_impl (NULL);
+
+    TEST_ASSERT_TRUE (g_mock_assert_result.handled);
+
+    unmock_assert ();
+}
+
+// --------------------------------------------------------------------------
+// Test implementation of the interface 'hash info'.
+// --------------------------------------------------------------------------
+
+void test__hash_info_api__always__returns_not_null (void) {
+    const vsf_hash_info_api_t *hash_info_api = vsf_sha256_hash_info_api();
+
+    TEST_ASSERT_NOT_NULL (hash_info_api);
+}
+
+
+void test__sha256_DIGEST_SIZE__always__equals_32 (void) {
+    TEST_ASSERT_EQUAL (32, vsf_sha256_DIGEST_SIZE);
+}
+
+// --------------------------------------------------------------------------
+// Test implementation of the interface 'hash'.
+// --------------------------------------------------------------------------
+
+void test__hash_api__always__returns_not_null (void) {
+    const vsf_hash_api_t *hash_api = vsf_sha256_hash_api();
+
+    TEST_ASSERT_NOT_NULL (hash_api);
+}
+
+void test__hash__vector_1__success (void) {
 
     byte digest[vsf_sha256_DIGEST_SIZE] = { 0x00 };
-    byte expected_digest[vsf_sha256_DIGEST_SIZE] = { 0x00 };
-    byte data[16];
 
-    size_t data_len = unhexify (data_hex, data);
-    size_t expected_digest_len = unhexify (expected_digest_hex, expected_digest);
+    vsf_sha256_hash (test_sha256_VECTOR_1_INPUT, test_sha256_VECTOR_1_INPUT_LEN, digest, vsf_sha256_DIGEST_SIZE);
 
-    vsf_hash (vsf_sha256_hash_api (), data, data_len, digest, vsf_sha256_DIGEST_SIZE);
-
-    TEST_ASSERT_EQUAL_HEX8_ARRAY (expected_digest, digest, vsf_sha256_DIGEST_SIZE);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha256_VECTOR_1_DIGEST, digest, test_sha256_VECTOR_1_DIGEST_LEN);
 }
 
-static void test_interface_hash_stream (const char *expected_digest_hex, const char *data_hex) {
-    vsf_impl_t *sha256 = vsf_sha256_impl (vsf_sha256_new ());
+void test__hash__vector_2__success (void) {
 
     byte digest[vsf_sha256_DIGEST_SIZE] = { 0x00 };
-    byte expected_digest[vsf_sha256_DIGEST_SIZE] = { 0x00 };
-    byte data[16];
 
-    size_t data_len = unhexify (data_hex, data);
-    size_t expected_digest_len = unhexify (expected_digest_hex, expected_digest);
+    vsf_sha256_hash (test_sha256_VECTOR_2_INPUT, test_sha256_VECTOR_2_INPUT_LEN, digest, vsf_sha256_DIGEST_SIZE);
 
-    vsf_hash_stream_start (sha256);
-    vsf_hash_stream_update (sha256, data, data_len);
-    vsf_hash_stream_finish (sha256, digest, vsf_sha256_DIGEST_SIZE);
-
-    vsf_impl_destroy (&sha256);
-
-    TEST_ASSERT_EQUAL_HEX8_ARRAY (expected_digest, digest, vsf_sha256_DIGEST_SIZE);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha256_VECTOR_2_DIGEST, digest, test_sha256_VECTOR_2_DIGEST_LEN);
 }
 
+void test__hash__vector_3__success (void) {
 
-void test_interface_hash_over_sha256 (void) {
-    test_interface_hash ("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "");
-    test_interface_hash ("68325720aabd7c82f30f554b313d0570c95accbb7dc4b5aae11204c08ffe732b", "bd");
-    test_interface_hash ("7c4fbf484498d21b487b9d61de8914b2eadaf2698712936d47c3ada2558f6788", "5fd4");
+    byte digest[vsf_sha256_DIGEST_SIZE] = { 0x00 };
+
+    vsf_sha256_hash (test_sha256_VECTOR_3_INPUT, test_sha256_VECTOR_3_INPUT_LEN, digest, vsf_sha256_DIGEST_SIZE);
+
+    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha256_VECTOR_3_DIGEST, digest, test_sha256_VECTOR_3_DIGEST_LEN);
 }
 
-void test_interface_hash_stream_over_sha256 (void) {
-    test_interface_hash_stream ("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "");
-    test_interface_hash_stream ("68325720aabd7c82f30f554b313d0570c95accbb7dc4b5aae11204c08ffe732b", "bd");
-    test_interface_hash_stream ("7c4fbf484498d21b487b9d61de8914b2eadaf2698712936d47c3ada2558f6788", "5fd4");
+// --------------------------------------------------------------------------
+// Test implementation of the interface 'hash stream'.
+// --------------------------------------------------------------------------
+
+void test__hash_stream_api__always__returns_not_null (void) {
+    const vsf_hash_stream_api_t *hash_stream_api = vsf_sha256_hash_stream_api();
+
+    TEST_ASSERT_NOT_NULL (hash_stream_api);
 }
 
+void test__hash_stream__vector_1__success (void) {
 
-int main() {
-    UNITY_BEGIN();
+    byte digest[vsf_sha256_DIGEST_SIZE] = { 0x00 };
 
-    RUN_TEST(test_interface_hash_over_sha256);
-    RUN_TEST(test_interface_hash_stream_over_sha256);
+    vsf_sha256_impl_t *sha256_impl = vsf_sha256_new();
+
+    vsf_sha256_start (sha256_impl);
+    vsf_sha256_update (sha256_impl, test_sha256_VECTOR_1_INPUT, test_sha256_VECTOR_1_INPUT_LEN);
+    vsf_sha256_finish (sha256_impl, digest, vsf_sha256_DIGEST_SIZE);
+
+    vsf_sha256_destroy (&sha256_impl);
+
+    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha256_VECTOR_1_DIGEST, digest, test_sha256_VECTOR_1_DIGEST_LEN);
+}
+
+void test__hash_stream__vector_2__success (void) {
+
+    byte digest[vsf_sha256_DIGEST_SIZE] = { 0x00 };
+
+    vsf_sha256_impl_t *sha256_impl = vsf_sha256_new();
+
+    vsf_sha256_start (sha256_impl);
+    vsf_sha256_update (sha256_impl, test_sha256_VECTOR_2_INPUT, test_sha256_VECTOR_2_INPUT_LEN);
+    vsf_sha256_finish (sha256_impl, digest, vsf_sha256_DIGEST_SIZE);
+
+    vsf_sha256_destroy (&sha256_impl);
+
+    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha256_VECTOR_2_DIGEST, digest, test_sha256_VECTOR_2_DIGEST_LEN);
+}
+
+void test__hash_stream__vector_3__success (void) {
+
+    byte digest[vsf_sha256_DIGEST_SIZE] = { 0x00 };
+
+    vsf_sha256_impl_t *sha256_impl = vsf_sha256_new();
+
+    vsf_sha256_start (sha256_impl);
+    vsf_sha256_update (sha256_impl, test_sha256_VECTOR_3_INPUT, test_sha256_VECTOR_3_INPUT_LEN);
+    vsf_sha256_finish (sha256_impl, digest, vsf_sha256_DIGEST_SIZE);
+
+    vsf_sha256_destroy (&sha256_impl);
+
+    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha256_VECTOR_3_DIGEST, digest, test_sha256_VECTOR_3_DIGEST_LEN);
+}
+
+// --------------------------------------------------------------------------
+// Entrypoint.
+// --------------------------------------------------------------------------
+
+int main (void) {
+    UNITY_BEGIN ();
+
+    RUN_TEST (test__impl__valid_arg__returns_not_null);
+    RUN_TEST (test__impl__null_arg__call_assert);
+
+    RUN_TEST (test__hash_info_api__always__returns_not_null);
+    RUN_TEST (test__sha256_DIGEST_SIZE__always__equals_32);
+
+    RUN_TEST (test__hash_api__always__returns_not_null);
+    RUN_TEST (test__hash__vector_1__success);
+    RUN_TEST (test__hash__vector_2__success);
+    RUN_TEST (test__hash__vector_3__success);
+
+    RUN_TEST (test__hash_stream_api__always__returns_not_null);
+    RUN_TEST (test__hash_stream__vector_1__success);
+    RUN_TEST (test__hash_stream__vector_2__success);
+    RUN_TEST (test__hash_stream__vector_3__success);
 
     return UNITY_END();
 }
-
