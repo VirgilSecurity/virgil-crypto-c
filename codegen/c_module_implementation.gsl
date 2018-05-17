@@ -244,13 +244,13 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
         .scope = "private"
     endnew
 
-    for my.impl.require_context where type = "api"
+    for my.impl.dependency where type = "api"
         new require to my.destination
-            .module = require_context.name
+            .module = dependency.name
         endnew
     endfor
 
-    if count (my.impl.require_context, type = "impl") | _Z19_has_methods_with_context_impl (my.impl)
+    if count (my.impl.dependency, type = "impl") | _Z19_has_methods_with_context_impl (my.impl)
         new require to my.destination
             .module = my.names.module_impl
         endnew
@@ -424,20 +424,20 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
             .class = my.refs.class_impl_struct_info
         endnew
 
-        for my.impl.require_context where type = "impl"
+        for my.impl.dependency where type = "impl"
             new property to struct
-                . = "Dependency to the interface '$(require_context.name:)'."
-                .name = my.names.implementation_property_dependency_$(make_id (require_context.name))
+                . = "Dependency to the interface '$(dependency.name:)'."
+                .name = my.names.implementation_property_dependency_$(make_id (dependency.name))
                 .class = my.refs.class_impl_struct_impl
                 .access = "readwrite"
             endnew
         endfor
 
-        for my.impl.require_context where type = "api"
+        for my.impl.dependency where type = "api"
             new property to struct
-                . = "Dependency to the interface api '$(require_context.name:)'."
-                .name = my.names.implementation_property_dependency_$(make_id (require_context.name))
-                .class = ".($(make_id ("class", require_context.name, "struct", require_context.name)))"
+                . = "Dependency to the interface api '$(dependency.name:)'."
+                .name = my.names.implementation_property_dependency_$(make_id (dependency.name))
+                .class = ".($(make_id ("class", dependency.name, "struct", dependency.name)))"
             endnew
         endfor
 
@@ -448,10 +448,10 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
             endfor
         endfor
 
-        for my.impl.require_context where type = "impl"
+        for my.impl.dependency where type = "impl"
             new property to struct
-                . = "Ownership status of the dependency to the interface '$(require_context.name:)'."
-                .name = my.names.implementation_property_is_owning_dependency_$(make_id (require_context.name))
+                . = "Ownership status of the dependency to the interface '$(dependency.name:)'."
+                .name = my.names.implementation_property_is_owning_dependency_$(make_id (dependency.name))
                 .type = "size"
                 .bits = 1
             endnew
@@ -605,14 +605,14 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
             "
 
 
-            for my.impl.require_context where type = "impl"
-                my.dependency = my.refs.c_implementation_property_dependency_$(make_id (require_context.name))
-                my.is_owning_dependency = my.refs.c_implementation_property_is_owning_dependency_$(make_id (require_context.name))
+            for my.impl.dependency where type = "impl"
+                my.dependency = my.refs.c_implementation_property_dependency_$(make_id (dependency.name))
+                my.is_owning_dependency = my.refs.c_implementation_property_is_owning_dependency_$(make_id (dependency.name))
 
                 my.impl_cleanup_dependencies ?= ""
                 my.impl_cleanup_dependencies += "\
 
-                    //   Cleanup dependency: '$(require_context.name)'.
+                    //   Cleanup dependency: '$(dependency.name)'.
                     if ($(my.arg_impl)->$(my.dependency)) {
 
                         if ($(my.arg_impl)->$(my.is_owning_dependency)) {
@@ -628,13 +628,13 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
                 "
             endfor
 
-            for my.impl.require_context where type = "api"
-                my.dependency = my.refs.c_implementation_property_dependency_$(make_id (require_context.name))
+            for my.impl.dependency where type = "api"
+                my.dependency = my.refs.c_implementation_property_dependency_$(make_id (dependency.name))
 
                 my.impl_cleanup_dependencies_api ?= ""
                 my.impl_cleanup_dependencies_api += "\
 
-                    //   Release dependency: '$(require_context.name)'.
+                    //   Release dependency: '$(dependency.name)'.
                     if ($(my.arg_impl)->$(my.dependency)) {
                         $(my.arg_impl)->$(my.dependency) = NULL;
                     }
@@ -801,8 +801,8 @@ endfunction
 function _Z19_define_interface_method_with_api_context (method, impl, meta)
     check_arguments (my, "method, impl, meta", my)
 
-    for my.impl.require_context
-        my.after_argument = _Z19_add_dependency_argument (require_context, my.method, my.after_argument, my.meta)
+    for my.impl.dependency
+        my.after_argument = _Z19_add_dependency_argument (dependency, my.method, my.after_argument, my.meta)
     endfor
 endfunction
 
@@ -1073,9 +1073,9 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
             .module = my.names.module_impl_private
         endnew
 
-        for my.impl.require_context where type = "api"
+        for my.impl.dependency where type = "api"
             new require to module
-                .module = require_context.name
+                .module = dependency.name
             endnew
         endfor
 

@@ -74,7 +74,7 @@
         </attr>
 
         <allow entity="interface" occurs="1+"/>
-        <allow entity="require_context" occurs="0+"/>
+        <allow entity="dependency" occurs="0+"/>
         <allow entity="require_include" occurs="0+"/>
     </entity>
 
@@ -116,7 +116,7 @@
     </entity>
 
 
-    <entity name="require_context">
+    <entity name="dependency">
         Defines implementation dependency.
 
         <attr name="name" required="1">
