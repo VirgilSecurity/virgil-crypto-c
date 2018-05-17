@@ -14,7 +14,7 @@ attribute names are case-sensitive and we use only lower-case names.
              <context name/>
              <constant name value/>
           </interface>
-          <require_context name [type]/>
+          <dependency name [type]/>
           <require_include name [type]/>
        </implementation>
     </implementor>
@@ -65,7 +65,7 @@ Defines set of the implemented interfaces in a one module.
         name = "..."
         >
         <interface>, 1 or more
-        <require_context>
+        <dependency>
         <require_include>
     </implementation>
 
@@ -129,17 +129,17 @@ value:
     attribute is required.
 
 
-The 'require_context' item
---------------------------
+The 'dependency' item
+---------------------
 
 Defines implementation dependency.
 
-    <require_context
+    <dependency
         name = "..."
       [ type = "api | impl"  ("api") ]
         />
 
-The require_context item can have these attributes:
+The dependency item can have these attributes:
 
 name:
     Dependency name. The name attribute is required.

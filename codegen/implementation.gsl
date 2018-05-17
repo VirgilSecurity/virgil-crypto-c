@@ -118,9 +118,9 @@ function implementation_resolve_interface (interface, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve attribute: implementation.require_context.type.
+#   Resolve attribute: implementation.dependency.type.
 # ---------------------------------------------------------------------------
-function implementation_resolve_attr_require_context_type (require, parent)
+function implementation_resolve_attr_dependency_type (require, parent)
     check_arguments (my, "require", my)
 
     my.require.type ?= "api"
@@ -130,18 +130,18 @@ function implementation_resolve_attr_require_context_type (require, parent)
     if ! string_in (my.require.type, my.valid_types)
         my.require_dump = "<$(name (my.require)) name=\"$(my.require.name:)\" type=\"$(my.require.type)\")"
 
-        echo_fatal ("Invalid attribute require_context.type '$(my.require_dump:)'. Expected {$(my.valid_types)}", my)
+        echo_fatal ("Invalid attribute dependency.type '$(my.require_dump:)'. Expected {$(my.valid_types)}", my)
     endif
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve model: implementation.require_context.
+#   Resolve model: implementation.dependency.
 # ---------------------------------------------------------------------------
-function implementation_resolve_require_context (require_context, parent)
-    check_arguments (my, "require_context, parent", my)
+function implementation_resolve_dependency (dependency, parent)
+    check_arguments (my, "dependency, parent", my)
 
-    c_component_require_attr_name (my.require_context, my)
-    implementation_resolve_attr_require_context_type (my.require_context, my.parent)
+    c_component_require_attr_name (my.dependency, my)
+    implementation_resolve_attr_dependency_type (my.dependency, my.parent)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -197,8 +197,8 @@ function implementation_resolve (implementation, parent, project)
         implementation_resolve_require_include (require_include, my.implementation)
     endfor
 
-    for my.implementation.require_context
-        implementation_resolve_require_context (require_context, my.implementation)
+    for my.implementation.dependency
+        implementation_resolve_dependency (dependency, my.implementation)
     endfor
 
 endfunction
