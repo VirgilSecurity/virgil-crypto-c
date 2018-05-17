@@ -39,7 +39,7 @@
 #include "vsf_hash_api.h"
 #include "vsf_sha256.h"
 
-#include "data_sha256.h"
+#include "test_sha256_data.h"
 
 
 // --------------------------------------------------------------------------
