@@ -395,17 +395,17 @@ function _X17_add_entity_implementation (meta, implementation)
         endfor
 
         #   Dependencies
-        for my.implementation.require
-            _X17_add_smart_name (entity, "implementation property dependency", require.name)
-            _X17_add_link (entity, "implementation property dependency $(require.name)", \
-                    make_id ("class", my.name, "struct", "impl", "property", require.name))
+        for my.implementation.dependency
+            _X17_add_smart_name (entity, "implementation property dependency", dependency.name)
+            _X17_add_link (entity, "implementation property dependency $(dependency.name)", \
+                    make_id ("class", my.name, "struct", "impl", "property", dependency.name))
 
-            if require.type = "impl"
-                _X17_add_name (entity, "implementation property is owning dependency $(require.name)", \
-                    cat ("is owning", require.name))
+            if dependency.type = "impl"
+                _X17_add_name (entity, "implementation property is owning dependency $(dependency.name)", \
+                    cat ("is owning", dependency.name))
 
-                _X17_add_link (entity, "implementation property is owning dependency $(require.name)", \
-                        make_id ("class", my.name, "struct", "impl", "property", "is owning", require.name))
+                _X17_add_link (entity, "implementation property is owning dependency $(dependency.name)", \
+                        make_id ("class", my.name, "struct", "impl", "property", "is owning", dependency.name))
             endif
         endfor
 
