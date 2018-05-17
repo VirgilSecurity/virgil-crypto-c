@@ -175,6 +175,7 @@ function _X17_add_entity_api (meta)
         .is_active = 1
 
         _X17_add_smart_linked_name (entity, "class", "api")
+        _X17_add_smart_linked_name (entity, "struct", "api")
         _X17_add_smart_linked_name (entity, "module", "api")
         _X17_add_smart_linked_name (entity, "module", "api private")
         _X17_add_smart_linked_name (entity, "argument", "api tag")

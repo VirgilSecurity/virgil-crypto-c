@@ -438,7 +438,7 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
 
         for my.impl.dependency where type = "impl"
             new property to struct
-                . = "Dependency to the interface '$(dependency.name:)'."
+                . = "Dependency to the interface '$(dependency.interface:)'."
                 .name = my.names.implementation_property_dependency_$(make_id (dependency.name))
                 .class = my.refs.class_impl_struct_impl
                 .access = "readwrite"
@@ -447,9 +447,11 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
 
         for my.impl.dependency where type = "api"
             new property to struct
-                . = "Dependency to the interface api '$(dependency.name:)'."
+                . = "Dependency to the interface api '$(dependency.interface:)'."
                 .name = my.names.implementation_property_dependency_$(make_id (dependency.name))
-                .class = ".($(make_id ("class", dependency.name, "struct", dependency.name)))"
+                .class = ".($(make_id (\
+                        "class", dependency.interface, my.names.struct_api, \
+                        "struct", dependency.interface, my.names.struct_api)))"
             endnew
         endfor
 
@@ -462,7 +464,7 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
 
         for my.impl.dependency where type = "impl"
             new property to struct
-                . = "Ownership status of the dependency to the interface '$(dependency.name:)'."
+                . = "Ownership status of the dependency to the interface '$(dependency.interface:)'."
                 .name = my.names.implementation_property_is_owning_dependency_$(make_id (dependency.name))
                 .type = "size"
                 .bits = 1

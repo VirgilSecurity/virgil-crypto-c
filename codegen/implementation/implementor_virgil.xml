@@ -4,9 +4,9 @@
     <implementation name = "kdf1">
         Virgil Security implementation of the KDF1 (ISO-18033-2) algorithm.
 
-        <interface name = "kdf" />
+        <interface name = "kdf"/>
 
-        <dependency name = "hash" type = "impl" />
+        <dependency name = "hash api" interface="hash" type = "api"/>
     </implementation>
 <!--
     <implementation name = "dynamic_list">

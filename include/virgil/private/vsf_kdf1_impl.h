@@ -46,15 +46,18 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface 'kdf' API.
+//  Types of the 'kdf1' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_KDF_API_H_INCLUDED
-#define VSF_KDF_API_H_INCLUDED
+#ifndef VSF_KDF1_IMPL_H_INCLUDED
+#define VSF_KDF1_IMPL_H_INCLUDED
 
 #include "vsf_library.h"
-#include "vsf_api.h"
-#include "vsf_impl.h"
+#include "vsf_impl_private.h"
+#include "vsf_hash.h"
 //  @end
 
 
@@ -69,24 +72,17 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Calculate hash over given data.
+//  Handles implementation details.
 //
-typedef void (*vsf_kdf_api_derive_fn) (vsf_impl_t* impl, const byte* data, size_t data_len,
-        byte* key, size_t key_len);
-
-//
-//  Contains API requirements of the interface 'kdf'.
-//
-struct vsf_kdf_api_t {
+struct vsf_kdf1_impl_t {
     //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'kdf' MUST be equal to the 'vsf_api_tag_KDF'.
+    //  Compile-time known information about this implementation.
     //
-    vsf_api_tag_t api_tag;
+    const vsf_impl_info_t* info;
     //
-    //  Calculate hash over given data.
+    //  Dependency to the interface api 'hash'.
     //
-    vsf_kdf_api_derive_fn derive_cb;
+    const vsf_hash_api_t* hash_api;
 };
 
 
@@ -102,5 +98,5 @@ struct vsf_kdf_api_t {
 
 
 //  @footer
-#endif // VSF_KDF_API_H_INCLUDED
+#endif // VSF_KDF1_IMPL_H_INCLUDED
 //  @end

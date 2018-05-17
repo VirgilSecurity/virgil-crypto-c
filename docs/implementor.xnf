@@ -120,7 +120,11 @@
         Defines implementation dependency.
 
         <attr name="name" required="1">
-            Dependency name.
+            Dependency name - used for properties and methods names.
+        </attr>
+
+        <attr name="interface" required="1">
+            Dependency interface - used for type deduction and includes.
         </attr>
 
         <attr name="type" default="api">

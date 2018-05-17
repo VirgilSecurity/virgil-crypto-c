@@ -53,6 +53,7 @@
 #define VSF_KDF1_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_hash.h"
 #include "vsf_impl.h"
 #include "vsf_kdf.h"
 //  @end
@@ -69,6 +70,60 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Handles implementation details.
+//
+typedef struct vsf_kdf1_impl_t vsf_kdf1_impl_t;
+
+//
+//  Return size of 'vsf_kdf1_impl_t' type.
+//
+VSF_PUBLIC size_t
+vsf_kdf1_impl_size (void);
+
+//
+//  Cast to the 'vsf_impl_t' type.
+//
+VSF_PUBLIC vsf_impl_t*
+vsf_kdf1_impl (vsf_kdf1_impl_t* kdf1_impl);
+
+//
+//  Perform initialization of preallocated implementation context.
+//
+VSF_PUBLIC void
+vsf_kdf1_init (vsf_kdf1_impl_t* kdf1_impl);
+
+//
+//  Cleanup implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_kdf1_init ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
+//
+VSF_PUBLIC void
+vsf_kdf1_cleanup (vsf_kdf1_impl_t* kdf1_impl);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
+//
+VSF_PUBLIC vsf_kdf1_impl_t*
+vsf_kdf1_new (void);
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_kdf1_new ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
+//
+VSF_PUBLIC void
+vsf_kdf1_destroy (vsf_kdf1_impl_t** kdf1_impl_ref);
+
+//
+//  Setup dependency 'hash api' and keep ownership.
+//
+VSF_PUBLIC void
+vsf_kdf1_use_hash_api (vsf_kdf1_impl_t* kdf1_impl, const vsf_hash_api_t* hash_api);
+
+//
 //  Returns instance of the implemented interface 'kdf'.
 //
 VSF_PUBLIC const vsf_kdf_api_t*
@@ -78,7 +133,8 @@ vsf_kdf1_kdf_api (void);
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
-vsf_kdf1_derive (vsf_impl_t* hash, const byte* data, size_t data_len, byte* key, size_t key_len);
+vsf_kdf1_derive (vsf_kdf1_impl_t* kdf1_impl, const byte* data, size_t data_len, byte* key,
+        size_t key_len);
 
 
 // --------------------------------------------------------------------------
