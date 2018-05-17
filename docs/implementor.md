@@ -14,7 +14,7 @@ attribute names are case-sensitive and we use only lower-case names.
              <context name/>
              <constant name value/>
           </interface>
-          <dependency name [type]/>
+          <dependency name interface [type]/>
           <require_include name [type]/>
        </implementation>
     </implementor>
@@ -136,13 +136,19 @@ Defines implementation dependency.
 
     <dependency
         name = "..."
+        interface = "..."
       [ type = "api | impl"  ("api") ]
         />
 
 The dependency item can have these attributes:
 
 name:
-    Dependency name. The name attribute is required.
+    Dependency name - used for properties and methods names. The name
+    attribute is required.
+
+interface:
+    Dependency interface - used for type deduction and includes. The
+    interface attribute is required.
 
 type:
     Dependency type. The type attribute is optional. Its default value is

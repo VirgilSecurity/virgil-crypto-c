@@ -64,13 +64,13 @@
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
-vsf_kdf_derive (const vsf_kdf_api_t* kdf_api, const byte* data, size_t data_len, byte* key,
-        size_t key_len) {
+vsf_kdf_derive (vsf_impl_t* impl, const byte* data, size_t data_len, byte* key, size_t key_len) {
 
+    const vsf_kdf_api_t *kdf_api = vsf_kdf_api (impl);
     VSF_ASSERT_PTR (kdf_api);
 
     VSF_ASSERT_PTR (kdf_api->derive_cb);
-    kdf_api->derive_cb (data, data_len, key, key_len);
+    kdf_api->derive_cb (impl, data, data_len, key, key_len);
 }
 
 //

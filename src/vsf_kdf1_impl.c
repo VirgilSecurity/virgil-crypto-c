@@ -36,6 +36,15 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'kdf1' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,24 +52,8 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'kdf' API.
-// --------------------------------------------------------------------------
-
-#ifndef VSF_KDF_API_H_INCLUDED
-#define VSF_KDF_API_H_INCLUDED
-
-#include "vsf_library.h"
-#include "vsf_api.h"
-#include "vsf_impl.h"
+#include "vsf_kdf1_impl.h"
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -68,39 +61,8 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Callback. Calculate hash over given data.
-//
-typedef void (*vsf_kdf_api_derive_fn) (vsf_impl_t* impl, const byte* data, size_t data_len,
-        byte* key, size_t key_len);
-
-//
-//  Contains API requirements of the interface 'kdf'.
-//
-struct vsf_kdf_api_t {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'kdf' MUST be equal to the 'vsf_api_tag_KDF'.
-    //
-    vsf_api_tag_t api_tag;
-    //
-    //  Calculate hash over given data.
-    //
-    vsf_kdf_api_derive_fn derive_cb;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSF_KDF_API_H_INCLUDED
 //  @end
