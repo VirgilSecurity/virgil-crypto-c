@@ -63,6 +63,18 @@ function _Z19_has_methods_with_context_impl (impl)
     return 0
 endfunction
 
+# ---------------------------------------------------------------------------
+function _Z19_has_underlying_context (impl)
+    check_argument (my, "impl", my)
+
+    for my.impl.interface
+        if count (interface.context)
+            return 1
+        endif
+    endfor
+
+    return 0
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Add instance of 'Interface API' class.
@@ -246,7 +258,7 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
 
     for my.impl.dependency where type = "api"
         new require to my.destination
-            .module = dependency.name
+            .module = dependency.interface
         endnew
     endfor
 
@@ -555,17 +567,28 @@ function _Z19_add_method_init (impl, declaration, definition, destination, meta)
 
         _Z19_add_argument_impl (method, my.meta)
 
+
         new implementation to method
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_struct_impl)))"
 
-            . = "\
-            .(c_class_assert_macros_ptr) ($(my.arg_impl));
-            .(c_class_assert_macros_ptr) ($(my.arg_impl)->$(my.names.c_property_info:) == NULL);
+            my.impl_begin = "\
+                .(c_class_assert_macros_ptr) ($(my.arg_impl));
+                .(c_class_assert_macros_ptr) ($(my.arg_impl)->$(my.names.c_property_info:) == NULL);
 
-            $(my.arg_impl)->$(my.names.c_property_info:) = &$(my.refs.c_implementation_variable_info);
-
-            $(my.refs.c_implementation_method_init_ctx) ($(my.arg_impl));
+                $(my.arg_impl)->$(my.names.c_property_info:) = &$(my.refs.c_implementation_variable_info);
             "
+
+            if _Z19_has_underlying_context (my.impl)
+                my.impl_end = "\
+                    $(my.refs.c_implementation_method_init_ctx) ($(my.arg_impl));
+                "
+            endif
+
+            my.method_body = ""
+            my.method_body += format_left (my.impl_begin) + terminator
+            my.method_body += format_left (my.impl_end) + terminator ? ""
+
+            . = my.method_body
         endnew
     endnew
 endfunction
@@ -641,9 +664,11 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
                 "
             endfor
 
-            my.impl_cleanup_ctx = "\
-                $(my.refs.c_implementation_method_cleanup_ctx) ($(my.arg_impl));
-            "
+            if _Z19_has_underlying_context (my.impl)
+                my.impl_cleanup_ctx = "\
+                    $(my.refs.c_implementation_method_cleanup_ctx) ($(my.arg_impl));
+                "
+            endif
 
             my.impl_cleanup_info = "\
                 $(my.arg_impl)->$(my.names.c_property_info:) = NULL;
@@ -651,9 +676,9 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
 
             my.method_body = ""
             my.method_body += format_left (my.impl_check_precondition) + terminator
-            my.method_body += (format_left (my.impl_cleanup_dependencies) + terminator) ? ""
-            my.method_body += (format_left (my.impl_cleanup_dependencies_api) + terminator) ? ""
-            my.method_body += format_left (my.impl_cleanup_ctx) + terminator
+            my.method_body += format_left (my.impl_cleanup_dependencies) + terminator ? ""
+            my.method_body += format_left (my.impl_cleanup_dependencies_api) + terminator ? ""
+            my.method_body += format_left (my.impl_cleanup_ctx) + terminator ? ""
             my.method_body += format_left (my.impl_cleanup_info)
 
             . = my.method_body
@@ -1043,7 +1068,11 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
             _Z19_add_type_impl (my.impl, "public", "external", module, my.meta)
             _Z19_add_method_impl_type_size (my.impl, "public", "external", module, my.meta)
             _Z19_add_method_impl_type_cast (my.impl, "public", "external", module, my.meta)
-            _Z19_add_ctx_lifecycle_methods (my.impl, "external", "private", module, my.meta)
+
+            if _Z19_has_underlying_context (my.impl)
+                _Z19_add_ctx_lifecycle_methods (my.impl, "external", "private", module, my.meta)
+            endif
+
             _Z19_add_lifecycle_methods (my.impl, "public", "external", module, my.meta)
             _Z19_add_dependency_methods (my.impl, "public", "external", module, my.meta)
         endif
@@ -1084,7 +1113,7 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
 
         for my.impl.dependency where type = "api"
             new require to module
-                .module = dependency.name
+                .module = dependency.interface
             endnew
         endfor
 
@@ -1128,7 +1157,11 @@ function c_module_implementation_create_module_internal (impl, source, destinati
 
             _Z19_add_includes_for_module_internal (my.impl, module, my.meta)
             _Z19_add_instances (my.impl, my.source, module, my.meta)
-            _Z19_add_ctx_lifecycle_methods (my.impl, "public", "external", module, my.meta)
+
+            if _Z19_has_underlying_context (my.impl)
+                _Z19_add_ctx_lifecycle_methods (my.impl, "public", "external", module, my.meta)
+            endif
+
             _Z19_add_lifecycle_methods (my.impl, "external", "private", module, my.meta)
             _Z19_add_interface_api_methods (my.impl, "external", "private", module, my.meta)
             _Z19_add_dependency_methods (my.impl, "external", "private", module, my.meta)
