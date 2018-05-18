@@ -46,15 +46,17 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains common functionality for all 'implementation' object.
-//  It is also enumerate all available implementations within crypto libary.
+//  This module contains 'sha384' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_IMPL_H_INCLUDED
-#define VSF_IMPL_H_INCLUDED
+#ifndef VSF_SHA384_H_INCLUDED
+#define VSF_SHA384_H_INCLUDED
 
 #include "vsf_library.h"
-#include "vsf_api.h"
+#include "vsf_impl.h"
+#include "vsf_hash_info.h"
+#include "vsf_hash.h"
+#include "vsf_hash_stream.h"
 //  @end
 
 
@@ -69,57 +71,101 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible implementations within crypto library.
+//  Public integral constants.
 //
-enum vsf_impl_tag_t {
-    vsf_impl_tag_BEGIN = 0,
-    vsf_impl_tag_SHA256,
-    vsf_impl_tag_KDF1,
-    vsf_impl_tag_END
+enum {
+    vsf_sha384_DIGEST_SIZE = 48
 };
-typedef enum vsf_impl_tag_t vsf_impl_tag_t;
 
 //
-//  Generic type for any 'implementation'.
+//  Handles implementation details.
 //
-typedef struct vsf_impl_t vsf_impl_t;
+typedef struct vsf_sha384_impl_t vsf_sha384_impl_t;
 
 //
-//  Callback type for cleanup action.
+//  Return size of 'vsf_sha384_impl_t' type.
 //
-typedef void (*vsf_impl_cleanup_fn) (vsf_impl_t* impl);
+VSF_PUBLIC size_t
+vsf_sha384_impl_size (void);
 
 //
-//  Callback type for destroy action.
+//  Cast to the 'vsf_impl_t' type.
 //
-typedef void (*vsf_impl_destroy_fn) (vsf_impl_t** impl_ref);
+VSF_PUBLIC vsf_impl_t*
+vsf_sha384_impl (vsf_sha384_impl_t* sha384_impl);
 
 //
-//  Return 'API' object that is fulfiled with a meta information
-//  specific to the given implementation object.
-//  Or NULL if object does not implement requested 'API'.
-//
-VSF_PUBLIC const vsf_api_t*
-vsf_impl_api (vsf_impl_t* impl, vsf_api_tag_t api_tag);
-
-//
-//  Return unique 'Implementation TAG'.
-//
-VSF_PUBLIC vsf_impl_tag_t
-vsf_impl_tag (vsf_impl_t* impl);
-
-//
-//  Cleanup implementation object and it's dependencies.
+//  Perform initialization of preallocated implementation context.
 //
 VSF_PUBLIC void
-vsf_impl_cleanup (vsf_impl_t* impl);
+vsf_sha384_init (vsf_sha384_impl_t* sha384_impl);
 
 //
-//  Destroy implementation object and it's dependencies.
-//  Note, do 'cleanup' before 'destroy'.
+//  Cleanup implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_sha384_init ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_impl_destroy (vsf_impl_t** impl_ref);
+vsf_sha384_cleanup (vsf_sha384_impl_t* sha384_impl);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
+//
+VSF_PUBLIC vsf_sha384_impl_t*
+vsf_sha384_new (void);
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_sha384_new ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
+//
+VSF_PUBLIC void
+vsf_sha384_destroy (vsf_sha384_impl_t** sha384_impl_ref);
+
+//
+//  Returns instance of the implemented interface 'hash info'.
+//
+VSF_PUBLIC const vsf_hash_info_api_t*
+vsf_sha384_hash_info_api (void);
+
+//
+//  Returns instance of the implemented interface 'hash'.
+//
+VSF_PUBLIC const vsf_hash_api_t*
+vsf_sha384_hash_api (void);
+
+//
+//  Returns instance of the implemented interface 'hash stream'.
+//
+VSF_PUBLIC const vsf_hash_stream_api_t*
+vsf_sha384_hash_stream_api (void);
+
+//
+//  Calculate hash over given data.
+//
+VSF_PUBLIC void
+vsf_sha384_hash (const byte* data, size_t data_len, byte* digest, size_t digest_len);
+
+//
+//  Start a new hashing.
+//
+VSF_PUBLIC void
+vsf_sha384_start (vsf_sha384_impl_t* sha384_impl);
+
+//
+//  Add given data to the hash.
+//
+VSF_PUBLIC void
+vsf_sha384_update (vsf_sha384_impl_t* sha384_impl, const byte* data, size_t data_len);
+
+//
+//  Accompilsh hashing and return it's result (a message digest).
+//
+VSF_PUBLIC void
+vsf_sha384_finish (vsf_sha384_impl_t* sha384_impl, byte* digest, size_t digest_len);
 
 
 // --------------------------------------------------------------------------
@@ -134,5 +180,5 @@ vsf_impl_destroy (vsf_impl_t** impl_ref);
 
 
 //  @footer
-#endif // VSF_IMPL_H_INCLUDED
+#endif // VSF_SHA384_H_INCLUDED
 //  @end
