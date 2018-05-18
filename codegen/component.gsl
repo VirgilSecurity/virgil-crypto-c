@@ -695,7 +695,7 @@ function component_resolve_property_attr_bits (property, parent)
         return
     endif
 
-    if ! defined (my.property.type) | ! string_in (my.property.type, "integer, size")
+    if ! defined (my.property.type) | ! string_in (my.property.type, "integer, boolean")
         my.instance_dump = component_instance_dump (my.property)
         echo_fatal ("Attribute 'bits' is allowed only for integral types" + \
                 ", but found in $(my.instance_dump:)", my)
