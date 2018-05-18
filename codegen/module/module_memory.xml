@@ -81,7 +81,7 @@
 
         <argument name="size" type="size"/>
 
-        <return class="any"/>
+        <return class="any" access="disown"/>
 
         <implementation>
             return .(c_class_memory_variable_inner_alloc) (.(_argument_size));
