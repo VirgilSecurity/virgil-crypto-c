@@ -70,9 +70,7 @@ const size_t test_sha224_VECTOR_2_DIGEST_LEN = sizeof(test_sha224_VECTOR_2_DIGES
 //
 //  Test Vector 3
 //
-const byte test_sha224_VECTOR_3_INPUT[] = {
-    0x5c, 0x7b
-};
+const byte test_sha224_VECTOR_3_INPUT[] = { 0x5c, 0x7b };
 
 const byte test_sha224_VECTOR_3_DIGEST[] = {
     0xda, 0xff, 0x9b, 0xce, 0x68, 0x5e, 0xb8, 0x31, 

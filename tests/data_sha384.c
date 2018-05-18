@@ -56,9 +56,7 @@ const size_t test_sha384_VECTOR_1_DIGEST_LEN = sizeof (test_sha384_VECTOR_1_DIGE
 //
 //  Test Vector 2
 //
-const byte test_sha384_VECTOR_2_INPUT[] = {
-    0xab
-};
+const byte test_sha384_VECTOR_2_INPUT[] = { 0xab };
 
 const byte test_sha384_VECTOR_2_DIGEST[] = {
     0xfb, 0x94, 0xd5, 0xbe, 0x11, 0x88, 0x65, 0xf6, 
@@ -75,9 +73,7 @@ const size_t test_sha384_VECTOR_2_DIGEST_LEN = sizeof (test_sha384_VECTOR_2_DIGE
 //
 //  Test Vector 3
 //
-const byte test_sha384_VECTOR_3_INPUT[] = {
-    0x7c, 0x27
-};
+const byte test_sha384_VECTOR_3_INPUT[] = { 0x7c, 0x27 };
 
 const byte test_sha384_VECTOR_3_DIGEST[] = {
     0x3d, 0x80, 0xbe, 0x46, 0x7d, 0xf8, 0x6d, 0x63, 

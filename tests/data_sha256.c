@@ -54,9 +54,7 @@ const size_t test_sha256_VECTOR_1_DIGEST_LEN = sizeof (test_sha256_VECTOR_1_DIGE
 //
 //  Test Vector 2
 //
-const byte test_sha256_VECTOR_2_INPUT[] = {
-    0xbd
-};
+const byte test_sha256_VECTOR_2_INPUT[] = { 0xbd };
 
 const byte test_sha256_VECTOR_2_DIGEST[] = {
     0x68, 0x32, 0x57, 0x20, 0xaa, 0xbd, 0x7c, 0x82,
@@ -71,9 +69,7 @@ const size_t test_sha256_VECTOR_2_DIGEST_LEN = sizeof (test_sha256_VECTOR_2_DIGE
 //
 //  Test Vector 3
 //
-const byte test_sha256_VECTOR_3_INPUT[] = {
-    0x5f, 0xd4
-};
+const byte test_sha256_VECTOR_3_INPUT[] = { 0x5f, 0xd4 };
 
 const byte test_sha256_VECTOR_3_DIGEST[] = {
     0x7c, 0x4f, 0xbf, 0x48, 0x44, 0x98, 0xd2, 0x1b,
