@@ -81,7 +81,6 @@ vsf_kdf1_derive (vsf_kdf1_impl_t* kdf1_impl, const byte* data, size_t data_len, 
     VSF_ASSERT_PTR (kdf1_impl->hash);
     VSF_ASSERT_PTR (data);
     VSF_ASSERT_PTR (key);
-    VSF_ASSERT (vsf_hash_stream_is_implemented (kdf1_impl->hash));
 
 
     // Get HASH parameters

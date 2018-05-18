@@ -56,6 +56,7 @@
 #include "vsf_kdf1.h"
 #include "vsf_kdf1_impl.h"
 #include "vsf_kdf_api.h"
+#include "vsf_hash_stream.h"
 //  @end
 
 
@@ -208,6 +209,8 @@ vsf_kdf1_use_hash_stream (vsf_kdf1_impl_t* kdf1_impl, vsf_impl_t* hash) {
     VSF_ASSERT_PTR (hash);
     VSF_ASSERT_PTR (kdf1_impl->hash == NULL);
 
+    VSF_ASSERT (vsf_hash_stream_is_implemented (hash));
+
     kdf1_impl->hash = hash;
 
     kdf1_impl->is_owning_hash = 0;
@@ -226,6 +229,8 @@ vsf_kdf1_take_hash_stream (vsf_kdf1_impl_t* kdf1_impl, vsf_impl_t** hash_ref) {
     vsf_impl_t *hash = *hash_ref;
     *hash_ref = NULL;
     VSF_ASSERT_PTR (hash);
+
+    VSF_ASSERT (vsf_hash_stream_is_implemented (hash));
 
     kdf1_impl->hash = hash;
 
