@@ -46,14 +46,18 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Interface 'cipher' API.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_API_H_INCLUDED
-#define VSF_API_H_INCLUDED
+#ifndef VSF_CIPHER_API_H_INCLUDED
+#define VSF_CIPHER_API_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_api.h"
+#include "vsf_impl.h"
+#include "vsf_encrypt.h"
+#include "vsf_decrypt.h"
+#include "vsf_cipher_padding.h"
 //  @end
 
 
@@ -68,25 +72,50 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Callback. Returns nonce length in bytes, or 0 if nonce is not required.
 //
-enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_HASH,
-    vsf_api_tag_KDF,
-    vsf_api_tag_ENCRYPT,
-    vsf_api_tag_DECRYPT,
-    vsf_api_tag_CIPHER,
-    vsf_api_tag_END
-};
-typedef enum vsf_api_tag_t vsf_api_tag_t;
+typedef size_t (*vsf_cipher_api_nonce_len_fn) (vsf_impl_t* impl);
 
 //
-//  Generic type for any 'API' object.
+//  Callback. Setup IV or nonce.
 //
-typedef struct vsf_api_t vsf_api_t;
+typedef void (*vsf_cipher_api_set_nonce_fn) (vsf_impl_t* impl, const byte* nonce, size_t nonce_len);
+
+//
+//  Callback. Set padding mode, for cipher modes that use padding.
+//
+typedef void (*vsf_cipher_api_set_padding_fn) (vsf_impl_t* impl, vsf_cipher_padding_t padding);
+
+//
+//  Contains API requirements of the interface 'cipher'.
+//
+struct vsf_cipher_api_t {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'cipher' MUST be equal to the 'vsf_api_tag_CIPHER'.
+    //
+    vsf_api_tag_t api_tag;
+    //
+    //  Link to the inherited interface API 'encrypt'.
+    //
+    const vsf_encrypt_api_t* encrypt_api;
+    //
+    //  Link to the inherited interface API 'decrypt'.
+    //
+    const vsf_decrypt_api_t* decrypt_api;
+    //
+    //  Returns nonce length in bytes, or 0 if nonce is not required.
+    //
+    vsf_cipher_api_nonce_len_fn nonce_len_cb;
+    //
+    //  Setup IV or nonce.
+    //
+    vsf_cipher_api_set_nonce_fn set_nonce_cb;
+    //
+    //  Set padding mode, for cipher modes that use padding.
+    //
+    vsf_cipher_api_set_padding_fn set_padding_cb;
+};
 
 
 // --------------------------------------------------------------------------
@@ -101,5 +130,5 @@ typedef struct vsf_api_t vsf_api_t;
 
 
 //  @footer
-#endif // VSF_API_H_INCLUDED
+#endif // VSF_CIPHER_API_H_INCLUDED
 //  @end

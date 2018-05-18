@@ -36,6 +36,12 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Provide interface for data encryption.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,23 +49,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
-// --------------------------------------------------------------------------
-
-#ifndef VSF_API_H_INCLUDED
-#define VSF_API_H_INCLUDED
-
-#include "vsf_library.h"
+#include "vsf_decrypt.h"
+#include "vsf_assert.h"
+#include "vsf_decrypt_api.h"
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -68,38 +61,53 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Decrypt given data.
 //
-enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_HASH,
-    vsf_api_tag_KDF,
-    vsf_api_tag_ENCRYPT,
-    vsf_api_tag_DECRYPT,
-    vsf_api_tag_CIPHER,
-    vsf_api_tag_END
-};
-typedef enum vsf_api_tag_t vsf_api_tag_t;
+VSF_PUBLIC int
+vsf_decrypt (vsf_impl_t* impl, const byte* enc, size_t enc_len, byte* data, size_t data_len,
+        size_t* out_len) {
+
+    const vsf_decrypt_api_t *decrypt_api = vsf_decrypt_api (impl);
+    VSF_ASSERT_PTR (decrypt_api);
+
+    VSF_ASSERT_PTR (decrypt_api->decrypt_cb);
+    return decrypt_api->decrypt_cb (impl, enc, enc_len, data, data_len, out_len);
+}
 
 //
-//  Generic type for any 'API' object.
+//  Return decrypt API, or NULL if it is not implemented.
 //
-typedef struct vsf_api_t vsf_api_t;
+VSF_PUBLIC const vsf_decrypt_api_t*
+vsf_decrypt_api (vsf_impl_t* impl) {
+
+    VSF_ASSERT_PTR (impl);
+
+    const vsf_api_t *api = vsf_impl_api (impl, vsf_api_tag_DECRYPT);
+    return (const vsf_decrypt_api_t *) api;
+}
+
+//
+//  Return size of 'vsf_decrypt_api_t' type.
+//
+VSF_PUBLIC size_t
+vsf_decrypt_api_size (void) {
+
+    return sizeof(vsf_decrypt_api_t);
+}
+
+//
+//  Check if given object implements interface 'decrypt'.
+//
+VSF_PUBLIC bool
+vsf_decrypt_is_implemented (vsf_impl_t* impl) {
+
+    VSF_ASSERT_PTR (impl);
+
+    return vsf_impl_api (impl, vsf_api_tag_DECRYPT) != NULL;
+}
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSF_API_H_INCLUDED
 //  @end

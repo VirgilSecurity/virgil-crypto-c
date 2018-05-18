@@ -46,14 +46,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Interface 'decrypt' API.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_API_H_INCLUDED
-#define VSF_API_H_INCLUDED
+#ifndef VSF_DECRYPT_API_H_INCLUDED
+#define VSF_DECRYPT_API_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_api.h"
+#include "vsf_impl.h"
 //  @end
 
 
@@ -68,25 +69,25 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Callback. Decrypt given data.
 //
-enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_HASH,
-    vsf_api_tag_KDF,
-    vsf_api_tag_ENCRYPT,
-    vsf_api_tag_DECRYPT,
-    vsf_api_tag_CIPHER,
-    vsf_api_tag_END
-};
-typedef enum vsf_api_tag_t vsf_api_tag_t;
+typedef int (*vsf_decrypt_api_decrypt_fn) (vsf_impl_t* impl, const byte* enc, size_t enc_len,
+        byte* data, size_t data_len, size_t* out_len);
 
 //
-//  Generic type for any 'API' object.
+//  Contains API requirements of the interface 'decrypt'.
 //
-typedef struct vsf_api_t vsf_api_t;
+struct vsf_decrypt_api_t {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'decrypt' MUST be equal to the 'vsf_api_tag_DECRYPT'.
+    //
+    vsf_api_tag_t api_tag;
+    //
+    //  Decrypt given data.
+    //
+    vsf_decrypt_api_decrypt_fn decrypt_cb;
+};
 
 
 // --------------------------------------------------------------------------
@@ -101,5 +102,5 @@ typedef struct vsf_api_t vsf_api_t;
 
 
 //  @footer
-#endif // VSF_API_H_INCLUDED
+#endif // VSF_DECRYPT_API_H_INCLUDED
 //  @end

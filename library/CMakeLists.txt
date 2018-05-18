@@ -59,6 +59,10 @@ target_sources(vsf
         PUBLIC
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_api.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_assert.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_cipher.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_cipher_padding.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_decrypt.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_encrypt.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_hash.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_hash_info.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_hash_stream.h"
@@ -70,6 +74,9 @@ target_sources(vsf
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_sha256.h"
 
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_api_private.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_cipher_api.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_decrypt_api.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_encrypt_api.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_hash_api.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_hash_info_api.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_hash_stream_api.h"
@@ -78,10 +85,18 @@ target_sources(vsf
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_kdf_api.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_sha256_impl.h"
 
+
         PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_api.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_api_private.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_assert.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_cipher.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_cipher_api.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_cipher_padding.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_decrypt.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_decrypt_api.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_encrypt.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_encrypt_api.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_hash.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_hash_api.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_hash_info.c"
