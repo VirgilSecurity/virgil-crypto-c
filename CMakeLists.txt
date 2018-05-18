@@ -49,14 +49,27 @@ add_subdirectory ("thirdparty/mbedtls")
 # ---------------------------------------------------------------------------
 #   Library
 # ---------------------------------------------------------------------------
-add_library(enable_pedantic_mode INTERFACE)
+add_library(enable_pedantic INTERFACE)
 
-target_compile_options(enable_pedantic_mode
+#
+#   Library that force compiler to the pedantic mode.
+#
+target_compile_options(enable_pedantic
         INTERFACE
-        $<$<C_COMPILER_ID:GNU>:-Wall -Werror -pedantic>
+        $<$<C_COMPILER_ID:GNU>:-Wall -Werror -pedantic -pg>
         $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>>:-Werror>
         )
 
+#
+#   Library that force compiler to the profiling mode.
+#
+add_library(enable_profiling INTERFACE)
+target_compile_options(enable_profiling INTERFACE $<$<C_COMPILER_ID:GNU>:-pg>)
+target_link_libraries(enable_profiling INTERFACE $<$<C_COMPILER_ID:GNU>:-pg>)
+
+#
+#   Core library.
+#
 add_library(vsf "")
 target_sources(vsf
         PUBLIC
@@ -123,8 +136,11 @@ target_link_libraries(vsf
         PUBLIC
         mbed::crypto
 
+        PUBLIC
+        $<$<CONFIG:Debug>:enable_profiling>
+
         PRIVATE
-        enable_pedantic_mode
+        enable_pedantic
         )
 
 # ---------------------------------------------------------------------------
