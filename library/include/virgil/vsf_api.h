@@ -73,12 +73,9 @@ extern "C" {
 enum vsf_api_tag_t {
     vsf_api_tag_BEGIN = 0,
     vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HASH_INFO,
     vsf_api_tag_HASH,
+    vsf_api_tag_HASH_INFO,
     vsf_api_tag_KDF,
-    vsf_api_tag_ENCRYPT,
-    vsf_api_tag_DECRYPT,
-    vsf_api_tag_CIPHER,
     vsf_api_tag_END
 };
 typedef enum vsf_api_tag_t vsf_api_tag_t;
