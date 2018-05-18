@@ -103,7 +103,7 @@ vsf_default_dealloc (void* mem) {
 //  Allocate required amount of memory by usging current allocation function.
 //  Returns NULL if memory allocation fails.
 //
-VSF_PUBLIC const void*
+VSF_PUBLIC void*
 vsf_alloc (size_t size) {
 
     return inner_alloc (size);

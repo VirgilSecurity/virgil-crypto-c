@@ -95,6 +95,11 @@ extern "C" {
                 VSF_VERSION_MINOR, \
                 VSF_VERSION_PATCH)
 
+//
+//  Custom implementation of the number ceil algorithm.
+//
+#define VSF_CEIL(x,y) (1 + (((x) - 1) / (y)))
+
 //  TDOD: Review with approach: https://gcc.gnu.org/wiki/Visibility
 #if defined (__WINDOWS__)
 #   if defined VSF_STATIC
