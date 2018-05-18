@@ -422,6 +422,12 @@ function c_module_interface_create_module_public (interface, destination, meta)
             .scope = "private"
         endnew
 
+        for my.interface.inherit
+            new require to module
+                .module = inherit.interface
+            endnew
+        endfor
+
         my.enum_tag = c_module_api_find_enum_tag (my.destination, my.meta)
         _L23_add_self_tag (my.interface, my.enum_tag, my.meta)
         _L23_add_interface_api_type (my.interface, "public", "external", module, my.meta)
