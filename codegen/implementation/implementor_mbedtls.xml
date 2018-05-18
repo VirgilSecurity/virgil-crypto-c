@@ -3,7 +3,7 @@
 
     <require library = "mbedTLS" />
 
-    <implementation name = "sha224">
+    <implementation name = "sha256">
         This is MbedTLS implementation of SHA224.
 
         <require_include name = "mbedtls/sha224.h" type = "context" />
