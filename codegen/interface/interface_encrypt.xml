@@ -1,0 +1,16 @@
+<interface name="encrypt">
+    Provide interface for data encryption.
+
+    <method name="encrypt" context="impl">
+        Encrypt given data.
+
+        <argument name="data" type="data"/>
+        <argument name="data len" type="size"/>
+
+        <argument name="enc" type="data" access="writeonly"/>
+        <argument name="enc len" type="size"/>
+        <argument name="out len" type="size" access="writeonly" is_reference="1"/>
+
+        <return type="integer"/>
+    </method>
+</interface>

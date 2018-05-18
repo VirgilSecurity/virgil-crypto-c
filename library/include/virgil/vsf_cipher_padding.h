@@ -43,17 +43,8 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
-// --------------------------------------------------------------------------
-
-#ifndef VSF_API_H_INCLUDED
-#define VSF_API_H_INCLUDED
-
-#include "vsf_library.h"
+#ifndef VSF_CIPHER_PADDING_H_INCLUDED
+#define VSF_CIPHER_PADDING_H_INCLUDED
 //  @end
 
 
@@ -67,26 +58,14 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Enumerates all possible interfaces within crypto library.
-//
-enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_HASH,
-    vsf_api_tag_KDF,
-    vsf_api_tag_ENCRYPT,
-    vsf_api_tag_DECRYPT,
-    vsf_api_tag_CIPHER,
-    vsf_api_tag_END
+enum vsf_cipher_padding_t {
+    vsf_cipher_padding_NONE = 0,
+    vsf_cipher_padding_PKCS7,
+    vsf_cipher_padding_ONE_AND_ZEROS,
+    vsf_cipher_padding_ZEROS_AND_LEN,
+    vsf_cipher_padding_ZEROS
 };
-typedef enum vsf_api_tag_t vsf_api_tag_t;
-
-//
-//  Generic type for any 'API' object.
-//
-typedef struct vsf_api_t vsf_api_t;
+typedef enum vsf_cipher_padding_t vsf_cipher_padding_t;
 
 
 // --------------------------------------------------------------------------
@@ -101,5 +80,5 @@ typedef struct vsf_api_t vsf_api_t;
 
 
 //  @footer
-#endif // VSF_API_H_INCLUDED
+#endif // VSF_CIPHER_PADDING_H_INCLUDED
 //  @end

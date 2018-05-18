@@ -46,14 +46,17 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Provide interface for symmetric ciphers.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_API_H_INCLUDED
-#define VSF_API_H_INCLUDED
+#ifndef VSF_CIPHER_H_INCLUDED
+#define VSF_CIPHER_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_impl.h"
+#include "vsf_encrypt.h"
+#include "vsf_decrypt.h"
+#include "vsf_cipher_padding.h"
 //  @end
 
 
@@ -68,25 +71,45 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Contains API requirements of the interface 'cipher'.
 //
-enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_HASH,
-    vsf_api_tag_KDF,
-    vsf_api_tag_ENCRYPT,
-    vsf_api_tag_DECRYPT,
-    vsf_api_tag_CIPHER,
-    vsf_api_tag_END
-};
-typedef enum vsf_api_tag_t vsf_api_tag_t;
+typedef struct vsf_cipher_api_t vsf_cipher_api_t;
 
 //
-//  Generic type for any 'API' object.
+//  Returns nonce length in bytes, or 0 if nonce is not required.
 //
-typedef struct vsf_api_t vsf_api_t;
+VSF_PUBLIC size_t
+vsf_cipher_nonce_len (vsf_impl_t* impl);
+
+//
+//  Setup IV or nonce.
+//
+VSF_PUBLIC void
+vsf_cipher_set_nonce (vsf_impl_t* impl, const byte* nonce, size_t nonce_len);
+
+//
+//  Set padding mode, for cipher modes that use padding.
+//
+VSF_PUBLIC void
+vsf_cipher_set_padding (vsf_impl_t* impl, vsf_cipher_padding_t padding);
+
+//
+//  Return cipher API, or NULL if it is not implemented.
+//
+VSF_PUBLIC const vsf_cipher_api_t*
+vsf_cipher_api (vsf_impl_t* impl);
+
+//
+//  Return size of 'vsf_cipher_api_t' type.
+//
+VSF_PUBLIC size_t
+vsf_cipher_api_size (void);
+
+//
+//  Check if given object implements interface 'cipher'.
+//
+VSF_PUBLIC bool
+vsf_cipher_is_implemented (vsf_impl_t* impl);
 
 
 // --------------------------------------------------------------------------
@@ -101,5 +124,5 @@ typedef struct vsf_api_t vsf_api_t;
 
 
 //  @footer
-#endif // VSF_API_H_INCLUDED
+#endif // VSF_CIPHER_H_INCLUDED
 //  @end

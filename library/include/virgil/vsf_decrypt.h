@@ -46,14 +46,14 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Provide interface for data encryption.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_API_H_INCLUDED
-#define VSF_API_H_INCLUDED
+#ifndef VSF_DECRYPT_H_INCLUDED
+#define VSF_DECRYPT_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_impl.h"
 //  @end
 
 
@@ -68,25 +68,34 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Contains API requirements of the interface 'decrypt'.
 //
-enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_HASH,
-    vsf_api_tag_KDF,
-    vsf_api_tag_ENCRYPT,
-    vsf_api_tag_DECRYPT,
-    vsf_api_tag_CIPHER,
-    vsf_api_tag_END
-};
-typedef enum vsf_api_tag_t vsf_api_tag_t;
+typedef struct vsf_decrypt_api_t vsf_decrypt_api_t;
 
 //
-//  Generic type for any 'API' object.
+//  Decrypt given data.
 //
-typedef struct vsf_api_t vsf_api_t;
+VSF_PUBLIC int
+vsf_decrypt (vsf_impl_t* impl, const byte* enc, size_t enc_len, byte* data, size_t data_len,
+        size_t* out_len);
+
+//
+//  Return decrypt API, or NULL if it is not implemented.
+//
+VSF_PUBLIC const vsf_decrypt_api_t*
+vsf_decrypt_api (vsf_impl_t* impl);
+
+//
+//  Return size of 'vsf_decrypt_api_t' type.
+//
+VSF_PUBLIC size_t
+vsf_decrypt_api_size (void);
+
+//
+//  Check if given object implements interface 'decrypt'.
+//
+VSF_PUBLIC bool
+vsf_decrypt_is_implemented (vsf_impl_t* impl);
 
 
 // --------------------------------------------------------------------------
@@ -101,5 +110,5 @@ typedef struct vsf_api_t vsf_api_t;
 
 
 //  @footer
-#endif // VSF_API_H_INCLUDED
+#endif // VSF_DECRYPT_H_INCLUDED
 //  @end
