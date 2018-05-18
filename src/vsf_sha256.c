@@ -51,6 +51,7 @@
 
 #include "vsf_sha256.h"
 #include "vsf_assert.h"
+#include "vsf_memory.h"
 #include "vsf_sha256_impl.h"
 #include "vsf_sha256_internal.h"
 

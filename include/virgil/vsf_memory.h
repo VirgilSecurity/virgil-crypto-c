@@ -84,7 +84,7 @@ extern "C" {
 //  Allocate required amount of memory by usging current allocation function.
 //  Returns NULL if memory allocation fails.
 //
-VSF_PUBLIC const void*
+VSF_PUBLIC void*
 vsf_alloc (size_t size);
 
 //
