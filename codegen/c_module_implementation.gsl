@@ -887,9 +887,9 @@ function _Z19_add_method_use_dependency (dependency, declaration, definition, de
 
     new method to my.destination
         . = "\
-        Setup dependency '$(my.dependency.name)' and keep ownership.
+        Setup dependency to the interface '$(my.dependency.interface:)' and keep ownership.
         "
-        .name = cat (my.names.method_use, my.dependency.name)
+        .name = cat (my.names.method_use, my.dependency.interface, my.dependency.type = "api" ?? my.dependency.type ?)
         .definition = my.definition
         .declaration = my.declaration
 
@@ -944,9 +944,9 @@ function _Z19_add_method_take_dependency (dependency, declaration, definition, d
 
     new method to my.destination
         . = "\
-        Setup dependency '$(my.dependency.name)' and transfer ownership.
+        Setup dependency to the interface '$(my.dependency.interface)' and transfer ownership.
         "
-        .name = cat (my.names.method_take, my.dependency.name)
+        .name = cat (my.names.method_take, my.dependency.interface, my.dependency.type = "api" ?? my.dependency.type ?)
         .definition = my.definition
         .declaration = my.declaration
 
