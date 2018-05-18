@@ -404,20 +404,20 @@ function c_module_interface_create_module_public (interface, destination, meta)
         .of_class = my.names.class_interface
         .interface = my.interface.name
 
-        new require
+        new require to module
             .module = my.names.module_library
         endnew
 
-        new require
+        new require to module
             .module = my.names.module_assert
             .scope = "private"
         endnew
 
-        new require
+        new require to module
             .module = my.names.module_impl
         endnew
 
-        new require
+        new require to module
             .module = my.names.interface_module_api
             .scope = "private"
         endnew
@@ -426,6 +426,10 @@ function c_module_interface_create_module_public (interface, destination, meta)
             new require to module
                 .module = inherit.interface
             endnew
+        endfor
+
+        for my.interface.require
+            copy require to module
         endfor
 
         my.enum_tag = c_module_api_find_enum_tag (my.destination, my.meta)
@@ -471,6 +475,10 @@ function c_module_interface_create_module_api (interface, destination, meta)
             new require to module
                 .module = inherit.interface
             endnew
+        endfor
+
+        for my.interface.require
+            copy require to module
         endfor
 
         _L23_add_interface_api_type (my.interface, "external", "public", module, my.meta)
