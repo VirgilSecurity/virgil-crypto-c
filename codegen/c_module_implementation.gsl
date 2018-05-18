@@ -256,9 +256,21 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
         .scope = "private"
     endnew
 
+    new require to my.destination
+        .module = my.names.module_memory
+        .scope = "private"
+    endnew
+
     for my.impl.dependency where type = "api"
         new require to my.destination
             .module = dependency.interface
+        endnew
+    endfor
+
+    for my.impl.dependency where type = "impl"
+        new require to my.destination
+            .module = dependency.interface
+            .scope = "private"
         endnew
     endfor
 
