@@ -39,7 +39,11 @@ project(virgil_crypto_c_integration_tests VERSION 0.1.0 LANGUAGES C)
 add_subdirectory(unity)
 
 macro(_add_test test)
-    add_executable(${test} ${test}.c test_utils.c data_sha256.c)
+    add_executable(${test} ${test}.c
+            test_utils.c
+            data_sha256.c
+            test_kdf1_data.c
+            )
     target_link_libraries(${test} unity vsf)
     set_target_properties(${test} PROPERTIES C_STANDARD "99")
     add_test (NAME ${test} COMMAND ${test})
@@ -49,3 +53,4 @@ _add_test (test_hash_info)
 _add_test (test_hash)
 _add_test (test_hash_stream)
 _add_test (test_sha256)
+_add_test (test_kdf1)
