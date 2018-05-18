@@ -478,8 +478,8 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
             new property to struct
                 . = "Ownership status of the dependency to the interface '$(dependency.interface:)'."
                 .name = my.names.implementation_property_is_owning_dependency_$(make_id (dependency.name))
-                .type = "size"
-                .bits = 1
+                .type = "boolean"
+                .bits = "1"
             endnew
         endfor
     endnew
