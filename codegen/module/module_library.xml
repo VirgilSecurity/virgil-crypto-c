@@ -85,6 +85,13 @@
         </implementation>
     </macroses>
 
+    <macros name="ceil">
+        Custom implementation of the number ceil algorithm.
+
+        <implementation>
+            #define .(c_global_macros_ceil) (x,y) (1 + (((x) - 1) / (y)))
+        </implementation>
+    </macros>
 
     <constant name="pointer size" value="sizeof (void *)">
         Pointer size in bytes.
