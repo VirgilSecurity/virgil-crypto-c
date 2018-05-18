@@ -34,114 +34,46 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil-crypto-c VERSION 0.1.0 LANGUAGES C)
+project(virgil-crypto-c-top VERSION 0.1.0 LANGUAGES C)
 
 # ---------------------------------------------------------------------------
 #   Options
 # ---------------------------------------------------------------------------
 option(ENABLE_TESTING "On/Off library integration tests." ON)
 
-#
+
+# ---------------------------------------------------------------------------
 #   Dependencies / thirdparty libraries
+# ---------------------------------------------------------------------------
+
+#
+# MbedTLS
 #
 add_subdirectory ("thirdparty/mbedtls")
 
-# ---------------------------------------------------------------------------
-#   Library
-# ---------------------------------------------------------------------------
+#
+# Library that force compiler to the pedantic mode.
+#
 add_library(enable_pedantic INTERFACE)
-
-#
-#   Library that force compiler to the pedantic mode.
-#
 target_compile_options(enable_pedantic
         INTERFACE
-        $<$<C_COMPILER_ID:GNU>:-Wall -Werror -pedantic -pg>
+        $<$<C_COMPILER_ID:GNU>:-Wall -Werror -pedantic>
         $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>>:-Werror>
         )
 
 #
-#   Library that force compiler to the profiling mode.
+# Library that force compiler to the profiling mode.
 #
 add_library(enable_profiling INTERFACE)
 target_compile_options(enable_profiling INTERFACE $<$<C_COMPILER_ID:GNU>:-pg>)
 target_link_libraries(enable_profiling INTERFACE $<$<C_COMPILER_ID:GNU>:-pg>)
 
-#
-#   Core library.
-#
-add_library(vsf "")
-target_sources(vsf
-        PUBLIC
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_assert.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_hash.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_hash_info.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_hash_stream.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_impl.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_kdf.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_kdf1.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_library.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_memory.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_sha256.h"
 
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_api_private.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_hash_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_hash_info_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_hash_stream_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_impl_private.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_kdf1_impl.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_kdf_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_sha256_impl.h"
+# ---------------------------------------------------------------------------
+#   Library
+# ---------------------------------------------------------------------------
+add_subdirectory ("library")
 
-        PRIVATE
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_api_private.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_assert.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_hash.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_hash_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_hash_info.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_hash_info_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_hash_stream.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_hash_stream_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_impl.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_impl_private.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf1.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf1_impl.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf1_internal.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf1_internal.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_library.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_memory.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256_impl.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256_internal.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256_internal.h"
-        )
-
-target_include_directories(vsf
-        PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/private>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
-        )
-
-set_target_properties(vsf PROPERTIES
-        C_STANDARD "99"
-        DEBUG_POSTFIX "_d"
-        )
-
-target_link_libraries(vsf
-        PUBLIC
-        mbed::crypto
-
-        PUBLIC
-        $<$<CONFIG:Debug>:enable_profiling>
-
-        PRIVATE
-        enable_pedantic
-        )
 
 # ---------------------------------------------------------------------------
 #   Integration tests
