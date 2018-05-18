@@ -51,6 +51,8 @@
 
 #include "vsf_kdf1.h"
 #include "vsf_assert.h"
+#include "vsf_memory.h"
+#include "vsf_hash_stream.h"
 #include "vsf_kdf1_impl.h"
 #include "vsf_kdf1_internal.h"
 //  @end
@@ -75,5 +77,45 @@ VSF_PUBLIC void
 vsf_kdf1_derive (vsf_kdf1_impl_t* kdf1_impl, const byte* data, size_t data_len, byte* key,
         size_t key_len) {
 
-    //  TODO: This is STUB. Implement me.
+    VSF_ASSERT_PTR (kdf1_impl);
+    VSF_ASSERT_PTR (kdf1_impl->hash);
+    VSF_ASSERT_PTR (data);
+    VSF_ASSERT_PTR (key);
+    VSF_ASSERT (vsf_hash_stream_is_implemented (kdf1_impl->hash));
+
+
+    // Get HASH parameters
+    size_t digest_len = vsf_hash_info_digest_size (vsf_hash_info_api (kdf1_impl->hash));
+    unsigned char* digest = vsf_alloc (digest_len);
+
+    // Get KDF parameters
+    size_t counter = 0;
+    size_t counter_len = VSF_CEIL(key_len, digest_len);
+    size_t current_key_len = 0;
+    unsigned char counter_string[4] = {0x0};
+
+    // Start hashing
+    for(; counter < counter_len; ++counter) {
+        counter_string[0] = (unsigned char)((counter >> 24) & 255);
+        counter_string[1] = (unsigned char)((counter >> 16) & 255);
+        counter_string[2] = (unsigned char)((counter >> 8)) & 255;
+        counter_string[3] = (unsigned char)(counter & 255);
+
+        vsf_hash_stream_start (kdf1_impl->hash);
+        vsf_hash_stream_update (kdf1_impl->hash, data, data_len);
+        vsf_hash_stream_update (kdf1_impl->hash, counter_string, sizeof (counter_string));
+
+        if (current_key_len + digest_len <= key_len) {
+            vsf_hash_stream_finish (kdf1_impl->hash, key + current_key_len, digest_len);
+            current_key_len += digest_len;
+
+        } else {
+            vsf_hash_stream_finish (kdf1_impl->hash, digest, digest_len);
+            memcpy (key + current_key_len, digest, key_len - current_key_len);
+            current_key_len = key_len;
+        }
+    }
+
+    vsf_erase (digest, data_len);
+    vsf_dealloc (digest);
 }

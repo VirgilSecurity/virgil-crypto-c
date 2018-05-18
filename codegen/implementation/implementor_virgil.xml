@@ -1,60 +1,60 @@
-<implementor name = "virgil" is_default = "1">
+<implementor name="virgil" is_default="1">
     Provide implementation based on the Virgil Security implementations.
 
-    <implementation name = "kdf1">
+    <implementation name="kdf1">
         Virgil Security implementation of the KDF1 (ISO-18033-2) algorithm.
 
-        <interface name = "kdf"/>
+        <interface name="kdf"/>
 
-        <dependency name = "hash api" interface="hash" type = "api"/>
+        <dependency name="hash" interface="hash stream" type="impl"/>
     </implementation>
 <!--
-    <implementation name = "dynamic_list">
+    <implementation name="dynamic_list">
         Virgil Security implementation of dynamic list.
 
-        <interface name = "list" />
+        <interface name="list" />
 
     </implementation>
 
-    <implementation name = "password_recipient">
+    <implementation name="password_recipient">
         CMS Password recipient.
 
-        <interface name = "cms" />
+        <interface name="cms" />
 
     </implementation>
 
-    <implementation name = "key_trans_recipient">
+    <implementation name="key_trans_recipient">
         CMS Key Trans Recipient.
 
-        <interface name = "cms" />
+        <interface name="cms" />
 
     </implementation>
 
-    <implementation name = "enveloped_data">
+    <implementation name="enveloped_data">
         CMS Enveloped Data.
 
-        <interface name = "cms" />
+        <interface name="cms" />
 
     </implementation>
 
-    <implementation name = "encrypted_content">
+    <implementation name="encrypted_content">
         CMS EncryptedContent.
 
-        <interface name = "cms" />
+        <interface name="cms" />
 
     </implementation>
 
-    <implementation name = "content">
+    <implementation name="content">
         CMS Content.
 
-        <interface name = "cms" />
+        <interface name="cms" />
 
     </implementation>
 
-    <implementation name = "content_info">
+    <implementation name="content_info">
         CMS Content Info.
 
-        <interface name = "cms" />
+        <interface name="cms" />
 
     </implementation>
 -->

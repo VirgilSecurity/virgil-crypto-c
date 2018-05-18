@@ -53,7 +53,6 @@
 #define VSF_KDF1_H_INCLUDED
 
 #include "vsf_library.h"
-#include "vsf_hash.h"
 #include "vsf_impl.h"
 #include "vsf_kdf.h"
 //  @end
@@ -118,10 +117,16 @@ VSF_PUBLIC void
 vsf_kdf1_destroy (vsf_kdf1_impl_t** kdf1_impl_ref);
 
 //
-//  Setup dependency 'hash api' and keep ownership.
+//  Setup dependency to the interface 'hash stream' and keep ownership.
 //
 VSF_PUBLIC void
-vsf_kdf1_use_hash_api (vsf_kdf1_impl_t* kdf1_impl, const vsf_hash_api_t* hash_api);
+vsf_kdf1_use_hash_stream (vsf_kdf1_impl_t* kdf1_impl, vsf_impl_t* hash);
+
+//
+//  Setup dependency to the interface 'hash stream' and transfer ownership.
+//
+VSF_PUBLIC void
+vsf_kdf1_take_hash_stream (vsf_kdf1_impl_t* kdf1_impl, vsf_impl_t** hash_ref);
 
 //
 //  Returns instance of the implemented interface 'kdf'.

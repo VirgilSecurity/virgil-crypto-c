@@ -57,7 +57,6 @@
 
 #include "vsf_library.h"
 #include "vsf_impl_private.h"
-#include "vsf_hash.h"
 //  @end
 
 
@@ -80,9 +79,13 @@ struct vsf_kdf1_impl_t {
     //
     const vsf_impl_info_t* info;
     //
-    //  Dependency to the interface api 'hash'.
+    //  Dependency to the interface 'hash stream'.
     //
-    const vsf_hash_api_t* hash_api;
+    vsf_impl_t* hash;
+    //
+    //  Ownership status of the dependency to the interface 'hash stream'.
+    //
+    size_t is_owning_hash:1;
 };
 
 

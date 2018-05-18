@@ -137,9 +137,18 @@ vsf_kdf1_cleanup (vsf_kdf1_impl_t* kdf1_impl) {
         return;
     }
 
-    //   Release dependency: 'hash api'.
-    if (kdf1_impl->hash_api) {
-        kdf1_impl->hash_api = NULL;
+    //   Cleanup dependency: 'hash'.
+    if (kdf1_impl->hash) {
+
+        if (kdf1_impl->is_owning_hash) {
+            vsf_impl_destroy (&kdf1_impl->hash);
+
+        } else {
+            vsf_impl_cleanup (kdf1_impl->hash);
+            kdf1_impl->hash = NULL;
+        }
+
+        kdf1_impl->is_owning_hash = 0;
     }
 
     kdf1_impl->info = NULL;
@@ -190,16 +199,37 @@ vsf_kdf1_kdf_api (void) {
 }
 
 //
-//  Setup dependency 'hash api' and keep ownership.
+//  Setup dependency to the interface 'hash stream' and keep ownership.
 //
 VSF_PUBLIC void
-vsf_kdf1_use_hash_api (vsf_kdf1_impl_t* kdf1_impl, const vsf_hash_api_t* hash_api) {
+vsf_kdf1_use_hash_stream (vsf_kdf1_impl_t* kdf1_impl, vsf_impl_t* hash) {
 
     VSF_ASSERT_PTR (kdf1_impl);
-    VSF_ASSERT_PTR (hash_api);
-    VSF_ASSERT_PTR (kdf1_impl->hash_api == NULL);
+    VSF_ASSERT_PTR (hash);
+    VSF_ASSERT_PTR (kdf1_impl->hash == NULL);
 
-    kdf1_impl->hash_api = hash_api;
+    kdf1_impl->hash = hash;
+
+    kdf1_impl->is_owning_hash = 0;
+}
+
+//
+//  Setup dependency to the interface 'hash stream' and transfer ownership.
+//
+VSF_PUBLIC void
+vsf_kdf1_take_hash_stream (vsf_kdf1_impl_t* kdf1_impl, vsf_impl_t** hash_ref) {
+
+    VSF_ASSERT_PTR (kdf1_impl);
+    VSF_ASSERT_PTR (hash_ref);
+    VSF_ASSERT_PTR (kdf1_impl->hash == NULL);
+
+    vsf_impl_t *hash = *hash_ref;
+    *hash_ref = NULL;
+    VSF_ASSERT_PTR (hash);
+
+    kdf1_impl->hash = hash;
+
+    kdf1_impl->is_owning_hash = 1;
 }
 
 //
