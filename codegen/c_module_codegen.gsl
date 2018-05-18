@@ -146,9 +146,14 @@ function c_module_generate_source (c_module)
         c_insert_macros (c_macroses)
     endfor
 
-    for my.c_module.c_enum where definition = "private"
+    for my.c_module.c_enum where definition = "private" & declaration = "private"
         newline ()
         c_insert_enum (c_enum)
+    endfor
+
+    for my.c_module.c_enum where definition = "private" & declaration <> "private"
+        newline ()
+        c_insert_enum_definition (c_enum)
     endfor
 
     for my.c_module.c_callback where declaration = "private"
@@ -156,9 +161,14 @@ function c_module_generate_source (c_module)
         c_insert_callback (c_callback)
     endfor
 
-    for my.c_module.c_struct where definition = "private"
+    for my.c_module.c_struct where definition = "private" & declaration = "private"
         newline ()
         c_insert_struct (c_struct)
+    endfor
+
+    for my.c_module.c_struct where definition = "private" & declaration <> "private"
+        newline ()
+        c_insert_struct_definition (c_struct)
     endfor
 
     for my.c_module.c_method where declaration = "private"
