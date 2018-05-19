@@ -43,8 +43,18 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSF_CIPHER_PADDING_H_INCLUDED
-#define VSF_CIPHER_PADDING_H_INCLUDED
+
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
+// --------------------------------------------------------------------------
+
+#ifndef VSF_SHA384_INTERNAL_H_INCLUDED
+#define VSF_SHA384_INTERNAL_H_INCLUDED
+
+#include "vsf_library.h"
+#include "vsf_sha384.h"
 //  @end
 
 
@@ -58,14 +68,17 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-enum vsf_cipher_padding_t {
-    vsf_cipher_padding_NONE = 0,
-    vsf_cipher_padding_PKCS7,
-    vsf_cipher_padding_ONE_AND_ZEROS,
-    vsf_cipher_padding_ZEROS_AND_LEN,
-    vsf_cipher_padding_ZEROS
-};
-typedef enum vsf_cipher_padding_t vsf_cipher_padding_t;
+//
+//  Provides initialization of the implementation specific context.
+//
+VSF_PRIVATE void
+vsf_sha384_init_ctx (vsf_sha384_impl_t* sha384_impl);
+
+//
+//  Provides cleanup of the implementation specific context.
+//
+VSF_PRIVATE void
+vsf_sha384_cleanup_ctx (vsf_sha384_impl_t* sha384_impl);
 
 
 // --------------------------------------------------------------------------
@@ -80,5 +93,5 @@ typedef enum vsf_cipher_padding_t vsf_cipher_padding_t;
 
 
 //  @footer
-#endif // VSF_CIPHER_PADDING_H_INCLUDED
+#endif // VSF_SHA384_INTERNAL_H_INCLUDED
 //  @end

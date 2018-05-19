@@ -44,7 +44,7 @@ project(virgil-crypto-c VERSION 0.1.0 LANGUAGES C)
 # MbedTLS
 #
 if(NOT TARGET mbed::crypto)
-    message(FATAL_ERROR "Required library MbedTLS is not found - looking for target 'mbed::crypto'.")
+    message(FATAL_ERROR "Require library MbedTLS defined as a target mbed::crypto")
 endif()
 
 # ---------------------------------------------------------------------------
@@ -59,10 +59,6 @@ target_sources(vsf
         PUBLIC
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_api.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_assert.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_cipher.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_cipher_padding.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_decrypt.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_encrypt.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_hash.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_hash_info.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_hash_stream.h"
@@ -71,32 +67,27 @@ target_sources(vsf
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_kdf1.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_library.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_memory.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_sha224.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_sha256.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_sha384.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_sha512.h"
 
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_api_private.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_cipher_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_decrypt_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_encrypt_api.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_hash_api.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_hash_info_api.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_hash_stream_api.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_impl_private.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_kdf1_impl.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_kdf_api.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_sha224_impl.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_sha256_impl.h"
-
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_sha384_impl.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_sha512_impl.h"
 
         PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_api.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_api_private.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_assert.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_cipher.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_cipher_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_cipher_padding.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_decrypt.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_decrypt_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_encrypt.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_encrypt_api.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_hash.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_hash_api.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_hash_info.c"
@@ -113,10 +104,22 @@ target_sources(vsf
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf_api.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_library.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_memory.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha224.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha224_impl.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha224_internal.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha224_internal.h"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256_impl.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256_internal.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256_internal.h"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha384.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha384_impl.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha384_internal.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha384_internal.h"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha512.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha512_impl.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha512_internal.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha512_internal.h"
         )
 
 #

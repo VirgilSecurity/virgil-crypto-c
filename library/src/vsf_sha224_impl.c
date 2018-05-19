@@ -36,6 +36,15 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'sha224' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,7 +52,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsf_cipher_padding.h"
+#include "vsf_sha224_impl.h"
 //  @end
 
 

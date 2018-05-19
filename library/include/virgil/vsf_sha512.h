@@ -46,14 +46,17 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  This module contains 'sha512' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_API_H_INCLUDED
-#define VSF_API_H_INCLUDED
+#ifndef VSF_SHA512_H_INCLUDED
+#define VSF_SHA512_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_impl.h"
+#include "vsf_hash_info.h"
+#include "vsf_hash.h"
+#include "vsf_hash_stream.h"
 //  @end
 
 
@@ -68,22 +71,101 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Public integral constants.
 //
-enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HASH,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_KDF,
-    vsf_api_tag_END
+enum {
+    vsf_sha512_DIGEST_SIZE = 64
 };
-typedef enum vsf_api_tag_t vsf_api_tag_t;
 
 //
-//  Generic type for any 'API' object.
+//  Handles implementation details.
 //
-typedef struct vsf_api_t vsf_api_t;
+typedef struct vsf_sha512_impl_t vsf_sha512_impl_t;
+
+//
+//  Return size of 'vsf_sha512_impl_t' type.
+//
+VSF_PUBLIC size_t
+vsf_sha512_impl_size (void);
+
+//
+//  Cast to the 'vsf_impl_t' type.
+//
+VSF_PUBLIC vsf_impl_t*
+vsf_sha512_impl (vsf_sha512_impl_t* sha512_impl);
+
+//
+//  Perform initialization of preallocated implementation context.
+//
+VSF_PUBLIC void
+vsf_sha512_init (vsf_sha512_impl_t* sha512_impl);
+
+//
+//  Cleanup implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_sha512_init ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
+//
+VSF_PUBLIC void
+vsf_sha512_cleanup (vsf_sha512_impl_t* sha512_impl);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
+//
+VSF_PUBLIC vsf_sha512_impl_t*
+vsf_sha512_new (void);
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_sha512_new ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
+//
+VSF_PUBLIC void
+vsf_sha512_destroy (vsf_sha512_impl_t** sha512_impl_ref);
+
+//
+//  Returns instance of the implemented interface 'hash info'.
+//
+VSF_PUBLIC const vsf_hash_info_api_t*
+vsf_sha512_hash_info_api (void);
+
+//
+//  Returns instance of the implemented interface 'hash'.
+//
+VSF_PUBLIC const vsf_hash_api_t*
+vsf_sha512_hash_api (void);
+
+//
+//  Returns instance of the implemented interface 'hash stream'.
+//
+VSF_PUBLIC const vsf_hash_stream_api_t*
+vsf_sha512_hash_stream_api (void);
+
+//
+//  Calculate hash over given data.
+//
+VSF_PUBLIC void
+vsf_sha512_hash (const byte* data, size_t data_len, byte* digest, size_t digest_len);
+
+//
+//  Start a new hashing.
+//
+VSF_PUBLIC void
+vsf_sha512_start (vsf_sha512_impl_t* sha512_impl);
+
+//
+//  Add given data to the hash.
+//
+VSF_PUBLIC void
+vsf_sha512_update (vsf_sha512_impl_t* sha512_impl, const byte* data, size_t data_len);
+
+//
+//  Accompilsh hashing and return it's result (a message digest).
+//
+VSF_PUBLIC void
+vsf_sha512_finish (vsf_sha512_impl_t* sha512_impl, byte* digest, size_t digest_len);
 
 
 // --------------------------------------------------------------------------
@@ -98,5 +180,5 @@ typedef struct vsf_api_t vsf_api_t;
 
 
 //  @footer
-#endif // VSF_API_H_INCLUDED
+#endif // VSF_SHA512_H_INCLUDED
 //  @end

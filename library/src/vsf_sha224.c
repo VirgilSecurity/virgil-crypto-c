@@ -38,7 +38,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Provide interface for data encryption.
+//  This module contains 'sha224' implementation.
 // --------------------------------------------------------------------------
 
 
@@ -49,9 +49,13 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsf_decrypt.h"
+#include "vsf_sha224.h"
 #include "vsf_assert.h"
-#include "vsf_decrypt_api.h"
+#include "vsf_memory.h"
+#include "vsf_sha224_impl.h"
+#include "vsf_sha224_internal.h"
+
+#include <mbedtls/sha256.h>
 //  @end
 
 
@@ -60,54 +64,82 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Decrypt given data.
-//
-VSF_PUBLIC int
-vsf_decrypt (vsf_impl_t* impl, const byte* enc, size_t enc_len, byte* data, size_t data_len,
-        size_t* out_len) {
-
-    const vsf_decrypt_api_t *decrypt_api = vsf_decrypt_api (impl);
-    VSF_ASSERT_PTR (decrypt_api);
-
-    VSF_ASSERT_PTR (decrypt_api->decrypt_cb);
-    return decrypt_api->decrypt_cb (impl, enc, enc_len, data, data_len, out_len);
-}
-
-//
-//  Return decrypt API, or NULL if it is not implemented.
-//
-VSF_PUBLIC const vsf_decrypt_api_t*
-vsf_decrypt_api (vsf_impl_t* impl) {
-
-    VSF_ASSERT_PTR (impl);
-
-    const vsf_api_t *api = vsf_impl_api (impl, vsf_api_tag_DECRYPT);
-    return (const vsf_decrypt_api_t *) api;
-}
-
-//
-//  Return size of 'vsf_decrypt_api_t' type.
-//
-VSF_PUBLIC size_t
-vsf_decrypt_api_size (void) {
-
-    return sizeof(vsf_decrypt_api_t);
-}
-
-//
-//  Check if given object implements interface 'decrypt'.
-//
-VSF_PUBLIC bool
-vsf_decrypt_is_implemented (vsf_impl_t* impl) {
-
-    VSF_ASSERT_PTR (impl);
-
-    return vsf_impl_api (impl, vsf_api_tag_DECRYPT) != NULL;
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // --------------------------------------------------------------------------
 //  @end
+
+
+//
+//  Provides initialization of the implementation specific context.
+//
+VSF_PRIVATE void
+vsf_sha224_init_ctx (vsf_sha224_impl_t* sha224_impl) {
+
+    VSF_ASSERT_PTR(sha224_impl);
+
+    mbedtls_sha256_init(&sha224_impl->hash_ctx);
+}
+
+//
+//  Provides cleanup of the implementation specific context.
+//
+VSF_PRIVATE void
+vsf_sha224_cleanup_ctx (vsf_sha224_impl_t* sha224_impl) {
+
+    VSF_ASSERT_PTR(sha224_impl);
+
+    mbedtls_sha256_free(&sha224_impl->hash_ctx);
+}
+
+//
+//  Calculate hash over given data.
+//
+VSF_PUBLIC void
+vsf_sha224_hash (const byte* data, size_t data_len, byte* digest, size_t digest_len) {
+
+    VSF_ASSERT_PTR(data);
+    VSF_ASSERT_PTR(digest);
+    VSF_ASSERT_OPT(digest_len >= vsf_sha224_DIGEST_SIZE);
+
+    const int is224 = 1;
+    mbedtls_sha256(data, data_len, digest, is224);
+}
+
+//
+//  Start a new hashing.
+//
+VSF_PUBLIC void
+vsf_sha224_start (vsf_sha224_impl_t* sha224_impl) {
+
+    VSF_ASSERT_PTR(sha224_impl);
+
+    const int is224 = 1;
+    mbedtls_sha256_starts(&sha224_impl->hash_ctx, is224);
+}
+
+//
+//  Add given data to the hash.
+//
+VSF_PUBLIC void
+vsf_sha224_update (vsf_sha224_impl_t* sha224_impl, const byte* data, size_t data_len) {
+
+    VSF_ASSERT_PTR(sha224_impl);
+    VSF_ASSERT_PTR(data);
+
+    mbedtls_sha256_update(&sha224_impl->hash_ctx, data, data_len);
+}
+
+//
+//  Accompilsh hashing and return it's result (a message digest).
+//
+VSF_PUBLIC void
+vsf_sha224_finish (vsf_sha224_impl_t* sha224_impl, byte* digest, size_t digest_len) {
+
+    VSF_ASSERT_PTR(sha224_impl);
+    VSF_ASSERT_PTR(digest);
+    VSF_ASSERT_OPT(digest_len >= vsf_sha224_DIGEST_SIZE);
+
+    mbedtls_sha256_finish(&sha224_impl->hash_ctx, digest);
+}

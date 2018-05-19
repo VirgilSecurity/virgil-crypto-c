@@ -77,9 +77,6 @@ function main_load_all (destination)
     item_load_from_file_pattern ("^module\.+xml$", my.destination, "module")
     item_load_from_file_pattern ("^interface_hash\.+xml$", my.destination, "interface")
     item_load_from_file_pattern ("^interface_kdf\.+xml$", my.destination, "interface")
-    item_load_from_file_pattern ("^interface_encrypt\.+xml$", my.destination, "interface")
-    item_load_from_file_pattern ("^interface_decrypt\.+xml$", my.destination, "interface")
-    item_load_from_file_pattern ("^interface_cipher\.+xml$", my.destination, "interface")
     item_load_from_file_pattern ("^implementor\.+xml$", my.destination, "implementation")
 endfunction
 

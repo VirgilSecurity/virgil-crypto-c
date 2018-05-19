@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2018 Virgil Security Inc.
 //
 //  All rights reserved.
@@ -33,33 +31,31 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-// --------------------------------------------------------------------------
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'decrypt' API.
-// --------------------------------------------------------------------------
+#include "vsf_library.h"
+
+//
+//  Test Vector 1
+//
+extern const byte test_sha512_VECTOR_1_INPUT[];
+extern const byte test_sha512_VECTOR_1_DIGEST[];
+extern const size_t test_sha512_VECTOR_1_INPUT_LEN;
+extern const size_t test_sha512_VECTOR_1_DIGEST_LEN;
 
 
-//  @warning
-// --------------------------------------------------------------------------
-//  This file is partially generated.
-//  Generated blocks are enclosed between tags [@<tag>, @end].
-//  User's code can be added between tags [@end, @<tag>].
-// --------------------------------------------------------------------------
+//
+//  Test Vector 2
+//
+extern const byte test_sha512_VECTOR_2_INPUT[];
+extern const byte test_sha512_VECTOR_2_DIGEST[];
+extern const size_t test_sha512_VECTOR_2_INPUT_LEN;
+extern const size_t test_sha512_VECTOR_2_DIGEST_LEN;
 
-#include "vsf_decrypt_api.h"
-//  @end
-
-
-//  @generated
-// --------------------------------------------------------------------------
-//  Generated section start.
-// --------------------------------------------------------------------------
-
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// --------------------------------------------------------------------------
-//  @end
+//
+//  Test Vector 3
+//
+extern const byte test_sha512_VECTOR_3_INPUT[];
+extern const byte test_sha512_VECTOR_3_DIGEST[];
+extern const size_t test_sha512_VECTOR_3_INPUT_LEN;
+extern const size_t test_sha512_VECTOR_3_DIGEST_LEN;

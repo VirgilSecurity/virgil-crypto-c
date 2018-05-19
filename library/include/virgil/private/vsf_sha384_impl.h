@@ -46,14 +46,19 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Provide interface for data encryption.
+//  Types of the 'sha384' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_DECRYPT_H_INCLUDED
-#define VSF_DECRYPT_H_INCLUDED
+#ifndef VSF_SHA384_IMPL_H_INCLUDED
+#define VSF_SHA384_IMPL_H_INCLUDED
 
 #include "vsf_library.h"
-#include "vsf_impl.h"
+#include "vsf_impl_private.h"
+
+#include <mbedtls/sha512.h>
 //  @end
 
 
@@ -68,34 +73,18 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'decrypt'.
+//  Handles implementation details.
 //
-typedef struct vsf_decrypt_api_t vsf_decrypt_api_t;
-
-//
-//  Decrypt given data.
-//
-VSF_PUBLIC int
-vsf_decrypt (vsf_impl_t* impl, const byte* enc, size_t enc_len, byte* data, size_t data_len,
-        size_t* out_len);
-
-//
-//  Return decrypt API, or NULL if it is not implemented.
-//
-VSF_PUBLIC const vsf_decrypt_api_t*
-vsf_decrypt_api (vsf_impl_t* impl);
-
-//
-//  Return size of 'vsf_decrypt_api_t' type.
-//
-VSF_PUBLIC size_t
-vsf_decrypt_api_size (void);
-
-//
-//  Check if given object implements interface 'decrypt'.
-//
-VSF_PUBLIC bool
-vsf_decrypt_is_implemented (vsf_impl_t* impl);
+struct vsf_sha384_impl_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vsf_impl_info_t* info;
+    //
+    //  Interface implementation specific context.
+    //
+    mbedtls_sha512_context hash_ctx;
+};
 
 
 // --------------------------------------------------------------------------
@@ -110,5 +99,5 @@ vsf_decrypt_is_implemented (vsf_impl_t* impl);
 
 
 //  @footer
-#endif // VSF_DECRYPT_H_INCLUDED
+#endif // VSF_SHA384_IMPL_H_INCLUDED
 //  @end

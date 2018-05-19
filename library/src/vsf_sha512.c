@@ -36,6 +36,12 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains 'sha512' implementation.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,73 +49,20 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#include "vsf_sha512.h"
+#include "vsf_assert.h"
+#include "vsf_memory.h"
+#include "vsf_sha512_impl.h"
+#include "vsf_sha512_internal.h"
 
-//  @description
-// --------------------------------------------------------------------------
-//  Provide interface for symmetric ciphers.
-// --------------------------------------------------------------------------
-
-#ifndef VSF_CIPHER_H_INCLUDED
-#define VSF_CIPHER_H_INCLUDED
-
-#include "vsf_library.h"
-#include "vsf_impl.h"
-#include "vsf_encrypt.h"
-#include "vsf_decrypt.h"
-#include "vsf_cipher_padding.h"
+#include <mbedtls/sha512.h>
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
 // --------------------------------------------------------------------------
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Contains API requirements of the interface 'cipher'.
-//
-typedef struct vsf_cipher_api_t vsf_cipher_api_t;
-
-//
-//  Returns nonce length in bytes, or 0 if nonce is not required.
-//
-VSF_PUBLIC size_t
-vsf_cipher_nonce_len (vsf_impl_t* impl);
-
-//
-//  Setup IV or nonce.
-//
-VSF_PUBLIC void
-vsf_cipher_set_nonce (vsf_impl_t* impl, const byte* nonce, size_t nonce_len);
-
-//
-//  Set padding mode, for cipher modes that use padding.
-//
-VSF_PUBLIC void
-vsf_cipher_set_padding (vsf_impl_t* impl, vsf_cipher_padding_t padding);
-
-//
-//  Return cipher API, or NULL if it is not implemented.
-//
-VSF_PUBLIC const vsf_cipher_api_t*
-vsf_cipher_api (vsf_impl_t* impl);
-
-//
-//  Return size of 'vsf_cipher_api_t' type.
-//
-VSF_PUBLIC size_t
-vsf_cipher_api_size (void);
-
-//
-//  Check if given object implements interface 'cipher'.
-//
-VSF_PUBLIC bool
-vsf_cipher_is_implemented (vsf_impl_t* impl);
 
 
 // --------------------------------------------------------------------------
@@ -118,11 +71,76 @@ vsf_cipher_is_implemented (vsf_impl_t* impl);
 //  @end
 
 
-#ifdef __cplusplus
+//
+//  Provides initialization of the implementation specific context.
+//
+VSF_PRIVATE void
+vsf_sha512_init_ctx (vsf_sha512_impl_t* sha512_impl) {
+    
+    VSF_ASSERT_PTR(sha512_impl);
+
+    mbedtls_sha512_init(&sha512_impl->hash_ctx);
 }
-#endif
 
+//
+//  Provides cleanup of the implementation specific context.
+//
+VSF_PRIVATE void
+vsf_sha512_cleanup_ctx (vsf_sha512_impl_t* sha512_impl) {
 
-//  @footer
-#endif // VSF_CIPHER_H_INCLUDED
-//  @end
+    VSF_ASSERT_PTR(sha512_impl);
+
+    mbedtls_sha512_free(&sha512_impl->hash_ctx);
+}
+
+//
+//  Calculate hash over given data.
+//
+VSF_PUBLIC void
+vsf_sha512_hash (const byte* data, size_t data_len, byte* digest, size_t digest_len) {
+
+    VSF_ASSERT_PTR(data);
+    VSF_ASSERT_PTR(digest);
+    VSF_ASSERT_OPT(digest_len >= vsf_sha512_DIGEST_SIZE);
+
+    const int is384 = 0;
+    mbedtls_sha512(data, data_len, digest, is384);
+    
+}
+
+//
+//  Start a new hashing.
+//
+VSF_PUBLIC void
+vsf_sha512_start (vsf_sha512_impl_t* sha512_impl) {
+
+    VSF_ASSERT_PTR(sha512_impl);
+
+    const int is384 = 0;
+    mbedtls_sha512_starts(&sha512_impl->hash_ctx, is384);
+}
+
+//
+//  Add given data to the hash.
+//
+VSF_PUBLIC void
+vsf_sha512_update (vsf_sha512_impl_t* sha512_impl, const byte* data, size_t data_len) {
+
+    VSF_ASSERT_PTR(sha512_impl);
+    VSF_ASSERT_PTR(data);
+
+    mbedtls_sha512_update(&sha512_impl->hash_ctx, data, data_len);
+}
+
+//
+//  Accompilsh hashing and return it's result (a message digest).
+//
+VSF_PUBLIC void
+vsf_sha512_finish (vsf_sha512_impl_t* sha512_impl, byte* digest, size_t digest_len) {
+
+    VSF_ASSERT_PTR(sha512_impl);
+    VSF_ASSERT_PTR(digest);
+    VSF_ASSERT_OPT(digest_len >= vsf_sha512_DIGEST_SIZE);
+
+    mbedtls_sha512_finish(&sha512_impl->hash_ctx, digest);
+}

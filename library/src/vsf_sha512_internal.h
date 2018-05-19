@@ -46,14 +46,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_API_H_INCLUDED
-#define VSF_API_H_INCLUDED
+#ifndef VSF_SHA512_INTERNAL_H_INCLUDED
+#define VSF_SHA512_INTERNAL_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_sha512.h"
 //  @end
 
 
@@ -68,22 +69,16 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Provides initialization of the implementation specific context.
 //
-enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HASH,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_KDF,
-    vsf_api_tag_END
-};
-typedef enum vsf_api_tag_t vsf_api_tag_t;
+VSF_PRIVATE void
+vsf_sha512_init_ctx (vsf_sha512_impl_t* sha512_impl);
 
 //
-//  Generic type for any 'API' object.
+//  Provides cleanup of the implementation specific context.
 //
-typedef struct vsf_api_t vsf_api_t;
+VSF_PRIVATE void
+vsf_sha512_cleanup_ctx (vsf_sha512_impl_t* sha512_impl);
 
 
 // --------------------------------------------------------------------------
@@ -98,5 +93,5 @@ typedef struct vsf_api_t vsf_api_t;
 
 
 //  @footer
-#endif // VSF_API_H_INCLUDED
+#endif // VSF_SHA512_INTERNAL_H_INCLUDED
 //  @end

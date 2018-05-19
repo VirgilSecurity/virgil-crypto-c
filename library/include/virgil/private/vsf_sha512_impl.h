@@ -46,15 +46,19 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface 'decrypt' API.
+//  Types of the 'sha512' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_DECRYPT_API_H_INCLUDED
-#define VSF_DECRYPT_API_H_INCLUDED
+#ifndef VSF_SHA512_IMPL_H_INCLUDED
+#define VSF_SHA512_IMPL_H_INCLUDED
 
 #include "vsf_library.h"
-#include "vsf_api.h"
-#include "vsf_impl.h"
+#include "vsf_impl_private.h"
+
+#include <mbedtls/sha512.h>
 //  @end
 
 
@@ -69,24 +73,17 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Decrypt given data.
+//  Handles implementation details.
 //
-typedef int (*vsf_decrypt_api_decrypt_fn) (vsf_impl_t* impl, const byte* enc, size_t enc_len,
-        byte* data, size_t data_len, size_t* out_len);
-
-//
-//  Contains API requirements of the interface 'decrypt'.
-//
-struct vsf_decrypt_api_t {
+struct vsf_sha512_impl_t {
     //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'decrypt' MUST be equal to the 'vsf_api_tag_DECRYPT'.
+    //  Compile-time known information about this implementation.
     //
-    vsf_api_tag_t api_tag;
+    const vsf_impl_info_t* info;
     //
-    //  Decrypt given data.
+    //  Interface implementation specific context.
     //
-    vsf_decrypt_api_decrypt_fn decrypt_cb;
+    mbedtls_sha512_context hash_ctx;
 };
 
 
@@ -102,5 +99,5 @@ struct vsf_decrypt_api_t {
 
 
 //  @footer
-#endif // VSF_DECRYPT_API_H_INCLUDED
+#endif // VSF_SHA512_IMPL_H_INCLUDED
 //  @end

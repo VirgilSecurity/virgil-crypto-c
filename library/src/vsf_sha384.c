@@ -36,6 +36,12 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains 'sha384' implementation.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,47 +49,20 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#include "vsf_sha384.h"
+#include "vsf_assert.h"
+#include "vsf_memory.h"
+#include "vsf_sha384_impl.h"
+#include "vsf_sha384_internal.h"
 
-//  @description
-// --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
-// --------------------------------------------------------------------------
-
-#ifndef VSF_API_H_INCLUDED
-#define VSF_API_H_INCLUDED
-
-#include "vsf_library.h"
+#include <mbedtls/sha512.h>
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
 // --------------------------------------------------------------------------
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Enumerates all possible interfaces within crypto library.
-//
-enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HASH,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_KDF,
-    vsf_api_tag_END
-};
-typedef enum vsf_api_tag_t vsf_api_tag_t;
-
-//
-//  Generic type for any 'API' object.
-//
-typedef struct vsf_api_t vsf_api_t;
 
 
 // --------------------------------------------------------------------------
@@ -92,11 +71,75 @@ typedef struct vsf_api_t vsf_api_t;
 //  @end
 
 
-#ifdef __cplusplus
+//
+//  Provides initialization of the implementation specific context.
+//
+VSF_PRIVATE void
+vsf_sha384_init_ctx (vsf_sha384_impl_t* sha384_impl) {
+
+    VSF_ASSERT_PTR(sha384_impl);
+
+    mbedtls_sha512_init(&sha384_impl->hash_ctx);
 }
-#endif
 
+//
+//  Provides cleanup of the implementation specific context.
+//
+VSF_PRIVATE void
+vsf_sha384_cleanup_ctx (vsf_sha384_impl_t* sha384_impl) {
 
-//  @footer
-#endif // VSF_API_H_INCLUDED
-//  @end
+    VSF_ASSERT_PTR(sha384_impl);
+
+    mbedtls_sha512_free(&sha384_impl->hash_ctx);
+}
+
+//
+//  Calculate hash over given data.
+//
+VSF_PUBLIC void
+vsf_sha384_hash (const byte* data, size_t data_len, byte* digest, size_t digest_len) {
+
+    VSF_ASSERT_PTR(data);
+    VSF_ASSERT_PTR(digest);
+    VSF_ASSERT_OPT(digest_len >= vsf_sha384_DIGEST_SIZE);
+
+    const int is384 = 1;
+    mbedtls_sha512(data, data_len, digest, is384);
+}
+
+//
+//  Start a new hashing.
+//
+VSF_PUBLIC void
+vsf_sha384_start (vsf_sha384_impl_t* sha384_impl) {
+
+    VSF_ASSERT_PTR(sha384_impl);
+
+    const int is384 = 1;
+    mbedtls_sha512_starts(&sha384_impl->hash_ctx, is384);
+}
+
+//
+//  Add given data to the hash.
+//
+VSF_PUBLIC void
+vsf_sha384_update(vsf_sha384_impl_t* sha384_impl, const byte* data, size_t data_len) {
+
+    VSF_ASSERT_PTR(sha384_impl);
+    VSF_ASSERT_PTR(data);
+
+    mbedtls_sha512_update(&sha384_impl->hash_ctx, data, data_len);
+}
+
+//
+//  Accompilsh hashing and return it's result (a message digest).
+//
+VSF_PUBLIC void
+vsf_sha384_finish (vsf_sha384_impl_t* sha384_impl, byte* digest, size_t digest_len) {
+
+    VSF_ASSERT_PTR(sha384_impl);
+    VSF_ASSERT_PTR(digest);
+    VSF_ASSERT_OPT(digest_len >= vsf_sha384_DIGEST_SIZE);
+
+    mbedtls_sha512_finish(&sha384_impl->hash_ctx, digest);
+}

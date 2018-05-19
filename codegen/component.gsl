@@ -331,7 +331,7 @@ function component_derive_name_prefix (component)
     component_require_lineage (my.component, my)
 
     my.ancestors = ""
-    for my.component->lineage.ancestor where ! string_in (id, "project, module") & name <> of_class
+    for my.component->lineage.ancestor where ! string_in (id, "project, module")
         my.ancestors = cat (my.ancestors, ancestor.name)
     endfor
 

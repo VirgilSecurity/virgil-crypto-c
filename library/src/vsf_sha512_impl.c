@@ -36,6 +36,15 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'sha512' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,24 +52,8 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'encrypt' API.
-// --------------------------------------------------------------------------
-
-#ifndef VSF_ENCRYPT_API_H_INCLUDED
-#define VSF_ENCRYPT_API_H_INCLUDED
-
-#include "vsf_library.h"
-#include "vsf_api.h"
-#include "vsf_impl.h"
+#include "vsf_sha512_impl.h"
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -68,39 +61,8 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Callback. Encrypt given data.
-//
-typedef int (*vsf_encrypt_api_encrypt_fn) (vsf_impl_t* impl, const byte* data, size_t data_len,
-        byte* enc, size_t enc_len, size_t* out_len);
-
-//
-//  Contains API requirements of the interface 'encrypt'.
-//
-struct vsf_encrypt_api_t {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'encrypt' MUST be equal to the 'vsf_api_tag_ENCRYPT'.
-    //
-    vsf_api_tag_t api_tag;
-    //
-    //  Encrypt given data.
-    //
-    vsf_encrypt_api_encrypt_fn encrypt_cb;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSF_ENCRYPT_API_H_INCLUDED
 //  @end

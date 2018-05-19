@@ -46,14 +46,17 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Provide interface for data encryption.
+//  This module contains 'sha224' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_ENCRYPT_H_INCLUDED
-#define VSF_ENCRYPT_H_INCLUDED
+#ifndef VSF_SHA224_H_INCLUDED
+#define VSF_SHA224_H_INCLUDED
 
 #include "vsf_library.h"
 #include "vsf_impl.h"
+#include "vsf_hash_info.h"
+#include "vsf_hash.h"
+#include "vsf_hash_stream.h"
 //  @end
 
 
@@ -68,34 +71,101 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'encrypt'.
+//  Public integral constants.
 //
-typedef struct vsf_encrypt_api_t vsf_encrypt_api_t;
+enum {
+    vsf_sha224_DIGEST_SIZE = 24
+};
 
 //
-//  Encrypt given data.
+//  Handles implementation details.
 //
-VSF_PUBLIC int
-vsf_encrypt (vsf_impl_t* impl, const byte* data, size_t data_len, byte* enc, size_t enc_len,
-        size_t* out_len);
+typedef struct vsf_sha224_impl_t vsf_sha224_impl_t;
 
 //
-//  Return encrypt API, or NULL if it is not implemented.
-//
-VSF_PUBLIC const vsf_encrypt_api_t*
-vsf_encrypt_api (vsf_impl_t* impl);
-
-//
-//  Return size of 'vsf_encrypt_api_t' type.
+//  Return size of 'vsf_sha224_impl_t' type.
 //
 VSF_PUBLIC size_t
-vsf_encrypt_api_size (void);
+vsf_sha224_impl_size (void);
 
 //
-//  Check if given object implements interface 'encrypt'.
+//  Cast to the 'vsf_impl_t' type.
 //
-VSF_PUBLIC bool
-vsf_encrypt_is_implemented (vsf_impl_t* impl);
+VSF_PUBLIC vsf_impl_t*
+vsf_sha224_impl (vsf_sha224_impl_t* sha224_impl);
+
+//
+//  Perform initialization of preallocated implementation context.
+//
+VSF_PUBLIC void
+vsf_sha224_init (vsf_sha224_impl_t* sha224_impl);
+
+//
+//  Cleanup implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_sha224_init ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
+//
+VSF_PUBLIC void
+vsf_sha224_cleanup (vsf_sha224_impl_t* sha224_impl);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
+//
+VSF_PUBLIC vsf_sha224_impl_t*
+vsf_sha224_new (void);
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_sha224_new ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
+//
+VSF_PUBLIC void
+vsf_sha224_destroy (vsf_sha224_impl_t** sha224_impl_ref);
+
+//
+//  Returns instance of the implemented interface 'hash info'.
+//
+VSF_PUBLIC const vsf_hash_info_api_t*
+vsf_sha224_hash_info_api (void);
+
+//
+//  Returns instance of the implemented interface 'hash'.
+//
+VSF_PUBLIC const vsf_hash_api_t*
+vsf_sha224_hash_api (void);
+
+//
+//  Returns instance of the implemented interface 'hash stream'.
+//
+VSF_PUBLIC const vsf_hash_stream_api_t*
+vsf_sha224_hash_stream_api (void);
+
+//
+//  Calculate hash over given data.
+//
+VSF_PUBLIC void
+vsf_sha224_hash (const byte* data, size_t data_len, byte* digest, size_t digest_len);
+
+//
+//  Start a new hashing.
+//
+VSF_PUBLIC void
+vsf_sha224_start (vsf_sha224_impl_t* sha224_impl);
+
+//
+//  Add given data to the hash.
+//
+VSF_PUBLIC void
+vsf_sha224_update (vsf_sha224_impl_t* sha224_impl, const byte* data, size_t data_len);
+
+//
+//  Accompilsh hashing and return it's result (a message digest).
+//
+VSF_PUBLIC void
+vsf_sha224_finish (vsf_sha224_impl_t* sha224_impl, byte* digest, size_t digest_len);
 
 
 // --------------------------------------------------------------------------
@@ -110,5 +180,5 @@ vsf_encrypt_is_implemented (vsf_impl_t* impl);
 
 
 //  @footer
-#endif // VSF_ENCRYPT_H_INCLUDED
+#endif // VSF_SHA224_H_INCLUDED
 //  @end

@@ -36,12 +36,6 @@
 // --------------------------------------------------------------------------
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Provide interface for data encryption.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -49,10 +43,24 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsf_encrypt.h"
-#include "vsf_assert.h"
-#include "vsf_encrypt_api.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
+// --------------------------------------------------------------------------
+
+#ifndef VSF_SHA224_INTERNAL_H_INCLUDED
+#define VSF_SHA224_INTERNAL_H_INCLUDED
+
+#include "vsf_library.h"
+#include "vsf_sha224.h"
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -61,53 +69,29 @@
 // --------------------------------------------------------------------------
 
 //
-//  Encrypt given data.
+//  Provides initialization of the implementation specific context.
 //
-VSF_PUBLIC int
-vsf_encrypt (vsf_impl_t* impl, const byte* data, size_t data_len, byte* enc, size_t enc_len,
-        size_t* out_len) {
-
-    const vsf_encrypt_api_t *encrypt_api = vsf_encrypt_api (impl);
-    VSF_ASSERT_PTR (encrypt_api);
-
-    VSF_ASSERT_PTR (encrypt_api->encrypt_cb);
-    return encrypt_api->encrypt_cb (impl, data, data_len, enc, enc_len, out_len);
-}
+VSF_PRIVATE void
+vsf_sha224_init_ctx (vsf_sha224_impl_t* sha224_impl);
 
 //
-//  Return encrypt API, or NULL if it is not implemented.
+//  Provides cleanup of the implementation specific context.
 //
-VSF_PUBLIC const vsf_encrypt_api_t*
-vsf_encrypt_api (vsf_impl_t* impl) {
-
-    VSF_ASSERT_PTR (impl);
-
-    const vsf_api_t *api = vsf_impl_api (impl, vsf_api_tag_ENCRYPT);
-    return (const vsf_encrypt_api_t *) api;
-}
-
-//
-//  Return size of 'vsf_encrypt_api_t' type.
-//
-VSF_PUBLIC size_t
-vsf_encrypt_api_size (void) {
-
-    return sizeof(vsf_encrypt_api_t);
-}
-
-//
-//  Check if given object implements interface 'encrypt'.
-//
-VSF_PUBLIC bool
-vsf_encrypt_is_implemented (vsf_impl_t* impl) {
-
-    VSF_ASSERT_PTR (impl);
-
-    return vsf_impl_api (impl, vsf_api_tag_ENCRYPT) != NULL;
-}
+VSF_PRIVATE void
+vsf_sha224_cleanup_ctx (vsf_sha224_impl_t* sha224_impl);
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSF_SHA224_INTERNAL_H_INCLUDED
 //  @end
