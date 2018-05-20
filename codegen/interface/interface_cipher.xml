@@ -5,11 +5,12 @@
 
     <inherit interface="encrypt"/>
     <inherit interface="decrypt"/>
+    <inherit interface="cipher info"/>
 
-    <method name="nonce len">
-        Returns nonce length in bytes, or 0 if nonce is not required.
+    <method name="set padding">
+         Set padding mode, for cipher modes that use padding.
 
-        <return type="size"/>
+         <argument name="padding" enum=".(class_cipher_padding_enum_cipher_padding)"/>
     </method>
 
     <method name="set nonce">
@@ -19,9 +20,10 @@
         <argument name="nonce len" type="size"/>
     </method>
 
-    <method name="set padding">
-         Set padding mode, for cipher modes that use padding.
+    <method name="set key">
+        Set cipher encryption / decryption key.
 
-         <argument name="padding" enum=".(class_cipher_padding_enum_cipher_padding)"/>
+        <argument name="key" type="data"/>
+        <argument name="key len" type="size"/>
     </method>
 </interface>

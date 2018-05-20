@@ -56,6 +56,7 @@
 #include "vsf_impl.h"
 #include "vsf_encrypt.h"
 #include "vsf_decrypt.h"
+#include "vsf_cipher_info.h"
 #include "vsf_cipher_padding.h"
 //  @end
 
@@ -76,10 +77,10 @@ extern "C" {
 typedef struct vsf_cipher_api_t vsf_cipher_api_t;
 
 //
-//  Returns nonce length in bytes, or 0 if nonce is not required.
+//  Set padding mode, for cipher modes that use padding.
 //
-VSF_PUBLIC size_t
-vsf_cipher_nonce_len (vsf_impl_t* impl);
+VSF_PUBLIC void
+vsf_cipher_set_padding (vsf_impl_t* impl, vsf_cipher_padding_t padding);
 
 //
 //  Setup IV or nonce.
@@ -88,10 +89,10 @@ VSF_PUBLIC void
 vsf_cipher_set_nonce (vsf_impl_t* impl, const byte* nonce, size_t nonce_len);
 
 //
-//  Set padding mode, for cipher modes that use padding.
+//  Set cipher encryption / decryption key.
 //
 VSF_PUBLIC void
-vsf_cipher_set_padding (vsf_impl_t* impl, vsf_cipher_padding_t padding);
+vsf_cipher_set_key (vsf_impl_t* impl, const byte* key, size_t key_len);
 
 //
 //  Return cipher API, or NULL if it is not implemented.

@@ -1,0 +1,11 @@
+<interface name="cipher info" of_class="cipher">
+    Provides compile time knownledge about algorithm.
+
+    <constant name="nonce len" type="size" value="0">
+        Nonce length or IV length in bytes, or 0 if nonce is not required.
+    </constant>
+
+    <constant name="key len" type="size">
+        Key length in bytes.
+    </constant>
+</interface>

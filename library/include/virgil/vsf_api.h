@@ -79,6 +79,7 @@ enum vsf_api_tag_t {
     vsf_api_tag_ENCRYPT,
     vsf_api_tag_DECRYPT,
     vsf_api_tag_CIPHER,
+    vsf_api_tag_CIPHER_INFO,
     vsf_api_tag_END
 };
 typedef enum vsf_api_tag_t vsf_api_tag_t;
