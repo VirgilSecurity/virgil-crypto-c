@@ -38,7 +38,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Provide interface for symmetric ciphers.
+//  Provides compile time knownledge about algorithm.
 // --------------------------------------------------------------------------
 
 
@@ -49,9 +49,9 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsf_cipher.h"
+#include "vsf_cipher_info.h"
 #include "vsf_assert.h"
-#include "vsf_cipher_api.h"
+#include "vsf_cipher_info_api.h"
 //  @end
 
 
@@ -61,74 +61,57 @@
 // --------------------------------------------------------------------------
 
 //
-//  Set padding mode, for cipher modes that use padding.
-//
-VSF_PUBLIC void
-vsf_cipher_set_padding (vsf_impl_t* impl, vsf_cipher_padding_t padding) {
-
-    const vsf_cipher_api_t *cipher_api = vsf_cipher_api (impl);
-    VSF_ASSERT_PTR (cipher_api);
-
-    VSF_ASSERT_PTR (cipher_api->set_padding_cb);
-    cipher_api->set_padding_cb (impl, padding);
-}
-
-//
-//  Setup IV or nonce.
-//
-VSF_PUBLIC void
-vsf_cipher_set_nonce (vsf_impl_t* impl, const byte* nonce, size_t nonce_len) {
-
-    const vsf_cipher_api_t *cipher_api = vsf_cipher_api (impl);
-    VSF_ASSERT_PTR (cipher_api);
-
-    VSF_ASSERT_PTR (cipher_api->set_nonce_cb);
-    cipher_api->set_nonce_cb (impl, nonce, nonce_len);
-}
-
-//
-//  Set cipher encryption / decryption key.
-//
-VSF_PUBLIC void
-vsf_cipher_set_key (vsf_impl_t* impl, const byte* key, size_t key_len) {
-
-    const vsf_cipher_api_t *cipher_api = vsf_cipher_api (impl);
-    VSF_ASSERT_PTR (cipher_api);
-
-    VSF_ASSERT_PTR (cipher_api->set_key_cb);
-    cipher_api->set_key_cb (impl, key, key_len);
-}
-
-//
-//  Return cipher API, or NULL if it is not implemented.
-//
-VSF_PUBLIC const vsf_cipher_api_t*
-vsf_cipher_api (vsf_impl_t* impl) {
-
-    VSF_ASSERT_PTR (impl);
-
-    const vsf_api_t *api = vsf_impl_api (impl, vsf_api_tag_CIPHER);
-    return (const vsf_cipher_api_t *) api;
-}
-
-//
-//  Return size of 'vsf_cipher_api_t' type.
+//  Returns constant 'nonce len'.
 //
 VSF_PUBLIC size_t
-vsf_cipher_api_size (void) {
+vsf_cipher_info_nonce_len (const vsf_cipher_info_api_t* cipher_info_api) {
 
-    return sizeof(vsf_cipher_api_t);
+    VSF_ASSERT_PTR (cipher_info_api);
+
+    return cipher_info_api->nonce_len;
 }
 
 //
-//  Check if given object implements interface 'cipher'.
+//  Returns constant 'key len'.
 //
-VSF_PUBLIC bool
-vsf_cipher_is_implemented (vsf_impl_t* impl) {
+VSF_PUBLIC size_t
+vsf_cipher_info_key_len (const vsf_cipher_info_api_t* cipher_info_api) {
+
+    VSF_ASSERT_PTR (cipher_info_api);
+
+    return cipher_info_api->key_len;
+}
+
+//
+//  Return cipher info API, or NULL if it is not implemented.
+//
+VSF_PUBLIC const vsf_cipher_info_api_t*
+vsf_cipher_info_api (vsf_impl_t* impl) {
 
     VSF_ASSERT_PTR (impl);
 
-    return vsf_impl_api (impl, vsf_api_tag_CIPHER) != NULL;
+    const vsf_api_t *api = vsf_impl_api (impl, vsf_api_tag_CIPHER_INFO);
+    return (const vsf_cipher_info_api_t *) api;
+}
+
+//
+//  Return size of 'vsf_cipher_info_api_t' type.
+//
+VSF_PUBLIC size_t
+vsf_cipher_info_api_size (void) {
+
+    return sizeof(vsf_cipher_info_api_t);
+}
+
+//
+//  Check if given object implements interface 'cipher info'.
+//
+VSF_PUBLIC bool
+vsf_cipher_info_is_implemented (vsf_impl_t* impl) {
+
+    VSF_ASSERT_PTR (impl);
+
+    return vsf_impl_api (impl, vsf_api_tag_CIPHER_INFO) != NULL;
 }
 
 
