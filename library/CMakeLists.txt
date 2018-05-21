@@ -60,6 +60,7 @@ target_sources(vsf
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_api.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_assert.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_cipher.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_cipher_auth.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_cipher_info.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_cipher_padding.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_decrypt.h"
@@ -76,6 +77,7 @@ target_sources(vsf
 
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_api_private.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_cipher_api.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_cipher_auth_api.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_cipher_info_api.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_decrypt_api.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_encrypt_api.h"
@@ -87,13 +89,14 @@ target_sources(vsf
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_kdf_api.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_sha256_impl.h"
 
-
         PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_api.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_api_private.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_assert.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_cipher.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_cipher_api.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_cipher_auth.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_cipher_auth_api.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_cipher_info.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_cipher_info_api.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_cipher_padding.c"

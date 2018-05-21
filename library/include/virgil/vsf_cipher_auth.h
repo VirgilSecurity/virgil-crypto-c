@@ -46,14 +46,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Mix-in interface that provides specific functionality to authenticated
+//  encryption and decryption.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_API_H_INCLUDED
-#define VSF_API_H_INCLUDED
+#ifndef VSF_CIPHER_AUTH_H_INCLUDED
+#define VSF_CIPHER_AUTH_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_impl.h"
 //  @end
 
 
@@ -68,27 +69,54 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Contains API requirements of the interface 'cipher auth'.
 //
-enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_HASH,
-    vsf_api_tag_KDF,
-    vsf_api_tag_ENCRYPT,
-    vsf_api_tag_DECRYPT,
-    vsf_api_tag_CIPHER,
-    vsf_api_tag_CIPHER_AUTH,
-    vsf_api_tag_CIPHER_INFO,
-    vsf_api_tag_END
-};
-typedef enum vsf_api_tag_t vsf_api_tag_t;
+typedef struct vsf_cipher_auth_api_t vsf_cipher_auth_api_t;
 
 //
-//  Generic type for any 'API' object.
+//  Setup additional data.
+//  Must be called before encryption / decryption operation.
 //
-typedef struct vsf_api_t vsf_api_t;
+VSF_PUBLIC void
+vsf_cipher_auth_set_data (vsf_impl_t* impl, const byte* data, size_t data_len);
+
+//
+//  Write authentication tag.
+//  Must be called after encryption is finished.
+//
+VSF_PUBLIC void
+vsf_cipher_auth_write_tag (vsf_impl_t* impl, byte* tag, size_t tag_len);
+
+//
+//  Validate authentication tag.
+//  Must be called after decryption is finished.
+//
+VSF_PUBLIC void
+vsf_cipher_auth_check_tag (vsf_impl_t* impl, const byte* tag, size_t tag_len);
+
+//
+//  Returns constant 'tag len'.
+//
+VSF_PUBLIC size_t
+vsf_cipher_auth_tag_len (const vsf_cipher_auth_api_t* cipher_auth_api);
+
+//
+//  Return cipher auth API, or NULL if it is not implemented.
+//
+VSF_PUBLIC const vsf_cipher_auth_api_t*
+vsf_cipher_auth_api (vsf_impl_t* impl);
+
+//
+//  Return size of 'vsf_cipher_auth_api_t' type.
+//
+VSF_PUBLIC size_t
+vsf_cipher_auth_api_size (void);
+
+//
+//  Check if given object implements interface 'cipher auth'.
+//
+VSF_PUBLIC bool
+vsf_cipher_auth_is_implemented (vsf_impl_t* impl);
 
 
 // --------------------------------------------------------------------------
@@ -103,5 +131,5 @@ typedef struct vsf_api_t vsf_api_t;
 
 
 //  @footer
-#endif // VSF_API_H_INCLUDED
+#endif // VSF_CIPHER_AUTH_H_INCLUDED
 //  @end

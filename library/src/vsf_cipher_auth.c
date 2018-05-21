@@ -38,7 +38,8 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Provides compile time knownledge about algorithm.
+//  Mix-in interface that provides specific functionality to authenticated
+//  encryption and decryption.
 // --------------------------------------------------------------------------
 
 
@@ -49,9 +50,9 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsf_cipher_info.h"
+#include "vsf_cipher_auth.h"
 #include "vsf_assert.h"
-#include "vsf_cipher_info_api.h"
+#include "vsf_cipher_auth_api.h"
 //  @end
 
 
@@ -61,68 +62,88 @@
 // --------------------------------------------------------------------------
 
 //
-//  Returns constant 'nonce len'.
+//  Setup additional data.
+//  Must be called before encryption / decryption operation.
 //
-VSF_PUBLIC size_t
-vsf_cipher_info_nonce_len (const vsf_cipher_info_api_t* cipher_info_api) {
+VSF_PUBLIC void
+vsf_cipher_auth_set_data (vsf_impl_t* impl, const byte* data, size_t data_len) {
 
-    VSF_ASSERT_PTR (cipher_info_api);
+    const vsf_cipher_auth_api_t *cipher_auth_api = vsf_cipher_auth_api (impl);
+    VSF_ASSERT_PTR (cipher_auth_api);
 
-    return cipher_info_api->nonce_len;
+    VSF_ASSERT_PTR (cipher_auth_api->set_data_cb);
+    cipher_auth_api->set_data_cb (impl, data, data_len);
 }
 
 //
-//  Returns constant 'key len'.
+//  Write authentication tag.
+//  Must be called after encryption is finished.
 //
-VSF_PUBLIC size_t
-vsf_cipher_info_key_len (const vsf_cipher_info_api_t* cipher_info_api) {
+VSF_PUBLIC void
+vsf_cipher_auth_write_tag (vsf_impl_t* impl, byte* tag, size_t tag_len) {
 
-    VSF_ASSERT_PTR (cipher_info_api);
+    const vsf_cipher_auth_api_t *cipher_auth_api = vsf_cipher_auth_api (impl);
+    VSF_ASSERT_PTR (cipher_auth_api);
 
-    return cipher_info_api->key_len;
+    VSF_ASSERT_PTR (cipher_auth_api->write_tag_cb);
+    cipher_auth_api->write_tag_cb (impl, tag, tag_len);
 }
 
 //
-//  Returns constant 'block len'.
+//  Validate authentication tag.
+//  Must be called after decryption is finished.
 //
-VSF_PUBLIC size_t
-vsf_cipher_info_block_len (const vsf_cipher_info_api_t* cipher_info_api) {
+VSF_PUBLIC void
+vsf_cipher_auth_check_tag (vsf_impl_t* impl, const byte* tag, size_t tag_len) {
 
-    VSF_ASSERT_PTR (cipher_info_api);
+    const vsf_cipher_auth_api_t *cipher_auth_api = vsf_cipher_auth_api (impl);
+    VSF_ASSERT_PTR (cipher_auth_api);
 
-    return cipher_info_api->block_len;
+    VSF_ASSERT_PTR (cipher_auth_api->check_tag_cb);
+    cipher_auth_api->check_tag_cb (impl, tag, tag_len);
 }
 
 //
-//  Return cipher info API, or NULL if it is not implemented.
+//  Returns constant 'tag len'.
 //
-VSF_PUBLIC const vsf_cipher_info_api_t*
-vsf_cipher_info_api (vsf_impl_t* impl) {
+VSF_PUBLIC size_t
+vsf_cipher_auth_tag_len (const vsf_cipher_auth_api_t* cipher_auth_api) {
+
+    VSF_ASSERT_PTR (cipher_auth_api);
+
+    return cipher_auth_api->tag_len;
+}
+
+//
+//  Return cipher auth API, or NULL if it is not implemented.
+//
+VSF_PUBLIC const vsf_cipher_auth_api_t*
+vsf_cipher_auth_api (vsf_impl_t* impl) {
 
     VSF_ASSERT_PTR (impl);
 
-    const vsf_api_t *api = vsf_impl_api (impl, vsf_api_tag_CIPHER_INFO);
-    return (const vsf_cipher_info_api_t *) api;
+    const vsf_api_t *api = vsf_impl_api (impl, vsf_api_tag_CIPHER_AUTH);
+    return (const vsf_cipher_auth_api_t *) api;
 }
 
 //
-//  Return size of 'vsf_cipher_info_api_t' type.
+//  Return size of 'vsf_cipher_auth_api_t' type.
 //
 VSF_PUBLIC size_t
-vsf_cipher_info_api_size (void) {
+vsf_cipher_auth_api_size (void) {
 
-    return sizeof(vsf_cipher_info_api_t);
+    return sizeof(vsf_cipher_auth_api_t);
 }
 
 //
-//  Check if given object implements interface 'cipher info'.
+//  Check if given object implements interface 'cipher auth'.
 //
 VSF_PUBLIC bool
-vsf_cipher_info_is_implemented (vsf_impl_t* impl) {
+vsf_cipher_auth_is_implemented (vsf_impl_t* impl) {
 
     VSF_ASSERT_PTR (impl);
 
-    return vsf_impl_api (impl, vsf_api_tag_CIPHER_INFO) != NULL;
+    return vsf_impl_api (impl, vsf_api_tag_CIPHER_AUTH) != NULL;
 }
 
 

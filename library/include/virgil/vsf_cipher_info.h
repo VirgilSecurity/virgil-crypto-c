@@ -85,6 +85,12 @@ VSF_PUBLIC size_t
 vsf_cipher_info_key_len (const vsf_cipher_info_api_t* cipher_info_api);
 
 //
+//  Returns constant 'block len'.
+//
+VSF_PUBLIC size_t
+vsf_cipher_info_block_len (const vsf_cipher_info_api_t* cipher_info_api);
+
+//
 //  Return cipher info API, or NULL if it is not implemented.
 //
 VSF_PUBLIC const vsf_cipher_info_api_t*

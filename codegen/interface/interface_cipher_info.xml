@@ -2,10 +2,14 @@
     Provides compile time knownledge about algorithm.
 
     <constant name="nonce len" type="size" value="0">
-        Nonce length or IV length in bytes, or 0 if nonce is not required.
+        Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
     </constant>
 
     <constant name="key len" type="size">
-        Key length in bytes.
+        Cipher key length in bytes.
+    </constant>
+
+    <constant name="block len" type="size">
+        Cipher block length in bytes.
     </constant>
 </interface>
