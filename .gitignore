@@ -26,5 +26,3 @@ cmake-build-*/
 # Visual Studio (VisualGDB)
 Debug*/
 gcc*
-virgil-crypto-c.*
-virgil-crypto-c-*

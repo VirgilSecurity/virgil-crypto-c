@@ -52,7 +52,6 @@ const byte test_sha384_VECTOR_1_DIGEST[] = {
 const size_t test_sha384_VECTOR_1_INPUT_LEN = sizeof (test_sha384_VECTOR_1_INPUT);
 const size_t test_sha384_VECTOR_1_DIGEST_LEN = sizeof (test_sha384_VECTOR_1_DIGEST);
 
-
 //
 //  Test Vector 2
 //
