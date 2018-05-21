@@ -36,6 +36,12 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains 'sha384' implementation.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,86 +49,20 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#include "vsf_sha384.h"
+#include "vsf_assert.h"
+#include "vsf_memory.h"
+#include "vsf_sha384_impl.h"
+#include "vsf_sha384_internal.h"
 
-//  @description
-// --------------------------------------------------------------------------
-//  This module contains common functionality for all 'implementation' object.
-//  It is also enumerate all available implementations within crypto libary.
-// --------------------------------------------------------------------------
-
-#ifndef VSF_IMPL_H_INCLUDED
-#define VSF_IMPL_H_INCLUDED
-
-#include "vsf_library.h"
-#include "vsf_api.h"
+#include <mbedtls/sha512.h>
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
 // --------------------------------------------------------------------------
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Enumerates all possible implementations within crypto library.
-//
-enum vsf_impl_tag_t {
-    vsf_impl_tag_BEGIN = 0,
-    vsf_impl_tag_KDF1,
-    vsf_impl_tag_SHA224,
-    vsf_impl_tag_SHA256,
-    vsf_impl_tag_SHA384,
-    vsf_impl_tag_SHA512,
-    vsf_impl_tag_END
-};
-typedef enum vsf_impl_tag_t vsf_impl_tag_t;
-
-//
-//  Generic type for any 'implementation'.
-//
-typedef struct vsf_impl_t vsf_impl_t;
-
-//
-//  Callback type for cleanup action.
-//
-typedef void (*vsf_impl_cleanup_fn) (vsf_impl_t* impl);
-
-//
-//  Callback type for destroy action.
-//
-typedef void (*vsf_impl_destroy_fn) (vsf_impl_t** impl_ref);
-
-//
-//  Return 'API' object that is fulfiled with a meta information
-//  specific to the given implementation object.
-//  Or NULL if object does not implement requested 'API'.
-//
-VSF_PUBLIC const vsf_api_t*
-vsf_impl_api (vsf_impl_t* impl, vsf_api_tag_t api_tag);
-
-//
-//  Return unique 'Implementation TAG'.
-//
-VSF_PUBLIC vsf_impl_tag_t
-vsf_impl_tag (vsf_impl_t* impl);
-
-//
-//  Cleanup implementation object and it's dependencies.
-//
-VSF_PUBLIC void
-vsf_impl_cleanup (vsf_impl_t* impl);
-
-//
-//  Destroy implementation object and it's dependencies.
-//  Note, do 'cleanup' before 'destroy'.
-//
-VSF_PUBLIC void
-vsf_impl_destroy (vsf_impl_t** impl_ref);
 
 
 // --------------------------------------------------------------------------
@@ -131,11 +71,75 @@ vsf_impl_destroy (vsf_impl_t** impl_ref);
 //  @end
 
 
-#ifdef __cplusplus
+//
+//  Provides initialization of the implementation specific context.
+//
+VSF_PRIVATE void
+vsf_sha384_init_ctx (vsf_sha384_impl_t* sha384_impl) {
+
+    VSF_ASSERT_PTR(sha384_impl);
+
+    mbedtls_sha512_init(&sha384_impl->hash_ctx);
 }
-#endif
 
+//
+//  Provides cleanup of the implementation specific context.
+//
+VSF_PRIVATE void
+vsf_sha384_cleanup_ctx (vsf_sha384_impl_t* sha384_impl) {
 
-//  @footer
-#endif // VSF_IMPL_H_INCLUDED
-//  @end
+    VSF_ASSERT_PTR(sha384_impl);
+
+    mbedtls_sha512_free(&sha384_impl->hash_ctx);
+}
+
+//
+//  Calculate hash over given data.
+//
+VSF_PUBLIC void
+vsf_sha384_hash (const byte* data, size_t data_len, byte* digest, size_t digest_len) {
+
+    VSF_ASSERT_PTR(data);
+    VSF_ASSERT_PTR(digest);
+    VSF_ASSERT_OPT(digest_len >= vsf_sha384_DIGEST_SIZE);
+
+    const int is384 = 1;
+    mbedtls_sha512(data, data_len, digest, is384);
+}
+
+//
+//  Start a new hashing.
+//
+VSF_PUBLIC void
+vsf_sha384_start (vsf_sha384_impl_t* sha384_impl) {
+
+    VSF_ASSERT_PTR(sha384_impl);
+
+    const int is384 = 1;
+    mbedtls_sha512_starts(&sha384_impl->hash_ctx, is384);
+}
+
+//
+//  Add given data to the hash.
+//
+VSF_PUBLIC void
+vsf_sha384_update(vsf_sha384_impl_t* sha384_impl, const byte* data, size_t data_len) {
+
+    VSF_ASSERT_PTR(sha384_impl);
+    VSF_ASSERT_PTR(data);
+
+    mbedtls_sha512_update(&sha384_impl->hash_ctx, data, data_len);
+}
+
+//
+//  Accompilsh hashing and return it's result (a message digest).
+//
+VSF_PUBLIC void
+vsf_sha384_finish (vsf_sha384_impl_t* sha384_impl, byte* digest, size_t digest_len) {
+
+    VSF_ASSERT_PTR(sha384_impl);
+    VSF_ASSERT_PTR(digest);
+    VSF_ASSERT_OPT(digest_len >= vsf_sha384_DIGEST_SIZE);
+
+    mbedtls_sha512_finish(&sha384_impl->hash_ctx, digest);
+}

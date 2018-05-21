@@ -46,15 +46,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains common functionality for all 'implementation' object.
-//  It is also enumerate all available implementations within crypto libary.
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_IMPL_H_INCLUDED
-#define VSF_IMPL_H_INCLUDED
+#ifndef VSF_SHA512_INTERNAL_H_INCLUDED
+#define VSF_SHA512_INTERNAL_H_INCLUDED
 
 #include "vsf_library.h"
-#include "vsf_api.h"
+#include "vsf_sha512.h"
 //  @end
 
 
@@ -69,60 +69,16 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible implementations within crypto library.
+//  Provides initialization of the implementation specific context.
 //
-enum vsf_impl_tag_t {
-    vsf_impl_tag_BEGIN = 0,
-    vsf_impl_tag_KDF1,
-    vsf_impl_tag_SHA224,
-    vsf_impl_tag_SHA256,
-    vsf_impl_tag_SHA384,
-    vsf_impl_tag_SHA512,
-    vsf_impl_tag_END
-};
-typedef enum vsf_impl_tag_t vsf_impl_tag_t;
+VSF_PRIVATE void
+vsf_sha512_init_ctx (vsf_sha512_impl_t* sha512_impl);
 
 //
-//  Generic type for any 'implementation'.
+//  Provides cleanup of the implementation specific context.
 //
-typedef struct vsf_impl_t vsf_impl_t;
-
-//
-//  Callback type for cleanup action.
-//
-typedef void (*vsf_impl_cleanup_fn) (vsf_impl_t* impl);
-
-//
-//  Callback type for destroy action.
-//
-typedef void (*vsf_impl_destroy_fn) (vsf_impl_t** impl_ref);
-
-//
-//  Return 'API' object that is fulfiled with a meta information
-//  specific to the given implementation object.
-//  Or NULL if object does not implement requested 'API'.
-//
-VSF_PUBLIC const vsf_api_t*
-vsf_impl_api (vsf_impl_t* impl, vsf_api_tag_t api_tag);
-
-//
-//  Return unique 'Implementation TAG'.
-//
-VSF_PUBLIC vsf_impl_tag_t
-vsf_impl_tag (vsf_impl_t* impl);
-
-//
-//  Cleanup implementation object and it's dependencies.
-//
-VSF_PUBLIC void
-vsf_impl_cleanup (vsf_impl_t* impl);
-
-//
-//  Destroy implementation object and it's dependencies.
-//  Note, do 'cleanup' before 'destroy'.
-//
-VSF_PUBLIC void
-vsf_impl_destroy (vsf_impl_t** impl_ref);
+VSF_PRIVATE void
+vsf_sha512_cleanup_ctx (vsf_sha512_impl_t* sha512_impl);
 
 
 // --------------------------------------------------------------------------
@@ -137,5 +93,5 @@ vsf_impl_destroy (vsf_impl_t** impl_ref);
 
 
 //  @footer
-#endif // VSF_IMPL_H_INCLUDED
+#endif // VSF_SHA512_INTERNAL_H_INCLUDED
 //  @end

@@ -36,12 +36,6 @@
 // --------------------------------------------------------------------------
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'decrypt' API.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -49,8 +43,28 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsf_decrypt_api.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'sha512' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+#ifndef VSF_SHA512_IMPL_H_INCLUDED
+#define VSF_SHA512_IMPL_H_INCLUDED
+
+#include "vsf_library.h"
+#include "vsf_impl_private.h"
+
+#include <mbedtls/sha512.h>
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -58,8 +72,32 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handles implementation details.
+//
+struct vsf_sha512_impl_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vsf_impl_info_t* info;
+    //
+    //  Interface implementation specific context.
+    //
+    mbedtls_sha512_context hash_ctx;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSF_SHA512_IMPL_H_INCLUDED
 //  @end
