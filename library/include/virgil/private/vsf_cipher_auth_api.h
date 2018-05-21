@@ -46,14 +46,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Interface 'cipher auth' API.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_API_H_INCLUDED
-#define VSF_API_H_INCLUDED
+#ifndef VSF_CIPHER_AUTH_API_H_INCLUDED
+#define VSF_CIPHER_AUTH_API_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_api.h"
+#include "vsf_impl.h"
 //  @end
 
 
@@ -68,27 +69,54 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Callback. Setup additional data.
+//          Must be called before encryption / decryption operation.
 //
-enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_HASH,
-    vsf_api_tag_KDF,
-    vsf_api_tag_ENCRYPT,
-    vsf_api_tag_DECRYPT,
-    vsf_api_tag_CIPHER,
-    vsf_api_tag_CIPHER_AUTH,
-    vsf_api_tag_CIPHER_INFO,
-    vsf_api_tag_END
-};
-typedef enum vsf_api_tag_t vsf_api_tag_t;
+typedef void (*vsf_cipher_auth_api_set_data_fn) (vsf_impl_t* impl, const byte* data,
+        size_t data_len);
 
 //
-//  Generic type for any 'API' object.
+//  Callback. Write authentication tag.
+//          Must be called after encryption is finished.
 //
-typedef struct vsf_api_t vsf_api_t;
+typedef void (*vsf_cipher_auth_api_write_tag_fn) (vsf_impl_t* impl, byte* tag, size_t tag_len);
+
+//
+//  Callback. Validate authentication tag.
+//          Must be called after decryption is finished.
+//
+typedef void (*vsf_cipher_auth_api_check_tag_fn) (vsf_impl_t* impl, const byte* tag,
+        size_t tag_len);
+
+//
+//  Contains API requirements of the interface 'cipher auth'.
+//
+struct vsf_cipher_auth_api_t {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'cipher_auth' MUST be equal to the 'vsf_api_tag_CIPHER_AUTH'.
+    //
+    vsf_api_tag_t api_tag;
+    //
+    //  Setup additional data.
+    //  Must be called before encryption / decryption operation.
+    //
+    vsf_cipher_auth_api_set_data_fn set_data_cb;
+    //
+    //  Write authentication tag.
+    //  Must be called after encryption is finished.
+    //
+    vsf_cipher_auth_api_write_tag_fn write_tag_cb;
+    //
+    //  Validate authentication tag.
+    //  Must be called after decryption is finished.
+    //
+    vsf_cipher_auth_api_check_tag_fn check_tag_cb;
+    //
+    //  Defines authentication tag length in bytes.
+    //
+    size_t tag_len;
+};
 
 
 // --------------------------------------------------------------------------
@@ -103,5 +131,5 @@ typedef struct vsf_api_t vsf_api_t;
 
 
 //  @footer
-#endif // VSF_API_H_INCLUDED
+#endif // VSF_CIPHER_AUTH_API_H_INCLUDED
 //  @end

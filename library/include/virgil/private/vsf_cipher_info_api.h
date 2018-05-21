@@ -78,13 +78,17 @@ struct vsf_cipher_info_api_t {
     //
     vsf_api_tag_t api_tag;
     //
-    //  Nonce length or IV length in bytes, or 0 if nonce is not required.
+    //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
     //
     size_t nonce_len;
     //
-    //  Key length in bytes.
+    //  Cipher key length in bytes.
     //
     size_t key_len;
+    //
+    //  Cipher block length in bytes.
+    //
+    size_t block_len;
 };
 
 
