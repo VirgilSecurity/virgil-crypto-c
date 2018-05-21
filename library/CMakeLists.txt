@@ -120,7 +120,6 @@ target_sources(vsf
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha512_impl.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha512_internal.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha512_internal.h"
-        #test
         )
 
 #

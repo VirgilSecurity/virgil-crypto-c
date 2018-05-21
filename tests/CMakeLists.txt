@@ -49,8 +49,21 @@ macro(_add_test test)
     add_test (NAME ${test} COMMAND ${test})
 endmacro()
 
+macro(_add_test_hash test)
+    add_executable(test_${test} test_${test}.c
+            test_utils.c
+            data_${test}.c
+            )
+    target_link_libraries(test_${test} unity vsf)
+    set_target_properties(test_${test} PROPERTIES C_STANDARD "99")
+    add_test (NAME test_${test} COMMAND test_${test})
+endmacro()
+
 _add_test (test_hash_info)
 _add_test (test_hash)
 _add_test (test_hash_stream)
-_add_test (test_sha256)
+_add_test_hash (sha224)
+_add_test_hash (sha256)
+_add_test_hash (sha384)
+_add_test_hash (sha512)
 _add_test (test_kdf1)
