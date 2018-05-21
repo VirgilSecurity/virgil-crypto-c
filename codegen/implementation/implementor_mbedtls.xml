@@ -4,6 +4,23 @@
     <require library = "mbedTLS" />
 
     <implementation name = "sha256">
+        This is MbedTLS implementation of SHA224.
+
+        <require_include name = "mbedtls/sha224.h" type = "context" />
+
+        <interface name = "hash info">
+            <constant name = "digest size" value = "24" />
+        </interface>
+
+        <interface name = "hash">
+        </interface>
+
+        <interface name = "hash stream">
+            <context name = "hash ctx" class = "mbedtls_sha224_context" access = "readwrite" is_reference="0"/>
+        </interface>
+
+    </implementation>
+    <implementation name = "sha256">
         This is MbedTLS implementation of SHA256.
 
         <require_include name = "mbedtls/sha256.h" type = "context" />
@@ -20,7 +37,41 @@
         </interface>
 
     </implementation>
-<!--
+    <implementation name = "sha384">
+        This is MbedTLS implementation of SHA384.
+
+        <require_include name = "mbedtls/sha512.h" type = "context" />
+
+        <interface name = "hash info">
+            <constant name = "digest size" value = "48" />
+        </interface>
+
+        <interface name = "hash">
+        </interface>
+
+        <interface name = "hash stream">
+            <context name = "hash ctx" class = "mbedtls_sha384_context" access = "readwrite" is_reference="0"/>
+        </interface>
+
+    </implementation>
+    <implementation name = "sha512">
+        This is MbedTLS implementation of SHA512.
+
+        <require_include name = "mbedtls/sha512.h" type = "context" />
+
+        <interface name = "hash info">
+            <constant name = "digest size" value = "64" />
+        </interface>
+
+        <interface name = "hash">
+        </interface>
+
+        <interface name = "hash stream">
+            <context name = "hash ctx" class = "mbedtls_sha512_context" access = "readwrite" is_reference="0"/>
+        </interface>
+
+    </implementation>
+    <!--
     <implementation name = "asn1_wr">
         This is MbedTLS implementation of ASN.1 writer.
 
