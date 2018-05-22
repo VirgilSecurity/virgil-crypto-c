@@ -74,7 +74,7 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
-    vsf_sha224_DIGEST_SIZE = 24
+    vsf_sha224_DIGEST_SIZE = 28
 };
 
 //
