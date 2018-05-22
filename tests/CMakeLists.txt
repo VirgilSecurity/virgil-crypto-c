@@ -40,11 +40,11 @@ add_subdirectory(unity)
 
 macro(_add_test test)
     add_executable(${test} ${test}.c
-            data_sha224.c
-            data_sha256.c
-            data_sha384.c
-            data_sha512.c
-            test_kdf1_data.c
+            test_data_sha224.c
+            test_data_sha256.c
+            test_data_sha384.c
+            test_data_sha512.c
+            test_data_kdf1.c
             test_utils.c
             )
     target_link_libraries(${test} unity vsf)

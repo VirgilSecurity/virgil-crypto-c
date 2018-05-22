@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#include "test_kdf1_data.h"
+#include "test_data_kdf1.h"
 
 //
 //  Test Vector 1

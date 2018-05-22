@@ -41,7 +41,7 @@
 #include "vsf_memory.h"
 
 #include "test_utils.h"
-#include "test_kdf1_data.h"
+#include "test_data_kdf1.h"
 
 
 // --------------------------------------------------------------------------

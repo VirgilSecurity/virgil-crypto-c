@@ -42,7 +42,7 @@
 #include "vsf_assert.h"
 
 #include "test_utils.h"
-#include "data_sha224.h"
+#include "test_data_sha224.h"
 
 
 // --------------------------------------------------------------------------
@@ -80,8 +80,8 @@ void test__hash_info_api__always__returns_not_null (void) {
 }
 
 
-void test__sha224_DIGEST_SIZE__always__equals_24 (void) {
-    TEST_ASSERT_EQUAL(24, vsf_sha224_DIGEST_SIZE);
+void test__sha224_DIGEST_SIZE__always__equals_28 (void) {
+    TEST_ASSERT_EQUAL(28, vsf_sha224_DIGEST_SIZE);
 }
 
 // --------------------------------------------------------------------------
@@ -187,7 +187,7 @@ int main (void) {
     RUN_TEST (test__impl__null_arg__call_assert);
 
     RUN_TEST (test__hash_info_api__always__returns_not_null);
-    RUN_TEST (test__sha224_DIGEST_SIZE__always__equals_24);
+    RUN_TEST (test__sha224_DIGEST_SIZE__always__equals_28);
 
     RUN_TEST (test__hash_api__always__returns_not_null);
     RUN_TEST (test__hash__vector_1__success);
