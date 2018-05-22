@@ -84,7 +84,7 @@ struct vsf_sha384_impl_t {
     //
     //  Interface implementation specific context.
     //
-    mbedtls_sha384_context hash_ctx;
+    mbedtls_sha512_context hash_ctx;
 };
 
 

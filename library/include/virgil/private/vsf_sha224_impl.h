@@ -59,7 +59,7 @@
 #include "vsf_impl_private.h"
 #include "vsf_sha224.h"
 
-#include <mbedtls/sha224.h>
+#include <mbedtls/sha256.h>
 //  @end
 
 
@@ -84,7 +84,7 @@ struct vsf_sha224_impl_t {
     //
     //  Interface implementation specific context.
     //
-    mbedtls_sha224_context hash_ctx;
+    mbedtls_sha256_context hash_ctx;
 };
 
 
