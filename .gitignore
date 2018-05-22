@@ -21,3 +21,8 @@ cmake-build-*/
 ####
 # Sublime Text 3
 *.sublime-workspace
+
+####
+# Visual Studio (VisualGDB)
+Debug*/
+gcc*
