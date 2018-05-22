@@ -11,7 +11,7 @@ install:
   - wget https://cmake.org/files/v3.11/cmake-3.11.1-Linux-x86_64.sh
   - sudo bash cmake-3.11.1-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local
   - export PATH="/usr/local/bin:$PATH"
-  - sudo apt install cloc
+  - travis_retry sudo apt-get install -y -qq cloc
 
 before_script:
   - ${CC} --version
