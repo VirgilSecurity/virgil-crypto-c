@@ -73,7 +73,10 @@ target_sources(vsf
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_kdf1.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_library.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_memory.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_sha224.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_sha256.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_sha384.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_sha512.h"
 
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_api_private.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_cipher_api.h"
@@ -87,7 +90,10 @@ target_sources(vsf
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_impl_private.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_kdf1_impl.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_kdf_api.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_sha224_impl.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_sha256_impl.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_sha384_impl.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_sha512_impl.h"
 
         PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_api.c"
@@ -120,10 +126,22 @@ target_sources(vsf
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_kdf_api.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_library.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_memory.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha224.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha224_impl.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha224_internal.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha224_internal.h"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256_impl.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256_internal.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha256_internal.h"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha384.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha384_impl.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha384_internal.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha384_internal.h"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha512.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha512_impl.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha512_internal.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_sha512_internal.h"
         )
 
 #
