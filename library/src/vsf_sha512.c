@@ -76,7 +76,7 @@
 //
 VSF_PRIVATE void
 vsf_sha512_init_ctx (vsf_sha512_impl_t* sha512_impl) {
-    
+
     VSF_ASSERT_PTR(sha512_impl);
 
     mbedtls_sha512_init(&sha512_impl->hash_ctx);
@@ -105,7 +105,6 @@ vsf_sha512_hash (const byte* data, size_t data_len, byte* digest, size_t digest_
 
     const int is384 = 0;
     mbedtls_sha512(data, data_len, digest, is384);
-    
 }
 
 //

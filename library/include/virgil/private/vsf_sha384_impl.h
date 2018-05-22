@@ -57,6 +57,7 @@
 
 #include "vsf_library.h"
 #include "vsf_impl_private.h"
+#include "vsf_sha384.h"
 
 #include <mbedtls/sha512.h>
 //  @end
@@ -83,7 +84,7 @@ struct vsf_sha384_impl_t {
     //
     //  Interface implementation specific context.
     //
-    mbedtls_sha512_context hash_ctx;
+    mbedtls_sha384_context hash_ctx;
 };
 
 

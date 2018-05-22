@@ -123,7 +123,7 @@ vsf_sha384_start (vsf_sha384_impl_t* sha384_impl) {
 //  Add given data to the hash.
 //
 VSF_PUBLIC void
-vsf_sha384_update(vsf_sha384_impl_t* sha384_impl, const byte* data, size_t data_len) {
+vsf_sha384_update (vsf_sha384_impl_t* sha384_impl, const byte* data, size_t data_len) {
 
     VSF_ASSERT_PTR(sha384_impl);
     VSF_ASSERT_PTR(data);
