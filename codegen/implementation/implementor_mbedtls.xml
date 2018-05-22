@@ -9,7 +9,7 @@
         <require_include name = "mbedtls/sha256.h" type = "context" />
 
         <interface name = "hash info">
-            <constant name = "digest size" value = "24" />
+            <constant name = "digest size" value = "28" />
         </interface>
 
         <interface name = "hash">
