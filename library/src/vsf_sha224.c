@@ -55,7 +55,7 @@
 #include "vsf_sha224_impl.h"
 #include "vsf_sha224_internal.h"
 
-#include <mbedtls/sha224.h>
+#include <mbedtls/sha256.h>
 //  @end
 
 
