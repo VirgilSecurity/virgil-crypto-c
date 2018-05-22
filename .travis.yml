@@ -11,6 +11,7 @@ install:
   - wget https://cmake.org/files/v3.11/cmake-3.11.1-Linux-x86_64.sh
   - sudo bash cmake-3.11.1-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local
   - export PATH="/usr/local/bin:$PATH"
+  - sudo apt install cloc
 
 before_script:
   - ${CC} --version
@@ -20,6 +21,9 @@ script:
   - cmake -H. -Bbuild -DCMAKE_INSTALL_PREFIX=install
   - cmake --build build -- -j8
   - cd build && ctest --verbose && cd -
+
+after_success:
+  - cmake --build build --target cloc
 
 jobs:
   include:
