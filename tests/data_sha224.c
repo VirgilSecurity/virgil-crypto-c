@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#include "data_sha256.h"
+#include "data_sha224.h"
 
 //
 //  Test Vector 1
