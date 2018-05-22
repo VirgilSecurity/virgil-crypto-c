@@ -40,20 +40,23 @@ add_subdirectory(unity)
 
 macro(_add_test test)
     add_executable(${test} ${test}.c
-            test_utils.c
+            data_sha224.c
             data_sha256.c
+            data_sha384.c
+            data_sha512.c
             test_kdf1_data.c
+            test_utils.c
             )
     target_link_libraries(${test} unity vsf)
     set_target_properties(${test} PROPERTIES C_STANDARD "99")
     add_test (NAME ${test} COMMAND ${test})
 endmacro()
 
-_add_test (test_hash_info)
 _add_test (test_hash)
+_add_test (test_hash_info)
 _add_test (test_hash_stream)
-_add_test_hash (sha224)
-_add_test_hash (sha256)
-_add_test_hash (sha384)
-_add_test_hash (sha512)
 _add_test (test_kdf1)
+_add_test (test_sha224)
+_add_test (test_sha256)
+_add_test (test_sha384)
+_add_test (test_sha512)
