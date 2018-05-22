@@ -7,65 +7,65 @@
         <argument name = "item" type = "vsf_buffer"  io = "in" />
         <argument name = "pos" type = "integer"  io = "in" />
     </method>
-    
+
     <method name = "add_first">
         Add item to head
-        
+
         <argument name = "item" type = "vsf_buffer" io = "in" />
     </method>
-    
+
     <method name = "add_last">
         Add item to tail
-        
+
         <argument name = "item" type = "vsf_buffer" io = "in" />
     </method>
-    
+
     <method name = "get">
         Get item from specific position
-        
+
         <argument name = "pos" type = "integer" io = "in" />
-        
+
         <return name = "res" type = "vsf_buffer" />
     </method>
-    
+
     <method name = "get_first">
         Get item from head
-        
+
         <return name = "res" type = "vsf_buffer" />
     </method>
-    
+
     <method name = "get_last">
         Get item from tail
-        
+
         <return name = "res" type = "vsf_buffer" />
     </method>
-    
+
     <method name = "remove">
         Get item and remove it from any position
-        
+
         <argument name = "pos" type = "integer" io = "in" />
-        
+
         <return name = "res" type = "vsf_buffer" />
     </method>
 
     <method name = "remove_first">
         Get and remove item from head
-        
+
         <return name = "res" type = "vsf_buffer" io = "in" />
     </method>
 
     <method name = "remove_last">
         Get and remove item from tail
-    
+
         <return name = "res" type = "vsf_buffer" />
     </method>
-    
+
     <method name = "display">
         Display the items in the list as byte array
     </method>
-    
+
     <method name = "display_strings">
          Display the strings in the list
     </method>
-    
+
 </interface>
