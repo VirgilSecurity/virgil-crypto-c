@@ -1157,6 +1157,10 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
             .module = my.names.module_impl_private
         endnew
 
+        new require to module
+            .module = my.names.implementation_module
+        endnew
+
         for my.impl.dependency where type = "api"
             new require to module
                 .module = dependency.interface
