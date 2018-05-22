@@ -83,3 +83,23 @@ if(ENABLE_TESTING)
     add_subdirectory(tests)
 endif()
 
+
+# ---------------------------------------------------------------------------
+#   Show code stats
+# ---------------------------------------------------------------------------
+find_program (CLOC_EXE cloc)
+
+if(CLOC_EXE)
+    add_custom_target(cloc_headers
+        COMMAND ${CLOC_EXE} "${CMAKE_CURRENT_LIST_DIR}/library/include/virgil"
+        COMMENT "Lines of code within: library/include/virgil"
+    )
+
+    add_custom_target(cloc_src
+        COMMAND ${CLOC_EXE} "${CMAKE_CURRENT_LIST_DIR}/library/src"
+        COMMENT "Lines of code within: library/src"
+    )
+
+    add_custom_target(cloc)
+    add_dependencies(cloc cloc_headers cloc_src)
+endif()
