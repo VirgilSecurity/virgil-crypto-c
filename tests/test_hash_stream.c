@@ -38,7 +38,7 @@
 #include "vsf_hash_stream_api.h"
 #include "vsf_sha256.h"
 
-#include "data_sha256.h"
+#include "test_data_sha256.h"
 
 // --------------------------------------------------------------------------
 //  Over implementation: 'sha256'.

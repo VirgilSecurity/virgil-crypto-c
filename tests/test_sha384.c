@@ -42,7 +42,7 @@
 #include "vsf_assert.h"
 
 #include "test_utils.h"
-#include "data_sha384.h"
+#include "test_data_sha384.h"
 
 
 // --------------------------------------------------------------------------
