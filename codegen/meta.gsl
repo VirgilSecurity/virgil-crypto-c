@@ -334,6 +334,7 @@ function _X17_add_entity_implementation (meta, implementation)
         my.name = my.implementation.name
 
         _X17_add_name (entity, "implementation class", my.name)
+        _X17_add_name (entity, "implementation argument impl", cat (my.name, "impl"))
 
         _X17_add_name (entity, "implementation module", my.name)
         _X17_add_link (entity, "implementation module", make_id ("module", my.name))
