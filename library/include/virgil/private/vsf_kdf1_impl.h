@@ -57,6 +57,7 @@
 
 #include "vsf_library.h"
 #include "vsf_impl_private.h"
+#include "vsf_kdf1.h"
 //  @end
 
 

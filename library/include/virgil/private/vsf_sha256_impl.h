@@ -57,6 +57,7 @@
 
 #include "vsf_library.h"
 #include "vsf_impl_private.h"
+#include "vsf_sha256.h"
 
 #include <mbedtls/sha256.h>
 //  @end
