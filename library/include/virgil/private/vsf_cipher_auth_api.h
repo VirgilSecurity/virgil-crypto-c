@@ -55,6 +55,9 @@
 #include "vsf_library.h"
 #include "vsf_api.h"
 #include "vsf_impl.h"
+#include "vsf_cipher_auth_info.h"
+#include "vsf_auth_encrypt.h"
+#include "vsf_auth_decrypt.h"
 //  @end
 
 
@@ -69,26 +72,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Setup additional data.
-//          Must be called before encryption / decryption operation.
-//
-typedef void (*vsf_cipher_auth_api_set_data_fn) (vsf_impl_t* impl, const byte* data,
-        size_t data_len);
-
-//
-//  Callback. Write authentication tag.
-//          Must be called after encryption is finished.
-//
-typedef void (*vsf_cipher_auth_api_write_tag_fn) (vsf_impl_t* impl, byte* tag, size_t tag_len);
-
-//
-//  Callback. Validate authentication tag.
-//          Must be called after decryption is finished.
-//
-typedef void (*vsf_cipher_auth_api_check_tag_fn) (vsf_impl_t* impl, const byte* tag,
-        size_t tag_len);
-
-//
 //  Contains API requirements of the interface 'cipher auth'.
 //
 struct vsf_cipher_auth_api_t {
@@ -98,24 +81,17 @@ struct vsf_cipher_auth_api_t {
     //
     vsf_api_tag_t api_tag;
     //
-    //  Setup additional data.
-    //  Must be called before encryption / decryption operation.
+    //  Link to the inherited interface API 'cipher auth info'.
     //
-    vsf_cipher_auth_api_set_data_fn set_data_cb;
+    const vsf_cipher_auth_info_api_t* cipher_auth_info_api;
     //
-    //  Write authentication tag.
-    //  Must be called after encryption is finished.
+    //  Link to the inherited interface API 'auth encrypt'.
     //
-    vsf_cipher_auth_api_write_tag_fn write_tag_cb;
+    const vsf_auth_encrypt_api_t* auth_encrypt_api;
     //
-    //  Validate authentication tag.
-    //  Must be called after decryption is finished.
+    //  Link to the inherited interface API 'auth decrypt'.
     //
-    vsf_cipher_auth_api_check_tag_fn check_tag_cb;
-    //
-    //  Defines authentication tag length in bytes.
-    //
-    size_t tag_len;
+    const vsf_auth_decrypt_api_t* auth_decrypt_api;
 };
 
 

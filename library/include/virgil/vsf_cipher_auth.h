@@ -55,6 +55,9 @@
 
 #include "vsf_library.h"
 #include "vsf_impl.h"
+#include "vsf_cipher_auth_info.h"
+#include "vsf_auth_encrypt.h"
+#include "vsf_auth_decrypt.h"
 //  @end
 
 
@@ -72,33 +75,6 @@ extern "C" {
 //  Contains API requirements of the interface 'cipher auth'.
 //
 typedef struct vsf_cipher_auth_api_t vsf_cipher_auth_api_t;
-
-//
-//  Setup additional data.
-//  Must be called before encryption / decryption operation.
-//
-VSF_PUBLIC void
-vsf_cipher_auth_set_data (vsf_impl_t* impl, const byte* data, size_t data_len);
-
-//
-//  Write authentication tag.
-//  Must be called after encryption is finished.
-//
-VSF_PUBLIC void
-vsf_cipher_auth_write_tag (vsf_impl_t* impl, byte* tag, size_t tag_len);
-
-//
-//  Validate authentication tag.
-//  Must be called after decryption is finished.
-//
-VSF_PUBLIC void
-vsf_cipher_auth_check_tag (vsf_impl_t* impl, const byte* tag, size_t tag_len);
-
-//
-//  Returns constant 'tag len'.
-//
-VSF_PUBLIC size_t
-vsf_cipher_auth_tag_len (const vsf_cipher_auth_api_t* cipher_auth_api);
 
 //
 //  Return cipher auth API, or NULL if it is not implemented.

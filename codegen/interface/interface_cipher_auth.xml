@@ -2,31 +2,7 @@
     Mix-in interface that provides specific functionality to authenticated
     encryption and decryption.
 
-    <constant name="tag len" type="size">
-        Defines authentication tag length in bytes.
-    </constant>
-
-    <method name="set data" context="impl">
-        Setup additional data.
-        Must be called before encryption / decryption operation.
-
-        <argument name="data" type="data"/>
-        <argument name="data len" type="size"/>
-    </method>
-
-    <method name="write tag" context="impl">
-        Write authentication tag.
-        Must be called after encryption is finished.
-
-        <argument name="tag" type="data" access="writeonly"/>
-        <argument name="tag len" type="size"/>
-    </method>
-
-    <method name="check tag" context="impl">
-        Validate authentication tag.
-        Must be called after decryption is finished.
-
-        <argument name="tag" type="data"/>
-        <argument name="tag len" type="size"/>
-    </method>
+    <inherit interface="cipher auth info"/>
+    <inherit interface="auth encrypt"/>
+    <inherit interface="auth decrypt"/>
 </interface>

@@ -9,6 +9,10 @@
         Cipher key length in bytes.
     </constant>
 
+    <constant name="key bitlen" type="size">
+        Cipher key length in bits.
+    </constant>
+
     <constant name="block len" type="size">
         Cipher block length in bytes.
     </constant>

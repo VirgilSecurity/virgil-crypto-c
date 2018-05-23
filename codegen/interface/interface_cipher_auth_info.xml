@@ -1,0 +1,5 @@
+<interface name="cipher auth info">
+    <constant name="auth tag len" type="size">
+        Defines authentication tag length in bytes.
+    </constant>
+</interface>

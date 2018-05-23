@@ -77,6 +77,7 @@ enum vsf_impl_tag_t {
     vsf_impl_tag_SHA256,
     vsf_impl_tag_SHA384,
     vsf_impl_tag_SHA512,
+    vsf_impl_tag_AES_256_GCM,
     vsf_impl_tag_KDF1,
     vsf_impl_tag_END
 };

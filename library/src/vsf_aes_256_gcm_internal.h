@@ -46,15 +46,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface 'cipher info' API.
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_CIPHER_INFO_API_H_INCLUDED
-#define VSF_CIPHER_INFO_API_H_INCLUDED
+#ifndef VSF_AES_256_GCM_INTERNAL_H_INCLUDED
+#define VSF_AES_256_GCM_INTERNAL_H_INCLUDED
 
 #include "vsf_library.h"
-#include "vsf_api.h"
-#include "vsf_impl.h"
+#include "vsf_aes_256_gcm.h"
 //  @end
 
 
@@ -69,31 +69,16 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'cipher info'.
+//  Provides initialization of the implementation specific context.
 //
-struct vsf_cipher_info_api_t {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'cipher_info' MUST be equal to the 'vsf_api_tag_CIPHER_INFO'.
-    //
-    vsf_api_tag_t api_tag;
-    //
-    //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
-    //
-    size_t nonce_len;
-    //
-    //  Cipher key length in bytes.
-    //
-    size_t key_len;
-    //
-    //  Cipher key length in bits.
-    //
-    size_t key_bitlen;
-    //
-    //  Cipher block length in bytes.
-    //
-    size_t block_len;
-};
+VSF_PRIVATE void
+vsf_aes_256_gcm_init_ctx (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl);
+
+//
+//  Provides cleanup of the implementation specific context.
+//
+VSF_PRIVATE void
+vsf_aes_256_gcm_cleanup_ctx (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl);
 
 
 // --------------------------------------------------------------------------
@@ -108,5 +93,5 @@ struct vsf_cipher_info_api_t {
 
 
 //  @footer
-#endif // VSF_CIPHER_INFO_API_H_INCLUDED
+#endif // VSF_AES_256_GCM_INTERNAL_H_INCLUDED
 //  @end

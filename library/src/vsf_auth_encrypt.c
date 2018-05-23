@@ -36,6 +36,12 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Provide interface for authenticated data encryption.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,24 +49,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'cipher info' API.
-// --------------------------------------------------------------------------
-
-#ifndef VSF_CIPHER_INFO_API_H_INCLUDED
-#define VSF_CIPHER_INFO_API_H_INCLUDED
-
-#include "vsf_library.h"
-#include "vsf_api.h"
-#include "vsf_impl.h"
+#include "vsf_auth_encrypt.h"
+#include "vsf_assert.h"
+#include "vsf_auth_encrypt_api.h"
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -69,44 +61,54 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'cipher info'.
+//  Encrypt given data.
 //
-struct vsf_cipher_info_api_t {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'cipher_info' MUST be equal to the 'vsf_api_tag_CIPHER_INFO'.
-    //
-    vsf_api_tag_t api_tag;
-    //
-    //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
-    //
-    size_t nonce_len;
-    //
-    //  Cipher key length in bytes.
-    //
-    size_t key_len;
-    //
-    //  Cipher key length in bits.
-    //
-    size_t key_bitlen;
-    //
-    //  Cipher block length in bytes.
-    //
-    size_t block_len;
-};
+VSF_PUBLIC int
+vsf_auth_encrypt (vsf_impl_t* impl, const byte* data, size_t data_len, const byte* auth_data,
+        size_t auth_data_len, byte* enc, size_t enc_len, size_t* out_len, byte* tag,
+        size_t tag_len) {
+
+    const vsf_auth_encrypt_api_t *auth_encrypt_api = vsf_auth_encrypt_api (impl);
+    VSF_ASSERT_PTR (auth_encrypt_api);
+
+    VSF_ASSERT_PTR (auth_encrypt_api->auth_encrypt_cb);
+    return auth_encrypt_api->auth_encrypt_cb (impl, data, data_len, auth_data, auth_data_len, enc, enc_len, out_len, tag, tag_len);
+}
+
+//
+//  Return auth encrypt API, or NULL if it is not implemented.
+//
+VSF_PUBLIC const vsf_auth_encrypt_api_t*
+vsf_auth_encrypt_api (vsf_impl_t* impl) {
+
+    VSF_ASSERT_PTR (impl);
+
+    const vsf_api_t *api = vsf_impl_api (impl, vsf_api_tag_AUTH_ENCRYPT);
+    return (const vsf_auth_encrypt_api_t *) api;
+}
+
+//
+//  Return size of 'vsf_auth_encrypt_api_t' type.
+//
+VSF_PUBLIC size_t
+vsf_auth_encrypt_api_size (void) {
+
+    return sizeof(vsf_auth_encrypt_api_t);
+}
+
+//
+//  Check if given object implements interface 'auth encrypt'.
+//
+VSF_PUBLIC bool
+vsf_auth_encrypt_is_implemented (vsf_impl_t* impl) {
+
+    VSF_ASSERT_PTR (impl);
+
+    return vsf_impl_api (impl, vsf_api_tag_AUTH_ENCRYPT) != NULL;
+}
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSF_CIPHER_INFO_API_H_INCLUDED
 //  @end

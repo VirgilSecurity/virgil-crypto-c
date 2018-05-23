@@ -1,0 +1,25 @@
+<interface name="auth encrypt">
+    Provide interface for authenticated data encryption.
+
+    <method name="auth encrypt" context="impl">
+        Encrypt given data.
+
+        <argument name="data" type="data"/>
+        <argument name="data len" type="size"/>
+
+        <argument name="auth data" type="data"/>
+        <argument name="auth data len" type="size"/>
+
+        <argument name="enc" type="data" access="writeonly"/>
+        <argument name="enc len" type="size"/>
+        <argument name="out len" type="size" access="writeonly" is_reference="1"/>
+
+        <argument name="tag" type="data" access="writeonly">
+            <array length="known"/>
+        </argument>
+
+        <argument name="tag len" type="size"/>
+
+        <return type="integer"/>
+    </method>
+</interface>

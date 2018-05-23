@@ -46,11 +46,11 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface 'cipher info' API.
+//  Interface 'cipher auth info' API.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_CIPHER_INFO_API_H_INCLUDED
-#define VSF_CIPHER_INFO_API_H_INCLUDED
+#ifndef VSF_CIPHER_AUTH_INFO_API_H_INCLUDED
+#define VSF_CIPHER_AUTH_INFO_API_H_INCLUDED
 
 #include "vsf_library.h"
 #include "vsf_api.h"
@@ -69,30 +69,18 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'cipher info'.
+//  Contains API requirements of the interface 'cipher auth info'.
 //
-struct vsf_cipher_info_api_t {
+struct vsf_cipher_auth_info_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'cipher_info' MUST be equal to the 'vsf_api_tag_CIPHER_INFO'.
+    //  For interface 'cipher_auth_info' MUST be equal to the 'vsf_api_tag_CIPHER_AUTH_INFO'.
     //
     vsf_api_tag_t api_tag;
     //
-    //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
+    //  Defines authentication tag length in bytes.
     //
-    size_t nonce_len;
-    //
-    //  Cipher key length in bytes.
-    //
-    size_t key_len;
-    //
-    //  Cipher key length in bits.
-    //
-    size_t key_bitlen;
-    //
-    //  Cipher block length in bytes.
-    //
-    size_t block_len;
+    size_t auth_tag_len;
 };
 
 
@@ -108,5 +96,5 @@ struct vsf_cipher_info_api_t {
 
 
 //  @footer
-#endif // VSF_CIPHER_INFO_API_H_INCLUDED
+#endif // VSF_CIPHER_AUTH_INFO_API_H_INCLUDED
 //  @end

@@ -36,6 +36,12 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Interface 'auth encrypt' API.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,24 +49,8 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'cipher info' API.
-// --------------------------------------------------------------------------
-
-#ifndef VSF_CIPHER_INFO_API_H_INCLUDED
-#define VSF_CIPHER_INFO_API_H_INCLUDED
-
-#include "vsf_library.h"
-#include "vsf_api.h"
-#include "vsf_impl.h"
+#include "vsf_auth_encrypt_api.h"
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -68,45 +58,8 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Contains API requirements of the interface 'cipher info'.
-//
-struct vsf_cipher_info_api_t {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'cipher_info' MUST be equal to the 'vsf_api_tag_CIPHER_INFO'.
-    //
-    vsf_api_tag_t api_tag;
-    //
-    //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
-    //
-    size_t nonce_len;
-    //
-    //  Cipher key length in bytes.
-    //
-    size_t key_len;
-    //
-    //  Cipher key length in bits.
-    //
-    size_t key_bitlen;
-    //
-    //  Cipher block length in bytes.
-    //
-    size_t block_len;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSF_CIPHER_INFO_API_H_INCLUDED
 //  @end

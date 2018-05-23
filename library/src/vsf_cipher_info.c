@@ -83,6 +83,17 @@ vsf_cipher_info_key_len (const vsf_cipher_info_api_t* cipher_info_api) {
 }
 
 //
+//  Returns constant 'key bitlen'.
+//
+VSF_PUBLIC size_t
+vsf_cipher_info_key_bitlen (const vsf_cipher_info_api_t* cipher_info_api) {
+
+    VSF_ASSERT_PTR (cipher_info_api);
+
+    return cipher_info_api->key_bitlen;
+}
+
+//
 //  Returns constant 'block len'.
 //
 VSF_PUBLIC size_t

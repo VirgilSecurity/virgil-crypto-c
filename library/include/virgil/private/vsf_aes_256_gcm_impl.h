@@ -46,15 +46,20 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface 'cipher info' API.
+//  Types of the 'aes 256 gcm' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_CIPHER_INFO_API_H_INCLUDED
-#define VSF_CIPHER_INFO_API_H_INCLUDED
+#ifndef VSF_AES_256_GCM_IMPL_H_INCLUDED
+#define VSF_AES_256_GCM_IMPL_H_INCLUDED
 
 #include "vsf_library.h"
-#include "vsf_api.h"
-#include "vsf_impl.h"
+#include "vsf_impl_private.h"
+#include "vsf_aes_256_gcm.h"
+
+#include <mbedtls/cipher.h>
 //  @end
 
 
@@ -69,30 +74,25 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'cipher info'.
+//  Handles implementation details.
 //
-struct vsf_cipher_info_api_t {
+struct vsf_aes_256_gcm_impl_t {
     //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'cipher_info' MUST be equal to the 'vsf_api_tag_CIPHER_INFO'.
+    //  Compile-time known information about this implementation.
     //
-    vsf_api_tag_t api_tag;
+    const vsf_impl_info_t* info;
     //
-    //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
+    //  Interface implementation specific context.
     //
-    size_t nonce_len;
+    mbedtls_cipher_context_t cipher_ctx;
     //
-    //  Cipher key length in bytes.
+    //  Interface implementation specific context.
     //
-    size_t key_len;
+    byte key[vsf_aes_256_gcm_KEY_LEN];
     //
-    //  Cipher key length in bits.
+    //  Interface implementation specific context.
     //
-    size_t key_bitlen;
-    //
-    //  Cipher block length in bytes.
-    //
-    size_t block_len;
+    byte nonce[vsf_aes_256_gcm_NONCE_LEN];
 };
 
 
@@ -108,5 +108,5 @@ struct vsf_cipher_info_api_t {
 
 
 //  @footer
-#endif // VSF_CIPHER_INFO_API_H_INCLUDED
+#endif // VSF_AES_256_GCM_IMPL_H_INCLUDED
 //  @end
