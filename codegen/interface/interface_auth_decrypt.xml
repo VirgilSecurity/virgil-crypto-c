@@ -1,0 +1,22 @@
+<interface name="auth decrypt">
+    Provide interface for data encryption.
+
+    <method name="auth decrypt" context="impl">
+        Decrypt given data.
+
+        <argument name="enc" type="data"/>
+        <argument name="enc len" type="size"/>
+
+        <argument name="data" type="data" access="writeonly"/>
+        <argument name="data len" type="size"/>
+        <argument name="out len" type="size" access="writeonly" is_reference="1"/>
+
+        <argument name="auth data" type="data"/>
+        <argument name="auth data len" type="size"/>
+
+        <argument name="tag" type="data"/>
+        <argument name="tag len" type="size"/>
+
+        <return type="integer"/>
+    </method>
+</interface>

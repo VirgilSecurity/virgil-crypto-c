@@ -62,59 +62,6 @@
 // --------------------------------------------------------------------------
 
 //
-//  Setup additional data.
-//  Must be called before encryption / decryption operation.
-//
-VSF_PUBLIC void
-vsf_cipher_auth_set_data (vsf_impl_t* impl, const byte* data, size_t data_len) {
-
-    const vsf_cipher_auth_api_t *cipher_auth_api = vsf_cipher_auth_api (impl);
-    VSF_ASSERT_PTR (cipher_auth_api);
-
-    VSF_ASSERT_PTR (cipher_auth_api->set_data_cb);
-    cipher_auth_api->set_data_cb (impl, data, data_len);
-}
-
-//
-//  Write authentication tag.
-//  Must be called after encryption is finished.
-//
-VSF_PUBLIC void
-vsf_cipher_auth_write_tag (vsf_impl_t* impl, byte* tag, size_t tag_len) {
-
-    const vsf_cipher_auth_api_t *cipher_auth_api = vsf_cipher_auth_api (impl);
-    VSF_ASSERT_PTR (cipher_auth_api);
-
-    VSF_ASSERT_PTR (cipher_auth_api->write_tag_cb);
-    cipher_auth_api->write_tag_cb (impl, tag, tag_len);
-}
-
-//
-//  Validate authentication tag.
-//  Must be called after decryption is finished.
-//
-VSF_PUBLIC void
-vsf_cipher_auth_check_tag (vsf_impl_t* impl, const byte* tag, size_t tag_len) {
-
-    const vsf_cipher_auth_api_t *cipher_auth_api = vsf_cipher_auth_api (impl);
-    VSF_ASSERT_PTR (cipher_auth_api);
-
-    VSF_ASSERT_PTR (cipher_auth_api->check_tag_cb);
-    cipher_auth_api->check_tag_cb (impl, tag, tag_len);
-}
-
-//
-//  Returns constant 'tag len'.
-//
-VSF_PUBLIC size_t
-vsf_cipher_auth_tag_len (const vsf_cipher_auth_api_t* cipher_auth_api) {
-
-    VSF_ASSERT_PTR (cipher_auth_api);
-
-    return cipher_auth_api->tag_len;
-}
-
-//
 //  Return cipher auth API, or NULL if it is not implemented.
 //
 VSF_PUBLIC const vsf_cipher_auth_api_t*
