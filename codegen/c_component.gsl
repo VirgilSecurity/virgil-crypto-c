@@ -233,16 +233,6 @@ function c_component_require_attr_value (c_component, caller)
     assert_attribute (my.c_component, "value", my.caller ? my)
 endfunction
 
-# ---------------------------------------------------------------------------
-#   Check optional integral attribute: value.
-# ---------------------------------------------------------------------------
-function c_component_optional_integral_attr_value (c_component, caller)
-    check_argument (my, "c_component", my)
-
-    if defined (my.c_component.value)
-        assert_attribute_number (my.c_component, "value", my.caller ? my)
-    endif
-endfunction
 
 # ###########################################################################
 #   Attribute resolution functions
@@ -327,7 +317,6 @@ function c_component_resolve_constant (c_constant)
     check_argument (my, "c_constant", my)
 
     c_component_require_attr_name (my.c_constant, my)
-    c_component_optional_integral_attr_value (my.c_constant, my)
     c_component_resolve_attr_definition (my.c_constant)
 endfunction
 
