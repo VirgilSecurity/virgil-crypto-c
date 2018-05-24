@@ -32,8 +32,9 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <stdio.h>
-typedef unsigned char byte;
+
+#include "bench_data_types.h"
+
 
 //
 //  Test Vector 1
