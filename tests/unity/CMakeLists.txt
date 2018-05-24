@@ -1,6 +1,8 @@
-project (unity C)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-add_library(unity STATIC
+project(unity VERSION 2.4.3 LANGUAGES C)
+
+add_library(unity
     "${CMAKE_CURRENT_LIST_DIR}/include/unity.h"
     "${CMAKE_CURRENT_LIST_DIR}/include/unity_internals.h"
     "${CMAKE_CURRENT_LIST_DIR}/src/unity.c"
