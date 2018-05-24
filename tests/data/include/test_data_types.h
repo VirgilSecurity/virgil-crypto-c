@@ -32,30 +32,11 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include <stddef.h>
+#include <stdint.h>
 
-#include "test_data_types.h"
-
-//
-//  Test Vector 1
-//
-extern const byte test_sha384_VECTOR_1_INPUT[];
-extern const byte test_sha384_VECTOR_1_DIGEST[];
-extern const size_t test_sha384_VECTOR_1_INPUT_LEN;
-extern const size_t test_sha384_VECTOR_1_DIGEST_LEN;
-
-
-//
-//  Test Vector 2
-//
-extern const byte test_sha384_VECTOR_2_INPUT[];
-extern const byte test_sha384_VECTOR_2_DIGEST[];
-extern const size_t test_sha384_VECTOR_2_INPUT_LEN;
-extern const size_t test_sha384_VECTOR_2_DIGEST_LEN;
-
-//
-//  Test Vector 3
-//
-extern const byte test_sha384_VECTOR_3_INPUT[];
-extern const byte test_sha384_VECTOR_3_DIGEST[];
-extern const size_t test_sha384_VECTOR_3_INPUT_LEN;
-extern const size_t test_sha384_VECTOR_3_DIGEST_LEN;
+#ifndef BYTE_DEFINED
+#define BYTE_DEFINED
+    //  Portable representation of the byte.
+    typedef uint8_t byte;
+#endif // BYTE_DEFINED

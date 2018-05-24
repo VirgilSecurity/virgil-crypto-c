@@ -33,8 +33,9 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#include <stdio.h>
-typedef unsigned char byte;
+
+#include "test_data_types.h"
+
 //
 //  Test vector 1
 //  AES-GCM NIST Validation (AES-256,128,0,0,128) #0
