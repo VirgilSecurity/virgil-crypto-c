@@ -40,9 +40,7 @@ add_subdirectory(unity)
 add_subdirectory(data)
 
 macro(_add_test test)
-    add_executable(${test} ${test}.c
-            test_utils.c
-            )
+    add_executable(${test} ${test}.c test_utils.c)
     target_link_libraries(${test} unity test_data vsf)
     set_target_properties(${test} PROPERTIES C_STANDARD "99")
     add_test (NAME ${test} COMMAND ${test})
