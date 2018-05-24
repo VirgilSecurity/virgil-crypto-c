@@ -40,6 +40,7 @@ project(virgil-crypto-c-top VERSION 0.1.0 LANGUAGES C)
 #   Options
 # ---------------------------------------------------------------------------
 option(ENABLE_TESTING "On/Off library integration tests." ON)
+option(ENABLE_BENCHMARKS "On/Off build library benchmarks." ON)
 
 
 # ---------------------------------------------------------------------------
@@ -83,6 +84,13 @@ if(ENABLE_TESTING)
     add_subdirectory(tests)
 endif()
 
+
+# ---------------------------------------------------------------------------
+#   Integration tests
+# ---------------------------------------------------------------------------
+if(ENABLE_BENCHMARKS)
+    add_subdirectory(benchmarks)
+endif()
 
 # ---------------------------------------------------------------------------
 #   Show code stats
