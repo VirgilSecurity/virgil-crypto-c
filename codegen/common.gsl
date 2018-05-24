@@ -428,7 +428,7 @@ function assert_attribute_number (attribute_scope, attribute_name, caller)
 
     assert_attribute (my.attribute_scope, my.attribute_name, my.caller)
 
-    if ! regexp.match ("^\\d+$", my.attribute_scope.$(my.attribute_name))
+    if ! regexp.match ("^\\d+$", my.attribute_scope.$(my.attribute_name:))
         echo_fatal ("Attribute '$(my.attribute_name:)' defined" + \
                 " within <$(name (my.attribute_scope)) $(my.name:)/> is not a number", my.caller)
     endif
