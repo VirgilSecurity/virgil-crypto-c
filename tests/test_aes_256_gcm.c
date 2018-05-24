@@ -76,7 +76,7 @@ void test__AUTH_TAG_LEN__always__equals_16 (void) {
 // Test implementation of the interface 'cipher'.
 // --------------------------------------------------------------------------
 
-void test__cipher_encrypt__vector_1__encrypted_len_equals_16 (void) {
+void test__encrypt__vector_1__encrypted_len_equals_16 (void) {
 
     vsf_aes_256_gcm_impl_t *aes_256_gcm_impl = vsf_aes_256_gcm_new ();
 
@@ -93,10 +93,12 @@ void test__cipher_encrypt__vector_1__encrypted_len_equals_16 (void) {
 
     vsf_aes_256_gcm_destroy (&aes_256_gcm_impl);
 
-    TEST_ASSERT_EQUAL (test_aes_256_gcm_VECTOR_1_AUTH_TAG_LEN, actual_enc_len);
+    TEST_ASSERT_EQUAL (16, actual_enc_len);
+
+    vsf_dealloc (enc);
 }
 
-void test__cipher_encrypt__vector_1__valid_encrypted_data (void) {
+void test__encrypt__vector_1__valid_encrypted_data (void) {
 
     vsf_aes_256_gcm_impl_t *aes_256_gcm_impl = vsf_aes_256_gcm_new ();
 
@@ -113,7 +115,65 @@ void test__cipher_encrypt__vector_1__valid_encrypted_data (void) {
 
     vsf_aes_256_gcm_destroy (&aes_256_gcm_impl);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_aes_256_gcm_VECTOR_1_AUTH_TAG, enc, test_aes_256_gcm_VECTOR_1_AUTH_TAG_LEN);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_aes_256_gcm_VECTOR_1_ENC, enc, test_aes_256_gcm_VECTOR_1_ENC_LEN);
+
+    vsf_dealloc (enc);
+}
+
+// --------------------------------------------------------------------------
+// Test implementation of the interface 'cipher auth'.
+// --------------------------------------------------------------------------
+
+void test__auth_encrypt__vector_2__encrypted_len_equals_0 (void) {
+
+    vsf_aes_256_gcm_impl_t *aes_256_gcm_impl = vsf_aes_256_gcm_new ();
+
+    size_t enc_len = test_aes_256_gcm_VECTOR_2_DATA_LEN + vsf_aes_256_gcm_BLOCK_LEN + vsf_aes_256_gcm_AUTH_TAG_LEN;
+    byte *enc = vsf_alloc (enc_len);
+    byte *tag = vsf_alloc (test_aes_256_gcm_VECTOR_2_AUTH_TAG_LEN);
+
+    vsf_aes_256_gcm_set_key (aes_256_gcm_impl, test_aes_256_gcm_VECTOR_2_KEY, test_aes_256_gcm_VECTOR_2_KEY_LEN);
+    vsf_aes_256_gcm_set_nonce (aes_256_gcm_impl, test_aes_256_gcm_VECTOR_2_NONCE, test_aes_256_gcm_VECTOR_2_NONCE_LEN);
+
+    size_t actual_enc_len = 0;
+    vsf_aes_256_gcm_auth_encrypt (aes_256_gcm_impl,
+            test_aes_256_gcm_VECTOR_2_DATA, test_aes_256_gcm_VECTOR_2_DATA_LEN,
+            test_aes_256_gcm_VECTOR_2_ADD, test_aes_256_gcm_VECTOR_2_ADD_LEN,
+            enc, enc_len, &actual_enc_len,
+            tag, test_aes_256_gcm_VECTOR_2_AUTH_TAG_LEN);
+
+    vsf_aes_256_gcm_destroy (&aes_256_gcm_impl);
+
+    TEST_ASSERT_EQUAL (0, actual_enc_len);
+
+    vsf_dealloc (enc);
+    vsf_dealloc (tag);
+}
+
+void test__auth_encrypt__vector_2__valid_auth_tag (void) {
+
+    vsf_aes_256_gcm_impl_t *aes_256_gcm_impl = vsf_aes_256_gcm_new ();
+
+    size_t enc_len = test_aes_256_gcm_VECTOR_2_DATA_LEN + vsf_aes_256_gcm_BLOCK_LEN + vsf_aes_256_gcm_AUTH_TAG_LEN;
+    byte *enc = vsf_alloc (enc_len);
+    byte *tag = vsf_alloc (test_aes_256_gcm_VECTOR_2_AUTH_TAG_LEN);
+
+    vsf_aes_256_gcm_set_key (aes_256_gcm_impl, test_aes_256_gcm_VECTOR_2_KEY, test_aes_256_gcm_VECTOR_2_KEY_LEN);
+    vsf_aes_256_gcm_set_nonce (aes_256_gcm_impl, test_aes_256_gcm_VECTOR_2_NONCE, test_aes_256_gcm_VECTOR_2_NONCE_LEN);
+
+    size_t actual_enc_len = 0;
+    vsf_aes_256_gcm_auth_encrypt (aes_256_gcm_impl,
+            test_aes_256_gcm_VECTOR_2_DATA, test_aes_256_gcm_VECTOR_2_DATA_LEN,
+            test_aes_256_gcm_VECTOR_2_ADD, test_aes_256_gcm_VECTOR_2_ADD_LEN,
+            enc, enc_len, &actual_enc_len,
+            tag, test_aes_256_gcm_VECTOR_2_AUTH_TAG_LEN);
+
+    vsf_aes_256_gcm_destroy (&aes_256_gcm_impl);
+
+    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_aes_256_gcm_VECTOR_2_AUTH_TAG, tag, test_aes_256_gcm_VECTOR_2_AUTH_TAG_LEN);
+
+    vsf_dealloc (enc);
+    vsf_dealloc (tag);
 }
 
 // --------------------------------------------------------------------------
@@ -130,8 +190,11 @@ int main (void) {
     RUN_TEST (test__BLOCK_LEN__always__equals_16);
     RUN_TEST (test__AUTH_TAG_LEN__always__equals_16);
 
-    RUN_TEST (test__cipher_encrypt__vector_1__encrypted_len_equals_16);
-    RUN_TEST (test__cipher_encrypt__vector_1__valid_encrypted_data);
+    RUN_TEST (test__encrypt__vector_1__encrypted_len_equals_16);
+    RUN_TEST (test__encrypt__vector_1__valid_encrypted_data);
+
+    RUN_TEST (test__auth_encrypt__vector_2__encrypted_len_equals_0);
+    RUN_TEST (test__auth_encrypt__vector_2__valid_auth_tag);
 
     return UNITY_END();
 }
