@@ -36,6 +36,12 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains 'kdf2' implementation.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,88 +49,19 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  This module contains common functionality for all 'implementation' object.
-//  It is also enumerate all available implementations within crypto libary.
-// --------------------------------------------------------------------------
-
-#ifndef VSF_IMPL_H_INCLUDED
-#define VSF_IMPL_H_INCLUDED
-
-#include "vsf_library.h"
-#include "vsf_api.h"
+#include "vsf_kdf2.h"
+#include "vsf_assert.h"
+#include "vsf_memory.h"
+#include "vsf_hash_stream.h"
+#include "vsf_kdf2_impl.h"
+#include "vsf_kdf2_internal.h"
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
 // --------------------------------------------------------------------------
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Enumerates all possible implementations within crypto library.
-//
-enum vsf_impl_tag_t {
-    vsf_impl_tag_BEGIN = 0,
-    vsf_impl_tag_SHA224,
-    vsf_impl_tag_SHA256,
-    vsf_impl_tag_SHA384,
-    vsf_impl_tag_SHA512,
-    vsf_impl_tag_AES_256_GCM,
-    vsf_impl_tag_KDF1,
-    vsf_impl_tag_KDF2,
-    vsf_impl_tag_END
-};
-typedef enum vsf_impl_tag_t vsf_impl_tag_t;
-
-//
-//  Generic type for any 'implementation'.
-//
-typedef struct vsf_impl_t vsf_impl_t;
-
-//
-//  Callback type for cleanup action.
-//
-typedef void (*vsf_impl_cleanup_fn) (vsf_impl_t* impl);
-
-//
-//  Callback type for destroy action.
-//
-typedef void (*vsf_impl_destroy_fn) (vsf_impl_t** impl_ref);
-
-//
-//  Return 'API' object that is fulfiled with a meta information
-//  specific to the given implementation object.
-//  Or NULL if object does not implement requested 'API'.
-//
-VSF_PUBLIC const vsf_api_t*
-vsf_impl_api (vsf_impl_t* impl, vsf_api_tag_t api_tag);
-
-//
-//  Return unique 'Implementation TAG'.
-//
-VSF_PUBLIC vsf_impl_tag_t
-vsf_impl_tag (vsf_impl_t* impl);
-
-//
-//  Cleanup implementation object and it's dependencies.
-//
-VSF_PUBLIC void
-vsf_impl_cleanup (vsf_impl_t* impl);
-
-//
-//  Destroy implementation object and it's dependencies.
-//  Note, do 'cleanup' before 'destroy'.
-//
-VSF_PUBLIC void
-vsf_impl_destroy (vsf_impl_t** impl_ref);
 
 
 // --------------------------------------------------------------------------
@@ -133,11 +70,51 @@ vsf_impl_destroy (vsf_impl_t** impl_ref);
 //  @end
 
 
-#ifdef __cplusplus
+//
+//  Calculate hash over given data.
+//
+VSF_PUBLIC void
+vsf_kdf2_derive (vsf_kdf2_impl_t* kdf2_impl, const byte* data, size_t data_len, byte* key,size_t key_len) {
+
+    VSF_ASSERT_PTR(kdf2_impl);
+    VSF_ASSERT_PTR(kdf2_impl->hash);
+    VSF_ASSERT_PTR(data);
+    VSF_ASSERT_PTR(key);
+
+
+    // Get HASH parameters
+    size_t digest_len = vsf_hash_info_digest_size(vsf_hash_info_api(kdf2_impl->hash));
+    unsigned char* digest = vsf_alloc(digest_len);
+
+    // Get KDF parameters
+    size_t counter = 1;
+    size_t counter_len = VSF_CEIL(key_len, digest_len);
+    size_t current_key_len = 0;
+    unsigned char counter_string[4] = { 0x0 };
+
+    // Start hashing
+    for(; counter <= counter_len ; ++counter) {
+        counter_string[0] = (unsigned char)((counter >> 24) & 255);
+        counter_string[1] = (unsigned char)((counter >> 16) & 255);
+        counter_string[2] = (unsigned char)((counter >> 8)) & 255;
+        counter_string[3] = (unsigned char)(counter & 255);
+
+        vsf_hash_stream_start(kdf2_impl->hash);
+        vsf_hash_stream_update(kdf2_impl->hash, data, data_len);
+        vsf_hash_stream_update(kdf2_impl->hash, counter_string, sizeof(counter_string));
+
+        if (current_key_len + digest_len <= key_len) {
+            vsf_hash_stream_finish(kdf2_impl->hash, key + current_key_len, digest_len);
+            current_key_len += digest_len;
+
+        }
+        else {
+            vsf_hash_stream_finish(kdf2_impl->hash, digest, digest_len);
+            memcpy(key + current_key_len, digest, key_len - current_key_len);
+            current_key_len = key_len;
+        }
+    }
+
+    vsf_erase(digest, data_len);
+    vsf_dealloc(digest);
 }
-#endif
-
-
-//  @footer
-#endif // VSF_IMPL_H_INCLUDED
-//  @end
