@@ -40,16 +40,16 @@
 //  Test vector 1
 //  AES-GCM NIST Validation (AES-256,128,0,0,128) #0
 //
-extern const byte test_aes_256_gcm_KEY[];
-extern const byte test_aes_256_gcm_DATA[];
-extern const byte test_aes_256_gcm_NONCE[];
-extern const byte test_aes_256_gcm_ADD[];
-extern const byte test_aes_256_gcm_ENC[];
-extern const byte test_aes_256_gcm_AUTH_TAG[];
+extern const byte test_aes_256_gcm_VECTOR_1_KEY[];
+extern const byte test_aes_256_gcm_VECTOR_1_DATA[];
+extern const byte test_aes_256_gcm_VECTOR_1_NONCE[];
+extern const byte test_aes_256_gcm_VECTOR_1_ADD[];
+extern const byte test_aes_256_gcm_VECTOR_1_ENC[];
+extern const byte test_aes_256_gcm_VECTOR_1_AUTH_TAG[];
 
-extern const size_t test_aes_256_gcm_KEY_LEN;
-extern const size_t test_aes_256_gcm_DATA_LEN;
-extern const size_t test_aes_256_gcm_NONCE_LEN;
-extern const size_t test_aes_256_gcm_ADD_LEN;
-extern const size_t test_aes_256_gcm_ENC_LEN;
-extern const size_t test_aes_256_gcm_AUTH_TAG_LEN;
+extern const size_t test_aes_256_gcm_VECTOR_1_KEY_LEN;
+extern const size_t test_aes_256_gcm_VECTOR_1_DATA_LEN;
+extern const size_t test_aes_256_gcm_VECTOR_1_NONCE_LEN;
+extern const size_t test_aes_256_gcm_VECTOR_1_ADD_LEN;
+extern const size_t test_aes_256_gcm_VECTOR_1_ENC_LEN;
+extern const size_t test_aes_256_gcm_VECTOR_1_AUTH_TAG_LEN;
