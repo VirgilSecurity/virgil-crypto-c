@@ -33,8 +33,8 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#include "vsf_library.h"
-
+#include <stdio.h>
+typedef unsigned char byte;
 //
 //  Test vector 1
 //  AES-GCM NIST Validation (AES-256,128,0,0,128) #0
