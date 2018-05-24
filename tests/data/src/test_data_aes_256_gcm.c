@@ -39,33 +39,33 @@
 //  Test vector 1
 //  AES-GCM NIST Validation (AES-256,128,0,0,128) #0
 //
-const byte test_aes_256_gcm_KEY[] = {
+const byte test_aes_256_gcm_VECTOR_1_KEY[] = {
     0xfb, 0x80, 0x94, 0xdd, 0x2e, 0xdd, 0xb3, 0xd8,
     0x00, 0x4b, 0xb7, 0x91, 0x34, 0x02, 0x3c, 0xa2,
     0xbe, 0x4d, 0xe9, 0xb6, 0x68, 0xa9, 0xe4, 0x60,
     0x8a, 0xbd, 0xf2, 0x13, 0x0e, 0x8b, 0xec, 0xb8,
 };
 
-const byte test_aes_256_gcm_DATA[] = {};
+const byte test_aes_256_gcm_VECTOR_1_DATA[] = {};
 
-const byte test_aes_256_gcm_NONCE[] = {
+const byte test_aes_256_gcm_VECTOR_1_NONCE[] = {
     0x49, 0x1a, 0x14, 0xe1, 0x3b, 0x59, 0x1c, 0xf2,
     0xf3, 0x9d, 0xa9, 0x6b, 0x68, 0x82, 0xb5, 0xe5,
 };
 
-const byte test_aes_256_gcm_ADD[] = {};
+const byte test_aes_256_gcm_VECTOR_1_ADD[] = {};
 
-const byte test_aes_256_gcm_ENC[] = {};
+const byte test_aes_256_gcm_VECTOR_1_ENC[] = {};
 
-const byte test_aes_256_gcm_AUTH_TAG[] = {
+const byte test_aes_256_gcm_VECTOR_1_AUTH_TAG[] = {
     0x80, 0x88, 0x3f, 0x2c, 0x92, 0x54, 0x34, 0xa5,
     0xed, 0xfc, 0xef, 0xd5, 0xb1, 0x23, 0xd5, 0x20,
 };
 
 
-const size_t test_aes_256_gcm_KEY_LEN = sizeof (test_aes_256_gcm_KEY);
-const size_t test_aes_256_gcm_DATA_LEN = sizeof (test_aes_256_gcm_DATA);
-const size_t test_aes_256_gcm_NONCE_LEN = sizeof (test_aes_256_gcm_NONCE);
-const size_t test_aes_256_gcm_ADD_LEN = sizeof (test_aes_256_gcm_ADD);
-const size_t test_aes_256_gcm_ENC_LEN = sizeof (test_aes_256_gcm_ENC);
-const size_t test_aes_256_gcm_AUTH_TAG_LEN = sizeof (test_aes_256_gcm_AUTH_TAG);
+const size_t test_aes_256_gcm_VECTOR_1_KEY_LEN = sizeof (test_aes_256_gcm_VECTOR_1_KEY);
+const size_t test_aes_256_gcm_VECTOR_1_DATA_LEN = sizeof (test_aes_256_gcm_VECTOR_1_DATA);
+const size_t test_aes_256_gcm_VECTOR_1_NONCE_LEN = sizeof (test_aes_256_gcm_VECTOR_1_NONCE);
+const size_t test_aes_256_gcm_VECTOR_1_ADD_LEN = sizeof (test_aes_256_gcm_VECTOR_1_ADD);
+const size_t test_aes_256_gcm_VECTOR_1_ENC_LEN = sizeof (test_aes_256_gcm_VECTOR_1_ENC);
+const size_t test_aes_256_gcm_VECTOR_1_AUTH_TAG_LEN = sizeof (test_aes_256_gcm_VECTOR_1_AUTH_TAG);
