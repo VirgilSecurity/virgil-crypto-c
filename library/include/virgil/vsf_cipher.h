@@ -57,7 +57,6 @@
 #include "vsf_encrypt.h"
 #include "vsf_decrypt.h"
 #include "vsf_cipher_info.h"
-#include "vsf_cipher_padding.h"
 //  @end
 
 
@@ -75,12 +74,6 @@ extern "C" {
 //  Contains API requirements of the interface 'cipher'.
 //
 typedef struct vsf_cipher_api_t vsf_cipher_api_t;
-
-//
-//  Set padding mode, for cipher modes that use padding.
-//
-VSF_PUBLIC void
-vsf_cipher_set_padding (vsf_impl_t* impl, vsf_cipher_padding_t padding);
 
 //
 //  Setup IV or nonce.

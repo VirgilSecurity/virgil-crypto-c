@@ -1,17 +1,9 @@
 <interface name="cipher">
     Provide interface for symmetric ciphers.
 
-    <require module="cipher padding"/>
-
     <inherit interface="encrypt"/>
     <inherit interface="decrypt"/>
     <inherit interface="cipher info"/>
-
-    <method name="set padding">
-         Set padding mode, for cipher modes that use padding.
-
-         <argument name="padding" enum=".(class_cipher_padding_enum_cipher_padding)"/>
-    </method>
 
     <method name="set nonce">
         Setup IV or nonce.

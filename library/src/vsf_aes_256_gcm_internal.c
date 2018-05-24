@@ -150,10 +150,6 @@ static const vsf_cipher_api_t cipher_api = {
     //
     &cipher_info_api,
     //
-    //  Set padding mode, for cipher modes that use padding.
-    //
-    (vsf_cipher_api_set_padding_fn) vsf_aes_256_gcm_set_padding,
-    //
     //  Setup IV or nonce.
     //
     (vsf_cipher_api_set_nonce_fn) vsf_aes_256_gcm_set_nonce,
