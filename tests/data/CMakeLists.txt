@@ -7,6 +7,7 @@ target_sources(test_data
         PUBLIC
         "${CMAKE_CURRENT_LIST_DIR}/include/test_data_aes_256_gcm.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/test_data_kdf1.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/test_data_kdf2.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/test_data_sha224.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/test_data_sha256.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/test_data_sha384.h"
@@ -16,6 +17,7 @@ target_sources(test_data
         PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/src/test_data_aes_256_gcm.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/test_data_kdf1.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/test_data_kdf2.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/test_data_sha224.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/test_data_sha256.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/test_data_sha384.c"
