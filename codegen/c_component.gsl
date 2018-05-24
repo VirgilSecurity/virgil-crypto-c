@@ -239,7 +239,7 @@ endfunction
 function c_component_optional_integral_attr_value (c_component, caller)
     check_argument (my, "c_component", my)
 
-    if defined (my.component.value)
+    if defined (my.c_component.value)
         assert_attribute_number (my.c_component, "value", my.caller ? my)
     endif
 endfunction
