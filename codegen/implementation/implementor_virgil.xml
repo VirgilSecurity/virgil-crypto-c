@@ -8,6 +8,13 @@
 
         <dependency name="hash" interface="hash stream" type="impl"/>
     </implementation>
+    <implementation name="kdf2">
+        Virgil Security implementation of the KDF2 (ISO-18033-2) algorithm.
+
+        <interface name="kdf"/>
+
+        <dependency name="hash" interface="hash stream" type="impl"/>
+    </implementation>
 <!--
     <implementation name="dynamic_list">
         Virgil Security implementation of dynamic list.

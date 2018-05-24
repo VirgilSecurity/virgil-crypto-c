@@ -46,15 +46,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains common functionality for all 'implementation' object.
-//  It is also enumerate all available implementations within crypto libary.
+//  This module contains 'kdf2' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_IMPL_H_INCLUDED
-#define VSF_IMPL_H_INCLUDED
+#ifndef VSF_KDF2_H_INCLUDED
+#define VSF_KDF2_H_INCLUDED
 
 #include "vsf_library.h"
-#include "vsf_api.h"
+#include "vsf_impl.h"
+#include "vsf_kdf.h"
 //  @end
 
 
@@ -69,62 +69,77 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible implementations within crypto library.
+//  Handles implementation details.
 //
-enum vsf_impl_tag_t {
-    vsf_impl_tag_BEGIN = 0,
-    vsf_impl_tag_SHA224,
-    vsf_impl_tag_SHA256,
-    vsf_impl_tag_SHA384,
-    vsf_impl_tag_SHA512,
-    vsf_impl_tag_AES_256_GCM,
-    vsf_impl_tag_KDF1,
-    vsf_impl_tag_KDF2,
-    vsf_impl_tag_END
-};
-typedef enum vsf_impl_tag_t vsf_impl_tag_t;
+typedef struct vsf_kdf2_impl_t vsf_kdf2_impl_t;
 
 //
-//  Generic type for any 'implementation'.
+//  Return size of 'vsf_kdf2_impl_t' type.
 //
-typedef struct vsf_impl_t vsf_impl_t;
+VSF_PUBLIC size_t
+vsf_kdf2_impl_size (void);
 
 //
-//  Callback type for cleanup action.
+//  Cast to the 'vsf_impl_t' type.
 //
-typedef void (*vsf_impl_cleanup_fn) (vsf_impl_t* impl);
+VSF_PUBLIC vsf_impl_t*
+vsf_kdf2_impl (vsf_kdf2_impl_t* kdf2_impl);
 
 //
-//  Callback type for destroy action.
-//
-typedef void (*vsf_impl_destroy_fn) (vsf_impl_t** impl_ref);
-
-//
-//  Return 'API' object that is fulfiled with a meta information
-//  specific to the given implementation object.
-//  Or NULL if object does not implement requested 'API'.
-//
-VSF_PUBLIC const vsf_api_t*
-vsf_impl_api (vsf_impl_t* impl, vsf_api_tag_t api_tag);
-
-//
-//  Return unique 'Implementation TAG'.
-//
-VSF_PUBLIC vsf_impl_tag_t
-vsf_impl_tag (vsf_impl_t* impl);
-
-//
-//  Cleanup implementation object and it's dependencies.
+//  Perform initialization of preallocated implementation context.
 //
 VSF_PUBLIC void
-vsf_impl_cleanup (vsf_impl_t* impl);
+vsf_kdf2_init (vsf_kdf2_impl_t* kdf2_impl);
 
 //
-//  Destroy implementation object and it's dependencies.
-//  Note, do 'cleanup' before 'destroy'.
+//  Cleanup implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_kdf2_init ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_impl_destroy (vsf_impl_t** impl_ref);
+vsf_kdf2_cleanup (vsf_kdf2_impl_t* kdf2_impl);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
+//
+VSF_PUBLIC vsf_kdf2_impl_t*
+vsf_kdf2_new (void);
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_kdf2_new ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
+//
+VSF_PUBLIC void
+vsf_kdf2_destroy (vsf_kdf2_impl_t** kdf2_impl_ref);
+
+//
+//  Setup dependency to the interface 'hash stream' and keep ownership.
+//
+VSF_PUBLIC void
+vsf_kdf2_use_hash_stream (vsf_kdf2_impl_t* kdf2_impl, vsf_impl_t* hash);
+
+//
+//  Setup dependency to the interface 'hash stream' and transfer ownership.
+//
+VSF_PUBLIC void
+vsf_kdf2_take_hash_stream (vsf_kdf2_impl_t* kdf2_impl, vsf_impl_t** hash_ref);
+
+//
+//  Returns instance of the implemented interface 'kdf'.
+//
+VSF_PUBLIC const vsf_kdf_api_t*
+vsf_kdf2_kdf_api (void);
+
+//
+//  Calculate hash over given data.
+//
+VSF_PUBLIC void
+vsf_kdf2_derive (vsf_kdf2_impl_t* kdf2_impl, const byte* data, size_t data_len, byte* key,
+        size_t key_len);
 
 
 // --------------------------------------------------------------------------
@@ -139,5 +154,5 @@ vsf_impl_destroy (vsf_impl_t** impl_ref);
 
 
 //  @footer
-#endif // VSF_IMPL_H_INCLUDED
+#endif // VSF_KDF2_H_INCLUDED
 //  @end
