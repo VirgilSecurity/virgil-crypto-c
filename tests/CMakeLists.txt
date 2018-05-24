@@ -40,6 +40,7 @@ add_subdirectory(unity)
 
 macro(_add_test test)
     add_executable(${test} ${test}.c
+            test_data_aes_256_gcm.c
             test_data_sha224.c
             test_data_sha256.c
             test_data_sha384.c
@@ -60,3 +61,4 @@ _add_test (test_sha224)
 _add_test (test_sha256)
 _add_test (test_sha384)
 _add_test (test_sha512)
+_add_test (test_aes_256_gcm)

@@ -76,7 +76,7 @@ typedef struct vsf_decrypt_api_t vsf_decrypt_api_t;
 //  Decrypt given data.
 //
 VSF_PUBLIC int
-vsf_decrypt (vsf_impl_t* impl, const byte* enc, size_t enc_len, byte* data, size_t data_len,
+vsf_decrypt (vsf_impl_t* impl, const byte* enc, size_t enc_len, byte* plain, size_t plain_len,
         size_t* out_len);
 
 //

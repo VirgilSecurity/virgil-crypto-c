@@ -83,7 +83,7 @@ enum {
     vsf_aes_256_gcm_KEY_LEN = 32,
     vsf_aes_256_gcm_KEY_BITLEN = 256,
     vsf_aes_256_gcm_BLOCK_LEN = 16,
-    vsf_aes_256_gcm_AUTH_TAG_LEN = vsf_aes_256_gcm_BLOCK_LEN
+    vsf_aes_256_gcm_AUTH_TAG_LEN = 16
 };
 
 //
@@ -194,14 +194,7 @@ vsf_aes_256_gcm_encrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const byte* d
 //
 VSF_PUBLIC int
 vsf_aes_256_gcm_decrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const byte* enc, size_t enc_len,
-        byte* data, size_t data_len, size_t* out_len);
-
-//
-//  Set padding mode, for cipher modes that use padding.
-//
-VSF_PUBLIC void
-vsf_aes_256_gcm_set_padding (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl,
-        vsf_cipher_padding_t padding);
+        byte* plain, size_t plain_len, size_t* out_len);
 
 //
 //  Setup IV or nonce.

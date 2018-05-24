@@ -105,7 +105,7 @@
         </interface>
 
         <interface name="cipher auth info">
-            <constant name="auth tag len" value=".(class_aes_256_gcm_constant_block_len)"/>
+            <constant name="auth tag len" value="16"/>
         </interface>
 
         <interface name="auth encrypt"/>

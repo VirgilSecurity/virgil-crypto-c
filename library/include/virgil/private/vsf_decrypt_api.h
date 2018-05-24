@@ -72,7 +72,7 @@ extern "C" {
 //  Callback. Decrypt given data.
 //
 typedef int (*vsf_decrypt_api_decrypt_fn) (vsf_impl_t* impl, const byte* enc, size_t enc_len,
-        byte* data, size_t data_len, size_t* out_len);
+        byte* plain, size_t plain_len, size_t* out_len);
 
 //
 //  Contains API requirements of the interface 'decrypt'.

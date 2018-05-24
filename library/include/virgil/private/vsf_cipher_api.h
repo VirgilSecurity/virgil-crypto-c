@@ -58,7 +58,6 @@
 #include "vsf_encrypt.h"
 #include "vsf_decrypt.h"
 #include "vsf_cipher_info.h"
-#include "vsf_cipher_padding.h"
 //  @end
 
 
@@ -71,11 +70,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Callback. Set padding mode, for cipher modes that use padding.
-//
-typedef void (*vsf_cipher_api_set_padding_fn) (vsf_impl_t* impl, vsf_cipher_padding_t padding);
 
 //
 //  Callback. Setup IV or nonce.
@@ -108,10 +102,6 @@ struct vsf_cipher_api_t {
     //  Link to the inherited interface API 'cipher info'.
     //
     const vsf_cipher_info_api_t* cipher_info_api;
-    //
-    //  Set padding mode, for cipher modes that use padding.
-    //
-    vsf_cipher_api_set_padding_fn set_padding_cb;
     //
     //  Setup IV or nonce.
     //

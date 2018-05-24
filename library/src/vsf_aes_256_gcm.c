@@ -84,8 +84,6 @@ vsf_aes_256_gcm_init_ctx (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl) {
     VSF_ASSERT_OPT (0 == mbedtls_cipher_setup (&aes_256_gcm_impl->cipher_ctx,
             mbedtls_cipher_info_from_type (MBEDTLS_CIPHER_AES_256_GCM)));
 
-    VSF_ASSERT_OPT (0 == mbedtls_cipher_set_padding_mode (&aes_256_gcm_impl->cipher_ctx, MBEDTLS_PADDING_PKCS7));
-
     vsf_zeroize (aes_256_gcm_impl->key, vsf_aes_256_gcm_KEY_LEN);
     vsf_zeroize (aes_256_gcm_impl->nonce, vsf_aes_256_gcm_NONCE_LEN);
 }
@@ -124,6 +122,10 @@ vsf_aes_256_gcm_encrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const byte* d
                     &aes_256_gcm_impl->cipher_ctx, aes_256_gcm_impl->key, vsf_aes_256_gcm_KEY_BITLEN, MBEDTLS_ENCRYPT));
 
     VSF_ASSERT_OPT (0 ==
+            mbedtls_cipher_update_ad (&aes_256_gcm_impl->cipher_ctx, NULL, 0));
+
+
+    VSF_ASSERT_OPT (0 ==
             mbedtls_cipher_reset (&aes_256_gcm_impl->cipher_ctx));
 
     VSF_ASSERT_OPT (0 ==
@@ -138,7 +140,7 @@ vsf_aes_256_gcm_encrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const byte* d
     VSF_ASSERT_OPT (0 ==
             mbedtls_cipher_write_tag (&aes_256_gcm_impl->cipher_ctx, enc + *out_len, vsf_aes_256_gcm_AUTH_TAG_LEN));
 
-    *out_len += last_block_len;
+    *out_len += vsf_aes_256_gcm_AUTH_TAG_LEN;
 
     return 0;
 }
@@ -165,6 +167,9 @@ vsf_aes_256_gcm_decrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const byte* e
                     &aes_256_gcm_impl->cipher_ctx, aes_256_gcm_impl->key, vsf_aes_256_gcm_KEY_BITLEN, MBEDTLS_DECRYPT));
 
     VSF_ASSERT_OPT (0 ==
+            mbedtls_cipher_update_ad (&aes_256_gcm_impl->cipher_ctx, NULL, 0));
+
+    VSF_ASSERT_OPT (0 ==
             mbedtls_cipher_reset (&aes_256_gcm_impl->cipher_ctx));
 
     VSF_ASSERT_OPT (0 ==
@@ -186,44 +191,6 @@ vsf_aes_256_gcm_decrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const byte* e
     }
 
     return -1;
-}
-
-//
-//  Set padding mode, for cipher modes that use padding.
-//
-VSF_PUBLIC void
-vsf_aes_256_gcm_set_padding (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl,
-        vsf_cipher_padding_t padding) {
-
-    mbedtls_cipher_padding_t mbedtls_padding = MBEDTLS_PADDING_NONE;
-
-    switch (padding) {
-        vsf_cipher_padding_NONE:
-            mbedtls_padding = MBEDTLS_PADDING_NONE;
-            break;
-
-        vsf_cipher_padding_PKCS7:
-            mbedtls_padding = MBEDTLS_PADDING_PKCS7;
-            break;
-
-        vsf_cipher_padding_ONE_AND_ZEROS:
-            mbedtls_padding = MBEDTLS_PADDING_ONE_AND_ZEROS;
-            break;
-
-        vsf_cipher_padding_ZEROS_AND_LEN:
-            mbedtls_padding = MBEDTLS_PADDING_ZEROS_AND_LEN;
-            break;
-
-        vsf_cipher_padding_ZEROS:
-            mbedtls_padding = MBEDTLS_PADDING_ZEROS;
-            break;
-
-        default:
-            VSF_ASSERT (0);
-    }
-
-    VSF_ASSERT_OPT (0 ==
-            mbedtls_cipher_set_padding_mode (&aes_256_gcm_impl->cipher_ctx, mbedtls_padding));
 }
 
 //

@@ -64,14 +64,14 @@
 //  Decrypt given data.
 //
 VSF_PUBLIC int
-vsf_decrypt (vsf_impl_t* impl, const byte* enc, size_t enc_len, byte* data, size_t data_len,
+vsf_decrypt (vsf_impl_t* impl, const byte* enc, size_t enc_len, byte* plain, size_t plain_len,
         size_t* out_len) {
 
     const vsf_decrypt_api_t *decrypt_api = vsf_decrypt_api (impl);
     VSF_ASSERT_PTR (decrypt_api);
 
     VSF_ASSERT_PTR (decrypt_api->decrypt_cb);
-    return decrypt_api->decrypt_cb (impl, enc, enc_len, data, data_len, out_len);
+    return decrypt_api->decrypt_cb (impl, enc, enc_len, plain, plain_len, out_len);
 }
 
 //

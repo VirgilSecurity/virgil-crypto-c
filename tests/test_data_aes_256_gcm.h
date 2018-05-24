@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2018 Virgil Security Inc.
 //
 //  All rights reserved.
@@ -33,27 +31,24 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-// --------------------------------------------------------------------------
 
 
-//  @warning
-// --------------------------------------------------------------------------
-//  This file is partially generated.
-//  Generated blocks are enclosed between tags [@<tag>, @end].
-//  User's code can be added between tags [@end, @<tag>].
-// --------------------------------------------------------------------------
+#include "vsf_library.h"
 
-#include "vsf_cipher_padding.h"
-//  @end
+//
+//  Test vector 1
+//  AES-GCM NIST Validation (AES-256,128,0,0,128) #0
+//
+extern const byte test_aes_256_gcm_KEY[];
+extern const byte test_aes_256_gcm_DATA[];
+extern const byte test_aes_256_gcm_NONCE[];
+extern const byte test_aes_256_gcm_ADD[];
+extern const byte test_aes_256_gcm_ENC[];
+extern const byte test_aes_256_gcm_AUTH_TAG[];
 
-
-//  @generated
-// --------------------------------------------------------------------------
-//  Generated section start.
-// --------------------------------------------------------------------------
-
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// --------------------------------------------------------------------------
-//  @end
+extern const size_t test_aes_256_gcm_KEY_LEN;
+extern const size_t test_aes_256_gcm_DATA_LEN;
+extern const size_t test_aes_256_gcm_NONCE_LEN;
+extern const size_t test_aes_256_gcm_ADD_LEN;
+extern const size_t test_aes_256_gcm_ENC_LEN;
+extern const size_t test_aes_256_gcm_AUTH_TAG_LEN;

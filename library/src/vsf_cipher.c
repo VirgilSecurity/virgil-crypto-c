@@ -61,19 +61,6 @@
 // --------------------------------------------------------------------------
 
 //
-//  Set padding mode, for cipher modes that use padding.
-//
-VSF_PUBLIC void
-vsf_cipher_set_padding (vsf_impl_t* impl, vsf_cipher_padding_t padding) {
-
-    const vsf_cipher_api_t *cipher_api = vsf_cipher_api (impl);
-    VSF_ASSERT_PTR (cipher_api);
-
-    VSF_ASSERT_PTR (cipher_api->set_padding_cb);
-    cipher_api->set_padding_cb (impl, padding);
-}
-
-//
 //  Setup IV or nonce.
 //
 VSF_PUBLIC void
