@@ -12,3 +12,5 @@ target_include_directories(unity
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
     PUBLIC $<INSTALL_INTERFACE:include>
 )
+
+target_compile_definitions(unity PRIVATE UNITY_OUTPUT_COLOR)
