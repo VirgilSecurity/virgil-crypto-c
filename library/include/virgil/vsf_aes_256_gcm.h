@@ -190,6 +190,12 @@ vsf_aes_256_gcm_encrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const byte* d
         size_t data_len, byte* enc, size_t enc_len, size_t* out_len);
 
 //
+//  Calculate required buffer length to hold the encrypted data.
+//
+VSF_PUBLIC size_t
+vsf_aes_256_gcm_required_enc_len (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, size_t data_len);
+
+//
 //  Decrypt given data.
 //
 VSF_PUBLIC int

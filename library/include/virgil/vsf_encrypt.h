@@ -80,6 +80,12 @@ vsf_encrypt (vsf_impl_t* impl, const byte* data, size_t data_len, byte* enc, siz
         size_t* out_len);
 
 //
+//  Calculate required buffer length to hold the encrypted data.
+//
+VSF_PUBLIC size_t
+vsf_encrypt_required_enc_len (vsf_impl_t* impl, size_t data_len);
+
+//
 //  Return encrypt API, or NULL if it is not implemented.
 //
 VSF_PUBLIC const vsf_encrypt_api_t*

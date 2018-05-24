@@ -13,4 +13,11 @@
 
         <return type="integer"/>
     </method>
+
+    <method name="required enc len" context="impl">
+        Calculate required buffer length to hold the encrypted data.
+
+        <argument name="data len" type="size"/>
+        <return type="size"/>
+    </method>
 </interface>
