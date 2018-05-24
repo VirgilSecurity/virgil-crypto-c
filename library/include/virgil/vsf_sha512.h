@@ -138,12 +138,6 @@ VSF_PUBLIC const vsf_hash_api_t*
 vsf_sha512_hash_api (void);
 
 //
-//  Returns instance of the implemented interface 'hash stream'.
-//
-VSF_PUBLIC const vsf_hash_stream_api_t*
-vsf_sha512_hash_stream_api (void);
-
-//
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void

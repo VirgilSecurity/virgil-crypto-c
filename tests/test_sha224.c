@@ -125,12 +125,6 @@ void test__hash__vector_3__success (void) {
 // Test implementation of the interface 'hash stream'.
 // --------------------------------------------------------------------------
 
-void test__hash_stream_api__always__returns_not_null (void) {
-    const vsf_hash_stream_api_t *hash_stream_api = vsf_sha224_hash_stream_api();
-
-    TEST_ASSERT_NOT_NULL (hash_stream_api);
-}
-
 void test__hash_stream__vector_1__success (void) {
 
     byte digest[vsf_sha224_DIGEST_SIZE] = { 0x00 };
@@ -194,7 +188,6 @@ int main (void) {
     RUN_TEST (test__hash__vector_2__success);
     RUN_TEST (test__hash__vector_3__success);
 
-    RUN_TEST (test__hash_stream_api__always__returns_not_null);
     RUN_TEST (test__hash_stream__vector_1__success);
     RUN_TEST (test__hash_stream__vector_2__success);
     RUN_TEST (test__hash_stream__vector_3__success);

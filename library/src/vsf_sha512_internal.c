@@ -248,15 +248,6 @@ vsf_sha512_hash_api (void) {
 }
 
 //
-//  Returns instance of the implemented interface 'hash stream'.
-//
-VSF_PUBLIC const vsf_hash_stream_api_t*
-vsf_sha512_hash_stream_api (void) {
-
-    return &hash_stream_api;
-}
-
-//
 //  Return size of 'vsf_sha512_impl_t' type.
 //
 VSF_PUBLIC size_t

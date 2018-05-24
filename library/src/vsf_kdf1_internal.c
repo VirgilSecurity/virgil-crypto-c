@@ -191,15 +191,6 @@ vsf_kdf1_destroy (vsf_kdf1_impl_t** kdf1_impl_ref) {
 }
 
 //
-//  Returns instance of the implemented interface 'kdf'.
-//
-VSF_PUBLIC const vsf_kdf_api_t*
-vsf_kdf1_kdf_api (void) {
-
-    return &kdf_api;
-}
-
-//
 //  Setup dependency to the interface 'hash stream' and keep ownership.
 //
 VSF_PUBLIC void
