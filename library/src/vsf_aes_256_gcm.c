@@ -124,7 +124,6 @@ vsf_aes_256_gcm_encrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const byte* d
     VSF_ASSERT_OPT (0 ==
             mbedtls_cipher_update_ad (&aes_256_gcm_impl->cipher_ctx, NULL, 0));
 
-
     VSF_ASSERT_OPT (0 ==
             mbedtls_cipher_reset (&aes_256_gcm_impl->cipher_ctx));
 
@@ -226,7 +225,37 @@ vsf_aes_256_gcm_auth_encrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const by
         size_t data_len, const byte* auth_data, size_t auth_data_len, byte* enc, size_t enc_len,
         size_t* out_len, byte* tag, size_t tag_len) {
 
-    //  TODO: This is STUB. Implement me.
+    VSF_ASSERT_PTR (aes_256_gcm_impl);
+    VSF_ASSERT_PTR (data);
+    VSF_ASSERT_PTR (enc);
+    VSF_ASSERT_PTR (out_len);
+    VSF_ASSERT_OPT (enc_len >= data_len + vsf_aes_256_gcm_BLOCK_LEN);
+    VSF_ASSERT_OPT (tag_len >= vsf_aes_256_gcm_AUTH_TAG_LEN);
+
+    *out_len = 0;
+
+    VSF_ASSERT_OPT (0 ==
+            mbedtls_cipher_setkey (
+                    &aes_256_gcm_impl->cipher_ctx, aes_256_gcm_impl->key, vsf_aes_256_gcm_KEY_BITLEN, MBEDTLS_ENCRYPT));
+
+    VSF_ASSERT_OPT (0 ==
+            mbedtls_cipher_update_ad (&aes_256_gcm_impl->cipher_ctx, auth_data, auth_data_len));
+
+    VSF_ASSERT_OPT (0 ==
+            mbedtls_cipher_reset (&aes_256_gcm_impl->cipher_ctx));
+
+    VSF_ASSERT_OPT (0 ==
+            mbedtls_cipher_update (&aes_256_gcm_impl->cipher_ctx, data, data_len, enc, out_len));
+
+    size_t last_block_len = 0;
+    VSF_ASSERT_OPT (0 ==
+            mbedtls_cipher_finish (&aes_256_gcm_impl->cipher_ctx, enc + *out_len, &last_block_len));
+
+    *out_len += last_block_len;
+
+    VSF_ASSERT_OPT (0 ==
+            mbedtls_cipher_write_tag (&aes_256_gcm_impl->cipher_ctx, tag, vsf_aes_256_gcm_AUTH_TAG_LEN));
+
     return 0;
 }
 
