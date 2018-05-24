@@ -34,25 +34,12 @@
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-project(virgil_crypto_c_integration_tests VERSION 0.1.0 LANGUAGES C)
+project(test_utils VERSION 0.1.0 LANGUAGES C)
 
-add_subdirectory(unity)
-add_subdirectory(data)
-add_subdirectory(utils)
+add_library(test_utils test_utils.h test_utils.c)
 
-macro(_add_test test)
-    add_executable(${test} ${test}.c)
-    target_link_libraries(${test} unity test_utils test_data vsf)
-    set_target_properties(${test} PROPERTIES C_STANDARD "99")
-    add_test (NAME ${test} COMMAND ${test})
-endmacro()
+target_include_directories(test_utils
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+        )
 
-_add_test (test_hash)
-_add_test (test_hash_info)
-_add_test (test_hash_stream)
-_add_test (test_kdf1)
-_add_test (test_sha224)
-_add_test (test_sha256)
-_add_test (test_sha384)
-_add_test (test_sha512)
-_add_test (test_aes_256_gcm)
+target_link_libraries(test_utils PUBLIC vsf)
