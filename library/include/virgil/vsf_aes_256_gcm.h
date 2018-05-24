@@ -135,46 +135,16 @@ VSF_PUBLIC void
 vsf_aes_256_gcm_destroy (vsf_aes_256_gcm_impl_t** aes_256_gcm_impl_ref);
 
 //
-//  Returns instance of the implemented interface 'encrypt'.
-//
-VSF_PUBLIC const vsf_encrypt_api_t*
-vsf_aes_256_gcm_encrypt_api (void);
-
-//
-//  Returns instance of the implemented interface 'decrypt'.
-//
-VSF_PUBLIC const vsf_decrypt_api_t*
-vsf_aes_256_gcm_decrypt_api (void);
-
-//
 //  Returns instance of the implemented interface 'cipher info'.
 //
 VSF_PUBLIC const vsf_cipher_info_api_t*
 vsf_aes_256_gcm_cipher_info_api (void);
 
 //
-//  Returns instance of the implemented interface 'cipher'.
-//
-VSF_PUBLIC const vsf_cipher_api_t*
-vsf_aes_256_gcm_cipher_api (void);
-
-//
 //  Returns instance of the implemented interface 'cipher auth info'.
 //
 VSF_PUBLIC const vsf_cipher_auth_info_api_t*
 vsf_aes_256_gcm_cipher_auth_info_api (void);
-
-//
-//  Returns instance of the implemented interface 'auth encrypt'.
-//
-VSF_PUBLIC const vsf_auth_encrypt_api_t*
-vsf_aes_256_gcm_auth_encrypt_api (void);
-
-//
-//  Returns instance of the implemented interface 'auth decrypt'.
-//
-VSF_PUBLIC const vsf_auth_decrypt_api_t*
-vsf_aes_256_gcm_auth_decrypt_api (void);
 
 //
 //  Returns instance of the implemented interface 'cipher auth'.

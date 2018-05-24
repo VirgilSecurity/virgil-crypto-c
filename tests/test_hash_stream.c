@@ -44,12 +44,12 @@
 //  Over implementation: 'sha256'.
 // --------------------------------------------------------------------------
 
-void test__api__sha256__returns_not_null (void) {
-    TEST_ASSERT_NOT_NULL (vsf_sha256_hash_stream_api());
-}
+void test__is_implemented__sha256__returns_true (void) {
+    vsf_impl_t *impl = vsf_sha256_impl (vsf_sha256_new());
 
-void test__api_tag__sha256__equals_api_tag_HASH_STREAM (void) {
-    TEST_ASSERT_EQUAL (vsf_api_tag_HASH_STREAM, vsf_sha256_hash_stream_api()->api_tag);
+    TEST_ASSERT_TRUE (vsf_hash_stream_is_implemented(impl));
+
+    vsf_impl_destroy (&impl);
 }
 
 void test__hash__sha256_vector_1__success (void) {
@@ -105,8 +105,7 @@ void test__hash__sha256_vector_3__success (void) {
 int main (void) {
     UNITY_BEGIN ();
 
-    RUN_TEST (test__api__sha256__returns_not_null);
-    RUN_TEST (test__api_tag__sha256__equals_api_tag_HASH_STREAM);
+    RUN_TEST (test__is_implemented__sha256__returns_true);
     RUN_TEST (test__hash__sha256_vector_1__success);
     RUN_TEST (test__hash__sha256_vector_2__success);
     RUN_TEST (test__hash__sha256_vector_3__success);

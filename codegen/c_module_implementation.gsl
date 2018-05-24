@@ -1054,7 +1054,7 @@ endfunction
 function _Z19_add_interface_api_methods (impl, declaration, definition, destination, meta)
     check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
-    for my.impl.interface
+    for my.impl.interface where ! count (method, method.context = "impl")
         meta_activate_entity (my.meta, interface.name)
 
         my.names = meta_names (my.meta)

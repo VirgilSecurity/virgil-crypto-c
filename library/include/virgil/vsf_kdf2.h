@@ -129,12 +129,6 @@ VSF_PUBLIC void
 vsf_kdf2_take_hash_stream (vsf_kdf2_impl_t* kdf2_impl, vsf_impl_t** hash_ref);
 
 //
-//  Returns instance of the implemented interface 'kdf'.
-//
-VSF_PUBLIC const vsf_kdf_api_t*
-vsf_kdf2_kdf_api (void);
-
-//
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
