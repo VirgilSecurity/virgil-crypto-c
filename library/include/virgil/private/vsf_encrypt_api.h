@@ -75,6 +75,11 @@ typedef int (*vsf_encrypt_api_encrypt_fn) (vsf_impl_t* impl, const byte* data, s
         byte* enc, size_t enc_len, size_t* out_len);
 
 //
+//  Callback. Calculate required buffer length to hold the encrypted data.
+//
+typedef size_t (*vsf_encrypt_api_required_enc_len_fn) (vsf_impl_t* impl, size_t data_len);
+
+//
 //  Contains API requirements of the interface 'encrypt'.
 //
 struct vsf_encrypt_api_t {
@@ -87,6 +92,10 @@ struct vsf_encrypt_api_t {
     //  Encrypt given data.
     //
     vsf_encrypt_api_encrypt_fn encrypt_cb;
+    //
+    //  Calculate required buffer length to hold the encrypted data.
+    //
+    vsf_encrypt_api_required_enc_len_fn required_enc_len_cb;
 };
 
 

@@ -83,7 +83,11 @@ static const vsf_encrypt_api_t encrypt_api = {
     //
     //  Encrypt given data.
     //
-    (vsf_encrypt_api_encrypt_fn) vsf_aes_256_gcm_encrypt
+    (vsf_encrypt_api_encrypt_fn) vsf_aes_256_gcm_encrypt,
+    //
+    //  Calculate required buffer length to hold the encrypted data.
+    //
+    (vsf_encrypt_api_required_enc_len_fn) vsf_aes_256_gcm_required_enc_len
 };
 
 //
