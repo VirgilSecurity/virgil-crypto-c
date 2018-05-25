@@ -54,6 +54,14 @@ const byte test_aes_256_gcm_VECTOR_1_NONCE[] = {
 };
 
 const byte test_aes_256_gcm_VECTOR_1_ENC[] = {
+};
+
+const byte test_aes_256_gcm_VECTOR_1_AUTH_TAG[] = {
+    0x80, 0x88, 0x3f, 0x2c, 0x92, 0x54, 0x34, 0xa5,
+    0xed, 0xfc, 0xef, 0xd5, 0xb1, 0x23, 0xd5, 0x20,
+};
+
+const byte test_aes_256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG[] = {
     0x80, 0x88, 0x3f, 0x2c, 0x92, 0x54, 0x34, 0xa5,
     0xed, 0xfc, 0xef, 0xd5, 0xb1, 0x23, 0xd5, 0x20,
 };
@@ -62,6 +70,8 @@ const size_t test_aes_256_gcm_VECTOR_1_KEY_LEN = sizeof (test_aes_256_gcm_VECTOR
 const size_t test_aes_256_gcm_VECTOR_1_DATA_LEN = sizeof (test_aes_256_gcm_VECTOR_1_DATA);
 const size_t test_aes_256_gcm_VECTOR_1_NONCE_LEN = sizeof (test_aes_256_gcm_VECTOR_1_NONCE);
 const size_t test_aes_256_gcm_VECTOR_1_ENC_LEN = sizeof (test_aes_256_gcm_VECTOR_1_ENC);
+const size_t test_aes_256_gcm_VECTOR_1_AUTH_TAG_LEN = sizeof (test_aes_256_gcm_VECTOR_1_AUTH_TAG);
+const size_t test_aes_256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG_LEN = sizeof (test_aes_256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG);
 
 
 //

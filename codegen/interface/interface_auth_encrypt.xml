@@ -3,6 +3,7 @@
 
     <method name="auth encrypt" context="impl">
         Encrypt given data.
+        If 'tag' is not give, then it will written to the 'enc'.
 
         <argument name="data" type="data"/>
         <argument name="data len" type="size"/>

@@ -62,17 +62,18 @@
 
 //
 //  Decrypt given data.
+//  If 'tag' is not give, then it will be taken from the 'enc'.
 //
 VSF_PUBLIC int
-vsf_auth_decrypt (vsf_impl_t* impl, const byte* enc, size_t enc_len, byte* data, size_t data_len,
-        size_t* out_len, const byte* auth_data, size_t auth_data_len, const byte* tag,
-        size_t tag_len) {
+vsf_auth_decrypt (vsf_impl_t* impl, const byte* enc, size_t enc_len, const byte* auth_data,
+        size_t auth_data_len, const byte* tag, size_t tag_len, byte* dec, size_t dec_len,
+        size_t* out_len) {
 
     const vsf_auth_decrypt_api_t *auth_decrypt_api = vsf_auth_decrypt_api (impl);
     VSF_ASSERT_PTR (auth_decrypt_api);
 
     VSF_ASSERT_PTR (auth_decrypt_api->auth_decrypt_cb);
-    return auth_decrypt_api->auth_decrypt_cb (impl, enc, enc_len, data, data_len, out_len, auth_data, auth_data_len, tag, tag_len);
+    return auth_decrypt_api->auth_decrypt_cb (impl, enc, enc_len, auth_data, auth_data_len, tag, tag_len, dec, dec_len, out_len);
 }
 
 //

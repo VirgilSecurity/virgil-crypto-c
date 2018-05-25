@@ -199,6 +199,7 @@ vsf_aes_256_gcm_set_key (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const byte* k
 
 //
 //  Encrypt given data.
+//  If 'tag' is not give, then it will written to the 'enc'.
 //
 VSF_PUBLIC int
 vsf_aes_256_gcm_auth_encrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const byte* data,
@@ -207,11 +208,12 @@ vsf_aes_256_gcm_auth_encrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const by
 
 //
 //  Decrypt given data.
+//  If 'tag' is not give, then it will be taken from the 'enc'.
 //
 VSF_PUBLIC int
 vsf_aes_256_gcm_auth_decrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const byte* enc,
-        size_t enc_len, byte* data, size_t data_len, size_t* out_len, const byte* auth_data,
-        size_t auth_data_len, const byte* tag, size_t tag_len);
+        size_t enc_len, const byte* auth_data, size_t auth_data_len, const byte* tag,
+        size_t tag_len, byte* dec, size_t dec_len, size_t* out_len);
 
 
 // --------------------------------------------------------------------------
