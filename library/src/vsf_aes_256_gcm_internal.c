@@ -104,7 +104,13 @@ static const vsf_decrypt_api_t decrypt_api = {
     //
     //  Decrypt given data.
     //
-    (vsf_decrypt_api_decrypt_fn) vsf_aes_256_gcm_decrypt
+    (vsf_decrypt_api_decrypt_fn) vsf_aes_256_gcm_decrypt,
+    //
+    //  Calculate required buffer length to hold the decrypted data.
+    //  If argument 'auth tag len' is 0, then returned length
+    //  adjusted to cut of auth tag length.
+    //
+    (vsf_decrypt_api_required_dec_len_fn) vsf_aes_256_gcm_required_dec_len
 };
 
 //

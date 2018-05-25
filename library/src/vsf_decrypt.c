@@ -75,6 +75,21 @@ vsf_decrypt (vsf_impl_t* impl, const byte* enc, size_t enc_len, byte* plain, siz
 }
 
 //
+//  Calculate required buffer length to hold the decrypted data.
+//  If argument 'auth tag len' is 0, then returned length
+//  adjusted to cut of auth tag length.
+//
+VSF_PUBLIC size_t
+vsf_decrypt_required_dec_len (vsf_impl_t* impl, size_t enc_len, size_t auth_tag_len) {
+
+    const vsf_decrypt_api_t *decrypt_api = vsf_decrypt_api (impl);
+    VSF_ASSERT_PTR (decrypt_api);
+
+    VSF_ASSERT_PTR (decrypt_api->required_dec_len_cb);
+    return decrypt_api->required_dec_len_cb (impl, enc_len, auth_tag_len);
+}
+
+//
 //  Return decrypt API, or NULL if it is not implemented.
 //
 VSF_PUBLIC const vsf_decrypt_api_t*
