@@ -86,6 +86,8 @@ static const vsf_encrypt_api_t encrypt_api = {
     (vsf_encrypt_api_encrypt_fn) vsf_aes_256_gcm_encrypt,
     //
     //  Calculate required buffer length to hold the encrypted data.
+    //  If argument 'auth tag len' is 0, then returned length
+    //  adjusted to hold auth tag as well.
     //
     (vsf_encrypt_api_required_enc_len_fn) vsf_aes_256_gcm_required_enc_len
 };

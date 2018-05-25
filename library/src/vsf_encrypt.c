@@ -76,15 +76,17 @@ vsf_encrypt (vsf_impl_t* impl, const byte* data, size_t data_len, byte* enc, siz
 
 //
 //  Calculate required buffer length to hold the encrypted data.
+//  If argument 'auth tag len' is 0, then returned length
+//  adjusted to hold auth tag as well.
 //
 VSF_PUBLIC size_t
-vsf_encrypt_required_enc_len (vsf_impl_t* impl, size_t data_len) {
+vsf_encrypt_required_enc_len (vsf_impl_t* impl, size_t data_len, size_t auth_tag_len) {
 
     const vsf_encrypt_api_t *encrypt_api = vsf_encrypt_api (impl);
     VSF_ASSERT_PTR (encrypt_api);
 
     VSF_ASSERT_PTR (encrypt_api->required_enc_len_cb);
-    return encrypt_api->required_enc_len_cb (impl, data_len);
+    return encrypt_api->required_enc_len_cb (impl, data_len, auth_tag_len);
 }
 
 //

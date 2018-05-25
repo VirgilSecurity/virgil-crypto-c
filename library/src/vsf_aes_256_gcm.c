@@ -113,7 +113,7 @@ vsf_aes_256_gcm_encrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const byte* d
     VSF_ASSERT_PTR (data);
     VSF_ASSERT_PTR (enc);
     VSF_ASSERT_PTR (out_len);
-    VSF_ASSERT_OPT (enc_len >= data_len + vsf_aes_256_gcm_BLOCK_LEN + vsf_aes_256_gcm_AUTH_TAG_LEN);
+    VSF_ASSERT_OPT (enc_len >= vsf_aes_256_gcm_required_enc_len (aes_256_gcm_impl, data_len, 0));
 
     *out_len = 0;
 
@@ -146,12 +146,19 @@ vsf_aes_256_gcm_encrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const byte* d
 
 //
 //  Calculate required buffer length to hold the encrypted data.
+//  If argument 'auth tag len' is 0, then returned length
+//  adjusted to hold auth tag as well.
 //
 VSF_PUBLIC size_t
-vsf_aes_256_gcm_required_enc_len (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, size_t data_len) {
+vsf_aes_256_gcm_required_enc_len (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, size_t data_len,
+        size_t auth_tag_len) {
 
     VSF_ASSERT_PTR (aes_256_gcm_impl);
-    return data_len + vsf_aes_256_gcm_BLOCK_LEN + vsf_aes_256_gcm_AUTH_TAG_LEN;
+
+    const size_t required_enc_len = data_len + vsf_aes_256_gcm_BLOCK_LEN +
+            (auth_tag_len > 0 ? 0 : vsf_aes_256_gcm_AUTH_TAG_LEN);
+
+    return required_enc_len;
 }
 
 //
