@@ -78,15 +78,6 @@ vsf_cipher_auth_info_api (vsf_impl_t* impl) {
 }
 
 //
-//  Return size of 'vsf_cipher_auth_info_api_t' type.
-//
-VSF_PUBLIC size_t
-vsf_cipher_auth_info_api_size (void) {
-
-    return sizeof(vsf_cipher_auth_info_api_t);
-}
-
-//
 //  Check if given object implements interface 'cipher auth info'.
 //
 VSF_PUBLIC bool

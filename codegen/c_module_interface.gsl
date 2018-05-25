@@ -331,33 +331,6 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-#   Add method that returns size of 'API' type.
-# ---------------------------------------------------------------------------
-function _L23_add_method_get_api_size (interface, destination, meta)
-    check_arguments (my, "interface, destination, meta")
-
-    my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
-
-    new method to my.destination
-        . = "Return size of '$(my.refs.c_interface_struct_api)' type."
-
-        .name = cat (my.names.class_api, "size")
-
-        new return
-            .type = "size"
-        endnew
-
-        new implementation
-            . = "\
-            return sizeof($(my.refs.c_interface_struct_api));
-            "
-        endnew
-    endnew
-endfunction
-
-
-# ---------------------------------------------------------------------------
 #   Add method that check if 'API' is implemented.
 # ---------------------------------------------------------------------------
 function _L23_add_method_check_api (interface, destination, meta)
@@ -439,7 +412,6 @@ function c_module_interface_create_module_public (interface, destination, meta)
         _L23_add_stateless_methods (my.interface, module, my.meta)
         _L23_add_stateless_getters (my.interface, module, my.meta)
         _L23_add_method_get_api (my.interface, module, my.meta)
-        _L23_add_method_get_api_size (my.interface, module, my.meta)
         _L23_add_method_check_api (my.interface, module, my.meta)
     endnew
 endfunction
