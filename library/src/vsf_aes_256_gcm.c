@@ -267,7 +267,7 @@ vsf_aes_256_gcm_auth_decrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const by
     VSF_ASSERT_PTR (enc);
     VSF_ASSERT_PTR (dec);
     VSF_ASSERT_PTR (out_len);
-    VSF_ASSERT_OPT (tag == NULL && tag_len == 0 || tag != NULL && tag_len == vsf_aes_256_gcm_AUTH_TAG_LEN);
+    VSF_ASSERT_OPT ((tag == NULL && tag_len == 0) || (tag != NULL && tag_len == vsf_aes_256_gcm_AUTH_TAG_LEN));
     VSF_ASSERT_OPT (dec_len >= vsf_aes_256_gcm_required_dec_len (aes_256_gcm_impl, enc_len, tag_len));
 
     if (NULL == tag) {
