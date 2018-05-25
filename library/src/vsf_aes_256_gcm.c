@@ -115,33 +115,7 @@ vsf_aes_256_gcm_encrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const byte* d
     VSF_ASSERT_PTR (out_len);
     VSF_ASSERT_OPT (enc_len >= vsf_aes_256_gcm_required_enc_len (aes_256_gcm_impl, data_len, 0));
 
-    *out_len = 0;
-
-    VSF_ASSERT_OPT (0 ==
-            mbedtls_cipher_setkey (
-                    &aes_256_gcm_impl->cipher_ctx, aes_256_gcm_impl->key, vsf_aes_256_gcm_KEY_BITLEN, MBEDTLS_ENCRYPT));
-
-    VSF_ASSERT_OPT (0 ==
-            mbedtls_cipher_update_ad (&aes_256_gcm_impl->cipher_ctx, NULL, 0));
-
-    VSF_ASSERT_OPT (0 ==
-            mbedtls_cipher_reset (&aes_256_gcm_impl->cipher_ctx));
-
-    VSF_ASSERT_OPT (0 ==
-            mbedtls_cipher_update (&aes_256_gcm_impl->cipher_ctx, data, data_len, enc, out_len));
-
-    size_t last_block_len = 0;
-    VSF_ASSERT_OPT (0 ==
-            mbedtls_cipher_finish (&aes_256_gcm_impl->cipher_ctx, enc + *out_len, &last_block_len));
-
-    *out_len += last_block_len;
-
-    VSF_ASSERT_OPT (0 ==
-            mbedtls_cipher_write_tag (&aes_256_gcm_impl->cipher_ctx, enc + *out_len, vsf_aes_256_gcm_AUTH_TAG_LEN));
-
-    *out_len += vsf_aes_256_gcm_AUTH_TAG_LEN;
-
-    return 0;
+    return vsf_aes_256_gcm_auth_encrypt (aes_256_gcm_impl, data, data_len, NULL, 0, enc, enc_len, out_len, NULL, 0);
 }
 
 //
@@ -175,38 +149,7 @@ vsf_aes_256_gcm_decrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const byte* e
     VSF_ASSERT_OPT (enc_len >= vsf_aes_256_gcm_AUTH_TAG_LEN);
     VSF_ASSERT_OPT (plain_len >= enc_len + vsf_aes_256_gcm_BLOCK_LEN - vsf_aes_256_gcm_AUTH_TAG_LEN);
 
-    size_t curr_out_len = 0;
-    *out_len = 0;
-
-    VSF_ASSERT_OPT (0 ==
-            mbedtls_cipher_setkey (
-                    &aes_256_gcm_impl->cipher_ctx, aes_256_gcm_impl->key, vsf_aes_256_gcm_KEY_BITLEN, MBEDTLS_DECRYPT));
-
-    VSF_ASSERT_OPT (0 ==
-            mbedtls_cipher_update_ad (&aes_256_gcm_impl->cipher_ctx, NULL, 0));
-
-    VSF_ASSERT_OPT (0 ==
-            mbedtls_cipher_reset (&aes_256_gcm_impl->cipher_ctx));
-
-    VSF_ASSERT_OPT (0 ==
-            mbedtls_cipher_update (&aes_256_gcm_impl->cipher_ctx, enc, enc_len - vsf_aes_256_gcm_AUTH_TAG_LEN,
-                    plain, &curr_out_len));
-
-    size_t last_block_len = 0;
-    VSF_ASSERT_OPT (0 ==
-            mbedtls_cipher_finish (&aes_256_gcm_impl->cipher_ctx, plain + *out_len, &last_block_len));
-
-    curr_out_len += last_block_len;
-
-    if (0 == mbedtls_cipher_check_tag (&aes_256_gcm_impl->cipher_ctx,
-                enc + enc_len - vsf_aes_256_gcm_AUTH_TAG_LEN, vsf_aes_256_gcm_AUTH_TAG_LEN)) {
-
-        *out_len = curr_out_len;
-        return 0;
-
-    }
-
-    return -1;
+    return vsf_aes_256_gcm_auth_decrypt (aes_256_gcm_impl, enc, enc_len, NULL, 0, NULL, 0, plain, plain_len, out_len);
 }
 
 //
@@ -225,7 +168,7 @@ vsf_aes_256_gcm_required_dec_len (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, size
 
     } else {
         VSF_ASSERT_OPT (enc_len >= auth_tag_len);
-        return enc_len - auth_tag_len + vsf_aes_256_gcm_BLOCK_LEN;
+        return enc_len + vsf_aes_256_gcm_BLOCK_LEN - vsf_aes_256_gcm_AUTH_TAG_LEN;
     }
 }
 

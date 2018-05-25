@@ -117,7 +117,9 @@ void test__decrypt__vector_1__decrypted_len_equals_0 (void) {
 
     vsf_aes_256_gcm_impl_t *aes_256_gcm_impl = vsf_aes_256_gcm_new ();
 
-    size_t dec_len = vsf_aes_256_gcm_required_dec_len (aes_256_gcm_impl, test_aes_256_gcm_VECTOR_1_ENC_LEN, 0);
+    size_t dec_len = vsf_aes_256_gcm_required_dec_len (
+            aes_256_gcm_impl, test_aes_256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG_LEN, 0);
+
     byte *dec = vsf_alloc (dec_len);
 
 
@@ -140,7 +142,9 @@ void test__decrypt__vector_1__valid_auth_tag (void) {
 
     vsf_aes_256_gcm_impl_t *aes_256_gcm_impl = vsf_aes_256_gcm_new ();
 
-    size_t dec_len = vsf_aes_256_gcm_required_dec_len (aes_256_gcm_impl, test_aes_256_gcm_VECTOR_1_ENC_LEN, 0);
+    size_t dec_len = vsf_aes_256_gcm_required_dec_len (
+            aes_256_gcm_impl, test_aes_256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG_LEN, 0);
+
     byte *dec = vsf_alloc (dec_len);
 
 
