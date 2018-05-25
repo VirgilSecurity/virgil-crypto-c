@@ -13,4 +13,15 @@
 
         <return type="integer"/>
     </method>
+
+
+    <method name="required dec len" context="impl">
+        Calculate required buffer length to hold the decrypted data.
+        If argument 'auth tag len' is 0, then returned length
+        adjusted to cut of auth tag length.
+
+        <argument name="enc len" type="size"/>
+        <argument name="auth tag len" type="size"/>
+        <return type="size"/>
+    </method>
 </interface>

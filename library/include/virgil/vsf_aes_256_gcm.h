@@ -176,6 +176,15 @@ vsf_aes_256_gcm_decrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const byte* e
         byte* plain, size_t plain_len, size_t* out_len);
 
 //
+//  Calculate required buffer length to hold the decrypted data.
+//  If argument 'auth tag len' is 0, then returned length
+//  adjusted to cut of auth tag length.
+//
+VSF_PUBLIC size_t
+vsf_aes_256_gcm_required_dec_len (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, size_t enc_len,
+        size_t auth_tag_len);
+
+//
 //  Setup IV or nonce.
 //
 VSF_PUBLIC void
