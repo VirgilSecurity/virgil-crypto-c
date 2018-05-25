@@ -74,6 +74,7 @@ typedef struct vsf_auth_encrypt_api_t vsf_auth_encrypt_api_t;
 
 //
 //  Encrypt given data.
+//  If 'tag' is not give, then it will written to the 'enc'.
 //
 VSF_PUBLIC int
 vsf_auth_encrypt (vsf_impl_t* impl, const byte* data, size_t data_len, const byte* auth_data,
