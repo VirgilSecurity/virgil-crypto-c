@@ -108,7 +108,10 @@ function run_main ()
     my.meta = meta_create ()
     foreach_interface_update_meta (root, my.meta)
     foreach_implementation_update_meta (root, my.meta)
-    item_save_to_file (my.meta, "meta.xml", root->project.work_path)
+
+    if main.echo_level = "debug"
+        item_save_to_file (my.meta, "meta.xml", root->project.work_path)
+    endif
 
     #   Create modules.
     c_module_api_create (my.meta, root)
@@ -131,7 +134,9 @@ function run_main ()
     c_module_resolve (root)
 
     #   At this point all elements are created and resolved.
-    item_save_to_file (root, "root.xml", root->project.work_path)
+    if main.echo_level = "debug"
+        item_save_to_file (root, "root.xml", root->project.work_path)
+    endif
 
     #   Fullfil context with models name.
     context_resolve_refs (root->context, root)
