@@ -99,6 +99,19 @@
     </method>
 
 
+    <macros name="file path or name" of_class="global">
+        Contains file path or file name.
+
+        <implementation lang="c">
+            #if defined (__FILENAME__)
+            #   define .(c_global_macros_file_path_or_name) __FILENAME__
+            #else
+            #   define .(c_global_macros_file_path_or_name) __FILE__
+            #endif
+        </implementation>
+    </macros>
+
+
     <macros name="internal" is_method="1">
         Asserts always.
 
@@ -106,7 +119,7 @@
             #define .(c_class_assert_macros_internal) (X)
                 do {
                     if (!(X)) {
-                        .(c_class_assert_method_trigger) (#X, __FILE__, __LINE__);
+                        .(c_class_assert_method_trigger) (#X, .(c_global_macros_file_path_or_name), __LINE__);
                     }
                 } while (false)
         </implementation>
@@ -155,7 +168,8 @@
             #define .(c_class_assert_macros_ptr) (X)
                 do {
                     if (!(X)) {
-                        .(c_class_assert_method_trigger) (#X" != NULL", __FILE__, __LINE__);
+                        .(c_class_assert_method_trigger) (#X" != NULL", \
+                                .(c_global_macros_file_path_or_name), __LINE__);
                     }
                 } while (false)
         </implementation>

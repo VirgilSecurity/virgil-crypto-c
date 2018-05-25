@@ -70,13 +70,22 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Contains file path or file name.
+//
+#if defined (__FILENAME__)
+#   define VSF_FILE_PATH_OR_NAME __FILENAME__
+#else
+#   define VSF_FILE_PATH_OR_NAME __FILE__
+#endif
+
+//
 //  Asserts always.
 //
-#define VSF_ASSERT_INTERNAL(X)                           \
-    do {                                                 \
-        if (!(X)) {                                      \
-            vsf_assert_trigger (#X, __FILE__, __LINE__); \
-        }                                                \
+#define VSF_ASSERT_INTERNAL(X)                                        \
+    do {                                                              \
+        if (!(X)) {                                                   \
+            vsf_assert_trigger (#X, VSF_FILE_PATH_OR_NAME, __LINE__); \
+        }                                                             \
     } while (false)
 
 //
@@ -102,11 +111,11 @@ extern "C" {
 //
 //  Assert that given pointer is not NULL. It is enabled in debug mode.
 //
-#define VSF_ASSERT_PTR(X)                                          \
-    do {                                                           \
-        if (!(X)) {                                                \
-            vsf_assert_trigger (#X" != NULL", __FILE__, __LINE__); \
-        }                                                          \
+#define VSF_ASSERT_PTR(X)                                                       \
+    do {                                                                        \
+        if (!(X)) {                                                             \
+            vsf_assert_trigger (#X" != NULL", VSF_FILE_PATH_OR_NAME, __LINE__); \
+        }                                                                       \
     } while (false)
 
 //
