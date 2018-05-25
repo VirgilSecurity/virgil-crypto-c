@@ -76,8 +76,11 @@ typedef int (*vsf_encrypt_api_encrypt_fn) (vsf_impl_t* impl, const byte* data, s
 
 //
 //  Callback. Calculate required buffer length to hold the encrypted data.
+//          If argument 'auth tag len' is 0, then returned length
+//          adjusted to hold auth tag as well.
 //
-typedef size_t (*vsf_encrypt_api_required_enc_len_fn) (vsf_impl_t* impl, size_t data_len);
+typedef size_t (*vsf_encrypt_api_required_enc_len_fn) (vsf_impl_t* impl, size_t data_len,
+        size_t auth_tag_len);
 
 //
 //  Contains API requirements of the interface 'encrypt'.
@@ -94,6 +97,8 @@ struct vsf_encrypt_api_t {
     vsf_encrypt_api_encrypt_fn encrypt_cb;
     //
     //  Calculate required buffer length to hold the encrypted data.
+    //  If argument 'auth tag len' is 0, then returned length
+    //  adjusted to hold auth tag as well.
     //
     vsf_encrypt_api_required_enc_len_fn required_enc_len_cb;
 };
