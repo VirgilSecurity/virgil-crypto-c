@@ -103,12 +103,6 @@ VSF_PUBLIC const vsf_cipher_info_api_t*
 vsf_cipher_info_api (vsf_impl_t* impl);
 
 //
-//  Return size of 'vsf_cipher_info_api_t' type.
-//
-VSF_PUBLIC size_t
-vsf_cipher_info_api_size (void);
-
-//
 //  Check if given object implements interface 'cipher info'.
 //
 VSF_PUBLIC bool

@@ -102,15 +102,6 @@ vsf_decrypt_api (vsf_impl_t* impl) {
 }
 
 //
-//  Return size of 'vsf_decrypt_api_t' type.
-//
-VSF_PUBLIC size_t
-vsf_decrypt_api_size (void) {
-
-    return sizeof(vsf_decrypt_api_t);
-}
-
-//
 //  Check if given object implements interface 'decrypt'.
 //
 VSF_PUBLIC bool

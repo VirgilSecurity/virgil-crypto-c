@@ -99,15 +99,6 @@ vsf_cipher_api (vsf_impl_t* impl) {
 }
 
 //
-//  Return size of 'vsf_cipher_api_t' type.
-//
-VSF_PUBLIC size_t
-vsf_cipher_api_size (void) {
-
-    return sizeof(vsf_cipher_api_t);
-}
-
-//
 //  Check if given object implements interface 'cipher'.
 //
 VSF_PUBLIC bool

@@ -88,12 +88,6 @@ VSF_PUBLIC const vsf_auth_encrypt_api_t*
 vsf_auth_encrypt_api (vsf_impl_t* impl);
 
 //
-//  Return size of 'vsf_auth_encrypt_api_t' type.
-//
-VSF_PUBLIC size_t
-vsf_auth_encrypt_api_size (void);
-
-//
 //  Check if given object implements interface 'auth encrypt'.
 //
 VSF_PUBLIC bool
