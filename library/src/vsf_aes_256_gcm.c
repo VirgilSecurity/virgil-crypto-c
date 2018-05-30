@@ -129,7 +129,7 @@ vsf_aes_256_gcm_required_enc_len (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, size
 
     VSF_ASSERT_PTR (aes_256_gcm_impl);
 
-    const size_t required_enc_len = data_len + vsf_aes_256_gcm_BLOCK_LEN +
+    const size_t required_enc_len = data_len +
             (auth_tag_len > 0 ? 0 : vsf_aes_256_gcm_AUTH_TAG_LEN);
 
     return required_enc_len;
@@ -147,7 +147,7 @@ vsf_aes_256_gcm_decrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const byte* e
     VSF_ASSERT_PTR (plain);
     VSF_ASSERT_PTR (out_len);
     VSF_ASSERT_OPT (enc_len >= vsf_aes_256_gcm_AUTH_TAG_LEN);
-    VSF_ASSERT_OPT (plain_len >= enc_len + vsf_aes_256_gcm_BLOCK_LEN - vsf_aes_256_gcm_AUTH_TAG_LEN);
+    VSF_ASSERT_OPT (plain_len >= enc_len - vsf_aes_256_gcm_AUTH_TAG_LEN);
 
     return vsf_aes_256_gcm_auth_decrypt (aes_256_gcm_impl, enc, enc_len, NULL, 0, NULL, 0, plain, plain_len, out_len);
 }
@@ -164,11 +164,11 @@ vsf_aes_256_gcm_required_dec_len (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, size
     VSF_ASSERT_PTR (aes_256_gcm_impl);
 
     if (auth_tag_len > 0) {
-        return enc_len + vsf_aes_256_gcm_BLOCK_LEN;
+        return enc_len;
 
     } else {
         VSF_ASSERT_OPT (enc_len >= auth_tag_len);
-        return enc_len + vsf_aes_256_gcm_BLOCK_LEN - vsf_aes_256_gcm_AUTH_TAG_LEN;
+        return enc_len - vsf_aes_256_gcm_AUTH_TAG_LEN;
     }
 }
 
@@ -213,11 +213,11 @@ vsf_aes_256_gcm_auth_encrypt (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl, const by
 
     if (tag) {
         VSF_ASSERT_OPT (tag_len >= vsf_aes_256_gcm_AUTH_TAG_LEN);
-        VSF_ASSERT_OPT (enc_len >= data_len + vsf_aes_256_gcm_BLOCK_LEN);
+        VSF_ASSERT_OPT (enc_len >= data_len);
 
     } else {
         VSF_ASSERT_OPT (0 == tag_len);
-        VSF_ASSERT_OPT (enc_len >= data_len + vsf_aes_256_gcm_BLOCK_LEN + vsf_aes_256_gcm_AUTH_TAG_LEN);
+        VSF_ASSERT_OPT (enc_len >= data_len + vsf_aes_256_gcm_AUTH_TAG_LEN);
     }
 
     *out_len = 0;
