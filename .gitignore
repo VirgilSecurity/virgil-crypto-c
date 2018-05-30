@@ -26,3 +26,6 @@ cmake-build-*/
 # Visual Studio (VisualGDB)
 Debug*/
 gcc*
+obj/
+bin/
+.vs/
