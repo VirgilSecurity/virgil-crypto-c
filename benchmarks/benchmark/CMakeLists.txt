@@ -36,7 +36,7 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project (benchmark C)
 
-add_library(benchmark STATIC
+add_library(benchmark
     "${CMAKE_CURRENT_LIST_DIR}/include/benchmark.h"
     "${CMAKE_CURRENT_LIST_DIR}/src/benchmark.c"
 )
