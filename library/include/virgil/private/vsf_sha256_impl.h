@@ -60,6 +60,7 @@
 #include "vsf_sha256.h"
 
 #include <mbedtls/sha256.h>
+#include <mbedtls/md.h>
 //  @end
 
 
@@ -85,6 +86,10 @@ struct vsf_sha256_impl_t {
     //  Interface implementation specific context.
     //
     mbedtls_sha256_context hash_ctx;
+    //
+    //  Interface implementation specific context.
+    //
+    mbedtls_md_context_t hmac_ctx;
 };
 
 

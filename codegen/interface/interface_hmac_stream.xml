@@ -1,0 +1,35 @@
+<interface name="hmac stream">
+    Provides interface to the hmac (messege digest) algorithms.
+
+    <inherit interface="hash info" />
+
+    <method name="hmac reset">
+        Reset HMAC.
+    </method>
+    <method name="hmac start">
+        Start a new HMAC.
+        <argument name="key" type="data"/>
+
+        <argument name="key len" type="size"/>
+    </method>
+
+
+    <method name="hmac update">
+        Add given data to the HMAC.
+
+        <argument name="data" type="data"/>
+
+        <argument name="data len" type="size"/>
+    </method>
+
+
+    <method name="hmac finish">
+        Accompilsh HMAC and return it's result (a message digest).
+
+        <argument name="hmac" type="data" access="writeonly">
+            <array length="known" length_constant="hash info digest size" />
+        </argument>
+
+        <argument name="hmac len" type="size"/>
+   </method>
+</interface>

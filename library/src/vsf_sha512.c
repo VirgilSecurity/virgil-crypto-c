@@ -56,6 +56,7 @@
 #include "vsf_sha512_internal.h"
 
 #include <mbedtls/sha512.h>
+#include <mbedtls/md.h>
 //  @end
 
 
@@ -75,29 +76,32 @@
 //  Provides initialization of the implementation specific context.
 //
 VSF_PRIVATE void
-vsf_sha512_init_ctx (vsf_sha512_impl_t* sha512_impl) {
+vsf_sha512_init_ctx(vsf_sha512_impl_t* sha512_impl) {
 
     VSF_ASSERT_PTR(sha512_impl);
 
     mbedtls_sha512_init(&sha512_impl->hash_ctx);
+    mbedtls_md_init(&sha512_impl->hmac_ctx);
+    mbedtls_md_setup(&sha512_impl->hmac_ctx, mbedtls_md_info_from_type(MBEDTLS_MD_SHA512), 1);
 }
 
 //
 //  Provides cleanup of the implementation specific context.
 //
 VSF_PRIVATE void
-vsf_sha512_cleanup_ctx (vsf_sha512_impl_t* sha512_impl) {
+vsf_sha512_cleanup_ctx(vsf_sha512_impl_t* sha512_impl) {
 
     VSF_ASSERT_PTR(sha512_impl);
 
     mbedtls_sha512_free(&sha512_impl->hash_ctx);
+    mbedtls_md_free(&sha512_impl->hmac_ctx);
 }
 
 //
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
-vsf_sha512_hash (const byte* data, size_t data_len, byte* digest, size_t digest_len) {
+vsf_sha512_hash(const byte* data, size_t data_len, byte* digest, size_t digest_len) {
 
     VSF_ASSERT_PTR(data);
     VSF_ASSERT_PTR(digest);
@@ -111,7 +115,7 @@ vsf_sha512_hash (const byte* data, size_t data_len, byte* digest, size_t digest_
 //  Start a new hashing.
 //
 VSF_PUBLIC void
-vsf_sha512_start (vsf_sha512_impl_t* sha512_impl) {
+vsf_sha512_start(vsf_sha512_impl_t* sha512_impl) {
 
     VSF_ASSERT_PTR(sha512_impl);
 
@@ -123,7 +127,7 @@ vsf_sha512_start (vsf_sha512_impl_t* sha512_impl) {
 //  Add given data to the hash.
 //
 VSF_PUBLIC void
-vsf_sha512_update (vsf_sha512_impl_t* sha512_impl, const byte* data, size_t data_len) {
+vsf_sha512_update(vsf_sha512_impl_t* sha512_impl, const byte* data, size_t data_len) {
 
     VSF_ASSERT_PTR(sha512_impl);
     VSF_ASSERT_PTR(data);
@@ -135,11 +139,65 @@ vsf_sha512_update (vsf_sha512_impl_t* sha512_impl, const byte* data, size_t data
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSF_PUBLIC void
-vsf_sha512_finish (vsf_sha512_impl_t* sha512_impl, byte* digest, size_t digest_len) {
+vsf_sha512_finish(vsf_sha512_impl_t* sha512_impl, byte* digest, size_t digest_len) {
 
     VSF_ASSERT_PTR(sha512_impl);
     VSF_ASSERT_PTR(digest);
     VSF_ASSERT_OPT(digest_len >= vsf_sha512_DIGEST_SIZE);
 
     mbedtls_sha512_finish(&sha512_impl->hash_ctx, digest);
+}
+
+//
+//  Calculate hmac over given data.
+//
+VSF_PUBLIC void
+vsf_sha512_hmac(const byte* key,
+    size_t key_len,
+    const byte* data,
+    size_t data_len,
+    byte* hmac,
+    size_t hmac_len) {
+
+    VSF_ASSERT_OPT(hmac_len >= vsf_sha512_DIGEST_SIZE);
+
+    mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA512), key, key_len, data, data_len, hmac);
+}
+
+//
+//  Reset HMAC.
+//
+VSF_PUBLIC void
+vsf_sha512_hmac_reset(vsf_sha512_impl_t* sha512_impl) {
+
+    mbedtls_md_hmac_reset(&sha512_impl->hmac_ctx);
+}
+
+//
+//  Start a new HMAC.
+//
+VSF_PUBLIC void
+vsf_sha512_hmac_start(vsf_sha512_impl_t* sha512_impl, const byte* key, size_t key_len) {
+
+    mbedtls_md_hmac_starts(&sha512_impl->hmac_ctx, key, key_len);
+}
+
+//
+//  Add given data to the HMAC.
+//
+VSF_PUBLIC void
+vsf_sha512_hmac_update(vsf_sha512_impl_t* sha512_impl, const byte* data, size_t data_len) {
+
+    mbedtls_md_hmac_update(&sha512_impl->hmac_ctx, data, data_len);
+}
+
+//
+//  Accompilsh HMAC and return it's result (a message digest).
+//
+VSF_PUBLIC void
+vsf_sha512_hmac_finish(vsf_sha512_impl_t* sha512_impl, byte* hmac, size_t hmac_len) {
+
+    VSF_ASSERT_OPT(hmac_len >= vsf_sha512_DIGEST_SIZE);
+
+    mbedtls_md_hmac_finish(&sha512_impl->hmac_ctx, hmac);
 }

@@ -56,6 +56,7 @@
 #include "vsf_sha256_internal.h"
 
 #include <mbedtls/sha256.h>
+#include <mbedtls/md.h>
 //  @end
 
 
@@ -75,71 +76,128 @@
 //  Provides initialization of the implementation specific context.
 //
 VSF_PRIVATE void
-vsf_sha256_init_ctx (vsf_sha256_impl_t* sha256_impl) {
+vsf_sha256_init_ctx(vsf_sha256_impl_t* sha256_impl) {
 
-    VSF_ASSERT_PTR (sha256_impl);
+    VSF_ASSERT_PTR(sha256_impl);
 
-    mbedtls_sha256_init (&sha256_impl->hash_ctx);
+    mbedtls_sha256_init(&sha256_impl->hash_ctx);
+    mbedtls_md_init(&sha256_impl->hmac_ctx);
+    mbedtls_md_setup(&sha256_impl->hmac_ctx, mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), 1);
 }
 
 //
 //  Provides cleanup of the implementation specific context.
 //
 VSF_PRIVATE void
-vsf_sha256_cleanup_ctx (vsf_sha256_impl_t* sha256_impl) {
+vsf_sha256_cleanup_ctx(vsf_sha256_impl_t* sha256_impl) {
 
-    VSF_ASSERT_PTR (sha256_impl);
+    VSF_ASSERT_PTR(sha256_impl);
 
-    mbedtls_sha256_free (&sha256_impl->hash_ctx);
+    mbedtls_sha256_free(&sha256_impl->hash_ctx);
+    mbedtls_md_free(&sha256_impl->hmac_ctx);
 }
 
 //
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
-vsf_sha256_hash (const byte* data, size_t data_len, byte* digest, size_t digest_len) {
+vsf_sha256_hash(const byte* data, size_t data_len, byte* digest, size_t digest_len) {
 
-    VSF_ASSERT_PTR (data);
-    VSF_ASSERT_PTR (digest);
-    VSF_ASSERT_OPT (digest_len >= vsf_sha256_DIGEST_SIZE);
+    VSF_ASSERT_PTR(data);
+    VSF_ASSERT_PTR(digest);
+    VSF_ASSERT_OPT(digest_len >= vsf_sha256_DIGEST_SIZE);
 
     const int is224 = 0;
-    mbedtls_sha256 (data, data_len, digest, is224);
+    mbedtls_sha256(data, data_len, digest, is224);
 }
 
 //
 //  Start a new hashing.
 //
 VSF_PUBLIC void
-vsf_sha256_start (vsf_sha256_impl_t* sha256_impl) {
+vsf_sha256_start(vsf_sha256_impl_t* sha256_impl) {
 
-    VSF_ASSERT_PTR (sha256_impl);
+    VSF_ASSERT_PTR(sha256_impl);
 
     const int is224 = 0;
-    mbedtls_sha256_starts (&sha256_impl->hash_ctx, is224);
+    mbedtls_sha256_starts(&sha256_impl->hash_ctx, is224);
 }
 
 //
 //  Add given data to the hash.
 //
 VSF_PUBLIC void
-vsf_sha256_update (vsf_sha256_impl_t* sha256_impl, const byte* data, size_t data_len) {
+vsf_sha256_update(vsf_sha256_impl_t* sha256_impl, const byte* data, size_t data_len) {
 
-    VSF_ASSERT_PTR (sha256_impl);
-    VSF_ASSERT_PTR (data);
+    VSF_ASSERT_PTR(sha256_impl);
+    VSF_ASSERT_PTR(data);
 
-    mbedtls_sha256_update (&sha256_impl->hash_ctx, data, data_len);
+    mbedtls_sha256_update(&sha256_impl->hash_ctx, data, data_len);
 }
 
 //
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSF_PUBLIC void
-vsf_sha256_finish (vsf_sha256_impl_t* sha256_impl, byte* digest, size_t digest_len) {
+vsf_sha256_finish(vsf_sha256_impl_t* sha256_impl, byte* digest, size_t digest_len) {
 
-    VSF_ASSERT_PTR (sha256_impl);
-    VSF_ASSERT_PTR (digest);
-    VSF_ASSERT_OPT (digest_len >= vsf_sha256_DIGEST_SIZE);
+    VSF_ASSERT_PTR(sha256_impl);
+    VSF_ASSERT_PTR(digest);
+    VSF_ASSERT_OPT(digest_len >= vsf_sha256_DIGEST_SIZE);
 
-    mbedtls_sha256_finish (&sha256_impl->hash_ctx, digest);
+    mbedtls_sha256_finish(&sha256_impl->hash_ctx, digest);
+}
+
+//
+//  Calculate hmac over given data.
+//
+VSF_PUBLIC void
+vsf_sha256_hmac(const byte* key,
+    size_t key_len,
+    const byte* data,
+    size_t data_len,
+    byte* hmac,
+    size_t hmac_len) {
+
+    VSF_ASSERT_OPT(hmac_len >= vsf_sha256_DIGEST_SIZE);
+
+    mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), key, key_len, data, data_len, hmac);
+}
+
+//
+//  Reset HMAC.
+//
+VSF_PUBLIC void
+vsf_sha256_hmac_reset(vsf_sha256_impl_t* sha256_impl) {
+
+    mbedtls_md_hmac_reset(&sha256_impl->hmac_ctx);
+}
+
+//
+//  Start a new HMAC.
+//
+VSF_PUBLIC void
+vsf_sha256_hmac_start(vsf_sha256_impl_t* sha256_impl, const byte* key, size_t key_len) {
+
+    mbedtls_md_hmac_starts(&sha256_impl->hmac_ctx, key, key_len);
+}
+
+//
+//  Add given data to the HMAC.
+//
+VSF_PUBLIC void
+vsf_sha256_hmac_update(vsf_sha256_impl_t* sha256_impl, const byte* data, size_t data_len) {
+
+    mbedtls_md_hmac_update(&sha256_impl->hmac_ctx, data, data_len);
+}
+
+//
+//  Accompilsh HMAC and return it's result (a message digest).
+//
+VSF_PUBLIC void
+vsf_sha256_hmac_finish(vsf_sha256_impl_t* sha256_impl, byte* hmac, size_t hmac_len) {
+
+    VSF_ASSERT_OPT(hmac_len >= vsf_sha256_DIGEST_SIZE);
+
+    mbedtls_md_hmac_finish(&sha256_impl->hmac_ctx, hmac);
 }

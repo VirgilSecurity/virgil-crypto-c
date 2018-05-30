@@ -58,6 +58,8 @@
 #include "vsf_hash_info_api.h"
 #include "vsf_hash_api.h"
 #include "vsf_hash_stream_api.h"
+#include "vsf_hmac_api.h"
+#include "vsf_hmac_stream_api.h"
 //  @end
 
 
@@ -128,12 +130,64 @@ static const vsf_hash_stream_api_t hash_stream_api = {
 };
 
 //
+//  Configuration of the interface API 'hmac api'.
+//
+static const vsf_hmac_api_t hmac_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'hmac' MUST be equal to the 'vsf_api_tag_HMAC'.
+    //
+    vsf_api_tag_HMAC,
+    //
+    //  Link to the inherited interface API 'hash info'.
+    //
+    &hash_info_api,
+    //
+    //  Calculate hmac over given data.
+    //
+    (vsf_hmac_api_hmac_fn) vsf_sha256_hmac
+};
+
+//
+//  Configuration of the interface API 'hmac stream api'.
+//
+static const vsf_hmac_stream_api_t hmac_stream_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'hmac_stream' MUST be equal to the 'vsf_api_tag_HMAC_STREAM'.
+    //
+    vsf_api_tag_HMAC_STREAM,
+    //
+    //  Link to the inherited interface API 'hash info'.
+    //
+    &hash_info_api,
+    //
+    //  Reset HMAC.
+    //
+    (vsf_hmac_stream_api_hmac_reset_fn) vsf_sha256_hmac_reset,
+    //
+    //  Start a new HMAC.
+    //
+    (vsf_hmac_stream_api_hmac_start_fn) vsf_sha256_hmac_start,
+    //
+    //  Add given data to the HMAC.
+    //
+    (vsf_hmac_stream_api_hmac_update_fn) vsf_sha256_hmac_update,
+    //
+    //  Accompilsh HMAC and return it's result (a message digest).
+    //
+    (vsf_hmac_stream_api_hmac_finish_fn) vsf_sha256_hmac_finish
+};
+
+//
 //  Null-terminated array of the implemented 'Interface API' instances.
 //
 static const vsf_api_t* api_array[] = {
     (const vsf_api_t*) &hash_info_api,
     (const vsf_api_t*) &hash_api,
     (const vsf_api_t*) &hash_stream_api,
+    (const vsf_api_t*) &hmac_api,
+    (const vsf_api_t*) &hmac_stream_api,
     NULL
 };
 
@@ -245,6 +299,15 @@ VSF_PUBLIC const vsf_hash_api_t*
 vsf_sha256_hash_api (void) {
 
     return &hash_api;
+}
+
+//
+//  Returns instance of the implemented interface 'hmac'.
+//
+VSF_PUBLIC const vsf_hmac_api_t*
+vsf_sha256_hmac_api (void) {
+
+    return &hmac_api;
 }
 
 //

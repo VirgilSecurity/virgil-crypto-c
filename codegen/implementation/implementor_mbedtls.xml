@@ -7,6 +7,7 @@
         This is MbedTLS implementation of SHA224.
 
         <require_include name = "mbedtls/sha256.h" type = "context" />
+        <require_include name = "mbedtls/md.h" type = "context" />
 
         <interface name = "hash info">
             <constant name = "digest size" value = "28" />
@@ -18,6 +19,13 @@
         <interface name = "hash stream">
             <context name = "hash ctx" class = "mbedtls_sha256_context" access = "readwrite" is_reference="0"/>
         </interface>
+
+        <interface name = "hmac">
+        </interface>
+
+        <interface name = "hmac stream">
+            <context name = "hmac ctx" class = "mbedtls_md_context_t" access = "readwrite" is_reference="0"/>
+        </interface>
     </implementation>
 
 
@@ -25,6 +33,7 @@
         This is MbedTLS implementation of SHA256.
 
         <require_include name = "mbedtls/sha256.h" type = "context" />
+        <require_include name = "mbedtls/md.h" type = "context" />
 
         <interface name = "hash info">
             <constant name = "digest size" value = "32" />
@@ -36,6 +45,13 @@
         <interface name = "hash stream">
             <context name = "hash ctx" class = "mbedtls_sha256_context" access = "readwrite" is_reference="0"/>
         </interface>
+
+        <interface name = "hmac">
+        </interface>
+
+        <interface name = "hmac stream">
+            <context name = "hmac ctx" class = "mbedtls_md_context_t" access = "readwrite" is_reference="0"/>
+        </interface>
     </implementation>
 
 
@@ -43,6 +59,7 @@
         This is MbedTLS implementation of SHA384.
 
         <require_include name = "mbedtls/sha512.h" type = "context" />
+        <require_include name = "mbedtls/md.h" type = "context" />
 
         <interface name = "hash info">
             <constant name = "digest size" value = "48" />
@@ -54,6 +71,13 @@
         <interface name = "hash stream">
             <context name = "hash ctx" class = "mbedtls_sha512_context" access = "readwrite" is_reference="0"/>
         </interface>
+
+        <interface name = "hmac">
+        </interface>
+
+        <interface name = "hmac stream">
+            <context name = "hmac ctx" class = "mbedtls_md_context_t" access = "readwrite" is_reference="0"/>
+        </interface>
     </implementation>
 
 
@@ -61,6 +85,7 @@
         This is MbedTLS implementation of SHA512.
 
         <require_include name = "mbedtls/sha512.h" type = "context" />
+        <require_include name = "mbedtls/md.h" type = "context" />
 
         <interface name = "hash info">
             <constant name = "digest size" value = "64" />
@@ -71,6 +96,13 @@
 
         <interface name = "hash stream">
             <context name = "hash ctx" class = "mbedtls_sha512_context" access = "readwrite" is_reference="0"/>
+        </interface>
+        
+        <interface name = "hmac">
+        </interface>
+
+        <interface name = "hmac stream">
+            <context name = "hmac ctx" class = "mbedtls_md_context_t" access = "readwrite" is_reference="0"/>
         </interface>
     </implementation>
 

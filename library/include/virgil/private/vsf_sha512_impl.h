@@ -60,6 +60,7 @@
 #include "vsf_sha512.h"
 
 #include <mbedtls/sha512.h>
+#include <mbedtls/md.h>
 //  @end
 
 
@@ -85,6 +86,10 @@ struct vsf_sha512_impl_t {
     //  Interface implementation specific context.
     //
     mbedtls_sha512_context hash_ctx;
+    //
+    //  Interface implementation specific context.
+    //
+    mbedtls_md_context_t hmac_ctx;
 };
 
 

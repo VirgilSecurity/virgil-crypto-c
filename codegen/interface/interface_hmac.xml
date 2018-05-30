@@ -1,0 +1,24 @@
+<interface name="hmac">
+    Provides interface to the stateless hmac (messege digest) algorithms.
+
+    <inherit interface="hash info" />
+
+
+    <method name="hmac" context="api">
+        Calculate hmac over given data.
+
+        <argument name="key" type="data"/>
+
+        <argument name="key len" type="size"/>
+
+        <argument name="data" type="data"/>
+
+        <argument name="data len" type="size"/>
+
+        <argument name="hmac" type="data" access="writeonly">
+            <array length="known"/>
+        </argument>
+
+        <argument name="hmac len" type="size"/>
+    </method>
+</interface>

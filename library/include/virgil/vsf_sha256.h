@@ -57,6 +57,8 @@
 #include "vsf_hash_info.h"
 #include "vsf_hash.h"
 #include "vsf_hash_stream.h"
+#include "vsf_hmac.h"
+#include "vsf_hmac_stream.h"
 //  @end
 
 
@@ -138,6 +140,12 @@ VSF_PUBLIC const vsf_hash_api_t*
 vsf_sha256_hash_api (void);
 
 //
+//  Returns instance of the implemented interface 'hmac'.
+//
+VSF_PUBLIC const vsf_hmac_api_t*
+vsf_sha256_hmac_api (void);
+
+//
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
@@ -160,6 +168,37 @@ vsf_sha256_update (vsf_sha256_impl_t* sha256_impl, const byte* data, size_t data
 //
 VSF_PUBLIC void
 vsf_sha256_finish (vsf_sha256_impl_t* sha256_impl, byte* digest, size_t digest_len);
+
+//
+//  Calculate hmac over given data.
+//
+VSF_PUBLIC void
+vsf_sha256_hmac (const byte* key, size_t key_len, const byte* data, size_t data_len, byte* hmac,
+        size_t hmac_len);
+
+//
+//  Reset HMAC.
+//
+VSF_PUBLIC void
+vsf_sha256_hmac_reset (vsf_sha256_impl_t* sha256_impl);
+
+//
+//  Start a new HMAC.
+//
+VSF_PUBLIC void
+vsf_sha256_hmac_start (vsf_sha256_impl_t* sha256_impl, const byte* key, size_t key_len);
+
+//
+//  Add given data to the HMAC.
+//
+VSF_PUBLIC void
+vsf_sha256_hmac_update (vsf_sha256_impl_t* sha256_impl, const byte* data, size_t data_len);
+
+//
+//  Accompilsh HMAC and return it's result (a message digest).
+//
+VSF_PUBLIC void
+vsf_sha256_hmac_finish (vsf_sha256_impl_t* sha256_impl, byte* hmac, size_t hmac_len);
 
 
 // --------------------------------------------------------------------------
