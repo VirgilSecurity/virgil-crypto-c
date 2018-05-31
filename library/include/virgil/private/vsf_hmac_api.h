@@ -46,14 +46,16 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Interface 'hmac' API.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_API_H_INCLUDED
-#define VSF_API_H_INCLUDED
+#ifndef VSF_HMAC_API_H_INCLUDED
+#define VSF_HMAC_API_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_api.h"
+#include "vsf_impl.h"
+#include "vsf_hmac_info.h"
 //  @end
 
 
@@ -68,33 +70,29 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Callback. Calculate hmac over given data.
 //
-enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HMAC_INFO,
-    vsf_api_tag_CIPHER_AUTH_INFO,
-    vsf_api_tag_ENCRYPT,
-    vsf_api_tag_HMAC_STREAM,
-    vsf_api_tag_HASH,
-    vsf_api_tag_AUTH_DECRYPT,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_DECRYPT,
-    vsf_api_tag_CIPHER,
-    vsf_api_tag_KDF,
-    vsf_api_tag_HMAC,
-    vsf_api_tag_AUTH_ENCRYPT,
-    vsf_api_tag_CIPHER_AUTH,
-    vsf_api_tag_CIPHER_INFO,
-    vsf_api_tag_END
-};
-typedef enum vsf_api_tag_t vsf_api_tag_t;
+typedef void (*vsf_hmac_api_hmac_fn) (const byte* key, size_t key_len, const byte* data,
+        size_t data_len, byte* hmac, size_t hmac_len);
 
 //
-//  Generic type for any 'API' object.
+//  Contains API requirements of the interface 'hmac'.
 //
-typedef struct vsf_api_t vsf_api_t;
+struct vsf_hmac_api_t {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'hmac' MUST be equal to the 'vsf_api_tag_HMAC'.
+    //
+    vsf_api_tag_t api_tag;
+    //
+    //  Link to the inherited interface API 'hmac info'.
+    //
+    const vsf_hmac_info_api_t* hmac_info_api;
+    //
+    //  Calculate hmac over given data.
+    //
+    vsf_hmac_api_hmac_fn hmac_cb;
+};
 
 
 // --------------------------------------------------------------------------
@@ -109,5 +107,5 @@ typedef struct vsf_api_t vsf_api_t;
 
 
 //  @footer
-#endif // VSF_API_H_INCLUDED
+#endif // VSF_HMAC_API_H_INCLUDED
 //  @end

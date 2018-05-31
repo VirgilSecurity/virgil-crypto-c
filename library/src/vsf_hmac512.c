@@ -36,6 +36,12 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains 'hmac512' implementation.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,58 +49,20 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#include "vsf_hmac512.h"
+#include "vsf_assert.h"
+#include "vsf_memory.h"
+#include "vsf_hmac512_impl.h"
+#include "vsf_hmac512_internal.h"
 
-//  @description
-// --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
-// --------------------------------------------------------------------------
-
-#ifndef VSF_API_H_INCLUDED
-#define VSF_API_H_INCLUDED
-
-#include "vsf_library.h"
+#include <mbedtls/md.h>
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
 // --------------------------------------------------------------------------
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Enumerates all possible interfaces within crypto library.
-//
-enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HMAC_INFO,
-    vsf_api_tag_CIPHER_AUTH_INFO,
-    vsf_api_tag_ENCRYPT,
-    vsf_api_tag_HMAC_STREAM,
-    vsf_api_tag_HASH,
-    vsf_api_tag_AUTH_DECRYPT,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_DECRYPT,
-    vsf_api_tag_CIPHER,
-    vsf_api_tag_KDF,
-    vsf_api_tag_HMAC,
-    vsf_api_tag_AUTH_ENCRYPT,
-    vsf_api_tag_CIPHER_AUTH,
-    vsf_api_tag_CIPHER_INFO,
-    vsf_api_tag_END
-};
-typedef enum vsf_api_tag_t vsf_api_tag_t;
-
-//
-//  Generic type for any 'API' object.
-//
-typedef struct vsf_api_t vsf_api_t;
 
 
 // --------------------------------------------------------------------------
@@ -103,11 +71,71 @@ typedef struct vsf_api_t vsf_api_t;
 //  @end
 
 
-#ifdef __cplusplus
+//
+//  Provides initialization of the implementation specific context.
+//
+VSF_PRIVATE void
+vsf_hmac512_init_ctx (vsf_hmac512_impl_t* hmac512_impl) {
+
+    mbedtls_md_init (&hmac512_impl->hmac_ctx);
+    mbedtls_md_setup (&hmac512_impl->hmac_ctx, mbedtls_md_info_from_type (MBEDTLS_MD_SHA512), 1);
 }
-#endif
 
+//
+//  Provides cleanup of the implementation specific context.
+//
+VSF_PRIVATE void
+vsf_hmac512_cleanup_ctx (vsf_hmac512_impl_t* hmac512_impl) {
 
-//  @footer
-#endif // VSF_API_H_INCLUDED
-//  @end
+    mbedtls_md_free (&hmac512_impl->hmac_ctx);
+}
+
+//
+//  Calculate hmac over given data.
+//
+VSF_PUBLIC void
+vsf_hmac512_hmac (const byte* key, size_t key_len, const byte* data, size_t data_len, byte* hmac,
+        size_t hmac_len) {
+
+    VSF_ASSERT_OPT (hmac_len >= vsf_hmac512_DIGEST_SIZE);
+
+    mbedtls_md_hmac (mbedtls_md_info_from_type (MBEDTLS_MD_SHA512), key, key_len, data, data_len, hmac);
+}
+
+//
+//  Reset HMAC.
+//
+VSF_PUBLIC void
+vsf_hmac512_reset (vsf_hmac512_impl_t* hmac512_impl) {
+
+    mbedtls_md_hmac_reset (&hmac512_impl->hmac_ctx);
+}
+
+//
+//  Start a new HMAC.
+//
+VSF_PUBLIC void
+vsf_hmac512_start (vsf_hmac512_impl_t* hmac512_impl, const byte* key, size_t key_len) {
+
+    mbedtls_md_hmac_starts (&hmac512_impl->hmac_ctx, key, key_len);
+}
+
+//
+//  Add given data to the HMAC.
+//
+VSF_PUBLIC void
+vsf_hmac512_update (vsf_hmac512_impl_t* hmac512_impl, const byte* data, size_t data_len) {
+
+    mbedtls_md_hmac_update (&hmac512_impl->hmac_ctx, data, data_len);
+}
+
+//
+//  Accompilsh HMAC and return it's result (a message digest).
+//
+VSF_PUBLIC void
+vsf_hmac512_finish (vsf_hmac512_impl_t* hmac512_impl, byte* hmac, size_t hmac_len) {
+
+    VSF_ASSERT_OPT (hmac_len >= vsf_hmac512_DIGEST_SIZE);
+
+    mbedtls_md_hmac_finish (&hmac512_impl->hmac_ctx, hmac);
+}

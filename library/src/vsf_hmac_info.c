@@ -36,6 +36,12 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Provide details about implemented hash algorithm.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,23 +49,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
-// --------------------------------------------------------------------------
-
-#ifndef VSF_API_H_INCLUDED
-#define VSF_API_H_INCLUDED
-
-#include "vsf_library.h"
+#include "vsf_hmac_info.h"
+#include "vsf_assert.h"
+#include "vsf_hmac_info_api.h"
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -68,46 +61,41 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Returns constant 'digest size'.
 //
-enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HMAC_INFO,
-    vsf_api_tag_CIPHER_AUTH_INFO,
-    vsf_api_tag_ENCRYPT,
-    vsf_api_tag_HMAC_STREAM,
-    vsf_api_tag_HASH,
-    vsf_api_tag_AUTH_DECRYPT,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_DECRYPT,
-    vsf_api_tag_CIPHER,
-    vsf_api_tag_KDF,
-    vsf_api_tag_HMAC,
-    vsf_api_tag_AUTH_ENCRYPT,
-    vsf_api_tag_CIPHER_AUTH,
-    vsf_api_tag_CIPHER_INFO,
-    vsf_api_tag_END
-};
-typedef enum vsf_api_tag_t vsf_api_tag_t;
+VSF_PUBLIC size_t
+vsf_hmac_info_digest_size (const vsf_hmac_info_api_t* hmac_info_api) {
+
+    VSF_ASSERT_PTR (hmac_info_api);
+
+    return hmac_info_api->digest_size;
+}
 
 //
-//  Generic type for any 'API' object.
+//  Return hmac info API, or NULL if it is not implemented.
 //
-typedef struct vsf_api_t vsf_api_t;
+VSF_PUBLIC const vsf_hmac_info_api_t*
+vsf_hmac_info_api (vsf_impl_t* impl) {
+
+    VSF_ASSERT_PTR (impl);
+
+    const vsf_api_t *api = vsf_impl_api (impl, vsf_api_tag_HMAC_INFO);
+    return (const vsf_hmac_info_api_t *) api;
+}
+
+//
+//  Check if given object implements interface 'hmac info'.
+//
+VSF_PUBLIC bool
+vsf_hmac_info_is_implemented (vsf_impl_t* impl) {
+
+    VSF_ASSERT_PTR (impl);
+
+    return vsf_impl_api (impl, vsf_api_tag_HMAC_INFO) != NULL;
+}
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSF_API_H_INCLUDED
 //  @end

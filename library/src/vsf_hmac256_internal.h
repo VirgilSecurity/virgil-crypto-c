@@ -46,14 +46,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_API_H_INCLUDED
-#define VSF_API_H_INCLUDED
+#ifndef VSF_HMAC256_INTERNAL_H_INCLUDED
+#define VSF_HMAC256_INTERNAL_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_hmac256.h"
 //  @end
 
 
@@ -68,33 +69,16 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Provides initialization of the implementation specific context.
 //
-enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HMAC_INFO,
-    vsf_api_tag_CIPHER_AUTH_INFO,
-    vsf_api_tag_ENCRYPT,
-    vsf_api_tag_HMAC_STREAM,
-    vsf_api_tag_HASH,
-    vsf_api_tag_AUTH_DECRYPT,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_DECRYPT,
-    vsf_api_tag_CIPHER,
-    vsf_api_tag_KDF,
-    vsf_api_tag_HMAC,
-    vsf_api_tag_AUTH_ENCRYPT,
-    vsf_api_tag_CIPHER_AUTH,
-    vsf_api_tag_CIPHER_INFO,
-    vsf_api_tag_END
-};
-typedef enum vsf_api_tag_t vsf_api_tag_t;
+VSF_PRIVATE void
+vsf_hmac256_init_ctx (vsf_hmac256_impl_t* hmac256_impl);
 
 //
-//  Generic type for any 'API' object.
+//  Provides cleanup of the implementation specific context.
 //
-typedef struct vsf_api_t vsf_api_t;
+VSF_PRIVATE void
+vsf_hmac256_cleanup_ctx (vsf_hmac256_impl_t* hmac256_impl);
 
 
 // --------------------------------------------------------------------------
@@ -109,5 +93,5 @@ typedef struct vsf_api_t vsf_api_t;
 
 
 //  @footer
-#endif // VSF_API_H_INCLUDED
+#endif // VSF_HMAC256_INTERNAL_H_INCLUDED
 //  @end

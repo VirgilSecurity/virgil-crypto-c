@@ -36,6 +36,12 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Provides interface to the hmac (messege digest) algorithms.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,24 +49,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  This module contains common functionality for all 'implementation' object.
-//  It is also enumerate all available implementations within crypto libary.
-// --------------------------------------------------------------------------
-
-#ifndef VSF_IMPL_H_INCLUDED
-#define VSF_IMPL_H_INCLUDED
-
-#include "vsf_library.h"
-#include "vsf_api.h"
+#include "vsf_hmac_stream.h"
+#include "vsf_assert.h"
+#include "vsf_hmac_stream_api.h"
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -69,79 +61,82 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible implementations within crypto library.
-//
-enum vsf_impl_tag_t {
-    vsf_impl_tag_BEGIN = 0,
-    vsf_impl_tag_KDF1,
-    vsf_impl_tag_KDF2,
-    vsf_impl_tag_HMAC224,
-    vsf_impl_tag_HMAC256,
-    vsf_impl_tag_HMAC384,
-    vsf_impl_tag_HMAC512,
-    vsf_impl_tag_SHA224,
-    vsf_impl_tag_SHA256,
-    vsf_impl_tag_SHA384,
-    vsf_impl_tag_SHA512,
-    vsf_impl_tag_AES_256_GCM,
-    vsf_impl_tag_END
-};
-typedef enum vsf_impl_tag_t vsf_impl_tag_t;
-
-//
-//  Generic type for any 'implementation'.
-//
-typedef struct vsf_impl_t vsf_impl_t;
-
-//
-//  Callback type for cleanup action.
-//
-typedef void (*vsf_impl_cleanup_fn) (vsf_impl_t* impl);
-
-//
-//  Callback type for destroy action.
-//
-typedef void (*vsf_impl_destroy_fn) (vsf_impl_t** impl_ref);
-
-//
-//  Return 'API' object that is fulfiled with a meta information
-//  specific to the given implementation object.
-//  Or NULL if object does not implement requested 'API'.
-//
-VSF_PUBLIC const vsf_api_t*
-vsf_impl_api (vsf_impl_t* impl, vsf_api_tag_t api_tag);
-
-//
-//  Return unique 'Implementation TAG'.
-//
-VSF_PUBLIC vsf_impl_tag_t
-vsf_impl_tag (vsf_impl_t* impl);
-
-//
-//  Cleanup implementation object and it's dependencies.
+//  Reset HMAC.
 //
 VSF_PUBLIC void
-vsf_impl_cleanup (vsf_impl_t* impl);
+vsf_hmac_stream_reset (vsf_impl_t* impl) {
+
+    const vsf_hmac_stream_api_t *hmac_stream_api = vsf_hmac_stream_api (impl);
+    VSF_ASSERT_PTR (hmac_stream_api);
+
+    VSF_ASSERT_PTR (hmac_stream_api->reset_cb);
+    hmac_stream_api->reset_cb (impl);
+}
 
 //
-//  Destroy implementation object and it's dependencies.
-//  Note, do 'cleanup' before 'destroy'.
+//  Start a new HMAC.
 //
 VSF_PUBLIC void
-vsf_impl_destroy (vsf_impl_t** impl_ref);
+vsf_hmac_stream_start (vsf_impl_t* impl, const byte* key, size_t key_len) {
+
+    const vsf_hmac_stream_api_t *hmac_stream_api = vsf_hmac_stream_api (impl);
+    VSF_ASSERT_PTR (hmac_stream_api);
+
+    VSF_ASSERT_PTR (hmac_stream_api->start_cb);
+    hmac_stream_api->start_cb (impl, key, key_len);
+}
+
+//
+//  Add given data to the HMAC.
+//
+VSF_PUBLIC void
+vsf_hmac_stream_update (vsf_impl_t* impl, const byte* data, size_t data_len) {
+
+    const vsf_hmac_stream_api_t *hmac_stream_api = vsf_hmac_stream_api (impl);
+    VSF_ASSERT_PTR (hmac_stream_api);
+
+    VSF_ASSERT_PTR (hmac_stream_api->update_cb);
+    hmac_stream_api->update_cb (impl, data, data_len);
+}
+
+//
+//  Accompilsh HMAC and return it's result (a message digest).
+//
+VSF_PUBLIC void
+vsf_hmac_stream_finish (vsf_impl_t* impl, byte* hmac, size_t hmac_len) {
+
+    const vsf_hmac_stream_api_t *hmac_stream_api = vsf_hmac_stream_api (impl);
+    VSF_ASSERT_PTR (hmac_stream_api);
+
+    VSF_ASSERT_PTR (hmac_stream_api->finish_cb);
+    hmac_stream_api->finish_cb (impl, hmac, hmac_len);
+}
+
+//
+//  Return hmac stream API, or NULL if it is not implemented.
+//
+VSF_PUBLIC const vsf_hmac_stream_api_t*
+vsf_hmac_stream_api (vsf_impl_t* impl) {
+
+    VSF_ASSERT_PTR (impl);
+
+    const vsf_api_t *api = vsf_impl_api (impl, vsf_api_tag_HMAC_STREAM);
+    return (const vsf_hmac_stream_api_t *) api;
+}
+
+//
+//  Check if given object implements interface 'hmac stream'.
+//
+VSF_PUBLIC bool
+vsf_hmac_stream_is_implemented (vsf_impl_t* impl) {
+
+    VSF_ASSERT_PTR (impl);
+
+    return vsf_impl_api (impl, vsf_api_tag_HMAC_STREAM) != NULL;
+}
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSF_IMPL_H_INCLUDED
 //  @end
