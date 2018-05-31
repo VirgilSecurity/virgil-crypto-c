@@ -157,7 +157,7 @@ static const vsf_impl_info_t info = {
     //
     //  Self destruction, according to destruction policy.
     //
-    (vsf_impl_destroy_fn) vsf_sha512_destroy
+    (vsf_impl_delete_fn) vsf_sha512_delete
 };
 
 //
@@ -210,10 +210,26 @@ vsf_sha512_new (void) {
 }
 
 //
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_sha512_new ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
+//
+VSF_PUBLIC void
+vsf_sha512_delete (vsf_sha512_impl_t* sha512_impl) {
+
+    if (sha512_impl) {
+        vsf_sha512_cleanup (sha512_impl);
+        vsf_dealloc (sha512_impl);
+    }
+}
+
+//
 //  Destroy given implementation context and it's dependencies.
 //  This is a reverse action of the function 'vsf_sha512_new ()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
+//  Given reference is nullified.
 //
 VSF_PUBLIC void
 vsf_sha512_destroy (vsf_sha512_impl_t** sha512_impl_ref) {
@@ -223,10 +239,7 @@ vsf_sha512_destroy (vsf_sha512_impl_t** sha512_impl_ref) {
     vsf_sha512_impl_t *sha512_impl = *sha512_impl_ref;
     *sha512_impl_ref = NULL;
 
-    if (sha512_impl) {
-        vsf_sha512_cleanup (sha512_impl);
-        vsf_dealloc (sha512_impl);
-    }
+    vsf_sha512_delete (sha512_impl);
 }
 
 //

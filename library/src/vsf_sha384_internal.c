@@ -157,7 +157,7 @@ static const vsf_impl_info_t info = {
     //
     //  Self destruction, according to destruction policy.
     //
-    (vsf_impl_destroy_fn) vsf_sha384_destroy
+    (vsf_impl_delete_fn) vsf_sha384_delete
 };
 
 //
@@ -210,10 +210,26 @@ vsf_sha384_new (void) {
 }
 
 //
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_sha384_new ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
+//
+VSF_PUBLIC void
+vsf_sha384_delete (vsf_sha384_impl_t* sha384_impl) {
+
+    if (sha384_impl) {
+        vsf_sha384_cleanup (sha384_impl);
+        vsf_dealloc (sha384_impl);
+    }
+}
+
+//
 //  Destroy given implementation context and it's dependencies.
 //  This is a reverse action of the function 'vsf_sha384_new ()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
+//  Given reference is nullified.
 //
 VSF_PUBLIC void
 vsf_sha384_destroy (vsf_sha384_impl_t** sha384_impl_ref) {
@@ -223,10 +239,7 @@ vsf_sha384_destroy (vsf_sha384_impl_t** sha384_impl_ref) {
     vsf_sha384_impl_t *sha384_impl = *sha384_impl_ref;
     *sha384_impl_ref = NULL;
 
-    if (sha384_impl) {
-        vsf_sha384_cleanup (sha384_impl);
-        vsf_dealloc (sha384_impl);
-    }
+    vsf_sha384_delete (sha384_impl);
 }
 
 //

@@ -126,10 +126,20 @@ VSF_PUBLIC vsf_aes_256_gcm_impl_t*
 vsf_aes_256_gcm_new (void);
 
 //
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_aes_256_gcm_new ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
+//
+VSF_PUBLIC void
+vsf_aes_256_gcm_delete (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl);
+
+//
 //  Destroy given implementation context and it's dependencies.
 //  This is a reverse action of the function 'vsf_aes_256_gcm_new ()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
+//  Given reference is nullified.
 //
 VSF_PUBLIC void
 vsf_aes_256_gcm_destroy (vsf_aes_256_gcm_impl_t** aes_256_gcm_impl_ref);

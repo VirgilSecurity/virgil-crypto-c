@@ -157,7 +157,7 @@ static const vsf_impl_info_t info = {
     //
     //  Self destruction, according to destruction policy.
     //
-    (vsf_impl_destroy_fn) vsf_sha256_destroy
+    (vsf_impl_delete_fn) vsf_sha256_delete
 };
 
 //
@@ -210,10 +210,26 @@ vsf_sha256_new (void) {
 }
 
 //
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_sha256_new ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
+//
+VSF_PUBLIC void
+vsf_sha256_delete (vsf_sha256_impl_t* sha256_impl) {
+
+    if (sha256_impl) {
+        vsf_sha256_cleanup (sha256_impl);
+        vsf_dealloc (sha256_impl);
+    }
+}
+
+//
 //  Destroy given implementation context and it's dependencies.
 //  This is a reverse action of the function 'vsf_sha256_new ()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
+//  Given reference is nullified.
 //
 VSF_PUBLIC void
 vsf_sha256_destroy (vsf_sha256_impl_t** sha256_impl_ref) {
@@ -223,10 +239,7 @@ vsf_sha256_destroy (vsf_sha256_impl_t** sha256_impl_ref) {
     vsf_sha256_impl_t *sha256_impl = *sha256_impl_ref;
     *sha256_impl_ref = NULL;
 
-    if (sha256_impl) {
-        vsf_sha256_cleanup (sha256_impl);
-        vsf_dealloc (sha256_impl);
-    }
+    vsf_sha256_delete (sha256_impl);
 }
 
 //

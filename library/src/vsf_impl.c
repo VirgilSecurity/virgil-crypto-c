@@ -115,8 +115,20 @@ vsf_impl_cleanup (vsf_impl_t* impl) {
 }
 
 //
+//  Delete implementation object and it's dependencies.
+//
+VSF_PUBLIC void
+vsf_impl_delete (vsf_impl_t* impl) {
+
+    if (impl) {
+        VSF_ASSERT_PTR (impl->info);
+        VSF_ASSERT_PTR (impl->info->self_delete_cb);
+        impl->info->self_delete_cb (impl);
+    }
+}
+
+//
 //  Destroy implementation object and it's dependencies.
-//  Note, do 'cleanup' before 'destroy'.
 //
 VSF_PUBLIC void
 vsf_impl_destroy (vsf_impl_t** impl_ref) {
@@ -126,11 +138,7 @@ vsf_impl_destroy (vsf_impl_t** impl_ref) {
     vsf_impl_t* impl = *impl_ref;
     *impl_ref = NULL;
 
-    if (impl) {
-        VSF_ASSERT_PTR (impl->info);
-        VSF_ASSERT_PTR (impl->info->self_destroy_cb);
-        impl->info->self_destroy_cb (&impl);
-    }
+    vsf_impl_delete (impl);
 }
 
 

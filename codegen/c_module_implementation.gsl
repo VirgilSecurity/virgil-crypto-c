@@ -48,6 +48,7 @@
 
 
 gsl from "common.gsl"
+gsl from "component.gsl"
 gsl from "c_module_interface.gsl"
 
 # ---------------------------------------------------------------------------
@@ -113,7 +114,7 @@ function _Z19_add_instance_interface_api (impl, interface_api, destination, meta
                     .value = my.refs.implementation_constant_$(make_id (property.name))
 
                 else
-                    my.property_dump = my.property_dump = component_dump_instance (property)
+                    my.property_dump = my.property_dump = component_instance_dump (property)
                     echo_fatal ("Can not handle attribute 'tag' of the property $(my.property_dump:).")
                 endif
             endscope
@@ -209,12 +210,12 @@ function _Z19_add_instance_impl_info (impl, source, destination, meta)
                     .value = my.refs.implementation_method_cleanup
                     item_copy_to (property, value, "cast")
 
-                elsif property.tag = "self_destroy"
-                    .value = my.refs.implementation_method_destroy
+                elsif property.tag = "self_delete"
+                    .value = my.refs.implementation_method_delete
                     item_copy_to (property, value, "cast")
 
                 else
-                    my.property_dump = component_dump_instance (property)
+                    my.property_dump = component_instance_dump (property)
                     echo_fatal ("Unsupported impl info property: $(my.property_dump:).", my)
                 endif
             endscope
@@ -743,6 +744,39 @@ function _Z19_add_method_new (impl, declaration, definition, destination, meta)
     endnew
 endfunction
 
+# ---------------------------------------------------------------------------
+function _Z19_add_method_delete (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        .name = my.names.method_delete
+        .declaration = my.declaration
+        .definition = my.definition
+
+        . = "\
+        Delete given implementation context and it's dependencies.
+        This is a reverse action of the function '$(my.refs.c_implementation_method_new) ()'.
+        All dependencies that is not under ownership will be cleaned up.
+        All dependencies that is under ownership will be destroyed.
+        "
+
+        _Z19_add_argument_impl (method, my.meta)
+
+        new implementation
+            my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
+
+            . = "\
+            if ($(my.arg_impl)) {
+                $(my.refs.c_implementation_method_cleanup) ($(my.arg_impl));
+                .(c_global_method_dealloc) ($(my.arg_impl));
+            }
+            "
+        endnew
+    endnew
+endfunction
 
 # ---------------------------------------------------------------------------
 function _Z19_add_method_destroy (impl, declaration, definition, destination, meta)
@@ -761,6 +795,7 @@ function _Z19_add_method_destroy (impl, declaration, definition, destination, me
         This is a reverse action of the function '$(my.refs.c_implementation_method_new) ()'.
         All dependencies that is not under ownership will be cleaned up.
         All dependencies that is under ownership will be destroyed.
+        Given reference is nullified.
         "
 
         _Z19_add_argument_impl (method, my.meta, "disown")
@@ -776,10 +811,7 @@ function _Z19_add_method_destroy (impl, declaration, definition, destination, me
             $(my.type_impl) *$(my.arg_impl:) = *$(my.arg_impl_ref);
             *$(my.arg_impl_ref) = NULL;
 
-            if ($(my.arg_impl:)) {
-                $(my.refs.c_implementation_method_cleanup) ($(my.arg_impl:));
-                .(c_global_method_dealloc) ($(my.arg_impl:));
-            }
+            $(my.refs.c_implementation_method_delete) ($(my.arg_impl:));
             "
         endnew
     endnew
@@ -793,6 +825,7 @@ function _Z19_add_lifecycle_methods (impl, declaration, definition, destination,
     _Z19_add_method_init (my.impl, my.declaration, my.definition, my.destination, my.meta)
     _Z19_add_method_cleanup (my.impl, my.declaration, my.definition, my.destination, my.meta)
     _Z19_add_method_new (my.impl, my.declaration, my.definition, my.destination, my.meta)
+    _Z19_add_method_delete (my.impl, my.declaration, my.definition, my.destination, my.meta)
     _Z19_add_method_destroy (my.impl, my.declaration, my.definition, my.destination, my.meta)
 endfunction
 

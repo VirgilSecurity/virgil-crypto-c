@@ -87,7 +87,7 @@ struct vsf_impl_info_t {
     //
     //  Self destruction, according to destruction policy.
     //
-    vsf_impl_destroy_fn self_destroy_cb;
+    vsf_impl_delete_fn self_delete_cb;
 };
 typedef struct vsf_impl_info_t vsf_impl_info_t;
 

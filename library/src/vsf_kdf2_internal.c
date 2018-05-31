@@ -108,7 +108,7 @@ static const vsf_impl_info_t info = {
     //
     //  Self destruction, according to destruction policy.
     //
-    (vsf_impl_destroy_fn) vsf_kdf2_destroy
+    (vsf_impl_delete_fn) vsf_kdf2_delete
 };
 
 //
@@ -171,10 +171,26 @@ vsf_kdf2_new (void) {
 }
 
 //
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_kdf2_new ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
+//
+VSF_PUBLIC void
+vsf_kdf2_delete (vsf_kdf2_impl_t* kdf2_impl) {
+
+    if (kdf2_impl) {
+        vsf_kdf2_cleanup (kdf2_impl);
+        vsf_dealloc (kdf2_impl);
+    }
+}
+
+//
 //  Destroy given implementation context and it's dependencies.
 //  This is a reverse action of the function 'vsf_kdf2_new ()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
+//  Given reference is nullified.
 //
 VSF_PUBLIC void
 vsf_kdf2_destroy (vsf_kdf2_impl_t** kdf2_impl_ref) {
@@ -184,10 +200,7 @@ vsf_kdf2_destroy (vsf_kdf2_impl_t** kdf2_impl_ref) {
     vsf_kdf2_impl_t *kdf2_impl = *kdf2_impl_ref;
     *kdf2_impl_ref = NULL;
 
-    if (kdf2_impl) {
-        vsf_kdf2_cleanup (kdf2_impl);
-        vsf_dealloc (kdf2_impl);
-    }
+    vsf_kdf2_delete (kdf2_impl);
 }
 
 //

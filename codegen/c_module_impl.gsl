@@ -201,6 +201,35 @@ function _L24_add_method_cleanup (meta, destination)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Add function that proxy 'delete' action to the implementation object.
+# ---------------------------------------------------------------------------
+function _L24_add_method_delete (meta, destination)
+    check_arguments (my, "meta, destination", my)
+
+    my.names = meta_names (my.meta)
+
+    new method to my.destination
+        . = "
+        $(my.names.method_delete:Neat) implementation object and it's dependencies.
+        "
+
+        .name = my.names.method_delete
+
+        component_create_argument_impl (method)
+
+        new implementation
+            . = "\
+            if (.(_argument_impl)) {
+                .(c_class_assert_macros_ptr) (.(_argument_impl)->info);
+                .(c_class_assert_macros_ptr) (.(_argument_impl)->info->self_delete_cb);
+                .(_argument_impl)->info->self_delete_cb (.(_argument_impl));
+            }
+            "
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Add function that proxy 'destroy' action to the implementation object.
 # ---------------------------------------------------------------------------
 function _L24_add_method_destroy (meta, destination)
@@ -211,7 +240,6 @@ function _L24_add_method_destroy (meta, destination)
     new method to my.destination
         . = "
         $(my.names.method_destroy:Neat) implementation object and it's dependencies.
-        Note, do '$(my.names.method_cleanup)' before '$(my.names.method_destroy)'.
         "
 
         .name = my.names.method_destroy
@@ -220,16 +248,12 @@ function _L24_add_method_destroy (meta, destination)
 
         new implementation
             . = "\
-            .(c_class_assert_macros_ptr) (impl_ref);
+            .(c_class_assert_macros_ptr) (.(_argument_impl));
 
-            \.(c_class_impl_struct_impl)* impl = *impl_ref;
+            \.(c_class_impl_struct_impl)* impl = *.(_argument_impl);
             *impl_ref = NULL;
 
-            if (impl) {
-                .(c_class_assert_macros_ptr) (impl->info);
-                .(c_class_assert_macros_ptr) (impl->info->self_destroy_cb);
-                impl->info->self_destroy_cb (&impl);
-            }
+            .(c_class_impl_method_delete) (impl);
             "
         endnew
     endnew
@@ -254,19 +278,19 @@ function _L24_add_callback_cleanup (meta, destination)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Define callback 'destroy'
+#   Define callback 'delete'
 # ---------------------------------------------------------------------------
-function _L24_add_callback_destroy (meta, destination)
+function _L24_add_callback_delete (meta, destination)
     check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
 
     new callback to my.destination
-        . = "Callback type for $(my.names.method_destroy) action."
+        . = "Callback type for $(my.names.method_delete) action."
 
-        .name = my.names.method_destroy
+        .name = my.names.method_delete
 
-        component_create_argument_impl_ref (callback)
+        component_create_argument_impl (callback)
     endnew
 
 endfunction
@@ -315,9 +339,10 @@ function c_module_impl_create (meta, destination)
         _L24_add_method_get_api (my.meta, module)
         _L24_add_method_get_tag (my.meta, module)
         _L24_add_method_cleanup (my.meta, module)
+        _L24_add_method_delete (my.meta, module)
         _L24_add_method_destroy (my.meta, module)
         _L24_add_callback_cleanup (my.meta, module)
-        _L24_add_callback_destroy (my.meta, module)
+        _L24_add_callback_delete (my.meta, module)
     endnew
 endfunction
 

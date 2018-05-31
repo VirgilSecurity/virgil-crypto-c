@@ -95,9 +95,9 @@ function _A12_add_struct_info (meta, destination)
         new property
             . = "Self destruction, according to destruction policy."
 
-            .name = my.names.property_self_destroy
-            .callback = ".(class_impl_callback_destroy)"
-            .tag = "self_destroy"
+            .name = my.names.property_self_delete
+            .callback = ".(class_impl_callback_delete)"
+            .tag = "self_delete"
         endnew
     endnew
 endfunction
