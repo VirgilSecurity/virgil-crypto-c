@@ -143,6 +143,7 @@ function _X17_add_entity_common (meta)
 
         _X17_add_smart_name (entity, "method", "api")
         _X17_add_smart_name (entity, "method", "cleanup")
+        _X17_add_smart_name (entity, "method", "delete")
         _X17_add_smart_name (entity, "method", "destroy")
         _X17_add_smart_name (entity, "method", "init")
         _X17_add_smart_name (entity, "method", "new")
@@ -216,9 +217,9 @@ function _X17_add_entity_impl (meta)
         _X17_add_smart_linked_name (entity, "property", "impl tag")
 
         _X17_add_smart_name (entity, "property", "self cleanup")
-        _X17_add_smart_name (entity, "property", "self destroy")
+        _X17_add_smart_name (entity, "property", "self delete")
         _X17_add_smart_link (entity, "property self cleanup cb")
-        _X17_add_smart_link (entity, "property self destroy cb")
+        _X17_add_smart_link (entity, "property self delete cb")
 
         _X17_add_smart_link (entity, "class impl struct impl")
         _X17_add_smart_link (entity, "class impl struct info")
@@ -229,6 +230,7 @@ function _X17_add_entity_impl (meta)
         _X17_add_smart_link (entity, "class impl method api")
         _X17_add_smart_link (entity, "class impl method cleanup")
         _X17_add_smart_link (entity, "class impl method destroy")
+        _X17_add_smart_link (entity, "class impl method delete")
         return entity
     endnew
 endfunction
@@ -356,6 +358,7 @@ function _X17_add_entity_implementation (meta, implementation)
         _X17_add_link (entity, "implementation method cleanup", make_id ("class", my.name, "method", "cleanup"))
 
         _X17_add_link (entity, "implementation method new", make_id ("class", my.name, "method new"))
+        _X17_add_link (entity, "implementation method delete", make_id ("class", my.name, "method delete"))
         _X17_add_link (entity, "implementation method destroy", make_id ("class", my.name, "method destroy"))
 
         #   Types

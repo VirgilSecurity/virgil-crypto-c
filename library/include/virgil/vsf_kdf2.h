@@ -108,10 +108,20 @@ VSF_PUBLIC vsf_kdf2_impl_t*
 vsf_kdf2_new (void);
 
 //
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_kdf2_new ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
+//
+VSF_PUBLIC void
+vsf_kdf2_delete (vsf_kdf2_impl_t* kdf2_impl);
+
+//
 //  Destroy given implementation context and it's dependencies.
 //  This is a reverse action of the function 'vsf_kdf2_new ()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
+//  Given reference is nullified.
 //
 VSF_PUBLIC void
 vsf_kdf2_destroy (vsf_kdf2_impl_t** kdf2_impl_ref);

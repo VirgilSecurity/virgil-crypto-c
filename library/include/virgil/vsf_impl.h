@@ -95,9 +95,9 @@ typedef struct vsf_impl_t vsf_impl_t;
 typedef void (*vsf_impl_cleanup_fn) (vsf_impl_t* impl);
 
 //
-//  Callback type for destroy action.
+//  Callback type for delete action.
 //
-typedef void (*vsf_impl_destroy_fn) (vsf_impl_t** impl_ref);
+typedef void (*vsf_impl_delete_fn) (vsf_impl_t* impl);
 
 //
 //  Return 'API' object that is fulfiled with a meta information
@@ -120,8 +120,13 @@ VSF_PUBLIC void
 vsf_impl_cleanup (vsf_impl_t* impl);
 
 //
+//  Delete implementation object and it's dependencies.
+//
+VSF_PUBLIC void
+vsf_impl_delete (vsf_impl_t* impl);
+
+//
 //  Destroy implementation object and it's dependencies.
-//  Note, do 'cleanup' before 'destroy'.
 //
 VSF_PUBLIC void
 vsf_impl_destroy (vsf_impl_t** impl_ref);

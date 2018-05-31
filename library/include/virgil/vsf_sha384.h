@@ -117,10 +117,20 @@ VSF_PUBLIC vsf_sha384_impl_t*
 vsf_sha384_new (void);
 
 //
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_sha384_new ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
+//
+VSF_PUBLIC void
+vsf_sha384_delete (vsf_sha384_impl_t* sha384_impl);
+
+//
 //  Destroy given implementation context and it's dependencies.
 //  This is a reverse action of the function 'vsf_sha384_new ()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
+//  Given reference is nullified.
 //
 VSF_PUBLIC void
 vsf_sha384_destroy (vsf_sha384_impl_t** sha384_impl_ref);
