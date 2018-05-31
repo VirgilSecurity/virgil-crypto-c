@@ -36,6 +36,15 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'hmac256' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,23 +52,8 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
-// --------------------------------------------------------------------------
-
-#ifndef VSF_API_H_INCLUDED
-#define VSF_API_H_INCLUDED
-
-#include "vsf_library.h"
+#include "vsf_hmac256_impl.h"
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -67,47 +61,8 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Enumerates all possible interfaces within crypto library.
-//
-enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HMAC_INFO,
-    vsf_api_tag_CIPHER_AUTH_INFO,
-    vsf_api_tag_ENCRYPT,
-    vsf_api_tag_HMAC_STREAM,
-    vsf_api_tag_HASH,
-    vsf_api_tag_AUTH_DECRYPT,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_DECRYPT,
-    vsf_api_tag_CIPHER,
-    vsf_api_tag_KDF,
-    vsf_api_tag_HMAC,
-    vsf_api_tag_AUTH_ENCRYPT,
-    vsf_api_tag_CIPHER_AUTH,
-    vsf_api_tag_CIPHER_INFO,
-    vsf_api_tag_END
-};
-typedef enum vsf_api_tag_t vsf_api_tag_t;
-
-//
-//  Generic type for any 'API' object.
-//
-typedef struct vsf_api_t vsf_api_t;
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSF_API_H_INCLUDED
 //  @end

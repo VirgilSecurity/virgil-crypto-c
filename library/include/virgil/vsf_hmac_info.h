@@ -46,14 +46,14 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Provide details about implemented hash algorithm.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_API_H_INCLUDED
-#define VSF_API_H_INCLUDED
+#ifndef VSF_HMAC_INFO_H_INCLUDED
+#define VSF_HMAC_INFO_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_impl.h"
 //  @end
 
 
@@ -68,33 +68,27 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Contains API requirements of the interface 'hmac info'.
 //
-enum vsf_api_tag_t {
-    vsf_api_tag_BEGIN = 0,
-    vsf_api_tag_HASH_STREAM,
-    vsf_api_tag_HMAC_INFO,
-    vsf_api_tag_CIPHER_AUTH_INFO,
-    vsf_api_tag_ENCRYPT,
-    vsf_api_tag_HMAC_STREAM,
-    vsf_api_tag_HASH,
-    vsf_api_tag_AUTH_DECRYPT,
-    vsf_api_tag_HASH_INFO,
-    vsf_api_tag_DECRYPT,
-    vsf_api_tag_CIPHER,
-    vsf_api_tag_KDF,
-    vsf_api_tag_HMAC,
-    vsf_api_tag_AUTH_ENCRYPT,
-    vsf_api_tag_CIPHER_AUTH,
-    vsf_api_tag_CIPHER_INFO,
-    vsf_api_tag_END
-};
-typedef enum vsf_api_tag_t vsf_api_tag_t;
+typedef struct vsf_hmac_info_api_t vsf_hmac_info_api_t;
 
 //
-//  Generic type for any 'API' object.
+//  Returns constant 'digest size'.
 //
-typedef struct vsf_api_t vsf_api_t;
+VSF_PUBLIC size_t
+vsf_hmac_info_digest_size (const vsf_hmac_info_api_t* hmac_info_api);
+
+//
+//  Return hmac info API, or NULL if it is not implemented.
+//
+VSF_PUBLIC const vsf_hmac_info_api_t*
+vsf_hmac_info_api (vsf_impl_t* impl);
+
+//
+//  Check if given object implements interface 'hmac info'.
+//
+VSF_PUBLIC bool
+vsf_hmac_info_is_implemented (vsf_impl_t* impl);
 
 
 // --------------------------------------------------------------------------
@@ -109,5 +103,5 @@ typedef struct vsf_api_t vsf_api_t;
 
 
 //  @footer
-#endif // VSF_API_H_INCLUDED
+#endif // VSF_HMAC_INFO_H_INCLUDED
 //  @end
