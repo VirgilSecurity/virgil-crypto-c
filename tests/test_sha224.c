@@ -39,6 +39,7 @@
 #include "vsf_hash.h"
 #include "vsf_hash_stream.h"
 #include "vsf_sha224.h"
+#include "vsf_hmac224.h"
 #include "vsf_assert.h"
 
 #include "test_utils.h"
@@ -170,6 +171,80 @@ void test__hash_stream__vector_3__success (void) {
     TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha224_VECTOR_3_DIGEST, digest, test_sha224_VECTOR_3_DIGEST_LEN);
 }
 
+void test__hmac__vector_1__success (void) {
+
+    byte digest[vsf_hmac224_DIGEST_SIZE] = { 0x00 };
+
+    vsf_hmac224_hmac (test_sha224_HMAC_KEY_1_INPUT, test_sha224_HMAC_KEY_1_INPUT_LEN, test_sha224_HMAC_VECTOR_1_INPUT, test_sha224_HMAC_VECTOR_1_INPUT_LEN, digest, vsf_hmac224_DIGEST_SIZE);
+
+    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha224_HMAC_VECTOR_1_DIGEST, digest, test_sha224_HMAC_VECTOR_1_DIGEST_LEN);
+}
+
+void test__hmac__vector_2__success (void) {
+
+    byte digest[vsf_hmac224_DIGEST_SIZE] = { 0x00 };
+
+    vsf_hmac224_hmac (test_sha224_HMAC_KEY_2_INPUT, test_sha224_HMAC_KEY_2_INPUT_LEN, test_sha224_HMAC_VECTOR_2_INPUT, test_sha224_HMAC_VECTOR_2_INPUT_LEN, digest, vsf_hmac224_DIGEST_SIZE);
+
+    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha224_HMAC_VECTOR_2_DIGEST, digest, test_sha224_HMAC_VECTOR_2_DIGEST_LEN);
+}
+
+void test__hmac__vector_3__success (void) {
+
+    byte digest[vsf_hmac224_DIGEST_SIZE] = { 0x00 };
+
+    vsf_hmac224_hmac (test_sha224_HMAC_KEY_3_INPUT, test_sha224_HMAC_KEY_3_INPUT_LEN, test_sha224_HMAC_VECTOR_3_INPUT, test_sha224_HMAC_VECTOR_3_INPUT_LEN, digest, vsf_hmac224_DIGEST_SIZE);
+
+    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha224_HMAC_VECTOR_3_DIGEST, digest, test_sha224_HMAC_VECTOR_3_DIGEST_LEN);
+}
+
+void test__hmac_stream__vector_1_success (void) {
+
+    byte digest[vsf_hmac224_DIGEST_SIZE] = { 0x00 };
+
+    vsf_hmac224_impl_t *hmac224_impl = vsf_hmac224_new ();
+
+    vsf_hmac224_reset (hmac224_impl);
+    vsf_hmac224_start (hmac224_impl, test_sha224_HMAC_KEY_1_INPUT, test_sha224_HMAC_KEY_1_INPUT_LEN);
+    vsf_hmac224_update (hmac224_impl, test_sha224_HMAC_VECTOR_1_INPUT, test_sha224_HMAC_VECTOR_1_INPUT_LEN);
+    vsf_hmac224_finish (hmac224_impl, digest, vsf_hmac224_DIGEST_SIZE);
+    
+    vsf_hmac224_destroy (&hmac224_impl);
+
+    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha224_HMAC_VECTOR_1_DIGEST, digest, test_sha224_HMAC_VECTOR_1_DIGEST_LEN);
+}
+
+void test__hmac_stream__vector_2_success (void) {
+
+    byte digest[vsf_hmac224_DIGEST_SIZE] = { 0x00 };
+
+    vsf_hmac224_impl_t *hmac224_impl = vsf_hmac224_new ();
+
+    vsf_hmac224_reset (hmac224_impl);
+    vsf_hmac224_start (hmac224_impl, test_sha224_HMAC_KEY_2_INPUT, test_sha224_HMAC_KEY_2_INPUT_LEN);
+    vsf_hmac224_update (hmac224_impl, test_sha224_HMAC_VECTOR_2_INPUT, test_sha224_HMAC_VECTOR_2_INPUT_LEN);
+    vsf_hmac224_finish (hmac224_impl, digest, vsf_hmac224_DIGEST_SIZE);
+    
+    vsf_hmac224_destroy (&hmac224_impl);
+
+    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha224_HMAC_VECTOR_2_DIGEST, digest, test_sha224_HMAC_VECTOR_2_DIGEST_LEN);
+}
+
+void test__hmac_stream__vector_3_success (void) {
+
+    byte digest[vsf_hmac224_DIGEST_SIZE] = { 0x00 };
+
+    vsf_hmac224_impl_t *hmac224_impl = vsf_hmac224_new ();
+
+    vsf_hmac224_reset (hmac224_impl);
+    vsf_hmac224_start (hmac224_impl, test_sha224_HMAC_KEY_3_INPUT, test_sha224_HMAC_KEY_3_INPUT_LEN);
+    vsf_hmac224_update (hmac224_impl, test_sha224_HMAC_VECTOR_3_INPUT, test_sha224_HMAC_VECTOR_3_INPUT_LEN);
+    vsf_hmac224_finish (hmac224_impl, digest, vsf_hmac224_DIGEST_SIZE);
+    
+    vsf_hmac224_destroy (&hmac224_impl);
+
+    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha224_HMAC_VECTOR_3_DIGEST, digest, test_sha224_HMAC_VECTOR_3_DIGEST_LEN);
+}
 // --------------------------------------------------------------------------
 // Entrypoint.
 // --------------------------------------------------------------------------
@@ -192,5 +267,13 @@ int main (void) {
     RUN_TEST (test__hash_stream__vector_2__success);
     RUN_TEST (test__hash_stream__vector_3__success);
 
+    RUN_TEST (test__hmac__vector_1__success);
+    RUN_TEST (test__hmac__vector_2__success);
+    RUN_TEST (test__hmac__vector_3__success);
+    
+    RUN_TEST (test__hmac_stream__vector_1_success);
+    RUN_TEST (test__hmac_stream__vector_2_success);
+    RUN_TEST (test__hmac_stream__vector_3_success);
+    
     return UNITY_END();
 }
