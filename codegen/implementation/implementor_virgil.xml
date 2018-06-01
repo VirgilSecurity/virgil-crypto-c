@@ -7,7 +7,31 @@
         <interface name="ex_kdf"/>
 
         <dependency name="hmac" interface="hmac stream" type="impl"/>
+
+        <method name="extract" context="impl">
+            Extracts fixed-length pseudorandom key from keying material.
+
+            <argument name="data" type="data"/>
+            <argument name="data len" type="size"/>
+            <argument name="salt" type="data"/>
+            <argument name="salt len" type="size"/>
+            <argument name="pr key" type="data" access="writeonly"/>
+            <argument name="pr key len" type="size"/>
+        </method>
+
+        <method name="expand" context="impl">
+            Expands the pseudorandom key to the desired length.
+
+            <argument name="pr key" type="data"/>
+            <argument name="pr key len" type="size"/>
+            <argument name="info" type="data"/>
+            <argument name="info len" type="size"/>
+            <argument name="key" type="data" access="writeonly"/>
+            <argument name="key len" type="size"/>
+        </method>
     </implementation>
+
+
     <implementation name="kdf1">
         Virgil Security implementation of the KDF1 (ISO-18033-2) algorithm.
 
@@ -15,6 +39,8 @@
 
         <dependency name="hash" interface="hash stream" type="impl"/>
     </implementation>
+
+
     <implementation name="kdf2">
         Virgil Security implementation of the KDF2 (ISO-18033-2) algorithm.
 
