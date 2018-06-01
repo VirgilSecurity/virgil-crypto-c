@@ -38,7 +38,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'hmac256' implementation.
+//  Provides interface to the key derivation function (HKDF) algorithms.
 // --------------------------------------------------------------------------
 
 
@@ -49,13 +49,9 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsf_hmac256.h"
+#include "vsf_ex_kdf.h"
 #include "vsf_assert.h"
-#include "vsf_memory.h"
-#include "vsf_hmac256_impl.h"
-#include "vsf_hmac256_internal.h"
-
-#include <mbedtls/md.h>
+#include "vsf_ex_kdf_api.h"
 //  @end
 
 
@@ -64,78 +60,45 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Calculate hash over given data.
+//
+VSF_PUBLIC void
+vsf_ex_kdf_derive (vsf_impl_t* impl, const byte* data, size_t data_len, const byte* salt,
+        size_t salt_len, const byte* info, size_t info_len, byte* key, size_t key_len) {
+
+    const vsf_ex_kdf_api_t *ex_kdf_api = vsf_ex_kdf_api (impl);
+    VSF_ASSERT_PTR (ex_kdf_api);
+
+    VSF_ASSERT_PTR (ex_kdf_api->derive_cb);
+    ex_kdf_api->derive_cb (impl, data, data_len, salt, salt_len, info, info_len, key, key_len);
+}
+
+//
+//  Return ex_kdf API, or NULL if it is not implemented.
+//
+VSF_PUBLIC const vsf_ex_kdf_api_t*
+vsf_ex_kdf_api (vsf_impl_t* impl) {
+
+    VSF_ASSERT_PTR (impl);
+
+    const vsf_api_t *api = vsf_impl_api (impl, vsf_api_tag_EX_KDF);
+    return (const vsf_ex_kdf_api_t *) api;
+}
+
+//
+//  Check if given object implements interface 'ex_kdf'.
+//
+VSF_PUBLIC bool
+vsf_ex_kdf_is_implemented (vsf_impl_t* impl) {
+
+    VSF_ASSERT_PTR (impl);
+
+    return vsf_impl_api (impl, vsf_api_tag_EX_KDF) != NULL;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // --------------------------------------------------------------------------
 //  @end
-
-
-//
-//  Provides initialization of the implementation specific context.
-//
-VSF_PRIVATE void
-vsf_hmac256_init_ctx (vsf_hmac256_impl_t* hmac256_impl) {
-
-    mbedtls_md_init (&hmac256_impl->hmac_ctx);
-    mbedtls_md_setup (&hmac256_impl->hmac_ctx, mbedtls_md_info_from_type (MBEDTLS_MD_SHA256), 1);
-}
-
-//
-//  Provides cleanup of the implementation specific context.
-//
-VSF_PRIVATE void
-vsf_hmac256_cleanup_ctx (vsf_hmac256_impl_t* hmac256_impl) {
-
-    mbedtls_md_free (&hmac256_impl->hmac_ctx);
-}
-
-//
-//  Calculate hmac over given data.
-//
-VSF_PUBLIC void
-vsf_hmac256_hmac (const byte* key, size_t key_len, const byte* data, size_t data_len, byte* hmac,
-        size_t hmac_len) {
-
-    VSF_ASSERT_OPT (hmac_len >= vsf_hmac256_DIGEST_SIZE);
-
-    mbedtls_md_hmac (mbedtls_md_info_from_type (MBEDTLS_MD_SHA256), key, key_len, data, data_len, hmac);
-}
-
-//
-//  Reset HMAC.
-//
-VSF_PUBLIC void
-vsf_hmac256_reset (vsf_hmac256_impl_t* hmac256_impl) {
-
-    mbedtls_md_hmac_reset (&hmac256_impl->hmac_ctx);
-}
-
-//
-//  Start a new HMAC.
-//
-VSF_PUBLIC void
-vsf_hmac256_start (vsf_hmac256_impl_t* hmac256_impl, const byte* key, size_t key_len) {
-
-    mbedtls_md_hmac_starts (&hmac256_impl->hmac_ctx, key, key_len);
-}
-
-//
-//  Add given data to the HMAC.
-//
-VSF_PUBLIC void
-vsf_hmac256_update (vsf_hmac256_impl_t* hmac256_impl, const byte* data, size_t data_len) {
-
-    mbedtls_md_hmac_update (&hmac256_impl->hmac_ctx, data, data_len);
-}
-
-//
-//  Accompilsh HMAC and return it's result (a message digest).
-//
-VSF_PUBLIC void
-vsf_hmac256_finish (vsf_hmac256_impl_t* hmac256_impl, byte* hmac, size_t hmac_len) {
-
-    VSF_ASSERT_OPT (hmac_len >= vsf_hmac256_DIGEST_SIZE);
-
-    mbedtls_md_hmac_finish (&hmac256_impl->hmac_ctx, hmac);
-}

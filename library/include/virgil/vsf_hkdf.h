@@ -36,12 +36,6 @@
 // --------------------------------------------------------------------------
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  This module contains 'hmac256' implementation.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -49,20 +43,97 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsf_hmac256.h"
-#include "vsf_assert.h"
-#include "vsf_memory.h"
-#include "vsf_hmac256_impl.h"
-#include "vsf_hmac256_internal.h"
 
-#include <mbedtls/md.h>
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains 'hkdf' implementation.
+// --------------------------------------------------------------------------
+
+#ifndef VSF_HKDF_H_INCLUDED
+#define VSF_HKDF_H_INCLUDED
+
+#include "vsf_library.h"
+#include "vsf_impl.h"
+#include "vsf_ex_kdf.h"
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
 // --------------------------------------------------------------------------
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Handles implementation details.
+//
+typedef struct vsf_hkdf_impl_t vsf_hkdf_impl_t;
+
+//
+//  Return size of 'vsf_hkdf_impl_t' type.
+//
+VSF_PUBLIC size_t
+vsf_hkdf_impl_size (void);
+
+//
+//  Cast to the 'vsf_impl_t' type.
+//
+VSF_PUBLIC vsf_impl_t*
+vsf_hkdf_impl (vsf_hkdf_impl_t* hkdf_impl);
+
+//
+//  Perform initialization of preallocated implementation context.
+//
+VSF_PUBLIC void
+vsf_hkdf_init (vsf_hkdf_impl_t* hkdf_impl);
+
+//
+//  Cleanup implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_hkdf_init ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
+//
+VSF_PUBLIC void
+vsf_hkdf_cleanup (vsf_hkdf_impl_t* hkdf_impl);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
+//
+VSF_PUBLIC vsf_hkdf_impl_t*
+vsf_hkdf_new (void);
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vsf_hkdf_new ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
+//
+VSF_PUBLIC void
+vsf_hkdf_destroy (vsf_hkdf_impl_t** hkdf_impl_ref);
+
+//
+//  Setup dependency to the interface 'hmac stream' and keep ownership.
+//
+VSF_PUBLIC void
+vsf_hkdf_use_hmac_stream (vsf_hkdf_impl_t* hkdf_impl, vsf_impl_t* hmac);
+
+//
+//  Setup dependency to the interface 'hmac stream' and transfer ownership.
+//
+VSF_PUBLIC void
+vsf_hkdf_take_hmac_stream (vsf_hkdf_impl_t* hkdf_impl, vsf_impl_t** hmac_ref);
+
+//
+//  Calculate hash over given data.
+//
+VSF_PUBLIC void
+vsf_hkdf_derive (vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len, const byte* salt,
+        size_t salt_len, const byte* info, size_t info_len, byte* key, size_t key_len);
 
 
 // --------------------------------------------------------------------------
@@ -71,71 +142,11 @@
 //  @end
 
 
-//
-//  Provides initialization of the implementation specific context.
-//
-VSF_PRIVATE void
-vsf_hmac256_init_ctx (vsf_hmac256_impl_t* hmac256_impl) {
-
-    mbedtls_md_init (&hmac256_impl->hmac_ctx);
-    mbedtls_md_setup (&hmac256_impl->hmac_ctx, mbedtls_md_info_from_type (MBEDTLS_MD_SHA256), 1);
+#ifdef __cplusplus
 }
+#endif
 
-//
-//  Provides cleanup of the implementation specific context.
-//
-VSF_PRIVATE void
-vsf_hmac256_cleanup_ctx (vsf_hmac256_impl_t* hmac256_impl) {
 
-    mbedtls_md_free (&hmac256_impl->hmac_ctx);
-}
-
-//
-//  Calculate hmac over given data.
-//
-VSF_PUBLIC void
-vsf_hmac256_hmac (const byte* key, size_t key_len, const byte* data, size_t data_len, byte* hmac,
-        size_t hmac_len) {
-
-    VSF_ASSERT_OPT (hmac_len >= vsf_hmac256_DIGEST_SIZE);
-
-    mbedtls_md_hmac (mbedtls_md_info_from_type (MBEDTLS_MD_SHA256), key, key_len, data, data_len, hmac);
-}
-
-//
-//  Reset HMAC.
-//
-VSF_PUBLIC void
-vsf_hmac256_reset (vsf_hmac256_impl_t* hmac256_impl) {
-
-    mbedtls_md_hmac_reset (&hmac256_impl->hmac_ctx);
-}
-
-//
-//  Start a new HMAC.
-//
-VSF_PUBLIC void
-vsf_hmac256_start (vsf_hmac256_impl_t* hmac256_impl, const byte* key, size_t key_len) {
-
-    mbedtls_md_hmac_starts (&hmac256_impl->hmac_ctx, key, key_len);
-}
-
-//
-//  Add given data to the HMAC.
-//
-VSF_PUBLIC void
-vsf_hmac256_update (vsf_hmac256_impl_t* hmac256_impl, const byte* data, size_t data_len) {
-
-    mbedtls_md_hmac_update (&hmac256_impl->hmac_ctx, data, data_len);
-}
-
-//
-//  Accompilsh HMAC and return it's result (a message digest).
-//
-VSF_PUBLIC void
-vsf_hmac256_finish (vsf_hmac256_impl_t* hmac256_impl, byte* hmac, size_t hmac_len) {
-
-    VSF_ASSERT_OPT (hmac_len >= vsf_hmac256_DIGEST_SIZE);
-
-    mbedtls_md_hmac_finish (&hmac256_impl->hmac_ctx, hmac);
-}
+//  @footer
+#endif // VSF_HKDF_H_INCLUDED
+//  @end

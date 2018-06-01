@@ -81,6 +81,7 @@ enum vsf_api_tag_t {
     vsf_api_tag_AUTH_DECRYPT,
     vsf_api_tag_HASH_INFO,
     vsf_api_tag_DECRYPT,
+    vsf_api_tag_EX_KDF,
     vsf_api_tag_CIPHER,
     vsf_api_tag_KDF,
     vsf_api_tag_HMAC,
