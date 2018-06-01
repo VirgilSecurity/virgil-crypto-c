@@ -1,6 +1,13 @@
 <implementor name="virgil" is_default="1">
     Provide implementation based on the Virgil Security implementations.
 
+    <implementation name="hkdf">
+        Virgil Security implementation of the HKDF (RFC 6234) algorithm.
+
+        <interface name="ex_kdf"/>
+
+        <dependency name="hmac" interface="hmac stream" type="impl"/>
+    </implementation>
     <implementation name="kdf1">
         Virgil Security implementation of the KDF1 (ISO-18033-2) algorithm.
 
