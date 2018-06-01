@@ -57,6 +57,7 @@
 #include "vsf_hkdf_impl.h"
 #include "vsf_ex_kdf_api.h"
 #include "vsf_hmac_stream.h"
+#include "vsf_impl.h"
 //  @end
 
 
