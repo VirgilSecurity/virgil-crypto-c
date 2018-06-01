@@ -3,6 +3,78 @@
 
     <require library = "mbedTLS" />
 
+    <implementation name = "hmac224">
+        This is MbedTLS implementation of HMAC224.
+
+        <require_include name = "mbedtls/md.h" type = "context" />
+
+        <interface name = "hmac info">
+            <constant name = "digest size" value = "28" />
+        </interface>
+
+        <interface name = "hmac">
+        </interface>
+
+        <interface name = "hmac stream">
+            <context name = "hmac ctx" class = "mbedtls_md_context_t" access = "readwrite" is_reference="0"/>
+        </interface>
+    </implementation>
+
+
+    <implementation name = "hmac256">
+        This is MbedTLS implementation of HMAC256.
+
+        <require_include name = "mbedtls/md.h" type = "context" />
+
+        <interface name = "hmac info">
+            <constant name = "digest size" value = "32" />
+        </interface>
+
+        <interface name = "hmac">
+        </interface>
+
+        <interface name = "hmac stream">
+            <context name = "hmac ctx" class = "mbedtls_md_context_t" access = "readwrite" is_reference="0"/>
+        </interface>
+    </implementation>
+
+
+    <implementation name = "hmac384">
+        This is MbedTLS implementation of HMAC384.
+
+        <require_include name = "mbedtls/md.h" type = "context" />
+
+        <interface name = "hmac info">
+            <constant name = "digest size" value = "48" />
+        </interface>
+
+        <interface name = "hmac">
+        </interface>
+
+        <interface name = "hmac stream">
+            <context name = "hmac ctx" class = "mbedtls_md_context_t" access = "readwrite" is_reference="0"/>
+        </interface>
+    </implementation>
+
+
+    <implementation name = "hmac512">
+        This is MbedTLS implementation of HMAC512.
+
+        <require_include name = "mbedtls/md.h" type = "context" />
+
+        <interface name = "hmac info">
+            <constant name = "digest size" value = "64" />
+        </interface>
+
+        <interface name = "hmac">
+        </interface>
+
+        <interface name = "hmac stream">
+            <context name = "hmac ctx" class = "mbedtls_md_context_t" access = "readwrite" is_reference="0"/>
+        </interface>
+    </implementation>
+
+
     <implementation name = "sha224">
         This is MbedTLS implementation of SHA224.
 
@@ -73,6 +145,7 @@
             <context name = "hash ctx" class = "mbedtls_sha512_context" access = "readwrite" is_reference="0"/>
         </interface>
     </implementation>
+
 
     <implementation name="aes 256 gcm">
         Implementation of the symmetric cipher AES-256 bit in a GCM mode.
