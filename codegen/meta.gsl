@@ -458,6 +458,8 @@ function meta_add_interface (meta, interface)
     check_argument (my, "interface", my)
     assert_argument_type (my.meta, "meta", my)
 
+    echo_trace ("Update meta with interface: $(my.interface.name:)", my)
+
     return _X17_add_entity_interface (my.meta, my.interface)
 endfunction
 
@@ -468,6 +470,8 @@ function meta_add_implementation (meta, implementation)
     check_argument (my, "meta", my)
     check_argument (my, "implementation", my)
     assert_argument_type (my.meta, "meta", my)
+
+    echo_trace ("Update meta with implementation: $(my.implementation.name:)", my)
 
     return _X17_add_entity_implementation (my.meta, my.implementation)
 endfunction

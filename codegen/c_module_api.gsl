@@ -96,6 +96,8 @@ function c_module_api_create (meta, destination)
 
     my.names = meta_names (my.meta)
 
+    echo_trace ("Create module: $(my.names.module_api)", my)
+
     new module to my.destination
         . = "\
         Create module with functionality common for all 'api' objects.

@@ -371,6 +371,8 @@ function c_module_interface_create_module_public (interface, destination, meta)
 
     my.names = meta_names (my.meta)
 
+    echo_trace ("Create module: $(my.names.interface_module)", my)
+
     new module to my.destination
         . = my.interface. ?
         .name = my.names.interface_module
@@ -424,6 +426,8 @@ function c_module_interface_create_module_api (interface, destination, meta)
     check_arguments (my, "interface, destination, meta", my)
 
     my.names = meta_names (my.meta)
+
+    echo_trace ("Create module: $(my.names.interface_module_api)", my)
 
     new module to my.destination
         . = "Interface '$(my.interface.name:)' API."

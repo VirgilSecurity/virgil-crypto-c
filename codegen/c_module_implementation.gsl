@@ -1149,6 +1149,8 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
 
     my.names = meta_names (my.meta)
 
+    echo_trace ("Create module: $(my.names.implementation_module)", my)
+
     new module to my.destination
         . = "\
         This module contains '$(my.names.implementation_module)' implementation.
@@ -1188,6 +1190,8 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
     check_arguments (my, "impl, destination, meta", my)
 
     my.names = meta_names (my.meta)
+
+    echo_trace ("Create module: $(my.names.implementation_module_impl)", my)
 
     new module to my.destination
         .= "\
@@ -1244,6 +1248,8 @@ function c_module_implementation_create_module_internal (impl, source, destinati
     check_arguments (my, "impl, source, destination, meta", my)
 
     my.names = meta_names (my.meta)
+
+    echo_trace ("Create module: $(my.names.implementation_module_internal)", my)
 
     new module to my.destination
         . = "\
