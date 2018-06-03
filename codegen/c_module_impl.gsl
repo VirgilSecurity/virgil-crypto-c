@@ -104,13 +104,13 @@ function _L24_add_method_get_api (meta, destination)
         Or NULL if object does not implement requested 'API'.
         "
 
-        .name = my.names.class_api
+        .name = my.names.method_api
 
         new return
             .class = ".(class_api_struct_api)"
         endnew
 
-        component_create_argument_impl (method)
+        component_create_argument_impl (method, my.meta)
 
         new argument
             .name = my.names.argument_api_tag
@@ -159,7 +159,7 @@ function _L24_add_method_get_tag (meta, destination)
             .enum = ".(class_impl_enum_tag)"
         endnew
 
-        component_create_argument_impl (method)
+        component_create_argument_impl (method, my.meta)
 
         new implementation
             . = "
@@ -185,7 +185,7 @@ function _L24_add_method_cleanup (meta, destination)
 
         .name = my.names.method_cleanup
 
-        component_create_argument_impl (method)
+        component_create_argument_impl (method, my.meta)
 
         new implementation
             . = "\
@@ -215,7 +215,7 @@ function _L24_add_method_delete (meta, destination)
 
         .name = my.names.method_delete
 
-        component_create_argument_impl (method)
+        component_create_argument_impl (method, my.meta)
 
         new implementation
             . = "\
@@ -244,7 +244,7 @@ function _L24_add_method_destroy (meta, destination)
 
         .name = my.names.method_destroy
 
-        component_create_argument_impl_ref (method)
+        component_create_argument_impl_ref (method, my.meta)
 
         new implementation
             . = "\
@@ -272,7 +272,7 @@ function _L24_add_callback_cleanup (meta, destination)
 
         .name = my.names.method_cleanup
 
-        component_create_argument_impl (callback)
+        component_create_argument_impl (callback, my.meta)
     endnew
 
 endfunction
@@ -290,7 +290,7 @@ function _L24_add_callback_delete (meta, destination)
 
         .name = my.names.method_delete
 
-        component_create_argument_impl (callback)
+        component_create_argument_impl (callback, my.meta)
     endnew
 
 endfunction
@@ -309,7 +309,7 @@ function c_module_impl_create (meta, destination)
         It is also enumerate all available implementations within crypto libary.
         "
         .name = my.names.module_impl
-        .class = my.names.class_impl
+        .of_class = my.names.class_impl
 
         new require
             .module = my.names.module_library

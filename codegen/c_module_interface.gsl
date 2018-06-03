@@ -128,8 +128,8 @@ function _L23_add_interface_api_type (interface, declaration, definition, destin
 
             new property to struct
                 . = "Link to the inherited interface API '$(inherit.interface:)'."
-                .name = my.names.property_inherited_$(make_id(inherit.interface))_api
-                .class = my.refs.class_inherited_$(make_id(inherit.interface))_api
+                .name = my.names.property_inherited_$(make_id (inherit.interface))_api
+                .class = my.refs.class_inherited_$(make_id (inherit.interface))_api
                 .tag = "api"
             endnew
         endfor
@@ -162,7 +162,7 @@ function _L23_add_interface_api_callbacks (interface, destination, meta)
         my.callback. = ("Callback. " + string_trim(my.callback.)) ?
 
         if method.context = "impl"
-            component_create_argument_impl (my.callback)
+            component_create_argument_impl (my.callback, my.meta)
         endif
     endfor
 endfunction
@@ -205,7 +205,7 @@ function _L23_add_stateful_methods (interface, destination, meta)
 
         my.proxy_method = item_copy_to (method, my.destination)
 
-        component_create_argument_impl (my.proxy_method)
+        component_create_argument_impl (my.proxy_method, my.meta)
 
         my.has_return = count (method.[return], defined (type) & type <> "nothing")
         my.callback = "$(my.api_name:)->$(c_format_callback_name (method.name))"
@@ -306,9 +306,9 @@ function _L23_add_method_get_api (interface, destination, meta)
     new method to my.destination
         . = "Return $(my.interface.name:) API, or NULL if it is not implemented."
 
-        .name = my.names.class_api
+        .name = my.names.method_api
 
-        component_create_argument_impl (method)
+        component_create_argument_impl (method, my.meta)
 
         new return
             .class = my.refs.interface_struct_api
@@ -342,9 +342,9 @@ function _L23_add_method_check_api (interface, destination, meta)
     new method to my.destination
         . = "Check if given object implements interface '$(my.interface.name:)'."
 
-        .name = "is implemented"
+        .name = my.names.method_is_implemented
 
-       component_create_argument_impl (method)
+       component_create_argument_impl (method, my.meta)
 
         new return
             .type = "boolean"
@@ -373,8 +373,8 @@ function c_module_interface_create_module_public (interface, destination, meta)
 
     new module to my.destination
         . = my.interface. ?
-        .name = my.names.module_interface
-        .of_class = my.names.class_interface
+        .name = my.names.interface_module
+        .of_class = my.names.interface_class
         .interface = my.interface.name
 
         new require to module

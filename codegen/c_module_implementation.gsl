@@ -349,15 +349,19 @@ function _Z19_add_includes_for_module_internal (impl, destination, meta)
     endif
 
     for my.impl.interface
+        my.entity_names = meta_entity_names (my.meta, interface.name)
+
         new require to my.destination
-            .module = cat (interface.name, my.names.module_api)
+            .module = my.entity_names.interface_module_api
             .scope = "private"
         endnew
     endfor
 
     for my.impl.dependency
+        my.entity_names = meta_entity_names (my.meta, dependency.interface)
+
         new require to my.destination
-            .module = cat (dependency.interface)
+            .module = my.entity_names.interface_module
             .scope = "private"
         endnew
     endfor
@@ -446,7 +450,7 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
 
     new struct to my.destination
         . = "Handles implementation details."
-        .name = my.names.class_impl
+        .name = my.names.struct_impl
         .declaration = my.declaration
         .definition = my.definition
 
@@ -459,7 +463,7 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
         for my.impl.dependency where type = "impl"
             new property to struct
                 . = "Dependency to the interface '$(dependency.interface:)'."
-                .name = my.names.implementation_property_dependency_$(make_id (dependency.name))
+                .name = my.names.implementation_property_$(make_id (dependency.name))
                 .class = my.refs.class_impl_struct_impl
                 .access = "readwrite"
             endnew
@@ -468,7 +472,7 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
         for my.impl.dependency where type = "api"
             new property to struct
                 . = "Dependency to the interface api '$(dependency.interface:)'."
-                .name = my.names.implementation_property_dependency_$(make_id (dependency.name))
+                .name = my.names.implementation_property_$(make_id (dependency.name))
                 .class = ".($(make_id (\
                         "class", dependency.interface, my.names.struct_api, \
                         "struct", dependency.interface, my.names.struct_api)))"
@@ -485,7 +489,7 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
         for my.impl.dependency where type = "impl"
             new property to struct
                 . = "Ownership status of the dependency to the interface '$(dependency.interface:)'."
-                .name = my.names.implementation_property_is_owning_dependency_$(make_id (dependency.name))
+                .name = my.names.implementation_property_is_owning_$(make_id (dependency.name))
                 .type = "boolean"
                 .bits = "1"
             endnew
@@ -519,7 +523,7 @@ function _Z19_add_method_impl_type_size (impl, declaration, definition, destinat
         . = "\
         Return size of '$(my.refs.c_implementation_struct_impl)' type.
         "
-        .name = cat (my.names.class_impl, "size")
+        .name = my.names.method_impl_size
         .declaration = my.declaration
         .definition = my.definition
 
@@ -548,7 +552,7 @@ function _Z19_add_method_impl_type_cast (impl, declaration, definition, destinat
         . = "\
         Cast to the '.(c_class_impl_struct_impl)' type.
         "
-        .name = my.names.class_impl
+        .name = my.names.method_impl
         .declaration = my.declaration
         .definition = my.definition
 
@@ -651,8 +655,8 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
 
 
             for my.impl.dependency where type = "impl"
-                my.dependency = my.refs.c_implementation_property_dependency_$(make_id (dependency.name))
-                my.is_owning_dependency = my.refs.c_implementation_property_is_owning_dependency_$(make_id (dependency.name))
+                my.dependency = my.refs.c_implementation_property_$(make_id (dependency.name))
+                my.is_owning_dependency = my.refs.c_implementation_property_is_owning_$(make_id (dependency.name))
 
                 my.impl_cleanup_dependencies ?= ""
                 my.impl_cleanup_dependencies += "\
@@ -674,7 +678,7 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
             endfor
 
             for my.impl.dependency where type = "api"
-                my.dependency = my.refs.c_implementation_property_dependency_$(make_id (dependency.name))
+                my.dependency = my.refs.c_implementation_property_$(make_id (dependency.name))
 
                 my.impl_cleanup_dependencies_api ?= ""
                 my.impl_cleanup_dependencies_api += "\
@@ -931,7 +935,7 @@ function _Z19_add_method_use_dependency (dependency, declaration, definition, de
         . = "\
         Setup dependency to the interface '$(my.dependency.interface:)' and keep ownership.
         "
-        .name = cat (my.names.method_use, my.dependency.interface, my.dependency.type = "api" ?? my.dependency.type ?)
+        .name = my.names.implementation_method_use_$(make_id (dependency.interface))
         .definition = my.definition
         .declaration = my.declaration
 
@@ -942,7 +946,7 @@ function _Z19_add_method_use_dependency (dependency, declaration, definition, de
         new implementation to method
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
             my.arg_dependency = ".(_argument_$(make_id (my.dependency.name)))"
-            my.property_dependency = my.refs.c_implementation_property_dependency_$(make_id (my.dependency.name))
+            my.property_dependency = my.refs.c_implementation_property_$(make_id (my.dependency.name))
             my.full_dependency = "$(my.arg_impl)->$(my.property_dependency)"
 
             my.impl_check_precondition = "\
@@ -963,7 +967,7 @@ function _Z19_add_method_use_dependency (dependency, declaration, definition, de
 
             if my.dependency.type = "impl"
                 my.property_is_owning_dependency = \
-                        my.refs.c_implementation_property_is_owning_dependency_$(make_id (my.dependency.name))
+                        my.refs.c_implementation_property_is_owning_$(make_id (my.dependency.name))
 
                 my.is_owning_dependency = "$(my.arg_impl)->$(my.property_is_owning_dependency)"
 
@@ -999,7 +1003,7 @@ function _Z19_add_method_take_dependency (dependency, declaration, definition, d
         . = "\
         Setup dependency to the interface '$(my.dependency.interface)' and transfer ownership.
         "
-        .name = cat (my.names.method_take, my.dependency.interface, my.dependency.type = "api" ?? my.dependency.type ?)
+        .name = my.names.implementation_method_take_$(make_id (dependency.interface))
         .definition = my.definition
         .declaration = my.declaration
 
@@ -1013,7 +1017,7 @@ function _Z19_add_method_take_dependency (dependency, declaration, definition, d
             my.arg_dependency_ref = ".(_argument_$(make_id (my.dependency.name)))"
             my.type_dependency = my.refs.c_class_impl_struct_impl
             my.arg_dependency = make_id (my.dependency.name)
-            my.property_dependency = my.refs.c_implementation_property_dependency_$(make_id (my.dependency.name))
+            my.property_dependency = my.refs.c_implementation_property_$(make_id (my.dependency.name))
             my.full_dependency = "$(my.arg_impl)->$(my.property_dependency:)"
 
             my.impl_check_precondition = "\
@@ -1040,7 +1044,7 @@ function _Z19_add_method_take_dependency (dependency, declaration, definition, d
 
             if my.dependency.type = "impl"
                 my.property_is_owning_dependency = \
-                        my.refs.c_implementation_property_is_owning_dependency_$(make_id (my.dependency.name))
+                        my.refs.c_implementation_property_is_owning_$(make_id (my.dependency.name))
 
                 my.is_owning_dependency = "$(my.arg_impl)->$(my.property_is_owning_dependency)"
 
@@ -1151,7 +1155,7 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
         "
 
         .name = my.names.implementation_module
-        .class = my.names.implementation_class
+        .of_class = my.names.implementation_class
 
         _Z19_add_includes_for_module_public (my.impl, module, my.meta)
         _Z19_add_self_tag (my.impl, my.enum_impl_tag, my.meta)
