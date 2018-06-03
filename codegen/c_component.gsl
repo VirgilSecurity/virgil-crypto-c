@@ -415,6 +415,9 @@ function c_component_map_instance_attr_type (c_instance, instance)
         elsif my.instance.type = "char"
             my.c_instance.type = "char"
 
+        elsif my.instance.type = "error"
+            my.c_instance.type = ".(c_class_error_enum_error)"
+
         else
             echo_fatal ("Unsupported instance type '$(my.instance.type)' for C language.", my)
         endif

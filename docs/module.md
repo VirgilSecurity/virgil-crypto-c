@@ -272,7 +272,7 @@ attributes for the component. Defines global variable.
     <variable
         is_reference = "0 | 1"
         name = "..."
-      [ type = "nothing | boolean | integer | size | byte | data | string" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
       [ enum = "..." ]
       [ callback = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
@@ -314,6 +314,7 @@ size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
 string: Shortcut for the char array.
+error: Type for error codes.
 
 class:
     Defines instance class. Possible values are: * any - Any class or type. *
@@ -415,7 +416,7 @@ variable value.
       [ callback = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | size | byte | data | string" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
         >
         <cast>, optional
         <string>, optional
@@ -446,6 +447,7 @@ size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
 string: Shortcut for the char array.
+error: Type for error codes.
 
 class:
     Defines instance class. Possible values are: * any - Any class or type. *
@@ -505,7 +507,7 @@ type to the type defined in this entity.
       [ enum = "..." ]
       [ callback = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ type = "nothing | boolean | integer | size | byte | data | string" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
         >
         <string>, optional
         <array>, optional
@@ -535,6 +537,7 @@ size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
 string: Shortcut for the char array.
+error: Type for error codes.
 
 class:
     Defines instance class. Possible values are: * any - Any class or type. *
@@ -723,7 +726,7 @@ property.
     <property
         is_reference = "0 | 1"
         name = "..."
-      [ type = "nothing | boolean | integer | size | byte | data | string" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -764,6 +767,7 @@ size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
 string: Shortcut for the char array.
+error: Type for error codes.
 
 class:
     Defines instance class. Possible values are: * any - Any class or type. *
@@ -870,7 +874,7 @@ Defines attributes that related to the instance type. Defines return type.
       [ enum = "..." ]
       [ callback = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ type = "nothing | boolean | integer | size | byte | data | string" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
         >
         <string>, optional
         <array>, optional
@@ -900,6 +904,7 @@ size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
 string: Shortcut for the char array.
+error: Type for error codes.
 
 class:
     Defines instance class. Possible values are: * any - Any class or type. *
@@ -952,7 +957,7 @@ name, type, and usage information.
     <argument
         is_reference = "0 | 1"
         name = "..."
-      [ type = "nothing | boolean | integer | size | byte | data | string" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -992,6 +997,7 @@ size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
 string: Shortcut for the char array.
+error: Type for error codes.
 
 class:
     Defines instance class. Possible values are: * any - Any class or type. *
