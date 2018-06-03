@@ -59,7 +59,7 @@ add_library(enable_pedantic INTERFACE)
 target_compile_options(enable_pedantic
         INTERFACE
         $<$<C_COMPILER_ID:GNU>:-Wall -Werror -pedantic>
-        $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>>:-Werror>
+        $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>>:-Werror -Wall -pedantic -Wassign-enum>
         )
 
 #
