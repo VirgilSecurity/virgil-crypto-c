@@ -320,7 +320,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return component's name prefix: class name + ancestors.
 #   Rules:
-#       - class name is ommited if class is 'global';
+#       - no prefix if class is 'global';
 #       - class name is ommited if component's name equals to the class name.
 # ---------------------------------------------------------------------------
 function component_derive_name_prefix (component)
@@ -336,7 +336,7 @@ function component_derive_name_prefix (component)
     endfor
 
     if component_is_global (my.component)
-        return cat (my.ancestors)
+        return ""
 
     elsif string_equal (my.component.of_class, my.component.name)
         return cat (my.ancestors)
