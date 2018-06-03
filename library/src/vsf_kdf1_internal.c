@@ -114,13 +114,15 @@ static const vsf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSF_PUBLIC void
+VSF_PUBLIC vsf_error_t
 vsf_kdf1_init (vsf_kdf1_impl_t* kdf1_impl) {
 
     VSF_ASSERT_PTR (kdf1_impl);
     VSF_ASSERT_PTR (kdf1_impl->info == NULL);
 
     kdf1_impl->info = &info;
+
+    return vsf_SUCCESS;
 }
 
 //

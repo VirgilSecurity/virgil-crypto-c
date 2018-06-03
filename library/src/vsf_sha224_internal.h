@@ -72,7 +72,7 @@ extern "C" {
 //
 //  Provides initialization of the implementation specific context.
 //
-VSF_PRIVATE void
+VSF_PRIVATE vsf_error_t
 vsf_sha224_init_ctx (vsf_sha224_impl_t* sha224_impl);
 
 //

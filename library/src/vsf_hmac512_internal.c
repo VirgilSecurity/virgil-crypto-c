@@ -167,7 +167,7 @@ static const vsf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSF_PUBLIC void
+VSF_PUBLIC vsf_error_t
 vsf_hmac512_init (vsf_hmac512_impl_t* hmac512_impl) {
 
     VSF_ASSERT_PTR (hmac512_impl);
@@ -175,7 +175,7 @@ vsf_hmac512_init (vsf_hmac512_impl_t* hmac512_impl) {
 
     hmac512_impl->info = &info;
 
-    vsf_hmac512_init_ctx (hmac512_impl);
+    return vsf_hmac512_init_ctx (hmac512_impl);
 }
 
 //

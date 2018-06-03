@@ -98,7 +98,7 @@ vsf_sha256_impl (vsf_sha256_impl_t* sha256_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSF_PUBLIC void
+VSF_PUBLIC vsf_error_t
 vsf_sha256_init (vsf_sha256_impl_t* sha256_impl);
 
 //

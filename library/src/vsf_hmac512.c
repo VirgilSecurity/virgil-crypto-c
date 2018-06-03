@@ -74,11 +74,23 @@
 //
 //  Provides initialization of the implementation specific context.
 //
-VSF_PRIVATE void
+VSF_PRIVATE vsf_error_t
 vsf_hmac512_init_ctx (vsf_hmac512_impl_t* hmac512_impl) {
 
     mbedtls_md_init (&hmac512_impl->hmac_ctx);
-    mbedtls_md_setup (&hmac512_impl->hmac_ctx, mbedtls_md_info_from_type (MBEDTLS_MD_SHA512), 1);
+    int result = mbedtls_md_setup (&hmac512_impl->hmac_ctx, mbedtls_md_info_from_type (MBEDTLS_MD_SHA512), 1);
+
+    switch (result) {
+        case 0:
+            return vsf_SUCCESS;
+
+        case MBEDTLS_ERR_MD_ALLOC_FAILED:
+            return vsf_error_NO_MEMORY;
+
+        default:
+            VSF_ASSERT (result && "mbedtls error");
+            return vsf_error_BAD_ARGUMENTS;
+    }
 }
 
 //

@@ -163,7 +163,7 @@ static const vsf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSF_PUBLIC void
+VSF_PUBLIC vsf_error_t
 vsf_sha256_init (vsf_sha256_impl_t* sha256_impl) {
 
     VSF_ASSERT_PTR (sha256_impl);
@@ -171,7 +171,7 @@ vsf_sha256_init (vsf_sha256_impl_t* sha256_impl) {
 
     sha256_impl->info = &info;
 
-    vsf_sha256_init_ctx (sha256_impl);
+    return vsf_sha256_init_ctx (sha256_impl);
 }
 
 //

@@ -73,6 +73,10 @@ enum vsf_error_t {
     //
     vsf_SUCCESS = 0,
     //
+    //  This error should not be returned if assertions is enabled.
+    //
+    vsf_error_BAD_ARGUMENTS = -1,
+    //
     //  Memory allocation failed.
     //
     vsf_error_NO_MEMORY = -100,

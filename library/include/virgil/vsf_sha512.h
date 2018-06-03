@@ -98,7 +98,7 @@ vsf_sha512_impl (vsf_sha512_impl_t* sha512_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSF_PUBLIC void
+VSF_PUBLIC vsf_error_t
 vsf_sha512_init (vsf_sha512_impl_t* sha512_impl);
 
 //

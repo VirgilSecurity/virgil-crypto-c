@@ -107,7 +107,7 @@ vsf_aes256_gcm_impl (vsf_aes256_gcm_impl_t* aes256_gcm_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSF_PUBLIC void
+VSF_PUBLIC vsf_error_t
 vsf_aes256_gcm_init (vsf_aes256_gcm_impl_t* aes256_gcm_impl);
 
 //

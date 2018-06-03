@@ -8,6 +8,10 @@
             No errors was occurred.
         </constant>
 
+        <constant name="bad arguments" value="-1">
+            This error should not be returned if assertions is enabled.
+        </constant>
+
         <constant name="no memory" value="-100">
             Memory allocation failed.
         </constant>
