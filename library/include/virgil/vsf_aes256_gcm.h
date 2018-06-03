@@ -53,6 +53,7 @@
 #define VSF_AES256_GCM_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_error.h"
 #include "vsf_impl.h"
 #include "vsf_encrypt.h"
 #include "vsf_decrypt.h"
@@ -165,7 +166,7 @@ vsf_aes256_gcm_cipher_auth_api (void);
 //
 //  Encrypt given data.
 //
-VSF_PUBLIC int
+VSF_PUBLIC vsf_error_t
 vsf_aes256_gcm_encrypt (vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* data, size_t data_len,
         byte* enc, size_t enc_len, size_t* out_len);
 
@@ -181,7 +182,7 @@ vsf_aes256_gcm_required_enc_len (vsf_aes256_gcm_impl_t* aes256_gcm_impl, size_t 
 //
 //  Decrypt given data.
 //
-VSF_PUBLIC int
+VSF_PUBLIC vsf_error_t
 vsf_aes256_gcm_decrypt (vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* enc, size_t enc_len,
         byte* plain, size_t plain_len, size_t* out_len);
 
@@ -211,7 +212,7 @@ vsf_aes256_gcm_set_key (vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* key,
 //  Encrypt given data.
 //  If 'tag' is not give, then it will written to the 'enc'.
 //
-VSF_PUBLIC int
+VSF_PUBLIC vsf_error_t
 vsf_aes256_gcm_auth_encrypt (vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* data,
         size_t data_len, const byte* auth_data, size_t auth_data_len, byte* enc, size_t enc_len,
         size_t* out_len, byte* tag, size_t tag_len);
@@ -220,7 +221,7 @@ vsf_aes256_gcm_auth_encrypt (vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte*
 //  Decrypt given data.
 //  If 'tag' is not give, then it will be taken from the 'enc'.
 //
-VSF_PUBLIC int
+VSF_PUBLIC vsf_error_t
 vsf_aes256_gcm_auth_decrypt (vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* enc,
         size_t enc_len, const byte* auth_data, size_t auth_data_len, const byte* tag,
         size_t tag_len, byte* dec, size_t dec_len, size_t* out_len);

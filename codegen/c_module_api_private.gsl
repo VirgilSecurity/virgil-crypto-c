@@ -90,6 +90,10 @@ function c_module_api_private_create (meta, destination)
         endnew
 
         new require
+            .module = my.names.module_error
+        endnew
+
+        new require
             .module = my.names.module_api
         endnew
 

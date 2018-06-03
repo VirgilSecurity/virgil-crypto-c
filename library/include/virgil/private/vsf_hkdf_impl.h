@@ -56,6 +56,7 @@
 #define VSF_HKDF_IMPL_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_error.h"
 #include "vsf_impl_private.h"
 #include "vsf_hkdf.h"
 //  @end

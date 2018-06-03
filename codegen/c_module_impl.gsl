@@ -318,6 +318,10 @@ function c_module_impl_create (meta, destination)
         endnew
 
         new require
+            .module = my.names.module_error
+        endnew
+
+        new require
             .module = my.names.module_api
         endnew
 

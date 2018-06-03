@@ -18,6 +18,6 @@
         <argument name="dec len" type="size"/>
         <argument name="out len" type="size" access="writeonly" is_reference="1"/>
 
-        <return type="integer"/>
+        <return type="error"/>
     </method>
 </interface>

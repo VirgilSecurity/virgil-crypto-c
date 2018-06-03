@@ -53,6 +53,7 @@
 #define VSF_DECRYPT_API_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_error.h"
 #include "vsf_api.h"
 #include "vsf_impl.h"
 //  @end
@@ -71,8 +72,8 @@ extern "C" {
 //
 //  Callback. Decrypt given data.
 //
-typedef int (*vsf_decrypt_api_decrypt_fn) (vsf_impl_t* impl, const byte* enc, size_t enc_len,
-        byte* plain, size_t plain_len, size_t* out_len);
+typedef vsf_error_t (*vsf_decrypt_api_decrypt_fn) (vsf_impl_t* impl, const byte* enc,
+        size_t enc_len, byte* plain, size_t plain_len, size_t* out_len);
 
 //
 //  Callback. Calculate required buffer length to hold the decrypted data.

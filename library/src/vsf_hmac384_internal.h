@@ -54,6 +54,7 @@
 #define VSF_HMAC384_INTERNAL_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_error.h"
 #include "vsf_hmac384.h"
 //  @end
 

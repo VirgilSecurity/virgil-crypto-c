@@ -21,6 +21,6 @@
 
         <argument name="tag len" type="size"/>
 
-        <return type="integer"/>
+        <return type="error"/>
     </method>
 </interface>

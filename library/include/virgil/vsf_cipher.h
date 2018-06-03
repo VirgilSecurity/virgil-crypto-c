@@ -53,6 +53,7 @@
 #define VSF_CIPHER_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_error.h"
 #include "vsf_impl.h"
 #include "vsf_encrypt.h"
 #include "vsf_decrypt.h"

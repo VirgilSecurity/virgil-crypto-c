@@ -53,6 +53,7 @@
 #define VSF_KDF_API_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_error.h"
 #include "vsf_api.h"
 #include "vsf_impl.h"
 //  @end
