@@ -54,6 +54,7 @@
 #define VSF_CIPHER_AUTH_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_error.h"
 #include "vsf_impl.h"
 #include "vsf_cipher_auth_info.h"
 #include "vsf_auth_encrypt.h"

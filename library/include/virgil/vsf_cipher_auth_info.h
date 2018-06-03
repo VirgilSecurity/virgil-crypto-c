@@ -47,6 +47,7 @@
 #define VSF_CIPHER_AUTH_INFO_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_error.h"
 #include "vsf_impl.h"
 //  @end
 

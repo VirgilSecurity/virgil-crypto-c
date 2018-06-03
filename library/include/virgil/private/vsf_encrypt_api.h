@@ -53,6 +53,7 @@
 #define VSF_ENCRYPT_API_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_error.h"
 #include "vsf_api.h"
 #include "vsf_impl.h"
 //  @end
@@ -71,8 +72,8 @@ extern "C" {
 //
 //  Callback. Encrypt given data.
 //
-typedef int (*vsf_encrypt_api_encrypt_fn) (vsf_impl_t* impl, const byte* data, size_t data_len,
-        byte* enc, size_t enc_len, size_t* out_len);
+typedef vsf_error_t (*vsf_encrypt_api_encrypt_fn) (vsf_impl_t* impl, const byte* data,
+        size_t data_len, byte* enc, size_t enc_len, size_t* out_len);
 
 //
 //  Callback. Calculate required buffer length to hold the encrypted data.

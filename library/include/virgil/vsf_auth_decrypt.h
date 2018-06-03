@@ -53,6 +53,7 @@
 #define VSF_AUTH_DECRYPT_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_error.h"
 #include "vsf_impl.h"
 //  @end
 
@@ -76,7 +77,7 @@ typedef struct vsf_auth_decrypt_api_t vsf_auth_decrypt_api_t;
 //  Decrypt given data.
 //  If 'tag' is not give, then it will be taken from the 'enc'.
 //
-VSF_PUBLIC int
+VSF_PUBLIC vsf_error_t
 vsf_auth_decrypt (vsf_impl_t* impl, const byte* enc, size_t enc_len, const byte* auth_data,
         size_t auth_data_len, const byte* tag, size_t tag_len, byte* dec, size_t dec_len,
         size_t* out_len);

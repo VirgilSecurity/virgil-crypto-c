@@ -111,6 +111,10 @@ function c_module_api_create (meta, destination)
             .module = my.names.module_library
         endnew
 
+        new require
+            .module = my.names.module_error
+        endnew
+
         _N24_add_type_self (my.meta, module)
         _N24_add_enum_tag (my.meta, module)
     endnew

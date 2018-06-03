@@ -54,6 +54,7 @@
 #define VSF_SHA224_INTERNAL_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_error.h"
 #include "vsf_sha224.h"
 //  @end
 

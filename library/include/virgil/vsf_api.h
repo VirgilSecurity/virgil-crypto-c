@@ -54,6 +54,7 @@
 #define VSF_API_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_error.h"
 //  @end
 
 

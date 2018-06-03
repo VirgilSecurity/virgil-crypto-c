@@ -53,6 +53,7 @@
 #define VSF_HMAC_INFO_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_error.h"
 #include "vsf_impl.h"
 //  @end
 

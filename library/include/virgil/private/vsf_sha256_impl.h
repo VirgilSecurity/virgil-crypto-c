@@ -56,6 +56,7 @@
 #define VSF_SHA256_IMPL_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_error.h"
 #include "vsf_impl_private.h"
 #include "vsf_sha256.h"
 

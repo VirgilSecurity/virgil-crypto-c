@@ -53,6 +53,7 @@
 #define VSF_HASH_H_INCLUDED
 
 #include "vsf_library.h"
+#include "vsf_error.h"
 #include "vsf_impl.h"
 #include "vsf_hash_info.h"
 //  @end

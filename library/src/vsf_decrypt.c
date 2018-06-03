@@ -63,7 +63,7 @@
 //
 //  Decrypt given data.
 //
-VSF_PUBLIC int
+VSF_PUBLIC vsf_error_t
 vsf_decrypt (vsf_impl_t* impl, const byte* enc, size_t enc_len, byte* plain, size_t plain_len,
         size_t* out_len) {
 

@@ -11,7 +11,7 @@
         <argument name="enc len" type="size"/>
         <argument name="out len" type="size" access="writeonly" is_reference="1"/>
 
-        <return type="integer"/>
+        <return type="error"/>
     </method>
 
     <method name="required enc len" context="impl">
