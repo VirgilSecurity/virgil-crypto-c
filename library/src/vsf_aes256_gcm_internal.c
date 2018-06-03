@@ -282,7 +282,7 @@ static const vsf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSF_PUBLIC void
+VSF_PUBLIC vsf_error_t
 vsf_aes256_gcm_init (vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
 
     VSF_ASSERT_PTR (aes256_gcm_impl);
@@ -290,7 +290,7 @@ vsf_aes256_gcm_init (vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
 
     aes256_gcm_impl->info = &info;
 
-    vsf_aes256_gcm_init_ctx (aes256_gcm_impl);
+    return vsf_aes256_gcm_init_ctx (aes256_gcm_impl);
 }
 
 //

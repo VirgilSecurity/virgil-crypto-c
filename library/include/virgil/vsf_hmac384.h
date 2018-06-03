@@ -98,7 +98,7 @@ vsf_hmac384_impl (vsf_hmac384_impl_t* hmac384_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSF_PUBLIC void
+VSF_PUBLIC vsf_error_t
 vsf_hmac384_init (vsf_hmac384_impl_t* hmac384_impl);
 
 //

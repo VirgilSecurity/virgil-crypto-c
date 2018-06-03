@@ -89,7 +89,7 @@ vsf_hkdf_impl (vsf_hkdf_impl_t* hkdf_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSF_PUBLIC void
+VSF_PUBLIC vsf_error_t
 vsf_hkdf_init (vsf_hkdf_impl_t* hkdf_impl);
 
 //

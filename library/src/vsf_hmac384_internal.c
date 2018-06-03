@@ -167,7 +167,7 @@ static const vsf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSF_PUBLIC void
+VSF_PUBLIC vsf_error_t
 vsf_hmac384_init (vsf_hmac384_impl_t* hmac384_impl) {
 
     VSF_ASSERT_PTR (hmac384_impl);
@@ -175,7 +175,7 @@ vsf_hmac384_init (vsf_hmac384_impl_t* hmac384_impl) {
 
     hmac384_impl->info = &info;
 
-    vsf_hmac384_init_ctx (hmac384_impl);
+    return vsf_hmac384_init_ctx (hmac384_impl);
 }
 
 //

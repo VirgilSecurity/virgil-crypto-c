@@ -72,7 +72,7 @@ extern "C" {
 //
 //  Provides initialization of the implementation specific context.
 //
-VSF_PRIVATE void
+VSF_PRIVATE vsf_error_t
 vsf_aes256_gcm_init_ctx (vsf_aes256_gcm_impl_t* aes256_gcm_impl);
 
 //

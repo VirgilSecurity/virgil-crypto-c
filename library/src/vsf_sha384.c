@@ -74,12 +74,14 @@
 //
 //  Provides initialization of the implementation specific context.
 //
-VSF_PRIVATE void
+VSF_PRIVATE vsf_error_t
 vsf_sha384_init_ctx (vsf_sha384_impl_t* sha384_impl) {
 
     VSF_ASSERT_PTR(sha384_impl);
 
     mbedtls_sha512_init(&sha384_impl->hash_ctx);
+
+    return vsf_SUCCESS;
 }
 
 //
