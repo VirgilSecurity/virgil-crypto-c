@@ -134,6 +134,7 @@ function _X17_add_entity_common (meta)
         _X17_add_smart_linked_name (entity, "module", "library")
         _X17_add_smart_linked_name (entity, "module", "assert")
         _X17_add_smart_linked_name (entity, "module", "memory")
+        _X17_add_smart_linked_name (entity, "module", "error")
 
         _X17_add_smart_name (entity, "struct", "info")
         _X17_add_smart_name (entity, "property", "info")

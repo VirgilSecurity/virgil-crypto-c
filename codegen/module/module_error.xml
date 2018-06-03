@@ -1,0 +1,19 @@
+<module name="error">
+     Manages library error codes.
+
+    <enum name="error" definition="public">
+        Defines library error codes.
+
+        <constant name="success" of_class="global" value="0">
+            No errors was occurred.
+        </constant>
+
+        <constant name="no memory" value="-100">
+            Memory allocation failed.
+        </constant>
+
+        <constant name="auth failed" value="-201">
+            Authentication failed during decryption
+        </constant>
+    </enum>
+</module>
