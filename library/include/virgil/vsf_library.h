@@ -133,7 +133,7 @@ enum {
     //
     //  Pointer size in bytes.
     //
-    vsf__POINTER_SIZE = sizeof (void *)
+    vsf_POINTER_SIZE = sizeof (void *)
 };
 
 //

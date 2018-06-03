@@ -181,7 +181,7 @@ endfunction
 function c_format_constant_name (prefix, ancestors, name)
     check_arguments (my, "prefix, ancestors, name")
 
-    return "$(my.prefix:lower,c)_$(my.ancestors:lower,c)_$(my.name:upper,c)"
+    return make_id (my.prefix, my.ancestors) + "_$(my.name:upper,c)"
 endfunction
 
 # ---------------------------------------------------------------------------
