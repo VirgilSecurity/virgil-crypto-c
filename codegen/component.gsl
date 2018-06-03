@@ -1170,13 +1170,15 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add 'impl' argument to the destination with 'readwrite' access.
 # ---------------------------------------------------------------------------
-function component_create_argument_impl (destination)
-    check_arguments (my, "destination", my)
+function component_create_argument_impl (destination, meta)
+    check_arguments (my, "destination, meta", my)
+
+    my.names = meta_names (my.meta)
 
     my.argument = item_prepend_new ("argument", my.destination)
     scope my.argument
-        .name = "impl"
-        .class = "impl"
+        .name = my.names.argument_impl
+        .class = my.names.type_impl
         .access = "readwrite"
     endscope
     return my.argument
@@ -1185,42 +1187,18 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add 'impl' argument to the destination with 'disown' access.
 # ---------------------------------------------------------------------------
-function component_create_argument_impl_ref (destination)
-    check_arguments (my, "destination", my)
+function component_create_argument_impl_ref (destination, meta)
+    check_arguments (my, "destination, meta", my)
+
+    my.names = meta_names (my.meta)
 
     new argument to my.destination
-        .name = "impl"
-        .class = "impl"
+        .name = my.names.argument_impl
+        .class = my.names.type_impl
         .access = "disown"
         return argument
     endnew
 endfunction
 
-# ---------------------------------------------------------------------------
-#   Add constant 'begin' to the destination with optional value, default 0.
-# ---------------------------------------------------------------------------
-function component_create_constant_begin (destination, value)
-    check_arguments (my, "destination", my)
-
-    new constant to my.destination
-        .name = "begin"
-        .value = my.value ? "0"
-
-        return constant
-    endnew
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Add constant 'end' to the destination.
-# ---------------------------------------------------------------------------
-function component_create_constant_end (destination)
-    check_arguments (my, "destination", my)
-
-    new constant to my.destination
-        .name = "end"
-
-        return constant
-    endnew
-endfunction
 
 .endtemplate

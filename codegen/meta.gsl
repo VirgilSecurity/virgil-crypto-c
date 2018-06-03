@@ -49,9 +49,9 @@ gsl from "c_formatter.gsl"
 #   Add item: <link/> with attributes {id, uid, ref, c_ref}
 # ---------------------------------------------------------------------------
 function _X17_add_link (entity, id, uid)
-    check_argument (my, "entity")
-    check_argument (my, "id")
-    check_argument (my, "uid")
+    check_argument (my, "entity", my)
+    check_argument (my, "id", my)
+    check_argument (my, "uid", my)
 
     new link to my.entity
         .id = make_id (my.id)
@@ -66,8 +66,8 @@ endfunction
 #   Note, uid = f(id).
 # ---------------------------------------------------------------------------
 function _X17_add_smart_link (entity, id)
-    check_argument (my, "entity")
-    check_argument (my, "id")
+    check_argument (my, "entity", my)
+    check_argument (my, "id", my)
 
     _X17_add_link (my.entity, my.id, make_id (my.id))
 endfunction
@@ -76,8 +76,8 @@ endfunction
 #   Add item: <name/> with attributes: {id, name}.
 # ---------------------------------------------------------------------------
 function _X17_add_name (entity, id, name)
-    check_argument (my, "entity")
-    check_argument (my, "name")
+    check_argument (my, "entity", my)
+    check_argument (my, "name", my)
 
     new name to my.entity
         .id = make_id (my.id)
@@ -90,9 +90,9 @@ endfunction
 #   Note, id = f(prefix, name).
 # ---------------------------------------------------------------------------
 function _X17_add_smart_name (entity, prefix, name)
-    check_argument (my, "entity")
-    check_argument (my, "prefix")
-    check_argument (my, "name")
+    check_argument (my, "entity", my)
+    check_argument (my, "prefix", my)
+    check_argument (my, "name", my)
 
     my.id = make_id (my.prefix, my.name)
     _X17_add_name (my.entity, my.id, my.name)
@@ -105,9 +105,9 @@ endfunction
 #   Note, uid = f(id).
 # ---------------------------------------------------------------------------
 function _X17_add_smart_linked_name (entity, prefix, name)
-    check_argument (my, "entity")
-    check_argument (my, "prefix")
-    check_argument (my, "name")
+    check_argument (my, "entity", my)
+    check_argument (my, "prefix", my)
+    check_argument (my, "name", my)
 
     my.id = make_id (my.prefix, my.name)
     _X17_add_name (my.entity, my.id, my.name)
@@ -118,7 +118,7 @@ endfunction
 #   Add item '<entity>' that defines common <name/>(s) and, <link/>(s).
 # ---------------------------------------------------------------------------
 function _X17_add_entity_common (meta)
-    check_argument (my, "meta")
+    check_argument (my, "meta", my)
     assert_argument_type (my.meta, "meta", my)
 
     my.id = "common"
@@ -136,12 +136,8 @@ function _X17_add_entity_common (meta)
         _X17_add_smart_linked_name (entity, "module", "memory")
 
         _X17_add_smart_name (entity, "struct", "info")
-        _X17_add_smart_name (entity, "struct", "context")
+        _X17_add_smart_name (entity, "property", "info")
 
-        _X17_add_smart_linked_name (entity, "property", "info")
-        _X17_add_smart_linked_name (entity, "property", "context")
-
-        _X17_add_smart_name (entity, "method", "api")
         _X17_add_smart_name (entity, "method", "cleanup")
         _X17_add_smart_name (entity, "method", "delete")
         _X17_add_smart_name (entity, "method", "destroy")
@@ -162,7 +158,7 @@ endfunction
 #   Add item '<entity id = "api">'.
 # ---------------------------------------------------------------------------
 function _X17_add_entity_api (meta)
-    check_argument (my, "meta")
+    check_argument (my, "meta", my)
     assert_argument_type (my.meta, "meta", my)
 
     my.id = "api"
@@ -176,6 +172,7 @@ function _X17_add_entity_api (meta)
         .is_active = 1
 
         _X17_add_smart_linked_name (entity, "class", "api")
+        _X17_add_smart_linked_name (entity, "method", "api")
         _X17_add_smart_linked_name (entity, "struct", "api")
         _X17_add_smart_linked_name (entity, "module", "api")
         _X17_add_smart_linked_name (entity, "module", "api private")
@@ -195,7 +192,7 @@ endfunction
 #   Add item '<entity id = "impl">'.
 # ---------------------------------------------------------------------------
 function _X17_add_entity_impl (meta)
-    check_argument (my, "meta")
+    check_argument (my, "meta", my)
     assert_argument_type (my.meta, "meta", my)
 
     my.id = "impl"
@@ -208,40 +205,35 @@ function _X17_add_entity_impl (meta)
         .id = my.id
         .is_active = 1
 
-        _X17_add_smart_name (entity, "class", "ctx")
-
         _X17_add_smart_linked_name (entity, "class", "impl")
+        _X17_add_smart_linked_name (entity, "struct", "impl")
+        _X17_add_smart_linked_name (entity, "type", "impl")
         _X17_add_smart_linked_name (entity, "module", "impl")
         _X17_add_smart_linked_name (entity, "module", "impl private")
         _X17_add_smart_linked_name (entity, "argument", "impl")
         _X17_add_smart_linked_name (entity, "property", "impl tag")
 
+        _X17_add_smart_name (entity, "method", "impl")
+        _X17_add_smart_name (entity, "method", "impl size")
+        _X17_add_smart_name (entity, "method", "is implemented")
+
         _X17_add_smart_name (entity, "property", "self cleanup")
         _X17_add_smart_name (entity, "property", "self delete")
-        _X17_add_smart_link (entity, "property self cleanup cb")
-        _X17_add_smart_link (entity, "property self delete cb")
 
         _X17_add_smart_link (entity, "class impl struct impl")
         _X17_add_smart_link (entity, "class impl struct info")
-        _X17_add_smart_link (entity, "class impl enum tag")
-        _X17_add_smart_link (entity, "class impl enum tag constant begin")
-        _X17_add_smart_link (entity, "class impl enum tag constant end")
 
-        _X17_add_smart_link (entity, "class impl method api")
-        _X17_add_smart_link (entity, "class impl method cleanup")
-        _X17_add_smart_link (entity, "class impl method destroy")
-        _X17_add_smart_link (entity, "class impl method delete")
         return entity
     endnew
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Add item '<entity id = "interface name plceholder">'.
+#   Add item '<entity id = "interface name">'.
 # ---------------------------------------------------------------------------
 function _X17_add_entity_interface (meta, interface)
-    check_argument (my, "meta")
+    check_argument (my, "meta", my)
     assert_argument_type (my.meta, "meta", my)
-    check_argument (my, "interface")
+    check_argument (my, "interface", my)
 
     my.id = make_id (my.interface.name)
 
@@ -252,42 +244,24 @@ function _X17_add_entity_interface (meta, interface)
     new entity to my.meta
         .id = my.id
 
-        #   Public
+        #   Interface
         my.name = my.interface.name
-        _X17_add_name (entity, "class interface", my.name)
-
-        _X17_add_name (entity, "module interface", my.name)
-        _X17_add_link (entity, "module interface", make_id ("module", my.name))
-
-        _X17_add_name (entity, "argument interface", my.name)
-        _X17_add_link (entity, "argument interface", make_id ("argument", my.name))
-
-        _X17_add_name (entity, "property interface", my.name)
-        _X17_add_link (entity, "property interface", make_id ("property", my.name))
+        _X17_add_name (entity, "interface class", my.name)
+        _X17_add_name (entity, "interface module", my.name)
+        _X17_add_link (entity, "interface module", make_id ("module", my.name))
 
         _X17_add_link (entity, "interface constant tag", make_id ("class api enum tag constant", my.name))
 
-        _X17_add_name (entity, "interface method api", cat (my.name, "api"))
         _X17_add_link (entity, "interface method api", make_id ("class", my.name, "method api"))
+        _X17_add_link (entity, "interface method is implemented",make_id ("class", my.name, "method is implemented"))
 
-        _X17_add_link (entity, "interface method is implemented", make_id ("class", my.name, "method is implemented"))
-
-        #   Private
+        #   Interface API
         my.api_name = cat (my.name, "api")
 
         _X17_add_name (entity, "interface class api", my.api_name)
-
+        _X17_add_name (entity, "interface module api", my.api_name)
         _X17_add_name (entity, "interface struct api", my.api_name)
         _X17_add_link (entity, "interface struct api", make_id ("class", my.api_name, "struct", my.api_name))
-
-        _X17_add_name (entity, "interface module api", my.api_name)
-        _X17_add_link (entity, "interface module api", make_id ("module", my.api_name))
-
-        _X17_add_name (entity, "argument interface api", my.api_name)
-        _X17_add_link (entity, "argument interface api", make_id ("argument", my.api_name))
-
-        _X17_add_name (entity, "property interface api",my.api_name)
-        _X17_add_link (entity, "property interface api", make_id ("property", my.api_name))
 
         #   Inherited interface
         for my.interface.inherit
@@ -305,7 +279,6 @@ function _X17_add_entity_interface (meta, interface)
 
         #   Callbacks
         for my.interface.method
-            _X17_add_name (entity, "interface callback $(method.name)", cat (method.name, "cb"))
             _X17_add_link (entity, "interface callback $(method.name)", \
                     make_id ("class", interface.name, "api", "callback", method.name))
         endfor
@@ -316,12 +289,12 @@ function _X17_add_entity_interface (meta, interface)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Add item '<entity id = "implementation name plceholder">'.
+#   Add item '<entity id = "implementation name">'.
 # ---------------------------------------------------------------------------
 function _X17_add_entity_implementation (meta, implementation)
-    check_arguments (my, "meta")
+    check_argument (my, "meta", my)
     assert_argument_type (my.meta, "meta", my)
-    check_argument (my, "implementation")
+    check_argument (my, "implementation", my)
 
     my.id = make_id (my.implementation.name)
 
@@ -336,38 +309,24 @@ function _X17_add_entity_implementation (meta, implementation)
         my.name = my.implementation.name
 
         _X17_add_name (entity, "implementation class", my.name)
-        _X17_add_name (entity, "implementation argument impl", cat (my.name, "impl"))
 
         _X17_add_name (entity, "implementation module", my.name)
-        _X17_add_link (entity, "implementation module", make_id ("module", my.name))
+        _X17_add_name (entity, "implementation module impl", make_id (my.name, "impl"))
+        _X17_add_name (entity, "implementation module internal", make_id (my.name, "internal"))
 
-        _X17_add_name (entity, "implementation struct impl", cat (my.name, "impl"))
         _X17_add_link (entity, "implementation struct impl", make_id ("class", my.name, "struct", "impl"))
 
-        _X17_add_name (entity, "implementation struct ctx", cat (my.name, "ctx"))
-        _X17_add_link (entity, "implementation struct ctx", make_id ("class", my.name, "struct", "ctx"))
+        _X17_add_name (entity, "implementation argument impl", cat (my.name, "impl"))
 
-        _X17_add_link (entity, "implementation constant tag", \
-                make_id ("class impl enum tag constant", my.name))
-
+        _X17_add_link (entity, "implementation constant tag", make_id ("class impl enum tag constant", my.name))
 
         _X17_add_link (entity, "implementation method init ctx", make_id ("class", my.name, "method", "init ctx"))
         _X17_add_link (entity, "implementation method cleanup ctx", make_id ("class", my.name, "method", "cleanup ctx"))
-
         _X17_add_link (entity, "implementation method init", make_id ("class", my.name, "method", "init"))
         _X17_add_link (entity, "implementation method cleanup", make_id ("class", my.name, "method", "cleanup"))
-
         _X17_add_link (entity, "implementation method new", make_id ("class", my.name, "method new"))
         _X17_add_link (entity, "implementation method delete", make_id ("class", my.name, "method delete"))
         _X17_add_link (entity, "implementation method destroy", make_id ("class", my.name, "method destroy"))
-
-        #   Types
-        _X17_add_name (entity, "implementation module impl", make_id (my.name, "impl"))
-        _X17_add_link (entity, "implementation module impl", make_id ("module", my.name, "impl"))
-
-        #   Internal
-        _X17_add_name (entity, "implementation module internal", make_id (my.name, "internal"))
-        _X17_add_link (entity, "implementation module internal", make_id ("module", my.name, "internal"))
 
         #   Private variables
         _X17_add_smart_name (entity, "implementation variable", "api array")
@@ -403,16 +362,39 @@ function _X17_add_entity_implementation (meta, implementation)
 
         #   Dependencies
         for my.implementation.dependency
-            _X17_add_smart_name (entity, "implementation property dependency", dependency.name)
-            _X17_add_link (entity, "implementation property dependency $(dependency.name)", \
+            _X17_add_smart_name (entity, "implementation property", dependency.name)
+            _X17_add_link (entity, "implementation property $(dependency.name)", \
                     make_id ("class", my.name, "struct", "impl", "property", dependency.name))
 
             if dependency.type = "impl"
-                _X17_add_name (entity, "implementation property is owning dependency $(dependency.name)", \
+                _X17_add_name (entity, "implementation property is owning $(dependency.name)", \
                     cat ("is owning", dependency.name))
 
-                _X17_add_link (entity, "implementation property is owning dependency $(dependency.name)", \
+                _X17_add_link (entity, "implementation property is owning $(dependency.name)", \
                         make_id ("class", my.name, "struct", "impl", "property", "is owning", dependency.name))
+
+
+                if dependency.type = "api"
+                    _X17_add_name (entity, "implementation method use $(dependency.interface)", \
+                            cat ("use", dependency.interface, "api"))
+
+                    _X17_add_link (entity, "implementation method use $(dependency.interface)", \
+                            make_id ("class", my.name, "method", "use", dependency.interface, "api"))
+
+                elsif dependency.type = "impl"
+                    _X17_add_name (entity, "implementation method use $(dependency.interface)", \
+                            cat ("use", dependency.interface))
+
+                    _X17_add_link (entity, "implementation method use $(dependency.interface)", \
+                            make_id ("class", my.name, "method", "use", dependency.interface))
+
+                    _X17_add_name (entity, "implementation method take $(dependency.interface)", \
+                            cat ("take", dependency.interface))
+
+                    _X17_add_link (entity, "implementation method take $(dependency.interface)", \
+                            make_id ("class", my.name, "method", "take", dependency.interface))
+                endif
+
             endif
         endfor
 
@@ -424,8 +406,8 @@ endfunction
 #   Append entity's <name/> elements to the <names/> dictionary.
 # ---------------------------------------------------------------------------
 function _X17_names_add_entity (names, entity)
-    check_argument (my, "names")
-    check_argument (my, "entity")
+    check_argument (my, "names", my)
+    check_argument (my, "entity", my)
 
     for my.entity.name
         if defined (my.names.$(name.id))
@@ -442,8 +424,8 @@ endfunction
 #   Append entity's <name/> elements to the <names/> dictionary.
 # ---------------------------------------------------------------------------
 function _X17_refs_add_entity (refs, entity)
-    check_argument (my, "refs")
-    check_argument (my, "entity")
+    check_argument (my, "refs", my)
+    check_argument (my, "entity", my)
 
     for my.entity.link
         if defined (my.refs.$(link.id))
@@ -472,8 +454,8 @@ endfunction
 #   Add item '<entity id = "interface name plceholder">'.
 # ---------------------------------------------------------------------------
 function meta_add_interface (meta, interface)
-    check_argument (my, "meta")
-    check_argument (my, "interface")
+    check_argument (my, "meta", my)
+    check_argument (my, "interface", my)
     assert_argument_type (my.meta, "meta", my)
 
     return _X17_add_entity_interface (my.meta, my.interface)
@@ -483,8 +465,8 @@ endfunction
 #   Add item '<entity id = "implementation name plceholder">'.
 # ---------------------------------------------------------------------------
 function meta_add_implementation (meta, implementation)
-    check_argument (my, "meta")
-    check_argument (my, "implementation")
+    check_argument (my, "meta", my)
+    check_argument (my, "implementation", my)
     assert_argument_type (my.meta, "meta", my)
 
     return _X17_add_entity_implementation (my.meta, my.implementation)
@@ -510,8 +492,8 @@ endfunction
 #   Update 'names' with entity found by it's name.
 # ---------------------------------------------------------------------------
 function meta_update_names_with_entity (meta, names, entity_name)
-    check_argument (my, "meta")
-    check_argument (my, "entity_name")
+    check_argument (my, "meta", my)
+    check_argument (my, "entity_name", my)
     assert_argument_type (my.meta, "meta", my)
 
     my.names ?= XML.new ("names")
@@ -525,8 +507,8 @@ endfunction
 #   Update 'refs' with entity found by it's name.
 # ---------------------------------------------------------------------------
 function meta_update_refs_with_entity (meta, refs, entity_name)
-    check_argument (my, "meta")
-    check_argument (my, "entity_name")
+    check_argument (my, "meta", my)
+    check_argument (my, "entity_name", my)
     assert_argument_type (my.meta, "meta", my)
 
     my.refs ?= XML.new ("refs")
@@ -540,8 +522,8 @@ endfunction
 #   Update 'refs' with entity found by it's name.
 # ---------------------------------------------------------------------------
 function meta_entity_update_refs (meta, entity_name, refs)
-    check_argument (my, "meta")
-    check_argument (my, "entity_name")
+    check_argument (my, "meta", my)
+    check_argument (my, "entity_name", my)
     assert_argument_type (my.meta, "meta", my)
 
     my.refs ?= XML.new ("refs")
@@ -557,8 +539,8 @@ endfunction
 #   function meta_names() and meta_refs().
 # ---------------------------------------------------------------------------
 function meta_activate_entity (meta, entity_name)
-    check_argument (my, "meta")
-    check_argument (my, "entity_name")
+    check_argument (my, "meta", my)
+    check_argument (my, "entity_name", my)
     assert_argument_type (my.meta, "meta", my)
 
     my.entity = meta_find_entity (my.meta, my.entity_name, my)
@@ -569,8 +551,8 @@ endfunction
 #   Mark entity with given name as 'inactive'.
 # ---------------------------------------------------------------------------
 function meta_deactivate_entity (meta, entity_name)
-    check_argument (my, "meta")
-    check_argument (my, "entity_name")
+    check_argument (my, "meta", my)
+    check_argument (my, "entity_name", my)
     assert_argument_type (my.meta, "meta", my)
 
     my.entity = meta_find_entity (my.meta, my.entity_name, my)
@@ -581,12 +563,42 @@ endfunction
 #   Reset entities 'active'ness to defaults.
 # ---------------------------------------------------------------------------
 function meta_reset_active_entity (meta, entity_name)
-    check_argument (my, "meta")
+    check_argument (my, "meta", my)
     assert_argument_type (my.meta, "meta", my)
 
     for my.meta.entity
         entity.is_active = string_in (entity.id, "common, api, impl, $(make_id (my.entity_name))")
     endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return names of the given entity only.
+# ---------------------------------------------------------------------------
+function meta_entity_names (meta, entity_name)
+    check_argument (my, "meta", my)
+    check_argument (my, "entity_name", my)
+    assert_argument_type (my.meta, "meta", my)
+
+    my.names = XML.new ("names")
+
+    _X17_names_add_entity (my.names, meta_find_entity (my.meta, my.entity_name, my))
+
+    return my.names
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return refs of the given entity only.
+# ---------------------------------------------------------------------------
+function meta_entity_refs (meta, entity_name)
+    check_argument (my, "meta", my)
+    check_argument (my, "entity_name", my)
+    assert_argument_type (my.meta, "meta", my)
+
+    my.refs = XML.new ("refs")
+
+    _X17_refs_add_entity (my.refs, meta_find_entity (my.meta, my.entity_name, my))
+
+    return my.refs
 endfunction
 
 
@@ -599,7 +611,7 @@ endfunction
 #   entities: common, api, impl.
 # ---------------------------------------------------------------------------
 function meta_names (meta)
-    check_argument (my, "meta")
+    check_argument (my, "meta", my)
     assert_argument_type (my.meta, "meta", my)
 
     for my.meta.entity where is_true (is_active)
@@ -614,7 +626,7 @@ endfunction
 #   entities: common, api, impl.
 # ---------------------------------------------------------------------------
 function meta_refs (meta)
-    check_argument (my, "meta")
+    check_argument (my, "meta", my)
     assert_argument_type (my.meta, "meta", my)
 
     for my.meta.entity where is_true (is_active)

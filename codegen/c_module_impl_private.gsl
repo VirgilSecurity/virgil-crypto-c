@@ -115,7 +115,7 @@ function  _A12_add_struct_impl (meta, destination)
         Contains header of any 'API' implementation structure.
         It is used for runtime type casting and checking.
         "
-        .name = my.names.class_impl
+        .name = my.names.struct_impl
         .declaration = "external"
         .definition = "public"
 
