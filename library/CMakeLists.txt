@@ -57,7 +57,7 @@ endif()
 add_library(vsf "")
 target_sources(vsf
         PUBLIC
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_aes_256_gcm.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_aes256_gcm.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_api.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_assert.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_cipher.h"
@@ -88,7 +88,7 @@ target_sources(vsf
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_sha384.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsf_sha512.h"
 
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_aes_256_gcm_impl.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_aes256_gcm_impl.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_api_private.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_cipher_api.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_cipher_auth_api.h"
@@ -117,10 +117,10 @@ target_sources(vsf
         "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsf_sha512_impl.h"
 
         PRIVATE
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_aes_256_gcm.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_aes_256_gcm_impl.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_aes_256_gcm_internal.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_aes_256_gcm_internal.h"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_aes256_gcm.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_aes256_gcm_impl.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_aes256_gcm_internal.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsf_aes256_gcm_internal.h"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_api.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_api_private.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsf_assert.c"

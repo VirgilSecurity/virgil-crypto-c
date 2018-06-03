@@ -50,11 +50,11 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsf_aes_256_gcm_internal.h"
+#include "vsf_aes256_gcm_internal.h"
 #include "vsf_memory.h"
 #include "vsf_assert.h"
-#include "vsf_aes_256_gcm.h"
-#include "vsf_aes_256_gcm_impl.h"
+#include "vsf_aes256_gcm.h"
+#include "vsf_aes256_gcm_impl.h"
 #include "vsf_encrypt_api.h"
 #include "vsf_decrypt_api.h"
 #include "vsf_cipher_info_api.h"
@@ -83,13 +83,13 @@ static const vsf_encrypt_api_t encrypt_api = {
     //
     //  Encrypt given data.
     //
-    (vsf_encrypt_api_encrypt_fn) vsf_aes_256_gcm_encrypt,
+    (vsf_encrypt_api_encrypt_fn) vsf_aes256_gcm_encrypt,
     //
     //  Calculate required buffer length to hold the encrypted data.
     //  If argument 'auth tag len' is 0, then returned length
     //  adjusted to hold auth tag as well.
     //
-    (vsf_encrypt_api_required_enc_len_fn) vsf_aes_256_gcm_required_enc_len
+    (vsf_encrypt_api_required_enc_len_fn) vsf_aes256_gcm_required_enc_len
 };
 
 //
@@ -104,13 +104,13 @@ static const vsf_decrypt_api_t decrypt_api = {
     //
     //  Decrypt given data.
     //
-    (vsf_decrypt_api_decrypt_fn) vsf_aes_256_gcm_decrypt,
+    (vsf_decrypt_api_decrypt_fn) vsf_aes256_gcm_decrypt,
     //
     //  Calculate required buffer length to hold the decrypted data.
     //  If argument 'auth tag len' is 0, then returned length
     //  adjusted to cut of auth tag length.
     //
-    (vsf_decrypt_api_required_dec_len_fn) vsf_aes_256_gcm_required_dec_len
+    (vsf_decrypt_api_required_dec_len_fn) vsf_aes256_gcm_required_dec_len
 };
 
 //
@@ -125,19 +125,19 @@ static const vsf_cipher_info_api_t cipher_info_api = {
     //
     //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
     //
-    vsf_aes_256_gcm_NONCE_LEN,
+    vsf_aes256_gcm_NONCE_LEN,
     //
     //  Cipher key length in bytes.
     //
-    vsf_aes_256_gcm_KEY_LEN,
+    vsf_aes256_gcm_KEY_LEN,
     //
     //  Cipher key length in bits.
     //
-    vsf_aes_256_gcm_KEY_BITLEN,
+    vsf_aes256_gcm_KEY_BITLEN,
     //
     //  Cipher block length in bytes.
     //
-    vsf_aes_256_gcm_BLOCK_LEN
+    vsf_aes256_gcm_BLOCK_LEN
 };
 
 //
@@ -164,11 +164,11 @@ static const vsf_cipher_api_t cipher_api = {
     //
     //  Setup IV or nonce.
     //
-    (vsf_cipher_api_set_nonce_fn) vsf_aes_256_gcm_set_nonce,
+    (vsf_cipher_api_set_nonce_fn) vsf_aes256_gcm_set_nonce,
     //
     //  Set cipher encryption / decryption key.
     //
-    (vsf_cipher_api_set_key_fn) vsf_aes_256_gcm_set_key
+    (vsf_cipher_api_set_key_fn) vsf_aes256_gcm_set_key
 };
 
 //
@@ -183,7 +183,7 @@ static const vsf_cipher_auth_info_api_t cipher_auth_info_api = {
     //
     //  Defines authentication tag length in bytes.
     //
-    vsf_aes_256_gcm_AUTH_TAG_LEN
+    vsf_aes256_gcm_AUTH_TAG_LEN
 };
 
 //
@@ -199,7 +199,7 @@ static const vsf_auth_encrypt_api_t auth_encrypt_api = {
     //  Encrypt given data.
     //  If 'tag' is not give, then it will written to the 'enc'.
     //
-    (vsf_auth_encrypt_api_auth_encrypt_fn) vsf_aes_256_gcm_auth_encrypt
+    (vsf_auth_encrypt_api_auth_encrypt_fn) vsf_aes256_gcm_auth_encrypt
 };
 
 //
@@ -215,7 +215,7 @@ static const vsf_auth_decrypt_api_t auth_decrypt_api = {
     //  Decrypt given data.
     //  If 'tag' is not give, then it will be taken from the 'enc'.
     //
-    (vsf_auth_decrypt_api_auth_decrypt_fn) vsf_aes_256_gcm_auth_decrypt
+    (vsf_auth_decrypt_api_auth_decrypt_fn) vsf_aes256_gcm_auth_decrypt
 };
 
 //
@@ -257,13 +257,13 @@ static const vsf_api_t* api_array[] = {
 };
 
 //
-//  Compile-time known information about 'aes 256 gcm' implementation.
+//  Compile-time known information about 'aes256 gcm' implementation.
 //
 static const vsf_impl_info_t info = {
     //
     //  Implementation unique identifier, MUST be first in the structure.
     //
-    vsf_impl_tag_AES_256_GCM,
+    vsf_impl_tag_AES256_GCM,
     //
     //  NULL terminated array of the implemented interfaces.
     //  MUST be second in the structure.
@@ -272,100 +272,100 @@ static const vsf_impl_info_t info = {
     //
     //  Erase inner state in a secure manner.
     //
-    (vsf_impl_cleanup_fn) vsf_aes_256_gcm_cleanup,
+    (vsf_impl_cleanup_fn) vsf_aes256_gcm_cleanup,
     //
     //  Self destruction, according to destruction policy.
     //
-    (vsf_impl_delete_fn) vsf_aes_256_gcm_delete
+    (vsf_impl_delete_fn) vsf_aes256_gcm_delete
 };
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSF_PUBLIC void
-vsf_aes_256_gcm_init (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl) {
+vsf_aes256_gcm_init (vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
 
-    VSF_ASSERT_PTR (aes_256_gcm_impl);
-    VSF_ASSERT_PTR (aes_256_gcm_impl->info == NULL);
+    VSF_ASSERT_PTR (aes256_gcm_impl);
+    VSF_ASSERT_PTR (aes256_gcm_impl->info == NULL);
 
-    aes_256_gcm_impl->info = &info;
+    aes256_gcm_impl->info = &info;
 
-    vsf_aes_256_gcm_init_ctx (aes_256_gcm_impl);
+    vsf_aes256_gcm_init_ctx (aes256_gcm_impl);
 }
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vsf_aes_256_gcm_init ()'.
+//  This is a reverse action of the function 'vsf_aes256_gcm_init ()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_aes_256_gcm_cleanup (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl) {
+vsf_aes256_gcm_cleanup (vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
 
-    VSF_ASSERT_PTR (aes_256_gcm_impl);
+    VSF_ASSERT_PTR (aes256_gcm_impl);
 
-    if (aes_256_gcm_impl->info == NULL) {
+    if (aes256_gcm_impl->info == NULL) {
         return;
     }
 
-    vsf_aes_256_gcm_cleanup_ctx (aes_256_gcm_impl);
+    vsf_aes256_gcm_cleanup_ctx (aes256_gcm_impl);
 
-    aes_256_gcm_impl->info = NULL;
+    aes256_gcm_impl->info = NULL;
 }
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSF_PUBLIC vsf_aes_256_gcm_impl_t*
-vsf_aes_256_gcm_new (void) {
+VSF_PUBLIC vsf_aes256_gcm_impl_t*
+vsf_aes256_gcm_new (void) {
 
-    vsf_aes_256_gcm_impl_t *aes_256_gcm_impl = (vsf_aes_256_gcm_impl_t *) vsf_alloc (sizeof (vsf_aes_256_gcm_impl_t));
-    VSF_ASSERT_PTR (aes_256_gcm_impl);
+    vsf_aes256_gcm_impl_t *aes256_gcm_impl = (vsf_aes256_gcm_impl_t *) vsf_alloc (sizeof (vsf_aes256_gcm_impl_t));
+    VSF_ASSERT_PTR (aes256_gcm_impl);
 
-    vsf_aes_256_gcm_init (aes_256_gcm_impl);
+    vsf_aes256_gcm_init (aes256_gcm_impl);
 
-    return aes_256_gcm_impl;
+    return aes256_gcm_impl;
 }
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vsf_aes_256_gcm_new ()'.
+//  This is a reverse action of the function 'vsf_aes256_gcm_new ()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_aes_256_gcm_delete (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl) {
+vsf_aes256_gcm_delete (vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
 
-    if (aes_256_gcm_impl) {
-        vsf_aes_256_gcm_cleanup (aes_256_gcm_impl);
-        vsf_dealloc (aes_256_gcm_impl);
+    if (aes256_gcm_impl) {
+        vsf_aes256_gcm_cleanup (aes256_gcm_impl);
+        vsf_dealloc (aes256_gcm_impl);
     }
 }
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vsf_aes_256_gcm_new ()'.
+//  This is a reverse action of the function 'vsf_aes256_gcm_new ()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
 //
 VSF_PUBLIC void
-vsf_aes_256_gcm_destroy (vsf_aes_256_gcm_impl_t** aes_256_gcm_impl_ref) {
+vsf_aes256_gcm_destroy (vsf_aes256_gcm_impl_t** aes256_gcm_impl_ref) {
 
-    VSF_ASSERT_PTR (aes_256_gcm_impl_ref);
+    VSF_ASSERT_PTR (aes256_gcm_impl_ref);
 
-    vsf_aes_256_gcm_impl_t *aes_256_gcm_impl = *aes_256_gcm_impl_ref;
-    *aes_256_gcm_impl_ref = NULL;
+    vsf_aes256_gcm_impl_t *aes256_gcm_impl = *aes256_gcm_impl_ref;
+    *aes256_gcm_impl_ref = NULL;
 
-    vsf_aes_256_gcm_delete (aes_256_gcm_impl);
+    vsf_aes256_gcm_delete (aes256_gcm_impl);
 }
 
 //
 //  Returns instance of the implemented interface 'cipher info'.
 //
 VSF_PUBLIC const vsf_cipher_info_api_t*
-vsf_aes_256_gcm_cipher_info_api (void) {
+vsf_aes256_gcm_cipher_info_api (void) {
 
     return &cipher_info_api;
 }
@@ -374,7 +374,7 @@ vsf_aes_256_gcm_cipher_info_api (void) {
 //  Returns instance of the implemented interface 'cipher auth info'.
 //
 VSF_PUBLIC const vsf_cipher_auth_info_api_t*
-vsf_aes_256_gcm_cipher_auth_info_api (void) {
+vsf_aes256_gcm_cipher_auth_info_api (void) {
 
     return &cipher_auth_info_api;
 }
@@ -383,28 +383,28 @@ vsf_aes_256_gcm_cipher_auth_info_api (void) {
 //  Returns instance of the implemented interface 'cipher auth'.
 //
 VSF_PUBLIC const vsf_cipher_auth_api_t*
-vsf_aes_256_gcm_cipher_auth_api (void) {
+vsf_aes256_gcm_cipher_auth_api (void) {
 
     return &cipher_auth_api;
 }
 
 //
-//  Return size of 'vsf_aes_256_gcm_impl_t' type.
+//  Return size of 'vsf_aes256_gcm_impl_t' type.
 //
 VSF_PUBLIC size_t
-vsf_aes_256_gcm_impl_size (void) {
+vsf_aes256_gcm_impl_size (void) {
 
-    return sizeof (vsf_aes_256_gcm_impl_t);
+    return sizeof (vsf_aes256_gcm_impl_t);
 }
 
 //
 //  Cast to the 'vsf_impl_t' type.
 //
 VSF_PUBLIC vsf_impl_t*
-vsf_aes_256_gcm_impl (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl) {
+vsf_aes256_gcm_impl (vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
 
-    VSF_ASSERT_PTR (aes_256_gcm_impl);
-    return (vsf_impl_t *) (aes_256_gcm_impl);
+    VSF_ASSERT_PTR (aes256_gcm_impl);
+    return (vsf_impl_t *) (aes256_gcm_impl);
 }
 
 

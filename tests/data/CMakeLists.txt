@@ -39,7 +39,7 @@ project(test_data VERSION 0.1.0 LANGUAGES C)
 add_library(test_data "")
 target_sources(test_data
         PUBLIC
-        "${CMAKE_CURRENT_LIST_DIR}/include/test_data_aes_256_gcm.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/test_data_aes256_gcm.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/test_data_hkdf.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/test_data_kdf1.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/test_data_kdf2.h"
@@ -50,7 +50,7 @@ target_sources(test_data
         "${CMAKE_CURRENT_LIST_DIR}/include/test_data_types.h"
 
         PRIVATE
-        "${CMAKE_CURRENT_LIST_DIR}/src/test_data_aes_256_gcm.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/test_data_aes256_gcm.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/test_data_hkdf.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/test_data_kdf1.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/test_data_kdf2.c"
