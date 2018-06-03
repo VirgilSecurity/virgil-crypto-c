@@ -36,15 +36,6 @@
 // --------------------------------------------------------------------------
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Types of the 'aes 256 gcm' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -52,8 +43,29 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsf_aes_256_gcm_impl.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'aes256 gcm' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+#ifndef VSF_AES256_GCM_IMPL_H_INCLUDED
+#define VSF_AES256_GCM_IMPL_H_INCLUDED
+
+#include "vsf_library.h"
+#include "vsf_impl_private.h"
+#include "vsf_aes256_gcm.h"
+
+#include <mbedtls/cipher.h>
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -61,8 +73,40 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handles implementation details.
+//
+struct vsf_aes256_gcm_impl_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vsf_impl_info_t* info;
+    //
+    //  Interface implementation specific context.
+    //
+    mbedtls_cipher_context_t cipher_ctx;
+    //
+    //  Interface implementation specific context.
+    //
+    byte key[vsf_aes256_gcm_KEY_LEN];
+    //
+    //  Interface implementation specific context.
+    //
+    byte nonce[vsf_aes256_gcm_NONCE_LEN];
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSF_AES256_GCM_IMPL_H_INCLUDED
 //  @end

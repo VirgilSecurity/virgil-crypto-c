@@ -46,20 +46,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'aes 256 gcm' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSF_AES_256_GCM_IMPL_H_INCLUDED
-#define VSF_AES_256_GCM_IMPL_H_INCLUDED
+#ifndef VSF_AES256_GCM_INTERNAL_H_INCLUDED
+#define VSF_AES256_GCM_INTERNAL_H_INCLUDED
 
 #include "vsf_library.h"
-#include "vsf_impl_private.h"
-#include "vsf_aes_256_gcm.h"
-
-#include <mbedtls/cipher.h>
+#include "vsf_aes256_gcm.h"
 //  @end
 
 
@@ -74,26 +69,16 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Provides initialization of the implementation specific context.
 //
-struct vsf_aes_256_gcm_impl_t {
-    //
-    //  Compile-time known information about this implementation.
-    //
-    const vsf_impl_info_t* info;
-    //
-    //  Interface implementation specific context.
-    //
-    mbedtls_cipher_context_t cipher_ctx;
-    //
-    //  Interface implementation specific context.
-    //
-    byte key[vsf_aes_256_gcm_KEY_LEN];
-    //
-    //  Interface implementation specific context.
-    //
-    byte nonce[vsf_aes_256_gcm_NONCE_LEN];
-};
+VSF_PRIVATE void
+vsf_aes256_gcm_init_ctx (vsf_aes256_gcm_impl_t* aes256_gcm_impl);
+
+//
+//  Provides cleanup of the implementation specific context.
+//
+VSF_PRIVATE void
+vsf_aes256_gcm_cleanup_ctx (vsf_aes256_gcm_impl_t* aes256_gcm_impl);
 
 
 // --------------------------------------------------------------------------
@@ -108,5 +93,5 @@ struct vsf_aes_256_gcm_impl_t {
 
 
 //  @footer
-#endif // VSF_AES_256_GCM_IMPL_H_INCLUDED
+#endif // VSF_AES256_GCM_INTERNAL_H_INCLUDED
 //  @end

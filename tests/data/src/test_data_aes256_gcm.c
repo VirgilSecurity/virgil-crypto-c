@@ -33,66 +33,66 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#include "test_data_aes_256_gcm.h"
+#include "test_data_aes256_gcm.h"
 
 //
 //  Test vector 1
 //  AES-GCM NIST Validation (AES-256,128,0,0,128) #0
 //
-const byte test_aes_256_gcm_VECTOR_1_KEY[] = {
+const byte test_aes256_gcm_VECTOR_1_KEY[] = {
     0xfb, 0x80, 0x94, 0xdd, 0x2e, 0xdd, 0xb3, 0xd8,
     0x00, 0x4b, 0xb7, 0x91, 0x34, 0x02, 0x3c, 0xa2,
     0xbe, 0x4d, 0xe9, 0xb6, 0x68, 0xa9, 0xe4, 0x60,
     0x8a, 0xbd, 0xf2, 0x13, 0x0e, 0x8b, 0xec, 0xb8,
 };
 
-const byte test_aes_256_gcm_VECTOR_1_DATA[] = {};
+const byte test_aes256_gcm_VECTOR_1_DATA[] = {};
 
-const byte test_aes_256_gcm_VECTOR_1_NONCE[] = {
+const byte test_aes256_gcm_VECTOR_1_NONCE[] = {
     0x49, 0x1a, 0x14, 0xe1, 0x3b, 0x59, 0x1c, 0xf2,
     0xf3, 0x9d, 0xa9, 0x6b, 0x68, 0x82, 0xb5, 0xe5,
 };
 
-const byte test_aes_256_gcm_VECTOR_1_ENC[] = {
+const byte test_aes256_gcm_VECTOR_1_ENC[] = {
 };
 
-const byte test_aes_256_gcm_VECTOR_1_AUTH_TAG[] = {
+const byte test_aes256_gcm_VECTOR_1_AUTH_TAG[] = {
     0x80, 0x88, 0x3f, 0x2c, 0x92, 0x54, 0x34, 0xa5,
     0xed, 0xfc, 0xef, 0xd5, 0xb1, 0x23, 0xd5, 0x20,
 };
 
-const byte test_aes_256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG[] = {
+const byte test_aes256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG[] = {
     0x80, 0x88, 0x3f, 0x2c, 0x92, 0x54, 0x34, 0xa5,
     0xed, 0xfc, 0xef, 0xd5, 0xb1, 0x23, 0xd5, 0x20,
 };
 
-const size_t test_aes_256_gcm_VECTOR_1_KEY_LEN = sizeof (test_aes_256_gcm_VECTOR_1_KEY);
-const size_t test_aes_256_gcm_VECTOR_1_DATA_LEN = sizeof (test_aes_256_gcm_VECTOR_1_DATA);
-const size_t test_aes_256_gcm_VECTOR_1_NONCE_LEN = sizeof (test_aes_256_gcm_VECTOR_1_NONCE);
-const size_t test_aes_256_gcm_VECTOR_1_ENC_LEN = sizeof (test_aes_256_gcm_VECTOR_1_ENC);
-const size_t test_aes_256_gcm_VECTOR_1_AUTH_TAG_LEN = sizeof (test_aes_256_gcm_VECTOR_1_AUTH_TAG);
-const size_t test_aes_256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG_LEN = sizeof (test_aes_256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG);
+const size_t test_aes256_gcm_VECTOR_1_KEY_LEN = sizeof (test_aes256_gcm_VECTOR_1_KEY);
+const size_t test_aes256_gcm_VECTOR_1_DATA_LEN = sizeof (test_aes256_gcm_VECTOR_1_DATA);
+const size_t test_aes256_gcm_VECTOR_1_NONCE_LEN = sizeof (test_aes256_gcm_VECTOR_1_NONCE);
+const size_t test_aes256_gcm_VECTOR_1_ENC_LEN = sizeof (test_aes256_gcm_VECTOR_1_ENC);
+const size_t test_aes256_gcm_VECTOR_1_AUTH_TAG_LEN = sizeof (test_aes256_gcm_VECTOR_1_AUTH_TAG);
+const size_t test_aes256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG_LEN = sizeof (test_aes256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG);
 
 
 //
 //  Test vector 2
 //  AES-GCM NIST Validation (AES-256,128,0,1024,128) #0
 //
-const byte test_aes_256_gcm_VECTOR_2_KEY[] = {
+const byte test_aes256_gcm_VECTOR_2_KEY[] = {
     0x43, 0xc9, 0xe2, 0x09, 0xda, 0x3c, 0x19, 0x71,
     0xd9, 0x86, 0xa4, 0x5b, 0x92, 0xf2, 0xfa, 0x0d,
     0x2d, 0x15, 0x51, 0x83, 0x73, 0x0d, 0x21, 0xd7,
     0x1e, 0xd8, 0xe2, 0x28, 0x4e, 0xc3, 0x08, 0xe3,
 };
 
-const byte test_aes_256_gcm_VECTOR_2_DATA[] = {};
+const byte test_aes256_gcm_VECTOR_2_DATA[] = {};
 
-const byte test_aes_256_gcm_VECTOR_2_NONCE[] = {
+const byte test_aes256_gcm_VECTOR_2_NONCE[] = {
     0x78, 0xbe, 0xf6, 0x55, 0xdf, 0xd8, 0x99, 0x0b,
     0x04, 0xd2, 0xa2, 0x56, 0x78, 0xd7, 0x08, 0x6d,
 };
 
-const byte test_aes_256_gcm_VECTOR_2_ADD[] = {
+const byte test_aes256_gcm_VECTOR_2_ADD[] = {
     0x9d, 0x8c, 0x67, 0x34, 0x54, 0x67, 0x97, 0xc5,
     0x81, 0xb9, 0xb1, 0xd0, 0xd4, 0xf0, 0x5b, 0x27,
     0xfe, 0x05, 0x39, 0xbd, 0x01, 0x65, 0x5d, 0x2d,
@@ -111,34 +111,34 @@ const byte test_aes_256_gcm_VECTOR_2_ADD[] = {
     0xd9, 0x52, 0xf8, 0x11, 0x9f, 0xf1, 0x11, 0x1d,
 };
 
-const byte test_aes_256_gcm_VECTOR_2_ENC[] = {};
+const byte test_aes256_gcm_VECTOR_2_ENC[] = {};
 
-const byte test_aes_256_gcm_VECTOR_2_AUTH_TAG[] = {
+const byte test_aes256_gcm_VECTOR_2_AUTH_TAG[] = {
     0xf1, 0x5d, 0xdf, 0x93, 0x8b, 0xbf, 0x52, 0xc2,
     0x97, 0x7a, 0xda, 0xba, 0xf4, 0x12, 0x0d, 0xe8,
 };
 
 
-const size_t test_aes_256_gcm_VECTOR_2_KEY_LEN = sizeof (test_aes_256_gcm_VECTOR_2_KEY);
-const size_t test_aes_256_gcm_VECTOR_2_DATA_LEN = sizeof (test_aes_256_gcm_VECTOR_2_DATA);
-const size_t test_aes_256_gcm_VECTOR_2_NONCE_LEN = sizeof (test_aes_256_gcm_VECTOR_2_NONCE);
-const size_t test_aes_256_gcm_VECTOR_2_ADD_LEN = sizeof (test_aes_256_gcm_VECTOR_2_ADD);
-const size_t test_aes_256_gcm_VECTOR_2_ENC_LEN = sizeof (test_aes_256_gcm_VECTOR_2_ENC);
-const size_t test_aes_256_gcm_VECTOR_2_AUTH_TAG_LEN = sizeof (test_aes_256_gcm_VECTOR_2_AUTH_TAG);
+const size_t test_aes256_gcm_VECTOR_2_KEY_LEN = sizeof (test_aes256_gcm_VECTOR_2_KEY);
+const size_t test_aes256_gcm_VECTOR_2_DATA_LEN = sizeof (test_aes256_gcm_VECTOR_2_DATA);
+const size_t test_aes256_gcm_VECTOR_2_NONCE_LEN = sizeof (test_aes256_gcm_VECTOR_2_NONCE);
+const size_t test_aes256_gcm_VECTOR_2_ADD_LEN = sizeof (test_aes256_gcm_VECTOR_2_ADD);
+const size_t test_aes256_gcm_VECTOR_2_ENC_LEN = sizeof (test_aes256_gcm_VECTOR_2_ENC);
+const size_t test_aes256_gcm_VECTOR_2_AUTH_TAG_LEN = sizeof (test_aes256_gcm_VECTOR_2_AUTH_TAG);
 
 
 //
 //  Test vector 3
 //  AES-GCM NIST Validation (AES-256,128,1024,1024,128) #0
 //
-const byte test_aes_256_gcm_VECTOR_3_KEY[] = {
+const byte test_aes256_gcm_VECTOR_3_KEY[] = {
     0x29, 0x07, 0x2a, 0xb5, 0xba, 0xd2, 0xc1, 0x42,
     0x5c, 0xa8, 0xdd, 0x0a, 0xe5, 0x6f, 0x27, 0xe9,
     0x3f, 0x8d, 0x26, 0xb3, 0x20, 0xb0, 0x8f, 0x77,
     0xb8, 0xbd, 0x3f, 0xa9, 0xd0, 0x3e, 0xdc, 0x6c,
 };
 
-const byte test_aes_256_gcm_VECTOR_3_DATA[] = {
+const byte test_aes256_gcm_VECTOR_3_DATA[] = {
     0x3c, 0x7a, 0xfc, 0x5c, 0xfc, 0x5a, 0x1e, 0x14,
     0x15, 0x87, 0xe9, 0x3f, 0xef, 0x84, 0x27, 0xd4,
     0xf2, 0x1d, 0x89, 0x2b, 0x98, 0x3b, 0x7c, 0x9b,
@@ -157,12 +157,12 @@ const byte test_aes_256_gcm_VECTOR_3_DATA[] = {
     0xc7, 0x3c, 0x86, 0xef, 0x67, 0xf5, 0xb5, 0xa4,
 };
 
-const byte test_aes_256_gcm_VECTOR_3_NONCE[] = {
+const byte test_aes256_gcm_VECTOR_3_NONCE[] = {
     0x02, 0x01, 0xed, 0xf8, 0x04, 0x75, 0xd2, 0xf9,
     0x69, 0xa9, 0x08, 0x48, 0xf6, 0x39, 0x52, 0x8c,
 };
 
-const byte test_aes_256_gcm_VECTOR_3_ADD[] = {
+const byte test_aes256_gcm_VECTOR_3_ADD[] = {
     0x4c, 0x8f, 0xf3, 0xed, 0xea, 0xa6, 0x8e, 0x47,
     0xbb, 0xc8, 0x72, 0x4b, 0x37, 0x82, 0x22, 0x16,
     0xd4, 0x2e, 0x26, 0x69, 0xca, 0x12, 0x7d, 0xa1,
@@ -181,7 +181,7 @@ const byte test_aes_256_gcm_VECTOR_3_ADD[] = {
     0x03, 0xa5, 0xf0, 0x48, 0xec, 0x75, 0x08, 0x1a,
 };
 
-const byte test_aes_256_gcm_VECTOR_3_ENC[] = {
+const byte test_aes256_gcm_VECTOR_3_ENC[] = {
     0xf3, 0x75, 0x5a, 0xae, 0x68, 0x13, 0xe4, 0xe4,
     0xb8, 0x4a, 0x08, 0x9c, 0xa1, 0x49, 0x65, 0x64,
     0x67, 0x66, 0x55, 0xba, 0x3c, 0x94, 0xe5, 0x9c,
@@ -200,12 +200,12 @@ const byte test_aes_256_gcm_VECTOR_3_ENC[] = {
     0x18, 0x4b, 0x01, 0x5c, 0xbb, 0xbc, 0x62, 0xe1,
 };
 
-const byte test_aes_256_gcm_VECTOR_3_AUTH_TAG[] = {
+const byte test_aes256_gcm_VECTOR_3_AUTH_TAG[] = {
     0x05, 0x49, 0xdd, 0x9f, 0x2a, 0x12, 0x3b, 0xd6,
     0xd5, 0x8e, 0x5c, 0xd1, 0x6c, 0x06, 0x24, 0xa1,
 };
 
-const byte test_aes_256_gcm_VECTOR_3_ENC_PLUS_AUTH_TAG[] = {
+const byte test_aes256_gcm_VECTOR_3_ENC_PLUS_AUTH_TAG[] = {
     0xf3, 0x75, 0x5a, 0xae, 0x68, 0x13, 0xe4, 0xe4,
     0xb8, 0x4a, 0x08, 0x9c, 0xa1, 0x49, 0x65, 0x64,
     0x67, 0x66, 0x55, 0xba, 0x3c, 0x94, 0xe5, 0x9c,
@@ -224,10 +224,10 @@ const byte test_aes_256_gcm_VECTOR_3_ENC_PLUS_AUTH_TAG[] = {
     0x18, 0x4b, 0x01, 0x5c, 0xbb, 0xbc, 0x62, 0xe1,
 };
 
-const size_t test_aes_256_gcm_VECTOR_3_KEY_LEN = sizeof (test_aes_256_gcm_VECTOR_3_KEY);
-const size_t test_aes_256_gcm_VECTOR_3_DATA_LEN = sizeof (test_aes_256_gcm_VECTOR_3_DATA);
-const size_t test_aes_256_gcm_VECTOR_3_NONCE_LEN = sizeof (test_aes_256_gcm_VECTOR_3_NONCE);
-const size_t test_aes_256_gcm_VECTOR_3_ADD_LEN = sizeof (test_aes_256_gcm_VECTOR_3_ADD);
-const size_t test_aes_256_gcm_VECTOR_3_ENC_LEN = sizeof (test_aes_256_gcm_VECTOR_3_ENC);
-const size_t test_aes_256_gcm_VECTOR_3_AUTH_TAG_LEN = sizeof (test_aes_256_gcm_VECTOR_3_AUTH_TAG);
-const size_t test_aes_256_gcm_VECTOR_3_ENC_AND_TAG_LEN = sizeof (test_aes_256_gcm_VECTOR_3_ENC_PLUS_AUTH_TAG);
+const size_t test_aes256_gcm_VECTOR_3_KEY_LEN = sizeof (test_aes256_gcm_VECTOR_3_KEY);
+const size_t test_aes256_gcm_VECTOR_3_DATA_LEN = sizeof (test_aes256_gcm_VECTOR_3_DATA);
+const size_t test_aes256_gcm_VECTOR_3_NONCE_LEN = sizeof (test_aes256_gcm_VECTOR_3_NONCE);
+const size_t test_aes256_gcm_VECTOR_3_ADD_LEN = sizeof (test_aes256_gcm_VECTOR_3_ADD);
+const size_t test_aes256_gcm_VECTOR_3_ENC_LEN = sizeof (test_aes256_gcm_VECTOR_3_ENC);
+const size_t test_aes256_gcm_VECTOR_3_AUTH_TAG_LEN = sizeof (test_aes256_gcm_VECTOR_3_AUTH_TAG);
+const size_t test_aes256_gcm_VECTOR_3_ENC_AND_TAG_LEN = sizeof (test_aes256_gcm_VECTOR_3_ENC_PLUS_AUTH_TAG);

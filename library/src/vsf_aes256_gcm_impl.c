@@ -36,6 +36,15 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'aes256 gcm' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,24 +52,8 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  This module contains logic for interface/implementation architecture.
-//  Do not use this module in any part of the code.
-// --------------------------------------------------------------------------
-
-#ifndef VSF_AES_256_GCM_INTERNAL_H_INCLUDED
-#define VSF_AES_256_GCM_INTERNAL_H_INCLUDED
-
-#include "vsf_library.h"
-#include "vsf_aes_256_gcm.h"
+#include "vsf_aes256_gcm_impl.h"
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -68,30 +61,8 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Provides initialization of the implementation specific context.
-//
-VSF_PRIVATE void
-vsf_aes_256_gcm_init_ctx (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl);
-
-//
-//  Provides cleanup of the implementation specific context.
-//
-VSF_PRIVATE void
-vsf_aes_256_gcm_cleanup_ctx (vsf_aes_256_gcm_impl_t* aes_256_gcm_impl);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSF_AES_256_GCM_INTERNAL_H_INCLUDED
 //  @end
