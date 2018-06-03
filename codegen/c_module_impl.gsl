@@ -303,6 +303,8 @@ function c_module_impl_create (meta, destination)
 
     my.names = meta_names (my.meta)
 
+    echo_trace ("Create module: $(my.names.module_impl)", my)
+
     new module to my.destination
         . = "\
         This module contains common functionality for all 'implementation' object.

@@ -76,6 +76,8 @@ function c_module_api_private_create (meta, destination)
 
     my.names = meta_names (my.meta)
 
+    echo_trace ("Create module: $(my.names.module_api_private)", my)
+
     new module to my.destination
         . = "Interface Private API."
 
