@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil-crypto-c VERSION 0.1.0 LANGUAGES C)
+project(virgil-crypto-foundation VERSION 0.1.0 LANGUAGES C)
 
 # ---------------------------------------------------------------------------
 #   Check dependencies
