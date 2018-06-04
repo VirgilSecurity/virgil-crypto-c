@@ -71,9 +71,9 @@ target_link_libraries(enable_profiling INTERFACE $<$<C_COMPILER_ID:GNU>:-pg>)
 
 
 # ---------------------------------------------------------------------------
-#   Library
+#   Library core libraries
 # ---------------------------------------------------------------------------
-add_subdirectory ("library")
+add_subdirectory ("library/foundation")
 
 
 # ---------------------------------------------------------------------------

@@ -1,14 +1,12 @@
 <project
         name = "vsf"
-        brief = "Virgil Security Foundation"
+        brief = "Virgil Security Crypto Foundation"
         namespace = "virgil"
         prefix = "vsf"
-        inc_path = "../library/include/virgil/"
-        inc_private_path = "../library/include/virgil/private/"
-        src_path = "../library/src/"
+        inc_path = "../library/foundation/include/virgil/"
+        inc_private_path = "../library/foundation/include/virgil/private/"
+        src_path = "../library/foundation/src/"
         work_path = "generated/"
-        TODO = "Next attributes must be resolved via GSL."
-        c_library_header = "vsf_library.h"
         >
 
     <version major = "5" minor = "0" path = "1" />
