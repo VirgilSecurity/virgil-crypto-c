@@ -22,7 +22,7 @@
         <method name="expand" context="impl">
             Expands the pseudorandom key to the desired length.
 
-            <argument name="pr key" type="data"/>
+            <argument name="pr key" type="data" access="readwrite"/>
             <argument name="pr key len" type="size"/>
             <argument name="info" type="data"/>
             <argument name="info len" type="size"/>
