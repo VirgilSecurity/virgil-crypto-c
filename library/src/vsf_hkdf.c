@@ -74,8 +74,8 @@ vsf_hkdf_extract (vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len,
 //  Expands the pseudorandom key to the desired length.
 //
 static void
-vsf_hkdf_expand (vsf_hkdf_impl_t* hkdf_impl, const byte* pr_key, size_t pr_key_len,
-        const byte* info, size_t info_len, byte* key, size_t key_len);
+vsf_hkdf_expand (vsf_hkdf_impl_t* hkdf_impl, byte* pr_key, size_t pr_key_len, const byte* info,
+        size_t info_len, byte* key, size_t key_len);
 
 
 // --------------------------------------------------------------------------
@@ -92,7 +92,7 @@ vsf_hkdf_extract (vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len,
         size_t salt_len, byte* pr_key, size_t pr_key_len) {
 
     vsf_hmac_stream_reset (hkdf_impl->hmac);
-    vsf_hmac_stream_start (hkdf_impl->hmac,salt,salt_len);
+    vsf_hmac_stream_start (hkdf_impl->hmac, salt, salt_len);
     vsf_hmac_stream_update (hkdf_impl->hmac, data, data_len);
     vsf_hmac_stream_finish (hkdf_impl->hmac, pr_key, pr_key_len);
 }
@@ -101,36 +101,29 @@ vsf_hkdf_extract (vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len,
 //  Expands the pseudorandom key to the desired length.
 //
 static void
-vsf_hkdf_expand (vsf_hkdf_impl_t* hkdf_impl, const byte* pr_key, size_t pr_key_len,
-        const byte* info, size_t info_len, byte* key, size_t key_len) {
+vsf_hkdf_expand (vsf_hkdf_impl_t* hkdf_impl, byte* pr_key, size_t pr_key_len, const byte* info,
+        size_t info_len, byte* key, size_t key_len) {
 
-    size_t offset = 0;
     unsigned char counter = 0x00;
-    size_t current_hmac_len = vsf_hmac_info_digest_size (vsf_hmac_info_api (hkdf_impl->hmac));
-    unsigned char* current_hmac = vsf_alloc (current_hmac_len);
-    vsf_erase (current_hmac, current_hmac_len);
     vsf_hmac_stream_start (hkdf_impl->hmac, pr_key, pr_key_len);
     do
     {
         ++counter;
+        size_t need = key_len - ((counter - 1)*pr_key_len);
         vsf_hmac_stream_reset (hkdf_impl->hmac);
-        if (offset!=0)
-            vsf_hmac_stream_update (hkdf_impl->hmac, current_hmac, current_hmac_len);
+        if (counter > 1)
+            vsf_hmac_stream_update (hkdf_impl->hmac, key + ((counter - 2)*pr_key_len), pr_key_len);
         vsf_hmac_stream_update (hkdf_impl->hmac, info, info_len);
         vsf_hmac_stream_update (hkdf_impl->hmac, &counter, 1);
-        vsf_hmac_stream_finish (hkdf_impl->hmac, current_hmac, current_hmac_len);
-        size_t need = key_len - offset;
-        if (need >= current_hmac_len)
-        {
-            memcpy (key + offset, current_hmac, current_hmac_len);
-            offset += current_hmac_len;
-        }
+
+        if (need >= pr_key_len)
+            vsf_hmac_stream_finish (hkdf_impl->hmac, key + ((counter - 1)*pr_key_len), pr_key_len);
         else
         {
-            memcpy (key + offset, current_hmac, need);
-            offset += need;
+            vsf_hmac_stream_finish (hkdf_impl->hmac, pr_key, pr_key_len);
+            memcpy (key + ((counter - 1)*pr_key_len), pr_key, need);
         }
-    } while (offset < key_len);
+    } while (counter*pr_key_len < key_len);
 }
 
 //
@@ -153,7 +146,8 @@ vsf_hkdf_derive (vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len, 
     vsf_hkdf_extract (hkdf_impl, data, data_len, salt, salt_len, pr_key, pr_key_len);
     if (key_len < 255*pr_key_len)
         vsf_hkdf_expand (hkdf_impl, pr_key, pr_key_len, info, info_len, key, key_len);
-
+    else
+        VSF_ASSERT_INTERNAL ("Key size is large!!!");
 
     vsf_dealloc (pr_key);
 }
