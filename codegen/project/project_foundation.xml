@@ -1,12 +1,12 @@
 <project
-        name = "vsf"
+        name = "foundation"
         brief = "Virgil Security Crypto Foundation"
         namespace = "virgil"
         prefix = "vsf"
         inc_path = "../library/foundation/include/virgil/"
         inc_private_path = "../library/foundation/include/virgil/private/"
         src_path = "../library/foundation/src/"
-        work_path = "generated/"
+        work_path = "generated/foundation/"
         >
 
     <version major = "5" minor = "0" path = "1" />
@@ -46,4 +46,29 @@
 
         Lead Maintainer: Virgil Security Inc. &lt;support@virgilsecurity.com&gt;
     </license>
+
+    <interface name="cipher"/>
+    <interface name="auth encrypt"/>
+    <interface name="auth decrypt"/>
+    <interface name="cipher auth"/>
+    <interface name="cipher auth info"/>
+    <interface name="cipher info"/>
+    <interface name="decrypt"/>
+    <interface name="encrypt"/>
+    <interface name="ex kdf"/>
+    <interface name="hash"/>
+    <interface name="hash info"/>
+    <interface name="hash stream"/>
+    <interface name="hmac"/>
+    <interface name="hmac info"/>
+    <interface name="hmac stream"/>
+    <interface name="kdf"/>
+
+    <module name="assert"/>
+    <module name="error"/>
+    <module name="library"/>
+    <module name="memory"/>
+
+    <implementor name="mbedtls"/>
+    <implementor name="virgil"/>
 </project>
