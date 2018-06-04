@@ -1,1 +1,3 @@
-<main script = "main.gsl" echo_level = "trace"/>
+<main script = "main.gsl" echo_level = "trace">
+    <project name="foundation"/>
+</main>

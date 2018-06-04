@@ -79,78 +79,98 @@ function main_load_all (destination)
     item_load_from_file_pattern ("^implementor\.+xml$", my.destination, "implementation")
 endfunction
 
+
+function process_project (main, project)
+    check_arguments (my, "main, project")
+
+    #   Create my.root eleement where all models will be created.
+    my.root = XML.new ("my.root")
+
+    #   Create element that holds resolution context.
+    my.context = XML.new ("context")
+
+    #   Load project's components.
+    for my.project.interface
+        item_load_from_file ("interface/$(make_id ("interface", interface.name)).xml", my.root)
+    endfor
+
+    for my.project.module
+        item_load_from_file ("module/$(make_id ("module", module.name)).xml", my.root)
+    endfor
+
+    for my.project.implementor
+        item_load_from_file ("implementation/$(make_id ("implementor", implementor.name)).xml", my.root)
+    endfor
+
+    #   Process project.
+    project_resolve (my.project)
+    project_generate_structure (my.project)
+    project_update_context (my.project, my.context)
+
+    #   Process Interface / Implementation.
+    foreach_interface_resolve (my.root, my.project)
+    foreach_implementor_resolve (my.root, my.project)
+    foreach_implementation_resolve (my.root, my.project)
+
+    #   Create meta informtation about high level entities.
+    my.meta = meta_create ()
+    foreach_interface_update_meta (my.root, my.meta)
+    foreach_implementation_update_meta (my.root, my.meta)
+
+    if main.echo_level = "debug"
+        item_save_to_file (my.meta, "meta.xml", my.project.work_path)
+    endif
+
+    #   Create modules.
+    c_module_api_create (my.meta, my.root)
+    c_module_api_private_create (my.meta, my.root)
+
+    c_module_impl_create (my.meta, my.root)
+    c_module_impl_private_create (my.meta, my.root)
+
+    c_module_interface_create (my.root, my.root, my.meta)
+    c_module_implementation_create (my.root, my.root, my.meta)
+
+    #   Process modules.
+    foreach_module_resolve (my.root, my.project)
+    foreach_dump ("module", my.root, my.project.work_path)
+
+    #   Create lang_modules.
+    c_module_create (my.root, my.root, my.project)
+
+    #   Process lang_modules.
+    c_module_resolve (my.root)
+
+    #   At this point all elements are created and resolved.
+    if main.echo_level = "debug"
+        item_save_to_file (my.root, "my.root.xml", my.project.work_path)
+    endif
+
+    #   Fullfil context with models name.
+    context_resolve_refs (my.context, my.root)
+    context_append_hierarchy (my.context, my.root)
+    item_save_to_file (my.context, "context.xml", my.project.work_path)
+
+    #   Generate code.
+    for my.root.c_module
+        my.c_module_resolved = \
+                context_inject_to_lang_module (my.context, c_module, my.project.work_path)
+        move my.c_module_resolved before c_module
+        delete c_module
+    endfor
+    c_module_generate_sources (my.root)
+endfunction
+
 # ---------------------------------------------------------------------------
 #   Entrypoint.
 # ---------------------------------------------------------------------------
 function run_main ()
-    root = XML.new ("root")
-
     main.echo_level ?= "fatal"
 
-    #   Create empty resolution context.
-    new context to root
-    endnew
-
-    #   Load all components, including project.
-    main_load_all (root)
-
-    #   Process project.
-    project_resolve (root->project)
-    project_generate_structure (root->project)
-    project_update_context (root->project, root->context)
-
-    #   Process Interface / Implementation.
-    foreach_interface_resolve (root, root->project)
-    foreach_implementor_resolve (root, root->project)
-    foreach_implementation_resolve (root, root->project)
-
-    #   Create meta informtation about high level entities.
-    my.meta = meta_create ()
-    foreach_interface_update_meta (root, my.meta)
-    foreach_implementation_update_meta (root, my.meta)
-
-    if main.echo_level = "debug"
-        item_save_to_file (my.meta, "meta.xml", root->project.work_path)
-    endif
-
-    #   Create modules.
-    c_module_api_create (my.meta, root)
-    c_module_api_private_create (my.meta, root)
-
-    c_module_impl_create (my.meta, root)
-    c_module_impl_private_create (my.meta, root)
-
-    c_module_interface_create (root, root, my.meta)
-    c_module_implementation_create (root, root, my.meta)
-
-    #   Process modules.
-    foreach_module_resolve (root, root->project)
-    foreach_dump ("module", root, root->project.work_path)
-
-    #   Create lang_modules.
-    c_module_create (root, root, root->project)
-
-    #   Process lang_modules.
-    c_module_resolve (root)
-
-    #   At this point all elements are created and resolved.
-    if main.echo_level = "debug"
-        item_save_to_file (root, "root.xml", root->project.work_path)
-    endif
-
-    #   Fullfil context with models name.
-    context_resolve_refs (root->context, root)
-    context_append_hierarchy (root->context, root)
-    item_save_to_file (root->context, "context.xml", root->project.work_path)
-
-    #   Generate code.
-    for root.c_module
-        my.c_module_resolved = \
-                context_inject_to_lang_module (root->context, c_module, root->project.work_path)
-        move my.c_module_resolved before c_module
-        delete c_module
+    for main.project
+        my.loaded_project = item_load_from_file ("project/$(make_id ("project", project.name)).xml")
+        process_project (main, my.loaded_project)
     endfor
-    c_module_generate_sources (root)
 endfunction
 
 # ---------------------------------------------------------------------------
