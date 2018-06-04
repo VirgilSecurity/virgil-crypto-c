@@ -1320,7 +1320,7 @@ function c_module_implementation_create (source, destination, meta)
     my.module_impl = my.source->module (name = my.names.module_impl)
     my.enum_impl_tag = my.module_impl->enum (name = my.names.enum_tag)
 
-    for my.source.implementation
+    for my.source.implementation by name
         meta_reset_active_entity (my.meta, implementation.name)
 
         c_module_implementation_create_module_public (implementation, my.enum_impl_tag, my.destination, my.meta)

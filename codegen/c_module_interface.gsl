@@ -482,7 +482,7 @@ function c_module_interface_create (source, destination, meta)
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
-    for my.source.interface
+    for my.source.interface by name
         meta_reset_active_entity (my.meta, interface.name)
 
         c_module_interface_create_module_public (interface, my.destination, my.meta)
