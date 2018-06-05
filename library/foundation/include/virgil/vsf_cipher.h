@@ -80,25 +80,25 @@ typedef struct vsf_cipher_api_t vsf_cipher_api_t;
 //  Setup IV or nonce.
 //
 VSF_PUBLIC void
-vsf_cipher_set_nonce (vsf_impl_t* impl, const byte* nonce, size_t nonce_len);
+vsf_cipher_set_nonce(vsf_impl_t* impl, const byte* nonce, size_t nonce_len);
 
 //
 //  Set cipher encryption / decryption key.
 //
 VSF_PUBLIC void
-vsf_cipher_set_key (vsf_impl_t* impl, const byte* key, size_t key_len);
+vsf_cipher_set_key(vsf_impl_t* impl, const byte* key, size_t key_len);
 
 //
 //  Return cipher API, or NULL if it is not implemented.
 //
 VSF_PUBLIC const vsf_cipher_api_t*
-vsf_cipher_api (vsf_impl_t* impl);
+vsf_cipher_api(vsf_impl_t* impl);
 
 //
 //  Check if given object implements interface 'cipher'.
 //
 VSF_PUBLIC bool
-vsf_cipher_is_implemented (vsf_impl_t* impl);
+vsf_cipher_is_implemented(vsf_impl_t* impl);
 
 
 // --------------------------------------------------------------------------

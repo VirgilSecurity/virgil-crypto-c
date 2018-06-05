@@ -115,7 +115,7 @@ static const vsf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSF_PUBLIC vsf_error_t
-vsf_kdf2_init (vsf_kdf2_impl_t* kdf2_impl) {
+vsf_kdf2_init(vsf_kdf2_impl_t* kdf2_impl) {
 
     VSF_ASSERT_PTR (kdf2_impl);
     VSF_ASSERT_PTR (kdf2_impl->info == NULL);
@@ -132,7 +132,7 @@ vsf_kdf2_init (vsf_kdf2_impl_t* kdf2_impl) {
 //  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_kdf2_cleanup (vsf_kdf2_impl_t* kdf2_impl) {
+vsf_kdf2_cleanup(vsf_kdf2_impl_t* kdf2_impl) {
 
     VSF_ASSERT_PTR (kdf2_impl);
 
@@ -162,7 +162,7 @@ vsf_kdf2_cleanup (vsf_kdf2_impl_t* kdf2_impl) {
 //  Postcondition: check memory allocation result.
 //
 VSF_PUBLIC vsf_kdf2_impl_t*
-vsf_kdf2_new (void) {
+vsf_kdf2_new(void) {
 
     vsf_kdf2_impl_t *kdf2_impl = (vsf_kdf2_impl_t *) vsf_alloc (sizeof (vsf_kdf2_impl_t));
     VSF_ASSERT_PTR (kdf2_impl);
@@ -179,7 +179,7 @@ vsf_kdf2_new (void) {
 //  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_kdf2_delete (vsf_kdf2_impl_t* kdf2_impl) {
+vsf_kdf2_delete(vsf_kdf2_impl_t* kdf2_impl) {
 
     if (kdf2_impl) {
         vsf_kdf2_cleanup (kdf2_impl);
@@ -195,7 +195,7 @@ vsf_kdf2_delete (vsf_kdf2_impl_t* kdf2_impl) {
 //  Given reference is nullified.
 //
 VSF_PUBLIC void
-vsf_kdf2_destroy (vsf_kdf2_impl_t** kdf2_impl_ref) {
+vsf_kdf2_destroy(vsf_kdf2_impl_t** kdf2_impl_ref) {
 
     VSF_ASSERT_PTR (kdf2_impl_ref);
 
@@ -209,7 +209,7 @@ vsf_kdf2_destroy (vsf_kdf2_impl_t** kdf2_impl_ref) {
 //  Setup dependency to the interface 'hash stream' and keep ownership.
 //
 VSF_PUBLIC void
-vsf_kdf2_use_hash_stream (vsf_kdf2_impl_t* kdf2_impl, vsf_impl_t* hash) {
+vsf_kdf2_use_hash_stream(vsf_kdf2_impl_t* kdf2_impl, vsf_impl_t* hash) {
 
     VSF_ASSERT_PTR (kdf2_impl);
     VSF_ASSERT_PTR (hash);
@@ -226,7 +226,7 @@ vsf_kdf2_use_hash_stream (vsf_kdf2_impl_t* kdf2_impl, vsf_impl_t* hash) {
 //  Setup dependency to the interface 'hash stream' and transfer ownership.
 //
 VSF_PUBLIC void
-vsf_kdf2_take_hash_stream (vsf_kdf2_impl_t* kdf2_impl, vsf_impl_t** hash_ref) {
+vsf_kdf2_take_hash_stream(vsf_kdf2_impl_t* kdf2_impl, vsf_impl_t** hash_ref) {
 
     VSF_ASSERT_PTR (kdf2_impl);
     VSF_ASSERT_PTR (hash_ref);
@@ -247,7 +247,7 @@ vsf_kdf2_take_hash_stream (vsf_kdf2_impl_t* kdf2_impl, vsf_impl_t** hash_ref) {
 //  Return size of 'vsf_kdf2_impl_t' type.
 //
 VSF_PUBLIC size_t
-vsf_kdf2_impl_size (void) {
+vsf_kdf2_impl_size(void) {
 
     return sizeof (vsf_kdf2_impl_t);
 }
@@ -256,7 +256,7 @@ vsf_kdf2_impl_size (void) {
 //  Cast to the 'vsf_impl_t' type.
 //
 VSF_PUBLIC vsf_impl_t*
-vsf_kdf2_impl (vsf_kdf2_impl_t* kdf2_impl) {
+vsf_kdf2_impl(vsf_kdf2_impl_t* kdf2_impl) {
 
     VSF_ASSERT_PTR (kdf2_impl);
     return (vsf_impl_t *) (kdf2_impl);

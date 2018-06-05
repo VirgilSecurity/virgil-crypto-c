@@ -77,7 +77,7 @@ typedef struct vsf_decrypt_api_t vsf_decrypt_api_t;
 //  Decrypt given data.
 //
 VSF_PUBLIC vsf_error_t
-vsf_decrypt (vsf_impl_t* impl, const byte* enc, size_t enc_len, byte* plain, size_t plain_len,
+vsf_decrypt(vsf_impl_t* impl, const byte* enc, size_t enc_len, byte* plain, size_t plain_len,
         size_t* out_len);
 
 //
@@ -86,19 +86,19 @@ vsf_decrypt (vsf_impl_t* impl, const byte* enc, size_t enc_len, byte* plain, siz
 //  adjusted to cut of auth tag length.
 //
 VSF_PUBLIC size_t
-vsf_decrypt_required_dec_len (vsf_impl_t* impl, size_t enc_len, size_t auth_tag_len);
+vsf_decrypt_required_dec_len(vsf_impl_t* impl, size_t enc_len, size_t auth_tag_len);
 
 //
 //  Return decrypt API, or NULL if it is not implemented.
 //
 VSF_PUBLIC const vsf_decrypt_api_t*
-vsf_decrypt_api (vsf_impl_t* impl);
+vsf_decrypt_api(vsf_impl_t* impl);
 
 //
 //  Check if given object implements interface 'decrypt'.
 //
 VSF_PUBLIC bool
-vsf_decrypt_is_implemented (vsf_impl_t* impl);
+vsf_decrypt_is_implemented(vsf_impl_t* impl);
 
 
 // --------------------------------------------------------------------------

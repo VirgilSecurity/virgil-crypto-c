@@ -78,20 +78,20 @@ typedef struct vsf_hmac_api_t vsf_hmac_api_t;
 //  Calculate hmac over given data.
 //
 VSF_PUBLIC void
-vsf_hmac (const vsf_hmac_api_t* hmac_api, const byte* key, size_t key_len, const byte* data,
+vsf_hmac(const vsf_hmac_api_t* hmac_api, const byte* key, size_t key_len, const byte* data,
         size_t data_len, byte* hmac, size_t hmac_len);
 
 //
 //  Return hmac API, or NULL if it is not implemented.
 //
 VSF_PUBLIC const vsf_hmac_api_t*
-vsf_hmac_api (vsf_impl_t* impl);
+vsf_hmac_api(vsf_impl_t* impl);
 
 //
 //  Check if given object implements interface 'hmac'.
 //
 VSF_PUBLIC bool
-vsf_hmac_is_implemented (vsf_impl_t* impl);
+vsf_hmac_is_implemented(vsf_impl_t* impl);
 
 
 // --------------------------------------------------------------------------

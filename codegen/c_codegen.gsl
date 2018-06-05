@@ -340,7 +340,7 @@ function c_insert_callback (c_callback, prefix)
     c_insert_description (my.c_callback)
 
     my.c_callback_return_type = c_derive_instance_type (my.c_callback->c_return)
-    my.beginning = "typedef $(my.c_callback_return_type:) (*$(my.c_callback.name)) "
+    my.beginning = "typedef $(my.c_callback_return_type:) (*$(my.c_callback.name))"
 
     insert_code (my.beginning + c_format_arguments (my.c_callback, my.beginning, ";"))
 endfunction
@@ -357,7 +357,7 @@ function c_insert_method_signature (c_method, ending)
 
     insert_code (cat (my.modifiers, c_derive_instance_type (my.c_method->c_return)))
 
-    my.beginning = my.c_method.name + " "
+    my.beginning = my.c_method.name
     insert_code (my.beginning + c_format_arguments (my.c_method, my.beginning, my.ending))
 endfunction
 

@@ -75,7 +75,7 @@
 //  Provides initialization of the implementation specific context.
 //
 VSF_PRIVATE vsf_error_t
-vsf_aes256_gcm_init_ctx (vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
+vsf_aes256_gcm_init_ctx(vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
 
     VSF_ASSERT_PTR (aes256_gcm_impl);
 
@@ -106,7 +106,7 @@ vsf_aes256_gcm_init_ctx (vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
 //  Provides cleanup of the implementation specific context.
 //
 VSF_PRIVATE void
-vsf_aes256_gcm_cleanup_ctx (vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
+vsf_aes256_gcm_cleanup_ctx(vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
 
     VSF_ASSERT_PTR (aes256_gcm_impl);
 
@@ -120,7 +120,7 @@ vsf_aes256_gcm_cleanup_ctx (vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
 //  Encrypt given data.
 //
 VSF_PUBLIC vsf_error_t
-vsf_aes256_gcm_encrypt (vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* data, size_t data_len,
+vsf_aes256_gcm_encrypt(vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* data, size_t data_len,
         byte* enc, size_t enc_len, size_t* out_len) {
 
     VSF_ASSERT_PTR (aes256_gcm_impl);
@@ -138,7 +138,7 @@ vsf_aes256_gcm_encrypt (vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* data
 //  adjusted to hold auth tag as well.
 //
 VSF_PUBLIC size_t
-vsf_aes256_gcm_required_enc_len (vsf_aes256_gcm_impl_t* aes256_gcm_impl, size_t data_len,
+vsf_aes256_gcm_required_enc_len(vsf_aes256_gcm_impl_t* aes256_gcm_impl, size_t data_len,
         size_t auth_tag_len) {
 
     VSF_ASSERT_PTR (aes256_gcm_impl);
@@ -153,7 +153,7 @@ vsf_aes256_gcm_required_enc_len (vsf_aes256_gcm_impl_t* aes256_gcm_impl, size_t 
 //  Decrypt given data.
 //
 VSF_PUBLIC vsf_error_t
-vsf_aes256_gcm_decrypt (vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* enc, size_t enc_len,
+vsf_aes256_gcm_decrypt(vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* enc, size_t enc_len,
         byte* plain, size_t plain_len, size_t* out_len) {
 
     VSF_ASSERT_PTR (aes256_gcm_impl);
@@ -172,7 +172,7 @@ vsf_aes256_gcm_decrypt (vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* enc,
 //  adjusted to cut of auth tag length.
 //
 VSF_PUBLIC size_t
-vsf_aes256_gcm_required_dec_len (vsf_aes256_gcm_impl_t* aes256_gcm_impl, size_t enc_len,
+vsf_aes256_gcm_required_dec_len(vsf_aes256_gcm_impl_t* aes256_gcm_impl, size_t enc_len,
         size_t auth_tag_len) {
 
     VSF_ASSERT_PTR (aes256_gcm_impl);
@@ -190,7 +190,7 @@ vsf_aes256_gcm_required_dec_len (vsf_aes256_gcm_impl_t* aes256_gcm_impl, size_t 
 //  Setup IV or nonce.
 //
 VSF_PUBLIC void
-vsf_aes256_gcm_set_nonce (vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* nonce,
+vsf_aes256_gcm_set_nonce(vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* nonce,
         size_t nonce_len) {
 
     VSF_ASSERT_OPT (0 ==
@@ -201,7 +201,7 @@ vsf_aes256_gcm_set_nonce (vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* no
 //  Set cipher encryption / decryption key.
 //
 VSF_PUBLIC void
-vsf_aes256_gcm_set_key (vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* key, size_t key_len) {
+vsf_aes256_gcm_set_key(vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* key, size_t key_len) {
 
     VSF_ASSERT_PTR (aes256_gcm_impl);
     VSF_ASSERT_PTR (key);
@@ -215,7 +215,7 @@ vsf_aes256_gcm_set_key (vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* key,
 //  If 'tag' is not give, then it will written to the 'enc'.
 //
 VSF_PUBLIC vsf_error_t
-vsf_aes256_gcm_auth_encrypt (vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* data,
+vsf_aes256_gcm_auth_encrypt(vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* data,
         size_t data_len, const byte* auth_data, size_t auth_data_len, byte* enc, size_t enc_len,
         size_t* out_len, byte* tag, size_t tag_len) {
 
@@ -272,9 +272,9 @@ vsf_aes256_gcm_auth_encrypt (vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte*
 //  If 'tag' is not give, then it will be taken from the 'enc'.
 //
 VSF_PUBLIC vsf_error_t
-vsf_aes256_gcm_auth_decrypt (vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* enc,
-        size_t enc_len, const byte* auth_data, size_t auth_data_len, const byte* tag,
-        size_t tag_len, byte* dec, size_t dec_len, size_t* out_len) {
+vsf_aes256_gcm_auth_decrypt(vsf_aes256_gcm_impl_t* aes256_gcm_impl, const byte* enc, size_t enc_len,
+        const byte* auth_data, size_t auth_data_len, const byte* tag, size_t tag_len, byte* dec,
+        size_t dec_len, size_t* out_len) {
 
     VSF_ASSERT_PTR (aes256_gcm_impl);
     VSF_ASSERT_PTR (enc);

@@ -115,7 +115,7 @@ static const vsf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSF_PUBLIC vsf_error_t
-vsf_hkdf_init (vsf_hkdf_impl_t* hkdf_impl) {
+vsf_hkdf_init(vsf_hkdf_impl_t* hkdf_impl) {
 
     VSF_ASSERT_PTR (hkdf_impl);
     VSF_ASSERT_PTR (hkdf_impl->info == NULL);
@@ -132,7 +132,7 @@ vsf_hkdf_init (vsf_hkdf_impl_t* hkdf_impl) {
 //  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_hkdf_cleanup (vsf_hkdf_impl_t* hkdf_impl) {
+vsf_hkdf_cleanup(vsf_hkdf_impl_t* hkdf_impl) {
 
     VSF_ASSERT_PTR (hkdf_impl);
 
@@ -162,7 +162,7 @@ vsf_hkdf_cleanup (vsf_hkdf_impl_t* hkdf_impl) {
 //  Postcondition: check memory allocation result.
 //
 VSF_PUBLIC vsf_hkdf_impl_t*
-vsf_hkdf_new (void) {
+vsf_hkdf_new(void) {
 
     vsf_hkdf_impl_t *hkdf_impl = (vsf_hkdf_impl_t *) vsf_alloc (sizeof (vsf_hkdf_impl_t));
     VSF_ASSERT_PTR (hkdf_impl);
@@ -179,7 +179,7 @@ vsf_hkdf_new (void) {
 //  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_hkdf_delete (vsf_hkdf_impl_t* hkdf_impl) {
+vsf_hkdf_delete(vsf_hkdf_impl_t* hkdf_impl) {
 
     if (hkdf_impl) {
         vsf_hkdf_cleanup (hkdf_impl);
@@ -195,7 +195,7 @@ vsf_hkdf_delete (vsf_hkdf_impl_t* hkdf_impl) {
 //  Given reference is nullified.
 //
 VSF_PUBLIC void
-vsf_hkdf_destroy (vsf_hkdf_impl_t** hkdf_impl_ref) {
+vsf_hkdf_destroy(vsf_hkdf_impl_t** hkdf_impl_ref) {
 
     VSF_ASSERT_PTR (hkdf_impl_ref);
 
@@ -209,7 +209,7 @@ vsf_hkdf_destroy (vsf_hkdf_impl_t** hkdf_impl_ref) {
 //  Setup dependency to the interface 'hmac stream' and keep ownership.
 //
 VSF_PUBLIC void
-vsf_hkdf_use_hmac_stream (vsf_hkdf_impl_t* hkdf_impl, vsf_impl_t* hmac) {
+vsf_hkdf_use_hmac_stream(vsf_hkdf_impl_t* hkdf_impl, vsf_impl_t* hmac) {
 
     VSF_ASSERT_PTR (hkdf_impl);
     VSF_ASSERT_PTR (hmac);
@@ -226,7 +226,7 @@ vsf_hkdf_use_hmac_stream (vsf_hkdf_impl_t* hkdf_impl, vsf_impl_t* hmac) {
 //  Setup dependency to the interface 'hmac stream' and transfer ownership.
 //
 VSF_PUBLIC void
-vsf_hkdf_take_hmac_stream (vsf_hkdf_impl_t* hkdf_impl, vsf_impl_t** hmac_ref) {
+vsf_hkdf_take_hmac_stream(vsf_hkdf_impl_t* hkdf_impl, vsf_impl_t** hmac_ref) {
 
     VSF_ASSERT_PTR (hkdf_impl);
     VSF_ASSERT_PTR (hmac_ref);
@@ -247,7 +247,7 @@ vsf_hkdf_take_hmac_stream (vsf_hkdf_impl_t* hkdf_impl, vsf_impl_t** hmac_ref) {
 //  Return size of 'vsf_hkdf_impl_t' type.
 //
 VSF_PUBLIC size_t
-vsf_hkdf_impl_size (void) {
+vsf_hkdf_impl_size(void) {
 
     return sizeof (vsf_hkdf_impl_t);
 }
@@ -256,7 +256,7 @@ vsf_hkdf_impl_size (void) {
 //  Cast to the 'vsf_impl_t' type.
 //
 VSF_PUBLIC vsf_impl_t*
-vsf_hkdf_impl (vsf_hkdf_impl_t* hkdf_impl) {
+vsf_hkdf_impl(vsf_hkdf_impl_t* hkdf_impl) {
 
     VSF_ASSERT_PTR (hkdf_impl);
     return (vsf_impl_t *) (hkdf_impl);

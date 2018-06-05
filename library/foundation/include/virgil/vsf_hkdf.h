@@ -78,19 +78,19 @@ typedef struct vsf_hkdf_impl_t vsf_hkdf_impl_t;
 //  Return size of 'vsf_hkdf_impl_t' type.
 //
 VSF_PUBLIC size_t
-vsf_hkdf_impl_size (void);
+vsf_hkdf_impl_size(void);
 
 //
 //  Cast to the 'vsf_impl_t' type.
 //
 VSF_PUBLIC vsf_impl_t*
-vsf_hkdf_impl (vsf_hkdf_impl_t* hkdf_impl);
+vsf_hkdf_impl(vsf_hkdf_impl_t* hkdf_impl);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSF_PUBLIC vsf_error_t
-vsf_hkdf_init (vsf_hkdf_impl_t* hkdf_impl);
+vsf_hkdf_init(vsf_hkdf_impl_t* hkdf_impl);
 
 //
 //  Cleanup implementation context and it's dependencies.
@@ -99,14 +99,14 @@ vsf_hkdf_init (vsf_hkdf_impl_t* hkdf_impl);
 //  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_hkdf_cleanup (vsf_hkdf_impl_t* hkdf_impl);
+vsf_hkdf_cleanup(vsf_hkdf_impl_t* hkdf_impl);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
 VSF_PUBLIC vsf_hkdf_impl_t*
-vsf_hkdf_new (void);
+vsf_hkdf_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
@@ -115,7 +115,7 @@ vsf_hkdf_new (void);
 //  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_hkdf_delete (vsf_hkdf_impl_t* hkdf_impl);
+vsf_hkdf_delete(vsf_hkdf_impl_t* hkdf_impl);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -125,25 +125,25 @@ vsf_hkdf_delete (vsf_hkdf_impl_t* hkdf_impl);
 //  Given reference is nullified.
 //
 VSF_PUBLIC void
-vsf_hkdf_destroy (vsf_hkdf_impl_t** hkdf_impl_ref);
+vsf_hkdf_destroy(vsf_hkdf_impl_t** hkdf_impl_ref);
 
 //
 //  Setup dependency to the interface 'hmac stream' and keep ownership.
 //
 VSF_PUBLIC void
-vsf_hkdf_use_hmac_stream (vsf_hkdf_impl_t* hkdf_impl, vsf_impl_t* hmac);
+vsf_hkdf_use_hmac_stream(vsf_hkdf_impl_t* hkdf_impl, vsf_impl_t* hmac);
 
 //
 //  Setup dependency to the interface 'hmac stream' and transfer ownership.
 //
 VSF_PUBLIC void
-vsf_hkdf_take_hmac_stream (vsf_hkdf_impl_t* hkdf_impl, vsf_impl_t** hmac_ref);
+vsf_hkdf_take_hmac_stream(vsf_hkdf_impl_t* hkdf_impl, vsf_impl_t** hmac_ref);
 
 //
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
-vsf_hkdf_derive (vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len, const byte* salt,
+vsf_hkdf_derive(vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len, const byte* salt,
         size_t salt_len, const byte* info, size_t info_len, byte* key, size_t key_len);
 
 

@@ -75,7 +75,7 @@
 //  Provides initialization of the implementation specific context.
 //
 VSF_PRIVATE vsf_error_t
-vsf_hmac256_init_ctx (vsf_hmac256_impl_t* hmac256_impl) {
+vsf_hmac256_init_ctx(vsf_hmac256_impl_t* hmac256_impl) {
 
     mbedtls_md_init (&hmac256_impl->hmac_ctx);
     int result = mbedtls_md_setup (&hmac256_impl->hmac_ctx, mbedtls_md_info_from_type (MBEDTLS_MD_SHA256), 1);
@@ -97,7 +97,7 @@ vsf_hmac256_init_ctx (vsf_hmac256_impl_t* hmac256_impl) {
 //  Provides cleanup of the implementation specific context.
 //
 VSF_PRIVATE void
-vsf_hmac256_cleanup_ctx (vsf_hmac256_impl_t* hmac256_impl) {
+vsf_hmac256_cleanup_ctx(vsf_hmac256_impl_t* hmac256_impl) {
 
     mbedtls_md_free (&hmac256_impl->hmac_ctx);
 }
@@ -106,7 +106,7 @@ vsf_hmac256_cleanup_ctx (vsf_hmac256_impl_t* hmac256_impl) {
 //  Calculate hmac over given data.
 //
 VSF_PUBLIC void
-vsf_hmac256_hmac (const byte* key, size_t key_len, const byte* data, size_t data_len, byte* hmac,
+vsf_hmac256_hmac(const byte* key, size_t key_len, const byte* data, size_t data_len, byte* hmac,
         size_t hmac_len) {
 
     VSF_ASSERT_OPT (hmac_len >= vsf_hmac256_DIGEST_SIZE);
@@ -118,7 +118,7 @@ vsf_hmac256_hmac (const byte* key, size_t key_len, const byte* data, size_t data
 //  Reset HMAC.
 //
 VSF_PUBLIC void
-vsf_hmac256_reset (vsf_hmac256_impl_t* hmac256_impl) {
+vsf_hmac256_reset(vsf_hmac256_impl_t* hmac256_impl) {
 
     mbedtls_md_hmac_reset (&hmac256_impl->hmac_ctx);
 }
@@ -127,7 +127,7 @@ vsf_hmac256_reset (vsf_hmac256_impl_t* hmac256_impl) {
 //  Start a new HMAC.
 //
 VSF_PUBLIC void
-vsf_hmac256_start (vsf_hmac256_impl_t* hmac256_impl, const byte* key, size_t key_len) {
+vsf_hmac256_start(vsf_hmac256_impl_t* hmac256_impl, const byte* key, size_t key_len) {
 
     mbedtls_md_hmac_starts (&hmac256_impl->hmac_ctx, key, key_len);
 }
@@ -136,7 +136,7 @@ vsf_hmac256_start (vsf_hmac256_impl_t* hmac256_impl, const byte* key, size_t key
 //  Add given data to the HMAC.
 //
 VSF_PUBLIC void
-vsf_hmac256_update (vsf_hmac256_impl_t* hmac256_impl, const byte* data, size_t data_len) {
+vsf_hmac256_update(vsf_hmac256_impl_t* hmac256_impl, const byte* data, size_t data_len) {
 
     mbedtls_md_hmac_update (&hmac256_impl->hmac_ctx, data, data_len);
 }
@@ -145,7 +145,7 @@ vsf_hmac256_update (vsf_hmac256_impl_t* hmac256_impl, const byte* data, size_t d
 //  Accompilsh HMAC and return it's result (a message digest).
 //
 VSF_PUBLIC void
-vsf_hmac256_finish (vsf_hmac256_impl_t* hmac256_impl, byte* hmac, size_t hmac_len) {
+vsf_hmac256_finish(vsf_hmac256_impl_t* hmac256_impl, byte* hmac, size_t hmac_len) {
 
     VSF_ASSERT_OPT (hmac_len >= vsf_hmac256_DIGEST_SIZE);
 

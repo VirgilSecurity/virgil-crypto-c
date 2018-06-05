@@ -78,19 +78,19 @@ typedef struct vsf_kdf1_impl_t vsf_kdf1_impl_t;
 //  Return size of 'vsf_kdf1_impl_t' type.
 //
 VSF_PUBLIC size_t
-vsf_kdf1_impl_size (void);
+vsf_kdf1_impl_size(void);
 
 //
 //  Cast to the 'vsf_impl_t' type.
 //
 VSF_PUBLIC vsf_impl_t*
-vsf_kdf1_impl (vsf_kdf1_impl_t* kdf1_impl);
+vsf_kdf1_impl(vsf_kdf1_impl_t* kdf1_impl);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSF_PUBLIC vsf_error_t
-vsf_kdf1_init (vsf_kdf1_impl_t* kdf1_impl);
+vsf_kdf1_init(vsf_kdf1_impl_t* kdf1_impl);
 
 //
 //  Cleanup implementation context and it's dependencies.
@@ -99,14 +99,14 @@ vsf_kdf1_init (vsf_kdf1_impl_t* kdf1_impl);
 //  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_kdf1_cleanup (vsf_kdf1_impl_t* kdf1_impl);
+vsf_kdf1_cleanup(vsf_kdf1_impl_t* kdf1_impl);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
 VSF_PUBLIC vsf_kdf1_impl_t*
-vsf_kdf1_new (void);
+vsf_kdf1_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
@@ -115,7 +115,7 @@ vsf_kdf1_new (void);
 //  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_kdf1_delete (vsf_kdf1_impl_t* kdf1_impl);
+vsf_kdf1_delete(vsf_kdf1_impl_t* kdf1_impl);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -125,25 +125,25 @@ vsf_kdf1_delete (vsf_kdf1_impl_t* kdf1_impl);
 //  Given reference is nullified.
 //
 VSF_PUBLIC void
-vsf_kdf1_destroy (vsf_kdf1_impl_t** kdf1_impl_ref);
+vsf_kdf1_destroy(vsf_kdf1_impl_t** kdf1_impl_ref);
 
 //
 //  Setup dependency to the interface 'hash stream' and keep ownership.
 //
 VSF_PUBLIC void
-vsf_kdf1_use_hash_stream (vsf_kdf1_impl_t* kdf1_impl, vsf_impl_t* hash);
+vsf_kdf1_use_hash_stream(vsf_kdf1_impl_t* kdf1_impl, vsf_impl_t* hash);
 
 //
 //  Setup dependency to the interface 'hash stream' and transfer ownership.
 //
 VSF_PUBLIC void
-vsf_kdf1_take_hash_stream (vsf_kdf1_impl_t* kdf1_impl, vsf_impl_t** hash_ref);
+vsf_kdf1_take_hash_stream(vsf_kdf1_impl_t* kdf1_impl, vsf_impl_t** hash_ref);
 
 //
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
-vsf_kdf1_derive (vsf_kdf1_impl_t* kdf1_impl, const byte* data, size_t data_len, byte* key,
+vsf_kdf1_derive(vsf_kdf1_impl_t* kdf1_impl, const byte* data, size_t data_len, byte* key,
         size_t key_len);
 
 

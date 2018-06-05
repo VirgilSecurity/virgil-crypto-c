@@ -71,19 +71,19 @@ typedef struct vsf_cipher_auth_info_api_t vsf_cipher_auth_info_api_t;
 //  Returns constant 'auth tag len'.
 //
 VSF_PUBLIC size_t
-vsf_cipher_auth_info_auth_tag_len (const vsf_cipher_auth_info_api_t* cipher_auth_info_api);
+vsf_cipher_auth_info_auth_tag_len(const vsf_cipher_auth_info_api_t* cipher_auth_info_api);
 
 //
 //  Return cipher auth info API, or NULL if it is not implemented.
 //
 VSF_PUBLIC const vsf_cipher_auth_info_api_t*
-vsf_cipher_auth_info_api (vsf_impl_t* impl);
+vsf_cipher_auth_info_api(vsf_impl_t* impl);
 
 //
 //  Check if given object implements interface 'cipher auth info'.
 //
 VSF_PUBLIC bool
-vsf_cipher_auth_info_is_implemented (vsf_impl_t* impl);
+vsf_cipher_auth_info_is_implemented(vsf_impl_t* impl);
 
 
 // --------------------------------------------------------------------------

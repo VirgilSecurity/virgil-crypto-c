@@ -73,13 +73,13 @@ extern "C" {
 //  Provides initialization of the implementation specific context.
 //
 VSF_PRIVATE vsf_error_t
-vsf_hmac256_init_ctx (vsf_hmac256_impl_t* hmac256_impl);
+vsf_hmac256_init_ctx(vsf_hmac256_impl_t* hmac256_impl);
 
 //
 //  Provides cleanup of the implementation specific context.
 //
 VSF_PRIVATE void
-vsf_hmac256_cleanup_ctx (vsf_hmac256_impl_t* hmac256_impl);
+vsf_hmac256_cleanup_ctx(vsf_hmac256_impl_t* hmac256_impl);
 
 
 // --------------------------------------------------------------------------

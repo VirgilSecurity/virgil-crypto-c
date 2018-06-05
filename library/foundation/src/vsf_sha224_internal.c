@@ -164,7 +164,7 @@ static const vsf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSF_PUBLIC vsf_error_t
-vsf_sha224_init (vsf_sha224_impl_t* sha224_impl) {
+vsf_sha224_init(vsf_sha224_impl_t* sha224_impl) {
 
     VSF_ASSERT_PTR (sha224_impl);
     VSF_ASSERT_PTR (sha224_impl->info == NULL);
@@ -181,7 +181,7 @@ vsf_sha224_init (vsf_sha224_impl_t* sha224_impl) {
 //  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_sha224_cleanup (vsf_sha224_impl_t* sha224_impl) {
+vsf_sha224_cleanup(vsf_sha224_impl_t* sha224_impl) {
 
     VSF_ASSERT_PTR (sha224_impl);
 
@@ -199,7 +199,7 @@ vsf_sha224_cleanup (vsf_sha224_impl_t* sha224_impl) {
 //  Postcondition: check memory allocation result.
 //
 VSF_PUBLIC vsf_sha224_impl_t*
-vsf_sha224_new (void) {
+vsf_sha224_new(void) {
 
     vsf_sha224_impl_t *sha224_impl = (vsf_sha224_impl_t *) vsf_alloc (sizeof (vsf_sha224_impl_t));
     VSF_ASSERT_PTR (sha224_impl);
@@ -216,7 +216,7 @@ vsf_sha224_new (void) {
 //  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_sha224_delete (vsf_sha224_impl_t* sha224_impl) {
+vsf_sha224_delete(vsf_sha224_impl_t* sha224_impl) {
 
     if (sha224_impl) {
         vsf_sha224_cleanup (sha224_impl);
@@ -232,7 +232,7 @@ vsf_sha224_delete (vsf_sha224_impl_t* sha224_impl) {
 //  Given reference is nullified.
 //
 VSF_PUBLIC void
-vsf_sha224_destroy (vsf_sha224_impl_t** sha224_impl_ref) {
+vsf_sha224_destroy(vsf_sha224_impl_t** sha224_impl_ref) {
 
     VSF_ASSERT_PTR (sha224_impl_ref);
 
@@ -246,7 +246,7 @@ vsf_sha224_destroy (vsf_sha224_impl_t** sha224_impl_ref) {
 //  Returns instance of the implemented interface 'hash info'.
 //
 VSF_PUBLIC const vsf_hash_info_api_t*
-vsf_sha224_hash_info_api (void) {
+vsf_sha224_hash_info_api(void) {
 
     return &hash_info_api;
 }
@@ -255,7 +255,7 @@ vsf_sha224_hash_info_api (void) {
 //  Returns instance of the implemented interface 'hash'.
 //
 VSF_PUBLIC const vsf_hash_api_t*
-vsf_sha224_hash_api (void) {
+vsf_sha224_hash_api(void) {
 
     return &hash_api;
 }
@@ -264,7 +264,7 @@ vsf_sha224_hash_api (void) {
 //  Return size of 'vsf_sha224_impl_t' type.
 //
 VSF_PUBLIC size_t
-vsf_sha224_impl_size (void) {
+vsf_sha224_impl_size(void) {
 
     return sizeof (vsf_sha224_impl_t);
 }
@@ -273,7 +273,7 @@ vsf_sha224_impl_size (void) {
 //  Cast to the 'vsf_impl_t' type.
 //
 VSF_PUBLIC vsf_impl_t*
-vsf_sha224_impl (vsf_sha224_impl_t* sha224_impl) {
+vsf_sha224_impl(vsf_sha224_impl_t* sha224_impl) {
 
     VSF_ASSERT_PTR (sha224_impl);
     return (vsf_impl_t *) (sha224_impl);

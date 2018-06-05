@@ -73,7 +73,7 @@ extern "C" {
 //  Callback. Decrypt given data.
 //          If 'tag' is not give, then it will be taken from the 'enc'.
 //
-typedef vsf_error_t (*vsf_auth_decrypt_api_auth_decrypt_fn) (vsf_impl_t* impl, const byte* enc,
+typedef vsf_error_t (*vsf_auth_decrypt_api_auth_decrypt_fn)(vsf_impl_t* impl, const byte* enc,
         size_t enc_len, const byte* auth_data, size_t auth_data_len, const byte* tag,
         size_t tag_len, byte* dec, size_t dec_len, size_t* out_len);
 

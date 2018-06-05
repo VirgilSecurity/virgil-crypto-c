@@ -168,7 +168,7 @@ static const vsf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSF_PUBLIC vsf_error_t
-vsf_hmac224_init (vsf_hmac224_impl_t* hmac224_impl) {
+vsf_hmac224_init(vsf_hmac224_impl_t* hmac224_impl) {
 
     VSF_ASSERT_PTR (hmac224_impl);
     VSF_ASSERT_PTR (hmac224_impl->info == NULL);
@@ -185,7 +185,7 @@ vsf_hmac224_init (vsf_hmac224_impl_t* hmac224_impl) {
 //  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_hmac224_cleanup (vsf_hmac224_impl_t* hmac224_impl) {
+vsf_hmac224_cleanup(vsf_hmac224_impl_t* hmac224_impl) {
 
     VSF_ASSERT_PTR (hmac224_impl);
 
@@ -203,7 +203,7 @@ vsf_hmac224_cleanup (vsf_hmac224_impl_t* hmac224_impl) {
 //  Postcondition: check memory allocation result.
 //
 VSF_PUBLIC vsf_hmac224_impl_t*
-vsf_hmac224_new (void) {
+vsf_hmac224_new(void) {
 
     vsf_hmac224_impl_t *hmac224_impl = (vsf_hmac224_impl_t *) vsf_alloc (sizeof (vsf_hmac224_impl_t));
     VSF_ASSERT_PTR (hmac224_impl);
@@ -220,7 +220,7 @@ vsf_hmac224_new (void) {
 //  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_hmac224_delete (vsf_hmac224_impl_t* hmac224_impl) {
+vsf_hmac224_delete(vsf_hmac224_impl_t* hmac224_impl) {
 
     if (hmac224_impl) {
         vsf_hmac224_cleanup (hmac224_impl);
@@ -236,7 +236,7 @@ vsf_hmac224_delete (vsf_hmac224_impl_t* hmac224_impl) {
 //  Given reference is nullified.
 //
 VSF_PUBLIC void
-vsf_hmac224_destroy (vsf_hmac224_impl_t** hmac224_impl_ref) {
+vsf_hmac224_destroy(vsf_hmac224_impl_t** hmac224_impl_ref) {
 
     VSF_ASSERT_PTR (hmac224_impl_ref);
 
@@ -250,7 +250,7 @@ vsf_hmac224_destroy (vsf_hmac224_impl_t** hmac224_impl_ref) {
 //  Returns instance of the implemented interface 'hmac info'.
 //
 VSF_PUBLIC const vsf_hmac_info_api_t*
-vsf_hmac224_hmac_info_api (void) {
+vsf_hmac224_hmac_info_api(void) {
 
     return &hmac_info_api;
 }
@@ -259,7 +259,7 @@ vsf_hmac224_hmac_info_api (void) {
 //  Returns instance of the implemented interface 'hmac'.
 //
 VSF_PUBLIC const vsf_hmac_api_t*
-vsf_hmac224_hmac_api (void) {
+vsf_hmac224_hmac_api(void) {
 
     return &hmac_api;
 }
@@ -268,7 +268,7 @@ vsf_hmac224_hmac_api (void) {
 //  Return size of 'vsf_hmac224_impl_t' type.
 //
 VSF_PUBLIC size_t
-vsf_hmac224_impl_size (void) {
+vsf_hmac224_impl_size(void) {
 
     return sizeof (vsf_hmac224_impl_t);
 }
@@ -277,7 +277,7 @@ vsf_hmac224_impl_size (void) {
 //  Cast to the 'vsf_impl_t' type.
 //
 VSF_PUBLIC vsf_impl_t*
-vsf_hmac224_impl (vsf_hmac224_impl_t* hmac224_impl) {
+vsf_hmac224_impl(vsf_hmac224_impl_t* hmac224_impl) {
 
     VSF_ASSERT_PTR (hmac224_impl);
     return (vsf_impl_t *) (hmac224_impl);

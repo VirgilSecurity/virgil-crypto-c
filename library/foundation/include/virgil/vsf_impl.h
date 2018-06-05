@@ -98,12 +98,12 @@ typedef struct vsf_impl_t vsf_impl_t;
 //
 //  Callback type for cleanup action.
 //
-typedef void (*vsf_impl_cleanup_fn) (vsf_impl_t* impl);
+typedef void (*vsf_impl_cleanup_fn)(vsf_impl_t* impl);
 
 //
 //  Callback type for delete action.
 //
-typedef void (*vsf_impl_delete_fn) (vsf_impl_t* impl);
+typedef void (*vsf_impl_delete_fn)(vsf_impl_t* impl);
 
 //
 //  Return 'API' object that is fulfiled with a meta information
@@ -111,31 +111,31 @@ typedef void (*vsf_impl_delete_fn) (vsf_impl_t* impl);
 //  Or NULL if object does not implement requested 'API'.
 //
 VSF_PUBLIC const vsf_api_t*
-vsf_impl_api (vsf_impl_t* impl, vsf_api_tag_t api_tag);
+vsf_impl_api(vsf_impl_t* impl, vsf_api_tag_t api_tag);
 
 //
 //  Return unique 'Implementation TAG'.
 //
 VSF_PUBLIC vsf_impl_tag_t
-vsf_impl_tag (vsf_impl_t* impl);
+vsf_impl_tag(vsf_impl_t* impl);
 
 //
 //  Cleanup implementation object and it's dependencies.
 //
 VSF_PUBLIC void
-vsf_impl_cleanup (vsf_impl_t* impl);
+vsf_impl_cleanup(vsf_impl_t* impl);
 
 //
 //  Delete implementation object and it's dependencies.
 //
 VSF_PUBLIC void
-vsf_impl_delete (vsf_impl_t* impl);
+vsf_impl_delete(vsf_impl_t* impl);
 
 //
 //  Destroy implementation object and it's dependencies.
 //
 VSF_PUBLIC void
-vsf_impl_destroy (vsf_impl_t** impl_ref);
+vsf_impl_destroy(vsf_impl_t** impl_ref);
 
 
 // --------------------------------------------------------------------------

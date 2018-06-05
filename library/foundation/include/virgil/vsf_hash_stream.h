@@ -78,31 +78,31 @@ typedef struct vsf_hash_stream_api_t vsf_hash_stream_api_t;
 //  Start a new hashing.
 //
 VSF_PUBLIC void
-vsf_hash_stream_start (vsf_impl_t* impl);
+vsf_hash_stream_start(vsf_impl_t* impl);
 
 //
 //  Add given data to the hash.
 //
 VSF_PUBLIC void
-vsf_hash_stream_update (vsf_impl_t* impl, const byte* data, size_t data_len);
+vsf_hash_stream_update(vsf_impl_t* impl, const byte* data, size_t data_len);
 
 //
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSF_PUBLIC void
-vsf_hash_stream_finish (vsf_impl_t* impl, byte* digest, size_t digest_len);
+vsf_hash_stream_finish(vsf_impl_t* impl, byte* digest, size_t digest_len);
 
 //
 //  Return hash stream API, or NULL if it is not implemented.
 //
 VSF_PUBLIC const vsf_hash_stream_api_t*
-vsf_hash_stream_api (vsf_impl_t* impl);
+vsf_hash_stream_api(vsf_impl_t* impl);
 
 //
 //  Check if given object implements interface 'hash stream'.
 //
 VSF_PUBLIC bool
-vsf_hash_stream_is_implemented (vsf_impl_t* impl);
+vsf_hash_stream_is_implemented(vsf_impl_t* impl);
 
 
 // --------------------------------------------------------------------------

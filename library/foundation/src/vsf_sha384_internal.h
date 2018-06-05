@@ -73,13 +73,13 @@ extern "C" {
 //  Provides initialization of the implementation specific context.
 //
 VSF_PRIVATE vsf_error_t
-vsf_sha384_init_ctx (vsf_sha384_impl_t* sha384_impl);
+vsf_sha384_init_ctx(vsf_sha384_impl_t* sha384_impl);
 
 //
 //  Provides cleanup of the implementation specific context.
 //
 VSF_PRIVATE void
-vsf_sha384_cleanup_ctx (vsf_sha384_impl_t* sha384_impl);
+vsf_sha384_cleanup_ctx(vsf_sha384_impl_t* sha384_impl);
 
 
 // --------------------------------------------------------------------------

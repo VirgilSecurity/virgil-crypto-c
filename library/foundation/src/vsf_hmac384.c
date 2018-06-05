@@ -75,7 +75,7 @@
 //  Provides initialization of the implementation specific context.
 //
 VSF_PRIVATE vsf_error_t
-vsf_hmac384_init_ctx (vsf_hmac384_impl_t* hmac384_impl) {
+vsf_hmac384_init_ctx(vsf_hmac384_impl_t* hmac384_impl) {
 
     mbedtls_md_init (&hmac384_impl->hmac_ctx);
     int result = mbedtls_md_setup (&hmac384_impl->hmac_ctx, mbedtls_md_info_from_type (MBEDTLS_MD_SHA384), 1);
@@ -97,7 +97,7 @@ vsf_hmac384_init_ctx (vsf_hmac384_impl_t* hmac384_impl) {
 //  Provides cleanup of the implementation specific context.
 //
 VSF_PRIVATE void
-vsf_hmac384_cleanup_ctx (vsf_hmac384_impl_t* hmac384_impl) {
+vsf_hmac384_cleanup_ctx(vsf_hmac384_impl_t* hmac384_impl) {
 
     mbedtls_md_free (&hmac384_impl->hmac_ctx);
 }
@@ -106,7 +106,7 @@ vsf_hmac384_cleanup_ctx (vsf_hmac384_impl_t* hmac384_impl) {
 //  Calculate hmac over given data.
 //
 VSF_PUBLIC void
-vsf_hmac384_hmac (const byte* key, size_t key_len, const byte* data, size_t data_len, byte* hmac,
+vsf_hmac384_hmac(const byte* key, size_t key_len, const byte* data, size_t data_len, byte* hmac,
         size_t hmac_len) {
 
     VSF_ASSERT_OPT (hmac_len >= vsf_hmac384_DIGEST_SIZE);
@@ -118,7 +118,7 @@ vsf_hmac384_hmac (const byte* key, size_t key_len, const byte* data, size_t data
 //  Reset HMAC.
 //
 VSF_PUBLIC void
-vsf_hmac384_reset (vsf_hmac384_impl_t* hmac384_impl) {
+vsf_hmac384_reset(vsf_hmac384_impl_t* hmac384_impl) {
 
     mbedtls_md_hmac_reset (&hmac384_impl->hmac_ctx);
 }
@@ -127,7 +127,7 @@ vsf_hmac384_reset (vsf_hmac384_impl_t* hmac384_impl) {
 //  Start a new HMAC.
 //
 VSF_PUBLIC void
-vsf_hmac384_start (vsf_hmac384_impl_t* hmac384_impl, const byte* key, size_t key_len) {
+vsf_hmac384_start(vsf_hmac384_impl_t* hmac384_impl, const byte* key, size_t key_len) {
 
     mbedtls_md_hmac_starts (&hmac384_impl->hmac_ctx, key, key_len);
 }
@@ -136,7 +136,7 @@ vsf_hmac384_start (vsf_hmac384_impl_t* hmac384_impl, const byte* key, size_t key
 //  Add given data to the HMAC.
 //
 VSF_PUBLIC void
-vsf_hmac384_update (vsf_hmac384_impl_t* hmac384_impl, const byte* data, size_t data_len) {
+vsf_hmac384_update(vsf_hmac384_impl_t* hmac384_impl, const byte* data, size_t data_len) {
 
     mbedtls_md_hmac_update (&hmac384_impl->hmac_ctx, data, data_len);
 }
@@ -145,7 +145,7 @@ vsf_hmac384_update (vsf_hmac384_impl_t* hmac384_impl, const byte* data, size_t d
 //  Accompilsh HMAC and return it's result (a message digest).
 //
 VSF_PUBLIC void
-vsf_hmac384_finish (vsf_hmac384_impl_t* hmac384_impl, byte* hmac, size_t hmac_len) {
+vsf_hmac384_finish(vsf_hmac384_impl_t* hmac384_impl, byte* hmac, size_t hmac_len) {
 
     VSF_ASSERT_OPT (hmac_len >= vsf_hmac384_DIGEST_SIZE);
 

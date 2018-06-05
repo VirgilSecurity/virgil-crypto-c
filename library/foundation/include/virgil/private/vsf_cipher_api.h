@@ -75,12 +75,12 @@ extern "C" {
 //
 //  Callback. Setup IV or nonce.
 //
-typedef void (*vsf_cipher_api_set_nonce_fn) (vsf_impl_t* impl, const byte* nonce, size_t nonce_len);
+typedef void (*vsf_cipher_api_set_nonce_fn)(vsf_impl_t* impl, const byte* nonce, size_t nonce_len);
 
 //
 //  Callback. Set cipher encryption / decryption key.
 //
-typedef void (*vsf_cipher_api_set_key_fn) (vsf_impl_t* impl, const byte* key, size_t key_len);
+typedef void (*vsf_cipher_api_set_key_fn)(vsf_impl_t* impl, const byte* key, size_t key_len);
 
 //
 //  Contains API requirements of the interface 'cipher'.
