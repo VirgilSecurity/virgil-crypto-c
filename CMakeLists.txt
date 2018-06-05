@@ -100,9 +100,9 @@ find_program (CLOC_EXE cloc)
 if(CLOC_EXE)
     add_custom_target(cloc
         COMMAND ${CLOC_EXE}
-                "${CMAKE_CURRENT_LIST_DIR}/library/include/virgil"
-                "${CMAKE_CURRENT_LIST_DIR}/library/include/virgil/private"
-                "${CMAKE_CURRENT_LIST_DIR}/library/src"
+                "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil"
+                "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil/private"
+                "${CMAKE_CURRENT_LIST_DIR}/library/foundation/src"
         COMMENT "Calculate lines of code..."
     )
 endif()
