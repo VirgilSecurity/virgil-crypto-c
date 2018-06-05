@@ -68,15 +68,15 @@
 //  Extracts fixed-length pseudorandom key from keying material.
 //
 static void
-vsf_hkdf_extract(vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len, const byte* salt,
-        size_t salt_len, byte* pr_key, size_t pr_key_len);
+vsf_hkdf_extract(vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len, const byte* salt, size_t salt_len,
+        byte* pr_key, size_t pr_key_len);
 
 //
 //  Expands the pseudorandom key to the desired length.
 //
 static void
-vsf_hkdf_expand(vsf_hkdf_impl_t* hkdf_impl, byte* pr_key, size_t pr_key_len, const byte* info,
-        size_t info_len, byte* key, size_t key_len);
+vsf_hkdf_expand(vsf_hkdf_impl_t* hkdf_impl, byte* pr_key, size_t pr_key_len, const byte* info, size_t info_len,
+        byte* key, size_t key_len);
 
 
 // --------------------------------------------------------------------------
@@ -90,8 +90,8 @@ vsf_hkdf_expand(vsf_hkdf_impl_t* hkdf_impl, byte* pr_key, size_t pr_key_len, con
 //  Extracts fixed-length pseudorandom key from keying material.
 //
 static void
-vsf_hkdf_extract(vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len, const byte* salt,
-        size_t salt_len, byte* pr_key, size_t pr_key_len) {
+vsf_hkdf_extract(vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len, const byte* salt, size_t salt_len,
+        byte* pr_key, size_t pr_key_len) {
 
     vsf_hmac_stream_reset (hkdf_impl->hmac);
     vsf_hmac_stream_start (hkdf_impl->hmac, salt, salt_len);
@@ -103,8 +103,8 @@ vsf_hkdf_extract(vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len, 
 //  Expands the pseudorandom key to the desired length.
 //
 static void
-vsf_hkdf_expand(vsf_hkdf_impl_t* hkdf_impl, byte* pr_key, size_t pr_key_len, const byte* info,
-        size_t info_len, byte* key, size_t key_len) {
+vsf_hkdf_expand(vsf_hkdf_impl_t* hkdf_impl, byte* pr_key, size_t pr_key_len, const byte* info, size_t info_len,
+        byte* key, size_t key_len) {
 
     unsigned char counter = 0x00;
     vsf_hmac_stream_start (hkdf_impl->hmac, pr_key, pr_key_len);
@@ -132,8 +132,8 @@ vsf_hkdf_expand(vsf_hkdf_impl_t* hkdf_impl, byte* pr_key, size_t pr_key_len, con
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
-vsf_hkdf_derive(vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len, const byte* salt,
-        size_t salt_len, const byte* info, size_t info_len, byte* key, size_t key_len) {
+vsf_hkdf_derive(vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len, const byte* salt, size_t salt_len,
+        const byte* info, size_t info_len, byte* key, size_t key_len) {
 
     VSF_ASSERT_PTR (hkdf_impl);
     VSF_ASSERT_PTR (hkdf_impl->hmac);

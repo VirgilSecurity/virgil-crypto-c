@@ -76,8 +76,7 @@
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
-vsf_kdf1_derive(vsf_kdf1_impl_t* kdf1_impl, const byte* data, size_t data_len, byte* key,
-        size_t key_len) {
+vsf_kdf1_derive(vsf_kdf1_impl_t* kdf1_impl, const byte* data, size_t data_len, byte* key, size_t key_len) {
 
     VSF_ASSERT_PTR (kdf1_impl);
     VSF_ASSERT_PTR (kdf1_impl->hash);

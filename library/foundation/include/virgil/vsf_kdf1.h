@@ -144,8 +144,7 @@ vsf_kdf1_take_hash_stream(vsf_kdf1_impl_t* kdf1_impl, vsf_impl_t** hash_ref);
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
-vsf_kdf1_derive(vsf_kdf1_impl_t* kdf1_impl, const byte* data, size_t data_len, byte* key,
-        size_t key_len);
+vsf_kdf1_derive(vsf_kdf1_impl_t* kdf1_impl, const byte* data, size_t data_len, byte* key, size_t key_len);
 
 
 // --------------------------------------------------------------------------

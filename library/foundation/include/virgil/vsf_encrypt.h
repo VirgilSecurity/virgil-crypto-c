@@ -78,8 +78,7 @@ typedef struct vsf_encrypt_api_t vsf_encrypt_api_t;
 //  Encrypt given data.
 //
 VSF_PUBLIC vsf_error_t
-vsf_encrypt(vsf_impl_t* impl, const byte* data, size_t data_len, byte* enc, size_t enc_len,
-        size_t* out_len);
+vsf_encrypt(vsf_impl_t* impl, const byte* data, size_t data_len, byte* enc, size_t enc_len, size_t* out_len);
 
 //
 //  Calculate required buffer length to hold the encrypted data.

@@ -66,9 +66,8 @@
 //  If 'tag' is not give, then it will written to the 'enc'.
 //
 VSF_PUBLIC vsf_error_t
-vsf_auth_encrypt(vsf_impl_t* impl, const byte* data, size_t data_len, const byte* auth_data,
-        size_t auth_data_len, byte* enc, size_t enc_len, size_t* out_len, byte* tag,
-        size_t tag_len) {
+vsf_auth_encrypt(vsf_impl_t* impl, const byte* data, size_t data_len, const byte* auth_data, size_t auth_data_len,
+        byte* enc, size_t enc_len, size_t* out_len, byte* tag, size_t tag_len) {
 
     const vsf_auth_encrypt_api_t *auth_encrypt_api = vsf_auth_encrypt_api (impl);
     VSF_ASSERT_PTR (auth_encrypt_api);

@@ -74,8 +74,8 @@ extern "C" {
 //
 //  Callback. Calculate hmac over given data.
 //
-typedef void (*vsf_hmac_api_hmac_fn)(const byte* key, size_t key_len, const byte* data,
-        size_t data_len, byte* hmac, size_t hmac_len);
+typedef void (*vsf_hmac_api_hmac_fn)(const byte* key, size_t key_len, const byte* data, size_t data_len, byte* hmac,
+        size_t hmac_len);
 
 //
 //  Contains API requirements of the interface 'hmac'.

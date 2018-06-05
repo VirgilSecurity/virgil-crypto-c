@@ -71,7 +71,7 @@ function _L23_format_proxy_arguments (method, beginning, ending, tab_count, line
     my.ending ?= ""
     my.ending = ")" + my.ending
     my.tab_count ?= 0
-    my.line_limit ?= 100
+    my.line_limit ?= 120
     my.line = "("
     my.result = ""
     my.indent = tabs (my.tab_count)
