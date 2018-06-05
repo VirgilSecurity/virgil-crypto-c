@@ -106,3 +106,12 @@ if(CLOC_EXE)
         COMMENT "Calculate lines of code..."
     )
 endif()
+
+# ---------------------------------------------------------------------------
+#   Format code
+# ---------------------------------------------------------------------------
+include("cmake/clangformat.cmake")
+
+if (TARGET vsf)
+    add_clangformat(vsf)
+endif()
