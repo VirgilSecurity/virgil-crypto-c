@@ -53,6 +53,11 @@ option(ENABLE_BENCHMARKS "On/Off build library benchmarks." ON)
 add_subdirectory ("thirdparty/mbedtls")
 
 #
+# Pythia
+#
+add_subdirectory ("thirdparty/pythia")
+
+#
 # Library that force compiler to the pedantic mode.
 #
 add_library(enable_pedantic INTERFACE)
@@ -74,6 +79,7 @@ target_link_libraries(enable_profiling INTERFACE $<$<C_COMPILER_ID:GNU>:-pg>)
 #   Library core libraries
 # ---------------------------------------------------------------------------
 add_subdirectory ("library/foundation")
+add_subdirectory ("library/pythia")
 
 
 # ---------------------------------------------------------------------------
@@ -98,13 +104,24 @@ endif()
 find_program (CLOC_EXE cloc)
 
 if(CLOC_EXE)
-    add_custom_target(cloc
+    add_custom_target(cloc-foundation
         COMMAND ${CLOC_EXE}
                 "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil"
                 "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil/private"
                 "${CMAKE_CURRENT_LIST_DIR}/library/foundation/src"
-        COMMENT "Calculate lines of code..."
+        COMMENT "Calculate lines of the 'foundation' library..."
     )
+
+    add_custom_target(cloc-pythia
+        COMMAND ${CLOC_EXE}
+                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil"
+                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/private"
+                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/src"
+        COMMENT "Calculate lines of the 'pythia' library..."
+    )
+
+    add_custom_target(cloc)
+    add_dependencies(cloc cloc-foundation cloc-pythia)
 endif()
 
 # ---------------------------------------------------------------------------
@@ -114,4 +131,5 @@ include("cmake/clangformat.cmake")
 
 if (TARGET vsf)
     add_clangformat(vsf)
+    add_clangformat(vsc_pythia)
 endif()
