@@ -92,10 +92,10 @@ vsf_kdf2_derive(vsf_kdf2_impl_t* kdf2_impl, const byte* data, size_t data_len, b
     size_t counter = 1;
     size_t counter_len = VSF_CEIL(key_len, digest_len);
     size_t current_key_len = 0;
-    unsigned char counter_string[4] = { 0x0 };
+    unsigned char counter_string[4] = {0x0};
 
     // Start hashing
-    for(; counter <= counter_len ; ++counter) {
+    for (; counter <= counter_len; ++counter) {
         counter_string[0] = (unsigned char)((counter >> 24) & 255);
         counter_string[1] = (unsigned char)((counter >> 16) & 255);
         counter_string[2] = (unsigned char)((counter >> 8)) & 255;
@@ -109,8 +109,7 @@ vsf_kdf2_derive(vsf_kdf2_impl_t* kdf2_impl, const byte* data, size_t data_len, b
             vsf_hash_stream_finish(kdf2_impl->hash, key + current_key_len, digest_len);
             current_key_len += digest_len;
 
-        }
-        else {
+        } else {
             vsf_hash_stream_finish(kdf2_impl->hash, digest, digest_len);
             memcpy(key + current_key_len, digest, key_len - current_key_len);
             current_key_len = key_len;

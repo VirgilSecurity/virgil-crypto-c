@@ -79,9 +79,9 @@
 VSF_PRIVATE vsf_error_t
 vsf_sha256_init_ctx(vsf_sha256_impl_t* sha256_impl) {
 
-    VSF_ASSERT_PTR (sha256_impl);
+    VSF_ASSERT_PTR(sha256_impl);
 
-    mbedtls_sha256_init (&sha256_impl->hash_ctx);
+    mbedtls_sha256_init(&sha256_impl->hash_ctx);
 
     return vsf_SUCCESS;
 }
@@ -92,9 +92,9 @@ vsf_sha256_init_ctx(vsf_sha256_impl_t* sha256_impl) {
 VSF_PRIVATE void
 vsf_sha256_cleanup_ctx(vsf_sha256_impl_t* sha256_impl) {
 
-    VSF_ASSERT_PTR (sha256_impl);
+    VSF_ASSERT_PTR(sha256_impl);
 
-    mbedtls_sha256_free (&sha256_impl->hash_ctx);
+    mbedtls_sha256_free(&sha256_impl->hash_ctx);
 }
 
 //
@@ -103,12 +103,12 @@ vsf_sha256_cleanup_ctx(vsf_sha256_impl_t* sha256_impl) {
 VSF_PUBLIC void
 vsf_sha256_hash(const byte* data, size_t data_len, byte* digest, size_t digest_len) {
 
-    VSF_ASSERT_PTR (data);
-    VSF_ASSERT_PTR (digest);
-    VSF_ASSERT_OPT (digest_len >= vsf_sha256_DIGEST_SIZE);
+    VSF_ASSERT_PTR(data);
+    VSF_ASSERT_PTR(digest);
+    VSF_ASSERT_OPT(digest_len >= vsf_sha256_DIGEST_SIZE);
 
     const int is224 = 0;
-    mbedtls_sha256 (data, data_len, digest, is224);
+    mbedtls_sha256(data, data_len, digest, is224);
 }
 
 //
@@ -117,10 +117,10 @@ vsf_sha256_hash(const byte* data, size_t data_len, byte* digest, size_t digest_l
 VSF_PUBLIC void
 vsf_sha256_start(vsf_sha256_impl_t* sha256_impl) {
 
-    VSF_ASSERT_PTR (sha256_impl);
+    VSF_ASSERT_PTR(sha256_impl);
 
     const int is224 = 0;
-    mbedtls_sha256_starts (&sha256_impl->hash_ctx, is224);
+    mbedtls_sha256_starts(&sha256_impl->hash_ctx, is224);
 }
 
 //
@@ -129,10 +129,10 @@ vsf_sha256_start(vsf_sha256_impl_t* sha256_impl) {
 VSF_PUBLIC void
 vsf_sha256_update(vsf_sha256_impl_t* sha256_impl, const byte* data, size_t data_len) {
 
-    VSF_ASSERT_PTR (sha256_impl);
-    VSF_ASSERT_PTR (data);
+    VSF_ASSERT_PTR(sha256_impl);
+    VSF_ASSERT_PTR(data);
 
-    mbedtls_sha256_update (&sha256_impl->hash_ctx, data, data_len);
+    mbedtls_sha256_update(&sha256_impl->hash_ctx, data, data_len);
 }
 
 //
@@ -141,9 +141,9 @@ vsf_sha256_update(vsf_sha256_impl_t* sha256_impl, const byte* data, size_t data_
 VSF_PUBLIC void
 vsf_sha256_finish(vsf_sha256_impl_t* sha256_impl, byte* digest, size_t digest_len) {
 
-    VSF_ASSERT_PTR (sha256_impl);
-    VSF_ASSERT_PTR (digest);
-    VSF_ASSERT_OPT (digest_len >= vsf_sha256_DIGEST_SIZE);
+    VSF_ASSERT_PTR(sha256_impl);
+    VSF_ASSERT_PTR(digest);
+    VSF_ASSERT_OPT(digest_len >= vsf_sha256_DIGEST_SIZE);
 
-    mbedtls_sha256_finish (&sha256_impl->hash_ctx, digest);
+    mbedtls_sha256_finish(&sha256_impl->hash_ctx, digest);
 }
