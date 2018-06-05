@@ -79,19 +79,19 @@
 VSF_PRIVATE vsf_error_t
 vsf_hmac224_init_ctx(vsf_hmac224_impl_t* hmac224_impl) {
 
-    mbedtls_md_init (&hmac224_impl->hmac_ctx);
-    int result = mbedtls_md_setup (&hmac224_impl->hmac_ctx, mbedtls_md_info_from_type (MBEDTLS_MD_SHA224), 1);
+    mbedtls_md_init(&hmac224_impl->hmac_ctx);
+    int result = mbedtls_md_setup(&hmac224_impl->hmac_ctx, mbedtls_md_info_from_type(MBEDTLS_MD_SHA224), 1);
 
     switch (result) {
-        case 0:
-            return vsf_SUCCESS;
+    case 0:
+        return vsf_SUCCESS;
 
-        case MBEDTLS_ERR_MD_ALLOC_FAILED:
-            return vsf_error_NO_MEMORY;
+    case MBEDTLS_ERR_MD_ALLOC_FAILED:
+        return vsf_error_NO_MEMORY;
 
-        default:
-            VSF_ASSERT (result && "mbedtls error");
-            return vsf_error_BAD_ARGUMENTS;
+    default:
+        VSF_ASSERT(result && "mbedtls error");
+        return vsf_error_BAD_ARGUMENTS;
     }
 }
 
@@ -101,7 +101,7 @@ vsf_hmac224_init_ctx(vsf_hmac224_impl_t* hmac224_impl) {
 VSF_PRIVATE void
 vsf_hmac224_cleanup_ctx(vsf_hmac224_impl_t* hmac224_impl) {
 
-    mbedtls_md_free (&hmac224_impl->hmac_ctx);
+    mbedtls_md_free(&hmac224_impl->hmac_ctx);
 }
 
 //
@@ -110,9 +110,9 @@ vsf_hmac224_cleanup_ctx(vsf_hmac224_impl_t* hmac224_impl) {
 VSF_PUBLIC void
 vsf_hmac224_hmac(const byte* key, size_t key_len, const byte* data, size_t data_len, byte* hmac, size_t hmac_len) {
 
-    VSF_ASSERT_OPT (hmac_len >= vsf_hmac224_DIGEST_SIZE);
+    VSF_ASSERT_OPT(hmac_len >= vsf_hmac224_DIGEST_SIZE);
 
-    mbedtls_md_hmac (mbedtls_md_info_from_type (MBEDTLS_MD_SHA224), key, key_len, data, data_len, hmac);
+    mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA224), key, key_len, data, data_len, hmac);
 }
 
 //
@@ -121,7 +121,7 @@ vsf_hmac224_hmac(const byte* key, size_t key_len, const byte* data, size_t data_
 VSF_PUBLIC void
 vsf_hmac224_reset(vsf_hmac224_impl_t* hmac224_impl) {
 
-    mbedtls_md_hmac_reset (&hmac224_impl->hmac_ctx);
+    mbedtls_md_hmac_reset(&hmac224_impl->hmac_ctx);
 }
 
 //
@@ -130,7 +130,7 @@ vsf_hmac224_reset(vsf_hmac224_impl_t* hmac224_impl) {
 VSF_PUBLIC void
 vsf_hmac224_start(vsf_hmac224_impl_t* hmac224_impl, const byte* key, size_t key_len) {
 
-    mbedtls_md_hmac_starts (&hmac224_impl->hmac_ctx, key, key_len);
+    mbedtls_md_hmac_starts(&hmac224_impl->hmac_ctx, key, key_len);
 }
 
 //
@@ -139,7 +139,7 @@ vsf_hmac224_start(vsf_hmac224_impl_t* hmac224_impl, const byte* key, size_t key_
 VSF_PUBLIC void
 vsf_hmac224_update(vsf_hmac224_impl_t* hmac224_impl, const byte* data, size_t data_len) {
 
-    mbedtls_md_hmac_update (&hmac224_impl->hmac_ctx, data, data_len);
+    mbedtls_md_hmac_update(&hmac224_impl->hmac_ctx, data, data_len);
 }
 
 //
@@ -148,7 +148,7 @@ vsf_hmac224_update(vsf_hmac224_impl_t* hmac224_impl, const byte* data, size_t da
 VSF_PUBLIC void
 vsf_hmac224_finish(vsf_hmac224_impl_t* hmac224_impl, byte* hmac, size_t hmac_len) {
 
-    VSF_ASSERT_OPT (hmac_len >= vsf_hmac224_DIGEST_SIZE);
+    VSF_ASSERT_OPT(hmac_len >= vsf_hmac224_DIGEST_SIZE);
 
-    mbedtls_md_hmac_finish (&hmac224_impl->hmac_ctx, hmac);
+    mbedtls_md_hmac_finish(&hmac224_impl->hmac_ctx, hmac);
 }
