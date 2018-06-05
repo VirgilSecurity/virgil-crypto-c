@@ -172,6 +172,43 @@ function implementation_resolve_require_include (require, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve model: implementation.macros.
+# ---------------------------------------------------------------------------
+function implementation_resolve_macros (macros, parent)
+    check_arguments (my, "macros, parent", my)
+
+    my.macros.definition ?= "private"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve model: implementation.macros.
+# ---------------------------------------------------------------------------
+function implementation_resolve_macroses (macroses, parent)
+    check_arguments (my, "macroses, parent", my)
+
+    my.macroses.definition ?= "private"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve model: implementation.constant.
+# ---------------------------------------------------------------------------
+function implementation_resolve_constant (constant, parent)
+    check_arguments (my, "constant, parent", my)
+
+    my.constant.definition ?= "private"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve model: implementation.enum.
+# ---------------------------------------------------------------------------
+function implementation_resolve_enum (enum, parent)
+    check_arguments (my, "enum, parent", my)
+
+    my.enum.declaration ?= "private"
+    my.enum.definition ?= "private"
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve model: implementation.method.
 # ---------------------------------------------------------------------------
 function implementation_resolve_method (method, parent)
@@ -209,6 +246,22 @@ function implementation_resolve (implementation, parent, project)
 
     for my.implementation.dependency
         implementation_resolve_dependency (dependency, my.implementation)
+    endfor
+
+    for my.implementation.constant
+        implementation_resolve_constant (constant, my.implementation)
+    endfor
+
+    for my.implementation.macros
+        implementation_resolve_macros (macros, my.implementation)
+    endfor
+
+    for my.implementation.macroses
+        implementation_resolve_macroses (macroses, my.implementation)
+    endfor
+
+    for my.implementation.enum
+        implementation_resolve_enum (enum, my.implementation)
     endfor
 
     for my.implementation.method

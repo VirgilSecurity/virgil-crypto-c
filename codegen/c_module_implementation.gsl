@@ -1140,6 +1140,43 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add functions that are defined in the implementation itself.
 # ---------------------------------------------------------------------------
+function _Z19_add_constants (impl, destination, meta)
+    check_arguments (my, "impl, destination, meta", my)
+
+    for my.impl.constant
+        copy constant to my.destination
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add functions that are defined in the implementation itself.
+# ---------------------------------------------------------------------------
+function _Z19_add_enums (impl, destination, meta)
+    check_arguments (my, "impl, destination, meta", my)
+
+    for my.impl.enum
+        copy enum to my.destination
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add functions that are defined in the implementation itself.
+# ---------------------------------------------------------------------------
+function _Z19_add_macroses (impl, destination, meta)
+    check_arguments (my, "impl, destination, meta", my)
+
+    for my.impl.macros
+        copy macros to my.destination
+    endfor
+
+    for my.impl.macroses
+        copy macroses to my.destination
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add functions that are defined in the implementation itself.
+# ---------------------------------------------------------------------------
 function _Z19_add_methods (impl, destination, meta)
     check_arguments (my, "impl, destination, meta", my)
 
@@ -1196,6 +1233,9 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
         endif
 
         _Z19_add_interface_api_methods (my.impl, "public", "external", module, my.meta)
+        _Z19_add_constants (my.impl, module, my.meta)
+        _Z19_add_enums (my.impl, module, my.meta)
+        _Z19_add_macroses (my.impl, module, my.meta)
         _Z19_add_methods (my.impl, module, my.meta)
         _Z19_add_interface_methods (my.impl, "public", module, my.meta)
     endnew
