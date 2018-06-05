@@ -67,15 +67,25 @@
 //  Extracts fixed-length pseudorandom key from keying material.
 //
 static void
-vsf_hkdf_extract (vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len, const byte* salt,
-        size_t salt_len, byte* pr_key, size_t pr_key_len);
+vsf_hkdf_extract (vsf_hkdf_impl_t* hkdf_impl,
+    const byte* data,
+    size_t data_len,
+    const byte* salt,
+    size_t salt_len,
+    byte* pr_key,
+    size_t pr_key_len);
 
 //
 //  Expands the pseudorandom key to the desired length.
 //
 static void
-vsf_hkdf_expand (vsf_hkdf_impl_t* hkdf_impl, byte* pr_key, size_t pr_key_len, const byte* info,
-        size_t info_len, byte* key, size_t key_len);
+vsf_hkdf_expand (vsf_hkdf_impl_t* hkdf_impl,
+    byte* pr_key,
+    size_t pr_key_len,
+    const byte* info,
+    size_t info_len,
+    byte* key,
+    size_t key_len);
 
 
 // --------------------------------------------------------------------------
@@ -88,8 +98,13 @@ vsf_hkdf_expand (vsf_hkdf_impl_t* hkdf_impl, byte* pr_key, size_t pr_key_len, co
 //  Extracts fixed-length pseudorandom key from keying material.
 //
 static void
-vsf_hkdf_extract (vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len, const byte* salt,
-        size_t salt_len, byte* pr_key, size_t pr_key_len) {
+vsf_hkdf_extract (vsf_hkdf_impl_t* hkdf_impl,
+    const byte* data,
+    size_t data_len,
+    const byte* salt,
+    size_t salt_len,
+    byte* pr_key,
+    size_t pr_key_len) {
 
     vsf_hmac_stream_reset (hkdf_impl->hmac);
     vsf_hmac_stream_start (hkdf_impl->hmac, salt, salt_len);
@@ -101,8 +116,13 @@ vsf_hkdf_extract (vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len,
 //  Expands the pseudorandom key to the desired length.
 //
 static void
-vsf_hkdf_expand (vsf_hkdf_impl_t* hkdf_impl, byte* pr_key, size_t pr_key_len, const byte* info,
-        size_t info_len, byte* key, size_t key_len) {
+vsf_hkdf_expand (vsf_hkdf_impl_t* hkdf_impl,
+    byte* pr_key,
+    size_t pr_key_len,
+    const byte* info,
+    size_t info_len,
+    byte* key,
+    size_t key_len) {
 
     unsigned char counter = 0x00;
     vsf_hmac_stream_start (hkdf_impl->hmac, pr_key, pr_key_len);
@@ -130,8 +150,15 @@ vsf_hkdf_expand (vsf_hkdf_impl_t* hkdf_impl, byte* pr_key, size_t pr_key_len, co
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
-vsf_hkdf_derive (vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len, const byte* salt,
-        size_t salt_len, const byte* info, size_t info_len, byte* key, size_t key_len) {
+vsf_hkdf_derive (vsf_hkdf_impl_t* hkdf_impl,
+    const byte* data,
+    size_t data_len,
+    const byte* salt,
+    size_t salt_len,
+    const byte* info,
+    size_t info_len,
+    byte* key,
+    size_t key_len) {
 
     VSF_ASSERT_PTR (hkdf_impl);
     VSF_ASSERT_PTR (hkdf_impl->hmac);
@@ -141,13 +168,18 @@ vsf_hkdf_derive (vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len, 
     VSF_ASSERT_PTR (key);
 
     size_t pr_key_len = vsf_hmac_info_digest_size (vsf_hmac_info_api (hkdf_impl->hmac));
-    unsigned char* pr_key = vsf_alloc (pr_key_len);
 
+    unsigned char* pr_key = vsf_alloc (pr_key_len);
+            
+    VSF_ASSERT_PTR (pr_key);
+            
     vsf_hkdf_extract (hkdf_impl, data, data_len, salt, salt_len, pr_key, pr_key_len);
-    if (key_len < 255*pr_key_len)
+    if (key_len < 255*pr_key_len) {
         vsf_hkdf_expand (hkdf_impl, pr_key, pr_key_len, info, info_len, key, key_len);
-    else
-        VSF_ASSERT_INTERNAL ("Key size is large!!!");
+    }     
+    else {
+        VSF_ASSERT_OPT ("Key size is large!!!");
+    }
 
     vsf_dealloc (pr_key);
 }
