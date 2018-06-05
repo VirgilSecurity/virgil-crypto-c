@@ -8,6 +8,8 @@
 
         <dependency name="hmac" interface="hmac stream" type="impl"/>
 
+        <constant name="hash counter max" value="255"/>
+
         <method name="extract" context="impl">
             Extracts fixed-length pseudorandom key from keying material.
 
