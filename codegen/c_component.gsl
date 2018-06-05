@@ -588,6 +588,27 @@ endfunction
 # ###########################################################################
 
 # ---------------------------------------------------------------------------
+#   Create 'c_modifiers' from component attributes:
+#       - visibility
+#       - declaration
+#       - definition
+# ---------------------------------------------------------------------------
+function c_component_create_modifiers (component, destination)
+    check_arguments (my, "component, destination", my)
+
+    new c_modifier to my.destination
+        if item_in (my.component, "method") & my.component.declaration = "private"
+            .value = "static"
+
+        elsif my.component.visibility = "public"
+            .value = ".(c_global_macros_public)"
+        else
+            .value = ".(c_global_macros_private)"
+        endif
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create 'c_implementation' from 'implementation'.
 # ---------------------------------------------------------------------------
 function c_component_create_implementation (implementation, destination)
@@ -766,6 +787,8 @@ function c_component_create_method (method, destination)
         else
             c_component_create_stub_implementation (c_method)
         endfor
+
+        c_component_create_modifiers (my.method, c_method)
     endnew
 endfunction
 
@@ -952,6 +975,8 @@ function c_component_create_variable (variable, destination)
         if count (my.variable.array) & my.variable->array.length = "null_terminated"
             c_component_create_null_value (c_variable)
         endif
+
+        c_component_create_modifiers (my.variable, c_variable)
     endnew
 endfunction
 
