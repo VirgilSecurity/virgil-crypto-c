@@ -118,12 +118,17 @@ endfunction
 function c_derive_component_modifiers (component)
     check_argument (my, "component", my)
 
-    #   TODO: Replace hard-coded values by UIDs
-    if my.component.visibility = "public"
-        return "VSF_PUBLIC"
-    else
-        return "VSF_PRIVATE"
-    endif
+    my.modifiers = ""
+
+    for my.component.c_modifier
+        if ! first ()
+            my.modifiers += " "
+        endif
+
+        my.modifiers += c_modifier.value
+    endfor
+
+    return my.modifiers
 endfunction
 
 # ---------------------------------------------------------------------------
