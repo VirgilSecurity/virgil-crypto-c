@@ -73,7 +73,7 @@ extern "C" {
 //  Callback. Encrypt given data.
 //          If 'tag' is not give, then it will written to the 'enc'.
 //
-typedef vsf_error_t (*vsf_auth_encrypt_api_auth_encrypt_fn) (vsf_impl_t* impl, const byte* data,
+typedef vsf_error_t (*vsf_auth_encrypt_api_auth_encrypt_fn)(vsf_impl_t* impl, const byte* data,
         size_t data_len, const byte* auth_data, size_t auth_data_len, byte* enc, size_t enc_len,
         size_t* out_len, byte* tag, size_t tag_len);
 

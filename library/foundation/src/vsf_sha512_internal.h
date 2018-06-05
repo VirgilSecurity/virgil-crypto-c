@@ -73,13 +73,13 @@ extern "C" {
 //  Provides initialization of the implementation specific context.
 //
 VSF_PRIVATE vsf_error_t
-vsf_sha512_init_ctx (vsf_sha512_impl_t* sha512_impl);
+vsf_sha512_init_ctx(vsf_sha512_impl_t* sha512_impl);
 
 //
 //  Provides cleanup of the implementation specific context.
 //
 VSF_PRIVATE void
-vsf_sha512_cleanup_ctx (vsf_sha512_impl_t* sha512_impl);
+vsf_sha512_cleanup_ctx(vsf_sha512_impl_t* sha512_impl);
 
 
 // --------------------------------------------------------------------------

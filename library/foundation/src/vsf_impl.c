@@ -68,7 +68,7 @@
 //  Or NULL if object does not implement requested 'API'.
 //
 VSF_PUBLIC const vsf_api_t*
-vsf_impl_api (vsf_impl_t* impl, vsf_api_tag_t api_tag) {
+vsf_impl_api(vsf_impl_t* impl, vsf_api_tag_t api_tag) {
 
     VSF_ASSERT_PTR (impl);
     VSF_ASSERT_PTR (impl->info);
@@ -93,7 +93,7 @@ vsf_impl_api (vsf_impl_t* impl, vsf_api_tag_t api_tag) {
 //  Return unique 'Implementation TAG'.
 //
 VSF_PUBLIC vsf_impl_tag_t
-vsf_impl_tag (vsf_impl_t* impl) {
+vsf_impl_tag(vsf_impl_t* impl) {
 
     VSF_ASSERT_PTR (impl);
     VSF_ASSERT_PTR (impl->info);
@@ -105,7 +105,7 @@ vsf_impl_tag (vsf_impl_t* impl) {
 //  Cleanup implementation object and it's dependencies.
 //
 VSF_PUBLIC void
-vsf_impl_cleanup (vsf_impl_t* impl) {
+vsf_impl_cleanup(vsf_impl_t* impl) {
 
     VSF_ASSERT_PTR (impl);
     VSF_ASSERT_PTR (impl->info);
@@ -118,7 +118,7 @@ vsf_impl_cleanup (vsf_impl_t* impl) {
 //  Delete implementation object and it's dependencies.
 //
 VSF_PUBLIC void
-vsf_impl_delete (vsf_impl_t* impl) {
+vsf_impl_delete(vsf_impl_t* impl) {
 
     if (impl) {
         VSF_ASSERT_PTR (impl->info);
@@ -131,7 +131,7 @@ vsf_impl_delete (vsf_impl_t* impl) {
 //  Destroy implementation object and it's dependencies.
 //
 VSF_PUBLIC void
-vsf_impl_destroy (vsf_impl_t** impl_ref) {
+vsf_impl_destroy(vsf_impl_t** impl_ref) {
 
     VSF_ASSERT_PTR (impl_ref);
 

@@ -77,37 +77,37 @@ typedef struct vsf_cipher_info_api_t vsf_cipher_info_api_t;
 //  Returns constant 'nonce len'.
 //
 VSF_PUBLIC size_t
-vsf_cipher_info_nonce_len (const vsf_cipher_info_api_t* cipher_info_api);
+vsf_cipher_info_nonce_len(const vsf_cipher_info_api_t* cipher_info_api);
 
 //
 //  Returns constant 'key len'.
 //
 VSF_PUBLIC size_t
-vsf_cipher_info_key_len (const vsf_cipher_info_api_t* cipher_info_api);
+vsf_cipher_info_key_len(const vsf_cipher_info_api_t* cipher_info_api);
 
 //
 //  Returns constant 'key bitlen'.
 //
 VSF_PUBLIC size_t
-vsf_cipher_info_key_bitlen (const vsf_cipher_info_api_t* cipher_info_api);
+vsf_cipher_info_key_bitlen(const vsf_cipher_info_api_t* cipher_info_api);
 
 //
 //  Returns constant 'block len'.
 //
 VSF_PUBLIC size_t
-vsf_cipher_info_block_len (const vsf_cipher_info_api_t* cipher_info_api);
+vsf_cipher_info_block_len(const vsf_cipher_info_api_t* cipher_info_api);
 
 //
 //  Return cipher info API, or NULL if it is not implemented.
 //
 VSF_PUBLIC const vsf_cipher_info_api_t*
-vsf_cipher_info_api (vsf_impl_t* impl);
+vsf_cipher_info_api(vsf_impl_t* impl);
 
 //
 //  Check if given object implements interface 'cipher info'.
 //
 VSF_PUBLIC bool
-vsf_cipher_info_is_implemented (vsf_impl_t* impl);
+vsf_cipher_info_is_implemented(vsf_impl_t* impl);
 
 
 // --------------------------------------------------------------------------

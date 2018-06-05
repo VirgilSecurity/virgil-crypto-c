@@ -121,26 +121,26 @@ extern "C" {
 //
 //  Assertion handler callback type.
 //
-typedef void (*vsf_assert_handler_fn) (const char* message, const char* file, int line);
+typedef void (*vsf_assert_handler_fn)(const char* message, const char* file, int line);
 
 //
 //  Change active assertion handler.
 //
 VSF_PUBLIC void
-vsf_assert_change_handler (vsf_assert_handler_fn handler_cb);
+vsf_assert_change_handler(vsf_assert_handler_fn handler_cb);
 
 //
 //  Assertion handler, that print given information and abort program.
 //  This is default handler.
 //
 VSF_PUBLIC void
-vsf_assert_abort (const char* message, const char* file, int line);
+vsf_assert_abort(const char* message, const char* file, int line);
 
 //
 //  Trigger active assertion handler.
 //
 VSF_PUBLIC void
-vsf_assert_trigger (const char* message, const char* file, int line);
+vsf_assert_trigger(const char* message, const char* file, int line);
 
 
 // --------------------------------------------------------------------------

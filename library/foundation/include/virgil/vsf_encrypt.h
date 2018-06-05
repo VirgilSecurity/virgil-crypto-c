@@ -77,7 +77,7 @@ typedef struct vsf_encrypt_api_t vsf_encrypt_api_t;
 //  Encrypt given data.
 //
 VSF_PUBLIC vsf_error_t
-vsf_encrypt (vsf_impl_t* impl, const byte* data, size_t data_len, byte* enc, size_t enc_len,
+vsf_encrypt(vsf_impl_t* impl, const byte* data, size_t data_len, byte* enc, size_t enc_len,
         size_t* out_len);
 
 //
@@ -86,19 +86,19 @@ vsf_encrypt (vsf_impl_t* impl, const byte* data, size_t data_len, byte* enc, siz
 //  adjusted to hold auth tag as well.
 //
 VSF_PUBLIC size_t
-vsf_encrypt_required_enc_len (vsf_impl_t* impl, size_t data_len, size_t auth_tag_len);
+vsf_encrypt_required_enc_len(vsf_impl_t* impl, size_t data_len, size_t auth_tag_len);
 
 //
 //  Return encrypt API, or NULL if it is not implemented.
 //
 VSF_PUBLIC const vsf_encrypt_api_t*
-vsf_encrypt_api (vsf_impl_t* impl);
+vsf_encrypt_api(vsf_impl_t* impl);
 
 //
 //  Check if given object implements interface 'encrypt'.
 //
 VSF_PUBLIC bool
-vsf_encrypt_is_implemented (vsf_impl_t* impl);
+vsf_encrypt_is_implemented(vsf_impl_t* impl);
 
 
 // --------------------------------------------------------------------------

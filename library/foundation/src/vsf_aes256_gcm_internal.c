@@ -283,7 +283,7 @@ static const vsf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSF_PUBLIC vsf_error_t
-vsf_aes256_gcm_init (vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
+vsf_aes256_gcm_init(vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
 
     VSF_ASSERT_PTR (aes256_gcm_impl);
     VSF_ASSERT_PTR (aes256_gcm_impl->info == NULL);
@@ -300,7 +300,7 @@ vsf_aes256_gcm_init (vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
 //  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_aes256_gcm_cleanup (vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
+vsf_aes256_gcm_cleanup(vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
 
     VSF_ASSERT_PTR (aes256_gcm_impl);
 
@@ -318,7 +318,7 @@ vsf_aes256_gcm_cleanup (vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
 //  Postcondition: check memory allocation result.
 //
 VSF_PUBLIC vsf_aes256_gcm_impl_t*
-vsf_aes256_gcm_new (void) {
+vsf_aes256_gcm_new(void) {
 
     vsf_aes256_gcm_impl_t *aes256_gcm_impl = (vsf_aes256_gcm_impl_t *) vsf_alloc (sizeof (vsf_aes256_gcm_impl_t));
     VSF_ASSERT_PTR (aes256_gcm_impl);
@@ -335,7 +335,7 @@ vsf_aes256_gcm_new (void) {
 //  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_aes256_gcm_delete (vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
+vsf_aes256_gcm_delete(vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
 
     if (aes256_gcm_impl) {
         vsf_aes256_gcm_cleanup (aes256_gcm_impl);
@@ -351,7 +351,7 @@ vsf_aes256_gcm_delete (vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
 //  Given reference is nullified.
 //
 VSF_PUBLIC void
-vsf_aes256_gcm_destroy (vsf_aes256_gcm_impl_t** aes256_gcm_impl_ref) {
+vsf_aes256_gcm_destroy(vsf_aes256_gcm_impl_t** aes256_gcm_impl_ref) {
 
     VSF_ASSERT_PTR (aes256_gcm_impl_ref);
 
@@ -365,7 +365,7 @@ vsf_aes256_gcm_destroy (vsf_aes256_gcm_impl_t** aes256_gcm_impl_ref) {
 //  Returns instance of the implemented interface 'cipher info'.
 //
 VSF_PUBLIC const vsf_cipher_info_api_t*
-vsf_aes256_gcm_cipher_info_api (void) {
+vsf_aes256_gcm_cipher_info_api(void) {
 
     return &cipher_info_api;
 }
@@ -374,7 +374,7 @@ vsf_aes256_gcm_cipher_info_api (void) {
 //  Returns instance of the implemented interface 'cipher auth info'.
 //
 VSF_PUBLIC const vsf_cipher_auth_info_api_t*
-vsf_aes256_gcm_cipher_auth_info_api (void) {
+vsf_aes256_gcm_cipher_auth_info_api(void) {
 
     return &cipher_auth_info_api;
 }
@@ -383,7 +383,7 @@ vsf_aes256_gcm_cipher_auth_info_api (void) {
 //  Returns instance of the implemented interface 'cipher auth'.
 //
 VSF_PUBLIC const vsf_cipher_auth_api_t*
-vsf_aes256_gcm_cipher_auth_api (void) {
+vsf_aes256_gcm_cipher_auth_api(void) {
 
     return &cipher_auth_api;
 }
@@ -392,7 +392,7 @@ vsf_aes256_gcm_cipher_auth_api (void) {
 //  Return size of 'vsf_aes256_gcm_impl_t' type.
 //
 VSF_PUBLIC size_t
-vsf_aes256_gcm_impl_size (void) {
+vsf_aes256_gcm_impl_size(void) {
 
     return sizeof (vsf_aes256_gcm_impl_t);
 }
@@ -401,7 +401,7 @@ vsf_aes256_gcm_impl_size (void) {
 //  Cast to the 'vsf_impl_t' type.
 //
 VSF_PUBLIC vsf_impl_t*
-vsf_aes256_gcm_impl (vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
+vsf_aes256_gcm_impl(vsf_aes256_gcm_impl_t* aes256_gcm_impl) {
 
     VSF_ASSERT_PTR (aes256_gcm_impl);
     return (vsf_impl_t *) (aes256_gcm_impl);

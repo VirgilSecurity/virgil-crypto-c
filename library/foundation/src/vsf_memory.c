@@ -63,13 +63,13 @@
 //  Default allocation function, that is configured during compilation.
 //
 static void*
-vsf_default_alloc (size_t size);
+vsf_default_alloc(size_t size);
 
 //
 //  Default de-allocation function, that is configured during compilation.
 //
 static void
-vsf_default_dealloc (void* mem);
+vsf_default_dealloc(void* mem);
 
 //
 //  Current allocation function.
@@ -85,7 +85,7 @@ static vsf_dealloc_fn inner_dealloc = vsf_default_dealloc;
 //  Default allocation function, that is configured during compilation.
 //
 static void*
-vsf_default_alloc (size_t size) {
+vsf_default_alloc(size_t size) {
 
     return VSF_ALLOC_DEFAULT (size);
 }
@@ -94,7 +94,7 @@ vsf_default_alloc (size_t size) {
 //  Default de-allocation function, that is configured during compilation.
 //
 static void
-vsf_default_dealloc (void* mem) {
+vsf_default_dealloc(void* mem) {
 
     VSF_DEALLOC_DEFAULT (mem);
 }
@@ -104,7 +104,7 @@ vsf_default_dealloc (void* mem) {
 //  Returns NULL if memory allocation fails.
 //
 VSF_PUBLIC void*
-vsf_alloc (size_t size) {
+vsf_alloc(size_t size) {
 
     return inner_alloc (size);
 }
@@ -113,7 +113,7 @@ vsf_alloc (size_t size) {
 //  Deallocate given memory by usging current de-allocation function.
 //
 VSF_PUBLIC void
-vsf_dealloc (void* mem) {
+vsf_dealloc(void* mem) {
 
     inner_dealloc (mem);
 }
@@ -122,7 +122,7 @@ vsf_dealloc (void* mem) {
 //  Change current used memory functions in the runtime.
 //
 VSF_PUBLIC void
-vsf_set_allocators (vsf_alloc_fn alloc_cb, vsf_dealloc_fn dealloc_cb) {
+vsf_set_allocators(vsf_alloc_fn alloc_cb, vsf_dealloc_fn dealloc_cb) {
 
     VSF_ASSERT_PTR (alloc_cb);
     VSF_ASSERT_PTR (dealloc_cb);
@@ -137,7 +137,7 @@ vsf_set_allocators (vsf_alloc_fn alloc_cb, vsf_dealloc_fn dealloc_cb) {
 //  For sensitive data erasing use vsf_erase ().
 //
 VSF_PUBLIC void
-vsf_zeroize (void* mem, size_t size) {
+vsf_zeroize(void* mem, size_t size) {
 
     VSF_ASSERT_PTR (mem);
     memset (mem, 0, size);
@@ -148,7 +148,7 @@ vsf_zeroize (void* mem, size_t size) {
 //  Compiler can not reduce this function during optimization step.
 //
 VSF_PUBLIC void
-vsf_erase (void* mem, size_t size) {
+vsf_erase(void* mem, size_t size) {
 
     VSF_ASSERT_PTR (mem);
 

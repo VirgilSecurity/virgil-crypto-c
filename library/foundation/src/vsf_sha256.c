@@ -75,7 +75,7 @@
 //  Provides initialization of the implementation specific context.
 //
 VSF_PRIVATE vsf_error_t
-vsf_sha256_init_ctx (vsf_sha256_impl_t* sha256_impl) {
+vsf_sha256_init_ctx(vsf_sha256_impl_t* sha256_impl) {
 
     VSF_ASSERT_PTR (sha256_impl);
 
@@ -88,7 +88,7 @@ vsf_sha256_init_ctx (vsf_sha256_impl_t* sha256_impl) {
 //  Provides cleanup of the implementation specific context.
 //
 VSF_PRIVATE void
-vsf_sha256_cleanup_ctx (vsf_sha256_impl_t* sha256_impl) {
+vsf_sha256_cleanup_ctx(vsf_sha256_impl_t* sha256_impl) {
 
     VSF_ASSERT_PTR (sha256_impl);
 
@@ -99,7 +99,7 @@ vsf_sha256_cleanup_ctx (vsf_sha256_impl_t* sha256_impl) {
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
-vsf_sha256_hash (const byte* data, size_t data_len, byte* digest, size_t digest_len) {
+vsf_sha256_hash(const byte* data, size_t data_len, byte* digest, size_t digest_len) {
 
     VSF_ASSERT_PTR (data);
     VSF_ASSERT_PTR (digest);
@@ -113,7 +113,7 @@ vsf_sha256_hash (const byte* data, size_t data_len, byte* digest, size_t digest_
 //  Start a new hashing.
 //
 VSF_PUBLIC void
-vsf_sha256_start (vsf_sha256_impl_t* sha256_impl) {
+vsf_sha256_start(vsf_sha256_impl_t* sha256_impl) {
 
     VSF_ASSERT_PTR (sha256_impl);
 
@@ -125,7 +125,7 @@ vsf_sha256_start (vsf_sha256_impl_t* sha256_impl) {
 //  Add given data to the hash.
 //
 VSF_PUBLIC void
-vsf_sha256_update (vsf_sha256_impl_t* sha256_impl, const byte* data, size_t data_len) {
+vsf_sha256_update(vsf_sha256_impl_t* sha256_impl, const byte* data, size_t data_len) {
 
     VSF_ASSERT_PTR (sha256_impl);
     VSF_ASSERT_PTR (data);
@@ -137,7 +137,7 @@ vsf_sha256_update (vsf_sha256_impl_t* sha256_impl, const byte* data, size_t data
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSF_PUBLIC void
-vsf_sha256_finish (vsf_sha256_impl_t* sha256_impl, byte* digest, size_t digest_len) {
+vsf_sha256_finish(vsf_sha256_impl_t* sha256_impl, byte* digest, size_t digest_len) {
 
     VSF_ASSERT_PTR (sha256_impl);
     VSF_ASSERT_PTR (digest);

@@ -64,7 +64,7 @@
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
-vsf_kdf_derive (vsf_impl_t* impl, const byte* data, size_t data_len, byte* key, size_t key_len) {
+vsf_kdf_derive(vsf_impl_t* impl, const byte* data, size_t data_len, byte* key, size_t key_len) {
 
     const vsf_kdf_api_t *kdf_api = vsf_kdf_api (impl);
     VSF_ASSERT_PTR (kdf_api);
@@ -77,7 +77,7 @@ vsf_kdf_derive (vsf_impl_t* impl, const byte* data, size_t data_len, byte* key, 
 //  Return kdf API, or NULL if it is not implemented.
 //
 VSF_PUBLIC const vsf_kdf_api_t*
-vsf_kdf_api (vsf_impl_t* impl) {
+vsf_kdf_api(vsf_impl_t* impl) {
 
     VSF_ASSERT_PTR (impl);
 
@@ -89,7 +89,7 @@ vsf_kdf_api (vsf_impl_t* impl) {
 //  Check if given object implements interface 'kdf'.
 //
 VSF_PUBLIC bool
-vsf_kdf_is_implemented (vsf_impl_t* impl) {
+vsf_kdf_is_implemented(vsf_impl_t* impl) {
 
     VSF_ASSERT_PTR (impl);
 

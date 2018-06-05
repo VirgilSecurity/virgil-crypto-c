@@ -87,19 +87,19 @@ typedef struct vsf_sha512_impl_t vsf_sha512_impl_t;
 //  Return size of 'vsf_sha512_impl_t' type.
 //
 VSF_PUBLIC size_t
-vsf_sha512_impl_size (void);
+vsf_sha512_impl_size(void);
 
 //
 //  Cast to the 'vsf_impl_t' type.
 //
 VSF_PUBLIC vsf_impl_t*
-vsf_sha512_impl (vsf_sha512_impl_t* sha512_impl);
+vsf_sha512_impl(vsf_sha512_impl_t* sha512_impl);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSF_PUBLIC vsf_error_t
-vsf_sha512_init (vsf_sha512_impl_t* sha512_impl);
+vsf_sha512_init(vsf_sha512_impl_t* sha512_impl);
 
 //
 //  Cleanup implementation context and it's dependencies.
@@ -108,14 +108,14 @@ vsf_sha512_init (vsf_sha512_impl_t* sha512_impl);
 //  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_sha512_cleanup (vsf_sha512_impl_t* sha512_impl);
+vsf_sha512_cleanup(vsf_sha512_impl_t* sha512_impl);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
 VSF_PUBLIC vsf_sha512_impl_t*
-vsf_sha512_new (void);
+vsf_sha512_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
@@ -124,7 +124,7 @@ vsf_sha512_new (void);
 //  All dependencies that is under ownership will be destroyed.
 //
 VSF_PUBLIC void
-vsf_sha512_delete (vsf_sha512_impl_t* sha512_impl);
+vsf_sha512_delete(vsf_sha512_impl_t* sha512_impl);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -134,43 +134,43 @@ vsf_sha512_delete (vsf_sha512_impl_t* sha512_impl);
 //  Given reference is nullified.
 //
 VSF_PUBLIC void
-vsf_sha512_destroy (vsf_sha512_impl_t** sha512_impl_ref);
+vsf_sha512_destroy(vsf_sha512_impl_t** sha512_impl_ref);
 
 //
 //  Returns instance of the implemented interface 'hash info'.
 //
 VSF_PUBLIC const vsf_hash_info_api_t*
-vsf_sha512_hash_info_api (void);
+vsf_sha512_hash_info_api(void);
 
 //
 //  Returns instance of the implemented interface 'hash'.
 //
 VSF_PUBLIC const vsf_hash_api_t*
-vsf_sha512_hash_api (void);
+vsf_sha512_hash_api(void);
 
 //
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
-vsf_sha512_hash (const byte* data, size_t data_len, byte* digest, size_t digest_len);
+vsf_sha512_hash(const byte* data, size_t data_len, byte* digest, size_t digest_len);
 
 //
 //  Start a new hashing.
 //
 VSF_PUBLIC void
-vsf_sha512_start (vsf_sha512_impl_t* sha512_impl);
+vsf_sha512_start(vsf_sha512_impl_t* sha512_impl);
 
 //
 //  Add given data to the hash.
 //
 VSF_PUBLIC void
-vsf_sha512_update (vsf_sha512_impl_t* sha512_impl, const byte* data, size_t data_len);
+vsf_sha512_update(vsf_sha512_impl_t* sha512_impl, const byte* data, size_t data_len);
 
 //
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSF_PUBLIC void
-vsf_sha512_finish (vsf_sha512_impl_t* sha512_impl, byte* digest, size_t digest_len);
+vsf_sha512_finish(vsf_sha512_impl_t* sha512_impl, byte* digest, size_t digest_len);
 
 
 // --------------------------------------------------------------------------

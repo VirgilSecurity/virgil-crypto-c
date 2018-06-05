@@ -73,7 +73,7 @@ extern "C" {
 //
 //  Callback. Calculate hash over given data.
 //
-typedef void (*vsf_hash_api_hash_fn) (const byte* data, size_t data_len, byte* digest,
+typedef void (*vsf_hash_api_hash_fn)(const byte* data, size_t data_len, byte* digest,
         size_t digest_len);
 
 //

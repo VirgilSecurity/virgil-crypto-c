@@ -72,7 +72,7 @@ extern "C" {
 //
 //  Callback. Encrypt given data.
 //
-typedef vsf_error_t (*vsf_encrypt_api_encrypt_fn) (vsf_impl_t* impl, const byte* data,
+typedef vsf_error_t (*vsf_encrypt_api_encrypt_fn)(vsf_impl_t* impl, const byte* data,
         size_t data_len, byte* enc, size_t enc_len, size_t* out_len);
 
 //
@@ -80,7 +80,7 @@ typedef vsf_error_t (*vsf_encrypt_api_encrypt_fn) (vsf_impl_t* impl, const byte*
 //          If argument 'auth tag len' is 0, then returned length
 //          adjusted to hold auth tag as well.
 //
-typedef size_t (*vsf_encrypt_api_required_enc_len_fn) (vsf_impl_t* impl, size_t data_len,
+typedef size_t (*vsf_encrypt_api_required_enc_len_fn)(vsf_impl_t* impl, size_t data_len,
         size_t auth_tag_len);
 
 //

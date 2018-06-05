@@ -77,20 +77,20 @@ typedef struct vsf_ex_kdf_api_t vsf_ex_kdf_api_t;
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
-vsf_ex_kdf_derive (vsf_impl_t* impl, const byte* data, size_t data_len, const byte* salt,
+vsf_ex_kdf_derive(vsf_impl_t* impl, const byte* data, size_t data_len, const byte* salt,
         size_t salt_len, const byte* info, size_t info_len, byte* key, size_t key_len);
 
 //
 //  Return ex_kdf API, or NULL if it is not implemented.
 //
 VSF_PUBLIC const vsf_ex_kdf_api_t*
-vsf_ex_kdf_api (vsf_impl_t* impl);
+vsf_ex_kdf_api(vsf_impl_t* impl);
 
 //
 //  Check if given object implements interface 'ex_kdf'.
 //
 VSF_PUBLIC bool
-vsf_ex_kdf_is_implemented (vsf_impl_t* impl);
+vsf_ex_kdf_is_implemented(vsf_impl_t* impl);
 
 
 // --------------------------------------------------------------------------

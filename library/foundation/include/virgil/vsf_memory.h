@@ -85,19 +85,19 @@ extern "C" {
 //  Returns NULL if memory allocation fails.
 //
 VSF_PUBLIC void*
-vsf_alloc (size_t size);
+vsf_alloc(size_t size);
 
 //
 //  Deallocate given memory by usging current de-allocation function.
 //
 VSF_PUBLIC void
-vsf_dealloc (void* mem);
+vsf_dealloc(void* mem);
 
 //
 //  Change current used memory functions in the runtime.
 //
 VSF_PUBLIC void
-vsf_set_allocators (vsf_alloc_fn alloc_cb, vsf_dealloc_fn dealloc_cb);
+vsf_set_allocators(vsf_alloc_fn alloc_cb, vsf_dealloc_fn dealloc_cb);
 
 //
 //  Zeroize memory.
@@ -105,14 +105,14 @@ vsf_set_allocators (vsf_alloc_fn alloc_cb, vsf_dealloc_fn dealloc_cb);
 //  For sensitive data erasing use vsf_erase ().
 //
 VSF_PUBLIC void
-vsf_zeroize (void* mem, size_t size);
+vsf_zeroize(void* mem, size_t size);
 
 //
 //  Zeroize memory in a secure manner.
 //  Compiler can not reduce this function during optimization step.
 //
 VSF_PUBLIC void
-vsf_erase (void* mem, size_t size);
+vsf_erase(void* mem, size_t size);
 
 
 // --------------------------------------------------------------------------

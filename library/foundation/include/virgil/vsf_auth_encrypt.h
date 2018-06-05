@@ -78,7 +78,7 @@ typedef struct vsf_auth_encrypt_api_t vsf_auth_encrypt_api_t;
 //  If 'tag' is not give, then it will written to the 'enc'.
 //
 VSF_PUBLIC vsf_error_t
-vsf_auth_encrypt (vsf_impl_t* impl, const byte* data, size_t data_len, const byte* auth_data,
+vsf_auth_encrypt(vsf_impl_t* impl, const byte* data, size_t data_len, const byte* auth_data,
         size_t auth_data_len, byte* enc, size_t enc_len, size_t* out_len, byte* tag,
         size_t tag_len);
 
@@ -86,13 +86,13 @@ vsf_auth_encrypt (vsf_impl_t* impl, const byte* data, size_t data_len, const byt
 //  Return auth encrypt API, or NULL if it is not implemented.
 //
 VSF_PUBLIC const vsf_auth_encrypt_api_t*
-vsf_auth_encrypt_api (vsf_impl_t* impl);
+vsf_auth_encrypt_api(vsf_impl_t* impl);
 
 //
 //  Check if given object implements interface 'auth encrypt'.
 //
 VSF_PUBLIC bool
-vsf_auth_encrypt_is_implemented (vsf_impl_t* impl);
+vsf_auth_encrypt_is_implemented(vsf_impl_t* impl);
 
 
 // --------------------------------------------------------------------------
