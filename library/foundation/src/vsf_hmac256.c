@@ -108,8 +108,7 @@ vsf_hmac256_cleanup_ctx(vsf_hmac256_impl_t* hmac256_impl) {
 //  Calculate hmac over given data.
 //
 VSF_PUBLIC void
-vsf_hmac256_hmac(const byte* key, size_t key_len, const byte* data, size_t data_len, byte* hmac,
-        size_t hmac_len) {
+vsf_hmac256_hmac(const byte* key, size_t key_len, const byte* data, size_t data_len, byte* hmac, size_t hmac_len) {
 
     VSF_ASSERT_OPT (hmac_len >= vsf_hmac256_DIGEST_SIZE);
 

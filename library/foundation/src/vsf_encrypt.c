@@ -65,8 +65,7 @@
 //  Encrypt given data.
 //
 VSF_PUBLIC vsf_error_t
-vsf_encrypt(vsf_impl_t* impl, const byte* data, size_t data_len, byte* enc, size_t enc_len,
-        size_t* out_len) {
+vsf_encrypt(vsf_impl_t* impl, const byte* data, size_t data_len, byte* enc, size_t enc_len, size_t* out_len) {
 
     const vsf_encrypt_api_t *encrypt_api = vsf_encrypt_api (impl);
     VSF_ASSERT_PTR (encrypt_api);

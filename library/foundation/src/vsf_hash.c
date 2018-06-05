@@ -65,8 +65,7 @@
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
-vsf_hash(const vsf_hash_api_t* hash_api, const byte* data, size_t data_len, byte* digest,
-        size_t digest_len) {
+vsf_hash(const vsf_hash_api_t* hash_api, const byte* data, size_t data_len, byte* digest, size_t digest_len) {
 
     VSF_ASSERT_PTR (hash_api);
 

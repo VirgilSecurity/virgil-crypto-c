@@ -144,8 +144,8 @@ vsf_hkdf_take_hmac_stream(vsf_hkdf_impl_t* hkdf_impl, vsf_impl_t** hmac_ref);
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
-vsf_hkdf_derive(vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len, const byte* salt,
-        size_t salt_len, const byte* info, size_t info_len, byte* key, size_t key_len);
+vsf_hkdf_derive(vsf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len, const byte* salt, size_t salt_len,
+        const byte* info, size_t info_len, byte* key, size_t key_len);
 
 
 // --------------------------------------------------------------------------

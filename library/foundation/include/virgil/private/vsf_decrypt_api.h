@@ -73,16 +73,15 @@ extern "C" {
 //
 //  Callback. Decrypt given data.
 //
-typedef vsf_error_t (*vsf_decrypt_api_decrypt_fn)(vsf_impl_t* impl, const byte* enc, size_t enc_len,
-        byte* plain, size_t plain_len, size_t* out_len);
+typedef vsf_error_t (*vsf_decrypt_api_decrypt_fn)(vsf_impl_t* impl, const byte* enc, size_t enc_len, byte* plain,
+        size_t plain_len, size_t* out_len);
 
 //
 //  Callback. Calculate required buffer length to hold the decrypted data.
 //          If argument 'auth tag len' is 0, then returned length
 //          adjusted to cut of auth tag length.
 //
-typedef size_t (*vsf_decrypt_api_required_dec_len_fn)(vsf_impl_t* impl, size_t enc_len,
-        size_t auth_tag_len);
+typedef size_t (*vsf_decrypt_api_required_dec_len_fn)(vsf_impl_t* impl, size_t enc_len, size_t auth_tag_len);
 
 //
 //  Contains API requirements of the interface 'decrypt'.

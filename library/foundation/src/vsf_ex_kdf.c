@@ -65,8 +65,8 @@
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
-vsf_ex_kdf_derive(vsf_impl_t* impl, const byte* data, size_t data_len, const byte* salt,
-        size_t salt_len, const byte* info, size_t info_len, byte* key, size_t key_len) {
+vsf_ex_kdf_derive(vsf_impl_t* impl, const byte* data, size_t data_len, const byte* salt, size_t salt_len,
+        const byte* info, size_t info_len, byte* key, size_t key_len) {
 
     const vsf_ex_kdf_api_t *ex_kdf_api = vsf_ex_kdf_api (impl);
     VSF_ASSERT_PTR (ex_kdf_api);
