@@ -18,7 +18,6 @@ BinPackParameters: true
 AlwaysBreakBeforeMultilineStrings: true
 MaxEmptyLinesToKeep: 2
 AlwaysBreakAfterReturnType: All
-IncludeBlocks: Preserve
 SortIncludes: false
 BreakBeforeBraces: Custom
 BraceWrapping:
