@@ -81,6 +81,7 @@ VSCP_PUBLIC size_t
 vscp_pythia_blinded_password_len(void) {
 
     //  TODO: This is STUB. Implement me.
+    return 0;
 }
 
 //
@@ -90,6 +91,7 @@ VSCP_PUBLIC size_t
 vscp_pythia_deblinded_password_len(void) {
 
     //  TODO: This is STUB. Implement me.
+    return 0;
 }
 
 //
@@ -99,6 +101,7 @@ VSCP_PUBLIC size_t
 vscp_pythia_blinding_secret_len(void) {
 
     //  TODO: This is STUB. Implement me.
+    return 0;
 }
 
 //

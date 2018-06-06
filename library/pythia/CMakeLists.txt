@@ -71,25 +71,18 @@ endif()
 add_library(vsc_pythia "")
 target_sources(vsc_pythia
         PUBLIC
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsc_pythia_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsc_pythia_assert.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsc_pythia_error.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsc_pythia_impl.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsc_pythia_library.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vsc_pythia_memory.h"
-
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsc_pythia_api_private.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/private/vsc_pythia_impl_private.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vscp_assert.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vscp_error.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vscp_library.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vscp_memory.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/vscp_pythia.h"
 
         PRIVATE
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsc_pythia_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsc_pythia_api_private.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsc_pythia_assert.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsc_pythia_error.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsc_pythia_impl.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsc_pythia_impl_private.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsc_pythia_library.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsc_pythia_memory.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vscp_assert.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vscp_error.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vscp_library.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vscp_memory.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vscp_pythia.c"
         )
 
 #
