@@ -957,6 +957,49 @@ function cat (part1, part2, part3, part4, part5, part6, part7, part8)
     return "$(my.result:)"
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Return string with removed sequential duplicated words.
+# ---------------------------------------------------------------------------
+function remove_sequential_duplicated_words (str)
+    check_argument (my, "str", my)
+
+    my.result = ""
+    my.prev_separator = ""
+    while my.str <> ""
+
+        my.word = string.prefix (my.str, "_ ")
+
+        if ! string_defined (my.word)
+            my.word = my.str
+        endif
+
+        my.separator_length = is_false (my.is_last_word) ?? "1" ? "0"
+        my.separator = string.substr (my.str, string.length(my.word), , my.separator_length)
+        my.str = string.substr (my.str, string.length(my.word) + my.separator_length)
+
+        if ! string_equal (my.word, my.prev_word)
+            my.result += my.prev_separator + my.word
+        endif
+
+        my.prev_word = my.word
+        my.prev_separator = my.separator
+    endwhile
+
+    return my.result
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted string constructed by concatenating parts separated by
+#   spaces and removed sequential duplicated words.
+# ---------------------------------------------------------------------------
+function cat_reduce (part1, part2, part3, part4, part5, part6, part7, part8)
+    my.result = "$(my.part1 ?:) $(my.part2 ?:) $(my.part3 ?:) $(my.part4 ?:) " + \
+                "$(my.part5 ?:) $(my.part6 ?:) $(my.part7 ?:) $(my.part8 ?:)"
+
+    return remove_sequential_duplicated_words ( \
+                cat (my.part1, my.part2, my.part3, my.part4, my.part5, my.part6, my.part7, my.part8))
+endfunction
+
 
 # ---------------------------------------------------------------------------
 #   Return 'uid' as concatinated C like string.
