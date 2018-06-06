@@ -79,7 +79,7 @@ function abspath() {
 SCRIPT_DIR=$(dirname "$(abspath "${BASH_SOURCE[0]}")")
 CURRENT_DIR=$(abspath .)
 DOCGEN_DIR="${SCRIPT_DIR}/docs"
-DOCGEN_SCRIPT_NAMES=(module.xnf c_module.xnf interface.xnf implementor.xnf)
+DOCGEN_SCRIPT_NAMES=(module.xnf c_module.xnf interface.xnf implementor.xnf class.xnf)
 
 
 # ###########################################################################
