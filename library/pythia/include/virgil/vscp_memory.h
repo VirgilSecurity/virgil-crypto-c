@@ -49,10 +49,10 @@
 //  Provides configurable memory management model.
 // --------------------------------------------------------------------------
 
-#ifndef VSC_PYTHIA_MEMORY_H_INCLUDED
-#define VSC_PYTHIA_MEMORY_H_INCLUDED
+#ifndef VSCP_MEMORY_H_INCLUDED
+#define VSCP_MEMORY_H_INCLUDED
 
-#include "vsc_pythia_library.h"
+#include "vscp_library.h"
 //  @end
 
 
@@ -70,50 +70,50 @@ extern "C" {
 //
 //  Compile-time configuration of the default alloc function.
 //
-#ifndef VSC_PYTHIA_ALLOC_DEFAULT
-#   define VSC_PYTHIA_ALLOC_DEFAULT(size) calloc (1, (size))
+#ifndef VSCP_ALLOC_DEFAULT
+#   define VSCP_ALLOC_DEFAULT(size) calloc (1, (size))
 #endif
 
 //
 //  Compile-time configuration of the default dealloc function.
 //
-#ifndef VSC_PYTHIA_DEALLOC_DEFAULT
-#   define VSC_PYTHIA_DEALLOC_DEFAULT(mem) free ((mem))
+#ifndef VSCP_DEALLOC_DEFAULT
+#   define VSCP_DEALLOC_DEFAULT(mem) free ((mem))
 #endif
 
 //
 //  Allocate required amount of memory by usging current allocation function.
 //  Returns NULL if memory allocation fails.
 //
-VSC_PYTHIA_PUBLIC void*
-vsc_pythia_alloc(size_t size);
+VSCP_PUBLIC void*
+vscp_alloc(size_t size);
 
 //
 //  Deallocate given memory by usging current de-allocation function.
 //
-VSC_PYTHIA_PUBLIC void
-vsc_pythia_dealloc(void* mem);
+VSCP_PUBLIC void
+vscp_dealloc(void* mem);
 
 //
 //  Change current used memory functions in the runtime.
 //
-VSC_PYTHIA_PUBLIC void
-vsc_pythia_set_allocators(vsc_pythia_alloc_fn alloc_cb, vsc_pythia_dealloc_fn dealloc_cb);
+VSCP_PUBLIC void
+vscp_set_allocators(vscp_alloc_fn alloc_cb, vscp_dealloc_fn dealloc_cb);
 
 //
 //  Zeroize memory.
 //  Note, this function can be reduced by compiler during optimization step.
-//  For sensitive data erasing use vsc_pythia_erase ().
+//  For sensitive data erasing use vscp_erase ().
 //
-VSC_PYTHIA_PUBLIC void
-vsc_pythia_zeroize(void* mem, size_t size);
+VSCP_PUBLIC void
+vscp_zeroize(void* mem, size_t size);
 
 //
 //  Zeroize memory in a secure manner.
 //  Compiler can not reduce this function during optimization step.
 //
-VSC_PYTHIA_PUBLIC void
-vsc_pythia_erase(void* mem, size_t size);
+VSCP_PUBLIC void
+vscp_erase(void* mem, size_t size);
 
 
 // --------------------------------------------------------------------------
@@ -129,5 +129,5 @@ vsc_pythia_erase(void* mem, size_t size);
 
 
 //  @footer
-#endif // VSC_PYTHIA_MEMORY_H_INCLUDED
+#endif // VSCP_MEMORY_H_INCLUDED
 //  @end
