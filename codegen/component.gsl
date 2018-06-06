@@ -719,7 +719,7 @@ function component_resolve_method_attr_context (method, parent)
 
     my.method.context ?= "none"
 
-    my.valid_context = "none, impl, api"
+    my.valid_context = "none, api, impl, class"
 
     if ! string_in (my.method.context, my.valid_context)
         echo_fatal ("Invalid method attribute context=\"$(my.method.context:)\"." + \

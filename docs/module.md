@@ -1058,7 +1058,7 @@ and optionally implementation.
       [ of_class = "..." ]
       [ uid = "..." ]
       [ definition = "public | private | external"  ("private") ]
-      [ context = "none | api | impl"  ("none") ]
+      [ context = "none | api | impl | class"  ("none") ]
         >
         <return>, optional
         <argument>
@@ -1121,6 +1121,7 @@ Value: Meaning:
 none: Method takes only data arguments (no context).
 api: Method takes interface object as a first argument.
 impl: Method takes implementation object as a first argument.
+class: Method takes class object as a first argument. This value is default for methods within 'class'. Value 'none' can be used to define static class method.
 
 
 The 'implementation' item
