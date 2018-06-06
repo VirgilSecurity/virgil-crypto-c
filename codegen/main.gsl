@@ -47,6 +47,7 @@ gsl from "module.gsl"
 gsl from "interface.gsl"
 gsl from "implementor.gsl"
 gsl from "implementation.gsl"
+gsl from "class.gsl"
 gsl from "context.gsl"
 gsl from "meta.gsl"
 
@@ -60,6 +61,8 @@ gsl from "c_module_impl_private.gsl"
 
 gsl from "c_module_interface.gsl"
 gsl from "c_module_implementation.gsl"
+
+gsl from "c_module_class.gsl"
 
 
 # ###########################################################################
@@ -102,6 +105,10 @@ function process_project (main, project)
         item_load_from_file ("implementation/$(make_id ("implementor", implementor.name)).xml", my.root)
     endfor
 
+    for my.project.class
+        item_load_from_file ("class/$(make_id ("class", class.name)).xml", my.root)
+    endfor
+
     #   Process project.
     project_resolve (my.project)
     project_generate_structure (my.project)
@@ -112,6 +119,9 @@ function process_project (main, project)
     foreach_implementor_resolve (my.root, my.project)
     foreach_implementation_resolve (my.root, my.project)
 
+    #   Process classes.
+    foreach_class_resolve (my.root, my.project)
+
     #   Create meta informtation about high level entities.
     my.meta = meta_create ()
     foreach_interface_update_meta (my.root, my.meta)
@@ -121,15 +131,20 @@ function process_project (main, project)
         item_save_to_file (my.meta, "meta.xml", my.project.work_path)
     endif
 
-    #   Create modules.
-    c_module_api_create (my.meta, my.root)
-    c_module_api_private_create (my.meta, my.root)
+    #   Create Interface / Implementation related modules.
+    if count (my.root.interface)
+        c_module_api_create (my.meta, my.root)
+        c_module_api_private_create (my.meta, my.root)
 
-    c_module_impl_create (my.meta, my.root)
-    c_module_impl_private_create (my.meta, my.root)
+        c_module_impl_create (my.meta, my.root)
+        c_module_impl_private_create (my.meta, my.root)
 
-    c_module_interface_create (my.root, my.root, my.meta)
-    c_module_implementation_create (my.root, my.root, my.meta)
+        c_module_interface_create (my.root, my.root, my.meta)
+        c_module_implementation_create (my.root, my.root, my.meta)
+    endif
+
+    #   Create modules from the clsses.
+    c_module_class_create (my.root, my.root, my.meta)
 
     #   Process modules.
     foreach_module_resolve (my.root, my.project)

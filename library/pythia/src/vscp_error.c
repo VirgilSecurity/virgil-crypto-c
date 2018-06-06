@@ -38,7 +38,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface Private API.
+//  Manages pythia error codes.
 // --------------------------------------------------------------------------
 
 
@@ -49,7 +49,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsc_pythia_api_private.h"
+#include "vscp_error.h"
 //  @end
 
 

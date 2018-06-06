@@ -36,12 +36,6 @@
 // --------------------------------------------------------------------------
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Manages pythia error codes.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -49,8 +43,20 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsc_pythia_error.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Manages pythia error codes.
+// --------------------------------------------------------------------------
+
+#ifndef VSCP_ERROR_H_INCLUDED
+#define VSCP_ERROR_H_INCLUDED
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -59,9 +65,38 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Defines pythia error codes.
+//
+enum vscp_error_t {
+    //
+    //  No errors was occurred.
+    //
+    vscp_SUCCESS = 0,
+    //
+    //  This error should not be returned if assertions is enabled.
+    //
+    vscp_error_BAD_ARGUMENTS = -1,
+    //
+    //  Memory allocation failed.
+    //
+    vscp_error_NO_MEMORY = -100
+};
+typedef enum vscp_error_t vscp_error_t;
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCP_ERROR_H_INCLUDED
 //  @end

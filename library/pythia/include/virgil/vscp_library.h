@@ -53,8 +53,8 @@
 //      - common types;
 // --------------------------------------------------------------------------
 
-#ifndef VSC_PYTHIA_LIBRARY_H_INCLUDED
-#define VSC_PYTHIA_LIBRARY_H_INCLUDED
+#ifndef VSCP_LIBRARY_H_INCLUDED
+#define VSCP_LIBRARY_H_INCLUDED
 
 #include <stdint.h>
 #include <stddef.h>
@@ -82,48 +82,48 @@ extern "C" {
     typedef uint8_t byte;
 #endif // BYTE_DEFINED
 
-#define VSC_PYTHIA_VERSION_MAJOR 0
+#define VSCP_VERSION_MAJOR 0
 
-#define VSC_PYTHIA_VERSION_MINOR 2
+#define VSCP_VERSION_MINOR 2
 
-#define VSC_PYTHIA_VERSION_PATCH 0
+#define VSCP_VERSION_PATCH 0
 
-#define VSC_PYTHIA_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
+#define VSCP_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
 
-#define VSC_PYTHIA_VERSION                \
-        VSC_PYTHIA_VERSION_MAKE (         \
-                VSC_PYTHIA_VERSION_MAJOR, \
-                VSC_PYTHIA_VERSION_MINOR, \
-                VSC_PYTHIA_VERSION_PATCH)
+#define VSCP_VERSION                \
+        VSCP_VERSION_MAKE (         \
+                VSCP_VERSION_MAJOR, \
+                VSCP_VERSION_MINOR, \
+                VSCP_VERSION_PATCH)
 
 //
 //  Custom implementation of the number ceil algorithm.
 //
-#define VSC_PYTHIA_CEIL(x,y) (1 + (((x) - 1) / (y)))
+#define VSCP_CEIL(x,y) (1 + (((x) - 1) / (y)))
 
 //  TDOD: Review with approach: https://gcc.gnu.org/wiki/Visibility
 #if defined (__WINDOWS__)
-#   if defined VSC_PYTHIA_STATIC
-#       define VSC_PYTHIA_PUBLIC
-#   elif defined VSC_PYTHIA_INTERNAL_BUILD
+#   if defined VSCP_STATIC
+#       define VSCP_PUBLIC
+#   elif defined VSCP_INTERNAL_BUILD
 #       if defined DLL_PUBLIC
-#           define VSC_PYTHIA_PUBLIC __declspec(dllexport)
+#           define VSCP_PUBLIC __declspec(dllexport)
 #       else
-#           define VSC_PYTHIA_PUBLIC
+#           define VSCP_PUBLIC
 #       endif
-#   elif defined VSC_PYTHIA_PUBLICS
-#       define VSC_PYTHIA_PUBLIC __declspec(dllexport)
+#   elif defined VSCP_PUBLICS
+#       define VSCP_PUBLIC __declspec(dllexport)
 #   else
-#       define VSC_PYTHIA_PUBLIC __declspec(dllimport)
+#       define VSCP_PUBLIC __declspec(dllimport)
 #   endif
-#   define VSC_PYTHIA_PRIVATE
+#   define VSCP_PRIVATE
 #else
 #   if (defined __GNUC__ && __GNUC__ >= 4) || defined __INTEL_COMPILER
-#       define VSC_PYTHIA_PUBLIC __attribute__ ((visibility ("default")))
-#       define VSC_PYTHIA_PRIVATE __attribute__ ((visibility ("hidden")))
+#       define VSCP_PUBLIC __attribute__ ((visibility ("default")))
+#       define VSCP_PRIVATE __attribute__ ((visibility ("hidden")))
 #   else
-#       define VSC_PYTHIA_PUBLIC
-#       define VSC_PYTHIA_PRIVATE
+#       define VSCP_PUBLIC
+#       define VSCP_PRIVATE
 #   endif
 #endif
 
@@ -134,18 +134,18 @@ enum {
     //
     //  Pointer size in bytes.
     //
-    vsc_pythia_POINTER_SIZE = sizeof (void *)
+    vscp_POINTER_SIZE = sizeof (void *)
 };
 
 //
 //  Generic allocation function type.
 //
-typedef void* (*vsc_pythia_alloc_fn)(size_t size);
+typedef void* (*vscp_alloc_fn)(size_t size);
 
 //
 //  Generic de-allocation function type.
 //
-typedef void (*vsc_pythia_dealloc_fn)(void* mem);
+typedef void (*vscp_dealloc_fn)(void* mem);
 
 
 // --------------------------------------------------------------------------
@@ -161,5 +161,5 @@ typedef void (*vsc_pythia_dealloc_fn)(void* mem);
 
 
 //  @footer
-#endif // VSC_PYTHIA_LIBRARY_H_INCLUDED
+#endif // VSCP_LIBRARY_H_INCLUDED
 //  @end

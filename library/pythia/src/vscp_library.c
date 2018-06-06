@@ -38,8 +38,11 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains common functionality for all 'implementation' object.
-//  It is also enumerate all available implementations within crypto libary.
+//  This module contains:
+//      - library version;
+//      - portable API visibility attributes;
+//      - common constants;
+//      - common types;
 // --------------------------------------------------------------------------
 
 
@@ -50,10 +53,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsc_pythia_impl.h"
-#include "vsc_pythia_api_private.h"
-#include "vsc_pythia_impl_private.h"
-#include "vsc_pythia_assert.h"
+#include "vscp_library.h"
 //  @end
 
 
@@ -62,85 +62,6 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Return 'API' object that is fulfiled with a meta information
-//  specific to the given implementation object.
-//  Or NULL if object does not implement requested 'API'.
-//
-VSC_PYTHIA_PUBLIC const vsc_pythia_api_t*
-vsc_pythia_impl_api(vsc_pythia_impl_t* impl, vsc_pythia_api_tag_t api_tag) {
-
-    VSC_PYTHIA_ASSERT_PTR (impl);
-    VSC_PYTHIA_ASSERT_PTR (impl->info);
-
-    if (impl->info->api_array == NULL) {
-        return NULL;
-    }
-
-    for (const vsc_pythia_api_t *const * api_array = impl->info->api_array; *api_array != NULL; ++api_array) {
-
-        const vsc_pythia_api_t* api = *api_array;
-
-        if (api->api_tag == api_tag) {
-            return api;
-        }
-    }
-
-    return NULL;
-}
-
-//
-//  Return unique 'Implementation TAG'.
-//
-VSC_PYTHIA_PUBLIC vsc_pythia_impl_tag_t
-vsc_pythia_impl_tag(vsc_pythia_impl_t* impl) {
-
-    VSC_PYTHIA_ASSERT_PTR (impl);
-    VSC_PYTHIA_ASSERT_PTR (impl->info);
-
-    return impl->info->impl_tag;
-}
-
-//
-//  Cleanup implementation object and it's dependencies.
-//
-VSC_PYTHIA_PUBLIC void
-vsc_pythia_impl_cleanup(vsc_pythia_impl_t* impl) {
-
-    VSC_PYTHIA_ASSERT_PTR (impl);
-    VSC_PYTHIA_ASSERT_PTR (impl->info);
-    VSC_PYTHIA_ASSERT_PTR (impl->info->self_cleanup_cb);
-
-    impl->info->self_cleanup_cb (impl);
-}
-
-//
-//  Delete implementation object and it's dependencies.
-//
-VSC_PYTHIA_PUBLIC void
-vsc_pythia_impl_delete(vsc_pythia_impl_t* impl) {
-
-    if (impl) {
-        VSC_PYTHIA_ASSERT_PTR (impl->info);
-        VSC_PYTHIA_ASSERT_PTR (impl->info->self_delete_cb);
-        impl->info->self_delete_cb (impl);
-    }
-}
-
-//
-//  Destroy implementation object and it's dependencies.
-//
-VSC_PYTHIA_PUBLIC void
-vsc_pythia_impl_destroy(vsc_pythia_impl_t** impl_ref) {
-
-    VSC_PYTHIA_ASSERT_PTR (impl_ref);
-
-    vsc_pythia_impl_t* impl = *impl_ref;
-    *impl_ref = NULL;
-
-    vsc_pythia_impl_delete (impl);
-}
 
 
 // --------------------------------------------------------------------------

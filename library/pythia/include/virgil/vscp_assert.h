@@ -46,11 +46,16 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Manages pythia error codes.
+//  Implements custom assert mechanism, which:
+//      - allows to choose assertion handler from predefined set,
+//        or provide custom assertion handler;
+//      - allows to choose which assertion leave in production build.
 // --------------------------------------------------------------------------
 
-#ifndef VSC_PYTHIA_ERROR_H_INCLUDED
-#define VSC_PYTHIA_ERROR_H_INCLUDED
+#ifndef VSCP_ASSERT_H_INCLUDED
+#define VSCP_ASSERT_H_INCLUDED
+
+#include "vscp_library.h"
 //  @end
 
 
@@ -66,23 +71,77 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Defines pythia error codes.
+//  Contains file path or file name.
 //
-enum vsc_pythia_error_t {
-    //
-    //  No errors was occurred.
-    //
-    vsc_pythia_SUCCESS = 0,
-    //
-    //  This error should not be returned if assertions is enabled.
-    //
-    vsc_pythia_error_BAD_ARGUMENTS = -1,
-    //
-    //  Memory allocation failed.
-    //
-    vsc_pythia_error_NO_MEMORY = -100
-};
-typedef enum vsc_pythia_error_t vsc_pythia_error_t;
+#if defined (__FILENAME__)
+#   define VSCP_FILE_PATH_OR_NAME __FILENAME__
+#else
+#   define VSCP_FILE_PATH_OR_NAME __FILE__
+#endif
+
+//
+//  Asserts always.
+//
+#define VSCP_ASSERT_INTERNAL(X)                                         \
+    do {                                                                \
+        if (!(X)) {                                                     \
+            vscp_assert_trigger (#X, VSCP_FILE_PATH_OR_NAME, __LINE__); \
+        }                                                               \
+    } while (false)
+
+//
+//  Asserts even in optimized mode.
+//
+#define VSCP_ASSERT_OPT(X) VSCP_ASSERT_INTERNAL (X)
+
+//
+//  Default assert, that is enabled in debug mode.
+//
+#define VSCP_ASSERT(X) VSCP_ASSERT_INTERNAL (X)
+
+//
+//  Heavy assert, that is enabled in a special (safe) cases.
+//
+#define VSCP_ASSERT_SAFE(X) VSCP_ASSERT_INTERNAL (X)
+
+//
+//  Asserts during compilation. Has no runtime impact.
+//
+#define VSCP_ASSERT_STATIC(X) (void) sizeof(char[(X) ? 1 : -1])
+
+//
+//  Assert that given pointer is not NULL. It is enabled in debug mode.
+//
+#define VSCP_ASSERT_PTR(X)                                                        \
+    do {                                                                          \
+        if (!(X)) {                                                               \
+            vscp_assert_trigger (#X" != NULL", VSCP_FILE_PATH_OR_NAME, __LINE__); \
+        }                                                                         \
+    } while (false)
+
+//
+//  Assertion handler callback type.
+//
+typedef void (*vscp_assert_handler_fn)(const char* message, const char* file, int line);
+
+//
+//  Change active assertion handler.
+//
+VSCP_PUBLIC void
+vscp_assert_change_handler(vscp_assert_handler_fn handler_cb);
+
+//
+//  Assertion handler, that print given information and abort program.
+//  This is default handler.
+//
+VSCP_PUBLIC void
+vscp_assert_abort(const char* message, const char* file, int line);
+
+//
+//  Trigger active assertion handler.
+//
+VSCP_PUBLIC void
+vscp_assert_trigger(const char* message, const char* file, int line);
 
 
 // --------------------------------------------------------------------------
@@ -98,5 +157,5 @@ typedef enum vsc_pythia_error_t vsc_pythia_error_t;
 
 
 //  @footer
-#endif // VSC_PYTHIA_ERROR_H_INCLUDED
+#endif // VSCP_ASSERT_H_INCLUDED
 //  @end

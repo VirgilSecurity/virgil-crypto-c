@@ -38,8 +38,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Provide Pythia implementation based on the Virgil Security.
 // --------------------------------------------------------------------------
 
 
@@ -50,7 +49,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsc_pythia_api.h"
+#include "vscp_pythia.h"
 //  @end
 
 
@@ -60,9 +59,65 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handle 'pythia' context.
+//
+struct vscp_pythia_t {
+    size_t instances;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
+
+//
+//  Return length of the buffer needed to hold 'blinded password'.
+//
+VSCP_PUBLIC size_t
+vscp_pythia_blinded_password_len(void) {
+
+    //  TODO: This is STUB. Implement me.
+}
+
+//
+//  Return length of the buffer needed to hold 'deblinded password'.
+//
+VSCP_PUBLIC size_t
+vscp_pythia_deblinded_password_len(void) {
+
+    //  TODO: This is STUB. Implement me.
+}
+
+//
+//  Return length of the buffer needed to hold 'blinding secret'.
+//
+VSCP_PUBLIC size_t
+vscp_pythia_blinding_secret_len(void) {
+
+    //  TODO: This is STUB. Implement me.
+}
+
+//
+//  Blinds password. Turns password into a pseudo-random string.
+//  This step is necessary to prevent 3rd-parties from knowledge of end user's password.
+//
+VSCP_PUBLIC void
+vscp_pythia_blind(const byte* password, size_t pssword_len, byte* blinded_password, size_t blinded_password_len,
+        byte* blinding_secret, size_t blinding_secret_len) {
+
+    //  TODO: This is STUB. Implement me.
+}
+
+//
+//  Deblinds 'transformed password' value with previously returned 'blinding secret' from blind().
+//
+VSCP_PUBLIC void
+vscp_pythia_deblind(const byte* transformed_password, size_t transformed_pssword_len, const byte* blinding_secret,
+        size_t blinding_secret_len, byte* deblinded_password, size_t deblinded_password_len) {
+
+    //  TODO: This is STUB. Implement me.
+}

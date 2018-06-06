@@ -2,7 +2,7 @@
         name = "pythia"
         brief = "Virgil Security Crypto Pythia"
         namespace = "virgil"
-        prefix = "vsc pythia"
+        prefix = "vscp"
         inc_path = "../library/pythia/include/virgil/"
         inc_private_path = "../library/pythia/include/virgil/private/"
         src_path = "../library/pythia/src/"
@@ -51,6 +51,5 @@
     <module name="pythia error"/>
     <module name="library"/>
     <module name="memory"/>
-
-    <!-- <implementor name="virgil pythia"/> -->
+    <class name="pythia"/>
 </project>

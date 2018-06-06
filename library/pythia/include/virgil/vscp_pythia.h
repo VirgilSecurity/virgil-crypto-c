@@ -36,12 +36,6 @@
 // --------------------------------------------------------------------------
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Provides configurable memory management model.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -49,9 +43,23 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsc_pythia_memory.h"
-#include "vsc_pythia_assert.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Provide Pythia implementation based on the Virgil Security.
+// --------------------------------------------------------------------------
+
+#ifndef VSCP_PYTHIA_H_INCLUDED
+#define VSCP_PYTHIA_H_INCLUDED
+
+#include "vscp_library.h"
+#include "vscp_error.h"
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -61,105 +69,56 @@
 // --------------------------------------------------------------------------
 
 //
-//  Default allocation function, that is configured during compilation.
+//  Handle 'pythia' context.
 //
-static void*
-vsc_pythia_default_alloc(size_t size);
+typedef struct vscp_pythia_t vscp_pythia_t;
 
 //
-//  Default de-allocation function, that is configured during compilation.
+//  Return length of the buffer needed to hold 'blinded password'.
 //
-static void
-vsc_pythia_default_dealloc(void* mem);
+VSCP_PUBLIC size_t
+vscp_pythia_blinded_password_len(void);
 
 //
-//  Current allocation function.
+//  Return length of the buffer needed to hold 'deblinded password'.
 //
-static vsc_pythia_alloc_fn inner_alloc = vsc_pythia_default_alloc;
+VSCP_PUBLIC size_t
+vscp_pythia_deblinded_password_len(void);
 
 //
-//  Current de-allocation function.
+//  Return length of the buffer needed to hold 'blinding secret'.
 //
-static vsc_pythia_dealloc_fn inner_dealloc = vsc_pythia_default_dealloc;
-
-//
-//  Default allocation function, that is configured during compilation.
-//
-static void*
-vsc_pythia_default_alloc(size_t size) {
-
-    return VSC_PYTHIA_ALLOC_DEFAULT (size);
-}
+VSCP_PUBLIC size_t
+vscp_pythia_blinding_secret_len(void);
 
 //
-//  Default de-allocation function, that is configured during compilation.
+//  Blinds password. Turns password into a pseudo-random string.
+//  This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 //
-static void
-vsc_pythia_default_dealloc(void* mem) {
-
-    VSC_PYTHIA_DEALLOC_DEFAULT (mem);
-}
-
-//
-//  Allocate required amount of memory by usging current allocation function.
-//  Returns NULL if memory allocation fails.
-//
-VSC_PYTHIA_PUBLIC void*
-vsc_pythia_alloc(size_t size) {
-
-    return inner_alloc (size);
-}
+VSCP_PUBLIC void
+vscp_pythia_blind(const byte* password, size_t pssword_len, byte* blinded_password, size_t blinded_password_len,
+        byte* blinding_secret, size_t blinding_secret_len);
 
 //
-//  Deallocate given memory by usging current de-allocation function.
+//  Deblinds 'transformed password' value with previously returned 'blinding secret' from blind().
 //
-VSC_PYTHIA_PUBLIC void
-vsc_pythia_dealloc(void* mem) {
-
-    inner_dealloc (mem);
-}
-
-//
-//  Change current used memory functions in the runtime.
-//
-VSC_PYTHIA_PUBLIC void
-vsc_pythia_set_allocators(vsc_pythia_alloc_fn alloc_cb, vsc_pythia_dealloc_fn dealloc_cb) {
-
-    VSC_PYTHIA_ASSERT_PTR (alloc_cb);
-    VSC_PYTHIA_ASSERT_PTR (dealloc_cb);
-
-    inner_alloc = alloc_cb;
-    inner_dealloc = dealloc_cb;
-}
-
-//
-//  Zeroize memory.
-//  Note, this function can be reduced by compiler during optimization step.
-//  For sensitive data erasing use vsc_pythia_erase ().
-//
-VSC_PYTHIA_PUBLIC void
-vsc_pythia_zeroize(void* mem, size_t size) {
-
-    VSC_PYTHIA_ASSERT_PTR (mem);
-    memset (mem, 0, size);
-}
-
-//
-//  Zeroize memory in a secure manner.
-//  Compiler can not reduce this function during optimization step.
-//
-VSC_PYTHIA_PUBLIC void
-vsc_pythia_erase(void* mem, size_t size) {
-
-    VSC_PYTHIA_ASSERT_PTR (mem);
-
-    volatile uint8_t* p = (uint8_t*)mem;
-    while (size--) { *p++ = 0; }
-}
+VSCP_PUBLIC void
+vscp_pythia_deblind(const byte* transformed_password, size_t transformed_pssword_len, const byte* blinding_secret,
+        size_t blinding_secret_len, byte* deblinded_password, size_t deblinded_password_len);
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCP_PYTHIA_H_INCLUDED
 //  @end
