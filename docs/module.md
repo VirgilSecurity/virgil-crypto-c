@@ -1,4 +1,4 @@
-Module groups high level logical components within one phisical
+Module groups high level logical components within one physical
 component.
 
 Summary of language
@@ -70,11 +70,11 @@ The 'module' item
 -----------------
 
 Groups common attributes for the component. Module groups high level
-logical components within one phisical component. Phisical component is a
+logical components within one physical component. Physical component is a
 source file, plus header file for C/C++. Logical component is
 representation of a constant, type, enumeration, method, etc. Module
 represents C components in a language agnostic way. This makes possible to
-generate wrappers for high level languakes like C#, Java, Python, etc.
+generate wrappers for high level languages like C#, Java, Python, etc.
 
     <module
         name = "..."

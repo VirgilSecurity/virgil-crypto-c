@@ -36,19 +36,19 @@
 -->
 
 <xnf name = "module" script = "xnf_gen.gsl" version = "1.0a1">
-    Module groups high level logical components within one phisical
+    Module groups high level logical components within one physical
     component.
 
     <produce filename = "module.md" type = "gurudoc" />
 
     <entity name = "module">
-        Module groups high level logical components within one phisical
-        component. Phisical component is a source file, plus header file for
+        Module groups high level logical components within one physical
+        component. Physical component is a source file, plus header file for
         C/C++. Logical component is representation of a constant, type,
         enumeration, method, etc.
 
         Module represents C components in a language agnostic way. This makes
-        possible to generate wrappers for high level languakes like C#, Java,
+        possible to generate wrappers for high level languages like C#, Java,
         Python, etc.
 
         <attr name="name" required="1">
@@ -67,7 +67,6 @@
         <allow entity="method"/>
         <allow entity="macros"/>
         <allow entity="macroses"/>
-
     </entity>
 
     <include filename="common.xnf"/>

@@ -36,7 +36,7 @@
 -->
 
 
- <entity name="lineage">
+<entity name="lineage">
     Keep hierarchical information about parents.
     Lower component is a child relative to the upper component.
 
@@ -354,6 +354,7 @@
     <inherit entity="instance"/>
 </entity>
 
+
 <entity name="enum">
     Defines enumeration type.
 
@@ -368,6 +369,7 @@
 
     <allow entity="constant" occurs="0+"/>
 </entity>
+
 
 <entity name="struct">
     Defines struct type.
@@ -494,6 +496,7 @@
 
     <allow entity="implementation" occurs="0/1"/>
 </entity>
+
 
 <entity name="macroses">
     Group a set of macroses with common implemenatation.
