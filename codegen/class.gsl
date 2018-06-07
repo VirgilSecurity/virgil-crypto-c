@@ -50,6 +50,7 @@
 
 gsl from "common.gsl"
 gsl from "component.gsl"
+gsl from "meta.gsl"
 
 # ---------------------------------------------------------------------------
 #   Resolve attribute: method.context.
@@ -87,6 +88,17 @@ function foreach_class_resolve (source, project)
 
     for my.source.class
         class_resolve (class, my.project)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create 'meta entity' for each class within source.
+# ---------------------------------------------------------------------------
+function foreach_class_update_meta (source, meta)
+    check_arguments (my, "source, meta", my)
+
+    for my.source.class
+        meta_add_class (my.meta, class)
     endfor
 endfunction
 
