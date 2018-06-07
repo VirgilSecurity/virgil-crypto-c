@@ -203,9 +203,14 @@ VSF_PUBLIC vsf_sha512_impl_t*
 vsf_sha512_new(void) {
 
     vsf_sha512_impl_t *sha512_impl = (vsf_sha512_impl_t *) vsf_alloc (sizeof (vsf_sha512_impl_t));
-    VSF_ASSERT_PTR (sha512_impl);
+    if (NULL == sha512_impl) {
+        return NULL;
+    }
 
-    vsf_sha512_init (sha512_impl);
+    if (vsf_sha512_init (sha512_impl) != vsf_SUCCESS) {
+        vsf_dealloc(sha512_impl);
+        return NULL;
+    }
 
     return sha512_impl;
 }

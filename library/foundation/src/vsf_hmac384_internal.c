@@ -207,9 +207,14 @@ VSF_PUBLIC vsf_hmac384_impl_t*
 vsf_hmac384_new(void) {
 
     vsf_hmac384_impl_t *hmac384_impl = (vsf_hmac384_impl_t *) vsf_alloc (sizeof (vsf_hmac384_impl_t));
-    VSF_ASSERT_PTR (hmac384_impl);
+    if (NULL == hmac384_impl) {
+        return NULL;
+    }
 
-    vsf_hmac384_init (hmac384_impl);
+    if (vsf_hmac384_init (hmac384_impl) != vsf_SUCCESS) {
+        vsf_dealloc(hmac384_impl);
+        return NULL;
+    }
 
     return hmac384_impl;
 }

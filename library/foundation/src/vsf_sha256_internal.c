@@ -203,9 +203,14 @@ VSF_PUBLIC vsf_sha256_impl_t*
 vsf_sha256_new(void) {
 
     vsf_sha256_impl_t *sha256_impl = (vsf_sha256_impl_t *) vsf_alloc (sizeof (vsf_sha256_impl_t));
-    VSF_ASSERT_PTR (sha256_impl);
+    if (NULL == sha256_impl) {
+        return NULL;
+    }
 
-    vsf_sha256_init (sha256_impl);
+    if (vsf_sha256_init (sha256_impl) != vsf_SUCCESS) {
+        vsf_dealloc(sha256_impl);
+        return NULL;
+    }
 
     return sha256_impl;
 }

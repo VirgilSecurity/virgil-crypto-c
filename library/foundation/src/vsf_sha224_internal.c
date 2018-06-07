@@ -203,9 +203,14 @@ VSF_PUBLIC vsf_sha224_impl_t*
 vsf_sha224_new(void) {
 
     vsf_sha224_impl_t *sha224_impl = (vsf_sha224_impl_t *) vsf_alloc (sizeof (vsf_sha224_impl_t));
-    VSF_ASSERT_PTR (sha224_impl);
+    if (NULL == sha224_impl) {
+        return NULL;
+    }
 
-    vsf_sha224_init (sha224_impl);
+    if (vsf_sha224_init (sha224_impl) != vsf_SUCCESS) {
+        vsf_dealloc(sha224_impl);
+        return NULL;
+    }
 
     return sha224_impl;
 }

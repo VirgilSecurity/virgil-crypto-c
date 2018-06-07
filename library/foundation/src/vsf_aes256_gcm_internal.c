@@ -322,9 +322,14 @@ VSF_PUBLIC vsf_aes256_gcm_impl_t*
 vsf_aes256_gcm_new(void) {
 
     vsf_aes256_gcm_impl_t *aes256_gcm_impl = (vsf_aes256_gcm_impl_t *) vsf_alloc (sizeof (vsf_aes256_gcm_impl_t));
-    VSF_ASSERT_PTR (aes256_gcm_impl);
+    if (NULL == aes256_gcm_impl) {
+        return NULL;
+    }
 
-    vsf_aes256_gcm_init (aes256_gcm_impl);
+    if (vsf_aes256_gcm_init (aes256_gcm_impl) != vsf_SUCCESS) {
+        vsf_dealloc(aes256_gcm_impl);
+        return NULL;
+    }
 
     return aes256_gcm_impl;
 }
