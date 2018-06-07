@@ -126,6 +126,7 @@ function process_project (main, project)
     my.meta = meta_create ()
     foreach_interface_update_meta (my.root, my.meta)
     foreach_implementation_update_meta (my.root, my.meta)
+    foreach_class_update_meta (my.root, my.meta)
 
     if main.echo_level = "debug"
         item_save_to_file (my.meta, "meta.xml", my.project.work_path)

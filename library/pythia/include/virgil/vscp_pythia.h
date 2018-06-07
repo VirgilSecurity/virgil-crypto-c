@@ -53,6 +53,7 @@
 #define VSCP_PYTHIA_H_INCLUDED
 
 #include "vscp_library.h"
+#include "vscp_library.h"
 #include "vscp_error.h"
 //  @end
 
@@ -72,6 +73,39 @@ extern "C" {
 //  Handle 'pythia' context.
 //
 typedef struct vscp_pythia_t vscp_pythia_t;
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCP_PUBLIC vscp_error_t
+vscp_pythia_init(vscp_pythia_t* pythia_ctx);
+
+//
+//  Cleanup context.
+//  This is a reverse action of the function 'vscp_pythia_init ()'.
+//
+VSCP_PUBLIC void
+vscp_pythia_cleanup(vscp_pythia_t* pythia_ctx);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCP_PUBLIC vscp_pythia_t*
+vscp_pythia_new(void);
+
+//
+//  Delete given context.
+//  This is a reverse action of the function 'vscp_pythia_new ()'.
+//
+VSCP_PUBLIC void
+vscp_pythia_delete(vscp_pythia_t* pythia_ctx);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscp_pythia_new ()'.
+//
+VSCP_PUBLIC void
+vscp_pythia_destroy(vscp_pythia_t** pythia_ctx_ref);
 
 //
 //  Return length of the buffer needed to hold 'blinded password'.

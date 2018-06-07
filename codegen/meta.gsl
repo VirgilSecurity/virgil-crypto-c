@@ -404,6 +404,36 @@ function _X17_add_entity_implementation (meta, implementation)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Add item '<entity id = "class name">'.
+# ---------------------------------------------------------------------------
+function _X17_add_entity_class (meta, class)
+    check_argument (my, "meta", my)
+    assert_argument_type (my.meta, "meta", my)
+    check_argument (my, "class", my)
+
+    my.id = make_id (my.class.name)
+
+    if count (my.meta.entity, id = my.id)
+        return my.conetxt->entity (id = my.id)
+    endif
+
+    new entity to my.meta
+        .id = my.id
+
+        _X17_add_name (entity, "class argument ctx", cat (my.class.name, "ctx"))
+        _X17_add_link (entity, "class argument ctx", make_id ("_argument", my.class.name, "ctx"))
+        _X17_add_link (entity, "class struct ctx", make_id ("class", my.class.name, "struct", my.class.name))
+        _X17_add_link (entity, "class method init", make_id ("class", my.class.name, "method init"))
+        _X17_add_link (entity, "class method cleanup", make_id ("class", my.class.name, "method cleanup"))
+        _X17_add_link (entity, "class method new", make_id ("class", my.class.name, "method new"))
+        _X17_add_link (entity, "class method delete", make_id ("class", my.class.name, "method delete"))
+
+        return entity
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
 #   Append entity's <name/> elements to the <names/> dictionary.
 # ---------------------------------------------------------------------------
 function _X17_names_add_entity (names, entity)
@@ -475,6 +505,19 @@ function meta_add_implementation (meta, implementation)
     echo_trace ("Update meta with implementation: $(my.implementation.name:)", my)
 
     return _X17_add_entity_implementation (my.meta, my.implementation)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add item '<entity id = "class name plceholder">'.
+# ---------------------------------------------------------------------------
+function meta_add_class (meta, class)
+    check_argument (my, "meta", my)
+    check_argument (my, "class", my)
+    assert_argument_type (my.meta, "meta", my)
+
+    echo_trace ("Update meta with class: $(my.class.name:)", my)
+
+    return _X17_add_entity_class (my.meta, my.class)
 endfunction
 
 # ---------------------------------------------------------------------------

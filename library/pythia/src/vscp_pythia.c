@@ -50,6 +50,8 @@
 // --------------------------------------------------------------------------
 
 #include "vscp_pythia.h"
+#include "vscp_memory.h"
+#include "vscp_assert.h"
 //  @end
 
 
@@ -66,6 +68,53 @@ struct vscp_pythia_t {
     size_t instances;
 };
 
+//
+//  Allocate context and perform it's initialization.
+//
+VSCP_PUBLIC vscp_pythia_t*
+vscp_pythia_new(void) {
+
+    vscp_pythia_t *pythia_ctx = (vscp_pythia_t *) vscp_alloc (sizeof (vscp_pythia_t));
+    if (NULL == pythia_ctx) {
+        return NULL;
+    }
+
+    if (vscp_pythia_init (pythia_ctx) != vscp_SUCCESS) {
+        vscp_dealloc (pythia_ctx);
+        return NULL;
+    }
+
+    return pythia_ctx;
+}
+
+//
+//  Delete given context.
+//  This is a reverse action of the function 'vscp_pythia_new ()'.
+//
+VSCP_PUBLIC void
+vscp_pythia_delete(vscp_pythia_t* pythia_ctx) {
+
+    if (pythia_ctx) {
+        vscp_pythia_cleanup (pythia_ctx);
+        vscp_dealloc (pythia_ctx);
+    }
+}
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscp_pythia_new ()'.
+//
+VSCP_PUBLIC void
+vscp_pythia_destroy(vscp_pythia_t** pythia_ctx_ref) {
+
+    VSCP_ASSERT_PTR (pythia_ctx_ref);
+
+    vscp_pythia_t *pythia_ctx = *pythia_ctx_ref;
+    *pythia_ctx_ref = NULL;
+
+    vscp_pythia_delete (pythia_ctx);
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -73,6 +122,29 @@ struct vscp_pythia_t {
 // --------------------------------------------------------------------------
 //  @end
 
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCP_PUBLIC vscp_error_t
+vscp_pythia_init(vscp_pythia_t* pythia_ctx) {
+
+    VSCP_ASSERT_PTR(pythia_ctx);
+
+    //  TODO: This is STUB. Implement me.
+
+    return vscp_error_BAD_ARGUMENTS;
+}
+
+//
+//  Cleanup context.
+//  This is a reverse action of the function 'vscp_pythia_init ()'.
+//
+VSCP_PUBLIC void
+vscp_pythia_cleanup(vscp_pythia_t* pythia_ctx) {
+
+    //  TODO: This is STUB. Implement me.
+}
 
 //
 //  Return length of the buffer needed to hold 'blinded password'.
