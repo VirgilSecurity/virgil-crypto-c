@@ -181,8 +181,8 @@ vscp_pythia_blinding_secret_len(void) {
 //  This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 //
 VSCP_PUBLIC void
-vscp_pythia_blind(const byte* password, size_t pssword_len, byte* blinded_password, size_t blinded_password_len,
-        byte* blinding_secret, size_t blinding_secret_len) {
+vscp_pythia_blind(vscp_pythia_t* pythia_ctx, const byte* password, size_t pssword_len, byte* blinded_password,
+        size_t blinded_password_len, byte* blinding_secret, size_t blinding_secret_len) {
 
     //  TODO: This is STUB. Implement me.
 }
@@ -191,8 +191,9 @@ vscp_pythia_blind(const byte* password, size_t pssword_len, byte* blinded_passwo
 //  Deblinds 'transformed password' value with previously returned 'blinding secret' from blind().
 //
 VSCP_PUBLIC void
-vscp_pythia_deblind(const byte* transformed_password, size_t transformed_pssword_len, const byte* blinding_secret,
-        size_t blinding_secret_len, byte* deblinded_password, size_t deblinded_password_len) {
+vscp_pythia_deblind(vscp_pythia_t* pythia_ctx, const byte* transformed_password, size_t transformed_pssword_len,
+        const byte* blinding_secret, size_t blinding_secret_len, byte* deblinded_password,
+        size_t deblinded_password_len) {
 
     //  TODO: This is STUB. Implement me.
 }

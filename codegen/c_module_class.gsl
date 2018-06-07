@@ -68,11 +68,13 @@ function _X13_add_argument_ctx (destination, meta)
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
-    new argument to my.destination
+    my.argument = item_prepend_new ("argument", my.destination)
+
+    scope my.argument
         .name = my.names.class_argument_ctx
         .class = my.refs.class_struct_ctx
         .access = "readwrite"
-    endnew
+    endscope
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -254,6 +256,19 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
+#
+# ---------------------------------------------------------------------------
+function _X13_add_method (method, destination, meta)
+    check_arguments (my, "method, destination, meta", my)
+
+    my.copied_method = item_copy_to (my.method, my.destination)
+
+    if my.copied_method.context = "class"
+        _X13_add_argument_ctx (my.copied_method, my.meta)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Add methods that manages class lifecycle.
 # ---------------------------------------------------------------------------
 function _X13_add_lifecycle_methods (class, destination, meta)
@@ -320,7 +335,7 @@ function c_module_class_create_module_public (class, destination, meta)
         endfor
 
         for my.class.method
-            copy method to module
+            _X13_add_method (method, module, my.meta)
         endfor
 
         for my.class.macros
