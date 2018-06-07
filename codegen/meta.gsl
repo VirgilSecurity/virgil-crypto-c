@@ -312,8 +312,8 @@ function _X17_add_entity_implementation (meta, implementation)
         _X17_add_name (entity, "implementation class", my.name)
 
         _X17_add_name (entity, "implementation module", my.name)
-        _X17_add_name (entity, "implementation module impl", make_id (my.name, "impl"))
-        _X17_add_name (entity, "implementation module internal", make_id (my.name, "internal"))
+        _X17_add_name (entity, "implementation module impl", cat (my.name, "impl"))
+        _X17_add_name (entity, "implementation module internal", cat (my.name, "internal"))
 
         _X17_add_link (entity, "implementation struct impl", make_id ("class", my.name, "struct", "impl"))
 
