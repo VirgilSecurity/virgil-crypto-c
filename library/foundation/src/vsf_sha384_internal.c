@@ -203,9 +203,14 @@ VSF_PUBLIC vsf_sha384_impl_t*
 vsf_sha384_new(void) {
 
     vsf_sha384_impl_t *sha384_impl = (vsf_sha384_impl_t *) vsf_alloc (sizeof (vsf_sha384_impl_t));
-    VSF_ASSERT_PTR (sha384_impl);
+    if (NULL == sha384_impl) {
+        return NULL;
+    }
 
-    vsf_sha384_init (sha384_impl);
+    if (vsf_sha384_init (sha384_impl) != vsf_SUCCESS) {
+        vsf_dealloc(sha384_impl);
+        return NULL;
+    }
 
     return sha384_impl;
 }

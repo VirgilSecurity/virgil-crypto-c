@@ -166,9 +166,14 @@ VSF_PUBLIC vsf_kdf2_impl_t*
 vsf_kdf2_new(void) {
 
     vsf_kdf2_impl_t *kdf2_impl = (vsf_kdf2_impl_t *) vsf_alloc (sizeof (vsf_kdf2_impl_t));
-    VSF_ASSERT_PTR (kdf2_impl);
+    if (NULL == kdf2_impl) {
+        return NULL;
+    }
 
-    vsf_kdf2_init (kdf2_impl);
+    if (vsf_kdf2_init (kdf2_impl) != vsf_SUCCESS) {
+        vsf_dealloc(kdf2_impl);
+        return NULL;
+    }
 
     return kdf2_impl;
 }

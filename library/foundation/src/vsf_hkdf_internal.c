@@ -166,9 +166,14 @@ VSF_PUBLIC vsf_hkdf_impl_t*
 vsf_hkdf_new(void) {
 
     vsf_hkdf_impl_t *hkdf_impl = (vsf_hkdf_impl_t *) vsf_alloc (sizeof (vsf_hkdf_impl_t));
-    VSF_ASSERT_PTR (hkdf_impl);
+    if (NULL == hkdf_impl) {
+        return NULL;
+    }
 
-    vsf_hkdf_init (hkdf_impl);
+    if (vsf_hkdf_init (hkdf_impl) != vsf_SUCCESS) {
+        vsf_dealloc(hkdf_impl);
+        return NULL;
+    }
 
     return hkdf_impl;
 }
