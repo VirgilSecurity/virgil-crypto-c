@@ -93,6 +93,12 @@ VSC_PUBLIC vsc_buffer_t*
 vsc_buffer_new(void);
 
 //
+//  Allocate context and underlying byte array.
+//
+VSC_PUBLIC vsc_buffer_t*
+vsc_buffer_new_with_capacity(size_t capacity);
+
+//
 //  Release all inner resorces and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //

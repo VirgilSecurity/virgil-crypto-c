@@ -154,6 +154,30 @@ vsc_buffer_cleanup(vsc_buffer_t *buffer_ctx) {
 }
 
 //
+//  Allocate context and underlying byte array.
+//
+VSC_PUBLIC vsc_buffer_t *
+vsc_buffer_new_with_capacity(size_t capacity) {
+
+    vsc_buffer_t *buffer_ctx = (vsc_buffer_t *)vsc_alloc(sizeof(vsc_buffer_t) + capacity);
+    if (NULL == buffer_ctx) {
+        return NULL;
+    }
+
+    if (vsc_buffer_init(buffer_ctx) != vsc_SUCCESS) {
+        vsc_dealloc(buffer_ctx);
+        return NULL;
+    }
+
+    buffer_ctx->bytes = (byte *)(buffer_ctx + sizeof(vsc_buffer_t));
+    buffer_ctx->capacity = capacity;
+    buffer_ctx->self_dealloc_cb = vsc_dealloc;
+    buffer_ctx->bytes_dealloc_cb = NULL;
+
+    return buffer_ctx;
+}
+
+//
 //  Allocates inner buffer with a given capacity.
 //  Precondition: buffer is initialized.
 //  Precondition: buffer does not hold any bytes.
