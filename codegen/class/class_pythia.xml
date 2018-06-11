@@ -147,6 +147,21 @@
     </method>
 
 
+    <method name="verify">
+        This operation allows client to verify that the output of transform() is correct,
+        assuming that client has previously stored transformation public key.
+
+        <argument name="transformed password" class="data"/>
+        <argument name="blinded password" class="data"/>
+        <argument name="tweak" class="data"/>
+        <argument name="transformation public key" class="data"/>
+        <argument name="proof value c" class="data"/>
+        <argument name="proof value u" class="data"/>
+
+        <return type="error"/>
+    </method>
+
+
     <method name="random handler" context="none" declaration="private">
         Callback for the pythia random.
 

@@ -84,7 +84,11 @@ enum vscp_error_t {
     //
     //  Undrlying pythia library returns -1.
     //
-    vscp_error_PYTHIA_INNER_FAIL = -200
+    vscp_error_PYTHIA_INNER_FAIL = -200,
+    //
+    //  Pythia verify operation failed.
+    //
+    vscp_error_VERIFICATION_FAIL = -201
 };
 typedef enum vscp_error_t vscp_error_t;
 

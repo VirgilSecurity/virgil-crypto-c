@@ -19,5 +19,9 @@
         <constant name="pythia inner fail" value="-200">
             Undrlying pythia library returns -1.
         </constant>
+
+        <constant name="verification fail" value="-201">
+            Pythia verify operation failed.
+        </constant>
     </enum>
 </module>
