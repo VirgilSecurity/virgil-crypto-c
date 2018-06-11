@@ -48,16 +48,29 @@ gsl from "common.gsl"
 # ---------------------------------------------------------------------------
 #   Add model 'struct' that handles class context.
 # ---------------------------------------------------------------------------
-function _X13_add_context_struct (class, destination, meta)
-    check_arguments (my, "class, destination, meta", my)
+function _X13_add_context_struct (class, declaration, definition, destination, meta)
+    check_arguments (my, "class, declaration, definition, destination, meta", my)
+
+    my.names = meta_names (my.meta)
 
     new struct to my.destination
         . = "Handle '$(my.class.name:)' context."
         .name = my.class.name
+        .of_class = my.class.name
+        .declaration = my.declaration
+        .definition = my.definition
 
         for my.class.property
             copy property to struct
         endfor
+
+        new property to struct
+            .name = my.names.class_property_self_dealloc
+            .callback = ".(global_callback_dealloc)"
+            .="\
+            Function do deallocate self context.
+            "
+        endnew
     endnew
 endfunction
 
@@ -139,8 +152,7 @@ function _X13_add_method_cleanup (class, destination, meta)
 
     new method to my.destination
         . = "\
-        Cleanup context.
-        This is a reverse action of the function '$(my.refs.c_class_method_init) ()'.
+        Release all inner resources.
         "
         .name = my.names.method_cleanup
 
@@ -172,15 +184,17 @@ function _X13_add_method_new (class, destination, meta)
             my.arg_ctx = my.names.c_class_argument_ctx
 
             . = "\
-            $(my.type_ctx) *$(my.arg_ctx:) = ($(my.type_ctx) *) .(c_global_method_alloc) (sizeof ($(my.type_ctx)));
+            $(my.type_ctx) *$(my.arg_ctx:) = ($(my.type_ctx) *) .(c_global_method_alloc)(sizeof ($(my.type_ctx)));
             if (NULL == $(my.arg_ctx:)) {
                 return NULL;
             }
 
-            if ($(my.refs.c_class_method_init) ($(my.arg_ctx:)) != .(c_global_enum_error_constant_success)) {
-                .(c_global_method_dealloc) ($(my.arg_ctx:));
+            if ($(my.refs.c_class_method_init)($(my.arg_ctx:)) != .(c_global_enum_error_constant_success)) {
+                .(c_global_method_dealloc)($(my.arg_ctx:));
                 return NULL;
             }
+
+            $(my.arg_ctx:)->$(my.refs.c_class_property_self_dealloc) = .(c_global_method_dealloc);
 
             return $(my.arg_ctx:);
             "
@@ -200,8 +214,8 @@ function _X13_add_method_delete (class, destination, meta)
         .name = my.names.method_delete
 
         . = "\
-        Delete given context.
-        This is a reverse action of the function '$(my.refs.c_class_method_new) ()'.
+        Release all inner resorces and deallocate context if needed.
+        It is safe to call this method even if context was allocated by the caller.
         "
 
         _X13_add_argument_ctx (method, my.meta)
@@ -210,9 +224,14 @@ function _X13_add_method_delete (class, destination, meta)
             my.arg_ctx = my.refs.class_argument_ctx
 
             . = "\
-            if ($(my.arg_ctx)) {
-                $(my.refs.c_class_method_cleanup) ($(my.arg_ctx));
-                .(c_global_method_dealloc) ($(my.arg_ctx));
+            if (NULL == $(my.arg_ctx)) {
+                return;
+            }
+
+            $(my.refs.c_class_method_cleanup)($(my.arg_ctx));
+
+            if ( $(my.arg_ctx:)->$(my.refs.c_class_property_self_dealloc) != NULL) {
+                 $(my.arg_ctx:)->$(my.refs.c_class_property_self_dealloc)($(my.arg_ctx));
             }
             "
         endnew
@@ -243,12 +262,12 @@ function _X13_add_method_destroy (class, destination, meta)
             my.type_ctx = my.refs.c_class_struct_ctx
 
             . = "\
-            .(c_class_assert_macros_ptr) ($(my.arg_ctx_ref));
+            .(c_class_assert_macros_ptr)($(my.arg_ctx_ref));
 
             $(my.type_ctx) *$(my.arg_ctx:) = *$(my.arg_ctx_ref);
             *$(my.arg_ctx_ref) = NULL;
 
-            $(my.refs.c_class_method_delete) ($(my.arg_ctx:));
+            $(my.refs.c_class_method_delete)($(my.arg_ctx:));
             "
         endnew
     endnew
@@ -282,7 +301,7 @@ function _X13_add_lifecycle_methods (class, destination, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create 'module' component for given class.
+#   Create 'module' component with a public API for given class.
 # ---------------------------------------------------------------------------
 function c_module_class_create_module_public (class, destination, meta)
     check_arguments (my, "class, destination, meta", my)
@@ -291,12 +310,16 @@ function c_module_class_create_module_public (class, destination, meta)
 
     new module to my.destination
         . = my.class.?
-        .name = my.class.name
+        .name = my.names.class_module
         .of_class = my.class.of_class ?
         .c_prefix = my.class.c_prefix ?
 
         new require to module
             .module = my.names.module_library
+        endnew
+
+        new require to module
+            .module = my.names.module_error
         endnew
 
         new require to module
@@ -309,10 +332,27 @@ function c_module_class_create_module_public (class, destination, meta)
             .scope = "private"
         endnew
 
-        if count (my.class.property)
-            _X13_add_context_struct (my.class, module, my.meta)
+
+        if my.class.context = "public"
+            _X13_add_context_struct (my.class, "public", "public", module, my.meta)
+
+        elsif my.class.context = "private"
+            _X13_add_context_struct (my.class, "public", "external", module, my.meta)
+
+            new require to module
+                .module = my.names.class_module_defs
+                .scope = "private"
+            endnew
+
+        elsif my.class.context = "internal"
+            _X13_add_context_struct (my.class, "public", "private", module, my.meta)
+        endif
+
+
+        if my.class.lifecycle <> "none" & my.class.context <> "none"
             _X13_add_lifecycle_methods (my.class, module, my.meta)
         endif
+
 
         for my.class.require
             copy require to module
@@ -348,6 +388,30 @@ function c_module_class_create_module_public (class, destination, meta)
     endnew
 endfunction
 
+
+# ---------------------------------------------------------------------------
+#   Create 'module' component with a types defineition for given class.
+# ---------------------------------------------------------------------------
+function c_module_class_create_module_defs (class, destination, meta)
+    check_arguments (my, "class, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+
+    new module to my.destination
+        .name = my.names.class_module_defs
+        .scope = "private"
+        . = "
+        Class '$(my.class.name:)' types definition.
+        "
+
+        new require to module
+            .module = my.names.module_library
+        endnew
+
+        _X13_add_context_struct (my.class, "external", "public", module, my.meta)
+    endnew
+endfunction
+
 # ---------------------------------------------------------------------------
 #   Entrypoint.
 # ---------------------------------------------------------------------------
@@ -357,6 +421,10 @@ function c_module_class_create (source, destination, meta)
     for my.source.class by name
         meta_reset_active_entity (my.meta, class.name)
         c_module_class_create_module_public (class, my.destination, my.meta)
+
+        if class.context = "private"
+            c_module_class_create_module_defs (class, my.destination, my.meta)
+        endif
     endfor
 
 endfunction

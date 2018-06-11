@@ -47,6 +47,41 @@
             Short module name.
         </attr>
 
+        <attr name="context" default="none">
+            Define context presence and it's visibility.
+
+            <restrict value="none">
+                Class do not require context, so it contains only static methods.
+                This value is default if class does not contain any 'property'.
+            </restrict>
+
+            <restrict value="public">
+                Context is defined in the public scope.
+            </restrict>
+
+            <restrict value="private">
+                Context is defined in the private scope.
+                This value is default if class contains at least one 'property'.
+            </restrict>
+
+            <restrict value="internal">
+                Context is defined in the internal scope.
+            </restrict>
+        </attr>
+
+
+        <attr name="lifecycle" default="default">
+            Define how to generate context lifecycle methods.
+
+            <restrict value="none">
+                Do not generate lifecycle methods.
+            </restrict>
+
+            <restrict value="default">
+                Generate default lifecycle methods.
+            </restrict>
+        </attr>
+
         <inherit entity="scope"/>
         <inherit entity="of_class"/>
         <inherit entity="c_prefix"/>
