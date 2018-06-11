@@ -115,3 +115,10 @@ endif()
 # Add library alias
 #
 add_library(vsc::common ALIAS vsc_common)
+
+#
+# Format code
+#
+if(COMMAND add_clangformat)
+    add_clangformat(vsc_common)
+endif()

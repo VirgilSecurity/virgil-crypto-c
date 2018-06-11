@@ -248,3 +248,15 @@ if(TARGET enable_pedantic)
 else()
     message("To compile library in pedantic mode create target 'enable_pedantic'.")
 endif()
+
+#
+# Add library alias
+#
+add_library(vsc::foundation ALIAS vsf)
+
+#
+# Format code
+#
+if(COMMAND add_clangformat)
+    add_clangformat(vsf)
+endif()

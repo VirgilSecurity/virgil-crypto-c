@@ -46,60 +46,63 @@
 //  Over implementation: 'sha256'.
 // --------------------------------------------------------------------------
 
-void test__api__sha256__returns_not_null (void) {
-    TEST_ASSERT_NOT_NULL (vsf_sha256_hash_api());
+void
+test__api__sha256__returns_not_null(void) {
+    TEST_ASSERT_NOT_NULL(vsf_sha256_hash_api());
 }
 
-void test__api_tag__sha256__equals_api_tag_HASH (void) {
-    TEST_ASSERT_EQUAL (vsf_api_tag_HASH, vsf_sha256_hash_api()->api_tag);
+void
+test__api_tag__sha256__equals_api_tag_HASH(void) {
+    TEST_ASSERT_EQUAL(vsf_api_tag_HASH, vsf_sha256_hash_api()->api_tag);
 }
 
-void test__hash__sha256_vector_1__success (void) {
+void
+test__hash__sha256_vector_1__success(void) {
 
-    byte digest[vsf_sha256_DIGEST_SIZE] = { 0x00 };
+    byte digest[vsf_sha256_DIGEST_SIZE] = {0x00};
 
-    vsf_hash (vsf_sha256_hash_api (),
-            test_sha256_VECTOR_1_INPUT, test_sha256_VECTOR_1_INPUT_LEN,
-            digest, vsf_sha256_DIGEST_SIZE);
+    vsf_hash(vsf_sha256_hash_api(), test_sha256_VECTOR_1_INPUT, test_sha256_VECTOR_1_INPUT_LEN, digest,
+            vsf_sha256_DIGEST_SIZE);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha256_VECTOR_1_DIGEST, digest, test_sha256_VECTOR_1_DIGEST_LEN);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_1_DIGEST, digest, test_sha256_VECTOR_1_DIGEST_LEN);
 }
 
-void test__hash__sha256_vector_2__success (void) {
+void
+test__hash__sha256_vector_2__success(void) {
 
-    byte digest[vsf_sha256_DIGEST_SIZE] = { 0x00 };
+    byte digest[vsf_sha256_DIGEST_SIZE] = {0x00};
 
-    vsf_hash (vsf_sha256_hash_api (),
-            test_sha256_VECTOR_2_INPUT, test_sha256_VECTOR_2_INPUT_LEN,
-            digest, vsf_sha256_DIGEST_SIZE);
+    vsf_hash(vsf_sha256_hash_api(), test_sha256_VECTOR_2_INPUT, test_sha256_VECTOR_2_INPUT_LEN, digest,
+            vsf_sha256_DIGEST_SIZE);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha256_VECTOR_2_DIGEST, digest, test_sha256_VECTOR_2_DIGEST_LEN);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_2_DIGEST, digest, test_sha256_VECTOR_2_DIGEST_LEN);
 }
 
-void test__hash__sha256_vector_3__success (void) {
+void
+test__hash__sha256_vector_3__success(void) {
 
-    byte digest[vsf_sha256_DIGEST_SIZE] = { 0x00 };
+    byte digest[vsf_sha256_DIGEST_SIZE] = {0x00};
 
-    vsf_hash (vsf_sha256_hash_api (),
-            test_sha256_VECTOR_3_INPUT, test_sha256_VECTOR_3_INPUT_LEN,
-            digest, vsf_sha256_DIGEST_SIZE);
+    vsf_hash(vsf_sha256_hash_api(), test_sha256_VECTOR_3_INPUT, test_sha256_VECTOR_3_INPUT_LEN, digest,
+            vsf_sha256_DIGEST_SIZE);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha256_VECTOR_3_DIGEST, digest, test_sha256_VECTOR_3_DIGEST_LEN);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_3_DIGEST, digest, test_sha256_VECTOR_3_DIGEST_LEN);
 }
 
 // --------------------------------------------------------------------------
 //  Entrypoint.
 // --------------------------------------------------------------------------
 
-int main (void) {
-    UNITY_BEGIN ();
+int
+main(void) {
+    UNITY_BEGIN();
 
-    RUN_TEST (test__api__sha256__returns_not_null);
-    RUN_TEST (test__api_tag__sha256__equals_api_tag_HASH);
+    RUN_TEST(test__api__sha256__returns_not_null);
+    RUN_TEST(test__api_tag__sha256__equals_api_tag_HASH);
 
-    RUN_TEST (test__hash__sha256_vector_1__success);
-    RUN_TEST (test__hash__sha256_vector_2__success);
-    RUN_TEST (test__hash__sha256_vector_3__success);
+    RUN_TEST(test__hash__sha256_vector_1__success);
+    RUN_TEST(test__hash__sha256_vector_2__success);
+    RUN_TEST(test__hash__sha256_vector_3__success);
 
-    return UNITY_END ();
+    return UNITY_END();
 }

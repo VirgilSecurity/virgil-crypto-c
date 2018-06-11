@@ -43,16 +43,19 @@
 //  Over implementation: 'sha256'.
 // --------------------------------------------------------------------------
 
-void test__digest_size__sha256__returns_32 (void) {
-    TEST_ASSERT_EQUAL (32, vsf_hash_info_digest_size (vsf_sha256_hash_info_api ()));
+void
+test__digest_size__sha256__returns_32(void) {
+    TEST_ASSERT_EQUAL(32, vsf_hash_info_digest_size(vsf_sha256_hash_info_api()));
 }
 
-void test__api__sha256__returns_not_null (void) {
-    TEST_ASSERT_NOT_NULL (vsf_sha256_hash_info_api());
+void
+test__api__sha256__returns_not_null(void) {
+    TEST_ASSERT_NOT_NULL(vsf_sha256_hash_info_api());
 }
 
-void test__api_tag__sha256__equals_api_tag_HASH_INFO (void) {
-    TEST_ASSERT_EQUAL (vsf_api_tag_HASH_INFO, vsf_sha256_hash_info_api()->api_tag);
+void
+test__api_tag__sha256__equals_api_tag_HASH_INFO(void) {
+    TEST_ASSERT_EQUAL(vsf_api_tag_HASH_INFO, vsf_sha256_hash_info_api()->api_tag);
 }
 
 
@@ -60,12 +63,13 @@ void test__api_tag__sha256__equals_api_tag_HASH_INFO (void) {
 //  Entrypoint
 // --------------------------------------------------------------------------
 
-int main (void) {
-    UNITY_BEGIN ();
+int
+main(void) {
+    UNITY_BEGIN();
 
-    RUN_TEST (test__digest_size__sha256__returns_32);
-    RUN_TEST (test__api__sha256__returns_not_null);
-    RUN_TEST (test__api_tag__sha256__equals_api_tag_HASH_INFO);
+    RUN_TEST(test__digest_size__sha256__returns_32);
+    RUN_TEST(test__api__sha256__returns_not_null);
+    RUN_TEST(test__api_tag__sha256__equals_api_tag_HASH_INFO);
 
-    return UNITY_END ();
+    return UNITY_END();
 }
