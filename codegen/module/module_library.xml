@@ -93,6 +93,15 @@
         </implementation>
     </macros>
 
+    <macros name="unused">
+        Mark argument or function return value as "unused".
+
+        <implementation>
+            #define .(c_global_macros_unused) (x) (void)(x)
+        </implementation>
+    </macros>
+
+
     <constant name="pointer size" value="sizeof (void *)">
         Pointer size in bytes.
     </constant>
