@@ -51,10 +51,10 @@
 void
 test__derive__sha256_vector_1__success(void) {
 
-    byte* key = vsf_alloc(test_hkdf_VECTOR_1_DERIVED_DATA_LEN);
+    byte *key = vsf_alloc(test_hkdf_VECTOR_1_DERIVED_DATA_LEN);
 
-    vsf_hkdf_impl_t* hkdf_impl = vsf_hkdf_new();
-    vsf_impl_t* hmac256_impl = vsf_hmac256_impl(vsf_hmac256_new());
+    vsf_hkdf_impl_t *hkdf_impl = vsf_hkdf_new();
+    vsf_impl_t *hmac256_impl = vsf_hmac256_impl(vsf_hmac256_new());
 
     vsf_hkdf_take_hmac_stream(hkdf_impl, &hmac256_impl);
 
@@ -72,10 +72,10 @@ test__derive__sha256_vector_1__success(void) {
 void
 test__derive__sha256_vector_2__success(void) {
 
-    byte* key = vsf_alloc(test_hkdf_VECTOR_2_DERIVED_DATA_LEN);
+    byte *key = vsf_alloc(test_hkdf_VECTOR_2_DERIVED_DATA_LEN);
 
-    vsf_hkdf_impl_t* hkdf_impl = vsf_hkdf_new();
-    vsf_impl_t* hmac256_impl = vsf_hmac256_impl(vsf_hmac256_new());
+    vsf_hkdf_impl_t *hkdf_impl = vsf_hkdf_new();
+    vsf_impl_t *hmac256_impl = vsf_hmac256_impl(vsf_hmac256_new());
 
     vsf_hkdf_take_hmac_stream(hkdf_impl, &hmac256_impl);
 

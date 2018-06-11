@@ -74,10 +74,10 @@ test__BLOCK_LEN__always__equals_16(void) {
 void
 test__encrypt__vector_1__encrypted_len_equals_16(void) {
 
-    vsf_aes256_gcm_impl_t* aes256_gcm_impl = vsf_aes256_gcm_new();
+    vsf_aes256_gcm_impl_t *aes256_gcm_impl = vsf_aes256_gcm_new();
 
     size_t enc_len = vsf_aes256_gcm_required_enc_len(aes256_gcm_impl, test_aes256_gcm_VECTOR_1_DATA_LEN, 0);
-    byte* enc = vsf_alloc(enc_len);
+    byte *enc = vsf_alloc(enc_len);
 
 
     vsf_aes256_gcm_set_key(aes256_gcm_impl, test_aes256_gcm_VECTOR_1_KEY, test_aes256_gcm_VECTOR_1_KEY_LEN);
@@ -97,10 +97,10 @@ test__encrypt__vector_1__encrypted_len_equals_16(void) {
 void
 test__encrypt__vector_1__valid_encrypted_data(void) {
 
-    vsf_aes256_gcm_impl_t* aes256_gcm_impl = vsf_aes256_gcm_new();
+    vsf_aes256_gcm_impl_t *aes256_gcm_impl = vsf_aes256_gcm_new();
 
     size_t enc_len = vsf_aes256_gcm_required_enc_len(aes256_gcm_impl, test_aes256_gcm_VECTOR_1_DATA_LEN, 0);
-    byte* enc = vsf_alloc(enc_len);
+    byte *enc = vsf_alloc(enc_len);
 
 
     vsf_aes256_gcm_set_key(aes256_gcm_impl, test_aes256_gcm_VECTOR_1_KEY, test_aes256_gcm_VECTOR_1_KEY_LEN);
@@ -121,12 +121,12 @@ test__encrypt__vector_1__valid_encrypted_data(void) {
 void
 test__decrypt__vector_1__decrypted_len_equals_0(void) {
 
-    vsf_aes256_gcm_impl_t* aes256_gcm_impl = vsf_aes256_gcm_new();
+    vsf_aes256_gcm_impl_t *aes256_gcm_impl = vsf_aes256_gcm_new();
 
     size_t dec_len =
             vsf_aes256_gcm_required_dec_len(aes256_gcm_impl, test_aes256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG_LEN, 0);
 
-    byte* dec = vsf_alloc(dec_len);
+    byte *dec = vsf_alloc(dec_len);
 
 
     vsf_aes256_gcm_set_key(aes256_gcm_impl, test_aes256_gcm_VECTOR_1_KEY, test_aes256_gcm_VECTOR_1_KEY_LEN);
@@ -146,12 +146,12 @@ test__decrypt__vector_1__decrypted_len_equals_0(void) {
 void
 test__decrypt__vector_1__valid_auth_tag(void) {
 
-    vsf_aes256_gcm_impl_t* aes256_gcm_impl = vsf_aes256_gcm_new();
+    vsf_aes256_gcm_impl_t *aes256_gcm_impl = vsf_aes256_gcm_new();
 
     size_t dec_len =
             vsf_aes256_gcm_required_dec_len(aes256_gcm_impl, test_aes256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG_LEN, 0);
 
-    byte* dec = vsf_alloc(dec_len);
+    byte *dec = vsf_alloc(dec_len);
 
 
     vsf_aes256_gcm_set_key(aes256_gcm_impl, test_aes256_gcm_VECTOR_1_KEY, test_aes256_gcm_VECTOR_1_KEY_LEN);
@@ -179,13 +179,13 @@ test__AUTH_TAG_LEN__always__equals_16(void) {
 void
 test__auth_encrypt__vector_2__encrypted_len_equals_0(void) {
 
-    vsf_aes256_gcm_impl_t* aes256_gcm_impl = vsf_aes256_gcm_new();
+    vsf_aes256_gcm_impl_t *aes256_gcm_impl = vsf_aes256_gcm_new();
 
     size_t enc_len = vsf_aes256_gcm_required_enc_len(
             aes256_gcm_impl, test_aes256_gcm_VECTOR_2_DATA_LEN, test_aes256_gcm_VECTOR_2_AUTH_TAG_LEN);
 
-    byte* enc = vsf_alloc(enc_len);
-    byte* tag = vsf_alloc(test_aes256_gcm_VECTOR_2_AUTH_TAG_LEN);
+    byte *enc = vsf_alloc(enc_len);
+    byte *tag = vsf_alloc(test_aes256_gcm_VECTOR_2_AUTH_TAG_LEN);
 
     vsf_aes256_gcm_set_key(aes256_gcm_impl, test_aes256_gcm_VECTOR_2_KEY, test_aes256_gcm_VECTOR_2_KEY_LEN);
     vsf_aes256_gcm_set_nonce(aes256_gcm_impl, test_aes256_gcm_VECTOR_2_NONCE, test_aes256_gcm_VECTOR_2_NONCE_LEN);
@@ -206,13 +206,13 @@ test__auth_encrypt__vector_2__encrypted_len_equals_0(void) {
 void
 test__auth_encrypt__vector_2__valid_auth_tag(void) {
 
-    vsf_aes256_gcm_impl_t* aes256_gcm_impl = vsf_aes256_gcm_new();
+    vsf_aes256_gcm_impl_t *aes256_gcm_impl = vsf_aes256_gcm_new();
 
     size_t enc_len = vsf_aes256_gcm_required_enc_len(
             aes256_gcm_impl, test_aes256_gcm_VECTOR_2_DATA_LEN, test_aes256_gcm_VECTOR_2_AUTH_TAG_LEN);
 
-    byte* enc = vsf_alloc(enc_len);
-    byte* tag = vsf_alloc(test_aes256_gcm_VECTOR_2_AUTH_TAG_LEN);
+    byte *enc = vsf_alloc(enc_len);
+    byte *tag = vsf_alloc(test_aes256_gcm_VECTOR_2_AUTH_TAG_LEN);
 
     vsf_aes256_gcm_set_key(aes256_gcm_impl, test_aes256_gcm_VECTOR_2_KEY, test_aes256_gcm_VECTOR_2_KEY_LEN);
     vsf_aes256_gcm_set_nonce(aes256_gcm_impl, test_aes256_gcm_VECTOR_2_NONCE, test_aes256_gcm_VECTOR_2_NONCE_LEN);
@@ -233,12 +233,12 @@ test__auth_encrypt__vector_2__valid_auth_tag(void) {
 void
 test__auth_decrypt__vector_2__decrypted_len_equals_0(void) {
 
-    vsf_aes256_gcm_impl_t* aes256_gcm_impl = vsf_aes256_gcm_new();
+    vsf_aes256_gcm_impl_t *aes256_gcm_impl = vsf_aes256_gcm_new();
 
     size_t dec_len = vsf_aes256_gcm_required_dec_len(
             aes256_gcm_impl, test_aes256_gcm_VECTOR_2_DATA_LEN, test_aes256_gcm_VECTOR_2_AUTH_TAG_LEN);
 
-    byte* dec = vsf_alloc(dec_len);
+    byte *dec = vsf_alloc(dec_len);
 
     vsf_aes256_gcm_set_key(aes256_gcm_impl, test_aes256_gcm_VECTOR_2_KEY, test_aes256_gcm_VECTOR_2_KEY_LEN);
     vsf_aes256_gcm_set_nonce(aes256_gcm_impl, test_aes256_gcm_VECTOR_2_NONCE, test_aes256_gcm_VECTOR_2_NONCE_LEN);
@@ -258,12 +258,12 @@ test__auth_decrypt__vector_2__decrypted_len_equals_0(void) {
 void
 test__auth_decrypt__vector_2__valid_auth_tag(void) {
 
-    vsf_aes256_gcm_impl_t* aes256_gcm_impl = vsf_aes256_gcm_new();
+    vsf_aes256_gcm_impl_t *aes256_gcm_impl = vsf_aes256_gcm_new();
 
     size_t dec_len = vsf_aes256_gcm_required_dec_len(
             aes256_gcm_impl, test_aes256_gcm_VECTOR_2_DATA_LEN, test_aes256_gcm_VECTOR_2_AUTH_TAG_LEN);
 
-    byte* dec = vsf_alloc(dec_len);
+    byte *dec = vsf_alloc(dec_len);
 
     vsf_aes256_gcm_set_key(aes256_gcm_impl, test_aes256_gcm_VECTOR_2_KEY, test_aes256_gcm_VECTOR_2_KEY_LEN);
     vsf_aes256_gcm_set_nonce(aes256_gcm_impl, test_aes256_gcm_VECTOR_2_NONCE, test_aes256_gcm_VECTOR_2_NONCE_LEN);
@@ -283,13 +283,13 @@ test__auth_decrypt__vector_2__valid_auth_tag(void) {
 void
 test__auth_encrypt__vector_3__encrypted_len_equals_128(void) {
 
-    vsf_aes256_gcm_impl_t* aes256_gcm_impl = vsf_aes256_gcm_new();
+    vsf_aes256_gcm_impl_t *aes256_gcm_impl = vsf_aes256_gcm_new();
 
     size_t enc_len = vsf_aes256_gcm_required_enc_len(
             aes256_gcm_impl, test_aes256_gcm_VECTOR_3_DATA_LEN, test_aes256_gcm_VECTOR_3_AUTH_TAG_LEN);
 
-    byte* enc = vsf_alloc(enc_len);
-    byte* tag = vsf_alloc(test_aes256_gcm_VECTOR_3_AUTH_TAG_LEN);
+    byte *enc = vsf_alloc(enc_len);
+    byte *tag = vsf_alloc(test_aes256_gcm_VECTOR_3_AUTH_TAG_LEN);
 
     vsf_aes256_gcm_set_key(aes256_gcm_impl, test_aes256_gcm_VECTOR_3_KEY, test_aes256_gcm_VECTOR_3_KEY_LEN);
     vsf_aes256_gcm_set_nonce(aes256_gcm_impl, test_aes256_gcm_VECTOR_3_NONCE, test_aes256_gcm_VECTOR_3_NONCE_LEN);
@@ -310,13 +310,13 @@ test__auth_encrypt__vector_3__encrypted_len_equals_128(void) {
 void
 test__auth_encrypt__vector_3__valid_enc(void) {
 
-    vsf_aes256_gcm_impl_t* aes256_gcm_impl = vsf_aes256_gcm_new();
+    vsf_aes256_gcm_impl_t *aes256_gcm_impl = vsf_aes256_gcm_new();
 
     size_t enc_len = vsf_aes256_gcm_required_enc_len(
             aes256_gcm_impl, test_aes256_gcm_VECTOR_3_DATA_LEN, test_aes256_gcm_VECTOR_3_AUTH_TAG_LEN);
 
-    byte* enc = vsf_alloc(enc_len);
-    byte* tag = vsf_alloc(test_aes256_gcm_VECTOR_3_AUTH_TAG_LEN);
+    byte *enc = vsf_alloc(enc_len);
+    byte *tag = vsf_alloc(test_aes256_gcm_VECTOR_3_AUTH_TAG_LEN);
 
     vsf_aes256_gcm_set_key(aes256_gcm_impl, test_aes256_gcm_VECTOR_3_KEY, test_aes256_gcm_VECTOR_3_KEY_LEN);
     vsf_aes256_gcm_set_nonce(aes256_gcm_impl, test_aes256_gcm_VECTOR_3_NONCE, test_aes256_gcm_VECTOR_3_NONCE_LEN);
@@ -337,13 +337,13 @@ test__auth_encrypt__vector_3__valid_enc(void) {
 void
 test__auth_encrypt__vector_3__valid_auth_tag(void) {
 
-    vsf_aes256_gcm_impl_t* aes256_gcm_impl = vsf_aes256_gcm_new();
+    vsf_aes256_gcm_impl_t *aes256_gcm_impl = vsf_aes256_gcm_new();
 
     size_t enc_len = vsf_aes256_gcm_required_enc_len(
             aes256_gcm_impl, test_aes256_gcm_VECTOR_3_DATA_LEN, test_aes256_gcm_VECTOR_3_AUTH_TAG_LEN);
 
-    byte* enc = vsf_alloc(enc_len);
-    byte* tag = vsf_alloc(test_aes256_gcm_VECTOR_3_AUTH_TAG_LEN);
+    byte *enc = vsf_alloc(enc_len);
+    byte *tag = vsf_alloc(test_aes256_gcm_VECTOR_3_AUTH_TAG_LEN);
 
     vsf_aes256_gcm_set_key(aes256_gcm_impl, test_aes256_gcm_VECTOR_3_KEY, test_aes256_gcm_VECTOR_3_KEY_LEN);
     vsf_aes256_gcm_set_nonce(aes256_gcm_impl, test_aes256_gcm_VECTOR_3_NONCE, test_aes256_gcm_VECTOR_3_NONCE_LEN);
@@ -365,12 +365,12 @@ test__auth_encrypt__vector_3__valid_auth_tag(void) {
 void
 test__auth_decrypt__vector_3__decrypted_len_equals_128(void) {
 
-    vsf_aes256_gcm_impl_t* aes256_gcm_impl = vsf_aes256_gcm_new();
+    vsf_aes256_gcm_impl_t *aes256_gcm_impl = vsf_aes256_gcm_new();
 
     size_t dec_len = vsf_aes256_gcm_required_dec_len(
             aes256_gcm_impl, test_aes256_gcm_VECTOR_3_DATA_LEN, test_aes256_gcm_VECTOR_3_AUTH_TAG_LEN);
 
-    byte* dec = vsf_alloc(dec_len);
+    byte *dec = vsf_alloc(dec_len);
 
     vsf_aes256_gcm_set_key(aes256_gcm_impl, test_aes256_gcm_VECTOR_3_KEY, test_aes256_gcm_VECTOR_3_KEY_LEN);
     vsf_aes256_gcm_set_nonce(aes256_gcm_impl, test_aes256_gcm_VECTOR_3_NONCE, test_aes256_gcm_VECTOR_3_NONCE_LEN);
@@ -390,12 +390,12 @@ test__auth_decrypt__vector_3__decrypted_len_equals_128(void) {
 void
 test__auth_decrypt__vector_3__valid_auth_tag(void) {
 
-    vsf_aes256_gcm_impl_t* aes256_gcm_impl = vsf_aes256_gcm_new();
+    vsf_aes256_gcm_impl_t *aes256_gcm_impl = vsf_aes256_gcm_new();
 
     size_t dec_len = vsf_aes256_gcm_required_dec_len(
             aes256_gcm_impl, test_aes256_gcm_VECTOR_3_DATA_LEN, test_aes256_gcm_VECTOR_3_AUTH_TAG_LEN);
 
-    byte* dec = vsf_alloc(dec_len);
+    byte *dec = vsf_alloc(dec_len);
 
     vsf_aes256_gcm_set_key(aes256_gcm_impl, test_aes256_gcm_VECTOR_3_KEY, test_aes256_gcm_VECTOR_3_KEY_LEN);
     vsf_aes256_gcm_set_nonce(aes256_gcm_impl, test_aes256_gcm_VECTOR_3_NONCE, test_aes256_gcm_VECTOR_3_NONCE_LEN);
@@ -415,12 +415,12 @@ test__auth_decrypt__vector_3__valid_auth_tag(void) {
 void
 test__auth_decrypt__vector_3__valid_dec(void) {
 
-    vsf_aes256_gcm_impl_t* aes256_gcm_impl = vsf_aes256_gcm_new();
+    vsf_aes256_gcm_impl_t *aes256_gcm_impl = vsf_aes256_gcm_new();
 
     size_t dec_len = vsf_aes256_gcm_required_dec_len(
             aes256_gcm_impl, test_aes256_gcm_VECTOR_3_DATA_LEN, test_aes256_gcm_VECTOR_3_AUTH_TAG_LEN);
 
-    byte* dec = vsf_alloc(dec_len);
+    byte *dec = vsf_alloc(dec_len);
 
     vsf_aes256_gcm_set_key(aes256_gcm_impl, test_aes256_gcm_VECTOR_3_KEY, test_aes256_gcm_VECTOR_3_KEY_LEN);
     vsf_aes256_gcm_set_nonce(aes256_gcm_impl, test_aes256_gcm_VECTOR_3_NONCE, test_aes256_gcm_VECTOR_3_NONCE_LEN);

@@ -51,10 +51,10 @@
 void
 test__derive__sha256_vector_1__success(void) {
 
-    byte* key = vsf_alloc(test_kdf1_VECTOR_1_KEY_LEN);
+    byte *key = vsf_alloc(test_kdf1_VECTOR_1_KEY_LEN);
 
-    vsf_kdf1_impl_t* kdf1_impl = vsf_kdf1_new();
-    vsf_impl_t* sha256_impl = vsf_sha256_impl(vsf_sha256_new());
+    vsf_kdf1_impl_t *kdf1_impl = vsf_kdf1_new();
+    vsf_impl_t *sha256_impl = vsf_sha256_impl(vsf_sha256_new());
 
     vsf_kdf1_take_hash_stream(kdf1_impl, &sha256_impl);
 
@@ -70,10 +70,10 @@ test__derive__sha256_vector_1__success(void) {
 void
 test__derive__sha256_vector_2__success(void) {
 
-    byte* key = vsf_alloc(test_kdf1_VECTOR_2_KEY_LEN);
+    byte *key = vsf_alloc(test_kdf1_VECTOR_2_KEY_LEN);
 
-    vsf_kdf1_impl_t* kdf1_impl = vsf_kdf1_new();
-    vsf_impl_t* sha256_impl = vsf_sha256_impl(vsf_sha256_new());
+    vsf_kdf1_impl_t *kdf1_impl = vsf_kdf1_new();
+    vsf_impl_t *sha256_impl = vsf_sha256_impl(vsf_sha256_new());
 
     vsf_kdf1_take_hash_stream(kdf1_impl, &sha256_impl);
 
@@ -89,10 +89,10 @@ test__derive__sha256_vector_2__success(void) {
 void
 test__derive__sha256_vector_3__success(void) {
 
-    byte* key = vsf_alloc(test_kdf1_VECTOR_3_KEY_LEN);
+    byte *key = vsf_alloc(test_kdf1_VECTOR_3_KEY_LEN);
 
-    vsf_kdf1_impl_t* kdf1_impl = vsf_kdf1_new();
-    vsf_impl_t* sha256_impl = vsf_sha256_impl(vsf_sha256_new());
+    vsf_kdf1_impl_t *kdf1_impl = vsf_kdf1_new();
+    vsf_impl_t *sha256_impl = vsf_sha256_impl(vsf_sha256_new());
 
     vsf_kdf1_take_hash_stream(kdf1_impl, &sha256_impl);
 

@@ -52,8 +52,8 @@
 
 void
 test__impl__valid_arg__returns_not_null(void) {
-    vsf_sha384_impl_t* sha384_impl = vsf_sha384_new();
-    vsf_impl_t* impl = vsf_sha384_impl(sha384_impl);
+    vsf_sha384_impl_t *sha384_impl = vsf_sha384_new();
+    vsf_impl_t *impl = vsf_sha384_impl(sha384_impl);
 
     TEST_ASSERT_NOT_NULL(impl);
 
@@ -65,7 +65,7 @@ test__impl__null_arg__call_assert(void) {
 
     mock_assert();
 
-    vsf_impl_t* impl = vsf_sha384_impl(NULL);
+    vsf_impl_t *impl = vsf_sha384_impl(NULL);
 
     TEST_ASSERT_TRUE(g_mock_assert_result.handled);
 
@@ -78,7 +78,7 @@ test__impl__null_arg__call_assert(void) {
 
 void
 test__hash_info_api__always__returns_not_null(void) {
-    const vsf_hash_info_api_t* hash_info_api = vsf_sha384_hash_info_api();
+    const vsf_hash_info_api_t *hash_info_api = vsf_sha384_hash_info_api();
 
     TEST_ASSERT_NOT_NULL(hash_info_api);
 }
@@ -95,7 +95,7 @@ test__sha384_DIGEST_SIZE__always__equals_48(void) {
 
 void
 test__hash_api__always__returns_not_null(void) {
-    const vsf_hash_api_t* hash_api = vsf_sha384_hash_api();
+    const vsf_hash_api_t *hash_api = vsf_sha384_hash_api();
 
     TEST_ASSERT_NOT_NULL(hash_api);
 }
@@ -139,7 +139,7 @@ test__hash_stream__vector_1__success(void) {
 
     byte digest[vsf_sha384_DIGEST_SIZE] = {0x00};
 
-    vsf_sha384_impl_t* sha384_impl = vsf_sha384_new();
+    vsf_sha384_impl_t *sha384_impl = vsf_sha384_new();
 
     vsf_sha384_start(sha384_impl);
     vsf_sha384_update(sha384_impl, test_sha384_VECTOR_1_INPUT, test_sha384_VECTOR_1_INPUT_LEN);
@@ -155,7 +155,7 @@ test__hash_stream__vector_2__success(void) {
 
     byte digest[vsf_sha384_DIGEST_SIZE] = {0x00};
 
-    vsf_sha384_impl_t* sha384_impl = vsf_sha384_new();
+    vsf_sha384_impl_t *sha384_impl = vsf_sha384_new();
 
     vsf_sha384_start(sha384_impl);
     vsf_sha384_update(sha384_impl, test_sha384_VECTOR_2_INPUT, test_sha384_VECTOR_2_INPUT_LEN);
@@ -171,7 +171,7 @@ test__hash_stream__vector_3__success(void) {
 
     byte digest[vsf_sha384_DIGEST_SIZE] = {0x00};
 
-    vsf_sha384_impl_t* sha384_impl = vsf_sha384_new();
+    vsf_sha384_impl_t *sha384_impl = vsf_sha384_new();
 
     vsf_sha384_start(sha384_impl);
     vsf_sha384_update(sha384_impl, test_sha384_VECTOR_3_INPUT, test_sha384_VECTOR_3_INPUT_LEN);
@@ -220,7 +220,7 @@ test__hmac_stream__vector_1_success(void) {
 
     byte digest[vsf_hmac384_DIGEST_SIZE] = {0x00};
 
-    vsf_hmac384_impl_t* hmac384_impl = vsf_hmac384_new();
+    vsf_hmac384_impl_t *hmac384_impl = vsf_hmac384_new();
 
     vsf_hmac384_reset(hmac384_impl);
     vsf_hmac384_start(hmac384_impl, test_sha384_HMAC_KEY_1_INPUT, test_sha384_HMAC_KEY_1_INPUT_LEN);
@@ -237,7 +237,7 @@ test__hmac_stream__vector_2_success(void) {
 
     byte digest[vsf_hmac384_DIGEST_SIZE] = {0x00};
 
-    vsf_hmac384_impl_t* hmac384_impl = vsf_hmac384_new();
+    vsf_hmac384_impl_t *hmac384_impl = vsf_hmac384_new();
 
     vsf_hmac384_reset(hmac384_impl);
     vsf_hmac384_start(hmac384_impl, test_sha384_HMAC_KEY_2_INPUT, test_sha384_HMAC_KEY_2_INPUT_LEN);
@@ -254,7 +254,7 @@ test__hmac_stream__vector_3_success(void) {
 
     byte digest[vsf_hmac384_DIGEST_SIZE] = {0x00};
 
-    vsf_hmac384_impl_t* hmac384_impl = vsf_hmac384_new();
+    vsf_hmac384_impl_t *hmac384_impl = vsf_hmac384_new();
 
     vsf_hmac384_reset(hmac384_impl);
     vsf_hmac384_start(hmac384_impl, test_sha384_HMAC_KEY_3_INPUT, test_sha384_HMAC_KEY_3_INPUT_LEN);
