@@ -358,6 +358,10 @@ function c_module_class_create_module_public (class, destination, meta)
             copy require to module
         endfor
 
+        for my.class.c_include
+            copy c_include to module
+        endfor
+
         for my.class.constant
             copy constant to module
         endfor
