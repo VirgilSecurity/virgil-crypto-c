@@ -108,7 +108,6 @@ target_include_directories(vsc_pythia
 #
 target_link_libraries(vsc_pythia PUBLIC vsc_common mbed::crypto pythia relic)
 
-
 #
 # Define specific compilation and linkage flags.
 #
@@ -140,4 +139,16 @@ if(TARGET enable_pedantic)
     target_link_libraries(vsc_pythia PRIVATE enable_pedantic)
 else()
     message("To compile pythia in pedantic mode create target 'enable_pedantic'.")
+endif()
+
+#
+# Add library alias
+#
+add_library(vsc::pythia ALIAS vsc_pythia)
+
+#
+# Format code
+#
+if(COMMAND add_clangformat)
+    add_clangformat(vsc_pythia)
 endif()

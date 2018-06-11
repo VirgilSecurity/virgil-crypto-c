@@ -48,69 +48,63 @@
 // Test implementation of the interface 'hkdf'.
 // --------------------------------------------------------------------------
 
-void test__derive__sha256_vector_1__success (void) {
+void
+test__derive__sha256_vector_1__success(void) {
 
-    byte *key = vsf_alloc (test_hkdf_VECTOR_1_DERIVED_DATA_LEN);
+    byte* key = vsf_alloc(test_hkdf_VECTOR_1_DERIVED_DATA_LEN);
 
-    vsf_hkdf_impl_t *hkdf_impl = vsf_hkdf_new();
-    vsf_impl_t *hmac256_impl = vsf_hmac256_impl (vsf_hmac256_new());
- 
-    vsf_hkdf_take_hmac_stream (hkdf_impl, &hmac256_impl);
+    vsf_hkdf_impl_t* hkdf_impl = vsf_hkdf_new();
+    vsf_impl_t* hmac256_impl = vsf_hmac256_impl(vsf_hmac256_new());
 
-    vsf_hkdf_derive (hkdf_impl, test_hkdf_VECTOR_1_KEY, test_hkdf_VECTOR_1_KEY_LEN, 
-        test_hkdf_VECTOR_1_SALT, test_hkdf_VECTOR_1_SALT_LEN,
-        test_hkdf_VECTOR_1_INFO,test_hkdf_VECTOR_1_INFO_LEN,
-        key, test_hkdf_VECTOR_1_DERIVED_DATA_LEN);
+    vsf_hkdf_take_hmac_stream(hkdf_impl, &hmac256_impl);
 
-    vsf_hkdf_destroy (&hkdf_impl);
+    vsf_hkdf_derive(hkdf_impl, test_hkdf_VECTOR_1_KEY, test_hkdf_VECTOR_1_KEY_LEN, test_hkdf_VECTOR_1_SALT,
+            test_hkdf_VECTOR_1_SALT_LEN, test_hkdf_VECTOR_1_INFO, test_hkdf_VECTOR_1_INFO_LEN, key,
+            test_hkdf_VECTOR_1_DERIVED_DATA_LEN);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_hkdf_VECTOR_1_DERIVED_DATA, key, test_hkdf_VECTOR_1_DERIVED_DATA_LEN);
+    vsf_hkdf_destroy(&hkdf_impl);
 
-    vsf_dealloc (key);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hkdf_VECTOR_1_DERIVED_DATA, key, test_hkdf_VECTOR_1_DERIVED_DATA_LEN);
+
+    vsf_dealloc(key);
 }
 
-void test__derive__sha256_vector_2__success (void) {
+void
+test__derive__sha256_vector_2__success(void) {
 
-    byte *key = vsf_alloc (test_hkdf_VECTOR_2_DERIVED_DATA_LEN);
+    byte* key = vsf_alloc(test_hkdf_VECTOR_2_DERIVED_DATA_LEN);
 
-    vsf_hkdf_impl_t *hkdf_impl = vsf_hkdf_new ();
-    vsf_impl_t *hmac256_impl = vsf_hmac256_impl (vsf_hmac256_new ());
- 
-    vsf_hkdf_take_hmac_stream (hkdf_impl, &hmac256_impl);
+    vsf_hkdf_impl_t* hkdf_impl = vsf_hkdf_new();
+    vsf_impl_t* hmac256_impl = vsf_hmac256_impl(vsf_hmac256_new());
 
-    vsf_hkdf_derive (hkdf_impl,
-        test_hkdf_VECTOR_2_KEY,
-        test_hkdf_VECTOR_2_KEY_LEN, 
-        test_hkdf_VECTOR_2_SALT,
-        test_hkdf_VECTOR_2_SALT_LEN,
-        test_hkdf_VECTOR_2_INFO,
-        test_hkdf_VECTOR_2_INFO_LEN,
-        key,
-        test_hkdf_VECTOR_2_DERIVED_DATA_LEN);
+    vsf_hkdf_take_hmac_stream(hkdf_impl, &hmac256_impl);
 
-    vsf_hkdf_destroy (&hkdf_impl);
+    vsf_hkdf_derive(hkdf_impl, test_hkdf_VECTOR_2_KEY, test_hkdf_VECTOR_2_KEY_LEN, test_hkdf_VECTOR_2_SALT,
+            test_hkdf_VECTOR_2_SALT_LEN, test_hkdf_VECTOR_2_INFO, test_hkdf_VECTOR_2_INFO_LEN, key,
+            test_hkdf_VECTOR_2_DERIVED_DATA_LEN);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_hkdf_VECTOR_2_DERIVED_DATA, key, test_hkdf_VECTOR_2_DERIVED_DATA_LEN);
+    vsf_hkdf_destroy(&hkdf_impl);
 
-    vsf_dealloc (key);
-   
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hkdf_VECTOR_2_DERIVED_DATA, key, test_hkdf_VECTOR_2_DERIVED_DATA_LEN);
+
+    vsf_dealloc(key);
 }
 
-void test__derive__sha256_vector_3__success (void) {
-
-    
+void
+test__derive__sha256_vector_3__success(void) {
 }
 
 // --------------------------------------------------------------------------
 // Entrypoint.
 // --------------------------------------------------------------------------
 
-int main (void) {
-    UNITY_BEGIN ();
+int
+main(void) {
+    UNITY_BEGIN();
 
-    RUN_TEST (test__derive__sha256_vector_1__success);
-    RUN_TEST (test__derive__sha256_vector_2__success);
-    RUN_TEST (test__derive__sha256_vector_3__success);
+    RUN_TEST(test__derive__sha256_vector_1__success);
+    RUN_TEST(test__derive__sha256_vector_2__success);
+    RUN_TEST(test__derive__sha256_vector_3__success);
 
     return UNITY_END();
 }

@@ -37,6 +37,12 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 project(virgil-crypto-c-top VERSION 0.1.0 LANGUAGES C)
 
 # ---------------------------------------------------------------------------
+#   Add code formatting module
+# ---------------------------------------------------------------------------
+include("cmake/clangformat.cmake")
+
+
+# ---------------------------------------------------------------------------
 #   Options
 # ---------------------------------------------------------------------------
 option(ENABLE_TESTING "On/Off library integration tests." ON)
@@ -105,6 +111,14 @@ endif()
 find_program (CLOC_EXE cloc)
 
 if(CLOC_EXE)
+    add_custom_target(cloc-common
+        COMMAND ${CLOC_EXE}
+                "${CMAKE_CURRENT_LIST_DIR}/library/common/include/virgil"
+                "${CMAKE_CURRENT_LIST_DIR}/library/common/include/virgil/private"
+                "${CMAKE_CURRENT_LIST_DIR}/library/common/src"
+        COMMENT "Calculate lines of the 'common' library..."
+    )
+
     add_custom_target(cloc-foundation
         COMMAND ${CLOC_EXE}
                 "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil"
@@ -122,19 +136,5 @@ if(CLOC_EXE)
     )
 
     add_custom_target(cloc)
-    add_dependencies(cloc cloc-foundation cloc-pythia)
-endif()
-
-# ---------------------------------------------------------------------------
-#   Format code
-# ---------------------------------------------------------------------------
-include("cmake/clangformat.cmake")
-
-if(TARGET vsf)
-    add_clangformat(vsf)
-    add_clangformat(vsc_pythia)
-endif()
-
-if(TARGET vsc_common)
-    add_clangformat(vsc_common)
+    add_dependencies(cloc cloc-common cloc-foundation cloc-pythia)
 endif()

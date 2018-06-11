@@ -44,57 +44,61 @@
 //  Over implementation: 'sha256'.
 // --------------------------------------------------------------------------
 
-void test__is_implemented__sha256__returns_true (void) {
-    vsf_impl_t *impl = vsf_sha256_impl (vsf_sha256_new());
+void
+test__is_implemented__sha256__returns_true(void) {
+    vsf_impl_t* impl = vsf_sha256_impl(vsf_sha256_new());
 
-    TEST_ASSERT_TRUE (vsf_hash_stream_is_implemented(impl));
+    TEST_ASSERT_TRUE(vsf_hash_stream_is_implemented(impl));
 
-    vsf_impl_destroy (&impl);
+    vsf_impl_destroy(&impl);
 }
 
-void test__hash__sha256_vector_1__success (void) {
+void
+test__hash__sha256_vector_1__success(void) {
 
-    byte digest[vsf_sha256_DIGEST_SIZE] = { 0x00 };
+    byte digest[vsf_sha256_DIGEST_SIZE] = {0x00};
 
-    vsf_impl_t *impl = vsf_sha256_impl (vsf_sha256_new());
+    vsf_impl_t* impl = vsf_sha256_impl(vsf_sha256_new());
 
-    vsf_hash_stream_start (impl);
-    vsf_hash_stream_update (impl, test_sha256_VECTOR_1_INPUT, test_sha256_VECTOR_1_INPUT_LEN);
-    vsf_hash_stream_finish (impl, digest, vsf_sha256_DIGEST_SIZE);
+    vsf_hash_stream_start(impl);
+    vsf_hash_stream_update(impl, test_sha256_VECTOR_1_INPUT, test_sha256_VECTOR_1_INPUT_LEN);
+    vsf_hash_stream_finish(impl, digest, vsf_sha256_DIGEST_SIZE);
 
-    vsf_impl_destroy (&impl);
+    vsf_impl_destroy(&impl);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha256_VECTOR_1_DIGEST, digest, test_sha256_VECTOR_1_DIGEST_LEN);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_1_DIGEST, digest, test_sha256_VECTOR_1_DIGEST_LEN);
 }
 
-void test__hash__sha256_vector_2__success (void) {
+void
+test__hash__sha256_vector_2__success(void) {
 
-    byte digest[vsf_sha256_DIGEST_SIZE] = { 0x00 };
+    byte digest[vsf_sha256_DIGEST_SIZE] = {0x00};
 
-    vsf_impl_t *impl = vsf_sha256_impl (vsf_sha256_new());
+    vsf_impl_t* impl = vsf_sha256_impl(vsf_sha256_new());
 
-    vsf_hash_stream_start (impl);
-    vsf_hash_stream_update (impl, test_sha256_VECTOR_2_INPUT, test_sha256_VECTOR_2_INPUT_LEN);
-    vsf_hash_stream_finish (impl, digest, vsf_sha256_DIGEST_SIZE);
+    vsf_hash_stream_start(impl);
+    vsf_hash_stream_update(impl, test_sha256_VECTOR_2_INPUT, test_sha256_VECTOR_2_INPUT_LEN);
+    vsf_hash_stream_finish(impl, digest, vsf_sha256_DIGEST_SIZE);
 
-    vsf_impl_destroy (&impl);
+    vsf_impl_destroy(&impl);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha256_VECTOR_2_DIGEST, digest, test_sha256_VECTOR_2_DIGEST_LEN);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_2_DIGEST, digest, test_sha256_VECTOR_2_DIGEST_LEN);
 }
 
-void test__hash__sha256_vector_3__success (void) {
+void
+test__hash__sha256_vector_3__success(void) {
 
-    byte digest[vsf_sha256_DIGEST_SIZE] = { 0x00 };
+    byte digest[vsf_sha256_DIGEST_SIZE] = {0x00};
 
-    vsf_impl_t *impl = vsf_sha256_impl (vsf_sha256_new());
+    vsf_impl_t* impl = vsf_sha256_impl(vsf_sha256_new());
 
-    vsf_hash_stream_start (impl);
-    vsf_hash_stream_update (impl, test_sha256_VECTOR_3_INPUT, test_sha256_VECTOR_3_INPUT_LEN);
-    vsf_hash_stream_finish (impl, digest, vsf_sha256_DIGEST_SIZE);
+    vsf_hash_stream_start(impl);
+    vsf_hash_stream_update(impl, test_sha256_VECTOR_3_INPUT, test_sha256_VECTOR_3_INPUT_LEN);
+    vsf_hash_stream_finish(impl, digest, vsf_sha256_DIGEST_SIZE);
 
-    vsf_impl_destroy (&impl);
+    vsf_impl_destroy(&impl);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY (test_sha256_VECTOR_3_DIGEST, digest, test_sha256_VECTOR_3_DIGEST_LEN);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_3_DIGEST, digest, test_sha256_VECTOR_3_DIGEST_LEN);
 }
 
 
@@ -102,13 +106,14 @@ void test__hash__sha256_vector_3__success (void) {
 //  Entrypoint
 // --------------------------------------------------------------------------
 
-int main (void) {
-    UNITY_BEGIN ();
+int
+main(void) {
+    UNITY_BEGIN();
 
-    RUN_TEST (test__is_implemented__sha256__returns_true);
-    RUN_TEST (test__hash__sha256_vector_1__success);
-    RUN_TEST (test__hash__sha256_vector_2__success);
-    RUN_TEST (test__hash__sha256_vector_3__success);
+    RUN_TEST(test__is_implemented__sha256__returns_true);
+    RUN_TEST(test__hash__sha256_vector_1__success);
+    RUN_TEST(test__hash__sha256_vector_2__success);
+    RUN_TEST(test__hash__sha256_vector_3__success);
 
-    return UNITY_END ();
+    return UNITY_END();
 }

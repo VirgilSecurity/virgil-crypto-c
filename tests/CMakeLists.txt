@@ -45,6 +45,10 @@ macro(_add_test test)
     target_link_libraries(${test} unity test_utils test_data vsf vsc_pythia)
     set_target_properties(${test} PROPERTIES C_STANDARD "99")
     add_test (NAME ${test} COMMAND ${test})
+
+    if(COMMAND add_clangformat)
+        add_clangformat(${test})
+    endif()
 endmacro()
 
 _add_test (test_hash)
