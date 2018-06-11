@@ -64,6 +64,18 @@
         <return type="size"/>
     </method>
 
+    <method name="transformed password buf len" context="none">
+        Return length of the buffer needed to hold 'transformed password'.
+
+        <return type="size"/>
+    </method>
+
+    <method name="transformed tweak buf len" context="none">
+        Return length of the buffer needed to hold 'transformed tweak'.
+
+        <return type="size"/>
+    </method>
+
 
     <method name="blind">
         Blinds password. Turns password into a pseudo-random string.
@@ -87,6 +99,7 @@
         <return type="error"/>
     </method>
 
+
     <method name="compute transformation key pair">
         Computes transformation private and public key.
 
@@ -95,6 +108,19 @@
         <argument name="pythia scope secret" class="data"/>
         <argument name="transformation private key" class="buffer"/>
         <argument name="transformation public key" class="buffer"/>
+
+        <return type="error"/>
+    </method>
+
+
+    <method name="transform">
+        Transforms blinded password using transformation private key.
+
+        <argument name="blinded password" class="data"/>
+        <argument name="tweak" class="data"/>
+        <argument name="transformation private key" class="data"/>
+        <argument name="transformed password" class="buffer"/>
+        <argument name="transformed tweak" class="buffer"/>
 
         <return type="error"/>
     </method>

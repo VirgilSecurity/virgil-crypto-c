@@ -249,6 +249,24 @@ vscp_pythia_transformation_public_key_buf_len(void) {
 }
 
 //
+//  Return length of the buffer needed to hold 'transformed password'.
+//
+VSCP_PUBLIC size_t
+vscp_pythia_transformed_password_buf_len(void) {
+
+    return PYTHIA_GT_BUF_SIZE;
+}
+
+//
+//  Return length of the buffer needed to hold 'transformed tweak'.
+//
+VSCP_PUBLIC size_t
+vscp_pythia_transformed_tweak_buf_len(void) {
+
+    return PYTHIA_G2_BUF_SIZE;
+}
+
+//
 //  Blinds password. Turns password into a pseudo-random string.
 //  This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 //
@@ -323,6 +341,35 @@ vscp_pythia_compute_transformation_key_pair(vscp_pythia_t *pythia_ctx, const vsc
     if (0 != pythia_w_compute_transformation_key_pair(&transformation_key_id_buf, &pythia_secret_buf,
                      &pythia_scope_secret_buf, (pythia_buf_t *)transformation_private_key,
                      (pythia_buf_t *)transformation_public_key)) {
+
+        return vscp_error_PYTHIA_INNER_FAIL;
+    }
+
+    return vscp_SUCCESS;
+}
+
+//
+//  Transforms blinded password using transformation private key.
+//
+VSCP_PUBLIC vscp_error_t
+vscp_pythia_transform(vscp_pythia_t *pythia_ctx, const vsc_data_t blinded_password, const vsc_data_t tweak,
+        const vsc_data_t transformation_private_key, vsc_buffer_t *transformed_password,
+        vsc_buffer_t *transformed_tweak) {
+
+    VSCP_ASSERT_PTR(pythia_ctx);
+    VSCP_ASSERT_PTR(blinded_password.bytes);
+    VSCP_ASSERT_PTR(tweak.bytes);
+    VSCP_ASSERT_PTR(transformation_private_key.bytes);
+
+    VSCP_ASSERT(vsc_buffer_capacity(transformed_password) >= vscp_pythia_transformed_password_buf_len());
+    VSCP_ASSERT(vsc_buffer_capacity(transformed_tweak) >= vscp_pythia_transformed_tweak_buf_len());
+
+    const pythia_buf_t blinded_password_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(blinded_password);
+    const pythia_buf_t tweak_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(tweak);
+    const pythia_buf_t transformation_private_key_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(transformation_private_key);
+
+    if (0 != pythia_w_transform(&blinded_password_buf, &tweak_buf, &transformation_private_key_buf,
+                     (pythia_buf_t *)transformed_password, (pythia_buf_t *)transformed_tweak)) {
 
         return vscp_error_PYTHIA_INNER_FAIL;
     }
