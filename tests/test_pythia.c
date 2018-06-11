@@ -62,11 +62,8 @@ test__blind__valid_args___returns_success(void) {
 
     vsc_data_t password = vsc_data((const byte *)"password", 8);
 
-    vsc_buffer_t *blinded_password = vsc_buffer_new();
-    vsc_buffer_alloc(blinded_password, vscp_pythia_blinded_password_buf_len());
-
-    vsc_buffer_t *blinding_secret = vsc_buffer_new();
-    vsc_buffer_alloc(blinding_secret, vscp_pythia_blinding_secret_buf_len());
+    vsc_buffer_t *blinded_password = vsc_buffer_new_with_capacity(vscp_pythia_blinded_password_buf_len());
+    vsc_buffer_t *blinding_secret = vsc_buffer_new_with_capacity(vscp_pythia_blinding_secret_buf_len());
 
     vscp_error_t result = vscp_pythia_blind(pythia, password, blinded_password, blinding_secret);
 
