@@ -509,6 +509,34 @@ vscp_pythia_get_password_update_token(vscp_pythia_t *pythia_ctx, const vsc_data_
 }
 
 //
+//  Updates previously stored 'deblinded password' with 'password update token'.
+//  After this call, 'transform()' called with new arguments will return corresponding values.
+//
+VSCP_PUBLIC vscp_error_t
+vscp_pythia_update_deblinded_with_token(vscp_pythia_t *pythia_ctx, const vsc_data_t deblinded_password,
+        const vsc_data_t password_update_token, vsc_buffer_t *updated_deblinded_password) {
+
+    VSCP_ASSERT_PTR(pythia_ctx);
+    VSCP_ASSERT_PTR(deblinded_password.bytes);
+    VSCP_ASSERT_PTR(password_update_token.bytes);
+    VSCP_ASSERT_PTR(updated_deblinded_password);
+
+    VSCP_ASSERT(vsc_buffer_capacity(updated_deblinded_password) >= vscp_pythia_deblinded_password_buf_len());
+
+    const pythia_buf_t deblinded_password_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(deblinded_password);
+    const pythia_buf_t password_update_token_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(password_update_token);
+
+
+    if (0 != pythia_w_update_deblinded_with_token(
+                     &deblinded_password_buf, &password_update_token_buf, (pythia_buf_t *)updated_deblinded_password)) {
+
+        return vscp_error_PYTHIA_INNER_FAIL;
+    }
+
+    return vscp_SUCCESS;
+}
+
+//
 //  Callback for the pythia random.
 //
 static void
