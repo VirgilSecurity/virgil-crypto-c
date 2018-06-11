@@ -24,6 +24,13 @@
     </property>
 
 
+    <constructor name="with capacity">
+        Allocate context and underlying byte array.
+
+        <argument name="capacity" type="size"/>
+    </constructor>
+
+
     <method name="alloc">
         Allocates inner buffer with a given capacity.
         Precondition: buffer is initialized.
