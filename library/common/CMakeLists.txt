@@ -70,6 +70,7 @@ target_sources(vsc_common
 #
 target_include_directories(vsc_common
         PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/common>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/private>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
@@ -108,3 +109,8 @@ if(TARGET enable_pedantic)
 else()
     message("To compile pythia in pedantic mode create target 'enable_pedantic'.")
 endif()
+
+#
+# Add library alias
+#
+add_library(vsc::common ALIAS vsc_common)
