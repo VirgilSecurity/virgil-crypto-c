@@ -141,6 +141,18 @@ VSCP_PUBLIC size_t
 vscp_pythia_blinding_secret_buf_len(void);
 
 //
+//  Return length of the buffer needed to hold 'transformation private key'.
+//
+VSCP_PUBLIC size_t
+vscp_pythia_transformation_private_key_buf_len(void);
+
+//
+//  Return length of the buffer needed to hold 'transformation public key'.
+//
+VSCP_PUBLIC size_t
+vscp_pythia_transformation_public_key_buf_len(void);
+
+//
 //  Blinds password. Turns password into a pseudo-random string.
 //  This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 //
@@ -154,6 +166,14 @@ vscp_pythia_blind(vscp_pythia_t* pythia_ctx, const vsc_data_t password, vsc_buff
 VSCP_PUBLIC vscp_error_t
 vscp_pythia_deblind(vscp_pythia_t* pythia_ctx, const vsc_data_t transformed_password, const vsc_data_t blinding_secret,
         vsc_buffer_t* deblinded_password);
+
+//
+//  Computes transformation private and public key.
+//
+VSCP_PUBLIC vscp_error_t
+vscp_pythia_compute_transformation_key_pair(vscp_pythia_t* pythia_ctx, const vsc_data_t transformation_key_id,
+        const vsc_data_t pythia_secret, const vsc_data_t pythia_scope_secret, vsc_buffer_t* transformation_private_key,
+        vsc_buffer_t* transformation_public_key);
 
 
 // --------------------------------------------------------------------------

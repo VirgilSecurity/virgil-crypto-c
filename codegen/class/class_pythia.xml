@@ -34,18 +34,33 @@
 
     <method name="blinded password buf len" context="none">
         Return length of the buffer needed to hold 'blinded password'.
+
         <return type="size"/>
     </method>
 
 
     <method name="deblinded password buf len" context="none">
         Return length of the buffer needed to hold 'deblinded password'.
+
         <return type="size"/>
     </method>
 
 
     <method name="blinding secret buf len" context="none">
         Return length of the buffer needed to hold 'blinding secret'.
+
+        <return type="size"/>
+    </method>
+
+    <method name="transformation private key buf len" context="none">
+        Return length of the buffer needed to hold 'transformation private key'.
+
+        <return type="size"/>
+    </method>
+
+    <method name="transformation public key buf len" context="none">
+        Return length of the buffer needed to hold 'transformation public key'.
+
         <return type="size"/>
     </method>
 
@@ -68,6 +83,18 @@
         <argument name="transformed password" class="data"/>
         <argument name="blinding secret" class="data"/>
         <argument name="deblinded password" class="buffer"/>
+
+        <return type="error"/>
+    </method>
+
+    <method name="compute transformation key pair">
+        Computes transformation private and public key.
+
+        <argument name="transformation key id" class="data"/>
+        <argument name="pythia secret" class="data"/>
+        <argument name="pythia scope secret" class="data"/>
+        <argument name="transformation private key" class="buffer"/>
+        <argument name="transformation public key" class="buffer"/>
 
         <return type="error"/>
     </method>
