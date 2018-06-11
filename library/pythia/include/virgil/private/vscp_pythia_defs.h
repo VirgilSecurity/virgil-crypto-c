@@ -46,17 +46,13 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Provide Pythia implementation based on the Virgil Security.
+//  Class 'pythia' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSCP_PYTHIA_H_INCLUDED
-#define VSCP_PYTHIA_H_INCLUDED
+#ifndef VSCP_PYTHIA_DEFS_H_INCLUDED
+#define VSCP_PYTHIA_DEFS_H_INCLUDED
 
 #include "vscp_library.h"
-#include "vscp_error.h"
-
-#include <virgil/common/vsc_data.h>
-#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -74,86 +70,12 @@ extern "C" {
 //
 //  Handle 'pythia' context.
 //
-typedef struct vscp_pythia_t vscp_pythia_t;
-
-//
-//  Perform initialization of pre-allocated context.
-//
-VSCP_PUBLIC vscp_error_t
-vscp_pythia_init(vscp_pythia_t* pythia_ctx);
-
-//
-//  Release all inner resources.
-//
-VSCP_PUBLIC void
-vscp_pythia_cleanup(vscp_pythia_t* pythia_ctx);
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCP_PUBLIC vscp_pythia_t*
-vscp_pythia_new(void);
-
-//
-//  Release all inner resorces and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
-//
-VSCP_PUBLIC void
-vscp_pythia_delete(vscp_pythia_t* pythia_ctx);
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscp_pythia_new ()'.
-//
-VSCP_PUBLIC void
-vscp_pythia_destroy(vscp_pythia_t** pythia_ctx_ref);
-
-//
-//  Performs global initialization of the pythia library.
-//  Must be called once for entire application at startup.
-//
-VSCP_PUBLIC void
-vscp_init(void);
-
-//
-//  Performs global cleanup of the pythia library.
-//  Must be called once for entire application before exit.
-//
-VSCP_PUBLIC void
-vscp_cleanup(void);
-
-//
-//  Return length of the buffer needed to hold 'blinded password'.
-//
-VSCP_PUBLIC size_t
-vscp_pythia_blinded_password_buf_len(void);
-
-//
-//  Return length of the buffer needed to hold 'deblinded password'.
-//
-VSCP_PUBLIC size_t
-vscp_pythia_deblinded_password_buf_len(void);
-
-//
-//  Return length of the buffer needed to hold 'blinding secret'.
-//
-VSCP_PUBLIC size_t
-vscp_pythia_blinding_secret_buf_len(void);
-
-//
-//  Blinds password. Turns password into a pseudo-random string.
-//  This step is necessary to prevent 3rd-parties from knowledge of end user's password.
-//
-VSCP_PUBLIC vscp_error_t
-vscp_pythia_blind(vscp_pythia_t* pythia_ctx, const vsc_data_t password, vsc_buffer_t* blinded_password,
-        vsc_buffer_t* blinding_secret);
-
-//
-//  Deblinds 'transformed password' value with previously returned 'blinding secret' from blind().
-//
-VSCP_PUBLIC vscp_error_t
-vscp_pythia_deblind(vscp_pythia_t* pythia_ctx, const vsc_data_t transformed_password, const vsc_data_t blinding_secret,
-        vsc_buffer_t* deblinded_password);
+struct vscp_pythia_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscp_dealloc_fn self_dealloc_cb;
+};
 
 
 // --------------------------------------------------------------------------
@@ -169,5 +91,5 @@ vscp_pythia_deblind(vscp_pythia_t* pythia_ctx, const vsc_data_t transformed_pass
 
 
 //  @footer
-#endif // VSCP_PYTHIA_H_INCLUDED
+#endif // VSCP_PYTHIA_DEFS_H_INCLUDED
 //  @end

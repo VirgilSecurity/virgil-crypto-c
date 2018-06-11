@@ -15,5 +15,9 @@
         <constant name="no memory" value="-100">
             Memory allocation failed.
         </constant>
+
+        <constant name="pythia inner fail" value="-200">
+            Undrlying pythia library returns -1.
+        </constant>
     </enum>
 </module>

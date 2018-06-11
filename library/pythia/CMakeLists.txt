@@ -43,6 +43,14 @@ project(virgil-crypto-pythia VERSION 0.2.0 LANGUAGES C)
 #
 # MbedTLS
 #
+if(NOT TARGET vsc::common)
+    message(FATAL_ERROR
+            "Required library 'Virgil Security Crypto Common' is not found - looking for target 'vsc::common'.")
+endif()
+
+#
+# MbedTLS
+#
 if(NOT TARGET mbed::crypto)
     message(FATAL_ERROR "Required library 'MbedTLS' is not found - looking for target 'mbed::crypto'.")
 endif()
@@ -98,7 +106,7 @@ target_include_directories(vsc_pythia
 #
 # Link to dependencies
 #
-target_link_libraries(vsc_pythia PUBLIC mbed::crypto pythia relic)
+target_link_libraries(vsc_pythia PUBLIC vsc_common mbed::crypto pythia relic)
 
 
 #
