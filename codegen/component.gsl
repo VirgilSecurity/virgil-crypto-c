@@ -519,6 +519,15 @@ function component_resolve_instance_attr_class (instance, parent)
     check_arguments (my, "instance, parent")
 
     component_require_attr_class (my.instance, my)
+
+    if my.instance.class = "data"
+        my.instance.access ?= "readonly"
+        my.instance.is_reference = "0"
+
+    elsif my.instance.class = "buffer"
+        my.instance.access ?= "readwrite"
+        my.instance.is_reference = "1"
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
