@@ -1,0 +1,19 @@
+<module name="error">
+     Manages common library error codes.
+
+    <enum name="error" definition="public">
+        Defines common library error codes.
+
+        <constant name="success" of_class="global" value="0">
+            No errors was occurred.
+        </constant>
+
+        <constant name="bad arguments" value="-1">
+            This error should not be returned if assertions is enabled.
+        </constant>
+
+        <constant name="no memory" value="-100">
+            Memory allocation failed.
+        </constant>
+    </enum>
+</module>
