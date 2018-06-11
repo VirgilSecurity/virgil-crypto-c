@@ -206,6 +206,30 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
+function _X13_add_constructor (class, constructor, destination, meta)
+    check_arguments (my, "class, constructor, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        .name = cat (my.names.method_new, my.constructor.name)
+
+        . = my.constructor. ?
+
+        for my.constructor.argument
+            copy argument to method
+        endfor
+
+        new return to method
+            .class = my.refs.class_struct_ctx
+            .access = "disown"
+        endnew
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
 function _X13_add_method_delete (class, destination, meta)
     check_arguments (my, "class, destination, meta", my)
 
@@ -298,6 +322,11 @@ function _X13_add_lifecycle_methods (class, destination, meta)
     _X13_add_method_init (my.class, my.destination, my.meta)
     _X13_add_method_cleanup (my.class, my.destination, my.meta)
     _X13_add_method_new (my.class, my.destination, my.meta)
+
+    for my.class.constructor
+        _X13_add_constructor (my.class, constructor, my.destination, my.meta)
+    endfor
+
     _X13_add_method_delete (my.class, my.destination, my.meta)
     _X13_add_method_destroy (my.class, my.destination, my.meta)
 endfunction
