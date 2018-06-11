@@ -64,13 +64,15 @@ function _X13_add_context_struct (class, declaration, definition, destination, m
             copy property to struct
         endfor
 
-        new property to struct
-            .name = my.names.class_property_self_dealloc
-            .callback = ".(global_callback_dealloc)"
-            .="\
-            Function do deallocate self context.
-            "
-        endnew
+        if my.class.lifecycle <> "none" & my.class.context <> "none"
+            new property to struct
+                .name = my.names.class_property_self_dealloc
+                .callback = ".(global_callback_dealloc)"
+                .="\
+                Function do deallocate self context.
+                "
+            endnew
+        endif
     endnew
 endfunction
 
