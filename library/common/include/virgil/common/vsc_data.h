@@ -80,10 +80,6 @@ struct vsc_data_t {
     //  Byte array length.
     //
     size_t len;
-    //
-    //  Function do deallocate self context.
-    //
-    vsc_dealloc_fn self_dealloc_cb;
 };
 typedef struct vsc_data_t vsc_data_t;
 
