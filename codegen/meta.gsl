@@ -420,6 +420,8 @@ function _X17_add_entity_class (meta, class)
     new entity to my.meta
         .id = my.id
 
+        _X17_add_name (entity, "class module", my.class.name)
+        _X17_add_name (entity, "class module defs", cat (my.class.name, "defs"))
         _X17_add_name (entity, "class argument ctx", cat (my.class.name, "ctx"))
         _X17_add_link (entity, "class argument ctx", make_id ("_argument", my.class.name, "ctx"))
         _X17_add_link (entity, "class struct ctx", make_id ("class", my.class.name, "struct", my.class.name))
@@ -427,6 +429,10 @@ function _X17_add_entity_class (meta, class)
         _X17_add_link (entity, "class method cleanup", make_id ("class", my.class.name, "method cleanup"))
         _X17_add_link (entity, "class method new", make_id ("class", my.class.name, "method new"))
         _X17_add_link (entity, "class method delete", make_id ("class", my.class.name, "method delete"))
+
+        _X17_add_smart_name (entity, "class property", "self dealloc")
+        _X17_add_link (entity, "class property self dealloc", \
+                make_id ("class", my.class.name, "struct", my.class.name, "property", "self dealloc"))
 
         return entity
     endnew
