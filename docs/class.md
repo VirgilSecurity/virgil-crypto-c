@@ -260,10 +260,11 @@ error: Type for error codes.
 
 class:
     Defines instance class. Possible values are: * any - Any class or type. *
-    buffer - Special class "buffer" that is used as an output byte array. *
-    impl - Universal implementation class. If value differs from the listed
-    above then next algorithm applied: 1. If value in a format .(uid), then
-    it treated as a reference to the in-project class and will be substituted
+    data - Special class "data" that is used as an input byte array. * buffer
+    - Special class "buffer" that is used as an output byte array. * impl -
+    Universal implementation class. If value differs from the listed above
+    then next algorithm applied: 1. If value in a format .(uid), then it
+    treated as a reference to the in-project class and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
     one third party type can be used. The class attribute is optional.
 
@@ -533,10 +534,11 @@ error: Type for error codes.
 
 class:
     Defines instance class. Possible values are: * any - Any class or type. *
-    buffer - Special class "buffer" that is used as an output byte array. *
-    impl - Universal implementation class. If value differs from the listed
-    above then next algorithm applied: 1. If value in a format .(uid), then
-    it treated as a reference to the in-project class and will be substituted
+    data - Special class "data" that is used as an input byte array. * buffer
+    - Special class "buffer" that is used as an output byte array. * impl -
+    Universal implementation class. If value differs from the listed above
+    then next algorithm applied: 1. If value in a format .(uid), then it
+    treated as a reference to the in-project class and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
     one third party type can be used. The class attribute is optional.
 
@@ -626,10 +628,11 @@ error: Type for error codes.
 
 class:
     Defines instance class. Possible values are: * any - Any class or type. *
-    buffer - Special class "buffer" that is used as an output byte array. *
-    impl - Universal implementation class. If value differs from the listed
-    above then next algorithm applied: 1. If value in a format .(uid), then
-    it treated as a reference to the in-project class and will be substituted
+    data - Special class "data" that is used as an input byte array. * buffer
+    - Special class "buffer" that is used as an output byte array. * impl -
+    Universal implementation class. If value differs from the listed above
+    then next algorithm applied: 1. If value in a format .(uid), then it
+    treated as a reference to the in-project class and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
     one third party type can be used. The class attribute is optional.
 
@@ -804,10 +807,11 @@ error: Type for error codes.
 
 class:
     Defines instance class. Possible values are: * any - Any class or type. *
-    buffer - Special class "buffer" that is used as an output byte array. *
-    impl - Universal implementation class. If value differs from the listed
-    above then next algorithm applied: 1. If value in a format .(uid), then
-    it treated as a reference to the in-project class and will be substituted
+    data - Special class "data" that is used as an input byte array. * buffer
+    - Special class "buffer" that is used as an output byte array. * impl -
+    Universal implementation class. If value differs from the listed above
+    then next algorithm applied: 1. If value in a format .(uid), then it
+    treated as a reference to the in-project class and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
     one third party type can be used. The class attribute is optional.
 
@@ -937,10 +941,11 @@ error: Type for error codes.
 
 class:
     Defines instance class. Possible values are: * any - Any class or type. *
-    buffer - Special class "buffer" that is used as an output byte array. *
-    impl - Universal implementation class. If value differs from the listed
-    above then next algorithm applied: 1. If value in a format .(uid), then
-    it treated as a reference to the in-project class and will be substituted
+    data - Special class "data" that is used as an input byte array. * buffer
+    - Special class "buffer" that is used as an output byte array. * impl -
+    Universal implementation class. If value differs from the listed above
+    then next algorithm applied: 1. If value in a format .(uid), then it
+    treated as a reference to the in-project class and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
     one third party type can be used. The class attribute is optional.
 
@@ -1027,10 +1032,11 @@ error: Type for error codes.
 
 class:
     Defines instance class. Possible values are: * any - Any class or type. *
-    buffer - Special class "buffer" that is used as an output byte array. *
-    impl - Universal implementation class. If value differs from the listed
-    above then next algorithm applied: 1. If value in a format .(uid), then
-    it treated as a reference to the in-project class and will be substituted
+    data - Special class "data" that is used as an input byte array. * buffer
+    - Special class "buffer" that is used as an output byte array. * impl -
+    Universal implementation class. If value differs from the listed above
+    then next algorithm applied: 1. If value in a format .(uid), then it
+    treated as a reference to the in-project class and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
     one third party type can be used. The class attribute is optional.
 

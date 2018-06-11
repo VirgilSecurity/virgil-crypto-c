@@ -424,8 +424,11 @@ function c_component_map_instance_attr_type (c_instance, instance)
 
     elsif defined (my.instance.class)
 
-        if my.instance.class = "buffer"
-            my.c_instance.type = ".(c_class_buffer_struct_buffer)"
+        if my.instance.class = "data"
+            my.c_instance.type = "vsc_data_t"
+
+        elsif my.instance.class = "buffer"
+            my.c_instance.type = "vsc_buffer_t"
 
         elsif my.instance.class = "impl"
             my.c_instance.type = ".(c_class_impl_struct_impl)"

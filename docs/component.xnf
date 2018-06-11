@@ -117,6 +117,7 @@
 
         Possible values are:
             * any    - Any class or type.
+            * data - Special class "data" that is used as an input byte array.
             * buffer - Special class "buffer" that is used as an output byte array.
             * impl   - Universal implementation class.
 
