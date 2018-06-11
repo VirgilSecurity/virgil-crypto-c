@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2018 Virgil Security Inc.
 //
 //  All rights reserved.
@@ -33,74 +31,63 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-// --------------------------------------------------------------------------
 
 
-//  @warning
-// --------------------------------------------------------------------------
-//  This file is partially generated.
-//  Generated blocks are enclosed between tags [@<tag>, @end].
-//  User's code can be added between tags [@end, @<tag>].
-// --------------------------------------------------------------------------
+#include "unity.h"
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Manages pythia error codes.
-// --------------------------------------------------------------------------
-
-#ifndef VSCP_ERROR_H_INCLUDED
-#define VSCP_ERROR_H_INCLUDED
-//  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-//  @generated
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated section start.
-// --------------------------------------------------------------------------
-
-//
-//  Defines pythia error codes.
-//
-enum vscp_error_t {
-    //
-    //  No errors was occurred.
-    //
-    vscp_SUCCESS = 0,
-    //
-    //  This error should not be returned if assertions is enabled.
-    //
-    vscp_error_BAD_ARGUMENTS = -1,
-    //
-    //  Memory allocation failed.
-    //
-    vscp_error_NO_MEMORY = -100,
-    //
-    //  Undrlying pythia library returns -1.
-    //
-    vscp_error_PYTHIA_INNER_FAIL = -200
-};
-typedef enum vscp_error_t vscp_error_t;
+#include "vscp_pythia.h"
+#include "test_utils.h"
 
 
 // --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
+// Test implementation helpers & lifecycle functions.
 // --------------------------------------------------------------------------
-//  @end
 
+void test__new__always__returns_not_null (void) {
+    vscp_pythia_t *pythia = vscp_pythia_new();
 
-#ifdef __cplusplus
+    TEST_ASSERT_NOT_NULL (pythia);
+
+    vscp_pythia_destroy (&pythia);
 }
-#endif
 
+// --------------------------------------------------------------------------
+// Happy path tests.
+// --------------------------------------------------------------------------
 
-//  @footer
-#endif // VSCP_ERROR_H_INCLUDED
-//  @end
+void test__blind__valid_args___returns_success(void) {
+    vscp_pythia_t *pythia = vscp_pythia_new();
+
+    vsc_data_t password = vsc_data((const byte *)"password", 8);
+
+    vsc_buffer_t *blinded_password = vsc_buffer_new();
+    vsc_buffer_alloc(blinded_password, vscp_pythia_blinded_password_buf_len());
+
+    vsc_buffer_t *blinding_secret = vsc_buffer_new();
+    vsc_buffer_alloc(blinding_secret, vscp_pythia_blinding_secret_buf_len());
+
+    vscp_error_t result = vscp_pythia_blind(pythia, password, blinded_password, blinding_secret);
+
+    TEST_ASSERT_EQUAL(vscp_SUCCESS, result);
+
+    vsc_buffer_destroy (&blinded_password);
+    vsc_buffer_destroy (&blinding_secret);
+    vscp_pythia_destroy (&pythia);
+}
+
+// --------------------------------------------------------------------------
+// Entrypoint.
+// --------------------------------------------------------------------------
+
+int main (void) {
+    UNITY_BEGIN ();
+
+    vscp_init();
+
+    RUN_TEST (test__new__always__returns_not_null);
+    RUN_TEST (test__blind__valid_args___returns_success);
+
+    vscp_cleanup();
+
+    return UNITY_END();
+}

@@ -34,7 +34,8 @@
 # ---------------------------------------------------------------------------
 #   Options
 # ---------------------------------------------------------------------------
-set(PYTHIA_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/pythia)
+set(PYTHIA_INSTALL_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/pythia")
+set(PYTHIA_SRC_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/pythia-ext-prefix/src/pythia-ext/src")
 
 # ---------------------------------------------------------------------------
 #   Load MbedTLS as an external project
@@ -46,8 +47,10 @@ ExternalProject_Add(pythia-ext
         CMAKE_ARGS
             -G${CMAKE_GENERATOR}
             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-            -DCMAKE_INSTALL_PREFIX=${PYTHIA_LOCATION}
+            -DCMAKE_INSTALL_PREFIX=${PYTHIA_INSTALL_LOCATION}
             -DENABLE_TESTING=OFF
+            -DRELIC_USE_PTHREAD=ON
+            -DRELIC_USE_EXT_RNG=ON
         )
 
 # ---------------------------------------------------------------------------
@@ -58,22 +61,27 @@ add_library(relic STATIC IMPORTED GLOBAL)
 
 add_dependencies(pythia pythia-ext)
 
-file(MAKE_DIRECTORY ${PYTHIA_LOCATION}/include)
+file(MAKE_DIRECTORY ${PYTHIA_INSTALL_LOCATION}/include)
+file(MAKE_DIRECTORY ${PYTHIA_SRC_LOCATION})
 
 set_target_properties(pythia
         PROPERTIES
         IMPORTED_LOCATION
-            ${PYTHIA_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}pythia${CMAKE_STATIC_LIBRARY_SUFFIX}
+            ${PYTHIA_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}pythia${CMAKE_STATIC_LIBRARY_SUFFIX}
 
         INTERFACE_INCLUDE_DIRECTORIES
-            ${PYTHIA_LOCATION}/include
+            ${PYTHIA_INSTALL_LOCATION}/include
+        )
+
+set_property(TARGET pythia
+        APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${PYTHIA_SRC_LOCATION}"
         )
 
 set_target_properties(relic
         PROPERTIES
         IMPORTED_LOCATION
-            ${PYTHIA_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}relic_s${CMAKE_STATIC_LIBRARY_SUFFIX}
+            ${PYTHIA_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}relic_s${CMAKE_STATIC_LIBRARY_SUFFIX}
 
         INTERFACE_INCLUDE_DIRECTORIES
-            ${PYTHIA_LOCATION}/include
+            ${PYTHIA_INSTALL_LOCATION}/include
         )

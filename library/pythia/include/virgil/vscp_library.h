@@ -101,6 +101,11 @@ extern "C" {
 //
 #define VSCP_CEIL(x,y) (1 + (((x) - 1) / (y)))
 
+//
+//  Mark argument or function return value as "unused".
+//
+#define VSCP_UNUSED(x) (void)(x)
+
 //  TDOD: Review with approach: https://gcc.gnu.org/wiki/Visibility
 #if defined (__WINDOWS__)
 #   if defined VSCP_STATIC

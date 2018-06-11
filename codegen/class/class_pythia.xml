@@ -1,25 +1,50 @@
-<class name="pythia">
+<class name="pythia" context="private">
     Provide Pythia implementation based on the Virgil Security.
 
-    <require module="library"/>
-    <require module="error"/>
+    <c_include file="virgil/common/vsc_data.h" scope="public" is_system="1"/>
+    <c_include file="virgil/common/vsc_buffer.h" scope="public" is_system="1"/>
 
-    <property name="instances" type="size"/>
+    <c_include file="pythia/pythia_init.h" scope="private" is_system="1"/>
+    <c_include file="pythia/pythia_wrapper.h" scope="private" is_system="1"/>
+    <c_include file="pythia/pythia_buf_sizes.h" scope="private" is_system="1"/>
+
+    <c_include file="mbedtls/ctr_drbg.h" scope="private" is_system="1"/>
+    <c_include file="mbedtls/entropy.h" scope="private" is_system="1"/>
 
 
-    <method name="blinded password len" context="none">
+    <macros name="buffer from data" definition="private">
+
+        <implementation>
+            #define .(c_class_pythia_macros_buffer_from_data) (X) {.p = (uint8_t *)X.bytes, .allocated = X.len, .len = X.len}
+        </implementation>
+    </macros>
+
+
+    <method name="init" of_class="global" context="none">
+        Performs global initialization of the pythia library.
+        Must be called once for entire application at startup.
+    </method>
+
+
+    <method name="cleanup" of_class="global" context="none">
+        Performs global cleanup of the pythia library.
+        Must be called once for entire application before exit.
+    </method>
+
+
+    <method name="blinded password buf len" context="none">
         Return length of the buffer needed to hold 'blinded password'.
         <return type="size"/>
     </method>
 
 
-    <method name="deblinded password len" context="none">
+    <method name="deblinded password buf len" context="none">
         Return length of the buffer needed to hold 'deblinded password'.
         <return type="size"/>
     </method>
 
 
-    <method name="blinding secret len" context="none">
+    <method name="blinding secret buf len" context="none">
         Return length of the buffer needed to hold 'blinding secret'.
         <return type="size"/>
     </method>
@@ -29,24 +54,30 @@
         Blinds password. Turns password into a pseudo-random string.
         This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 
-        <argument name="password" type="data"/>
-        <argument name="pssword len" type="size"/>
-        <argument name="blinded password" type="data" access="writeonly"/>
-        <argument name="blinded password len" type="size"/>
-        <argument name="blinding secret" type="data" access="writeonly"/>
-        <argument name="blinding secret len" type="size"/>
+        <argument name="password" class="data"/>
+        <argument name="blinded password" class="buffer"/>
+        <argument name="blinding secret" class="buffer"/>
+
+        <return type="error"/>
     </method>
 
 
     <method name="deblind">
         Deblinds 'transformed password' value with previously returned 'blinding secret' from blind().
 
-        <argument name="transformed password" type="data"/>
-        <argument name="transformed pssword len" type="size"/>
-        <argument name="blinding secret" type="data"/>
-        <argument name="blinding secret len" type="size"/>
-        <argument name="deblinded password" type="data" access="writeonly"/>
-        <argument name="deblinded password len" type="size"/>
+        <argument name="transformed password" class="data"/>
+        <argument name="blinding secret" class="data"/>
+        <argument name="deblinded password" class="buffer"/>
+
+        <return type="error"/>
     </method>
 
+
+    <method name="random handler" context="none" declaration="private">
+        Callback for the pythia random.
+
+        <argument name="out" type="data" access="writeonly"/>
+        <argument name="out len" type="integer"/>
+        <argument name="ctx" type="nothing" access="readwrite" is_reference="1"/>
+    </method>
 </class>
