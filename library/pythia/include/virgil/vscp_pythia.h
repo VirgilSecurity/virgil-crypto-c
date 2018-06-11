@@ -171,6 +171,12 @@ VSCP_PUBLIC size_t
 vscp_pythia_proof_value_buf_len(void);
 
 //
+//  Return length of the buffer needed to hold 'password update token'.
+//
+VSCP_PUBLIC size_t
+vscp_pythia_password_update_token_buf_len(void);
+
+//
 //  Blinds password. Turns password into a pseudo-random string.
 //  This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 //
@@ -217,6 +223,16 @@ VSCP_PUBLIC vscp_error_t
 vscp_pythia_verify(vscp_pythia_t* pythia_ctx, const vsc_data_t transformed_password, const vsc_data_t blinded_password,
         const vsc_data_t tweak, const vsc_data_t transformation_public_key, const vsc_data_t proof_value_c,
         const vsc_data_t proof_value_u);
+
+//
+//  Rotates old transformation key to new transformation key and generates 'password update token',
+//  that can update 'deblinded password'(s).
+//
+//  This action should increment version of the 'pythia scope secret'.
+//
+VSCP_PUBLIC vscp_error_t
+vscp_pythia_get_password_update_token(vscp_pythia_t* pythia_ctx, const vsc_data_t previous_transformation_private_key,
+        const vsc_data_t new_transformation_private_key, vsc_buffer_t* password_update_token);
 
 
 // --------------------------------------------------------------------------
