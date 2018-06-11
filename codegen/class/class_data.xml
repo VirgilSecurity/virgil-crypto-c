@@ -1,0 +1,22 @@
+<class name="data" context="public" lifecycle="none">
+    Encapsulates fixed byte array.
+
+
+    <property name="bytes" type="data">
+        Underlying byte array.
+    </property>
+
+
+    <property name="len" type="size">
+        Byte array length.
+    </property>
+
+
+    <method name="data" context="none">
+        Creates data from the preallocated bytes.
+
+        <argument name="bytes" type="data"/>
+        <argument name="len" type="size"/>
+        <return class=".(class_data_struct_data)" is_reference="0" access="readwrite"/>
+    </method>
+</class>
