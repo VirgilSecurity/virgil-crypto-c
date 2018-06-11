@@ -78,6 +78,7 @@ target_link_libraries(enable_profiling INTERFACE $<$<C_COMPILER_ID:GNU>:-pg>)
 # ---------------------------------------------------------------------------
 #   Library core libraries
 # ---------------------------------------------------------------------------
+add_subdirectory ("library/common")
 add_subdirectory ("library/foundation")
 add_subdirectory ("library/pythia")
 
@@ -129,7 +130,11 @@ endif()
 # ---------------------------------------------------------------------------
 include("cmake/clangformat.cmake")
 
-if (TARGET vsf)
+if(TARGET vsf)
     add_clangformat(vsf)
     add_clangformat(vsc_pythia)
+endif()
+
+if(TARGET vsc_common)
+    add_clangformat(vsc_common)
 endif()
