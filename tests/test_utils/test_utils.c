@@ -32,48 +32,93 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef TEST_UTILS_H_INCLUDED
-#define TEST_UTILS_H_INCLUDED
+//
+//  Initial code was taken form the MbedTLS test.
+//  See https://github.com/ARMmbed/mbedtls.
 
-#include <vsf_library.h>
+#include "test_utils.h"
 
-// --------------------------------------------------------------------------
-//  Takes string with HEX data and converts to the byte array.
-//  Return data length.
-//  Precondition: string length must be even.
-//  Precondition: data length must be at least half of the hex string length.
-// --------------------------------------------------------------------------
-size_t unhexify(const char *hex_str, byte *data);
+#include <assert.h>
+#include <string.h>
+
 
 // --------------------------------------------------------------------------
-//  Takes byte array and represents it as HEX string.
-//  Precondition: string length must be at least doubled of the data length.
+//  HEX utils
 // --------------------------------------------------------------------------
-void hexify(const byte *data, size_t data_len, char *hex_str);
+
+size_t unhexify(const char *hex_str, uint8_t *data) {
+    uint8_t c, c2;
+    size_t len = strlen(hex_str) / 2;
+    assert(strlen(hex_str) % 2 == 0); /* must be even number of uint8_ts */
+
+    while (*hex_str != 0) {
+        c = *hex_str++;
+        if (c >= '0' && c <= '9') {
+            c -= '0';
+        } else if (c >= 'a' && c <= 'f') {
+            c -= 'a' - 10;
+        } else if (c >= 'A' && c <= 'F') {
+            c -= 'A' - 10;
+        } else {
+            assert(0);
+        }
+
+        c2 = *hex_str++;
+        if (c2 >= '0' && c2 <= '9') {
+            c2 -= '0';
+        } else if (c2 >= 'a' && c2 <= 'f') {
+            c2 -= 'a' - 10;
+        } else if (c2 >= 'A' && c2 <= 'F') {
+            c2 -= 'A' - 10;
+        } else {
+            assert(0);
+        }
+
+        *data++ = (c << 4) | c2;
+    }
+
+    return len;
+}
+
+void hexify(const uint8_t *data, size_t data_len, char *hex_str) {
+    uint8_t l, h;
+
+    while (data_len != 0) {
+        h = *data / 16;
+        l = *data % 16;
+
+        if (h < 10) {
+            *hex_str++ = '0' + h;
+        } else {
+            *hex_str++ = 'a' + h - 10;
+        }
+
+        if (l < 10) {
+            *hex_str++ = '0' + l;
+        } else {
+            *hex_str++ = 'a' + l - 10;
+        }
+
+        ++hex_str;
+        data_len--;
+    }
+}
+
 
 // --------------------------------------------------------------------------
-//  Handles assertion info.
+//  Assertion utils
 // --------------------------------------------------------------------------
-typedef struct {
-    bool handled;
-    const char* message;
-    const char* file;
-    int line;
-} mock_assert_result_t;
 
-// --------------------------------------------------------------------------
-//  Global object that handles assertion info.
-// --------------------------------------------------------------------------
-extern mock_assert_result_t g_mock_assert_result;
+mock_assert_result_t g_mock_assert_result = {false, NULL, NULL, 0};
 
-// --------------------------------------------------------------------------
-//  Mock assertion handler.
-// --------------------------------------------------------------------------
-void mock_assert (void);
+void mock_assert_handler (const char* message, const char* file, int line) {
+    g_mock_assert_result.handled = true;
+    g_mock_assert_result.message = message;
+    g_mock_assert_result.file = file;
+    g_mock_assert_result.line = line;
+}
 
-// --------------------------------------------------------------------------
-//  Restore default assertion handler.
-// --------------------------------------------------------------------------
-void unmock_assert (void);
+void mock_assert_reset(void) {
+    memset(&g_mock_assert_result, 0x00, sizeof(mock_assert_result_t));
+}
 
-#endif // TEST_UTILS_H_INCLUDED

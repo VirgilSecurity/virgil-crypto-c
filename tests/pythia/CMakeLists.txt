@@ -34,19 +34,17 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_c_integration_tests VERSION 0.1.0 LANGUAGES C)
+project(virgil_crypto_c_pythia_integration_tests VERSION 0.1.0 LANGUAGES C)
 
-add_subdirectory(unity)
-add_subdirectory(test_utils)
+macro(_add_test test)
+    add_executable(${test} ${test}.c)
+    target_link_libraries(${test} unity test_utils vsc::pythia)
+    set_target_properties(${test} PROPERTIES C_STANDARD "99")
+    add_test (NAME ${test} COMMAND ${test})
 
-if(TARGET vsc::common)
-    add_subdirectory(common)
-endif()
+    if(COMMAND add_clangformat)
+        add_clangformat(${test})
+    endif()
+endmacro()
 
-if(TARGET vsc::foundation)
-    add_subdirectory(foundation)
-endif()
-
-if(TARGET vsc::pythia)
-    add_subdirectory(pythia)
-endif()
+_add_test (test_pythia)

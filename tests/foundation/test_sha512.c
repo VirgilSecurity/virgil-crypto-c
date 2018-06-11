@@ -63,13 +63,13 @@ test__impl__valid_arg__returns_not_null(void) {
 void
 test__impl__null_arg__call_assert(void) {
 
-    mock_assert();
+    vsf_assert_change_handler(mock_assert_handler);
 
     vsf_impl_t *impl = vsf_sha512_impl(NULL);
 
     TEST_ASSERT_TRUE(g_mock_assert_result.handled);
 
-    unmock_assert();
+    vsf_assert_change_handler(vsf_assert_abort);
 }
 
 // --------------------------------------------------------------------------
