@@ -182,6 +182,18 @@
     </method>
 
 
+    <method name="update deblinded with token">
+        Updates previously stored 'deblinded password' with 'password update token'.
+        After this call, 'transform()' called with new arguments will return corresponding values.
+
+        <argument name="deblinded password" class="data"/>
+        <argument name="password update token" class="data"/>
+        <argument name="updated deblinded password" class="buffer"/>
+
+        <return type="error"/>
+    </method>
+
+
     <method name="random handler" context="none" declaration="private">
         Callback for the pythia random.
 

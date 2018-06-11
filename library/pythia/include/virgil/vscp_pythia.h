@@ -234,6 +234,14 @@ VSCP_PUBLIC vscp_error_t
 vscp_pythia_get_password_update_token(vscp_pythia_t* pythia_ctx, const vsc_data_t previous_transformation_private_key,
         const vsc_data_t new_transformation_private_key, vsc_buffer_t* password_update_token);
 
+//
+//  Updates previously stored 'deblinded password' with 'password update token'.
+//  After this call, 'transform()' called with new arguments will return corresponding values.
+//
+VSCP_PUBLIC vscp_error_t
+vscp_pythia_update_deblinded_with_token(vscp_pythia_t* pythia_ctx, const vsc_data_t deblinded_password,
+        const vsc_data_t password_update_token, vsc_buffer_t* updated_deblinded_password);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
