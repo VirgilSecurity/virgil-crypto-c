@@ -76,6 +76,12 @@
         <return type="size"/>
     </method>
 
+    <method name="proof value buf len" context="none">
+        Return length of the buffer needed to hold 'proof value'.
+
+        <return type="size"/>
+    </method>
+
 
     <method name="blind">
         Blinds password. Turns password into a pseudo-random string.
@@ -121,6 +127,21 @@
         <argument name="transformation private key" class="data"/>
         <argument name="transformed password" class="buffer"/>
         <argument name="transformed tweak" class="buffer"/>
+
+        <return type="error"/>
+    </method>
+
+
+    <method name="prove">
+        Generates proof that server possesses secret values that were used to transform password.
+
+        <argument name="transformed_password" class="data"/>
+        <argument name="blinded_password" class="data"/>
+        <argument name="transformed_tweak" class="data"/>
+        <argument name="transformation_private_key" class="data"/>
+        <argument name="transformation_public_key" class="data"/>
+        <argument name="proof_value_c" class="buffer"/>
+        <argument name="proof_value_u" class="buffer"/>
 
         <return type="error"/>
     </method>
