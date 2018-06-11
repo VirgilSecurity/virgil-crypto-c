@@ -169,7 +169,7 @@ vsc_buffer_new_with_capacity(size_t capacity) {
         return NULL;
     }
 
-    buffer_ctx->bytes = (byte *)(buffer_ctx + sizeof(vsc_buffer_t));
+    buffer_ctx->bytes = (byte *)(buffer_ctx) + sizeof(vsc_buffer_t);
     buffer_ctx->capacity = capacity;
     buffer_ctx->self_dealloc_cb = vsc_dealloc;
     buffer_ctx->bytes_dealloc_cb = NULL;
