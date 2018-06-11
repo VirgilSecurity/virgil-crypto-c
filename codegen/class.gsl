@@ -38,7 +38,7 @@
 #
 #   Resolution includes several steps:
 #       1. Validate - check that required attributes and items are defined.
-#       2. Define default values to the optional component attributes.
+#       2. Define default values to the optional class attributes.
 #       3. Append optional items.
 #
 #    Private function prefix is: B18.
@@ -53,6 +53,23 @@ gsl from "component.gsl"
 gsl from "meta.gsl"
 
 # ---------------------------------------------------------------------------
+#   Return class as shortened XML string with required attributes.
+# ---------------------------------------------------------------------------
+function class_dump (class)
+    check_argument (my, "class", my)
+
+    my.class_info = ""
+    my.class_info += " name=\"$(my.class.name)\"" ? ""
+    my.class_info += " of_class=\"$(my.class.of_class)\"" ? ""
+    my.class_info += " c_prefix=\"$(my.class.c_prefix)\"" ? ""
+    my.class_info += " context=\"$(my.class.context)\"" ? ""
+    my.class_info += " lifecycle=\"$(my.class.lifecycle)\"" ? ""
+    my.class_dump = "<$(name (my.class))$(my.class_info)/>"
+
+    return my.class_dump
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve attribute: method.context.
 # ---------------------------------------------------------------------------
 function _B18_resolve_method_attr_context (method, parent)
@@ -60,6 +77,69 @@ function _B18_resolve_method_attr_context (method, parent)
 
     my.method.context ?= "class"
 endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: class.context.
+# ---------------------------------------------------------------------------
+function class_resolve_attr_context (class, project)
+    check_arguments (my, "class, project", my)
+
+    my.class.context ?= count (my.class.property) ?? "private" ? "none"
+
+    my.valid_contexts = "none, public, private, internal"
+
+    if ! string_in (my.class.context, my.valid_contexts)
+        my.class_dump = class_dump (my.class)
+
+        echo_fatal ("Invalid class attribute context '$(my.class_dump:)'. " + \
+                    "Expected {$(my.valid_contexts)}", my)
+    endif
+
+    if count (my.class.property) & my.class.context = "none"
+        my.class_dump = class_dump (my.class)
+
+        echo_fatal ("Class attribute context is explicitly 'none'," + \
+                    " when context's 'property' defained as well." + \
+                    "Expected {$(my.valid_contexts)}", my)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: class.lifecycle.
+# ---------------------------------------------------------------------------
+function class_resolve_attr_lifecycle (class, project)
+    check_arguments (my, "class, project", my)
+
+    my.class.lifecycle ?= "default"
+
+    my.valid_lifecycles = "none, default"
+
+    if ! string_in (my.class.lifecycle, my.valid_lifecycles)
+        my.class_dump = class_dump (my.class)
+
+        echo_fatal ("Invalid class attribute lifecycle '$(my.class_dump:)'. " + \
+                    "Expected {$(my.valid_lifecycles)}", my)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: class.of_class.
+# ---------------------------------------------------------------------------
+function class_resolve_attr_of_class (class, project)
+    check_arguments (my, "class, project", my)
+
+    my.class.of_class ?= my.class.name
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: class.c_prefix.
+# ---------------------------------------------------------------------------
+function class_resolve_attr_c_prefix (class, project)
+    check_arguments (my, "class, project", my)
+
+    my.class.c_prefix ?= my.project.prefix
+endfunction
+
 
 # ---------------------------------------------------------------------------
 #   Resolve component: class.
@@ -72,8 +152,10 @@ function class_resolve (class, project)
     assert_attribute (my.class, "name", my)
 
     component_resolve_attr_scope (my.class)
-    my.class.of_class ?= my.class.name
-    my.class.c_prefix ?= my.project.prefix
+    class_resolve_attr_context (my.class, my.project)
+    class_resolve_attr_lifecycle (my.class, my.project)
+    class_resolve_attr_of_class (my.class, my.project)
+    class_resolve_attr_c_prefix (my.class, my.project)
 
     for my.class.method
         _B18_resolve_method_attr_context (method, my.class)

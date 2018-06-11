@@ -7,7 +7,7 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <class name [of_class] [scope] [c_prefix]>
+    <class name [of_class] [scope] [c_prefix] [context] [lifecycle]>
        <require module [scope]/>
        <constant name [c_prefix] [of_class] [uid] [definition] [value]/>
        <property is_reference name [type] [class] [enum] [callback] [size] [uid] [access] [bits]>
@@ -72,6 +72,8 @@ Defines class type.
       [ of_class = "..." ]
       [ scope = "public | private | internal"  ("public") ]
       [ c_prefix = "..." ]
+      [ context = "none | public | private | internal"  ("none") ]
+      [ lifecycle = "none | default"  ("default") ]
         >
         <require>
         <constant>
@@ -107,6 +109,26 @@ internal: Component is visible only within library or a specific source file.
 
 name:
     Short module name. The name attribute is required.
+
+context:
+    Define context presence and it's visibility. The context attribute is
+    optional. Its default value is "none". It can take one of the following
+    values:
+
+Value: Meaning:
+none: Class do not require context, so it contains only static methods. This value is default if class does not contain any 'property'.
+public: Context is defined in the public scope.
+private: Context is defined in the private scope. This value is default if class contains at least one 'property'.
+internal: Context is defined in the internal scope.
+
+lifecycle:
+    Define how to generate context lifecycle methods. The lifecycle attribute
+    is optional. Its default value is "default". It can take one of the
+    following values:
+
+Value: Meaning:
+none: Do not generate lifecycle methods.
+default: Generate default lifecycle methods.
 
 
 The 'require' item
