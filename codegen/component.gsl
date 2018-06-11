@@ -640,6 +640,8 @@ function component_resolve_array_attr_access (array, parent)
     my.valid_access_variable = "readonly, readwrite"
     my.valid_access_return = "readonly, disown"
 
+    my.parent_dump = component_instance_dump(my.parent)
+
     if item_in (my.parent, "argument") & \
             ! string_in (my.array.access, my.valid_access_argument)
 
@@ -662,7 +664,7 @@ function component_resolve_array_attr_access (array, parent)
         echo_fatal ( \
             "Invalid value '$(my.array.access)' " + \
             "of attribute '$(name (my.parent))->array.access'." + \
-            " Expected {$(my.valid_access_return)}")
+            " Expected {$(my.valid_access_return)}. Parent dump: $(my.parent_dump:).")
     endif
 
 endfunction
