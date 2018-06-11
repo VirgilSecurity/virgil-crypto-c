@@ -60,6 +60,7 @@ target_sources(vsc_common
         "${CMAKE_CURRENT_LIST_DIR}/src/vsc_assert.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsc_buffer.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsc_buffer_defs.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/vsc_data.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsc_error.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsc_library.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/vsc_memory.c"
