@@ -78,13 +78,13 @@ endfunction
 function c_module_add_includes (module, destination)
     check_arguments (my, "module, destination", my)
 
+    for my.module.require
+        c_component_create_include (require, my.destination)
+    endfor
+
     for my.module.c_include as source
         my.c_include = item_copy_to (source, my.destination)
         c_component_resolve_include (my.c_include)
-    endfor
-
-    for my.module.require
-        c_component_create_include (require, my.destination)
     endfor
 endfunction
 
