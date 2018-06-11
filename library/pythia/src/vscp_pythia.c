@@ -276,6 +276,15 @@ vscp_pythia_proof_value_buf_len(void) {
 }
 
 //
+//  Return length of the buffer needed to hold 'password update token'.
+//
+VSCP_PUBLIC size_t
+vscp_pythia_password_update_token_buf_len(void) {
+
+    return PYTHIA_BN_BUF_SIZE;
+}
+
+//
 //  Blinds password. Turns password into a pseudo-random string.
 //  This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 //
@@ -454,6 +463,39 @@ vscp_pythia_verify(vscp_pythia_t *pythia_ctx, const vsc_data_t transformed_passw
 
     if (0 == verified) {
         return vscp_error_VERIFICATION_FAIL;
+    }
+
+    return vscp_SUCCESS;
+}
+
+//
+//  Rotates old transformation key to new transformation key and generates 'password update token',
+//  that can update 'deblinded password'(s).
+//
+//  This action should increment version of the 'pythia scope secret'.
+//
+VSCP_PUBLIC vscp_error_t
+vscp_pythia_get_password_update_token(vscp_pythia_t *pythia_ctx, const vsc_data_t previous_transformation_private_key,
+        const vsc_data_t new_transformation_private_key, vsc_buffer_t *password_update_token) {
+
+    VSCP_ASSERT_PTR(pythia_ctx);
+    VSCP_ASSERT_PTR(previous_transformation_private_key.bytes);
+    VSCP_ASSERT_PTR(new_transformation_private_key.bytes);
+    VSCP_ASSERT_PTR(password_update_token);
+
+    VSCP_ASSERT(vsc_buffer_capacity(password_update_token) >= vscp_pythia_proof_value_buf_len());
+
+    const pythia_buf_t previous_transformation_private_key_buf =
+            VSCP_PYTHIA_BUFFER_FROM_DATA(previous_transformation_private_key);
+
+    const pythia_buf_t new_transformation_private_key_buf =
+            VSCP_PYTHIA_BUFFER_FROM_DATA(new_transformation_private_key);
+
+
+    if (0 != pythia_w_get_password_update_token(&previous_transformation_private_key_buf,
+                     &new_transformation_private_key_buf, (pythia_buf_t *)password_update_token)) {
+
+        return vscp_error_PYTHIA_INNER_FAIL;
     }
 
     return vscp_SUCCESS;

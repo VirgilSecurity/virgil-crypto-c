@@ -82,6 +82,12 @@
         <return type="size"/>
     </method>
 
+    <method name="password update token buf len" context="none">
+        Return length of the buffer needed to hold 'password update token'.
+
+        <return type="size"/>
+    </method>
+
 
     <method name="blind">
         Blinds password. Turns password into a pseudo-random string.
@@ -157,6 +163,20 @@
         <argument name="transformation public key" class="data"/>
         <argument name="proof value c" class="data"/>
         <argument name="proof value u" class="data"/>
+
+        <return type="error"/>
+    </method>
+
+
+    <method name="get password update token">
+        Rotates old transformation key to new transformation key and generates 'password update token',
+        that can update 'deblinded password'(s).
+
+        This action should increment version of the 'pythia scope secret'.
+
+        <argument name="previous transformation private key" class="data"/>
+        <argument name="new transformation private key" class="data"/>
+        <argument name="password update token" class="buffer"/>
 
         <return type="error"/>
     </method>
