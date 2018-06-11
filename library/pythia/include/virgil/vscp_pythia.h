@@ -165,6 +165,12 @@ VSCP_PUBLIC size_t
 vscp_pythia_transformed_tweak_buf_len(void);
 
 //
+//  Return length of the buffer needed to hold 'proof value'.
+//
+VSCP_PUBLIC size_t
+vscp_pythia_proof_value_buf_len(void);
+
+//
 //  Blinds password. Turns password into a pseudo-random string.
 //  This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 //
@@ -194,6 +200,14 @@ VSCP_PUBLIC vscp_error_t
 vscp_pythia_transform(vscp_pythia_t* pythia_ctx, const vsc_data_t blinded_password, const vsc_data_t tweak,
         const vsc_data_t transformation_private_key, vsc_buffer_t* transformed_password,
         vsc_buffer_t* transformed_tweak);
+
+//
+//  Generates proof that server possesses secret values that were used to transform password.
+//
+VSCP_PUBLIC vscp_error_t
+vscp_pythia_prove(vscp_pythia_t* pythia_ctx, const vsc_data_t transformed_password, const vsc_data_t blinded_password,
+        const vsc_data_t transformed_tweak, const vsc_data_t transformation_private_key,
+        const vsc_data_t transformation_public_key, vsc_buffer_t* proof_value_c, vsc_buffer_t* proof_value_u);
 
 
 // --------------------------------------------------------------------------

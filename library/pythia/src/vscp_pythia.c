@@ -267,6 +267,15 @@ vscp_pythia_transformed_tweak_buf_len(void) {
 }
 
 //
+//  Return length of the buffer needed to hold 'proof value'.
+//
+VSCP_PUBLIC size_t
+vscp_pythia_proof_value_buf_len(void) {
+
+    return PYTHIA_BN_BUF_SIZE;
+}
+
+//
 //  Blinds password. Turns password into a pseudo-random string.
 //  This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 //
@@ -370,6 +379,40 @@ vscp_pythia_transform(vscp_pythia_t *pythia_ctx, const vsc_data_t blinded_passwo
 
     if (0 != pythia_w_transform(&blinded_password_buf, &tweak_buf, &transformation_private_key_buf,
                      (pythia_buf_t *)transformed_password, (pythia_buf_t *)transformed_tweak)) {
+
+        return vscp_error_PYTHIA_INNER_FAIL;
+    }
+
+    return vscp_SUCCESS;
+}
+
+//
+//  Generates proof that server possesses secret values that were used to transform password.
+//
+VSCP_PUBLIC vscp_error_t
+vscp_pythia_prove(vscp_pythia_t *pythia_ctx, const vsc_data_t transformed_password, const vsc_data_t blinded_password,
+        const vsc_data_t transformed_tweak, const vsc_data_t transformation_private_key,
+        const vsc_data_t transformation_public_key, vsc_buffer_t *proof_value_c, vsc_buffer_t *proof_value_u) {
+
+    VSCP_ASSERT_PTR(pythia_ctx);
+    VSCP_ASSERT_PTR(transformed_password.bytes);
+    VSCP_ASSERT_PTR(blinded_password.bytes);
+    VSCP_ASSERT_PTR(transformed_tweak.bytes);
+    VSCP_ASSERT_PTR(transformation_private_key.bytes);
+    VSCP_ASSERT_PTR(transformation_public_key.bytes);
+
+    VSCP_ASSERT(vsc_buffer_capacity(proof_value_c) >= vscp_pythia_proof_value_buf_len());
+    VSCP_ASSERT(vsc_buffer_capacity(proof_value_u) >= vscp_pythia_proof_value_buf_len());
+
+    const pythia_buf_t transformed_password_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(transformed_password);
+    const pythia_buf_t blinded_password_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(blinded_password);
+    const pythia_buf_t transformed_tweak_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(transformed_tweak);
+    const pythia_buf_t transformation_private_key_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(transformation_private_key);
+    const pythia_buf_t transformation_public_key_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(transformation_public_key);
+
+    if (0 != pythia_w_prove(&transformed_password_buf, &blinded_password_buf, &transformed_tweak_buf,
+                     &transformation_private_key_buf, &transformation_public_key_buf, (pythia_buf_t *)proof_value_c,
+                     (pythia_buf_t *)proof_value_u)) {
 
         return vscp_error_PYTHIA_INNER_FAIL;
     }
