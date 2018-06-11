@@ -101,6 +101,11 @@ extern "C" {
 //
 #define VSF_CEIL(x,y) (1 + (((x) - 1) / (y)))
 
+//
+//  Mark argument or function return value as "unused".
+//
+#define VSF_UNUSED(x) (void)(x)
+
 //  TDOD: Review with approach: https://gcc.gnu.org/wiki/Visibility
 #if defined (__WINDOWS__)
 #   if defined VSF_STATIC
