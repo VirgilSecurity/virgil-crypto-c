@@ -321,6 +321,7 @@ vscp_pythia_deblind(vscp_pythia_t *pythia_ctx, const vsc_data_t transformed_pass
     VSCP_ASSERT_PTR(pythia_ctx);
     VSCP_ASSERT_PTR(transformed_password.bytes);
     VSCP_ASSERT_PTR(blinding_secret.bytes);
+    VSCP_ASSERT_PTR(deblinded_password);
 
     VSCP_ASSERT(vsc_buffer_capacity(deblinded_password) >= vscp_pythia_deblinded_password_buf_len());
 
@@ -348,6 +349,8 @@ vscp_pythia_compute_transformation_key_pair(vscp_pythia_t *pythia_ctx, const vsc
     VSCP_ASSERT_PTR(transformation_key_id.bytes);
     VSCP_ASSERT_PTR(pythia_secret.bytes);
     VSCP_ASSERT_PTR(pythia_scope_secret.bytes);
+    VSCP_ASSERT_PTR(transformation_private_key);
+    VSCP_ASSERT_PTR(transformation_public_key);
 
     VSCP_ASSERT(vsc_buffer_capacity(transformation_private_key) >= vscp_pythia_transformation_private_key_buf_len());
     VSCP_ASSERT(vsc_buffer_capacity(transformation_public_key) >= vscp_pythia_transformation_public_key_buf_len());
@@ -378,6 +381,8 @@ vscp_pythia_transform(vscp_pythia_t *pythia_ctx, const vsc_data_t blinded_passwo
     VSCP_ASSERT_PTR(blinded_password.bytes);
     VSCP_ASSERT_PTR(tweak.bytes);
     VSCP_ASSERT_PTR(transformation_private_key.bytes);
+    VSCP_ASSERT_PTR(transformed_password);
+    VSCP_ASSERT_PTR(transformed_tweak);
 
     VSCP_ASSERT(vsc_buffer_capacity(transformed_password) >= vscp_pythia_transformed_password_buf_len());
     VSCP_ASSERT(vsc_buffer_capacity(transformed_tweak) >= vscp_pythia_transformed_tweak_buf_len());
@@ -409,6 +414,8 @@ vscp_pythia_prove(vscp_pythia_t *pythia_ctx, const vsc_data_t transformed_passwo
     VSCP_ASSERT_PTR(transformed_tweak.bytes);
     VSCP_ASSERT_PTR(transformation_private_key.bytes);
     VSCP_ASSERT_PTR(transformation_public_key.bytes);
+    VSCP_ASSERT_PTR(proof_value_c);
+    VSCP_ASSERT_PTR(proof_value_u);
 
     VSCP_ASSERT(vsc_buffer_capacity(proof_value_c) >= vscp_pythia_proof_value_buf_len());
     VSCP_ASSERT(vsc_buffer_capacity(proof_value_u) >= vscp_pythia_proof_value_buf_len());
