@@ -421,6 +421,45 @@ vscp_pythia_prove(vscp_pythia_t *pythia_ctx, const vsc_data_t transformed_passwo
 }
 
 //
+//  This operation allows client to verify that the output of transform() is correct,
+//  assuming that client has previously stored transformation public key.
+//
+VSCP_PUBLIC vscp_error_t
+vscp_pythia_verify(vscp_pythia_t *pythia_ctx, const vsc_data_t transformed_password, const vsc_data_t blinded_password,
+        const vsc_data_t tweak, const vsc_data_t transformation_public_key, const vsc_data_t proof_value_c,
+        const vsc_data_t proof_value_u) {
+
+    VSCP_ASSERT_PTR(pythia_ctx);
+    VSCP_ASSERT_PTR(transformed_password.bytes);
+    VSCP_ASSERT_PTR(blinded_password.bytes);
+    VSCP_ASSERT_PTR(tweak.bytes);
+    VSCP_ASSERT_PTR(transformation_public_key.bytes);
+    VSCP_ASSERT_PTR(proof_value_c.bytes);
+    VSCP_ASSERT_PTR(proof_value_u.bytes);
+
+    const pythia_buf_t transformed_password_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(transformed_password);
+    const pythia_buf_t blinded_password_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(blinded_password);
+    const pythia_buf_t tweak_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(tweak);
+    const pythia_buf_t transformation_public_key_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(transformation_public_key);
+    const pythia_buf_t proof_value_c_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(proof_value_c);
+    const pythia_buf_t proof_value_u_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(proof_value_u);
+
+    int verified = 0;
+
+    if (0 != pythia_w_verify(&transformed_password_buf, &blinded_password_buf, &tweak_buf,
+                     &transformation_public_key_buf, &proof_value_c_buf, &proof_value_u_buf, &verified)) {
+
+        return vscp_error_PYTHIA_INNER_FAIL;
+    }
+
+    if (0 == verified) {
+        return vscp_error_VERIFICATION_FAIL;
+    }
+
+    return vscp_SUCCESS;
+}
+
+//
 //  Callback for the pythia random.
 //
 static void

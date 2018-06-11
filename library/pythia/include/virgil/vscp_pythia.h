@@ -209,6 +209,15 @@ vscp_pythia_prove(vscp_pythia_t* pythia_ctx, const vsc_data_t transformed_passwo
         const vsc_data_t transformed_tweak, const vsc_data_t transformation_private_key,
         const vsc_data_t transformation_public_key, vsc_buffer_t* proof_value_c, vsc_buffer_t* proof_value_u);
 
+//
+//  This operation allows client to verify that the output of transform() is correct,
+//  assuming that client has previously stored transformation public key.
+//
+VSCP_PUBLIC vscp_error_t
+vscp_pythia_verify(vscp_pythia_t* pythia_ctx, const vsc_data_t transformed_password, const vsc_data_t blinded_password,
+        const vsc_data_t tweak, const vsc_data_t transformation_public_key, const vsc_data_t proof_value_c,
+        const vsc_data_t proof_value_u);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
