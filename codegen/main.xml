@@ -1,4 +1,5 @@
 <main script = "main.gsl" echo_level = "trace">
+    <project name="common"/>
     <project name="foundation"/>
     <project name="pythia"/>
 </main>
