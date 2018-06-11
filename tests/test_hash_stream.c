@@ -46,7 +46,7 @@
 
 void
 test__is_implemented__sha256__returns_true(void) {
-    vsf_impl_t* impl = vsf_sha256_impl(vsf_sha256_new());
+    vsf_impl_t *impl = vsf_sha256_impl(vsf_sha256_new());
 
     TEST_ASSERT_TRUE(vsf_hash_stream_is_implemented(impl));
 
@@ -58,7 +58,7 @@ test__hash__sha256_vector_1__success(void) {
 
     byte digest[vsf_sha256_DIGEST_SIZE] = {0x00};
 
-    vsf_impl_t* impl = vsf_sha256_impl(vsf_sha256_new());
+    vsf_impl_t *impl = vsf_sha256_impl(vsf_sha256_new());
 
     vsf_hash_stream_start(impl);
     vsf_hash_stream_update(impl, test_sha256_VECTOR_1_INPUT, test_sha256_VECTOR_1_INPUT_LEN);
@@ -74,7 +74,7 @@ test__hash__sha256_vector_2__success(void) {
 
     byte digest[vsf_sha256_DIGEST_SIZE] = {0x00};
 
-    vsf_impl_t* impl = vsf_sha256_impl(vsf_sha256_new());
+    vsf_impl_t *impl = vsf_sha256_impl(vsf_sha256_new());
 
     vsf_hash_stream_start(impl);
     vsf_hash_stream_update(impl, test_sha256_VECTOR_2_INPUT, test_sha256_VECTOR_2_INPUT_LEN);
@@ -90,7 +90,7 @@ test__hash__sha256_vector_3__success(void) {
 
     byte digest[vsf_sha256_DIGEST_SIZE] = {0x00};
 
-    vsf_impl_t* impl = vsf_sha256_impl(vsf_sha256_new());
+    vsf_impl_t *impl = vsf_sha256_impl(vsf_sha256_new());
 
     vsf_hash_stream_start(impl);
     vsf_hash_stream_update(impl, test_sha256_VECTOR_3_INPUT, test_sha256_VECTOR_3_INPUT_LEN);

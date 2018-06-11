@@ -45,7 +45,7 @@
 
 void
 test__new__always__returns_not_null(void) {
-    vscp_pythia_t* pythia = vscp_pythia_new();
+    vscp_pythia_t *pythia = vscp_pythia_new();
 
     TEST_ASSERT_NOT_NULL(pythia);
 
@@ -58,14 +58,14 @@ test__new__always__returns_not_null(void) {
 
 void
 test__blind__valid_args___returns_success(void) {
-    vscp_pythia_t* pythia = vscp_pythia_new();
+    vscp_pythia_t *pythia = vscp_pythia_new();
 
-    vsc_data_t password = vsc_data((const byte*)"password", 8);
+    vsc_data_t password = vsc_data((const byte *)"password", 8);
 
-    vsc_buffer_t* blinded_password = vsc_buffer_new();
+    vsc_buffer_t *blinded_password = vsc_buffer_new();
     vsc_buffer_alloc(blinded_password, vscp_pythia_blinded_password_buf_len());
 
-    vsc_buffer_t* blinding_secret = vsc_buffer_new();
+    vsc_buffer_t *blinding_secret = vsc_buffer_new();
     vsc_buffer_alloc(blinding_secret, vscp_pythia_blinding_secret_buf_len());
 
     vscp_error_t result = vscp_pythia_blind(pythia, password, blinded_password, blinding_secret);

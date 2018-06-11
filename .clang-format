@@ -9,7 +9,7 @@ IndentWidth:     4
 ContinuationIndentWidth: 8
 AllowShortFunctionsOnASingleLine : false
 DerivePointerAlignment: false
-PointerAlignment: Left
+PointerAlignment: Right
 AlignAfterOpenBracket: DontAlign
 AccessModifierOffset: -4
 AllowAllParametersOfDeclarationOnNextLine: true

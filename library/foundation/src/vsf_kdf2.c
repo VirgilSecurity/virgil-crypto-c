@@ -76,7 +76,7 @@
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
-vsf_kdf2_derive(vsf_kdf2_impl_t* kdf2_impl, const byte* data, size_t data_len, byte* key, size_t key_len) {
+vsf_kdf2_derive(vsf_kdf2_impl_t *kdf2_impl, const byte *data, size_t data_len, byte *key, size_t key_len) {
 
     VSF_ASSERT_PTR(kdf2_impl);
     VSF_ASSERT_PTR(kdf2_impl->hash);
@@ -86,7 +86,7 @@ vsf_kdf2_derive(vsf_kdf2_impl_t* kdf2_impl, const byte* data, size_t data_len, b
 
     // Get HASH parameters
     size_t digest_len = vsf_hash_info_digest_size(vsf_hash_info_api(kdf2_impl->hash));
-    unsigned char* digest = vsf_alloc(digest_len);
+    unsigned char *digest = vsf_alloc(digest_len);
 
     // Get KDF parameters
     size_t counter = 1;

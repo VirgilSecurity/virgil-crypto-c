@@ -77,7 +77,7 @@
 //  Provides initialization of the implementation specific context.
 //
 VSF_PRIVATE vsf_error_t
-vsf_sha384_init_ctx(vsf_sha384_impl_t* sha384_impl) {
+vsf_sha384_init_ctx(vsf_sha384_impl_t *sha384_impl) {
 
     VSF_ASSERT_PTR(sha384_impl);
 
@@ -90,7 +90,7 @@ vsf_sha384_init_ctx(vsf_sha384_impl_t* sha384_impl) {
 //  Provides cleanup of the implementation specific context.
 //
 VSF_PRIVATE void
-vsf_sha384_cleanup_ctx(vsf_sha384_impl_t* sha384_impl) {
+vsf_sha384_cleanup_ctx(vsf_sha384_impl_t *sha384_impl) {
 
     VSF_ASSERT_PTR(sha384_impl);
 
@@ -101,7 +101,7 @@ vsf_sha384_cleanup_ctx(vsf_sha384_impl_t* sha384_impl) {
 //  Calculate hash over given data.
 //
 VSF_PUBLIC void
-vsf_sha384_hash(const byte* data, size_t data_len, byte* digest, size_t digest_len) {
+vsf_sha384_hash(const byte *data, size_t data_len, byte *digest, size_t digest_len) {
 
     VSF_ASSERT_PTR(data);
     VSF_ASSERT_PTR(digest);
@@ -115,7 +115,7 @@ vsf_sha384_hash(const byte* data, size_t data_len, byte* digest, size_t digest_l
 //  Start a new hashing.
 //
 VSF_PUBLIC void
-vsf_sha384_start(vsf_sha384_impl_t* sha384_impl) {
+vsf_sha384_start(vsf_sha384_impl_t *sha384_impl) {
 
     VSF_ASSERT_PTR(sha384_impl);
 
@@ -127,7 +127,7 @@ vsf_sha384_start(vsf_sha384_impl_t* sha384_impl) {
 //  Add given data to the hash.
 //
 VSF_PUBLIC void
-vsf_sha384_update(vsf_sha384_impl_t* sha384_impl, const byte* data, size_t data_len) {
+vsf_sha384_update(vsf_sha384_impl_t *sha384_impl, const byte *data, size_t data_len) {
 
     VSF_ASSERT_PTR(sha384_impl);
     VSF_ASSERT_PTR(data);
@@ -139,7 +139,7 @@ vsf_sha384_update(vsf_sha384_impl_t* sha384_impl, const byte* data, size_t data_
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSF_PUBLIC void
-vsf_sha384_finish(vsf_sha384_impl_t* sha384_impl, byte* digest, size_t digest_len) {
+vsf_sha384_finish(vsf_sha384_impl_t *sha384_impl, byte *digest, size_t digest_len) {
 
     VSF_ASSERT_PTR(sha384_impl);
     VSF_ASSERT_PTR(digest);

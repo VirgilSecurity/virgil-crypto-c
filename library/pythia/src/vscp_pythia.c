@@ -147,7 +147,7 @@ vscp_pythia_destroy(vscp_pythia_t** pythia_ctx_ref) {
 //  Perform initialization of pre-allocated context.
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_init(vscp_pythia_t* pythia_ctx) {
+vscp_pythia_init(vscp_pythia_t *pythia_ctx) {
 
     VSCP_ASSERT_PTR(pythia_ctx);
 
@@ -169,7 +169,7 @@ vscp_pythia_init(vscp_pythia_t* pythia_ctx) {
 //  Release all inner resources.
 //
 VSCP_PUBLIC void
-vscp_pythia_cleanup(vscp_pythia_t* pythia_ctx) {
+vscp_pythia_cleanup(vscp_pythia_t *pythia_ctx) {
 
     if (--g_instances > 0) {
         return;
@@ -235,8 +235,8 @@ vscp_pythia_blinding_secret_buf_len(void) {
 //  This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_blind(vscp_pythia_t* pythia_ctx, const vsc_data_t password, vsc_buffer_t* blinded_password,
-        vsc_buffer_t* blinding_secret) {
+vscp_pythia_blind(vscp_pythia_t *pythia_ctx, const vsc_data_t password, vsc_buffer_t *blinded_password,
+        vsc_buffer_t *blinding_secret) {
 
     VSCP_ASSERT_PTR(pythia_ctx);
     VSCP_ASSERT_PTR(password.bytes);
@@ -250,7 +250,7 @@ vscp_pythia_blind(vscp_pythia_t* pythia_ctx, const vsc_data_t password, vsc_buff
     const pythia_buf_t password_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(password);
 
 
-    if (0 != pythia_w_blind(&password_buf, (pythia_buf_t*)blinded_password, (pythia_buf_t*)blinding_secret)) {
+    if (0 != pythia_w_blind(&password_buf, (pythia_buf_t *)blinded_password, (pythia_buf_t *)blinding_secret)) {
         return vscp_error_PYTHIA_INNER_FAIL;
     }
 
@@ -261,8 +261,8 @@ vscp_pythia_blind(vscp_pythia_t* pythia_ctx, const vsc_data_t password, vsc_buff
 //  Deblinds 'transformed password' value with previously returned 'blinding secret' from blind().
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_deblind(vscp_pythia_t* pythia_ctx, const vsc_data_t transformed_password, const vsc_data_t blinding_secret,
-        vsc_buffer_t* deblinded_password) {
+vscp_pythia_deblind(vscp_pythia_t *pythia_ctx, const vsc_data_t transformed_password, const vsc_data_t blinding_secret,
+        vsc_buffer_t *deblinded_password) {
 
     VSCP_ASSERT_PTR(pythia_ctx);
     VSCP_ASSERT_PTR(transformed_password.bytes);
@@ -275,7 +275,7 @@ vscp_pythia_deblind(vscp_pythia_t* pythia_ctx, const vsc_data_t transformed_pass
     const pythia_buf_t blinding_secret_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(blinding_secret);
 
 
-    if (0 != pythia_w_deblind(&transformed_password_buf, &blinding_secret_buf, (pythia_buf_t*)deblinded_password)) {
+    if (0 != pythia_w_deblind(&transformed_password_buf, &blinding_secret_buf, (pythia_buf_t *)deblinded_password)) {
         return vscp_error_PYTHIA_INNER_FAIL;
     }
 
@@ -286,7 +286,7 @@ vscp_pythia_deblind(vscp_pythia_t* pythia_ctx, const vsc_data_t transformed_pass
 //  Callback for the pythia random.
 //
 static void
-vscp_pythia_random_handler(byte* out, int out_len, void* ctx) {
+vscp_pythia_random_handler(byte *out, int out_len, void *ctx) {
 
     VSCP_UNUSED(ctx);
     VSCP_ASSERT_OPT(0 == mbedtls_ctr_drbg_random(&g_rng_ctx, out, out_len));

@@ -73,7 +73,7 @@
 //  Creates data from the preallocated bytes.
 //
 VSC_PUBLIC vsc_data_t
-vsc_data(const byte* bytes, size_t len) {
+vsc_data(const byte *bytes, size_t len) {
 
     VSC_ASSERT_PTR(bytes);
 
