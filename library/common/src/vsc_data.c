@@ -75,5 +75,7 @@
 VSC_PUBLIC vsc_data_t
 vsc_data(const byte* bytes, size_t len) {
 
-    //  TODO: This is STUB. Implement me.
+    VSC_ASSERT_PTR(bytes);
+
+    return (vsc_data_t){bytes, len};
 }
