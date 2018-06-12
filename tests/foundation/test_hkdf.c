@@ -35,10 +35,10 @@
 
 #include "unity.h"
 
-#include "vsf_hkdf.h"
-#include "vsf_hmac256.h"
-#include "vsf_assert.h"
-#include "vsf_memory.h"
+#include "vscf_hkdf.h"
+#include "vscf_hmac256.h"
+#include "vscf_assert.h"
+#include "vscf_memory.h"
 
 #include "test_utils.h"
 #include "test_data_hkdf.h"
@@ -51,43 +51,43 @@
 void
 test__derive__sha256_vector_1__success(void) {
 
-    byte *key = vsf_alloc(test_hkdf_VECTOR_1_DERIVED_DATA_LEN);
+    byte *key = vscf_alloc(test_hkdf_VECTOR_1_DERIVED_DATA_LEN);
 
-    vsf_hkdf_impl_t *hkdf_impl = vsf_hkdf_new();
-    vsf_impl_t *hmac256_impl = vsf_hmac256_impl(vsf_hmac256_new());
+    vscf_hkdf_impl_t *hkdf_impl = vscf_hkdf_new();
+    vscf_impl_t *hmac256_impl = vscf_hmac256_impl(vscf_hmac256_new());
 
-    vsf_hkdf_take_hmac_stream(hkdf_impl, &hmac256_impl);
+    vscf_hkdf_take_hmac_stream(hkdf_impl, &hmac256_impl);
 
-    vsf_hkdf_derive(hkdf_impl, test_hkdf_VECTOR_1_KEY, test_hkdf_VECTOR_1_KEY_LEN, test_hkdf_VECTOR_1_SALT,
+    vscf_hkdf_derive(hkdf_impl, test_hkdf_VECTOR_1_KEY, test_hkdf_VECTOR_1_KEY_LEN, test_hkdf_VECTOR_1_SALT,
             test_hkdf_VECTOR_1_SALT_LEN, test_hkdf_VECTOR_1_INFO, test_hkdf_VECTOR_1_INFO_LEN, key,
             test_hkdf_VECTOR_1_DERIVED_DATA_LEN);
 
-    vsf_hkdf_destroy(&hkdf_impl);
+    vscf_hkdf_destroy(&hkdf_impl);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hkdf_VECTOR_1_DERIVED_DATA, key, test_hkdf_VECTOR_1_DERIVED_DATA_LEN);
 
-    vsf_dealloc(key);
+    vscf_dealloc(key);
 }
 
 void
 test__derive__sha256_vector_2__success(void) {
 
-    byte *key = vsf_alloc(test_hkdf_VECTOR_2_DERIVED_DATA_LEN);
+    byte *key = vscf_alloc(test_hkdf_VECTOR_2_DERIVED_DATA_LEN);
 
-    vsf_hkdf_impl_t *hkdf_impl = vsf_hkdf_new();
-    vsf_impl_t *hmac256_impl = vsf_hmac256_impl(vsf_hmac256_new());
+    vscf_hkdf_impl_t *hkdf_impl = vscf_hkdf_new();
+    vscf_impl_t *hmac256_impl = vscf_hmac256_impl(vscf_hmac256_new());
 
-    vsf_hkdf_take_hmac_stream(hkdf_impl, &hmac256_impl);
+    vscf_hkdf_take_hmac_stream(hkdf_impl, &hmac256_impl);
 
-    vsf_hkdf_derive(hkdf_impl, test_hkdf_VECTOR_2_KEY, test_hkdf_VECTOR_2_KEY_LEN, test_hkdf_VECTOR_2_SALT,
+    vscf_hkdf_derive(hkdf_impl, test_hkdf_VECTOR_2_KEY, test_hkdf_VECTOR_2_KEY_LEN, test_hkdf_VECTOR_2_SALT,
             test_hkdf_VECTOR_2_SALT_LEN, test_hkdf_VECTOR_2_INFO, test_hkdf_VECTOR_2_INFO_LEN, key,
             test_hkdf_VECTOR_2_DERIVED_DATA_LEN);
 
-    vsf_hkdf_destroy(&hkdf_impl);
+    vscf_hkdf_destroy(&hkdf_impl);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hkdf_VECTOR_2_DERIVED_DATA, key, test_hkdf_VECTOR_2_DERIVED_DATA_LEN);
 
-    vsf_dealloc(key);
+    vscf_dealloc(key);
 }
 
 void

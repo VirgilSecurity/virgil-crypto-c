@@ -35,9 +35,9 @@
 
 #include "unity.h"
 
-#include "vsf_hash_info.h"
-#include "vsf_hash_info_api.h"
-#include "vsf_sha256.h"
+#include "vscf_hash_info.h"
+#include "vscf_hash_info_api.h"
+#include "vscf_sha256.h"
 
 // --------------------------------------------------------------------------
 //  Over implementation: 'sha256'.
@@ -45,17 +45,17 @@
 
 void
 test__digest_size__sha256__returns_32(void) {
-    TEST_ASSERT_EQUAL(32, vsf_hash_info_digest_size(vsf_sha256_hash_info_api()));
+    TEST_ASSERT_EQUAL(32, vscf_hash_info_digest_size(vscf_sha256_hash_info_api()));
 }
 
 void
 test__api__sha256__returns_not_null(void) {
-    TEST_ASSERT_NOT_NULL(vsf_sha256_hash_info_api());
+    TEST_ASSERT_NOT_NULL(vscf_sha256_hash_info_api());
 }
 
 void
 test__api_tag__sha256__equals_api_tag_HASH_INFO(void) {
-    TEST_ASSERT_EQUAL(vsf_api_tag_HASH_INFO, vsf_sha256_hash_info_api()->api_tag);
+    TEST_ASSERT_EQUAL(vscf_api_tag_HASH_INFO, vscf_sha256_hash_info_api()->api_tag);
 }
 
 

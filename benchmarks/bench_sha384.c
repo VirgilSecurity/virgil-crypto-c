@@ -32,13 +32,13 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include "vsf_hash_info.h"
-#include "vsf_hash.h"
-#include "vsf_hash_stream.h"
-#include "vsf_sha384.h"
-#include "vsf_assert.h"
-#include "vsf_hash_api.h"
-#include "vsf_hash_stream.h"
+#include "vscf_hash_info.h"
+#include "vscf_hash.h"
+#include "vscf_hash_stream.h"
+#include "vscf_sha384.h"
+#include "vscf_assert.h"
+#include "vscf_hash_api.h"
+#include "vscf_hash_stream.h"
 
 #include "data/include/bench_data_sha384.h"
 #include "benchmark/include/benchmark.h"
@@ -49,22 +49,22 @@
 
 void benchmark_sha384_native(void * data, size_t data_size)
 {
-    byte digest[vsf_sha384_DIGEST_SIZE] = { 0x00 };
+    byte digest[vscf_sha384_DIGEST_SIZE] = { 0x00 };
 
-    vsf_sha384_hash(data, data_size, digest, vsf_sha384_DIGEST_SIZE);
+    vscf_sha384_hash(data, data_size, digest, vscf_sha384_DIGEST_SIZE);
 }
 
 void benchmark_sha384_interface(void * data, size_t data_size)
 {
-    byte digest[vsf_sha384_DIGEST_SIZE] = { 0x00 };
+    byte digest[vscf_sha384_DIGEST_SIZE] = { 0x00 };
 
-    vsf_impl_t *impl = vsf_sha384_impl(vsf_sha384_new());
+    vscf_impl_t *impl = vscf_sha384_impl(vscf_sha384_new());
 
-    vsf_hash_stream_start (impl);
-    vsf_hash_stream_update (impl, data, data_size);
-    vsf_hash_stream_finish(impl, digest, vsf_sha384_DIGEST_SIZE);
+    vscf_hash_stream_start (impl);
+    vscf_hash_stream_update (impl, data, data_size);
+    vscf_hash_stream_finish(impl, digest, vscf_sha384_DIGEST_SIZE);
 
-    vsf_impl_destroy (&impl);
+    vscf_impl_destroy (&impl);
 }
 
 // --------------------------------------------------------------------------

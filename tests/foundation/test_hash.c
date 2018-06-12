@@ -35,9 +35,9 @@
 
 #include "unity.h"
 
-#include "vsf_hash.h"
-#include "vsf_hash_api.h"
-#include "vsf_sha256.h"
+#include "vscf_hash.h"
+#include "vscf_hash_api.h"
+#include "vscf_sha256.h"
 
 #include "test_data_sha256.h"
 
@@ -48,21 +48,21 @@
 
 void
 test__api__sha256__returns_not_null(void) {
-    TEST_ASSERT_NOT_NULL(vsf_sha256_hash_api());
+    TEST_ASSERT_NOT_NULL(vscf_sha256_hash_api());
 }
 
 void
 test__api_tag__sha256__equals_api_tag_HASH(void) {
-    TEST_ASSERT_EQUAL(vsf_api_tag_HASH, vsf_sha256_hash_api()->api_tag);
+    TEST_ASSERT_EQUAL(vscf_api_tag_HASH, vscf_sha256_hash_api()->api_tag);
 }
 
 void
 test__hash__sha256_vector_1__success(void) {
 
-    byte digest[vsf_sha256_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_sha256_DIGEST_SIZE] = {0x00};
 
-    vsf_hash(vsf_sha256_hash_api(), test_sha256_VECTOR_1_INPUT, test_sha256_VECTOR_1_INPUT_LEN, digest,
-            vsf_sha256_DIGEST_SIZE);
+    vscf_hash(vscf_sha256_hash_api(), test_sha256_VECTOR_1_INPUT, test_sha256_VECTOR_1_INPUT_LEN, digest,
+            vscf_sha256_DIGEST_SIZE);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_1_DIGEST, digest, test_sha256_VECTOR_1_DIGEST_LEN);
 }
@@ -70,10 +70,10 @@ test__hash__sha256_vector_1__success(void) {
 void
 test__hash__sha256_vector_2__success(void) {
 
-    byte digest[vsf_sha256_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_sha256_DIGEST_SIZE] = {0x00};
 
-    vsf_hash(vsf_sha256_hash_api(), test_sha256_VECTOR_2_INPUT, test_sha256_VECTOR_2_INPUT_LEN, digest,
-            vsf_sha256_DIGEST_SIZE);
+    vscf_hash(vscf_sha256_hash_api(), test_sha256_VECTOR_2_INPUT, test_sha256_VECTOR_2_INPUT_LEN, digest,
+            vscf_sha256_DIGEST_SIZE);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_2_DIGEST, digest, test_sha256_VECTOR_2_DIGEST_LEN);
 }
@@ -81,10 +81,10 @@ test__hash__sha256_vector_2__success(void) {
 void
 test__hash__sha256_vector_3__success(void) {
 
-    byte digest[vsf_sha256_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_sha256_DIGEST_SIZE] = {0x00};
 
-    vsf_hash(vsf_sha256_hash_api(), test_sha256_VECTOR_3_INPUT, test_sha256_VECTOR_3_INPUT_LEN, digest,
-            vsf_sha256_DIGEST_SIZE);
+    vscf_hash(vscf_sha256_hash_api(), test_sha256_VECTOR_3_INPUT, test_sha256_VECTOR_3_INPUT_LEN, digest,
+            vscf_sha256_DIGEST_SIZE);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_3_DIGEST, digest, test_sha256_VECTOR_3_DIGEST_LEN);
 }
