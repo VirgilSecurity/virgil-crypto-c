@@ -35,12 +35,12 @@
 
 #include "unity.h"
 
-#include "vsf_hash_info.h"
-#include "vsf_hash.h"
-#include "vsf_hash_stream.h"
-#include "vsf_sha512.h"
-#include "vsf_hmac512.h"
-#include "vsf_assert.h"
+#include "vscf_hash_info.h"
+#include "vscf_hash.h"
+#include "vscf_hash_stream.h"
+#include "vscf_sha512.h"
+#include "vscf_hmac512.h"
+#include "vscf_assert.h"
 
 #include "test_utils.h"
 #include "test_data_sha512.h"
@@ -52,24 +52,24 @@
 
 void
 test__impl__valid_arg__returns_not_null(void) {
-    vsf_sha512_impl_t *sha512_impl = vsf_sha512_new();
-    vsf_impl_t *impl = vsf_sha512_impl(sha512_impl);
+    vscf_sha512_impl_t *sha512_impl = vscf_sha512_new();
+    vscf_impl_t *impl = vscf_sha512_impl(sha512_impl);
 
     TEST_ASSERT_NOT_NULL(impl);
 
-    vsf_sha512_destroy(&sha512_impl);
+    vscf_sha512_destroy(&sha512_impl);
 }
 
 void
 test__impl__null_arg__call_assert(void) {
 
-    vsf_assert_change_handler(mock_assert_handler);
+    vscf_assert_change_handler(mock_assert_handler);
 
-    vsf_impl_t *impl = vsf_sha512_impl(NULL);
+    vscf_impl_t *impl = vscf_sha512_impl(NULL);
 
     TEST_ASSERT_TRUE(g_mock_assert_result.handled);
 
-    vsf_assert_change_handler(vsf_assert_abort);
+    vscf_assert_change_handler(vscf_assert_abort);
 }
 
 // --------------------------------------------------------------------------
@@ -78,7 +78,7 @@ test__impl__null_arg__call_assert(void) {
 
 void
 test__hash_info_api__always__returns_not_null(void) {
-    const vsf_hash_info_api_t *hash_info_api = vsf_sha512_hash_info_api();
+    const vscf_hash_info_api_t *hash_info_api = vscf_sha512_hash_info_api();
 
     TEST_ASSERT_NOT_NULL(hash_info_api);
 }
@@ -86,7 +86,7 @@ test__hash_info_api__always__returns_not_null(void) {
 
 void
 test__sha512_DIGEST_SIZE__always__equals_64(void) {
-    TEST_ASSERT_EQUAL(64, vsf_sha512_DIGEST_SIZE);
+    TEST_ASSERT_EQUAL(64, vscf_sha512_DIGEST_SIZE);
 }
 
 // --------------------------------------------------------------------------
@@ -95,7 +95,7 @@ test__sha512_DIGEST_SIZE__always__equals_64(void) {
 
 void
 test__hash_api__always__returns_not_null(void) {
-    const vsf_hash_api_t *hash_api = vsf_sha512_hash_api();
+    const vscf_hash_api_t *hash_api = vscf_sha512_hash_api();
 
     TEST_ASSERT_NOT_NULL(hash_api);
 }
@@ -103,9 +103,9 @@ test__hash_api__always__returns_not_null(void) {
 void
 test__hash__vector_1__success(void) {
 
-    byte digest[vsf_sha512_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_sha512_DIGEST_SIZE] = {0x00};
 
-    vsf_sha512_hash(test_sha512_VECTOR_1_INPUT, test_sha512_VECTOR_1_INPUT_LEN, digest, vsf_sha512_DIGEST_SIZE);
+    vscf_sha512_hash(test_sha512_VECTOR_1_INPUT, test_sha512_VECTOR_1_INPUT_LEN, digest, vscf_sha512_DIGEST_SIZE);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_VECTOR_1_DIGEST, digest, test_sha512_VECTOR_1_DIGEST_LEN);
 }
@@ -113,9 +113,9 @@ test__hash__vector_1__success(void) {
 void
 test__hash__vector_2__success(void) {
 
-    byte digest[vsf_sha512_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_sha512_DIGEST_SIZE] = {0x00};
 
-    vsf_sha512_hash(test_sha512_VECTOR_2_INPUT, test_sha512_VECTOR_2_INPUT_LEN, digest, vsf_sha512_DIGEST_SIZE);
+    vscf_sha512_hash(test_sha512_VECTOR_2_INPUT, test_sha512_VECTOR_2_INPUT_LEN, digest, vscf_sha512_DIGEST_SIZE);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_VECTOR_2_DIGEST, digest, test_sha512_VECTOR_2_DIGEST_LEN);
 }
@@ -123,9 +123,9 @@ test__hash__vector_2__success(void) {
 void
 test__hash__vector_3__success(void) {
 
-    byte digest[vsf_sha512_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_sha512_DIGEST_SIZE] = {0x00};
 
-    vsf_sha512_hash(test_sha512_VECTOR_3_INPUT, test_sha512_VECTOR_3_INPUT_LEN, digest, vsf_sha512_DIGEST_SIZE);
+    vscf_sha512_hash(test_sha512_VECTOR_3_INPUT, test_sha512_VECTOR_3_INPUT_LEN, digest, vscf_sha512_DIGEST_SIZE);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_VECTOR_3_DIGEST, digest, test_sha512_VECTOR_3_DIGEST_LEN);
 }
@@ -137,15 +137,15 @@ test__hash__vector_3__success(void) {
 void
 test__hash_stream__vector_1__success(void) {
 
-    byte digest[vsf_sha512_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_sha512_DIGEST_SIZE] = {0x00};
 
-    vsf_sha512_impl_t *sha512_impl = vsf_sha512_new();
+    vscf_sha512_impl_t *sha512_impl = vscf_sha512_new();
 
-    vsf_sha512_start(sha512_impl);
-    vsf_sha512_update(sha512_impl, test_sha512_VECTOR_1_INPUT, test_sha512_VECTOR_1_INPUT_LEN);
-    vsf_sha512_finish(sha512_impl, digest, vsf_sha512_DIGEST_SIZE);
+    vscf_sha512_start(sha512_impl);
+    vscf_sha512_update(sha512_impl, test_sha512_VECTOR_1_INPUT, test_sha512_VECTOR_1_INPUT_LEN);
+    vscf_sha512_finish(sha512_impl, digest, vscf_sha512_DIGEST_SIZE);
 
-    vsf_sha512_destroy(&sha512_impl);
+    vscf_sha512_destroy(&sha512_impl);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_VECTOR_1_DIGEST, digest, test_sha512_VECTOR_1_DIGEST_LEN);
 }
@@ -153,15 +153,15 @@ test__hash_stream__vector_1__success(void) {
 void
 test__hash_stream__vector_2__success(void) {
 
-    byte digest[vsf_sha512_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_sha512_DIGEST_SIZE] = {0x00};
 
-    vsf_sha512_impl_t *sha512_impl = vsf_sha512_new();
+    vscf_sha512_impl_t *sha512_impl = vscf_sha512_new();
 
-    vsf_sha512_start(sha512_impl);
-    vsf_sha512_update(sha512_impl, test_sha512_VECTOR_2_INPUT, test_sha512_VECTOR_2_INPUT_LEN);
-    vsf_sha512_finish(sha512_impl, digest, vsf_sha512_DIGEST_SIZE);
+    vscf_sha512_start(sha512_impl);
+    vscf_sha512_update(sha512_impl, test_sha512_VECTOR_2_INPUT, test_sha512_VECTOR_2_INPUT_LEN);
+    vscf_sha512_finish(sha512_impl, digest, vscf_sha512_DIGEST_SIZE);
 
-    vsf_sha512_destroy(&sha512_impl);
+    vscf_sha512_destroy(&sha512_impl);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_VECTOR_2_DIGEST, digest, test_sha512_VECTOR_2_DIGEST_LEN);
 }
@@ -169,15 +169,15 @@ test__hash_stream__vector_2__success(void) {
 void
 test__hash_stream__vector_3__success(void) {
 
-    byte digest[vsf_sha512_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_sha512_DIGEST_SIZE] = {0x00};
 
-    vsf_sha512_impl_t *sha512_impl = vsf_sha512_new();
+    vscf_sha512_impl_t *sha512_impl = vscf_sha512_new();
 
-    vsf_sha512_start(sha512_impl);
-    vsf_sha512_update(sha512_impl, test_sha512_VECTOR_3_INPUT, test_sha512_VECTOR_3_INPUT_LEN);
-    vsf_sha512_finish(sha512_impl, digest, vsf_sha512_DIGEST_SIZE);
+    vscf_sha512_start(sha512_impl);
+    vscf_sha512_update(sha512_impl, test_sha512_VECTOR_3_INPUT, test_sha512_VECTOR_3_INPUT_LEN);
+    vscf_sha512_finish(sha512_impl, digest, vscf_sha512_DIGEST_SIZE);
 
-    vsf_sha512_destroy(&sha512_impl);
+    vscf_sha512_destroy(&sha512_impl);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_VECTOR_3_DIGEST, digest, test_sha512_VECTOR_3_DIGEST_LEN);
 }
@@ -185,10 +185,10 @@ test__hash_stream__vector_3__success(void) {
 void
 test__hmac__vector_1__success(void) {
 
-    byte digest[vsf_hmac512_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_hmac512_DIGEST_SIZE] = {0x00};
 
-    vsf_hmac512_hmac(test_sha512_HMAC_KEY_1_INPUT, test_sha512_HMAC_KEY_1_INPUT_LEN, test_sha512_HMAC_VECTOR_1_INPUT,
-            test_sha512_HMAC_VECTOR_1_INPUT_LEN, digest, vsf_hmac512_DIGEST_SIZE);
+    vscf_hmac512_hmac(test_sha512_HMAC_KEY_1_INPUT, test_sha512_HMAC_KEY_1_INPUT_LEN, test_sha512_HMAC_VECTOR_1_INPUT,
+            test_sha512_HMAC_VECTOR_1_INPUT_LEN, digest, vscf_hmac512_DIGEST_SIZE);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_HMAC_VECTOR_1_DIGEST, digest, test_sha512_HMAC_VECTOR_1_DIGEST_LEN);
 }
@@ -196,10 +196,10 @@ test__hmac__vector_1__success(void) {
 void
 test__hmac__vector_2__success(void) {
 
-    byte digest[vsf_hmac512_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_hmac512_DIGEST_SIZE] = {0x00};
 
-    vsf_hmac512_hmac(test_sha512_HMAC_KEY_2_INPUT, test_sha512_HMAC_KEY_2_INPUT_LEN, test_sha512_HMAC_VECTOR_2_INPUT,
-            test_sha512_HMAC_VECTOR_2_INPUT_LEN, digest, vsf_hmac512_DIGEST_SIZE);
+    vscf_hmac512_hmac(test_sha512_HMAC_KEY_2_INPUT, test_sha512_HMAC_KEY_2_INPUT_LEN, test_sha512_HMAC_VECTOR_2_INPUT,
+            test_sha512_HMAC_VECTOR_2_INPUT_LEN, digest, vscf_hmac512_DIGEST_SIZE);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_HMAC_VECTOR_2_DIGEST, digest, test_sha512_HMAC_VECTOR_2_DIGEST_LEN);
 }
@@ -207,10 +207,10 @@ test__hmac__vector_2__success(void) {
 void
 test__hmac__vector_3__success(void) {
 
-    byte digest[vsf_hmac512_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_hmac512_DIGEST_SIZE] = {0x00};
 
-    vsf_hmac512_hmac(test_sha512_HMAC_KEY_3_INPUT, test_sha512_HMAC_KEY_3_INPUT_LEN, test_sha512_HMAC_VECTOR_3_INPUT,
-            test_sha512_HMAC_VECTOR_3_INPUT_LEN, digest, vsf_hmac512_DIGEST_SIZE);
+    vscf_hmac512_hmac(test_sha512_HMAC_KEY_3_INPUT, test_sha512_HMAC_KEY_3_INPUT_LEN, test_sha512_HMAC_VECTOR_3_INPUT,
+            test_sha512_HMAC_VECTOR_3_INPUT_LEN, digest, vscf_hmac512_DIGEST_SIZE);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_HMAC_VECTOR_3_DIGEST, digest, test_sha512_HMAC_VECTOR_3_DIGEST_LEN);
 }
@@ -218,16 +218,16 @@ test__hmac__vector_3__success(void) {
 void
 test__hmac_stream__vector_1_success(void) {
 
-    byte digest[vsf_hmac512_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_hmac512_DIGEST_SIZE] = {0x00};
 
-    vsf_hmac512_impl_t *hmac512_impl = vsf_hmac512_new();
+    vscf_hmac512_impl_t *hmac512_impl = vscf_hmac512_new();
 
-    vsf_hmac512_reset(hmac512_impl);
-    vsf_hmac512_start(hmac512_impl, test_sha512_HMAC_KEY_1_INPUT, test_sha512_HMAC_KEY_1_INPUT_LEN);
-    vsf_hmac512_update(hmac512_impl, test_sha512_HMAC_VECTOR_1_INPUT, test_sha512_HMAC_VECTOR_1_INPUT_LEN);
-    vsf_hmac512_finish(hmac512_impl, digest, vsf_hmac512_DIGEST_SIZE);
+    vscf_hmac512_reset(hmac512_impl);
+    vscf_hmac512_start(hmac512_impl, test_sha512_HMAC_KEY_1_INPUT, test_sha512_HMAC_KEY_1_INPUT_LEN);
+    vscf_hmac512_update(hmac512_impl, test_sha512_HMAC_VECTOR_1_INPUT, test_sha512_HMAC_VECTOR_1_INPUT_LEN);
+    vscf_hmac512_finish(hmac512_impl, digest, vscf_hmac512_DIGEST_SIZE);
 
-    vsf_hmac512_destroy(&hmac512_impl);
+    vscf_hmac512_destroy(&hmac512_impl);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_HMAC_VECTOR_1_DIGEST, digest, test_sha512_HMAC_VECTOR_1_DIGEST_LEN);
 }
@@ -235,16 +235,16 @@ test__hmac_stream__vector_1_success(void) {
 void
 test__hmac_stream__vector_2_success(void) {
 
-    byte digest[vsf_hmac512_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_hmac512_DIGEST_SIZE] = {0x00};
 
-    vsf_hmac512_impl_t *hmac512_impl = vsf_hmac512_new();
+    vscf_hmac512_impl_t *hmac512_impl = vscf_hmac512_new();
 
-    vsf_hmac512_reset(hmac512_impl);
-    vsf_hmac512_start(hmac512_impl, test_sha512_HMAC_KEY_2_INPUT, test_sha512_HMAC_KEY_2_INPUT_LEN);
-    vsf_hmac512_update(hmac512_impl, test_sha512_HMAC_VECTOR_2_INPUT, test_sha512_HMAC_VECTOR_2_INPUT_LEN);
-    vsf_hmac512_finish(hmac512_impl, digest, vsf_hmac512_DIGEST_SIZE);
+    vscf_hmac512_reset(hmac512_impl);
+    vscf_hmac512_start(hmac512_impl, test_sha512_HMAC_KEY_2_INPUT, test_sha512_HMAC_KEY_2_INPUT_LEN);
+    vscf_hmac512_update(hmac512_impl, test_sha512_HMAC_VECTOR_2_INPUT, test_sha512_HMAC_VECTOR_2_INPUT_LEN);
+    vscf_hmac512_finish(hmac512_impl, digest, vscf_hmac512_DIGEST_SIZE);
 
-    vsf_hmac512_destroy(&hmac512_impl);
+    vscf_hmac512_destroy(&hmac512_impl);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_HMAC_VECTOR_2_DIGEST, digest, test_sha512_HMAC_VECTOR_2_DIGEST_LEN);
 }
@@ -252,16 +252,16 @@ test__hmac_stream__vector_2_success(void) {
 void
 test__hmac_stream__vector_3_success(void) {
 
-    byte digest[vsf_hmac512_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_hmac512_DIGEST_SIZE] = {0x00};
 
-    vsf_hmac512_impl_t *hmac512_impl = vsf_hmac512_new();
+    vscf_hmac512_impl_t *hmac512_impl = vscf_hmac512_new();
 
-    vsf_hmac512_reset(hmac512_impl);
-    vsf_hmac512_start(hmac512_impl, test_sha512_HMAC_KEY_3_INPUT, test_sha512_HMAC_KEY_3_INPUT_LEN);
-    vsf_hmac512_update(hmac512_impl, test_sha512_HMAC_VECTOR_3_INPUT, test_sha512_HMAC_VECTOR_3_INPUT_LEN);
-    vsf_hmac512_finish(hmac512_impl, digest, vsf_hmac512_DIGEST_SIZE);
+    vscf_hmac512_reset(hmac512_impl);
+    vscf_hmac512_start(hmac512_impl, test_sha512_HMAC_KEY_3_INPUT, test_sha512_HMAC_KEY_3_INPUT_LEN);
+    vscf_hmac512_update(hmac512_impl, test_sha512_HMAC_VECTOR_3_INPUT, test_sha512_HMAC_VECTOR_3_INPUT_LEN);
+    vscf_hmac512_finish(hmac512_impl, digest, vscf_hmac512_DIGEST_SIZE);
 
-    vsf_hmac512_destroy(&hmac512_impl);
+    vscf_hmac512_destroy(&hmac512_impl);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_HMAC_VECTOR_3_DIGEST, digest, test_sha512_HMAC_VECTOR_3_DIGEST_LEN);
 }

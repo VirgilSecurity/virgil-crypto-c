@@ -32,13 +32,13 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include "vsf_hash_info.h"
-#include "vsf_hash.h"
-#include "vsf_hash_stream.h"
-#include "vsf_kdf1.h"
-#include "vsf_sha256.h"
-#include "vsf_assert.h"
-#include "vsf_memory.h"
+#include "vscf_hash_info.h"
+#include "vscf_hash.h"
+#include "vscf_hash_stream.h"
+#include "vscf_kdf1.h"
+#include "vscf_sha256.h"
+#include "vscf_assert.h"
+#include "vscf_memory.h"
 
 #include "data/include/bench_data_kdf1.h"
 #include "benchmark/include/benchmark.h"
@@ -49,25 +49,25 @@
 
 void benchmark_kdf1_native(void * data, size_t data_size)
 {
-    //byte digest[vsf_sha224_DIGEST_SIZE] = { 0x00 };
+    //byte digest[vscf_sha224_DIGEST_SIZE] = { 0x00 };
 
-    //vsf_sha224_hash(data, data_size, digest, vsf_sha224_DIGEST_SIZE);
+    //vscf_sha224_hash(data, data_size, digest, vscf_sha224_DIGEST_SIZE);
 }
 
 void benchmark_kdf1_interface(void * data, size_t data_size)
 {
-    byte *key = vsf_alloc(test_kdf1_VECTOR_1_KEY_LEN);
+    byte *key = vscf_alloc(test_kdf1_VECTOR_1_KEY_LEN);
 
-    vsf_kdf1_impl_t *kdf1_impl = vsf_kdf1_new();
-    vsf_impl_t *sha256_impl = vsf_sha256_impl(vsf_sha256_new());
+    vscf_kdf1_impl_t *kdf1_impl = vscf_kdf1_new();
+    vscf_impl_t *sha256_impl = vscf_sha256_impl(vscf_sha256_new());
 
-    vsf_kdf1_take_hash_stream(kdf1_impl, &sha256_impl);
+    vscf_kdf1_take_hash_stream(kdf1_impl, &sha256_impl);
 
-    vsf_kdf1_derive(kdf1_impl, data, data_size, key, test_kdf1_VECTOR_1_KEY_LEN);
+    vscf_kdf1_derive(kdf1_impl, data, data_size, key, test_kdf1_VECTOR_1_KEY_LEN);
 
-    vsf_kdf1_destroy(&kdf1_impl);
+    vscf_kdf1_destroy(&kdf1_impl);
 
-    vsf_dealloc(key);
+    vscf_dealloc(key);
 }
 
 // --------------------------------------------------------------------------
