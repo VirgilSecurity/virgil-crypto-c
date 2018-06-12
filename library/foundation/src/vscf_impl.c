@@ -68,8 +68,8 @@
 //  specific to the given implementation object.
 //  Or NULL if object does not implement requested 'API'.
 //
-VSCF_PUBLIC const vscf_api_t*
-vscf_impl_api(vscf_impl_t* impl, vscf_api_tag_t api_tag) {
+VSCF_PUBLIC const vscf_api_t *
+vscf_impl_api(vscf_impl_t *impl, vscf_api_tag_t api_tag) {
 
     VSCF_ASSERT_PTR (impl);
     VSCF_ASSERT_PTR (impl->info);
@@ -94,7 +94,7 @@ vscf_impl_api(vscf_impl_t* impl, vscf_api_tag_t api_tag) {
 //  Return unique 'Implementation TAG'.
 //
 VSCF_PUBLIC vscf_impl_tag_t
-vscf_impl_tag(vscf_impl_t* impl) {
+vscf_impl_tag(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
     VSCF_ASSERT_PTR (impl->info);
@@ -106,7 +106,7 @@ vscf_impl_tag(vscf_impl_t* impl) {
 //  Cleanup implementation object and it's dependencies.
 //
 VSCF_PUBLIC void
-vscf_impl_cleanup(vscf_impl_t* impl) {
+vscf_impl_cleanup(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
     VSCF_ASSERT_PTR (impl->info);
@@ -119,7 +119,7 @@ vscf_impl_cleanup(vscf_impl_t* impl) {
 //  Delete implementation object and it's dependencies.
 //
 VSCF_PUBLIC void
-vscf_impl_delete(vscf_impl_t* impl) {
+vscf_impl_delete(vscf_impl_t *impl) {
 
     if (impl) {
         VSCF_ASSERT_PTR (impl->info);
@@ -132,7 +132,7 @@ vscf_impl_delete(vscf_impl_t* impl) {
 //  Destroy implementation object and it's dependencies.
 //
 VSCF_PUBLIC void
-vscf_impl_destroy(vscf_impl_t** impl_ref) {
+vscf_impl_destroy(vscf_impl_t * *impl_ref) {
 
     VSCF_ASSERT_PTR (impl_ref);
 

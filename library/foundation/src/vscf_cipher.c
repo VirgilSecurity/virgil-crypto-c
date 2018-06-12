@@ -65,7 +65,7 @@
 //  Setup IV or nonce.
 //
 VSCF_PUBLIC void
-vscf_cipher_set_nonce(vscf_impl_t* impl, const byte* nonce, size_t nonce_len) {
+vscf_cipher_set_nonce(vscf_impl_t *impl, const byte *nonce, size_t nonce_len) {
 
     const vscf_cipher_api_t *cipher_api = vscf_cipher_api (impl);
     VSCF_ASSERT_PTR (cipher_api);
@@ -78,7 +78,7 @@ vscf_cipher_set_nonce(vscf_impl_t* impl, const byte* nonce, size_t nonce_len) {
 //  Set cipher encryption / decryption key.
 //
 VSCF_PUBLIC void
-vscf_cipher_set_key(vscf_impl_t* impl, const byte* key, size_t key_len) {
+vscf_cipher_set_key(vscf_impl_t *impl, const byte *key, size_t key_len) {
 
     const vscf_cipher_api_t *cipher_api = vscf_cipher_api (impl);
     VSCF_ASSERT_PTR (cipher_api);
@@ -90,8 +90,8 @@ vscf_cipher_set_key(vscf_impl_t* impl, const byte* key, size_t key_len) {
 //
 //  Return cipher API, or NULL if it is not implemented.
 //
-VSCF_PUBLIC const vscf_cipher_api_t*
-vscf_cipher_api(vscf_impl_t* impl) {
+VSCF_PUBLIC const vscf_cipher_api_t *
+vscf_cipher_api(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -103,7 +103,7 @@ vscf_cipher_api(vscf_impl_t* impl) {
 //  Check if given object implements interface 'cipher'.
 //
 VSCF_PUBLIC bool
-vscf_cipher_is_implemented(vscf_impl_t* impl) {
+vscf_cipher_is_implemented(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 

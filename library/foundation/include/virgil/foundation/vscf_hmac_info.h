@@ -78,19 +78,19 @@ typedef struct vscf_hmac_info_api_t vscf_hmac_info_api_t;
 //  Returns constant 'digest size'.
 //
 VSCF_PUBLIC size_t
-vscf_hmac_info_digest_size(const vscf_hmac_info_api_t* hmac_info_api);
+vscf_hmac_info_digest_size(const vscf_hmac_info_api_t *hmac_info_api);
 
 //
 //  Return hmac info API, or NULL if it is not implemented.
 //
-VSCF_PUBLIC const vscf_hmac_info_api_t*
-vscf_hmac_info_api(vscf_impl_t* impl);
+VSCF_PUBLIC const vscf_hmac_info_api_t *
+vscf_hmac_info_api(vscf_impl_t *impl);
 
 //
 //  Check if given object implements interface 'hmac info'.
 //
 VSCF_PUBLIC bool
-vscf_hmac_info_is_implemented(vscf_impl_t* impl);
+vscf_hmac_info_is_implemented(vscf_impl_t *impl);
 
 
 // --------------------------------------------------------------------------

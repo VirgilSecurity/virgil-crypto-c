@@ -74,13 +74,13 @@ extern "C" {
 //  Provides initialization of the implementation specific context.
 //
 VSCF_PRIVATE vscf_error_t
-vscf_hmac224_init_ctx(vscf_hmac224_impl_t* hmac224_impl);
+vscf_hmac224_init_ctx(vscf_hmac224_impl_t *hmac224_impl);
 
 //
 //  Provides cleanup of the implementation specific context.
 //
 VSCF_PRIVATE void
-vscf_hmac224_cleanup_ctx(vscf_hmac224_impl_t* hmac224_impl);
+vscf_hmac224_cleanup_ctx(vscf_hmac224_impl_t *hmac224_impl);
 
 
 // --------------------------------------------------------------------------

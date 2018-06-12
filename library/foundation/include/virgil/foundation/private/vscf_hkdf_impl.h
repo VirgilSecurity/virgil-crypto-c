@@ -80,11 +80,11 @@ struct vscf_hkdf_impl_t {
     //
     //  Compile-time known information about this implementation.
     //
-    const vscf_impl_info_t* info;
+    const vscf_impl_info_t *info;
     //
     //  Dependency to the interface 'hmac stream'.
     //
-    vscf_impl_t* hmac;
+    vscf_impl_t *hmac;
     //
     //  Ownership status of the dependency to the interface 'hmac stream'.
     //

@@ -84,14 +84,14 @@ vscf_kdf2_impl_size(void);
 //
 //  Cast to the 'vscf_impl_t' type.
 //
-VSCF_PUBLIC vscf_impl_t*
-vscf_kdf2_impl(vscf_kdf2_impl_t* kdf2_impl);
+VSCF_PUBLIC vscf_impl_t *
+vscf_kdf2_impl(vscf_kdf2_impl_t *kdf2_impl);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_kdf2_init(vscf_kdf2_impl_t* kdf2_impl);
+vscf_kdf2_init(vscf_kdf2_impl_t *kdf2_impl);
 
 //
 //  Cleanup implementation context and it's dependencies.
@@ -100,13 +100,13 @@ vscf_kdf2_init(vscf_kdf2_impl_t* kdf2_impl);
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_kdf2_cleanup(vscf_kdf2_impl_t* kdf2_impl);
+vscf_kdf2_cleanup(vscf_kdf2_impl_t *kdf2_impl);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_kdf2_impl_t*
+VSCF_PUBLIC vscf_kdf2_impl_t *
 vscf_kdf2_new(void);
 
 //
@@ -116,7 +116,7 @@ vscf_kdf2_new(void);
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_kdf2_delete(vscf_kdf2_impl_t* kdf2_impl);
+vscf_kdf2_delete(vscf_kdf2_impl_t *kdf2_impl);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -126,25 +126,25 @@ vscf_kdf2_delete(vscf_kdf2_impl_t* kdf2_impl);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_kdf2_destroy(vscf_kdf2_impl_t** kdf2_impl_ref);
+vscf_kdf2_destroy(vscf_kdf2_impl_t * *kdf2_impl_ref);
 
 //
 //  Setup dependency to the interface 'hash stream' and keep ownership.
 //
 VSCF_PUBLIC void
-vscf_kdf2_use_hash_stream(vscf_kdf2_impl_t* kdf2_impl, vscf_impl_t* hash);
+vscf_kdf2_use_hash_stream(vscf_kdf2_impl_t *kdf2_impl, vscf_impl_t *hash);
 
 //
 //  Setup dependency to the interface 'hash stream' and transfer ownership.
 //
 VSCF_PUBLIC void
-vscf_kdf2_take_hash_stream(vscf_kdf2_impl_t* kdf2_impl, vscf_impl_t** hash_ref);
+vscf_kdf2_take_hash_stream(vscf_kdf2_impl_t *kdf2_impl, vscf_impl_t * *hash_ref);
 
 //
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
-vscf_kdf2_derive(vscf_kdf2_impl_t* kdf2_impl, const byte* data, size_t data_len, byte* key, size_t key_len);
+vscf_kdf2_derive(vscf_kdf2_impl_t *kdf2_impl, const byte *data, size_t data_len, byte *key, size_t key_len);
 
 
 // --------------------------------------------------------------------------

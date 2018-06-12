@@ -74,7 +74,7 @@ extern "C" {
 //
 //  Callback. Calculate hmac over given data.
 //
-typedef void (*vscf_hmac_api_hmac_fn)(const byte* key, size_t key_len, const byte* data, size_t data_len, byte* hmac,
+typedef void (*vscf_hmac_api_hmac_fn)(const byte *key, size_t key_len, const byte *data, size_t data_len, byte *hmac,
         size_t hmac_len);
 
 //
@@ -89,7 +89,7 @@ struct vscf_hmac_api_t {
     //
     //  Link to the inherited interface API 'hmac info'.
     //
-    const vscf_hmac_info_api_t* hmac_info_api;
+    const vscf_hmac_info_api_t *hmac_info_api;
     //
     //  Calculate hmac over given data.
     //

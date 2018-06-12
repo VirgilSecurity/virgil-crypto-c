@@ -82,7 +82,7 @@ struct vscf_sha384_impl_t {
     //
     //  Compile-time known information about this implementation.
     //
-    const vscf_impl_info_t* info;
+    const vscf_impl_info_t *info;
     //
     //  Interface implementation specific context.
     //

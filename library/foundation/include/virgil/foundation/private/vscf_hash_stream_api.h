@@ -74,17 +74,17 @@ extern "C" {
 //
 //  Callback. Start a new hashing.
 //
-typedef void (*vscf_hash_stream_api_start_fn)(vscf_impl_t* impl);
+typedef void (*vscf_hash_stream_api_start_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Add given data to the hash.
 //
-typedef void (*vscf_hash_stream_api_update_fn)(vscf_impl_t* impl, const byte* data, size_t data_len);
+typedef void (*vscf_hash_stream_api_update_fn)(vscf_impl_t *impl, const byte *data, size_t data_len);
 
 //
 //  Callback. Accompilsh hashing and return it's result (a message digest).
 //
-typedef void (*vscf_hash_stream_api_finish_fn)(vscf_impl_t* impl, byte* digest, size_t digest_len);
+typedef void (*vscf_hash_stream_api_finish_fn)(vscf_impl_t *impl, byte *digest, size_t digest_len);
 
 //
 //  Contains API requirements of the interface 'hash stream'.
@@ -98,7 +98,7 @@ struct vscf_hash_stream_api_t {
     //
     //  Link to the inherited interface API 'hash info'.
     //
-    const vscf_hash_info_api_t* hash_info_api;
+    const vscf_hash_info_api_t *hash_info_api;
     //
     //  Start a new hashing.
     //

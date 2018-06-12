@@ -93,14 +93,14 @@ vscf_hmac384_impl_size(void);
 //
 //  Cast to the 'vscf_impl_t' type.
 //
-VSCF_PUBLIC vscf_impl_t*
-vscf_hmac384_impl(vscf_hmac384_impl_t* hmac384_impl);
+VSCF_PUBLIC vscf_impl_t *
+vscf_hmac384_impl(vscf_hmac384_impl_t *hmac384_impl);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_hmac384_init(vscf_hmac384_impl_t* hmac384_impl);
+vscf_hmac384_init(vscf_hmac384_impl_t *hmac384_impl);
 
 //
 //  Cleanup implementation context and it's dependencies.
@@ -109,13 +109,13 @@ vscf_hmac384_init(vscf_hmac384_impl_t* hmac384_impl);
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_hmac384_cleanup(vscf_hmac384_impl_t* hmac384_impl);
+vscf_hmac384_cleanup(vscf_hmac384_impl_t *hmac384_impl);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_hmac384_impl_t*
+VSCF_PUBLIC vscf_hmac384_impl_t *
 vscf_hmac384_new(void);
 
 //
@@ -125,7 +125,7 @@ vscf_hmac384_new(void);
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_hmac384_delete(vscf_hmac384_impl_t* hmac384_impl);
+vscf_hmac384_delete(vscf_hmac384_impl_t *hmac384_impl);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -135,49 +135,49 @@ vscf_hmac384_delete(vscf_hmac384_impl_t* hmac384_impl);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_hmac384_destroy(vscf_hmac384_impl_t** hmac384_impl_ref);
+vscf_hmac384_destroy(vscf_hmac384_impl_t * *hmac384_impl_ref);
 
 //
 //  Returns instance of the implemented interface 'hmac info'.
 //
-VSCF_PUBLIC const vscf_hmac_info_api_t*
+VSCF_PUBLIC const vscf_hmac_info_api_t *
 vscf_hmac384_hmac_info_api(void);
 
 //
 //  Returns instance of the implemented interface 'hmac'.
 //
-VSCF_PUBLIC const vscf_hmac_api_t*
+VSCF_PUBLIC const vscf_hmac_api_t *
 vscf_hmac384_hmac_api(void);
 
 //
 //  Calculate hmac over given data.
 //
 VSCF_PUBLIC void
-vscf_hmac384_hmac(const byte* key, size_t key_len, const byte* data, size_t data_len, byte* hmac, size_t hmac_len);
+vscf_hmac384_hmac(const byte *key, size_t key_len, const byte *data, size_t data_len, byte *hmac, size_t hmac_len);
 
 //
 //  Reset HMAC.
 //
 VSCF_PUBLIC void
-vscf_hmac384_reset(vscf_hmac384_impl_t* hmac384_impl);
+vscf_hmac384_reset(vscf_hmac384_impl_t *hmac384_impl);
 
 //
 //  Start a new HMAC.
 //
 VSCF_PUBLIC void
-vscf_hmac384_start(vscf_hmac384_impl_t* hmac384_impl, const byte* key, size_t key_len);
+vscf_hmac384_start(vscf_hmac384_impl_t *hmac384_impl, const byte *key, size_t key_len);
 
 //
 //  Add given data to the HMAC.
 //
 VSCF_PUBLIC void
-vscf_hmac384_update(vscf_hmac384_impl_t* hmac384_impl, const byte* data, size_t data_len);
+vscf_hmac384_update(vscf_hmac384_impl_t *hmac384_impl, const byte *data, size_t data_len);
 
 //
 //  Accompilsh HMAC and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_hmac384_finish(vscf_hmac384_impl_t* hmac384_impl, byte* hmac, size_t hmac_len);
+vscf_hmac384_finish(vscf_hmac384_impl_t *hmac384_impl, byte *hmac, size_t hmac_len);
 
 
 // --------------------------------------------------------------------------

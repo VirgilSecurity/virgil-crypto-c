@@ -65,7 +65,7 @@
 //  Encrypt given data.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_encrypt(vscf_impl_t* impl, const byte* data, size_t data_len, byte* enc, size_t enc_len, size_t* out_len) {
+vscf_encrypt(vscf_impl_t *impl, const byte *data, size_t data_len, byte *enc, size_t enc_len, size_t *out_len) {
 
     const vscf_encrypt_api_t *encrypt_api = vscf_encrypt_api (impl);
     VSCF_ASSERT_PTR (encrypt_api);
@@ -80,7 +80,7 @@ vscf_encrypt(vscf_impl_t* impl, const byte* data, size_t data_len, byte* enc, si
 //  adjusted to hold auth tag as well.
 //
 VSCF_PUBLIC size_t
-vscf_encrypt_required_enc_len(vscf_impl_t* impl, size_t data_len, size_t auth_tag_len) {
+vscf_encrypt_required_enc_len(vscf_impl_t *impl, size_t data_len, size_t auth_tag_len) {
 
     const vscf_encrypt_api_t *encrypt_api = vscf_encrypt_api (impl);
     VSCF_ASSERT_PTR (encrypt_api);
@@ -92,8 +92,8 @@ vscf_encrypt_required_enc_len(vscf_impl_t* impl, size_t data_len, size_t auth_ta
 //
 //  Return encrypt API, or NULL if it is not implemented.
 //
-VSCF_PUBLIC const vscf_encrypt_api_t*
-vscf_encrypt_api(vscf_impl_t* impl) {
+VSCF_PUBLIC const vscf_encrypt_api_t *
+vscf_encrypt_api(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -105,7 +105,7 @@ vscf_encrypt_api(vscf_impl_t* impl) {
 //  Check if given object implements interface 'encrypt'.
 //
 VSCF_PUBLIC bool
-vscf_encrypt_is_implemented(vscf_impl_t* impl) {
+vscf_encrypt_is_implemented(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 

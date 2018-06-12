@@ -79,20 +79,20 @@ typedef struct vscf_auth_decrypt_api_t vscf_auth_decrypt_api_t;
 //  If 'tag' is not give, then it will be taken from the 'enc'.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_auth_decrypt(vscf_impl_t* impl, const byte* enc, size_t enc_len, const byte* auth_data, size_t auth_data_len,
-        const byte* tag, size_t tag_len, byte* dec, size_t dec_len, size_t* out_len);
+vscf_auth_decrypt(vscf_impl_t *impl, const byte *enc, size_t enc_len, const byte *auth_data, size_t auth_data_len,
+        const byte *tag, size_t tag_len, byte *dec, size_t dec_len, size_t *out_len);
 
 //
 //  Return auth decrypt API, or NULL if it is not implemented.
 //
-VSCF_PUBLIC const vscf_auth_decrypt_api_t*
-vscf_auth_decrypt_api(vscf_impl_t* impl);
+VSCF_PUBLIC const vscf_auth_decrypt_api_t *
+vscf_auth_decrypt_api(vscf_impl_t *impl);
 
 //
 //  Check if given object implements interface 'auth decrypt'.
 //
 VSCF_PUBLIC bool
-vscf_auth_decrypt_is_implemented(vscf_impl_t* impl);
+vscf_auth_decrypt_is_implemented(vscf_impl_t *impl);
 
 
 // --------------------------------------------------------------------------

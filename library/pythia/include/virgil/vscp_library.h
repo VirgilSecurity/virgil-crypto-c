@@ -145,12 +145,12 @@ enum {
 //
 //  Generic allocation function type.
 //
-typedef void* (*vscp_alloc_fn)(size_t size);
+typedef void * (*vscp_alloc_fn)(size_t size);
 
 //
 //  Generic de-allocation function type.
 //
-typedef void (*vscp_dealloc_fn)(void* mem);
+typedef void (*vscp_dealloc_fn)(void *mem);
 
 
 // --------------------------------------------------------------------------

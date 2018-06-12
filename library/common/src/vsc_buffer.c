@@ -65,7 +65,7 @@
 //
 //  Allocate context and perform it's initialization.
 //
-VSC_PUBLIC vsc_buffer_t*
+VSC_PUBLIC vsc_buffer_t *
 vsc_buffer_new(void) {
 
     vsc_buffer_t *buffer_ctx = (vsc_buffer_t *) vsc_alloc(sizeof (vsc_buffer_t));
@@ -88,7 +88,7 @@ vsc_buffer_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSC_PUBLIC void
-vsc_buffer_delete(vsc_buffer_t* buffer_ctx) {
+vsc_buffer_delete(vsc_buffer_t *buffer_ctx) {
 
     if (NULL == buffer_ctx) {
         return;
@@ -106,7 +106,7 @@ vsc_buffer_delete(vsc_buffer_t* buffer_ctx) {
 //  This is a reverse action of the function 'vsc_buffer_new ()'.
 //
 VSC_PUBLIC void
-vsc_buffer_destroy(vsc_buffer_t** buffer_ctx_ref) {
+vsc_buffer_destroy(vsc_buffer_t * *buffer_ctx_ref) {
 
     VSC_ASSERT_PTR(buffer_ctx_ref);
 

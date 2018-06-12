@@ -76,12 +76,12 @@ extern "C" {
 //
 //  Callback. Setup IV or nonce.
 //
-typedef void (*vscf_cipher_api_set_nonce_fn)(vscf_impl_t* impl, const byte* nonce, size_t nonce_len);
+typedef void (*vscf_cipher_api_set_nonce_fn)(vscf_impl_t *impl, const byte *nonce, size_t nonce_len);
 
 //
 //  Callback. Set cipher encryption / decryption key.
 //
-typedef void (*vscf_cipher_api_set_key_fn)(vscf_impl_t* impl, const byte* key, size_t key_len);
+typedef void (*vscf_cipher_api_set_key_fn)(vscf_impl_t *impl, const byte *key, size_t key_len);
 
 //
 //  Contains API requirements of the interface 'cipher'.
@@ -95,15 +95,15 @@ struct vscf_cipher_api_t {
     //
     //  Link to the inherited interface API 'encrypt'.
     //
-    const vscf_encrypt_api_t* encrypt_api;
+    const vscf_encrypt_api_t *encrypt_api;
     //
     //  Link to the inherited interface API 'decrypt'.
     //
-    const vscf_decrypt_api_t* decrypt_api;
+    const vscf_decrypt_api_t *decrypt_api;
     //
     //  Link to the inherited interface API 'cipher info'.
     //
-    const vscf_cipher_info_api_t* cipher_info_api;
+    const vscf_cipher_info_api_t *cipher_info_api;
     //
     //  Setup IV or nonce.
     //

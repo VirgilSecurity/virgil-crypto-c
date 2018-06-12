@@ -65,8 +65,8 @@
 //  Calculate hmac over given data.
 //
 VSCF_PUBLIC void
-vscf_hmac(const vscf_hmac_api_t* hmac_api, const byte* key, size_t key_len, const byte* data, size_t data_len, byte* hmac,
-        size_t hmac_len) {
+vscf_hmac(const vscf_hmac_api_t *hmac_api, const byte *key, size_t key_len, const byte *data, size_t data_len,
+        byte *hmac, size_t hmac_len) {
 
     VSCF_ASSERT_PTR (hmac_api);
 
@@ -77,8 +77,8 @@ vscf_hmac(const vscf_hmac_api_t* hmac_api, const byte* key, size_t key_len, cons
 //
 //  Return hmac API, or NULL if it is not implemented.
 //
-VSCF_PUBLIC const vscf_hmac_api_t*
-vscf_hmac_api(vscf_impl_t* impl) {
+VSCF_PUBLIC const vscf_hmac_api_t *
+vscf_hmac_api(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -90,7 +90,7 @@ vscf_hmac_api(vscf_impl_t* impl) {
 //  Check if given object implements interface 'hmac'.
 //
 VSCF_PUBLIC bool
-vscf_hmac_is_implemented(vscf_impl_t* impl) {
+vscf_hmac_is_implemented(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 

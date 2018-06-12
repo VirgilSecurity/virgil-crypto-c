@@ -63,14 +63,14 @@
 //
 //  Default allocation function, that is configured during compilation.
 //
-static void*
+static void *
 vscf_default_alloc(size_t size);
 
 //
 //  Default de-allocation function, that is configured during compilation.
 //
 static void
-vscf_default_dealloc(void* mem);
+vscf_default_dealloc(void *mem);
 
 //
 //  Current allocation function.
@@ -85,7 +85,7 @@ static vscf_dealloc_fn inner_dealloc = vscf_default_dealloc;
 //
 //  Default allocation function, that is configured during compilation.
 //
-static void*
+static void *
 vscf_default_alloc(size_t size) {
 
     return VSCF_ALLOC_DEFAULT (size);
@@ -95,7 +95,7 @@ vscf_default_alloc(size_t size) {
 //  Default de-allocation function, that is configured during compilation.
 //
 static void
-vscf_default_dealloc(void* mem) {
+vscf_default_dealloc(void *mem) {
 
     VSCF_DEALLOC_DEFAULT (mem);
 }
@@ -104,7 +104,7 @@ vscf_default_dealloc(void* mem) {
 //  Allocate required amount of memory by usging current allocation function.
 //  Returns NULL if memory allocation fails.
 //
-VSCF_PUBLIC void*
+VSCF_PUBLIC void *
 vscf_alloc(size_t size) {
 
     return inner_alloc (size);
@@ -114,7 +114,7 @@ vscf_alloc(size_t size) {
 //  Deallocate given memory by usging current de-allocation function.
 //
 VSCF_PUBLIC void
-vscf_dealloc(void* mem) {
+vscf_dealloc(void *mem) {
 
     inner_dealloc (mem);
 }
@@ -138,7 +138,7 @@ vscf_set_allocators(vscf_alloc_fn alloc_cb, vscf_dealloc_fn dealloc_cb) {
 //  For sensitive data erasing use vscf_erase ().
 //
 VSCF_PUBLIC void
-vscf_zeroize(void* mem, size_t size) {
+vscf_zeroize(void *mem, size_t size) {
 
     VSCF_ASSERT_PTR (mem);
     memset (mem, 0, size);
@@ -149,7 +149,7 @@ vscf_zeroize(void* mem, size_t size) {
 //  Compiler can not reduce this function during optimization step.
 //
 VSCF_PUBLIC void
-vscf_erase(void* mem, size_t size) {
+vscf_erase(void *mem, size_t size) {
 
     VSCF_ASSERT_PTR (mem);
 

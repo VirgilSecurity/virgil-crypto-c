@@ -80,18 +80,18 @@ typedef struct vscp_pythia_t vscp_pythia_t;
 //  Perform initialization of pre-allocated context.
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_init(vscp_pythia_t* pythia_ctx);
+vscp_pythia_init(vscp_pythia_t *pythia_ctx);
 
 //
 //  Release all inner resources.
 //
 VSCP_PUBLIC void
-vscp_pythia_cleanup(vscp_pythia_t* pythia_ctx);
+vscp_pythia_cleanup(vscp_pythia_t *pythia_ctx);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCP_PUBLIC vscp_pythia_t*
+VSCP_PUBLIC vscp_pythia_t *
 vscp_pythia_new(void);
 
 //
@@ -99,14 +99,14 @@ vscp_pythia_new(void);
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCP_PUBLIC void
-vscp_pythia_delete(vscp_pythia_t* pythia_ctx);
+vscp_pythia_delete(vscp_pythia_t *pythia_ctx);
 
 //
 //  Delete given context and nullifies reference.
 //  This is a reverse action of the function 'vscp_pythia_new ()'.
 //
 VSCP_PUBLIC void
-vscp_pythia_destroy(vscp_pythia_t** pythia_ctx_ref);
+vscp_pythia_destroy(vscp_pythia_t * *pythia_ctx_ref);
 
 //
 //  Performs global initialization of the pythia library.
@@ -181,46 +181,46 @@ vscp_pythia_password_update_token_buf_len(void);
 //  This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_blind(vscp_pythia_t* pythia_ctx, const vsc_data_t password, vsc_buffer_t* blinded_password,
-        vsc_buffer_t* blinding_secret);
+vscp_pythia_blind(vscp_pythia_t *pythia_ctx, const vsc_data_t password, vsc_buffer_t *blinded_password,
+        vsc_buffer_t *blinding_secret);
 
 //
 //  Deblinds 'transformed password' value with previously returned 'blinding secret' from blind().
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_deblind(vscp_pythia_t* pythia_ctx, const vsc_data_t transformed_password, const vsc_data_t blinding_secret,
-        vsc_buffer_t* deblinded_password);
+vscp_pythia_deblind(vscp_pythia_t *pythia_ctx, const vsc_data_t transformed_password, const vsc_data_t blinding_secret,
+        vsc_buffer_t *deblinded_password);
 
 //
 //  Computes transformation private and public key.
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_compute_transformation_key_pair(vscp_pythia_t* pythia_ctx, const vsc_data_t transformation_key_id,
-        const vsc_data_t pythia_secret, const vsc_data_t pythia_scope_secret, vsc_buffer_t* transformation_private_key,
-        vsc_buffer_t* transformation_public_key);
+vscp_pythia_compute_transformation_key_pair(vscp_pythia_t *pythia_ctx, const vsc_data_t transformation_key_id,
+        const vsc_data_t pythia_secret, const vsc_data_t pythia_scope_secret, vsc_buffer_t *transformation_private_key,
+        vsc_buffer_t *transformation_public_key);
 
 //
 //  Transforms blinded password using transformation private key.
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_transform(vscp_pythia_t* pythia_ctx, const vsc_data_t blinded_password, const vsc_data_t tweak,
-        const vsc_data_t transformation_private_key, vsc_buffer_t* transformed_password,
-        vsc_buffer_t* transformed_tweak);
+vscp_pythia_transform(vscp_pythia_t *pythia_ctx, const vsc_data_t blinded_password, const vsc_data_t tweak,
+        const vsc_data_t transformation_private_key, vsc_buffer_t *transformed_password,
+        vsc_buffer_t *transformed_tweak);
 
 //
 //  Generates proof that server possesses secret values that were used to transform password.
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_prove(vscp_pythia_t* pythia_ctx, const vsc_data_t transformed_password, const vsc_data_t blinded_password,
+vscp_pythia_prove(vscp_pythia_t *pythia_ctx, const vsc_data_t transformed_password, const vsc_data_t blinded_password,
         const vsc_data_t transformed_tweak, const vsc_data_t transformation_private_key,
-        const vsc_data_t transformation_public_key, vsc_buffer_t* proof_value_c, vsc_buffer_t* proof_value_u);
+        const vsc_data_t transformation_public_key, vsc_buffer_t *proof_value_c, vsc_buffer_t *proof_value_u);
 
 //
 //  This operation allows client to verify that the output of transform() is correct,
 //  assuming that client has previously stored transformation public key.
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_verify(vscp_pythia_t* pythia_ctx, const vsc_data_t transformed_password, const vsc_data_t blinded_password,
+vscp_pythia_verify(vscp_pythia_t *pythia_ctx, const vsc_data_t transformed_password, const vsc_data_t blinded_password,
         const vsc_data_t tweak, const vsc_data_t transformation_public_key, const vsc_data_t proof_value_c,
         const vsc_data_t proof_value_u);
 
@@ -231,16 +231,16 @@ vscp_pythia_verify(vscp_pythia_t* pythia_ctx, const vsc_data_t transformed_passw
 //  This action should increment version of the 'pythia scope secret'.
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_get_password_update_token(vscp_pythia_t* pythia_ctx, const vsc_data_t previous_transformation_private_key,
-        const vsc_data_t new_transformation_private_key, vsc_buffer_t* password_update_token);
+vscp_pythia_get_password_update_token(vscp_pythia_t *pythia_ctx, const vsc_data_t previous_transformation_private_key,
+        const vsc_data_t new_transformation_private_key, vsc_buffer_t *password_update_token);
 
 //
 //  Updates previously stored 'deblinded password' with 'password update token'.
 //  After this call, 'transform()' called with new arguments will return corresponding values.
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_update_deblinded_with_token(vscp_pythia_t* pythia_ctx, const vsc_data_t deblinded_password,
-        const vsc_data_t password_update_token, vsc_buffer_t* updated_deblinded_password);
+vscp_pythia_update_deblinded_with_token(vscp_pythia_t *pythia_ctx, const vsc_data_t deblinded_password,
+        const vsc_data_t password_update_token, vsc_buffer_t *updated_deblinded_password);
 
 
 // --------------------------------------------------------------------------

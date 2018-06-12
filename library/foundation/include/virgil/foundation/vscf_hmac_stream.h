@@ -79,37 +79,37 @@ typedef struct vscf_hmac_stream_api_t vscf_hmac_stream_api_t;
 //  Reset HMAC.
 //
 VSCF_PUBLIC void
-vscf_hmac_stream_reset(vscf_impl_t* impl);
+vscf_hmac_stream_reset(vscf_impl_t *impl);
 
 //
 //  Start a new HMAC.
 //
 VSCF_PUBLIC void
-vscf_hmac_stream_start(vscf_impl_t* impl, const byte* key, size_t key_len);
+vscf_hmac_stream_start(vscf_impl_t *impl, const byte *key, size_t key_len);
 
 //
 //  Add given data to the HMAC.
 //
 VSCF_PUBLIC void
-vscf_hmac_stream_update(vscf_impl_t* impl, const byte* data, size_t data_len);
+vscf_hmac_stream_update(vscf_impl_t *impl, const byte *data, size_t data_len);
 
 //
 //  Accompilsh HMAC and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_hmac_stream_finish(vscf_impl_t* impl, byte* hmac, size_t hmac_len);
+vscf_hmac_stream_finish(vscf_impl_t *impl, byte *hmac, size_t hmac_len);
 
 //
 //  Return hmac stream API, or NULL if it is not implemented.
 //
-VSCF_PUBLIC const vscf_hmac_stream_api_t*
-vscf_hmac_stream_api(vscf_impl_t* impl);
+VSCF_PUBLIC const vscf_hmac_stream_api_t *
+vscf_hmac_stream_api(vscf_impl_t *impl);
 
 //
 //  Check if given object implements interface 'hmac stream'.
 //
 VSCF_PUBLIC bool
-vscf_hmac_stream_is_implemented(vscf_impl_t* impl);
+vscf_hmac_stream_is_implemented(vscf_impl_t *impl);
 
 
 // --------------------------------------------------------------------------

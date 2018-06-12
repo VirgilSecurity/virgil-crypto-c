@@ -53,10 +53,10 @@ function c_derive_instance_type (c_instance)
 
     #   Define modifiers
     my.value_modifiers = my.c_instance.is_const_type ?? "const " ? ""
-    my.pointer_modifiers = my.c_instance.is_const_pointer ?? " *const" ? "*"
-    my.reference_modifiers = my.c_instance.is_const_reference ?? " *const" ? "*"
-    my.array_modifiers = my.c_instance.is_const_array ?? " *const" ? "*"
-    my.string_modifiers = my.c_instance.is_const_string ?? " *const" ? "*"
+    my.pointer_modifiers = my.c_instance.is_const_pointer ?? " *const" ? " *"
+    my.reference_modifiers = my.c_instance.is_const_reference ?? " *const" ? " *"
+    my.array_modifiers = my.c_instance.is_const_array ?? " *const" ? " *"
+    my.string_modifiers = my.c_instance.is_const_string ?? " *const" ? " *"
 
     #   Apply type modifiers
     if my.c_instance.accessed_by = "value"
@@ -93,6 +93,10 @@ endfunction
 function c_derive_instance_declaration_name (c_instance)
     check_argument (my, "c_instance", my)
 
+    if ! defined (my.c_instance.name)
+        return ""
+    endif
+
     if string_in (my.c_instance.array, "derived")
         return my.c_instance.name + "[]"
     elsif string_in (my.c_instance.array, "fixed")
@@ -108,8 +112,16 @@ endfunction
 function c_derive_instance_declaration (c_instance)
     check_argument (my, "c_instance", my)
 
-    return cat (c_derive_instance_type (my.c_instance), \
-            c_derive_instance_declaration_name (my.c_instance))
+    my.instance_type = c_derive_instance_type (my.c_instance)
+    my.instance_name = c_derive_instance_declaration_name (my.c_instance)
+
+    #   Type does not end with star, and instance name is defined,
+    #   so need additional space.
+    if ! regexp.match("\\*$", my.instance_type) & my.instance_name <> ""
+        my.instance_type += " "
+    endif
+
+    return my.instance_type + my.instance_name
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -158,7 +170,7 @@ function c_derive_instance_value (c_value, parent)
 
     my.value ?= "$(my.derefence?:)$(my.c_value.value:)"
 
-    return cat (my.type?, my.value)
+    return (my.type ? "") + my.value
 endfunction
 
 # ---------------------------------------------------------------------------

@@ -74,7 +74,7 @@ struct vsc_buffer_t {
     //
     //  Underlying byte array.
     //
-    byte* bytes;
+    byte *bytes;
     //
     //  Byte array capacity - total allocated bytes.
     //

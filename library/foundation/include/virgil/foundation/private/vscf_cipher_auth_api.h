@@ -85,15 +85,15 @@ struct vscf_cipher_auth_api_t {
     //
     //  Link to the inherited interface API 'cipher auth info'.
     //
-    const vscf_cipher_auth_info_api_t* cipher_auth_info_api;
+    const vscf_cipher_auth_info_api_t *cipher_auth_info_api;
     //
     //  Link to the inherited interface API 'auth encrypt'.
     //
-    const vscf_auth_encrypt_api_t* auth_encrypt_api;
+    const vscf_auth_encrypt_api_t *auth_encrypt_api;
     //
     //  Link to the inherited interface API 'auth decrypt'.
     //
-    const vscf_auth_decrypt_api_t* auth_decrypt_api;
+    const vscf_auth_decrypt_api_t *auth_decrypt_api;
 };
 
 

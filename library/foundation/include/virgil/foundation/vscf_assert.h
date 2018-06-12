@@ -82,11 +82,11 @@ extern "C" {
 //
 //  Asserts always.
 //
-#define VSCF_ASSERT_INTERNAL(X)                                        \
-    do {                                                              \
-        if (!(X)) {                                                   \
+#define VSCF_ASSERT_INTERNAL(X)                                         \
+    do {                                                                \
+        if (!(X)) {                                                     \
             vscf_assert_trigger (#X, VSCF_FILE_PATH_OR_NAME, __LINE__); \
-        }                                                             \
+        }                                                               \
     } while (false)
 
 //
@@ -112,17 +112,17 @@ extern "C" {
 //
 //  Assert that given pointer is not NULL. It is enabled in debug mode.
 //
-#define VSCF_ASSERT_PTR(X)                                                       \
-    do {                                                                        \
-        if (!(X)) {                                                             \
+#define VSCF_ASSERT_PTR(X)                                                        \
+    do {                                                                          \
+        if (!(X)) {                                                               \
             vscf_assert_trigger (#X" != NULL", VSCF_FILE_PATH_OR_NAME, __LINE__); \
-        }                                                                       \
+        }                                                                         \
     } while (false)
 
 //
 //  Assertion handler callback type.
 //
-typedef void (*vscf_assert_handler_fn)(const char* message, const char* file, int line);
+typedef void (*vscf_assert_handler_fn)(const char *message, const char *file, int line);
 
 //
 //  Change active assertion handler.
@@ -135,13 +135,13 @@ vscf_assert_change_handler(vscf_assert_handler_fn handler_cb);
 //  This is default handler.
 //
 VSCF_PUBLIC void
-vscf_assert_abort(const char* message, const char* file, int line);
+vscf_assert_abort(const char *message, const char *file, int line);
 
 //
 //  Trigger active assertion handler.
 //
 VSCF_PUBLIC void
-vscf_assert_trigger(const char* message, const char* file, int line);
+vscf_assert_trigger(const char *message, const char *file, int line);
 
 
 // --------------------------------------------------------------------------

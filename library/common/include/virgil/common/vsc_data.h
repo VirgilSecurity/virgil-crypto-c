@@ -75,7 +75,7 @@ struct vsc_data_t {
     //
     //  Underlying byte array.
     //
-    const byte* bytes;
+    const byte *bytes;
     //
     //  Byte array length.
     //
@@ -87,7 +87,7 @@ typedef struct vsc_data_t vsc_data_t;
 //  Creates data from the preallocated bytes.
 //
 VSC_PUBLIC vsc_data_t
-vsc_data(const byte* bytes, size_t len);
+vsc_data(const byte *bytes, size_t len);
 
 
 // --------------------------------------------------------------------------

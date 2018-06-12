@@ -63,14 +63,14 @@
 //
 //  Default allocation function, that is configured during compilation.
 //
-static void*
+static void *
 vscp_default_alloc(size_t size);
 
 //
 //  Default de-allocation function, that is configured during compilation.
 //
 static void
-vscp_default_dealloc(void* mem);
+vscp_default_dealloc(void *mem);
 
 //
 //  Current allocation function.
@@ -85,7 +85,7 @@ static vscp_dealloc_fn inner_dealloc = vscp_default_dealloc;
 //
 //  Default allocation function, that is configured during compilation.
 //
-static void*
+static void *
 vscp_default_alloc(size_t size) {
 
     return VSCP_ALLOC_DEFAULT (size);
@@ -95,7 +95,7 @@ vscp_default_alloc(size_t size) {
 //  Default de-allocation function, that is configured during compilation.
 //
 static void
-vscp_default_dealloc(void* mem) {
+vscp_default_dealloc(void *mem) {
 
     VSCP_DEALLOC_DEFAULT (mem);
 }
@@ -104,7 +104,7 @@ vscp_default_dealloc(void* mem) {
 //  Allocate required amount of memory by usging current allocation function.
 //  Returns NULL if memory allocation fails.
 //
-VSCP_PUBLIC void*
+VSCP_PUBLIC void *
 vscp_alloc(size_t size) {
 
     return inner_alloc (size);
@@ -114,7 +114,7 @@ vscp_alloc(size_t size) {
 //  Deallocate given memory by usging current de-allocation function.
 //
 VSCP_PUBLIC void
-vscp_dealloc(void* mem) {
+vscp_dealloc(void *mem) {
 
     inner_dealloc (mem);
 }
@@ -138,7 +138,7 @@ vscp_set_allocators(vscp_alloc_fn alloc_cb, vscp_dealloc_fn dealloc_cb) {
 //  For sensitive data erasing use vscp_erase ().
 //
 VSCP_PUBLIC void
-vscp_zeroize(void* mem, size_t size) {
+vscp_zeroize(void *mem, size_t size) {
 
     VSCP_ASSERT_PTR (mem);
     memset (mem, 0, size);
@@ -149,7 +149,7 @@ vscp_zeroize(void* mem, size_t size) {
 //  Compiler can not reduce this function during optimization step.
 //
 VSCP_PUBLIC void
-vscp_erase(void* mem, size_t size) {
+vscp_erase(void *mem, size_t size) {
 
     VSCP_ASSERT_PTR (mem);
 
