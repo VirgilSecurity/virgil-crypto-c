@@ -78,24 +78,24 @@ typedef struct vsc_buffer_t vsc_buffer_t;
 //  Perform initialization of pre-allocated context.
 //
 VSC_PUBLIC vsc_error_t
-vsc_buffer_init(vsc_buffer_t* buffer_ctx);
+vsc_buffer_init(vsc_buffer_t *buffer_ctx);
 
 //
 //  Release all inner resources.
 //
 VSC_PUBLIC void
-vsc_buffer_cleanup(vsc_buffer_t* buffer_ctx);
+vsc_buffer_cleanup(vsc_buffer_t *buffer_ctx);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSC_PUBLIC vsc_buffer_t*
+VSC_PUBLIC vsc_buffer_t *
 vsc_buffer_new(void);
 
 //
 //  Allocate context and underlying byte array.
 //
-VSC_PUBLIC vsc_buffer_t*
+VSC_PUBLIC vsc_buffer_t *
 vsc_buffer_new_with_capacity(size_t capacity);
 
 //
@@ -103,14 +103,14 @@ vsc_buffer_new_with_capacity(size_t capacity);
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSC_PUBLIC void
-vsc_buffer_delete(vsc_buffer_t* buffer_ctx);
+vsc_buffer_delete(vsc_buffer_t *buffer_ctx);
 
 //
 //  Delete given context and nullifies reference.
 //  This is a reverse action of the function 'vsc_buffer_new ()'.
 //
 VSC_PUBLIC void
-vsc_buffer_destroy(vsc_buffer_t** buffer_ctx_ref);
+vsc_buffer_destroy(vsc_buffer_t * *buffer_ctx_ref);
 
 //
 //  Allocates inner buffer with a given capacity.
@@ -118,7 +118,7 @@ vsc_buffer_destroy(vsc_buffer_t** buffer_ctx_ref);
 //  Precondition: buffer does not hold any bytes.
 //
 VSC_PUBLIC vsc_error_t
-vsc_buffer_alloc(vsc_buffer_t* buffer_ctx, size_t capacity);
+vsc_buffer_alloc(vsc_buffer_t *buffer_ctx, size_t capacity);
 
 //
 //  Use given data as output buffer.
@@ -127,7 +127,7 @@ vsc_buffer_alloc(vsc_buffer_t* buffer_ctx, size_t capacity);
 //  Precondition: buffer does not hold any bytes.
 //
 VSC_PUBLIC void
-vsc_buffer_use(vsc_buffer_t* buffer_ctx, byte* bytes, size_t bytes_len);
+vsc_buffer_use(vsc_buffer_t *buffer_ctx, byte *bytes, size_t bytes_len);
 
 //
 //  Use given data as output buffer.
@@ -136,31 +136,31 @@ vsc_buffer_use(vsc_buffer_t* buffer_ctx, byte* bytes, size_t bytes_len);
 //  Precondition: buffer does not hold any bytes.
 //
 VSC_PUBLIC void
-vsc_buffer_take(vsc_buffer_t* buffer_ctx, byte* bytes, size_t bytes_len, vsc_dealloc_fn dealloc_cb);
+vsc_buffer_take(vsc_buffer_t *buffer_ctx, byte *bytes, size_t bytes_len, vsc_dealloc_fn dealloc_cb);
 
 //
 //  Returns underlying buffer bytes.
 //
-VSC_PUBLIC const byte*
-vsc_buffer_bytes(vsc_buffer_t* buffer_ctx);
+VSC_PUBLIC const byte *
+vsc_buffer_bytes(vsc_buffer_t *buffer_ctx);
 
 //
 //  Returns underlying buffer bytes as object.
 //
 VSC_PUBLIC vsc_data_t
-vsc_buffer_data(vsc_buffer_t* buffer_ctx);
+vsc_buffer_data(vsc_buffer_t *buffer_ctx);
 
 //
 //  Returns buffer capacity.
 //
 VSC_PUBLIC size_t
-vsc_buffer_capacity(vsc_buffer_t* buffer_ctx);
+vsc_buffer_capacity(vsc_buffer_t *buffer_ctx);
 
 //
 //  Returns buffer length - length of bytes actually used.
 //
 VSC_PUBLIC size_t
-vsc_buffer_len(vsc_buffer_t* buffer_ctx);
+vsc_buffer_len(vsc_buffer_t *buffer_ctx);
 
 
 // --------------------------------------------------------------------------

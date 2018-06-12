@@ -93,14 +93,14 @@ vscf_sha224_impl_size(void);
 //
 //  Cast to the 'vscf_impl_t' type.
 //
-VSCF_PUBLIC vscf_impl_t*
-vscf_sha224_impl(vscf_sha224_impl_t* sha224_impl);
+VSCF_PUBLIC vscf_impl_t *
+vscf_sha224_impl(vscf_sha224_impl_t *sha224_impl);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_sha224_init(vscf_sha224_impl_t* sha224_impl);
+vscf_sha224_init(vscf_sha224_impl_t *sha224_impl);
 
 //
 //  Cleanup implementation context and it's dependencies.
@@ -109,13 +109,13 @@ vscf_sha224_init(vscf_sha224_impl_t* sha224_impl);
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_sha224_cleanup(vscf_sha224_impl_t* sha224_impl);
+vscf_sha224_cleanup(vscf_sha224_impl_t *sha224_impl);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_sha224_impl_t*
+VSCF_PUBLIC vscf_sha224_impl_t *
 vscf_sha224_new(void);
 
 //
@@ -125,7 +125,7 @@ vscf_sha224_new(void);
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_sha224_delete(vscf_sha224_impl_t* sha224_impl);
+vscf_sha224_delete(vscf_sha224_impl_t *sha224_impl);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -135,43 +135,43 @@ vscf_sha224_delete(vscf_sha224_impl_t* sha224_impl);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_sha224_destroy(vscf_sha224_impl_t** sha224_impl_ref);
+vscf_sha224_destroy(vscf_sha224_impl_t * *sha224_impl_ref);
 
 //
 //  Returns instance of the implemented interface 'hash info'.
 //
-VSCF_PUBLIC const vscf_hash_info_api_t*
+VSCF_PUBLIC const vscf_hash_info_api_t *
 vscf_sha224_hash_info_api(void);
 
 //
 //  Returns instance of the implemented interface 'hash'.
 //
-VSCF_PUBLIC const vscf_hash_api_t*
+VSCF_PUBLIC const vscf_hash_api_t *
 vscf_sha224_hash_api(void);
 
 //
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
-vscf_sha224_hash(const byte* data, size_t data_len, byte* digest, size_t digest_len);
+vscf_sha224_hash(const byte *data, size_t data_len, byte *digest, size_t digest_len);
 
 //
 //  Start a new hashing.
 //
 VSCF_PUBLIC void
-vscf_sha224_start(vscf_sha224_impl_t* sha224_impl);
+vscf_sha224_start(vscf_sha224_impl_t *sha224_impl);
 
 //
 //  Add given data to the hash.
 //
 VSCF_PUBLIC void
-vscf_sha224_update(vscf_sha224_impl_t* sha224_impl, const byte* data, size_t data_len);
+vscf_sha224_update(vscf_sha224_impl_t *sha224_impl, const byte *data, size_t data_len);
 
 //
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_sha224_finish(vscf_sha224_impl_t* sha224_impl, byte* digest, size_t digest_len);
+vscf_sha224_finish(vscf_sha224_impl_t *sha224_impl, byte *digest, size_t digest_len);
 
 
 // --------------------------------------------------------------------------

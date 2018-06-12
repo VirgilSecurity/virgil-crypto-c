@@ -98,7 +98,7 @@ static const vscf_hash_api_t hash_api = {
     //
     //  Calculate hash over given data.
     //
-    (vscf_hash_api_hash_fn) vscf_sha256_hash
+    (vscf_hash_api_hash_fn)vscf_sha256_hash
 };
 
 //
@@ -117,24 +117,24 @@ static const vscf_hash_stream_api_t hash_stream_api = {
     //
     //  Start a new hashing.
     //
-    (vscf_hash_stream_api_start_fn) vscf_sha256_start,
+    (vscf_hash_stream_api_start_fn)vscf_sha256_start,
     //
     //  Add given data to the hash.
     //
-    (vscf_hash_stream_api_update_fn) vscf_sha256_update,
+    (vscf_hash_stream_api_update_fn)vscf_sha256_update,
     //
     //  Accompilsh hashing and return it's result (a message digest).
     //
-    (vscf_hash_stream_api_finish_fn) vscf_sha256_finish
+    (vscf_hash_stream_api_finish_fn)vscf_sha256_finish
 };
 
 //
 //  Null-terminated array of the implemented 'Interface API' instances.
 //
-static const vscf_api_t* api_array[] = {
-    (const vscf_api_t*) &hash_info_api,
-    (const vscf_api_t*) &hash_api,
-    (const vscf_api_t*) &hash_stream_api,
+static const vscf_api_t *api_array[] = {
+    (const vscf_api_t *)&hash_info_api,
+    (const vscf_api_t *)&hash_api,
+    (const vscf_api_t *)&hash_stream_api,
     NULL
 };
 
@@ -154,18 +154,18 @@ static const vscf_impl_info_t info = {
     //
     //  Erase inner state in a secure manner.
     //
-    (vscf_impl_cleanup_fn) vscf_sha256_cleanup,
+    (vscf_impl_cleanup_fn)vscf_sha256_cleanup,
     //
     //  Self destruction, according to destruction policy.
     //
-    (vscf_impl_delete_fn) vscf_sha256_delete
+    (vscf_impl_delete_fn)vscf_sha256_delete
 };
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_sha256_init(vscf_sha256_impl_t* sha256_impl) {
+vscf_sha256_init(vscf_sha256_impl_t *sha256_impl) {
 
     VSCF_ASSERT_PTR (sha256_impl);
     VSCF_ASSERT_PTR (sha256_impl->info == NULL);
@@ -182,7 +182,7 @@ vscf_sha256_init(vscf_sha256_impl_t* sha256_impl) {
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_sha256_cleanup(vscf_sha256_impl_t* sha256_impl) {
+vscf_sha256_cleanup(vscf_sha256_impl_t *sha256_impl) {
 
     VSCF_ASSERT_PTR (sha256_impl);
 
@@ -199,7 +199,7 @@ vscf_sha256_cleanup(vscf_sha256_impl_t* sha256_impl) {
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_sha256_impl_t*
+VSCF_PUBLIC vscf_sha256_impl_t *
 vscf_sha256_new(void) {
 
     vscf_sha256_impl_t *sha256_impl = (vscf_sha256_impl_t *) vscf_alloc (sizeof (vscf_sha256_impl_t));
@@ -222,7 +222,7 @@ vscf_sha256_new(void) {
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_sha256_delete(vscf_sha256_impl_t* sha256_impl) {
+vscf_sha256_delete(vscf_sha256_impl_t *sha256_impl) {
 
     if (sha256_impl) {
         vscf_sha256_cleanup (sha256_impl);
@@ -238,7 +238,7 @@ vscf_sha256_delete(vscf_sha256_impl_t* sha256_impl) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_sha256_destroy(vscf_sha256_impl_t** sha256_impl_ref) {
+vscf_sha256_destroy(vscf_sha256_impl_t * *sha256_impl_ref) {
 
     VSCF_ASSERT_PTR (sha256_impl_ref);
 
@@ -251,7 +251,7 @@ vscf_sha256_destroy(vscf_sha256_impl_t** sha256_impl_ref) {
 //
 //  Returns instance of the implemented interface 'hash info'.
 //
-VSCF_PUBLIC const vscf_hash_info_api_t*
+VSCF_PUBLIC const vscf_hash_info_api_t *
 vscf_sha256_hash_info_api(void) {
 
     return &hash_info_api;
@@ -260,7 +260,7 @@ vscf_sha256_hash_info_api(void) {
 //
 //  Returns instance of the implemented interface 'hash'.
 //
-VSCF_PUBLIC const vscf_hash_api_t*
+VSCF_PUBLIC const vscf_hash_api_t *
 vscf_sha256_hash_api(void) {
 
     return &hash_api;
@@ -278,8 +278,8 @@ vscf_sha256_impl_size(void) {
 //
 //  Cast to the 'vscf_impl_t' type.
 //
-VSCF_PUBLIC vscf_impl_t*
-vscf_sha256_impl(vscf_sha256_impl_t* sha256_impl) {
+VSCF_PUBLIC vscf_impl_t *
+vscf_sha256_impl(vscf_sha256_impl_t *sha256_impl) {
 
     VSCF_ASSERT_PTR (sha256_impl);
     return (vscf_impl_t *) (sha256_impl);

@@ -85,14 +85,14 @@ extern "C" {
 //  Allocate required amount of memory by usging current allocation function.
 //  Returns NULL if memory allocation fails.
 //
-VSC_PUBLIC void*
+VSC_PUBLIC void *
 vsc_alloc(size_t size);
 
 //
 //  Deallocate given memory by usging current de-allocation function.
 //
 VSC_PUBLIC void
-vsc_dealloc(void* mem);
+vsc_dealloc(void *mem);
 
 //
 //  Change current used memory functions in the runtime.
@@ -106,14 +106,14 @@ vsc_set_allocators(vsc_alloc_fn alloc_cb, vsc_dealloc_fn dealloc_cb);
 //  For sensitive data erasing use vsc_erase ().
 //
 VSC_PUBLIC void
-vsc_zeroize(void* mem, size_t size);
+vsc_zeroize(void *mem, size_t size);
 
 //
 //  Zeroize memory in a secure manner.
 //  Compiler can not reduce this function during optimization step.
 //
 VSC_PUBLIC void
-vsc_erase(void* mem, size_t size);
+vsc_erase(void *mem, size_t size);
 
 
 // --------------------------------------------------------------------------

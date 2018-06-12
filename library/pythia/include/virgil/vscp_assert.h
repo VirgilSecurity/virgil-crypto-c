@@ -122,7 +122,7 @@ extern "C" {
 //
 //  Assertion handler callback type.
 //
-typedef void (*vscp_assert_handler_fn)(const char* message, const char* file, int line);
+typedef void (*vscp_assert_handler_fn)(const char *message, const char *file, int line);
 
 //
 //  Change active assertion handler.
@@ -135,13 +135,13 @@ vscp_assert_change_handler(vscp_assert_handler_fn handler_cb);
 //  This is default handler.
 //
 VSCP_PUBLIC void
-vscp_assert_abort(const char* message, const char* file, int line);
+vscp_assert_abort(const char *message, const char *file, int line);
 
 //
 //  Trigger active assertion handler.
 //
 VSCP_PUBLIC void
-vscp_assert_trigger(const char* message, const char* file, int line);
+vscp_assert_trigger(const char *message, const char *file, int line);
 
 
 // --------------------------------------------------------------------------

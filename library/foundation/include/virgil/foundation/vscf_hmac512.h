@@ -93,14 +93,14 @@ vscf_hmac512_impl_size(void);
 //
 //  Cast to the 'vscf_impl_t' type.
 //
-VSCF_PUBLIC vscf_impl_t*
-vscf_hmac512_impl(vscf_hmac512_impl_t* hmac512_impl);
+VSCF_PUBLIC vscf_impl_t *
+vscf_hmac512_impl(vscf_hmac512_impl_t *hmac512_impl);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_hmac512_init(vscf_hmac512_impl_t* hmac512_impl);
+vscf_hmac512_init(vscf_hmac512_impl_t *hmac512_impl);
 
 //
 //  Cleanup implementation context and it's dependencies.
@@ -109,13 +109,13 @@ vscf_hmac512_init(vscf_hmac512_impl_t* hmac512_impl);
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_hmac512_cleanup(vscf_hmac512_impl_t* hmac512_impl);
+vscf_hmac512_cleanup(vscf_hmac512_impl_t *hmac512_impl);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_hmac512_impl_t*
+VSCF_PUBLIC vscf_hmac512_impl_t *
 vscf_hmac512_new(void);
 
 //
@@ -125,7 +125,7 @@ vscf_hmac512_new(void);
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_hmac512_delete(vscf_hmac512_impl_t* hmac512_impl);
+vscf_hmac512_delete(vscf_hmac512_impl_t *hmac512_impl);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -135,49 +135,49 @@ vscf_hmac512_delete(vscf_hmac512_impl_t* hmac512_impl);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_hmac512_destroy(vscf_hmac512_impl_t** hmac512_impl_ref);
+vscf_hmac512_destroy(vscf_hmac512_impl_t * *hmac512_impl_ref);
 
 //
 //  Returns instance of the implemented interface 'hmac info'.
 //
-VSCF_PUBLIC const vscf_hmac_info_api_t*
+VSCF_PUBLIC const vscf_hmac_info_api_t *
 vscf_hmac512_hmac_info_api(void);
 
 //
 //  Returns instance of the implemented interface 'hmac'.
 //
-VSCF_PUBLIC const vscf_hmac_api_t*
+VSCF_PUBLIC const vscf_hmac_api_t *
 vscf_hmac512_hmac_api(void);
 
 //
 //  Calculate hmac over given data.
 //
 VSCF_PUBLIC void
-vscf_hmac512_hmac(const byte* key, size_t key_len, const byte* data, size_t data_len, byte* hmac, size_t hmac_len);
+vscf_hmac512_hmac(const byte *key, size_t key_len, const byte *data, size_t data_len, byte *hmac, size_t hmac_len);
 
 //
 //  Reset HMAC.
 //
 VSCF_PUBLIC void
-vscf_hmac512_reset(vscf_hmac512_impl_t* hmac512_impl);
+vscf_hmac512_reset(vscf_hmac512_impl_t *hmac512_impl);
 
 //
 //  Start a new HMAC.
 //
 VSCF_PUBLIC void
-vscf_hmac512_start(vscf_hmac512_impl_t* hmac512_impl, const byte* key, size_t key_len);
+vscf_hmac512_start(vscf_hmac512_impl_t *hmac512_impl, const byte *key, size_t key_len);
 
 //
 //  Add given data to the HMAC.
 //
 VSCF_PUBLIC void
-vscf_hmac512_update(vscf_hmac512_impl_t* hmac512_impl, const byte* data, size_t data_len);
+vscf_hmac512_update(vscf_hmac512_impl_t *hmac512_impl, const byte *data, size_t data_len);
 
 //
 //  Accompilsh HMAC and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_hmac512_finish(vscf_hmac512_impl_t* hmac512_impl, byte* hmac, size_t hmac_len);
+vscf_hmac512_finish(vscf_hmac512_impl_t *hmac512_impl, byte *hmac, size_t hmac_len);
 
 
 // --------------------------------------------------------------------------

@@ -80,11 +80,11 @@ struct vscf_kdf2_impl_t {
     //
     //  Compile-time known information about this implementation.
     //
-    const vscf_impl_info_t* info;
+    const vscf_impl_info_t *info;
     //
     //  Dependency to the interface 'hash stream'.
     //
-    vscf_impl_t* hash;
+    vscf_impl_t *hash;
     //
     //  Ownership status of the dependency to the interface 'hash stream'.
     //

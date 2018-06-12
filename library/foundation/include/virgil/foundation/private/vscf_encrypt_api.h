@@ -73,15 +73,15 @@ extern "C" {
 //
 //  Callback. Encrypt given data.
 //
-typedef vscf_error_t (*vscf_encrypt_api_encrypt_fn)(vscf_impl_t* impl, const byte* data, size_t data_len, byte* enc,
-        size_t enc_len, size_t* out_len);
+typedef vscf_error_t (*vscf_encrypt_api_encrypt_fn)(vscf_impl_t *impl, const byte *data, size_t data_len, byte *enc,
+        size_t enc_len, size_t *out_len);
 
 //
 //  Callback. Calculate required buffer length to hold the encrypted data.
 //          If argument 'auth tag len' is 0, then returned length
 //          adjusted to hold auth tag as well.
 //
-typedef size_t (*vscf_encrypt_api_required_enc_len_fn)(vscf_impl_t* impl, size_t data_len, size_t auth_tag_len);
+typedef size_t (*vscf_encrypt_api_required_enc_len_fn)(vscf_impl_t *impl, size_t data_len, size_t auth_tag_len);
 
 //
 //  Contains API requirements of the interface 'encrypt'.

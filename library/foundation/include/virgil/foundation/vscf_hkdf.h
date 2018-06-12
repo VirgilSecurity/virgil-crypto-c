@@ -84,14 +84,14 @@ vscf_hkdf_impl_size(void);
 //
 //  Cast to the 'vscf_impl_t' type.
 //
-VSCF_PUBLIC vscf_impl_t*
-vscf_hkdf_impl(vscf_hkdf_impl_t* hkdf_impl);
+VSCF_PUBLIC vscf_impl_t *
+vscf_hkdf_impl(vscf_hkdf_impl_t *hkdf_impl);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_hkdf_init(vscf_hkdf_impl_t* hkdf_impl);
+vscf_hkdf_init(vscf_hkdf_impl_t *hkdf_impl);
 
 //
 //  Cleanup implementation context and it's dependencies.
@@ -100,13 +100,13 @@ vscf_hkdf_init(vscf_hkdf_impl_t* hkdf_impl);
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_hkdf_cleanup(vscf_hkdf_impl_t* hkdf_impl);
+vscf_hkdf_cleanup(vscf_hkdf_impl_t *hkdf_impl);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_hkdf_impl_t*
+VSCF_PUBLIC vscf_hkdf_impl_t *
 vscf_hkdf_new(void);
 
 //
@@ -116,7 +116,7 @@ vscf_hkdf_new(void);
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_hkdf_delete(vscf_hkdf_impl_t* hkdf_impl);
+vscf_hkdf_delete(vscf_hkdf_impl_t *hkdf_impl);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -126,26 +126,26 @@ vscf_hkdf_delete(vscf_hkdf_impl_t* hkdf_impl);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_hkdf_destroy(vscf_hkdf_impl_t** hkdf_impl_ref);
+vscf_hkdf_destroy(vscf_hkdf_impl_t * *hkdf_impl_ref);
 
 //
 //  Setup dependency to the interface 'hmac stream' and keep ownership.
 //
 VSCF_PUBLIC void
-vscf_hkdf_use_hmac_stream(vscf_hkdf_impl_t* hkdf_impl, vscf_impl_t* hmac);
+vscf_hkdf_use_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hmac);
 
 //
 //  Setup dependency to the interface 'hmac stream' and transfer ownership.
 //
 VSCF_PUBLIC void
-vscf_hkdf_take_hmac_stream(vscf_hkdf_impl_t* hkdf_impl, vscf_impl_t** hmac_ref);
+vscf_hkdf_take_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t * *hmac_ref);
 
 //
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
-vscf_hkdf_derive(vscf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len, const byte* salt, size_t salt_len,
-        const byte* info, size_t info_len, byte* key, size_t key_len);
+vscf_hkdf_derive(vscf_hkdf_impl_t *hkdf_impl, const byte *data, size_t data_len, const byte *salt, size_t salt_len,
+        const byte *info, size_t info_len, byte *key, size_t key_len);
 
 
 // --------------------------------------------------------------------------

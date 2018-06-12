@@ -65,7 +65,7 @@
 //  Returns constant 'nonce len'.
 //
 VSCF_PUBLIC size_t
-vscf_cipher_info_nonce_len(const vscf_cipher_info_api_t* cipher_info_api) {
+vscf_cipher_info_nonce_len(const vscf_cipher_info_api_t *cipher_info_api) {
 
     VSCF_ASSERT_PTR (cipher_info_api);
 
@@ -76,7 +76,7 @@ vscf_cipher_info_nonce_len(const vscf_cipher_info_api_t* cipher_info_api) {
 //  Returns constant 'key len'.
 //
 VSCF_PUBLIC size_t
-vscf_cipher_info_key_len(const vscf_cipher_info_api_t* cipher_info_api) {
+vscf_cipher_info_key_len(const vscf_cipher_info_api_t *cipher_info_api) {
 
     VSCF_ASSERT_PTR (cipher_info_api);
 
@@ -87,7 +87,7 @@ vscf_cipher_info_key_len(const vscf_cipher_info_api_t* cipher_info_api) {
 //  Returns constant 'key bitlen'.
 //
 VSCF_PUBLIC size_t
-vscf_cipher_info_key_bitlen(const vscf_cipher_info_api_t* cipher_info_api) {
+vscf_cipher_info_key_bitlen(const vscf_cipher_info_api_t *cipher_info_api) {
 
     VSCF_ASSERT_PTR (cipher_info_api);
 
@@ -98,7 +98,7 @@ vscf_cipher_info_key_bitlen(const vscf_cipher_info_api_t* cipher_info_api) {
 //  Returns constant 'block len'.
 //
 VSCF_PUBLIC size_t
-vscf_cipher_info_block_len(const vscf_cipher_info_api_t* cipher_info_api) {
+vscf_cipher_info_block_len(const vscf_cipher_info_api_t *cipher_info_api) {
 
     VSCF_ASSERT_PTR (cipher_info_api);
 
@@ -108,8 +108,8 @@ vscf_cipher_info_block_len(const vscf_cipher_info_api_t* cipher_info_api) {
 //
 //  Return cipher info API, or NULL if it is not implemented.
 //
-VSCF_PUBLIC const vscf_cipher_info_api_t*
-vscf_cipher_info_api(vscf_impl_t* impl) {
+VSCF_PUBLIC const vscf_cipher_info_api_t *
+vscf_cipher_info_api(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -121,7 +121,7 @@ vscf_cipher_info_api(vscf_impl_t* impl) {
 //  Check if given object implements interface 'cipher info'.
 //
 VSCF_PUBLIC bool
-vscf_cipher_info_is_implemented(vscf_impl_t* impl) {
+vscf_cipher_info_is_implemented(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 

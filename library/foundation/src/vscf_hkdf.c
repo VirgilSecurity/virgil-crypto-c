@@ -75,15 +75,15 @@ enum {
 //  Extracts fixed-length pseudorandom key from keying material.
 //
 static void
-vscf_hkdf_extract(vscf_hkdf_impl_t* hkdf_impl, const byte* data, size_t data_len, const byte* salt, size_t salt_len,
-        byte* pr_key, size_t pr_key_len);
+vscf_hkdf_extract(vscf_hkdf_impl_t *hkdf_impl, const byte *data, size_t data_len, const byte *salt, size_t salt_len,
+        byte *pr_key, size_t pr_key_len);
 
 //
 //  Expands the pseudorandom key to the desired length.
 //
 static void
-vscf_hkdf_expand(vscf_hkdf_impl_t* hkdf_impl, byte* pr_key, size_t pr_key_len, const byte* info, size_t info_len,
-        byte* key, size_t key_len);
+vscf_hkdf_expand(vscf_hkdf_impl_t *hkdf_impl, byte *pr_key, size_t pr_key_len, const byte *info, size_t info_len,
+        byte *key, size_t key_len);
 
 
 // --------------------------------------------------------------------------

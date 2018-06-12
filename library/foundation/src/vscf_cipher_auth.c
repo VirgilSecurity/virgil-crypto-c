@@ -65,8 +65,8 @@
 //
 //  Return cipher auth API, or NULL if it is not implemented.
 //
-VSCF_PUBLIC const vscf_cipher_auth_api_t*
-vscf_cipher_auth_api(vscf_impl_t* impl) {
+VSCF_PUBLIC const vscf_cipher_auth_api_t *
+vscf_cipher_auth_api(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -78,7 +78,7 @@ vscf_cipher_auth_api(vscf_impl_t* impl) {
 //  Check if given object implements interface 'cipher auth'.
 //
 VSCF_PUBLIC bool
-vscf_cipher_auth_is_implemented(vscf_impl_t* impl) {
+vscf_cipher_auth_is_implemented(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 

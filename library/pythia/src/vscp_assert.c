@@ -67,8 +67,8 @@
 //
 //  Return pointer to the last component in the path.
 //
-static const char*
-vscp_assert_path_basename(const char* path);
+static const char *
+vscp_assert_path_basename(const char *path);
 
 //
 //  Active handler for assertion failback.
@@ -90,7 +90,7 @@ vscp_assert_change_handler(vscp_assert_handler_fn handler_cb) {
 //  This is default handler.
 //
 VSCP_PUBLIC void
-vscp_assert_abort(const char* message, const char* file, int line) {
+vscp_assert_abort(const char *message, const char *file, int line) {
 
     printf ("Assertion failed: %s, file %s, line %d\n",
             message, vscp_assert_path_basename (file), line);
@@ -104,7 +104,7 @@ vscp_assert_abort(const char* message, const char* file, int line) {
 //  Trigger active assertion handler.
 //
 VSCP_PUBLIC void
-vscp_assert_trigger(const char* message, const char* file, int line) {
+vscp_assert_trigger(const char *message, const char *file, int line) {
 
     active_handler (message, file, line);
 }
@@ -112,8 +112,8 @@ vscp_assert_trigger(const char* message, const char* file, int line) {
 //
 //  Return pointer to the last component in the path.
 //
-static const char*
-vscp_assert_path_basename(const char* path) {
+static const char *
+vscp_assert_path_basename(const char *path) {
 
     const char *result = path;
     for (const char *symbol = path; *symbol != '\0' && (symbol - path < 255); ++symbol) {

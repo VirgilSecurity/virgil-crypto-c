@@ -78,14 +78,14 @@ static const vscf_ex_kdf_api_t ex_kdf_api = {
     //
     //  Calculate hash over given data.
     //
-    (vscf_ex_kdf_api_derive_fn) vscf_hkdf_derive
+    (vscf_ex_kdf_api_derive_fn)vscf_hkdf_derive
 };
 
 //
 //  Null-terminated array of the implemented 'Interface API' instances.
 //
-static const vscf_api_t* api_array[] = {
-    (const vscf_api_t*) &ex_kdf_api,
+static const vscf_api_t *api_array[] = {
+    (const vscf_api_t *)&ex_kdf_api,
     NULL
 };
 
@@ -105,18 +105,18 @@ static const vscf_impl_info_t info = {
     //
     //  Erase inner state in a secure manner.
     //
-    (vscf_impl_cleanup_fn) vscf_hkdf_cleanup,
+    (vscf_impl_cleanup_fn)vscf_hkdf_cleanup,
     //
     //  Self destruction, according to destruction policy.
     //
-    (vscf_impl_delete_fn) vscf_hkdf_delete
+    (vscf_impl_delete_fn)vscf_hkdf_delete
 };
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_hkdf_init(vscf_hkdf_impl_t* hkdf_impl) {
+vscf_hkdf_init(vscf_hkdf_impl_t *hkdf_impl) {
 
     VSCF_ASSERT_PTR (hkdf_impl);
     VSCF_ASSERT_PTR (hkdf_impl->info == NULL);
@@ -133,7 +133,7 @@ vscf_hkdf_init(vscf_hkdf_impl_t* hkdf_impl) {
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_hkdf_cleanup(vscf_hkdf_impl_t* hkdf_impl) {
+vscf_hkdf_cleanup(vscf_hkdf_impl_t *hkdf_impl) {
 
     VSCF_ASSERT_PTR (hkdf_impl);
 
@@ -162,7 +162,7 @@ vscf_hkdf_cleanup(vscf_hkdf_impl_t* hkdf_impl) {
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_hkdf_impl_t*
+VSCF_PUBLIC vscf_hkdf_impl_t *
 vscf_hkdf_new(void) {
 
     vscf_hkdf_impl_t *hkdf_impl = (vscf_hkdf_impl_t *) vscf_alloc (sizeof (vscf_hkdf_impl_t));
@@ -185,7 +185,7 @@ vscf_hkdf_new(void) {
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_hkdf_delete(vscf_hkdf_impl_t* hkdf_impl) {
+vscf_hkdf_delete(vscf_hkdf_impl_t *hkdf_impl) {
 
     if (hkdf_impl) {
         vscf_hkdf_cleanup (hkdf_impl);
@@ -201,7 +201,7 @@ vscf_hkdf_delete(vscf_hkdf_impl_t* hkdf_impl) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_hkdf_destroy(vscf_hkdf_impl_t** hkdf_impl_ref) {
+vscf_hkdf_destroy(vscf_hkdf_impl_t * *hkdf_impl_ref) {
 
     VSCF_ASSERT_PTR (hkdf_impl_ref);
 
@@ -215,7 +215,7 @@ vscf_hkdf_destroy(vscf_hkdf_impl_t** hkdf_impl_ref) {
 //  Setup dependency to the interface 'hmac stream' and keep ownership.
 //
 VSCF_PUBLIC void
-vscf_hkdf_use_hmac_stream(vscf_hkdf_impl_t* hkdf_impl, vscf_impl_t* hmac) {
+vscf_hkdf_use_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hmac) {
 
     VSCF_ASSERT_PTR (hkdf_impl);
     VSCF_ASSERT_PTR (hmac);
@@ -232,7 +232,7 @@ vscf_hkdf_use_hmac_stream(vscf_hkdf_impl_t* hkdf_impl, vscf_impl_t* hmac) {
 //  Setup dependency to the interface 'hmac stream' and transfer ownership.
 //
 VSCF_PUBLIC void
-vscf_hkdf_take_hmac_stream(vscf_hkdf_impl_t* hkdf_impl, vscf_impl_t** hmac_ref) {
+vscf_hkdf_take_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t * *hmac_ref) {
 
     VSCF_ASSERT_PTR (hkdf_impl);
     VSCF_ASSERT_PTR (hmac_ref);
@@ -261,8 +261,8 @@ vscf_hkdf_impl_size(void) {
 //
 //  Cast to the 'vscf_impl_t' type.
 //
-VSCF_PUBLIC vscf_impl_t*
-vscf_hkdf_impl(vscf_hkdf_impl_t* hkdf_impl) {
+VSCF_PUBLIC vscf_impl_t *
+vscf_hkdf_impl(vscf_hkdf_impl_t *hkdf_impl) {
 
     VSCF_ASSERT_PTR (hkdf_impl);
     return (vscf_impl_t *) (hkdf_impl);

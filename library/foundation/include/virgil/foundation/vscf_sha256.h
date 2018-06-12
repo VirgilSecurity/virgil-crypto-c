@@ -93,14 +93,14 @@ vscf_sha256_impl_size(void);
 //
 //  Cast to the 'vscf_impl_t' type.
 //
-VSCF_PUBLIC vscf_impl_t*
-vscf_sha256_impl(vscf_sha256_impl_t* sha256_impl);
+VSCF_PUBLIC vscf_impl_t *
+vscf_sha256_impl(vscf_sha256_impl_t *sha256_impl);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_sha256_init(vscf_sha256_impl_t* sha256_impl);
+vscf_sha256_init(vscf_sha256_impl_t *sha256_impl);
 
 //
 //  Cleanup implementation context and it's dependencies.
@@ -109,13 +109,13 @@ vscf_sha256_init(vscf_sha256_impl_t* sha256_impl);
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_sha256_cleanup(vscf_sha256_impl_t* sha256_impl);
+vscf_sha256_cleanup(vscf_sha256_impl_t *sha256_impl);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_sha256_impl_t*
+VSCF_PUBLIC vscf_sha256_impl_t *
 vscf_sha256_new(void);
 
 //
@@ -125,7 +125,7 @@ vscf_sha256_new(void);
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_sha256_delete(vscf_sha256_impl_t* sha256_impl);
+vscf_sha256_delete(vscf_sha256_impl_t *sha256_impl);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -135,43 +135,43 @@ vscf_sha256_delete(vscf_sha256_impl_t* sha256_impl);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_sha256_destroy(vscf_sha256_impl_t** sha256_impl_ref);
+vscf_sha256_destroy(vscf_sha256_impl_t * *sha256_impl_ref);
 
 //
 //  Returns instance of the implemented interface 'hash info'.
 //
-VSCF_PUBLIC const vscf_hash_info_api_t*
+VSCF_PUBLIC const vscf_hash_info_api_t *
 vscf_sha256_hash_info_api(void);
 
 //
 //  Returns instance of the implemented interface 'hash'.
 //
-VSCF_PUBLIC const vscf_hash_api_t*
+VSCF_PUBLIC const vscf_hash_api_t *
 vscf_sha256_hash_api(void);
 
 //
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
-vscf_sha256_hash(const byte* data, size_t data_len, byte* digest, size_t digest_len);
+vscf_sha256_hash(const byte *data, size_t data_len, byte *digest, size_t digest_len);
 
 //
 //  Start a new hashing.
 //
 VSCF_PUBLIC void
-vscf_sha256_start(vscf_sha256_impl_t* sha256_impl);
+vscf_sha256_start(vscf_sha256_impl_t *sha256_impl);
 
 //
 //  Add given data to the hash.
 //
 VSCF_PUBLIC void
-vscf_sha256_update(vscf_sha256_impl_t* sha256_impl, const byte* data, size_t data_len);
+vscf_sha256_update(vscf_sha256_impl_t *sha256_impl, const byte *data, size_t data_len);
 
 //
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_sha256_finish(vscf_sha256_impl_t* sha256_impl, byte* digest, size_t digest_len);
+vscf_sha256_finish(vscf_sha256_impl_t *sha256_impl, byte *digest, size_t digest_len);
 
 
 // --------------------------------------------------------------------------

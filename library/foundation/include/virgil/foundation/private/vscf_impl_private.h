@@ -81,7 +81,7 @@ struct vscf_impl_info_t {
     //  NULL terminated array of the implemented interfaces.
     //  MUST be second in the structure.
     //
-    const vscf_api_t** api_array;
+    const vscf_api_t * *api_array;
     //
     //  Erase inner state in a secure manner.
     //
@@ -101,7 +101,7 @@ struct vscf_impl_t {
     //
     //  Compile-time known information.
     //
-    const vscf_impl_info_t* info;
+    const vscf_impl_info_t *info;
 };
 
 

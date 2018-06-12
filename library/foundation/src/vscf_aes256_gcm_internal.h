@@ -74,13 +74,13 @@ extern "C" {
 //  Provides initialization of the implementation specific context.
 //
 VSCF_PRIVATE vscf_error_t
-vscf_aes256_gcm_init_ctx(vscf_aes256_gcm_impl_t* aes256_gcm_impl);
+vscf_aes256_gcm_init_ctx(vscf_aes256_gcm_impl_t *aes256_gcm_impl);
 
 //
 //  Provides cleanup of the implementation specific context.
 //
 VSCF_PRIVATE void
-vscf_aes256_gcm_cleanup_ctx(vscf_aes256_gcm_impl_t* aes256_gcm_impl);
+vscf_aes256_gcm_cleanup_ctx(vscf_aes256_gcm_impl_t *aes256_gcm_impl);
 
 
 // --------------------------------------------------------------------------

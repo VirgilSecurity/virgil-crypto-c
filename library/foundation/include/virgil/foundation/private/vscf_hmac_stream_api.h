@@ -74,22 +74,22 @@ extern "C" {
 //
 //  Callback. Reset HMAC.
 //
-typedef void (*vscf_hmac_stream_api_reset_fn)(vscf_impl_t* impl);
+typedef void (*vscf_hmac_stream_api_reset_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Start a new HMAC.
 //
-typedef void (*vscf_hmac_stream_api_start_fn)(vscf_impl_t* impl, const byte* key, size_t key_len);
+typedef void (*vscf_hmac_stream_api_start_fn)(vscf_impl_t *impl, const byte *key, size_t key_len);
 
 //
 //  Callback. Add given data to the HMAC.
 //
-typedef void (*vscf_hmac_stream_api_update_fn)(vscf_impl_t* impl, const byte* data, size_t data_len);
+typedef void (*vscf_hmac_stream_api_update_fn)(vscf_impl_t *impl, const byte *data, size_t data_len);
 
 //
 //  Callback. Accompilsh HMAC and return it's result (a message digest).
 //
-typedef void (*vscf_hmac_stream_api_finish_fn)(vscf_impl_t* impl, byte* hmac, size_t hmac_len);
+typedef void (*vscf_hmac_stream_api_finish_fn)(vscf_impl_t *impl, byte *hmac, size_t hmac_len);
 
 //
 //  Contains API requirements of the interface 'hmac stream'.
@@ -103,7 +103,7 @@ struct vscf_hmac_stream_api_t {
     //
     //  Link to the inherited interface API 'hmac info'.
     //
-    const vscf_hmac_info_api_t* hmac_info_api;
+    const vscf_hmac_info_api_t *hmac_info_api;
     //
     //  Reset HMAC.
     //

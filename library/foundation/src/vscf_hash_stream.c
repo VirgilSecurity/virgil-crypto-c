@@ -65,7 +65,7 @@
 //  Start a new hashing.
 //
 VSCF_PUBLIC void
-vscf_hash_stream_start(vscf_impl_t* impl) {
+vscf_hash_stream_start(vscf_impl_t *impl) {
 
     const vscf_hash_stream_api_t *hash_stream_api = vscf_hash_stream_api (impl);
     VSCF_ASSERT_PTR (hash_stream_api);
@@ -78,7 +78,7 @@ vscf_hash_stream_start(vscf_impl_t* impl) {
 //  Add given data to the hash.
 //
 VSCF_PUBLIC void
-vscf_hash_stream_update(vscf_impl_t* impl, const byte* data, size_t data_len) {
+vscf_hash_stream_update(vscf_impl_t *impl, const byte *data, size_t data_len) {
 
     const vscf_hash_stream_api_t *hash_stream_api = vscf_hash_stream_api (impl);
     VSCF_ASSERT_PTR (hash_stream_api);
@@ -91,7 +91,7 @@ vscf_hash_stream_update(vscf_impl_t* impl, const byte* data, size_t data_len) {
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_hash_stream_finish(vscf_impl_t* impl, byte* digest, size_t digest_len) {
+vscf_hash_stream_finish(vscf_impl_t *impl, byte *digest, size_t digest_len) {
 
     const vscf_hash_stream_api_t *hash_stream_api = vscf_hash_stream_api (impl);
     VSCF_ASSERT_PTR (hash_stream_api);
@@ -103,8 +103,8 @@ vscf_hash_stream_finish(vscf_impl_t* impl, byte* digest, size_t digest_len) {
 //
 //  Return hash stream API, or NULL if it is not implemented.
 //
-VSCF_PUBLIC const vscf_hash_stream_api_t*
-vscf_hash_stream_api(vscf_impl_t* impl) {
+VSCF_PUBLIC const vscf_hash_stream_api_t *
+vscf_hash_stream_api(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -116,7 +116,7 @@ vscf_hash_stream_api(vscf_impl_t* impl) {
 //  Check if given object implements interface 'hash stream'.
 //
 VSCF_PUBLIC bool
-vscf_hash_stream_is_implemented(vscf_impl_t* impl) {
+vscf_hash_stream_is_implemented(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 

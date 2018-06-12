@@ -74,7 +74,7 @@ extern "C" {
 //
 //  Callback. Calculate hash over given data.
 //
-typedef void (*vscf_hash_api_hash_fn)(const byte* data, size_t data_len, byte* digest, size_t digest_len);
+typedef void (*vscf_hash_api_hash_fn)(const byte *data, size_t data_len, byte *digest, size_t digest_len);
 
 //
 //  Contains API requirements of the interface 'hash'.
@@ -88,7 +88,7 @@ struct vscf_hash_api_t {
     //
     //  Link to the inherited interface API 'hash info'.
     //
-    const vscf_hash_info_api_t* hash_info_api;
+    const vscf_hash_info_api_t *hash_info_api;
     //
     //  Calculate hash over given data.
     //

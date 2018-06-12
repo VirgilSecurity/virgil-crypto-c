@@ -79,19 +79,19 @@ typedef struct vscf_hash_api_t vscf_hash_api_t;
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
-vscf_hash(const vscf_hash_api_t* hash_api, const byte* data, size_t data_len, byte* digest, size_t digest_len);
+vscf_hash(const vscf_hash_api_t *hash_api, const byte *data, size_t data_len, byte *digest, size_t digest_len);
 
 //
 //  Return hash API, or NULL if it is not implemented.
 //
-VSCF_PUBLIC const vscf_hash_api_t*
-vscf_hash_api(vscf_impl_t* impl);
+VSCF_PUBLIC const vscf_hash_api_t *
+vscf_hash_api(vscf_impl_t *impl);
 
 //
 //  Check if given object implements interface 'hash'.
 //
 VSCF_PUBLIC bool
-vscf_hash_is_implemented(vscf_impl_t* impl);
+vscf_hash_is_implemented(vscf_impl_t *impl);
 
 
 // --------------------------------------------------------------------------

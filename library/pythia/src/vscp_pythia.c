@@ -79,12 +79,12 @@ static __thread size_t g_instances = 0;
 //  Callback for the pythia random.
 //
 static void
-vscp_pythia_random_handler(byte* out, int out_len, void* ctx);
+vscp_pythia_random_handler(byte *out, int out_len, void *ctx);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCP_PUBLIC vscp_pythia_t*
+VSCP_PUBLIC vscp_pythia_t *
 vscp_pythia_new(void) {
 
     vscp_pythia_t *pythia_ctx = (vscp_pythia_t *) vscp_alloc(sizeof (vscp_pythia_t));
@@ -107,7 +107,7 @@ vscp_pythia_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCP_PUBLIC void
-vscp_pythia_delete(vscp_pythia_t* pythia_ctx) {
+vscp_pythia_delete(vscp_pythia_t *pythia_ctx) {
 
     if (NULL == pythia_ctx) {
         return;
@@ -125,7 +125,7 @@ vscp_pythia_delete(vscp_pythia_t* pythia_ctx) {
 //  This is a reverse action of the function 'vscp_pythia_new ()'.
 //
 VSCP_PUBLIC void
-vscp_pythia_destroy(vscp_pythia_t** pythia_ctx_ref) {
+vscp_pythia_destroy(vscp_pythia_t * *pythia_ctx_ref) {
 
     VSCP_ASSERT_PTR(pythia_ctx_ref);
 

@@ -98,7 +98,7 @@ static const vscf_hmac_api_t hmac_api = {
     //
     //  Calculate hmac over given data.
     //
-    (vscf_hmac_api_hmac_fn) vscf_hmac384_hmac
+    (vscf_hmac_api_hmac_fn)vscf_hmac384_hmac
 };
 
 //
@@ -117,28 +117,28 @@ static const vscf_hmac_stream_api_t hmac_stream_api = {
     //
     //  Reset HMAC.
     //
-    (vscf_hmac_stream_api_reset_fn) vscf_hmac384_reset,
+    (vscf_hmac_stream_api_reset_fn)vscf_hmac384_reset,
     //
     //  Start a new HMAC.
     //
-    (vscf_hmac_stream_api_start_fn) vscf_hmac384_start,
+    (vscf_hmac_stream_api_start_fn)vscf_hmac384_start,
     //
     //  Add given data to the HMAC.
     //
-    (vscf_hmac_stream_api_update_fn) vscf_hmac384_update,
+    (vscf_hmac_stream_api_update_fn)vscf_hmac384_update,
     //
     //  Accompilsh HMAC and return it's result (a message digest).
     //
-    (vscf_hmac_stream_api_finish_fn) vscf_hmac384_finish
+    (vscf_hmac_stream_api_finish_fn)vscf_hmac384_finish
 };
 
 //
 //  Null-terminated array of the implemented 'Interface API' instances.
 //
-static const vscf_api_t* api_array[] = {
-    (const vscf_api_t*) &hmac_info_api,
-    (const vscf_api_t*) &hmac_api,
-    (const vscf_api_t*) &hmac_stream_api,
+static const vscf_api_t *api_array[] = {
+    (const vscf_api_t *)&hmac_info_api,
+    (const vscf_api_t *)&hmac_api,
+    (const vscf_api_t *)&hmac_stream_api,
     NULL
 };
 
@@ -158,18 +158,18 @@ static const vscf_impl_info_t info = {
     //
     //  Erase inner state in a secure manner.
     //
-    (vscf_impl_cleanup_fn) vscf_hmac384_cleanup,
+    (vscf_impl_cleanup_fn)vscf_hmac384_cleanup,
     //
     //  Self destruction, according to destruction policy.
     //
-    (vscf_impl_delete_fn) vscf_hmac384_delete
+    (vscf_impl_delete_fn)vscf_hmac384_delete
 };
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_hmac384_init(vscf_hmac384_impl_t* hmac384_impl) {
+vscf_hmac384_init(vscf_hmac384_impl_t *hmac384_impl) {
 
     VSCF_ASSERT_PTR (hmac384_impl);
     VSCF_ASSERT_PTR (hmac384_impl->info == NULL);
@@ -186,7 +186,7 @@ vscf_hmac384_init(vscf_hmac384_impl_t* hmac384_impl) {
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_hmac384_cleanup(vscf_hmac384_impl_t* hmac384_impl) {
+vscf_hmac384_cleanup(vscf_hmac384_impl_t *hmac384_impl) {
 
     VSCF_ASSERT_PTR (hmac384_impl);
 
@@ -203,7 +203,7 @@ vscf_hmac384_cleanup(vscf_hmac384_impl_t* hmac384_impl) {
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_hmac384_impl_t*
+VSCF_PUBLIC vscf_hmac384_impl_t *
 vscf_hmac384_new(void) {
 
     vscf_hmac384_impl_t *hmac384_impl = (vscf_hmac384_impl_t *) vscf_alloc (sizeof (vscf_hmac384_impl_t));
@@ -226,7 +226,7 @@ vscf_hmac384_new(void) {
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_hmac384_delete(vscf_hmac384_impl_t* hmac384_impl) {
+vscf_hmac384_delete(vscf_hmac384_impl_t *hmac384_impl) {
 
     if (hmac384_impl) {
         vscf_hmac384_cleanup (hmac384_impl);
@@ -242,7 +242,7 @@ vscf_hmac384_delete(vscf_hmac384_impl_t* hmac384_impl) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_hmac384_destroy(vscf_hmac384_impl_t** hmac384_impl_ref) {
+vscf_hmac384_destroy(vscf_hmac384_impl_t * *hmac384_impl_ref) {
 
     VSCF_ASSERT_PTR (hmac384_impl_ref);
 
@@ -255,7 +255,7 @@ vscf_hmac384_destroy(vscf_hmac384_impl_t** hmac384_impl_ref) {
 //
 //  Returns instance of the implemented interface 'hmac info'.
 //
-VSCF_PUBLIC const vscf_hmac_info_api_t*
+VSCF_PUBLIC const vscf_hmac_info_api_t *
 vscf_hmac384_hmac_info_api(void) {
 
     return &hmac_info_api;
@@ -264,7 +264,7 @@ vscf_hmac384_hmac_info_api(void) {
 //
 //  Returns instance of the implemented interface 'hmac'.
 //
-VSCF_PUBLIC const vscf_hmac_api_t*
+VSCF_PUBLIC const vscf_hmac_api_t *
 vscf_hmac384_hmac_api(void) {
 
     return &hmac_api;
@@ -282,8 +282,8 @@ vscf_hmac384_impl_size(void) {
 //
 //  Cast to the 'vscf_impl_t' type.
 //
-VSCF_PUBLIC vscf_impl_t*
-vscf_hmac384_impl(vscf_hmac384_impl_t* hmac384_impl) {
+VSCF_PUBLIC vscf_impl_t *
+vscf_hmac384_impl(vscf_hmac384_impl_t *hmac384_impl) {
 
     VSCF_ASSERT_PTR (hmac384_impl);
     return (vscf_impl_t *) (hmac384_impl);
