@@ -85,3 +85,25 @@ set_target_properties(relic
         INTERFACE_INCLUDE_DIRECTORIES
             "${PYTHIA_INSTALL_LOCATION}/include"
         )
+
+
+# ---------------------------------------------------------------------------
+#   Install library
+# ---------------------------------------------------------------------------
+
+#
+# Install binaries
+#
+install(
+        DIRECTORY "${PYTHIA_INSTALL_LOCATION}/lib/"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        PATTERN "cmake" EXCLUDE
+        )
+
+#
+# Install headers
+#
+install(
+        DIRECTORY "${PYTHIA_INSTALL_LOCATION}/include/"
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+        )
