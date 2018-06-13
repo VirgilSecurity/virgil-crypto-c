@@ -122,3 +122,25 @@ add_library(vsc::common ALIAS vsc_common)
 if(COMMAND add_clangformat)
     add_clangformat(vsc_common)
 endif()
+
+# ---------------------------------------------------------------------------
+#   Install library
+# ---------------------------------------------------------------------------
+
+#
+# Install binaries
+#
+install(
+        TARGETS vsc_common
+        LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        )
+
+#
+# Install headers
+#
+install(
+        DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/"
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+        )
+

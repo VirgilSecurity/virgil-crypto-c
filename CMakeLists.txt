@@ -37,9 +37,10 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 project(virgil-crypto-c-top VERSION 0.1.0 LANGUAGES C)
 
 # ---------------------------------------------------------------------------
-#   Add code formatting module
+#   Add helper modules
 # ---------------------------------------------------------------------------
 include("cmake/clangformat.cmake")
+include("GNUInstallDirs")
 
 
 # ---------------------------------------------------------------------------
