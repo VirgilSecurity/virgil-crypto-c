@@ -63,6 +63,15 @@
 // --------------------------------------------------------------------------
 
 //
+//  Return size of 'vsc_buffer_t'.
+//
+VSC_PUBLIC size_t
+vsc_buffer_ctx_size(void) {
+
+    return sizeof(vsc_buffer_t);
+}
+
+//
 //  Allocate context and perform it's initialization.
 //
 VSC_PUBLIC vsc_buffer_t *

@@ -82,6 +82,15 @@ static void
 vscp_pythia_random_handler(byte *out, int out_len, void *ctx);
 
 //
+//  Return size of 'vscp_pythia_t'.
+//
+VSCP_PUBLIC size_t
+vscp_pythia_ctx_size(void) {
+
+    return sizeof(vscp_pythia_t);
+}
+
+//
 //  Allocate context and perform it's initialization.
 //
 VSCP_PUBLIC vscp_pythia_t *

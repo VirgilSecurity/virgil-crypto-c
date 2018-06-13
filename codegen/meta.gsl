@@ -420,6 +420,8 @@ function _X17_add_entity_class (meta, class)
     new entity to my.meta
         .id = my.id
 
+        _X17_add_smart_name (entity, "class method", "ctx size")
+
         _X17_add_name (entity, "class module", my.class.name)
         _X17_add_name (entity, "class module defs", cat (my.class.name, "defs"))
         _X17_add_name (entity, "class argument ctx", cat (my.class.name, "ctx"))
