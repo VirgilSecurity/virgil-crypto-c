@@ -3,8 +3,8 @@
         brief = "Virgil Security Crypto Pythia"
         namespace = "virgil"
         prefix = "vscp"
-        inc_path = "../library/pythia/include/virgil/"
-        inc_private_path = "../library/pythia/include/virgil/private/"
+        inc_path = "../library/pythia/include/virgil/pythia/"
+        inc_private_path = "../library/pythia/include/virgil/pythia/private/"
         src_path = "../library/pythia/src/"
         work_path = "generated/pythia/"
         >
