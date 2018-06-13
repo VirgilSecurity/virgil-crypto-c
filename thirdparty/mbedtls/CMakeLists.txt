@@ -72,3 +72,25 @@ set_target_properties(mbedcrypto
 if(NOT TARGET mbed::crypto)
     add_library(mbed::crypto ALIAS mbedcrypto)
 endif()
+
+
+# ---------------------------------------------------------------------------
+#   Install library
+# ---------------------------------------------------------------------------
+
+#
+# Install binaries
+#
+install(
+        DIRECTORY "${MBEDTLS_INSTALL_LOCATION}/lib/"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        PATTERN "cmake" EXCLUDE
+        )
+
+#
+# Install headers
+#
+install(
+        DIRECTORY "${MBEDTLS_INSTALL_LOCATION}/include/"
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+        )
