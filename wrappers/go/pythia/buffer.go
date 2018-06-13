@@ -32,15 +32,57 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-package common
+package pythia
 
-// #cgo CFLAGS:  -I${SRCDIR}/../include
+// #cgo CFLAGS: -I${SRCDIR}/../include
 // #cgo LDFLAGS: -L${SRCDIR}/../lib -lvsc_common
-// #include <virgil/common/vsc_data.h>
+// #include <virgil/common/vsc_buffer.h>
 import "C"
+import unsafe "unsafe"
 
+// Buf is needed to pass memory to be written within C
+type Buf struct {
+    memory []byte
+    ctx *C.vsc_buffer_t
+    data []byte
+}
 
-// Wrap Go byte array to the C struct
-func WrapData(data []byte) C.vsc_data_t {
-    return C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+// NewBuf allocates memory block of predefined capacity
+func NewBuf(capacity C.size_t) *Buf {
+    if capacity == 0 {
+        panic("Buffer with capacity zero is not allowed.");
+    }
+
+    ctxLen := C.vsc_buffer_ctx_size()
+    memory := make([]byte, int(ctxLen + capacity))
+    ctx := (*C.vsc_buffer_t)(unsafe.Pointer(&memory[0]))
+    data := memory[int(ctxLen):]
+
+    C.vsc_buffer_init(ctx)
+    C.vsc_buffer_use(ctx, (*C.byte)(unsafe.Pointer(&data[0])), capacity)
+
+    return &Buf{
+        memory: memory,
+        ctx: ctx,
+        data: data,
+    }
+}
+
+// GetData returns as many bytes as were written to buf by C code
+func (b *Buf) GetData() []byte {
+    newSize := int(C.vsc_buffer_len(b.ctx))
+    if newSize > len(b.data) {
+        panic("Underlying C buffer corrupt the memory.")
+    }
+    return b.data[:newSize]
+}
+
+// Cap returns buffer capacity
+func (b *Buf) Cap() int {
+    return int(C.vsc_buffer_capacity(b.ctx))
+}
+
+// Len returns buffer actual data length
+func (b *Buf) Len() int {
+    return int(C.vsc_buffer_len(b.ctx))
 }

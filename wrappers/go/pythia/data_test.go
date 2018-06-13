@@ -32,7 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-package common
+package pythia
 
 import (
     "testing"
@@ -40,21 +40,9 @@ import (
     "github.com/stretchr/testify/assert"
 )
 
-func TestBufferLenWithCapacity128IsZero(t *testing.T) {
+func TestData(t *testing.T) {
 
-    b := NewBuf(128)
+    data := make([]byte, 5)
 
-    assert.Equal(t, 0, b.Len())
-}
-
-func TestBufferWithCapacityZeroExpectPanic(t *testing.T) {
-
-    assert.Panics(t, func(){ NewBuf(0) })
-}
-
-func TestBufferCapacityWithCapacity128Is128(t *testing.T) {
-
-    b := NewBuf(128)
-
-    assert.Equal(t, 128, b.Cap())
+    assert.Equal(t, 5, int(WrapData(data).len))
 }
