@@ -152,3 +152,26 @@ add_library(vsc::pythia ALIAS vsc_pythia)
 if(COMMAND add_clangformat)
     add_clangformat(vsc_pythia)
 endif()
+
+
+# ---------------------------------------------------------------------------
+#   Install library
+# ---------------------------------------------------------------------------
+
+#
+# Install binaries
+#
+install(
+        TARGETS vsc_pythia
+        LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        )
+
+#
+# Install headers
+#
+install(
+        DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/"
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+        )
+
