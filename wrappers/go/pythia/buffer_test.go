@@ -32,57 +32,29 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-package common
+package pythia
 
-// #cgo CFLAGS: -I${SRCDIR}/../include
-// #cgo LDFLAGS: -L${SRCDIR}/../lib -lvsc_common
-// #include <virgil/common/vsc_buffer.h>
-import "C"
-import unsafe "unsafe"
+import (
+    "testing"
 
-// Buf is needed to pass memory to be written within C
-type Buf struct {
-    memory []byte
-    cbuf *C.vsc_buffer_t
-    data []byte
+    "github.com/stretchr/testify/assert"
+)
+
+func TestBufferLenWithCapacity128IsZero(t *testing.T) {
+
+    b := NewBuf(128)
+
+    assert.Equal(t, 0, b.Len())
 }
 
-// NewBuf allocates memory block of predefined capacity
-func NewBuf(capacity int) *Buf {
-    if capacity == 0 {
-        panic("Buffer with capacity zero is not allowed.");
-    }
+func TestBufferWithCapacityZeroExpectPanic(t *testing.T) {
 
-    ctxLen := int(C.vsc_buffer_ctx_size())
-    memory := make([]byte, ctxLen + capacity)
-    cbuf := (*C.vsc_buffer_t)(unsafe.Pointer(&memory[0]))
-    data := memory[ctxLen:]
-
-    C.vsc_buffer_init(cbuf)
-    C.vsc_buffer_use(cbuf, (*C.byte)(unsafe.Pointer(&data[0])), C.size_t(capacity))
-
-    return &Buf{
-        memory: memory,
-        cbuf: cbuf,
-        data: data,
-    }
+    assert.Panics(t, func(){ NewBuf(0) })
 }
 
-// GetData returns as many bytes as were written to buf by C code
-func (b *Buf) GetData() []byte {
-    newSize := int(C.vsc_buffer_len(b.cbuf))
-    if newSize > len(b.data) {
-        panic("Underlying C buffer corrupt the memory.")
-    }
-    return b.data[:newSize]
-}
+func TestBufferCapacityWithCapacity128Is128(t *testing.T) {
 
-// Cap returns buffer capacity
-func (b *Buf) Cap() int {
-    return int(C.vsc_buffer_capacity(b.cbuf))
-}
+    b := NewBuf(128)
 
-// Len returns buffer actual data length
-func (b *Buf) Len() int {
-    return int(C.vsc_buffer_len(b.cbuf))
+    assert.Equal(t, 128, b.Cap())
 }

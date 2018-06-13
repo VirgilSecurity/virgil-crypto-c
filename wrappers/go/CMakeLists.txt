@@ -41,7 +41,6 @@ project(virgil_crypto_go_common VERSION 5.0.0 LANGUAGES C)
 #
 install(
         DIRECTORY
-        "${CMAKE_CURRENT_LIST_DIR}/common"
         "${CMAKE_CURRENT_LIST_DIR}/foundation"
         "${CMAKE_CURRENT_LIST_DIR}/pythia"
 

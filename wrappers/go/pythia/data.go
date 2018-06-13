@@ -32,17 +32,15 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-package common
+package pythia
 
-import (
-    "testing"
+// #cgo CFLAGS:  -I${SRCDIR}/../include
+// #cgo LDFLAGS: -L${SRCDIR}/../lib -lvsc_common
+// #include <virgil/common/vsc_data.h>
+import "C"
 
-    "github.com/stretchr/testify/assert"
-)
 
-func TestData(t *testing.T) {
-
-    data := make([]byte, 5)
-
-    assert.Equal(t, 5, int(WrapData(data).len))
+// Wrap Go byte array to the C struct
+func WrapData(data []byte) C.vsc_data_t {
+    return C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
 }
