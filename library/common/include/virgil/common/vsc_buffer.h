@@ -75,6 +75,12 @@ extern "C" {
 typedef struct vsc_buffer_t vsc_buffer_t;
 
 //
+//  Return size of 'vsc_buffer_t'.
+//
+VSC_PUBLIC size_t
+vsc_buffer_ctx_size(void);
+
+//
 //  Perform initialization of pre-allocated context.
 //
 VSC_PUBLIC vsc_error_t

@@ -84,6 +84,12 @@ struct vsc_data_t {
 typedef struct vsc_data_t vsc_data_t;
 
 //
+//  Return size of 'vsc_data_t'.
+//
+VSC_PUBLIC size_t
+vsc_data_ctx_size(void);
+
+//
 //  Creates data from the preallocated bytes.
 //
 VSC_PUBLIC vsc_data_t

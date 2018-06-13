@@ -77,6 +77,31 @@ function _X13_add_context_struct (class, declaration, definition, destination, m
 endfunction
 
 # ---------------------------------------------------------------------------
+function _X13_add_method_context_size (class, destination, meta)
+    check_arguments (my, "class, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        .name = my.names.class_method_ctx_size
+        . = "\
+        Return size of '$(my.refs.c_class_struct_ctx)'.
+        "
+
+        new return to method
+            .type = "size"
+        endnew
+
+        new implementation to method
+            . = "\
+                return sizeof($(my.refs.c_class_struct_ctx));
+            "
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 function _X13_add_argument_ctx (destination, meta)
     check_arguments (my, "destination, meta", my)
 
@@ -377,6 +402,11 @@ function c_module_class_create_module_public (class, destination, meta)
 
         elsif my.class.context = "internal"
             _X13_add_context_struct (my.class, "public", "private", module, my.meta)
+        endif
+
+
+        if my.class.context <> "none"
+            _X13_add_method_context_size (my.class, module, my.meta)
         endif
 
 
