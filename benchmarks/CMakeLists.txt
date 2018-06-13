@@ -36,6 +36,10 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(virgil_crypto_c_benchmarks VERSION 0.1.0 LANGUAGES C)
 
+if(NOT TARGET vsc::foundation)
+    return()
+endif()
+
 add_subdirectory(benchmark)
 add_subdirectory(data)
 
