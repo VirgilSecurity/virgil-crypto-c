@@ -63,10 +63,10 @@ file(MAKE_DIRECTORY ${MBEDTLS_LOCATION}/include)
 set_target_properties(mbedcrypto
         PROPERTIES
         IMPORTED_LOCATION
-            ${MBEDTLS_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}mbedcrypto${CMAKE_STATIC_LIBRARY_SUFFIX}
+            "${MBEDTLS_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}mbedcrypto${CMAKE_STATIC_LIBRARY_SUFFIX}"
 
         INTERFACE_INCLUDE_DIRECTORIES
-            ${MBEDTLS_LOCATION}/include
+            "${MBEDTLS_LOCATION}/include"
         )
 
 if(NOT TARGET mbed::crypto)
