@@ -34,7 +34,7 @@
 # ---------------------------------------------------------------------------
 #   Options
 # ---------------------------------------------------------------------------
-set(MBEDTLS_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/mbedtls)
+set(MBEDTLS_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/mbedtls)
 
 # ---------------------------------------------------------------------------
 #   Load MbedTLS as an external project
@@ -46,7 +46,7 @@ ExternalProject_Add(mbedtls-ext
         CMAKE_ARGS
             -G${CMAKE_GENERATOR}
             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-            -DCMAKE_INSTALL_PREFIX=${MBEDTLS_LOCATION}
+            -DCMAKE_INSTALL_PREFIX=${MBEDTLS_INSTALL_LOCATION}
             -DENABLE_TESTING=OFF
             -DENABLE_PROGRAMS=OFF
         )
@@ -58,15 +58,15 @@ add_library(mbedcrypto STATIC IMPORTED GLOBAL)
 
 add_dependencies(mbedcrypto mbedtls-ext)
 
-file(MAKE_DIRECTORY ${MBEDTLS_LOCATION}/include)
+file(MAKE_DIRECTORY ${MBEDTLS_INSTALL_LOCATION}/include)
 
 set_target_properties(mbedcrypto
         PROPERTIES
         IMPORTED_LOCATION
-            "${MBEDTLS_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}mbedcrypto${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            "${MBEDTLS_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}mbedcrypto${CMAKE_STATIC_LIBRARY_SUFFIX}"
 
         INTERFACE_INCLUDE_DIRECTORIES
-            "${MBEDTLS_LOCATION}/include"
+            "${MBEDTLS_INSTALL_LOCATION}/include"
         )
 
 if(NOT TARGET mbed::crypto)
