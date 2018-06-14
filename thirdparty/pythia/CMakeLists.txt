@@ -45,12 +45,13 @@ ExternalProject_Add(pythia-ext
         GIT_REPOSITORY https://github.com/VirgilSecurity/pythia
         GIT_TAG 0.2.1-alpha
         CMAKE_ARGS
-            -G${CMAKE_GENERATOR}
-            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-            -DCMAKE_INSTALL_PREFIX=${PYTHIA_INSTALL_LOCATION}
-            -DENABLE_TESTING=OFF
-            -DRELIC_USE_PTHREAD=ON
-            -DRELIC_USE_EXT_RNG=ON
+            "-G${CMAKE_GENERATOR}"
+            "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+            "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+            "-DCMAKE_INSTALL_PREFIX=${PYTHIA_INSTALL_LOCATION}"
+            "-DENABLE_TESTING=OFF"
+            "-DRELIC_USE_PTHREAD=ON"
+            "-DRELIC_USE_EXT_RNG=ON"
         )
 
 # ---------------------------------------------------------------------------
