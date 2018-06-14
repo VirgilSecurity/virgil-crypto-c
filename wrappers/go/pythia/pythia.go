@@ -41,6 +41,8 @@ import "C"
 import (
     "fmt"
 
+    "runtime"
+
     "github.com/pkg/errors"
 )
 
@@ -55,9 +57,11 @@ func init() {
 
 // New allocates underlying C context
 func New() *Pythia {
-    return &Pythia{
+    p := &Pythia{
         ctx: C.vscp_pythia_new(),
     }
+    runtime.SetFinalizer(p, (*Pythia).Close)
+    return p
 }
 
 // Close release underlying C context
