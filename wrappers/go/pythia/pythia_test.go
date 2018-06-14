@@ -59,11 +59,11 @@ const (
     deblinded2 = "05a00496503c4b36c9fc447c2553387ff3c53417d5c1d2c4183e8cc84ef6fc2aade5e6cf4d4e1eda76a024803a9af3c90ffd4b991c959e101f5a18c6c373768942ad1f987d2ca80773e430e2039324943a16dfc3a90e03550a3b6dc50aa7f6160b91ade09aa99c712b9d6b6982884247e3eb3bdea58e9cf1201b587dfc6df3721a8d74a5c29e06b57c952dc26164300a0defa4fa483fda11514acfcf6ca13c73eaf67f7a8215e7a6284e1f575cf05dbf55e08801380519956a15e4c3b97e8e6c04eadee78c9d02318b7321e87c3d393e4e79ebed32d89960c1e4c2648b7216bd2d01d67330697804d30fa3c2beaca060165c27020b17c3d6273f7f5146eb24d379c97f97e5ee560390c7c7cf19710e056d521a8955ebcfc88dd38af24015c54d060997c10c430c4466613e3447229c3c2d3dbcff3e246ecbe9a7641ff13b68c72b691c211a6dc40bc9684f54e388929916eecfbfb476aaf47961413f2695ec985b25de76a8c5d5caa13520ef600b2df69e8574729026a4b5d80461348fb67d05"
 )
 
-var (
-    p = New()
-)
 
 func TestBlindStable(t *testing.T) {
+    p := New()
+    defer p.Close()
+
     for i := 0; i < 1000; i++ {
         b, s, err := p.Blind([]byte("1234"))
         if err != nil {
@@ -74,6 +74,8 @@ func TestBlindStable(t *testing.T) {
 }
 
 func TestBadBufFails(t *testing.T) {
+    p := New()
+    defer p.Close()
 
     bigBuf := make([]byte, 51)
     rand.Read(bigBuf)
@@ -87,6 +89,9 @@ func TestBadBufFails(t *testing.T) {
 }
 
 func TestBlindEvalDeblind(t *testing.T) {
+    p := New()
+    defer p.Close()
+
     vals := make(map[string]bool)
 
     sk, _, err := p.ComputeTransformationKeypair([]byte(domain1), []byte(msk1), []byte(sss1))
@@ -120,6 +125,8 @@ func TestBlindEvalDeblind(t *testing.T) {
 }
 
 func TestFullProto(t *testing.T) {
+    p := New()
+    defer p.Close()
 
     sk, pk, err := p.ComputeTransformationKeypair([]byte(domain1), []byte(msk1), []byte(sss1))
     assert.NoError(t, err)
@@ -133,6 +140,8 @@ func TestFullProto(t *testing.T) {
 }
 
 func TestUpdateWithToken(t *testing.T) {
+    p := New()
+    defer p.Close()
 
     sk, pk, err := p.ComputeTransformationKeypair([]byte(domain1), []byte(msk1), []byte(sss1))
     assert.NoError(t, err)
@@ -163,6 +172,9 @@ func TestUpdateWithToken(t *testing.T) {
 }
 
 func simpleProto(password, userName string, privateKey []byte) (blinded []byte, evald []byte, tTilde []byte, deblinded []byte, err error) {
+    p := New()
+    defer p.Close()
+
     blinded, secret, err := p.Blind([]byte(password))
     if err != nil {
         return nil, nil, nil, nil, err
@@ -177,6 +189,8 @@ func simpleProto(password, userName string, privateKey []byte) (blinded []byte, 
 }
 
 func BenchmarkBlind(b *testing.B) {
+    p := New()
+    defer p.Close()
 
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
@@ -189,6 +203,9 @@ func BenchmarkBlind(b *testing.B) {
 }
 
 func BenchmarkEval(b *testing.B) {
+    p := New()
+    defer p.Close()
+
     blinded, _, err := p.Blind([]byte(password))
     if err != nil {
         panic(err)
@@ -210,6 +227,8 @@ func BenchmarkEval(b *testing.B) {
 }
 
 func BenchmarkDeblind(b *testing.B) {
+    p := New()
+    defer p.Close()
 
     blinded, secret, err := p.Blind([]byte(password))
     if err != nil {
@@ -235,6 +254,8 @@ func BenchmarkDeblind(b *testing.B) {
 }
 
 func BenchmarkProve(b *testing.B) {
+    p := New()
+    defer p.Close()
 
     blinded, _, err := p.Blind([]byte(password))
     if err != nil {
@@ -257,6 +278,8 @@ func BenchmarkProve(b *testing.B) {
 }
 
 func BenchmarkVerify(b *testing.B) {
+    p := New()
+    defer p.Close()
 
     blinded, _, err := p.Blind([]byte(password))
     if err != nil {
@@ -284,6 +307,8 @@ func BenchmarkVerify(b *testing.B) {
 }
 
 func BenchmarkGetToken(b *testing.B) {
+    p := New()
+    defer p.Close()
 
     sk1, _, err := p.ComputeTransformationKeypair([]byte(domain1), []byte(msk1), []byte(sss1))
     if err != nil {
@@ -302,6 +327,8 @@ func BenchmarkGetToken(b *testing.B) {
 }
 
 func BenchmarkUpdateWithToken(b *testing.B) {
+    p := New()
+    defer p.Close()
 
     sk1, _, err := p.ComputeTransformationKeypair([]byte(domain1), []byte(msk1), []byte(sss1))
     if err != nil {

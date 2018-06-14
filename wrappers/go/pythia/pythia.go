@@ -71,6 +71,7 @@ func (p *Pythia) Close() {
 
 // Blind turns password into a pseudo-random string.
 func (p *Pythia) Blind(password []byte) (blindedPassword, blindingSecret []byte, err error) {
+
     defer func() {
         if r := recover(); r != nil {
             var ok bool
@@ -80,6 +81,9 @@ func (p *Pythia) Blind(password []byte) (blindedPassword, blindingSecret []byte,
             }
         }
     }()
+
+    C.vscp_pythia_init(p.ctx)
+    defer C.vscp_pythia_cleanup(p.ctx)
 
     blindedPasswordBuf := NewBuf(C.vscp_pythia_blinded_password_buf_len())
     blindingSecretBuf := NewBuf(C.vscp_pythia_blinding_secret_buf_len())
@@ -105,6 +109,9 @@ func (p *Pythia) Deblind(transformedPassword []byte, blindingSecret []byte) (deb
             }
         }
     }()
+
+    C.vscp_pythia_init(p.ctx)
+    defer C.vscp_pythia_cleanup(p.ctx)
 
     deblindedBuf := NewBuf(C.vscp_pythia_deblinded_password_buf_len())
 
@@ -141,6 +148,9 @@ func (p *Pythia) ComputeTransformationKeypair(transformationKeyId, pythiaSecret,
             }
         }
     }()
+
+    C.vscp_pythia_init(p.ctx)
+    defer C.vscp_pythia_cleanup(p.ctx)
 
     privateKeyBuf := NewBuf(C.vscp_pythia_transformation_private_key_buf_len())
     publicKeyBuf := NewBuf(C.vscp_pythia_transformation_public_key_buf_len())
@@ -180,6 +190,9 @@ func (p *Pythia) Transform(blindedPassword, tweak, transformationPrivateKey []by
         }
     }()
 
+    C.vscp_pythia_init(p.ctx)
+    defer C.vscp_pythia_cleanup(p.ctx)
+
     transformedPasswordBuf := NewBuf(C.vscp_pythia_transformed_password_buf_len())
     transformedTweakBuf := NewBuf(C.vscp_pythia_transformed_tweak_buf_len())
 
@@ -204,6 +217,9 @@ func (p *Pythia) Prove(transformedPassword, blindedPassword, transformedTweak, t
             }
         }
     }()
+
+    C.vscp_pythia_init(p.ctx)
+    defer C.vscp_pythia_cleanup(p.ctx)
 
     proofValueCBuf := NewBuf(C.vscp_pythia_proof_value_buf_len())
     proofValueUBuf := NewBuf(C.vscp_pythia_proof_value_buf_len())
@@ -235,6 +251,9 @@ func (p *Pythia) Verify(transformedPassword, blindedPassword, tweak, transformat
         }
     }()
 
+    C.vscp_pythia_init(p.ctx)
+    defer C.vscp_pythia_cleanup(p.ctx)
+
     pErr := C.vscp_pythia_verify(p.ctx, WrapData(transformedPassword), WrapData(blindedPassword), WrapData(tweak), WrapData(transformationPublicKey), WrapData(proofValueC), WrapData(proofValueU))
 
     if pErr == C.vscp_error_VERIFICATION_FAIL {
@@ -261,6 +280,9 @@ func (p *Pythia) GetPasswordUpdateToken(previousTransformationPrivateKey, newTra
         }
     }()
 
+    C.vscp_pythia_init(p.ctx)
+    defer C.vscp_pythia_cleanup(p.ctx)
+
     passwordUpdateTokenBuf := NewBuf(C.vscp_pythia_password_update_token_buf_len())
 
     pErr := C.vscp_pythia_get_password_update_token(p.ctx, WrapData(previousTransformationPrivateKey), WrapData(newTransformationPrivateKey), passwordUpdateTokenBuf.ctx)
@@ -284,6 +306,9 @@ func (p *Pythia) UpdateDeblindedWithToken(deblindedPassword, passwordUpdateToken
             }
         }
     }()
+
+    C.vscp_pythia_init(p.ctx)
+    defer C.vscp_pythia_cleanup(p.ctx)
 
     updatedDeblindedPasswordBuf := NewBuf(C.vscp_pythia_deblinded_password_buf_len())
 
