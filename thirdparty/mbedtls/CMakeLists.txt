@@ -44,11 +44,12 @@ ExternalProject_Add(mbedtls-ext
         GIT_REPOSITORY https://github.com/ARMmbed/mbedtls
         GIT_TAG mbedtls-2.9.0
         CMAKE_ARGS
-            -G${CMAKE_GENERATOR}
-            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-            -DCMAKE_INSTALL_PREFIX=${MBEDTLS_INSTALL_LOCATION}
-            -DENABLE_TESTING=OFF
-            -DENABLE_PROGRAMS=OFF
+            "-G${CMAKE_GENERATOR}"
+            "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+            "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+            "-DCMAKE_INSTALL_PREFIX=${MBEDTLS_INSTALL_LOCATION}"
+            "-DENABLE_TESTING=OFF"
+            "-DENABLE_PROGRAMS=OFF"
         )
 
 # ---------------------------------------------------------------------------
