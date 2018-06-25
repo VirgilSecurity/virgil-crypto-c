@@ -37,6 +37,15 @@
 set(MBEDTLS_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/mbedtls)
 
 # ---------------------------------------------------------------------------
+#   Create config.h file to be used in the patch step.
+# ---------------------------------------------------------------------------
+if(MBEDTLS_FEATURES_FILE)
+    include("${MBEDTLS_FEATURES_FILE}")
+endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/features-default.cmake")
+
+# ---------------------------------------------------------------------------
 #   Load MbedTLS as an external project
 # ---------------------------------------------------------------------------
 include(ExternalProject)
@@ -50,7 +59,17 @@ ExternalProject_Add(mbedtls-ext
             "-DCMAKE_INSTALL_PREFIX=${MBEDTLS_INSTALL_LOCATION}"
             "-DENABLE_TESTING=OFF"
             "-DENABLE_PROGRAMS=OFF"
+        PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_CURRENT_BINARY_DIR}/config.h"
+            "${CMAKE_CURRENT_BINARY_DIR}/mbedtls-ext-prefix/src/mbedtls-ext/include/mbedtls/config.h"
         )
+
+configure_file(
+        "${CMAKE_CURRENT_LIST_DIR}/config.h.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/config.h"
+        )
+
+ExternalProject_Add_StepDependencies(mbedtls-ext patch "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
 # ---------------------------------------------------------------------------
 #   Import MbedTLS libary as a target
@@ -68,6 +87,8 @@ set_target_properties(mbedcrypto
 
         INTERFACE_INCLUDE_DIRECTORIES
             "${MBEDTLS_INSTALL_LOCATION}/include"
+
+        FEATURES "${MBEDTLS_FEATURES}"
         )
 
 if(NOT TARGET mbed::crypto)
