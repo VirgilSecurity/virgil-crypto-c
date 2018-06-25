@@ -39,12 +39,21 @@
 #define MBEDTLS_CONFIG_H
 
 
+//
+//  Required by library vsc::foundation
+//
 #cmakedefine MBEDTLS_SHA256_C
 #cmakedefine MBEDTLS_SHA512_C
 #cmakedefine MBEDTLS_CIPHER_C
 #cmakedefine MBEDTLS_AES_C
 #cmakedefine MBEDTLS_GCM_C
 #cmakedefine MBEDTLS_MD_C
+
+//
+//  Required by library vsc::pythia
+//
+#cmakedefine MBEDTLS_CTR_DRBG_C
+#cmakedefine MBEDTLS_ENTROPY_C
 
 
 #include "check_config.h"
