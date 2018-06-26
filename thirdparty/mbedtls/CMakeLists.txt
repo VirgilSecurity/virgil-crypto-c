@@ -45,6 +45,11 @@ endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/features-default.cmake")
 
+configure_file(
+        "${CMAKE_CURRENT_LIST_DIR}/config.h.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/config.h"
+        )
+
 # ---------------------------------------------------------------------------
 #   Load MbedTLS as an external project
 # ---------------------------------------------------------------------------
@@ -64,11 +69,9 @@ ExternalProject_Add(mbedtls-ext
             "${CMAKE_CURRENT_BINARY_DIR}/mbedtls-ext-prefix/src/mbedtls-ext/include/mbedtls/config.h"
         )
 
-configure_file(
-        "${CMAKE_CURRENT_LIST_DIR}/config.h.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/config.h"
-        )
-
+#
+# Add dependency to the file 'config.h' to trigger patch step each time this file is changed.
+#
 ExternalProject_Add_StepDependencies(mbedtls-ext patch "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
 # ---------------------------------------------------------------------------
