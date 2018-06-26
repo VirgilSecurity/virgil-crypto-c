@@ -32,10 +32,14 @@
 
 include_guard()
 
+#
+#   Define boolean variable with feature name and value ON,
+#   and add given feature to the features list.
+#
 if(NOT COMMAND _add_feature)
-    macro(_add_feature list name value)
+    macro(_add_feature list name)
         if(NOT DEFINED ${name})
-            set(${name} ${value})
+            set(${name} ON)
 
             if(${name})
                 list(APPEND ${list} ${name})
@@ -46,13 +50,13 @@ endif()
 
 set(MBEDTLS_FEATURES)
 
-_add_feature(MBEDTLS_FEATURES MBEDTLS_SHA256_C ON)
-_add_feature(MBEDTLS_FEATURES MBEDTLS_SHA512_C ON)
-_add_feature(MBEDTLS_FEATURES MBEDTLS_CIPHER_C ON)
-_add_feature(MBEDTLS_FEATURES MBEDTLS_AES_C ON)
-_add_feature(MBEDTLS_FEATURES MBEDTLS_GCM_C ON)
-_add_feature(MBEDTLS_FEATURES MBEDTLS_MD_C ON)
-_add_feature(MBEDTLS_FEATURES MBEDTLS_CTR_DRBG_C ON)
-_add_feature(MBEDTLS_FEATURES MBEDTLS_ENTROPY_C ON)
+_add_feature(MBEDTLS_FEATURES MBEDTLS_SHA256_C)
+_add_feature(MBEDTLS_FEATURES MBEDTLS_SHA512_C)
+_add_feature(MBEDTLS_FEATURES MBEDTLS_CIPHER_C)
+_add_feature(MBEDTLS_FEATURES MBEDTLS_AES_C)
+_add_feature(MBEDTLS_FEATURES MBEDTLS_GCM_C)
+_add_feature(MBEDTLS_FEATURES MBEDTLS_MD_C)
+_add_feature(MBEDTLS_FEATURES MBEDTLS_CTR_DRBG_C)
+_add_feature(MBEDTLS_FEATURES MBEDTLS_ENTROPY_C)
 
 list(REMOVE_DUPLICATES MBEDTLS_FEATURES)
