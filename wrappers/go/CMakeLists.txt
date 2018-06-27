@@ -34,15 +34,26 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_go_common VERSION 5.0.0 LANGUAGES C)
+project(virgil_crypto_go VERSION 5.0.0 LANGUAGES C)
 
 #
-#   Install Golang files
+# Derive installation path.
+#
+if(VIRGIL_INSTALL_WRAP_STANDALONE)
+    get_filename_component(GO_DESTINATION "${VIRGIL_INSTALL_WRAP_PREFIX}/go" ABSOLUTE)
+else()
+    set(GO_DESTINATION "${VIRGIL_INSTALL_WRAP_PREFIX}")
+endif()
+
+#
+#   Install Golang files.
 #
 install(
         DIRECTORY
-        "${CMAKE_CURRENT_LIST_DIR}/foundation"
-        "${CMAKE_CURRENT_LIST_DIR}/pythia"
-
-        DESTINATION "${CMAKE_INSTALL_PREFIX}"
+            "${CMAKE_CURRENT_LIST_DIR}/foundation"
+            "${CMAKE_CURRENT_LIST_DIR}/pythia"
+        DESTINATION
+            "${GO_DESTINATION}"
+        FILES_MATCHING PATTERN
+            "*.go"
         )
