@@ -46,7 +46,7 @@ else()
 endif()
 
 #
-#   Install Golang files.
+# Install Golang files.
 #
 install(
         DIRECTORY
