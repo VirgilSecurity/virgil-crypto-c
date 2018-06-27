@@ -36,8 +36,9 @@
 # ---------------------------------------------------------------------------
 set(MBEDTLS_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/mbedtls)
 
+
 # ---------------------------------------------------------------------------
-#   Create config.h file to be used in the patch step.
+#   Create config.h file to be used in the patch step
 # ---------------------------------------------------------------------------
 if(MBEDTLS_FEATURES_FILE)
     include("${MBEDTLS_FEATURES_FILE}")
@@ -50,15 +51,17 @@ configure_file(
         "${CMAKE_CURRENT_BINARY_DIR}/config.h"
         )
 
+
 # ---------------------------------------------------------------------------
-#   Load MbedTLS as an external project
+#   Load library as an external project
 # ---------------------------------------------------------------------------
 include(ExternalProject)
 ExternalProject_Add(mbedtls-ext
-        GIT_REPOSITORY https://github.com/ARMmbed/mbedtls
-        GIT_TAG mbedtls-2.9.0
+        GIT_REPOSITORY
+            https://github.com/ARMmbed/mbedtls
+        GIT_TAG
+            mbedtls-2.9.0
         CMAKE_ARGS
-            "-G${CMAKE_GENERATOR}"
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
             "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
             "-DCMAKE_INSTALL_PREFIX=${MBEDTLS_INSTALL_LOCATION}"
@@ -67,21 +70,22 @@ ExternalProject_Add(mbedtls-ext
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_CURRENT_BINARY_DIR}/config.h"
             "${CMAKE_CURRENT_BINARY_DIR}/mbedtls-ext-prefix/src/mbedtls-ext/include/mbedtls/config.h"
+        BUILD_BYPRODUCTS
+            "${MBEDTLS_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}mbedcrypto${CMAKE_STATIC_LIBRARY_SUFFIX}"
         )
 
-#
 # Add dependency to the file 'config.h' to trigger patch step each time this file is changed.
-#
 ExternalProject_Add_StepDependencies(mbedtls-ext patch "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
+
 # ---------------------------------------------------------------------------
-#   Import MbedTLS libary as a target
+#   Import library as a target
 # ---------------------------------------------------------------------------
+file(MAKE_DIRECTORY ${MBEDTLS_INSTALL_LOCATION}/include)
+
 add_library(mbedcrypto STATIC IMPORTED GLOBAL)
 
 add_dependencies(mbedcrypto mbedtls-ext)
-
-file(MAKE_DIRECTORY ${MBEDTLS_INSTALL_LOCATION}/include)
 
 set_target_properties(mbedcrypto
         PROPERTIES
@@ -94,6 +98,10 @@ set_target_properties(mbedcrypto
         FEATURES "${MBEDTLS_FEATURES}"
         )
 
+
+# ---------------------------------------------------------------------------
+#   Alias library alias
+# ---------------------------------------------------------------------------
 if(NOT TARGET mbed::crypto)
     add_library(mbed::crypto ALIAS mbedcrypto)
 endif()
@@ -104,18 +112,23 @@ endif()
 # ---------------------------------------------------------------------------
 
 #
-# Install binaries
+# Install headers.
 #
-install(
-        DIRECTORY "${MBEDTLS_INSTALL_LOCATION}/lib/"
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-        PATTERN "cmake" EXCLUDE
-        )
+if(VIRGIL_INSTALL_DEPS_HDRS)
+    install(
+            DIRECTORY "${MBEDTLS_INSTALL_LOCATION}/include/"
+            DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+            )
+endif()
 
 #
-# Install headers
+# Install libraries.
 #
-install(
-        DIRECTORY "${MBEDTLS_INSTALL_LOCATION}/include/"
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-        )
+if(VIRGIL_INSTALL_DEPS_LIBS)
+    install(
+            DIRECTORY "${MBEDTLS_INSTALL_LOCATION}/lib/"
+            DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            FILES_MATCHING REGEX "mbedcrypto"
+            PATTERN "cmake" EXCLUDE
+            )
+endif()
