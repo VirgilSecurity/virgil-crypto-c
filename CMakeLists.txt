@@ -37,17 +37,72 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 project(virgil-crypto-c-top VERSION 0.1.0 LANGUAGES C)
 
 # ---------------------------------------------------------------------------
-#   Add helper modules
+#   Helper modules
 # ---------------------------------------------------------------------------
 include("cmake/clangformat.cmake")
-include("GNUInstallDirs")
 
 
 # ---------------------------------------------------------------------------
-#   Options
+#   Build options
 # ---------------------------------------------------------------------------
+
+#
+# Test & bench
+#
 option(ENABLE_TESTING "On/Off library integration tests." ON)
 option(ENABLE_BENCHMARKS "On/Off build library benchmarks." ON)
+
+#
+# Libraries
+#
+option(VIRGIL_COMMON "Build 'common' library" ON)
+option(VIRGIL_FOUNDATION "Build 'foundation' library" ON)
+option(VIRGIL_PYTHIA "Build 'pythia' library" ON)
+
+#
+# Wrappers
+#
+option(VIRGIL_WRAP_ALL "Build all available wrappers on the given platform" ON)
+option(VIRGIL_WRAP_GO "Build 'Golang' wrapper" OFF)
+
+
+# ---------------------------------------------------------------------------
+#   Install options
+# ---------------------------------------------------------------------------
+
+#
+# Core
+#
+option(VIRGIL_INSTALL_HDRS "Install headers" ON)
+option(VIRGIL_INSTALL_LIBS "Install libraries" ON)
+option(VIRGIL_INSTALL_CMAKE "Install CMake configuration files" ON)
+
+#
+# External dependencies
+#
+option(VIRGIL_INSTALL_DEPS_HDRS "Install dependencies headers" ON)
+option(VIRGIL_INSTALL_DEPS_LIBS "Install dependencies libraries" ON)
+option(VIRGIL_INSTALL_DEPS_CMAKE "Install dependencies CMake configuration file" ON)
+
+#
+# Wrappers
+#
+option(VIRGIL_INSTALL_WRAP_STANDALONE "Install each wrapper to separate directory" ON)
+
+
+# ---------------------------------------------------------------------------
+#   Installation paths options
+# ---------------------------------------------------------------------------
+
+#
+# Use common options from the module 'GNUInstallDirs'.
+#
+include(GNUInstallDirs)
+
+#
+# Define installation options for wrappers.
+#
+set(VIRGIL_INSTALL_WRAP_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Path where available wrappers will be installed")
 
 
 # ---------------------------------------------------------------------------
@@ -57,25 +112,32 @@ option(ENABLE_BENCHMARKS "On/Off build library benchmarks." ON)
 #
 # MbedTLS
 #
-add_subdirectory ("thirdparty/mbedtls")
+if(VIRGIL_FOUNDATION OR VIRGIL_PYTHIA)
+    add_subdirectory ("thirdparty/mbedtls")
+endif()
 
 #
 # Pythia
 #
-add_subdirectory ("thirdparty/pythia")
+if(VIRGIL_PYTHIA)
+    add_subdirectory ("thirdparty/pythia")
+endif()
 
 #
-# Library that force compiler to the pedantic mode.
+# Interface library that contains pedantic diagnostic options for compiler.
 #
 add_library(enable_pedantic INTERFACE)
 target_compile_options(enable_pedantic
         INTERFACE
-        $<$<C_COMPILER_ID:GNU>:-Wall -Werror -pedantic>
-        $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>>:-Werror -Wall -pedantic -Wassign-enum>
+        $<$<C_COMPILER_ID:GNU>:
+                -Wall -Werror -pedantic>
+
+        $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>>:
+                -Werror -Wall -pedantic -Wassign-enum>
         )
 
 #
-# Library that force compiler to the profiling mode.
+# Interface library that contains profiling options for compiler.
 #
 add_library(enable_profiling INTERFACE)
 target_compile_options(enable_profiling INTERFACE $<$<C_COMPILER_ID:GNU>:-pg>)
@@ -85,15 +147,26 @@ target_link_libraries(enable_profiling INTERFACE $<$<C_COMPILER_ID:GNU>:-pg>)
 # ---------------------------------------------------------------------------
 #   Library core libraries
 # ---------------------------------------------------------------------------
-add_subdirectory ("library/common")
-add_subdirectory ("library/foundation")
-add_subdirectory ("library/pythia")
+
+if(VIRGIL_COMMON)
+    add_subdirectory ("library/common")
+endif()
+
+if(VIRGIL_FOUNDATION)
+    add_subdirectory ("library/foundation")
+endif()
+
+if(VIRGIL_PYTHIA)
+    add_subdirectory ("library/pythia")
+endif()
 
 
 # ---------------------------------------------------------------------------
 #   Library wrappers
 # ---------------------------------------------------------------------------
-add_subdirectory ("wrappers/go")
+if(VIRGIL_WRAP_ALL OR VIRGIL_WRAP_GO)
+    add_subdirectory ("wrappers/go")
+endif()
 
 
 # ---------------------------------------------------------------------------
@@ -106,41 +179,42 @@ endif()
 
 
 # ---------------------------------------------------------------------------
-#   Integration tests
+#   Benchmarks
 # ---------------------------------------------------------------------------
 if(ENABLE_BENCHMARKS)
     add_subdirectory(benchmarks)
 endif()
 
+
 # ---------------------------------------------------------------------------
-#   Show code stats
+#   Code line stats
 # ---------------------------------------------------------------------------
 find_program (CLOC_EXE cloc)
 
 if(CLOC_EXE)
     add_custom_target(cloc-common
-        COMMAND ${CLOC_EXE}
+            COMMAND ${CLOC_EXE}
                 "${CMAKE_CURRENT_LIST_DIR}/library/common/include/virgil"
                 "${CMAKE_CURRENT_LIST_DIR}/library/common/include/virgil/private"
                 "${CMAKE_CURRENT_LIST_DIR}/library/common/src"
-        COMMENT "Calculate lines of the 'common' library..."
-    )
+            COMMENT "Calculate lines of the 'common' library..."
+            )
 
     add_custom_target(cloc-foundation
-        COMMAND ${CLOC_EXE}
+            COMMAND ${CLOC_EXE}
                 "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil"
                 "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil/private"
                 "${CMAKE_CURRENT_LIST_DIR}/library/foundation/src"
-        COMMENT "Calculate lines of the 'foundation' library..."
-    )
+            COMMENT "Calculate lines of the 'foundation' library..."
+            )
 
     add_custom_target(cloc-pythia
-        COMMAND ${CLOC_EXE}
+            COMMAND ${CLOC_EXE}
                 "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil"
                 "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/private"
                 "${CMAKE_CURRENT_LIST_DIR}/library/pythia/src"
-        COMMENT "Calculate lines of the 'pythia' library..."
-    )
+            COMMENT "Calculate lines of the 'pythia' library..."
+            )
 
     add_custom_target(cloc)
     add_dependencies(cloc cloc-common cloc-foundation cloc-pythia)
