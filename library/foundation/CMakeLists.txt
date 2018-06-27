@@ -54,179 +54,179 @@ endif()
 #
 # Define sources
 #
-add_library(vsc_foundation "")
-target_sources(vsc_foundation
-        PUBLIC
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_aes256_gcm.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_assert.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_cipher.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_cipher_auth.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_cipher_info.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_decrypt.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_encrypt.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_error.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_ex_kdf.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hash.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hash_info.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hash_stream.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hkdf.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hmac.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hmac224.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hmac256.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hmac384.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hmac512.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hmac_info.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hmac_stream.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_impl.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_kdf.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_kdf1.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_kdf2.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_library.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_memory.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_sha224.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_sha256.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_sha384.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_sha512.h"
-
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_aes256_gcm_impl.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_api_private.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_cipher_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_cipher_auth_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_cipher_info_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_decrypt_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_encrypt_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_ex_kdf_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hash_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hash_info_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hash_stream_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hkdf_impl.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hmac_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hmac_info_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hmac_stream_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hmac224_impl.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hmac256_impl.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hmac384_impl.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hmac512_impl.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_impl_private.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_kdf1_impl.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_kdf2_impl.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_kdf_api.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_sha224_impl.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_sha256_impl.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_sha384_impl.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_sha512_impl.h"
-
+add_library(foundation "")
+target_sources(foundation
         PRIVATE
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_gcm.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_gcm_impl.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_gcm_internal.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_gcm_internal.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_api_private.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_assert.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher_auth.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher_auth_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher_info.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher_info_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_decrypt.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_decrypt_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_encrypt.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_encrypt_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_error.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_info.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_info_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_stream.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_stream_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hkdf.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hkdf_impl.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hkdf_internal.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hkdf_internal.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac224.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac224_impl.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac224_internal.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac224_internal.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac256.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac256_impl.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac256_internal.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac256_internal.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac384.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac384_impl.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac384_internal.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac384_internal.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac512.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac512_impl.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac512_internal.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac512_internal.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac_info.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac_info_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac_stream.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac_stream_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_impl.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_impl_private.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf1.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf1_impl.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf1_internal.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf1_internal.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2_impl.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2_internal.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2_internal.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf_api.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_library.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_memory.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224_impl.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224_internal.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224_internal.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha256.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha256_impl.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha256_internal.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha256_internal.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha384.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha384_impl.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha384_internal.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha384_internal.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha512.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha512_impl.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha512_internal.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha512_internal.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_aes256_gcm_impl.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_api_private.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_cipher_api.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_cipher_auth_api.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_cipher_info_api.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_decrypt_api.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_encrypt_api.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_ex_kdf_api.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hash_api.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hash_info_api.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hash_stream_api.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hkdf_impl.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hmac224_impl.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hmac256_impl.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hmac384_impl.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hmac512_impl.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hmac_api.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hmac_info_api.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_hmac_stream_api.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_impl_private.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_kdf1_impl.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_kdf2_impl.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_kdf_api.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_sha224_impl.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_sha256_impl.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_sha384_impl.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private/vscf_sha512_impl.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_aes256_gcm.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_api.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_assert.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_cipher.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_cipher_auth.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_cipher_info.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_decrypt.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_encrypt.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_error.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_ex_kdf.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hash.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hash_info.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hash_stream.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hkdf.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hmac.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hmac224.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hmac256.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hmac384.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hmac512.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hmac_info.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_hmac_stream.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_impl.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_kdf.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_kdf1.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_kdf2.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_library.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_memory.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_sha224.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_sha256.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_sha384.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_sha512.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_gcm.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_gcm_impl.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_gcm_internal.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_aes256_gcm_internal.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_api.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_api_private.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_assert.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher_api.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher_auth.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher_auth_api.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher_info.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher_info_api.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_decrypt.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_decrypt_api.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_encrypt.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_encrypt_api.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_error.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_api.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_info.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_info_api.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_stream.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_stream_api.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hkdf.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hkdf_impl.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hkdf_internal.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hkdf_internal.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac224.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac224_impl.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac224_internal.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac224_internal.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac256.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac256_impl.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac256_internal.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac256_internal.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac384.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac384_impl.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac384_internal.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac384_internal.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac512.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac512_impl.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac512_internal.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac512_internal.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac_api.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac_info.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac_info_api.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac_stream.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hmac_stream_api.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_impl.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_impl_private.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf1.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf1_impl.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf1_internal.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf1_internal.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2_impl.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2_internal.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2_internal.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf_api.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_library.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_memory.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224_impl.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224_internal.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224_internal.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha256.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha256_impl.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha256_internal.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha256_internal.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha384.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha384_impl.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha384_internal.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha384_internal.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha512.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha512_impl.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha512_internal.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha512_internal.h"
         )
 
 #
 # Define include headers
 #
-target_include_directories(vsc_foundation
+target_include_directories(foundation
         PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
+            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
 
 #
 # Link to dependencies
 #
-target_link_libraries(vsc_foundation PUBLIC mbed::crypto)
-
+target_link_libraries(foundation PUBLIC mbed::crypto)
 
 #
 # Define specific compilation and linkage flags.
 #
-set_target_properties(vsc_foundation PROPERTIES
+set_target_properties(foundation PROPERTIES
         C_STANDARD "99"
         DEBUG_POSTFIX "_d"
+        OUTPUT_NAME vsc_foundation
         )
 
-
-get_target_property(SOURCES vsc_foundation SOURCES)
+#
+# Add __FILENAME__ definition, that handles file name without path, to each source file.
+#
+get_target_property(SOURCES foundation SOURCES)
 foreach(src ${SOURCES})
     get_filename_component(file_name "${src}" NAME)
     get_filename_component(file_ext "${src}" EXT)
@@ -236,28 +236,101 @@ foreach(src ${SOURCES})
     endif()
 endforeach()
 
-
-if(TARGET enable_profiling)
-    target_link_libraries(vsc_foundation PUBLIC $<$<CONFIG:Debug>:enable_profiling>)
+#
+# Enable profiling
+#
+if(COMMAND enable_target_profiling)
+    enable_target_profiling(foundation)
 else()
-    message("To enable library profiling create target 'enable_profiling'.")
+    message(STATUS "To enable profiling create function 'enable_target_profiling(<target>)'.")
 endif()
 
-
-if(TARGET enable_pedantic)
-    target_link_libraries(vsc_foundation PRIVATE enable_pedantic)
+#
+# Enable pedantic mode
+#
+if(COMMAND enable_target_pedantic)
+    enable_target_pedantic(foundation)
 else()
-    message("To compile library in pedantic mode create target 'enable_pedantic'.")
+    message(STATUS "To enable pedantic mode create function 'enable_target_pedantic(<target>)'.")
 endif()
 
 #
 # Add library alias
 #
-add_library(vsc::foundation ALIAS vsc_foundation)
+add_library(vsc::foundation ALIAS foundation)
 
 #
 # Format code
 #
 if(COMMAND add_clangformat)
-    add_clangformat(vsc_foundation)
+    add_clangformat(foundation)
 endif()
+
+# ---------------------------------------------------------------------------
+#   Install library
+# ---------------------------------------------------------------------------
+include (CMakePackageConfigHelpers)
+
+#
+# Install headers.
+#
+if(VIRGIL_INSTALL_HDRS)
+    install(
+            DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/"
+            DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+            )
+endif()
+
+#
+# Install libraries.
+#
+if(VIRGIL_INSTALL_LIBS)
+    install(
+            TARGETS foundation
+            EXPORT vsc_foundationTargets
+            LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            )
+endif()
+
+#
+# Install CMake configuration files.
+#
+if(VIRGIL_INSTALL_CMAKE)
+    #
+    # Create 'main' config file
+    #
+    configure_package_config_file (
+            "Config.cmake.in" "vsc_foundationConfig.cmake"
+            INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/vsc_foundation"
+            )
+
+    #
+    # Create 'version' config file
+    #
+    write_basic_package_version_file(
+            "vsc_foundationConfigVersion.cmake"
+            COMPATIBILITY SameMajorVersion
+            )
+
+    #
+    # Install all config files
+    #
+    install(
+            FILES
+                "${CMAKE_CURRENT_BINARY_DIR}/vsc_foundationConfig.cmake"
+                "${CMAKE_CURRENT_BINARY_DIR}/vsc_foundationConfigVersion.cmake"
+            DESTINATION
+                "${CMAKE_INSTALL_LIBDIR}/cmake/vsc_foundation"
+            )
+
+    install(
+            EXPORT
+                vsc_foundationTargets
+            NAMESPACE
+                vsc::
+            DESTINATION
+                "${CMAKE_INSTALL_LIBDIR}/cmake/vsc_foundation"
+            )
+endif()
+

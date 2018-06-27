@@ -34,12 +34,13 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil-crypto-c-top VERSION 0.1.0 LANGUAGES C)
+project(virgil_crypto_c_top VERSION 0.1.0 LANGUAGES C)
 
 # ---------------------------------------------------------------------------
 #   Helper modules
 # ---------------------------------------------------------------------------
 include("cmake/clangformat.cmake")
+include("cmake/helpers.cmake")
 
 
 # ---------------------------------------------------------------------------
@@ -123,26 +124,6 @@ if(VIRGIL_PYTHIA)
     add_subdirectory ("thirdparty/pythia")
 endif()
 
-#
-# Interface library that contains pedantic diagnostic options for compiler.
-#
-add_library(enable_pedantic INTERFACE)
-target_compile_options(enable_pedantic
-        INTERFACE
-        $<$<C_COMPILER_ID:GNU>:
-                -Wall -Werror -pedantic>
-
-        $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>>:
-                -Werror -Wall -pedantic -Wassign-enum>
-        )
-
-#
-# Interface library that contains profiling options for compiler.
-#
-add_library(enable_profiling INTERFACE)
-target_compile_options(enable_profiling INTERFACE $<$<C_COMPILER_ID:GNU>:-pg>)
-target_link_libraries(enable_profiling INTERFACE $<$<C_COMPILER_ID:GNU>:-pg>)
-
 
 # ---------------------------------------------------------------------------
 #   Library core libraries
@@ -189,11 +170,11 @@ endif()
 # ---------------------------------------------------------------------------
 #   Code line stats
 # ---------------------------------------------------------------------------
-find_program (CLOC_EXE cloc)
+find_program (CLOC_EXECUTABLE cloc)
 
-if(CLOC_EXE)
+if(CLOC_EXECUTABLE)
     add_custom_target(cloc-common
-            COMMAND ${CLOC_EXE}
+            COMMAND ${CLOC_EXECUTABLE}
                 "${CMAKE_CURRENT_LIST_DIR}/library/common/include/virgil"
                 "${CMAKE_CURRENT_LIST_DIR}/library/common/include/virgil/private"
                 "${CMAKE_CURRENT_LIST_DIR}/library/common/src"
@@ -201,7 +182,7 @@ if(CLOC_EXE)
             )
 
     add_custom_target(cloc-foundation
-            COMMAND ${CLOC_EXE}
+            COMMAND ${CLOC_EXECUTABLE}
                 "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil"
                 "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil/private"
                 "${CMAKE_CURRENT_LIST_DIR}/library/foundation/src"
@@ -209,7 +190,7 @@ if(CLOC_EXE)
             )
 
     add_custom_target(cloc-pythia
-            COMMAND ${CLOC_EXE}
+            COMMAND ${CLOC_EXECUTABLE}
                 "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil"
                 "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/private"
                 "${CMAKE_CURRENT_LIST_DIR}/library/pythia/src"

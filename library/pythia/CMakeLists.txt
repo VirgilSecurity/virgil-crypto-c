@@ -76,52 +76,53 @@ endif()
 #
 # Define sources
 #
-add_library(vsc_pythia "")
-target_sources(vsc_pythia
-        PUBLIC
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_assert.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_error.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_library.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_memory.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_pythia.h"
-
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/private/vscp_pythia_defs.h"
-
+add_library(pythia_wrap "")
+target_sources(pythia_wrap
         PRIVATE
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscp_assert.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscp_error.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscp_library.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscp_memory.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscp_pythia.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vscp_pythia_defs.c"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/private/vscp_pythia_defs.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_assert.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_error.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_library.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_memory.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_pythia.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_assert.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_error.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_library.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_memory.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_pythia.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_pythia_defs.c"
         )
 
 #
 # Define include headers
 #
-target_include_directories(vsc_pythia
+target_include_directories(pythia_wrap
         PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/private>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/private>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
+            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
 
 #
 # Link to dependencies
 #
-target_link_libraries(vsc_pythia PUBLIC vsc_common mbed::crypto pythia relic)
+target_link_libraries(pythia_wrap PUBLIC vsc::common mbed::crypto pythia relic)
 
 #
 # Define specific compilation and linkage flags.
 #
-set_target_properties(vsc_pythia PROPERTIES
+set_target_properties(pythia_wrap PROPERTIES
         C_STANDARD "99"
         DEBUG_POSTFIX "_d"
+        OUTPUT_NAME vsc_pythia
         )
 
-
-get_target_property(SOURCES vsc_pythia SOURCES)
+#
+# Add __FILENAME__ definition, that handles file name without path, to each source file.
+#
+get_target_property(SOURCES pythia_wrap SOURCES)
 foreach(src ${SOURCES})
     get_filename_component(file_name "${src}" NAME)
     get_filename_component(file_ext "${src}" EXT)
@@ -131,51 +132,102 @@ foreach(src ${SOURCES})
     endif()
 endforeach()
 
-
-if(TARGET enable_profiling)
-    target_link_libraries(vsc_pythia PUBLIC $<$<CONFIG:Debug>:enable_profiling>)
+#
+# Enable profiling
+#
+if(COMMAND enable_target_profiling)
+    enable_target_profiling(pythia_wrap)
 else()
-    message("To enable pythia profiling create target 'enable_profiling'.")
+    message(STATUS "To enable profiling create function 'enable_target_profiling(<target>)'.")
 endif()
 
-
-if(TARGET enable_pedantic)
-    target_link_libraries(vsc_pythia PRIVATE enable_pedantic)
+#
+# Enable pedantic mode
+#
+if(COMMAND enable_target_pedantic)
+    enable_target_pedantic(pythia_wrap)
 else()
-    message("To compile pythia in pedantic mode create target 'enable_pedantic'.")
+    message(STATUS "To enable pedantic mode create function 'enable_target_pedantic(<target>)'.")
 endif()
 
 #
 # Add library alias
 #
-add_library(vsc::pythia ALIAS vsc_pythia)
+add_library(vsc::pythia ALIAS pythia_wrap)
 
 #
 # Format code
 #
 if(COMMAND add_clangformat)
-    add_clangformat(vsc_pythia)
+    add_clangformat(pythia_wrap)
 endif()
 
 
 # ---------------------------------------------------------------------------
 #   Install library
 # ---------------------------------------------------------------------------
+include (CMakePackageConfigHelpers)
 
 #
-# Install binaries
+# Install headers.
 #
-install(
-        TARGETS vsc_pythia
-        LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-        ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-        )
+if(VIRGIL_INSTALL_HDRS)
+    install(
+            DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/"
+            DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+            )
+endif()
 
 #
-# Install headers
+# Install libraries.
 #
-install(
-        DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/"
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-        )
+if(VIRGIL_INSTALL_LIBS)
+    install(
+            TARGETS pythia_wrap
+            EXPORT vsc_pythiaTargets
+            LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            )
+endif()
+
+#
+# Install CMake configuration files.
+#
+if(VIRGIL_INSTALL_CMAKE)
+    #
+    # Create 'main' config file
+    #
+    configure_package_config_file (
+            "Config.cmake.in" "vsc_pythiaConfig.cmake"
+            INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/vsc_pythia"
+            )
+
+    #
+    # Create 'version' config file
+    #
+    write_basic_package_version_file(
+            "vsc_pythiaConfigVersion.cmake"
+            COMPATIBILITY SameMajorVersion
+            )
+
+    #
+    # Install all config files
+    #
+    install(
+            FILES
+                "${CMAKE_CURRENT_BINARY_DIR}/vsc_pythiaConfig.cmake"
+                "${CMAKE_CURRENT_BINARY_DIR}/vsc_pythiaConfigVersion.cmake"
+            DESTINATION
+                "${CMAKE_INSTALL_LIBDIR}/cmake/vsc_pythia"
+            )
+
+    install(
+            EXPORT
+                vsc_pythiaTargets
+            NAMESPACE
+                vsc::
+            DESTINATION
+                "${CMAKE_INSTALL_LIBDIR}/cmake/vsc_pythia"
+            )
+endif()
 

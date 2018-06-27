@@ -44,50 +44,51 @@ project(virgil_crypto_c_common VERSION 0.1.0 LANGUAGES C)
 #
 # Define sources
 #
-add_library(vsc_common "")
-target_sources(vsc_common
-        PUBLIC
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_assert.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_buffer.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_data.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_error.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_library.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_memory.h"
-
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/private/vsc_buffer_defs.h"
-
+add_library(common "")
+target_sources(common
         PRIVATE
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsc_assert.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsc_buffer.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsc_buffer_defs.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsc_data.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsc_error.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsc_library.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/vsc_memory.c"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/private/vsc_buffer_defs.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_assert.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_buffer.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_data.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_error.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_library.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_memory.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vsc_assert.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vsc_buffer.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vsc_buffer_defs.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vsc_data.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vsc_error.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vsc_library.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vsc_memory.c"
         )
 
 #
 # Define include headers
 #
-target_include_directories(vsc_common
+target_include_directories(common
         PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/common>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/private>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/common>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/private>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
+            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
 
 
 #
 # Define specific compilation and linkage flags.
 #
-set_target_properties(vsc_common PROPERTIES
+set_target_properties(common PROPERTIES
         C_STANDARD "99"
         DEBUG_POSTFIX "_d"
+        OUTPUT_NAME vsc_common
         )
 
-
-get_target_property(SOURCES vsc_common SOURCES)
+#
+# Add __FILENAME__ definition, that handles file name without path, to each source file.
+#
+get_target_property(SOURCES common SOURCES)
 foreach(src ${SOURCES})
     get_filename_component(file_name "${src}" NAME)
     get_filename_component(file_ext "${src}" EXT)
@@ -97,50 +98,100 @@ foreach(src ${SOURCES})
     endif()
 endforeach()
 
-
-if(TARGET enable_profiling)
-    target_link_libraries(vsc_common PUBLIC $<$<CONFIG:Debug>:enable_profiling>)
+#
+# Enable profiling
+#
+if(COMMAND enable_target_profiling)
+    enable_target_profiling(common)
 else()
-    message("To enable pythia profiling create target 'enable_profiling'.")
+    message(STATUS "To enable profiling create function 'enable_target_profiling(<target>)'.")
 endif()
 
-
-if(TARGET enable_pedantic)
-    target_link_libraries(vsc_common PRIVATE enable_pedantic)
+#
+# Enable pedantic mode
+#
+if(COMMAND enable_target_pedantic)
+    enable_target_pedantic(common)
 else()
-    message("To compile pythia in pedantic mode create target 'enable_pedantic'.")
+    message(STATUS "To enable pedantic mode create function 'enable_target_pedantic(<target>)'.")
 endif()
 
 #
 # Add library alias
 #
-add_library(vsc::common ALIAS vsc_common)
+add_library(vsc::common ALIAS common)
 
 #
 # Format code
 #
 if(COMMAND add_clangformat)
-    add_clangformat(vsc_common)
+    add_clangformat(common)
 endif()
 
 # ---------------------------------------------------------------------------
 #   Install library
 # ---------------------------------------------------------------------------
+include (CMakePackageConfigHelpers)
 
 #
-# Install binaries
+# Install headers.
 #
-install(
-        TARGETS vsc_common
-        LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-        ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-        )
+if(VIRGIL_INSTALL_HDRS)
+    install(
+            DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/"
+            DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+            )
+endif()
 
 #
-# Install headers
+# Install libraries.
 #
-install(
-        DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/"
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-        )
+if(VIRGIL_INSTALL_LIBS)
+    install(
+            TARGETS common
+            EXPORT vsc_commonTargets
+            LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            )
+endif()
 
+#
+# Install CMake configuration files.
+#
+if(VIRGIL_INSTALL_CMAKE)
+    #
+    # Create 'main' config file
+    #
+    configure_package_config_file (
+            "Config.cmake.in" "vsc_commonConfig.cmake"
+            INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/vsc_common"
+            )
+
+    #
+    # Create 'version' config file
+    #
+    write_basic_package_version_file(
+            "vsc_commonConfigVersion.cmake"
+            COMPATIBILITY SameMajorVersion
+            )
+
+    #
+    # Install all config files
+    #
+    install(
+            FILES
+                "${CMAKE_CURRENT_BINARY_DIR}/vsc_commonConfig.cmake"
+                "${CMAKE_CURRENT_BINARY_DIR}/vsc_commonConfigVersion.cmake"
+            DESTINATION
+                "${CMAKE_INSTALL_LIBDIR}/cmake/vsc_common"
+            )
+
+    install(
+            EXPORT
+                vsc_commonTargets
+            NAMESPACE
+                vsc::
+            DESTINATION
+                "${CMAKE_INSTALL_LIBDIR}/cmake/vsc_common"
+            )
+endif()
