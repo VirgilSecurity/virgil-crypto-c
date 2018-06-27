@@ -35,57 +35,64 @@
 #   Options
 # ---------------------------------------------------------------------------
 set(PYTHIA_INSTALL_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/pythia")
-set(PYTHIA_SRC_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/pythia-ext-prefix/src/pythia-ext/src")
+
 
 # ---------------------------------------------------------------------------
-#   Load MbedTLS as an external project
+#   Load library as an external project
 # ---------------------------------------------------------------------------
 include(ExternalProject)
 ExternalProject_Add(pythia-ext
-        GIT_REPOSITORY https://github.com/VirgilSecurity/pythia
-        GIT_TAG 0.2.1-alpha
+        GIT_REPOSITORY
+            https://github.com/VirgilSecurity/pythia
+        GIT_TAG
+            0.2.2-alpha
         CMAKE_ARGS
-            "-G${CMAKE_GENERATOR}"
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
             "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
             "-DCMAKE_INSTALL_PREFIX=${PYTHIA_INSTALL_LOCATION}"
             "-DENABLE_TESTING=OFF"
             "-DRELIC_USE_PTHREAD=ON"
             "-DRELIC_USE_EXT_RNG=ON"
+        BUILD_BYPRODUCTS
+            "${PYTHIA_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}pythia${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            "${PYTHIA_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}pythia_d${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            "${PYTHIA_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}relic_s${CMAKE_STATIC_LIBRARY_SUFFIX}"
         )
 
+
 # ---------------------------------------------------------------------------
-#   Import MbedTLS libary as a target
+#   Import library as a target
 # ---------------------------------------------------------------------------
+file(MAKE_DIRECTORY ${PYTHIA_INSTALL_LOCATION}/include)
+
+#
+# Pythia
+#
 add_library(pythia STATIC IMPORTED GLOBAL)
-add_library(relic STATIC IMPORTED GLOBAL)
 
 add_dependencies(pythia pythia-ext)
-
-file(MAKE_DIRECTORY ${PYTHIA_INSTALL_LOCATION}/include)
-file(MAKE_DIRECTORY ${PYTHIA_SRC_LOCATION})
 
 set_target_properties(pythia
         PROPERTIES
         IMPORTED_LOCATION
             "${PYTHIA_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}pythia${CMAKE_STATIC_LIBRARY_SUFFIX}"
-
         IMPORTED_LOCATION_DEBUG
             "${PYTHIA_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}pythia_d${CMAKE_STATIC_LIBRARY_SUFFIX}"
-
         INTERFACE_INCLUDE_DIRECTORIES
             "${PYTHIA_INSTALL_LOCATION}/include"
         )
 
-set_property(TARGET pythia
-        APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${PYTHIA_SRC_LOCATION}"
-        )
+#
+# Relic
+#
+add_library(relic STATIC IMPORTED GLOBAL)
+
+add_dependencies(relic pythia-ext)
 
 set_target_properties(relic
         PROPERTIES
         IMPORTED_LOCATION
             "${PYTHIA_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}relic_s${CMAKE_STATIC_LIBRARY_SUFFIX}"
-
         INTERFACE_INCLUDE_DIRECTORIES
             "${PYTHIA_INSTALL_LOCATION}/include"
         )
@@ -96,18 +103,32 @@ set_target_properties(relic
 # ---------------------------------------------------------------------------
 
 #
-# Install binaries
+# Install headers.
 #
-install(
-        DIRECTORY "${PYTHIA_INSTALL_LOCATION}/lib/"
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-        PATTERN "cmake" EXCLUDE
-        )
+if(VIRGIL_INSTALL_DEPS_HDRS)
+    install(
+            DIRECTORY "${PYTHIA_INSTALL_LOCATION}/include/"
+            DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+            )
+endif()
 
 #
-# Install headers
+# Install libraries.
 #
-install(
-        DIRECTORY "${PYTHIA_INSTALL_LOCATION}/include/"
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-        )
+if(VIRGIL_INSTALL_DEPS_LIBS)
+    install(
+            DIRECTORY "${PYTHIA_INSTALL_LOCATION}/lib/"
+            DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            PATTERN "cmake" EXCLUDE
+            )
+endif()
+
+#
+# Install CMake configuration files.
+#
+if(VIRGIL_INSTALL_DEPS_CMAKE)
+    install(
+            DIRECTORY "${PYTHIA_INSTALL_LOCATION}/lib/cmake"
+            DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            )
+endif()
