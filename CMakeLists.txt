@@ -56,9 +56,9 @@ option(ENABLE_BENCHMARKS "On/Off build library benchmarks." ON)
 #
 # Libraries
 #
-option(VIRGIL_COMMON "Build 'common' library" ON)
-option(VIRGIL_FOUNDATION "Build 'foundation' library" ON)
-option(VIRGIL_PYTHIA "Build 'pythia' library" ON)
+option(VIRGIL_LIB_COMMON "Build 'common' library" ON)
+option(VIRGIL_LIB_FOUNDATION "Build 'foundation' library" ON)
+option(VIRGIL_LIB_PYTHIA "Build 'pythia' library" ON)
 
 #
 # Wrappers
@@ -113,14 +113,14 @@ set(VIRGIL_INSTALL_WRAP_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Path where 
 #
 # MbedTLS
 #
-if(VIRGIL_FOUNDATION OR VIRGIL_PYTHIA)
+if(VIRGIL_LIB_FOUNDATION OR VIRGIL_LIB_PYTHIA)
     add_subdirectory ("thirdparty/mbedtls")
 endif()
 
 #
 # Pythia
 #
-if(VIRGIL_PYTHIA)
+if(VIRGIL_LIB_PYTHIA)
     add_subdirectory ("thirdparty/pythia")
 endif()
 
@@ -129,15 +129,15 @@ endif()
 #   Library core libraries
 # ---------------------------------------------------------------------------
 
-if(VIRGIL_COMMON)
+if(VIRGIL_LIB_COMMON)
     add_subdirectory ("library/common")
 endif()
 
-if(VIRGIL_FOUNDATION)
+if(VIRGIL_LIB_FOUNDATION)
     add_subdirectory ("library/foundation")
 endif()
 
-if(VIRGIL_PYTHIA)
+if(VIRGIL_LIB_PYTHIA)
     add_subdirectory ("library/pythia")
 endif()
 
