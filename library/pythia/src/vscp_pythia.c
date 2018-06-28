@@ -180,6 +180,8 @@ vscp_pythia_init(vscp_pythia_t *pythia_ctx) {
 VSCP_PUBLIC void
 vscp_pythia_cleanup(vscp_pythia_t *pythia_ctx) {
 
+    VSCP_ASSERT_PTR(pythia_ctx);
+
     if (--g_instances > 0) {
         return;
     }
