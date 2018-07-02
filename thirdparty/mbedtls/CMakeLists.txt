@@ -94,8 +94,6 @@ set_target_properties(mbedcrypto
 
         INTERFACE_INCLUDE_DIRECTORIES
             "${MBEDTLS_INSTALL_LOCATION}/include"
-
-        FEATURES "${MBEDTLS_FEATURES}"
         )
 
 

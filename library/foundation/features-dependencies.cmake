@@ -1,4 +1,4 @@
-#   Copyright (c) 2015-2017 Virgil Security Inc.
+#   Copyright (C) 2015-2018 Virgil Security Inc.
 #
 #   All rights reserved.
 #
@@ -21,7 +21,7 @@
 #   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 #   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 #   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLsE FOR ANY DIRECT,
 #   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 #   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
 #   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
@@ -29,14 +29,36 @@
 #   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
 #   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 #   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 include_guard()
 
-option(MBEDTLS_SHA256_C "" ON)
-option(MBEDTLS_SHA512_C "" ON)
-option(MBEDTLS_CIPHER_C "" ON)
-option(MBEDTLS_AES_C "" ON)
-option(MBEDTLS_GCM_C "" ON)
-option(MBEDTLS_MD_C "" ON)
-option(MBEDTLS_CTR_DRBG_C "" ON)
-option(MBEDTLS_ENTROPY_C "" ON)
+
+# ---------------------------------------------------------------------------
+#   Interfaces
+# ---------------------------------------------------------------------------
+if(VSCF_INTERFACE_HASH)
+    if(NOT VSCF_INTERFACE_HASH_INFO)
+        message(FATAL_ERROR
+            "Feature VSCF_INTERFACE_HASH depends on the feature VSCF_INTERFACE_HASH_INFO which is disabled")
+    endif()
+endif()
+
+if(VSCF_INTERFACE_HASH_STREAM)
+    if(NOT VSCF_INTERFACE_HASH_INFO)
+        message(FATAL_ERROR
+            "Feature VSCF_INTERFACE_HASH_STREAM depends on the feature VSCF_INTERFACE_HASH_INFO which is disabled")
+    endif()
+endif()
+
+
+# ---------------------------------------------------------------------------
+#   Implementations
+# ---------------------------------------------------------------------------
+if(VSCF_IMPL_SHA256)
+    if(NOT MBEDTLS_SHA256_C)
+        message(FATAL_ERROR
+            "Feature VSCF_IMPL_SHA256 depends on the feature MBEDTLS_SHA256_C which is disabled")
+    endif()
+endif()

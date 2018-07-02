@@ -1,148 +1,160 @@
-<implementor name = "mbedtls" is_default = "1">
+<implementor name="mbedtls" is_default="1">
     Provide implementation based on the library ARM mbedTLS.
 
-    <require library = "mbedTLS" />
 
-    <implementation name = "hmac224">
+    <implementation name="hmac224">
         This is MbedTLS implementation of HMAC224.
 
-        <require_include name = "mbedtls/md.h" type = "context" />
+        <require_include name="mbedtls/md.h" type="context"/>
+        <require library="mbedtls" feature="MD C"/>
+        <require library="mbedtls" feature="SHA256 C"/>
 
-        <interface name = "hmac info">
-            <constant name = "digest size" value = "28" />
+
+        <interface name="hmac info">
+            <constant name="digest size" value="28"/>
         </interface>
 
-        <interface name = "hmac">
+        <interface name="hmac">
         </interface>
 
-        <interface name = "hmac stream">
-            <context name = "hmac ctx" class = "mbedtls_md_context_t" access = "readwrite" is_reference="0"/>
+        <interface name="hmac stream">
+            <context name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
         </interface>
     </implementation>
 
 
-    <implementation name = "hmac256">
+    <implementation name="hmac256">
         This is MbedTLS implementation of HMAC256.
 
-        <require_include name = "mbedtls/md.h" type = "context" />
+        <require_include name="mbedtls/md.h" type="context"/>
+        <require library="mbedtls" feature="MD C"/>
+        <require library="mbedtls" feature="SHA256 C"/>
 
-        <interface name = "hmac info">
-            <constant name = "digest size" value = "32" />
+        <interface name="hmac info">
+            <constant name="digest size" value="32"/>
         </interface>
 
-        <interface name = "hmac">
+        <interface name="hmac">
         </interface>
 
-        <interface name = "hmac stream">
-            <context name = "hmac ctx" class = "mbedtls_md_context_t" access = "readwrite" is_reference="0"/>
+        <interface name="hmac stream">
+            <context name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
         </interface>
     </implementation>
 
 
-    <implementation name = "hmac384">
+    <implementation name="hmac384">
         This is MbedTLS implementation of HMAC384.
 
-        <require_include name = "mbedtls/md.h" type = "context" />
+        <require_include name="mbedtls/md.h" type="context"/>
+        <require library="mbedtls" feature="MD C"/>
+        <require library="mbedtls" feature="SHA512 C"/>
 
-        <interface name = "hmac info">
-            <constant name = "digest size" value = "48" />
+        <interface name="hmac info">
+            <constant name="digest size" value="48"/>
         </interface>
 
-        <interface name = "hmac">
+        <interface name="hmac">
         </interface>
 
-        <interface name = "hmac stream">
-            <context name = "hmac ctx" class = "mbedtls_md_context_t" access = "readwrite" is_reference="0"/>
+        <interface name="hmac stream">
+            <context name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
         </interface>
     </implementation>
 
 
-    <implementation name = "hmac512">
+    <implementation name="hmac512">
         This is MbedTLS implementation of HMAC512.
 
-        <require_include name = "mbedtls/md.h" type = "context" />
+        <require_include name="mbedtls/md.h" type="context"/>
+        <require library="mbedtls" feature="MD C"/>
+        <require library="mbedtls" feature="SHA512 C"/>
 
-        <interface name = "hmac info">
-            <constant name = "digest size" value = "64" />
+        <interface name="hmac info">
+            <constant name="digest size" value="64"/>
         </interface>
 
-        <interface name = "hmac">
+        <interface name="hmac">
         </interface>
 
-        <interface name = "hmac stream">
-            <context name = "hmac ctx" class = "mbedtls_md_context_t" access = "readwrite" is_reference="0"/>
+        <interface name="hmac stream">
+            <context name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
         </interface>
     </implementation>
 
 
-    <implementation name = "sha224">
+    <implementation name="sha224">
         This is MbedTLS implementation of SHA224.
 
-        <require_include name = "mbedtls/sha256.h" type = "context" />
+        <require_include name="mbedtls/sha256.h" type="context"/>
+        <require library="mbedtls" feature="SHA256 C"/>
 
-        <interface name = "hash info">
-            <constant name = "digest size" value = "28" />
+        <interface name="hash info">
+            <constant name="digest size" value="28"/>
         </interface>
 
-        <interface name = "hash">
+        <interface name="hash">
         </interface>
 
-        <interface name = "hash stream">
-            <context name = "hash ctx" class = "mbedtls_sha256_context" access = "readwrite" is_reference="0"/>
+        <interface name="hash stream">
+            <context name="hash ctx" class="mbedtls_sha256_context" access="readwrite" is_reference="0"/>
         </interface>
     </implementation>
 
 
-    <implementation name = "sha256">
+    <implementation name="sha256">
         This is MbedTLS implementation of SHA256.
 
-        <require_include name = "mbedtls/sha256.h" type = "context" />
+        <require_include name="mbedtls/sha256.h" type="context"/>
+        <require library="mbedtls" feature="SHA256 C"/>
 
-        <interface name = "hash info">
-            <constant name = "digest size" value = "32" />
+        <interface name="hash info">
+            <constant name="digest size" value="32"/>
         </interface>
 
-        <interface name = "hash">
+        <interface name="hash">
         </interface>
 
-        <interface name = "hash stream">
-            <context name = "hash ctx" class = "mbedtls_sha256_context" access = "readwrite" is_reference="0"/>
+        <interface name="hash stream">
+            <context name="hash ctx" class="mbedtls_sha256_context" access="readwrite" is_reference="0"/>
         </interface>
     </implementation>
 
 
-    <implementation name = "sha384">
+    <implementation name="sha384">
         This is MbedTLS implementation of SHA384.
 
-        <require_include name = "mbedtls/sha512.h" type = "context" />
+        <require_include name="mbedtls/sha512.h" type="context"/>
+        <require library="mbedtls" feature="SHA512 C"/>
 
-        <interface name = "hash info">
-            <constant name = "digest size" value = "48" />
+        <interface name="hash info">
+            <constant name="digest size" value="48"/>
         </interface>
 
-        <interface name = "hash">
+        <interface name="hash">
         </interface>
 
-        <interface name = "hash stream">
-            <context name = "hash ctx" class = "mbedtls_sha512_context" access = "readwrite" is_reference="0"/>
+        <interface name="hash stream">
+            <context name="hash ctx" class="mbedtls_sha512_context" access="readwrite" is_reference="0"/>
         </interface>
     </implementation>
 
 
-    <implementation name = "sha512">
+    <implementation name="sha512">
         This is MbedTLS implementation of SHA512.
 
-        <require_include name = "mbedtls/sha512.h" type = "context" />
+        <require_include name="mbedtls/sha512.h" type="context"/>
+        <require library="mbedtls" feature="SHA512 C"/>
 
-        <interface name = "hash info">
-            <constant name = "digest size" value = "64" />
+        <interface name="hash info">
+            <constant name="digest size" value="64"/>
         </interface>
 
-        <interface name = "hash">
+        <interface name="hash">
         </interface>
 
-        <interface name = "hash stream">
-            <context name = "hash ctx" class = "mbedtls_sha512_context" access = "readwrite" is_reference="0"/>
+        <interface name="hash stream">
+            <context name="hash ctx" class="mbedtls_sha512_context" access="readwrite" is_reference="0"/>
         </interface>
     </implementation>
 
@@ -152,7 +164,8 @@
         Note, this implementation contains dynamic memory allocations,
         this should be improved in the future releases.
 
-        <require_include name = "mbedtls/cipher.h" type = "context" />
+        <require_include name="mbedtls/cipher.h" type="context"/>
+        <require library="mbedtls" feature="CIPHER C"/>
 
         <interface name="encrypt"/>
 
@@ -187,23 +200,23 @@
     </implementation>
 
     <!--
-    <implementation name = "asn1_wr">
+    <implementation name="asn1_wr">
         This is MbedTLS implementation of ASN.1 writer.
 
-        <c_include file = "mbedtls/asn1.h" is_system = "1" scope = "private" />
-        <c_include file = "mbedtls/asn1write.h" is_system = "1" scope = "private" />
+        <c_include file="mbedtls/asn1.h" is_system="1" scope="private"/>
+        <c_include file="mbedtls/asn1write.h" is_system="1" scope="private"/>
 
 
-        <interface name = "asn1_writer" />
+        <interface name="asn1_writer"/>
 
     </implementation>
 
-    <implementation name = "asn1_rd">
+    <implementation name="asn1_rd">
         This is MbedTLS implementation of ASN.1 reader.
 
-        <c_include file = "mbedtls/asn1.h" is_system = "1" scope = "private" />
+        <c_include file="mbedtls/asn1.h" is_system="1" scope="private"/>
 
-        <interface name = "asn1_reader" />
+        <interface name="asn1_reader"/>
 
     </implementation>
 -->

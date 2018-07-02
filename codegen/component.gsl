@@ -134,6 +134,15 @@ function component_require_attr_name (component, caller)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Check required attribute: prefix.
+# ---------------------------------------------------------------------------
+function component_require_attr_prefix (component, caller)
+    check_argument (my, "component", my)
+
+    assert_attribute (my.component, "prefix", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Check required attribute: of_class.
 # ---------------------------------------------------------------------------
 function component_require_attr_of_class (component, caller)
