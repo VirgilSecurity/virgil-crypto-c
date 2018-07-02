@@ -1,0 +1,29 @@
+<library
+        name="mbedtls"
+        path="../thirdparty/mbedtls/">
+
+    External library: https://github.com/ARMmbed/mbedtls
+
+    <feature name="SHA256 C"/>
+
+    <feature name="SHA512 C"/>
+
+    <feature name="CIPHER C"/>
+
+    <feature name="AES C"/>
+
+    <feature name="GCM C"/>
+
+    <feature name="MD C"/>
+
+    <feature name="CTR_DRBG C">
+        <require feature="ENTROPY C"/>
+    </feature>
+
+    <feature name="ENTROPY C">
+        <require>
+            <alternative feature="SHA256 C"/>
+            <alternative feature="SHA512 C"/>
+        </require>
+    </feature>
+</library>

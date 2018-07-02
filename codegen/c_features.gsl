@@ -34,91 +34,69 @@
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 # ---------------------------------------------------------------------------
-#   This module contains functions processing component 'project'.
+#   Create language "C" specific 'c_features' components from the generic
+#   'feature' components taken from 'project' and 'library' components.
+#
+#   Private function prefix is: F21.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
 #   language. See https://github.com/imatix/gsl for details.
 # ---------------------------------------------------------------------------
 
-
 gsl from "common.gsl"
+gsl from "c_component.gsl"
+gsl from "c_formatter.gsl"
+
 
 # ---------------------------------------------------------------------------
-#   Add missed attributes and components to the 'project'.
+#   Derive C style in-project feature full name.
 # ---------------------------------------------------------------------------
-function project_resolve (project)
-    check_argument (my, "project")
+function c_derive_feature_name (feature)
+    check_argument (my, "feature", my)
 
-    if count (my.project.version) = 0
-        new version to my.project
-        endnew
-    endif
+    component_require_attr_uid (my.feature, my)
+    component_require_attr_name (my.feature, my)
+    component_require_attr_prefix (my.feature, my)
 
-    assert_item (my.project, "version", my)
-    assert_attribute (my.project, "path", my)
-    assert_attribute (my.project, "inc_path", my)
-    assert_attribute (my.project, "inc_private_path", my)
-    assert_attribute (my.project, "src_path", my)
-    assert_attribute (my.project, "work_path", my)
-
-    my.version = my.project->version
-    my.version.major ?= 1
-    my.version.minor ?= 0
-    my.version.patch ?= 0
-
-    my.project.version_major = my.version.major
-    my.project.version_minor = my.version.minor
-    my.project.version_patch = my.version.patch
-
-    my.project.version_string = "$(my.version.major:).$(my.version.minor:).$(my.version.patch:)"
+    return c_format_macros_name (my.feature.prefix, my.feature.name)
 endfunction
 
-# ---------------------------------------------------------------------------
-#   Generate project structure: folders, build files, etc.
-# ---------------------------------------------------------------------------
-function project_generate_structure (project)
-    check_argument (my, "project")
-
-    directory.create (my.project.root_path)
-    directory.create (my.project.inc_path)
-    directory.create (my.project.inc_private_path)
-    directory.create (my.project.src_path)
-    directory.create (my.project.work_path)
-endfunction
 
 # ---------------------------------------------------------------------------
-#   Update resolution context with a project information.
+#   Create 'c_feature' from 'feature'.
 # ---------------------------------------------------------------------------
-function project_update_context (project, context)
-    check_argument (my, "project")
-    check_argument (my, "context")
+function c_feature_create (feature, destination)
+    check_arguments (my, "feature, destination", my)
 
-    my.context.project_version_major = my.project.version_major
-    my.context.project_version_minor = my.project.version_minor
-    my.context.project_version_patch = my.project.version_patch
-    my.context.project_version_string = my.project.version_string
-endfunction
+    component_require_attr_name (feature, my)
 
-# ---------------------------------------------------------------------------
-#   Add 'features' from project to destination.
-# ---------------------------------------------------------------------------
-function project_create_features (project, destination)
-    check_arguments (my, "project, destination", my)
+    new c_feature to my.destination
+        . = c_format_description (my.feature.) ?
+        .name = c_derive_feature_name (my.feature)
 
-    echo_trace ("Create <features/> for <project name=\"$(my.project.name)\"", my)
-
-    new features to my.destination
-        .name = my.project.name
-        .prefix = my.project.prefix ?
-        .source = name (my.project)
-        .path = my.project.path
-
-        for my.project.feature
-            copy feature to features
-        endfor
-
-        return features
+        c_component_map_attr_uid (c_feature, my.feature)
     endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Create 'c_features' component from 'features' component.
+# ---------------------------------------------------------------------------
+function c_features_create (source, destination)
+    check_arguments (my, "source, destination", my)
+
+    for my.source.features
+        echo_trace ("Createing <c_features/> from <$(name (features)) name=\"$(features.name:)/>\"", my)
+
+        new c_features to my.destination
+            .name = features.name
+            .path = features.path
+
+            for features.feature
+                c_feature_create (feature, c_features)
+            endfor
+        endnew
+    endfor
 endfunction
 
 .endtemplate

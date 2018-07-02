@@ -43,6 +43,7 @@
 
 gsl from "common.gsl"
 gsl from "project.gsl"
+gsl from "library.gsl"
 gsl from "module.gsl"
 gsl from "interface.gsl"
 gsl from "implementor.gsl"
@@ -50,7 +51,9 @@ gsl from "implementation.gsl"
 gsl from "class.gsl"
 gsl from "context.gsl"
 gsl from "meta.gsl"
+gsl from "features.gsl"
 
+gsl from "c_features.gsl"
 gsl from "c_module.gsl"
 gsl from "c_module_codegen.gsl"
 
@@ -69,22 +72,9 @@ gsl from "c_module_class.gsl"
 #   Main data processing.
 # ###########################################################################
 
-# ---------------------------------------------------------------------------
-#   Load and return all hight level models from known XML files.
-# ---------------------------------------------------------------------------
-function main_load_all (destination)
-    check_argument (my, "destination")
 
-    item_load_from_file ("project.xml", my.destination)
-
-    item_load_from_file_pattern ("^module\.+xml$", my.destination, "module")
-    item_load_from_file_pattern ("^interface\.+xml$", my.destination, "interface")
-    item_load_from_file_pattern ("^implementor\.+xml$", my.destination, "implementation")
-endfunction
-
-
-function process_project (main, project)
-    check_arguments (my, "main, project")
+function process_project (project, features_list, echo_level)
+    check_arguments (my, "project, features_list, echo_level", my)
 
     #   Create my.root eleement where all models will be created.
     my.root = XML.new ("my.root")
@@ -122,15 +112,31 @@ function process_project (main, project)
     #   Process classes.
     foreach_class_resolve (my.root, my.project)
 
+    #   Process libraries.
+    foreach_library_resolve (my.root, my.project)
+
+
+    #   Create feature per high level component.
+    foreach_interface_create_feature (my.root, my.project)
+    foreach_implementation_create_feature (my.root, my.project)
+    #foreach_module_create_feature (my.root, my.project)
+    #foreach_class_create_feature (my.root, my.project)
+
+    #   Grpup features within one component.
+    project_create_features (my.project, my.features_list)
+
+
     #   Create meta informtation about high level entities.
     my.meta = meta_create ()
     foreach_interface_update_meta (my.root, my.meta)
     foreach_implementation_update_meta (my.root, my.meta)
     foreach_class_update_meta (my.root, my.meta)
 
-    if main.echo_level = "debug"
+
+    if my.echo_level = "debug"
         item_save_to_file (my.meta, "meta.xml", my.project.work_path)
     endif
+
 
     #   Create Interface / Implementation related modules.
     if count (my.root.interface)
@@ -157,10 +163,12 @@ function process_project (main, project)
     #   Process lang_modules.
     c_module_resolve (my.root)
 
+
     #   At this point all elements are created and resolved.
-    if main.echo_level = "debug"
-        item_save_to_file (my.root, "my.root.xml", my.project.work_path)
+    if my.echo_level = "debug"
+        item_save_to_file (my.root, "root.xml", my.project.work_path)
     endif
+
 
     #   Fullfil context with models name.
     context_resolve_refs (my.context, my.root)
@@ -177,16 +185,46 @@ function process_project (main, project)
     c_module_generate_sources (my.root)
 endfunction
 
+
+function process_library (library, features_list, echo_level)
+    check_arguments (my, "library, features_list, echo_level", my)
+
+    library_create_features (my.library, my.features_list)
+endfunction
+
+
 # ---------------------------------------------------------------------------
 #   Entrypoint.
 # ---------------------------------------------------------------------------
 function run_main ()
     main.echo_level ?= "fatal"
 
+    #   Create container where all features will be located
+    my.features_list = XML.new("features_list")
+
+    #   Process code generation
     for main.project
         my.loaded_project = item_load_from_file ("project/$(make_id ("project", project.name)).xml")
-        process_project (main, my.loaded_project)
+        process_project (my.loaded_project, my.features_list, main.echo_level)
     endfor
+
+    for main.external where defined (library)
+        my.loaded_library = item_load_from_file ("external/$(make_id ("library", external.library)).xml")
+        process_library (my.loaded_library, my.features_list, main.echo_level)
+    endfor
+
+    #   Create context and populate it with features.
+    foreach_features_resolve (my.features_list)
+    c_features_create (my.features_list, my.features_list)
+
+    my.context = XML.new ("context")
+    context_append_hierarchy (my.context, my.features_list)
+
+    my.features_list_resolved = context_inject_to (my.context, my.features_list, main.work_path)
+
+    #   Generate cmake files for features.
+    #c_features_generate_cmake (my.features_list_resolved)
+
 endfunction
 
 # ---------------------------------------------------------------------------

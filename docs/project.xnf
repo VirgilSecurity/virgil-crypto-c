@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<!--
+    Copyright (C) 2015-2018 Virgil Security Inc.
+
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+        (1) Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer.
+
+        (2) Redistributions in binary form must reproduce the above copyright
+        notice, this list of conditions and the following disclaimer in
+        the documentation and/or other materials provided with the
+        distribution.
+
+        (3) Neither the name of the copyright holder nor the names of its
+        contributors may be used to endorse or promote products derived from
+        this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+    IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+    INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+    HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+    IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+
+    Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+-->
+
+<xnf name="project" script="xnf_gen.gsl" version="1.0a1">
+    Define project as set of interfaces, implementators and modules.s
+
+    <produce filename="project.md" type="gurudoc" />
+
+
+    <entity name="project">
+        Define project as set of interfaces, implementators and modules.
+
+        <attr name="name" required="1">
+            Project name.
+        </attr>
+
+        <attr name="brief" required="1">
+            Project brief description.
+        </attr>
+
+        <attr name="prefix" required="1">
+            Prefix for C names within project.
+        </attr>
+
+        <attr name="namespace" required="1">
+            Project namespace.
+            This attribute is used to for wrappers that support namesapces.
+        </attr>
+
+        <attr name="path" required="1">
+            Path to the project root directory.
+        </attr>
+
+        <attr name="inc_path" required="1">
+            Path to the directory with public headers.
+        </attr>
+
+        <attr name="inc_private_path" required="1">
+            Path to the directory with private headers.
+        </attr>
+
+        <attr name="src_path" required="1">
+            Path to the directory with source files.
+        </attr>
+
+        <attr name="work_path" required="1">
+            Path to the directory, that is used to hold temporary files.
+        </attr>
+
+        <allow entity="interface" occurs="0+"/>
+        <allow entity="implementor" occurs="0+"/>
+        <allow entity="module" occurs="0+"/>
+        <allow entity="feature" occurs="0+"/>
+    </entity>
+
+
+    <entity name="interface">
+        Define supported interface.
+
+        <attr name="name" required="1">
+            Interface name.
+        </attr>
+    </entity>
+
+
+    <entity name="implementor">
+        Define supported implementor.
+
+        <attr name="name" required="1">
+            Implementor name.
+        </attr>
+    </entity>
+
+
+    <entity name="module">
+        Define supported module.
+
+        <attr name="name" required="1">
+            Module name.
+        </attr>
+    </entity>
+
+    <include filename="features.xnf"/>
+</xnf>

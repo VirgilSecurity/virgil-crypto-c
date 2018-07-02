@@ -1,0 +1,261 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Perform resolution for item 'features' and all children.
+#
+#   Resolution includes several steps:
+#       1. Validate - check that required attributes and items are defined.
+#       2. Define default values to the optional component attributes.
+#       3. Append optional items.
+#
+#    Private function prefix is: D25.
+#
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+
+
+# ---------------------------------------------------------------------------
+#   Dump known attributes for given item to xml string.
+# ---------------------------------------------------------------------------
+function _D25_dump_item (item)
+    check_arguments (my, "item", my)
+
+    my.item_info = ""
+    my.item_info += "name=\"$(my.item.name)\"" ? "feature=\"$(my.item.feature)\""
+    my.item_info += " prefix=\"$(my.item.prefix)\"" ? ""
+    my.item_info += " source=\"$(my.item.source)\"" ? ""
+    my.item_info += " path=\"$(my.item.path)\"" ? ""
+    my.item_info += " library=\"$(my.item.library)\"" ? ""
+    my.item_info += " project=\"$(my.item.project)\"" ? ""
+    my.item_dump = "<$(name (my.item))$(my.item_info)/>"
+
+    return my.item_dump
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: name.
+# ---------------------------------------------------------------------------
+function _D25_require_attr_name (item, caller)
+    check_arguments (my, "item", my)
+
+    assert_attribute (my.item, "name", my.caller ? my)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: prefix.
+# ---------------------------------------------------------------------------
+function _D25_require_attr_prefix (item, caller)
+    check_arguments (my, "item", my)
+
+    assert_attribute (my.item, "prefix", my.caller ? my)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: feature.
+# ---------------------------------------------------------------------------
+function _D25_require_attr_feature (item, caller)
+    check_arguments (my, "item", my)
+
+    assert_attribute (my.item, "feature", my.caller ? my)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: path.
+# ---------------------------------------------------------------------------
+function _D25_require_attr_path (item, caller)
+    check_arguments (my, "item", my)
+
+    assert_attribute (my.item, "path", my.caller ? my)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: source.
+# ---------------------------------------------------------------------------
+function _D25_require_attr_source (item, caller)
+    check_arguments (my, "item", my)
+
+    assert_attribute (my.item, "source", my.caller ? my)
+
+    my.valid_source = "project, library"
+
+    if ! string_in (my.item.source, my.valid_source)
+        my.item_dump = _D25_dump_item (my.item)
+
+        echo_fatal ("Invalid attribute 'source' within '$(my.item_dump:)'. " + \
+                    "Expected {$(my.valid_source)}", my)
+    endif
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: uid.
+# ---------------------------------------------------------------------------
+function _D25_resolve_attr_uid (feature, parent)
+    check_arguments (my, "feature, parent", my)
+
+    if defined (my.feature.library)
+        my.source = "library"
+        my.source_name = my.feature.library
+    else
+        my.source = "project"
+        my.source_name = my.feature.project
+    endif
+
+    my.feature.uid = make_id (my.source, my.source_name, name (my.feature), my.feature.name)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: features.prefix.
+# ---------------------------------------------------------------------------
+function _D25_resolve_attr_prefix (features)
+    check_arguments (my, "features", my)
+
+    my.features.prefix ?= my.features.name
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve abstract item: feature_info.
+# ---------------------------------------------------------------------------
+function _D25_resolve_feature_info (feature, parent)
+    check_arguments (my, "feature, parent", my)
+
+    my.feature.prefix ?= my.parent.prefix
+
+    if defined (my.parent.source)
+        my.feature.$(my.parent.source) = my.parent.name
+
+    elsif defined (my.parent.project)
+        my.feature.project = my.parent.project
+
+    elsif defined (my.parent.library)
+        my.feature.library = my.parent.library
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve item: alternative.
+# ---------------------------------------------------------------------------
+function _D25_resolve_alternative (alternative, parent)
+    check_arguments (my, "alternative, parent", my)
+
+    _D25_require_attr_feature (my.alternative, my)
+    _D25_resolve_feature_info (my.alternative, my.parent)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Resolve item: require.
+# ---------------------------------------------------------------------------
+function _D25_resolve_require (require, parent)
+    check_arguments (my, "require, parent", my)
+
+    my.require_dump = _D25_dump_item (my.parent)
+
+    if defined(my.require.feature) & count (my.require.alternative)
+        echo_fatal ( \
+                "Attribute 'feature' and item 'alternative' are both defined within $(require_dump). " + \
+                "Expected one of them only.")
+
+    elsif ! defined(my.require.feature) & ! count (my.require.alternative)
+        echo_fatal ( \
+                "Not attribute 'feature' nor item 'alternative' is defined within $(require_dump). " + \
+                "Expected one of them.")
+    endif
+
+    _D25_resolve_feature_info (my.require, my.parent)
+
+    for my.require.alternative
+        _D25_resolve_alternative (alternative, my.parent)
+    endfor
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Resolve component: feature.
+# ---------------------------------------------------------------------------
+function _D25_resolve_feature (feature, parent)
+    check_arguments (my, "feature, parent", my)
+
+    _D25_require_attr_name (my.feature, my)
+    _D25_resolve_feature_info (my.feature, my.parent)
+    _D25_resolve_attr_uid (my.feature, my.parent)
+
+    for my.feature.require
+        _D25_resolve_require (require, my.feature)
+    endfor
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Resolve component: features.
+# ---------------------------------------------------------------------------
+function features_resolve (features)
+    check_arguments (my, "features", my)
+
+    _D25_require_attr_name (my.features, my)
+    _D25_require_attr_source (my.features, my)
+    _D25_require_attr_path (my.features, my)
+    _D25_resolve_attr_prefix (my.features)
+
+    for my.features.feature
+        _D25_resolve_feature (feature, my.features)
+    endfor
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve all 'features' entries within 'source'
+# ---------------------------------------------------------------------------
+function foreach_features_resolve (source)
+    check_arguments (my, "source", my)
+
+    for my.source.features
+        features_resolve (features)
+    endfor
+endfunction
+
+
+.endtemplate

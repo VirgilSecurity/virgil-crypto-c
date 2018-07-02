@@ -47,6 +47,9 @@ if(NOT TARGET mbed::crypto)
     message(FATAL_ERROR "Required library MbedTLS is not found - looking for target 'mbed::crypto'.")
 endif()
 
+include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/features-dependencies.cmake")
+
 # ---------------------------------------------------------------------------
 #   Define library
 # ---------------------------------------------------------------------------

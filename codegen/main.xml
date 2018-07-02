@@ -1,4 +1,6 @@
-<main script = "main.gsl" echo_level = "trace">
+<main script="main.gsl" work_path="generated/main" echo_level="trace">
+    <external library="mbedtls"/>
+
     <project name="common"/>
     <project name="foundation"/>
     <project name="pythia"/>

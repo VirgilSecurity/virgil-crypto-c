@@ -34,86 +34,105 @@
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 # ---------------------------------------------------------------------------
-#   This module contains functions processing component 'project'.
+#   Perform resolution for item 'library' and all children.
+#
+#   Resolution includes several steps:
+#       1. Validate - check that required attributes and items are defined.
+#       2. Define default values to the optional component attributes.
+#       3. Append optional items.
+#
+#    Private function prefix is: J21.
+#
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
 #   language. See https://github.com/imatix/gsl for details.
 # ---------------------------------------------------------------------------
 
-
 gsl from "common.gsl"
+gsl from "features.gsl"
+
 
 # ---------------------------------------------------------------------------
-#   Add missed attributes and components to the 'project'.
+#   Check required attribute: name.
 # ---------------------------------------------------------------------------
-function project_resolve (project)
-    check_argument (my, "project")
+function _J21_require_attr_name (library, caller)
+    check_arguments (my, "library", my)
 
-    if count (my.project.version) = 0
-        new version to my.project
-        endnew
-    endif
+    assert_attribute (my.library, "name", my.caller ? my)
+endfunction
 
-    assert_item (my.project, "version", my)
-    assert_attribute (my.project, "path", my)
-    assert_attribute (my.project, "inc_path", my)
-    assert_attribute (my.project, "inc_private_path", my)
-    assert_attribute (my.project, "src_path", my)
-    assert_attribute (my.project, "work_path", my)
 
-    my.version = my.project->version
-    my.version.major ?= 1
-    my.version.minor ?= 0
-    my.version.patch ?= 0
+# ---------------------------------------------------------------------------
+#   Check required attribute: path.
+# ---------------------------------------------------------------------------
+function _J21_require_attr_path (library, caller)
+    check_arguments (my, "library", my)
 
-    my.project.version_major = my.version.major
-    my.project.version_minor = my.version.minor
-    my.project.version_patch = my.version.patch
+    assert_attribute (my.library, "path", my.caller ? my)
+endfunction
 
-    my.project.version_string = "$(my.version.major:).$(my.version.minor:).$(my.version.patch:)"
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: prefix.
+# ---------------------------------------------------------------------------
+function _J21_resolve_attr_prefix (library)
+    check_arguments (my, "library", my)
+
+    my.library.prefix ?= my.library.name
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Generate project structure: folders, build files, etc.
+#   Resolve attribute: uid.
 # ---------------------------------------------------------------------------
-function project_generate_structure (project)
-    check_argument (my, "project")
+function _J21_resolve_attr_uid (library)
+    check_arguments (my, "library", my)
 
-    directory.create (my.project.root_path)
-    directory.create (my.project.inc_path)
-    directory.create (my.project.inc_private_path)
-    directory.create (my.project.src_path)
-    directory.create (my.project.work_path)
+    my.library.uid ?= make_id (name (my.library), my.library.name)
 endfunction
 
-# ---------------------------------------------------------------------------
-#   Update resolution context with a project information.
-# ---------------------------------------------------------------------------
-function project_update_context (project, context)
-    check_argument (my, "project")
-    check_argument (my, "context")
 
-    my.context.project_version_major = my.project.version_major
-    my.context.project_version_minor = my.project.version_minor
-    my.context.project_version_patch = my.project.version_patch
-    my.context.project_version_string = my.project.version_string
+# ---------------------------------------------------------------------------
+#   Resolve component: library.
+# ---------------------------------------------------------------------------
+function library_resolve (library)
+    check_arguments (my, "library, project", my)
+
+    _J21_require_attr_name (my.library, my)
+    _J21_resolve_attr_path (my.library, my)
+    _J21_resolve_attr_prefix (my.library)
+    _J21_resolve_attr_uid (my.library)
+
+    foreach_feature_resolve (my.library, my.library)
 endfunction
 
-# ---------------------------------------------------------------------------
-#   Add 'features' from project to destination.
-# ---------------------------------------------------------------------------
-function project_create_features (project, destination)
-    check_arguments (my, "project, destination", my)
 
-    echo_trace ("Create <features/> for <project name=\"$(my.project.name)\"", my)
+# ---------------------------------------------------------------------------
+#   Resolve all 'library' entries within 'source'.
+# ---------------------------------------------------------------------------
+function foreach_library_resolve (source, project)
+    check_arguments (my, "source, project", my)
+
+    for my.source.library
+        library_resolve (library)
+    endfor
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add 'features' from library to destination.
+# ---------------------------------------------------------------------------
+function library_create_features (library, destination)
+    check_arguments (my, "library, destination", my)
+
+    echo_trace ("Create <features/> for <library name=\"$(my.library.name)\"", my)
 
     new features to my.destination
-        .name = my.project.name
-        .prefix = my.project.prefix ?
-        .source = name (my.project)
-        .path = my.project.path
+        .name = my.library.name
+        .prefix = my.library.prefix ?
+        .source = name (my.library)
+        .path = my.library.path
 
-        for my.project.feature
+        for my.library.feature
             copy feature to features
         endfor
 

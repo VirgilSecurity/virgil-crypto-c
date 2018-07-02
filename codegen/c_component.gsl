@@ -159,6 +159,7 @@ function c_derive_callback_name (callback)
     return c_format_name (my.callback.c_prefix, component_derive_full_name (my.callback), "fn")
 endfunction
 
+
 # ---------------------------------------------------------------------------
 #   Derive C integer type correspond to it's size.
 #   Size: {1, 2, 4, 8}.
@@ -982,5 +983,6 @@ function c_component_create_variable (variable, destination)
         c_component_create_modifiers (my.variable, c_variable)
     endnew
 endfunction
+
 
 .endtemplate

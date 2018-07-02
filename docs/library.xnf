@@ -35,28 +35,32 @@
     Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 -->
 
-<xnf name="interface" script="xnf_gen.gsl" version="1.0a1">
-    Defines C class interface as a set of constants and methods.
+<xnf name="library" script="xnf_gen.gsl" version="1.0a1">
+    Contains meta information about external library.
 
-    <produce filename="interface.md" type="gurudoc" />
+    <produce filename="library.md" type="gurudoc" />
 
-    <entity name="interface">
-        Defines C class interface as a set of constants and methods.
 
-        <allow entity="constant" occurs="0+"/>
-        <allow entity="method" occurs="0+"/>
-        <allow entity="inherit" occurs="0+"/>
-    </entity>
+    <entity name="library">
+        Contains meta information about external library.
 
-    <entity name="inherit">
-        Defines inherited interface.
-
-        <attr name="interface" required="1">
-            Inherited interface name.
+        <attr name="name" required="1">
+            Library in-project name.
         </attr>
+
+        <attr name="prefix">
+            Prefix for names within library.
+            If not defined, then it equals to library name.
+            Can be explicitly empty.
+        </attr>
+
+        <attr name="path" required="1">
+            Path to the library root directory.
+        </attr>
+
+        <allow entity="feature" occurs="0+"/>
     </entity>
 
-    <include filename="common.xnf"/>
-    <include filename="component.xnf"/>
-</xnf>
 
+    <include filename="features.xnf"/>
+</xnf>
