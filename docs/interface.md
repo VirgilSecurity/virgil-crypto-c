@@ -33,6 +33,7 @@ attribute names are case-sensitive and we use only lower-case names.
           </variable>
           <implementation [lang] [body]/>
        </method>
+       <inherit interface/>
     </interface>
 
 Detailed specifications
@@ -51,6 +52,7 @@ Defines C class interface as a set of constants and methods.
     <interface>
         <constant>
         <method>
+        <inherit>
     </interface>
 
 
@@ -790,4 +792,19 @@ Value: Meaning:
 stub: Implementation is just a stub, so method must be implemented by developer.
 generated: Implementation is fully generated, so it must no be modified within source code.
 handwritten: Implementation was written by developer, so it can be extracted and reused during generation phase. In this way comments and/or entity signature can be changed, but implementation will be untouched.
+
+
+The 'inherit' item
+------------------
+
+Defines inherited interface.
+
+    <inherit
+        interface = "..."
+        />
+
+The inherit item has this single attribute:
+
+interface:
+    Inherited interface name. The interface attribute is required.
 

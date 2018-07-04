@@ -79,7 +79,7 @@ endfunction
 function project_generate_structure (project)
     check_argument (my, "project")
 
-    directory.create (my.project.root_path)
+    directory.create (my.project.path)
     directory.create (my.project.inc_path)
     directory.create (my.project.inc_private_path)
     directory.create (my.project.src_path)

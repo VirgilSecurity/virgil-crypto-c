@@ -388,14 +388,3 @@
         Position's weight of the precondition.
     </attr>
 </entity>
-
-
-<entity name="c_feature">
-    Defines full qualified feature name.
-
-    <attr name="name">
-        Full qualified feature name.
-    </attr>
-
-    <inherit entity="uid"/>
-</entity>
