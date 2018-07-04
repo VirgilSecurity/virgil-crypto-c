@@ -36,6 +36,11 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(virgil_crypto_c_common VERSION 0.1.0 LANGUAGES C)
 
+#
+# Options
+#
+include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
+
 
 # ---------------------------------------------------------------------------
 #   Define library

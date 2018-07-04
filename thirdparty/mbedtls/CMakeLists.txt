@@ -44,7 +44,10 @@ if(MBEDTLS_FEATURES_FILE)
     include("${MBEDTLS_FEATURES_FILE}")
 endif()
 
-include("${CMAKE_CURRENT_LIST_DIR}/features-default.cmake")
+#
+# Options
+#
+include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 
 configure_file(
         "${CMAKE_CURRENT_LIST_DIR}/config.h.in"
