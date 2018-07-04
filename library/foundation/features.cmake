@@ -120,10 +120,6 @@ if(VSCF_HMAC256 AND NOT MBEDTLS_SHA256_C)
     message(FATAL_ERROR "Feature VSCF_HMAC256 depends on the feature: MBEDTLS_SHA256_C - which is disabled.")
 endif()
 
-if(VSCF_HMAC256 AND NOT MBEDTLS_SHA256_C)
-    message(FATAL_ERROR "Feature VSCF_HMAC256 depends on the feature: MBEDTLS_SHA256_C - which is disabled.")
-endif()
-
 if(VSCF_HMAC384 AND NOT MBEDTLS_MD_C)
     message(FATAL_ERROR "Feature VSCF_HMAC384 depends on the feature: MBEDTLS_MD_C - which is disabled.")
 endif()
