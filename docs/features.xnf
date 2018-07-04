@@ -35,17 +35,24 @@
     Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 -->
 
-<entity name="feature_source" abstract="1">
-    Provide attributes that defines the source of feature.
+<entity name="source" abstract="1">
+    Provide attributes that defines the source of featur(e).
+    This entity is inherited.
 
-    <attr name="library">
-        Name of the library that provides feature.
-        By default this attribute is resolved to parent library name.
+    <attr name="name">
+        Source name
     </attr>
 
-    <attr name="project">
-        Name of the project that provides feature.
-        By default this attribute is resolved to parent project name.
+    <attr name="type">
+        The source type of the feature(s).
+
+        <restrict value="project">
+            Feture(s) are provided by inner project.
+        </restrict>
+
+        <restrict value="library">
+            Feture(s) are provided by external library.
+        </restrict>
     </attr>
 </entity>
 
@@ -53,26 +60,10 @@
 <entity name="features">
     Defines set of features provided by the same source.
 
-    <attr name="name" required="1">
-        Features source name.
-    </attr>
-
     <attr name="prefix">
         Feature prefix.
         If not defined, then it equals to the attribute 'name'.
         This attribute is inherited by 'feature' item.
-    </attr>
-
-    <attr name="source" required="1">
-        The source of grouped features.
-
-        <restrict value="project">
-            Fetures are provided by inner project.
-        </restrict>
-
-        <restrict value="library">
-            Fetures are provided by external library.
-        </restrict>
     </attr>
 
     <attr name="path" required="1">
@@ -80,6 +71,7 @@
         By default, resolved to parent's 'path' attribute
     </attr>
 
+    <allow entity="source" occurs="1"/>
     <allow entity="feature" occurs="0+"/>
 </entity>
 
@@ -96,8 +88,7 @@
         This attribute is derived from parent's attribute 'prefix'.
     </attr>
 
-    <inherit entity="feature_source"/>
-
+    <allow entity="source" occurs="1"/>
     <allow entity="require" occurs="0+"/>
 </entity>
 
@@ -111,8 +102,7 @@
         Required feature name.
     </attr>
 
-    <inherit entity="feature_source"/>
-
+    <allow entity="source" occurs="1"/>
     <allow entity="alternative" occurs="0+"/>
 </entity>
 
@@ -124,5 +114,6 @@
         Required feature name.
     </attr>
 
+    <allow entity="source" occurs="1"/>
     <inherit entity="feature_source"/>
 </entity>

@@ -1,0 +1,688 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Functions for CMake primitives generation: license, setters, etc.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+
+gsl from "c_formatter.gsl"
+
+
+# ###########################################################################
+#   Code generation for different C code fragment.
+# ###########################################################################
+
+
+# ---------------------------------------------------------------------------
+#   Insert trailing comment.
+# ---------------------------------------------------------------------------
+function c_insert_line_comment (line, tab_count)
+    my.content = string_indent ("//  " + my.line, my.tab_count)
+    out (my.content)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert separation line as a comment.
+# ---------------------------------------------------------------------------
+function c_insert_double_line ()
+    out ("// ==========================================================================")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert separation line as a comment.
+# ---------------------------------------------------------------------------
+function c_insert_line ()
+    out ("// --------------------------------------------------------------------------")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert description of the given object.
+# ---------------------------------------------------------------------------
+function c_insert_description (obj, tab_count)
+    my.desciption = my.obj. ?
+    my.tab_count ?= 0
+    if string_empty (my.desciption)
+        return
+    endif
+    insert_code (my.desciption, my.tab_count)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Insert given content prefixed eith @<block> tag.
+# ---------------------------------------------------------------------------
+function c_insert_block (content, block, tab_count)
+    if string_empty (my.content)
+        echo_fatal ("Content is not defined.", my)
+    endif
+
+    if string_empty (my.block)
+        echo_fatal ("Block is not defined.", my)
+    endif
+
+    c_insert_line_comment ("@$(my.block:)", my.tab_count)
+    c_insert_line ()
+    out (string_indent (my.content, my.tab_count))
+    c_insert_line ()
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert @<tag>.
+# ---------------------------------------------------------------------------
+function c_insert_tag (tag, tab_count)
+    check_argument (my, "tag")
+
+    c_insert_line_comment ("@$(my.tag:)", my.tab_count)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert @end.
+# ---------------------------------------------------------------------------
+function c_insert_tag_end (tab_count)
+    c_insert_line_comment ("@end", my.tab_count)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert 'include' statement.
+# ---------------------------------------------------------------------------
+function c_insert_include (c_include)
+    check_argument (my, "c_include")
+    if is_true (my.c_include.is_system)
+        out ("#include <$(my.c_include.file)>")
+    else
+        out ("#include \"$(my.c_include.file)\"")
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert formatted block of public 'include' statements.
+# ---------------------------------------------------------------------------
+function c_insert_public_includes (component)
+    for my.component.c_include \
+                where string_equal (0.scope ?, "public") & is_false (is_system)
+        newline_if (first () & is_true (my.was_inserted))
+        c_insert_include (c_include)
+        my.was_inserted = 1
+    endfor
+    for my.component.c_include \
+                where string_equal (0.scope ?, "public") & is_true (is_system)
+        newline_if (first () & is_true (my.was_inserted))
+        c_insert_include (c_include)
+        my.was_inserted = 1
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert formatted block of public 'include' statements.
+# ---------------------------------------------------------------------------
+function c_insert_private_includes (component)
+    for my.component.c_include \
+                where string_equal (0.scope ?, "private") & is_false (is_system)
+        newline_if (first () & is_true (my.was_inserted))
+        c_insert_include (c_include)
+        my.was_inserted = 1
+    endfor
+    for my.component.c_include \
+                where string_equal (0.scope ?, "private") & is_true (is_system)
+        newline_if (first () & is_true (my.was_inserted))
+        c_insert_include (c_include)
+        my.was_inserted = 1
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert: license + caution + description + headers + extern "C" begin.
+# ---------------------------------------------------------------------------
+function c_insert_header_prologue (component, content_before)
+    c_insert_block (my.component->c_license., "license")
+    if defined (my.component->c_caution.)
+        newline (2)
+        c_insert_block (my.component->c_caution., "warning")
+    endif
+    if defined (my.component.)
+        newline (2)
+        c_insert_block (my.component., "description")
+    endif
+    newline ()
+    out ("#ifndef $(my.component.ONCE_GUARD)")
+    out ("#define $(my.component.ONCE_GUARD)")
+
+    newline_if (count (my.component.c_include, scope = "public"))
+    c_insert_public_includes (my.component)
+    c_insert_tag_end ()
+
+    newline (2)
+    if string_defined (my.content_before)
+        out (my.content_before)
+    else
+        out ("#ifdef __cplusplus")
+        out ("extern \"C\" {")
+        out ("#endif")
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert extern "C" end.
+# ---------------------------------------------------------------------------
+function c_insert_header_epilogue (component, content_after)
+
+    if string_defined (my.content_after)
+        newline (2)
+        out (my.content_after)
+    else
+        newline (2)
+        out ("#ifdef __cplusplus")
+        out ("}")
+        out ("#endif")
+    endif
+
+    newline (2)
+    c_insert_tag ("footer")
+    out ("#endif // $(my.component.ONCE_GUARD)")
+    c_insert_tag_end ()
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert license + caution + headers.
+# ---------------------------------------------------------------------------
+function c_insert_source_prologue (component, content_before)
+    c_insert_block (my.component->c_license., "license")
+    if defined (my.component.)
+        newline (2)
+        c_insert_block (my.component., "description")
+    endif
+    if defined (my.component->c_caution.)
+        newline (2)
+        c_insert_block (my.component->c_caution., "warning")
+    endif
+
+    newline_if (count (my.component.c_include, scope = "private"))
+    c_insert_private_includes (my.component)
+    c_insert_tag_end ()
+
+    if string_defined (my.content_before)
+        newline (2)
+        out (my.content_before)
+    endif
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Insert titled category.
+#   Category is the biggest grouping item.
+#   Rules:
+#       - 2 new lines before category;
+# ---------------------------------------------------------------------------
+function c_insert_category (title)
+    newline (2)
+    c_insert_line ()
+    c_insert_line_comment (my.title)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Same as 'c_insert_category (title)' if title is not empty string and
+#   condition is true, otherwise - do nothing.
+# ---------------------------------------------------------------------------
+function c_insert_category_if (title, condition)
+    if string_defined (my.title) & is_true (my.condition)
+        c_insert_category (my.title)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert titled section.
+#   Section is a grouping item smaller then category.
+#   Rules:
+#       - 2 new lines before section;
+# ---------------------------------------------------------------------------
+function c_insert_section (title)
+    newline (2)
+    c_insert_line ()
+    c_insert_line_comment (my.title)
+    c_insert_line ()
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Same as 'c_insert_section (title)' if title is not empty string and
+#   condition is true, otherwise - do nothing.
+# ---------------------------------------------------------------------------
+function c_insert_section_if (title, condition)
+    if string_defined (my.title) & is_true (my.condition)
+        c_insert_section (my.title)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Same as 'c_insert_section (title)' if title is not empty string,
+#   otherwise - do nothing.
+# ---------------------------------------------------------------------------
+function c_insert_section_if_title (title)
+    if string_defined (my.title)
+        c_insert_section (my.title)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert special section: generated start.
+#   Rules:
+#       - 2 new lines before section;
+# ---------------------------------------------------------------------------
+function c_insert_section_generated_start ()
+    newline (2)
+    c_insert_line_comment ("@generated")
+    c_insert_line ()
+    out ("// clang-format off")
+    c_insert_line_comment ("Generated section start.")
+    c_insert_line ()
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert special section: generated end.
+#   Rules:
+#       - 2 new lines before section;
+# ---------------------------------------------------------------------------
+function c_insert_section_generated_end ()
+    newline (2)
+    c_insert_line ()
+    c_insert_line_comment ("Generated section end.")
+    out ("// clang-format on")
+    c_insert_line ()
+    c_insert_line_comment ("@end")
+endfunction
+
+
+# ###########################################################################
+#   Code generation for type: function.
+# ###########################################################################
+
+
+# ---------------------------------------------------------------------------
+#   Insert callback type declaration for type: function.
+#   Use component: c_method.
+# ---------------------------------------------------------------------------
+function c_insert_callback (c_callback, prefix)
+    check_argument (my, "c_callback", my)
+
+    c_insert_description (my.c_callback)
+
+    my.c_callback_return_type = c_derive_instance_type (my.c_callback->c_return)
+    my.beginning = "typedef $(my.c_callback_return_type:) (*$(my.c_callback.name))"
+
+    insert_code (my.beginning + c_format_arguments (my.c_callback, my.beginning, ";"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert signature for type: function.
+#   Use component: c_method.
+# ---------------------------------------------------------------------------
+function c_insert_method_signature (c_method, ending)
+    check_argument (my, "c_method")
+
+    my.modifiers = c_derive_component_modifiers (my.c_method)
+
+    insert_code (cat (my.modifiers, c_derive_instance_type (my.c_method->c_return)))
+
+    my.beginning = my.c_method.name
+    insert_code (my.beginning + c_format_arguments (my.c_method, my.beginning, my.ending))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert declaration for type: function.
+#   Use component: c_method.
+# ---------------------------------------------------------------------------
+function c_insert_method_declaration (c_method)
+    check_argument (my, "c_method")
+
+    c_insert_description (my.c_method)
+    c_insert_method_signature (my.c_method, ";")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert 'asserts' for pointers and references.
+# ---------------------------------------------------------------------------
+function c_insert_method_argument_check (c_method)
+    check_argument (my, "c_method")
+
+    for my.c_method.c_argument where accessed_by = "pointer"
+        insert_code (" \
+            .(c_class_assert_macros) ($(c_argument.name:));
+        ", 1)
+    endfor
+
+    for my.c_method.c_argument where accessed_by = "reference"
+        insert_code (" \
+            .(c_class_assert_macros) ($(c_argument.name:));
+            .(c_class_assert_macros) (*$(c_argument.name:));
+        ", 1)
+    endfor
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert method stubbed definition, including it's description.
+# ---------------------------------------------------------------------------
+function c_insert_method_definition (c_method)
+    check_argument (my, "c_method")
+
+    c_insert_description (my.c_method)
+    c_insert_method_signature (my.c_method, " {")
+
+    for my.c_method.c_precondition where is_true (is_default)
+        newline_if (first ())
+        insert_code (c_precondition., 1)
+    endfor
+
+    for my.c_method.c_precondition where is_false (is_default)
+        newline_if (first ())
+        insert_code (c_precondition., 1)
+    endfor
+
+    assert_item (my.c_method, "c_implementation", my)
+
+    newline ()
+    insert_code (my.c_method->c_implementation., 1)
+    insert_code ("}")
+endfunction
+
+
+# ###########################################################################
+#   Code generation for type: enum.
+# ###########################################################################
+
+
+# ---------------------------------------------------------------------------
+#   Insert declaration for type: enum.
+#   If enumeration is anonymous then nothing is inserted.
+#   Use component: c_enum.
+# ---------------------------------------------------------------------------
+function c_insert_enum_declaration (c_enum, no_description)
+    check_argument (my, "c_enum")
+
+    my.name = my.c_enum.name ? my.c_enum.type ?
+    my.type = my.c_enum.type ? my.c_enum.name ?
+
+    if string_empty (my.name) & string_empty (my.type)
+        #   Declaration for anonymous enumeration is prohibited.
+        return
+    endif
+
+    if is_false (my.no_description)
+        c_insert_description (my.c_enum)
+    endif
+
+    insert_code ("typedef enum $(my.name:) $(my.type:);")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert definition for type: enum.
+#   Use component: c_enum.
+# ---------------------------------------------------------------------------
+function c_insert_enum_definition (c_enum, no_description)
+    check_argument (my, "c_enum")
+
+    my.name = my.c_enum.name ? my.c_enum.type ?
+
+    if is_false (my.no_description)
+        c_insert_description (my.c_enum)
+    endif
+
+    insert_code ("enum $(my.name ?:) {")
+
+    for my.c_enum.c_constant
+        c_insert_description (c_constant, 1)
+
+        my.enum_entry = c_constant.name
+
+        if defined (c_constant.value)
+            my.enum_entry += " = $(c_constant.value:)"
+        endif
+
+        if ! last ()
+            my.enum_entry += ","
+        endif
+
+        insert_code (my.enum_entry, 1)
+    endfor
+
+    insert_code ("};")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert declaration + definition for type: enum.
+#   Use component: c_enum.
+# ---------------------------------------------------------------------------
+function c_insert_enum (c_enum)
+    check_argument (my, "c_enum")
+
+    c_insert_description (my.c_enum)
+    c_insert_enum_definition (my.c_enum, 1)
+
+    if my.c_enum.declaration <> "external"
+        c_insert_enum_declaration (my.c_enum, 1)
+    endif
+endfunction
+
+
+# ###########################################################################
+#   Code generation for type: struct.
+# ###########################################################################
+
+# ---------------------------------------------------------------------------
+#   Insert declaration for type: struct.
+#   Use component: c_struct.
+# ---------------------------------------------------------------------------
+function c_insert_struct_declaration (c_struct, no_description)
+    check_argument (my, "c_struct")
+
+    my.name = my.c_struct.name ? my.c_struct.type ?
+    my.type = my.c_struct.type ? my.c_struct.name ?
+
+    if string_empty (my.name) & string_empty (my.type)
+        #   Declaration for anonymous structure is prohibited.
+        return
+    endif
+
+    if is_false (my.no_description)
+        c_insert_description (my.c_struct)
+    endif
+
+    insert_code ("typedef struct $(my.name:) $(my.type:);")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert definition for type: struct.
+#   Use component: c_struct.
+# ---------------------------------------------------------------------------
+function c_insert_struct_definition (c_struct, no_description)
+    check_argument (my, "c_struct")
+
+    if is_false (my.no_description)
+        c_insert_description (my.c_struct)
+    endif
+
+    my.name = my.c_struct.name ? my.c_struct.type ?
+
+    insert_code ("struct $(my.name ?:) {")
+
+    for my.c_struct.c_property
+        newline_if (is_true (my.is_not_first) & ! has_description (c_property))
+        c_insert_description (c_property, 1)
+
+        insert_code ( \
+                c_derive_instance_declaration (c_property) + (":$(c_property.bits)" ? "") + ";", 1)
+
+        my.is_not_first ?= 1
+    endfor
+
+    insert_code ("};")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert declaration + definition + callbacks for type: struct.
+#   Use component: c_struct.
+# ---------------------------------------------------------------------------
+function c_insert_struct (c_struct)
+    check_argument (my, "c_struct")
+
+    c_insert_description (my.c_struct)
+    c_insert_struct_definition (my.c_struct, 1)
+
+    if my.c_struct.declaration <> "external"
+        c_insert_struct_declaration (my.c_struct, 1)
+    endif
+endfunction
+
+
+# ###########################################################################
+#   Code generation for macros.
+# ###########################################################################
+
+# ---------------------------------------------------------------------------
+#   Insert given multiline macro.
+#   Use component: c_macros.
+# ---------------------------------------------------------------------------
+function c_insert_macros (c_macros)
+    check_argument (my, "c_macros")
+
+    c_insert_description (my.c_macros)
+
+    my.body = my.c_macros->c_implementation.
+    my.body = code_remove_side_effects (my.body)
+    my.body = "$(my.body:left, no)"
+    my.body = string_trim (my.body)
+
+    if string_multiline (my.body)
+        #   1. Adjust body as block, so whitespaces will be added to the end of the each line
+        #   2. Put backslash to the end of the each line wich ends with new line
+        #   3. Remove redundant backslash if next line starts new macros
+        #   4. Trim whitespaces on the right side of each line
+        my.body = "$(my.body:block, no)"
+        my.body = string.replace (my.body, "$(terminator)| \\$(terminator)")
+        my.body = string.replace (my.body, "\\$(terminator)#| $(terminator)#")
+        my.body = string_multi_rtrim (my.body)
+    endif
+
+    out (my.body)
+endfunction
+
+
+# ###########################################################################
+#   Code generation for variables.
+# ###########################################################################
+
+
+# ---------------------------------------------------------------------------
+#   Insert variable declaration.
+#   Use component: c_variable.
+# ---------------------------------------------------------------------------
+function c_insert_variable_declaration (c_variable)
+    check_argument (my, "c_variable", my)
+
+    c_insert_description (my.c_variable)
+
+
+    insert_code (cat ( \
+        c_derive_component_modifiers (my.c_variable), "extern", \
+        c_derive_instance_declaration (my.c_variable) + ";"))
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert variable definition.
+#   Use component: c_variable.
+# ---------------------------------------------------------------------------
+function c_insert_variable_definition (c_variable)
+    check_argument (my, "c_variable")
+
+    c_insert_description (my.c_variable)
+
+    my.maybe_static = (my.c_variable.declaration = "private") ?? "static " ? ""
+
+    my.code = "$(my.maybe_static:)$(c_derive_instance_declaration (my.c_variable))"
+
+    for my.c_variable.c_value
+
+        if first()
+            my.code += " = "
+        endif
+
+        if defined (my.c_variable.array) | my.c_variable.type_is = "class"
+            #   Array or object initialization
+            if first ()
+                insert_code (my.code + "{" + terminator)
+            endif
+
+            my.separator = ! last () ?? "," ? ""
+
+            c_insert_description (c_value, 1)
+            insert_code (c_derive_instance_value (c_value, my.c_variable) + my.separator + terminator, 1)
+
+            if last ()
+                insert_code ("};")
+            endif
+        else
+            #   Single value initialization
+            insert_code (my.code + c_derive_instance_value (c_value, my.c_variable) + ";")
+        endif
+    else
+        insert_code (my.code + ";")
+    endfor
+endfunction
+
+
+# ###########################################################################
+#   Code generation for aliases.
+# ###########################################################################
+
+
+# ---------------------------------------------------------------------------
+#   Insert type alias, by default it's typedef.
+# ---------------------------------------------------------------------------
+function c_insert_alias (c_alias)
+    check_argument (my, "c_alias")
+
+    my.definition_guard = c_format_macros_name (my.c_alias.name, "defined")
+    insert_code ("#ifndef " + my.definition_guard)
+    insert_code ("#define " + my.definition_guard)
+    c_insert_description (my.c_alias, 1)
+    insert_code ("typedef $(my.c_alias.type:) $(my.c_alias.name:);", 1)
+    insert_code ("#endif // " + my.definition_guard)
+endfunction
+
+.endtemplate

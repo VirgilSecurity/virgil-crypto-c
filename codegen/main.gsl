@@ -54,6 +54,7 @@ gsl from "meta.gsl"
 gsl from "features.gsl"
 
 gsl from "c_features.gsl"
+gsl from "c_features_codegen.gsl"
 gsl from "c_module.gsl"
 gsl from "c_module_codegen.gsl"
 
@@ -223,7 +224,7 @@ function run_main ()
     my.features_list_resolved = context_inject_to (my.context, my.features_list, main.work_path)
 
     #   Generate cmake files for features.
-    #c_features_generate_cmake (my.features_list_resolved)
+    c_features_generate_cmake (my.features_list_resolved)
 
 endfunction
 

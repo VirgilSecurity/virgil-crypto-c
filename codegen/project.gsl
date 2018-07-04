@@ -108,10 +108,13 @@ function project_create_features (project, destination)
     echo_trace ("Create <features/> for <project name=\"$(my.project.name)\"", my)
 
     new features to my.destination
-        .name = my.project.name
         .prefix = my.project.prefix ?
-        .source = name (my.project)
         .path = my.project.path
+
+        new source to features
+            .name = my.project.name
+            .type = "project"
+        endnew
 
         for my.project.feature
             copy feature to features
