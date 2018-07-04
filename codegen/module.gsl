@@ -104,4 +104,41 @@ function foreach_module_resolve (source, project)
     endfor
 endfunction
 
+
+# ---------------------------------------------------------------------------
+#   Create 'feature' for given 'module'.
+# ---------------------------------------------------------------------------
+function module_create_feature (module, destination)
+    check_arguments (my, "module, destination", my)
+
+    new feature to my.destination
+        .name = my.module.name
+
+        for my.module.require where defined (require.project) as impl_require
+            new require to feature
+                .project = impl_require.project
+                .feature = impl_require.feature
+            endnew
+        endfor
+
+        for my.module.require where defined (require.library) as impl_require
+            new require to feature
+                .library = impl_require.library
+                .feature = impl_require.feature
+            endnew
+        endfor
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   For each 'module' within 'source' create 'feature'.
+# ---------------------------------------------------------------------------
+function foreach_module_create_feature (source, destination)
+    check_arguments (my, "source, destination", my)
+
+    for my.source.module
+        module_create_feature (module, my.destination)
+    endfor
+endfunction
+
 .endtemplate

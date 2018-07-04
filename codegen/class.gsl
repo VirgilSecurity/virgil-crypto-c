@@ -184,4 +184,40 @@ function foreach_class_update_meta (source, meta)
     endfor
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Create 'feature' for given 'class'.
+# ---------------------------------------------------------------------------
+function class_create_feature (class, destination)
+    check_arguments (my, "class, destination", my)
+
+    new feature to my.destination
+        .name = my.class.name
+
+        for my.class.require where defined (require.project) as impl_require
+            new require to feature
+                .project = impl_require.project
+                .feature = impl_require.feature
+            endnew
+        endfor
+
+        for my.class.require where defined (require.library) as impl_require
+            new require to feature
+                .library = impl_require.library
+                .feature = impl_require.feature
+            endnew
+        endfor
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   For each 'class' within 'source' create 'feature'.
+# ---------------------------------------------------------------------------
+function foreach_class_create_feature (source, destination)
+    check_arguments (my, "source, destination", my)
+
+    for my.source.class
+        class_create_feature (class, my.destination)
+    endfor
+endfunction
+
 .endtemplate
