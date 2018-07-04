@@ -46,11 +46,23 @@
 gsl from "common.gsl"
 gsl from "c_features.gsl"
 
+function cmake_format_comment (str)
+    if ! defined (my.str)
+        return
+    endif
+
+    my.str = string_indent (my.str)
+    my.str = "#   $(my.str:left, block, no)$(terminator)"
+    my.str = string_multi_rtrim (my.str)
+
+    return my.str
+endfunction
+
 # ---------------------------------------------------------------------------
 #   Generate CMake file with avalibale project / library features.
 # ---------------------------------------------------------------------------
-function c_features_generate_cmake (source)
-    check_arguments (my, "source", my)
+function c_features_generate_cmake (source, license)
+    check_arguments (my, "source, license", my)
 
     for my.source.c_features
         echo_trace ("Generate files from <$(name (c_features)) name = \"$(c_features.name:)/>\"", my)
@@ -58,6 +70,10 @@ function c_features_generate_cmake (source)
         my.cmake_file = "$(directory.resolve (c_features.path))features.cmake"
 
         output my.cmake_file
+
+        out (cmake_format_comment(my.license.))
+
+        newline (2)
 
         out ("include_guard()")
 
