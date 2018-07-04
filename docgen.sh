@@ -87,6 +87,7 @@ DOCGEN_SCRIPT_NAMES=(\
         class.xnf \
         module.xnf \
         c_module.xnf \
+        c_features.xnf \
         )
 
 

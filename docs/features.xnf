@@ -77,7 +77,7 @@
 
     <attr name="path" required="1">
         Path where generated files will come.
-        By default, resolved to parent's 'root_path' attribute
+        By default, resolved to parent's 'path' attribute
     </attr>
 
     <allow entity="feature" occurs="0+"/>

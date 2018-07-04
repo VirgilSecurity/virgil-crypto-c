@@ -7,18 +7,16 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-```
-<project name brief prefix namespace root_path inc_path inc_private_path src_path work_path>
-   <interface name/>
-   <implementor name/>
-   <module name/>
-   <feature name [project] [library] [prefix]>
-      <require [library] [project] [feature]>
-         <alternative [library] [project] [feature]/>
-      </require>
-   </feature>
-</project>
-```
+    <project name brief prefix namespace path inc_path inc_private_path src_path work_path>
+       <interface name/>
+       <implementor name/>
+       <module name/>
+       <feature name [project] [library] [prefix]>
+          <require [library] [project] [feature]>
+             <alternative [library] [project] [feature]/>
+          </require>
+       </feature>
+    </project>
 
 Detailed specifications
 =======================
@@ -33,24 +31,22 @@ The 'project' item
 
 Define project as set of interfaces, implementators and modules.
 
-```xml
-<project
-    name = "..."
-    brief = "..."
-    prefix = "..."
-    namespace = "..."
-    root_path = "..."
-    inc_path = "..."
-    inc_private_path = "..."
-    src_path = "..."
-    work_path = "..."
-    >
-    <interface>
-    <implementor>
-    <module>
-    <feature>
-</project>
-```
+    <project
+        name = "..."
+        brief = "..."
+        prefix = "..."
+        namespace = "..."
+        path = "..."
+        inc_path = "..."
+        inc_private_path = "..."
+        src_path = "..."
+        work_path = "..."
+        >
+        <interface>
+        <implementor>
+        <module>
+        <feature>
+    </project>
 
 The project item can have these attributes:
 
@@ -67,8 +63,8 @@ namespace:
     Project namespace. This attribute is used to for wrappers that support
     namesapces. The namespace attribute is required.
 
-root_path:
-    Path to the project root directory. The root_path attribute is required.
+path:
+    Path to the project root directory. The path attribute is required.
 
 inc_path:
     Path to the directory with public headers. The inc_path attribute is

@@ -7,7 +7,7 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <library name [prefix]>
+    <library name path [prefix]>
        <feature name [project] [library] [prefix]>
           <require [library] [project] [feature]>
              <alternative [library] [project] [feature]/>
@@ -30,6 +30,7 @@ Contains meta information about external library.
 
     <library
         name = "..."
+        path = "..."
       [ prefix = "..." ]
         >
         <feature>
@@ -43,6 +44,9 @@ name:
 prefix:
     Prefix for names within library. If not defined, then it equals to
     library name. Can be explicitly empty. The prefix attribute is optional.
+
+path:
+    Path to the library root directory. The path attribute is required.
 
 
 The 'feature' item

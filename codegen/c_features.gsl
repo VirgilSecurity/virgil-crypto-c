@@ -51,14 +51,50 @@ gsl from "c_formatter.gsl"
 # ---------------------------------------------------------------------------
 #   Derive C style in-project feature full name.
 # ---------------------------------------------------------------------------
-function c_derive_feature_name (feature)
+function _F21_derive_feature_name (feature)
     check_argument (my, "feature", my)
 
-    component_require_attr_uid (my.feature, my)
-    component_require_attr_name (my.feature, my)
-    component_require_attr_prefix (my.feature, my)
+    assert_attribute (my.feature, "name", my)
+    assert_attribute (my.feature, "prefix", my)
 
     return c_format_macros_name (my.feature.prefix, my.feature.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Derive C style in-project require full name.
+# ---------------------------------------------------------------------------
+function _F21_derive_require_name (require)
+    check_argument (my, "require", my)
+
+    assert_attribute (my.require, "feature", my)
+    assert_attribute (my.require, "prefix", my)
+
+    return c_format_macros_name (my.require.prefix, my.require.feature)
+endfunction
+
+
+function _F21_create_alternative (alternative, destination)
+    check_arguments (my, "alternative, destination", my)
+
+    new c_alternative to my.destination
+        .feature = _F21_derive_require_name (my.alternative)
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create 'c_require' from 'require'.
+# ---------------------------------------------------------------------------
+function _F21_create_require (require, destination)
+    check_arguments (my, "require, destination", my)
+
+    new c_require to my.destination
+        for my.require.alternative
+            _F21_create_alternative (alternative, c_require)
+
+        else
+            .feature = _F21_derive_require_name (my.require)
+        endfor
+    endnew
 endfunction
 
 
@@ -68,13 +104,15 @@ endfunction
 function c_feature_create (feature, destination)
     check_arguments (my, "feature, destination", my)
 
-    component_require_attr_name (feature, my)
-
     new c_feature to my.destination
         . = c_format_description (my.feature.) ?
-        .name = c_derive_feature_name (my.feature)
+        .name = _F21_derive_feature_name (my.feature)
 
         c_component_map_attr_uid (c_feature, my.feature)
+
+        for my.feature.require
+            _F21_create_require (require, c_feature)
+        endfor
     endnew
 endfunction
 
@@ -90,6 +128,7 @@ function c_features_create (source, destination)
 
         new c_features to my.destination
             .name = features.name
+            .source = features.source
             .path = features.path
 
             for features.feature
