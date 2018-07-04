@@ -191,16 +191,17 @@ function class_create_feature (class, destination)
     check_arguments (my, "class, destination", my)
 
     new feature to my.destination
+        . = "Enable class '$(my.class.name)'."
         .name = my.class.name
 
-        for my.class.require where defined (require.project) as impl_require
+        for my.class.require where defined (0.project) as impl_require
             new require to feature
                 .project = impl_require.project
                 .feature = impl_require.feature
             endnew
         endfor
 
-        for my.class.require where defined (require.library) as impl_require
+        for my.class.require where defined (0.library) as impl_require
             new require to feature
                 .library = impl_require.library
                 .feature = impl_require.feature

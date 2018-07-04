@@ -127,10 +127,13 @@ function library_create_features (library, destination)
     echo_trace ("Create <features/> for <library name=\"$(my.library.name)\"", my)
 
     new features to my.destination
-        .name = my.library.name
         .prefix = my.library.prefix ?
-        .source = name (my.library)
         .path = my.library.path
+
+        new source to features
+            .name = my.library.name
+            .type = "library"
+        endnew
 
         for my.library.feature
             copy feature to features

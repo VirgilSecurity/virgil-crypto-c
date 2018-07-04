@@ -1,0 +1,102 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Create language "C" specific 'c_features' components from the generic
+#   'feature' components taken from 'project' and 'library' components.
+#
+#   Private function prefix is: F21.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+gsl from "c_features.gsl"
+
+# ---------------------------------------------------------------------------
+#   Generate CMake file with avalibale project / library features.
+# ---------------------------------------------------------------------------
+function c_features_generate_cmake (source)
+    check_arguments (my, "source", my)
+
+    for my.source.c_features
+        echo_trace ("Generate files from <$(name (c_features)) name = \"$(c_features.name:)/>\"", my)
+
+        my.cmake_file = "$(directory.resolve (c_features.path))features.cmake"
+
+        output my.cmake_file
+
+        out ("include_guard()")
+
+        newline ()
+
+        for c_features.c_feature
+            out ("option($(c_feature.name:) \"$(string_trim (c_feature.?""))\" ON)")
+        endfor
+
+        for c_features.c_feature where count (c_feature.c_require)
+            for c_feature.c_require
+                newline ()
+
+                for c_require.c_alternative
+
+                    if first ()
+                        my.alternative_enabled = ""
+                        my.alternatives = c_alternative.feature
+                    else
+                        my.alternatives += ", " + c_alternative.feature
+                    endif
+
+                    my.alternative_enabled += " AND NOT " + c_alternative.feature
+
+                    if last ()
+                        out("if($(c_feature.name:)$(my.alternative_enabled:))")
+                        out("    message(FATAL_ERROR \"Feature $(c_feature.name:) depends on one of the features: $(my.alternatives:) - which are disabled.\")")
+                        out("endif()")
+                    endif
+                else
+
+                    out("if($(c_feature.name:) AND NOT $(c_require.feature:))")
+                    out("    message(FATAL_ERROR \"Feature $(c_feature.name:) depends on the feature: $(c_require.feature:) - which is disabled.\")")
+                    out("endif()")
+                endfor
+            endfor
+        endfor
+    endfor
+
+endfunction
+
+.endtemplate

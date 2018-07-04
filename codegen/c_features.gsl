@@ -66,10 +66,9 @@ endfunction
 function _F21_derive_require_name (require)
     check_argument (my, "require", my)
 
-    assert_attribute (my.require, "feature", my)
-    assert_attribute (my.require, "prefix", my)
+    assert_item (my.require, "source", my)
 
-    return c_format_macros_name (my.require.prefix, my.require.feature)
+    return c_ref (make_id (my.require->source.type, my.require->source.name, "feature", my.require.feature))
 endfunction
 
 
@@ -105,7 +104,7 @@ function c_feature_create (feature, destination)
     check_arguments (my, "feature, destination", my)
 
     new c_feature to my.destination
-        . = c_format_description (my.feature.) ?
+        . = my.feature. ?
         .name = _F21_derive_feature_name (my.feature)
 
         c_component_map_attr_uid (c_feature, my.feature)
@@ -127,8 +126,8 @@ function c_features_create (source, destination)
         echo_trace ("Createing <c_features/> from <$(name (features)) name=\"$(features.name:)/>\"", my)
 
         new c_features to my.destination
-            .name = features.name
-            .source = features.source
+            .name = features->source.name
+            .source = features->source.type
             .path = features.path
 
             for features.feature

@@ -29,6 +29,7 @@
         <require_include name="mbedtls/md.h" type="context"/>
         <require library="mbedtls" feature="MD C"/>
         <require library="mbedtls" feature="SHA256 C"/>
+        <require library="mbedtls" feature="SHA256 C"/>
 
         <interface name="hmac info">
             <constant name="digest size" value="32"/>

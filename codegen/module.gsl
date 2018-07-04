@@ -112,16 +112,17 @@ function module_create_feature (module, destination)
     check_arguments (my, "module, destination", my)
 
     new feature to my.destination
-        .name = my.module.name
+        . = "Enable module '$(my.module.name)'."
+        .name = my.module.feature
 
-        for my.module.require where defined (require.project) as impl_require
+        for my.module.require where defined (0.project) as impl_require
             new require to feature
                 .project = impl_require.project
                 .feature = impl_require.feature
             endnew
         endfor
 
-        for my.module.require where defined (require.library) as impl_require
+        for my.module.require where defined (0.library) as impl_require
             new require to feature
                 .library = impl_require.library
                 .feature = impl_require.feature
@@ -136,7 +137,7 @@ endfunction
 function foreach_module_create_feature (source, destination)
     check_arguments (my, "source, destination", my)
 
-    for my.source.module
+    for my.source.module where defined (module.feature)
         module_create_feature (module, my.destination)
     endfor
 endfunction

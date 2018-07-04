@@ -163,6 +163,7 @@ function interface_create_feature (interface, destination)
     check_arguments (my, "interface, destination", my)
 
     new feature to my.destination
+        . = "Enable interface '$(my.interface.name)'."
         .name = my.interface.name
 
         for my.interface.inherit
