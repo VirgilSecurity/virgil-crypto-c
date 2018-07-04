@@ -41,7 +41,7 @@ project(virgil_crypto_c_pythia VERSION 0.2.0 LANGUAGES C)
 # ---------------------------------------------------------------------------
 
 #
-# MbedTLS
+# Virgil Security Library Common
 #
 if(NOT TARGET vsc::common)
     message(FATAL_ERROR
@@ -68,6 +68,11 @@ endif()
 if(NOT TARGET relic)
     message(FATAL_ERROR "Required library 'relic' is not found - looking for target 'relic'.")
 endif()
+
+#
+# Options
+#
+include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 
 # ---------------------------------------------------------------------------
 #   Define library
