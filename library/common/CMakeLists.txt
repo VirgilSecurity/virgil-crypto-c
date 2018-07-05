@@ -51,6 +51,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 #
 add_library(common "")
 include("${CMAKE_CURRENT_LIST_DIR}/sources.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 
 #
 # Define include headers

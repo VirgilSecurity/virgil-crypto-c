@@ -111,7 +111,7 @@ function cmake_generate_features (source, license)
     check_arguments (my, "source, license", my)
 
     for my.source.c_features
-        echo_trace ("Generate files from <$(name (c_features)) name = \"$(c_features.name:)/>\"", my)
+        echo_trace ("Generate 'features.cmake' from <$(name (c_features)) name = \"$(c_features.name:)/>\"", my)
 
         my.cmake_file = "$(directory.resolve (c_features.path))features.cmake"
 
@@ -198,6 +198,40 @@ function cmake_generate_sources (source, project)
     endfor
 
     cmake_insert (")", 2)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate 'definitions.cmake' file with project sources.
+#   This file should be included in the project CMakeLists.txt file.
+# ---------------------------------------------------------------------------
+function cmake_generate_definitions (source, license)
+    check_arguments (my, "source, license", my)
+
+    for my.source.c_features where source = "project"
+        echo_trace ("Generate 'definitions.cmake' from <$(name (c_features)) name = \"$(c_features.name:)/>\"", my)
+
+        my.cmake_file = "$(directory.resolve (c_features.path))definitions.cmake"
+
+        output my.cmake_file
+
+        cmake_insert_prologue (my.license)
+
+        cmake_insert ("\
+            if(NOT TARGET $(c_features.cmake_target:))
+                message(FATAL_ERROR \"Expected target '$(c_features.cmake_target:)' to be defined first.\")
+            endif()
+
+            target_compile_definitions($(c_features.cmake_target:)
+                    PUBLIC
+        ")
+
+        for c_features.c_feature
+            cmake_insert ("\"$(c_feature.name:)=$<BOOL:${$(c_feature.name:)}>\"", 3)
+        endfor
+
+        cmake_insert (")", 2)
+
+    endfor
 endfunction
 
 .endtemplate

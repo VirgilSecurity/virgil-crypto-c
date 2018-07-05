@@ -229,6 +229,7 @@ function run_main ()
 
     #   Generate cmake files for features.
     cmake_generate_features (my.features_list_resolved, main->license)
+    cmake_generate_definitions (my.features_list_resolved, main->license)
 
 endfunction
 
