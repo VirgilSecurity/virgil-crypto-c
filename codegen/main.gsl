@@ -185,6 +185,9 @@ function process_project (project, features_list, echo_level)
         delete c_module
     endfor
     c_module_generate_sources (my.root)
+
+    #   Generare CMake files.
+    cmake_generate_sources (my.root, my.project)
 endfunction
 
 
