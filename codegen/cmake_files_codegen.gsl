@@ -37,7 +37,7 @@
 #   Create language "C" specific 'c_features' components from the generic
 #   'feature' components taken from 'project' and 'library' components.
 #
-#   Private function prefix is: F21.
+#   Private function prefix is: Z23.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
 #   language. See https://github.com/imatix/gsl for details.
@@ -50,7 +50,7 @@ gsl from "cmake_codegen.gsl"
 # ---------------------------------------------------------------------------
 #   Generate CMake file with avalibale project / library features.
 # ---------------------------------------------------------------------------
-function c_features_generate_cmake (source, license)
+function cmake_generate_features (source, license)
     check_arguments (my, "source, license", my)
 
     for my.source.c_features
@@ -115,7 +115,6 @@ function c_features_generate_cmake (source, license)
             endfor
         endfor
     endfor
-
 endfunction
 
 .endtemplate
