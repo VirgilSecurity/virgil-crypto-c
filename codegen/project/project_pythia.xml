@@ -8,6 +8,7 @@
         inc_private_path = "../library/pythia/include/virgil/pythia/private/"
         src_path = "../library/pythia/src/"
         work_path = "generated/pythia/"
+        cmake_target = "pythia_wrap"
         >
 
     <version major = "0" minor = "2" path = "0" />

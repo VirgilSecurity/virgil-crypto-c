@@ -82,21 +82,8 @@ include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 # Define sources
 #
 add_library(pythia_wrap "")
-target_sources(pythia_wrap
-        PRIVATE
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/private/vscp_pythia_defs.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_assert.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_error.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_library.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_memory.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_pythia.h"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_assert.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_error.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_library.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_memory.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_pythia.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_pythia_defs.c"
-        )
+include("${CMAKE_CURRENT_LIST_DIR}/sources.cmake")
+
 
 #
 # Define include headers

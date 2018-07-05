@@ -45,33 +45,23 @@
 
 include_guard()
 
-option(MBEDTLS_SHA256_C "" ON)
-option(MBEDTLS_SHA512_C "" ON)
-option(MBEDTLS_CIPHER_C "" ON)
-option(MBEDTLS_AES_C "" ON)
-option(MBEDTLS_GCM_C "" ON)
-option(MBEDTLS_MD_C "" ON)
-option(MBEDTLS_CTR_DRBG_C "" ON)
-option(MBEDTLS_ENTROPY_C "" ON)
-mark_as_advanced(
-        MBEDTLS_SHA256_C
-        MBEDTLS_SHA512_C
-        MBEDTLS_CIPHER_C
-        MBEDTLS_AES_C
-        MBEDTLS_GCM_C
-        MBEDTLS_MD_C
-        MBEDTLS_CTR_DRBG_C
-        MBEDTLS_ENTROPY_C
+if(NOT TARGET pythia_wrap)
+    message(FATAL_ERROR "Expected target 'pythia_wrap' to be defined first.")
+endif()
+
+target_sources(pythia_wrap
+        PRIVATE
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_assert.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_error.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_library.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_memory.h"
+            "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_pythia.h>"
+            "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/private/vscp_pythia_defs.h>"
+
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_assert.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_error.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_library.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_memory.c"
+            "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/src/vscp_pythia.c>"
+            "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/src/vscp_pythia_defs.c>"
         )
-
-if(MBEDTLS_CTR_DRBG_C AND NOT MBEDTLS_ENTROPY_C)
-    message("Feature MBEDTLS_CTR_DRBG_C depends on the feature:")
-    message("     MBEDTLS_ENTROPY_C - which is disabled.")
-    message(FATAL_ERROR)
-endif()
-
-if(MBEDTLS_ENTROPY_C AND NOT MBEDTLS_SHA256_C AND NOT MBEDTLS_SHA512_C)
-    message("Feature MBEDTLS_ENTROPY_C depends on one of the features:")
-    message("     MBEDTLS_SHA256_C, MBEDTLS_SHA512_C - which are disabled.")
-    message(FATAL_ERROR)
-endif()
