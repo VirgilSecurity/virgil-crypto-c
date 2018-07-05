@@ -378,6 +378,7 @@ function c_module_interface_create_module_public (interface, destination, meta)
         .name = my.names.interface_module
         .of_class = my.names.interface_class
         .interface = my.interface.name
+        .feature = my.interface.name
 
         new require to module
             .module = my.names.module_library
@@ -438,6 +439,7 @@ function c_module_interface_create_module_api (interface, destination, meta)
         .name = my.names.interface_module_api
         .of_class = my.names.interface_class_api
         .scope = "private"
+        .feature = my.interface.name
 
         new require to module
             .module = my.names.module_library

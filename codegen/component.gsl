@@ -134,12 +134,12 @@ function component_require_attr_name (component, caller)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Check required attribute: prefix.
+#   Check required attribute: c_prefix.
 # ---------------------------------------------------------------------------
-function component_require_attr_prefix (component, caller)
+function component_require_attr_c_prefix (component, caller)
     check_argument (my, "component", my)
 
-    assert_attribute (my.component, "prefix", my.caller ? my)
+    assert_attribute (my.component, "c_prefix", my.caller ? my)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -763,6 +763,16 @@ function component_resolve_implementation_attr_body (implementation, parent)
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Resolve attribute: component.feature.
+# ---------------------------------------------------------------------------
+function component_resolve_attr_feature (component, parent)
+    check_arguments (my, "component")
+
+    #   This attribute is optional and can be set by upper models to define,
+    #   which feature this component implements.
+endfunction
+
 # ###########################################################################
 #   Per component resolution.
 # ###########################################################################
@@ -916,6 +926,7 @@ function component_resolve_component (component, parent)
     component_resolve_attr_of_class (my.component, my.parent)
     component_resolve_attr_c_prefix (my.component, my.parent)
     component_resolve_attr_uid (my.component, my.parent)
+    component_resolve_attr_feature (my.component, my.parent)
 endfunction
 
 # ---------------------------------------------------------------------------
