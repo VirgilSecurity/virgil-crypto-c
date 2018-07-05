@@ -8,8 +8,9 @@ required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
     <interface>
-       <constant name [c_prefix] [of_class] [uid] [definition] [value]/>
-       <method name [declaration] [visibility] [c_prefix] [of_class] [uid] [definition] [context]>
+       <constant name [c_prefix] [of_class] [feature] [uid] [definition] [value]/>
+       <method name [declaration] [visibility] [c_prefix] [of_class] [feature] [uid] [definition]
+            [context]>
           <return is_reference [access] [class] [enum] [callback] [size] [type]>
              <string [access] [length]/>
              <array [access] [length] [length_constant]/>
@@ -18,8 +19,8 @@ attribute names are case-sensitive and we use only lower-case names.
              <string .../>
              <array .../>
           </argument>
-          <variable is_reference name [type] [enum] [callback] [size] [access] [definition] [declaration]
-               [visibility] [c_prefix] [of_class] [uid] [class]>
+          <variable is_reference name [class] [type] [callback] [size] [access] [definition] [declaration]
+               [visibility] [c_prefix] [of_class] [feature] [uid] [enum]>
              <value is_reference value [class] [enum] [callback] [size] [access] [type]>
                 <cast is_reference [access] [class] [enum] [callback] [size] [type]>
                    <string .../>
@@ -66,6 +67,7 @@ Groups common attributes for the component. Defines integral constant.
         name = "..."
       [ c_prefix = "..." ]
       [ of_class = "..." ]
+      [ feature = "..." ]
       [ uid = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ value = "..." ]
@@ -91,6 +93,10 @@ of_class:
     Defines class name that a component belongs to. This attributes is used
     for inner components name resolution. The of_class attribute is optional.
 
+feature:
+    In-project feature name that is implemented. This attribute is used for
+    feature-based compilation. The feature attribute is optional.
+
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
@@ -115,6 +121,7 @@ and optionally implementation.
       [ visibility = "public | private"  ("public") ]
       [ c_prefix = "..." ]
       [ of_class = "..." ]
+      [ feature = "..." ]
       [ uid = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ context = "none | api | impl | class"  ("none") ]
@@ -163,6 +170,10 @@ c_prefix:
 of_class:
     Defines class name that a component belongs to. This attributes is used
     for inner components name resolution. The of_class attribute is optional.
+
+feature:
+    In-project feature name that is implemented. This attribute is used for
+    feature-based compilation. The feature attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
@@ -448,8 +459,8 @@ attributes for the component. Defines global variable.
     <variable
         is_reference = "0 | 1"
         name = "..."
+      [ class = "..." ]
       [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
-      [ enum = "..." ]
       [ callback = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
@@ -458,8 +469,9 @@ attributes for the component. Defines global variable.
       [ visibility = "public | private"  ("public") ]
       [ c_prefix = "..." ]
       [ of_class = "..." ]
+      [ feature = "..." ]
       [ uid = "..." ]
-      [ class = "..." ]
+      [ enum = "..." ]
         >
         <value>, 1 or more
         <string>, optional
@@ -570,6 +582,10 @@ c_prefix:
 of_class:
     Defines class name that a component belongs to. This attributes is used
     for inner components name resolution. The of_class attribute is optional.
+
+feature:
+    In-project feature name that is implemented. This attribute is used for
+    feature-based compilation. The feature attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
