@@ -129,6 +129,7 @@ function c_features_create (source, destination)
             .name = features->source.name
             .source = features->source.type
             .path = features.path
+            .cmake_target = features.cmake_target ?
 
             for features.feature
                 c_feature_create (feature, c_features)
