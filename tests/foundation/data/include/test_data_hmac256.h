@@ -33,49 +33,35 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#include "test_data_sha256.h"
+#include "test_data_types.h"
+
 
 //
 //  Test Vector 1
 //
-const byte test_sha256_VECTOR_1_INPUT[] = {};
-
-const byte test_sha256_VECTOR_1_DIGEST[] = {
-    0xe3, 0xb0, 0xc4, 0x42, 0x98, 0xfc, 0x1c, 0x14,
-    0x9a, 0xfb, 0xf4, 0xc8, 0x99, 0x6f, 0xb9, 0x24,
-    0x27, 0xae, 0x41, 0xe4, 0x64, 0x9b, 0x93, 0x4c,
-    0xa4, 0x95, 0x99, 0x1b, 0x78, 0x52, 0xb8, 0x55,
-};
-
-const size_t test_sha256_VECTOR_1_INPUT_LEN = sizeof (test_sha256_VECTOR_1_INPUT);
-const size_t test_sha256_VECTOR_1_DIGEST_LEN = sizeof (test_sha256_VECTOR_1_DIGEST);
+extern const byte test_hmac256_KEY_1_INPUT[];
+extern const byte test_hmac256_VECTOR_1_INPUT[];
+extern const byte test_hmac256_VECTOR_1_DIGEST[];
+extern const size_t test_hmac256_KEY_1_INPUT_LEN;
+extern const size_t test_hmac256_VECTOR_1_INPUT_LEN;
+extern const size_t test_hmac256_VECTOR_1_DIGEST_LEN;
 
 //
 //  Test Vector 2
 //
-const byte test_sha256_VECTOR_2_INPUT[] = { 0xbd };
-
-const byte test_sha256_VECTOR_2_DIGEST[] = {
-    0x68, 0x32, 0x57, 0x20, 0xaa, 0xbd, 0x7c, 0x82,
-    0xf3, 0x0f, 0x55, 0x4b, 0x31, 0x3d, 0x05, 0x70,
-    0xc9, 0x5a, 0xcc, 0xbb, 0x7d, 0xc4, 0xb5, 0xaa,
-    0xe1, 0x12, 0x04, 0xc0, 0x8f, 0xfe, 0x73, 0x2b,
-};
-
-const size_t test_sha256_VECTOR_2_INPUT_LEN = sizeof (test_sha256_VECTOR_2_INPUT);
-const size_t test_sha256_VECTOR_2_DIGEST_LEN = sizeof (test_sha256_VECTOR_2_DIGEST);
+extern const byte test_hmac256_KEY_2_INPUT[];
+extern const byte test_hmac256_VECTOR_2_INPUT[];
+extern const byte test_hmac256_VECTOR_2_DIGEST[];
+extern const size_t test_hmac256_KEY_2_INPUT_LEN;
+extern const size_t test_hmac256_VECTOR_2_INPUT_LEN;
+extern const size_t test_hmac256_VECTOR_2_DIGEST_LEN;
 
 //
 //  Test Vector 3
 //
-const byte test_sha256_VECTOR_3_INPUT[] = { 0x5f, 0xd4 };
-
-const byte test_sha256_VECTOR_3_DIGEST[] = {
-    0x7c, 0x4f, 0xbf, 0x48, 0x44, 0x98, 0xd2, 0x1b,
-    0x48, 0x7b, 0x9d, 0x61, 0xde, 0x89, 0x14, 0xb2,
-    0xea, 0xda, 0xf2, 0x69, 0x87, 0x12, 0x93, 0x6d,
-    0x47, 0xc3, 0xad, 0xa2, 0x55, 0x8f, 0x67, 0x88,
-};
-
-const size_t test_sha256_VECTOR_3_INPUT_LEN = sizeof (test_sha256_VECTOR_3_INPUT);
-const size_t test_sha256_VECTOR_3_DIGEST_LEN = sizeof (test_sha256_VECTOR_3_DIGEST);
+extern const byte test_hmac256_KEY_3_INPUT[];
+extern const byte test_hmac256_VECTOR_3_INPUT[];
+extern const byte test_hmac256_VECTOR_3_DIGEST[];
+extern const size_t test_hmac256_KEY_3_INPUT_LEN;
+extern const size_t test_hmac256_VECTOR_3_INPUT_LEN;
+extern const size_t test_hmac256_VECTOR_3_DIGEST_LEN;

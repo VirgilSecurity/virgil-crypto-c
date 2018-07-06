@@ -35,11 +35,10 @@
 
 #include "unity.h"
 
-#include "vscf_hash_info.h"
-#include "vscf_hash.h"
-#include "vscf_hash_stream.h"
+
+#if VSCF_SHA512
+
 #include "vscf_sha512.h"
-#include "vscf_hmac512.h"
 #include "vscf_assert.h"
 
 #include "test_utils.h"
@@ -49,7 +48,6 @@
 // --------------------------------------------------------------------------
 // Test implementation helpers & lifecycle functions.
 // --------------------------------------------------------------------------
-
 void
 test__impl__valid_arg__returns_not_null(void) {
     vscf_sha512_impl_t *sha512_impl = vscf_sha512_new();
@@ -72,10 +70,10 @@ test__impl__null_arg__call_assert(void) {
     vscf_assert_change_handler(vscf_assert_abort);
 }
 
+
 // --------------------------------------------------------------------------
 // Test implementation of the interface 'hash info'.
 // --------------------------------------------------------------------------
-
 void
 test__hash_info_api__always__returns_not_null(void) {
     const vscf_hash_info_api_t *hash_info_api = vscf_sha512_hash_info_api();
@@ -89,10 +87,10 @@ test__sha512_DIGEST_SIZE__always__equals_64(void) {
     TEST_ASSERT_EQUAL(64, vscf_sha512_DIGEST_SIZE);
 }
 
+
 // --------------------------------------------------------------------------
 // Test implementation of the interface 'hash'.
 // --------------------------------------------------------------------------
-
 void
 test__hash_api__always__returns_not_null(void) {
     const vscf_hash_api_t *hash_api = vscf_sha512_hash_api();
@@ -133,7 +131,6 @@ test__hash__vector_3__success(void) {
 // --------------------------------------------------------------------------
 // Test implementation of the interface 'hash stream'.
 // --------------------------------------------------------------------------
-
 void
 test__hash_stream__vector_1__success(void) {
 
@@ -182,97 +179,23 @@ test__hash_stream__vector_3__success(void) {
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_VECTOR_3_DIGEST, digest, test_sha512_VECTOR_3_DIGEST_LEN);
 }
 
-void
-test__hmac__vector_1__success(void) {
-
-    byte digest[vscf_hmac512_DIGEST_SIZE] = {0x00};
-
-    vscf_hmac512_hmac(test_sha512_HMAC_KEY_1_INPUT, test_sha512_HMAC_KEY_1_INPUT_LEN, test_sha512_HMAC_VECTOR_1_INPUT,
-            test_sha512_HMAC_VECTOR_1_INPUT_LEN, digest, vscf_hmac512_DIGEST_SIZE);
-
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_HMAC_VECTOR_1_DIGEST, digest, test_sha512_HMAC_VECTOR_1_DIGEST_LEN);
-}
+#else // VSCF_SHA512
 
 void
-test__hmac__vector_2__success(void) {
-
-    byte digest[vscf_hmac512_DIGEST_SIZE] = {0x00};
-
-    vscf_hmac512_hmac(test_sha512_HMAC_KEY_2_INPUT, test_sha512_HMAC_KEY_2_INPUT_LEN, test_sha512_HMAC_VECTOR_2_INPUT,
-            test_sha512_HMAC_VECTOR_2_INPUT_LEN, digest, vscf_hmac512_DIGEST_SIZE);
-
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_HMAC_VECTOR_2_DIGEST, digest, test_sha512_HMAC_VECTOR_2_DIGEST_LEN);
+test__nothing__feature_disabled__must_be_ignored(void) {
+    TEST_IGNORE();
 }
 
-void
-test__hmac__vector_3__success(void) {
+#endif // VSCF_SHA512
 
-    byte digest[vscf_hmac512_DIGEST_SIZE] = {0x00};
-
-    vscf_hmac512_hmac(test_sha512_HMAC_KEY_3_INPUT, test_sha512_HMAC_KEY_3_INPUT_LEN, test_sha512_HMAC_VECTOR_3_INPUT,
-            test_sha512_HMAC_VECTOR_3_INPUT_LEN, digest, vscf_hmac512_DIGEST_SIZE);
-
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_HMAC_VECTOR_3_DIGEST, digest, test_sha512_HMAC_VECTOR_3_DIGEST_LEN);
-}
-
-void
-test__hmac_stream__vector_1_success(void) {
-
-    byte digest[vscf_hmac512_DIGEST_SIZE] = {0x00};
-
-    vscf_hmac512_impl_t *hmac512_impl = vscf_hmac512_new();
-
-    vscf_hmac512_reset(hmac512_impl);
-    vscf_hmac512_start(hmac512_impl, test_sha512_HMAC_KEY_1_INPUT, test_sha512_HMAC_KEY_1_INPUT_LEN);
-    vscf_hmac512_update(hmac512_impl, test_sha512_HMAC_VECTOR_1_INPUT, test_sha512_HMAC_VECTOR_1_INPUT_LEN);
-    vscf_hmac512_finish(hmac512_impl, digest, vscf_hmac512_DIGEST_SIZE);
-
-    vscf_hmac512_destroy(&hmac512_impl);
-
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_HMAC_VECTOR_1_DIGEST, digest, test_sha512_HMAC_VECTOR_1_DIGEST_LEN);
-}
-
-void
-test__hmac_stream__vector_2_success(void) {
-
-    byte digest[vscf_hmac512_DIGEST_SIZE] = {0x00};
-
-    vscf_hmac512_impl_t *hmac512_impl = vscf_hmac512_new();
-
-    vscf_hmac512_reset(hmac512_impl);
-    vscf_hmac512_start(hmac512_impl, test_sha512_HMAC_KEY_2_INPUT, test_sha512_HMAC_KEY_2_INPUT_LEN);
-    vscf_hmac512_update(hmac512_impl, test_sha512_HMAC_VECTOR_2_INPUT, test_sha512_HMAC_VECTOR_2_INPUT_LEN);
-    vscf_hmac512_finish(hmac512_impl, digest, vscf_hmac512_DIGEST_SIZE);
-
-    vscf_hmac512_destroy(&hmac512_impl);
-
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_HMAC_VECTOR_2_DIGEST, digest, test_sha512_HMAC_VECTOR_2_DIGEST_LEN);
-}
-
-void
-test__hmac_stream__vector_3_success(void) {
-
-    byte digest[vscf_hmac512_DIGEST_SIZE] = {0x00};
-
-    vscf_hmac512_impl_t *hmac512_impl = vscf_hmac512_new();
-
-    vscf_hmac512_reset(hmac512_impl);
-    vscf_hmac512_start(hmac512_impl, test_sha512_HMAC_KEY_3_INPUT, test_sha512_HMAC_KEY_3_INPUT_LEN);
-    vscf_hmac512_update(hmac512_impl, test_sha512_HMAC_VECTOR_3_INPUT, test_sha512_HMAC_VECTOR_3_INPUT_LEN);
-    vscf_hmac512_finish(hmac512_impl, digest, vscf_hmac512_DIGEST_SIZE);
-
-    vscf_hmac512_destroy(&hmac512_impl);
-
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_HMAC_VECTOR_3_DIGEST, digest, test_sha512_HMAC_VECTOR_3_DIGEST_LEN);
-}
 // --------------------------------------------------------------------------
 // Entrypoint.
 // --------------------------------------------------------------------------
-
 int
 main(void) {
     UNITY_BEGIN();
 
+#if VSCF_SHA512
     RUN_TEST(test__impl__valid_arg__returns_not_null);
     RUN_TEST(test__impl__null_arg__call_assert);
 
@@ -287,14 +210,9 @@ main(void) {
     RUN_TEST(test__hash_stream__vector_1__success);
     RUN_TEST(test__hash_stream__vector_2__success);
     RUN_TEST(test__hash_stream__vector_3__success);
-
-    RUN_TEST(test__hmac__vector_1__success);
-    RUN_TEST(test__hmac__vector_2__success);
-    RUN_TEST(test__hmac__vector_3__success);
-
-    RUN_TEST(test__hmac_stream__vector_1_success);
-    RUN_TEST(test__hmac_stream__vector_2_success);
-    RUN_TEST(test__hmac_stream__vector_3_success);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+#endif
 
     return UNITY_END();
 }
