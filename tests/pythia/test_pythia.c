@@ -34,15 +34,18 @@
 
 
 #include "unity.h"
+#include "test_utils.h"
+
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCP_PYTHIA
+#if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscp_pythia.h"
-#include "test_utils.h"
 
 
 // --------------------------------------------------------------------------
 // Test implementation helpers & lifecycle functions.
 // --------------------------------------------------------------------------
-
 void
 test__new__always__returns_not_null(void) {
     vscp_pythia_t *pythia = vscp_pythia_new();
@@ -55,7 +58,6 @@ test__new__always__returns_not_null(void) {
 // --------------------------------------------------------------------------
 // Happy path tests.
 // --------------------------------------------------------------------------
-
 void
 test__blind__valid_args___returns_success(void) {
     vscp_pythia_t *pythia = vscp_pythia_new();
@@ -74,20 +76,25 @@ test__blind__valid_args___returns_success(void) {
     vscp_pythia_destroy(&pythia);
 }
 
+#endif // TEST_DEPENDENCIES_AVAILABLE
+
 // --------------------------------------------------------------------------
 // Entrypoint.
 // --------------------------------------------------------------------------
-
 int
 main(void) {
     UNITY_BEGIN();
 
+#if TEST_DEPENDENCIES_AVAILABLE
     vscp_init();
 
     RUN_TEST(test__new__always__returns_not_null);
     RUN_TEST(test__blind__valid_args___returns_success);
 
     vscp_cleanup();
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+#endif
 
     return UNITY_END();
 }
