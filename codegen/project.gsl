@@ -55,6 +55,11 @@ function project_resolve (project)
     endif
 
     assert_item (my.project, "version", my)
+    assert_attribute (my.project, "path", my)
+    assert_attribute (my.project, "inc_path", my)
+    assert_attribute (my.project, "inc_private_path", my)
+    assert_attribute (my.project, "src_path", my)
+    assert_attribute (my.project, "work_path", my)
 
     my.version = my.project->version
     my.version.major ?= 1
@@ -66,6 +71,7 @@ function project_resolve (project)
     my.project.version_patch = my.version.patch
 
     my.project.version_string = "$(my.version.major:).$(my.version.minor:).$(my.version.patch:)"
+    my.project.cmake_target ?= "$(my.project.name:c)"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -74,11 +80,7 @@ endfunction
 function project_generate_structure (project)
     check_argument (my, "project")
 
-    assert_attribute (my.project, "inc_path", my)
-    assert_attribute (my.project, "inc_private_path", my)
-    assert_attribute (my.project, "src_path", my)
-    assert_attribute (my.project, "work_path", my)
-
+    directory.create (my.project.path)
     directory.create (my.project.inc_path)
     directory.create (my.project.inc_private_path)
     directory.create (my.project.src_path)
@@ -96,6 +98,32 @@ function project_update_context (project, context)
     my.context.project_version_minor = my.project.version_minor
     my.context.project_version_patch = my.project.version_patch
     my.context.project_version_string = my.project.version_string
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'features' from project to destination.
+# ---------------------------------------------------------------------------
+function project_create_features (project, destination)
+    check_arguments (my, "project, destination", my)
+
+    echo_trace ("Create <features/> for <project name=\"$(my.project.name)\"", my)
+
+    new features to my.destination
+        .prefix = my.project.prefix ?
+        .path = my.project.path
+        .cmake_target = my.project.cmake_target ?
+
+        new source to features
+            .name = my.project.name
+            .type = "project"
+        endnew
+
+        for my.project.feature
+            copy feature to features
+        endfor
+
+        return features
+    endnew
 endfunction
 
 .endtemplate

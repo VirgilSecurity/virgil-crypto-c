@@ -367,6 +367,7 @@ function c_module_class_create_module_public (class, destination, meta)
     new module to my.destination
         . = my.class.?
         .name = my.names.class_module
+        .feature = my.class.name
         .of_class = my.class.of_class ?
         .c_prefix = my.class.c_prefix ?
 
@@ -465,6 +466,7 @@ function c_module_class_create_module_defs (class, destination, meta)
     new module to my.destination
         .name = my.names.class_module_defs
         .scope = "private"
+        .feature = my.class.name
         . = "
         Class '$(my.class.name:)' types definition.
         "

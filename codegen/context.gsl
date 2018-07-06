@@ -43,7 +43,7 @@
 gsl from "common.gsl"
 
 # ---------------------------------------------------------------------------
-#   Read source file tehn inject variables from the context and store result
+#   Read source file then inject variables from the context and store result
 #   to the destination file.
 #   Context defines variables as key-value pairs defined as attributes.
 # ---------------------------------------------------------------------------
@@ -61,6 +61,32 @@ gsl from "common.gsl"
 .   [gsl].substitute = my.default_gsl_substitute
 .   [gsl].ignorecase = my.default_gsl_ignorecase
 .endmacro
+
+
+# ---------------------------------------------------------------------------
+#   Inject context variables to given model.
+#   Note, this function create temporary files in the work dir.
+# ---------------------------------------------------------------------------
+function context_inject_to (context, model, work_dir)
+    check_arguments (my, "context, model, work_dir", my)
+
+    echo_trace ("Inject context to <$(name (my.model)) name=\"$(my.model.name?:)\"/>", my)
+
+    my.work_dir = directory.resolve (my.work_dir) ?
+
+    if directory.create (my.work_dir) = -1
+        echo_fatal ("Can not create directory: $(my.work_dir:). ", my)
+    endif
+
+    my.init_file_path = "$(my.work_dir?:)$(name (my.model))_unresolved.xml"
+    my.final_file_path = "$(my.work_dir?:)$(name (my.model)).xml"
+
+    item_save_to_file (my.model, my.init_file_path)
+
+    context_inject (my.context, my.init_file_path, my.final_file_path)
+
+    return item_load_from_file (my.final_file_path)
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Replace shorten refs, i.e. '.(_argument_impl)' with fully qualified ref.
@@ -113,6 +139,29 @@ endfunction
 # ---------------------------------------------------------------------------
 function context_append_hierarchy (context, item)
     check_arguments (my, "context, item", my)
+
+    #   Extract uid and name for current item
+    if defined (my.item.uid)
+        assert_attribute (my.item, "name", my)
+
+        my.context.$(my.item.uid) = my.item.name
+    endif
+
+    #   Dive in recursion
+    for my.item. as child_item where is_item (child_item)
+        context_append_hierarchy (my.context, child_item)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Update context with 'feature' items.
+# ---------------------------------------------------------------------------
+function context_append_features (context, source)
+    check_arguments (my, "context, source", my)
+
+    for my.source.feature
+
+    endfor
 
     #   Extract uid and name for current item
     if defined (my.item.uid)

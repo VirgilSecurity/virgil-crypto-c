@@ -3,6 +3,7 @@
         brief = "Virgil Security Crypto Foundation"
         namespace = "virgil"
         prefix = "vscf"
+        path = "../library/foundation/"
         inc_path = "../library/foundation/include/virgil/foundation/"
         inc_private_path = "../library/foundation/include/virgil/foundation/private/"
         src_path = "../library/foundation/src/"
@@ -46,6 +47,8 @@
 
         Lead Maintainer: Virgil Security Inc. &lt;support@virgilsecurity.com&gt;
     </license>
+
+    <external library="mbedtls"/>
 
     <interface name="cipher"/>
     <interface name="auth encrypt"/>

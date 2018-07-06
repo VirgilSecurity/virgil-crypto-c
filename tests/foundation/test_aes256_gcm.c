@@ -34,19 +34,22 @@
 
 
 #include "unity.h"
+#include "test_utils.h"
+
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCF_CIPHER &&VSCF_AES256_GCM
+#if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_memory.h"
 #include "vscf_cipher.h"
 #include "vscf_aes256_gcm.h"
-#include "test_data_aes256_gcm.h"
 
-#include "test_utils.h"
+#include "test_data_aes256_gcm.h"
 
 
 // --------------------------------------------------------------------------
 // Test implementation of the interface 'cipher info'.
 // --------------------------------------------------------------------------
-
 void
 test__NONCE_LEN__always__equals_12(void) {
     TEST_ASSERT_EQUAL(12, vscf_aes256_gcm_NONCE_LEN);
@@ -70,7 +73,6 @@ test__BLOCK_LEN__always__equals_16(void) {
 // --------------------------------------------------------------------------
 // Test implementation of the interface 'cipher'.
 // --------------------------------------------------------------------------
-
 void
 test__encrypt__vector_1__encrypted_len_equals_16(void) {
 
@@ -437,15 +439,17 @@ test__auth_decrypt__vector_3__valid_dec(void) {
     vscf_dealloc(dec);
 }
 
+#endif // TEST_DEPENDENCIES_AVAILABLE
+
+
 // --------------------------------------------------------------------------
 // Entrypoint.
 // --------------------------------------------------------------------------
-
 int
 main(void) {
     UNITY_BEGIN();
 
-
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__NONCE_LEN__always__equals_12);
     RUN_TEST(test__KEY_LEN__always__equals_32);
     RUN_TEST(test__KEY_BITLEN__always__equals_256);
@@ -468,6 +472,9 @@ main(void) {
     RUN_TEST(test__auth_decrypt__vector_3__decrypted_len_equals_128);
     RUN_TEST(test__auth_decrypt__vector_3__valid_auth_tag);
     RUN_TEST(test__auth_decrypt__vector_3__valid_dec);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+#endif
 
     return UNITY_END();
 }

@@ -36,6 +36,11 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(virgil_crypto_c_common VERSION 0.1.0 LANGUAGES C)
 
+#
+# Options
+#
+include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
+
 
 # ---------------------------------------------------------------------------
 #   Define library
@@ -45,23 +50,8 @@ project(virgil_crypto_c_common VERSION 0.1.0 LANGUAGES C)
 # Define sources
 #
 add_library(common "")
-target_sources(common
-        PRIVATE
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/private/vsc_buffer_defs.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_assert.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_buffer.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_data.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_error.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_library.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_memory.h"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vsc_assert.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vsc_buffer.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vsc_buffer_defs.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vsc_data.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vsc_error.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vsc_library.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vsc_memory.c"
-        )
+include("${CMAKE_CURRENT_LIST_DIR}/sources.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 
 #
 # Define include headers

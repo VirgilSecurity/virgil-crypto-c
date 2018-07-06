@@ -53,26 +53,6 @@ gsl from "component.gsl"
 
 
 # ---------------------------------------------------------------------------
-#   Resolve component: section.
-#
-#   The principle: for each component inside section embed 'section' as
-#   a component's child.
-# ---------------------------------------------------------------------------
-function module_embed_sections (module)
-    check_argument (my, "module")
-
-    for my.module.section as parent_section
-        for parent_section. as component where defined (name (component) ?)
-            new section to component
-                .title = parent_section.title
-            endnew
-            move component before parent_section
-        endfor
-        delete parent_section
-    endfor
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Resolve component: module.
 # ---------------------------------------------------------------------------
 function module_resolve (module, project)
@@ -81,8 +61,6 @@ function module_resolve (module, project)
     echo_trace ("Resolving module: $(my.module.name:)", my)
 
     assert_attribute (my.module, "name", my)
-
-    module_embed_sections (my.module)
 
     my.module.of_class ?= my.module.name
     my.module.c_prefix ?= my.project.prefix
@@ -93,6 +71,7 @@ function module_resolve (module, project)
     foreach_component_resolve (my.module)
 endfunction
 
+
 # ---------------------------------------------------------------------------
 #   Resolve all 'module' entries within 'source'
 # ---------------------------------------------------------------------------
@@ -101,6 +80,45 @@ function foreach_module_resolve (source, project)
 
     for my.source.module
         module_resolve (module, my.project)
+    endfor
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Create 'feature' for given 'module'.
+# ---------------------------------------------------------------------------
+function module_create_feature (module, destination)
+    check_arguments (my, "module, destination", my)
+
+    new feature to my.destination
+        . = "Enable module '$(my.module.name)'."
+        .name = my.module.feature
+
+        for my.module.require where defined (0.project) as impl_require
+            new require to feature
+                .project = impl_require.project
+                .feature = impl_require.feature
+            endnew
+        endfor
+
+        for my.module.require where defined (0.library) as impl_require
+            new require to feature
+                .library = impl_require.library
+                .feature = impl_require.feature
+            endnew
+        endfor
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   For each 'module' within 'source' create 'feature'.
+# ---------------------------------------------------------------------------
+function foreach_module_create_feature (source, destination)
+    check_arguments (my, "source, destination", my)
+
+    for my.source.module where defined (module.feature)
+        module_create_feature (module, my.destination)
     endfor
 endfunction
 

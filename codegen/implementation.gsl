@@ -292,4 +292,47 @@ function foreach_implementation_update_meta (source, meta)
     endfor
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Create 'feature' for given 'implementation'.
+# ---------------------------------------------------------------------------
+function implementation_create_feature (implementation, destination)
+    check_arguments (my, "implementation, destination", my)
+
+    new feature to my.destination
+        . = "Enable implementation '$(my.implementation.name)'."
+        .name = my.implementation.name
+
+        for my.implementation.require where defined (0.project) as impl_require
+            new require to feature
+                .project = impl_require.project
+                .feature = impl_require.feature
+            endnew
+        endfor
+
+        for my.implementation.require where defined (0.library) as impl_require
+            new require to feature
+                .library = impl_require.library
+                .feature = impl_require.feature
+            endnew
+        endfor
+
+        for my.implementation.dependency
+            new require to feature
+                .feature = dependency.interface
+            endnew
+        endfor
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   For each 'implementation' within 'source' create 'feature'.
+# ---------------------------------------------------------------------------
+function foreach_implementation_create_feature (source, destination)
+    check_arguments (my, "source, destination", my)
+
+    for my.source.implementation
+        implementation_create_feature (implementation, my.destination)
+    endfor
+endfunction
+
 .endtemplate

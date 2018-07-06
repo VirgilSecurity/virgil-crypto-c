@@ -57,6 +57,14 @@
 </entity>
 
 
+<entity name="feature" abstract="1">
+    <attr name="feature">
+        In-project feature name that is implemented.
+        This attribute is used for feature-based compilation.
+    </attr>
+</entity>
+
+
 <entity name="c_prefix" abstract="1">
     <attr name="c_prefix">
         Prefix that is used for C name resolution.
@@ -68,6 +76,7 @@
     Groups common attributes for the component.
 
     <inherit entity="uid"/>
+    <inherit entity="feature"/>
     <inherit entity="of_class"/>
     <inherit entity="c_prefix"/>
 </entity>
@@ -297,6 +306,7 @@
         Module name that current module depends on.
     </attr>
 
+    <inherit entity="feature"/>
     <inherit entity="scope"/>
 </entity>
 

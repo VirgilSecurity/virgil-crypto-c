@@ -1219,6 +1219,7 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
 
         .name = my.names.implementation_module
         .of_class = my.names.implementation_class
+        .feature = my.impl.name
 
         _Z19_add_includes_for_module_public (my.impl, module, my.meta)
         _Z19_add_self_tag (my.impl, my.enum_impl_tag, my.meta)
@@ -1268,6 +1269,7 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
         .name = my.names.implementation_module_impl
         .of_class = my.names.implementation_class
         .scope = "private"
+        .feature = my.impl.name
 
         new require to module
             .module = my.names.module_library
@@ -1328,6 +1330,7 @@ function c_module_implementation_create_module_internal (impl, source, destinati
         .name = my.names.implementation_module_internal
         .of_class = my.names.implementation_class
         .scope = "internal"
+        .feature = my.impl.name
 
         if _Z19_has_methods_with_context_impl (my.impl)
 

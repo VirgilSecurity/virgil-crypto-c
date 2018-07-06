@@ -108,6 +108,7 @@ function c_module_create (source, destination, project)
             .scope = module.scope
 
             c_component_map_attr_uid (c_module, module)
+            c_component_map_attr_feature (c_module, module)
 
             if module.scope = "public"
                 my.resolved_header_path = my.project.inc_path

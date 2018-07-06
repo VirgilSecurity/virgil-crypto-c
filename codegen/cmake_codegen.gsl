@@ -1,0 +1,173 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Functions for CMake primitives generation: license, setters, etc.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https:# github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+
+gsl from "common.gsl"
+
+
+# ###########################################################################
+#   Code generation for different CMake code fragment.
+# ###########################################################################
+
+
+# ---------------------------------------------------------------------------
+#   Return formatted multiline commented string.
+# ---------------------------------------------------------------------------
+function cmake_format_comment (str)
+    if ! defined (my.str)
+        return
+    endif
+
+    my.str = string_indent (my.str)
+    my.str = "#   $(my.str:left, block, no)$(terminator)"
+    my.str = string_multi_rtrim (my.str)
+
+    return my.str
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Insert given body with given indent.
+# ---------------------------------------------------------------------------
+function cmake_insert (body, tab_count)
+    check_argument (my, "body")
+
+    my.body = string_indent (my.body, my.tab_count)
+    my.body = string_multi_rtrim (my.body)
+
+    out (my.body)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Insert given body with given indent if condition is true.
+# ---------------------------------------------------------------------------
+function cmake_insert_if (condition, body, tab_count)
+    check_arguments (my, "condition, body", my)
+
+    if my.condition
+        cmake_insert (my.body, my.tab_count)
+    endif
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Insert trailing comment.
+# ---------------------------------------------------------------------------
+function cmake_insert_line_comment (line, tab_count)
+    my.content = string_indent ("#   " + my.line, my.tab_count)
+    out (my.content)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Insert separation line as a comment.
+# ---------------------------------------------------------------------------
+function cmake_insert_double_line ()
+    out ("#   =========================================================================")
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Insert separation line as a comment.
+# ---------------------------------------------------------------------------
+function cmake_insert_line ()
+    out ("#   -------------------------------------------------------------------------")
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Insert given content prefixed eith @<block> tag.
+# ---------------------------------------------------------------------------
+function cmake_insert_block (content, block, tab_count)
+    if string_empty (my.content)
+        echo_fatal ("Content is not defined.", my)
+    endif
+
+    if string_empty (my.block)
+        echo_fatal ("Block is not defined.", my)
+    endif
+
+    cmake_insert_line_comment ("@$(my.block:)", my.tab_count)
+    cmake_insert_line ()
+    out (string_indent (my.content, my.tab_count))
+    cmake_insert_line ()
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Insert @<tag>.
+# ---------------------------------------------------------------------------
+function cmake_insert_tag (tag, tab_count)
+    check_argument (my, "tag")
+
+    cmake_insert_line_comment ("@$(my.tag:)", my.tab_count)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Insert @end.
+# ---------------------------------------------------------------------------
+function cmake_insert_tag_end (tab_count)
+    cmake_insert_line_comment ("@end", my.tab_count)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Insert CMake prologue: license + caution + guard.
+# ---------------------------------------------------------------------------
+function cmake_insert_prologue (license)
+    check_arguments (my, "license", my)
+
+    cmake_insert_block (cmake_format_comment (my.license), "license")
+    newline ()
+    cmake_insert_block (cmake_format_comment ("\
+        This file is fully generated by script 'cmake_files_codegen.gsl'.
+        It can be changed temporary for debug purposes only.
+    "), "warning")
+    cmake_insert_tag_end()
+    newline (2)
+    cmake_insert ("include_guard()")
+    newline ()
+endfunction
+
+.endtemplate

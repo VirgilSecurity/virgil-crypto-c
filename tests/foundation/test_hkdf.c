@@ -34,20 +34,23 @@
 
 
 #include "unity.h"
+#include "test_utils.h"
+
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCF_HKDF &&VSCF_HMAC256
+#if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_hkdf.h"
 #include "vscf_hmac256.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
 
-#include "test_utils.h"
 #include "test_data_hkdf.h"
 
 
 // --------------------------------------------------------------------------
 // Test implementation of the interface 'hkdf'.
 // --------------------------------------------------------------------------
-
 void
 test__derive__sha256_vector_1__success(void) {
 
@@ -92,19 +95,41 @@ test__derive__sha256_vector_2__success(void) {
 
 void
 test__derive__sha256_vector_3__success(void) {
+    byte *key = vscf_alloc(test_hkdf_VECTOR_3_DERIVED_DATA_LEN);
+
+    vscf_hkdf_impl_t *hkdf_impl = vscf_hkdf_new();
+    vscf_impl_t *hmac256_impl = vscf_hmac256_impl(vscf_hmac256_new());
+
+    vscf_hkdf_take_hmac_stream(hkdf_impl, &hmac256_impl);
+
+    vscf_hkdf_derive(hkdf_impl, test_hkdf_VECTOR_3_KEY, test_hkdf_VECTOR_3_KEY_LEN, test_hkdf_VECTOR_3_SALT,
+            test_hkdf_VECTOR_3_SALT_LEN, test_hkdf_VECTOR_3_INFO, test_hkdf_VECTOR_3_INFO_LEN, key,
+            test_hkdf_VECTOR_3_DERIVED_DATA_LEN);
+
+    vscf_hkdf_destroy(&hkdf_impl);
+
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hkdf_VECTOR_3_DERIVED_DATA, key, test_hkdf_VECTOR_3_DERIVED_DATA_LEN);
+
+    vscf_dealloc(key);
 }
+
+#endif // TEST_DEPENDENCIES_AVAILABLE
+
 
 // --------------------------------------------------------------------------
 // Entrypoint.
 // --------------------------------------------------------------------------
-
 int
 main(void) {
     UNITY_BEGIN();
 
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__derive__sha256_vector_1__success);
     RUN_TEST(test__derive__sha256_vector_2__success);
     RUN_TEST(test__derive__sha256_vector_3__success);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+#endif
 
     return UNITY_END();
 }
