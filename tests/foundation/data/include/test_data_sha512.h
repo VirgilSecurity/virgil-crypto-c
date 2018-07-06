@@ -59,33 +59,3 @@ extern const byte test_sha512_VECTOR_3_INPUT[];
 extern const byte test_sha512_VECTOR_3_DIGEST[];
 extern const size_t test_sha512_VECTOR_3_INPUT_LEN;
 extern const size_t test_sha512_VECTOR_3_DIGEST_LEN;
-
-//
-//  Test Vector 1 (HMAC)
-//
-extern const byte test_sha512_HMAC_KEY_1_INPUT[];
-extern const byte test_sha512_HMAC_VECTOR_1_INPUT[];
-extern const byte test_sha512_HMAC_VECTOR_1_DIGEST[];
-extern const size_t test_sha512_HMAC_KEY_1_INPUT_LEN;
-extern const size_t test_sha512_HMAC_VECTOR_1_INPUT_LEN;
-extern const size_t test_sha512_HMAC_VECTOR_1_DIGEST_LEN;
-
-//
-//  Test Vector 2 (HMAC)
-//
-extern const byte test_sha512_HMAC_KEY_2_INPUT[];
-extern const byte test_sha512_HMAC_VECTOR_2_INPUT[];
-extern const byte test_sha512_HMAC_VECTOR_2_DIGEST[];
-extern const size_t test_sha512_HMAC_KEY_2_INPUT_LEN;
-extern const size_t test_sha512_HMAC_VECTOR_2_INPUT_LEN;
-extern const size_t test_sha512_HMAC_VECTOR_2_DIGEST_LEN;
-
-//
-//  Test Vector 3 (HMAC)
-//
-extern const byte test_sha512_HMAC_KEY_3_INPUT[];
-extern const byte test_sha512_HMAC_VECTOR_3_INPUT[];
-extern const byte test_sha512_HMAC_VECTOR_3_DIGEST[];
-extern const size_t test_sha512_HMAC_KEY_3_INPUT_LEN;
-extern const size_t test_sha512_HMAC_VECTOR_3_INPUT_LEN;
-extern const size_t test_sha512_HMAC_VECTOR_3_DIGEST_LEN;
