@@ -1,0 +1,146 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Perform resolution for item 'library' and all children.
+#
+#   Resolution includes several steps:
+#       1. Validate - check that required attributes and items are defined.
+#       2. Define default values to the optional component attributes.
+#       3. Append optional items.
+#
+#    Private function prefix is: J21.
+#
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+gsl from "features.gsl"
+
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: name.
+# ---------------------------------------------------------------------------
+function _J21_require_attr_name (library, caller)
+    check_arguments (my, "library", my)
+
+    assert_attribute (my.library, "name", my.caller ? my)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: path.
+# ---------------------------------------------------------------------------
+function _J21_require_attr_path (library, caller)
+    check_arguments (my, "library", my)
+
+    assert_attribute (my.library, "path", my.caller ? my)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: prefix.
+# ---------------------------------------------------------------------------
+function _J21_resolve_attr_prefix (library)
+    check_arguments (my, "library", my)
+
+    my.library.prefix ?= my.library.name
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: uid.
+# ---------------------------------------------------------------------------
+function _J21_resolve_attr_uid (library)
+    check_arguments (my, "library", my)
+
+    my.library.uid ?= make_id (name (my.library), my.library.name)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Resolve component: library.
+# ---------------------------------------------------------------------------
+function library_resolve (library)
+    check_arguments (my, "library, project", my)
+
+    _J21_require_attr_name (my.library, my)
+    _J21_resolve_attr_path (my.library, my)
+    _J21_resolve_attr_prefix (my.library)
+    _J21_resolve_attr_uid (my.library)
+
+    foreach_feature_resolve (my.library, my.library)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Resolve all 'library' entries within 'source'.
+# ---------------------------------------------------------------------------
+function foreach_library_resolve (source, project)
+    check_arguments (my, "source, project", my)
+
+    for my.source.library
+        library_resolve (library)
+    endfor
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add 'features' from library to destination.
+# ---------------------------------------------------------------------------
+function library_create_features (library, destination)
+    check_arguments (my, "library, destination", my)
+
+    echo_trace ("Create <features/> for <library name=\"$(my.library.name)\"", my)
+
+    new features to my.destination
+        .prefix = my.library.prefix ?
+        .path = my.library.path
+
+        new source to features
+            .name = my.library.name
+            .type = "library"
+        endnew
+
+        for my.library.feature
+            copy feature to features
+        endfor
+
+        return features
+    endnew
+endfunction
+
+.endtemplate

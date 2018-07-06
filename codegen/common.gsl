@@ -889,14 +889,21 @@ endfunction
 function item_save_to_file (model, file_name, dir_path)
     check_arguments (my, "model, file_name", my)
 
-    my.dir_path = directory.resolve (my.dir_path) ?
-    my.file_path = "$(my.dir_path?:)$(my.file_name:)"
+    if defined (my.dir_path)
+        my.dir_path = directory.resolve (my.dir_path) ?
+
+        if directory.create (my.dir_path) = -1
+            echo_fatal ("Can not create directory: $(my.dir_path:). ", my)
+        endif
+    endif
+
 
     my.model_name = name (my.model)
     if string_defined (my.model.name)
         my.model_name += " name=\"$(my.model.name:)\""
     endif
 
+    my.file_path = "$(my.dir_path?:)$(my.file_name:)"
     echo_trace ("Saving <$(my.model_name)/> to the file: $(my.file_path:)", my)
 
     item_format_body (my.model)

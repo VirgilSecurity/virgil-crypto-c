@@ -150,6 +150,16 @@
 </entity>
 
 
+<entity name="c_feature" abstract="1">
+    Defines feature name.
+
+    <attr name="feature">
+        Defines feature name.
+        Component that holds this attribute should be wrapped with #if &lt;feature&gt; #endif macros.
+    </attr>
+</entity>
+
+
 <entity name="c_include">
     <attr name="file" required="1">
         File name to be included.
@@ -165,6 +175,7 @@
         </restrict>
     </attr>
 
+    <inherit entity="c_feature"/>
     <inherit entity="scope"/>
 </entity>
 
@@ -195,6 +206,7 @@
     <inherit entity="declaration"/>
     <inherit entity="definition"/>
     <inherit entity="uid"/>
+    <inherit entity="c_feature"/>
 
     <allow entity = "c_constant" occurs = "1+"/>
 </entity>
@@ -213,6 +225,7 @@
 
     <inherit entity="definition"/>
     <inherit entity="uid"/>
+    <inherit entity="c_feature"/>
 </entity>
 
 
@@ -226,6 +239,7 @@
     <inherit entity="uid"/>
     <inherit entity="declaration"/>
     <inherit entity="definition"/>
+    <inherit entity="c_feature"/>
 
     <allow entity = "c_property" occurs = "1+"/>
 </entity>
@@ -243,6 +257,7 @@
     </attr>
 
     <inherit entity="uid"/>
+    <inherit entity="c_feature"/>
     <inherit entity="c_instance"/>
 </entity>
 
@@ -258,6 +273,7 @@
     <inherit entity="declaration"/>
     <inherit entity="definition"/>
     <inherit entity="uid"/>
+    <inherit entity="c_feature"/>
 
     <allow entity="c_modifier" occurs="0+"/>
     <allow entity="c_return" occurs="0/1"/>
@@ -296,6 +312,7 @@
 
     <inherit entity="uid"/>
     <inherit entity="definition"/>
+    <inherit entity="c_feature"/>
 
     <allow entity="c_implementation" occurs="0/1"/>
 </entity>
@@ -322,6 +339,7 @@
     <inherit entity="visibility"/>
     <inherit entity="declaration"/>
     <inherit entity="definition"/>
+    <inherit entity="c_feature"/>
     <inherit entity="c_instance"/>
 
     <allow entity="c_value" occurs="1+"/>

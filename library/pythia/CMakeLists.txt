@@ -41,7 +41,7 @@ project(virgil_crypto_c_pythia VERSION 0.2.0 LANGUAGES C)
 # ---------------------------------------------------------------------------
 
 #
-# MbedTLS
+# Virgil Security Library Common
 #
 if(NOT TARGET vsc::common)
     message(FATAL_ERROR
@@ -69,6 +69,11 @@ if(NOT TARGET relic)
     message(FATAL_ERROR "Required library 'relic' is not found - looking for target 'relic'.")
 endif()
 
+#
+# Options
+#
+include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
+
 # ---------------------------------------------------------------------------
 #   Define library
 # ---------------------------------------------------------------------------
@@ -77,21 +82,9 @@ endif()
 # Define sources
 #
 add_library(pythia_wrap "")
-target_sources(pythia_wrap
-        PRIVATE
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/private/vscp_pythia_defs.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_assert.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_error.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_library.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_memory.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_pythia.h"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_assert.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_error.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_library.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_memory.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_pythia.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_pythia_defs.c"
-        )
+include("${CMAKE_CURRENT_LIST_DIR}/sources.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
+
 
 #
 # Define include headers

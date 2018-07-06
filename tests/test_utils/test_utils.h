@@ -87,4 +87,14 @@ void mock_assert_reset(void);
 //
 void mock_assert_handler (const char* message, const char* file, int line);
 
+
+// --------------------------------------------------------------------------
+//  Usefull stubs
+// --------------------------------------------------------------------------
+
+//
+//  Use this test, when test's dependencies are disabled.
+//
+void test__nothing__feature_disabled__must_be_ignored(void);
+
 #endif /* TEST_UTILS_H_INCLUDED */

@@ -45,6 +45,15 @@
 
         <allow entity="constant" occurs="0+"/>
         <allow entity="method" occurs="0+"/>
+        <allow entity="inherit" occurs="0+"/>
+    </entity>
+
+    <entity name="inherit">
+        Defines inherited interface.
+
+        <attr name="interface" required="1">
+            Inherited interface name.
+        </attr>
     </entity>
 
     <include filename="common.xnf"/>

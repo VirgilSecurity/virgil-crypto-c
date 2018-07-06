@@ -9,26 +9,26 @@ attribute names are case-sensitive and we use only lower-case names.
 
     <c_module output_source_file once_guard name header_file source_file output_header_file
          [of_class] [scope]>
-       <c_include file [scope] [is_system]/>
+       <c_include file [feature] [scope] [is_system]/>
        <c_alias type name [declaration]/>
-       <c_enum [uid] [definition] [declaration] [visibility] [name]>
-          <c_constant name [definition] [uid] [value]/>
+       <c_enum [feature] [uid] [definition] [declaration] [visibility] [name]>
+          <c_constant name [uid] [definition] [feature] [value]/>
        </c_enum>
-       <c_struct name [declaration] [uid] [definition]>
-          <c_property type type_is name [array] [accessed_by] [length] [is_const_type] [is_const_pointer]
-               [is_const_array] [is_const_string] [is_const_reference] [uid]
-               [string] [bits]/>
+       <c_struct name [definition] [declaration] [uid] [feature]>
+          <c_property type type_is name [array] [string] [length] [is_const_type] [is_const_pointer]
+               [is_const_array] [is_const_string] [is_const_reference] [feature]
+               [uid] [accessed_by] [bits]/>
        </c_struct>
        <c_variable type type_is name [accessed_by] [string] [length] [is_const_type] [is_const_pointer]
-            [is_const_array] [is_const_string] [is_const_reference] [definition]
-            [declaration] [visibility] [uid] [array]>
+            [is_const_array] [is_const_string] [is_const_reference] [feature]
+            [definition] [declaration] [visibility] [uid] [array]>
           <c_value value>
              <c_cast type type_is [accessed_by] [array] [string] [length] [is_const_type] [is_const_pointer]
                   [is_const_array] [is_const_string] [is_const_reference]/>
           </c_value>
           <c_modifier [value]/>
        </c_variable>
-       <c_method name [definition] [declaration] [visibility] [uid]>
+       <c_method name [feature] [definition] [declaration] [visibility] [uid]>
           <c_modifier .../>
           <c_return type type_is [accessed_by] [array] [string] [length] [is_const_type] [is_const_pointer]
                [is_const_array] [is_const_string] [is_const_reference]/>
@@ -41,7 +41,7 @@ attribute names are case-sensitive and we use only lower-case names.
           <c_return .../>
           <c_argument .../>
        </c_callback>
-       <c_macros [definition] [uid] [is_method]>
+       <c_macros [feature] [definition] [uid] [is_method]>
           <c_implementation/>
        </c_macros>
        <c_macroses [definition]>
@@ -129,10 +129,11 @@ once_guard:
 The 'c_include' item
 --------------------
 
-
+Defines feature name.
 
     <c_include
         file = "..."
+      [ feature = "..." ]
       [ scope = "public | private | internal"  ("public") ]
       [ is_system = "0 | 1"  ("0") ]
         />
@@ -150,6 +151,11 @@ Value: Meaning:
 public: Component is visible for outside world.
 private: Component is visible for outside world via private interface.
 internal: Component is visible only within library or a specific source file.
+
+feature:
+    Defines feature name. Component that holds this attribute should be
+    wrapped with #if <feature> #endif macros. The feature attribute is
+    optional.
 
 file:
     File name to be included. The file attribute is required.
@@ -196,9 +202,10 @@ type:
 The 'c_enum' item
 -----------------
 
-Defines enumeration type.
+Defines feature name. Defines enumeration type.
 
     <c_enum
+      [ feature = "..." ]
       [ uid = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ declaration = "public | private | external"  ("public") ]
@@ -209,6 +216,11 @@ Defines enumeration type.
     </c_enum>
 
 The c_enum item can have these attributes:
+
+feature:
+    Defines feature name. Component that holds this attribute should be
+    wrapped with #if <feature> #endif macros. The feature attribute is
+    optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
@@ -251,16 +263,22 @@ name:
 The 'c_constant' item
 ---------------------
 
-Defines integral constant.
+Defines feature name. Defines integral constant.
 
     <c_constant
         name = "..."
-      [ definition = "public | private | external"  ("private") ]
       [ uid = "..." ]
+      [ definition = "public | private | external"  ("private") ]
+      [ feature = "..." ]
       [ value = "..." ]
         />
 
 The c_constant item can have these attributes:
+
+feature:
+    Defines feature name. Component that holds this attribute should be
+    wrapped with #if <feature> #endif macros. The feature attribute is
+    optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
@@ -286,18 +304,24 @@ value:
 The 'c_struct' item
 -------------------
 
-Define structure type.
+Defines feature name. Define structure type.
 
     <c_struct
         name = "..."
+      [ definition = "public | private | external"  ("private") ]
       [ declaration = "public | private | external"  ("public") ]
       [ uid = "..." ]
-      [ definition = "public | private | external"  ("private") ]
+      [ feature = "..." ]
         >
         <c_property>, 1 or more
     </c_struct>
 
 The c_struct item can have these attributes:
+
+feature:
+    Defines feature name. Component that holds this attribute should be
+    wrapped with #if <feature> #endif macros. The feature attribute is
+    optional.
 
 definition:
     Defines where component will be defined. This attribute must not be
@@ -330,22 +354,24 @@ name:
 The 'c_property' item
 ---------------------
 
-Defines a type of outer component. Define property of the structure type.
+Defines a type of outer component. Defines feature name. Define property of
+the structure type.
 
     <c_property
         type = "..."
         type_is = "primitive | class | callback | any"
         name = "..."
       [ array = "null_terminated | given | fixed | derived" ]
-      [ accessed_by = "value | pointer | reference"  ("value") ]
+      [ string = "null_terminated | given | fixed | derived" ]
       [ length = "..." ]
       [ is_const_type = "..." ]
       [ is_const_pointer = "..." ]
       [ is_const_array = "..." ]
       [ is_const_string = "..." ]
       [ is_const_reference = "..." ]
+      [ feature = "..." ]
       [ uid = "..." ]
-      [ string = "null_terminated | given | fixed | derived" ]
+      [ accessed_by = "value | pointer | reference"  ("value") ]
       [ bits = "..." ]
         />
 
@@ -415,6 +441,11 @@ is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
     The is_const_reference attribute is optional.
 
+feature:
+    Defines feature name. Component that holds this attribute should be
+    wrapped with #if <feature> #endif macros. The feature attribute is
+    optional.
+
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
@@ -430,7 +461,8 @@ bits:
 The 'c_variable' item
 ---------------------
 
-Defines a type of outer component. Define global variable.
+Defines a type of outer component. Defines feature name. Define global
+variable.
 
     <c_variable
         type = "..."
@@ -444,6 +476,7 @@ Defines a type of outer component. Define global variable.
       [ is_const_array = "..." ]
       [ is_const_string = "..." ]
       [ is_const_reference = "..." ]
+      [ feature = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
@@ -519,6 +552,11 @@ is_const_string:
 is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
     The is_const_reference attribute is optional.
+
+feature:
+    Defines feature name. Component that holds this attribute should be
+    wrapped with #if <feature> #endif macros. The feature attribute is
+    optional.
 
 definition:
     Defines where component will be defined. This attribute must not be
@@ -679,10 +717,12 @@ value:
 The 'c_method' item
 -------------------
 
-Define method signature and implementation (optional).
+Defines feature name. Define method signature and implementation
+(optional).
 
     <c_method
         name = "..."
+      [ feature = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
@@ -695,6 +735,11 @@ Define method signature and implementation (optional).
     </c_method>
 
 The c_method item can have these attributes:
+
+feature:
+    Defines feature name. Component that holds this attribute should be
+    wrapped with #if <feature> #endif macros. The feature attribute is
+    optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
@@ -968,9 +1013,11 @@ name:
 The 'c_macros' item
 -------------------
 
-Define macros, that can represent a constant or a method.
+Defines feature name. Define macros, that can represent a constant or a
+method.
 
     <c_macros
+      [ feature = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ uid = "..." ]
       [ is_method = "0 | 1"  ("0") ]
@@ -979,6 +1026,11 @@ Define macros, that can represent a constant or a method.
     </c_macros>
 
 The c_macros item can have these attributes:
+
+feature:
+    Defines feature name. Component that holds this attribute should be
+    wrapped with #if <feature> #endif macros. The feature attribute is
+    optional.
 
 definition:
     Defines where component will be defined. This attribute must not be

@@ -38,6 +38,8 @@
 
 #include "test_utils.h"
 
+#include "unity.h"
+
 #include <assert.h>
 #include <string.h>
 
@@ -122,3 +124,11 @@ void mock_assert_reset(void) {
     memset(&g_mock_assert_result, 0x00, sizeof(mock_assert_result_t));
 }
 
+
+// --------------------------------------------------------------------------
+//  Usefull stubs
+// --------------------------------------------------------------------------
+
+void test__nothing__feature_disabled__must_be_ignored(void) {
+    TEST_IGNORE();
+}

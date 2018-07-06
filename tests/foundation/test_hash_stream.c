@@ -33,6 +33,11 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include "unity.h"
+#include "test_utils.h"
+
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCF_HASH_STREAM &&VSCF_SHA256
+#if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_hash_stream.h"
 #include "vscf_hash_stream_api.h"
@@ -40,10 +45,10 @@
 
 #include "test_data_sha256.h"
 
+
 // --------------------------------------------------------------------------
 //  Over implementation: 'sha256'.
 // --------------------------------------------------------------------------
-
 void
 test__is_implemented__sha256__returns_true(void) {
     vscf_impl_t *impl = vscf_sha256_impl(vscf_sha256_new());
@@ -101,19 +106,24 @@ test__hash__sha256_vector_3__success(void) {
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_3_DIGEST, digest, test_sha256_VECTOR_3_DIGEST_LEN);
 }
 
+#endif // TEST_DEPENDENCIES_AVAILABLE
+
 
 // --------------------------------------------------------------------------
 //  Entrypoint
 // --------------------------------------------------------------------------
-
 int
 main(void) {
     UNITY_BEGIN();
 
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__is_implemented__sha256__returns_true);
     RUN_TEST(test__hash__sha256_vector_1__success);
     RUN_TEST(test__hash__sha256_vector_2__success);
     RUN_TEST(test__hash__sha256_vector_3__success);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+#endif
 
     return UNITY_END();
 }

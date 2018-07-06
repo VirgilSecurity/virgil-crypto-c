@@ -16,6 +16,10 @@ function(add_clangformat _targetname)
 
         set(_sources "")
         foreach(_source ${_clang_sources})
+            # remove cmake generator expressions if exists
+            string(REGEX REPLACE "([^:]+:)" "" _source "${_source}")
+            string(REGEX REPLACE ">" "" _source "${_source}")
+
             if(NOT TARGET ${_source})
                 get_filename_component(_source_file ${_source} NAME)
                 get_source_file_property(_clang_loc "${_source}" LOCATION)

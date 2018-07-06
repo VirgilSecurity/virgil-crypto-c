@@ -1,0 +1,141 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Create language "C" specific 'c_features' components from the generic
+#   'feature' components taken from 'project' and 'library' components.
+#
+#   Private function prefix is: F21.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+gsl from "c_component.gsl"
+gsl from "c_formatter.gsl"
+
+
+# ---------------------------------------------------------------------------
+#   Derive C style in-project feature full name.
+# ---------------------------------------------------------------------------
+function _F21_derive_feature_name (feature)
+    check_argument (my, "feature", my)
+
+    assert_attribute (my.feature, "name", my)
+    assert_attribute (my.feature, "prefix", my)
+
+    return c_format_macros_name (my.feature.prefix, my.feature.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Derive C style in-project require full name.
+# ---------------------------------------------------------------------------
+function _F21_derive_require_name (require)
+    check_argument (my, "require", my)
+
+    assert_item (my.require, "source", my)
+
+    return c_ref (make_id (my.require->source.type, my.require->source.name, "feature", my.require.feature))
+endfunction
+
+
+function _F21_create_alternative (alternative, destination)
+    check_arguments (my, "alternative, destination", my)
+
+    new c_alternative to my.destination
+        .feature = _F21_derive_require_name (my.alternative)
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create 'c_require' from 'require'.
+# ---------------------------------------------------------------------------
+function _F21_create_require (require, destination)
+    check_arguments (my, "require, destination", my)
+
+    new c_require to my.destination
+        for my.require.alternative
+            _F21_create_alternative (alternative, c_require)
+
+        else
+            .feature = _F21_derive_require_name (my.require)
+        endfor
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Create 'c_feature' from 'feature'.
+# ---------------------------------------------------------------------------
+function c_feature_create (feature, destination)
+    check_arguments (my, "feature, destination", my)
+
+    new c_feature to my.destination
+        . = my.feature. ?
+        .name = _F21_derive_feature_name (my.feature)
+
+        c_component_map_attr_uid (c_feature, my.feature)
+
+        for my.feature.require
+            _F21_create_require (require, c_feature)
+        endfor
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Create 'c_features' component from 'features' component.
+# ---------------------------------------------------------------------------
+function c_features_create (source, destination)
+    check_arguments (my, "source, destination", my)
+
+    for my.source.features
+        echo_trace ("Createing <c_features/> from <$(name (features)) name=\"$(features.name:)/>\"", my)
+
+        new c_features to my.destination
+            .name = features->source.name
+            .source = features->source.type
+            .path = features.path
+            .cmake_target = features.cmake_target ?
+
+            for features.feature
+                c_feature_create (feature, c_features)
+            endfor
+        endnew
+    endfor
+endfunction
+
+.endtemplate

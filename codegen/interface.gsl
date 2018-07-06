@@ -156,4 +156,33 @@ function interface_create_api_argument (interface, destination, meta)
     return my.api_argument
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Create 'feature' for given 'interface'.
+# ---------------------------------------------------------------------------
+function interface_create_feature (interface, destination)
+    check_arguments (my, "interface, destination", my)
+
+    new feature to my.destination
+        . = "Enable interface '$(my.interface.name)'."
+        .name = my.interface.name
+
+        for my.interface.inherit
+            new require to feature
+                .feature = inherit.interface
+            endnew
+        endfor
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   For each 'interface' within 'source' create 'feature'.
+# ---------------------------------------------------------------------------
+function foreach_interface_create_feature (source, destination)
+    check_arguments (my, "source, destination", my)
+
+    for my.source.interface
+        interface_create_feature (interface, my.destination)
+    endfor
+endfunction
+
 .endtemplate
