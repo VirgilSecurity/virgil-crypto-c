@@ -34,6 +34,11 @@
 
 
 #include "unity.h"
+#include "test_utils.h"
+
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCF_HASH &&VSCF_SHA256
+#if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_hash.h"
 #include "vscf_hash_api.h"
@@ -45,7 +50,6 @@
 // --------------------------------------------------------------------------
 //  Over implementation: 'sha256'.
 // --------------------------------------------------------------------------
-
 void
 test__api__sha256__returns_not_null(void) {
     TEST_ASSERT_NOT_NULL(vscf_sha256_hash_api());
@@ -89,20 +93,26 @@ test__hash__sha256_vector_3__success(void) {
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_3_DIGEST, digest, test_sha256_VECTOR_3_DIGEST_LEN);
 }
 
+#endif // TEST_DEPENDENCIES_AVAILABLE
+
+
 // --------------------------------------------------------------------------
 //  Entrypoint.
 // --------------------------------------------------------------------------
-
 int
 main(void) {
     UNITY_BEGIN();
 
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__api__sha256__returns_not_null);
     RUN_TEST(test__api_tag__sha256__equals_api_tag_HASH);
 
     RUN_TEST(test__hash__sha256_vector_1__success);
     RUN_TEST(test__hash__sha256_vector_2__success);
     RUN_TEST(test__hash__sha256_vector_3__success);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+#endif
 
     return UNITY_END();
 }

@@ -34,14 +34,15 @@
 
 
 #include "unity.h"
+#include "test_utils.h"
 
 
-#if VSCF_SHA512
+#define TEST_DEPENDENCIES_AVAILABLE VSCF_SHA512
+#if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_sha512.h"
 #include "vscf_assert.h"
 
-#include "test_utils.h"
 #include "test_data_sha512.h"
 
 
@@ -179,14 +180,8 @@ test__hash_stream__vector_3__success(void) {
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_VECTOR_3_DIGEST, digest, test_sha512_VECTOR_3_DIGEST_LEN);
 }
 
-#else // VSCF_SHA512
+#endif // TEST_DEPENDENCIES_AVAILABLE
 
-void
-test__nothing__feature_disabled__must_be_ignored(void) {
-    TEST_IGNORE();
-}
-
-#endif // VSCF_SHA512
 
 // --------------------------------------------------------------------------
 // Entrypoint.
@@ -195,7 +190,7 @@ int
 main(void) {
     UNITY_BEGIN();
 
-#if VSCF_SHA512
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__impl__valid_arg__returns_not_null);
     RUN_TEST(test__impl__null_arg__call_assert);
 

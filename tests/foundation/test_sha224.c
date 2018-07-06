@@ -34,14 +34,15 @@
 
 
 #include "unity.h"
+#include "test_utils.h"
 
 
-#if VSCF_SHA224
+#define TEST_DEPENDENCIES_AVAILABLE VSCF_SHA224
+#if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_sha224.h"
 #include "vscf_assert.h"
 
-#include "test_utils.h"
 #include "test_data_sha224.h"
 
 
@@ -179,14 +180,8 @@ test__hash_stream__vector_3__success(void) {
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha224_VECTOR_3_DIGEST, digest, test_sha224_VECTOR_3_DIGEST_LEN);
 }
 
-#else // VSCF_SHA224
+#endif // TEST_DEPENDENCIES_AVAILABLE
 
-void
-test__nothing__feature_disabled__must_be_ignored(void) {
-    TEST_IGNORE();
-}
-
-#endif // VSCF_SHA224
 
 // --------------------------------------------------------------------------
 // Entrypoint.

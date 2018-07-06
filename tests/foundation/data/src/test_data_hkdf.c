@@ -126,10 +126,10 @@ const size_t test_hkdf_VECTOR_2_KEY_LEN = sizeof (test_hkdf_VECTOR_2_KEY);
 const size_t test_hkdf_VECTOR_2_SALT_LEN = sizeof (test_hkdf_VECTOR_2_SALT);
 const size_t test_hkdf_VECTOR_2_INFO_LEN = sizeof (test_hkdf_VECTOR_2_INFO);
 const size_t test_hkdf_VECTOR_2_DERIVED_DATA_LEN = sizeof (test_hkdf_VECTOR_2_DERIVED_DATA);
+
 //
 //  Test Vector 3
 //
-
 const byte test_hkdf_VECTOR_3_KEY[] = {
     0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
     0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,

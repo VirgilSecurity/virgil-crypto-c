@@ -34,20 +34,23 @@
 
 
 #include "unity.h"
+#include "test_utils.h"
+
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCF_KDF1 &&VSCF_SHA256
+#if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_kdf1.h"
 #include "vscf_sha256.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
 
-#include "test_utils.h"
 #include "test_data_kdf1.h"
 
 
 // --------------------------------------------------------------------------
 // Test implementation of the interface 'kdf'.
 // --------------------------------------------------------------------------
-
 void
 test__derive__sha256_vector_1__success(void) {
 
@@ -105,17 +108,23 @@ test__derive__sha256_vector_3__success(void) {
     vscf_dealloc(key);
 }
 
+#endif // TEST_DEPENDENCIES_AVAILABLE
+
+
 // --------------------------------------------------------------------------
 // Entrypoint.
 // --------------------------------------------------------------------------
-
 int
 main(void) {
     UNITY_BEGIN();
 
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__derive__sha256_vector_1__success);
     RUN_TEST(test__derive__sha256_vector_2__success);
     RUN_TEST(test__derive__sha256_vector_3__success);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+#endif
 
     return UNITY_END();
 }

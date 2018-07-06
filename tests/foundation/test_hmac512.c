@@ -34,14 +34,15 @@
 
 
 #include "unity.h"
+#include "test_utils.h"
 
 
-#if VSCF_HMAC512
+#define TEST_DEPENDENCIES_AVAILABLE VSCF_HMAC512
+#if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_hmac512.h"
 #include "vscf_assert.h"
 
-#include "test_utils.h"
 #include "test_data_hmac512.h"
 
 
@@ -179,14 +180,7 @@ test__hmac_stream__vector_3_success(void) {
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac512_VECTOR_3_DIGEST, digest, test_hmac512_VECTOR_3_DIGEST_LEN);
 }
 
-#else // VSCF_HMAC512
-
-void
-test__nothing__feature_disabled__must_be_ignored(void) {
-    TEST_IGNORE();
-}
-
-#endif // VSCF_HMAC512
+#endif // TEST_DEPENDENCIES_AVAILABLE
 
 // --------------------------------------------------------------------------
 // Entrypoint.
@@ -195,7 +189,7 @@ int
 main(void) {
     UNITY_BEGIN();
 
-#if VSCF_HMAC512
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__impl__valid_arg__returns_not_null);
     RUN_TEST(test__impl__null_arg__call_assert);
 
@@ -212,5 +206,6 @@ main(void) {
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
+
     return UNITY_END();
 }
