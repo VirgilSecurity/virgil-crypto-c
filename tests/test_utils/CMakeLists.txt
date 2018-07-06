@@ -36,7 +36,12 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(test_utils VERSION 0.1.0 LANGUAGES C)
 
+if(NOT TARGET unity)
+    message(FATAL_ERROR "Required library 'unity' is not found - looking for target 'unity'.")
+endif()
+
 add_library(test_utils test_utils.h test_utils.c)
+target_link_libraries(test_utils unity)
 
 target_include_directories(test_utils
         PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
