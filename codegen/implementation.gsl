@@ -83,11 +83,10 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Resolve model: implementation.interface.context.
 # ---------------------------------------------------------------------------
-function implementation_resolve_interface_context (context, parent)
+function implementation_resolve_context (context, parent)
     check_arguments (my, "context, parent", my)
 
-    component_require_attr_name (my.context, my)
-    component_resolve_instance (my.context, my.parent)
+    #   Nothig to check.
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -107,10 +106,6 @@ function implementation_resolve_interface (interface, parent)
     check_arguments (my, "interface, parent", my)
 
     component_require_attr_name (my.interface, my)
-
-    for my.interface.context
-        implementation_resolve_interface_context (context, my.interface)
-    endfor
 
     for my.interface.constant
         implementation_resolve_interface_constant (constant, my.interface)
@@ -238,6 +233,10 @@ function implementation_resolve (implementation, parent, project)
         implementation_copy_interface_methods (implemented_interface, my.implementation, my.parent)
     else
         echo_fatal ("Implementation '$(my.implementation.name)' does not implement any interface.", my)
+    endfor
+
+    for my.implementation.context
+        implementation_resolve_context (context, my.implementation)
     endfor
 
     for my.implementation.require_include

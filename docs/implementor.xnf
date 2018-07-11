@@ -73,6 +73,7 @@
             Implementation name.
         </attr>
 
+        <allow entity="context" occurs="0/1"/>
         <allow entity="interface" occurs="1+"/>
         <allow entity="dependency" occurs="0+"/>
         <allow entity="require_include" occurs="0+"/>
@@ -86,7 +87,6 @@
             Name of the implemented interface.
         </attr>
 
-        <allow entity="context"/>
         <allow entity="constant"/>
     </entity>
 
@@ -94,25 +94,7 @@
     <entity name="context">
         Defines specific underlying implementation context.
 
-        <attr name="name" required="1">
-            Name of the context.
-        </attr>
-
-        <inherit entity="instance"/>
-    </entity>
-
-
-    <entity name="constant">
-        Defines specific value for interface constant.
-
-        <attr name="name" required="1">
-            Name of the interface constant.
-        </attr>
-
-        <attr name="value" required="1">
-            Value of the interface constant.
-            Note, value must be integral.
-        </attr>
+        <allow entity="property"/>
     </entity>
 
 
@@ -142,7 +124,7 @@
 
 
     <entity name="require_include">
-        Define implementation dependecy to the thirdparty header file.
+        Define implementation dependency to the third-party header file.
 
         <attr name="name" required="1">
             Dependency name.
@@ -152,7 +134,7 @@
             Dependency type.
 
             <restrict value="none">
-                Header file is used for implmentation purposes only.
+                Header file is used for implementation purposes only.
             </restrict>
 
             <restrict value="context">
@@ -161,8 +143,7 @@
         </attr>
     </entity>
 
-    <entity name="instance">
-        The same instance as component's instance.
-    </entity>
+    <include filename="common.xnf"/>
+    <include filename="component.xnf"/>
 </xnf>
 

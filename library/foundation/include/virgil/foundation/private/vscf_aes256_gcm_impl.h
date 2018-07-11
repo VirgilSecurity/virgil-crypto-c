@@ -84,15 +84,15 @@ struct vscf_aes256_gcm_impl_t {
     //
     const vscf_impl_info_t *info;
     //
-    //  Interface implementation specific context.
+    //  Implementation specific context.
     //
     mbedtls_cipher_context_t cipher_ctx;
     //
-    //  Interface implementation specific context.
+    //  Implementation specific context.
     //
     byte key[vscf_aes256_gcm_KEY_LEN];
     //
-    //  Interface implementation specific context.
+    //  Implementation specific context.
     //
     byte nonce[vscf_aes256_gcm_NONCE_LEN];
 };

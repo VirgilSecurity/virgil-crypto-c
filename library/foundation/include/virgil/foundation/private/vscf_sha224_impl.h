@@ -84,7 +84,7 @@ struct vscf_sha224_impl_t {
     //
     const vscf_impl_info_t *info;
     //
-    //  Interface implementation specific context.
+    //  Implementation specific context.
     //
     mbedtls_sha256_context hash_ctx;
 };
