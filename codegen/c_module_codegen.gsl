@@ -186,7 +186,7 @@ function c_module_generate_source (c_module)
         c_insert_variable_definition (c_variable)
     endfor
 
-    for my.c_module.c_method where definition <> "external" & c_method->c_implementation.body = "generated"
+    for my.c_module.c_method where definition <> "external" & c_method->c_code.type = "generated"
         newline ()
         c_insert_method_definition (c_method)
     endfor
@@ -197,18 +197,17 @@ function c_module_generate_source (c_module)
     if string_defined (my.content_after)
         my.entities = parse_handwritten_content (my.content_after)
 
-        for my.c_module.c_method where definition <> "external" & c_method->c_implementation.body = "stub"
+        for my.c_module.c_method where definition <> "external" & c_method->c_code.type = "stub"
             my.handwritten_implementation = my.entities->entity (name = c_method.name) ?
 
             if defined (my.handwritten_implementation)
-                c_method->c_implementation. = my.handwritten_implementation.body
-                c_method->c_implementation.body = "handwritten"
+                c_method->c_code. = my.handwritten_implementation.body
+                c_method->c_code.type = "handwritten"
             endif
         endfor
     endif
 
-    for my.c_module.c_method where definition <> "external" & \
-            string_in (c_method->c_implementation.body, "stub, handwritten")
+    for my.c_module.c_method where definition <> "external" & string_in (c_method->c_code.type, "stub, handwritten")
 
         newline_if (first ())
         newline ()

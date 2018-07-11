@@ -93,7 +93,7 @@ function _X13_add_method_context_size (class, destination, meta)
             .type = "size"
         endnew
 
-        new implementation to method
+        new code to method
             . = "\
                 return sizeof($(my.refs.c_class_struct_ctx));
             "
@@ -156,8 +156,8 @@ function _X13_add_method_init (class, destination, meta)
         _X13_add_argument_ctx (method, my.meta)
         _X13_add_return_error (method, my.meta)
 
-        new implementation to method
-            .body = "stub"
+        new code to method
+            .type = "stub"
             . = "
             .(c_class_assert_macros_ptr)($(my.refs.class_argument_ctx));
 
@@ -206,7 +206,7 @@ function _X13_add_method_new (class, destination, meta)
             .access = "disown"
         endnew
 
-        new implementation to method
+        new code to method
             my.type_ctx = my.refs.c_class_struct_ctx
             my.arg_ctx = my.names.c_class_argument_ctx
 
@@ -271,7 +271,7 @@ function _X13_add_method_delete (class, destination, meta)
 
         _X13_add_argument_ctx (method, my.meta)
 
-        new implementation to method
+        new code to method
             my.arg_ctx = my.refs.class_argument_ctx
 
             . = "\
@@ -307,7 +307,7 @@ function _X13_add_method_destroy (class, destination, meta)
 
         _X13_add_argument_ctx_ref (method, my.meta)
 
-        new implementation to method
+        new code to method
             my.arg_ctx_ref = my.refs.class_argument_ctx
             my.arg_ctx = my.names.c_class_argument_ctx
             my.type_ctx = my.refs.c_class_struct_ctx

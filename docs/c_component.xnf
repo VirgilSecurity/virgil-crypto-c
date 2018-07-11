@@ -314,7 +314,7 @@
     <inherit entity="definition"/>
     <inherit entity="c_feature"/>
 
-    <allow entity="c_implementation" occurs="0/1"/>
+    <allow entity="c_code" occurs="0/1"/>
 </entity>
 
 
@@ -324,7 +324,7 @@
     <inherit entity="definition"/>
 
     <allow entity="c_macros" occurs="1+"/>
-    <allow entity="c_implementation" occurs="0/1"/>
+    <allow entity="c_code" occurs="0/1"/>
 </entity>
 
 
@@ -384,7 +384,7 @@
 </entity>
 
 
-<entity name="c_implementation">
+<entity name="c_code">
     Defines method or macros implementation.
 </entity>
 

@@ -451,7 +451,7 @@
     <allow entity="return" occurs="0/1"/>
     <allow entity="argument" occurs="0+"/>
     <allow entity="variable" occurs="0+"/>
-    <allow entity="implementation" occurs="0/1"/>
+    <allow entity="code" occurs="0/1"/>
 </entity>
 
 
@@ -511,7 +511,7 @@
     <inherit entity="component"/>
     <inherit entity="definition"/>
 
-    <allow entity="implementation" occurs="0/1"/>
+    <allow entity="code" occurs="0/1"/>
 </entity>
 
 
@@ -521,5 +521,5 @@
     <inherit entity="definition"/>
 
     <allow entity="macros" occurs="1+"/>
-    <allow entity="implementation" occurs="1"/>
+    <allow entity="code" occurs="1"/>
 </entity>

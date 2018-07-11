@@ -117,7 +117,7 @@ function _L24_add_method_get_api (meta, destination)
             .enum = ".(class_api_enum_tag)"
         endnew
 
-        new implementation
+        new code
             . = "\
             .(c_class_assert_macros_ptr) (impl);
             .(c_class_assert_macros_ptr) (impl->info);
@@ -161,7 +161,7 @@ function _L24_add_method_get_tag (meta, destination)
 
         component_create_argument_impl (method, my.meta)
 
-        new implementation
+        new code
             . = "
             .(c_class_assert_macros_ptr) (impl);
             .(c_class_assert_macros_ptr) (impl->info);
@@ -187,7 +187,7 @@ function _L24_add_method_cleanup (meta, destination)
 
         component_create_argument_impl (method, my.meta)
 
-        new implementation
+        new code
             . = "\
             .(c_class_assert_macros_ptr) (impl);
             .(c_class_assert_macros_ptr) (impl->info);
@@ -217,7 +217,7 @@ function _L24_add_method_delete (meta, destination)
 
         component_create_argument_impl (method, my.meta)
 
-        new implementation
+        new code
             . = "\
             if (.(_argument_impl)) {
                 .(c_class_assert_macros_ptr) (.(_argument_impl)->info);
@@ -246,7 +246,7 @@ function _L24_add_method_destroy (meta, destination)
 
         component_create_argument_impl_ref (method, my.meta)
 
-        new implementation
+        new code
             . = "\
             .(c_class_assert_macros_ptr) (.(_argument_impl));
 

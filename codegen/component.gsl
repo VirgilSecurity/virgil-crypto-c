@@ -260,12 +260,12 @@ function component_require_lineage (component, caller)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Check required item: implementation.
+#   Check required item: code.
 # ---------------------------------------------------------------------------
-function component_require_implementation (component, caller)
+function component_require_code (component, caller)
     check_argument (my, "component", my)
 
-    assert_item (my.component, "implementation", my.caller ? my)
+    assert_item (my.component, "code", my.caller ? my)
 endfunction
 
 
@@ -748,18 +748,18 @@ function component_resolve_method_attr_context (method, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve attribute: implementation.body.
+#   Resolve attribute: code.type.
 # ---------------------------------------------------------------------------
-function component_resolve_implementation_attr_body (implementation, parent)
-    check_arguments (my, "implementation, parent", my)
+function component_resolve_code_attr_type (code, parent)
+    check_arguments (my, "code, parent", my)
 
-    my.implementation.body ?= "generated"
+    my.code.type ?= "generated"
 
-    my.valid_body = "stub, generated, handwritten"
+    my.valid_type = "stub, generated, handwritten"
 
-    if ! string_in (my.implementation.body, my.valid_body)
-        echo_fatal ("Invalid implementation attribute body=\"$(my.implementation.body:)\"." + \
-                    " Expected {$(my.valid_body)}", my)
+    if ! string_in (my.code.type, my.valid_type)
+        echo_fatal ("Invalid code attribute type=\"$(my.code.type:)\"." + \
+                    " Expected {$(my.valid_type)}", my)
     endif
 endfunction
 
@@ -811,13 +811,13 @@ function component_add_lineage (component, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve component: implementation
+#   Resolve component: code
 # ---------------------------------------------------------------------------
-function component_resolve_implementation (implementation, parent)
-    check_arguments (my, "implementation, parent")
+function component_resolve_code (code, parent)
+    check_arguments (my, "code, parent")
 
-    component_resolve_attr_lang (my.implementation, my.parent)
-    component_resolve_implementation_attr_body (my.implementation, my.parent)
+    component_resolve_attr_lang (my.code, my.parent)
+    component_resolve_code_attr_type (my.code, my.parent)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1088,8 +1088,8 @@ function component_resolve_method (method, parent)
         component_resolve_return (return, my.method)
     endfor
 
-    for my.method.implementation
-        component_resolve_implementation (implementation, my.method)
+    for my.method.code
+        component_resolve_code (code, my.method)
     endfor
 endfunction
 
@@ -1125,8 +1125,8 @@ function component_resolve_macros (macros, parent)
     component_resolve_attr_definition (my.macros, my.parent)
     component_resolve_macros_attr_is_method (my.macros, my.parent)
 
-    for my.macros.implementation
-        component_resolve_implementation (implementation, my.macros)
+    for my.macros.code
+        component_resolve_code (code, my.macros)
     endfor
 endfunction
 
@@ -1136,7 +1136,7 @@ endfunction
 function component_resolve_macroses (macroses, parent)
     check_arguments (my, "macroses, parent", my)
 
-    component_require_implementation (my.macroses, my)
+    component_require_code (my.macroses, my)
 
     component_resolve_attr_definition (my.macroses, my.parent)
     component_resolve_attr_of_class (my.macroses, my.parent)
@@ -1146,8 +1146,8 @@ function component_resolve_macroses (macroses, parent)
         component_resolve_macros (macros, my.parent)
     endfor
 
-    for my.macroses.implementation
-        component_resolve_implementation (implementation, my.macroses)
+    for my.macroses.code
+        component_resolve_code (code, my.macroses)
     endfor
 endfunction
 

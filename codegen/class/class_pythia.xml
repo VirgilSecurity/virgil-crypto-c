@@ -14,9 +14,9 @@
 
     <macros name="buffer from data" definition="private">
 
-        <implementation>
+        <code>
             #define .(c_class_pythia_macros_buffer_from_data) (X) {.p = (uint8_t *)X.bytes, .allocated = X.len, .len = X.len}
-        </implementation>
+        </code>
     </macros>
 
 

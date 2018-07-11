@@ -35,10 +35,10 @@
 
         <argument name="handler" callback=".(class_assert_callback_handler)" />
 
-        <implementation lang="c">
+        <code lang="c">
             .(c_class_assert_macros_assert) (handler_cb);
             .(c_class_assert_variable_active_handler) = handler_cb;
-        </implementation>
+        </code>
     </method>
 
 
@@ -49,14 +49,14 @@
         <argument name="message" type="string" />
         <argument name="file" type="string" />
         <argument name="line" type="integer" />
-        <implementation lang="c">
+        <code lang="c">
             printf (&quot;Assertion failed: %s, file %s, line %d\\n&quot;,
                     message, .(c_class_assert_method_path_basename) (file), line);
 
             printf (&quot;Abort&quot;);
 
             abort ();
-        </implementation>
+        </code>
     </method>
 
 
@@ -66,9 +66,9 @@
         <argument name="message" type="string" />
         <argument name="file" type="string" />
         <argument name="line" type="integer" />
-        <implementation lang="c">
+        <code lang="c">
              .(c_class_assert_variable_active_handler) (message, file, line);
-        </implementation>
+        </code>
     </method>
 
 
@@ -79,7 +79,7 @@
 
         <argument name="path" type="string" />
 
-        <implementation lang="c">
+        <code lang="c">
             const char *result = path;
             for ( \
                     const char *symbol = path; \
@@ -95,76 +95,76 @@
             }
 
             return result;
-        </implementation>
+        </code>
     </method>
 
 
     <macros name="file path or name" of_class="global">
         Contains file path or file name.
 
-        <implementation lang="c">
+        <code lang="c">
             #if defined (__FILENAME__)
             #   define .(c_global_macros_file_path_or_name) __FILENAME__
             #else
             #   define .(c_global_macros_file_path_or_name) __FILE__
             #endif
-        </implementation>
+        </code>
     </macros>
 
 
     <macros name="internal" is_method="1">
         Asserts always.
 
-        <implementation lang="c">
+        <code lang="c">
             #define .(c_class_assert_macros_internal) (X)
                 do {
                     if (!(X)) {
                         .(c_class_assert_method_trigger) (#X, .(c_global_macros_file_path_or_name), __LINE__);
                     }
                 } while (false)
-        </implementation>
+        </code>
     </macros>
 
 
     <macros name="opt" is_method="1">
         Asserts even in optimized mode.
 
-        <implementation lang="c">
+        <code lang="c">
             #define .(c_class_assert_macros_opt) (X) .(c_class_assert_macros_internal) (X)
-        </implementation>
+        </code>
     </macros>
 
 
     <macros name="assert" is_method="1">
         Default assert, that is enabled in debug mode.
 
-        <implementation lang="c">
+        <code lang="c">
             #define .(c_class_assert_macros_assert) (X) .(c_class_assert_macros_internal) (X)
-        </implementation>
+        </code>
     </macros>
 
 
     <macros name="safe" is_method="1">
         Heavy assert, that is enabled in a special (safe) cases.
 
-        <implementation lang="c">
+        <code lang="c">
             #define .(c_class_assert_macros_safe) (X) .(c_class_assert_macros_internal) (X)
-        </implementation>
+        </code>
     </macros>
 
 
     <macros name="static" is_method="1">
         Asserts during compilation. Has no runtime impact.
 
-        <implementation lang="c">
+        <code lang="c">
             #define .(c_class_assert_macros_static) (X) (void) sizeof(char[(X) ? 1 : -1])
-        </implementation>
+        </code>
     </macros>
 
     <macros name="ptr" is_method="1">
         Assert that given pointer is not NULL. It is enabled in debug mode.
 
-        <implementation lang="c">
+        <code lang="c">
             #define .(c_class_assert_macros_ptr) (X)
                 do {
                     if (!(X)) {
@@ -172,6 +172,6 @@
                                 .(c_global_macros_file_path_or_name), __LINE__);
                     }
                 } while (false)
-        </implementation>
+        </code>
     </macros>
  </module>

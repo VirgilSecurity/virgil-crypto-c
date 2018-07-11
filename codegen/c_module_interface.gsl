@@ -212,7 +212,7 @@ function _L23_add_stateful_methods (interface, destination, meta)
         my.callback_parameters = _L23_format_proxy_arguments (my.proxy_method, string_indent (my.callback, 1), ";")
 
 
-        new implementation to my.proxy_method
+        new code to my.proxy_method
             . = "\
             const $(my.api_type:) *$(my.api_name:) = $(my.refs.c_interface_method_api) (.(_argument_impl));
             .(c_class_assert_macros_ptr) ($(my.api_name:));
@@ -248,7 +248,7 @@ function _L23_add_stateless_methods (interface, destination, meta)
 
         interface_create_api_argument (my.interface, my.proxy_method, my.meta)
 
-        new implementation to my.proxy_method
+        new code to my.proxy_method
             . = "\
             .(c_class_assert_macros_ptr) ($(my.api_name:));
 
@@ -282,7 +282,7 @@ function _L23_add_stateless_getters (interface, destination, meta)
 
             my.api_name = ".(_argument_$(my.names.c_interface_struct_api:))"
             my.constant_name = my.names.c_interface_constant_$(make_id (constant.name))
-            new implementation to method
+            new code to method
                 . = "\
                 .(c_class_assert_macros_ptr) ($(my.api_name:));
 
@@ -317,7 +317,7 @@ function _L23_add_method_get_api (interface, destination, meta)
         my.api_name = my.names.c_interface_struct_api
         my.api_type = my.refs.c_interface_struct_api
 
-        new implementation
+        new code
             . = "\
             .(c_class_assert_macros_ptr) (.(_argument_impl));
 
@@ -352,7 +352,7 @@ function _L23_add_method_check_api (interface, destination, meta)
 
         my.api_name = my.names.c_interface_struct_api
 
-        new implementation
+        new code
             . = "\
             .(c_class_assert_macros_ptr) (.(_argument_impl));
 

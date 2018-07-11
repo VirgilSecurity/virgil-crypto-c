@@ -637,17 +637,17 @@ function c_component_create_modifiers (component, destination)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create 'c_implementation' from 'implementation'.
+#   Create 'c_code' from 'code'.
 # ---------------------------------------------------------------------------
-function c_component_create_implementation (implementation, destination)
-    check_arguments (my, "implementation, destination", my)
+function c_component_create_code (code, destination)
+    check_arguments (my, "code, destination", my)
 
-    if my.implementation.lang <> "c"
-        echo_fatal ("Require lang=\"c\" for given implementation, " + \
-                "but found \"$(my.implementation.lang:)\"", my)
+    if my.code.lang <> "c"
+        echo_fatal ("Require lang=\"c\" for given code, " + \
+                "but found \"$(my.code.lang:)\"", my)
     endif
 
-    copy implementation to my.destination as c_implementation
+    copy code to my.destination as c_code
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -770,14 +770,14 @@ function c_component_create_void_return (destination)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create subbed 'c_implementation'.
+#   Create subbed 'c_code'.
 # ---------------------------------------------------------------------------
-function c_component_create_stub_implementation (destination)
+function c_component_create_stub (destination)
     check_arguments (my, "destination", my)
 
-    new c_implementation to my.destination
+    new c_code to my.destination
         .lang = "c"
-        .body = "stub"
+        .type = "stub"
         . = "\
         //  TODO: This is STUB. Implement me.
         "
@@ -814,10 +814,10 @@ function c_component_create_method (method, destination)
             c_component_create_void_return (c_method)
         endif
 
-        for my.method.implementation where lang = "c"
-            c_component_create_implementation (implementation, c_method)
+        for my.method.code where lang = "c"
+            c_component_create_code (code, c_method)
         else
-            c_component_create_stub_implementation (c_method)
+            c_component_create_stub (c_method)
         endfor
 
         c_component_create_modifiers (my.method, c_method)
@@ -885,8 +885,8 @@ function c_component_create_macros (macros, destination)
         c_component_map_attr_feature (c_macros, my.macros)
         c_component_map_macros_attr_is_method (c_macros, my.macros)
 
-        for my.macros.implementation where lang = "c"
-            c_component_create_implementation (implementation, c_macros)
+        for my.macros.code where lang = "c"
+            c_component_create_code (code, c_macros)
         endfor
     endnew
 endfunction
@@ -907,8 +907,8 @@ function c_component_create_macroses (macroses, destination)
             c_component_create_macros (macros, c_macroses)
         endfor
 
-        for my.macroses.implementation where lang = "c"
-            c_component_create_implementation (implementation, c_macroses)
+        for my.macroses.code where lang = "c"
+            c_component_create_code (code, c_macroses)
         endfor
     endnew
 endfunction
