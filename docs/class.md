@@ -8,7 +8,7 @@ required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
     <class name [of_class] [scope] [c_prefix] [context] [lifecycle]>
-       <require module [feature] [scope]/>
+       <require [scope] [module] [header]/>
        <constant name [c_prefix] [of_class] [feature] [uid] [definition] [value]/>
        <property is_reference name [type] [class] [enum] [callback] [size] [uid] [access] [bits]>
           <string [access] [length]/>
@@ -136,12 +136,12 @@ default: Generate default lifecycle methods.
 The 'require' item
 ------------------
 
-Defines module that current module depends on.
+Defines dependency to: module or header.
 
     <require
-        module = "..."
-      [ feature = "..." ]
       [ scope = "public | private | internal"  ("public") ]
+      [ module = "..." ]
+      [ header = "..." ]
         />
 
 The require item can have these attributes:
@@ -158,13 +158,13 @@ public: Component is visible for outside world.
 private: Component is visible for outside world via private interface.
 internal: Component is visible only within library or a specific source file.
 
-feature:
-    In-project feature name that is implemented. This attribute is used for
-    feature-based compilation. The feature attribute is optional.
-
 module:
-    Module name that current module depends on. The module attribute is
-    required.
+    Module name that current component depends on. The module attribute is
+    optional.
+
+header:
+    Header name that current component depends on. The header attribute is
+    optional.
 
 
 The 'constant' item

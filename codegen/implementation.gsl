@@ -81,12 +81,23 @@ function implementation_copy_interface_methods (interface, implementation, sourc
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve model: implementation.interface.context.
+#   Resolve model: context.require.
+# ---------------------------------------------------------------------------
+function implementation_resolve_context_require (require, parent)
+    check_arguments (my, "require, parent", my)
+
+    assert_attribute (my.require, "header", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve model: implementation.context.
 # ---------------------------------------------------------------------------
 function implementation_resolve_context (context, parent)
     check_arguments (my, "context, parent", my)
 
-    #   Nothig to check.
+    for my.context.require where defined (require.header)
+        implementation_resolve_context_require (require, my.context)
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -137,33 +148,6 @@ function implementation_resolve_dependency (dependency, parent)
 
     c_component_require_attr_name (my.dependency, my)
     implementation_resolve_attr_dependency_type (my.dependency, my.parent)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Resolve attribute: implementation.require_include.type.
-# ---------------------------------------------------------------------------
-function implementation_resolve_attr_require_include_type (require, parent)
-    check_arguments (my, "require", my)
-
-    my.require.type ?= "none"
-
-    my.valid_types = "none, context"
-
-    if ! string_in (my.require.type, my.valid_types)
-        my.require_dump = "<$(name (my.require)) name=\"$(my.require.name:)\" type=\"$(my.require.type)\")"
-
-        echo_fatal ("Invalid attribute require_include.type '$(my.require_dump:)'. Expected {$(my.valid_types)}", my)
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Resolve model: implementation.require.
-# ---------------------------------------------------------------------------
-function implementation_resolve_require_include (require, parent)
-    check_arguments (my, "require, parent", my)
-
-    component_require_attr_name (my.require)
-    implementation_resolve_attr_require_include_type (my.require, my.parent)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -237,10 +221,6 @@ function implementation_resolve (implementation, parent, project)
 
     for my.implementation.context
         implementation_resolve_context (context, my.implementation)
-    endfor
-
-    for my.implementation.require_include
-        implementation_resolve_require_include (require_include, my.implementation)
     endfor
 
     for my.implementation.dependency

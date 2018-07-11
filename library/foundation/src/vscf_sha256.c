@@ -54,8 +54,6 @@
 #include "vscf_memory.h"
 #include "vscf_sha256_impl.h"
 #include "vscf_sha256_internal.h"
-
-#include <mbedtls/sha256.h>
 //  @end
 
 

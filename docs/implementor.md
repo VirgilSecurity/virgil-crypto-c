@@ -11,6 +11,7 @@ attribute names are case-sensitive and we use only lower-case names.
     <implementor name [is_default]>
        <implementation name>
           <context>
+             <require [scope] [module] [header]/>
              <property is_reference name [type] [class] [enum] [callback] [size] [uid] [access] [bits]>
                 <string [access] [length]/>
                 <array [access] [length] [length_constant]/>
@@ -20,7 +21,6 @@ attribute names are case-sensitive and we use only lower-case names.
              <constant name [c_prefix] [of_class] [feature] [uid] [definition] [value]/>
           </interface>
           <dependency name interface [type]/>
-          <require_include name [type]/>
        </implementation>
     </implementor>
 
@@ -72,7 +72,6 @@ Defines set of the implemented interfaces in a one module.
         <context>, optional
         <interface>, 1 or more
         <dependency>
-        <require_include>
     </implementation>
 
 The implementation item has this single attribute:
@@ -84,12 +83,47 @@ name:
 The 'context' item
 ------------------
 
-Defines specific underlying implementation context.
+Defines specific underlying implementation context. >
 
     <context>
+        <require>
         <property>
     </context>
 
+
+
+The 'require' item
+------------------
+
+Defines dependency to: module or header.
+
+    <require
+      [ scope = "public | private | internal"  ("public") ]
+      [ module = "..." ]
+      [ header = "..." ]
+        />
+
+The require item can have these attributes:
+
+scope:
+    Defines component visibility within scope. This attribute must not be
+    inherited. Note, scope attribute can be used for components, that can not
+    be defined in terms of 'declaration' and 'definition'. The scope
+    attribute is optional. Its default value is "public". It can take one of
+    the following values:
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
+
+module:
+    Module name that current component depends on. The module attribute is
+    optional.
+
+header:
+    Header name that current component depends on. The header attribute is
+    optional.
 
 
 The 'property' item
@@ -362,28 +396,4 @@ type:
 Value: Meaning:
 api: Dependency is an interface API object.
 impl: Dependency is an implementation object.
-
-
-The 'require_include' item
---------------------------
-
-Define implementation dependency to the third-party header file.
-
-    <require_include
-        name = "..."
-      [ type = "none | context"  ("none") ]
-        />
-
-The require_include item can have these attributes:
-
-name:
-    Dependency name. The name attribute is required.
-
-type:
-    Dependency type. The type attribute is optional. Its default value is
-    "none". It can take one of the following values:
-
-Value: Meaning:
-none: Header file is used for implementation purposes only.
-context: Header file contains implementation context type definition.
 

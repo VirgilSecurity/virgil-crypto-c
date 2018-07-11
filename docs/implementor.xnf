@@ -76,7 +76,6 @@
         <allow entity="context" occurs="0/1"/>
         <allow entity="interface" occurs="1+"/>
         <allow entity="dependency" occurs="0+"/>
-        <allow entity="require_include" occurs="0+"/>
     </entity>
 
 
@@ -93,6 +92,10 @@
 
     <entity name="context">
         Defines specific underlying implementation context.
+
+        <allow entity="require">
+            Currently support only with 'header' attribute.
+        </allow>>
 
         <allow entity="property"/>
     </entity>
@@ -122,26 +125,6 @@
         </attr>
     </entity>
 
-
-    <entity name="require_include">
-        Define implementation dependency to the third-party header file.
-
-        <attr name="name" required="1">
-            Dependency name.
-        </attr>
-
-        <attr name="type" default="none">
-            Dependency type.
-
-            <restrict value="none">
-                Header file is used for implementation purposes only.
-            </restrict>
-
-            <restrict value="context">
-                Header file contains implementation context type definition.
-            </restrict>
-        </attr>
-    </entity>
 
     <include filename="common.xnf"/>
     <include filename="component.xnf"/>

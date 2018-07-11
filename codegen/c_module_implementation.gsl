@@ -297,14 +297,6 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
         endnew
 
     endif
-
-    for my.impl.require_include
-        new c_include to my.destination
-            .file = require_include.name
-            .scope = "private"
-            .is_system = "1"
-        endnew
-    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1287,11 +1279,13 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
             endnew
         endfor
 
-        for my.impl.require_include where type = "context"
-            new c_include to module
-                .file = require_include.name
-                .is_system = "1"
-            endnew
+        for my.impl.context
+            for context.require where defined (require.header)
+                new c_include to module
+                    .file = require.header
+                    .is_system = "1"
+                endnew
+            endfor
         endfor
 
         _Z19_add_type_impl (my.impl, "external", "public", module, my.meta)

@@ -54,8 +54,6 @@
 #include "vscf_memory.h"
 #include "vscf_aes256_gcm_impl.h"
 #include "vscf_aes256_gcm_internal.h"
-
-#include <mbedtls/cipher.h>
 //  @end
 
 

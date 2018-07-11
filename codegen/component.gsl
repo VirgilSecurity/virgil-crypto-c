@@ -826,7 +826,8 @@ endfunction
 function component_resolve_require (require, parent)
     check_arguments (my, "require, parent")
 
-    component_resolve_attr_module (my.require, my.parent)
+    assert_attribute_one_of (my.require, "module, header", my)
+
     component_resolve_attr_scope (my.require, my.parent)
 endfunction
 

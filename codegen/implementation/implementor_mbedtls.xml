@@ -5,11 +5,11 @@
     <implementation name="hmac224">
         This is MbedTLS implementation of HMAC224.
 
-        <require_include name="mbedtls/md.h" type="context"/>
         <require library="mbedtls" feature="MD C"/>
         <require library="mbedtls" feature="SHA256 C"/>
 
         <context>
+            <require header="mbedtls/md.h"/>
             <property name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
         </context>
 
@@ -25,11 +25,11 @@
     <implementation name="hmac256">
         This is MbedTLS implementation of HMAC256.
 
-        <require_include name="mbedtls/md.h" type="context"/>
         <require library="mbedtls" feature="MD C"/>
         <require library="mbedtls" feature="SHA256 C"/>
 
         <context>
+            <require header="mbedtls/md.h"/>
             <property name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
         </context>
 
@@ -45,11 +45,11 @@
     <implementation name="hmac384">
         This is MbedTLS implementation of HMAC384.
 
-        <require_include name="mbedtls/md.h" type="context"/>
         <require library="mbedtls" feature="MD C"/>
         <require library="mbedtls" feature="SHA512 C"/>
 
         <context>
+            <require header="mbedtls/md.h"/>
             <property name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
         </context>
 
@@ -65,11 +65,11 @@
     <implementation name="hmac512">
         This is MbedTLS implementation of HMAC512.
 
-        <require_include name="mbedtls/md.h" type="context"/>
         <require library="mbedtls" feature="MD C"/>
         <require library="mbedtls" feature="SHA512 C"/>
 
         <context>
+            <require header="mbedtls/md.h"/>
             <property name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
         </context>
 
@@ -85,10 +85,10 @@
     <implementation name="sha224">
         This is MbedTLS implementation of SHA224.
 
-        <require_include name="mbedtls/sha256.h" type="context"/>
         <require library="mbedtls" feature="SHA256 C"/>
 
         <context>
+            <require header="mbedtls/sha256.h"/>
             <property name="hash ctx" class="mbedtls_sha256_context" access="readwrite" is_reference="0"/>
         </context>
 
@@ -104,10 +104,10 @@
     <implementation name="sha256">
         This is MbedTLS implementation of SHA256.
 
-        <require_include name="mbedtls/sha256.h" type="context"/>
         <require library="mbedtls" feature="SHA256 C"/>
 
         <context>
+            <require header="mbedtls/sha256.h"/>
             <property name="hash ctx" class="mbedtls_sha256_context" access="readwrite" is_reference="0"/>
         </context>
 
@@ -123,10 +123,10 @@
     <implementation name="sha384">
         This is MbedTLS implementation of SHA384.
 
-        <require_include name="mbedtls/sha512.h" type="context"/>
         <require library="mbedtls" feature="SHA512 C"/>
 
         <context>
+            <require header="mbedtls/sha512.h"/>
             <property name="hash ctx" class="mbedtls_sha512_context" access="readwrite" is_reference="0"/>
         </context>
 
@@ -142,10 +142,10 @@
     <implementation name="sha512">
         This is MbedTLS implementation of SHA512.
 
-        <require_include name="mbedtls/sha512.h" type="context"/>
         <require library="mbedtls" feature="SHA512 C"/>
 
         <context>
+            <require header="mbedtls/sha512.h"/>
             <property name="hash ctx" class="mbedtls_sha512_context" access="readwrite" is_reference="0"/>
         </context>
 
@@ -163,10 +163,11 @@
         Note, this implementation contains dynamic memory allocations,
         this should be improved in the future releases.
 
-        <require_include name="mbedtls/cipher.h" type="context"/>
         <require library="mbedtls" feature="CIPHER C"/>
 
         <context name="aes256 gcm">
+            <require header="mbedtls/cipher.h"/>
+
             <property name="cipher ctx" class="mbedtls_cipher_context_t" access="readwrite" is_reference="0"/>
 
             <property name="key" type="data" access="readwrite">
