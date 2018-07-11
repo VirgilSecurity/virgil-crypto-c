@@ -35,7 +35,7 @@
     Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 -->
 
-<entity name="source" abstract="1">
+<entity name="source">
     Provide attributes that defines the source of featur(e).
     This entity is inherited.
 
@@ -115,5 +115,4 @@
     </attr>
 
     <allow entity="source" occurs="1"/>
-    <inherit entity="feature_source"/>
 </entity>

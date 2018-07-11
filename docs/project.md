@@ -11,9 +11,13 @@ attribute names are case-sensitive and we use only lower-case names.
        <interface name/>
        <implementor name/>
        <module name/>
-       <feature name [project] [library] [prefix]>
-          <require [library] [project] [feature]>
-             <alternative [library] [project] [feature]/>
+       <feature name [prefix]>
+          <source [name] [type]/>
+          <require [feature]>
+             <source .../>
+             <alternative [feature]>
+                <source .../>
+             </alternative>
           </require>
        </feature>
     </project>
@@ -131,27 +135,17 @@ name:
 The 'feature' item
 ------------------
 
-Provide attributes that defines the source of feature. Define provided
-feature.
+Define provided feature.
 
     <feature
         name = "..."
-      [ project = "..." ]
-      [ library = "..." ]
       [ prefix = "..." ]
         >
+        <source>, required
         <require>
     </feature>
 
 The feature item can have these attributes:
-
-library:
-    Name of the library that provides feature. By default this attribute is
-    resolved to parent library name. The library attribute is optional.
-
-project:
-    Name of the project that provides feature. By default this attribute is
-    resolved to parent project name. The project attribute is optional.
 
 name:
     Feature name. The name attribute is required.
@@ -161,31 +155,46 @@ prefix:
     'prefix'. The prefix attribute is optional.
 
 
+The 'source' item
+-----------------
+
+Provide attributes that defines the source of featur(e). This entity is
+inherited.
+
+    <source
+      [ name = "..." ]
+      [ type = "project | library" ]
+        />
+
+The source item can have these attributes:
+
+name:
+    Source name The name attribute is optional.
+
+type:
+    The source type of the feature(s). The type attribute is optional. It can
+    take one of the following values:
+
+Value: Meaning:
+project: Feture(s) are provided by inner project.
+library: Feture(s) are provided by external library.
+
+
 The 'require' item
 ------------------
 
-Provide attributes that defines the source of feature. Define required
-feature. Note, attribute 'feature' or inner entity 'alternative' must be
-defined. If attribute name is not defined, then at least 2 'alternative'
-entities are expected.
+Define required feature. Note, attribute 'feature' or inner entity
+'alternative' must be defined. If attribute name is not defined, then at
+least 2 'alternative' entities are expected.
 
     <require
-      [ library = "..." ]
-      [ project = "..." ]
       [ feature = "..." ]
         >
+        <source>, required
         <alternative>
     </require>
 
-The require item can have these attributes:
-
-library:
-    Name of the library that provides feature. By default this attribute is
-    resolved to parent library name. The library attribute is optional.
-
-project:
-    Name of the project that provides feature. By default this attribute is
-    resolved to parent project name. The project attribute is optional.
+The require item has this single attribute:
 
 feature:
     Required feature name. The feature attribute is optional.
@@ -194,24 +203,16 @@ feature:
 The 'alternative' item
 ----------------------
 
-Provide attributes that defines the source of feature. Define alternative
-features that can be used, and in fact replace each other.
+Define alternative features that can be used, and in fact replace each
+other.
 
     <alternative
-      [ library = "..." ]
-      [ project = "..." ]
       [ feature = "..." ]
-        />
+        >
+        <source>, required
+    </alternative>
 
-The alternative item can have these attributes:
-
-library:
-    Name of the library that provides feature. By default this attribute is
-    resolved to parent library name. The library attribute is optional.
-
-project:
-    Name of the project that provides feature. By default this attribute is
-    resolved to parent project name. The project attribute is optional.
+The alternative item has this single attribute:
 
 feature:
     Required feature name. The feature attribute is optional.
