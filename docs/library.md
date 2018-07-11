@@ -9,8 +9,11 @@ attribute names are case-sensitive and we use only lower-case names.
 
     <library name path [prefix]>
        <feature name [prefix]>
+          <source [name] [type]/>
           <require [feature]>
-             <alternative [name] [type] [feature]>
+             <source .../>
+             <alternative [feature]>
+                <source .../>
              </alternative>
           </require>
        </feature>
@@ -59,6 +62,7 @@ Define provided feature.
         name = "..."
       [ prefix = "..." ]
         >
+        <source>, required
         <require>
     </feature>
 
@@ -72,6 +76,31 @@ prefix:
     'prefix'. The prefix attribute is optional.
 
 
+The 'source' item
+-----------------
+
+Provide attributes that defines the source of featur(e). This entity is
+inherited.
+
+    <source
+      [ name = "..." ]
+      [ type = "project | library" ]
+        />
+
+The source item can have these attributes:
+
+name:
+    Source name The name attribute is optional.
+
+type:
+    The source type of the feature(s). The type attribute is optional. It can
+    take one of the following values:
+
+Value: Meaning:
+project: Feture(s) are provided by inner project.
+library: Feture(s) are provided by external library.
+
+
 The 'require' item
 ------------------
 
@@ -82,6 +111,7 @@ least 2 'alternative' entities are expected.
     <require
       [ feature = "..." ]
         >
+        <source>, required
         <alternative>
     </require>
 
@@ -94,29 +124,16 @@ feature:
 The 'alternative' item
 ----------------------
 
-Provide attributes that defines the source of featur(e). This entity is
-inherited. Define alternative features that can be used, and in fact
-replace each other.
+Define alternative features that can be used, and in fact replace each
+other.
 
     <alternative
-      [ name = "..." ]
-      [ type = "project | library" ]
       [ feature = "..." ]
         >
+        <source>, required
     </alternative>
 
-The alternative item can have these attributes:
-
-name:
-    Source name The name attribute is optional.
-
-type:
-    The source type of the feature(s). The type attribute is optional. It can
-    take one of the following values:
-
-Value: Meaning:
-project: Feture(s) are provided by inner project.
-library: Feture(s) are provided by external library.
+The alternative item has this single attribute:
 
 feature:
     Required feature name. The feature attribute is optional.
