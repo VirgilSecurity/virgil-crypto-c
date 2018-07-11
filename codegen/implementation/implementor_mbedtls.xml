@@ -9,17 +9,16 @@
         <require library="mbedtls" feature="MD C"/>
         <require library="mbedtls" feature="SHA256 C"/>
 
+        <context>
+            <property name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
+        </context>
 
         <interface name="hmac info">
             <constant name="digest size" value="28"/>
         </interface>
 
-        <interface name="hmac">
-        </interface>
-
-        <interface name="hmac stream">
-            <context name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
-        </interface>
+        <interface name="hmac"/>
+        <interface name="hmac stream"/>
     </implementation>
 
 
@@ -30,16 +29,16 @@
         <require library="mbedtls" feature="MD C"/>
         <require library="mbedtls" feature="SHA256 C"/>
 
+        <context>
+            <property name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
+        </context>
+
         <interface name="hmac info">
             <constant name="digest size" value="32"/>
         </interface>
 
-        <interface name="hmac">
-        </interface>
-
-        <interface name="hmac stream">
-            <context name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
-        </interface>
+        <interface name="hmac"/>
+        <interface name="hmac stream"/>
     </implementation>
 
 
@@ -50,16 +49,16 @@
         <require library="mbedtls" feature="MD C"/>
         <require library="mbedtls" feature="SHA512 C"/>
 
+        <context>
+            <property name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
+        </context>
+
         <interface name="hmac info">
             <constant name="digest size" value="48"/>
         </interface>
 
-        <interface name="hmac">
-        </interface>
-
-        <interface name="hmac stream">
-            <context name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
-        </interface>
+        <interface name="hmac"/>
+        <interface name="hmac stream"/>
     </implementation>
 
 
@@ -70,16 +69,16 @@
         <require library="mbedtls" feature="MD C"/>
         <require library="mbedtls" feature="SHA512 C"/>
 
+        <context>
+            <property name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
+        </context>
+
         <interface name="hmac info">
             <constant name="digest size" value="64"/>
         </interface>
 
-        <interface name="hmac">
-        </interface>
-
-        <interface name="hmac stream">
-            <context name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
-        </interface>
+        <interface name="hmac"/>
+        <interface name="hmac stream"/>
     </implementation>
 
 
@@ -89,16 +88,16 @@
         <require_include name="mbedtls/sha256.h" type="context"/>
         <require library="mbedtls" feature="SHA256 C"/>
 
+        <context>
+            <property name="hash ctx" class="mbedtls_sha256_context" access="readwrite" is_reference="0"/>
+        </context>
+
         <interface name="hash info">
             <constant name="digest size" value="28"/>
         </interface>
 
-        <interface name="hash">
-        </interface>
-
-        <interface name="hash stream">
-            <context name="hash ctx" class="mbedtls_sha256_context" access="readwrite" is_reference="0"/>
-        </interface>
+        <interface name="hash"/>
+        <interface name="hash stream"/>
     </implementation>
 
 
@@ -108,16 +107,16 @@
         <require_include name="mbedtls/sha256.h" type="context"/>
         <require library="mbedtls" feature="SHA256 C"/>
 
+        <context>
+            <property name="hash ctx" class="mbedtls_sha256_context" access="readwrite" is_reference="0"/>
+        </context>
+
         <interface name="hash info">
             <constant name="digest size" value="32"/>
         </interface>
 
-        <interface name="hash">
-        </interface>
-
-        <interface name="hash stream">
-            <context name="hash ctx" class="mbedtls_sha256_context" access="readwrite" is_reference="0"/>
-        </interface>
+        <interface name="hash"/>
+        <interface name="hash stream"/>
     </implementation>
 
 
@@ -127,16 +126,16 @@
         <require_include name="mbedtls/sha512.h" type="context"/>
         <require library="mbedtls" feature="SHA512 C"/>
 
+        <context>
+            <property name="hash ctx" class="mbedtls_sha512_context" access="readwrite" is_reference="0"/>
+        </context>
+
         <interface name="hash info">
             <constant name="digest size" value="48"/>
         </interface>
 
-        <interface name="hash">
-        </interface>
-
-        <interface name="hash stream">
-            <context name="hash ctx" class="mbedtls_sha512_context" access="readwrite" is_reference="0"/>
-        </interface>
+        <interface name="hash"/>
+        <interface name="hash stream"/>
     </implementation>
 
 
@@ -146,16 +145,16 @@
         <require_include name="mbedtls/sha512.h" type="context"/>
         <require library="mbedtls" feature="SHA512 C"/>
 
+        <context>
+            <property name="hash ctx" class="mbedtls_sha512_context" access="readwrite" is_reference="0"/>
+        </context>
+
         <interface name="hash info">
             <constant name="digest size" value="64"/>
         </interface>
 
-        <interface name="hash">
-        </interface>
-
-        <interface name="hash stream">
-            <context name="hash ctx" class="mbedtls_sha512_context" access="readwrite" is_reference="0"/>
-        </interface>
+        <interface name="hash"/>
+        <interface name="hash stream"/>
     </implementation>
 
 
@@ -166,6 +165,18 @@
 
         <require_include name="mbedtls/cipher.h" type="context"/>
         <require library="mbedtls" feature="CIPHER C"/>
+
+        <context name="aes256 gcm">
+            <property name="cipher ctx" class="mbedtls_cipher_context_t" access="readwrite" is_reference="0"/>
+
+            <property name="key" type="data" access="readwrite">
+                <array length="fixed" length_constant=".(class_aes256_gcm_constant_key_len)"/>
+            </property>
+
+            <property name="nonce" type="data" access="readwrite">
+                <array length="fixed" length_constant=".(class_aes256_gcm_constant_nonce_len)"/>
+            </property>
+        </context>
 
         <interface name="encrypt"/>
 
@@ -178,17 +189,7 @@
             <constant name="block len" value="16"/>
         </interface>
 
-        <interface name="cipher">
-            <context name="cipher ctx" class="mbedtls_cipher_context_t" access="readwrite" is_reference="0"/>
-
-            <context name="key" type="data" access="readwrite">
-                <array length="fixed" length_constant=".(class_aes256_gcm_constant_key_len)"/>
-            </context>
-
-            <context name="nonce" type="data" access="readwrite">
-                <array length="fixed" length_constant=".(class_aes256_gcm_constant_nonce_len)"/>
-            </context>
-        </interface>
+        <interface name="cipher"/>
 
         <interface name="cipher auth info">
             <constant name="auth tag len" value="16"/>

@@ -68,13 +68,7 @@ endfunction
 function _Z19_has_underlying_context (impl)
     check_argument (my, "impl", my)
 
-    for my.impl.interface
-        if count (interface.context)
-            return 1
-        endif
-    endfor
-
-    return 0
+    return count (my.impl.context) <> 0
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -487,10 +481,10 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
             endnew
         endfor
 
-        for my.impl.interface
-            for interface.context
-                my.property = item_copy_to (context, struct, "property")
-                my.property. ?= "Interface implementation specific context."
+        for my.impl.context
+            for context.property
+                my.property = item_copy_to (property, struct)
+                my.property. ?= "Implementation specific context."
             endfor
         endfor
 

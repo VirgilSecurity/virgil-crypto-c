@@ -84,7 +84,7 @@ struct vscf_hmac224_impl_t {
     //
     const vscf_impl_info_t *info;
     //
-    //  Interface implementation specific context.
+    //  Implementation specific context.
     //
     mbedtls_md_context_t hmac_ctx;
 };

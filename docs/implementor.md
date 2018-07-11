@@ -10,9 +10,14 @@ attribute names are case-sensitive and we use only lower-case names.
 
     <implementor name [is_default]>
        <implementation name>
+          <context>
+             <property is_reference name [type] [class] [enum] [callback] [size] [uid] [access] [bits]>
+                <string [access] [length]/>
+                <array [access] [length] [length_constant]/>
+             </property>
+          </context>
           <interface name>
-             <context name/>
-             <constant name value/>
+             <constant name [c_prefix] [of_class] [feature] [uid] [definition] [value]/>
           </interface>
           <dependency name interface [type]/>
           <require_include name [type]/>
@@ -64,6 +69,7 @@ Defines set of the implemented interfaces in a one module.
     <implementation
         name = "..."
         >
+        <context>, optional
         <interface>, 1 or more
         <dependency>
         <require_include>
@@ -75,6 +81,191 @@ name:
     Implementation name. The name attribute is required.
 
 
+The 'context' item
+------------------
+
+Defines specific underlying implementation context.
+
+    <context>
+        <property>
+    </context>
+
+
+
+The 'property' item
+-------------------
+
+Defines attributes that related to the instance type. Defines struct
+property.
+
+    <property
+        is_reference = "0 | 1"
+        name = "..."
+      [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
+      [ class = "..." ]
+      [ enum = "..." ]
+      [ callback = "..." ]
+      [ size = "1 | 2 | 4 | 8" ]
+      [ uid = "..." ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ bits = "..." ]
+        >
+        <string>, optional
+        <array>, optional
+    </property>
+
+The property item can have these attributes:
+
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.
+
+access:
+    Defines access rights to the instance and/or array of instances. The
+    access attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+readonly: Value of the given type is can be modified.
+writeonly: Value of the given type will be modified.
+readwrite: Value of the given type can be read and then modified.
+disown: Ownership of the given class object is transferred. If object is passed via argument to method, then client can not use object after method return. If object is returned from method, then client is responsible for object destruction. Note, primitive type can not be disowned.
+
+type:
+    Defines instance primitive type. The type attribute is optional. It can
+    take one of the following values:
+
+Value: Meaning:
+nothing: The same as a C void type.
+boolean: True / False type.
+integer: Signed integral type.
+size: Unsigned integral type for size definition.
+byte: Unsigned 8-bit integral type.
+data: Shortcut for the byte array.
+string: Shortcut for the char array.
+error: Type for error codes.
+
+class:
+    Defines instance class. Possible values are: * any - Any class or type. *
+    data - Special class "data" that is used as an input byte array. * buffer
+    - Special class "buffer" that is used as an output byte array. * impl -
+    Universal implementation class. If value differs from the listed above
+    then next algorithm applied: 1. If value in a format .(uid), then it
+    treated as a reference to the in-project class and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The class attribute is optional.
+
+enum:
+    Defines enumeration type. 1. If value in a format .(uid), then it treated
+    as a reference to the in-project enumeration and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The enum attribute is optional.
+
+callback:
+    Defines instance as a callback. 1. If value in a format .(uid), then it
+    treated as a reference to the in-project callback and will be substituted
+    during context resolution step. 2. Any other value will be used as-is. So
+    one third party type can be used. The callback attribute is optional.
+
+size:
+    Define size of the primitive type or enum in bytes. The size attribute is
+    optional. It can take one of the following values:
+
+Value: Meaning:
+1: Size of the type is one byte.
+2: Size of the type is two bytes.
+4: Size of the type is three bytes.
+8: Size of the type is four bytes.
+
+is_reference:
+    Defines whether instance is a 'reference' instance. For 'type' - default
+    is '0'. For 'enum' - default is '0'. For 'callback' - default is '0'. For
+    'class' - default is '1'. The is_reference attribute is required. It can
+    take one of the following values:
+
+Value: Meaning:
+0: Instance is not a refernce.
+1: Instance is a reference to the other instance.
+
+name:
+    Property name. The name attribute is required.
+
+bits:
+    Define number of bits occupied by the property with integral type. The
+    bits attribute is optional.
+
+
+The 'string' item
+-----------------
+
+Defines restrictions to the special class 'string'.
+
+    <string
+      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ length = "null_terminated | given | fixed | derived"  ("null_terminated") ]
+        />
+
+The string item can have these attributes:
+
+access:
+    Defines access rights to the instance and/or array of instances. The
+    access attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+readonly: Value of the given type is can be modified.
+writeonly: Value of the given type will be modified.
+readwrite: Value of the given type can be read and then modified.
+disown: Ownership of the given class object is transferred. If object is passed via argument to method, then client can not use object after method return. If object is returned from method, then client is responsible for object destruction. Note, primitive type can not be disowned.
+
+length:
+    Defines string length. The length attribute is optional. Its default
+    value is "null_terminated". It can take one of the following values:
+
+Value: Meaning:
+null_terminated: String length is defined by distance from the first character up to the termination symbol (aka '\0').
+given: String length is given from the client.
+fixed: String length is known at compile time, so it can be substituted automatically.
+derived: String length can be statically derived during string initialization.
+
+
+The 'array' item
+----------------
+
+Turn parent instance to the array of instances.
+
+    <array
+      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ length = "null_terminated | given | known | fixed | derived" ]
+      [ length_constant = "..." ]
+        />
+
+The array item can have these attributes:
+
+access:
+    Defines access rights to the instance and/or array of instances. The
+    access attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+readonly: Value of the given type is can be modified.
+writeonly: Value of the given type will be modified.
+readwrite: Value of the given type can be read and then modified.
+disown: Ownership of the given class object is transferred. If object is passed via argument to method, then client can not use object after method return. If object is returned from method, then client is responsible for object destruction. Note, primitive type can not be disowned.
+
+length:
+    Defines array length. The length attribute is optional. It can take one
+    of the following values:
+
+Value: Meaning:
+null_terminated: Array length is defined by distance from the first element up to the empty element (aka NULL).
+given: Array length is defined from the client.
+known: Array length is defined from the client. Also client can obtained this value from a constant or a method.
+fixed: Array length is known at compile time, so it can be substituted automatically.
+derived: Array length can be statically derived during array initialization.
+
+length_constant:
+    For fixed size array it defines number of elements as integral constant.
+    The length_constant attribute is optional.
+
+
 The 'interface' item
 --------------------
 
@@ -83,7 +274,6 @@ Provide information about implemented interface.
     <interface
         name = "..."
         >
-        <context>
         <constant>
     </interface>
 
@@ -93,40 +283,55 @@ name:
     Name of the implemented interface. The name attribute is required.
 
 
-The 'context' item
-------------------
-
-The same instance as component's instance. Defines specific underlying
-implementation context.
-
-    <context
-        name = "..."
-        />
-
-The context item has this single attribute:
-
-name:
-    Name of the context. The name attribute is required.
-
-
 The 'constant' item
 -------------------
 
-Defines specific value for interface constant.
+Groups common attributes for the component. Defines integral constant.
 
     <constant
         name = "..."
-        value = "..."
+      [ c_prefix = "..." ]
+      [ of_class = "..." ]
+      [ feature = "..." ]
+      [ uid = "..." ]
+      [ definition = "public | private | external"  ("private") ]
+      [ value = "..." ]
         />
 
 The constant item can have these attributes:
 
+definition:
+    Defines where component will be defined. This attribute must not be
+    inherited. The definition attribute is optional. Its default value is
+    "private". It can take one of the following values:
+
+Value: Meaning:
+public: Component definition is visible for outside world.
+private: Component definition is hidden in a correspond source file.
+external: Component definition is located somewhere.
+
+c_prefix:
+    Prefix that is used for C name resolution. The c_prefix attribute is
+    optional.
+
+of_class:
+    Defines class name that a component belongs to. This attributes is used
+    for inner components name resolution. The of_class attribute is optional.
+
+feature:
+    In-project feature name that is implemented. This attribute is used for
+    feature-based compilation. The feature attribute is optional.
+
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.
+
 name:
-    Name of the interface constant. The name attribute is required.
+    Constant name. The name attribute is required.
 
 value:
-    Value of the interface constant. Note, value must be integral. The value
-    attribute is required.
+    Constant value. Optional for enumerated constant. The value attribute is
+    optional.
 
 
 The 'dependency' item
@@ -162,7 +367,7 @@ impl: Dependency is an implementation object.
 The 'require_include' item
 --------------------------
 
-Define implementation dependecy to the thirdparty header file.
+Define implementation dependency to the third-party header file.
 
     <require_include
         name = "..."
@@ -179,6 +384,6 @@ type:
     "none". It can take one of the following values:
 
 Value: Meaning:
-none: Header file is used for implmentation purposes only.
+none: Header file is used for implementation purposes only.
 context: Header file contains implementation context type definition.
 
