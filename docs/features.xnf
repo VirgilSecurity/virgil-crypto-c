@@ -35,27 +35,6 @@
     Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 -->
 
-<entity name="source">
-    Provide attributes that defines the source of featur(e).
-    This entity is inherited.
-
-    <attr name="name">
-        Source name
-    </attr>
-
-    <attr name="type">
-        The source type of the feature(s).
-
-        <restrict value="project">
-            Feture(s) are provided by inner project.
-        </restrict>
-
-        <restrict value="library">
-            Feture(s) are provided by external library.
-        </restrict>
-    </attr>
-</entity>
-
 
 <entity name="features">
     Defines set of features provided by the same source.
@@ -71,7 +50,7 @@
         By default, resolved to parent's 'path' attribute
     </attr>
 
-    <allow entity="source" occurs="1"/>
+    <inherit entity="landlord"/>
     <allow entity="feature" occurs="0+"/>
 </entity>
 
@@ -88,31 +67,6 @@
         This attribute is derived from parent's attribute 'prefix'.
     </attr>
 
-    <allow entity="source" occurs="1"/>
+    <inherit entity="landlord"/>
     <allow entity="require" occurs="0+"/>
-</entity>
-
-
-<entity name="require">
-    Define required feature.
-    Note, attribute 'feature' or inner entity 'alternative' must be defined.
-    If attribute name is not defined, then at least 2 'alternative' entities are expected.
-
-    <attr name="feature">
-        Required feature name.
-    </attr>
-
-    <allow entity="source" occurs="1"/>
-    <allow entity="alternative" occurs="0+"/>
-</entity>
-
-
-<entity name="alternative">
-    Define alternative features that can be used, and in fact replace each other.
-
-    <attr name="feature">
-        Required feature name.
-    </attr>
-
-    <allow entity="source" occurs="1"/>
 </entity>

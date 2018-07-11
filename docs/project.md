@@ -11,13 +11,9 @@ attribute names are case-sensitive and we use only lower-case names.
        <interface name/>
        <implementor name/>
        <module name/>
-       <feature name [prefix]>
-          <source [name] [type]/>
-          <require [feature]>
-             <source .../>
-             <alternative [feature]>
-                <source .../>
-             </alternative>
+       <feature name [library] [project] [prefix]>
+          <require [scope] [project] [library] [module] [header] [feature]>
+             <alternative [scope] [project] [library] [module] [header] [feature]/>
           </require>
        </feature>
     </project>
@@ -135,17 +131,26 @@ name:
 The 'feature' item
 ------------------
 
-Define provided feature.
+Defines whom component belongs to. Define provided feature.
 
     <feature
         name = "..."
+      [ library = "..." ]
+      [ project = "..." ]
       [ prefix = "..." ]
         >
-        <source>, required
         <require>
     </feature>
 
 The feature item can have these attributes:
+
+project:
+    Defines project name that component belongs to. The project attribute is
+    optional.
+
+library:
+    Defines libary name that component belongs to. The library attribute is
+    optional.
 
 name:
     Feature name. The name attribute is required.
@@ -155,46 +160,50 @@ prefix:
     'prefix'. The prefix attribute is optional.
 
 
-The 'source' item
------------------
-
-Provide attributes that defines the source of featur(e). This entity is
-inherited.
-
-    <source
-      [ name = "..." ]
-      [ type = "project | library" ]
-        />
-
-The source item can have these attributes:
-
-name:
-    Source name The name attribute is optional.
-
-type:
-    The source type of the feature(s). The type attribute is optional. It can
-    take one of the following values:
-
-Value: Meaning:
-project: Feture(s) are provided by inner project.
-library: Feture(s) are provided by external library.
-
-
 The 'require' item
 ------------------
 
-Define required feature. Note, attribute 'feature' or inner entity
-'alternative' must be defined. If attribute name is not defined, then at
-least 2 'alternative' entities are expected.
+Defines whom component belongs to. Base attributes for require. Defines
+dependency to: module, header, feature.
 
     <require
+      [ scope = "public | private | internal"  ("public") ]
+      [ project = "..." ]
+      [ library = "..." ]
+      [ module = "..." ]
+      [ header = "..." ]
       [ feature = "..." ]
         >
-        <source>, required
         <alternative>
     </require>
 
-The require item has this single attribute:
+The require item can have these attributes:
+
+scope:
+    Defines component visibility within scope. This attribute must not be
+    inherited. Note, scope attribute can be used for components, that can not
+    be defined in terms of 'declaration' and 'definition'. The scope
+    attribute is optional. Its default value is "public". It can take one of
+    the following values:
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
+
+project:
+    Defines project name that component belongs to. The project attribute is
+    optional.
+
+library:
+    Defines libary name that component belongs to. The library attribute is
+    optional.
+
+module:
+    Required module name. The module attribute is optional.
+
+header:
+    Required header file name. The header attribute is optional.
 
 feature:
     Required feature name. The feature attribute is optional.
@@ -203,16 +212,45 @@ feature:
 The 'alternative' item
 ----------------------
 
-Define alternative features that can be used, and in fact replace each
-other.
+Defines whom component belongs to. Base attributes for require. Define
+alternative requirements that can be used, and in fact replace each other.
 
     <alternative
+      [ scope = "public | private | internal"  ("public") ]
+      [ project = "..." ]
+      [ library = "..." ]
+      [ module = "..." ]
+      [ header = "..." ]
       [ feature = "..." ]
-        >
-        <source>, required
-    </alternative>
+        />
 
-The alternative item has this single attribute:
+The alternative item can have these attributes:
+
+scope:
+    Defines component visibility within scope. This attribute must not be
+    inherited. Note, scope attribute can be used for components, that can not
+    be defined in terms of 'declaration' and 'definition'. The scope
+    attribute is optional. Its default value is "public". It can take one of
+    the following values:
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
+
+project:
+    Defines project name that component belongs to. The project attribute is
+    optional.
+
+library:
+    Defines libary name that component belongs to. The library attribute is
+    optional.
+
+module:
+    Required module name. The module attribute is optional.
+
+header:
+    Required header file name. The header attribute is optional.
 
 feature:
     Required feature name. The feature attribute is optional.

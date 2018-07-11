@@ -90,19 +90,56 @@ function _J21_resolve_attr_uid (library)
     my.library.uid ?= make_id (name (my.library), my.library.name)
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Resolve item: alternative.
+# ---------------------------------------------------------------------------
+function _J21_resolve_alternative (alternative, parent)
+    check_arguments (my, "alternative, parent", my)
+
+    my.alternative.library ?= my.parent.library
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve item: require.
+# ---------------------------------------------------------------------------
+function _J21_resolve_require (require, parent)
+    check_arguments (my, "require, parent", my)
+
+    my.require.library ?= my.parent.library
+
+    for my.require.alternative
+        _J21_resolve_alternative (alternative, my.require)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve item: feature.
+# ---------------------------------------------------------------------------
+function _J21_resolve_feature (feature, library)
+    check_arguments (my, "feature, library", my)
+
+    my.feature.library ?= my.library.name
+
+    for my.feature.require where defined (0.feature)
+        _J21_resolve_require (require, my.feature)
+    endfor
+endfunction
+
 
 # ---------------------------------------------------------------------------
 #   Resolve component: library.
 # ---------------------------------------------------------------------------
 function library_resolve (library)
-    check_arguments (my, "library, project", my)
+    check_arguments (my, "library", my)
 
     _J21_require_attr_name (my.library, my)
-    _J21_resolve_attr_path (my.library, my)
+    _J21_require_attr_path (my.library, my)
     _J21_resolve_attr_prefix (my.library)
     _J21_resolve_attr_uid (my.library)
 
-    foreach_feature_resolve (my.library, my.library)
+    for my.library.feature
+        _J21_resolve_feature (feature, my.library)
+    endfor
 endfunction
 
 
@@ -129,11 +166,7 @@ function library_create_features (library, destination)
     new features to my.destination
         .prefix = my.library.prefix ?
         .path = my.library.path
-
-        new source to features
-            .name = my.library.name
-            .type = "library"
-        endnew
+        .library = my.library.name
 
         for my.library.feature
             copy feature to features

@@ -134,6 +134,13 @@
 </entity>
 
 
+<entity name="project_attr" abstract="1">
+    <attr name="project">
+        Parent project name.
+    </attr>
+</entity>
+
+
 <entity name="lang" abstract="1">
 
     <attr name="lang" default="c">
@@ -180,4 +187,16 @@
     </attr>
 
     <inherit entity="lang"/>
+</entity>
+
+<entity name="landlord" abstract="1">
+    Defines whom component belongs to.
+
+    <attr name="project">
+        Defines project name that component belongs to.
+    </attr>
+
+    <attr name="library">
+        Defines libary name that component belongs to.
+    </attr>
 </entity>

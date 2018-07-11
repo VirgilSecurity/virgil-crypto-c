@@ -207,6 +207,8 @@ function implementation_resolve (implementation, parent, project)
 
     echo_trace ("Resolving implementation: $(my.implementation.name:)", my)
 
+    my.implementation.project ?= my.project.name
+
     for my.implementation.c_include
         implementation_resolve_c_include (c_include, my.implementation)
     endfor
@@ -280,6 +282,7 @@ function implementation_create_feature (implementation, destination)
     new feature to my.destination
         . = "Enable implementation '$(my.implementation.name)'."
         .name = my.implementation.name
+        .project = my.implementation.project
 
         for my.implementation.require where defined (0.project) as impl_require
             new require to feature

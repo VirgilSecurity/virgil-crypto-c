@@ -111,12 +111,8 @@ function project_create_features (project, destination)
     new features to my.destination
         .prefix = my.project.prefix ?
         .path = my.project.path
+        .project = my.project.name
         .cmake_target = my.project.cmake_target ?
-
-        new source to features
-            .name = my.project.name
-            .type = "project"
-        endnew
 
         for my.project.feature
             copy feature to features

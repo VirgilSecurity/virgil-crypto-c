@@ -59,12 +59,21 @@ function component_dump (component)
 
     my.component_info = ""
     my.component_info += " name=\"$(my.component.name)\"" ? ""
+    my.component_info += " path=\"$(my.component.path)\"" ? ""
+    my.component_info += " module=\"$(my.component.module)\"" ? ""
+    my.component_info += " header=\"$(my.component.header)\"" ? ""
+    my.component_info += " feature=\"$(my.component.feature)\"" ? ""
+    my.component_info += " library=\"$(my.component.library)\"" ? ""
+    my.component_info += " project=\"$(my.component.project)\"" ? ""
     my.component_info += " lang=\"$(my.component.lang)\"" ? ""
     my.component_info += " of_class=\"$(my.component.of_class)\"" ? ""
     my.component_info += " visibility=\"$(my.component.visibility)\"" ? ""
     my.component_info += " scope=\"$(my.component.scope)\"" ? ""
     my.component_info += " declaration=\"$(my.component.declaration)\"" ? ""
     my.component_info += " definition=\"$(my.component.definition)\"" ? ""
+    my.component_info += " type=\"$(my.component.type)\"" ? ""
+    my.component_info += " prefix=\"$(my.component.prefix)\"" ? ""
+    my.component_info += " cmake_target=\"$(my.component.cmake_target)\"" ? ""
     my.component_dump = "<$(name (my.component))$(my.component_info)/>"
 
     return my.component_dump
@@ -119,6 +128,7 @@ function component_get_instance_array (instance)
         endnew
     endif
 endfunction
+
 
 # ###########################################################################
 #   Validate or check attribute.
@@ -268,7 +278,6 @@ function component_require_code (component, caller)
     assert_item (my.component, "code", my.caller ? my)
 endfunction
 
-
 # ---------------------------------------------------------------------------
 #   Check required attribute: macros.is_method.
 # ---------------------------------------------------------------------------
@@ -278,6 +287,42 @@ function component_require_macros_attr_is_method (macros, caller)
     assert_attribute (my.macros, "is_method", my.caller ? my)
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Check required attribute: feature.
+# ---------------------------------------------------------------------------
+function component_require_attr_feature (item, caller)
+    check_arguments (my, "item", my)
+
+    assert_attribute (my.item, "feature", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attribute: path.
+# ---------------------------------------------------------------------------
+function component_require_attr_path (item, caller)
+    check_arguments (my, "item", my)
+
+    assert_attribute (my.item, "path", my.caller ? my)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Check required attributes of item: landlord.
+# ---------------------------------------------------------------------------
+function component_require_landlord (component, caller)
+    check_arguments (my, "component", my)
+
+    assert_attribute_one_of (my.component, "project, library", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true if component has one of the attributes that define landlord.
+# ---------------------------------------------------------------------------
+function component_has_landlord (component)
+    check_arguments (my, "component", my)
+
+    return has_one_of_attribute (my.component, "project, library")
+endfunction
 
 # ###########################################################################
 #   Attribute resolution.
@@ -324,6 +369,47 @@ function component_derive_uid (component)
 
     #   Put it together
     return make_id (my.uid_scope, my.parent_uid, my.self_uid)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return landlord id.
+# ---------------------------------------------------------------------------
+function component_landlord_id (component)
+    check_arguments (my, "component", my)
+
+    component_require_landlord (my.component, my)
+
+    if defined (my.component.project)
+        return "project"
+    else
+        return "library"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return landlord name.
+# ---------------------------------------------------------------------------
+function component_landlord_name (component)
+    check_arguments (my, "component", my)
+
+    component_require_landlord (my.component, my)
+
+    if defined (my.component.project)
+        return my.component.project
+    else
+        return my.component.library
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Derive uid for item: landlord.
+# ---------------------------------------------------------------------------
+function component_derive_landlord_uid (component)
+    check_arguments (my, "component", my)
+
+    component_require_landlord (my.component, my)
+
+    return make_id (component_landlord_id (my.component), component_landlord_name (my.component))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -773,6 +859,7 @@ function component_resolve_attr_feature (component, parent)
     #   which feature this component implements.
 endfunction
 
+
 # ###########################################################################
 #   Per component resolution.
 # ###########################################################################
@@ -818,17 +905,6 @@ function component_resolve_code (code, parent)
 
     component_resolve_attr_lang (my.code, my.parent)
     component_resolve_code_attr_type (my.code, my.parent)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Resolve component: require
-# ---------------------------------------------------------------------------
-function component_resolve_require (require, parent)
-    check_arguments (my, "require, parent")
-
-    assert_attribute_one_of (my.require, "module, header", my)
-
-    component_resolve_attr_scope (my.require, my.parent)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1152,46 +1228,105 @@ function component_resolve_macroses (macroses, parent)
     endfor
 endfunction
 
+
 # ---------------------------------------------------------------------------
-#   Traverse known components within module and perform complete resolution.
+#   Resolve item: landlord.
 # ---------------------------------------------------------------------------
-function foreach_component_resolve (module)
-    check_argument (my, "module", my)
+function component_resolve_landlord (component, parent)
+    check_arguments (my, "component, parent", my)
 
-    for my.module.require
-        component_resolve_require (require, my.module)
+    if component_has_landlord (my.component)
+        return
+    endif
+
+    if defined (my.parent.project)
+        my.component.project ?= my.parent.project
+
+    elsif defined (my.parent.library)
+        my.component.library ?= my.parent.library
+    endif
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Resolve item: require_base.
+# ---------------------------------------------------------------------------
+function component_resolve_require_base (require_base, parent)
+    check_arguments (my, "require_base, parent", my)
+
+    assert_attribute_one_of (my.require_base, "module, header, feature", my)
+
+    component_resolve_landlord (my.require_base, my.parent)
+    component_resolve_attr_scope (my.require_base, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve item: alternative.
+# ---------------------------------------------------------------------------
+function component_resolve_alternative (alternative, parent)
+    check_arguments (my, "alternative, parent", my)
+
+    component_resolve_require_base (my.alternative, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve item: require.
+# ---------------------------------------------------------------------------
+function component_resolve_require (require, parent)
+    check_arguments (my, "require, parent", my)
+
+    for my.require.alternative
+        component_resolve_alternative (alternative, my.parent)
+    else
+        component_resolve_require_base (my.require, my.parent)
+    endfor
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Traverse known components within source and perform complete resolution.
+# ---------------------------------------------------------------------------
+function foreach_component_resolve (source)
+    check_argument (my, "source", my)
+
+    for my.source.require
+        component_resolve_require (require, my.source)
     endfor
 
-    for my.module.constant
-        component_resolve_constant (constant, my.module)
+    for my.source.constant
+        component_resolve_constant (constant, my.source)
     endfor
 
-    for my.module.enum
-        component_resolve_enum (enum, my.module)
+    for my.source.enum
+        component_resolve_enum (enum, my.source)
     endfor
 
-    for my.module.variable
-        component_resolve_variable (variable, my.module)
+    for my.source.variable
+        component_resolve_variable (variable, my.source)
     endfor
 
-    for my.module.struct
-        component_resolve_struct (struct, my.module)
+    for my.source.struct
+        component_resolve_struct (struct, my.source)
     endfor
 
-    for my.module.callback
-        component_resolve_callback (callback, my.module)
+    for my.source.callback
+        component_resolve_callback (callback, my.source)
     endfor
 
-    for my.module.method
-        component_resolve_method (method, my.module)
+    for my.source.method
+        component_resolve_method (method, my.source)
     endfor
 
-    for my.module.macros
-        component_resolve_macros (macros, my.module)
+    for my.source.macros
+        component_resolve_macros (macros, my.source)
     endfor
 
-    for my.module.macroses
-        component_resolve_macroses (macroses, my.module)
+    for my.source.macroses
+        component_resolve_macroses (macroses, my.source)
+    endfor
+
+    for my.source.features
+        component_resolve_features (features, my.source)
     endfor
 endfunction
 

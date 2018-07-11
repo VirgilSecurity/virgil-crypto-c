@@ -57,14 +57,6 @@
 </entity>
 
 
-<entity name="feature" abstract="1">
-    <attr name="feature">
-        In-project feature name that is implemented.
-        This attribute is used for feature-based compilation.
-    </attr>
-</entity>
-
-
 <entity name="c_prefix" abstract="1">
     <attr name="c_prefix">
         Prefix that is used for C name resolution.
@@ -75,8 +67,12 @@
 <entity name="component" abstract="1">
     Groups common attributes for the component.
 
+    <attr name="feature">
+        In-project feature name that is implemented.
+        This attribute is used for feature-based compilation.
+    </attr>
+
     <inherit entity="uid"/>
-    <inherit entity="feature"/>
     <inherit entity="of_class"/>
     <inherit entity="c_prefix"/>
 </entity>
@@ -299,18 +295,38 @@
 </entity>
 
 
-<entity name="require">
-    Defines dependency to: module or header.
+<entity name="require_base" abstract="1">
+    Base attributes for require.
 
     <attr name="module">
-        Module name that current component depends on.
+        Required module name.
     </attr>
 
     <attr name="header">
-        Header name that current component depends on.
+        Required header file name.
     </attr>
 
+    <attr name="feature">
+        Required feature name.
+    </attr>
+
+    <inherit entity="landlord"/>
     <inherit entity="scope"/>
+</entity>
+
+
+<entity name="require">
+    Defines dependency to: module, header, feature.
+
+    <inherit entity="require_base"/>
+    <allow entity="alternative"/>
+</entity>
+
+
+<entity name="alternative">
+    Define alternative requirements that can be used, and in fact replace each other.
+
+    <inherit entity="require_base"/>
 </entity>
 
 

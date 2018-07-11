@@ -62,5 +62,7 @@
     </entity>
 
 
+    <include filename="common.xnf"/>
+    <include filename="component.xnf"/>
     <include filename="features.xnf"/>
 </xnf>

@@ -194,6 +194,7 @@ endfunction
 function process_library (library, features_list, echo_level)
     check_arguments (my, "library, features_list, echo_level", my)
 
+    library_resolve (my.library)
     library_create_features (my.library, my.features_list)
 endfunction
 
