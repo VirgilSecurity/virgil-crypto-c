@@ -54,8 +54,6 @@
 #include "vscf_memory.h"
 #include "vscf_hmac384_impl.h"
 #include "vscf_hmac384_internal.h"
-
-#include <mbedtls/md.h>
 //  @end
 
 

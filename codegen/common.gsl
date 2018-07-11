@@ -429,6 +429,7 @@ function assert_attribute_number (attribute_scope, attribute_name, caller)
     assert_attribute (my.attribute_scope, my.attribute_name, my.caller)
 
     if ! regexp.match ("^\\d+$", my.attribute_scope.$(my.attribute_name:))
+        my.name = " name=\"$(my.attribute_scope.name)\"" ? ""
         echo_fatal ("Attribute '$(my.attribute_name:)' defined" + \
                 " within <$(name (my.attribute_scope)) $(my.name:)/> is not a number", my.caller)
     endif
@@ -466,6 +467,44 @@ function assert_argument_type (argument, type, caller)
                 Was given <$(my.actual_type:)/>, expected <$(my.type)/>", my.caller ? my)
     endif
 endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Abort if 0 or more then 1 attributes from the list are given.
+# ---------------------------------------------------------------------------
+function assert_attribute_one_of (attribute_scope, attribute_list, caller)
+    check_arguments (my, "attribute_scope, attribute_list", my.caller)
+
+    my.attributes_count = 0
+    my.defined_attributes = ""
+
+    while regexp.match ("([\\w]+)", my.attribute_list, my.attribute_name)
+        my.attribute_list = string.search_replace (my.attribute_list, my.attribute_name, "")
+
+        if defined (my.attribute_scope.$(my.attribute_name:))
+            my.attributes_count += 1
+
+            if ! string_empty (my.defined_attributes)
+                my.defined_attributes += ", "
+            endif
+
+            my.defined_attributes += my.attribute_name
+        endif
+    endwhile
+
+    my.name = " name=\"$(my.attribute_scope.name)\"" ? ""
+
+    if my.attributes_count = 0
+        echo_fatal ("Expected one of the attributes: {$(my.attribute_list)} \
+                within <$(name (my.attribute_scope)) $(my.name:)/>, to be defined.", my.caller)
+
+    elsif my.attributes_count > 1
+        echo_fatal ("Expected only one attribute of: {$(my.attribute_list)} \
+                within <$(name (my.attribute_scope)) $(my.name:)/>, but met {$(my.defined_attributes)}.", my.caller)
+
+    endif
+endfunction
+
 
 # ---------------------------------------------------------------------------
 #   Change spaces balance in the code: remove redundant spaces.

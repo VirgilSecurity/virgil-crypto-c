@@ -54,8 +54,6 @@
 #include "vscf_memory.h"
 #include "vscf_hmac512_impl.h"
 #include "vscf_hmac512_internal.h"
-
-#include <mbedtls/md.h>
 //  @end
 
 

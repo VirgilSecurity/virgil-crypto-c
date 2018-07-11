@@ -300,13 +300,16 @@
 
 
 <entity name="require">
-    Defines module that current module depends on.
+    Defines dependency to: module or header.
 
-    <attr name="module" required="1">
-        Module name that current module depends on.
+    <attr name="module">
+        Module name that current component depends on.
     </attr>
 
-    <inherit entity="feature"/>
+    <attr name="header">
+        Header name that current component depends on.
+    </attr>
+
     <inherit entity="scope"/>
 </entity>
 

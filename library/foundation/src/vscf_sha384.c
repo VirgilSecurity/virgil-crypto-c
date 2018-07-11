@@ -54,8 +54,6 @@
 #include "vscf_memory.h"
 #include "vscf_sha384_impl.h"
 #include "vscf_sha384_internal.h"
-
-#include <mbedtls/sha512.h>
 //  @end
 
 
