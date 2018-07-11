@@ -7,9 +7,9 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <interface>
-       <constant name [c_prefix] [of_class] [feature] [uid] [definition] [value]/>
-       <method name [declaration] [visibility] [c_prefix] [of_class] [feature] [uid] [definition]
+    <interface [project]>
+       <constant name [c_prefix] [of_class] [uid] [feature] [definition] [value]/>
+       <method name [declaration] [visibility] [c_prefix] [of_class] [uid] [feature] [definition]
             [context]>
           <return is_reference [access] [class] [enum] [callback] [size] [type]>
              <string [access] [length]/>
@@ -20,7 +20,7 @@ attribute names are case-sensitive and we use only lower-case names.
              <array .../>
           </argument>
           <variable is_reference name [class] [type] [callback] [size] [access] [definition] [declaration]
-               [visibility] [c_prefix] [of_class] [feature] [uid] [enum]>
+               [visibility] [c_prefix] [of_class] [uid] [feature] [enum]>
              <value is_reference value [class] [enum] [callback] [size] [access] [type]>
                 <cast is_reference [access] [class] [enum] [callback] [size] [type]>
                    <string .../>
@@ -50,12 +50,18 @@ The 'interface' item
 
 Defines C class interface as a set of constants and methods.
 
-    <interface>
+    <interface
+      [ project = "..." ]
+        >
         <constant>
         <method>
         <inherit>
     </interface>
 
+The interface item has this single attribute:
+
+project:
+    Parent project name. The project attribute is optional.
 
 
 The 'constant' item
@@ -67,8 +73,8 @@ Groups common attributes for the component. Defines integral constant.
         name = "..."
       [ c_prefix = "..." ]
       [ of_class = "..." ]
-      [ feature = "..." ]
       [ uid = "..." ]
+      [ feature = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ value = "..." ]
         />
@@ -93,13 +99,13 @@ of_class:
     Defines class name that a component belongs to. This attributes is used
     for inner components name resolution. The of_class attribute is optional.
 
-feature:
-    In-project feature name that is implemented. This attribute is used for
-    feature-based compilation. The feature attribute is optional.
-
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+feature:
+    In-project feature name that is implemented. This attribute is used for
+    feature-based compilation. The feature attribute is optional.
 
 name:
     Constant name. The name attribute is required.
@@ -121,8 +127,8 @@ and optionally implementation.
       [ visibility = "public | private"  ("public") ]
       [ c_prefix = "..." ]
       [ of_class = "..." ]
-      [ feature = "..." ]
       [ uid = "..." ]
+      [ feature = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ context = "none | api | impl | class"  ("none") ]
         >
@@ -171,13 +177,13 @@ of_class:
     Defines class name that a component belongs to. This attributes is used
     for inner components name resolution. The of_class attribute is optional.
 
-feature:
-    In-project feature name that is implemented. This attribute is used for
-    feature-based compilation. The feature attribute is optional.
-
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+feature:
+    In-project feature name that is implemented. This attribute is used for
+    feature-based compilation. The feature attribute is optional.
 
 name:
     Method name. The name attribute is required.
@@ -469,8 +475,8 @@ attributes for the component. Defines global variable.
       [ visibility = "public | private"  ("public") ]
       [ c_prefix = "..." ]
       [ of_class = "..." ]
-      [ feature = "..." ]
       [ uid = "..." ]
+      [ feature = "..." ]
       [ enum = "..." ]
         >
         <value>, 1 or more
@@ -583,13 +589,13 @@ of_class:
     Defines class name that a component belongs to. This attributes is used
     for inner components name resolution. The of_class attribute is optional.
 
-feature:
-    In-project feature name that is implemented. This attribute is used for
-    feature-based compilation. The feature attribute is optional.
-
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+feature:
+    In-project feature name that is implemented. This attribute is used for
+    feature-based compilation. The feature attribute is optional.
 
 name:
     Object name. The name attribute is required.

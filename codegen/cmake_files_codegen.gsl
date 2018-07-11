@@ -207,7 +207,7 @@ endfunction
 function cmake_generate_definitions (source, license)
     check_arguments (my, "source, license", my)
 
-    for my.source.c_features where source = "project"
+    for my.source.c_features where landlord = "project"
         echo_trace ("Generate 'definitions.cmake' from <$(name (c_features)) name = \"$(c_features.name:)/>\"", my)
 
         my.cmake_file = "$(directory.resolve (c_features.path))definitions.cmake"

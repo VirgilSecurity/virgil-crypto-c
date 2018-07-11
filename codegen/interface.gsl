@@ -91,6 +91,7 @@ function interface_resolve (interface, project)
 
     interface_require_attr_name (my.interface, my)
 
+    my.interface.project = my.project.name
     my.interface.c_prefix ?= my.project.name
 
     for my.interface.constant
@@ -165,6 +166,7 @@ function interface_create_feature (interface, destination)
     new feature to my.destination
         . = "Enable interface '$(my.interface.name)'."
         .name = my.interface.name
+        .project = my.interface.project
 
         for my.interface.inherit
             new require to feature

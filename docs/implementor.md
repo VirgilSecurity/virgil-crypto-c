@@ -9,18 +9,21 @@ required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
     <implementor name [is_default]>
-       <implementation name>
+       <implementation name [project]>
           <context>
-             <require [scope] [module] [header]/>
+             <require [scope] [project] [library] [module] [header] [feature]>
+                <alternative [scope] [project] [library] [module] [header] [feature]/>
+             </require>
              <property is_reference name [type] [class] [enum] [callback] [size] [uid] [access] [bits]>
                 <string [access] [length]/>
                 <array [access] [length] [length_constant]/>
              </property>
           </context>
           <interface name>
-             <constant name [c_prefix] [of_class] [feature] [uid] [definition] [value]/>
+             <constant name [c_prefix] [of_class] [uid] [feature] [definition] [value]/>
           </interface>
           <dependency name interface [type]/>
+          <require .../>
        </implementation>
     </implementor>
 
@@ -68,13 +71,18 @@ Defines set of the implemented interfaces in a one module.
 
     <implementation
         name = "..."
+      [ project = "..." ]
         >
         <context>, optional
         <interface>, 1 or more
         <dependency>
+        <require>
     </implementation>
 
-The implementation item has this single attribute:
+The implementation item can have these attributes:
+
+project:
+    Parent project name. The project attribute is optional.
 
 name:
     Implementation name. The name attribute is required.
@@ -83,7 +91,7 @@ name:
 The 'context' item
 ------------------
 
-Defines specific underlying implementation context. >
+Defines specific underlying implementation context.
 
     <context>
         <require>
@@ -95,13 +103,19 @@ Defines specific underlying implementation context. >
 The 'require' item
 ------------------
 
-Defines dependency to: module or header.
+Defines whom component belongs to. Base attributes for require. Defines
+dependency to: module, header, feature.
 
     <require
       [ scope = "public | private | internal"  ("public") ]
+      [ project = "..." ]
+      [ library = "..." ]
       [ module = "..." ]
       [ header = "..." ]
-        />
+      [ feature = "..." ]
+        >
+        <alternative>
+    </require>
 
 The require item can have these attributes:
 
@@ -117,13 +131,69 @@ public: Component is visible for outside world.
 private: Component is visible for outside world via private interface.
 internal: Component is visible only within library or a specific source file.
 
-module:
-    Module name that current component depends on. The module attribute is
+project:
+    Defines project name that component belongs to. The project attribute is
     optional.
 
-header:
-    Header name that current component depends on. The header attribute is
+library:
+    Defines libary name that component belongs to. The library attribute is
     optional.
+
+module:
+    Required module name. The module attribute is optional.
+
+header:
+    Required header file name. The header attribute is optional.
+
+feature:
+    Required feature name. The feature attribute is optional.
+
+
+The 'alternative' item
+----------------------
+
+Defines whom component belongs to. Base attributes for require. Define
+alternative requirements that can be used, and in fact replace each other.
+
+    <alternative
+      [ scope = "public | private | internal"  ("public") ]
+      [ project = "..." ]
+      [ library = "..." ]
+      [ module = "..." ]
+      [ header = "..." ]
+      [ feature = "..." ]
+        />
+
+The alternative item can have these attributes:
+
+scope:
+    Defines component visibility within scope. This attribute must not be
+    inherited. Note, scope attribute can be used for components, that can not
+    be defined in terms of 'declaration' and 'definition'. The scope
+    attribute is optional. Its default value is "public". It can take one of
+    the following values:
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
+
+project:
+    Defines project name that component belongs to. The project attribute is
+    optional.
+
+library:
+    Defines libary name that component belongs to. The library attribute is
+    optional.
+
+module:
+    Required module name. The module attribute is optional.
+
+header:
+    Required header file name. The header attribute is optional.
+
+feature:
+    Required feature name. The feature attribute is optional.
 
 
 The 'property' item
@@ -326,8 +396,8 @@ Groups common attributes for the component. Defines integral constant.
         name = "..."
       [ c_prefix = "..." ]
       [ of_class = "..." ]
-      [ feature = "..." ]
       [ uid = "..." ]
+      [ feature = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ value = "..." ]
         />
@@ -352,13 +422,13 @@ of_class:
     Defines class name that a component belongs to. This attributes is used
     for inner components name resolution. The of_class attribute is optional.
 
-feature:
-    In-project feature name that is implemented. This attribute is used for
-    feature-based compilation. The feature attribute is optional.
-
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+feature:
+    In-project feature name that is implemented. This attribute is used for
+    feature-based compilation. The feature attribute is optional.
 
 name:
     Constant name. The name attribute is required.

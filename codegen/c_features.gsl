@@ -66,9 +66,10 @@ endfunction
 function _F21_derive_require_name (require)
     check_argument (my, "require", my)
 
-    assert_item (my.require, "source", my)
 
-    return c_ref (make_id (my.require->source.type, my.require->source.name, "feature", my.require.feature))
+    component_require_landlord (my.require, my)
+
+    return c_ref (make_id (component_derive_landlord_uid (my.require), "feature", my.require.feature))
 endfunction
 
 
@@ -126,8 +127,8 @@ function c_features_create (source, destination)
         echo_trace ("Createing <c_features/> from <$(name (features)) name=\"$(features.name:)/>\"", my)
 
         new c_features to my.destination
-            .name = features->source.name
-            .source = features->source.type
+            .name = component_landlord_name (features)
+            .landlord = component_landlord_id (features)
             .path = features.path
             .cmake_target = features.cmake_target ?
 

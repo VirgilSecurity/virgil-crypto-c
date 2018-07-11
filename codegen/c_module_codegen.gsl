@@ -222,7 +222,7 @@ function c_module_generate_sources (source)
     check_argument (my, "source")
 
     for my.source.c_module
-        echo_trace ("Generate files from <$(name (c_module)) name = \"$(c_module.name:)/>\"", my)
+        echo_trace ("Generate files from <$(name (c_module)) name = \"$(c_module.name:)\"/>", my)
 
         if string_defined (c_module.header_file)
             c_module_generate_header (c_module)

@@ -49,57 +49,7 @@
 # ---------------------------------------------------------------------------
 
 gsl from "common.gsl"
-
-
-# ---------------------------------------------------------------------------
-#   Dump known attributes for given item to xml string.
-# ---------------------------------------------------------------------------
-function _D25_dump_item (item)
-    check_arguments (my, "item", my)
-
-    my.item_info = ""
-    my.item_info += "name=\"$(my.item.name)\"" ? "feature=\"$(my.item.feature)\""
-    my.item_info += " type=\"$(my.item.type)\"" ? ""
-    my.item_info += " prefix=\"$(my.item.prefix)\"" ? ""
-    my.item_info += " source=\"$(my.item.source)\"" ? ""
-    my.item_info += " path=\"$(my.item.path)\"" ? ""
-    my.item_info += " library=\"$(my.item.library)\"" ? ""
-    my.item_info += " project=\"$(my.item.project)\"" ? ""
-    my.item_info += " cmake_target=\"$(my.item.cmake_target)\"" ? ""
-    my.item_dump = "<$(name (my.item))$(my.item_info)/>"
-
-    return my.item_dump
-endfunction
-
-
-# ---------------------------------------------------------------------------
-#   Check required attribute: name.
-# ---------------------------------------------------------------------------
-function _D25_require_attr_name (item, caller)
-    check_arguments (my, "item", my)
-
-    assert_attribute (my.item, "name", my.caller ? my)
-endfunction
-
-
-# ---------------------------------------------------------------------------
-#   Check required attribute: prefix.
-# ---------------------------------------------------------------------------
-function _D25_require_attr_prefix (item, caller)
-    check_arguments (my, "item", my)
-
-    assert_attribute (my.item, "prefix", my.caller ? my)
-endfunction
-
-
-# ---------------------------------------------------------------------------
-#   Check required attribute: feature.
-# ---------------------------------------------------------------------------
-function _D25_require_attr_feature (item, caller)
-    check_arguments (my, "item", my)
-
-    assert_attribute (my.item, "feature", my.caller ? my)
-endfunction
+gsl from "component.gsl"
 
 
 # ---------------------------------------------------------------------------
@@ -118,9 +68,9 @@ endfunction
 function _D25_resolve_attr_uid (feature, parent)
     check_arguments (my, "feature, parent", my)
 
-    assert_item (my.feature, "source", my)
+    component_require_landlord (my.feature, my)
 
-    my.feature.uid = make_id (my.feature->source.type, my.feature->source.name, name (my.feature), my.feature.name)
+    my.feature.uid = make_id (component_derive_landlord_uid (my.feature), name (my.feature), my.feature.name)
 endfunction
 
 
@@ -133,118 +83,20 @@ function _D25_resolve_attr_prefix (item, parent)
     my.item.prefix ?= my.parent.prefix ? my.item->source.name
 endfunction
 
-
-# ---------------------------------------------------------------------------
-#   Resolve item: source.
-# ---------------------------------------------------------------------------
-function _D25_check_source (source, parent)
-    check_arguments (my, "source, parent", my)
-
-    assert_attribute (my.source, "name", my.caller ? my)
-
-    my.valid_types = "project, library"
-
-    if ! string_in (my.source.type, my.valid_types)
-        my.source_dump = _D25_dump_item (my.source)
-        my.parent_dump = _D25_dump_item (my.parent)
-
-        echo_fatal ("Invalid attribute 'type' within '$(my.source_dump:)' of parent '$(my.parent_dump:)'. " + \
-                    "Expected {$(my.valid_types)}", my)
-    endif
-endfunction
-
-
-# ---------------------------------------------------------------------------
-#  Inherit item: source.
-# ---------------------------------------------------------------------------
-function _D25_resolve_source (feature, parent)
-    check_arguments (my, "feature, parent", my)
-
-    if count (my.feature.source)
-        _D25_check_source (my.feature->source, my.feature)
-        return
-    endif
-
-    if defined (my.feature.project) | defined (my.feature.library)
-        new source to my.feature
-
-            if defined (my.feature.project)
-                .name = my.feature.project
-                .type = "project"
-                my.feature.project = # undefined
-            endif
-
-            if defined (my.feature.library)
-                .name = my.feature.library
-                .type = "library"
-                my.feature.library = # undefined
-            endif
-
-        endnew
-
-    else
-        copy my.parent->source to my.feature
-    endif
-
-    _D25_check_source (my.feature->source, my.feature)
-endfunction
-
-
-# ---------------------------------------------------------------------------
-#   Resolve item: alternative.
-# ---------------------------------------------------------------------------
-function _D25_resolve_alternative (alternative, parent)
-    check_arguments (my, "alternative, parent", my)
-
-    _D25_require_attr_feature (my.alternative, my)
-
-    _D25_resolve_source (my.alternative, my.parent)
-endfunction
-
-
-# ---------------------------------------------------------------------------
-#   Resolve item: require.
-# ---------------------------------------------------------------------------
-function _D25_resolve_require (require, parent)
-    check_arguments (my, "require, parent", my)
-
-    my.require_dump = _D25_dump_item (my.parent)
-
-    if defined(my.require.feature) & count (my.require.alternative)
-        echo_fatal ( \
-                "Attribute 'feature' and item 'alternative' are both defined within $(require_dump). " + \
-                "Expected one of them only.")
-
-    elsif ! defined(my.require.feature) & ! count (my.require.alternative)
-        echo_fatal ( \
-                "Not attribute 'feature' nor item 'alternative' is defined within $(require_dump). " + \
-                "Expected one of them.")
-    endif
-
-    for my.require.alternative
-        _D25_resolve_alternative (alternative, my.parent)
-    else
-        assert_attribute (my.require, "feature", my)
-
-        _D25_resolve_source (my.require, my.parent)
-    endfor
-endfunction
-
-
 # ---------------------------------------------------------------------------
 #   Resolve component: feature.
 # ---------------------------------------------------------------------------
 function _D25_resolve_feature (feature, parent)
     check_arguments (my, "feature, parent", my)
 
-    _D25_require_attr_name (my.feature, my)
-    _D25_resolve_attr_prefix (my.feature, my.parent)
+    component_require_attr_name (my.feature, my)
+    component_resolve_landlord (my.feature, my.parent)
 
-    _D25_resolve_source (my.feature, my.parent)
+    _D25_resolve_attr_prefix (my.feature, my.parent)
     _D25_resolve_attr_uid (my.feature, my.parent)
 
     for my.feature.require
-        _D25_resolve_require (require, my.feature)
+        component_resolve_require (require, my.feature)
     endfor
 endfunction
 
@@ -252,15 +104,15 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Resolve component: features.
 # ---------------------------------------------------------------------------
-function features_resolve (features)
-    check_arguments (my, "features", my)
+function features_resolve (features, parent)
+    check_arguments (my, "features, parent", my)
 
-    assert_item (my.features, "source", my)
+    assert_attribute_one_of (my.features, "project, library", my)
 
     _D25_require_attr_path (my.features, my)
     _D25_resolve_attr_prefix (my.features)
 
-    _D25_check_source (my.features->source, my.features)
+    component_resolve_landlord (my.features, my.parent)
 
     for my.features.feature
         _D25_resolve_feature (feature, my.features)
@@ -275,7 +127,7 @@ function foreach_features_resolve (source)
     check_arguments (my, "source", my)
 
     for my.source.features
-        features_resolve (features)
+        features_resolve (features, my.source)
     endfor
 endfunction
 

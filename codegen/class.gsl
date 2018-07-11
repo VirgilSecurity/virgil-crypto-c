@@ -140,6 +140,15 @@ function class_resolve_attr_c_prefix (class, project)
     my.class.c_prefix ?= my.project.prefix
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Resolve attribute: class.c_prefix.
+# ---------------------------------------------------------------------------
+function class_resolve_attr_project (class, project)
+    check_arguments (my, "class, project", my)
+
+    my.class.project ?= my.project.name
+endfunction
+
 
 # ---------------------------------------------------------------------------
 #   Resolve component: class.
@@ -156,6 +165,7 @@ function class_resolve (class, project)
     class_resolve_attr_lifecycle (my.class, my.project)
     class_resolve_attr_of_class (my.class, my.project)
     class_resolve_attr_c_prefix (my.class, my.project)
+    class_resolve_attr_project (my.class, my.project)
 
     for my.class.method
         _B18_resolve_method_attr_context (method, my.class)
@@ -193,6 +203,7 @@ function class_create_feature (class, destination)
     new feature to my.destination
         . = "Enable class '$(my.class.name)'."
         .name = my.class.name
+        .project = my.class.project
 
         for my.class.require where defined (0.project) as impl_require
             new require to feature

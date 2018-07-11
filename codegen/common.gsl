@@ -159,7 +159,7 @@ function item_in (item, list)
 endfunction
 
 # ---------------------------------------------------------------------------
-#
+#   Return true if given multiline string.
 # ---------------------------------------------------------------------------
 function string_multiline (str)
     check_argument (my, "str")
@@ -174,12 +174,28 @@ function is_item (element)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Retrun true given ele,emt contains description.
+#   Return true if given element contains description.
 # ---------------------------------------------------------------------------
 function has_description (element)
     return defined (my.element) & string_defined (my.element.)
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Return true if given item defines at least one attribute from the list.
+# ---------------------------------------------------------------------------
+function has_one_of_attribute (item, attribute_list)
+    check_arguments (my, "item, attribute_list", my)
+
+    while regexp.match ("([\\w]+)", my.attribute_list, my.attribute_name)
+        my.attribute_list = string.search_replace (my.attribute_list, my.attribute_name, "")
+
+        if defined (my.item.$(my.attribute_name:))
+            return 1
+        endif
+    endwhile
+
+    return 0
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Transform number of tabs to correspond spaces.
@@ -439,7 +455,7 @@ endfunction
 #   Abort if there is no elements with given name within given scope.
 # ---------------------------------------------------------------------------
 function assert_item (item_scope, item_name, caller)
-    check_arguments (my, "item_scope, item_name", my.caller ? my)
+    check_arguments (my, "item_scope, item_name", my)
 
     my.item_count = count (my.item_scope.$(my.item_name))
     if my.item_count > 0
@@ -473,13 +489,14 @@ endfunction
 #   Abort if 0 or more then 1 attributes from the list are given.
 # ---------------------------------------------------------------------------
 function assert_attribute_one_of (attribute_scope, attribute_list, caller)
-    check_arguments (my, "attribute_scope, attribute_list", my.caller)
+    check_arguments (my, "attribute_scope, attribute_list", my)
 
     my.attributes_count = 0
     my.defined_attributes = ""
+    my.list = my.attribute_list
 
-    while regexp.match ("([\\w]+)", my.attribute_list, my.attribute_name)
-        my.attribute_list = string.search_replace (my.attribute_list, my.attribute_name, "")
+    while regexp.match ("([\\w]+)", my.list, my.attribute_name)
+        my.list = string.search_replace (my.list, my.attribute_name, "")
 
         if defined (my.attribute_scope.$(my.attribute_name:))
             my.attributes_count += 1

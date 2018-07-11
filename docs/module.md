@@ -8,15 +8,17 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <module name [c_prefix] [feature] [uid] [scope] [of_class]>
-       <require [scope] [module] [header]/>
-       <constant name [c_prefix] [of_class] [feature] [uid] [definition] [value]/>
-       <enum [definition] [declaration] [visibility] [c_prefix] [of_class] [feature] [uid]
+    <module name [c_prefix] [uid] [feature] [scope] [of_class]>
+       <require [scope] [project] [library] [module] [header] [feature]>
+          <alternative [scope] [project] [library] [module] [header] [feature]/>
+       </require>
+       <constant name [c_prefix] [of_class] [uid] [feature] [definition] [value]/>
+       <enum [definition] [declaration] [visibility] [c_prefix] [of_class] [uid] [feature]
             [name]>
           <constant .../>
        </enum>
        <variable is_reference name [class] [type] [callback] [size] [access] [definition] [declaration]
-            [visibility] [c_prefix] [of_class] [feature] [uid] [enum]>
+            [visibility] [c_prefix] [of_class] [uid] [feature] [enum]>
           <value is_reference value [class] [enum] [callback] [size] [access] [type]>
              <cast is_reference [access] [class] [enum] [callback] [size] [type]>
                 <string [access] [length]/>
@@ -28,13 +30,13 @@ attribute names are case-sensitive and we use only lower-case names.
           <string .../>
           <array .../>
        </variable>
-       <struct name [definition] [visibility] [c_prefix] [of_class] [feature] [uid] [declaration]>
+       <struct name [definition] [visibility] [c_prefix] [of_class] [uid] [feature] [declaration]>
           <property is_reference name [type] [class] [enum] [callback] [size] [uid] [access] [bits]>
              <string .../>
              <array .../>
           </property>
        </struct>
-       <callback name [declaration] [of_class] [feature] [uid] [c_prefix]>
+       <callback name [declaration] [of_class] [uid] [feature] [c_prefix]>
           <return is_reference [access] [class] [enum] [callback] [size] [type]>
              <string .../>
              <array .../>
@@ -44,14 +46,14 @@ attribute names are case-sensitive and we use only lower-case names.
              <array .../>
           </argument>
        </callback>
-       <method name [declaration] [visibility] [c_prefix] [of_class] [feature] [uid] [definition]
+       <method name [declaration] [visibility] [c_prefix] [of_class] [uid] [feature] [definition]
             [context]>
           <return .../>
           <argument .../>
           <variable .../>
           <code [lang] [type]/>
        </method>
-       <macros name [c_prefix] [of_class] [feature] [uid] [definition] [is_method]>
+       <macros name [c_prefix] [of_class] [uid] [feature] [definition] [is_method]>
           <code .../>
        </macros>
        <macroses [definition]>
@@ -81,8 +83,8 @@ generate wrappers for high level languages like C#, Java, Python, etc.
     <module
         name = "..."
       [ c_prefix = "..." ]
-      [ feature = "..." ]
       [ uid = "..." ]
+      [ feature = "..." ]
       [ scope = "public | private | internal"  ("public") ]
       [ of_class = "..." ]
         >
@@ -107,13 +109,13 @@ of_class:
     Defines class name that a component belongs to. This attributes is used
     for inner components name resolution. The of_class attribute is optional.
 
-feature:
-    In-project feature name that is implemented. This attribute is used for
-    feature-based compilation. The feature attribute is optional.
-
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+feature:
+    In-project feature name that is implemented. This attribute is used for
+    feature-based compilation. The feature attribute is optional.
 
 scope:
     Defines component visibility within scope. This attribute must not be
@@ -134,13 +136,19 @@ name:
 The 'require' item
 ------------------
 
-Defines dependency to: module or header.
+Defines whom component belongs to. Base attributes for require. Defines
+dependency to: module, header, feature.
 
     <require
       [ scope = "public | private | internal"  ("public") ]
+      [ project = "..." ]
+      [ library = "..." ]
       [ module = "..." ]
       [ header = "..." ]
-        />
+      [ feature = "..." ]
+        >
+        <alternative>
+    </require>
 
 The require item can have these attributes:
 
@@ -156,13 +164,69 @@ public: Component is visible for outside world.
 private: Component is visible for outside world via private interface.
 internal: Component is visible only within library or a specific source file.
 
-module:
-    Module name that current component depends on. The module attribute is
+project:
+    Defines project name that component belongs to. The project attribute is
     optional.
 
-header:
-    Header name that current component depends on. The header attribute is
+library:
+    Defines libary name that component belongs to. The library attribute is
     optional.
+
+module:
+    Required module name. The module attribute is optional.
+
+header:
+    Required header file name. The header attribute is optional.
+
+feature:
+    Required feature name. The feature attribute is optional.
+
+
+The 'alternative' item
+----------------------
+
+Defines whom component belongs to. Base attributes for require. Define
+alternative requirements that can be used, and in fact replace each other.
+
+    <alternative
+      [ scope = "public | private | internal"  ("public") ]
+      [ project = "..." ]
+      [ library = "..." ]
+      [ module = "..." ]
+      [ header = "..." ]
+      [ feature = "..." ]
+        />
+
+The alternative item can have these attributes:
+
+scope:
+    Defines component visibility within scope. This attribute must not be
+    inherited. Note, scope attribute can be used for components, that can not
+    be defined in terms of 'declaration' and 'definition'. The scope
+    attribute is optional. Its default value is "public". It can take one of
+    the following values:
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
+
+project:
+    Defines project name that component belongs to. The project attribute is
+    optional.
+
+library:
+    Defines libary name that component belongs to. The library attribute is
+    optional.
+
+module:
+    Required module name. The module attribute is optional.
+
+header:
+    Required header file name. The header attribute is optional.
+
+feature:
+    Required feature name. The feature attribute is optional.
 
 
 The 'constant' item
@@ -174,8 +238,8 @@ Groups common attributes for the component. Defines integral constant.
         name = "..."
       [ c_prefix = "..." ]
       [ of_class = "..." ]
-      [ feature = "..." ]
       [ uid = "..." ]
+      [ feature = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ value = "..." ]
         />
@@ -200,13 +264,13 @@ of_class:
     Defines class name that a component belongs to. This attributes is used
     for inner components name resolution. The of_class attribute is optional.
 
-feature:
-    In-project feature name that is implemented. This attribute is used for
-    feature-based compilation. The feature attribute is optional.
-
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+feature:
+    In-project feature name that is implemented. This attribute is used for
+    feature-based compilation. The feature attribute is optional.
 
 name:
     Constant name. The name attribute is required.
@@ -227,8 +291,8 @@ Groups common attributes for the component. Defines enumeration type.
       [ visibility = "public | private"  ("public") ]
       [ c_prefix = "..." ]
       [ of_class = "..." ]
-      [ feature = "..." ]
       [ uid = "..." ]
+      [ feature = "..." ]
       [ name = "..." ]
         >
         <constant>
@@ -273,13 +337,13 @@ of_class:
     Defines class name that a component belongs to. This attributes is used
     for inner components name resolution. The of_class attribute is optional.
 
-feature:
-    In-project feature name that is implemented. This attribute is used for
-    feature-based compilation. The feature attribute is optional.
-
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+feature:
+    In-project feature name that is implemented. This attribute is used for
+    feature-based compilation. The feature attribute is optional.
 
 name:
     Object name. The name attribute is optional.
@@ -304,8 +368,8 @@ attributes for the component. Defines global variable.
       [ visibility = "public | private"  ("public") ]
       [ c_prefix = "..." ]
       [ of_class = "..." ]
-      [ feature = "..." ]
       [ uid = "..." ]
+      [ feature = "..." ]
       [ enum = "..." ]
         >
         <value>, 1 or more
@@ -418,13 +482,13 @@ of_class:
     Defines class name that a component belongs to. This attributes is used
     for inner components name resolution. The of_class attribute is optional.
 
-feature:
-    In-project feature name that is implemented. This attribute is used for
-    feature-based compilation. The feature attribute is optional.
-
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+feature:
+    In-project feature name that is implemented. This attribute is used for
+    feature-based compilation. The feature attribute is optional.
 
 name:
     Object name. The name attribute is required.
@@ -694,8 +758,8 @@ Groups common attributes for the component. Defines struct type.
       [ visibility = "public | private"  ("public") ]
       [ c_prefix = "..." ]
       [ of_class = "..." ]
-      [ feature = "..." ]
       [ uid = "..." ]
+      [ feature = "..." ]
       [ declaration = "public | private | external"  ("public") ]
         >
         <property>
@@ -740,13 +804,13 @@ of_class:
     Defines class name that a component belongs to. This attributes is used
     for inner components name resolution. The of_class attribute is optional.
 
-feature:
-    In-project feature name that is implemented. This attribute is used for
-    feature-based compilation. The feature attribute is optional.
-
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+feature:
+    In-project feature name that is implemented. This attribute is used for
+    feature-based compilation. The feature attribute is optional.
 
 name:
     Structure name. The name attribute is required.
@@ -863,8 +927,8 @@ Groups common attributes for the component. Defines the callback signature.
         name = "..."
       [ declaration = "public | private | external"  ("public") ]
       [ of_class = "..." ]
-      [ feature = "..." ]
       [ uid = "..." ]
+      [ feature = "..." ]
       [ c_prefix = "..." ]
         >
         <return>, optional
@@ -891,13 +955,13 @@ of_class:
     Defines class name that a component belongs to. This attributes is used
     for inner components name resolution. The of_class attribute is optional.
 
-feature:
-    In-project feature name that is implemented. This attribute is used for
-    feature-based compilation. The feature attribute is optional.
-
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+feature:
+    In-project feature name that is implemented. This attribute is used for
+    feature-based compilation. The feature attribute is optional.
 
 name:
     Method name. The name attribute is required.
@@ -1099,8 +1163,8 @@ and optionally implementation.
       [ visibility = "public | private"  ("public") ]
       [ c_prefix = "..." ]
       [ of_class = "..." ]
-      [ feature = "..." ]
       [ uid = "..." ]
+      [ feature = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ context = "none | api | impl | class"  ("none") ]
         >
@@ -1149,13 +1213,13 @@ of_class:
     Defines class name that a component belongs to. This attributes is used
     for inner components name resolution. The of_class attribute is optional.
 
-feature:
-    In-project feature name that is implemented. This attribute is used for
-    feature-based compilation. The feature attribute is optional.
-
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+feature:
+    In-project feature name that is implemented. This attribute is used for
+    feature-based compilation. The feature attribute is optional.
 
 name:
     Method name. The name attribute is required.
@@ -1216,8 +1280,8 @@ optionally implementation.
         name = "..."
       [ c_prefix = "..." ]
       [ of_class = "..." ]
-      [ feature = "..." ]
       [ uid = "..." ]
+      [ feature = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ is_method = "0 | 1"  ("0") ]
         >
@@ -1244,13 +1308,13 @@ of_class:
     Defines class name that a component belongs to. This attributes is used
     for inner components name resolution. The of_class attribute is optional.
 
-feature:
-    In-project feature name that is implemented. This attribute is used for
-    feature-based compilation. The feature attribute is optional.
-
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+feature:
+    In-project feature name that is implemented. This attribute is used for
+    feature-based compilation. The feature attribute is optional.
 
 name:
     Macros name. The name attribute is required.
