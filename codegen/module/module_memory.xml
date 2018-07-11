@@ -8,22 +8,22 @@
     <macros name="alloc default" is_method="1">
         Compile-time configuration of the default alloc function.
 
-        <implementation>
+        <code>
             #ifndef .(c_global_macros_alloc_default)
             #   define  .(c_global_macros_alloc_default) (size) calloc (1, (size))
             #endif
-        </implementation>
+        </code>
     </macros>
 
 
     <macros name="dealloc default" is_method="1">
         Compile-time configuration of the default dealloc function.
 
-        <implementation>
+        <code>
             #ifndef .(c_global_macros_dealloc_default)
             #   define  .(c_global_macros_dealloc_default) (mem) free ((mem))
             #endif
-        </implementation>
+        </code>
     </macros>
 
 
@@ -58,9 +58,9 @@
 
         <return class="any" access="disown"/>
 
-        <implementation>
+        <code>
             return .(c_global_macros_alloc_default) (.(_argument_size));
-        </implementation>
+        </code>
     </method>
 
 
@@ -69,9 +69,9 @@
 
         <argument name="mem" class="any" access="writeonly"/>
 
-        <implementation>
+        <code>
             .(c_global_macros_dealloc_default) (.(_argument_mem));
-        </implementation>
+        </code>
     </method>
 
 
@@ -83,9 +83,9 @@
 
         <return class="any" access="disown"/>
 
-        <implementation>
+        <code>
             return .(c_class_memory_variable_inner_alloc) (.(_argument_size));
-        </implementation>
+        </code>
     </method>
 
 
@@ -94,9 +94,9 @@
 
         <argument name="mem" class="any" access="writeonly"/>
 
-        <implementation>
+        <code>
             .(c_class_memory_variable_inner_dealloc) (.(_argument_mem));
-        </implementation>
+        </code>
     </method>
 
 
@@ -106,13 +106,13 @@
         <argument name="alloc" callback=".(global_callback_alloc)"/>
         <argument name="dealloc" callback=".(global_callback_dealloc)"/>
 
-        <implementation>
+        <code>
             .(c_class_assert_macros_ptr) (.(_argument_alloc));
             .(c_class_assert_macros_ptr) (.(_argument_dealloc));
 
             .(c_class_memory_variable_inner_alloc) = .(_argument_alloc);
             .(c_class_memory_variable_inner_dealloc) = .(_argument_dealloc);
-        </implementation>
+        </code>
     </method>
 
 
@@ -124,10 +124,10 @@
         <argument name="mem" class="any" access="writeonly"/>
         <argument name="size" type="size"/>
 
-        <implementation>
+        <code>
             .(c_class_assert_macros_ptr) (.(_argument_mem));
             memset (.(_argument_mem), 0, .(_argument_size));
-        </implementation>
+        </code>
     </method>
 
 
@@ -138,12 +138,12 @@
         <argument name="mem" class="any" access="writeonly"/>
         <argument name="size" type="size"/>
 
-        <implementation>
+        <code>
             .(c_class_assert_macros_ptr) (.(_argument_mem));
 
             volatile uint8_t* p = (uint8_t*).(_argument_mem);
             while (.(_argument_size)--) { *p++ = 0; }
-        </implementation>
+        </code>
     </method>
 
 </module>

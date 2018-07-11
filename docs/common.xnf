@@ -154,11 +154,11 @@
 </entity>
 
 
-<entity name="implementation">
+<entity name="code">
     Contains language specific implementation body.
     For instance, method implementation body for C language.
 
-    <attr name="body" default="generated">
+    <attr name="type" default="generated">
         Defines implementation body originator.
 
         <restrict value="stub">

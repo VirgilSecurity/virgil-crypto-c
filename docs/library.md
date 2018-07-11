@@ -8,9 +8,10 @@ required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
     <library name path [prefix]>
-       <feature name [project] [library] [prefix]>
-          <require [library] [project] [feature]>
-             <alternative [library] [project] [feature]/>
+       <feature name [prefix]>
+          <require [feature]>
+             <alternative [name] [type] [feature]>
+             </alternative>
           </require>
        </feature>
     </library>
@@ -52,27 +53,16 @@ path:
 The 'feature' item
 ------------------
 
-Provide attributes that defines the source of feature. Define provided
-feature.
+Define provided feature.
 
     <feature
         name = "..."
-      [ project = "..." ]
-      [ library = "..." ]
       [ prefix = "..." ]
         >
         <require>
     </feature>
 
 The feature item can have these attributes:
-
-library:
-    Name of the library that provides feature. By default this attribute is
-    resolved to parent library name. The library attribute is optional.
-
-project:
-    Name of the project that provides feature. By default this attribute is
-    resolved to parent project name. The project attribute is optional.
 
 name:
     Feature name. The name attribute is required.
@@ -85,28 +75,17 @@ prefix:
 The 'require' item
 ------------------
 
-Provide attributes that defines the source of feature. Define required
-feature. Note, attribute 'feature' or inner entity 'alternative' must be
-defined. If attribute name is not defined, then at least 2 'alternative'
-entities are expected.
+Define required feature. Note, attribute 'feature' or inner entity
+'alternative' must be defined. If attribute name is not defined, then at
+least 2 'alternative' entities are expected.
 
     <require
-      [ library = "..." ]
-      [ project = "..." ]
       [ feature = "..." ]
         >
         <alternative>
     </require>
 
-The require item can have these attributes:
-
-library:
-    Name of the library that provides feature. By default this attribute is
-    resolved to parent library name. The library attribute is optional.
-
-project:
-    Name of the project that provides feature. By default this attribute is
-    resolved to parent project name. The project attribute is optional.
+The require item has this single attribute:
 
 feature:
     Required feature name. The feature attribute is optional.
@@ -115,24 +94,29 @@ feature:
 The 'alternative' item
 ----------------------
 
-Provide attributes that defines the source of feature. Define alternative
-features that can be used, and in fact replace each other.
+Provide attributes that defines the source of featur(e). This entity is
+inherited. Define alternative features that can be used, and in fact
+replace each other.
 
     <alternative
-      [ library = "..." ]
-      [ project = "..." ]
+      [ name = "..." ]
+      [ type = "project | library" ]
       [ feature = "..." ]
-        />
+        >
+    </alternative>
 
 The alternative item can have these attributes:
 
-library:
-    Name of the library that provides feature. By default this attribute is
-    resolved to parent library name. The library attribute is optional.
+name:
+    Source name The name attribute is optional.
 
-project:
-    Name of the project that provides feature. By default this attribute is
-    resolved to parent project name. The project attribute is optional.
+type:
+    The source type of the feature(s). The type attribute is optional. It can
+    take one of the following values:
+
+Value: Meaning:
+project: Feture(s) are provided by inner project.
+library: Feture(s) are provided by external library.
 
 feature:
     Required feature name. The feature attribute is optional.

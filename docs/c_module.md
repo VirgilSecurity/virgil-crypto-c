@@ -42,11 +42,11 @@ attribute names are case-sensitive and we use only lower-case names.
           <c_argument .../>
        </c_callback>
        <c_macros [feature] [definition] [uid] [is_method]>
-          <c_implementation/>
+          <c_code/>
        </c_macros>
        <c_macroses [definition]>
           <c_macros .../>
-          <c_implementation .../>
+          <c_code .../>
        </c_macroses>
     </c_module>
 
@@ -1022,7 +1022,7 @@ method.
       [ uid = "..." ]
       [ is_method = "0 | 1"  ("0") ]
         >
-        <c_implementation>, optional
+        <c_code>, optional
     </c_macros>
 
 The c_macros item can have these attributes:
@@ -1055,12 +1055,12 @@ Value: Meaning:
 1: Macros is a method.
 
 
-The 'c_implementation' item
----------------------------
+The 'c_code' item
+-----------------
 
 Defines method or macros implementation.
 
-    <c_implementation>
+    <c_code>
 
 
 
@@ -1073,7 +1073,7 @@ Define set of macroses in the one implemenatation.
       [ definition = "public | private | external"  ("private") ]
         >
         <c_macros>, 1 or more
-        <c_implementation>, optional
+        <c_code>, optional
     </c_macroses>
 
 The c_macroses item has this single attribute:

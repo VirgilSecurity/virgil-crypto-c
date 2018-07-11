@@ -32,7 +32,7 @@ attribute names are case-sensitive and we use only lower-case names.
              <string .../>
              <array .../>
           </variable>
-          <implementation [lang] [body]/>
+          <code [lang] [type]/>
        </method>
        <inherit interface/>
     </interface>
@@ -129,7 +129,7 @@ and optionally implementation.
         <return>, optional
         <argument>
         <variable>
-        <implementation>, optional
+        <code>, optional
     </method>
 
 The method item can have these attributes:
@@ -776,18 +776,18 @@ Value: Meaning:
 1: Instance is a reference to the other instance.
 
 
-The 'implementation' item
--------------------------
+The 'code' item
+---------------
 
 Contains language specific implementation body. For instance, method
 implementation body for C language.
 
-    <implementation
+    <code
       [ lang = "c | java | csharp"  ("c") ]
-      [ body = "stub | generated | handwritten"  ("generated") ]
+      [ type = "stub | generated | handwritten"  ("generated") ]
         />
 
-The implementation item can have these attributes:
+The code item can have these attributes:
 
 lang:
     Defines target language this entity is applied to. The lang attribute is
@@ -799,8 +799,8 @@ c: C language.
 java: Java language.
 csharp: C# language.
 
-body:
-    Defines implementation body originator. The body attribute is optional.
+type:
+    Defines implementation body originator. The type attribute is optional.
     Its default value is "generated". It can take one of the following
     values:
 
