@@ -49,3 +49,15 @@ option(VSCP_PYTHIA "Enable class 'pythia'." ON)
 mark_as_advanced(
         VSCP_PYTHIA
         )
+
+if(VSCP_PYTHIA AND NOT VSC_DATA)
+    message("Feature VSCP_PYTHIA depends on the feature:")
+    message("     VSC_DATA - which is disabled.")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCP_PYTHIA AND NOT VSC_BUFFER)
+    message("Feature VSCP_PYTHIA depends on the feature:")
+    message("     VSC_BUFFER - which is disabled.")
+    message(FATAL_ERROR)
+endif()

@@ -12,6 +12,10 @@
     <c_include file="mbedtls/entropy.h" scope="private" is_system="1"/>
 
 
+    <require project="common" feature="data"/>
+    <require project="common" feature="buffer"/>
+
+
     <macros name="buffer from data" definition="private">
 
         <code>
