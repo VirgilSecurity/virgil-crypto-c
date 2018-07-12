@@ -146,16 +146,22 @@ function cmake_generate_features (source, license)
 
                     cmake_insert_if (last(), " \
                         if($(c_feature.name:)$(my.alternative_enabled:))
+                            message(\"-- error --\")
+                            message(\"--\")
                             message(\"Feature $(c_feature.name:) depends on one of the features:\")
                             message(\"    $(my.alternatives:) - which are disabled.\")
+                            message(\"--\")
                             message(FATAL_ERROR)
                         endif()
                     ")
                 else
                     cmake_insert (" \
                         if($(c_feature.name:) AND NOT $(c_require.feature:))
+                            message(\"-- error --\")
+                            message(\"--\")
                             message(\"Feature $(c_feature.name:) depends on the feature:\")
                             message(\"    $(c_require.feature:) - which is disabled.\")
+                            message(\"--\")
                             message(FATAL_ERROR)
                         endif()
                     ")
