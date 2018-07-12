@@ -458,9 +458,7 @@ function assert_item (item_scope, item_name, caller)
     check_arguments (my, "item_scope, item_name", my)
 
     my.item_count = count (my.item_scope.$(my.item_name))
-    if my.item_count > 0
-        echo_debug ("Item '$(name (my.item_scope))->$(my.item_name:)' count is $(my.item_count).", my.caller)
-    else
+    if my.item_count = 0
         echo_fatal ("Item '$(name (my.item_scope))->$(my.item_name:)' is not defined.", my.caller)
     endif
 endfunction
