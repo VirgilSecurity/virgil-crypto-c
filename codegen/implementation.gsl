@@ -284,18 +284,8 @@ function implementation_create_feature (implementation, destination)
         .name = my.implementation.name
         .project = my.implementation.project
 
-        for my.implementation.require where defined (0.project) as impl_require
-            new require to feature
-                .project = impl_require.project
-                .feature = impl_require.feature
-            endnew
-        endfor
-
-        for my.implementation.require where defined (0.library) as impl_require
-            new require to feature
-                .library = impl_require.library
-                .feature = impl_require.feature
-            endnew
+        for my.implementation.require where defined (0.feature)
+            copy require to feature
         endfor
 
         for my.implementation.dependency

@@ -78,7 +78,7 @@ endfunction
 function c_module_add_includes (module, destination)
     check_arguments (my, "module, destination", my)
 
-    for my.module.require
+    for my.module.require where defined (0.module)
         c_component_create_include (require, my.destination)
     endfor
 
