@@ -38,4 +38,8 @@
     <feature name="AES ALT" default="off">
         <require feature="AES C"/>
     </feature>
+
+    <feature name="GCM ALT" default="off">
+        <require feature="GCM C"/>
+    </feature>
 </library>
