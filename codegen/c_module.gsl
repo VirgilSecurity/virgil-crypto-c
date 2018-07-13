@@ -99,7 +99,7 @@ function c_module_create (source, destination, project)
         component_require_attr_of_class (module, my)
 
         echo_trace ("Createing <c_module/> from \
-                <$(name (module)) name = \"$(module.name:)/>\"", my)
+                <$(name (module)) name = \"$(module.name:)\"/>", my)
 
         new c_module to my.destination
             .lang = "C"
