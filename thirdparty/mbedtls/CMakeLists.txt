@@ -49,6 +49,20 @@ endif()
 #
 include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 
+
+set(MBEDTLS_ALT_INCLUDE_DIR "" CACHE PATH "Directory with alternative MbedTLS algorithm implementations.")
+
+if(EXISTS "${MBEDTLS_ALT_INCLUDE_DIR}")
+    file(GLOB MBEDTLS_ALT_INCLUDE_FILES "${MBEDTLS_ALT_INCLUDE_DIR}/*_alt.h")
+else()
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/fake_alt.h" "")
+    set(MBEDTLS_ALT_INCLUDE_FILES "${CMAKE_CURRENT_BINARY_DIR}/fake_alt.h")
+endif()
+
+
+#
+# File configuration
+#
 configure_file(
         "${CMAKE_CURRENT_LIST_DIR}/config.h.in"
         "${CMAKE_CURRENT_BINARY_DIR}/config.h"
@@ -74,12 +88,21 @@ ExternalProject_Add(mbedtls-ext
         PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_CURRENT_BINARY_DIR}/config.h"
             "${CMAKE_CURRENT_BINARY_DIR}/mbedtls-ext-prefix/src/mbedtls-ext/include/mbedtls/config.h"
+        COMMAND ${CMAKE_COMMAND} -E copy
+            ${MBEDTLS_ALT_INCLUDE_FILES}
+            "${CMAKE_CURRENT_BINARY_DIR}/mbedtls-ext-prefix/src/mbedtls-ext/include/mbedtls"
         BUILD_BYPRODUCTS
             "${MBEDTLS_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}mbedcrypto${CMAKE_STATIC_LIBRARY_SUFFIX}"
         )
 
+
 # Add dependency to the file 'config.h' to trigger patch step each time this file is changed.
 ExternalProject_Add_StepDependencies(mbedtls-ext patch "${CMAKE_CURRENT_BINARY_DIR}/config.h")
+
+# Add dependency to the file '*_alt.h' to trigger patch step each time this file is changed.
+foreach(alt_file IN LISTS MBEDTLS_ALT_INCLUDE_FILES)
+    ExternalProject_Add_StepDependencies(mbedtls-ext patch "${alt_file}")
+endforeach()
 
 
 # ---------------------------------------------------------------------------
