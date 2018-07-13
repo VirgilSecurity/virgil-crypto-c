@@ -8,7 +8,7 @@ required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
     <library name path [prefix]>
-       <feature name [library] [project] [prefix]>
+       <feature name [library] [project] [prefix] [default]>
           <require [scope] [project] [library] [module] [header] [feature]>
              <alternative [scope] [project] [library] [module] [header] [feature]/>
           </require>
@@ -59,6 +59,7 @@ Defines whom component belongs to. Define provided feature.
       [ library = "..." ]
       [ project = "..." ]
       [ prefix = "..." ]
+      [ default = "on | off"  ("on") ]
         >
         <require>
     </feature>
@@ -79,6 +80,14 @@ name:
 prefix:
     Feature prefix. This attribute is derived from parent's attribute
     'prefix'. The prefix attribute is optional.
+
+default:
+    Default feature state. The default attribute is optional. Its default
+    value is "on". It can take one of the following values:
+
+Value: Meaning:
+on: Feature is enabled by default.
+off: Feature is disabled by default.
 
 
 The 'require' item

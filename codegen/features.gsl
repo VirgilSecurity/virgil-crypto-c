@@ -84,6 +84,24 @@ function _D25_resolve_attr_prefix (item, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve attribute: feature.default.
+# ---------------------------------------------------------------------------
+function _D25_resolve_attr_default (item, parent)
+    check_arguments (my, "item", my)
+
+    my.item.default ?= "on"
+
+    my.valid_defaults = "on, off"
+
+    if ! string_in (my.item.default, my.valid_defaults)
+        my.component_dump = component_dump (my.item)
+
+        echo_fatal ("Invalid item attribute 'default' '$(my.component_dump:)'. " + \
+                    "Expected {$(my.valid_defaults)}", my)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve component: feature.
 # ---------------------------------------------------------------------------
 function _D25_resolve_feature (feature, parent)
@@ -93,6 +111,7 @@ function _D25_resolve_feature (feature, parent)
     component_resolve_landlord (my.feature, my.parent)
 
     _D25_resolve_attr_prefix (my.feature, my.parent)
+    _D25_resolve_attr_default (my.feature, my.parent)
     _D25_resolve_attr_uid (my.feature, my.parent)
 
     for my.feature.require
