@@ -61,6 +61,7 @@
 #cmakedefine MBEDTLS_SHA256_ALT
 #cmakedefine MBEDTLS_SHA512_ALT
 #cmakedefine MBEDTLS_AES_ALT
+#cmakedefine MBEDTLS_GCM_ALT
 
 #include "check_config.h"
 
