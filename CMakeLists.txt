@@ -41,6 +41,7 @@ project(virgil_crypto_c_top VERSION 0.1.0 LANGUAGES C)
 # ---------------------------------------------------------------------------
 include("cmake/clangformat.cmake")
 include("cmake/helpers.cmake")
+include("cmake/TransitiveArgs.cmake")
 
 
 # ---------------------------------------------------------------------------
