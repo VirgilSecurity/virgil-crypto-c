@@ -97,6 +97,15 @@ function _F21_create_require (require, destination)
     endnew
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Map attribute 'default'
+# ---------------------------------------------------------------------------
+function _F21_map_attr_default (c_feature, feature)
+    check_arguments (my, "c_feature, feature", my)
+
+    my.c_feature.default ?= my.feature.default
+endfunction
+
 
 # ---------------------------------------------------------------------------
 #   Create 'c_feature' from 'feature'.
@@ -108,6 +117,7 @@ function c_feature_create (feature, destination)
         . = my.feature. ?
         .name = _F21_derive_feature_name (my.feature)
 
+        _F21_map_attr_default (c_feature, my.feature)
         c_component_map_attr_uid (c_feature, my.feature)
 
         for my.feature.require

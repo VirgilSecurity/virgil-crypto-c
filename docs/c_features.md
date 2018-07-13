@@ -8,7 +8,7 @@ required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
     <c_features name source path>
-       <c_feature [uid] [name]>
+       <c_feature [uid] [name] [default]>
           <c_require [feature]>
              <c_alternative [feature]/>
           </c_require>
@@ -61,6 +61,7 @@ Defines full qualified feature name.
     <c_feature
       [ uid = "..." ]
       [ name = "..." ]
+      [ default = "on | off"  ("on") ]
         >
         <c_require>
     </c_feature>
@@ -73,6 +74,14 @@ uid:
 
 name:
     Full qualified feature name. The name attribute is optional.
+
+default:
+    Default feature state. The default attribute is optional. Its default
+    value is "on". It can take one of the following values:
+
+Value: Meaning:
+on: Feature is enabled by default.
+off: Feature is disabled by default.
 
 
 The 'c_require' item

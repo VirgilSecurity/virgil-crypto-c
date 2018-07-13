@@ -120,7 +120,7 @@ function cmake_generate_features (source, license)
         cmake_insert_prologue (my.license)
 
         for c_features.c_feature
-            cmake_insert ("option($(c_feature.name:) \"$(string_trim (c_feature.?""))\" ON)")
+            cmake_insert ("option($(c_feature.name:) \"$(string_trim (c_feature.?""))\" $(c_feature.DEFAULT))")
         endfor
 
         for c_features.c_feature

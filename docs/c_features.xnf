@@ -75,6 +75,18 @@
             Full qualified feature name.
         </attr>
 
+        <attr name="default" default="on">
+            Default feature state.
+
+            <restrict value="on">
+                Feature is enabled by default.
+            </restrict>
+
+            <restrict value="off">
+                Feature is disabled by default.
+            </restrict>
+        </attr>
+
         <inherit entity="uid"/>
 
         <allow entity="c_require" occurs="0+"/>
