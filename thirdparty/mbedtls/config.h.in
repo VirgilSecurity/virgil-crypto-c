@@ -55,6 +55,12 @@
 #cmakedefine MBEDTLS_CTR_DRBG_C
 #cmakedefine MBEDTLS_ENTROPY_C
 
+//
+//  Alternative implementations
+//
+#cmakedefine MBEDTLS_SHA256_ALT
+#cmakedefine MBEDTLS_SHA512_ALT
+#cmakedefine MBEDTLS_AES_ALT
 
 #include "check_config.h"
 

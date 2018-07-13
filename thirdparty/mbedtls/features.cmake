@@ -53,6 +53,9 @@ option(MBEDTLS_GCM_C "" ON)
 option(MBEDTLS_MD_C "" ON)
 option(MBEDTLS_CTR_DRBG_C "" ON)
 option(MBEDTLS_ENTROPY_C "" ON)
+option(MBEDTLS_SHA256_ALT "" OFF)
+option(MBEDTLS_SHA512_ALT "" OFF)
+option(MBEDTLS_AES_ALT "" OFF)
 mark_as_advanced(
         MBEDTLS_SHA256_C
         MBEDTLS_SHA512_C
@@ -62,6 +65,9 @@ mark_as_advanced(
         MBEDTLS_MD_C
         MBEDTLS_CTR_DRBG_C
         MBEDTLS_ENTROPY_C
+        MBEDTLS_SHA256_ALT
+        MBEDTLS_SHA512_ALT
+        MBEDTLS_AES_ALT
         )
 
 if(MBEDTLS_CTR_DRBG_C AND NOT MBEDTLS_ENTROPY_C)
@@ -78,6 +84,33 @@ if(MBEDTLS_ENTROPY_C AND NOT MBEDTLS_SHA256_C AND NOT MBEDTLS_SHA512_C)
     message("--")
     message("Feature MBEDTLS_ENTROPY_C depends on one of the features:")
     message("     MBEDTLS_SHA256_C, MBEDTLS_SHA512_C - which are disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(MBEDTLS_SHA256_ALT AND NOT MBEDTLS_SHA256_C)
+    message("-- error --")
+    message("--")
+    message("Feature MBEDTLS_SHA256_ALT depends on the feature:")
+    message("     MBEDTLS_SHA256_C - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(MBEDTLS_SHA512_ALT AND NOT MBEDTLS_SHA512_C)
+    message("-- error --")
+    message("--")
+    message("Feature MBEDTLS_SHA512_ALT depends on the feature:")
+    message("     MBEDTLS_SHA512_C - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(MBEDTLS_AES_ALT AND NOT MBEDTLS_AES_C)
+    message("-- error --")
+    message("--")
+    message("Feature MBEDTLS_AES_ALT depends on the feature:")
+    message("     MBEDTLS_AES_C - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
