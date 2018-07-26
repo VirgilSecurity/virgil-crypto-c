@@ -1,0 +1,18 @@
+<interface name="export private key">
+    Provide interface for exporting private key to the binary format.
+    Binary format must be defined in the key specification.
+    For instance, RSA private key must be exported in format defined in
+    RFC 3447 Appendix A.1.2.
+
+    <method name="export private key">
+        Export private key in the binary format.
+
+        <argument name="out" class="buffer"/>
+    </method>
+
+    <method name="exported private key len">
+        Return length in bytes required to hold exported private key.
+
+        <return type="size"/>
+    </method>
+</interface>

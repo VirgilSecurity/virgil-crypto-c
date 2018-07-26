@@ -1,0 +1,10 @@
+<interface name="generate private key">
+    Private interface for private key generation.
+
+    <method name="generate private key">
+        Generate new private key.
+        Note, this operation can be slow.
+
+        <return type="error"/>
+    </method>
+</interface>

@@ -1,0 +1,13 @@
+<interface name="verify">
+    Provide interface for verifying data with public key.
+
+    <method name="verify">
+        Verify data with given public key and signature.
+
+        <argument name="data" class="data"/>
+
+        <argument name="signature" class="data"/>
+
+        <return type="boolean"/>
+    </method>
+</interface>

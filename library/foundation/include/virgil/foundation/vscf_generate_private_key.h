@@ -46,15 +46,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Private interface for private key generation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_API_H_INCLUDED
-#define VSCF_API_H_INCLUDED
+#ifndef VSCF_GENERATE_PRIVATE_KEY_H_INCLUDED
+#define VSCF_GENERATE_PRIVATE_KEY_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_error.h"
+#include "vscf_impl.h"
 //  @end
 
 
@@ -70,48 +70,28 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Contains API requirements of the interface 'generate private key'.
 //
-enum vscf_api_tag_t {
-    vscf_api_tag_BEGIN = 0,
-    vscf_api_tag_AUTH_DECRYPT,
-    vscf_api_tag_AUTH_ENCRYPT,
-    vscf_api_tag_CIPHER,
-    vscf_api_tag_CIPHER_AUTH,
-    vscf_api_tag_CIPHER_AUTH_INFO,
-    vscf_api_tag_CIPHER_INFO,
-    vscf_api_tag_COMPUTE_SHARED_KEY,
-    vscf_api_tag_DECRYPT,
-    vscf_api_tag_DECRYPT2,
-    vscf_api_tag_ENCRYPT,
-    vscf_api_tag_ENCRYPT2,
-    vscf_api_tag_EX_KDF,
-    vscf_api_tag_EXPORT_PRIVATE_KEY,
-    vscf_api_tag_EXPORT_PUBLIC_KEY,
-    vscf_api_tag_GENERATE_PRIVATE_KEY,
-    vscf_api_tag_HASH,
-    vscf_api_tag_HASH_INFO,
-    vscf_api_tag_HASH_STREAM,
-    vscf_api_tag_HMAC,
-    vscf_api_tag_HMAC_INFO,
-    vscf_api_tag_HMAC_STREAM,
-    vscf_api_tag_IMPORT_PRIVATE_KEY,
-    vscf_api_tag_IMPORT_PUBLIC_KEY,
-    vscf_api_tag_KDF,
-    vscf_api_tag_KEY,
-    vscf_api_tag_KEY_IO,
-    vscf_api_tag_PRIVATE_KEY,
-    vscf_api_tag_PUBLIC_KEY,
-    vscf_api_tag_SIGN,
-    vscf_api_tag_VERIFY,
-    vscf_api_tag_END
-};
-typedef enum vscf_api_tag_t vscf_api_tag_t;
+typedef struct vscf_generate_private_key_api_t vscf_generate_private_key_api_t;
 
 //
-//  Generic type for any 'API' object.
+//  Generate new private key.
+//  Note, this operation can be slow.
 //
-typedef struct vscf_api_t vscf_api_t;
+VSCF_PUBLIC vscf_error_t
+vscf_generate_private_key(vscf_impl_t *impl);
+
+//
+//  Return generate private key API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_generate_private_key_api_t *
+vscf_generate_private_key_api(vscf_impl_t *impl);
+
+//
+//  Check if given object implements interface 'generate private key'.
+//
+VSCF_PUBLIC bool
+vscf_generate_private_key_is_implemented(vscf_impl_t *impl);
 
 
 // --------------------------------------------------------------------------
@@ -127,5 +107,5 @@ typedef struct vscf_api_t vscf_api_t;
 
 
 //  @footer
-#endif // VSCF_API_H_INCLUDED
+#endif // VSCF_GENERATE_PRIVATE_KEY_H_INCLUDED
 //  @end

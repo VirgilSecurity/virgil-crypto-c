@@ -61,6 +61,20 @@ option(VSCF_HMAC "Enable interface 'hmac'." ON)
 option(VSCF_HMAC_INFO "Enable interface 'hmac info'." ON)
 option(VSCF_HMAC_STREAM "Enable interface 'hmac stream'." ON)
 option(VSCF_KDF "Enable interface 'kdf'." ON)
+option(VSCF_KEY "Enable interface 'key'." ON)
+option(VSCF_PUBLIC_KEY "Enable interface 'public key'." ON)
+option(VSCF_PRIVATE_KEY "Enable interface 'private key'." ON)
+option(VSCF_KEY_IO "Enable interface 'key io'." ON)
+option(VSCF_ENCRYPT2 "Enable interface 'encrypt2'." ON)
+option(VSCF_DECRYPT2 "Enable interface 'decrypt2'." ON)
+option(VSCF_SIGN "Enable interface 'sign'." ON)
+option(VSCF_VERIFY "Enable interface 'verify'." ON)
+option(VSCF_GENERATE_PRIVATE_KEY "Enable interface 'generate private key'." ON)
+option(VSCF_COMPUTE_SHARED_KEY "Enable interface 'compute shared key'." ON)
+option(VSCF_EXPORT_PUBLIC_KEY "Enable interface 'export public key'." ON)
+option(VSCF_EXPORT_PRIVATE_KEY "Enable interface 'export private key'." ON)
+option(VSCF_IMPORT_PUBLIC_KEY "Enable interface 'import public key'." ON)
+option(VSCF_IMPORT_PRIVATE_KEY "Enable interface 'import private key'." ON)
 option(VSCF_HMAC224 "Enable implementation 'hmac224'." ON)
 option(VSCF_HMAC256 "Enable implementation 'hmac256'." ON)
 option(VSCF_HMAC384 "Enable implementation 'hmac384'." ON)
@@ -90,6 +104,20 @@ mark_as_advanced(
         VSCF_HMAC_INFO
         VSCF_HMAC_STREAM
         VSCF_KDF
+        VSCF_KEY
+        VSCF_PUBLIC_KEY
+        VSCF_PRIVATE_KEY
+        VSCF_KEY_IO
+        VSCF_ENCRYPT2
+        VSCF_DECRYPT2
+        VSCF_SIGN
+        VSCF_VERIFY
+        VSCF_GENERATE_PRIVATE_KEY
+        VSCF_COMPUTE_SHARED_KEY
+        VSCF_EXPORT_PUBLIC_KEY
+        VSCF_EXPORT_PRIVATE_KEY
+        VSCF_IMPORT_PUBLIC_KEY
+        VSCF_IMPORT_PRIVATE_KEY
         VSCF_HMAC224
         VSCF_HMAC256
         VSCF_HMAC384
@@ -190,6 +218,24 @@ if(VSCF_HMAC_STREAM AND NOT VSCF_HMAC_INFO)
     message("--")
     message("Feature VSCF_HMAC_STREAM depends on the feature:")
     message("     VSCF_HMAC_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PUBLIC_KEY AND NOT VSCF_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PUBLIC_KEY depends on the feature:")
+    message("     VSCF_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PRIVATE_KEY AND NOT VSCF_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PRIVATE_KEY depends on the feature:")
+    message("     VSCF_KEY - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
