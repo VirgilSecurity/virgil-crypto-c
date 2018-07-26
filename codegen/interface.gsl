@@ -58,7 +58,7 @@ endfunction
 function interface_resolve_constant (constant, parent)
     check_arguments (my, "constant, parent", my)
 
-    #   Do nothing at this moment.
+    my.constant.type ?= "size"
 endfunction
 
 # ---------------------------------------------------------------------------
