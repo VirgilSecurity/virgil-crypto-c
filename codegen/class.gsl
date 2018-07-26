@@ -51,6 +51,7 @@
 gsl from "common.gsl"
 gsl from "component.gsl"
 gsl from "meta.gsl"
+gsl from "project_common.gsl"
 
 # ---------------------------------------------------------------------------
 #   Return class as shortened XML string with required attributes.
@@ -167,10 +168,13 @@ function class_resolve (class, project)
     class_resolve_attr_c_prefix (my.class, my.project)
     class_resolve_attr_project (my.class, my.project)
 
+    project_common_resolve_dependecies_for (my.class)
+
     for my.class.method
         _B18_resolve_method_attr_context (method, my.class)
     endfor
 endfunction
+
 
 # ---------------------------------------------------------------------------
 #   Resolve all 'class' entries within 'source'
