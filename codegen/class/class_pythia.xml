@@ -1,9 +1,6 @@
 <class name="pythia" context="private">
     Provide Pythia implementation based on the Virgil Security.
 
-    <c_include file="virgil/common/vsc_data.h" scope="public" is_system="1"/>
-    <c_include file="virgil/common/vsc_buffer.h" scope="public" is_system="1"/>
-
     <c_include file="pythia/pythia_init.h" scope="private" is_system="1"/>
     <c_include file="pythia/pythia_wrapper.h" scope="private" is_system="1"/>
     <c_include file="pythia/pythia_buf_sizes.h" scope="private" is_system="1"/>
