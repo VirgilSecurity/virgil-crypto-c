@@ -207,7 +207,7 @@ function _L23_add_stateful_methods (interface, destination, meta)
 
         component_create_argument_impl (my.proxy_method, my.meta)
 
-        my.has_return = count (method.[return], defined (type) & type <> "nothing")
+        my.has_return = count (method.[return], ! string_in (0.type ?, "nothing"))
         my.callback = "$(my.api_name:)->$(c_format_callback_name (method.name))"
         my.callback_parameters = _L23_format_proxy_arguments (my.proxy_method, string_indent (my.callback, 1), ";")
 
@@ -242,7 +242,7 @@ function _L23_add_stateless_methods (interface, destination, meta)
         my.api_name = ".(_argument_$(my.names.c_interface_struct_api:))"
         my.api_type = my.refs.c_interface_struct_api
 
-        my.has_return = count (method.[return], defined (type) & type <> "nothing")
+        my.has_return = count (method.[return], ! string_in (0.type ?, "nothing"))
         my.callback = "$(my.api_name:)->$(c_format_callback_name (method.name))"
         my.callback_parameters = _L23_format_proxy_arguments (my.proxy_method, string_indent (my.callback, 1), ";")
 
