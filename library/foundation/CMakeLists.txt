@@ -41,6 +41,14 @@ project(virgil_crypto_c_foundation VERSION 0.1.0 LANGUAGES C)
 # ---------------------------------------------------------------------------
 
 #
+# Virgil Security Library Common
+#
+if(NOT TARGET vsc::common)
+    message(FATAL_ERROR
+            "Required library 'Virgil Security Crypto Common' is not found - looking for target 'vsc::common'.")
+endif()
+
+#
 # MbedTLS
 #
 if(NOT TARGET mbed::crypto)
@@ -78,7 +86,7 @@ target_include_directories(foundation
 #
 # Link to dependencies
 #
-target_link_libraries(foundation PUBLIC mbed::crypto)
+target_link_libraries(foundation PUBLIC vsc::common mbed::crypto)
 
 #
 # Define specific compilation and linkage flags.
