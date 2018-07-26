@@ -67,6 +67,21 @@
     <interface name="hmac stream"/>
     <interface name="kdf"/>
 
+    <interface name="key"/>
+    <interface name="public key"/>
+    <interface name="private key"/>
+    <interface name="key io"/>
+    <interface name="encrypt2"/>
+    <interface name="decrypt2"/>
+    <interface name="sign"/>
+    <interface name="verify"/>
+    <interface name="generate private key"/>
+    <interface name="compute shared key"/>
+    <interface name="export public key"/>
+    <interface name="export private key"/>
+    <interface name="import public key"/>
+    <interface name="import private key"/>
+
     <module name="assert"/>
     <module name="error"/>
     <module name="library"/>

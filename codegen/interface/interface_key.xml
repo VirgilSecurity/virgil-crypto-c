@@ -1,0 +1,11 @@
+<interface name="key">
+    Common information of
+
+    <constant name="key len">
+        Length of the key in bytes.
+    </constant>
+
+    <constant name="key bits">
+        Length of the key in bits.
+    </constant>
+</interface>

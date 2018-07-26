@@ -1,0 +1,20 @@
+<interface name="decrypt2">
+    Provide interface for data encryption.
+
+    <method name="decrypt" context="impl">
+        Decrypt given data.
+
+        <argument name="data" class="data"/>
+
+        <argument name="out" class="buffer"/>
+
+        <return type="error"/>
+    </method>
+
+
+    <method name="decrypted len" context="impl">
+        Calculate required buffer length to hold the decrypted data.
+
+        <return type="size"/>
+    </method>
+</interface>

@@ -46,15 +46,18 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Interface 'compute shared key' API.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_API_H_INCLUDED
-#define VSCF_API_H_INCLUDED
+#ifndef VSCF_COMPUTE_SHARED_KEY_API_H_INCLUDED
+#define VSCF_COMPUTE_SHARED_KEY_API_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_error.h"
+#include "vscf_api.h"
+#include "vscf_impl.h"
+
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -70,48 +73,36 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Callback. Compute shared key for 2 asymmetric keys.
+//          Note, shared key can be used only for symmetric cryptography.
 //
-enum vscf_api_tag_t {
-    vscf_api_tag_BEGIN = 0,
-    vscf_api_tag_AUTH_DECRYPT,
-    vscf_api_tag_AUTH_ENCRYPT,
-    vscf_api_tag_CIPHER,
-    vscf_api_tag_CIPHER_AUTH,
-    vscf_api_tag_CIPHER_AUTH_INFO,
-    vscf_api_tag_CIPHER_INFO,
-    vscf_api_tag_COMPUTE_SHARED_KEY,
-    vscf_api_tag_DECRYPT,
-    vscf_api_tag_DECRYPT2,
-    vscf_api_tag_ENCRYPT,
-    vscf_api_tag_ENCRYPT2,
-    vscf_api_tag_EX_KDF,
-    vscf_api_tag_EXPORT_PRIVATE_KEY,
-    vscf_api_tag_EXPORT_PUBLIC_KEY,
-    vscf_api_tag_GENERATE_PRIVATE_KEY,
-    vscf_api_tag_HASH,
-    vscf_api_tag_HASH_INFO,
-    vscf_api_tag_HASH_STREAM,
-    vscf_api_tag_HMAC,
-    vscf_api_tag_HMAC_INFO,
-    vscf_api_tag_HMAC_STREAM,
-    vscf_api_tag_IMPORT_PRIVATE_KEY,
-    vscf_api_tag_IMPORT_PUBLIC_KEY,
-    vscf_api_tag_KDF,
-    vscf_api_tag_KEY,
-    vscf_api_tag_KEY_IO,
-    vscf_api_tag_PRIVATE_KEY,
-    vscf_api_tag_PUBLIC_KEY,
-    vscf_api_tag_SIGN,
-    vscf_api_tag_VERIFY,
-    vscf_api_tag_END
-};
-typedef enum vscf_api_tag_t vscf_api_tag_t;
+typedef vscf_error_t (*vscf_compute_shared_key_api_compute_shared_key_fn)(vscf_impl_t *impl,
+        const vscf_impl_t *public_key, vsc_buffer_t *shared_key);
 
 //
-//  Generic type for any 'API' object.
+//  Callback. Return number of bytes required to hold shared key.
 //
-typedef struct vscf_api_t vscf_api_t;
+typedef size_t (*vscf_compute_shared_key_api_shared_key_len_fn)(vscf_impl_t *impl);
+
+//
+//  Contains API requirements of the interface 'compute shared key'.
+//
+struct vscf_compute_shared_key_api_t {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'compute_shared_key' MUST be equal to the 'vscf_api_tag_COMPUTE_SHARED_KEY'.
+    //
+    vscf_api_tag_t api_tag;
+    //
+    //  Compute shared key for 2 asymmetric keys.
+    //  Note, shared key can be used only for symmetric cryptography.
+    //
+    vscf_compute_shared_key_api_compute_shared_key_fn compute_shared_key_cb;
+    //
+    //  Return number of bytes required to hold shared key.
+    //
+    vscf_compute_shared_key_api_shared_key_len_fn shared_key_len_cb;
+};
 
 
 // --------------------------------------------------------------------------
@@ -127,5 +118,5 @@ typedef struct vscf_api_t vscf_api_t;
 
 
 //  @footer
-#endif // VSCF_API_H_INCLUDED
+#endif // VSCF_COMPUTE_SHARED_KEY_API_H_INCLUDED
 //  @end

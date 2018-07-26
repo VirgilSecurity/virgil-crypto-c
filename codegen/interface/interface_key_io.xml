@@ -1,0 +1,57 @@
+<interface name="key io">
+    Provide interface to for key marshaling.
+
+    <method name="generic error">
+        Return last occurred error.
+
+        <return type="error"/>
+    </method>
+
+
+    <method name="read public key">
+        Read public key object.
+
+        <argument name="data" class="data"/>
+
+        <return class="impl" access="disown"/>
+    </method>
+
+
+    <method name="write public key">
+        Write public key object.
+
+        <argument name="out" class="buffer"/>
+    </method>
+
+
+    <method name="read private key">
+        Read private key object.
+
+        <argument name="data" class="data"/>
+
+        <return class="impl" access="disown"/>
+    </method>
+
+
+    <method name="write private key">
+        Write private key object.
+
+        <argument name="out" class="buffer"/>
+    </method>
+
+
+    <method name="calclulate public key out len">
+        Return length in bytes required to hold written public key.
+        Note, this is time consuming operation.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="calclulate private key out len">
+        Return length in bytes required to hold written private key.
+        Note, this is time consuming operation.
+
+        <return type="size"/>
+    </method>
+</interface>

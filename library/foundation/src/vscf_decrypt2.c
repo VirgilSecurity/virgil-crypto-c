@@ -36,6 +36,12 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Provide interface for data encryption.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,24 +49,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_API_H_INCLUDED
-#define VSCF_API_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_error.h"
+#include "vscf_decrypt2.h"
+#include "vscf_assert.h"
+#include "vscf_decrypt2_api.h"
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -70,62 +62,57 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Decrypt given data.
 //
-enum vscf_api_tag_t {
-    vscf_api_tag_BEGIN = 0,
-    vscf_api_tag_AUTH_DECRYPT,
-    vscf_api_tag_AUTH_ENCRYPT,
-    vscf_api_tag_CIPHER,
-    vscf_api_tag_CIPHER_AUTH,
-    vscf_api_tag_CIPHER_AUTH_INFO,
-    vscf_api_tag_CIPHER_INFO,
-    vscf_api_tag_COMPUTE_SHARED_KEY,
-    vscf_api_tag_DECRYPT,
-    vscf_api_tag_DECRYPT2,
-    vscf_api_tag_ENCRYPT,
-    vscf_api_tag_ENCRYPT2,
-    vscf_api_tag_EX_KDF,
-    vscf_api_tag_EXPORT_PRIVATE_KEY,
-    vscf_api_tag_EXPORT_PUBLIC_KEY,
-    vscf_api_tag_GENERATE_PRIVATE_KEY,
-    vscf_api_tag_HASH,
-    vscf_api_tag_HASH_INFO,
-    vscf_api_tag_HASH_STREAM,
-    vscf_api_tag_HMAC,
-    vscf_api_tag_HMAC_INFO,
-    vscf_api_tag_HMAC_STREAM,
-    vscf_api_tag_IMPORT_PRIVATE_KEY,
-    vscf_api_tag_IMPORT_PUBLIC_KEY,
-    vscf_api_tag_KDF,
-    vscf_api_tag_KEY,
-    vscf_api_tag_KEY_IO,
-    vscf_api_tag_PRIVATE_KEY,
-    vscf_api_tag_PUBLIC_KEY,
-    vscf_api_tag_SIGN,
-    vscf_api_tag_VERIFY,
-    vscf_api_tag_END
-};
-typedef enum vscf_api_tag_t vscf_api_tag_t;
+VSCF_PUBLIC vscf_error_t
+vscf_decrypt2_decrypt(vscf_impl_t *impl, const vsc_data_t data, vsc_buffer_t *out) {
+
+    const vscf_decrypt2_api_t *decrypt2_api = vscf_decrypt2_api (impl);
+    VSCF_ASSERT_PTR (decrypt2_api);
+
+    VSCF_ASSERT_PTR (decrypt2_api->decrypt_cb);
+    return decrypt2_api->decrypt_cb (impl, data, out);
+}
 
 //
-//  Generic type for any 'API' object.
+//  Calculate required buffer length to hold the decrypted data.
 //
-typedef struct vscf_api_t vscf_api_t;
+VSCF_PUBLIC size_t
+vscf_decrypt2_decrypted_len(vscf_impl_t *impl) {
+
+    const vscf_decrypt2_api_t *decrypt2_api = vscf_decrypt2_api (impl);
+    VSCF_ASSERT_PTR (decrypt2_api);
+
+    VSCF_ASSERT_PTR (decrypt2_api->decrypted_len_cb);
+    return decrypt2_api->decrypted_len_cb (impl);
+}
+
+//
+//  Return decrypt2 API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_decrypt2_api_t *
+vscf_decrypt2_api(vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_DECRYPT2);
+    return (const vscf_decrypt2_api_t *) api;
+}
+
+//
+//  Check if given object implements interface 'decrypt2'.
+//
+VSCF_PUBLIC bool
+vscf_decrypt2_is_implemented(vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    return vscf_impl_api (impl, vscf_api_tag_DECRYPT2) != NULL;
+}
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_API_H_INCLUDED
 //  @end
