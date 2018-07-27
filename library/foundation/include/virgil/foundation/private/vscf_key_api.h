@@ -71,6 +71,16 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Callback. Length of the key in bytes.
+//
+typedef size_t (*vscf_key_api_key_len_fn)(vscf_impl_t *impl);
+
+//
+//  Callback. Length of the key in bits.
+//
+typedef size_t (*vscf_key_api_key_bitlen_fn)(vscf_impl_t *impl);
+
+//
 //  Contains API requirements of the interface 'key'.
 //
 struct vscf_key_api_t {
@@ -82,11 +92,11 @@ struct vscf_key_api_t {
     //
     //  Length of the key in bytes.
     //
-    size_t key_len;
+    vscf_key_api_key_len_fn key_len_cb;
     //
     //  Length of the key in bits.
     //
-    size_t key_bits;
+    vscf_key_api_key_bitlen_fn key_bitlen_cb;
 };
 
 
