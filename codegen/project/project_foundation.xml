@@ -66,6 +66,7 @@
     <interface name="hmac info"/>
     <interface name="hmac stream"/>
     <interface name="kdf"/>
+    <interface name="random"/>
 
     <interface name="key"/>
     <interface name="public key"/>

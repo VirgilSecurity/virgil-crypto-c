@@ -61,6 +61,7 @@ option(VSCF_HMAC "Enable interface 'hmac'." ON)
 option(VSCF_HMAC_INFO "Enable interface 'hmac info'." ON)
 option(VSCF_HMAC_STREAM "Enable interface 'hmac stream'." ON)
 option(VSCF_KDF "Enable interface 'kdf'." ON)
+option(VSCF_RANDOM "Enable interface 'random'." ON)
 option(VSCF_KEY "Enable interface 'key'." ON)
 option(VSCF_PUBLIC_KEY "Enable interface 'public key'." ON)
 option(VSCF_PRIVATE_KEY "Enable interface 'private key'." ON)
@@ -104,6 +105,7 @@ mark_as_advanced(
         VSCF_HMAC_INFO
         VSCF_HMAC_STREAM
         VSCF_KDF
+        VSCF_RANDOM
         VSCF_KEY
         VSCF_PUBLIC_KEY
         VSCF_PRIVATE_KEY
