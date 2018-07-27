@@ -85,6 +85,7 @@ option(VSCF_SHA256 "Enable implementation 'sha256'." ON)
 option(VSCF_SHA384 "Enable implementation 'sha384'." ON)
 option(VSCF_SHA512 "Enable implementation 'sha512'." ON)
 option(VSCF_AES256_GCM "Enable implementation 'aes256 gcm'." ON)
+option(VSCF_RSA_PUBLIC_KEY "Enable implementation 'rsa public key'." ON)
 option(VSCF_HKDF "Enable implementation 'hkdf'." ON)
 option(VSCF_KDF1 "Enable implementation 'kdf1'." ON)
 option(VSCF_KDF2 "Enable implementation 'kdf2'." ON)
@@ -129,6 +130,7 @@ mark_as_advanced(
         VSCF_SHA384
         VSCF_SHA512
         VSCF_AES256_GCM
+        VSCF_RSA_PUBLIC_KEY
         VSCF_HKDF
         VSCF_KDF1
         VSCF_KDF2
@@ -481,6 +483,33 @@ if(VSCF_AES256_GCM AND NOT MBEDTLS_CIPHER_C)
     message("--")
     message("Feature VSCF_AES256_GCM depends on the feature:")
     message("     MBEDTLS_CIPHER_C - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_RSA_PUBLIC_KEY AND NOT MBEDTLS_RSA_C)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_RSA_PUBLIC_KEY depends on the feature:")
+    message("     MBEDTLS_RSA_C - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_RSA_PUBLIC_KEY AND NOT VSCF_RANDOM)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_RSA_PUBLIC_KEY depends on the feature:")
+    message("     VSCF_RANDOM - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_RSA_PUBLIC_KEY AND NOT VSCF_RANDOM)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_RSA_PUBLIC_KEY depends on the feature:")
+    message("     VSCF_RANDOM - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

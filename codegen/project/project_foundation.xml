@@ -89,5 +89,6 @@
     <module name="memory"/>
 
     <implementor name="mbedtls"/>
+    <implementor name="mbedtls pk"/>
     <implementor name="virgil"/>
 </project>
