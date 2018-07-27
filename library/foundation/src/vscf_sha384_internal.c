@@ -238,7 +238,7 @@ vscf_sha384_delete(vscf_sha384_impl_t *sha384_impl) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_sha384_destroy(vscf_sha384_impl_t * *sha384_impl_ref) {
+vscf_sha384_destroy(vscf_sha384_impl_t **sha384_impl_ref) {
 
     VSCF_ASSERT_PTR (sha384_impl_ref);
 

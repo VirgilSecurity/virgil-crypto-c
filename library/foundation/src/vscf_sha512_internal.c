@@ -238,7 +238,7 @@ vscf_sha512_delete(vscf_sha512_impl_t *sha512_impl) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_sha512_destroy(vscf_sha512_impl_t * *sha512_impl_ref) {
+vscf_sha512_destroy(vscf_sha512_impl_t **sha512_impl_ref) {
 
     VSCF_ASSERT_PTR (sha512_impl_ref);
 

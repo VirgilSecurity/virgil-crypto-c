@@ -135,7 +135,7 @@ vscf_hmac512_delete(vscf_hmac512_impl_t *hmac512_impl);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_hmac512_destroy(vscf_hmac512_impl_t * *hmac512_impl_ref);
+vscf_hmac512_destroy(vscf_hmac512_impl_t **hmac512_impl_ref);
 
 //
 //  Returns instance of the implemented interface 'hmac info'.

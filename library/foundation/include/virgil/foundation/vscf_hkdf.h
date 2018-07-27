@@ -126,7 +126,7 @@ vscf_hkdf_delete(vscf_hkdf_impl_t *hkdf_impl);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_hkdf_destroy(vscf_hkdf_impl_t * *hkdf_impl_ref);
+vscf_hkdf_destroy(vscf_hkdf_impl_t **hkdf_impl_ref);
 
 //
 //  Setup dependency to the interface 'hmac stream' and keep ownership.
@@ -138,7 +138,7 @@ vscf_hkdf_use_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hmac);
 //  Setup dependency to the interface 'hmac stream' and transfer ownership.
 //
 VSCF_PUBLIC void
-vscf_hkdf_take_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t * *hmac_ref);
+vscf_hkdf_take_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t **hmac_ref);
 
 //
 //  Calculate hash over given data.

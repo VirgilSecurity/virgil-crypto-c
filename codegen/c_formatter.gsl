@@ -80,6 +80,7 @@ function c_derive_instance_type (c_instance)
     endif
 
     my.type = string.replace (my.type, "const*|const *")
+    my.type = string.replace (my.type, "* *|**")
 
     return my.type
 endfunction

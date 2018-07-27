@@ -242,7 +242,7 @@ vscf_hmac256_delete(vscf_hmac256_impl_t *hmac256_impl) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_hmac256_destroy(vscf_hmac256_impl_t * *hmac256_impl_ref) {
+vscf_hmac256_destroy(vscf_hmac256_impl_t **hmac256_impl_ref) {
 
     VSCF_ASSERT_PTR (hmac256_impl_ref);
 

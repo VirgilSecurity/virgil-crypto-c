@@ -135,7 +135,7 @@ vscf_sha512_delete(vscf_sha512_impl_t *sha512_impl);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_sha512_destroy(vscf_sha512_impl_t * *sha512_impl_ref);
+vscf_sha512_destroy(vscf_sha512_impl_t **sha512_impl_ref);
 
 //
 //  Returns instance of the implemented interface 'hash info'.
