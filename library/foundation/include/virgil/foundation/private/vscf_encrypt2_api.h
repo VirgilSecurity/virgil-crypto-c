@@ -81,7 +81,7 @@ typedef vscf_error_t (*vscf_encrypt2_api_encrypt_fn)(vscf_impl_t *impl, const vs
 //
 //  Callback. Calculate required buffer length to hold the encrypted data.
 //
-typedef size_t (*vscf_encrypt2_api_encrypted_len_fn)(vscf_impl_t *impl);
+typedef size_t (*vscf_encrypt2_api_encrypted_len_fn)(vscf_impl_t *impl, size_t data_len);
 
 //
 //  Contains API requirements of the interface 'encrypt2'.

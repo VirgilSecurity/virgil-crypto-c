@@ -78,13 +78,13 @@ vscf_encrypt2_encrypt(vscf_impl_t *impl, const vsc_data_t data, vsc_buffer_t *ou
 //  Calculate required buffer length to hold the encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_encrypt2_encrypted_len(vscf_impl_t *impl) {
+vscf_encrypt2_encrypted_len(vscf_impl_t *impl, size_t data_len) {
 
     const vscf_encrypt2_api_t *encrypt2_api = vscf_encrypt2_api (impl);
     VSCF_ASSERT_PTR (encrypt2_api);
 
     VSCF_ASSERT_PTR (encrypt2_api->encrypted_len_cb);
-    return encrypt2_api->encrypted_len_cb (impl);
+    return encrypt2_api->encrypted_len_cb (impl, data_len);
 }
 
 //

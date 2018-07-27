@@ -15,6 +15,8 @@
     <method name="decrypted len" context="impl">
         Calculate required buffer length to hold the decrypted data.
 
+        <argument name="data len" type="size"/>
+
         <return type="size"/>
     </method>
 </interface>
