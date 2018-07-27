@@ -238,7 +238,7 @@ vscf_sha256_delete(vscf_sha256_impl_t *sha256_impl) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_sha256_destroy(vscf_sha256_impl_t * *sha256_impl_ref) {
+vscf_sha256_destroy(vscf_sha256_impl_t **sha256_impl_ref) {
 
     VSCF_ASSERT_PTR (sha256_impl_ref);
 

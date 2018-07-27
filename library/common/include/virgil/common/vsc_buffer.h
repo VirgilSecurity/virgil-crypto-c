@@ -116,7 +116,7 @@ vsc_buffer_delete(vsc_buffer_t *buffer_ctx);
 //  This is a reverse action of the function 'vsc_buffer_new ()'.
 //
 VSC_PUBLIC void
-vsc_buffer_destroy(vsc_buffer_t * *buffer_ctx_ref);
+vsc_buffer_destroy(vsc_buffer_t **buffer_ctx_ref);
 
 //
 //  Allocates inner buffer with a given capacity.

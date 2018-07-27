@@ -126,7 +126,7 @@ vscf_kdf1_delete(vscf_kdf1_impl_t *kdf1_impl);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_kdf1_destroy(vscf_kdf1_impl_t * *kdf1_impl_ref);
+vscf_kdf1_destroy(vscf_kdf1_impl_t **kdf1_impl_ref);
 
 //
 //  Setup dependency to the interface 'hash stream' and keep ownership.
@@ -138,7 +138,7 @@ vscf_kdf1_use_hash_stream(vscf_kdf1_impl_t *kdf1_impl, vscf_impl_t *hash);
 //  Setup dependency to the interface 'hash stream' and transfer ownership.
 //
 VSCF_PUBLIC void
-vscf_kdf1_take_hash_stream(vscf_kdf1_impl_t *kdf1_impl, vscf_impl_t * *hash_ref);
+vscf_kdf1_take_hash_stream(vscf_kdf1_impl_t *kdf1_impl, vscf_impl_t **hash_ref);
 
 //
 //  Calculate hash over given data.

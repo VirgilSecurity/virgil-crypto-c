@@ -144,7 +144,7 @@ vscf_aes256_gcm_delete(vscf_aes256_gcm_impl_t *aes256_gcm_impl);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_aes256_gcm_destroy(vscf_aes256_gcm_impl_t * *aes256_gcm_impl_ref);
+vscf_aes256_gcm_destroy(vscf_aes256_gcm_impl_t **aes256_gcm_impl_ref);
 
 //
 //  Returns instance of the implemented interface 'cipher info'.

@@ -134,7 +134,7 @@ vscp_pythia_delete(vscp_pythia_t *pythia_ctx) {
 //  This is a reverse action of the function 'vscp_pythia_new ()'.
 //
 VSCP_PUBLIC void
-vscp_pythia_destroy(vscp_pythia_t * *pythia_ctx_ref) {
+vscp_pythia_destroy(vscp_pythia_t **pythia_ctx_ref) {
 
     VSCP_ASSERT_PTR(pythia_ctx_ref);
 

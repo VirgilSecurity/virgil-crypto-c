@@ -242,7 +242,7 @@ vscf_hmac384_delete(vscf_hmac384_impl_t *hmac384_impl) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_hmac384_destroy(vscf_hmac384_impl_t * *hmac384_impl_ref) {
+vscf_hmac384_destroy(vscf_hmac384_impl_t **hmac384_impl_ref) {
 
     VSCF_ASSERT_PTR (hmac384_impl_ref);
 
