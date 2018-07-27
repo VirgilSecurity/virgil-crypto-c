@@ -48,6 +48,8 @@
 #cmakedefine MBEDTLS_AES_C
 #cmakedefine MBEDTLS_GCM_C
 #cmakedefine MBEDTLS_MD_C
+#cmakedefine MBEDTLS_BIGNUM_C
+#cmakedefine MBEDTLS_RSA_C
 
 //
 //  Required by library vsc::pythia

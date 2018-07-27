@@ -16,6 +16,12 @@
 
     <feature name="MD C"/>
 
+    <feature name="BIGNUM C"/>
+
+    <feature name="RSA C">
+        <require feature="BIGNUM C"/>
+    </feature>
+
     <feature name="CTR_DRBG C">
         <require feature="ENTROPY C"/>
     </feature>
