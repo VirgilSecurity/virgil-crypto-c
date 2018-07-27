@@ -1,11 +1,16 @@
 <interface name="key">
-    Common information of
+    Common information about asymmetric key.
 
-    <constant name="key len">
+    <method name="key len">
         Length of the key in bytes.
-    </constant>
 
-    <constant name="key bits">
+        <return type="size"/>
+    </method>
+
+
+    <method name="key bitlen">
         Length of the key in bits.
-    </constant>
+
+        <return type="size"/>
+    </method>
 </interface>

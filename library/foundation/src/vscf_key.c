@@ -38,7 +38,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Common information of
+//  Common information about asymmetric key.
 // --------------------------------------------------------------------------
 
 
@@ -62,25 +62,29 @@
 // --------------------------------------------------------------------------
 
 //
-//  Returns constant 'key len'.
+//  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
-vscf_key_key_len(const vscf_key_api_t *key_api) {
+vscf_key_key_len(vscf_impl_t *impl) {
 
+    const vscf_key_api_t *key_api = vscf_key_api (impl);
     VSCF_ASSERT_PTR (key_api);
 
-    return key_api->key_len;
+    VSCF_ASSERT_PTR (key_api->key_len_cb);
+    return key_api->key_len_cb (impl);
 }
 
 //
-//  Returns constant 'key bits'.
+//  Length of the key in bits.
 //
 VSCF_PUBLIC size_t
-vscf_key_key_bits(const vscf_key_api_t *key_api) {
+vscf_key_key_bitlen(vscf_impl_t *impl) {
 
+    const vscf_key_api_t *key_api = vscf_key_api (impl);
     VSCF_ASSERT_PTR (key_api);
 
-    return key_api->key_bits;
+    VSCF_ASSERT_PTR (key_api->key_bitlen_cb);
+    return key_api->key_bitlen_cb (impl);
 }
 
 //
