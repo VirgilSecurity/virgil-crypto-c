@@ -656,9 +656,19 @@ endfunction
 function c_component_create_include (require, destination)
     check_arguments (my, "require, destination", my)
 
+    if ! has_one_of_attribute (my.require, "module, header")
+        return
+    endif
+
     new c_include to my.destination
-        .file = c_ref ("module_$(make_id (my.require.module))") + ".h"
-        .is_system = "0"
+        if defined (my.require.module)
+            .file = c_ref ("module_$(make_id (my.require.module))") + ".h"
+            .is_system = "0"
+
+        elsif defined (my.require.header)
+            .file = my.require.header
+            .is_system = "1"
+        endif
 
         c_component_resolve_include (c_include)
         c_component_map_attr_scope (c_include, my.require)
