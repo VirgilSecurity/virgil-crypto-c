@@ -67,6 +67,7 @@ target_compile_definitions(foundation
             "VSCF_HMAC_INFO=$<BOOL:${VSCF_HMAC_INFO}>"
             "VSCF_HMAC_STREAM=$<BOOL:${VSCF_HMAC_STREAM}>"
             "VSCF_KDF=$<BOOL:${VSCF_KDF}>"
+            "VSCF_RANDOM=$<BOOL:${VSCF_RANDOM}>"
             "VSCF_KEY=$<BOOL:${VSCF_KEY}>"
             "VSCF_PUBLIC_KEY=$<BOOL:${VSCF_PUBLIC_KEY}>"
             "VSCF_PRIVATE_KEY=$<BOOL:${VSCF_PRIVATE_KEY}>"
