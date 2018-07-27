@@ -285,6 +285,10 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
         endnew
     endfor
 
+    for my.impl.require where has_one_of_attribute (require, "module, header")
+        copy require to my.destination
+    endfor
+
     if _Z19_has_methods_with_context_impl (my.impl)
         new require to my.destination
             .module = my.names.implementation_module_impl
@@ -295,7 +299,6 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
             .module = my.names.implementation_module_internal
             .scope = "private"
         endnew
-
     endif
 endfunction
 
