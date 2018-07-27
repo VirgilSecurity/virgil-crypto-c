@@ -81,7 +81,7 @@ typedef vscf_error_t (*vscf_decrypt2_api_decrypt_fn)(vscf_impl_t *impl, const vs
 //
 //  Callback. Calculate required buffer length to hold the decrypted data.
 //
-typedef size_t (*vscf_decrypt2_api_decrypted_len_fn)(vscf_impl_t *impl);
+typedef size_t (*vscf_decrypt2_api_decrypted_len_fn)(vscf_impl_t *impl, size_t data_len);
 
 //
 //  Contains API requirements of the interface 'decrypt2'.

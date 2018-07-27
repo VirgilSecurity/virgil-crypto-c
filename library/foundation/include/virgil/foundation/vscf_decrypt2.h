@@ -87,7 +87,7 @@ vscf_decrypt2_decrypt(vscf_impl_t *impl, const vsc_data_t data, vsc_buffer_t *ou
 //  Calculate required buffer length to hold the decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_decrypt2_decrypted_len(vscf_impl_t *impl);
+vscf_decrypt2_decrypted_len(vscf_impl_t *impl, size_t data_len);
 
 //
 //  Return decrypt2 API, or NULL if it is not implemented.
