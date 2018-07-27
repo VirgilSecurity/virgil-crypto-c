@@ -1,0 +1,24 @@
+<implementor name="mbedtls pk" is_default="1">
+    Asymmetric cryptography implementation with ARM mbedTLS.
+
+    <implementation name="rsa public key">
+
+        <require library="mbedtls" feature="RSA C"/>
+        <require feature="random"/>
+        <require header="virgil/common/private/vsc_buffer_defs.h" scope="private"/>
+
+        <context>
+            <require header="mbedtls/rsa.h"/>
+            <property name="rsa ctx" class="mbedtls_rsa_context" access="readwrite" is_reference="0"/>
+        </context>
+
+        <dependency name="random" interface="random" type="impl"/>
+
+        <interface name="key"/>
+        <interface name="public key"/>
+        <interface name="encrypt2"/>
+        <interface name="verify"/>
+        <interface name="export public key"/>
+        <interface name="import public key"/>
+    </implementation>
+</implementor>
