@@ -82,6 +82,7 @@ target_compile_definitions(foundation
             "VSCF_EXPORT_PRIVATE_KEY=$<BOOL:${VSCF_EXPORT_PRIVATE_KEY}>"
             "VSCF_IMPORT_PUBLIC_KEY=$<BOOL:${VSCF_IMPORT_PUBLIC_KEY}>"
             "VSCF_IMPORT_PRIVATE_KEY=$<BOOL:${VSCF_IMPORT_PRIVATE_KEY}>"
+            "VSCF_ASN1_READER=$<BOOL:${VSCF_ASN1_READER}>"
             "VSCF_HMAC224=$<BOOL:${VSCF_HMAC224}>"
             "VSCF_HMAC256=$<BOOL:${VSCF_HMAC256}>"
             "VSCF_HMAC384=$<BOOL:${VSCF_HMAC384}>"
@@ -91,8 +92,10 @@ target_compile_definitions(foundation
             "VSCF_SHA384=$<BOOL:${VSCF_SHA384}>"
             "VSCF_SHA512=$<BOOL:${VSCF_SHA512}>"
             "VSCF_AES256_GCM=$<BOOL:${VSCF_AES256_GCM}>"
+            "VSCF_ASN1RD=$<BOOL:${VSCF_ASN1RD}>"
             "VSCF_RSA_PUBLIC_KEY=$<BOOL:${VSCF_RSA_PUBLIC_KEY}>"
             "VSCF_HKDF=$<BOOL:${VSCF_HKDF}>"
             "VSCF_KDF1=$<BOOL:${VSCF_KDF1}>"
             "VSCF_KDF2=$<BOOL:${VSCF_KDF2}>"
+            "VSCF_ASN1=$<BOOL:${VSCF_ASN1}>"
         )

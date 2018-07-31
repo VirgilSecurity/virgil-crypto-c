@@ -201,6 +201,40 @@
         <interface name="cipher auth"/>
     </implementation>
 
+
+    <implementation name="asn1rd">
+        This is MbedTLS implementation of ASN.1 reader.
+
+        <require library="mbedtls" feature="ASN1 PARSE C"/>
+        <require class="asn1" scope="private"/>
+        <require header="mbedtls/asn1.h" scope="private"/>
+        <require header="virgil/common/private/vsc_buffer_defs.h" scope="private"/>
+
+        <context>
+            <property name="curr" type="data" access="readwrite"/>
+            <property name="end" type="data"/>
+            <property name="error" type="error"/>
+        </context>
+
+        <interface name="asn1 reader"/>
+
+        <method name="mbedtls has error">
+            If given mbedtls code is equal to zero, then setup correspond error
+            to the context and return true, otherwise return false.
+
+            <argument name="code" type="integer"/>
+
+            <return type="boolean"/>
+        </method>
+
+        <method name="read tag data">
+            Read raw data of specific tag the to the buffer.
+
+            <argument name="tag" type="integer"/>
+            <argument name="buffer" class="buffer"/>
+        </method>
+    </implementation>
+
     <!--
     <implementation name="asn1_wr">
         This is MbedTLS implementation of ASN.1 writer.
@@ -210,15 +244,6 @@
 
 
         <interface name="asn1_writer"/>
-
-    </implementation>
-
-    <implementation name="asn1_rd">
-        This is MbedTLS implementation of ASN.1 reader.
-
-        <c_include file="mbedtls/asn1.h" is_system="1" scope="private"/>
-
-        <interface name="asn1_reader"/>
 
     </implementation>
 -->

@@ -46,12 +46,11 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  ASN.1 constants.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_API_H_INCLUDED
-#define VSCF_API_H_INCLUDED
+#ifndef VSCF_ASN1_H_INCLUDED
+#define VSCF_ASN1_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_error.h"
@@ -69,51 +68,28 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Enumerates all possible interfaces within crypto library.
-//
-enum vscf_api_tag_t {
-    vscf_api_tag_BEGIN = 0,
-    vscf_api_tag_ASN1_READER,
-    vscf_api_tag_AUTH_DECRYPT,
-    vscf_api_tag_AUTH_ENCRYPT,
-    vscf_api_tag_CIPHER,
-    vscf_api_tag_CIPHER_AUTH,
-    vscf_api_tag_CIPHER_AUTH_INFO,
-    vscf_api_tag_CIPHER_INFO,
-    vscf_api_tag_COMPUTE_SHARED_KEY,
-    vscf_api_tag_DECRYPT,
-    vscf_api_tag_DECRYPT2,
-    vscf_api_tag_ENCRYPT,
-    vscf_api_tag_ENCRYPT2,
-    vscf_api_tag_EX_KDF,
-    vscf_api_tag_EXPORT_PRIVATE_KEY,
-    vscf_api_tag_EXPORT_PUBLIC_KEY,
-    vscf_api_tag_GENERATE_PRIVATE_KEY,
-    vscf_api_tag_HASH,
-    vscf_api_tag_HASH_INFO,
-    vscf_api_tag_HASH_STREAM,
-    vscf_api_tag_HMAC,
-    vscf_api_tag_HMAC_INFO,
-    vscf_api_tag_HMAC_STREAM,
-    vscf_api_tag_IMPORT_PRIVATE_KEY,
-    vscf_api_tag_IMPORT_PUBLIC_KEY,
-    vscf_api_tag_KDF,
-    vscf_api_tag_KEY,
-    vscf_api_tag_KEY_IO,
-    vscf_api_tag_PRIVATE_KEY,
-    vscf_api_tag_PUBLIC_KEY,
-    vscf_api_tag_RANDOM,
-    vscf_api_tag_SIGN,
-    vscf_api_tag_VERIFY,
-    vscf_api_tag_END
+enum vscf_asn1_tag_t {
+    vscf_asn1_tag_BOOLEAN = 0x01,
+    vscf_asn1_tag_INTEGER = 0x02,
+    vscf_asn1_tag_BIT_STRING = 0x03,
+    vscf_asn1_tag_OCTET_STRING = 0x04,
+    vscf_asn1_tag_NULL = 0x05,
+    vscf_asn1_tag_OID = 0x06,
+    vscf_asn1_tag_UTF8_STRING = 0x0C,
+    vscf_asn1_tag_SEQUENCE = 0x10,
+    vscf_asn1_tag_SET = 0x11,
+    vscf_asn1_tag_PRINTABLE_STRING = 0x13,
+    vscf_asn1_tag_T61_STRING = 0x14,
+    vscf_asn1_tag_IA5_STRING = 0x16,
+    vscf_asn1_tag_UTC_TIME = 0x17,
+    vscf_asn1_tag_GENERALIZED_TIME = 0x18,
+    vscf_asn1_tag_UNIVERSAL_STRING = 0x1C,
+    vscf_asn1_tag_BMP_STRING = 0x1E,
+    vscf_asn1_tag_PRIMITIVE = 0x00,
+    vscf_asn1_tag_CONSTRUCTED = 0x20,
+    vscf_asn1_tag_CONTEXT_SPECIFIC = 0x80
 };
-typedef enum vscf_api_tag_t vscf_api_tag_t;
-
-//
-//  Generic type for any 'API' object.
-//
-typedef struct vscf_api_t vscf_api_t;
+typedef enum vscf_asn1_tag_t vscf_asn1_tag_t;
 
 
 // --------------------------------------------------------------------------
@@ -129,5 +105,5 @@ typedef struct vscf_api_t vscf_api_t;
 
 
 //  @footer
-#endif // VSCF_API_H_INCLUDED
+#endif // VSCF_ASN1_H_INCLUDED
 //  @end
