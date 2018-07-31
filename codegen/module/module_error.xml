@@ -12,12 +12,34 @@
             This error should not be returned if assertions is enabled.
         </constant>
 
+        <constant name="uninitialized" value="-2">
+            Can be used to define that not all context prerequisites are satisfied.
+            Note, this error should not be returned if assertions is enabled.
+        </constant>
+
+        <constant name="unhandled thirdparty error" value="-3">
+            Define that error code from one of third-party module was not handled.
+            Note, this error should not be returned if assertions is enabled.
+        </constant>
+
         <constant name="no memory" value="-100">
             Memory allocation failed.
         </constant>
 
+        <constant name="small buffer" value="-101">
+            Buffer capacity is not enaugh to hold result.
+        </constant>
+
         <constant name="auth failed" value="-201">
-            Authentication failed during decryption
+            Authentication failed during decryption.
+        </constant>
+
+        <constant name="out of data" value="-202">
+            Attempt to read data out of buffer bounds.
+        </constant>
+
+        <constant name="bad asn1" value="-203">
+            ASN.1 encoded data is corrupted.
         </constant>
     </enum>
 </module>
