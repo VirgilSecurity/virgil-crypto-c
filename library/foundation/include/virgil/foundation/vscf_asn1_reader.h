@@ -46,15 +46,20 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Provides interface to the ASN.1 reader.
+//  Note, that all "read" methods move reading position forward.
+//  Note, that all "get" do not change reading position.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_API_H_INCLUDED
-#define VSCF_API_H_INCLUDED
+#ifndef VSCF_ASN1_READER_H_INCLUDED
+#define VSCF_ASN1_READER_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_error.h"
+#include "vscf_impl.h"
+
+#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -70,50 +75,88 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Contains API requirements of the interface 'asn1 reader'.
 //
-enum vscf_api_tag_t {
-    vscf_api_tag_BEGIN = 0,
-    vscf_api_tag_ASN1_READER,
-    vscf_api_tag_AUTH_DECRYPT,
-    vscf_api_tag_AUTH_ENCRYPT,
-    vscf_api_tag_CIPHER,
-    vscf_api_tag_CIPHER_AUTH,
-    vscf_api_tag_CIPHER_AUTH_INFO,
-    vscf_api_tag_CIPHER_INFO,
-    vscf_api_tag_COMPUTE_SHARED_KEY,
-    vscf_api_tag_DECRYPT,
-    vscf_api_tag_DECRYPT2,
-    vscf_api_tag_ENCRYPT,
-    vscf_api_tag_ENCRYPT2,
-    vscf_api_tag_EX_KDF,
-    vscf_api_tag_EXPORT_PRIVATE_KEY,
-    vscf_api_tag_EXPORT_PUBLIC_KEY,
-    vscf_api_tag_GENERATE_PRIVATE_KEY,
-    vscf_api_tag_HASH,
-    vscf_api_tag_HASH_INFO,
-    vscf_api_tag_HASH_STREAM,
-    vscf_api_tag_HMAC,
-    vscf_api_tag_HMAC_INFO,
-    vscf_api_tag_HMAC_STREAM,
-    vscf_api_tag_IMPORT_PRIVATE_KEY,
-    vscf_api_tag_IMPORT_PUBLIC_KEY,
-    vscf_api_tag_KDF,
-    vscf_api_tag_KEY,
-    vscf_api_tag_KEY_IO,
-    vscf_api_tag_PRIVATE_KEY,
-    vscf_api_tag_PUBLIC_KEY,
-    vscf_api_tag_RANDOM,
-    vscf_api_tag_SIGN,
-    vscf_api_tag_VERIFY,
-    vscf_api_tag_END
-};
-typedef enum vscf_api_tag_t vscf_api_tag_t;
+typedef struct vscf_asn1_reader_api_t vscf_asn1_reader_api_t;
 
 //
-//  Generic type for any 'API' object.
+//  Reset all internal states and prepare to new ASN.1 reading operations.
 //
-typedef struct vscf_api_t vscf_api_t;
+VSCF_PUBLIC void
+vscf_asn1_reader_reset(vscf_impl_t *impl, const vsc_data_t data);
+
+//
+//  Return last error.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_asn1_reader_error(vscf_impl_t *impl);
+
+//
+//  Get tag of the current ASN.1 element.
+//
+VSCF_PUBLIC int
+vscf_asn1_reader_get_tag(vscf_impl_t *impl);
+
+//
+//  Get length of the current ASN.1 element.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_reader_get_len(vscf_impl_t *impl);
+
+//
+//  Read ASN.1 type: TAG.
+//  Return element length.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_reader_read_tag(vscf_impl_t *impl, int tag);
+
+//
+//  Read ASN.1 type: INTEGER.
+//
+VSCF_PUBLIC int
+vscf_asn1_reader_read_int(vscf_impl_t *impl);
+
+//
+//  Read ASN.1 type: BOOLEAN.
+//
+VSCF_PUBLIC bool
+vscf_asn1_reader_read_bool(vscf_impl_t *impl);
+
+//
+//  Read ASN.1 type: NULL.
+//
+VSCF_PUBLIC void
+vscf_asn1_reader_read_null(vscf_impl_t *impl);
+
+//
+//  Read ASN.1 type: OCTET STRING.
+//
+VSCF_PUBLIC void
+vscf_asn1_reader_read_octet_str(vscf_impl_t *impl, vsc_buffer_t *value);
+
+//
+//  Read ASN.1 type: UTF8String.
+//
+VSCF_PUBLIC void
+vscf_asn1_reader_read_utf8_str(vscf_impl_t *impl, vsc_buffer_t *value);
+
+//
+//  Read ASN.1 type: OID.
+//
+VSCF_PUBLIC void
+vscf_asn1_reader_read_oid(vscf_impl_t *impl, vsc_buffer_t *value);
+
+//
+//  Return asn1 reader API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_asn1_reader_api_t *
+vscf_asn1_reader_api(vscf_impl_t *impl);
+
+//
+//  Check if given object implements interface 'asn1 reader'.
+//
+VSCF_PUBLIC bool
+vscf_asn1_reader_is_implemented(vscf_impl_t *impl);
 
 
 // --------------------------------------------------------------------------
@@ -129,5 +172,5 @@ typedef struct vscf_api_t vscf_api_t;
 
 
 //  @footer
-#endif // VSCF_API_H_INCLUDED
+#endif // VSCF_ASN1_READER_H_INCLUDED
 //  @end

@@ -76,6 +76,7 @@ extern "C" {
 enum vscf_impl_tag_t {
     vscf_impl_tag_BEGIN = 0,
     vscf_impl_tag_AES256_GCM,
+    vscf_impl_tag_ASN1RD,
     vscf_impl_tag_HKDF,
     vscf_impl_tag_HMAC224,
     vscf_impl_tag_HMAC256,

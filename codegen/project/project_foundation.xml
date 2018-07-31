@@ -83,6 +83,10 @@
     <interface name="import public key"/>
     <interface name="import private key"/>
 
+    <interface name="asn1 reader"/>
+
+    <class name="asn1"/>
+
     <module name="assert"/>
     <module name="error"/>
     <module name="library"/>
