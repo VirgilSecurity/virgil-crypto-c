@@ -656,13 +656,17 @@ endfunction
 function c_component_create_include (require, destination)
     check_arguments (my, "require, destination", my)
 
-    if ! has_one_of_attribute (my.require, "module, header")
+    if ! has_one_of_attribute (my.require, "module, header, class")
         return
     endif
 
     new c_include to my.destination
         if defined (my.require.module)
             .file = c_ref ("module_$(make_id (my.require.module))") + ".h"
+            .is_system = "0"
+
+        elsif defined (my.require.class)
+            .file = c_ref ("module_$(make_id (my.require.class))") + ".h"
             .is_system = "0"
 
         elsif defined (my.require.header)

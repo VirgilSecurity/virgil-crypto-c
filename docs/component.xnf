@@ -310,6 +310,10 @@
         Required feature name.
     </attr>
 
+    <attr name="class">
+        Required class name.
+    </attr>
+
     <inherit entity="landlord"/>
     <inherit entity="scope"/>
 </entity>
