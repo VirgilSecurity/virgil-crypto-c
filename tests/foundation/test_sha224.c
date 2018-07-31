@@ -190,7 +190,7 @@ int
 main(void) {
     UNITY_BEGIN();
 
-#if VSCF_SHA224
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__impl__valid_arg__returns_not_null);
     RUN_TEST(test__impl__null_arg__call_assert);
 
