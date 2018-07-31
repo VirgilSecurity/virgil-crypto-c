@@ -88,8 +88,8 @@ vscf_hmac256_init_ctx(vscf_hmac256_impl_t *hmac256_impl) {
         return vscf_error_NO_MEMORY;
 
     default:
-        VSCF_ASSERT(result && "mbedtls error");
-        return vscf_error_BAD_ARGUMENTS;
+        VSCF_ASSERT(0 && "unhandled mbedtls error");
+        return vscf_error_UNHANDLED_THIRDPARTY_ERROR;
     }
 }
 

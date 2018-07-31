@@ -92,8 +92,8 @@ vscf_aes256_gcm_init_ctx(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
         return vscf_error_NO_MEMORY;
 
     default:
-        VSCF_ASSERT(result && "mbedtls error");
-        return vscf_error_BAD_ARGUMENTS;
+        VSCF_ASSERT(0 && "unhandled mbedtls error");
+        return vscf_error_UNHANDLED_THIRDPARTY_ERROR;
     }
 
     vscf_zeroize(aes256_gcm_impl->key, vscf_aes256_gcm_KEY_LEN);
