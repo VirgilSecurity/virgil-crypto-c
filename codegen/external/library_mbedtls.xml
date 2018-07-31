@@ -22,6 +22,8 @@
 
     <feature name="OID C"/>
 
+    <feature name="ASN1 PARSE C"/>
+
     <feature name="RSA C">
         <require feature="BIGNUM C"/>
         <require feature="OID C"/>

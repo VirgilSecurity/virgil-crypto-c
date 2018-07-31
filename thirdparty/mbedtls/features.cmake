@@ -54,6 +54,7 @@ option(MBEDTLS_MD_C "" ON)
 option(MBEDTLS_BIGNUM_C "" ON)
 option(MBEDTLS_PKCS1_V15 "" ON)
 option(MBEDTLS_OID_C "" ON)
+option(MBEDTLS_ASN1_PARSE_C "" ON)
 option(MBEDTLS_RSA_C "" ON)
 option(MBEDTLS_CTR_DRBG_C "" ON)
 option(MBEDTLS_ENTROPY_C "" ON)
@@ -71,6 +72,7 @@ mark_as_advanced(
         MBEDTLS_BIGNUM_C
         MBEDTLS_PKCS1_V15
         MBEDTLS_OID_C
+        MBEDTLS_ASN1_PARSE_C
         MBEDTLS_RSA_C
         MBEDTLS_CTR_DRBG_C
         MBEDTLS_ENTROPY_C
