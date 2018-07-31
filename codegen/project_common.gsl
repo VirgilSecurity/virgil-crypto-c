@@ -80,9 +80,10 @@ endfunction
 
 
 function _B13_add_class_require (class_name, destination)
-    check_arguments (my, "class_name. destination", my)
+    check_arguments (my, "class_name, destination", my)
 
-    if count (my.destination.require, require.project = "common" & require.feature = my.class_name)
+    if count (my.destination.require, string_equal(require.project ?, "common") & \
+            string_equal(require.feature ?, my.class_name))
         return
     endif
 
