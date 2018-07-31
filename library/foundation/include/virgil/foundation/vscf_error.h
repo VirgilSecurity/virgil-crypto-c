@@ -78,13 +78,35 @@ enum vscf_error_t {
     //
     vscf_error_BAD_ARGUMENTS = -1,
     //
+    //  Can be used to define that not all context prerequisites are satisfied.
+    //  Note, this error should not be returned if assertions is enabled.
+    //
+    vscf_error_UNINITIALIZED = -2,
+    //
+    //  Define that error code from one of third-party module was not handled.
+    //  Note, this error should not be returned if assertions is enabled.
+    //
+    vscf_error_UNHANDLED_THIRDPARTY_ERROR = -3,
+    //
     //  Memory allocation failed.
     //
     vscf_error_NO_MEMORY = -100,
     //
-    //  Authentication failed during decryption
+    //  Buffer capacity is not enaugh to hold result.
     //
-    vscf_error_AUTH_FAILED = -201
+    vscf_error_SMALL_BUFFER = -101,
+    //
+    //  Authentication failed during decryption.
+    //
+    vscf_error_AUTH_FAILED = -201,
+    //
+    //  Attempt to read data out of buffer bounds.
+    //
+    vscf_error_OUT_OF_DATA = -202,
+    //
+    //  ASN.1 encoded data is corrupted.
+    //
+    vscf_error_BAD_ASN1 = -203
 };
 typedef enum vscf_error_t vscf_error_t;
 
