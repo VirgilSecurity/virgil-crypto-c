@@ -53,6 +53,7 @@
 #cmakedefine MBEDTLS_OID_C
 #cmakedefine MBEDTLS_RSA_C
 #cmakedefine MBEDTLS_ASN1_PARSE_C
+#cmakedefine MBEDTLS_ASN1_WRITE_C
 
 //
 //  Required by library vsc::pythia
