@@ -62,6 +62,8 @@
 #include "vscf_export_public_key_api.h"
 #include "vscf_import_public_key_api.h"
 #include "vscf_random.h"
+#include "vscf_asn1_writer.h"
+#include "vscf_asn1_reader.h"
 //  @end
 
 
@@ -220,6 +222,18 @@ vscf_rsa_public_key_init(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
     rsa_public_key_impl->info = &info;
 
+    rsa_public_key_impl->random = NULL;
+
+    rsa_public_key_impl->asn1rd = NULL;
+
+    rsa_public_key_impl->asn1wr = NULL;
+
+    rsa_public_key_impl->is_owning_random = false;
+
+    rsa_public_key_impl->is_owning_asn1rd = false;
+
+    rsa_public_key_impl->is_owning_asn1wr = false;
+
     return vscf_rsa_public_key_init_ctx (rsa_public_key_impl);
 }
 
@@ -250,6 +264,34 @@ vscf_rsa_public_key_cleanup(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
         }
 
         rsa_public_key_impl->is_owning_random = 0;
+    }
+
+    //   Cleanup dependency: 'asn1rd'.
+    if (rsa_public_key_impl->asn1rd) {
+
+        if (rsa_public_key_impl->is_owning_asn1rd) {
+            vscf_impl_destroy (&rsa_public_key_impl->asn1rd);
+
+        } else {
+            vscf_impl_cleanup (rsa_public_key_impl->asn1rd);
+            rsa_public_key_impl->asn1rd = NULL;
+        }
+
+        rsa_public_key_impl->is_owning_asn1rd = 0;
+    }
+
+    //   Cleanup dependency: 'asn1wr'.
+    if (rsa_public_key_impl->asn1wr) {
+
+        if (rsa_public_key_impl->is_owning_asn1wr) {
+            vscf_impl_destroy (&rsa_public_key_impl->asn1wr);
+
+        } else {
+            vscf_impl_cleanup (rsa_public_key_impl->asn1wr);
+            rsa_public_key_impl->asn1wr = NULL;
+        }
+
+        rsa_public_key_impl->is_owning_asn1wr = 0;
     }
 
     vscf_rsa_public_key_cleanup_ctx (rsa_public_key_impl);
@@ -355,6 +397,82 @@ vscf_rsa_public_key_take_random(vscf_rsa_public_key_impl_t *rsa_public_key_impl,
     rsa_public_key_impl->random = random;
 
     rsa_public_key_impl->is_owning_random = 1;
+}
+
+//
+//  Setup dependency to the interface 'asn1 writer' and keep ownership.
+//
+VSCF_PUBLIC void
+vscf_rsa_public_key_use_asn1_writer(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1rd) {
+
+    VSCF_ASSERT_PTR (rsa_public_key_impl);
+    VSCF_ASSERT_PTR (asn1rd);
+    VSCF_ASSERT_PTR (rsa_public_key_impl->asn1rd == NULL);
+
+    VSCF_ASSERT (vscf_asn1_writer_is_implemented (asn1rd));
+
+    rsa_public_key_impl->asn1rd = asn1rd;
+
+    rsa_public_key_impl->is_owning_asn1rd = 0;
+}
+
+//
+//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
+//
+VSCF_PUBLIC void
+vscf_rsa_public_key_take_asn1_writer(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t **asn1rd_ref) {
+
+    VSCF_ASSERT_PTR (rsa_public_key_impl);
+    VSCF_ASSERT_PTR (asn1rd_ref);
+    VSCF_ASSERT_PTR (rsa_public_key_impl->asn1rd == NULL);
+
+    vscf_impl_t *asn1rd = *asn1rd_ref;
+    *asn1rd_ref = NULL;
+    VSCF_ASSERT_PTR (asn1rd);
+
+    VSCF_ASSERT (vscf_asn1_writer_is_implemented (asn1rd));
+
+    rsa_public_key_impl->asn1rd = asn1rd;
+
+    rsa_public_key_impl->is_owning_asn1rd = 1;
+}
+
+//
+//  Setup dependency to the interface 'asn1 reader' and keep ownership.
+//
+VSCF_PUBLIC void
+vscf_rsa_public_key_use_asn1_reader(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1wr) {
+
+    VSCF_ASSERT_PTR (rsa_public_key_impl);
+    VSCF_ASSERT_PTR (asn1wr);
+    VSCF_ASSERT_PTR (rsa_public_key_impl->asn1wr == NULL);
+
+    VSCF_ASSERT (vscf_asn1_reader_is_implemented (asn1wr));
+
+    rsa_public_key_impl->asn1wr = asn1wr;
+
+    rsa_public_key_impl->is_owning_asn1wr = 0;
+}
+
+//
+//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
+//
+VSCF_PUBLIC void
+vscf_rsa_public_key_take_asn1_reader(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t **asn1wr_ref) {
+
+    VSCF_ASSERT_PTR (rsa_public_key_impl);
+    VSCF_ASSERT_PTR (asn1wr_ref);
+    VSCF_ASSERT_PTR (rsa_public_key_impl->asn1wr == NULL);
+
+    vscf_impl_t *asn1wr = *asn1wr_ref;
+    *asn1wr_ref = NULL;
+    VSCF_ASSERT_PTR (asn1wr);
+
+    VSCF_ASSERT (vscf_asn1_reader_is_implemented (asn1wr));
+
+    rsa_public_key_impl->asn1wr = asn1wr;
+
+    rsa_public_key_impl->is_owning_asn1wr = 1;
 }
 
 //

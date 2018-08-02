@@ -67,14 +67,14 @@
 //
 //  Export public key in the binary format.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_error_t
 vscf_export_public_key(vscf_impl_t *impl, vsc_buffer_t *out) {
 
     const vscf_export_public_key_api_t *export_public_key_api = vscf_export_public_key_api (impl);
     VSCF_ASSERT_PTR (export_public_key_api);
 
     VSCF_ASSERT_PTR (export_public_key_api->export_public_key_cb);
-    export_public_key_api->export_public_key_cb (impl, out);
+    return export_public_key_api->export_public_key_cb (impl, out);
 }
 
 //

@@ -4,8 +4,13 @@
     <implementation name="rsa public key">
 
         <require library="mbedtls" feature="RSA C"/>
+        <require library="mbedtls" feature="BIGNUM C"/>
+
         <require feature="random"/>
-        <require header="virgil/common/private/vsc_buffer_defs.h" scope="private"/>
+
+        <require class="asn1"/>
+        <require header="virgil/common/private/vsc_buffer_defs.h"/>
+        <require header="mbedtls/bignum.h"/>
 
         <context>
             <require header="mbedtls/rsa.h"/>
@@ -13,6 +18,8 @@
         </context>
 
         <dependency name="random" interface="random" type="impl"/>
+        <dependency name="asn1rd" interface="asn1 writer" type="impl"/>
+        <dependency name="asn1wr" interface="asn1 reader" type="impl"/>
 
         <interface name="key"/>
         <interface name="public key"/>

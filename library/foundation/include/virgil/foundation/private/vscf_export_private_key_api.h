@@ -75,7 +75,7 @@ extern "C" {
 //
 //  Callback. Export private key in the binary format.
 //
-typedef void (*vscf_export_private_key_api_export_private_key_fn)(vscf_impl_t *impl, vsc_buffer_t *out);
+typedef vscf_error_t (*vscf_export_private_key_api_export_private_key_fn)(vscf_impl_t *impl, vsc_buffer_t *out);
 
 //
 //  Callback. Return length in bytes required to hold exported private key.
