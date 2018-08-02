@@ -82,7 +82,7 @@ typedef struct vscf_export_private_key_api_t vscf_export_private_key_api_t;
 //
 //  Export private key in the binary format.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_error_t
 vscf_export_private_key(vscf_impl_t *impl, vsc_buffer_t *out);
 
 //
