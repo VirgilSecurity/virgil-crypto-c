@@ -123,6 +123,10 @@ vscf_kdf1_init(vscf_kdf1_impl_t *kdf1_impl) {
 
     kdf1_impl->info = &info;
 
+    kdf1_impl->hash = NULL;
+
+    kdf1_impl->is_owning_hash = false;
+
     return vscf_SUCCESS;
 }
 
