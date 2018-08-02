@@ -103,6 +103,20 @@ vscf_asn1_writer_error(vscf_impl_t *impl) {
 }
 
 //
+//  Move writing position backward for the given length.
+//  Return current writing position.
+//
+VSCF_PUBLIC byte *
+vscf_asn1_writer_reserve(vscf_impl_t *impl, size_t len) {
+
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    VSCF_ASSERT_PTR (asn1_writer_api);
+
+    VSCF_ASSERT_PTR (asn1_writer_api->reserve_cb);
+    return asn1_writer_api->reserve_cb (impl, len);
+}
+
+//
 //  Write ASN.1 tag.
 //  Return count of written bytes.
 //

@@ -87,6 +87,11 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     //
     (vscf_asn1_writer_api_error_fn)vscf_asn1wr_error,
     //
+    //  Move writing position backward for the given length.
+    //  Return current writing position.
+    //
+    (vscf_asn1_writer_api_reserve_fn)vscf_asn1wr_reserve,
+    //
     //  Write ASN.1 tag.
     //  Return count of written bytes.
     //

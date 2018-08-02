@@ -23,6 +23,18 @@
     </method>
 
 
+    <method name="reserve">
+        Move writing position backward for the given length.
+        Return current writing position.
+
+        <argument name="len" type="size"/>
+
+        <return type="data" access="readwrite">
+            <array access="disown"/>
+        </return>
+    </method>
+
+
     <method name="write tag">
         Write ASN.1 tag.
         Return count of written bytes.

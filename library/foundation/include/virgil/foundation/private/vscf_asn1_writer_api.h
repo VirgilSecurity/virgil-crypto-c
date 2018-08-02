@@ -89,6 +89,12 @@ typedef void (*vscf_asn1_writer_api_seal_fn)(vscf_impl_t *impl);
 typedef vscf_error_t (*vscf_asn1_writer_api_error_fn)(vscf_impl_t *impl);
 
 //
+//  Callback. Move writing position backward for the given length.
+//          Return current writing position.
+//
+typedef byte * (*vscf_asn1_writer_api_reserve_fn)(vscf_impl_t *impl, size_t len);
+
+//
 //  Callback. Write ASN.1 tag.
 //          Return count of written bytes.
 //
@@ -168,6 +174,11 @@ struct vscf_asn1_writer_api_t {
     //  Return last error.
     //
     vscf_asn1_writer_api_error_fn error_cb;
+    //
+    //  Move writing position backward for the given length.
+    //  Return current writing position.
+    //
+    vscf_asn1_writer_api_reserve_fn reserve_cb;
     //
     //  Write ASN.1 tag.
     //  Return count of written bytes.
