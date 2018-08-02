@@ -123,6 +123,10 @@ vscf_hkdf_init(vscf_hkdf_impl_t *hkdf_impl) {
 
     hkdf_impl->info = &info;
 
+    hkdf_impl->hmac = NULL;
+
+    hkdf_impl->is_owning_hmac = false;
+
     return vscf_SUCCESS;
 }
 
