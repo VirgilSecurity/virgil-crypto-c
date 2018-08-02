@@ -200,6 +200,17 @@ function implementation_resolve_method (method, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve model: implementation.require.
+# ---------------------------------------------------------------------------
+function implementation_resolve_require (require, parent)
+    check_arguments (my, "require, parent", my)
+
+    if has_one_of_attribute(my.require, "class, header")
+        my.require.scope ?= "private"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve model: implementation.
 # ---------------------------------------------------------------------------
 function implementation_resolve (implementation, parent, project)
@@ -249,6 +260,10 @@ function implementation_resolve (implementation, parent, project)
 
     for my.implementation.method
         implementation_resolve_method (method, my.implementation)
+    endfor
+
+    for my.implementation.require
+        implementation_resolve_require (require, my.implementation)
     endfor
 
     project_common_resolve_dependecies_for (my.implementation)
