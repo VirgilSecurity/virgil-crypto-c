@@ -36,12 +36,6 @@
 // --------------------------------------------------------------------------
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'key io' API.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -49,8 +43,28 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_key_io_api.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Interface 'key reader' API.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_KEY_READER_API_H_INCLUDED
+#define VSCF_KEY_READER_API_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_error.h"
+#include "vscf_api.h"
+#include "vscf_impl.h"
+#include "vscf_error_context.h"
+
+#include <virgil/common/vsc_data.h>
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -59,9 +73,52 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Callback. Read public key object.
+//
+typedef vscf_impl_t * (*vscf_key_reader_api_read_public_key_fn)(vscf_impl_t *impl, const vsc_data_t data);
+
+//
+//  Callback. Read private key object.
+//
+typedef vscf_impl_t * (*vscf_key_reader_api_read_private_key_fn)(vscf_impl_t *impl, const vsc_data_t data);
+
+//
+//  Contains API requirements of the interface 'key reader'.
+//
+struct vscf_key_reader_api_t {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'key_reader' MUST be equal to the 'vscf_api_tag_KEY_READER'.
+    //
+    vscf_api_tag_t api_tag;
+    //
+    //  Link to the inherited interface API 'error context'.
+    //
+    const vscf_error_context_api_t *error_context_api;
+    //
+    //  Read public key object.
+    //
+    vscf_key_reader_api_read_public_key_fn read_public_key_cb;
+    //
+    //  Read private key object.
+    //
+    vscf_key_reader_api_read_private_key_fn read_private_key_cb;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_KEY_READER_API_H_INCLUDED
 //  @end

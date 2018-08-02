@@ -68,10 +68,10 @@
     <interface name="kdf"/>
     <interface name="random"/>
 
+    <interface name="error context"/>
     <interface name="key"/>
     <interface name="public key"/>
     <interface name="private key"/>
-    <interface name="key io"/>
     <interface name="encrypt2"/>
     <interface name="decrypt2"/>
     <interface name="sign"/>
@@ -82,6 +82,8 @@
     <interface name="export private key"/>
     <interface name="import public key"/>
     <interface name="import private key"/>
+    <interface name="key reader"/>
+    <interface name="key writer"/>
 
     <interface name="asn1 reader"/>
     <interface name="asn1 writer"/>
