@@ -49,9 +49,9 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_key_io.h"
+#include "vscf_key_reader.h"
 #include "vscf_assert.h"
-#include "vscf_key_io_api.h"
+#include "vscf_key_reader_api.h"
 //  @end
 
 
@@ -62,119 +62,52 @@
 // --------------------------------------------------------------------------
 
 //
-//  Return last occurred error.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_key_io_generic_error(vscf_impl_t *impl) {
-
-    const vscf_key_io_api_t *key_io_api = vscf_key_io_api (impl);
-    VSCF_ASSERT_PTR (key_io_api);
-
-    VSCF_ASSERT_PTR (key_io_api->generic_error_cb);
-    return key_io_api->generic_error_cb (impl);
-}
-
-//
 //  Read public key object.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_io_read_public_key(vscf_impl_t *impl, const vsc_data_t data) {
+vscf_key_reader_read_public_key(vscf_impl_t *impl, const vsc_data_t data) {
 
-    const vscf_key_io_api_t *key_io_api = vscf_key_io_api (impl);
-    VSCF_ASSERT_PTR (key_io_api);
+    const vscf_key_reader_api_t *key_reader_api = vscf_key_reader_api (impl);
+    VSCF_ASSERT_PTR (key_reader_api);
 
-    VSCF_ASSERT_PTR (key_io_api->read_public_key_cb);
-    return key_io_api->read_public_key_cb (impl, data);
-}
-
-//
-//  Write public key object.
-//
-VSCF_PUBLIC void
-vscf_key_io_write_public_key(vscf_impl_t *impl, vsc_buffer_t *out) {
-
-    const vscf_key_io_api_t *key_io_api = vscf_key_io_api (impl);
-    VSCF_ASSERT_PTR (key_io_api);
-
-    VSCF_ASSERT_PTR (key_io_api->write_public_key_cb);
-    key_io_api->write_public_key_cb (impl, out);
+    VSCF_ASSERT_PTR (key_reader_api->read_public_key_cb);
+    return key_reader_api->read_public_key_cb (impl, data);
 }
 
 //
 //  Read private key object.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_io_read_private_key(vscf_impl_t *impl, const vsc_data_t data) {
+vscf_key_reader_read_private_key(vscf_impl_t *impl, const vsc_data_t data) {
 
-    const vscf_key_io_api_t *key_io_api = vscf_key_io_api (impl);
-    VSCF_ASSERT_PTR (key_io_api);
+    const vscf_key_reader_api_t *key_reader_api = vscf_key_reader_api (impl);
+    VSCF_ASSERT_PTR (key_reader_api);
 
-    VSCF_ASSERT_PTR (key_io_api->read_private_key_cb);
-    return key_io_api->read_private_key_cb (impl, data);
+    VSCF_ASSERT_PTR (key_reader_api->read_private_key_cb);
+    return key_reader_api->read_private_key_cb (impl, data);
 }
 
 //
-//  Write private key object.
+//  Return key reader API, or NULL if it is not implemented.
 //
-VSCF_PUBLIC void
-vscf_key_io_write_private_key(vscf_impl_t *impl, vsc_buffer_t *out) {
-
-    const vscf_key_io_api_t *key_io_api = vscf_key_io_api (impl);
-    VSCF_ASSERT_PTR (key_io_api);
-
-    VSCF_ASSERT_PTR (key_io_api->write_private_key_cb);
-    key_io_api->write_private_key_cb (impl, out);
-}
-
-//
-//  Return length in bytes required to hold written public key.
-//  Note, this is time consuming operation.
-//
-VSCF_PUBLIC size_t
-vscf_key_io_calclulate_public_key_out_len(vscf_impl_t *impl) {
-
-    const vscf_key_io_api_t *key_io_api = vscf_key_io_api (impl);
-    VSCF_ASSERT_PTR (key_io_api);
-
-    VSCF_ASSERT_PTR (key_io_api->calclulate_public_key_out_len_cb);
-    return key_io_api->calclulate_public_key_out_len_cb (impl);
-}
-
-//
-//  Return length in bytes required to hold written private key.
-//  Note, this is time consuming operation.
-//
-VSCF_PUBLIC size_t
-vscf_key_io_calclulate_private_key_out_len(vscf_impl_t *impl) {
-
-    const vscf_key_io_api_t *key_io_api = vscf_key_io_api (impl);
-    VSCF_ASSERT_PTR (key_io_api);
-
-    VSCF_ASSERT_PTR (key_io_api->calclulate_private_key_out_len_cb);
-    return key_io_api->calclulate_private_key_out_len_cb (impl);
-}
-
-//
-//  Return key io API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_key_io_api_t *
-vscf_key_io_api(vscf_impl_t *impl) {
+VSCF_PUBLIC const vscf_key_reader_api_t *
+vscf_key_reader_api(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_KEY_IO);
-    return (const vscf_key_io_api_t *) api;
+    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_KEY_READER);
+    return (const vscf_key_reader_api_t *) api;
 }
 
 //
-//  Check if given object implements interface 'key io'.
+//  Check if given object implements interface 'key reader'.
 //
 VSCF_PUBLIC bool
-vscf_key_io_is_implemented(vscf_impl_t *impl) {
+vscf_key_reader_is_implemented(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_KEY_IO) != NULL;
+    return vscf_impl_api (impl, vscf_api_tag_KEY_READER) != NULL;
 }
 
 

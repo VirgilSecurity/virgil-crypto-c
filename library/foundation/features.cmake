@@ -62,10 +62,10 @@ option(VSCF_HMAC_INFO "Enable interface 'hmac info'." ON)
 option(VSCF_HMAC_STREAM "Enable interface 'hmac stream'." ON)
 option(VSCF_KDF "Enable interface 'kdf'." ON)
 option(VSCF_RANDOM "Enable interface 'random'." ON)
+option(VSCF_ERROR_CONTEXT "Enable interface 'error context'." ON)
 option(VSCF_KEY "Enable interface 'key'." ON)
 option(VSCF_PUBLIC_KEY "Enable interface 'public key'." ON)
 option(VSCF_PRIVATE_KEY "Enable interface 'private key'." ON)
-option(VSCF_KEY_IO "Enable interface 'key io'." ON)
 option(VSCF_ENCRYPT2 "Enable interface 'encrypt2'." ON)
 option(VSCF_DECRYPT2 "Enable interface 'decrypt2'." ON)
 option(VSCF_SIGN "Enable interface 'sign'." ON)
@@ -76,6 +76,8 @@ option(VSCF_EXPORT_PUBLIC_KEY "Enable interface 'export public key'." ON)
 option(VSCF_EXPORT_PRIVATE_KEY "Enable interface 'export private key'." ON)
 option(VSCF_IMPORT_PUBLIC_KEY "Enable interface 'import public key'." ON)
 option(VSCF_IMPORT_PRIVATE_KEY "Enable interface 'import private key'." ON)
+option(VSCF_KEY_READER "Enable interface 'key reader'." ON)
+option(VSCF_KEY_WRITER "Enable interface 'key writer'." ON)
 option(VSCF_ASN1_READER "Enable interface 'asn1 reader'." ON)
 option(VSCF_ASN1_WRITER "Enable interface 'asn1 writer'." ON)
 option(VSCF_HMAC224 "Enable implementation 'hmac224'." ON)
@@ -112,10 +114,10 @@ mark_as_advanced(
         VSCF_HMAC_STREAM
         VSCF_KDF
         VSCF_RANDOM
+        VSCF_ERROR_CONTEXT
         VSCF_KEY
         VSCF_PUBLIC_KEY
         VSCF_PRIVATE_KEY
-        VSCF_KEY_IO
         VSCF_ENCRYPT2
         VSCF_DECRYPT2
         VSCF_SIGN
@@ -126,6 +128,8 @@ mark_as_advanced(
         VSCF_EXPORT_PRIVATE_KEY
         VSCF_IMPORT_PUBLIC_KEY
         VSCF_IMPORT_PRIVATE_KEY
+        VSCF_KEY_READER
+        VSCF_KEY_WRITER
         VSCF_ASN1_READER
         VSCF_ASN1_WRITER
         VSCF_HMAC224
@@ -254,24 +258,6 @@ if(VSCF_PRIVATE_KEY AND NOT VSCF_KEY)
     message(FATAL_ERROR)
 endif()
 
-if(VSCF_KEY_IO AND NOT VSC_DATA)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_KEY_IO depends on the feature:")
-    message("     VSC_DATA - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_KEY_IO AND NOT VSC_BUFFER)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_KEY_IO depends on the feature:")
-    message("     VSC_BUFFER - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
 if(VSCF_ENCRYPT2 AND NOT VSC_DATA)
     message("-- error --")
     message("--")
@@ -376,6 +362,33 @@ if(VSCF_IMPORT_PRIVATE_KEY AND NOT VSC_DATA)
     message("--")
     message("Feature VSCF_IMPORT_PRIVATE_KEY depends on the feature:")
     message("     VSC_DATA - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_KEY_READER AND NOT VSCF_ERROR_CONTEXT)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_KEY_READER depends on the feature:")
+    message("     VSCF_ERROR_CONTEXT - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_KEY_READER AND NOT VSC_DATA)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_KEY_READER depends on the feature:")
+    message("     VSC_DATA - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_KEY_WRITER AND NOT VSC_BUFFER)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_KEY_WRITER depends on the feature:")
+    message("     VSC_BUFFER - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

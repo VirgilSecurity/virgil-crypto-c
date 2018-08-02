@@ -36,6 +36,12 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  This interface force implementor to hold last error in the context.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,27 +49,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Provide interface to for key marshaling.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_KEY_IO_H_INCLUDED
-#define VSCF_KEY_IO_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_error.h"
-#include "vscf_impl.h"
-
-#include <virgil/common/vsc_data.h>
-#include <virgil/common/vsc_buffer.h>
+#include "vscf_error_context.h"
+#include "vscf_assert.h"
+#include "vscf_error_context_api.h"
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -73,79 +62,44 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'key io'.
-//
-typedef struct vscf_key_io_api_t vscf_key_io_api_t;
-
-//
 //  Return last occurred error.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_key_io_generic_error(vscf_impl_t *impl);
+vscf_error_context_error(vscf_impl_t *impl) {
+
+    const vscf_error_context_api_t *error_context_api = vscf_error_context_api (impl);
+    VSCF_ASSERT_PTR (error_context_api);
+
+    VSCF_ASSERT_PTR (error_context_api->error_cb);
+    return error_context_api->error_cb (impl);
+}
 
 //
-//  Read public key object.
+//  Return error context API, or NULL if it is not implemented.
 //
-VSCF_PUBLIC vscf_impl_t *
-vscf_key_io_read_public_key(vscf_impl_t *impl, const vsc_data_t data);
+VSCF_PUBLIC const vscf_error_context_api_t *
+vscf_error_context_api(vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_ERROR_CONTEXT);
+    return (const vscf_error_context_api_t *) api;
+}
 
 //
-//  Write public key object.
-//
-VSCF_PUBLIC void
-vscf_key_io_write_public_key(vscf_impl_t *impl, vsc_buffer_t *out);
-
-//
-//  Read private key object.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_key_io_read_private_key(vscf_impl_t *impl, const vsc_data_t data);
-
-//
-//  Write private key object.
-//
-VSCF_PUBLIC void
-vscf_key_io_write_private_key(vscf_impl_t *impl, vsc_buffer_t *out);
-
-//
-//  Return length in bytes required to hold written public key.
-//  Note, this is time consuming operation.
-//
-VSCF_PUBLIC size_t
-vscf_key_io_calclulate_public_key_out_len(vscf_impl_t *impl);
-
-//
-//  Return length in bytes required to hold written private key.
-//  Note, this is time consuming operation.
-//
-VSCF_PUBLIC size_t
-vscf_key_io_calclulate_private_key_out_len(vscf_impl_t *impl);
-
-//
-//  Return key io API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_key_io_api_t *
-vscf_key_io_api(vscf_impl_t *impl);
-
-//
-//  Check if given object implements interface 'key io'.
+//  Check if given object implements interface 'error context'.
 //
 VSCF_PUBLIC bool
-vscf_key_io_is_implemented(vscf_impl_t *impl);
+vscf_error_context_is_implemented(vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    return vscf_impl_api (impl, vscf_api_tag_ERROR_CONTEXT) != NULL;
+}
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_KEY_IO_H_INCLUDED
 //  @end
