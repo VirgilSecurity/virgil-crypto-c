@@ -52,6 +52,7 @@
 #include "vscf_asn1wr.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_asn1.h"
 #include "vscf_asn1wr_impl.h"
 #include "vscf_asn1wr_internal.h"
 
@@ -222,6 +223,24 @@ vscf_asn1wr_error(vscf_asn1wr_impl_t *asn1wr_impl) {
     VSCF_ASSERT_PTR(asn1wr_impl);
 
     return asn1wr_impl->error;
+}
+
+//
+//  Move writing position backward for the given length.
+//  Return current writing position.
+//
+VSCF_PUBLIC byte *
+vscf_asn1wr_reserve(vscf_asn1wr_impl_t *asn1wr_impl, size_t len) {
+
+    VSCF_ASSERT_PTR(asn1wr_impl);
+
+    if (asn1wr_impl->start > asn1wr_impl->curr - len) {
+        asn1wr_impl->error = vscf_error_SMALL_BUFFER;
+        return NULL;
+    }
+
+    asn1wr_impl->curr -= len;
+    return asn1wr_impl->curr;
 }
 
 //

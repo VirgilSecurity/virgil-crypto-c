@@ -52,6 +52,7 @@
 #include "vscf_asn1rd.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_asn1.h"
 #include "vscf_asn1rd_impl.h"
 #include "vscf_asn1rd_internal.h"
 

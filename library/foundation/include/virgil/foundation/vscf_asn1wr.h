@@ -150,6 +150,13 @@ VSCF_PUBLIC vscf_error_t
 vscf_asn1wr_error(vscf_asn1wr_impl_t *asn1wr_impl);
 
 //
+//  Move writing position backward for the given length.
+//  Return current writing position.
+//
+VSCF_PUBLIC byte *
+vscf_asn1wr_reserve(vscf_asn1wr_impl_t *asn1wr_impl, size_t len);
+
+//
 //  Write ASN.1 tag.
 //  Return count of written bytes.
 //
