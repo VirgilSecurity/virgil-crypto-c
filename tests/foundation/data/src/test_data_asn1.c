@@ -95,3 +95,17 @@ const size_t test_asn1_encoded_UTF8_STRING_LEN = sizeof(test_asn1_encoded_UTF8_S
 const size_t test_asn1_decoded_UTF8_STRING_LEN = sizeof(test_asn1_decoded_UTF8_STRING);
 const size_t test_asn1_encoded_OID_SHA256_LEN = sizeof(test_asn1_encoded_OID_SHA256);
 const size_t test_asn1_decoded_OID_SHA256_LEN = sizeof(test_asn1_decoded_OID_SHA256);
+
+//
+// Containers
+//
+const byte test_asn1_encoded_SEQUENCE_WITH_LEN_32[] = {
+    0x30, 0x20
+};
+
+const byte test_asn1_encoded_SET_WITH_LEN_32[] = {
+    0x31, 0x20
+};
+
+const size_t test_asn1_encoded_SEQUENCE_WITH_LEN_32_LEN = sizeof(test_asn1_encoded_SEQUENCE_WITH_LEN_32);
+const size_t test_asn1_encoded_SET_WITH_LEN_32_LEN = sizeof(test_asn1_encoded_SET_WITH_LEN_32);

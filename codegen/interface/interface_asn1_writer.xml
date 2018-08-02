@@ -1,0 +1,121 @@
+<interface name="asn1 writer">
+    Provides interface to the ASN.1 writer.
+    Note, elements are written starting from the buffer ending.
+    Note, that all "write" methods move writing position backward.
+
+
+    <method name="reset">
+        Reset all internal states and prepare to new ASN.1 writing operations.
+
+        <argument name="out" class="buffer"/>
+    </method>
+
+
+    <method name="seal">
+        Move written data to the buffer beginning and forbid further operations.
+    </method>
+
+
+    <method name="error">
+        Return last error.
+
+        <return type="error"/>
+    </method>
+
+
+    <method name="write tag">
+        Write ASN.1 tag.
+        Return count of written bytes.
+
+        <argument name="tag" type="integer"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="write len">
+        Write length of the following data.
+        Return count of written bytes.
+
+        <argument name="len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="write int">
+        Write ASN.1 type: INTEGER.
+        Return count of written bytes.
+
+        <argument name="value" type="integer"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="write bool">
+        Write ASN.1 type: BOOLEAN.
+        Return count of written bytes.
+
+        <argument name="value" type="boolean"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="write null">
+        Write ASN.1 type: NULL.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="write octet str">
+        Write ASN.1 type: OCTET STRING.
+        Return count of written bytes.
+
+        <argument name="value" class="data"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="write utf8 str">
+        Write ASN.1 type: UTF8String.
+        Return count of written bytes.
+
+        <argument name="value" class="data"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="write oid">
+        Write ASN.1 type: OID.
+        Return count of written bytes.
+
+        <argument name="value" class="data"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="write sequence">
+        Mark previously written data of given length as ASN.1 type: SQUENCE.
+        Return count of written bytes.
+
+        <argument name="len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="write set">
+        Mark previously written data of given length as ASN.1 type: SET.
+        Return count of written bytes.
+
+        <argument name="len" type="size"/>
+
+        <return type="size"/>
+    </method>
+</interface>

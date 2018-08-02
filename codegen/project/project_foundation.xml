@@ -84,6 +84,7 @@
     <interface name="import private key"/>
 
     <interface name="asn1 reader"/>
+    <interface name="asn1 writer"/>
 
     <class name="asn1"/>
 
