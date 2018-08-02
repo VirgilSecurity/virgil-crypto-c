@@ -285,7 +285,7 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
         endnew
     endfor
 
-    for my.impl.require where has_one_of_attribute (require, "module, header")
+    for my.impl.require where has_one_of_attribute (require, "module, header, class")
         copy require to my.destination
     endfor
 
@@ -604,6 +604,25 @@ function _Z19_add_method_init (impl, declaration, definition, destination, meta)
                 $(my.arg_impl)->$(my.names.c_property_info:) = &$(my.refs.c_implementation_variable_info);
             "
 
+            for my.impl.dependency
+                my.dependency = my.refs.c_implementation_property_$(make_id (dependency.name))
+
+                my.impl_init_dependencies ?= ""
+                my.impl_init_dependencies += "\
+
+                    $(my.arg_impl)->$(my.dependency) = NULL;
+                "
+            endfor
+
+            for my.impl.dependency where type = "impl"
+                my.is_owning_dependency = my.refs.c_implementation_property_is_owning_$(make_id (dependency.name))
+
+                my.impl_init_dependencies += "\
+
+                    $(my.arg_impl)->$(my.is_owning_dependency) = false;
+                "
+            endfor
+
             if _Z19_has_underlying_context (my.impl)
                 my.impl_end = "\
                     return $(my.refs.c_implementation_method_init_ctx) ($(my.arg_impl));
@@ -616,6 +635,7 @@ function _Z19_add_method_init (impl, declaration, definition, destination, meta)
 
             my.method_body = ""
             my.method_body += format_left (my.impl_begin) + terminator
+            my.method_body += format_left (my.impl_init_dependencies) + terminator ? ""
             my.method_body += format_left (my.impl_end) + terminator
 
             . = my.method_body
