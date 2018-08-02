@@ -1,3 +1,5 @@
+//  @license
+// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2018 Virgil Security Inc.
 //
 //  All rights reserved.
@@ -31,48 +33,38 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+// --------------------------------------------------------------------------
 
 
-#include "test_data_types.h"
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'asn1wr' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
 
 
-//
-//  Primitive types
-//
-extern const byte test_asn1_encoded_INT_2[];
-extern const byte test_asn1_encoded_BOOLEAN_TRUE[];
-extern const byte test_asn1_encoded_BOOLEAN_FALSE[];
-extern const byte test_asn1_encoded_NULL[];
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
 
-extern const size_t test_asn1_encoded_INT_2_LEN;
-extern const size_t test_asn1_encoded_BOOLEAN_TRUE_LEN;
-extern const size_t test_asn1_encoded_BOOLEAN_FALSE_LEN;
-extern const size_t test_asn1_encoded_NULL_LEN;
+#include "vscf_asn1wr_impl.h"
+//  @end
 
 
-//
-// Strings
-//
-extern const byte test_asn1_encoded_OCTET_STRING[];
-extern const byte test_asn1_decoded_OCTET_STRING[];
-extern const byte test_asn1_encoded_UTF8_STRING[];
-extern const byte test_asn1_decoded_UTF8_STRING[];
-extern const byte test_asn1_encoded_OID_SHA256[];
-extern const byte test_asn1_decoded_OID_SHA256[];
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
 
-extern const size_t test_asn1_encoded_OCTET_STRING_LEN;
-extern const size_t test_asn1_decoded_OCTET_STRING_LEN;
-extern const size_t test_asn1_encoded_UTF8_STRING_LEN;
-extern const size_t test_asn1_decoded_UTF8_STRING_LEN;
-extern const size_t test_asn1_encoded_OID_SHA256_LEN;
-extern const size_t test_asn1_decoded_OID_SHA256_LEN;
 
-//
-// Containers
-//
-extern const byte test_asn1_encoded_SEQUENCE_WITH_LEN_32[];
-extern const byte test_asn1_encoded_SET_WITH_LEN_32[];
-
-extern const size_t test_asn1_encoded_SEQUENCE_WITH_LEN_32_LEN;
-extern const size_t test_asn1_encoded_SET_WITH_LEN_32_LEN;
-
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end

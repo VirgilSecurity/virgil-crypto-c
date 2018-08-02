@@ -77,6 +77,7 @@ option(VSCF_EXPORT_PRIVATE_KEY "Enable interface 'export private key'." ON)
 option(VSCF_IMPORT_PUBLIC_KEY "Enable interface 'import public key'." ON)
 option(VSCF_IMPORT_PRIVATE_KEY "Enable interface 'import private key'." ON)
 option(VSCF_ASN1_READER "Enable interface 'asn1 reader'." ON)
+option(VSCF_ASN1_WRITER "Enable interface 'asn1 writer'." ON)
 option(VSCF_HMAC224 "Enable implementation 'hmac224'." ON)
 option(VSCF_HMAC256 "Enable implementation 'hmac256'." ON)
 option(VSCF_HMAC384 "Enable implementation 'hmac384'." ON)
@@ -87,6 +88,7 @@ option(VSCF_SHA384 "Enable implementation 'sha384'." ON)
 option(VSCF_SHA512 "Enable implementation 'sha512'." ON)
 option(VSCF_AES256_GCM "Enable implementation 'aes256 gcm'." ON)
 option(VSCF_ASN1RD "Enable implementation 'asn1rd'." ON)
+option(VSCF_ASN1WR "Enable implementation 'asn1wr'." ON)
 option(VSCF_RSA_PUBLIC_KEY "Enable implementation 'rsa public key'." ON)
 option(VSCF_HKDF "Enable implementation 'hkdf'." ON)
 option(VSCF_KDF1 "Enable implementation 'kdf1'." ON)
@@ -125,6 +127,7 @@ mark_as_advanced(
         VSCF_IMPORT_PUBLIC_KEY
         VSCF_IMPORT_PRIVATE_KEY
         VSCF_ASN1_READER
+        VSCF_ASN1_WRITER
         VSCF_HMAC224
         VSCF_HMAC256
         VSCF_HMAC384
@@ -135,6 +138,7 @@ mark_as_advanced(
         VSCF_SHA512
         VSCF_AES256_GCM
         VSCF_ASN1RD
+        VSCF_ASN1WR
         VSCF_RSA_PUBLIC_KEY
         VSCF_HKDF
         VSCF_KDF1
@@ -394,6 +398,24 @@ if(VSCF_ASN1_READER AND NOT VSC_BUFFER)
     message(FATAL_ERROR)
 endif()
 
+if(VSCF_ASN1_WRITER AND NOT VSC_DATA)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ASN1_WRITER depends on the feature:")
+    message("     VSC_DATA - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ASN1_WRITER AND NOT VSC_BUFFER)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ASN1_WRITER depends on the feature:")
+    message("     VSC_BUFFER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCF_HMAC224 AND NOT MBEDTLS_MD_C)
     message("-- error --")
     message("--")
@@ -524,6 +546,33 @@ if(VSCF_ASN1RD AND NOT VSC_BUFFER)
     message("-- error --")
     message("--")
     message("Feature VSCF_ASN1RD depends on the feature:")
+    message("     VSC_BUFFER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ASN1WR AND NOT MBEDTLS_ASN1_WRITE_C)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ASN1WR depends on the feature:")
+    message("     MBEDTLS_ASN1_WRITE_C - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ASN1WR AND NOT VSC_DATA)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ASN1WR depends on the feature:")
+    message("     VSC_DATA - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ASN1WR AND NOT VSC_BUFFER)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ASN1WR depends on the feature:")
     message("     VSC_BUFFER - which is disabled.")
     message("--")
     message(FATAL_ERROR)

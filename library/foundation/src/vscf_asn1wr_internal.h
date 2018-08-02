@@ -46,16 +46,16 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains common functionality for all 'implementation' object.
-//  It is also enumerate all available implementations within crypto libary.
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_IMPL_H_INCLUDED
-#define VSCF_IMPL_H_INCLUDED
+#ifndef VSCF_ASN1WR_INTERNAL_H_INCLUDED
+#define VSCF_ASN1WR_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_error.h"
-#include "vscf_api.h"
+#include "vscf_asn1wr.h"
 //  @end
 
 
@@ -71,75 +71,16 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible implementations within crypto library.
+//  Provides initialization of the implementation specific context.
 //
-enum vscf_impl_tag_t {
-    vscf_impl_tag_BEGIN = 0,
-    vscf_impl_tag_AES256_GCM,
-    vscf_impl_tag_ASN1RD,
-    vscf_impl_tag_ASN1WR,
-    vscf_impl_tag_HKDF,
-    vscf_impl_tag_HMAC224,
-    vscf_impl_tag_HMAC256,
-    vscf_impl_tag_HMAC384,
-    vscf_impl_tag_HMAC512,
-    vscf_impl_tag_KDF1,
-    vscf_impl_tag_KDF2,
-    vscf_impl_tag_RSA_PUBLIC_KEY,
-    vscf_impl_tag_SHA224,
-    vscf_impl_tag_SHA256,
-    vscf_impl_tag_SHA384,
-    vscf_impl_tag_SHA512,
-    vscf_impl_tag_END
-};
-typedef enum vscf_impl_tag_t vscf_impl_tag_t;
+VSCF_PRIVATE vscf_error_t
+vscf_asn1wr_init_ctx(vscf_asn1wr_impl_t *asn1wr_impl);
 
 //
-//  Generic type for any 'implementation'.
+//  Provides cleanup of the implementation specific context.
 //
-typedef struct vscf_impl_t vscf_impl_t;
-
-//
-//  Callback type for cleanup action.
-//
-typedef void (*vscf_impl_cleanup_fn)(vscf_impl_t *impl);
-
-//
-//  Callback type for delete action.
-//
-typedef void (*vscf_impl_delete_fn)(vscf_impl_t *impl);
-
-//
-//  Return 'API' object that is fulfiled with a meta information
-//  specific to the given implementation object.
-//  Or NULL if object does not implement requested 'API'.
-//
-VSCF_PUBLIC const vscf_api_t *
-vscf_impl_api(vscf_impl_t *impl, vscf_api_tag_t api_tag);
-
-//
-//  Return unique 'Implementation TAG'.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_impl_tag(vscf_impl_t *impl);
-
-//
-//  Cleanup implementation object and it's dependencies.
-//
-VSCF_PUBLIC void
-vscf_impl_cleanup(vscf_impl_t *impl);
-
-//
-//  Delete implementation object and it's dependencies.
-//
-VSCF_PUBLIC void
-vscf_impl_delete(vscf_impl_t *impl);
-
-//
-//  Destroy implementation object and it's dependencies.
-//
-VSCF_PUBLIC void
-vscf_impl_destroy(vscf_impl_t **impl_ref);
+VSCF_PRIVATE void
+vscf_asn1wr_cleanup_ctx(vscf_asn1wr_impl_t *asn1wr_impl);
 
 
 // --------------------------------------------------------------------------
@@ -155,5 +96,5 @@ vscf_impl_destroy(vscf_impl_t **impl_ref);
 
 
 //  @footer
-#endif // VSCF_IMPL_H_INCLUDED
+#endif // VSCF_ASN1WR_INTERNAL_H_INCLUDED
 //  @end

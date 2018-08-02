@@ -228,23 +228,48 @@
         </method>
 
         <method name="read tag data">
-            Read raw data of specific tag the to the buffer.
+            Read raw data of specific tag the from the buffer.
 
             <argument name="tag" type="integer"/>
             <argument name="buffer" class="buffer"/>
         </method>
     </implementation>
 
-    <!--
-    <implementation name="asn1_wr">
+
+    <implementation name="asn1wr">
         This is MbedTLS implementation of ASN.1 writer.
 
-        <c_include file="mbedtls/asn1.h" is_system="1" scope="private"/>
-        <c_include file="mbedtls/asn1write.h" is_system="1" scope="private"/>
+        <require library="mbedtls" feature="ASN1 WRITE C"/>
+        <require class="asn1" scope="private"/>
+        <require header="mbedtls/asn1.h" scope="private"/>
+        <require header="mbedtls/asn1write.h" scope="private"/>
+        <require header="virgil/common/private/vsc_buffer_defs.h" scope="private"/>
 
+        <context>
+            <property name="out" class="buffer"/>
+            <property name="start" type="data" access="readwrite"/>
+            <property name="curr" type="data" access="readwrite"/>
+            <property name="error" type="error"/>
+        </context>
 
-        <interface name="asn1_writer"/>
+        <interface name="asn1 writer"/>
 
+        <method name="mbedtls has error">
+            If given mbedtls code is equal to zero, then setup correspond error
+            to the context and return true, otherwise return false.
+
+            <argument name="code" type="integer"/>
+
+            <return type="boolean"/>
+        </method>
+
+        <method name="write raw data">
+            Write raw data of specific tag the to the buffer.
+
+            <argument name="data" class="data"/>
+            <argument name="tag" type="integer"/>
+
+            <return type="size"/>
+        </method>
     </implementation>
--->
 </implementor>

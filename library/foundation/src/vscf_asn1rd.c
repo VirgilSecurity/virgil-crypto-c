@@ -74,7 +74,7 @@ static bool
 vscf_asn1rd_mbedtls_has_error(vscf_asn1rd_impl_t *asn1rd_impl, int code);
 
 //
-//  Read raw data of specific tag the to the buffer.
+//  Read raw data of specific tag the from the buffer.
 //
 static void
 vscf_asn1rd_read_tag_data(vscf_asn1rd_impl_t *asn1rd_impl, int tag, vsc_buffer_t *buffer);
@@ -108,7 +108,9 @@ vscf_asn1rd_init_ctx(vscf_asn1rd_impl_t *asn1rd_impl) {
 VSCF_PRIVATE void
 vscf_asn1rd_cleanup_ctx(vscf_asn1rd_impl_t *asn1rd_impl) {
 
-    VSCF_UNUSED(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd_impl);
+
+    vscf_zeroize(asn1rd_impl, sizeof(vscf_asn1rd_impl_t));
 }
 
 //
@@ -145,7 +147,7 @@ vscf_asn1rd_mbedtls_has_error(vscf_asn1rd_impl_t *asn1rd_impl, int code) {
 }
 
 //
-//  Read raw data of specific tag the to the buffer.
+//  Read raw data of specific tag the from the buffer.
 //
 static void
 vscf_asn1rd_read_tag_data(vscf_asn1rd_impl_t *asn1rd_impl, int tag, vsc_buffer_t *buffer) {

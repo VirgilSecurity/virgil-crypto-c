@@ -75,6 +75,7 @@ extern "C" {
 enum vscf_api_tag_t {
     vscf_api_tag_BEGIN = 0,
     vscf_api_tag_ASN1_READER,
+    vscf_api_tag_ASN1_WRITER,
     vscf_api_tag_AUTH_DECRYPT,
     vscf_api_tag_AUTH_ENCRYPT,
     vscf_api_tag_CIPHER,
