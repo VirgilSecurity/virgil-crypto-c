@@ -81,7 +81,7 @@ typedef struct vscf_encrypt2_api_t vscf_encrypt2_api_t;
 //  Encrypt given data.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_encrypt2_encrypt(vscf_impl_t *impl, const vsc_data_t data, vsc_buffer_t *out);
+vscf_encrypt2_encrypt(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Calculate required buffer length to hold the encrypted data.

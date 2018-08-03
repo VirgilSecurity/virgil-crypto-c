@@ -190,7 +190,7 @@ vscf_asn1_writer_write_null(vscf_impl_t *impl) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1_writer_write_octet_str(vscf_impl_t *impl, const vsc_data_t value) {
+vscf_asn1_writer_write_octet_str(vscf_impl_t *impl, vsc_data_t value) {
 
     const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
@@ -204,7 +204,7 @@ vscf_asn1_writer_write_octet_str(vscf_impl_t *impl, const vsc_data_t value) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1_writer_write_utf8_str(vscf_impl_t *impl, const vsc_data_t value) {
+vscf_asn1_writer_write_utf8_str(vscf_impl_t *impl, vsc_data_t value) {
 
     const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
@@ -218,7 +218,7 @@ vscf_asn1_writer_write_utf8_str(vscf_impl_t *impl, const vsc_data_t value) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1_writer_write_oid(vscf_impl_t *impl, const vsc_data_t value) {
+vscf_asn1_writer_write_oid(vscf_impl_t *impl, vsc_data_t value) {
 
     const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
     VSCF_ASSERT_PTR (asn1_writer_api);

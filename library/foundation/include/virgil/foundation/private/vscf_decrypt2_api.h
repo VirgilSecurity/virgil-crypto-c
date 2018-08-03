@@ -76,7 +76,7 @@ extern "C" {
 //
 //  Callback. Decrypt given data.
 //
-typedef vscf_error_t (*vscf_decrypt2_api_decrypt_fn)(vscf_impl_t *impl, const vsc_data_t data, vsc_buffer_t *out);
+typedef vscf_error_t (*vscf_decrypt2_api_decrypt_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Callback. Calculate required buffer length to hold the decrypted data.

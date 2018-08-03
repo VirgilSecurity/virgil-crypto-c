@@ -76,7 +76,7 @@ extern "C" {
 //
 //  Callback. Sign data given private key.
 //
-typedef vscf_error_t (*vscf_sign_api_sign_fn)(vscf_impl_t *impl, const vsc_data_t data, vsc_buffer_t *signature);
+typedef vscf_error_t (*vscf_sign_api_sign_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *signature);
 
 //
 //  Callback. Return length in bytes required to hold signature.

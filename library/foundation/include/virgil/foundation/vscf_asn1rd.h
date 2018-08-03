@@ -135,7 +135,7 @@ vscf_asn1rd_destroy(vscf_asn1rd_impl_t **asn1rd_impl_ref);
 //  Reset all internal states and prepare to new ASN.1 reading operations.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_reset(vscf_asn1rd_impl_t *asn1rd_impl, const vsc_data_t data);
+vscf_asn1rd_reset(vscf_asn1rd_impl_t *asn1rd_impl, vsc_data_t data);
 
 //
 //  Return last error.

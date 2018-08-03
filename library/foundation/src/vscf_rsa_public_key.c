@@ -131,7 +131,7 @@ vscf_rsa_public_key_key_bitlen(vscf_rsa_public_key_impl_t *rsa_public_key_impl) 
 //  Encrypt given data.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_rsa_public_key_encrypt(vscf_rsa_public_key_impl_t *rsa_public_key_impl, const vsc_data_t data, vsc_buffer_t *out) {
+vscf_rsa_public_key_encrypt(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
     VSCF_ASSERT_PTR(rsa_public_key_impl->random);
@@ -169,8 +169,7 @@ vscf_rsa_public_key_encrypted_len(vscf_rsa_public_key_impl_t *rsa_public_key_imp
 //  Verify data with given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_rsa_public_key_verify(
-        vscf_rsa_public_key_impl_t *rsa_public_key_impl, const vsc_data_t data, const vsc_data_t signature) {
+vscf_rsa_public_key_verify(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc_data_t data, vsc_data_t signature) {
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
     VSCF_ASSERT_PTR(rsa_public_key_impl->random);
@@ -235,7 +234,12 @@ vscf_rsa_public_key_exported_public_key_len(vscf_rsa_public_key_impl_t *rsa_publ
 //  Import public key from the binary format.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_rsa_public_key_import_public_key(vscf_rsa_public_key_impl_t *rsa_public_key_impl, const vsc_data_t data) {
+vscf_rsa_public_key_import_public_key(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc_data_t data) {
+
+    // RSAPublicKey ::= SEQUENCE {
+    //     modulus INTEGER, -- n
+    //     publicExponent INTEGER -- e
+    // }
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
     VSCF_ASSERT_PTR(data.bytes);

@@ -65,7 +65,7 @@
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_decrypt2_decrypt(vscf_impl_t *impl, const vsc_data_t data, vsc_buffer_t *out) {
+vscf_decrypt2_decrypt(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out) {
 
     const vscf_decrypt2_api_t *decrypt2_api = vscf_decrypt2_api (impl);
     VSCF_ASSERT_PTR (decrypt2_api);

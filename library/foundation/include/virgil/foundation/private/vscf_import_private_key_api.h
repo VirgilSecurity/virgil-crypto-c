@@ -75,7 +75,7 @@ extern "C" {
 //
 //  Callback. Import private key from the binary format.
 //
-typedef vscf_error_t (*vscf_import_private_key_api_import_private_key_fn)(vscf_impl_t *impl, const vsc_data_t data);
+typedef vscf_error_t (*vscf_import_private_key_api_import_private_key_fn)(vscf_impl_t *impl, vsc_data_t data);
 
 //
 //  Contains API requirements of the interface 'import private key'.

@@ -559,8 +559,8 @@ function c_component_map_instance_attr_is_const (c_instance, instance)
     check_arguments (my, "c_instance, instance", my)
 
     if my.instance.access = "readonly" & (\
-            (defined (my.instance.class)) | \
             (count (my.instance.string)) | \
+            (defined (my.instance.class) & (name(my.instance) <> "argument" | is_true(my.instance.is_reference))) | \
             (defined (my.instance.type) & count (my.instance.array)) | \
             (defined (my.instance.enum) & count (my.instance.array)))
         my.c_instance.is_const_type = "1"
