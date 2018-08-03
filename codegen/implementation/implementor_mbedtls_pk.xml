@@ -6,11 +6,10 @@
         <require library="mbedtls" feature="RSA C"/>
         <require library="mbedtls" feature="BIGNUM C"/>
 
-        <require feature="random"/>
-
+        <require class="mbedtls bignum asn1 writer"/>
         <require class="asn1"/>
+
         <require header="virgil/common/private/vsc_buffer_defs.h"/>
-        <require header="mbedtls/bignum.h"/>
 
         <context>
             <require header="mbedtls/rsa.h"/>

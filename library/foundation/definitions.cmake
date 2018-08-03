@@ -102,4 +102,5 @@ target_compile_definitions(foundation
             "VSCF_KDF1=$<BOOL:${VSCF_KDF1}>"
             "VSCF_KDF2=$<BOOL:${VSCF_KDF2}>"
             "VSCF_ASN1=$<BOOL:${VSCF_ASN1}>"
+            "VSCF_MBEDTLS_BIGNUM_ASN1_WRITER=$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_WRITER}>"
         )
