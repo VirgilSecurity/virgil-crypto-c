@@ -169,8 +169,8 @@ vscf_rsa_public_key_encrypted_len(vscf_rsa_public_key_impl_t *rsa_public_key_imp
 //  Verify data with given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_rsa_public_key_verify(vscf_rsa_public_key_impl_t *rsa_public_key_impl, const vsc_data_t data,
-        const vsc_data_t signature) {
+vscf_rsa_public_key_verify(
+        vscf_rsa_public_key_impl_t *rsa_public_key_impl, const vsc_data_t data, const vsc_data_t signature) {
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
     VSCF_ASSERT_PTR(rsa_public_key_impl->random);
