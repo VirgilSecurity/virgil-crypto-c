@@ -370,6 +370,7 @@ function c_module_class_create_module_public (class, destination, meta)
         .feature = my.class.name
         .of_class = my.class.of_class ?
         .c_prefix = my.class.c_prefix ?
+        .scope = my.class.scope ?
 
         new require to module
             .module = my.names.module_library
