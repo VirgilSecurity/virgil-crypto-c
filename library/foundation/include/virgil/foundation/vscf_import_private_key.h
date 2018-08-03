@@ -83,7 +83,7 @@ typedef struct vscf_import_private_key_api_t vscf_import_private_key_api_t;
 //  Import private key from the binary format.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_import_private_key(vscf_impl_t *impl, const vsc_data_t data);
+vscf_import_private_key(vscf_impl_t *impl, vsc_data_t data);
 
 //
 //  Return import private key API, or NULL if it is not implemented.

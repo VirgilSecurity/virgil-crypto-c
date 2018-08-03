@@ -65,7 +65,7 @@
 //  Encrypt given data.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_encrypt2_encrypt(vscf_impl_t *impl, const vsc_data_t data, vsc_buffer_t *out) {
+vscf_encrypt2_encrypt(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out) {
 
     const vscf_encrypt2_api_t *encrypt2_api = vscf_encrypt2_api (impl);
     VSCF_ASSERT_PTR (encrypt2_api);

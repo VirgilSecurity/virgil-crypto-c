@@ -76,7 +76,7 @@ extern "C" {
 //
 //  Callback. Reset all internal states and prepare to new ASN.1 reading operations.
 //
-typedef void (*vscf_asn1_reader_api_reset_fn)(vscf_impl_t *impl, const vsc_data_t data);
+typedef void (*vscf_asn1_reader_api_reset_fn)(vscf_impl_t *impl, vsc_data_t data);
 
 //
 //  Callback. Return last error.

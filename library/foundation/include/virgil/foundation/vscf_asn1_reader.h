@@ -83,7 +83,7 @@ typedef struct vscf_asn1_reader_api_t vscf_asn1_reader_api_t;
 //  Reset all internal states and prepare to new ASN.1 reading operations.
 //
 VSCF_PUBLIC void
-vscf_asn1_reader_reset(vscf_impl_t *impl, const vsc_data_t data);
+vscf_asn1_reader_reset(vscf_impl_t *impl, vsc_data_t data);
 
 //
 //  Return last error.

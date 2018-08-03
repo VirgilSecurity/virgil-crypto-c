@@ -143,21 +143,21 @@ vscf_asn1_writer_write_null(vscf_impl_t *impl);
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1_writer_write_octet_str(vscf_impl_t *impl, const vsc_data_t value);
+vscf_asn1_writer_write_octet_str(vscf_impl_t *impl, vsc_data_t value);
 
 //
 //  Write ASN.1 type: UTF8String.
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1_writer_write_utf8_str(vscf_impl_t *impl, const vsc_data_t value);
+vscf_asn1_writer_write_utf8_str(vscf_impl_t *impl, vsc_data_t value);
 
 //
 //  Write ASN.1 type: OID.
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1_writer_write_oid(vscf_impl_t *impl, const vsc_data_t value);
+vscf_asn1_writer_write_oid(vscf_impl_t *impl, vsc_data_t value);
 
 //
 //  Mark previously written data of given length as ASN.1 type: SQUENCE.

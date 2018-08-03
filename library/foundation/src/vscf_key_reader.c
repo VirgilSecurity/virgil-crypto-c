@@ -65,7 +65,7 @@
 //  Read public key object.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_reader_read_public_key(vscf_impl_t *impl, const vsc_data_t data) {
+vscf_key_reader_read_public_key(vscf_impl_t *impl, vsc_data_t data) {
 
     const vscf_key_reader_api_t *key_reader_api = vscf_key_reader_api (impl);
     VSCF_ASSERT_PTR (key_reader_api);
@@ -78,7 +78,7 @@ vscf_key_reader_read_public_key(vscf_impl_t *impl, const vsc_data_t data) {
 //  Read private key object.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_reader_read_private_key(vscf_impl_t *impl, const vsc_data_t data) {
+vscf_key_reader_read_private_key(vscf_impl_t *impl, vsc_data_t data) {
 
     const vscf_key_reader_api_t *key_reader_api = vscf_key_reader_api (impl);
     VSCF_ASSERT_PTR (key_reader_api);

@@ -83,7 +83,7 @@ typedef struct vscf_import_public_key_api_t vscf_import_public_key_api_t;
 //  Import public key from the binary format.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_import_public_key(vscf_impl_t *impl, const vsc_data_t data);
+vscf_import_public_key(vscf_impl_t *impl, vsc_data_t data);
 
 //
 //  Return import public key API, or NULL if it is not implemented.

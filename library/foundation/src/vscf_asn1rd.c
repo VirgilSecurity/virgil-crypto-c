@@ -186,7 +186,7 @@ vscf_asn1rd_read_tag_data(vscf_asn1rd_impl_t *asn1rd_impl, int tag, vsc_buffer_t
 //  Reset all internal states and prepare to new ASN.1 reading operations.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_reset(vscf_asn1rd_impl_t *asn1rd_impl, const vsc_data_t data) {
+vscf_asn1rd_reset(vscf_asn1rd_impl_t *asn1rd_impl, vsc_data_t data) {
 
     VSCF_ASSERT_PTR(asn1rd_impl);
     VSCF_ASSERT_PTR(data.bytes);

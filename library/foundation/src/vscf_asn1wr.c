@@ -79,7 +79,7 @@ vscf_asn1wr_mbedtls_has_error(vscf_asn1wr_impl_t *asn1wr_impl, int code);
 //  Write raw data of specific tag the to the buffer.
 //
 static size_t
-vscf_asn1wr_write_raw_data(vscf_asn1wr_impl_t *asn1wr_impl, const vsc_data_t data, int tag);
+vscf_asn1wr_write_raw_data(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t data, int tag);
 
 
 // --------------------------------------------------------------------------
@@ -145,7 +145,7 @@ vscf_asn1wr_mbedtls_has_error(vscf_asn1wr_impl_t *asn1wr_impl, int code) {
 //  Write raw data of specific tag the to the buffer.
 //
 static size_t
-vscf_asn1wr_write_raw_data(vscf_asn1wr_impl_t *asn1wr_impl, const vsc_data_t data, int tag) {
+vscf_asn1wr_write_raw_data(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t data, int tag) {
 
     VSCF_ASSERT_PTR(asn1wr_impl);
     VSCF_ASSERT_PTR(data.bytes);
@@ -360,7 +360,7 @@ vscf_asn1wr_write_null(vscf_asn1wr_impl_t *asn1wr_impl) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_octet_str(vscf_asn1wr_impl_t *asn1wr_impl, const vsc_data_t value) {
+vscf_asn1wr_write_octet_str(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t value) {
 
     VSCF_ASSERT_PTR(asn1wr_impl);
     VSCF_ASSERT_PTR(value.bytes);
@@ -373,7 +373,7 @@ vscf_asn1wr_write_octet_str(vscf_asn1wr_impl_t *asn1wr_impl, const vsc_data_t va
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_utf8_str(vscf_asn1wr_impl_t *asn1wr_impl, const vsc_data_t value) {
+vscf_asn1wr_write_utf8_str(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t value) {
 
     VSCF_ASSERT_PTR(asn1wr_impl);
     VSCF_ASSERT_PTR(value.bytes);
@@ -386,7 +386,7 @@ vscf_asn1wr_write_utf8_str(vscf_asn1wr_impl_t *asn1wr_impl, const vsc_data_t val
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_oid(vscf_asn1wr_impl_t *asn1wr_impl, const vsc_data_t value) {
+vscf_asn1wr_write_oid(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t value) {
 
     VSCF_ASSERT_PTR(asn1wr_impl);
     VSCF_ASSERT_PTR(value.bytes);

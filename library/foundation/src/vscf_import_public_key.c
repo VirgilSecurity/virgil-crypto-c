@@ -68,7 +68,7 @@
 //  Import public key from the binary format.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_import_public_key(vscf_impl_t *impl, const vsc_data_t data) {
+vscf_import_public_key(vscf_impl_t *impl, vsc_data_t data) {
 
     const vscf_import_public_key_api_t *import_public_key_api = vscf_import_public_key_api (impl);
     VSCF_ASSERT_PTR (import_public_key_api);

@@ -81,7 +81,7 @@ typedef struct vscf_sign_api_t vscf_sign_api_t;
 //  Sign data given private key.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_sign(vscf_impl_t *impl, const vsc_data_t data, vsc_buffer_t *signature);
+vscf_sign(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *signature);
 
 //
 //  Return length in bytes required to hold signature.

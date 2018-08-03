@@ -127,19 +127,19 @@ typedef size_t (*vscf_asn1_writer_api_write_null_fn)(vscf_impl_t *impl);
 //  Callback. Write ASN.1 type: OCTET STRING.
 //          Return count of written bytes.
 //
-typedef size_t (*vscf_asn1_writer_api_write_octet_str_fn)(vscf_impl_t *impl, const vsc_data_t value);
+typedef size_t (*vscf_asn1_writer_api_write_octet_str_fn)(vscf_impl_t *impl, vsc_data_t value);
 
 //
 //  Callback. Write ASN.1 type: UTF8String.
 //          Return count of written bytes.
 //
-typedef size_t (*vscf_asn1_writer_api_write_utf8_str_fn)(vscf_impl_t *impl, const vsc_data_t value);
+typedef size_t (*vscf_asn1_writer_api_write_utf8_str_fn)(vscf_impl_t *impl, vsc_data_t value);
 
 //
 //  Callback. Write ASN.1 type: OID.
 //          Return count of written bytes.
 //
-typedef size_t (*vscf_asn1_writer_api_write_oid_fn)(vscf_impl_t *impl, const vsc_data_t value);
+typedef size_t (*vscf_asn1_writer_api_write_oid_fn)(vscf_impl_t *impl, vsc_data_t value);
 
 //
 //  Callback. Mark previously written data of given length as ASN.1 type: SQUENCE.
