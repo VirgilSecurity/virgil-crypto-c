@@ -1254,7 +1254,7 @@ endfunction
 function component_resolve_require_base (require_base, parent)
     check_arguments (my, "require_base, parent", my)
 
-    assert_attribute_one_of (my.require_base, "module, header, feature, class", my)
+    assert_attribute_one_of (my.require_base, "module, header, feature, interface, class", my)
 
     component_resolve_landlord (my.require_base, my.parent)
     component_resolve_attr_scope (my.require_base, my.parent)

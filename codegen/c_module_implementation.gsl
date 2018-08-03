@@ -285,7 +285,7 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
         endnew
     endfor
 
-    for my.impl.require where has_one_of_attribute (require, "module, header, class")
+    for my.impl.require where has_one_of_attribute (require, "module, header, interface, class")
         copy require to my.destination
     endfor
 

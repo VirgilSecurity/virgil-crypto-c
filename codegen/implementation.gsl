@@ -205,7 +205,7 @@ endfunction
 function implementation_resolve_require (require, parent)
     check_arguments (my, "require, parent", my)
 
-    if has_one_of_attribute(my.require, "class, header")
+    if has_one_of_attribute(my.require, "header, interface, class")
         my.require.scope ?= "private"
     endif
 endfunction
@@ -304,6 +304,18 @@ function implementation_create_feature (implementation, destination)
 
         for my.implementation.require where defined (0.feature)
             copy require to feature
+        endfor
+
+        for my.implementation.require where defined (0.class)
+            new require to feature
+                .feature = -1.class
+            endnew
+        endfor
+
+        for my.implementation.require where defined (0.interface)
+            new require to feature
+                .feature = -1.interface
+            endnew
         endfor
 
         for my.implementation.dependency

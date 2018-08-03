@@ -217,6 +217,18 @@ function class_create_feature (class, destination)
         for my.class.require where defined (0.feature)
             copy require to feature
         endfor
+
+        for my.class.require where defined (0.class)
+            new require to feature
+                .feature = -1.class
+            endnew
+        endfor
+
+        for my.class.require where defined (0.interface)
+            new require to feature
+                .feature = -1.interface
+            endnew
+        endfor
     endnew
 endfunction
 

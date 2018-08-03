@@ -11,8 +11,8 @@ attribute names are case-sensitive and we use only lower-case names.
     <implementor name [is_default]>
        <implementation name [project]>
           <context>
-             <require [scope] [project] [library] [module] [header] [feature] [class]>
-                <alternative [scope] [project] [library] [module] [header] [feature] [class]/>
+             <require [scope] [project] [library] [module] [header] [feature] [interface] [class]>
+                <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]/>
              </require>
              <property is_reference name [type] [class] [enum] [callback] [size] [uid] [access] [bits]>
                 <string [access] [length]/>
@@ -113,6 +113,7 @@ dependency to: module, header, feature.
       [ module = "..." ]
       [ header = "..." ]
       [ feature = "..." ]
+      [ interface = "..." ]
       [ class = "..." ]
         >
         <alternative>
@@ -149,6 +150,9 @@ header:
 feature:
     Required feature name. The feature attribute is optional.
 
+interface:
+    Required interface name. The interface attribute is optional.
+
 class:
     Required class name. The class attribute is optional.
 
@@ -166,6 +170,7 @@ alternative requirements that can be used, and in fact replace each other.
       [ module = "..." ]
       [ header = "..." ]
       [ feature = "..." ]
+      [ interface = "..." ]
       [ class = "..." ]
         />
 
@@ -199,6 +204,9 @@ header:
 
 feature:
     Required feature name. The feature attribute is optional.
+
+interface:
+    Required interface name. The interface attribute is optional.
 
 class:
     Required class name. The class attribute is optional.

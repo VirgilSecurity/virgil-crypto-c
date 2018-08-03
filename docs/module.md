@@ -9,8 +9,8 @@ required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
     <module name [c_prefix] [uid] [feature] [scope] [of_class]>
-       <require [scope] [project] [library] [module] [header] [feature] [class]>
-          <alternative [scope] [project] [library] [module] [header] [feature] [class]/>
+       <require [scope] [project] [library] [module] [header] [feature] [interface] [class]>
+          <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]/>
        </require>
        <constant name [c_prefix] [of_class] [uid] [feature] [definition] [value]/>
        <enum [definition] [declaration] [visibility] [c_prefix] [of_class] [uid] [feature]
@@ -146,6 +146,7 @@ dependency to: module, header, feature.
       [ module = "..." ]
       [ header = "..." ]
       [ feature = "..." ]
+      [ interface = "..." ]
       [ class = "..." ]
         >
         <alternative>
@@ -182,6 +183,9 @@ header:
 feature:
     Required feature name. The feature attribute is optional.
 
+interface:
+    Required interface name. The interface attribute is optional.
+
 class:
     Required class name. The class attribute is optional.
 
@@ -199,6 +203,7 @@ alternative requirements that can be used, and in fact replace each other.
       [ module = "..." ]
       [ header = "..." ]
       [ feature = "..." ]
+      [ interface = "..." ]
       [ class = "..." ]
         />
 
@@ -232,6 +237,9 @@ header:
 
 feature:
     Required feature name. The feature attribute is optional.
+
+interface:
+    Required interface name. The interface attribute is optional.
 
 class:
     Required class name. The class attribute is optional.

@@ -310,6 +310,10 @@
         Required feature name.
     </attr>
 
+    <attr name="interface">
+        Required interface name.
+    </attr>
+
     <attr name="class">
         Required class name.
     </attr>
