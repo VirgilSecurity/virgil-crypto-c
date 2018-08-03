@@ -55,12 +55,12 @@
 #include "vscf_random.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_asn1_reader.h"
+#include "vscf_mbedtls_bignum_asn1_writer.h"
 #include "vscf_asn1.h"
 #include "vscf_rsa_public_key_impl.h"
 #include "vscf_rsa_public_key_internal.h"
 
 #include <virgil/common/private/vsc_buffer_defs.h>
-#include <mbedtls/bignum.h>
 //  @end
 
 
@@ -169,8 +169,8 @@ vscf_rsa_public_key_encrypted_len(vscf_rsa_public_key_impl_t *rsa_public_key_imp
 //  Verify data with given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_rsa_public_key_verify(
-        vscf_rsa_public_key_impl_t *rsa_public_key_impl, const vsc_data_t data, const vsc_data_t signature) {
+vscf_rsa_public_key_verify(vscf_rsa_public_key_impl_t *rsa_public_key_impl, const vsc_data_t data,
+        const vsc_data_t signature) {
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
     VSCF_ASSERT_PTR(rsa_public_key_impl->random);
@@ -205,70 +205,11 @@ vscf_rsa_public_key_export_public_key(vscf_rsa_public_key_impl_t *rsa_public_key
 
     vscf_impl_t *asn1wr = rsa_public_key_impl->asn1wr;
     mbedtls_rsa_context *rsa_ctx = &rsa_public_key_impl->rsa_ctx;
-    size_t asn1_len = 0;
 
     vscf_asn1_writer_reset(asn1wr, out);
 
-    //   Write: publicKey
-    size_t exponent_len = mbedtls_mpi_size(&rsa_ctx->E);
-    byte *exponent_start = vscf_asn1_writer_reserve(asn1wr, exponent_len);
-
-    if (exponent_start == NULL) {
-        return vscf_error_SMALL_BUFFER;
-    }
-
-    int mpi_ret = mbedtls_mpi_write_binary(&rsa_ctx->E, exponent_start, exponent_len);
-    VSCF_ASSERT_OPT(0 == mpi_ret);
-
-    //   if number is positive, but most left bit is one, then prepend it with zero byte
-    if (1 == rsa_ctx->E.s && *exponent_start & 0x80) {
-        exponent_start = vscf_asn1_writer_reserve(asn1wr, 1);
-
-        if (exponent_start == NULL) {
-            return vscf_error_SMALL_BUFFER;
-        }
-
-        *exponent_start = 0x00;
-        exponent_len += 1;
-    }
-
-    asn1_len += exponent_len;
-
-    asn1_len += vscf_asn1_writer_write_len(asn1wr, exponent_len);
-    asn1_len += vscf_asn1_writer_write_tag(asn1wr, vscf_asn1_tag_INTEGER);
-
-    if (vscf_asn1_writer_error(asn1wr) != vscf_SUCCESS) {
-        return vscf_asn1_writer_error(asn1wr);
-    }
-
-    //   Write: modulus
-    size_t modulus_len = mbedtls_mpi_size(&rsa_ctx->N);
-    byte *modulus_start = vscf_asn1_writer_reserve(asn1wr, modulus_len);
-
-    if (modulus_start == NULL) {
-        return vscf_error_SMALL_BUFFER;
-    }
-
-    mpi_ret = mbedtls_mpi_write_binary(&rsa_ctx->N, modulus_start, modulus_len);
-    VSCF_ASSERT_OPT(0 == mpi_ret);
-
-    //   if number is positive, but most left bit is one, then prepend it with zero byte
-    if (1 == rsa_ctx->N.s && *modulus_start & 0x80) {
-        modulus_start = vscf_asn1_writer_reserve(asn1wr, 1);
-
-        if (modulus_start == NULL) {
-            return vscf_error_SMALL_BUFFER;
-        }
-
-        *modulus_start = 0x00;
-        modulus_len += 1;
-    }
-
-    asn1_len += modulus_len;
-
-    asn1_len += vscf_asn1_writer_write_len(asn1wr, modulus_len);
-    asn1_len += vscf_asn1_writer_write_tag(asn1wr, vscf_asn1_tag_INTEGER);
-    (void)vscf_asn1_writer_write_sequence(asn1wr, asn1_len);
+    (void)vscf_asn1_writer_write_sequence(asn1wr,
+            vscf_mbedtls_bignum_write_asn1(&rsa_ctx->E, asn1wr) + vscf_mbedtls_bignum_write_asn1(&rsa_ctx->N, asn1wr));
 
     if (vscf_asn1_writer_error(asn1wr) != vscf_SUCCESS) {
         return vscf_error_SMALL_BUFFER;
