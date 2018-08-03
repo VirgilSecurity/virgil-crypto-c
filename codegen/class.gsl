@@ -76,7 +76,12 @@ endfunction
 function _B18_resolve_method_attr_context (method, parent)
     check_arguments (my, "method, parent", my)
 
-    my.method.context ?= "class"
+    if my.parent.context = "none"
+        my.method.context = "none"
+
+    else
+        my.method.context ?= "class"
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
