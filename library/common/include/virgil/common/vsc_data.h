@@ -95,6 +95,12 @@ vsc_data_ctx_size(void);
 VSC_PUBLIC vsc_data_t
 vsc_data(const byte *bytes, size_t len);
 
+//
+//  Creates emty data.
+//
+VSC_PUBLIC vsc_data_t
+vsc_data_empty(void);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

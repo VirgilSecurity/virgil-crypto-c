@@ -88,3 +88,12 @@ vsc_data(const byte *bytes, size_t len) {
 
     return (vsc_data_t){bytes, len};
 }
+
+//
+//  Creates emty data.
+//
+VSC_PUBLIC vsc_data_t
+vsc_data_empty(void) {
+
+    return (vsc_data_t){NULL, 0};
+}

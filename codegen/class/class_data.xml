@@ -17,6 +17,12 @@
 
         <argument name="bytes" type="data"/>
         <argument name="len" type="size"/>
-        <return class=".(class_data_struct_data)" is_reference="0" access="readwrite"/>
+        <return class="data"/>
+    </method>
+
+    <method name="empty" context="none">
+        Creates emty data.
+
+        <return class="data"/>
     </method>
 </class>
