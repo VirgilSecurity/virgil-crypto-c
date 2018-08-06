@@ -88,11 +88,11 @@ struct vscf_rsa_public_key_impl_t {
     //
     vscf_impl_t *random;
     //
-    //  Dependency to the interface 'asn1 writer'.
+    //  Dependency to the interface 'asn1 reader'.
     //
     vscf_impl_t *asn1rd;
     //
-    //  Dependency to the interface 'asn1 reader'.
+    //  Dependency to the interface 'asn1 writer'.
     //
     vscf_impl_t *asn1wr;
     //
@@ -104,11 +104,11 @@ struct vscf_rsa_public_key_impl_t {
     //
     bool is_owning_random:1;
     //
-    //  Ownership status of the dependency to the interface 'asn1 writer'.
+    //  Ownership status of the dependency to the interface 'asn1 reader'.
     //
     bool is_owning_asn1rd:1;
     //
-    //  Ownership status of the dependency to the interface 'asn1 reader'.
+    //  Ownership status of the dependency to the interface 'asn1 writer'.
     //
     bool is_owning_asn1wr:1;
 };

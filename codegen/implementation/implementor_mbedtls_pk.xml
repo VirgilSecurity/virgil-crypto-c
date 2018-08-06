@@ -18,8 +18,8 @@
         </context>
 
         <dependency name="random" interface="random" type="impl"/>
-        <dependency name="asn1rd" interface="asn1 writer" type="impl"/>
-        <dependency name="asn1wr" interface="asn1 reader" type="impl"/>
+        <dependency name="asn1rd" interface="asn1 reader" type="impl"/>
+        <dependency name="asn1wr" interface="asn1 writer" type="impl"/>
 
         <interface name="key"/>
         <interface name="public key"/>
