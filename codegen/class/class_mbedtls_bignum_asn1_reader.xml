@@ -1,0 +1,19 @@
+<class name="mbedtls bignum asn1 reader" scope="internal">
+    Provide method to read type 'mbedtls_mpi' from ASN.1 INTEGER representation.
+
+    <require library="mbedtls" feature="BIGNUM C"/>
+    <require header="mbedtls/bignum.h" scope="public"/>
+
+    <require interface="asn1 reader" scope="private"/>
+    <require class="asn1" scope="private"/>
+    <require module="impl" scope="public"/>
+
+    <method name="read asn1" of_class="mbedtls bignum">
+        Restore state of given MbedTLS big number from ASN.1 INTEGER representation.
+        Client side must check state of 'asn1rd' to define result of reading.
+
+        <argument name="asn1rd" class="impl" access="readwrite"/>
+        <argument name="bignum" class="mbedtls_mpi" access="readwrite"/>
+        <return type="error"/>
+    </method>
+</class>

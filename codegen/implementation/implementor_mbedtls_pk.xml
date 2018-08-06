@@ -6,8 +6,9 @@
         <require library="mbedtls" feature="RSA C"/>
         <require library="mbedtls" feature="BIGNUM C"/>
 
-        <require class="mbedtls bignum asn1 writer"/>
         <require class="asn1"/>
+        <require class="mbedtls bignum asn1 writer"/>
+        <require class="mbedtls bignum asn1 reader"/>
 
         <require header="virgil/common/private/vsc_buffer_defs.h"/>
 
