@@ -55,8 +55,9 @@
 #include "vscf_random.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_asn1_reader.h"
-#include "vscf_mbedtls_bignum_asn1_writer.h"
 #include "vscf_asn1.h"
+#include "vscf_mbedtls_bignum_asn1_writer.h"
+#include "vscf_mbedtls_bignum_asn1_reader.h"
 #include "vscf_rsa_public_key_impl.h"
 #include "vscf_rsa_public_key_internal.h"
 
@@ -207,8 +208,8 @@ vscf_rsa_public_key_export_public_key(vscf_rsa_public_key_impl_t *rsa_public_key
 
     vscf_asn1_writer_reset(asn1wr, out);
 
-    (void)vscf_asn1_writer_write_sequence(asn1wr,
-            vscf_mbedtls_bignum_write_asn1(&rsa_ctx->E, asn1wr) + vscf_mbedtls_bignum_write_asn1(&rsa_ctx->N, asn1wr));
+    vscf_asn1_writer_write_sequence(asn1wr,
+            vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->E) + vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->N));
 
     if (vscf_asn1_writer_error(asn1wr) != vscf_SUCCESS) {
         return vscf_error_SMALL_BUFFER;
@@ -227,7 +228,7 @@ vscf_rsa_public_key_exported_public_key_len(vscf_rsa_public_key_impl_t *rsa_publ
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
 
-    return 0;
+    return 1 + 2 + 3 + 4 + 4 + vscf_rsa_public_key_key_len(rsa_public_key_impl);
 }
 
 //
@@ -242,8 +243,26 @@ vscf_rsa_public_key_import_public_key(vscf_rsa_public_key_impl_t *rsa_public_key
     // }
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
+    VSCF_ASSERT_PTR(rsa_public_key_impl->asn1rd);
     VSCF_ASSERT_PTR(data.bytes);
     VSCF_ASSERT_PTR(data.len > 0);
+
+    vscf_impl_t *asn1rd = rsa_public_key_impl->asn1rd;
+    mbedtls_rsa_context *rsa_ctx = &rsa_public_key_impl->rsa_ctx;
+
+    vscf_asn1_reader_reset(asn1rd, data);
+    vscf_asn1_reader_read_sequence(asn1rd);
+
+    vscf_error_t modulus_ret = vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->N);
+    vscf_error_t exponent_ret = vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->E);
+
+    if (vscf_error_NO_MEMORY == modulus_ret | vscf_error_NO_MEMORY == exponent_ret) {
+        return vscf_error_NO_MEMORY;
+    }
+
+    if (vscf_asn1_reader_error(asn1rd) != vscf_SUCCESS) {
+        return vscf_error_BAD_PKCS1_PUBLIC_KEY;
+    }
 
     return vscf_SUCCESS;
 }
