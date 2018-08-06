@@ -256,7 +256,7 @@ vscf_rsa_public_key_import_public_key(vscf_rsa_public_key_impl_t *rsa_public_key
     vscf_error_t modulus_ret = vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->N);
     vscf_error_t exponent_ret = vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->E);
 
-    if (vscf_error_NO_MEMORY == modulus_ret | vscf_error_NO_MEMORY == exponent_ret) {
+    if ((vscf_error_NO_MEMORY == modulus_ret) | (vscf_error_NO_MEMORY == exponent_ret)) {
         return vscf_error_NO_MEMORY;
     }
 
