@@ -96,8 +96,8 @@ vscf_asn1rd_init_ctx(vscf_asn1rd_impl_t *asn1rd_impl) {
 
     VSCF_ASSERT_PTR(asn1rd_impl);
 
-    vscf_zeroize(asn1rd_impl, sizeof(vscf_asn1rd_impl_t));
-
+    asn1rd_impl->curr = NULL;
+    asn1rd_impl->end = NULL;
     asn1rd_impl->error = vscf_error_UNINITIALIZED;
 
     return vscf_SUCCESS;
@@ -111,7 +111,9 @@ vscf_asn1rd_cleanup_ctx(vscf_asn1rd_impl_t *asn1rd_impl) {
 
     VSCF_ASSERT_PTR(asn1rd_impl);
 
-    vscf_zeroize(asn1rd_impl, sizeof(vscf_asn1rd_impl_t));
+    asn1rd_impl->curr = NULL;
+    asn1rd_impl->end = NULL;
+    asn1rd_impl->error = vscf_error_UNINITIALIZED;
 }
 
 //
@@ -411,7 +413,10 @@ VSCF_PUBLIC vsc_data_t
 vscf_asn1rd_read_data(vscf_asn1rd_impl_t *asn1rd_impl, size_t len) {
 
     VSCF_ASSERT_PTR(asn1rd_impl);
-    VSCF_ASSERT_PTR(len > 0);
+
+    if (asn1rd_impl->error != vscf_SUCCESS) {
+        return vsc_data_empty();
+    }
 
     if (asn1rd_impl->curr + len > asn1rd_impl->end) {
         asn1rd_impl->error = vscf_error_OUT_OF_DATA;
@@ -429,6 +434,7 @@ vscf_asn1rd_read_data(vscf_asn1rd_impl_t *asn1rd_impl, size_t len) {
 //
 VSCF_PUBLIC size_t
 vscf_asn1rd_read_sequence(vscf_asn1rd_impl_t *asn1rd_impl) {
+
     VSCF_ASSERT_PTR(asn1rd_impl);
 
     return vscf_asn1rd_read_tag(asn1rd_impl, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SEQUENCE);

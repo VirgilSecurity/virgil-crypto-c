@@ -97,8 +97,8 @@ vscf_asn1wr_init_ctx(vscf_asn1wr_impl_t *asn1wr_impl) {
 
     VSCF_ASSERT_PTR(asn1wr_impl);
 
-    vscf_zeroize(asn1wr_impl, sizeof(vscf_asn1wr_impl_t));
-
+    asn1wr_impl->start = NULL;
+    asn1wr_impl->curr = NULL;
     asn1wr_impl->error = vscf_error_UNINITIALIZED;
 
     return vscf_SUCCESS;
@@ -112,7 +112,9 @@ vscf_asn1wr_cleanup_ctx(vscf_asn1wr_impl_t *asn1wr_impl) {
 
     VSCF_ASSERT_PTR(asn1wr_impl);
 
-    vscf_zeroize(asn1wr_impl, sizeof(vscf_asn1wr_impl_t));
+    asn1wr_impl->start = NULL;
+    asn1wr_impl->curr = NULL;
+    asn1wr_impl->error = vscf_error_UNINITIALIZED;
 }
 
 //
