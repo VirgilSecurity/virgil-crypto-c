@@ -264,5 +264,11 @@ vscf_rsa_public_key_import_public_key(vscf_rsa_public_key_impl_t *rsa_public_key
         return vscf_error_BAD_PKCS1_PUBLIC_KEY;
     }
 
+    rsa_ctx->len = mbedtls_mpi_size(&rsa_ctx->N);
+
+    if (mbedtls_rsa_complete(rsa_ctx) != 0 || mbedtls_rsa_check_pubkey(rsa_ctx) != 0) {
+        return vscf_error_BAD_PKCS1_PUBLIC_KEY;
+    }
+
     return vscf_SUCCESS;
 }
