@@ -81,4 +81,29 @@
 
         <argument name="value" class="buffer"/>
     </method>
+
+
+    <method name="read data">
+        Read raw data of given length.
+
+        <argument name="len" type="size"/>
+
+        <return class="data"/>
+    </method>
+
+
+    <method name="read sequence">
+        Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+        Return element length.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="read set">
+        Read ASN.1 type: CONSTRUCTED | SET.
+        Return element length.
+
+        <return type="size"/>
+    </method>
 </interface>

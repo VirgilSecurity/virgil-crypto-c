@@ -198,6 +198,26 @@ vscf_asn1rd_read_utf8_str(vscf_asn1rd_impl_t *asn1rd_impl, vsc_buffer_t *value);
 VSCF_PUBLIC void
 vscf_asn1rd_read_oid(vscf_asn1rd_impl_t *asn1rd_impl, vsc_buffer_t *value);
 
+//
+//  Read raw data of given length.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_asn1rd_read_data(vscf_asn1rd_impl_t *asn1rd_impl, size_t len);
+
+//
+//  Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+//  Return element length.
+//
+VSCF_PUBLIC size_t
+vscf_asn1rd_read_sequence(vscf_asn1rd_impl_t *asn1rd_impl);
+
+//
+//  Read ASN.1 type: CONSTRUCTED | SET.
+//  Return element length.
+//
+VSCF_PUBLIC size_t
+vscf_asn1rd_read_set(vscf_asn1rd_impl_t *asn1rd_impl);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

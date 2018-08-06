@@ -118,7 +118,21 @@ static const vscf_asn1_reader_api_t asn1_reader_api = {
     //
     //  Read ASN.1 type: OID.
     //
-    (vscf_asn1_reader_api_read_oid_fn)vscf_asn1rd_read_oid
+    (vscf_asn1_reader_api_read_oid_fn)vscf_asn1rd_read_oid,
+    //
+    //  Read raw data of given length.
+    //
+    (vscf_asn1_reader_api_read_data_fn)vscf_asn1rd_read_data,
+    //
+    //  Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+    //  Return element length.
+    //
+    (vscf_asn1_reader_api_read_sequence_fn)vscf_asn1rd_read_sequence,
+    //
+    //  Read ASN.1 type: CONSTRUCTED | SET.
+    //  Return element length.
+    //
+    (vscf_asn1_reader_api_read_set_fn)vscf_asn1rd_read_set
 };
 
 //
