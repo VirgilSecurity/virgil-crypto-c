@@ -77,7 +77,7 @@
 //  Client side must check state of 'asn1wr' to define result of writing.
 //
 VSCF_PUBLIC size_t
-vscf_mbedtls_bignum_write_asn1(const mbedtls_mpi *bignum, vscf_impl_t *asn1wr) {
+vscf_mbedtls_bignum_write_asn1(vscf_impl_t *asn1wr, const mbedtls_mpi *bignum) {
 
     VSCF_ASSERT_PTR(bignum);
     VSCF_ASSERT_PTR(asn1wr);
