@@ -106,7 +106,11 @@ enum vscf_error_t {
     //
     //  ASN.1 encoded data is corrupted.
     //
-    vscf_error_BAD_ASN1 = -203
+    vscf_error_BAD_ASN1 = -203,
+    //
+    //  ASN.1 representation of PKCS#1 public key is corrupted.
+    //
+    vscf_error_BAD_PKCS1_PUBLIC_KEY = -204
 };
 typedef enum vscf_error_t vscf_error_t;
 
