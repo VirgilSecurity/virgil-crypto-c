@@ -13,8 +13,8 @@
         Returns size of written data.
         Client side must check state of 'asn1wr' to define result of writing.
 
-        <argument name="bignum" class="mbedtls_mpi"/>
         <argument name="asn1wr" class="impl" access="readwrite"/>
+        <argument name="bignum" class="mbedtls_mpi"/>
         <return type="size"/>
     </method>
 </class>
