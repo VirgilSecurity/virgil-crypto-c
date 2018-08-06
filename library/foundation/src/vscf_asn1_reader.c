@@ -208,6 +208,47 @@ vscf_asn1_reader_read_oid(vscf_impl_t *impl, vsc_buffer_t *value) {
 }
 
 //
+//  Read raw data of given length.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_asn1_reader_read_data(vscf_impl_t *impl, size_t len) {
+
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    VSCF_ASSERT_PTR (asn1_reader_api);
+
+    VSCF_ASSERT_PTR (asn1_reader_api->read_data_cb);
+    return asn1_reader_api->read_data_cb (impl, len);
+}
+
+//
+//  Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+//  Return element length.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_reader_read_sequence(vscf_impl_t *impl) {
+
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    VSCF_ASSERT_PTR (asn1_reader_api);
+
+    VSCF_ASSERT_PTR (asn1_reader_api->read_sequence_cb);
+    return asn1_reader_api->read_sequence_cb (impl);
+}
+
+//
+//  Read ASN.1 type: CONSTRUCTED | SET.
+//  Return element length.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_reader_read_set(vscf_impl_t *impl) {
+
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    VSCF_ASSERT_PTR (asn1_reader_api);
+
+    VSCF_ASSERT_PTR (asn1_reader_api->read_set_cb);
+    return asn1_reader_api->read_set_cb (impl);
+}
+
+//
 //  Return asn1 reader API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_asn1_reader_api_t *

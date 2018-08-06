@@ -403,3 +403,45 @@ vscf_asn1rd_read_oid(vscf_asn1rd_impl_t *asn1rd_impl, vsc_buffer_t *value) {
 
     vscf_asn1rd_read_tag_data(asn1rd_impl, MBEDTLS_ASN1_OID, value);
 }
+
+//
+//  Read raw data of given length.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_asn1rd_read_data(vscf_asn1rd_impl_t *asn1rd_impl, size_t len) {
+
+    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(len > 0);
+
+    if (asn1rd_impl->curr + len > asn1rd_impl->end) {
+        asn1rd_impl->error = vscf_error_OUT_OF_DATA;
+        return vsc_data_empty();
+    }
+
+    asn1rd_impl->curr += len;
+
+    return vsc_data(asn1rd_impl->curr - len, len);
+}
+
+//
+//  Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+//  Return element length.
+//
+VSCF_PUBLIC size_t
+vscf_asn1rd_read_sequence(vscf_asn1rd_impl_t *asn1rd_impl) {
+    VSCF_ASSERT_PTR(asn1rd_impl);
+
+    return vscf_asn1rd_read_tag(asn1rd_impl, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SEQUENCE);
+}
+
+//
+//  Read ASN.1 type: CONSTRUCTED | SET.
+//  Return element length.
+//
+VSCF_PUBLIC size_t
+vscf_asn1rd_read_set(vscf_asn1rd_impl_t *asn1rd_impl) {
+
+    VSCF_ASSERT_PTR(asn1rd_impl);
+
+    return vscf_asn1rd_read_tag(asn1rd_impl, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SET);
+}
