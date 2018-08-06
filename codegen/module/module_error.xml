@@ -41,5 +41,9 @@
         <constant name="bad asn1" value="-203">
             ASN.1 encoded data is corrupted.
         </constant>
+
+        <constant name="bad pkcs1 public key" value="-204">
+            ASN.1 representation of PKCS#1 public key is corrupted.
+        </constant>
     </enum>
 </module>
