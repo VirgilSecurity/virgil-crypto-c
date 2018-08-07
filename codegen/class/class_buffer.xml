@@ -65,6 +65,20 @@
     </method>
 
 
+    <method name="is full">
+        Returns true if buffer full.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="is valid">
+        Returns true if buffer is configured and has valid internal states.
+
+        <return type="boolean"/>
+    </method>
+
+
     <method name="bytes">
         Returns underlying buffer bytes.
 
@@ -94,4 +108,16 @@
     </method>
 
 
+    <method name="available len">
+        Returns length of available bytes - bytes that are not in use yet.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="available ptr">
+        Returns pointer to the first available byte to be written.
+
+        <return type="byte" access="readwrite" is_reference="1"/>
+    </method>
 </class>

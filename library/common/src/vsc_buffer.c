@@ -252,13 +252,36 @@ vsc_buffer_take(vsc_buffer_t *buffer_ctx, byte *bytes, size_t bytes_len, vsc_dea
 }
 
 //
+//  Returns true if buffer full.
+//
+VSC_PUBLIC bool
+vsc_buffer_is_full(vsc_buffer_t *buffer_ctx) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
+
+    return buffer_ctx->len == buffer_ctx->capacity;
+}
+
+//
+//  Returns true if buffer is configured and has valid internal states.
+//
+VSC_PUBLIC bool
+vsc_buffer_is_valid(vsc_buffer_t *buffer_ctx) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+
+    return (buffer_ctx->bytes != NULL) && (buffer_ctx->capacity > 0) && (buffer_ctx->len <= buffer_ctx->capacity);
+}
+
+//
 //  Returns underlying buffer bytes.
 //
 VSC_PUBLIC const byte *
 vsc_buffer_bytes(vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
-    VSC_ASSERT_PTR(buffer_ctx->bytes);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
 
     return buffer_ctx->bytes;
 }
@@ -270,7 +293,7 @@ VSC_PUBLIC vsc_data_t
 vsc_buffer_data(vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
-    VSC_ASSERT_PTR(buffer_ctx->bytes);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
 
     return vsc_data(buffer_ctx->bytes, buffer_ctx->len);
 }
@@ -282,7 +305,7 @@ VSC_PUBLIC size_t
 vsc_buffer_capacity(vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
-    VSC_ASSERT_PTR(buffer_ctx->bytes);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
 
     return buffer_ctx->capacity;
 }
@@ -294,7 +317,32 @@ VSC_PUBLIC size_t
 vsc_buffer_len(vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
-    VSC_ASSERT_PTR(buffer_ctx->bytes);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
 
     return buffer_ctx->len;
+}
+
+//
+//  Returns length of available bytes - bytes that are not in use yet.
+//
+VSC_PUBLIC size_t
+vsc_buffer_available_len(vsc_buffer_t *buffer_ctx) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
+
+    return (size_t)(buffer_ctx->capacity - buffer_ctx->len);
+}
+
+//
+//  Returns pointer to the first available byte to be written.
+//
+VSC_PUBLIC byte *
+vsc_buffer_available_ptr(vsc_buffer_t *buffer_ctx) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
+    VSC_ASSERT(!vsc_buffer_is_full(buffer_ctx));
+
+    return buffer_ctx->bytes + buffer_ctx->len;
 }
