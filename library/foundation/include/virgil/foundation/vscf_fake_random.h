@@ -98,8 +98,8 @@ vscf_fake_random_init(vscf_fake_random_impl_t *fake_random_impl);
 //
 //  Cleanup implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_fake_random_init ()'.
-//  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
+//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_fake_random_cleanup(vscf_fake_random_impl_t *fake_random_impl);

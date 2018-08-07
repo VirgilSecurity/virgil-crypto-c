@@ -182,8 +182,8 @@ vscf_hmac256_init(vscf_hmac256_impl_t *hmac256_impl) {
 //
 //  Cleanup implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_hmac256_init ()'.
-//  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
+//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_hmac256_cleanup(vscf_hmac256_impl_t *hmac256_impl) {

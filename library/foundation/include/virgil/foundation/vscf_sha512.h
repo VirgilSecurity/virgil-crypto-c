@@ -105,8 +105,8 @@ vscf_sha512_init(vscf_sha512_impl_t *sha512_impl);
 //
 //  Cleanup implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_sha512_init ()'.
-//  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
+//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_sha512_cleanup(vscf_sha512_impl_t *sha512_impl);

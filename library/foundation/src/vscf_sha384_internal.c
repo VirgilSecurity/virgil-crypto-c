@@ -178,8 +178,8 @@ vscf_sha384_init(vscf_sha384_impl_t *sha384_impl) {
 //
 //  Cleanup implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_sha384_init ()'.
-//  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
+//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_sha384_cleanup(vscf_sha384_impl_t *sha384_impl) {

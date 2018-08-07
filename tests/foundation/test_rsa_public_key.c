@@ -44,12 +44,13 @@
 
 #include "vscf_rsa_public_key.h"
 #include "vscf_asn1rd.h"
+#include "vscf_fake_random.h"
 
 #include "test_data_rsa.h"
 
 
 void
-test__rsa_public_key_key_len__imported__2048_PUBLIC_KEY_PKCS1__returns_256(void) {
+test__rsa_public_key_key_len__imported_2048_PUBLIC_KEY_PKCS1__returns_256(void) {
     vscf_rsa_public_key_impl_t *public_key_impl = vscf_rsa_public_key_new();
     vscf_impl_t *asn1rd = vscf_asn1rd_impl(vscf_asn1rd_new());
 
@@ -64,19 +65,56 @@ test__rsa_public_key_key_len__imported__2048_PUBLIC_KEY_PKCS1__returns_256(void)
     vscf_rsa_public_key_destroy(&public_key_impl);
 }
 
+void
+test__rsa_public_key_encrypt__with_imported_2048_PUBLIC_KEY_PKCS1_and_DATA_1_and_random_AB__returns_2048_ENCRYPTED_DATA_1(
+        void) {
+
+    //  Setup dependencies
+    vscf_rsa_public_key_impl_t *public_key_impl = vscf_rsa_public_key_new();
+    vscf_impl_t *asn1rd = vscf_asn1rd_impl(vscf_asn1rd_new());
+    vscf_rsa_public_key_take_asn1_reader(public_key_impl, &asn1rd);
+
+
+    vscf_fake_random_impl_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_byte(fake_random, 0xAB);
+    vscf_rsa_public_key_use_random(public_key_impl, vscf_fake_random_impl(fake_random));
+
+    //  Import public key
+    vscf_error_t result = vscf_rsa_public_key_import_public_key(
+            public_key_impl, vsc_data(test_rsa_2048_PUBLIC_KEY_PKCS1, test_rsa_2048_PUBLIC_KEY_PKCS1_LEN));
+    VSCF_ASSERT(result == vscf_SUCCESS);
+
+
+    //  Encrypt
+    vsc_buffer_t *out =
+            vsc_buffer_new_with_capacity(vscf_rsa_public_key_encrypted_len(public_key_impl, test_rsa_DATA_1_LEN));
+    vscf_rsa_public_key_encrypt(public_key_impl, vsc_data(test_rsa_DATA_1, test_rsa_DATA_1_LEN), out);
+
+    //  Check
+    TEST_ASSERT_EQUAL(test_rsa_2048_ENCRYPTED_DATA_1_LEN, vsc_buffer_len(out));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_rsa_2048_ENCRYPTED_DATA_1, vsc_buffer_bytes(out), vsc_buffer_len(out));
+
+    //  Cleanup
+    vsc_buffer_destroy(&out);
+    vscf_fake_random_destroy(&fake_random);
+    vscf_rsa_public_key_destroy(&public_key_impl);
+}
+
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
 // --------------------------------------------------------------------------
 // Entrypoint.
+// clang-format off
 // --------------------------------------------------------------------------
 int
 main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__rsa_public_key_key_len__imported__2048_PUBLIC_KEY_PKCS1__returns_256);
+    RUN_TEST(test__rsa_public_key_key_len__imported_2048_PUBLIC_KEY_PKCS1__returns_256);
+    RUN_TEST(test__rsa_public_key_encrypt__with_imported_2048_PUBLIC_KEY_PKCS1_and_DATA_1_and_random_AB__returns_2048_ENCRYPTED_DATA_1);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

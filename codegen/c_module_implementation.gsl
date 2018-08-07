@@ -660,8 +660,8 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
         . = "\
         Cleanup implementation context and it's dependencies.
         This is a reverse action of the function '$(my.refs.c_implementation_method_init) ()'.
-        All dependencies that is not under ownership will be cleaned up.
         All dependencies that is under ownership will be destroyed.
+        All dependencies that is not under ownership will untouched.
         "
 
         _Z19_add_argument_impl (method, my.meta)
@@ -692,7 +692,6 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
                             .(c_class_impl_method_destroy) (&$(my.arg_impl)->$(my.dependency));
 
                         } else {
-                            .(c_class_impl_method_cleanup) ($(my.arg_impl)->$(my.dependency));
                             $(my.arg_impl)->$(my.dependency) = NULL;
                         }
 

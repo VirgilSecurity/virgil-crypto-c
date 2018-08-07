@@ -99,8 +99,8 @@ vscf_asn1rd_init(vscf_asn1rd_impl_t *asn1rd_impl);
 //
 //  Cleanup implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_asn1rd_init ()'.
-//  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
+//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_asn1rd_cleanup(vscf_asn1rd_impl_t *asn1rd_impl);
