@@ -133,8 +133,8 @@ vscf_kdf1_init(vscf_kdf1_impl_t *kdf1_impl) {
 //
 //  Cleanup implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_kdf1_init ()'.
-//  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
+//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_kdf1_cleanup(vscf_kdf1_impl_t *kdf1_impl) {
@@ -152,7 +152,6 @@ vscf_kdf1_cleanup(vscf_kdf1_impl_t *kdf1_impl) {
             vscf_impl_destroy (&kdf1_impl->hash);
 
         } else {
-            vscf_impl_cleanup (kdf1_impl->hash);
             kdf1_impl->hash = NULL;
         }
 

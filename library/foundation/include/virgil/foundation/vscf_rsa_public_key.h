@@ -104,8 +104,8 @@ vscf_rsa_public_key_init(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
 //
 //  Cleanup implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_rsa_public_key_init ()'.
-//  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
+//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_rsa_public_key_cleanup(vscf_rsa_public_key_impl_t *rsa_public_key_impl);

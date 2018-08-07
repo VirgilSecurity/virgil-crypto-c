@@ -133,8 +133,8 @@ vscf_hkdf_init(vscf_hkdf_impl_t *hkdf_impl) {
 //
 //  Cleanup implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_hkdf_init ()'.
-//  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
+//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_hkdf_cleanup(vscf_hkdf_impl_t *hkdf_impl) {
@@ -152,7 +152,6 @@ vscf_hkdf_cleanup(vscf_hkdf_impl_t *hkdf_impl) {
             vscf_impl_destroy (&hkdf_impl->hmac);
 
         } else {
-            vscf_impl_cleanup (hkdf_impl->hmac);
             hkdf_impl->hmac = NULL;
         }
 

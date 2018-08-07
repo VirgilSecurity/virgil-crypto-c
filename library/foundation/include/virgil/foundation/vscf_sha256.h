@@ -105,8 +105,8 @@ vscf_sha256_init(vscf_sha256_impl_t *sha256_impl);
 //
 //  Cleanup implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_sha256_init ()'.
-//  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
+//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_sha256_cleanup(vscf_sha256_impl_t *sha256_impl);
