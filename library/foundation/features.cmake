@@ -95,6 +95,7 @@ option(VSCF_RSA_PUBLIC_KEY "Enable implementation 'rsa public key'." ON)
 option(VSCF_HKDF "Enable implementation 'hkdf'." ON)
 option(VSCF_KDF1 "Enable implementation 'kdf1'." ON)
 option(VSCF_KDF2 "Enable implementation 'kdf2'." ON)
+option(VSCF_FAKE_RANDOM "Enable implementation 'fake random'." ON)
 option(VSCF_ASN1 "Enable class 'asn1'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER "Enable class 'mbedtls bignum asn1 writer'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_READER "Enable class 'mbedtls bignum asn1 reader'." ON)
@@ -149,6 +150,7 @@ mark_as_advanced(
         VSCF_HKDF
         VSCF_KDF1
         VSCF_KDF2
+        VSCF_FAKE_RANDOM
         VSCF_ASN1
         VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
         VSCF_MBEDTLS_BIGNUM_ASN1_READER
@@ -708,6 +710,15 @@ if(VSCF_KDF2 AND NOT VSCF_HASH_STREAM)
     message("--")
     message("Feature VSCF_KDF2 depends on the feature:")
     message("     VSCF_HASH_STREAM - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_FAKE_RANDOM AND NOT VSC_DATA)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_FAKE_RANDOM depends on the feature:")
+    message("     VSC_DATA - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

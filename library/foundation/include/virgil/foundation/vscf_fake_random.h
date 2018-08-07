@@ -46,16 +46,18 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains common functionality for all 'implementation' object.
-//  It is also enumerate all available implementations within crypto libary.
+//  This module contains 'fake random' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_IMPL_H_INCLUDED
-#define VSCF_IMPL_H_INCLUDED
+#ifndef VSCF_FAKE_RANDOM_H_INCLUDED
+#define VSCF_FAKE_RANDOM_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_error.h"
-#include "vscf_api.h"
+#include "vscf_impl.h"
+#include "vscf_random.h"
+
+#include <virgil/common/vsc_data.h>
 //  @end
 
 
@@ -71,76 +73,81 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible implementations within crypto library.
+//  Handles implementation details.
 //
-enum vscf_impl_tag_t {
-    vscf_impl_tag_BEGIN = 0,
-    vscf_impl_tag_AES256_GCM,
-    vscf_impl_tag_ASN1RD,
-    vscf_impl_tag_ASN1WR,
-    vscf_impl_tag_FAKE_RANDOM,
-    vscf_impl_tag_HKDF,
-    vscf_impl_tag_HMAC224,
-    vscf_impl_tag_HMAC256,
-    vscf_impl_tag_HMAC384,
-    vscf_impl_tag_HMAC512,
-    vscf_impl_tag_KDF1,
-    vscf_impl_tag_KDF2,
-    vscf_impl_tag_RSA_PUBLIC_KEY,
-    vscf_impl_tag_SHA224,
-    vscf_impl_tag_SHA256,
-    vscf_impl_tag_SHA384,
-    vscf_impl_tag_SHA512,
-    vscf_impl_tag_END
-};
-typedef enum vscf_impl_tag_t vscf_impl_tag_t;
+typedef struct vscf_fake_random_impl_t vscf_fake_random_impl_t;
 
 //
-//  Generic type for any 'implementation'.
+//  Return size of 'vscf_fake_random_impl_t' type.
 //
-typedef struct vscf_impl_t vscf_impl_t;
+VSCF_PUBLIC size_t
+vscf_fake_random_impl_size(void);
 
 //
-//  Callback type for cleanup action.
+//  Cast to the 'vscf_impl_t' type.
 //
-typedef void (*vscf_impl_cleanup_fn)(vscf_impl_t *impl);
+VSCF_PUBLIC vscf_impl_t *
+vscf_fake_random_impl(vscf_fake_random_impl_t *fake_random_impl);
 
 //
-//  Callback type for delete action.
+//  Perform initialization of preallocated implementation context.
 //
-typedef void (*vscf_impl_delete_fn)(vscf_impl_t *impl);
+VSCF_PUBLIC vscf_error_t
+vscf_fake_random_init(vscf_fake_random_impl_t *fake_random_impl);
 
 //
-//  Return 'API' object that is fulfiled with a meta information
-//  specific to the given implementation object.
-//  Or NULL if object does not implement requested 'API'.
-//
-VSCF_PUBLIC const vscf_api_t *
-vscf_impl_api(vscf_impl_t *impl, vscf_api_tag_t api_tag);
-
-//
-//  Return unique 'Implementation TAG'.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_impl_tag(vscf_impl_t *impl);
-
-//
-//  Cleanup implementation object and it's dependencies.
+//  Cleanup implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_fake_random_init ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_impl_cleanup(vscf_impl_t *impl);
+vscf_fake_random_cleanup(vscf_fake_random_impl_t *fake_random_impl);
 
 //
-//  Delete implementation object and it's dependencies.
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC void
-vscf_impl_delete(vscf_impl_t *impl);
+VSCF_PUBLIC vscf_fake_random_impl_t *
+vscf_fake_random_new(void);
 
 //
-//  Destroy implementation object and it's dependencies.
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_fake_random_new ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
-vscf_impl_destroy(vscf_impl_t **impl_ref);
+vscf_fake_random_delete(vscf_fake_random_impl_t *fake_random_impl);
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_fake_random_new ()'.
+//  All dependencies that is not under ownership will be cleaned up.
+//  All dependencies that is under ownership will be destroyed.
+//  Given reference is nullified.
+//
+VSCF_PUBLIC void
+vscf_fake_random_destroy(vscf_fake_random_impl_t **fake_random_impl_ref);
+
+//
+//  Configure random number generator to generate sequence filled with given byte.
+//
+VSCF_PUBLIC void
+vscf_fake_random_setup_source_byte(vscf_fake_random_impl_t *fake_random_impl, byte byte_source);
+
+//
+//  Configure random number generator to generate random sequence from given data.
+//  Note, that given data is used as circular source.
+//
+VSCF_PUBLIC void
+vscf_fake_random_setup_source_data(vscf_fake_random_impl_t *fake_random_impl, vsc_data_t data_source);
+
+//
+//  Generate rnadom bytes.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_fake_random_random(vscf_fake_random_impl_t *fake_random_impl, byte *data, size_t data_len);
 
 
 // --------------------------------------------------------------------------
@@ -156,5 +163,5 @@ vscf_impl_destroy(vscf_impl_t **impl_ref);
 
 
 //  @footer
-#endif // VSCF_IMPL_H_INCLUDED
+#endif // VSCF_FAKE_RANDOM_H_INCLUDED
 //  @end
