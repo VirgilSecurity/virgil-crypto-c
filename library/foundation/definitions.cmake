@@ -101,6 +101,7 @@ target_compile_definitions(foundation
             "VSCF_HKDF=$<BOOL:${VSCF_HKDF}>"
             "VSCF_KDF1=$<BOOL:${VSCF_KDF1}>"
             "VSCF_KDF2=$<BOOL:${VSCF_KDF2}>"
+            "VSCF_FAKE_RANDOM=$<BOOL:${VSCF_FAKE_RANDOM}>"
             "VSCF_ASN1=$<BOOL:${VSCF_ASN1}>"
             "VSCF_MBEDTLS_BIGNUM_ASN1_WRITER=$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_WRITER}>"
             "VSCF_MBEDTLS_BIGNUM_ASN1_READER=$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_READER}>"

@@ -46,16 +46,21 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains common functionality for all 'implementation' object.
-//  It is also enumerate all available implementations within crypto libary.
+//  Types of the 'fake random' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_IMPL_H_INCLUDED
-#define VSCF_IMPL_H_INCLUDED
+#ifndef VSCF_FAKE_RANDOM_IMPL_H_INCLUDED
+#define VSCF_FAKE_RANDOM_IMPL_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_error.h"
-#include "vscf_api.h"
+#include "vscf_impl_private.h"
+#include "vscf_fake_random.h"
+
+#include <virgil/common/vsc_data.h>
 //  @end
 
 
@@ -71,76 +76,26 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible implementations within crypto library.
+//  Handles implementation details.
 //
-enum vscf_impl_tag_t {
-    vscf_impl_tag_BEGIN = 0,
-    vscf_impl_tag_AES256_GCM,
-    vscf_impl_tag_ASN1RD,
-    vscf_impl_tag_ASN1WR,
-    vscf_impl_tag_FAKE_RANDOM,
-    vscf_impl_tag_HKDF,
-    vscf_impl_tag_HMAC224,
-    vscf_impl_tag_HMAC256,
-    vscf_impl_tag_HMAC384,
-    vscf_impl_tag_HMAC512,
-    vscf_impl_tag_KDF1,
-    vscf_impl_tag_KDF2,
-    vscf_impl_tag_RSA_PUBLIC_KEY,
-    vscf_impl_tag_SHA224,
-    vscf_impl_tag_SHA256,
-    vscf_impl_tag_SHA384,
-    vscf_impl_tag_SHA512,
-    vscf_impl_tag_END
+struct vscf_fake_random_impl_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Implementation specific context.
+    //
+    vsc_data_t data_source;
+    //
+    //  Implementation specific context.
+    //
+    byte byte_source;
+    //
+    //  Implementation specific context.
+    //
+    size_t pos;
 };
-typedef enum vscf_impl_tag_t vscf_impl_tag_t;
-
-//
-//  Generic type for any 'implementation'.
-//
-typedef struct vscf_impl_t vscf_impl_t;
-
-//
-//  Callback type for cleanup action.
-//
-typedef void (*vscf_impl_cleanup_fn)(vscf_impl_t *impl);
-
-//
-//  Callback type for delete action.
-//
-typedef void (*vscf_impl_delete_fn)(vscf_impl_t *impl);
-
-//
-//  Return 'API' object that is fulfiled with a meta information
-//  specific to the given implementation object.
-//  Or NULL if object does not implement requested 'API'.
-//
-VSCF_PUBLIC const vscf_api_t *
-vscf_impl_api(vscf_impl_t *impl, vscf_api_tag_t api_tag);
-
-//
-//  Return unique 'Implementation TAG'.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_impl_tag(vscf_impl_t *impl);
-
-//
-//  Cleanup implementation object and it's dependencies.
-//
-VSCF_PUBLIC void
-vscf_impl_cleanup(vscf_impl_t *impl);
-
-//
-//  Delete implementation object and it's dependencies.
-//
-VSCF_PUBLIC void
-vscf_impl_delete(vscf_impl_t *impl);
-
-//
-//  Destroy implementation object and it's dependencies.
-//
-VSCF_PUBLIC void
-vscf_impl_destroy(vscf_impl_t **impl_ref);
 
 
 // --------------------------------------------------------------------------
@@ -156,5 +111,5 @@ vscf_impl_destroy(vscf_impl_t **impl_ref);
 
 
 //  @footer
-#endif // VSCF_IMPL_H_INCLUDED
+#endif // VSCF_FAKE_RANDOM_IMPL_H_INCLUDED
 //  @end
