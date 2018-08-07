@@ -44,3 +44,12 @@ extern const byte test_rsa_2048_PRIVATE_KEY_PKCS1[];
 
 extern const size_t test_rsa_2048_PUBLIC_KEY_PKCS1_LEN;
 extern const size_t test_rsa_2048_PRIVATE_KEY_PKCS1_LEN;
+
+//
+//  Test data
+//
+extern const byte test_rsa_DATA_1[];
+extern const byte test_rsa_2048_ENCRYPTED_DATA_1[];
+
+extern const size_t test_rsa_DATA_1_LEN;
+extern const size_t test_rsa_2048_ENCRYPTED_DATA_1_LEN;
