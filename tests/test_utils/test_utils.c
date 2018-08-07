@@ -101,8 +101,8 @@ void hexify(const uint8_t *data, size_t data_len, char *hex_str) {
             *hex_str++ = 'a' + l - 10;
         }
 
-        ++hex_str;
-        data_len--;
+        ++data;
+        --data_len;
     }
 }
 
