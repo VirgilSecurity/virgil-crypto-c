@@ -53,8 +53,8 @@
 #include "vscf_assert.h"
 #include "vscf_memory.h"
 #include "vscf_random.h"
-#include "vscf_asn1_writer.h"
 #include "vscf_asn1_reader.h"
+#include "vscf_asn1_writer.h"
 #include "vscf_asn1.h"
 #include "vscf_mbedtls_bignum_asn1_writer.h"
 #include "vscf_mbedtls_bignum_asn1_reader.h"
@@ -136,15 +136,20 @@ vscf_rsa_public_key_encrypt(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
     VSCF_ASSERT_PTR(rsa_public_key_impl->random);
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+
+    VSCF_ASSERT_OPT(vsc_buffer_available_len(out) >= vscf_rsa_public_key_key_len(rsa_public_key_impl));
 
     VSCF_ASSERT_OPT(vscf_rsa_public_key_key_len(rsa_public_key_impl) > 11);
     VSCF_ASSERT_OPT(vscf_rsa_public_key_key_len(rsa_public_key_impl) - 11 >= data.len);
 
     int result = mbedtls_rsa_rsaes_pkcs1_v15_encrypt(&rsa_public_key_impl->rsa_ctx, (mbedtls_random_cb)vscf_random,
-            rsa_public_key_impl->random, MBEDTLS_RSA_PUBLIC, data.len, data.bytes, out->bytes);
+            rsa_public_key_impl->random, MBEDTLS_RSA_PUBLIC, data.len, data.bytes, vsc_buffer_available_ptr(out));
 
     switch (result) {
     case 0:
+        out->len += vscf_rsa_public_key_key_len(rsa_public_key_impl);
         return vscf_SUCCESS;
 
     default:
@@ -174,6 +179,8 @@ vscf_rsa_public_key_verify(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc_
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
     VSCF_ASSERT_PTR(rsa_public_key_impl->random);
+    VSCF_ASSERT_PTR(data.bytes);
+    VSCF_ASSERT_PTR(signature.bytes);
 
     if (signature.len != vscf_rsa_public_key_key_len(rsa_public_key_impl)) {
         return false;
