@@ -399,20 +399,19 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-function _Z19_add_dependency_argument (require, destination, after_argument, meta)
-    check_arguments (my, "require, destination, meta", my)
+function _Z19_add_dependency_argument (dependency, destination, after_argument, meta)
+    check_arguments (my, "dependency, destination, meta", my)
 
     my.refs = meta_refs (my.meta)
 
     my.argument = item_prepend_new ("argument", my.destination, my.after_argument)
 
     scope my.argument
-        .name = my.require.name
-        if my.require.type = "impl"
-            .class = my.refs.class_impl_struct_impl
+        .name = my.dependency.name
+        .class = my.refs.implementation_dependency_class_$(make_id (my.dependency.interface))
+        if my.dependency.type = "impl"
             .access = "readwrite"
-        elsif my.require.type = "api"
-            .class = ".($(make_id ("class", my.require.name, "struct", my.require.name)))"
+        elsif my.dependency.type = "api"
             .access = "readonly"
         endif
     endscope
