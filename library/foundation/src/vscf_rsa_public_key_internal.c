@@ -61,6 +61,7 @@
 #include "vscf_verify_api.h"
 #include "vscf_export_public_key_api.h"
 #include "vscf_import_public_key_api.h"
+#include "vscf_hash.h"
 #include "vscf_random.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_asn1_writer.h"
@@ -246,6 +247,8 @@ vscf_rsa_public_key_init(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
     rsa_public_key_impl->info = &info;
 
+    rsa_public_key_impl->hash = NULL;
+
     rsa_public_key_impl->random = NULL;
 
     rsa_public_key_impl->asn1rd = NULL;
@@ -315,6 +318,11 @@ vscf_rsa_public_key_cleanup(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
         rsa_public_key_impl->is_owning_asn1wr = 0;
     }
 
+    //   Release dependency: 'hash'.
+    if (rsa_public_key_impl->hash) {
+        rsa_public_key_impl->hash = NULL;
+    }
+
     vscf_rsa_public_key_cleanup_ctx (rsa_public_key_impl);
 
     rsa_public_key_impl->info = NULL;
@@ -380,6 +388,19 @@ VSCF_PUBLIC const vscf_public_key_api_t *
 vscf_rsa_public_key_public_key_api(void) {
 
     return &public_key_api;
+}
+
+//
+//  Setup dependency to the interface 'hash' and keep ownership.
+//
+VSCF_PUBLIC void
+vscf_rsa_public_key_use_hash_api(vscf_rsa_public_key_impl_t *rsa_public_key_impl, const vscf_hash_api_t *hash) {
+
+    VSCF_ASSERT_PTR (rsa_public_key_impl);
+    VSCF_ASSERT_PTR (hash);
+    VSCF_ASSERT_PTR (rsa_public_key_impl->hash == NULL);
+
+    rsa_public_key_impl->hash = hash;
 }
 
 //

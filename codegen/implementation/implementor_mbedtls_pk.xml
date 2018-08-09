@@ -17,6 +17,7 @@
             <property name="rsa ctx" class="mbedtls_rsa_context" access="readwrite" is_reference="0"/>
         </context>
 
+        <dependency name="hash" interface="hash" type="api"/>
         <dependency name="random" interface="random" type="impl"/>
         <dependency name="asn1rd" interface="asn1 reader" type="impl"/>
         <dependency name="asn1wr" interface="asn1 writer" type="impl"/>

@@ -54,6 +54,7 @@
 
 #include "vscf_library.h"
 #include "vscf_error.h"
+#include "vscf_hash.h"
 #include "vscf_impl.h"
 #include "vscf_key.h"
 #include "vscf_public_key.h"
@@ -135,6 +136,12 @@ vscf_rsa_public_key_delete(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
 //
 VSCF_PUBLIC void
 vscf_rsa_public_key_destroy(vscf_rsa_public_key_impl_t **rsa_public_key_impl_ref);
+
+//
+//  Setup dependency to the interface 'hash' and keep ownership.
+//
+VSCF_PUBLIC void
+vscf_rsa_public_key_use_hash_api(vscf_rsa_public_key_impl_t *rsa_public_key_impl, const vscf_hash_api_t *hash);
 
 //
 //  Setup dependency to the interface 'random' and keep ownership.
