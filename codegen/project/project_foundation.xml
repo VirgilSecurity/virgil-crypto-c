@@ -91,6 +91,7 @@
     <class name="asn1"/>
     <class name="mbedtls bignum asn1 writer"/>
     <class name="mbedtls bignum asn1 reader"/>
+    <class name="mbedtls md"/>
 
     <module name="assert"/>
     <module name="error"/>
