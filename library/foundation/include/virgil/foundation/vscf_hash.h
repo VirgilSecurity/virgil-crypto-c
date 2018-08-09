@@ -88,6 +88,12 @@ VSCF_PUBLIC const vscf_hash_api_t *
 vscf_hash_api(vscf_impl_t *impl);
 
 //
+//  Return hash info API.
+//
+VSCF_PUBLIC const vscf_hash_info_api_t *
+vscf_hash_hash_info_api(const vscf_hash_api_t *hash_api);
+
+//
 //  Check if given object implements interface 'hash'.
 //
 VSCF_PUBLIC bool

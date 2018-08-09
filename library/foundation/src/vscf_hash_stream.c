@@ -113,6 +113,17 @@ vscf_hash_stream_api(vscf_impl_t *impl) {
 }
 
 //
+//  Return hash info API.
+//
+VSCF_PUBLIC const vscf_hash_info_api_t *
+vscf_hash_stream_hash_info_api(const vscf_hash_stream_api_t *hash_stream_api) {
+
+    VSCF_ASSERT_PTR (hash_stream_api);
+
+    return hash_stream_api->hash_info_api;
+}
+
+//
 //  Check if given object implements interface 'hash stream'.
 //
 VSCF_PUBLIC bool

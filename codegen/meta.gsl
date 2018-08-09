@@ -276,12 +276,17 @@ function _X17_add_entity_interface (meta, interface)
                 make_id ("class", my.api_name, "struct", my.api_name, "property impl tag"))
 
         #   Inherited interface
-        for my.interface.inherit
-            my.inherit_api_name = cat (inherit.interface, "api")
+        for my.interface.inherit as inherited
+            my.inherited_interface_name = cat (inherited.interface, "api")
 
-            _X17_add_smart_linked_name (entity, "property inherited", my.inherit_api_name)
-            _X17_add_link (entity, "class inherited $(my.inherit_api_name) ", \
-                    make_id ("class", my.inherit_api_name, "struct", my.inherit_api_name))
+            _X17_add_name (entity, "interface property inherited $(inherited.interface)", my.inherited_interface_name)
+            _X17_add_name (entity, "interface method inherited $(inherited.interface)", my.inherited_interface_name)
+
+            _X17_add_link (entity, "interface property inherited $(inherited.interface) ", \
+                    make_id ("class", my.api_name, "struct", my.api_name, "property", my.inherited_interface_name))
+
+            _X17_add_link (entity, "interface class inherited $(inherited.interface) ", \
+                    make_id ("class", my.inherited_interface_name, "struct", my.inherited_interface_name))
         endfor
 
         #   Constants
