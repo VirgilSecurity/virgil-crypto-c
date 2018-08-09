@@ -100,6 +100,17 @@ vscf_key_reader_api(vscf_impl_t *impl) {
 }
 
 //
+//  Return error context API.
+//
+VSCF_PUBLIC const vscf_error_context_api_t *
+vscf_key_reader_error_context_api(const vscf_key_reader_api_t *key_reader_api) {
+
+    VSCF_ASSERT_PTR (key_reader_api);
+
+    return key_reader_api->error_context_api;
+}
+
+//
 //  Check if given object implements interface 'key reader'.
 //
 VSCF_PUBLIC bool

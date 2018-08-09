@@ -632,6 +632,14 @@ function component_resolve_instance_attr_enum (instance, parent)
     check_arguments (my, "instance, parent")
 
     component_require_attr_enum (my.instance, my)
+
+    #   Resolve enum shortcuts
+    if my.instance.enum = "api tag"
+        my.instance.enum = ".(class_api_enum_tag)"
+
+    elsif my.instance.enum = "impl tag"
+        my.instance.enum = ".(class_impl_enum_tag)"
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------

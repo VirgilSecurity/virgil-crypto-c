@@ -82,6 +82,12 @@ VSCF_PUBLIC const vscf_public_key_api_t *
 vscf_public_key_api(vscf_impl_t *impl);
 
 //
+//  Return key API.
+//
+VSCF_PUBLIC const vscf_key_api_t *
+vscf_public_key_key_api(const vscf_public_key_api_t *public_key_api);
+
+//
 //  Check if given object implements interface 'public key'.
 //
 VSCF_PUBLIC bool

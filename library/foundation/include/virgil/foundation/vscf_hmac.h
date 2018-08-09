@@ -89,6 +89,12 @@ VSCF_PUBLIC const vscf_hmac_api_t *
 vscf_hmac_api(vscf_impl_t *impl);
 
 //
+//  Return hmac info API.
+//
+VSCF_PUBLIC const vscf_hmac_info_api_t *
+vscf_hmac_hmac_info_api(const vscf_hmac_api_t *hmac_api);
+
+//
 //  Check if given object implements interface 'hmac'.
 //
 VSCF_PUBLIC bool
