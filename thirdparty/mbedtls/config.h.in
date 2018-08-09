@@ -49,7 +49,7 @@
 #cmakedefine MBEDTLS_GCM_C
 #cmakedefine MBEDTLS_MD_C
 #cmakedefine MBEDTLS_BIGNUM_C
-#cmakedefine MBEDTLS_PKCS1_V15
+#cmakedefine MBEDTLS_PKCS1_V21
 #cmakedefine MBEDTLS_OID_C
 #cmakedefine MBEDTLS_RSA_C
 #cmakedefine MBEDTLS_ASN1_PARSE_C
