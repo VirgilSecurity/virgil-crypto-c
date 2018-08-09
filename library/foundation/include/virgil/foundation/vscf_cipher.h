@@ -101,6 +101,18 @@ vscf_cipher_api(vscf_impl_t *impl);
 VSCF_PUBLIC bool
 vscf_cipher_is_implemented(vscf_impl_t *impl);
 
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_cipher_api_tag(const vscf_cipher_api_t *cipher_api);
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_cipher_impl_tag(const vscf_cipher_api_t *cipher_api);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -97,6 +97,28 @@ vscf_verify_is_implemented(vscf_impl_t *impl) {
     return vscf_impl_api (impl, vscf_api_tag_VERIFY) != NULL;
 }
 
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_verify_api_tag(const vscf_verify_api_t *verify_api) {
+
+    VSCF_ASSERT_PTR (verify_api);
+
+    return verify_api->api_tag;
+}
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_verify_impl_tag(const vscf_verify_api_t *verify_api) {
+
+    VSCF_ASSERT_PTR (verify_api);
+
+    return verify_api->impl_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

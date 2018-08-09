@@ -97,6 +97,28 @@ vscf_error_context_is_implemented(vscf_impl_t *impl) {
     return vscf_impl_api (impl, vscf_api_tag_ERROR_CONTEXT) != NULL;
 }
 
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_error_context_api_tag(const vscf_error_context_api_t *error_context_api) {
+
+    VSCF_ASSERT_PTR (error_context_api);
+
+    return error_context_api->api_tag;
+}
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_error_context_impl_tag(const vscf_error_context_api_t *error_context_api) {
+
+    VSCF_ASSERT_PTR (error_context_api);
+
+    return error_context_api->impl_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

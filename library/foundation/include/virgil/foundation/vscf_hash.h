@@ -93,6 +93,18 @@ vscf_hash_api(vscf_impl_t *impl);
 VSCF_PUBLIC bool
 vscf_hash_is_implemented(vscf_impl_t *impl);
 
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_hash_api_tag(const vscf_hash_api_t *hash_api);
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_hash_impl_tag(const vscf_hash_api_t *hash_api);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

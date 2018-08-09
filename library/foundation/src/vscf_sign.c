@@ -110,6 +110,28 @@ vscf_sign_is_implemented(vscf_impl_t *impl) {
     return vscf_impl_api (impl, vscf_api_tag_SIGN) != NULL;
 }
 
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_sign_api_tag(const vscf_sign_api_t *sign_api) {
+
+    VSCF_ASSERT_PTR (sign_api);
+
+    return sign_api->api_tag;
+}
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_sign_impl_tag(const vscf_sign_api_t *sign_api) {
+
+    VSCF_ASSERT_PTR (sign_api);
+
+    return sign_api->impl_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -93,6 +93,18 @@ vscf_private_key_api(vscf_impl_t *impl);
 VSCF_PUBLIC bool
 vscf_private_key_is_implemented(vscf_impl_t *impl);
 
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_private_key_api_tag(const vscf_private_key_api_t *private_key_api);
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_private_key_impl_tag(const vscf_private_key_api_t *private_key_api);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
