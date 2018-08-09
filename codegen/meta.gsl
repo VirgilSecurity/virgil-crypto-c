@@ -173,13 +173,14 @@ function _X17_add_entity_api (meta)
         .is_active = 1
 
         _X17_add_smart_linked_name (entity, "class", "api")
-        _X17_add_smart_linked_name (entity, "method", "api")
-        _X17_add_smart_linked_name (entity, "struct", "api")
         _X17_add_smart_linked_name (entity, "module", "api")
         _X17_add_smart_linked_name (entity, "module", "api private")
-        _X17_add_smart_linked_name (entity, "argument", "api tag")
-        _X17_add_smart_linked_name (entity, "property", "api tag")
-        _X17_add_smart_linked_name (entity, "property", "api array")
+
+        _X17_add_smart_name (entity, "method", "api")
+        _X17_add_smart_name (entity, "struct", "api")
+        _X17_add_smart_name (entity, "argument", "api tag")
+        _X17_add_smart_name (entity, "property", "api tag")
+        _X17_add_smart_name (entity, "property", "api array")
 
         _X17_add_smart_link (entity, "class api struct api")
         _X17_add_smart_link (entity, "class api enum tag")
@@ -207,12 +208,13 @@ function _X17_add_entity_impl (meta)
         .is_active = 1
 
         _X17_add_smart_linked_name (entity, "class", "impl")
-        _X17_add_smart_linked_name (entity, "struct", "impl")
-        _X17_add_smart_linked_name (entity, "type", "impl")
         _X17_add_smart_linked_name (entity, "module", "impl")
         _X17_add_smart_linked_name (entity, "module", "impl private")
-        _X17_add_smart_linked_name (entity, "argument", "impl")
-        _X17_add_smart_linked_name (entity, "property", "impl tag")
+
+        _X17_add_smart_name (entity, "struct", "impl")
+        _X17_add_smart_name (entity, "type", "impl")
+        _X17_add_smart_name (entity, "argument", "impl")
+        _X17_add_smart_name (entity, "property", "impl tag")
 
         _X17_add_smart_name (entity, "method", "impl")
         _X17_add_smart_name (entity, "method", "impl size")
