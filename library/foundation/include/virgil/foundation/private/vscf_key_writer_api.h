@@ -106,6 +106,10 @@ struct vscf_key_writer_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Write public key object.
     //
     vscf_key_writer_api_write_public_key_fn write_public_key_cb;

@@ -94,8 +94,11 @@ function _Z19_add_instance_interface_api (impl, interface_api, destination, meta
             my.value = item_copy_to (property, variable, "value")
 
             scope my.value
-                if property.tag = "tag"
+                if property.tag = "api_tag"
                     .value = property.value #   Actually this attribute already there
+
+                elsif property.tag = "impl_tag"
+                    .value = my.refs.implementation_constant_tag
 
                 elsif property.tag = "api"
                     .value = my.refs.implementation_variable_$(make_id (property.name))
@@ -194,7 +197,7 @@ function _Z19_add_instance_impl_info (impl, source, destination, meta)
         for my.impl_info.property
             my.value = item_copy_to (property, variable, "value")
             scope my.value
-                if property.tag = "tag"
+                if property.tag = "impl_tag"
                     .value = my.refs.implementation_constant_tag
 
                 elsif property.tag = "api_array"

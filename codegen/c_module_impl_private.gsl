@@ -66,7 +66,7 @@ function _A12_add_struct_info (meta, destination)
             "
             .name = my.names.property_impl_tag
             .enum = ".(class_impl_enum_tag)"
-            .tag = "tag"
+            .tag = "impl_tag"
         endnew
 
         new property

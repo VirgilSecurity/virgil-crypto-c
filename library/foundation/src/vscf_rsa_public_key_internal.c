@@ -83,6 +83,10 @@ static const vscf_key_api_t key_api = {
     //
     vscf_api_tag_KEY,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_RSA_PUBLIC_KEY,
+    //
     //  Length of the key in bytes.
     //
     (vscf_key_api_key_len_fn)vscf_rsa_public_key_key_len,
@@ -102,6 +106,10 @@ static const vscf_public_key_api_t public_key_api = {
     //
     vscf_api_tag_PUBLIC_KEY,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_RSA_PUBLIC_KEY,
+    //
     //  Link to the inherited interface API 'key'.
     //
     &key_api
@@ -116,6 +124,10 @@ static const vscf_encrypt2_api_t encrypt2_api = {
     //  For interface 'encrypt2' MUST be equal to the 'vscf_api_tag_ENCRYPT2'.
     //
     vscf_api_tag_ENCRYPT2,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_RSA_PUBLIC_KEY,
     //
     //  Encrypt given data.
     //
@@ -136,6 +148,10 @@ static const vscf_verify_api_t verify_api = {
     //
     vscf_api_tag_VERIFY,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_RSA_PUBLIC_KEY,
+    //
     //  Verify data with given public key and signature.
     //
     (vscf_verify_api_verify_fn)vscf_rsa_public_key_verify
@@ -150,6 +166,10 @@ static const vscf_export_public_key_api_t export_public_key_api = {
     //  For interface 'export_public_key' MUST be equal to the 'vscf_api_tag_EXPORT_PUBLIC_KEY'.
     //
     vscf_api_tag_EXPORT_PUBLIC_KEY,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_RSA_PUBLIC_KEY,
     //
     //  Export public key in the binary format.
     //
@@ -169,6 +189,10 @@ static const vscf_import_public_key_api_t import_public_key_api = {
     //  For interface 'import_public_key' MUST be equal to the 'vscf_api_tag_IMPORT_PUBLIC_KEY'.
     //
     vscf_api_tag_IMPORT_PUBLIC_KEY,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_RSA_PUBLIC_KEY,
     //
     //  Import public key from the binary format.
     //

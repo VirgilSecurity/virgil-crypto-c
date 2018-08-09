@@ -85,6 +85,10 @@ struct vscf_error_context_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Return last occurred error.
     //
     vscf_error_context_api_error_fn error_cb;

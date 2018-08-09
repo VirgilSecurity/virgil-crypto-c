@@ -76,6 +76,10 @@ static const vscf_ex_kdf_api_t ex_kdf_api = {
     //
     vscf_api_tag_EX_KDF,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_HKDF,
+    //
     //  Calculate hash over given data.
     //
     (vscf_ex_kdf_api_derive_fn)vscf_hkdf_derive

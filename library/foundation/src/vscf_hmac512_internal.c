@@ -77,6 +77,10 @@ static const vscf_hmac_info_api_t hmac_info_api = {
     //
     vscf_api_tag_HMAC_INFO,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_HMAC512,
+    //
     //  Size of the digest (hmac output).
     //
     vscf_hmac512_DIGEST_SIZE
@@ -91,6 +95,10 @@ static const vscf_hmac_api_t hmac_api = {
     //  For interface 'hmac' MUST be equal to the 'vscf_api_tag_HMAC'.
     //
     vscf_api_tag_HMAC,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_HMAC512,
     //
     //  Link to the inherited interface API 'hmac info'.
     //
@@ -110,6 +118,10 @@ static const vscf_hmac_stream_api_t hmac_stream_api = {
     //  For interface 'hmac_stream' MUST be equal to the 'vscf_api_tag_HMAC_STREAM'.
     //
     vscf_api_tag_HMAC_STREAM,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_HMAC512,
     //
     //  Link to the inherited interface API 'hmac info'.
     //

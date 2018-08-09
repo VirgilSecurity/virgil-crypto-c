@@ -224,6 +224,9 @@ function _X17_add_entity_impl (meta)
         _X17_add_smart_link (entity, "class impl struct impl")
         _X17_add_smart_link (entity, "class impl struct info")
 
+        _X17_add_smart_link (entity, "class impl enum tag")
+        _X17_add_smart_link (entity, "class impl enum tag constant begin")
+        _X17_add_smart_link (entity, "class impl enum tag constant end")
         return entity
     endnew
 endfunction

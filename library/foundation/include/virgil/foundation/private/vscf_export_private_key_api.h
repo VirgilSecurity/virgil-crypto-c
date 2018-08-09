@@ -92,6 +92,10 @@ struct vscf_export_private_key_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Export private key in the binary format.
     //
     vscf_export_private_key_api_export_private_key_fn export_private_key_cb;
