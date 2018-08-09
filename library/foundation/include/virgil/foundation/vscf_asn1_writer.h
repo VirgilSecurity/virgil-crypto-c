@@ -185,6 +185,18 @@ vscf_asn1_writer_api(vscf_impl_t *impl);
 VSCF_PUBLIC bool
 vscf_asn1_writer_is_implemented(vscf_impl_t *impl);
 
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_asn1_writer_api_tag(const vscf_asn1_writer_api_t *asn1_writer_api);
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_asn1_writer_impl_tag(const vscf_asn1_writer_api_t *asn1_writer_api);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

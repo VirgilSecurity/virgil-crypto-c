@@ -92,6 +92,18 @@ vscf_error_context_api(vscf_impl_t *impl);
 VSCF_PUBLIC bool
 vscf_error_context_is_implemented(vscf_impl_t *impl);
 
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_error_context_api_tag(const vscf_error_context_api_t *error_context_api);
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_error_context_impl_tag(const vscf_error_context_api_t *error_context_api);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -110,6 +110,28 @@ vscf_key_reader_is_implemented(vscf_impl_t *impl) {
     return vscf_impl_api (impl, vscf_api_tag_KEY_READER) != NULL;
 }
 
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_key_reader_api_tag(const vscf_key_reader_api_t *key_reader_api) {
+
+    VSCF_ASSERT_PTR (key_reader_api);
+
+    return key_reader_api->api_tag;
+}
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_key_reader_impl_tag(const vscf_key_reader_api_t *key_reader_api) {
+
+    VSCF_ASSERT_PTR (key_reader_api);
+
+    return key_reader_api->impl_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
