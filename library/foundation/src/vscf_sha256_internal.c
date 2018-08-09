@@ -77,6 +77,10 @@ static const vscf_hash_info_api_t hash_info_api = {
     //
     vscf_api_tag_HASH_INFO,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_SHA256,
+    //
     //  Size of the digest (hashing output).
     //
     vscf_sha256_DIGEST_SIZE
@@ -91,6 +95,10 @@ static const vscf_hash_api_t hash_api = {
     //  For interface 'hash' MUST be equal to the 'vscf_api_tag_HASH'.
     //
     vscf_api_tag_HASH,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_SHA256,
     //
     //  Link to the inherited interface API 'hash info'.
     //
@@ -110,6 +118,10 @@ static const vscf_hash_stream_api_t hash_stream_api = {
     //  For interface 'hash_stream' MUST be equal to the 'vscf_api_tag_HASH_STREAM'.
     //
     vscf_api_tag_HASH_STREAM,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_SHA256,
     //
     //  Link to the inherited interface API 'hash info'.
     //

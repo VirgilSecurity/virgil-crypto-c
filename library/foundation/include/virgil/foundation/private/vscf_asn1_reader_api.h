@@ -156,6 +156,10 @@ struct vscf_asn1_reader_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Reset all internal states and prepare to new ASN.1 reading operations.
     //
     vscf_asn1_reader_api_reset_fn reset_cb;

@@ -75,6 +75,10 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     //
     vscf_api_tag_ASN1_WRITER,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ASN1WR,
+    //
     //  Reset all internal states and prepare to new ASN.1 writing operations.
     //
     (vscf_asn1_writer_api_reset_fn)vscf_asn1wr_reset,

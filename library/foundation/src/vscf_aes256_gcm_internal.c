@@ -82,6 +82,10 @@ static const vscf_encrypt_api_t encrypt_api = {
     //
     vscf_api_tag_ENCRYPT,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
+    //
     //  Encrypt given data.
     //
     (vscf_encrypt_api_encrypt_fn)vscf_aes256_gcm_encrypt,
@@ -103,6 +107,10 @@ static const vscf_decrypt_api_t decrypt_api = {
     //
     vscf_api_tag_DECRYPT,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
+    //
     //  Decrypt given data.
     //
     (vscf_decrypt_api_decrypt_fn)vscf_aes256_gcm_decrypt,
@@ -123,6 +131,10 @@ static const vscf_cipher_info_api_t cipher_info_api = {
     //  For interface 'cipher_info' MUST be equal to the 'vscf_api_tag_CIPHER_INFO'.
     //
     vscf_api_tag_CIPHER_INFO,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
     //
     //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
     //
@@ -150,6 +162,10 @@ static const vscf_cipher_api_t cipher_api = {
     //  For interface 'cipher' MUST be equal to the 'vscf_api_tag_CIPHER'.
     //
     vscf_api_tag_CIPHER,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
     //
     //  Link to the inherited interface API 'encrypt'.
     //
@@ -182,6 +198,10 @@ static const vscf_cipher_auth_info_api_t cipher_auth_info_api = {
     //
     vscf_api_tag_CIPHER_AUTH_INFO,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
+    //
     //  Defines authentication tag length in bytes.
     //
     vscf_aes256_gcm_AUTH_TAG_LEN
@@ -196,6 +216,10 @@ static const vscf_auth_encrypt_api_t auth_encrypt_api = {
     //  For interface 'auth_encrypt' MUST be equal to the 'vscf_api_tag_AUTH_ENCRYPT'.
     //
     vscf_api_tag_AUTH_ENCRYPT,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
     //
     //  Encrypt given data.
     //  If 'tag' is not give, then it will written to the 'enc'.
@@ -213,6 +237,10 @@ static const vscf_auth_decrypt_api_t auth_decrypt_api = {
     //
     vscf_api_tag_AUTH_DECRYPT,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
+    //
     //  Decrypt given data.
     //  If 'tag' is not give, then it will be taken from the 'enc'.
     //
@@ -228,6 +256,10 @@ static const vscf_cipher_auth_api_t cipher_auth_api = {
     //  For interface 'cipher_auth' MUST be equal to the 'vscf_api_tag_CIPHER_AUTH'.
     //
     vscf_api_tag_CIPHER_AUTH,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
     //
     //  Link to the inherited interface API 'cipher auth info'.
     //

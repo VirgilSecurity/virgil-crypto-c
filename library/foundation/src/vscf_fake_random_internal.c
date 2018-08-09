@@ -75,6 +75,10 @@ static const vscf_random_api_t random_api = {
     //
     vscf_api_tag_RANDOM,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_FAKE_RANDOM,
+    //
     //  Generate rnadom bytes.
     //
     (vscf_random_api_random_fn)vscf_fake_random_random

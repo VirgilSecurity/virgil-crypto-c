@@ -90,6 +90,10 @@ struct vscf_key_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Length of the key in bytes.
     //
     vscf_key_api_key_len_fn key_len_cb;
