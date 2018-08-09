@@ -52,7 +52,7 @@ option(MBEDTLS_AES_C "" ON)
 option(MBEDTLS_GCM_C "" ON)
 option(MBEDTLS_MD_C "" ON)
 option(MBEDTLS_BIGNUM_C "" ON)
-option(MBEDTLS_PKCS1_V15 "" ON)
+option(MBEDTLS_PKCS1_V21 "" ON)
 option(MBEDTLS_OID_C "" ON)
 option(MBEDTLS_ASN1_PARSE_C "" ON)
 option(MBEDTLS_ASN1_WRITE_C "" ON)
@@ -71,7 +71,7 @@ mark_as_advanced(
         MBEDTLS_GCM_C
         MBEDTLS_MD_C
         MBEDTLS_BIGNUM_C
-        MBEDTLS_PKCS1_V15
+        MBEDTLS_PKCS1_V21
         MBEDTLS_OID_C
         MBEDTLS_ASN1_PARSE_C
         MBEDTLS_ASN1_WRITE_C
@@ -102,11 +102,11 @@ if(MBEDTLS_RSA_C AND NOT MBEDTLS_OID_C)
     message(FATAL_ERROR)
 endif()
 
-if(MBEDTLS_RSA_C AND NOT MBEDTLS_PKCS1_V15)
+if(MBEDTLS_RSA_C AND NOT MBEDTLS_PKCS1_V21)
     message("-- error --")
     message("--")
     message("Feature MBEDTLS_RSA_C depends on the feature:")
-    message("     MBEDTLS_PKCS1_V15 - which is disabled.")
+    message("     MBEDTLS_PKCS1_V21 - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

@@ -99,6 +99,7 @@ option(VSCF_FAKE_RANDOM "Enable implementation 'fake random'." ON)
 option(VSCF_ASN1 "Enable class 'asn1'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER "Enable class 'mbedtls bignum asn1 writer'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_READER "Enable class 'mbedtls bignum asn1 reader'." ON)
+option(VSCF_MBEDTLS_MD "Enable class 'mbedtls md'." ON)
 mark_as_advanced(
         VSCF_CIPHER
         VSCF_AUTH_ENCRYPT
@@ -154,6 +155,7 @@ mark_as_advanced(
         VSCF_ASN1
         VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
         VSCF_MBEDTLS_BIGNUM_ASN1_READER
+        VSCF_MBEDTLS_MD
         )
 
 if(VSCF_CIPHER AND NOT VSCF_ENCRYPT)
@@ -633,6 +635,15 @@ if(VSCF_RSA_PUBLIC_KEY AND NOT MBEDTLS_BIGNUM_C)
     message(FATAL_ERROR)
 endif()
 
+if(VSCF_RSA_PUBLIC_KEY AND NOT MBEDTLS_PKCS1_V21)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_RSA_PUBLIC_KEY depends on the feature:")
+    message("     MBEDTLS_PKCS1_V21 - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCF_RSA_PUBLIC_KEY AND NOT VSCF_ASN1)
     message("-- error --")
     message("--")
@@ -656,6 +667,15 @@ if(VSCF_RSA_PUBLIC_KEY AND NOT VSCF_MBEDTLS_BIGNUM_ASN1_READER)
     message("--")
     message("Feature VSCF_RSA_PUBLIC_KEY depends on the feature:")
     message("     VSCF_MBEDTLS_BIGNUM_ASN1_READER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_RSA_PUBLIC_KEY AND NOT VSCF_MBEDTLS_MD)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_RSA_PUBLIC_KEY depends on the feature:")
+    message("     VSCF_MBEDTLS_MD - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
