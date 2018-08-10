@@ -146,11 +146,11 @@ vscf_rsa_public_key_encrypt(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc
     size_t hash_len = vscf_hash_info_digest_size(vscf_hash_hash_info_api(rsa_public_key_impl->hash));
     VSCF_ASSERT_OPT(vscf_rsa_public_key_key_len(rsa_public_key_impl) >= data.len + 2 * hash_len + 2);
 
-    mbedtls_rsa_set_padding(&rsa_public_key_impl->rsa_ctx, MBEDTLS_RSA_PKCS_V21,
-            vscf_mbedtls_md_map_impl_tag(vscf_hash_impl_tag(rsa_public_key_impl->hash)));
+    mbedtls_md_type_t md_alg = vscf_mbedtls_md_map_impl_tag(vscf_hash_impl_tag(rsa_public_key_impl->hash));
+    mbedtls_rsa_set_padding(&rsa_public_key_impl->rsa_ctx, MBEDTLS_RSA_PKCS_V21, md_alg);
 
     int result = mbedtls_rsa_rsaes_oaep_encrypt(&rsa_public_key_impl->rsa_ctx, (mbedtls_random_cb)vscf_random,
-            rsa_public_key_impl->random, MBEDTLS_RSA_PUBLIC, (const unsigned char *)"", 0, data.len, data.bytes,
+            rsa_public_key_impl->random, MBEDTLS_RSA_PUBLIC, NULL, 0, data.len, data.bytes,
             vsc_buffer_available_ptr(out));
 
     switch (result) {
@@ -190,10 +190,9 @@ vscf_rsa_public_key_verify(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc_
         return false;
     }
 
+    mbedtls_md_type_t md_alg = vscf_mbedtls_md_map_impl_tag(vscf_hash_impl_tag(rsa_public_key_impl->hash));
     int result = mbedtls_rsa_rsassa_pss_verify(&rsa_public_key_impl->rsa_ctx, (mbedtls_random_cb)vscf_random,
-            rsa_public_key_impl->random, MBEDTLS_RSA_PUBLIC,
-            vscf_mbedtls_md_map_impl_tag(vscf_hash_impl_tag(rsa_public_key_impl->hash)), data.len, data.bytes,
-            signature.bytes);
+            rsa_public_key_impl->random, MBEDTLS_RSA_PUBLIC, md_alg, data.len, data.bytes, signature.bytes);
 
     return result == 0 ? true : false;
 }
