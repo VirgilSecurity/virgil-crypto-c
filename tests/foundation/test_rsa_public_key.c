@@ -37,13 +37,15 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE (VSCF_RSA_PUBLIC_KEY && VSCF_FAKE_RANDOM && VSCF_SHA512)
+#define TEST_DEPENDENCIES_AVAILABLE                                                                                    \
+    (VSCF_RSA_PUBLIC_KEY && VSCF_ASN1RD && VSCF_ASN1WR && VSCF_FAKE_RANDOM && VSCF_SHA512)
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_assert.h"
 
 #include "vscf_rsa_public_key.h"
 #include "vscf_asn1rd.h"
+#include "vscf_asn1wr.h"
 #include "vscf_fake_random.h"
 #include "vscf_sha512.h"
 
@@ -67,7 +69,7 @@ test__rsa_public_key_key_len__imported_2048_PUBLIC_KEY_PKCS1__returns_256(void) 
 }
 
 void
-test__rsa_public_key_encrypt__with_imported_2048_PUBLIC_KEY_PKCS1_and_DATA_1_and_random_AB_and_hash_sha256__returns_2048_ENCRYPTED_DATA_1(
+test__rsa_public_key_encrypt__with_imported_2048_PUBLIC_KEY_PKCS1_and_DATA_1_and_random_AB_and_hash_sha512__returns_2048_ENCRYPTED_DATA_1(
         void) {
 
     //  Setup dependencies
@@ -118,7 +120,7 @@ main(void) {
 
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__rsa_public_key_key_len__imported_2048_PUBLIC_KEY_PKCS1__returns_256);
-    RUN_TEST(test__rsa_public_key_encrypt__with_imported_2048_PUBLIC_KEY_PKCS1_and_DATA_1_and_random_AB_and_hash_sha256__returns_2048_ENCRYPTED_DATA_1);
+    RUN_TEST(test__rsa_public_key_encrypt__with_imported_2048_PUBLIC_KEY_PKCS1_and_DATA_1_and_random_AB_and_hash_sha512__returns_2048_ENCRYPTED_DATA_1);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
