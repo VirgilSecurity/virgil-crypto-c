@@ -46,11 +46,16 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Manages library error codes.
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ERROR_H_INCLUDED
-#define VSCF_ERROR_H_INCLUDED
+#ifndef VSCF_RSA_PRIVATE_KEY_INTERNAL_H_INCLUDED
+#define VSCF_RSA_PRIVATE_KEY_INTERNAL_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_error.h"
+#include "vscf_rsa_private_key.h"
 //  @end
 
 
@@ -66,61 +71,16 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Defines library error codes.
+//  Provides initialization of the implementation specific context.
 //
-enum vscf_error_t {
-    //
-    //  No errors was occurred.
-    //
-    vscf_SUCCESS = 0,
-    //
-    //  This error should not be returned if assertions is enabled.
-    //
-    vscf_error_BAD_ARGUMENTS = -1,
-    //
-    //  Can be used to define that not all context prerequisites are satisfied.
-    //  Note, this error should not be returned if assertions is enabled.
-    //
-    vscf_error_UNINITIALIZED = -2,
-    //
-    //  Define that error code from one of third-party module was not handled.
-    //  Note, this error should not be returned if assertions is enabled.
-    //
-    vscf_error_UNHANDLED_THIRDPARTY_ERROR = -3,
-    //
-    //  Memory allocation failed.
-    //
-    vscf_error_NO_MEMORY = -100,
-    //
-    //  Buffer capacity is not enaugh to hold result.
-    //
-    vscf_error_SMALL_BUFFER = -101,
-    //
-    //  Authentication failed during decryption.
-    //
-    vscf_error_AUTH_FAILED = -201,
-    //
-    //  Attempt to read data out of buffer bounds.
-    //
-    vscf_error_OUT_OF_DATA = -202,
-    //
-    //  ASN.1 encoded data is corrupted.
-    //
-    vscf_error_BAD_ASN1 = -203,
-    //
-    //  ASN.1 representation of PKCS#1 public key is corrupted.
-    //
-    vscf_error_BAD_PKCS1_PUBLIC_KEY = -204,
-    //
-    //  ASN.1 representation of PKCS#1 private key is corrupted.
-    //
-    vscf_error_BAD_PKCS1_PRIVATE_KEY = -205,
-    //
-    //  Encrypted data is corrupted.
-    //
-    vscf_error_BAD_ENCRYPTED_DATA = -206
-};
-typedef enum vscf_error_t vscf_error_t;
+VSCF_PRIVATE vscf_error_t
+vscf_rsa_private_key_init_ctx(vscf_rsa_private_key_impl_t *rsa_private_key_impl);
+
+//
+//  Provides cleanup of the implementation specific context.
+//
+VSCF_PRIVATE void
+vscf_rsa_private_key_cleanup_ctx(vscf_rsa_private_key_impl_t *rsa_private_key_impl);
 
 
 // --------------------------------------------------------------------------
@@ -136,5 +96,5 @@ typedef enum vscf_error_t vscf_error_t;
 
 
 //  @footer
-#endif // VSCF_ERROR_H_INCLUDED
+#endif // VSCF_RSA_PRIVATE_KEY_INTERNAL_H_INCLUDED
 //  @end
