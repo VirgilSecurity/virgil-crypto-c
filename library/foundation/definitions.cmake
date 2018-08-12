@@ -98,6 +98,7 @@ target_compile_definitions(foundation
             "VSCF_ASN1RD=$<BOOL:${VSCF_ASN1RD}>"
             "VSCF_ASN1WR=$<BOOL:${VSCF_ASN1WR}>"
             "VSCF_RSA_PUBLIC_KEY=$<BOOL:${VSCF_RSA_PUBLIC_KEY}>"
+            "VSCF_RSA_PRIVATE_KEY=$<BOOL:${VSCF_RSA_PRIVATE_KEY}>"
             "VSCF_HKDF=$<BOOL:${VSCF_HKDF}>"
             "VSCF_KDF1=$<BOOL:${VSCF_KDF1}>"
             "VSCF_KDF2=$<BOOL:${VSCF_KDF2}>"

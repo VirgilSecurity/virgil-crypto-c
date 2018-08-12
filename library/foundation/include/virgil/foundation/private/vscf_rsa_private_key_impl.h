@@ -46,11 +46,22 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Manages library error codes.
+//  Types of the 'rsa private key' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ERROR_H_INCLUDED
-#define VSCF_ERROR_H_INCLUDED
+#ifndef VSCF_RSA_PRIVATE_KEY_IMPL_H_INCLUDED
+#define VSCF_RSA_PRIVATE_KEY_IMPL_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_error.h"
+#include "vscf_impl_private.h"
+#include "vscf_rsa_private_key.h"
+#include "vscf_hash.h"
+
+#include <mbedtls/rsa.h>
 //  @end
 
 
@@ -66,61 +77,46 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Defines library error codes.
+//  Handles implementation details.
 //
-enum vscf_error_t {
+struct vscf_rsa_private_key_impl_t {
     //
-    //  No errors was occurred.
+    //  Compile-time known information about this implementation.
     //
-    vscf_SUCCESS = 0,
+    const vscf_impl_info_t *info;
     //
-    //  This error should not be returned if assertions is enabled.
+    //  Dependency to the interface 'random'.
     //
-    vscf_error_BAD_ARGUMENTS = -1,
+    vscf_impl_t *random;
     //
-    //  Can be used to define that not all context prerequisites are satisfied.
-    //  Note, this error should not be returned if assertions is enabled.
+    //  Dependency to the interface 'asn1 reader'.
     //
-    vscf_error_UNINITIALIZED = -2,
+    vscf_impl_t *asn1rd;
     //
-    //  Define that error code from one of third-party module was not handled.
-    //  Note, this error should not be returned if assertions is enabled.
+    //  Dependency to the interface 'asn1 writer'.
     //
-    vscf_error_UNHANDLED_THIRDPARTY_ERROR = -3,
+    vscf_impl_t *asn1wr;
     //
-    //  Memory allocation failed.
+    //  Dependency to the interface api 'hash'.
     //
-    vscf_error_NO_MEMORY = -100,
+    const vscf_hash_api_t *hash;
     //
-    //  Buffer capacity is not enaugh to hold result.
+    //  Implementation specific context.
     //
-    vscf_error_SMALL_BUFFER = -101,
+    mbedtls_rsa_context rsa_ctx;
     //
-    //  Authentication failed during decryption.
+    //  Ownership status of the dependency to the interface 'random'.
     //
-    vscf_error_AUTH_FAILED = -201,
+    bool is_owning_random:1;
     //
-    //  Attempt to read data out of buffer bounds.
+    //  Ownership status of the dependency to the interface 'asn1 reader'.
     //
-    vscf_error_OUT_OF_DATA = -202,
+    bool is_owning_asn1rd:1;
     //
-    //  ASN.1 encoded data is corrupted.
+    //  Ownership status of the dependency to the interface 'asn1 writer'.
     //
-    vscf_error_BAD_ASN1 = -203,
-    //
-    //  ASN.1 representation of PKCS#1 public key is corrupted.
-    //
-    vscf_error_BAD_PKCS1_PUBLIC_KEY = -204,
-    //
-    //  ASN.1 representation of PKCS#1 private key is corrupted.
-    //
-    vscf_error_BAD_PKCS1_PRIVATE_KEY = -205,
-    //
-    //  Encrypted data is corrupted.
-    //
-    vscf_error_BAD_ENCRYPTED_DATA = -206
+    bool is_owning_asn1wr:1;
 };
-typedef enum vscf_error_t vscf_error_t;
 
 
 // --------------------------------------------------------------------------
@@ -136,5 +132,5 @@ typedef enum vscf_error_t vscf_error_t;
 
 
 //  @footer
-#endif // VSCF_ERROR_H_INCLUDED
+#endif // VSCF_RSA_PRIVATE_KEY_IMPL_H_INCLUDED
 //  @end
