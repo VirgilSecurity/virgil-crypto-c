@@ -77,14 +77,14 @@ vscf_sign(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *signature) {
 //
 //  Return length in bytes required to hold signature.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC size_t
 vscf_sign_signature_len(vscf_impl_t *impl) {
 
     const vscf_sign_api_t *sign_api = vscf_sign_api (impl);
     VSCF_ASSERT_PTR (sign_api);
 
     VSCF_ASSERT_PTR (sign_api->signature_len_cb);
-    sign_api->signature_len_cb (impl);
+    return sign_api->signature_len_cb (impl);
 }
 
 //
