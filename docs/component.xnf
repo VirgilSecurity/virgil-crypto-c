@@ -462,12 +462,6 @@
         <restrict value="impl">
             Method takes implementation object as a first argument.
         </restrict>
-
-        <restrict value="class">
-            Method takes class object as a first argument.
-            This value is default for methods within 'class'.
-            Value 'none' can be used to define static class method.
-        </restrict>
     </attr>
 
     <inherit entity="component"/>

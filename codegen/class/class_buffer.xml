@@ -36,8 +36,8 @@
         Precondition: buffer is initialized.
         Precondition: buffer does not hold any bytes.
 
+        <argument class="context"/>
         <argument name="capacity" type="size"/>
-
         <return type="error"/>
     </method>
 
@@ -48,6 +48,7 @@
         Precondition: buffer is initialized.
         Precondition: buffer does not hold any bytes.
 
+        <argument class="context"/>
         <argument name="bytes" type="data" access="readwrite"/>
         <argument name="bytes len" type="size"/>
     </method>
@@ -59,6 +60,7 @@
         Precondition: buffer is initialized.
         Precondition: buffer does not hold any bytes.
 
+        <argument class="context"/>
         <argument name="bytes" type="data" access="readwrite"/>
         <argument name="bytes len" type="size"/>
         <argument name="dealloc" callback=".(global_callback_dealloc)"/>
@@ -68,6 +70,7 @@
     <method name="is full">
         Returns true if buffer full.
 
+        <argument class="context" access="readonly"/>
         <return type="boolean"/>
     </method>
 
@@ -75,6 +78,7 @@
     <method name="is valid">
         Returns true if buffer is configured and has valid internal states.
 
+        <argument class="context" access="readonly"/>
         <return type="boolean"/>
     </method>
 
@@ -82,6 +86,7 @@
     <method name="bytes">
         Returns underlying buffer bytes.
 
+        <argument class="context" access="readonly"/>
         <return type="data" access="readonly">
             <array access="disown"/>
         </return>
@@ -90,6 +95,7 @@
     <method name="data">
         Returns underlying buffer bytes as object.
 
+        <argument class="context" access="readonly"/>
         <return class=".(class_data_struct_data)" is_reference="0" access="readwrite"/>
     </method>
 
@@ -97,6 +103,7 @@
     <method name="capacity">
         Returns buffer capacity.
 
+        <argument class="context" access="readonly"/>
         <return type="size"/>
     </method>
 
@@ -104,6 +111,7 @@
     <method name="len">
         Returns buffer length - length of bytes actually used.
 
+        <argument class="context" access="readonly"/>
         <return type="size"/>
     </method>
 
@@ -111,6 +119,7 @@
     <method name="available len">
         Returns length of available bytes - bytes that are not in use yet.
 
+        <argument class="context" access="readonly"/>
         <return type="size"/>
     </method>
 
@@ -118,6 +127,7 @@
     <method name="available ptr">
         Returns pointer to the first available byte to be written.
 
+        <argument class="context"/>
         <return type="byte" access="readwrite" is_reference="1"/>
     </method>
 </class>

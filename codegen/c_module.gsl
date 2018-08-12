@@ -84,11 +84,19 @@ function _X11_add_c_include_for_common_class (module, c_module, class_name)
         for method.argument
             _X11_update_c_include_scope (my.c_include, argument, my.class_name, method.declaration)
         endfor
+
+        for method.return
+            _X11_update_c_include_scope (my.c_include, return, my.class_name, method.declaration)
+        endfor
     endfor
 
     for my.module.callback
         for callback.argument
             _X11_update_c_include_scope (my.c_include, argument, my.class_name, callback.declaration)
+        endfor
+
+        for callback.return
+            _X11_update_c_include_scope (my.c_include, return, my.class_name, callback.declaration)
         endfor
     endfor
 
