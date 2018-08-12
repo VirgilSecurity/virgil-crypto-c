@@ -86,7 +86,7 @@ vscf_sign(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *signature);
 //
 //  Return length in bytes required to hold signature.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC size_t
 vscf_sign_signature_len(vscf_impl_t *impl);
 
 //

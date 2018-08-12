@@ -14,5 +14,7 @@
 
     <method name="signature len">
         Return length in bytes required to hold signature.
+
+        <return type="size"/>
     </method>
 </interface>

@@ -81,7 +81,7 @@ typedef vscf_error_t (*vscf_sign_api_sign_fn)(vscf_impl_t *impl, vsc_data_t data
 //
 //  Callback. Return length in bytes required to hold signature.
 //
-typedef void (*vscf_sign_api_signature_len_fn)(vscf_impl_t *impl);
+typedef size_t (*vscf_sign_api_signature_len_fn)(vscf_impl_t *impl);
 
 //
 //  Contains API requirements of the interface 'sign'.
