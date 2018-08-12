@@ -91,7 +91,7 @@ vscf_rsa_public_key_init_ctx(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
 
-    mbedtls_rsa_init(&rsa_public_key_impl->rsa_ctx, MBEDTLS_RSA_PKCS_V15, 0);
+    mbedtls_rsa_init(&rsa_public_key_impl->rsa_ctx, MBEDTLS_RSA_PKCS_V21, MBEDTLS_MD_NONE);
 
     return vscf_SUCCESS;
 }
