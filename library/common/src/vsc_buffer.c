@@ -255,7 +255,7 @@ vsc_buffer_take(vsc_buffer_t *buffer_ctx, byte *bytes, size_t bytes_len, vsc_dea
 //  Returns true if buffer full.
 //
 VSC_PUBLIC bool
-vsc_buffer_is_full(vsc_buffer_t *buffer_ctx) {
+vsc_buffer_is_full(const vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
     VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
@@ -267,7 +267,7 @@ vsc_buffer_is_full(vsc_buffer_t *buffer_ctx) {
 //  Returns true if buffer is configured and has valid internal states.
 //
 VSC_PUBLIC bool
-vsc_buffer_is_valid(vsc_buffer_t *buffer_ctx) {
+vsc_buffer_is_valid(const vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
 
@@ -278,7 +278,7 @@ vsc_buffer_is_valid(vsc_buffer_t *buffer_ctx) {
 //  Returns underlying buffer bytes.
 //
 VSC_PUBLIC const byte *
-vsc_buffer_bytes(vsc_buffer_t *buffer_ctx) {
+vsc_buffer_bytes(const vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
     VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
@@ -290,7 +290,7 @@ vsc_buffer_bytes(vsc_buffer_t *buffer_ctx) {
 //  Returns underlying buffer bytes as object.
 //
 VSC_PUBLIC vsc_data_t
-vsc_buffer_data(vsc_buffer_t *buffer_ctx) {
+vsc_buffer_data(const vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
     VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
@@ -302,7 +302,7 @@ vsc_buffer_data(vsc_buffer_t *buffer_ctx) {
 //  Returns buffer capacity.
 //
 VSC_PUBLIC size_t
-vsc_buffer_capacity(vsc_buffer_t *buffer_ctx) {
+vsc_buffer_capacity(const vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
     VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
@@ -314,7 +314,7 @@ vsc_buffer_capacity(vsc_buffer_t *buffer_ctx) {
 //  Returns buffer length - length of bytes actually used.
 //
 VSC_PUBLIC size_t
-vsc_buffer_len(vsc_buffer_t *buffer_ctx) {
+vsc_buffer_len(const vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
     VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
@@ -326,7 +326,7 @@ vsc_buffer_len(vsc_buffer_t *buffer_ctx) {
 //  Returns length of available bytes - bytes that are not in use yet.
 //
 VSC_PUBLIC size_t
-vsc_buffer_available_len(vsc_buffer_t *buffer_ctx) {
+vsc_buffer_available_len(const vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
     VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));

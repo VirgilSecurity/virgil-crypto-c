@@ -102,6 +102,33 @@ function _X13_add_method_context_size (class, destination, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
+function _X13_resolve_argument_ctx (argument, meta)
+    check_arguments (my, "argument, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    scope my.argument
+        .name ?= my.names.class_argument_ctx
+        .class = my.refs.class_struct_ctx # redefine placeholder class='context'
+        .access ?= "readwrite"
+    endscope
+endfunction
+
+# ---------------------------------------------------------------------------
+function _X13_resolve_return_ctx (ret, meta)
+    check_arguments (my, "ret, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    scope my.ret
+        .class = my.refs.class_struct_ctx # redefine placeholder class='context'
+        .access ?= "disown"
+    endscope
+endfunction
+
+# ---------------------------------------------------------------------------
 function _X13_add_argument_ctx (destination, meta)
     check_arguments (my, "destination, meta", my)
 
@@ -326,16 +353,20 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-#
+#   Copy class methods with context resolution.
 # ---------------------------------------------------------------------------
 function _X13_add_method (method, destination, meta)
     check_arguments (my, "method, destination, meta", my)
 
     my.copied_method = item_copy_to (my.method, my.destination)
 
-    if my.copied_method.context = "class"
-        _X13_add_argument_ctx (my.copied_method, my.meta)
-    endif
+    for my.copied_method.argument where string_equal(0.class, "context")
+        _X13_resolve_argument_ctx (argument, my.meta)
+    endfor
+
+    for my.copied_method.return where string_equal(0.class, "context")
+        _X13_resolve_return_ctx (return, my.meta)
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------

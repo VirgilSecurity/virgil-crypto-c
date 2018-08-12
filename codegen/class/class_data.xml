@@ -12,17 +12,26 @@
     </property>
 
 
-    <method name="data" context="none">
+    <method name="is valid">
+        Returns true if underlying byte array is defined.
+
+        <argument class="context" access="readonly" is_reference="0"/>
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="data">
         Creates data from the preallocated bytes.
 
         <argument name="bytes" type="data"/>
         <argument name="len" type="size"/>
-        <return class="data"/>
+        <return class="context" access="readonly" is_reference="0"/>
     </method>
 
-    <method name="empty" context="none">
+
+    <method name="empty">
         Creates emty data.
 
-        <return class="data"/>
+        <return class="context" access="readonly" is_reference="0"/>
     </method>
 </class>

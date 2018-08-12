@@ -90,6 +90,12 @@ VSC_PUBLIC size_t
 vsc_data_ctx_size(void);
 
 //
+//  Returns true if underlying byte array is defined.
+//
+VSC_PUBLIC bool
+vsc_data_is_valid(vsc_data_t data_ctx);
+
+//
 //  Creates data from the preallocated bytes.
 //
 VSC_PUBLIC vsc_data_t

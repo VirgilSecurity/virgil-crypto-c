@@ -71,20 +71,6 @@ function class_dump (class)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve attribute: method.context.
-# ---------------------------------------------------------------------------
-function _B18_resolve_method_attr_context (method, parent)
-    check_arguments (my, "method, parent", my)
-
-    if my.parent.context = "none"
-        my.method.context = "none"
-
-    else
-        my.method.context ?= "class"
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Resolve attribute: class.context.
 # ---------------------------------------------------------------------------
 function class_resolve_attr_context (class, project)
@@ -174,10 +160,6 @@ function class_resolve (class, project)
     class_resolve_attr_project (my.class, my.project)
 
     project_common_resolve_dependecies_for (my.class)
-
-    for my.class.method
-        _B18_resolve_method_attr_context (method, my.class)
-    endfor
 endfunction
 
 
