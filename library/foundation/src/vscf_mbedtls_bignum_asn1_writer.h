@@ -55,6 +55,7 @@
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
+#include "vscf_error_ctx.h"
 
 #include <mbedtls/bignum.h>
 //  @end
@@ -74,10 +75,9 @@ extern "C" {
 //
 //  Write given MbedTLS big number as ASN.1 INTEGER type.
 //  Returns size of written data.
-//  Client side must check state of 'asn1wr' to define result of writing.
 //
 VSCF_PUBLIC size_t
-vscf_mbedtls_bignum_write_asn1(vscf_impl_t *asn1wr, const mbedtls_mpi *bignum);
+vscf_mbedtls_bignum_write_asn1(vscf_impl_t *asn1wr, const mbedtls_mpi *bignum, vscf_error_ctx_t *error);
 
 
 // --------------------------------------------------------------------------

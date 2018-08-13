@@ -11,10 +11,10 @@
     <method name="write asn1" of_class="mbedtls bignum">
         Write given MbedTLS big number as ASN.1 INTEGER type.
         Returns size of written data.
-        Client side must check state of 'asn1wr' to define result of writing.
 
         <argument name="asn1wr" class="impl" access="readwrite"/>
         <argument name="bignum" class="mbedtls_mpi"/>
+        <argument name="error" class="error ctx" access="readwrite"/>
         <return type="size"/>
     </method>
 </class>
