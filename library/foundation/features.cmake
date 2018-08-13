@@ -97,6 +97,7 @@ option(VSCF_HKDF "Enable implementation 'hkdf'." ON)
 option(VSCF_KDF1 "Enable implementation 'kdf1'." ON)
 option(VSCF_KDF2 "Enable implementation 'kdf2'." ON)
 option(VSCF_FAKE_RANDOM "Enable implementation 'fake random'." ON)
+option(VSCF_ERROR_CTX "Enable class 'error ctx'." ON)
 option(VSCF_ASN1 "Enable class 'asn1'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER "Enable class 'mbedtls bignum asn1 writer'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_READER "Enable class 'mbedtls bignum asn1 reader'." ON)
@@ -154,6 +155,7 @@ mark_as_advanced(
         VSCF_KDF1
         VSCF_KDF2
         VSCF_FAKE_RANDOM
+        VSCF_ERROR_CTX
         VSCF_ASN1
         VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
         VSCF_MBEDTLS_BIGNUM_ASN1_READER

@@ -88,6 +88,7 @@
     <interface name="asn1 reader"/>
     <interface name="asn1 writer"/>
 
+    <class name="error"/>
     <class name="asn1"/>
     <class name="mbedtls bignum asn1 writer"/>
     <class name="mbedtls bignum asn1 reader"/>
