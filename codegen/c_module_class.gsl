@@ -56,7 +56,7 @@ function _X13_add_context_struct (class, declaration, definition, destination, m
     new struct to my.destination
         . = "Handle '$(my.class.name:)' context."
         .name = my.class.name
-        .of_class = my.class.name
+        .of_class = my.class.of_class ?
         .declaration = my.declaration
         .definition = my.definition
 
@@ -438,7 +438,7 @@ function c_module_class_create_module_public (class, destination, meta)
         endif
 
 
-        if my.class.context <> "none"
+        if my.class.context <> "none" & my.class.context <> "public"
             _X13_add_method_context_size (my.class, module, my.meta)
         endif
 
