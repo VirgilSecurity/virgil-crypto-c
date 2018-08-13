@@ -55,6 +55,7 @@
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
+#include "vscf_error_ctx.h"
 
 #include <mbedtls/bignum.h>
 //  @end
@@ -75,8 +76,8 @@ extern "C" {
 //  Restore state of given MbedTLS big number from ASN.1 INTEGER representation.
 //  Client side must check state of 'asn1rd' to define result of reading.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_mbedtls_bignum_read_asn1(vscf_impl_t *asn1rd, mbedtls_mpi *bignum);
+VSCF_PUBLIC void
+vscf_mbedtls_bignum_read_asn1(vscf_impl_t *asn1rd, mbedtls_mpi *bignum, vscf_error_ctx_t *error);
 
 
 // --------------------------------------------------------------------------

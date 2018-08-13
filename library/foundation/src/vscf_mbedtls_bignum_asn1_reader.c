@@ -75,8 +75,8 @@
 //  Restore state of given MbedTLS big number from ASN.1 INTEGER representation.
 //  Client side must check state of 'asn1rd' to define result of reading.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_mbedtls_bignum_read_asn1(vscf_impl_t *asn1rd, mbedtls_mpi *bignum) {
+VSCF_PUBLIC void
+vscf_mbedtls_bignum_read_asn1(vscf_impl_t *asn1rd, mbedtls_mpi *bignum, vscf_error_ctx_t *error) {
 
     VSCF_ASSERT_PTR(bignum);
     VSCF_ASSERT_PTR(asn1rd);
@@ -85,14 +85,14 @@ vscf_mbedtls_bignum_read_asn1(vscf_impl_t *asn1rd, mbedtls_mpi *bignum) {
     vsc_data_t data = vscf_asn1_reader_read_data(asn1rd, len);
 
     if (NULL == data.bytes) {
-        return vscf_asn1_reader_error(asn1rd);
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_asn1_reader_error(asn1rd));
+        return;
     }
 
     int ret = mbedtls_mpi_read_binary(bignum, data.bytes, data.len);
 
     if (ret == MBEDTLS_ERR_MPI_ALLOC_FAILED) {
-        return vscf_error_NO_MEMORY;
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_NO_MEMORY);
+        return;
     }
-
-    return vscf_SUCCESS;
 }

@@ -14,6 +14,6 @@
 
         <argument name="asn1rd" class="impl" access="readwrite"/>
         <argument name="bignum" class="mbedtls_mpi" access="readwrite"/>
-        <return type="error"/>
+        <argument name="error" class="error ctx" access="readwrite"/>
     </method>
 </class>

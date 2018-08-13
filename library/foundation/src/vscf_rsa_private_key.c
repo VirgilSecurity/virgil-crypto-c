@@ -288,32 +288,39 @@ vscf_rsa_private_key_import_private_key(vscf_rsa_private_key_impl_t *rsa_private
         return vscf_error_BAD_PKCS1_PRIVATE_KEY;
     }
 
+    vscf_error_ctx_t error_ctx;
+    vscf_error_ctx_reset(&error_ctx);
+
     // modulus
-    vscf_error_t modulus_ret = vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->N);
+    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->N, &error_ctx);
 
     // publicExponent
-    vscf_error_t public_exponent_ret = vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->E);
+    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->E, &error_ctx);
 
     // privateExponent
-    vscf_error_t private_exponent_ret = vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->D);
+    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->D, &error_ctx);
 
     // prime1
-    vscf_error_t prime1_ret = vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->P);
+    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->P, &error_ctx);
 
     // prime2
-    vscf_error_t prime2_ret = vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->Q);
+    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->Q, &error_ctx);
 
-    if (modulus_ret + public_exponent_ret + private_exponent_ret + prime1_ret + prime2_ret) {
+    // Handle both errors: ASN.1 reader and mbedtls bignum reader.
+    switch (vscf_error_ctx_error(&error_ctx)) {
+    case vscf_SUCCESS:
+        break;
+
+    case vscf_error_NO_MEMORY:
         return vscf_error_NO_MEMORY;
-    }
 
-    if (vscf_asn1_reader_error(asn1rd) != vscf_SUCCESS) {
+    default:
         return vscf_error_BAD_PKCS1_PRIVATE_KEY;
     }
 
+    /* Complete the RSA private key */
     rsa_ctx->len = mbedtls_mpi_size(&rsa_ctx->N);
 
-    /* Complete the RSA private key */
     int rsa_complete_ret = mbedtls_rsa_complete(rsa_ctx);
     if (rsa_complete_ret != 0) {
         return vscf_error_NO_MEMORY;

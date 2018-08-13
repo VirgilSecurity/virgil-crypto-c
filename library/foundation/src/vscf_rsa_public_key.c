@@ -218,12 +218,17 @@ vscf_rsa_public_key_export_public_key(vscf_rsa_public_key_impl_t *rsa_public_key
     vscf_impl_t *asn1wr = rsa_public_key_impl->asn1wr;
     mbedtls_rsa_context *rsa_ctx = &rsa_public_key_impl->rsa_ctx;
 
+    vscf_error_ctx_t error_ctx;
+    vscf_error_ctx_reset(&error_ctx);
+
     vscf_asn1_writer_reset(asn1wr, out);
 
-    vscf_asn1_writer_write_sequence(asn1wr,
-            vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->E) + vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->N));
+    vscf_asn1_writer_write_sequence(asn1wr, vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->E, &error_ctx) +
+                                                    vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->N, &error_ctx));
 
-    if (vscf_asn1_writer_error(asn1wr) != vscf_SUCCESS) {
+    vscf_error_ctx_update(&error_ctx, vscf_asn1_writer_error(asn1wr));
+
+    if (vscf_error_ctx_error(&error_ctx) != vscf_SUCCESS) {
         return vscf_error_SMALL_BUFFER;
     }
 
@@ -262,17 +267,26 @@ vscf_rsa_public_key_import_public_key(vscf_rsa_public_key_impl_t *rsa_public_key
     vscf_impl_t *asn1rd = rsa_public_key_impl->asn1rd;
     mbedtls_rsa_context *rsa_ctx = &rsa_public_key_impl->rsa_ctx;
 
+    vscf_error_ctx_t error_ctx;
+    vscf_error_ctx_reset(&error_ctx);
+
     vscf_asn1_reader_reset(asn1rd, data);
     vscf_asn1_reader_read_sequence(asn1rd);
 
-    vscf_error_t modulus_ret = vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->N);
-    vscf_error_t exponent_ret = vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->E);
+    vscf_error_ctx_update(&error_ctx, vscf_asn1_reader_error(asn1rd));
 
-    if ((vscf_error_NO_MEMORY == modulus_ret) | (vscf_error_NO_MEMORY == exponent_ret)) {
+    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->N, &error_ctx);
+    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->E, &error_ctx);
+
+
+    switch (vscf_error_ctx_error(&error_ctx)) {
+    case vscf_SUCCESS:
+        break;
+
+    case vscf_error_NO_MEMORY:
         return vscf_error_NO_MEMORY;
-    }
 
-    if (vscf_asn1_reader_error(asn1rd) != vscf_SUCCESS) {
+    default:
         return vscf_error_BAD_PKCS1_PUBLIC_KEY;
     }
 
