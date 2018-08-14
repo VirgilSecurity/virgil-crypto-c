@@ -69,6 +69,33 @@ test__rsa_private_key_key_len__imported_2048_PRIVATE_KEY_PKCS1__returns_256(void
 }
 
 void
+test__rsa_private_key_export_private_key__import__2048_PRIVATE_KEY_PKCS1_then_export__expected_equal(void) {
+    vscf_rsa_private_key_impl_t *private_key_impl = vscf_rsa_private_key_new();
+    vscf_impl_t *asn1rd = vscf_asn1rd_impl(vscf_asn1rd_new());
+    vscf_impl_t *asn1wr = vscf_asn1wr_impl(vscf_asn1wr_new());
+
+    vscf_rsa_private_key_take_asn1_reader(private_key_impl, &asn1rd);
+    vscf_rsa_private_key_take_asn1_writer(private_key_impl, &asn1wr);
+
+    vscf_error_t result = vscf_rsa_private_key_import_private_key(
+            private_key_impl, vsc_data(test_rsa_2048_PRIVATE_KEY_PKCS1, test_rsa_2048_PRIVATE_KEY_PKCS1_LEN));
+    VSCF_ASSERT(result == vscf_SUCCESS);
+
+    vsc_buffer_t *exported_key_buf =
+            vsc_buffer_new_with_capacity(vscf_rsa_private_key_exported_private_key_len(private_key_impl));
+
+    result = vscf_rsa_private_key_export_private_key(private_key_impl, exported_key_buf);
+
+    TEST_ASSERT_EQUAL(vscf_SUCCESS, result);
+    TEST_ASSERT_EQUAL(test_rsa_2048_PRIVATE_KEY_PKCS1_LEN, vsc_buffer_len(exported_key_buf));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(
+            test_rsa_2048_PRIVATE_KEY_PKCS1, vsc_buffer_bytes(exported_key_buf), vsc_buffer_len(exported_key_buf));
+
+    vsc_buffer_destroy(&exported_key_buf);
+    vscf_rsa_private_key_destroy(&private_key_impl);
+}
+
+void
 test__rsa_private_key_decrypt__with_imported_2048_PRIVATE_KEY_PKCS1_and_2048_ENCRYPTED_DATA_1_and_random_AB_and_hash_sha512__returns_DATA_1(
         void) {
 
@@ -121,6 +148,7 @@ main(void) {
 
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__rsa_private_key_key_len__imported_2048_PRIVATE_KEY_PKCS1__returns_256);
+    RUN_TEST(test__rsa_private_key_export_private_key__import__2048_PRIVATE_KEY_PKCS1_then_export__expected_equal);
     RUN_TEST(test__rsa_private_key_decrypt__with_imported_2048_PRIVATE_KEY_PKCS1_and_2048_ENCRYPTED_DATA_1_and_random_AB_and_hash_sha512__returns_DATA_1);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
