@@ -237,8 +237,70 @@ vscf_rsa_private_key_signature_len(vscf_rsa_private_key_impl_t *rsa_private_key_
 VSCF_PUBLIC vscf_error_t
 vscf_rsa_private_key_export_private_key(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vsc_buffer_t *out) {
 
-    VSCF_UNUSED(rsa_private_key_impl);
-    VSCF_UNUSED(out);
+    //  RSAPrivateKey ::= SEQUENCE {
+    //       version Version,
+    //       modulus INTEGER, -- n
+    //       publicExponent INTEGER, -- e
+    //       privateExponent INTEGER, -- d
+    //       prime1 INTEGER, -- p
+    //       prime2 INTEGER, -- q
+    //       exponent1 INTEGER, -- d mod (p-1)
+    //       exponent2 INTEGER, -- d mod (q-1)
+    //       coefficient INTEGER -- (inverse of q) mod p }
+
+    VSCF_ASSERT_PTR(rsa_private_key_impl);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT_PTR(rsa_private_key_impl->asn1wr);
+
+    VSCF_ASSERT(mbedtls_rsa_check_privkey(&rsa_private_key_impl->rsa_ctx) == 0);
+
+    vscf_impl_t *asn1wr = rsa_private_key_impl->asn1wr;
+    mbedtls_rsa_context *rsa_ctx = &rsa_private_key_impl->rsa_ctx;
+
+
+    vscf_error_ctx_t error_ctx;
+    vscf_error_ctx_reset(&error_ctx);
+
+    vscf_asn1_writer_reset(asn1wr, out);
+
+    size_t top_sequence_len = 0;
+
+    // Write QP - modulus
+    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->QP, &error_ctx);
+
+    // Write DQ - publicExponent
+    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->DQ, &error_ctx);
+
+    // Write DP - privateExponent
+    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->DP, &error_ctx);
+
+    // Write Q - prime1
+    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->Q, &error_ctx);
+
+    // Write P - prime2
+    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->P, &error_ctx);
+
+    // Write D - exponent1
+    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->D, &error_ctx);
+
+    // Write E - exponent2
+    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->E, &error_ctx);
+
+    // Write N - coefficient
+    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->N, &error_ctx);
+
+    // Write version (0)
+    top_sequence_len += vscf_asn1_writer_write_int(asn1wr, 0);
+
+    vscf_asn1_writer_write_sequence(asn1wr, top_sequence_len);
+
+    vscf_error_ctx_update(&error_ctx, vscf_asn1_writer_error(asn1wr));
+
+    if (vscf_error_ctx_error(&error_ctx) != vscf_SUCCESS) {
+        return vscf_error_SMALL_BUFFER;
+    }
+
+    vscf_asn1_writer_seal(asn1wr);
 
     return vscf_SUCCESS;
 }
@@ -251,7 +313,15 @@ vscf_rsa_private_key_exported_private_key_len(vscf_rsa_private_key_impl_t *rsa_p
 
     VSCF_UNUSED(rsa_private_key_impl);
 
-    return 0;
+    size_t key_len = vscf_rsa_private_key_key_len(rsa_private_key_impl);
+
+    size_t top_tag_and_len = 4;
+    size_t version = 3;
+    size_t modulus = 5;
+    size_t int_tag_plus_len_plus_padding = 1 + 4 + 1;
+
+    return top_tag_and_len + version + modulus + 5 * (int_tag_plus_len_plus_padding + (key_len >> 1)) +
+           2 * (int_tag_plus_len_plus_padding + key_len);
 }
 
 //
