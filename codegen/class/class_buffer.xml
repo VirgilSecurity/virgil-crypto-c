@@ -130,4 +130,12 @@
         <argument class="context"/>
         <return type="byte" access="readwrite" is_reference="1"/>
     </method>
+
+
+    <method name="reserve">
+        Increase used bytes by given length.
+
+        <argument class="context"/>
+        <argument name="len" type="size"/>
+    </method>
 </class>

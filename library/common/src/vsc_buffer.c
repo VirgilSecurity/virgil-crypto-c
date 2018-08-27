@@ -346,3 +346,15 @@ vsc_buffer_available_ptr(vsc_buffer_t *buffer_ctx) {
 
     return buffer_ctx->bytes + buffer_ctx->len;
 }
+
+//
+//  Increase used bytes by given length.
+//
+VSC_PUBLIC void
+vsc_buffer_reserve(vsc_buffer_t *buffer_ctx, size_t len) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT(len <= vsc_buffer_available_len(buffer_ctx));
+
+    buffer_ctx->len += len;
+}

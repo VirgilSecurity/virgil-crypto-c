@@ -192,6 +192,12 @@ vsc_buffer_available_len(const vsc_buffer_t *buffer_ctx);
 VSC_PUBLIC byte *
 vsc_buffer_available_ptr(vsc_buffer_t *buffer_ctx);
 
+//
+//  Increase used bytes by given length.
+//
+VSC_PUBLIC void
+vsc_buffer_reserve(vsc_buffer_t *buffer_ctx, size_t len);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
