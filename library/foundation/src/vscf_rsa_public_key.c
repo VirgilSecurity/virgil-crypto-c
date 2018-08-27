@@ -153,8 +153,11 @@ vscf_rsa_public_key_encrypt(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc
 
     switch (result) {
     case 0:
-        out->len += vscf_rsa_public_key_key_len(rsa_public_key_impl);
+        vsc_buffer_reserve(out, vscf_rsa_public_key_key_len(rsa_public_key_impl));
         return vscf_SUCCESS;
+
+    case MBEDTLS_ERR_RSA_RNG_FAILED:
+        return vscf_error_RANDOM_FAILED;
 
     default:
         return vscf_error_BAD_ARGUMENTS;
