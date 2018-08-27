@@ -180,7 +180,7 @@ static const vscf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_hmac384_init(vscf_hmac384_impl_t *hmac384_impl) {
 
     VSCF_ASSERT_PTR (hmac384_impl);
@@ -188,7 +188,7 @@ vscf_hmac384_init(vscf_hmac384_impl_t *hmac384_impl) {
 
     hmac384_impl->info = &info;
 
-    return vscf_hmac384_init_ctx (hmac384_impl);
+    vscf_hmac384_init_ctx (hmac384_impl);
 }
 
 //
@@ -223,10 +223,7 @@ vscf_hmac384_new(void) {
         return NULL;
     }
 
-    if (vscf_hmac384_init (hmac384_impl) != vscf_SUCCESS) {
-        vscf_dealloc(hmac384_impl);
-        return NULL;
-    }
+    vscf_hmac384_init (hmac384_impl);
 
     return hmac384_impl;
 }

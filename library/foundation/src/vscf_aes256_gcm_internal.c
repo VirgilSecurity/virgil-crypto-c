@@ -315,7 +315,7 @@ static const vscf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_aes256_gcm_init(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 
     VSCF_ASSERT_PTR (aes256_gcm_impl);
@@ -323,7 +323,7 @@ vscf_aes256_gcm_init(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 
     aes256_gcm_impl->info = &info;
 
-    return vscf_aes256_gcm_init_ctx (aes256_gcm_impl);
+    vscf_aes256_gcm_init_ctx (aes256_gcm_impl);
 }
 
 //
@@ -358,10 +358,7 @@ vscf_aes256_gcm_new(void) {
         return NULL;
     }
 
-    if (vscf_aes256_gcm_init (aes256_gcm_impl) != vscf_SUCCESS) {
-        vscf_dealloc(aes256_gcm_impl);
-        return NULL;
-    }
+    vscf_aes256_gcm_init (aes256_gcm_impl);
 
     return aes256_gcm_impl;
 }

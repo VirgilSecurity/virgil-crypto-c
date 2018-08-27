@@ -176,7 +176,7 @@ static const vscf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_sha512_init(vscf_sha512_impl_t *sha512_impl) {
 
     VSCF_ASSERT_PTR (sha512_impl);
@@ -184,7 +184,7 @@ vscf_sha512_init(vscf_sha512_impl_t *sha512_impl) {
 
     sha512_impl->info = &info;
 
-    return vscf_sha512_init_ctx (sha512_impl);
+    vscf_sha512_init_ctx (sha512_impl);
 }
 
 //
@@ -219,10 +219,7 @@ vscf_sha512_new(void) {
         return NULL;
     }
 
-    if (vscf_sha512_init (sha512_impl) != vscf_SUCCESS) {
-        vscf_dealloc(sha512_impl);
-        return NULL;
-    }
+    vscf_sha512_init (sha512_impl);
 
     return sha512_impl;
 }

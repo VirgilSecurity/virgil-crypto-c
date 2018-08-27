@@ -180,7 +180,7 @@ static const vscf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_hmac256_init(vscf_hmac256_impl_t *hmac256_impl) {
 
     VSCF_ASSERT_PTR (hmac256_impl);
@@ -188,7 +188,7 @@ vscf_hmac256_init(vscf_hmac256_impl_t *hmac256_impl) {
 
     hmac256_impl->info = &info;
 
-    return vscf_hmac256_init_ctx (hmac256_impl);
+    vscf_hmac256_init_ctx (hmac256_impl);
 }
 
 //
@@ -223,10 +223,7 @@ vscf_hmac256_new(void) {
         return NULL;
     }
 
-    if (vscf_hmac256_init (hmac256_impl) != vscf_SUCCESS) {
-        vscf_dealloc(hmac256_impl);
-        return NULL;
-    }
+    vscf_hmac256_init (hmac256_impl);
 
     return hmac256_impl;
 }

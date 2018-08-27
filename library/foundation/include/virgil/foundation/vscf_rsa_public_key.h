@@ -99,7 +99,7 @@ vscf_rsa_public_key_impl(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_rsa_public_key_init(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
 
 //

@@ -176,7 +176,7 @@ static const vscf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_sha256_init(vscf_sha256_impl_t *sha256_impl) {
 
     VSCF_ASSERT_PTR (sha256_impl);
@@ -184,7 +184,7 @@ vscf_sha256_init(vscf_sha256_impl_t *sha256_impl) {
 
     sha256_impl->info = &info;
 
-    return vscf_sha256_init_ctx (sha256_impl);
+    vscf_sha256_init_ctx (sha256_impl);
 }
 
 //
@@ -219,10 +219,7 @@ vscf_sha256_new(void) {
         return NULL;
     }
 
-    if (vscf_sha256_init (sha256_impl) != vscf_SUCCESS) {
-        vscf_dealloc(sha256_impl);
-        return NULL;
-    }
+    vscf_sha256_init (sha256_impl);
 
     return sha256_impl;
 }

@@ -74,7 +74,7 @@
 //
 //  Provides initialization of the implementation specific context.
 //
-VSCF_PRIVATE vscf_error_t
+VSCF_PRIVATE void
 vscf_fake_random_init_ctx(vscf_fake_random_impl_t *fake_random_impl) {
 
     VSCF_ASSERT_PTR(fake_random_impl);
@@ -83,8 +83,6 @@ vscf_fake_random_init_ctx(vscf_fake_random_impl_t *fake_random_impl) {
     fake_random_impl->data_source.len = 0;
     fake_random_impl->byte_source = 0;
     fake_random_impl->pos = 0;
-
-    return vscf_SUCCESS;
 }
 
 //

@@ -180,7 +180,7 @@ static const vscf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_hmac512_init(vscf_hmac512_impl_t *hmac512_impl) {
 
     VSCF_ASSERT_PTR (hmac512_impl);
@@ -188,7 +188,7 @@ vscf_hmac512_init(vscf_hmac512_impl_t *hmac512_impl) {
 
     hmac512_impl->info = &info;
 
-    return vscf_hmac512_init_ctx (hmac512_impl);
+    vscf_hmac512_init_ctx (hmac512_impl);
 }
 
 //
@@ -223,10 +223,7 @@ vscf_hmac512_new(void) {
         return NULL;
     }
 
-    if (vscf_hmac512_init (hmac512_impl) != vscf_SUCCESS) {
-        vscf_dealloc(hmac512_impl);
-        return NULL;
-    }
+    vscf_hmac512_init (hmac512_impl);
 
     return hmac512_impl;
 }

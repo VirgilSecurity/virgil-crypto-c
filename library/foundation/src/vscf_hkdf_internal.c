@@ -119,7 +119,7 @@ static const vscf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_hkdf_init(vscf_hkdf_impl_t *hkdf_impl) {
 
     VSCF_ASSERT_PTR (hkdf_impl);
@@ -130,8 +130,6 @@ vscf_hkdf_init(vscf_hkdf_impl_t *hkdf_impl) {
     hkdf_impl->hmac = NULL;
 
     hkdf_impl->is_owning_hmac = false;
-
-    return vscf_SUCCESS;
 }
 
 //
@@ -177,10 +175,7 @@ vscf_hkdf_new(void) {
         return NULL;
     }
 
-    if (vscf_hkdf_init (hkdf_impl) != vscf_SUCCESS) {
-        vscf_dealloc(hkdf_impl);
-        return NULL;
-    }
+    vscf_hkdf_init (hkdf_impl);
 
     return hkdf_impl;
 }

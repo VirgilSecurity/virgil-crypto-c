@@ -176,7 +176,7 @@ static const vscf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_sha384_init(vscf_sha384_impl_t *sha384_impl) {
 
     VSCF_ASSERT_PTR (sha384_impl);
@@ -184,7 +184,7 @@ vscf_sha384_init(vscf_sha384_impl_t *sha384_impl) {
 
     sha384_impl->info = &info;
 
-    return vscf_sha384_init_ctx (sha384_impl);
+    vscf_sha384_init_ctx (sha384_impl);
 }
 
 //
@@ -219,10 +219,7 @@ vscf_sha384_new(void) {
         return NULL;
     }
 
-    if (vscf_sha384_init (sha384_impl) != vscf_SUCCESS) {
-        vscf_dealloc(sha384_impl);
-        return NULL;
-    }
+    vscf_sha384_init (sha384_impl);
 
     return sha384_impl;
 }

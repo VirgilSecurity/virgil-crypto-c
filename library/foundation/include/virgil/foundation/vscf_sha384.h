@@ -99,7 +99,7 @@ vscf_sha384_impl(vscf_sha384_impl_t *sha384_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_sha384_init(vscf_sha384_impl_t *sha384_impl);
 
 //

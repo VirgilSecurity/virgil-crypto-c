@@ -73,7 +73,7 @@ extern "C" {
 //
 //  Provides initialization of the implementation specific context.
 //
-VSCF_PRIVATE vscf_error_t
+VSCF_PRIVATE void
 vscf_fake_random_init_ctx(vscf_fake_random_impl_t *fake_random_impl);
 
 //

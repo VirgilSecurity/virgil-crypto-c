@@ -180,7 +180,7 @@ static const vscf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_asn1wr_init(vscf_asn1wr_impl_t *asn1wr_impl) {
 
     VSCF_ASSERT_PTR (asn1wr_impl);
@@ -188,7 +188,7 @@ vscf_asn1wr_init(vscf_asn1wr_impl_t *asn1wr_impl) {
 
     asn1wr_impl->info = &info;
 
-    return vscf_asn1wr_init_ctx (asn1wr_impl);
+    vscf_asn1wr_init_ctx (asn1wr_impl);
 }
 
 //
@@ -223,10 +223,7 @@ vscf_asn1wr_new(void) {
         return NULL;
     }
 
-    if (vscf_asn1wr_init (asn1wr_impl) != vscf_SUCCESS) {
-        vscf_dealloc(asn1wr_impl);
-        return NULL;
-    }
+    vscf_asn1wr_init (asn1wr_impl);
 
     return asn1wr_impl;
 }

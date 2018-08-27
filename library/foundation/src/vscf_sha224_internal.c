@@ -176,7 +176,7 @@ static const vscf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_sha224_init(vscf_sha224_impl_t *sha224_impl) {
 
     VSCF_ASSERT_PTR (sha224_impl);
@@ -184,7 +184,7 @@ vscf_sha224_init(vscf_sha224_impl_t *sha224_impl) {
 
     sha224_impl->info = &info;
 
-    return vscf_sha224_init_ctx (sha224_impl);
+    vscf_sha224_init_ctx (sha224_impl);
 }
 
 //
@@ -219,10 +219,7 @@ vscf_sha224_new(void) {
         return NULL;
     }
 
-    if (vscf_sha224_init (sha224_impl) != vscf_SUCCESS) {
-        vscf_dealloc(sha224_impl);
-        return NULL;
-    }
+    vscf_sha224_init (sha224_impl);
 
     return sha224_impl;
 }

@@ -91,7 +91,7 @@ vscf_asn1rd_read_tag_data(vscf_asn1rd_impl_t *asn1rd_impl, int tag, vsc_buffer_t
 //
 //  Provides initialization of the implementation specific context.
 //
-VSCF_PRIVATE vscf_error_t
+VSCF_PRIVATE void
 vscf_asn1rd_init_ctx(vscf_asn1rd_impl_t *asn1rd_impl) {
 
     VSCF_ASSERT_PTR(asn1rd_impl);
@@ -99,8 +99,6 @@ vscf_asn1rd_init_ctx(vscf_asn1rd_impl_t *asn1rd_impl) {
     asn1rd_impl->curr = NULL;
     asn1rd_impl->end = NULL;
     asn1rd_impl->error = vscf_error_UNINITIALIZED;
-
-    return vscf_SUCCESS;
 }
 
 //
