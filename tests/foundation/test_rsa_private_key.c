@@ -44,6 +44,7 @@
 #include "vscf_assert.h"
 
 #include "vscf_rsa_private_key.h"
+#include "vscf_rsa_public_key.h"
 #include "vscf_asn1rd.h"
 #include "vscf_asn1wr.h"
 #include "vscf_fake_random.h"
@@ -69,7 +70,7 @@ test__rsa_private_key_key_len__imported_2048_PRIVATE_KEY_PKCS1__returns_256(void
 }
 
 void
-test__rsa_private_key_export_private_key__import__2048_PRIVATE_KEY_PKCS1_then_export__expected_equal(void) {
+test__rsa_private_key_export_private_key__from_imported_2048_PRIVATE_KEY_PKCS1__expected_equal(void) {
     vscf_rsa_private_key_impl_t *private_key_impl = vscf_rsa_private_key_new();
     vscf_impl_t *asn1rd = vscf_asn1rd_impl(vscf_asn1rd_new());
     vscf_impl_t *asn1wr = vscf_asn1wr_impl(vscf_asn1wr_new());
@@ -112,7 +113,7 @@ test__rsa_private_key_decrypt__with_imported_2048_PRIVATE_KEY_PKCS1_and_2048_ENC
 
     vscf_rsa_private_key_use_hash_api(private_key_impl, vscf_sha512_hash_api());
 
-    //  Import public key
+    //  Import private key
     vscf_error_t result = vscf_rsa_private_key_import_private_key(
             private_key_impl, vsc_data(test_rsa_2048_PRIVATE_KEY_PKCS1, test_rsa_2048_PRIVATE_KEY_PKCS1_LEN));
     VSCF_ASSERT(result == vscf_SUCCESS);
@@ -135,6 +136,43 @@ test__rsa_private_key_decrypt__with_imported_2048_PRIVATE_KEY_PKCS1_and_2048_ENC
 }
 
 
+void
+test__rsa_private_key_extract_public_key__from_imported_2048_PRIVATE_KEY_PKCS1__when_exported_equals_2048_PUBLIC_KEY_PKCS1(
+        void) {
+    //  Setup dependencies
+    vscf_rsa_private_key_impl_t *private_key_impl = vscf_rsa_private_key_new();
+
+    vscf_impl_t *asn1rd = vscf_asn1rd_impl(vscf_asn1rd_new());
+    vscf_rsa_private_key_take_asn1_reader(private_key_impl, &asn1rd);
+
+    vscf_impl_t *asn1wr = vscf_asn1wr_impl(vscf_asn1wr_new());
+    vscf_rsa_private_key_take_asn1_writer(private_key_impl, &asn1wr);
+
+    //  Import private key
+    vscf_error_t result = vscf_rsa_private_key_import_private_key(
+            private_key_impl, vsc_data(test_rsa_2048_PRIVATE_KEY_PKCS1, test_rsa_2048_PRIVATE_KEY_PKCS1_LEN));
+    VSCF_ASSERT(result == vscf_SUCCESS);
+
+    //  Extract public key
+    vscf_impl_t *public_key_impl = vscf_rsa_private_key_extract_public_key(private_key_impl);
+    TEST_ASSERT_NOT_NULL(public_key_impl);
+
+    vsc_buffer_t *exported_key_buf =
+            vsc_buffer_new_with_capacity(vscf_export_public_key_exported_public_key_len(public_key_impl));
+
+    vscf_error_t export_err = vscf_export_public_key(public_key_impl, exported_key_buf);
+    VSCF_ASSERT(export_err == vscf_SUCCESS);
+
+    //  Check
+    TEST_ASSERT_EQUAL(test_rsa_2048_PUBLIC_KEY_PKCS1_LEN, vsc_buffer_len(exported_key_buf));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(
+            test_rsa_2048_PUBLIC_KEY_PKCS1, vsc_buffer_bytes(exported_key_buf), vsc_buffer_len(exported_key_buf));
+
+    vscf_rsa_private_key_destroy(&private_key_impl);
+    vscf_impl_destroy(&public_key_impl);
+    vsc_buffer_destroy(&exported_key_buf);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -148,8 +186,9 @@ main(void) {
 
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__rsa_private_key_key_len__imported_2048_PRIVATE_KEY_PKCS1__returns_256);
-    RUN_TEST(test__rsa_private_key_export_private_key__import__2048_PRIVATE_KEY_PKCS1_then_export__expected_equal);
+    RUN_TEST(test__rsa_private_key_export_private_key__from_imported_2048_PRIVATE_KEY_PKCS1__expected_equal);
     RUN_TEST(test__rsa_private_key_decrypt__with_imported_2048_PRIVATE_KEY_PKCS1_and_2048_ENCRYPTED_DATA_1_and_random_AB_and_hash_sha512__returns_DATA_1);
+    RUN_TEST(test__rsa_private_key_extract_public_key__from_imported_2048_PRIVATE_KEY_PKCS1__when_exported_equals_2048_PUBLIC_KEY_PKCS1);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
