@@ -22,10 +22,6 @@
             Note, this error should not be returned if assertions is enabled.
         </constant>
 
-        <constant name="no memory" value="-100">
-            Memory allocation failed.
-        </constant>
-
         <constant name="small buffer" value="-101">
             Buffer capacity is not enaugh to hold result.
         </constant>

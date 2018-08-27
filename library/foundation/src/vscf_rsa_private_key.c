@@ -375,14 +375,7 @@ vscf_rsa_private_key_import_private_key(vscf_rsa_private_key_impl_t *rsa_private
     vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->Q, &error_ctx);
 
     // Handle both errors: ASN.1 reader and mbedtls bignum reader.
-    switch (vscf_error_ctx_error(&error_ctx)) {
-    case vscf_SUCCESS:
-        break;
-
-    case vscf_error_NO_MEMORY:
-        return vscf_error_NO_MEMORY;
-
-    default:
+    if (vscf_error_ctx_error(&error_ctx) != vscf_SUCCESS) {
         return vscf_error_BAD_PKCS1_PRIVATE_KEY;
     }
 
@@ -390,9 +383,7 @@ vscf_rsa_private_key_import_private_key(vscf_rsa_private_key_impl_t *rsa_private
     rsa_ctx->len = mbedtls_mpi_size(&rsa_ctx->N);
 
     int rsa_complete_ret = mbedtls_rsa_complete(rsa_ctx);
-    if (rsa_complete_ret != 0) {
-        return vscf_error_NO_MEMORY;
-    }
+    VSCF_ASSERT_ALLOC(rsa_complete_ret == 0);
 
     return vscf_SUCCESS;
 }

@@ -277,14 +277,7 @@ vscf_rsa_public_key_import_public_key(vscf_rsa_public_key_impl_t *rsa_public_key
     vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->E, &error_ctx);
 
 
-    switch (vscf_error_ctx_error(&error_ctx)) {
-    case vscf_SUCCESS:
-        break;
-
-    case vscf_error_NO_MEMORY:
-        return vscf_error_NO_MEMORY;
-
-    default:
+    if (vscf_error_ctx_error(&error_ctx) != vscf_SUCCESS) {
         return vscf_error_BAD_PKCS1_PUBLIC_KEY;
     }
 

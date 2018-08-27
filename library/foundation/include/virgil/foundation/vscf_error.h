@@ -88,10 +88,6 @@ enum vscf_error_t {
     //
     vscf_error_UNHANDLED_THIRDPARTY_ERROR = -3,
     //
-    //  Memory allocation failed.
-    //
-    vscf_error_NO_MEMORY = -100,
-    //
     //  Buffer capacity is not enaugh to hold result.
     //
     vscf_error_SMALL_BUFFER = -101,
