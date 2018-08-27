@@ -114,7 +114,11 @@ enum vscf_error_t {
     //
     //  Encrypted data is corrupted.
     //
-    vscf_error_BAD_ENCRYPTED_DATA = -206
+    vscf_error_BAD_ENCRYPTED_DATA = -206,
+    //
+    //  Underlying random operation returns error.
+    //
+    vscf_error_RANDOM_FAILED = -207
 };
 typedef enum vscf_error_t vscf_error_t;
 
