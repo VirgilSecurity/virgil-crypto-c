@@ -91,8 +91,5 @@ vscf_mbedtls_bignum_read_asn1(vscf_impl_t *asn1rd, mbedtls_mpi *bignum, vscf_err
 
     int ret = mbedtls_mpi_read_binary(bignum, data.bytes, data.len);
 
-    if (ret == MBEDTLS_ERR_MPI_ALLOC_FAILED) {
-        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_NO_MEMORY);
-        return;
-    }
+    VSCF_ASSERT_ALLOC(ret != MBEDTLS_ERR_MPI_ALLOC_FAILED);
 }
