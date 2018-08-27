@@ -49,5 +49,9 @@
         <constant name="bad encrypted data" value="-206">
             Encrypted data is corrupted.
         </constant>
+
+        <constant name="random failed" value="-207">
+            Underlying random operation returns error.
+        </constant>
     </enum>
 </module>
