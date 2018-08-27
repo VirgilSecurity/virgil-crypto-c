@@ -73,7 +73,7 @@ extern "C" {
 //
 //  Provides initialization of the implementation specific context.
 //
-VSCF_PRIVATE vscf_error_t
+VSCF_PRIVATE void
 vscf_rsa_private_key_init_ctx(vscf_rsa_private_key_impl_t *rsa_private_key_impl);
 
 //

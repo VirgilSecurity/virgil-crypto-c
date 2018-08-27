@@ -118,7 +118,7 @@ static const vscf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_fake_random_init(vscf_fake_random_impl_t *fake_random_impl) {
 
     VSCF_ASSERT_PTR (fake_random_impl);
@@ -126,7 +126,7 @@ vscf_fake_random_init(vscf_fake_random_impl_t *fake_random_impl) {
 
     fake_random_impl->info = &info;
 
-    return vscf_fake_random_init_ctx (fake_random_impl);
+    vscf_fake_random_init_ctx (fake_random_impl);
 }
 
 //
@@ -161,10 +161,7 @@ vscf_fake_random_new(void) {
         return NULL;
     }
 
-    if (vscf_fake_random_init (fake_random_impl) != vscf_SUCCESS) {
-        vscf_dealloc(fake_random_impl);
-        return NULL;
-    }
+    vscf_fake_random_init (fake_random_impl);
 
     return fake_random_impl;
 }

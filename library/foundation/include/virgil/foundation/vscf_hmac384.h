@@ -99,7 +99,7 @@ vscf_hmac384_impl(vscf_hmac384_impl_t *hmac384_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_hmac384_init(vscf_hmac384_impl_t *hmac384_impl);
 
 //

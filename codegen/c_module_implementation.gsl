@@ -592,10 +592,6 @@ function _Z19_add_method_init (impl, declaration, definition, destination, meta)
 
         _Z19_add_argument_impl (method, my.meta)
 
-        new return to method
-            .type="error"
-        endnew
-
         new code to method
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
 
@@ -627,18 +623,14 @@ function _Z19_add_method_init (impl, declaration, definition, destination, meta)
 
             if _Z19_has_underlying_context (my.impl)
                 my.impl_end = "\
-                    return $(my.refs.c_implementation_method_init_ctx) ($(my.arg_impl));
-                "
-            else
-                my.impl_end = "\
-                    return .(c_global_enum_error_constant_success);
+                    $(my.refs.c_implementation_method_init_ctx) ($(my.arg_impl));
                 "
             endif
 
             my.method_body = ""
             my.method_body += format_left (my.impl_begin) + terminator
             my.method_body += format_left (my.impl_init_dependencies) + terminator ? ""
-            my.method_body += format_left (my.impl_end) + terminator
+            my.method_body += format_left (my.impl_end) + terminator ? ""
 
             . = my.method_body
         endnew
@@ -767,10 +759,7 @@ function _Z19_add_method_new (impl, declaration, definition, destination, meta)
                 return NULL;
             }
 
-            if ($(my.refs.c_implementation_method_init) ($(my.arg_impl:)) != .(c_global_enum_error_constant_success)) {
-                .(c_global_method_dealloc)($(my.arg_impl:));
-                return NULL;
-            }
+            $(my.refs.c_implementation_method_init) ($(my.arg_impl:));
 
             return $(my.arg_impl:);
             "
@@ -878,10 +867,6 @@ function _Z19_add_method_init_ctx (impl, declaration, definition, destination, m
         .visibility = "private"
 
         _Z19_add_argument_impl (method, my.meta)
-
-        new return to method
-            .type="error"
-        endnew
     endnew
 endfunction
 

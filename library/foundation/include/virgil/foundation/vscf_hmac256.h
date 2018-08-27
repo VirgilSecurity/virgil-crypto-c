@@ -99,7 +99,7 @@ vscf_hmac256_impl(vscf_hmac256_impl_t *hmac256_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_hmac256_init(vscf_hmac256_impl_t *hmac256_impl);
 
 //

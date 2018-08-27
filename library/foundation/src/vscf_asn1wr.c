@@ -92,7 +92,7 @@ vscf_asn1wr_write_raw_data(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t data, int
 //
 //  Provides initialization of the implementation specific context.
 //
-VSCF_PRIVATE vscf_error_t
+VSCF_PRIVATE void
 vscf_asn1wr_init_ctx(vscf_asn1wr_impl_t *asn1wr_impl) {
 
     VSCF_ASSERT_PTR(asn1wr_impl);
@@ -100,8 +100,6 @@ vscf_asn1wr_init_ctx(vscf_asn1wr_impl_t *asn1wr_impl) {
     asn1wr_impl->start = NULL;
     asn1wr_impl->curr = NULL;
     asn1wr_impl->error = vscf_error_UNINITIALIZED;
-
-    return vscf_SUCCESS;
 }
 
 //

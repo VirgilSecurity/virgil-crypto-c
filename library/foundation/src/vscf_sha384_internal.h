@@ -73,7 +73,7 @@ extern "C" {
 //
 //  Provides initialization of the implementation specific context.
 //
-VSCF_PRIVATE vscf_error_t
+VSCF_PRIVATE void
 vscf_sha384_init_ctx(vscf_sha384_impl_t *sha384_impl);
 
 //

@@ -99,7 +99,7 @@ vscf_hmac224_impl(vscf_hmac224_impl_t *hmac224_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_hmac224_init(vscf_hmac224_impl_t *hmac224_impl);
 
 //

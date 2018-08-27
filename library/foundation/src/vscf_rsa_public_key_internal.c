@@ -239,7 +239,7 @@ static const vscf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_rsa_public_key_init(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
     VSCF_ASSERT_PTR (rsa_public_key_impl);
@@ -261,7 +261,7 @@ vscf_rsa_public_key_init(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
     rsa_public_key_impl->is_owning_asn1wr = false;
 
-    return vscf_rsa_public_key_init_ctx (rsa_public_key_impl);
+    vscf_rsa_public_key_init_ctx (rsa_public_key_impl);
 }
 
 //
@@ -340,10 +340,7 @@ vscf_rsa_public_key_new(void) {
         return NULL;
     }
 
-    if (vscf_rsa_public_key_init (rsa_public_key_impl) != vscf_SUCCESS) {
-        vscf_dealloc(rsa_public_key_impl);
-        return NULL;
-    }
+    vscf_rsa_public_key_init (rsa_public_key_impl);
 
     return rsa_public_key_impl;
 }

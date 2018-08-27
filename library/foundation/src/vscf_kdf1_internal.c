@@ -119,7 +119,7 @@ static const vscf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_kdf1_init(vscf_kdf1_impl_t *kdf1_impl) {
 
     VSCF_ASSERT_PTR (kdf1_impl);
@@ -130,8 +130,6 @@ vscf_kdf1_init(vscf_kdf1_impl_t *kdf1_impl) {
     kdf1_impl->hash = NULL;
 
     kdf1_impl->is_owning_hash = false;
-
-    return vscf_SUCCESS;
 }
 
 //
@@ -177,10 +175,7 @@ vscf_kdf1_new(void) {
         return NULL;
     }
 
-    if (vscf_kdf1_init (kdf1_impl) != vscf_SUCCESS) {
-        vscf_dealloc(kdf1_impl);
-        return NULL;
-    }
+    vscf_kdf1_init (kdf1_impl);
 
     return kdf1_impl;
 }

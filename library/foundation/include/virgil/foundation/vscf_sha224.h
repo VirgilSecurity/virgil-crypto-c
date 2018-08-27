@@ -99,7 +99,7 @@ vscf_sha224_impl(vscf_sha224_impl_t *sha224_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_sha224_init(vscf_sha224_impl_t *sha224_impl);
 
 //

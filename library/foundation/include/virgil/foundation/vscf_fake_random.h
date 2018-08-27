@@ -92,7 +92,7 @@ vscf_fake_random_impl(vscf_fake_random_impl_t *fake_random_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_fake_random_init(vscf_fake_random_impl_t *fake_random_impl);
 
 //

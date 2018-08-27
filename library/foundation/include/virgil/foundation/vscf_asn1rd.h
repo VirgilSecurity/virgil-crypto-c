@@ -93,7 +93,7 @@ vscf_asn1rd_impl(vscf_asn1rd_impl_t *asn1rd_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_asn1rd_init(vscf_asn1rd_impl_t *asn1rd_impl);
 
 //

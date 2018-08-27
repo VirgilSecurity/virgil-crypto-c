@@ -74,23 +74,14 @@
 //
 //  Provides initialization of the implementation specific context.
 //
-VSCF_PRIVATE vscf_error_t
+VSCF_PRIVATE void
 vscf_hmac256_init_ctx(vscf_hmac256_impl_t *hmac256_impl) {
 
     mbedtls_md_init(&hmac256_impl->hmac_ctx);
     int result = mbedtls_md_setup(&hmac256_impl->hmac_ctx, mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), 1);
 
-    switch (result) {
-    case 0:
-        return vscf_SUCCESS;
-
-    case MBEDTLS_ERR_MD_ALLOC_FAILED:
-        return vscf_error_NO_MEMORY;
-
-    default:
-        VSCF_ASSERT(0 && "unhandled mbedtls error");
-        return vscf_error_UNHANDLED_THIRDPARTY_ERROR;
-    }
+    VSCF_ASSERT_ALLOC(result != MBEDTLS_ERR_MD_ALLOC_FAILED);
+    VSCF_ASSERT(result == 0 && "unhandled mbedtls error");
 }
 
 //

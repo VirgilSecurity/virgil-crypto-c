@@ -90,7 +90,7 @@ vscf_kdf1_impl(vscf_kdf1_impl_t *kdf1_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_kdf1_init(vscf_kdf1_impl_t *kdf1_impl);
 
 //

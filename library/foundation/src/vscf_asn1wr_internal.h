@@ -73,7 +73,7 @@ extern "C" {
 //
 //  Provides initialization of the implementation specific context.
 //
-VSCF_PRIVATE vscf_error_t
+VSCF_PRIVATE void
 vscf_asn1wr_init_ctx(vscf_asn1wr_impl_t *asn1wr_impl);
 
 //
