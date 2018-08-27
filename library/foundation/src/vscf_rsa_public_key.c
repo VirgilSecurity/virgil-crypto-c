@@ -184,16 +184,33 @@ vscf_rsa_public_key_verify(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc_
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
     VSCF_ASSERT_PTR(rsa_public_key_impl->random);
-    VSCF_ASSERT_PTR(data.bytes);
-    VSCF_ASSERT_PTR(signature.bytes);
+    VSCF_ASSERT_PTR(vsc_data_is_valid(data));
+    VSCF_ASSERT_PTR(vsc_data_is_valid(signature));
 
     if (signature.len != vscf_rsa_public_key_key_len(rsa_public_key_impl)) {
         return false;
     }
 
+    //  Hash
+    size_t data_hash_len = vscf_hash_info_digest_size(vscf_hash_hash_info_api(rsa_public_key_impl->hash));
+    vsc_buffer_t *data_hash_buf = vsc_buffer_new_with_capacity(data_hash_len);
+    VSCF_ASSERT_PTR(data_hash_buf);
+
+    vscf_hash(rsa_public_key_impl->hash, data.bytes, data.len, vsc_buffer_available_ptr(data_hash_buf),
+            vsc_buffer_available_len(data_hash_buf));
+
+    vsc_buffer_reserve(data_hash_buf, data_hash_len);
+
+    //  Verify
     mbedtls_md_type_t md_alg = vscf_mbedtls_md_map_impl_tag(vscf_hash_impl_tag(rsa_public_key_impl->hash));
+    mbedtls_rsa_set_padding(&rsa_public_key_impl->rsa_ctx, MBEDTLS_RSA_PKCS_V21, md_alg);
+
     int result = mbedtls_rsa_rsassa_pss_verify(&rsa_public_key_impl->rsa_ctx, (mbedtls_random_cb)vscf_random,
-            rsa_public_key_impl->random, MBEDTLS_RSA_PUBLIC, md_alg, data.len, data.bytes, signature.bytes);
+            rsa_public_key_impl->random, MBEDTLS_RSA_PUBLIC, md_alg, vsc_buffer_len(data_hash_buf),
+            vsc_buffer_bytes(data_hash_buf), signature.bytes);
+
+    //  Cleanup
+    vsc_buffer_destroy(&data_hash_buf);
 
     return result == 0 ? true : false;
 }
