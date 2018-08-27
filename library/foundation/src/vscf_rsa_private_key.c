@@ -156,6 +156,22 @@ vscf_rsa_private_key_extract_public_key(vscf_rsa_private_key_impl_t *rsa_private
 
     rsa_public_ctx->len = rsa_private_ctx->len;
 
+    if (rsa_private_key_impl->hash) {
+        vscf_rsa_public_key_use_hash_api(rsa_public_key_impl, rsa_private_key_impl->hash);
+    }
+
+    if (rsa_private_key_impl->random) {
+        vscf_rsa_public_key_use_random(rsa_public_key_impl, rsa_private_key_impl->random);
+    }
+
+    if (rsa_private_key_impl->asn1rd) {
+        vscf_rsa_public_key_use_asn1_reader(rsa_public_key_impl, rsa_private_key_impl->asn1rd);
+    }
+
+    if (rsa_private_key_impl->asn1wr) {
+        vscf_rsa_public_key_use_asn1_writer(rsa_public_key_impl, rsa_private_key_impl->asn1wr);
+    }
+
     return vscf_rsa_public_key_impl(rsa_public_key_impl);
 }
 
