@@ -221,6 +221,8 @@ vscf_sha512_new(void) {
 
     vscf_sha512_init (sha512_impl);
 
+    sha512_impl->refcnt = 1;
+
     return sha512_impl;
 }
 
@@ -233,7 +235,7 @@ vscf_sha512_new(void) {
 VSCF_PUBLIC void
 vscf_sha512_delete(vscf_sha512_impl_t *sha512_impl) {
 
-    if (sha512_impl) {
+    if (sha512_impl && (--sha512_impl->refcnt == 0)) {
         vscf_sha512_cleanup (sha512_impl);
         vscf_dealloc (sha512_impl);
     }
@@ -255,6 +257,17 @@ vscf_sha512_destroy(vscf_sha512_impl_t **sha512_impl_ref) {
     *sha512_impl_ref = NULL;
 
     vscf_sha512_delete (sha512_impl);
+}
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_sha512_impl_t *
+vscf_sha512_copy(vscf_sha512_impl_t *sha512_impl) {
+
+    // Proxy to the parent implementation.
+    return (vscf_sha512_impl_t *)vscf_impl_copy((vscf_impl_t *)sha512_impl);
 }
 
 //

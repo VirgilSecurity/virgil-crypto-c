@@ -126,6 +126,14 @@ function  _A12_add_struct_impl (meta, destination)
             .name = my.names.property_info
             .class = ".(class_impl_struct_info)"
         endnew
+
+        new property
+            . = "\
+            Reference counter.
+            "
+            .name = my.names.property_ref_counter
+            .type = "size"
+        endnew
     endnew
 endfunction
 

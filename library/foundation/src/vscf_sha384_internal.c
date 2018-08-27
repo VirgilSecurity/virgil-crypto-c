@@ -221,6 +221,8 @@ vscf_sha384_new(void) {
 
     vscf_sha384_init (sha384_impl);
 
+    sha384_impl->refcnt = 1;
+
     return sha384_impl;
 }
 
@@ -233,7 +235,7 @@ vscf_sha384_new(void) {
 VSCF_PUBLIC void
 vscf_sha384_delete(vscf_sha384_impl_t *sha384_impl) {
 
-    if (sha384_impl) {
+    if (sha384_impl && (--sha384_impl->refcnt == 0)) {
         vscf_sha384_cleanup (sha384_impl);
         vscf_dealloc (sha384_impl);
     }
@@ -255,6 +257,17 @@ vscf_sha384_destroy(vscf_sha384_impl_t **sha384_impl_ref) {
     *sha384_impl_ref = NULL;
 
     vscf_sha384_delete (sha384_impl);
+}
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_sha384_impl_t *
+vscf_sha384_copy(vscf_sha384_impl_t *sha384_impl) {
+
+    // Proxy to the parent implementation.
+    return (vscf_sha384_impl_t *)vscf_impl_copy((vscf_impl_t *)sha384_impl);
 }
 
 //

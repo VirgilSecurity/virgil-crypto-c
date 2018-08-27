@@ -132,6 +132,13 @@ VSCF_PUBLIC void
 vscf_asn1wr_destroy(vscf_asn1wr_impl_t **asn1wr_impl_ref);
 
 //
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_asn1wr_impl_t *
+vscf_asn1wr_copy(vscf_asn1wr_impl_t *asn1wr_impl);
+
+//
 //  Reset all internal states and prepare to new ASN.1 writing operations.
 //
 VSCF_PUBLIC void

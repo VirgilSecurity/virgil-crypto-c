@@ -84,6 +84,10 @@ struct vscf_asn1wr_impl_t {
     //
     const vscf_impl_info_t *info;
     //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
     //  Implementation specific context.
     //
     vsc_buffer_t *out;

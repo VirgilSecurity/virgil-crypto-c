@@ -138,6 +138,13 @@ VSCF_PUBLIC void
 vscf_sha256_destroy(vscf_sha256_impl_t **sha256_impl_ref);
 
 //
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_sha256_impl_t *
+vscf_sha256_copy(vscf_sha256_impl_t *sha256_impl);
+
+//
 //  Returns instance of the implemented interface 'hash info'.
 //
 VSCF_PUBLIC const vscf_hash_info_api_t *

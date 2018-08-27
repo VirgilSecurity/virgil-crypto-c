@@ -138,6 +138,13 @@ VSCF_PUBLIC void
 vscf_hmac512_destroy(vscf_hmac512_impl_t **hmac512_impl_ref);
 
 //
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_hmac512_impl_t *
+vscf_hmac512_copy(vscf_hmac512_impl_t *hmac512_impl);
+
+//
 //  Returns instance of the implemented interface 'hmac info'.
 //
 VSCF_PUBLIC const vscf_hmac_info_api_t *

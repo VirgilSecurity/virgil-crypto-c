@@ -225,6 +225,8 @@ vscf_hmac224_new(void) {
 
     vscf_hmac224_init (hmac224_impl);
 
+    hmac224_impl->refcnt = 1;
+
     return hmac224_impl;
 }
 
@@ -237,7 +239,7 @@ vscf_hmac224_new(void) {
 VSCF_PUBLIC void
 vscf_hmac224_delete(vscf_hmac224_impl_t *hmac224_impl) {
 
-    if (hmac224_impl) {
+    if (hmac224_impl && (--hmac224_impl->refcnt == 0)) {
         vscf_hmac224_cleanup (hmac224_impl);
         vscf_dealloc (hmac224_impl);
     }
@@ -259,6 +261,17 @@ vscf_hmac224_destroy(vscf_hmac224_impl_t **hmac224_impl_ref) {
     *hmac224_impl_ref = NULL;
 
     vscf_hmac224_delete (hmac224_impl);
+}
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_hmac224_impl_t *
+vscf_hmac224_copy(vscf_hmac224_impl_t *hmac224_impl) {
+
+    // Proxy to the parent implementation.
+    return (vscf_hmac224_impl_t *)vscf_impl_copy((vscf_impl_t *)hmac224_impl);
 }
 
 //

@@ -84,6 +84,10 @@ struct vscf_sha224_impl_t {
     //
     const vscf_impl_info_t *info;
     //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
     //  Implementation specific context.
     //
     mbedtls_sha256_context hash_ctx;

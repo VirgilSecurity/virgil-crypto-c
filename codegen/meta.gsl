@@ -138,6 +138,7 @@ function _X17_add_entity_common (meta)
 
         _X17_add_smart_name (entity, "struct", "info")
         _X17_add_smart_name (entity, "property", "info")
+        _X17_add_name (entity, "property ref counter", "refcnt")
 
         _X17_add_smart_name (entity, "method", "cleanup")
         _X17_add_smart_name (entity, "method", "delete")
@@ -148,6 +149,7 @@ function _X17_add_entity_common (meta)
         _X17_add_smart_name (entity, "method", "take")
         _X17_add_smart_name (entity, "method", "init ctx")
         _X17_add_smart_name (entity, "method", "cleanup ctx")
+        _X17_add_smart_name (entity, "method", "copy")
 
         _X17_add_smart_name (entity, "enum", "tag")
         _X17_add_smart_name (entity, "enum constant", "begin")

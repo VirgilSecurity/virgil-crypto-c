@@ -84,6 +84,10 @@ struct vscf_aes256_gcm_impl_t {
     //
     const vscf_impl_info_t *info;
     //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
     //  Implementation specific context.
     //
     mbedtls_cipher_context_t cipher_ctx;
