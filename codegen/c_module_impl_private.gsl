@@ -85,7 +85,7 @@ function _A12_add_struct_info (meta, destination)
         endnew
 
         new property
-            . = "Erase inner state in a secure manner."
+            . = "Release acquired inner resources."
 
             .name = my.names.property_self_cleanup
             .callback = ".(class_impl_callback_cleanup)"
