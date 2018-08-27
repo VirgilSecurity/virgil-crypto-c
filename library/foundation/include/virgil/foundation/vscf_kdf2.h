@@ -129,6 +129,13 @@ VSCF_PUBLIC void
 vscf_kdf2_destroy(vscf_kdf2_impl_t **kdf2_impl_ref);
 
 //
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_kdf2_impl_t *
+vscf_kdf2_copy(vscf_kdf2_impl_t *kdf2_impl);
+
+//
 //  Setup dependency to the interface 'hash stream' and keep ownership.
 //
 VSCF_PUBLIC void

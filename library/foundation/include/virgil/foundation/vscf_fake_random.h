@@ -131,6 +131,13 @@ VSCF_PUBLIC void
 vscf_fake_random_destroy(vscf_fake_random_impl_t **fake_random_impl_ref);
 
 //
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_fake_random_impl_t *
+vscf_fake_random_copy(vscf_fake_random_impl_t *fake_random_impl);
+
+//
 //  Configure random number generator to generate sequence filled with given byte.
 //
 VSCF_PUBLIC void

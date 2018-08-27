@@ -177,6 +177,8 @@ vscf_hkdf_new(void) {
 
     vscf_hkdf_init (hkdf_impl);
 
+    hkdf_impl->refcnt = 1;
+
     return hkdf_impl;
 }
 
@@ -189,7 +191,7 @@ vscf_hkdf_new(void) {
 VSCF_PUBLIC void
 vscf_hkdf_delete(vscf_hkdf_impl_t *hkdf_impl) {
 
-    if (hkdf_impl) {
+    if (hkdf_impl && (--hkdf_impl->refcnt == 0)) {
         vscf_hkdf_cleanup (hkdf_impl);
         vscf_dealloc (hkdf_impl);
     }
@@ -211,6 +213,17 @@ vscf_hkdf_destroy(vscf_hkdf_impl_t **hkdf_impl_ref) {
     *hkdf_impl_ref = NULL;
 
     vscf_hkdf_delete (hkdf_impl);
+}
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_hkdf_impl_t *
+vscf_hkdf_copy(vscf_hkdf_impl_t *hkdf_impl) {
+
+    // Proxy to the parent implementation.
+    return (vscf_hkdf_impl_t *)vscf_impl_copy((vscf_impl_t *)hkdf_impl);
 }
 
 //

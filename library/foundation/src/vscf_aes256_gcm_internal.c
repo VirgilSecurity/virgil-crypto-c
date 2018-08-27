@@ -360,6 +360,8 @@ vscf_aes256_gcm_new(void) {
 
     vscf_aes256_gcm_init (aes256_gcm_impl);
 
+    aes256_gcm_impl->refcnt = 1;
+
     return aes256_gcm_impl;
 }
 
@@ -372,7 +374,7 @@ vscf_aes256_gcm_new(void) {
 VSCF_PUBLIC void
 vscf_aes256_gcm_delete(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 
-    if (aes256_gcm_impl) {
+    if (aes256_gcm_impl && (--aes256_gcm_impl->refcnt == 0)) {
         vscf_aes256_gcm_cleanup (aes256_gcm_impl);
         vscf_dealloc (aes256_gcm_impl);
     }
@@ -394,6 +396,17 @@ vscf_aes256_gcm_destroy(vscf_aes256_gcm_impl_t **aes256_gcm_impl_ref) {
     *aes256_gcm_impl_ref = NULL;
 
     vscf_aes256_gcm_delete (aes256_gcm_impl);
+}
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_aes256_gcm_impl_t *
+vscf_aes256_gcm_copy(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
+
+    // Proxy to the parent implementation.
+    return (vscf_aes256_gcm_impl_t *)vscf_impl_copy((vscf_impl_t *)aes256_gcm_impl);
 }
 
 //

@@ -218,6 +218,8 @@ vscf_asn1rd_new(void) {
 
     vscf_asn1rd_init (asn1rd_impl);
 
+    asn1rd_impl->refcnt = 1;
+
     return asn1rd_impl;
 }
 
@@ -230,7 +232,7 @@ vscf_asn1rd_new(void) {
 VSCF_PUBLIC void
 vscf_asn1rd_delete(vscf_asn1rd_impl_t *asn1rd_impl) {
 
-    if (asn1rd_impl) {
+    if (asn1rd_impl && (--asn1rd_impl->refcnt == 0)) {
         vscf_asn1rd_cleanup (asn1rd_impl);
         vscf_dealloc (asn1rd_impl);
     }
@@ -252,6 +254,17 @@ vscf_asn1rd_destroy(vscf_asn1rd_impl_t **asn1rd_impl_ref) {
     *asn1rd_impl_ref = NULL;
 
     vscf_asn1rd_delete (asn1rd_impl);
+}
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_asn1rd_impl_t *
+vscf_asn1rd_copy(vscf_asn1rd_impl_t *asn1rd_impl) {
+
+    // Proxy to the parent implementation.
+    return (vscf_asn1rd_impl_t *)vscf_impl_copy((vscf_impl_t *)asn1rd_impl);
 }
 
 //

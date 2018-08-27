@@ -221,6 +221,8 @@ vscf_sha256_new(void) {
 
     vscf_sha256_init (sha256_impl);
 
+    sha256_impl->refcnt = 1;
+
     return sha256_impl;
 }
 
@@ -233,7 +235,7 @@ vscf_sha256_new(void) {
 VSCF_PUBLIC void
 vscf_sha256_delete(vscf_sha256_impl_t *sha256_impl) {
 
-    if (sha256_impl) {
+    if (sha256_impl && (--sha256_impl->refcnt == 0)) {
         vscf_sha256_cleanup (sha256_impl);
         vscf_dealloc (sha256_impl);
     }
@@ -255,6 +257,17 @@ vscf_sha256_destroy(vscf_sha256_impl_t **sha256_impl_ref) {
     *sha256_impl_ref = NULL;
 
     vscf_sha256_delete (sha256_impl);
+}
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_sha256_impl_t *
+vscf_sha256_copy(vscf_sha256_impl_t *sha256_impl) {
+
+    // Proxy to the parent implementation.
+    return (vscf_sha256_impl_t *)vscf_impl_copy((vscf_impl_t *)sha256_impl);
 }
 
 //

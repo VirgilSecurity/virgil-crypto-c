@@ -177,6 +177,8 @@ vscf_kdf2_new(void) {
 
     vscf_kdf2_init (kdf2_impl);
 
+    kdf2_impl->refcnt = 1;
+
     return kdf2_impl;
 }
 
@@ -189,7 +191,7 @@ vscf_kdf2_new(void) {
 VSCF_PUBLIC void
 vscf_kdf2_delete(vscf_kdf2_impl_t *kdf2_impl) {
 
-    if (kdf2_impl) {
+    if (kdf2_impl && (--kdf2_impl->refcnt == 0)) {
         vscf_kdf2_cleanup (kdf2_impl);
         vscf_dealloc (kdf2_impl);
     }
@@ -211,6 +213,17 @@ vscf_kdf2_destroy(vscf_kdf2_impl_t **kdf2_impl_ref) {
     *kdf2_impl_ref = NULL;
 
     vscf_kdf2_delete (kdf2_impl);
+}
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_kdf2_impl_t *
+vscf_kdf2_copy(vscf_kdf2_impl_t *kdf2_impl) {
+
+    // Proxy to the parent implementation.
+    return (vscf_kdf2_impl_t *)vscf_impl_copy((vscf_impl_t *)kdf2_impl);
 }
 
 //

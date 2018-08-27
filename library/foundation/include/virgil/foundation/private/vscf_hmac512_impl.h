@@ -84,6 +84,10 @@ struct vscf_hmac512_impl_t {
     //
     const vscf_impl_info_t *info;
     //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
     //  Implementation specific context.
     //
     mbedtls_md_context_t hmac_ctx;

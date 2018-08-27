@@ -102,6 +102,10 @@ struct vscf_impl_t {
     //  Compile-time known information.
     //
     const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
 };
 
 

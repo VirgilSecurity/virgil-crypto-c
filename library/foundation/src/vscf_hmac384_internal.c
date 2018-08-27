@@ -225,6 +225,8 @@ vscf_hmac384_new(void) {
 
     vscf_hmac384_init (hmac384_impl);
 
+    hmac384_impl->refcnt = 1;
+
     return hmac384_impl;
 }
 
@@ -237,7 +239,7 @@ vscf_hmac384_new(void) {
 VSCF_PUBLIC void
 vscf_hmac384_delete(vscf_hmac384_impl_t *hmac384_impl) {
 
-    if (hmac384_impl) {
+    if (hmac384_impl && (--hmac384_impl->refcnt == 0)) {
         vscf_hmac384_cleanup (hmac384_impl);
         vscf_dealloc (hmac384_impl);
     }
@@ -259,6 +261,17 @@ vscf_hmac384_destroy(vscf_hmac384_impl_t **hmac384_impl_ref) {
     *hmac384_impl_ref = NULL;
 
     vscf_hmac384_delete (hmac384_impl);
+}
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_hmac384_impl_t *
+vscf_hmac384_copy(vscf_hmac384_impl_t *hmac384_impl) {
+
+    // Proxy to the parent implementation.
+    return (vscf_hmac384_impl_t *)vscf_impl_copy((vscf_impl_t *)hmac384_impl);
 }
 
 //

@@ -147,6 +147,13 @@ VSCF_PUBLIC void
 vscf_aes256_gcm_destroy(vscf_aes256_gcm_impl_t **aes256_gcm_impl_ref);
 
 //
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_aes256_gcm_impl_t *
+vscf_aes256_gcm_copy(vscf_aes256_gcm_impl_t *aes256_gcm_impl);
+
+//
 //  Returns instance of the implemented interface 'cipher info'.
 //
 VSCF_PUBLIC const vscf_cipher_info_api_t *

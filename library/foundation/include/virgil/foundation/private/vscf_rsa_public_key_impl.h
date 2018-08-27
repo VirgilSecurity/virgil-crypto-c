@@ -85,6 +85,10 @@ struct vscf_rsa_public_key_impl_t {
     //
     const vscf_impl_info_t *info;
     //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *random;

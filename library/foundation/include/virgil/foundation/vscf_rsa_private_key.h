@@ -138,6 +138,13 @@ VSCF_PUBLIC void
 vscf_rsa_private_key_destroy(vscf_rsa_private_key_impl_t **rsa_private_key_impl_ref);
 
 //
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_rsa_private_key_impl_t *
+vscf_rsa_private_key_copy(vscf_rsa_private_key_impl_t *rsa_private_key_impl);
+
+//
 //  Setup dependency to the interface 'hash' and keep ownership.
 //
 VSCF_PUBLIC void

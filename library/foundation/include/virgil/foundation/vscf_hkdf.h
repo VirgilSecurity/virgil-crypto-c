@@ -129,6 +129,13 @@ VSCF_PUBLIC void
 vscf_hkdf_destroy(vscf_hkdf_impl_t **hkdf_impl_ref);
 
 //
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_hkdf_impl_t *
+vscf_hkdf_copy(vscf_hkdf_impl_t *hkdf_impl);
+
+//
 //  Setup dependency to the interface 'hmac stream' and keep ownership.
 //
 VSCF_PUBLIC void

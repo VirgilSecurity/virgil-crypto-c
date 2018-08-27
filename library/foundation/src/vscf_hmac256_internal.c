@@ -225,6 +225,8 @@ vscf_hmac256_new(void) {
 
     vscf_hmac256_init (hmac256_impl);
 
+    hmac256_impl->refcnt = 1;
+
     return hmac256_impl;
 }
 
@@ -237,7 +239,7 @@ vscf_hmac256_new(void) {
 VSCF_PUBLIC void
 vscf_hmac256_delete(vscf_hmac256_impl_t *hmac256_impl) {
 
-    if (hmac256_impl) {
+    if (hmac256_impl && (--hmac256_impl->refcnt == 0)) {
         vscf_hmac256_cleanup (hmac256_impl);
         vscf_dealloc (hmac256_impl);
     }
@@ -259,6 +261,17 @@ vscf_hmac256_destroy(vscf_hmac256_impl_t **hmac256_impl_ref) {
     *hmac256_impl_ref = NULL;
 
     vscf_hmac256_delete (hmac256_impl);
+}
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_hmac256_impl_t *
+vscf_hmac256_copy(vscf_hmac256_impl_t *hmac256_impl) {
+
+    // Proxy to the parent implementation.
+    return (vscf_hmac256_impl_t *)vscf_impl_copy((vscf_impl_t *)hmac256_impl);
 }
 
 //

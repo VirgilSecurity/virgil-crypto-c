@@ -163,6 +163,8 @@ vscf_fake_random_new(void) {
 
     vscf_fake_random_init (fake_random_impl);
 
+    fake_random_impl->refcnt = 1;
+
     return fake_random_impl;
 }
 
@@ -175,7 +177,7 @@ vscf_fake_random_new(void) {
 VSCF_PUBLIC void
 vscf_fake_random_delete(vscf_fake_random_impl_t *fake_random_impl) {
 
-    if (fake_random_impl) {
+    if (fake_random_impl && (--fake_random_impl->refcnt == 0)) {
         vscf_fake_random_cleanup (fake_random_impl);
         vscf_dealloc (fake_random_impl);
     }
@@ -197,6 +199,17 @@ vscf_fake_random_destroy(vscf_fake_random_impl_t **fake_random_impl_ref) {
     *fake_random_impl_ref = NULL;
 
     vscf_fake_random_delete (fake_random_impl);
+}
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_fake_random_impl_t *
+vscf_fake_random_copy(vscf_fake_random_impl_t *fake_random_impl) {
+
+    // Proxy to the parent implementation.
+    return (vscf_fake_random_impl_t *)vscf_impl_copy((vscf_impl_t *)fake_random_impl);
 }
 
 //

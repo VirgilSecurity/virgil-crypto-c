@@ -1360,6 +1360,21 @@ function component_create_argument_impl (destination, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Add 'impl' return to the destination with 'disown' access.
+# ---------------------------------------------------------------------------
+function component_create_return_impl (destination, meta)
+    check_arguments (my, "destination, meta", my)
+
+    my.names = meta_names (my.meta)
+
+    new [return] to my.destination
+        .class = my.names.type_impl
+        .access = "disown"
+        return [return]
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Add 'impl' argument to the destination with 'disown' access.
 # ---------------------------------------------------------------------------
 function component_create_argument_impl_ref (destination, meta)

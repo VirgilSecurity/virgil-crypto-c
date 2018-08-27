@@ -221,6 +221,8 @@ vscf_sha224_new(void) {
 
     vscf_sha224_init (sha224_impl);
 
+    sha224_impl->refcnt = 1;
+
     return sha224_impl;
 }
 
@@ -233,7 +235,7 @@ vscf_sha224_new(void) {
 VSCF_PUBLIC void
 vscf_sha224_delete(vscf_sha224_impl_t *sha224_impl) {
 
-    if (sha224_impl) {
+    if (sha224_impl && (--sha224_impl->refcnt == 0)) {
         vscf_sha224_cleanup (sha224_impl);
         vscf_dealloc (sha224_impl);
     }
@@ -255,6 +257,17 @@ vscf_sha224_destroy(vscf_sha224_impl_t **sha224_impl_ref) {
     *sha224_impl_ref = NULL;
 
     vscf_sha224_delete (sha224_impl);
+}
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_sha224_impl_t *
+vscf_sha224_copy(vscf_sha224_impl_t *sha224_impl) {
+
+    // Proxy to the parent implementation.
+    return (vscf_sha224_impl_t *)vscf_impl_copy((vscf_impl_t *)sha224_impl);
 }
 
 //
