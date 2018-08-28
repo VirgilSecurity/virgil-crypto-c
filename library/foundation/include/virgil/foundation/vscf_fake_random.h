@@ -97,7 +97,7 @@ vscf_fake_random_init(vscf_fake_random_impl_t *fake_random_impl);
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_fake_random_init ()'.
+//  This is a reverse action of the function 'vscf_fake_random_init()'.
 //  All dependencies that is under ownership will be destroyed.
 //  All dependencies that is not under ownership will untouched.
 //
@@ -113,7 +113,7 @@ vscf_fake_random_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_fake_random_new ()'.
+//  This is a reverse action of the function 'vscf_fake_random_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
@@ -122,7 +122,7 @@ vscf_fake_random_delete(vscf_fake_random_impl_t *fake_random_impl);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_fake_random_new ()'.
+//  This is a reverse action of the function 'vscf_fake_random_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.

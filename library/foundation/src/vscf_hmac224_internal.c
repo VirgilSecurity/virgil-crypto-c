@@ -183,30 +183,30 @@ static const vscf_impl_info_t info = {
 VSCF_PUBLIC void
 vscf_hmac224_init(vscf_hmac224_impl_t *hmac224_impl) {
 
-    VSCF_ASSERT_PTR (hmac224_impl);
-    VSCF_ASSERT_PTR (hmac224_impl->info == NULL);
+    VSCF_ASSERT_PTR(hmac224_impl);
+    VSCF_ASSERT_PTR(hmac224_impl->info == NULL);
 
     hmac224_impl->info = &info;
 
-    vscf_hmac224_init_ctx (hmac224_impl);
+    vscf_hmac224_init_ctx(hmac224_impl);
 }
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hmac224_init ()'.
+//  This is a reverse action of the function 'vscf_hmac224_init()'.
 //  All dependencies that is under ownership will be destroyed.
 //  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_hmac224_cleanup(vscf_hmac224_impl_t *hmac224_impl) {
 
-    VSCF_ASSERT_PTR (hmac224_impl);
+    VSCF_ASSERT_PTR(hmac224_impl);
 
     if (hmac224_impl->info == NULL) {
         return;
     }
 
-    vscf_hmac224_cleanup_ctx (hmac224_impl);
+    vscf_hmac224_cleanup_ctx(hmac224_impl);
 
     hmac224_impl->info = NULL;
 }
@@ -218,10 +218,10 @@ vscf_hmac224_cleanup(vscf_hmac224_impl_t *hmac224_impl) {
 VSCF_PUBLIC vscf_hmac224_impl_t *
 vscf_hmac224_new(void) {
 
-    vscf_hmac224_impl_t *hmac224_impl = (vscf_hmac224_impl_t *) vscf_alloc (sizeof (vscf_hmac224_impl_t));
+    vscf_hmac224_impl_t *hmac224_impl = (vscf_hmac224_impl_t *) vscf_alloc(sizeof (vscf_hmac224_impl_t));
     VSCF_ASSERT_ALLOC(hmac224_impl);
 
-    vscf_hmac224_init (hmac224_impl);
+    vscf_hmac224_init(hmac224_impl);
 
     hmac224_impl->refcnt = 1;
 
@@ -230,7 +230,7 @@ vscf_hmac224_new(void) {
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hmac224_new ()'.
+//  This is a reverse action of the function 'vscf_hmac224_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
@@ -238,14 +238,14 @@ VSCF_PUBLIC void
 vscf_hmac224_delete(vscf_hmac224_impl_t *hmac224_impl) {
 
     if (hmac224_impl && (--hmac224_impl->refcnt == 0)) {
-        vscf_hmac224_cleanup (hmac224_impl);
-        vscf_dealloc (hmac224_impl);
+        vscf_hmac224_cleanup(hmac224_impl);
+        vscf_dealloc(hmac224_impl);
     }
 }
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hmac224_new ()'.
+//  This is a reverse action of the function 'vscf_hmac224_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
@@ -253,12 +253,12 @@ vscf_hmac224_delete(vscf_hmac224_impl_t *hmac224_impl) {
 VSCF_PUBLIC void
 vscf_hmac224_destroy(vscf_hmac224_impl_t **hmac224_impl_ref) {
 
-    VSCF_ASSERT_PTR (hmac224_impl_ref);
+    VSCF_ASSERT_PTR(hmac224_impl_ref);
 
     vscf_hmac224_impl_t *hmac224_impl = *hmac224_impl_ref;
     *hmac224_impl_ref = NULL;
 
-    vscf_hmac224_delete (hmac224_impl);
+    vscf_hmac224_delete(hmac224_impl);
 }
 
 //
@@ -305,8 +305,8 @@ vscf_hmac224_impl_size(void) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_hmac224_impl(vscf_hmac224_impl_t *hmac224_impl) {
 
-    VSCF_ASSERT_PTR (hmac224_impl);
-    return (vscf_impl_t *) (hmac224_impl);
+    VSCF_ASSERT_PTR(hmac224_impl);
+    return (vscf_impl_t *)(hmac224_impl);
 }
 
 

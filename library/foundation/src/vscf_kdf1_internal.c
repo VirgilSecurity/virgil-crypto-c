@@ -122,8 +122,8 @@ static const vscf_impl_info_t info = {
 VSCF_PUBLIC void
 vscf_kdf1_init(vscf_kdf1_impl_t *kdf1_impl) {
 
-    VSCF_ASSERT_PTR (kdf1_impl);
-    VSCF_ASSERT_PTR (kdf1_impl->info == NULL);
+    VSCF_ASSERT_PTR(kdf1_impl);
+    VSCF_ASSERT_PTR(kdf1_impl->info == NULL);
 
     kdf1_impl->info = &info;
 
@@ -134,14 +134,14 @@ vscf_kdf1_init(vscf_kdf1_impl_t *kdf1_impl) {
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_kdf1_init ()'.
+//  This is a reverse action of the function 'vscf_kdf1_init()'.
 //  All dependencies that is under ownership will be destroyed.
 //  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_kdf1_cleanup(vscf_kdf1_impl_t *kdf1_impl) {
 
-    VSCF_ASSERT_PTR (kdf1_impl);
+    VSCF_ASSERT_PTR(kdf1_impl);
 
     if (kdf1_impl->info == NULL) {
         return;
@@ -151,7 +151,7 @@ vscf_kdf1_cleanup(vscf_kdf1_impl_t *kdf1_impl) {
     if (kdf1_impl->hash) {
 
         if (kdf1_impl->is_owning_hash) {
-            vscf_impl_destroy (&kdf1_impl->hash);
+            vscf_impl_destroy(&kdf1_impl->hash);
 
         } else {
             kdf1_impl->hash = NULL;
@@ -170,10 +170,10 @@ vscf_kdf1_cleanup(vscf_kdf1_impl_t *kdf1_impl) {
 VSCF_PUBLIC vscf_kdf1_impl_t *
 vscf_kdf1_new(void) {
 
-    vscf_kdf1_impl_t *kdf1_impl = (vscf_kdf1_impl_t *) vscf_alloc (sizeof (vscf_kdf1_impl_t));
+    vscf_kdf1_impl_t *kdf1_impl = (vscf_kdf1_impl_t *) vscf_alloc(sizeof (vscf_kdf1_impl_t));
     VSCF_ASSERT_ALLOC(kdf1_impl);
 
-    vscf_kdf1_init (kdf1_impl);
+    vscf_kdf1_init(kdf1_impl);
 
     kdf1_impl->refcnt = 1;
 
@@ -182,7 +182,7 @@ vscf_kdf1_new(void) {
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_kdf1_new ()'.
+//  This is a reverse action of the function 'vscf_kdf1_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
@@ -190,14 +190,14 @@ VSCF_PUBLIC void
 vscf_kdf1_delete(vscf_kdf1_impl_t *kdf1_impl) {
 
     if (kdf1_impl && (--kdf1_impl->refcnt == 0)) {
-        vscf_kdf1_cleanup (kdf1_impl);
-        vscf_dealloc (kdf1_impl);
+        vscf_kdf1_cleanup(kdf1_impl);
+        vscf_dealloc(kdf1_impl);
     }
 }
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_kdf1_new ()'.
+//  This is a reverse action of the function 'vscf_kdf1_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
@@ -205,12 +205,12 @@ vscf_kdf1_delete(vscf_kdf1_impl_t *kdf1_impl) {
 VSCF_PUBLIC void
 vscf_kdf1_destroy(vscf_kdf1_impl_t **kdf1_impl_ref) {
 
-    VSCF_ASSERT_PTR (kdf1_impl_ref);
+    VSCF_ASSERT_PTR(kdf1_impl_ref);
 
     vscf_kdf1_impl_t *kdf1_impl = *kdf1_impl_ref;
     *kdf1_impl_ref = NULL;
 
-    vscf_kdf1_delete (kdf1_impl);
+    vscf_kdf1_delete(kdf1_impl);
 }
 
 //
@@ -230,11 +230,11 @@ vscf_kdf1_copy(vscf_kdf1_impl_t *kdf1_impl) {
 VSCF_PUBLIC void
 vscf_kdf1_use_hash_stream(vscf_kdf1_impl_t *kdf1_impl, vscf_impl_t *hash) {
 
-    VSCF_ASSERT_PTR (kdf1_impl);
-    VSCF_ASSERT_PTR (hash);
-    VSCF_ASSERT_PTR (kdf1_impl->hash == NULL);
+    VSCF_ASSERT_PTR(kdf1_impl);
+    VSCF_ASSERT_PTR(hash);
+    VSCF_ASSERT_PTR(kdf1_impl->hash == NULL);
 
-    VSCF_ASSERT (vscf_hash_stream_is_implemented (hash));
+    VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
 
     kdf1_impl->hash = hash;
 
@@ -247,15 +247,15 @@ vscf_kdf1_use_hash_stream(vscf_kdf1_impl_t *kdf1_impl, vscf_impl_t *hash) {
 VSCF_PUBLIC void
 vscf_kdf1_take_hash_stream(vscf_kdf1_impl_t *kdf1_impl, vscf_impl_t **hash_ref) {
 
-    VSCF_ASSERT_PTR (kdf1_impl);
-    VSCF_ASSERT_PTR (hash_ref);
-    VSCF_ASSERT_PTR (kdf1_impl->hash == NULL);
+    VSCF_ASSERT_PTR(kdf1_impl);
+    VSCF_ASSERT_PTR(hash_ref);
+    VSCF_ASSERT_PTR(kdf1_impl->hash == NULL);
 
     vscf_impl_t *hash = *hash_ref;
     *hash_ref = NULL;
-    VSCF_ASSERT_PTR (hash);
+    VSCF_ASSERT_PTR(hash);
 
-    VSCF_ASSERT (vscf_hash_stream_is_implemented (hash));
+    VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
 
     kdf1_impl->hash = hash;
 
@@ -277,8 +277,8 @@ vscf_kdf1_impl_size(void) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_kdf1_impl(vscf_kdf1_impl_t *kdf1_impl) {
 
-    VSCF_ASSERT_PTR (kdf1_impl);
-    return (vscf_impl_t *) (kdf1_impl);
+    VSCF_ASSERT_PTR(kdf1_impl);
+    return (vscf_impl_t *)(kdf1_impl);
 }
 
 

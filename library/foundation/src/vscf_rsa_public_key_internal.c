@@ -242,8 +242,8 @@ static const vscf_impl_info_t info = {
 VSCF_PUBLIC void
 vscf_rsa_public_key_init(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
-    VSCF_ASSERT_PTR (rsa_public_key_impl);
-    VSCF_ASSERT_PTR (rsa_public_key_impl->info == NULL);
+    VSCF_ASSERT_PTR(rsa_public_key_impl);
+    VSCF_ASSERT_PTR(rsa_public_key_impl->info == NULL);
 
     rsa_public_key_impl->info = &info;
 
@@ -261,19 +261,19 @@ vscf_rsa_public_key_init(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
     rsa_public_key_impl->is_owning_asn1wr = false;
 
-    vscf_rsa_public_key_init_ctx (rsa_public_key_impl);
+    vscf_rsa_public_key_init_ctx(rsa_public_key_impl);
 }
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_rsa_public_key_init ()'.
+//  This is a reverse action of the function 'vscf_rsa_public_key_init()'.
 //  All dependencies that is under ownership will be destroyed.
 //  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_rsa_public_key_cleanup(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
-    VSCF_ASSERT_PTR (rsa_public_key_impl);
+    VSCF_ASSERT_PTR(rsa_public_key_impl);
 
     if (rsa_public_key_impl->info == NULL) {
         return;
@@ -283,7 +283,7 @@ vscf_rsa_public_key_cleanup(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
     if (rsa_public_key_impl->random) {
 
         if (rsa_public_key_impl->is_owning_random) {
-            vscf_impl_destroy (&rsa_public_key_impl->random);
+            vscf_impl_destroy(&rsa_public_key_impl->random);
 
         } else {
             rsa_public_key_impl->random = NULL;
@@ -296,7 +296,7 @@ vscf_rsa_public_key_cleanup(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
     if (rsa_public_key_impl->asn1rd) {
 
         if (rsa_public_key_impl->is_owning_asn1rd) {
-            vscf_impl_destroy (&rsa_public_key_impl->asn1rd);
+            vscf_impl_destroy(&rsa_public_key_impl->asn1rd);
 
         } else {
             rsa_public_key_impl->asn1rd = NULL;
@@ -309,7 +309,7 @@ vscf_rsa_public_key_cleanup(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
     if (rsa_public_key_impl->asn1wr) {
 
         if (rsa_public_key_impl->is_owning_asn1wr) {
-            vscf_impl_destroy (&rsa_public_key_impl->asn1wr);
+            vscf_impl_destroy(&rsa_public_key_impl->asn1wr);
 
         } else {
             rsa_public_key_impl->asn1wr = NULL;
@@ -323,7 +323,7 @@ vscf_rsa_public_key_cleanup(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
         rsa_public_key_impl->hash = NULL;
     }
 
-    vscf_rsa_public_key_cleanup_ctx (rsa_public_key_impl);
+    vscf_rsa_public_key_cleanup_ctx(rsa_public_key_impl);
 
     rsa_public_key_impl->info = NULL;
 }
@@ -335,10 +335,10 @@ vscf_rsa_public_key_cleanup(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 VSCF_PUBLIC vscf_rsa_public_key_impl_t *
 vscf_rsa_public_key_new(void) {
 
-    vscf_rsa_public_key_impl_t *rsa_public_key_impl = (vscf_rsa_public_key_impl_t *) vscf_alloc (sizeof (vscf_rsa_public_key_impl_t));
+    vscf_rsa_public_key_impl_t *rsa_public_key_impl = (vscf_rsa_public_key_impl_t *) vscf_alloc(sizeof (vscf_rsa_public_key_impl_t));
     VSCF_ASSERT_ALLOC(rsa_public_key_impl);
 
-    vscf_rsa_public_key_init (rsa_public_key_impl);
+    vscf_rsa_public_key_init(rsa_public_key_impl);
 
     rsa_public_key_impl->refcnt = 1;
 
@@ -347,7 +347,7 @@ vscf_rsa_public_key_new(void) {
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_rsa_public_key_new ()'.
+//  This is a reverse action of the function 'vscf_rsa_public_key_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
@@ -355,14 +355,14 @@ VSCF_PUBLIC void
 vscf_rsa_public_key_delete(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
     if (rsa_public_key_impl && (--rsa_public_key_impl->refcnt == 0)) {
-        vscf_rsa_public_key_cleanup (rsa_public_key_impl);
-        vscf_dealloc (rsa_public_key_impl);
+        vscf_rsa_public_key_cleanup(rsa_public_key_impl);
+        vscf_dealloc(rsa_public_key_impl);
     }
 }
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_rsa_public_key_new ()'.
+//  This is a reverse action of the function 'vscf_rsa_public_key_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
@@ -370,12 +370,12 @@ vscf_rsa_public_key_delete(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 VSCF_PUBLIC void
 vscf_rsa_public_key_destroy(vscf_rsa_public_key_impl_t **rsa_public_key_impl_ref) {
 
-    VSCF_ASSERT_PTR (rsa_public_key_impl_ref);
+    VSCF_ASSERT_PTR(rsa_public_key_impl_ref);
 
     vscf_rsa_public_key_impl_t *rsa_public_key_impl = *rsa_public_key_impl_ref;
     *rsa_public_key_impl_ref = NULL;
 
-    vscf_rsa_public_key_delete (rsa_public_key_impl);
+    vscf_rsa_public_key_delete(rsa_public_key_impl);
 }
 
 //
@@ -404,9 +404,9 @@ vscf_rsa_public_key_public_key_api(void) {
 VSCF_PUBLIC void
 vscf_rsa_public_key_use_hash_api(vscf_rsa_public_key_impl_t *rsa_public_key_impl, const vscf_hash_api_t *hash) {
 
-    VSCF_ASSERT_PTR (rsa_public_key_impl);
-    VSCF_ASSERT_PTR (hash);
-    VSCF_ASSERT_PTR (rsa_public_key_impl->hash == NULL);
+    VSCF_ASSERT_PTR(rsa_public_key_impl);
+    VSCF_ASSERT_PTR(hash);
+    VSCF_ASSERT_PTR(rsa_public_key_impl->hash == NULL);
 
     rsa_public_key_impl->hash = hash;
 }
@@ -417,11 +417,11 @@ vscf_rsa_public_key_use_hash_api(vscf_rsa_public_key_impl_t *rsa_public_key_impl
 VSCF_PUBLIC void
 vscf_rsa_public_key_use_random(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *random) {
 
-    VSCF_ASSERT_PTR (rsa_public_key_impl);
-    VSCF_ASSERT_PTR (random);
-    VSCF_ASSERT_PTR (rsa_public_key_impl->random == NULL);
+    VSCF_ASSERT_PTR(rsa_public_key_impl);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT_PTR(rsa_public_key_impl->random == NULL);
 
-    VSCF_ASSERT (vscf_random_is_implemented (random));
+    VSCF_ASSERT(vscf_random_is_implemented(random));
 
     rsa_public_key_impl->random = random;
 
@@ -434,15 +434,15 @@ vscf_rsa_public_key_use_random(vscf_rsa_public_key_impl_t *rsa_public_key_impl, 
 VSCF_PUBLIC void
 vscf_rsa_public_key_take_random(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t **random_ref) {
 
-    VSCF_ASSERT_PTR (rsa_public_key_impl);
-    VSCF_ASSERT_PTR (random_ref);
-    VSCF_ASSERT_PTR (rsa_public_key_impl->random == NULL);
+    VSCF_ASSERT_PTR(rsa_public_key_impl);
+    VSCF_ASSERT_PTR(random_ref);
+    VSCF_ASSERT_PTR(rsa_public_key_impl->random == NULL);
 
     vscf_impl_t *random = *random_ref;
     *random_ref = NULL;
-    VSCF_ASSERT_PTR (random);
+    VSCF_ASSERT_PTR(random);
 
-    VSCF_ASSERT (vscf_random_is_implemented (random));
+    VSCF_ASSERT(vscf_random_is_implemented(random));
 
     rsa_public_key_impl->random = random;
 
@@ -455,11 +455,11 @@ vscf_rsa_public_key_take_random(vscf_rsa_public_key_impl_t *rsa_public_key_impl,
 VSCF_PUBLIC void
 vscf_rsa_public_key_use_asn1_reader(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1rd) {
 
-    VSCF_ASSERT_PTR (rsa_public_key_impl);
-    VSCF_ASSERT_PTR (asn1rd);
-    VSCF_ASSERT_PTR (rsa_public_key_impl->asn1rd == NULL);
+    VSCF_ASSERT_PTR(rsa_public_key_impl);
+    VSCF_ASSERT_PTR(asn1rd);
+    VSCF_ASSERT_PTR(rsa_public_key_impl->asn1rd == NULL);
 
-    VSCF_ASSERT (vscf_asn1_reader_is_implemented (asn1rd));
+    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1rd));
 
     rsa_public_key_impl->asn1rd = asn1rd;
 
@@ -472,15 +472,15 @@ vscf_rsa_public_key_use_asn1_reader(vscf_rsa_public_key_impl_t *rsa_public_key_i
 VSCF_PUBLIC void
 vscf_rsa_public_key_take_asn1_reader(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t **asn1rd_ref) {
 
-    VSCF_ASSERT_PTR (rsa_public_key_impl);
-    VSCF_ASSERT_PTR (asn1rd_ref);
-    VSCF_ASSERT_PTR (rsa_public_key_impl->asn1rd == NULL);
+    VSCF_ASSERT_PTR(rsa_public_key_impl);
+    VSCF_ASSERT_PTR(asn1rd_ref);
+    VSCF_ASSERT_PTR(rsa_public_key_impl->asn1rd == NULL);
 
     vscf_impl_t *asn1rd = *asn1rd_ref;
     *asn1rd_ref = NULL;
-    VSCF_ASSERT_PTR (asn1rd);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    VSCF_ASSERT (vscf_asn1_reader_is_implemented (asn1rd));
+    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1rd));
 
     rsa_public_key_impl->asn1rd = asn1rd;
 
@@ -493,11 +493,11 @@ vscf_rsa_public_key_take_asn1_reader(vscf_rsa_public_key_impl_t *rsa_public_key_
 VSCF_PUBLIC void
 vscf_rsa_public_key_use_asn1_writer(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1wr) {
 
-    VSCF_ASSERT_PTR (rsa_public_key_impl);
-    VSCF_ASSERT_PTR (asn1wr);
-    VSCF_ASSERT_PTR (rsa_public_key_impl->asn1wr == NULL);
+    VSCF_ASSERT_PTR(rsa_public_key_impl);
+    VSCF_ASSERT_PTR(asn1wr);
+    VSCF_ASSERT_PTR(rsa_public_key_impl->asn1wr == NULL);
 
-    VSCF_ASSERT (vscf_asn1_writer_is_implemented (asn1wr));
+    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1wr));
 
     rsa_public_key_impl->asn1wr = asn1wr;
 
@@ -510,15 +510,15 @@ vscf_rsa_public_key_use_asn1_writer(vscf_rsa_public_key_impl_t *rsa_public_key_i
 VSCF_PUBLIC void
 vscf_rsa_public_key_take_asn1_writer(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t **asn1wr_ref) {
 
-    VSCF_ASSERT_PTR (rsa_public_key_impl);
-    VSCF_ASSERT_PTR (asn1wr_ref);
-    VSCF_ASSERT_PTR (rsa_public_key_impl->asn1wr == NULL);
+    VSCF_ASSERT_PTR(rsa_public_key_impl);
+    VSCF_ASSERT_PTR(asn1wr_ref);
+    VSCF_ASSERT_PTR(rsa_public_key_impl->asn1wr == NULL);
 
     vscf_impl_t *asn1wr = *asn1wr_ref;
     *asn1wr_ref = NULL;
-    VSCF_ASSERT_PTR (asn1wr);
+    VSCF_ASSERT_PTR(asn1wr);
 
-    VSCF_ASSERT (vscf_asn1_writer_is_implemented (asn1wr));
+    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1wr));
 
     rsa_public_key_impl->asn1wr = asn1wr;
 
@@ -540,8 +540,8 @@ vscf_rsa_public_key_impl_size(void) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_rsa_public_key_impl(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
-    VSCF_ASSERT_PTR (rsa_public_key_impl);
-    return (vscf_impl_t *) (rsa_public_key_impl);
+    VSCF_ASSERT_PTR(rsa_public_key_impl);
+    return (vscf_impl_t *)(rsa_public_key_impl);
 }
 
 

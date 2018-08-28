@@ -183,30 +183,30 @@ static const vscf_impl_info_t info = {
 VSCF_PUBLIC void
 vscf_asn1wr_init(vscf_asn1wr_impl_t *asn1wr_impl) {
 
-    VSCF_ASSERT_PTR (asn1wr_impl);
-    VSCF_ASSERT_PTR (asn1wr_impl->info == NULL);
+    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr_impl->info == NULL);
 
     asn1wr_impl->info = &info;
 
-    vscf_asn1wr_init_ctx (asn1wr_impl);
+    vscf_asn1wr_init_ctx(asn1wr_impl);
 }
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_asn1wr_init ()'.
+//  This is a reverse action of the function 'vscf_asn1wr_init()'.
 //  All dependencies that is under ownership will be destroyed.
 //  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_asn1wr_cleanup(vscf_asn1wr_impl_t *asn1wr_impl) {
 
-    VSCF_ASSERT_PTR (asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr_impl);
 
     if (asn1wr_impl->info == NULL) {
         return;
     }
 
-    vscf_asn1wr_cleanup_ctx (asn1wr_impl);
+    vscf_asn1wr_cleanup_ctx(asn1wr_impl);
 
     asn1wr_impl->info = NULL;
 }
@@ -218,10 +218,10 @@ vscf_asn1wr_cleanup(vscf_asn1wr_impl_t *asn1wr_impl) {
 VSCF_PUBLIC vscf_asn1wr_impl_t *
 vscf_asn1wr_new(void) {
 
-    vscf_asn1wr_impl_t *asn1wr_impl = (vscf_asn1wr_impl_t *) vscf_alloc (sizeof (vscf_asn1wr_impl_t));
+    vscf_asn1wr_impl_t *asn1wr_impl = (vscf_asn1wr_impl_t *) vscf_alloc(sizeof (vscf_asn1wr_impl_t));
     VSCF_ASSERT_ALLOC(asn1wr_impl);
 
-    vscf_asn1wr_init (asn1wr_impl);
+    vscf_asn1wr_init(asn1wr_impl);
 
     asn1wr_impl->refcnt = 1;
 
@@ -230,7 +230,7 @@ vscf_asn1wr_new(void) {
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_asn1wr_new ()'.
+//  This is a reverse action of the function 'vscf_asn1wr_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
@@ -238,14 +238,14 @@ VSCF_PUBLIC void
 vscf_asn1wr_delete(vscf_asn1wr_impl_t *asn1wr_impl) {
 
     if (asn1wr_impl && (--asn1wr_impl->refcnt == 0)) {
-        vscf_asn1wr_cleanup (asn1wr_impl);
-        vscf_dealloc (asn1wr_impl);
+        vscf_asn1wr_cleanup(asn1wr_impl);
+        vscf_dealloc(asn1wr_impl);
     }
 }
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_asn1wr_new ()'.
+//  This is a reverse action of the function 'vscf_asn1wr_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
@@ -253,12 +253,12 @@ vscf_asn1wr_delete(vscf_asn1wr_impl_t *asn1wr_impl) {
 VSCF_PUBLIC void
 vscf_asn1wr_destroy(vscf_asn1wr_impl_t **asn1wr_impl_ref) {
 
-    VSCF_ASSERT_PTR (asn1wr_impl_ref);
+    VSCF_ASSERT_PTR(asn1wr_impl_ref);
 
     vscf_asn1wr_impl_t *asn1wr_impl = *asn1wr_impl_ref;
     *asn1wr_impl_ref = NULL;
 
-    vscf_asn1wr_delete (asn1wr_impl);
+    vscf_asn1wr_delete(asn1wr_impl);
 }
 
 //
@@ -287,8 +287,8 @@ vscf_asn1wr_impl_size(void) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_asn1wr_impl(vscf_asn1wr_impl_t *asn1wr_impl) {
 
-    VSCF_ASSERT_PTR (asn1wr_impl);
-    return (vscf_impl_t *) (asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr_impl);
+    return (vscf_impl_t *)(asn1wr_impl);
 }
 
 

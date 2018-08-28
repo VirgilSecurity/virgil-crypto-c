@@ -183,30 +183,30 @@ static const vscf_impl_info_t info = {
 VSCF_PUBLIC void
 vscf_hmac512_init(vscf_hmac512_impl_t *hmac512_impl) {
 
-    VSCF_ASSERT_PTR (hmac512_impl);
-    VSCF_ASSERT_PTR (hmac512_impl->info == NULL);
+    VSCF_ASSERT_PTR(hmac512_impl);
+    VSCF_ASSERT_PTR(hmac512_impl->info == NULL);
 
     hmac512_impl->info = &info;
 
-    vscf_hmac512_init_ctx (hmac512_impl);
+    vscf_hmac512_init_ctx(hmac512_impl);
 }
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hmac512_init ()'.
+//  This is a reverse action of the function 'vscf_hmac512_init()'.
 //  All dependencies that is under ownership will be destroyed.
 //  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_hmac512_cleanup(vscf_hmac512_impl_t *hmac512_impl) {
 
-    VSCF_ASSERT_PTR (hmac512_impl);
+    VSCF_ASSERT_PTR(hmac512_impl);
 
     if (hmac512_impl->info == NULL) {
         return;
     }
 
-    vscf_hmac512_cleanup_ctx (hmac512_impl);
+    vscf_hmac512_cleanup_ctx(hmac512_impl);
 
     hmac512_impl->info = NULL;
 }
@@ -218,10 +218,10 @@ vscf_hmac512_cleanup(vscf_hmac512_impl_t *hmac512_impl) {
 VSCF_PUBLIC vscf_hmac512_impl_t *
 vscf_hmac512_new(void) {
 
-    vscf_hmac512_impl_t *hmac512_impl = (vscf_hmac512_impl_t *) vscf_alloc (sizeof (vscf_hmac512_impl_t));
+    vscf_hmac512_impl_t *hmac512_impl = (vscf_hmac512_impl_t *) vscf_alloc(sizeof (vscf_hmac512_impl_t));
     VSCF_ASSERT_ALLOC(hmac512_impl);
 
-    vscf_hmac512_init (hmac512_impl);
+    vscf_hmac512_init(hmac512_impl);
 
     hmac512_impl->refcnt = 1;
 
@@ -230,7 +230,7 @@ vscf_hmac512_new(void) {
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hmac512_new ()'.
+//  This is a reverse action of the function 'vscf_hmac512_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
@@ -238,14 +238,14 @@ VSCF_PUBLIC void
 vscf_hmac512_delete(vscf_hmac512_impl_t *hmac512_impl) {
 
     if (hmac512_impl && (--hmac512_impl->refcnt == 0)) {
-        vscf_hmac512_cleanup (hmac512_impl);
-        vscf_dealloc (hmac512_impl);
+        vscf_hmac512_cleanup(hmac512_impl);
+        vscf_dealloc(hmac512_impl);
     }
 }
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hmac512_new ()'.
+//  This is a reverse action of the function 'vscf_hmac512_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
@@ -253,12 +253,12 @@ vscf_hmac512_delete(vscf_hmac512_impl_t *hmac512_impl) {
 VSCF_PUBLIC void
 vscf_hmac512_destroy(vscf_hmac512_impl_t **hmac512_impl_ref) {
 
-    VSCF_ASSERT_PTR (hmac512_impl_ref);
+    VSCF_ASSERT_PTR(hmac512_impl_ref);
 
     vscf_hmac512_impl_t *hmac512_impl = *hmac512_impl_ref;
     *hmac512_impl_ref = NULL;
 
-    vscf_hmac512_delete (hmac512_impl);
+    vscf_hmac512_delete(hmac512_impl);
 }
 
 //
@@ -305,8 +305,8 @@ vscf_hmac512_impl_size(void) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_hmac512_impl(vscf_hmac512_impl_t *hmac512_impl) {
 
-    VSCF_ASSERT_PTR (hmac512_impl);
-    return (vscf_impl_t *) (hmac512_impl);
+    VSCF_ASSERT_PTR(hmac512_impl);
+    return (vscf_impl_t *)(hmac512_impl);
 }
 
 
