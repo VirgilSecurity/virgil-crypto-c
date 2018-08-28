@@ -49,9 +49,9 @@
 
 void benchmark_kdf1_native(void * data, size_t data_size)
 {
-    //byte digest[vscf_sha224_DIGEST_SIZE] = { 0x00 };
+    //byte digest[vscf_sha224_DIGEST_LEN] = { 0x00 };
 
-    //vscf_sha224_hash(data, data_size, digest, vscf_sha224_DIGEST_SIZE);
+    //vscf_sha224_hash(data, data_size, digest, vscf_sha224_DIGEST_LEN);
 }
 
 void benchmark_kdf1_interface(void * data, size_t data_size)

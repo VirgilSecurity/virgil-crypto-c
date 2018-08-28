@@ -99,7 +99,7 @@ vscf_hmac384_cleanup_ctx(vscf_hmac384_impl_t *hmac384_impl) {
 VSCF_PUBLIC void
 vscf_hmac384_hmac(const byte *key, size_t key_len, const byte *data, size_t data_len, byte *hmac, size_t hmac_len) {
 
-    VSCF_ASSERT_OPT(hmac_len >= vscf_hmac384_DIGEST_SIZE);
+    VSCF_ASSERT_OPT(hmac_len >= vscf_hmac384_DIGEST_LEN);
 
     mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA384), key, key_len, data, data_len, hmac);
 }
@@ -137,7 +137,7 @@ vscf_hmac384_update(vscf_hmac384_impl_t *hmac384_impl, const byte *data, size_t 
 VSCF_PUBLIC void
 vscf_hmac384_finish(vscf_hmac384_impl_t *hmac384_impl, byte *hmac, size_t hmac_len) {
 
-    VSCF_ASSERT_OPT(hmac_len >= vscf_hmac384_DIGEST_SIZE);
+    VSCF_ASSERT_OPT(hmac_len >= vscf_hmac384_DIGEST_LEN);
 
     mbedtls_md_hmac_finish(&hmac384_impl->hmac_ctx, hmac);
 }

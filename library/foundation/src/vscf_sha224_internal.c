@@ -81,9 +81,9 @@ static const vscf_hash_info_api_t hash_info_api = {
     //
     vscf_impl_tag_SHA224,
     //
-    //  Size of the digest (hashing output).
+    //  Length of the digest (hashing output) in bytes.
     //
-    vscf_sha224_DIGEST_SIZE
+    vscf_sha224_DIGEST_LEN
 };
 
 //

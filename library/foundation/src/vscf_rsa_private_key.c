@@ -241,7 +241,7 @@ vscf_rsa_private_key_sign(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vsc
     VSCF_ASSERT_OPT(vsc_buffer_left(signature) >= vscf_rsa_private_key_signature_len(rsa_private_key_impl));
 
     //  Hash
-    size_t data_hash_len = vscf_hash_info_digest_size(vscf_hash_hash_info_api(rsa_private_key_impl->hash));
+    size_t data_hash_len = vscf_hash_info_digest_len(vscf_hash_hash_info_api(rsa_private_key_impl->hash));
     vsc_buffer_t *data_hash_buf = vsc_buffer_new_with_capacity(data_hash_len);
     VSCF_ASSERT_PTR(data_hash_buf);
 

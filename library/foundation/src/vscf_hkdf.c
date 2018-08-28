@@ -148,7 +148,7 @@ vscf_hkdf_derive(vscf_hkdf_impl_t *hkdf_impl, const byte *data, size_t data_len,
     VSCF_ASSERT_PTR(info);
     VSCF_ASSERT_PTR(key);
 
-    size_t pr_key_len = vscf_hmac_info_digest_size(vscf_hmac_info_api(hkdf_impl->hmac));
+    size_t pr_key_len = vscf_hmac_info_digest_len(vscf_hmac_info_api(hkdf_impl->hmac));
     VSCF_ASSERT_OPT(key_len <= vscf_hkdf_HASH_COUNTER_MAX * pr_key_len);
 
     unsigned char *pr_key = vscf_alloc(pr_key_len);

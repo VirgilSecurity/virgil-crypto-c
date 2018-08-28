@@ -101,7 +101,7 @@ vscf_sha224_hash(const byte *data, size_t data_len, byte *digest, size_t digest_
 
     VSCF_ASSERT_PTR(data);
     VSCF_ASSERT_PTR(digest);
-    VSCF_ASSERT_OPT(digest_len >= vscf_sha224_DIGEST_SIZE);
+    VSCF_ASSERT_OPT(digest_len >= vscf_sha224_DIGEST_LEN);
 
     const int is224 = 1;
     mbedtls_sha256(data, data_len, digest, is224);
@@ -139,7 +139,7 @@ vscf_sha224_finish(vscf_sha224_impl_t *sha224_impl, byte *digest, size_t digest_
 
     VSCF_ASSERT_PTR(sha224_impl);
     VSCF_ASSERT_PTR(digest);
-    VSCF_ASSERT_OPT(digest_len >= vscf_sha224_DIGEST_SIZE);
+    VSCF_ASSERT_OPT(digest_len >= vscf_sha224_DIGEST_LEN);
 
     mbedtls_sha256_finish(&sha224_impl->hash_ctx, digest);
 }

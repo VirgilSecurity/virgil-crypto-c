@@ -84,9 +84,9 @@ struct vscf_hash_info_api_t {
     //
     vscf_impl_tag_t impl_tag;
     //
-    //  Size of the digest (hashing output).
+    //  Length of the digest (hashing output) in bytes.
     //
-    size_t digest_size;
+    size_t digest_len;
 };
 
 

@@ -75,10 +75,10 @@ extern "C" {
 typedef struct vscf_hash_info_api_t vscf_hash_info_api_t;
 
 //
-//  Returns constant 'digest size'.
+//  Returns constant 'digest len'.
 //
 VSCF_PUBLIC size_t
-vscf_hash_info_digest_size(const vscf_hash_info_api_t *hash_info_api);
+vscf_hash_info_digest_len(const vscf_hash_info_api_t *hash_info_api);
 
 //
 //  Return hash info API, or NULL if it is not implemented.

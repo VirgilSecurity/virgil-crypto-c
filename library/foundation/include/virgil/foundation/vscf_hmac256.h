@@ -76,7 +76,7 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
-    vscf_hmac256_DIGEST_SIZE = 32
+    vscf_hmac256_DIGEST_LEN = 32
 };
 
 //
