@@ -35,10 +35,10 @@
         Allocates inner buffer with a given capacity.
         Precondition: buffer is initialized.
         Precondition: buffer does not hold any bytes.
+        Postcondition: inner buffer is allocated.
 
         <argument class="context"/>
         <argument name="capacity" type="size"/>
-        <return type="error"/>
     </method>
 
 
