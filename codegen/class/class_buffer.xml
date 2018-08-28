@@ -116,16 +116,16 @@
     </method>
 
 
-    <method name="available len">
-        Returns length of available bytes - bytes that are not in use yet.
+    <method name="left">
+        Returns length of left bytes - bytes that are not in use yet.
 
         <argument class="context" access="readonly"/>
         <return type="size"/>
     </method>
 
 
-    <method name="available ptr">
-        Returns pointer to the first available byte to be written.
+    <method name="ptr">
+        Returns pointer to the current wirte position.
 
         <argument class="context"/>
         <return type="byte" access="readwrite" is_reference="1"/>

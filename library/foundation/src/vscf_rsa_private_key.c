@@ -189,8 +189,7 @@ vscf_rsa_private_key_decrypt(vscf_rsa_private_key_impl_t *rsa_private_key_impl, 
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT(vsc_buffer_is_valid(out));
 
-    VSCF_ASSERT_OPT(
-            vsc_buffer_available_len(out) >= vscf_rsa_private_key_decrypted_len(rsa_private_key_impl, data.len));
+    VSCF_ASSERT_OPT(vsc_buffer_left(out) >= vscf_rsa_private_key_decrypted_len(rsa_private_key_impl, data.len));
 
     if (data.len != vscf_rsa_private_key_key_len(rsa_private_key_impl)) {
         return vscf_error_BAD_ENCRYPTED_DATA;
@@ -201,8 +200,8 @@ vscf_rsa_private_key_decrypt(vscf_rsa_private_key_impl_t *rsa_private_key_impl, 
 
     size_t out_len = 0;
     int ret = mbedtls_rsa_rsaes_oaep_decrypt(&rsa_private_key_impl->rsa_ctx, (mbedtls_random_cb)vscf_random,
-            rsa_private_key_impl->random, MBEDTLS_RSA_PRIVATE, NULL, 0, &out_len, data.bytes,
-            vsc_buffer_available_ptr(out), vsc_buffer_available_len(out));
+            rsa_private_key_impl->random, MBEDTLS_RSA_PRIVATE, NULL, 0, &out_len, data.bytes, vsc_buffer_ptr(out),
+            vsc_buffer_left(out));
 
     if (ret != 0) {
         return vscf_error_BAD_ENCRYPTED_DATA;
@@ -239,15 +238,15 @@ vscf_rsa_private_key_sign(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vsc
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT(vsc_buffer_is_valid(signature));
 
-    VSCF_ASSERT_OPT(vsc_buffer_available_len(signature) >= vscf_rsa_private_key_signature_len(rsa_private_key_impl));
+    VSCF_ASSERT_OPT(vsc_buffer_left(signature) >= vscf_rsa_private_key_signature_len(rsa_private_key_impl));
 
     //  Hash
     size_t data_hash_len = vscf_hash_info_digest_size(vscf_hash_hash_info_api(rsa_private_key_impl->hash));
     vsc_buffer_t *data_hash_buf = vsc_buffer_new_with_capacity(data_hash_len);
     VSCF_ASSERT_PTR(data_hash_buf);
 
-    vscf_hash(rsa_private_key_impl->hash, data.bytes, data.len, vsc_buffer_available_ptr(data_hash_buf),
-            vsc_buffer_available_len(data_hash_buf));
+    vscf_hash(rsa_private_key_impl->hash, data.bytes, data.len, vsc_buffer_ptr(data_hash_buf),
+            vsc_buffer_left(data_hash_buf));
 
     vsc_buffer_reserve(data_hash_buf, data_hash_len);
 
@@ -259,7 +258,7 @@ vscf_rsa_private_key_sign(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vsc
 
     int ret = mbedtls_rsa_rsassa_pss_sign(rsa_ctx, (mbedtls_random_cb)vscf_random, rsa_private_key_impl->random,
             MBEDTLS_RSA_PRIVATE, md_alg, vsc_buffer_len(data_hash_buf), vsc_buffer_bytes(data_hash_buf),
-            vsc_buffer_available_ptr(signature));
+            vsc_buffer_ptr(signature));
 
     vsc_buffer_destroy(&data_hash_buf);
 
