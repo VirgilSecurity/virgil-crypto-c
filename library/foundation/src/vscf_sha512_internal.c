@@ -215,9 +215,7 @@ VSCF_PUBLIC vscf_sha512_impl_t *
 vscf_sha512_new(void) {
 
     vscf_sha512_impl_t *sha512_impl = (vscf_sha512_impl_t *) vscf_alloc (sizeof (vscf_sha512_impl_t));
-    if (NULL == sha512_impl) {
-        return NULL;
-    }
+    VSCF_ASSERT_ALLOC(sha512_impl);
 
     vscf_sha512_init (sha512_impl);
 

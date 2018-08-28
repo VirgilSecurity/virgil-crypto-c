@@ -215,9 +215,7 @@ VSCF_PUBLIC vscf_sha384_impl_t *
 vscf_sha384_new(void) {
 
     vscf_sha384_impl_t *sha384_impl = (vscf_sha384_impl_t *) vscf_alloc (sizeof (vscf_sha384_impl_t));
-    if (NULL == sha384_impl) {
-        return NULL;
-    }
+    VSCF_ASSERT_ALLOC(sha384_impl);
 
     vscf_sha384_init (sha384_impl);
 

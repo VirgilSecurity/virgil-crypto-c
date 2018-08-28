@@ -761,9 +761,7 @@ function _Z19_add_method_new (impl, declaration, definition, destination, meta)
 
             . = "\
             $(my.type_impl) *$(my.arg_impl:) = ($(my.type_impl) *) .(c_global_method_alloc) (sizeof ($(my.type_impl)));
-            if (NULL == $(my.arg_impl:)) {
-                return NULL;
-            }
+            .(c_class_assert_macros_alloc)($(my.arg_impl:));
 
             $(my.refs.c_implementation_method_init) ($(my.arg_impl:));
 

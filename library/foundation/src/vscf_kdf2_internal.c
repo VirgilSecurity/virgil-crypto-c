@@ -171,9 +171,7 @@ VSCF_PUBLIC vscf_kdf2_impl_t *
 vscf_kdf2_new(void) {
 
     vscf_kdf2_impl_t *kdf2_impl = (vscf_kdf2_impl_t *) vscf_alloc (sizeof (vscf_kdf2_impl_t));
-    if (NULL == kdf2_impl) {
-        return NULL;
-    }
+    VSCF_ASSERT_ALLOC(kdf2_impl);
 
     vscf_kdf2_init (kdf2_impl);
 

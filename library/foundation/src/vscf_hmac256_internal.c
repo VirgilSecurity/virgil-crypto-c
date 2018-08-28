@@ -219,9 +219,7 @@ VSCF_PUBLIC vscf_hmac256_impl_t *
 vscf_hmac256_new(void) {
 
     vscf_hmac256_impl_t *hmac256_impl = (vscf_hmac256_impl_t *) vscf_alloc (sizeof (vscf_hmac256_impl_t));
-    if (NULL == hmac256_impl) {
-        return NULL;
-    }
+    VSCF_ASSERT_ALLOC(hmac256_impl);
 
     vscf_hmac256_init (hmac256_impl);
 

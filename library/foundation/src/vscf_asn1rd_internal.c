@@ -212,9 +212,7 @@ VSCF_PUBLIC vscf_asn1rd_impl_t *
 vscf_asn1rd_new(void) {
 
     vscf_asn1rd_impl_t *asn1rd_impl = (vscf_asn1rd_impl_t *) vscf_alloc (sizeof (vscf_asn1rd_impl_t));
-    if (NULL == asn1rd_impl) {
-        return NULL;
-    }
+    VSCF_ASSERT_ALLOC(asn1rd_impl);
 
     vscf_asn1rd_init (asn1rd_impl);
 

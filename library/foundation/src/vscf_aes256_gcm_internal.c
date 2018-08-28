@@ -354,9 +354,7 @@ VSCF_PUBLIC vscf_aes256_gcm_impl_t *
 vscf_aes256_gcm_new(void) {
 
     vscf_aes256_gcm_impl_t *aes256_gcm_impl = (vscf_aes256_gcm_impl_t *) vscf_alloc (sizeof (vscf_aes256_gcm_impl_t));
-    if (NULL == aes256_gcm_impl) {
-        return NULL;
-    }
+    VSCF_ASSERT_ALLOC(aes256_gcm_impl);
 
     vscf_aes256_gcm_init (aes256_gcm_impl);
 
