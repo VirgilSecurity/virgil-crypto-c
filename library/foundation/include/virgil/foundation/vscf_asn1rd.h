@@ -98,7 +98,7 @@ vscf_asn1rd_init(vscf_asn1rd_impl_t *asn1rd_impl);
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_asn1rd_init ()'.
+//  This is a reverse action of the function 'vscf_asn1rd_init()'.
 //  All dependencies that is under ownership will be destroyed.
 //  All dependencies that is not under ownership will untouched.
 //
@@ -114,7 +114,7 @@ vscf_asn1rd_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_asn1rd_new ()'.
+//  This is a reverse action of the function 'vscf_asn1rd_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
@@ -123,7 +123,7 @@ vscf_asn1rd_delete(vscf_asn1rd_impl_t *asn1rd_impl);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_asn1rd_new ()'.
+//  This is a reverse action of the function 'vscf_asn1rd_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.

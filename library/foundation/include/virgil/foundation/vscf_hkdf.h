@@ -95,7 +95,7 @@ vscf_hkdf_init(vscf_hkdf_impl_t *hkdf_impl);
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hkdf_init ()'.
+//  This is a reverse action of the function 'vscf_hkdf_init()'.
 //  All dependencies that is under ownership will be destroyed.
 //  All dependencies that is not under ownership will untouched.
 //
@@ -111,7 +111,7 @@ vscf_hkdf_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hkdf_new ()'.
+//  This is a reverse action of the function 'vscf_hkdf_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
@@ -120,7 +120,7 @@ vscf_hkdf_delete(vscf_hkdf_impl_t *hkdf_impl);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hkdf_new ()'.
+//  This is a reverse action of the function 'vscf_hkdf_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.

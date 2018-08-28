@@ -121,30 +121,30 @@ static const vscf_impl_info_t info = {
 VSCF_PUBLIC void
 vscf_fake_random_init(vscf_fake_random_impl_t *fake_random_impl) {
 
-    VSCF_ASSERT_PTR (fake_random_impl);
-    VSCF_ASSERT_PTR (fake_random_impl->info == NULL);
+    VSCF_ASSERT_PTR(fake_random_impl);
+    VSCF_ASSERT_PTR(fake_random_impl->info == NULL);
 
     fake_random_impl->info = &info;
 
-    vscf_fake_random_init_ctx (fake_random_impl);
+    vscf_fake_random_init_ctx(fake_random_impl);
 }
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_fake_random_init ()'.
+//  This is a reverse action of the function 'vscf_fake_random_init()'.
 //  All dependencies that is under ownership will be destroyed.
 //  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_fake_random_cleanup(vscf_fake_random_impl_t *fake_random_impl) {
 
-    VSCF_ASSERT_PTR (fake_random_impl);
+    VSCF_ASSERT_PTR(fake_random_impl);
 
     if (fake_random_impl->info == NULL) {
         return;
     }
 
-    vscf_fake_random_cleanup_ctx (fake_random_impl);
+    vscf_fake_random_cleanup_ctx(fake_random_impl);
 
     fake_random_impl->info = NULL;
 }
@@ -156,10 +156,10 @@ vscf_fake_random_cleanup(vscf_fake_random_impl_t *fake_random_impl) {
 VSCF_PUBLIC vscf_fake_random_impl_t *
 vscf_fake_random_new(void) {
 
-    vscf_fake_random_impl_t *fake_random_impl = (vscf_fake_random_impl_t *) vscf_alloc (sizeof (vscf_fake_random_impl_t));
+    vscf_fake_random_impl_t *fake_random_impl = (vscf_fake_random_impl_t *) vscf_alloc(sizeof (vscf_fake_random_impl_t));
     VSCF_ASSERT_ALLOC(fake_random_impl);
 
-    vscf_fake_random_init (fake_random_impl);
+    vscf_fake_random_init(fake_random_impl);
 
     fake_random_impl->refcnt = 1;
 
@@ -168,7 +168,7 @@ vscf_fake_random_new(void) {
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_fake_random_new ()'.
+//  This is a reverse action of the function 'vscf_fake_random_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
@@ -176,14 +176,14 @@ VSCF_PUBLIC void
 vscf_fake_random_delete(vscf_fake_random_impl_t *fake_random_impl) {
 
     if (fake_random_impl && (--fake_random_impl->refcnt == 0)) {
-        vscf_fake_random_cleanup (fake_random_impl);
-        vscf_dealloc (fake_random_impl);
+        vscf_fake_random_cleanup(fake_random_impl);
+        vscf_dealloc(fake_random_impl);
     }
 }
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_fake_random_new ()'.
+//  This is a reverse action of the function 'vscf_fake_random_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
@@ -191,12 +191,12 @@ vscf_fake_random_delete(vscf_fake_random_impl_t *fake_random_impl) {
 VSCF_PUBLIC void
 vscf_fake_random_destroy(vscf_fake_random_impl_t **fake_random_impl_ref) {
 
-    VSCF_ASSERT_PTR (fake_random_impl_ref);
+    VSCF_ASSERT_PTR(fake_random_impl_ref);
 
     vscf_fake_random_impl_t *fake_random_impl = *fake_random_impl_ref;
     *fake_random_impl_ref = NULL;
 
-    vscf_fake_random_delete (fake_random_impl);
+    vscf_fake_random_delete(fake_random_impl);
 }
 
 //
@@ -225,8 +225,8 @@ vscf_fake_random_impl_size(void) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_fake_random_impl(vscf_fake_random_impl_t *fake_random_impl) {
 
-    VSCF_ASSERT_PTR (fake_random_impl);
-    return (vscf_impl_t *) (fake_random_impl);
+    VSCF_ASSERT_PTR(fake_random_impl);
+    return (vscf_impl_t *)(fake_random_impl);
 }
 
 

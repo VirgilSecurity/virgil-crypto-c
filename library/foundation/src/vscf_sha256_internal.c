@@ -179,30 +179,30 @@ static const vscf_impl_info_t info = {
 VSCF_PUBLIC void
 vscf_sha256_init(vscf_sha256_impl_t *sha256_impl) {
 
-    VSCF_ASSERT_PTR (sha256_impl);
-    VSCF_ASSERT_PTR (sha256_impl->info == NULL);
+    VSCF_ASSERT_PTR(sha256_impl);
+    VSCF_ASSERT_PTR(sha256_impl->info == NULL);
 
     sha256_impl->info = &info;
 
-    vscf_sha256_init_ctx (sha256_impl);
+    vscf_sha256_init_ctx(sha256_impl);
 }
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha256_init ()'.
+//  This is a reverse action of the function 'vscf_sha256_init()'.
 //  All dependencies that is under ownership will be destroyed.
 //  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_sha256_cleanup(vscf_sha256_impl_t *sha256_impl) {
 
-    VSCF_ASSERT_PTR (sha256_impl);
+    VSCF_ASSERT_PTR(sha256_impl);
 
     if (sha256_impl->info == NULL) {
         return;
     }
 
-    vscf_sha256_cleanup_ctx (sha256_impl);
+    vscf_sha256_cleanup_ctx(sha256_impl);
 
     sha256_impl->info = NULL;
 }
@@ -214,10 +214,10 @@ vscf_sha256_cleanup(vscf_sha256_impl_t *sha256_impl) {
 VSCF_PUBLIC vscf_sha256_impl_t *
 vscf_sha256_new(void) {
 
-    vscf_sha256_impl_t *sha256_impl = (vscf_sha256_impl_t *) vscf_alloc (sizeof (vscf_sha256_impl_t));
+    vscf_sha256_impl_t *sha256_impl = (vscf_sha256_impl_t *) vscf_alloc(sizeof (vscf_sha256_impl_t));
     VSCF_ASSERT_ALLOC(sha256_impl);
 
-    vscf_sha256_init (sha256_impl);
+    vscf_sha256_init(sha256_impl);
 
     sha256_impl->refcnt = 1;
 
@@ -226,7 +226,7 @@ vscf_sha256_new(void) {
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha256_new ()'.
+//  This is a reverse action of the function 'vscf_sha256_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
@@ -234,14 +234,14 @@ VSCF_PUBLIC void
 vscf_sha256_delete(vscf_sha256_impl_t *sha256_impl) {
 
     if (sha256_impl && (--sha256_impl->refcnt == 0)) {
-        vscf_sha256_cleanup (sha256_impl);
-        vscf_dealloc (sha256_impl);
+        vscf_sha256_cleanup(sha256_impl);
+        vscf_dealloc(sha256_impl);
     }
 }
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha256_new ()'.
+//  This is a reverse action of the function 'vscf_sha256_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
@@ -249,12 +249,12 @@ vscf_sha256_delete(vscf_sha256_impl_t *sha256_impl) {
 VSCF_PUBLIC void
 vscf_sha256_destroy(vscf_sha256_impl_t **sha256_impl_ref) {
 
-    VSCF_ASSERT_PTR (sha256_impl_ref);
+    VSCF_ASSERT_PTR(sha256_impl_ref);
 
     vscf_sha256_impl_t *sha256_impl = *sha256_impl_ref;
     *sha256_impl_ref = NULL;
 
-    vscf_sha256_delete (sha256_impl);
+    vscf_sha256_delete(sha256_impl);
 }
 
 //
@@ -301,8 +301,8 @@ vscf_sha256_impl_size(void) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_sha256_impl(vscf_sha256_impl_t *sha256_impl) {
 
-    VSCF_ASSERT_PTR (sha256_impl);
-    return (vscf_impl_t *) (sha256_impl);
+    VSCF_ASSERT_PTR(sha256_impl);
+    return (vscf_impl_t *)(sha256_impl);
 }
 
 

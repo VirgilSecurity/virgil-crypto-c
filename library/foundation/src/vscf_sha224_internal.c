@@ -179,30 +179,30 @@ static const vscf_impl_info_t info = {
 VSCF_PUBLIC void
 vscf_sha224_init(vscf_sha224_impl_t *sha224_impl) {
 
-    VSCF_ASSERT_PTR (sha224_impl);
-    VSCF_ASSERT_PTR (sha224_impl->info == NULL);
+    VSCF_ASSERT_PTR(sha224_impl);
+    VSCF_ASSERT_PTR(sha224_impl->info == NULL);
 
     sha224_impl->info = &info;
 
-    vscf_sha224_init_ctx (sha224_impl);
+    vscf_sha224_init_ctx(sha224_impl);
 }
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha224_init ()'.
+//  This is a reverse action of the function 'vscf_sha224_init()'.
 //  All dependencies that is under ownership will be destroyed.
 //  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_sha224_cleanup(vscf_sha224_impl_t *sha224_impl) {
 
-    VSCF_ASSERT_PTR (sha224_impl);
+    VSCF_ASSERT_PTR(sha224_impl);
 
     if (sha224_impl->info == NULL) {
         return;
     }
 
-    vscf_sha224_cleanup_ctx (sha224_impl);
+    vscf_sha224_cleanup_ctx(sha224_impl);
 
     sha224_impl->info = NULL;
 }
@@ -214,10 +214,10 @@ vscf_sha224_cleanup(vscf_sha224_impl_t *sha224_impl) {
 VSCF_PUBLIC vscf_sha224_impl_t *
 vscf_sha224_new(void) {
 
-    vscf_sha224_impl_t *sha224_impl = (vscf_sha224_impl_t *) vscf_alloc (sizeof (vscf_sha224_impl_t));
+    vscf_sha224_impl_t *sha224_impl = (vscf_sha224_impl_t *) vscf_alloc(sizeof (vscf_sha224_impl_t));
     VSCF_ASSERT_ALLOC(sha224_impl);
 
-    vscf_sha224_init (sha224_impl);
+    vscf_sha224_init(sha224_impl);
 
     sha224_impl->refcnt = 1;
 
@@ -226,7 +226,7 @@ vscf_sha224_new(void) {
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha224_new ()'.
+//  This is a reverse action of the function 'vscf_sha224_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
@@ -234,14 +234,14 @@ VSCF_PUBLIC void
 vscf_sha224_delete(vscf_sha224_impl_t *sha224_impl) {
 
     if (sha224_impl && (--sha224_impl->refcnt == 0)) {
-        vscf_sha224_cleanup (sha224_impl);
-        vscf_dealloc (sha224_impl);
+        vscf_sha224_cleanup(sha224_impl);
+        vscf_dealloc(sha224_impl);
     }
 }
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha224_new ()'.
+//  This is a reverse action of the function 'vscf_sha224_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
@@ -249,12 +249,12 @@ vscf_sha224_delete(vscf_sha224_impl_t *sha224_impl) {
 VSCF_PUBLIC void
 vscf_sha224_destroy(vscf_sha224_impl_t **sha224_impl_ref) {
 
-    VSCF_ASSERT_PTR (sha224_impl_ref);
+    VSCF_ASSERT_PTR(sha224_impl_ref);
 
     vscf_sha224_impl_t *sha224_impl = *sha224_impl_ref;
     *sha224_impl_ref = NULL;
 
-    vscf_sha224_delete (sha224_impl);
+    vscf_sha224_delete(sha224_impl);
 }
 
 //
@@ -301,8 +301,8 @@ vscf_sha224_impl_size(void) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_sha224_impl(vscf_sha224_impl_t *sha224_impl) {
 
-    VSCF_ASSERT_PTR (sha224_impl);
-    return (vscf_impl_t *) (sha224_impl);
+    VSCF_ASSERT_PTR(sha224_impl);
+    return (vscf_impl_t *)(sha224_impl);
 }
 
 

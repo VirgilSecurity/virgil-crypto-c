@@ -318,30 +318,30 @@ static const vscf_impl_info_t info = {
 VSCF_PUBLIC void
 vscf_aes256_gcm_init(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 
-    VSCF_ASSERT_PTR (aes256_gcm_impl);
-    VSCF_ASSERT_PTR (aes256_gcm_impl->info == NULL);
+    VSCF_ASSERT_PTR(aes256_gcm_impl);
+    VSCF_ASSERT_PTR(aes256_gcm_impl->info == NULL);
 
     aes256_gcm_impl->info = &info;
 
-    vscf_aes256_gcm_init_ctx (aes256_gcm_impl);
+    vscf_aes256_gcm_init_ctx(aes256_gcm_impl);
 }
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_aes256_gcm_init ()'.
+//  This is a reverse action of the function 'vscf_aes256_gcm_init()'.
 //  All dependencies that is under ownership will be destroyed.
 //  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_aes256_gcm_cleanup(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 
-    VSCF_ASSERT_PTR (aes256_gcm_impl);
+    VSCF_ASSERT_PTR(aes256_gcm_impl);
 
     if (aes256_gcm_impl->info == NULL) {
         return;
     }
 
-    vscf_aes256_gcm_cleanup_ctx (aes256_gcm_impl);
+    vscf_aes256_gcm_cleanup_ctx(aes256_gcm_impl);
 
     aes256_gcm_impl->info = NULL;
 }
@@ -353,10 +353,10 @@ vscf_aes256_gcm_cleanup(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 VSCF_PUBLIC vscf_aes256_gcm_impl_t *
 vscf_aes256_gcm_new(void) {
 
-    vscf_aes256_gcm_impl_t *aes256_gcm_impl = (vscf_aes256_gcm_impl_t *) vscf_alloc (sizeof (vscf_aes256_gcm_impl_t));
+    vscf_aes256_gcm_impl_t *aes256_gcm_impl = (vscf_aes256_gcm_impl_t *) vscf_alloc(sizeof (vscf_aes256_gcm_impl_t));
     VSCF_ASSERT_ALLOC(aes256_gcm_impl);
 
-    vscf_aes256_gcm_init (aes256_gcm_impl);
+    vscf_aes256_gcm_init(aes256_gcm_impl);
 
     aes256_gcm_impl->refcnt = 1;
 
@@ -365,7 +365,7 @@ vscf_aes256_gcm_new(void) {
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_aes256_gcm_new ()'.
+//  This is a reverse action of the function 'vscf_aes256_gcm_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
@@ -373,14 +373,14 @@ VSCF_PUBLIC void
 vscf_aes256_gcm_delete(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 
     if (aes256_gcm_impl && (--aes256_gcm_impl->refcnt == 0)) {
-        vscf_aes256_gcm_cleanup (aes256_gcm_impl);
-        vscf_dealloc (aes256_gcm_impl);
+        vscf_aes256_gcm_cleanup(aes256_gcm_impl);
+        vscf_dealloc(aes256_gcm_impl);
     }
 }
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_aes256_gcm_new ()'.
+//  This is a reverse action of the function 'vscf_aes256_gcm_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
@@ -388,12 +388,12 @@ vscf_aes256_gcm_delete(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 VSCF_PUBLIC void
 vscf_aes256_gcm_destroy(vscf_aes256_gcm_impl_t **aes256_gcm_impl_ref) {
 
-    VSCF_ASSERT_PTR (aes256_gcm_impl_ref);
+    VSCF_ASSERT_PTR(aes256_gcm_impl_ref);
 
     vscf_aes256_gcm_impl_t *aes256_gcm_impl = *aes256_gcm_impl_ref;
     *aes256_gcm_impl_ref = NULL;
 
-    vscf_aes256_gcm_delete (aes256_gcm_impl);
+    vscf_aes256_gcm_delete(aes256_gcm_impl);
 }
 
 //
@@ -449,8 +449,8 @@ vscf_aes256_gcm_impl_size(void) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_aes256_gcm_impl(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 
-    VSCF_ASSERT_PTR (aes256_gcm_impl);
-    return (vscf_impl_t *) (aes256_gcm_impl);
+    VSCF_ASSERT_PTR(aes256_gcm_impl);
+    return (vscf_impl_t *)(aes256_gcm_impl);
 }
 
 

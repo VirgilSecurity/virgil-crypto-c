@@ -179,30 +179,30 @@ static const vscf_impl_info_t info = {
 VSCF_PUBLIC void
 vscf_sha384_init(vscf_sha384_impl_t *sha384_impl) {
 
-    VSCF_ASSERT_PTR (sha384_impl);
-    VSCF_ASSERT_PTR (sha384_impl->info == NULL);
+    VSCF_ASSERT_PTR(sha384_impl);
+    VSCF_ASSERT_PTR(sha384_impl->info == NULL);
 
     sha384_impl->info = &info;
 
-    vscf_sha384_init_ctx (sha384_impl);
+    vscf_sha384_init_ctx(sha384_impl);
 }
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha384_init ()'.
+//  This is a reverse action of the function 'vscf_sha384_init()'.
 //  All dependencies that is under ownership will be destroyed.
 //  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_sha384_cleanup(vscf_sha384_impl_t *sha384_impl) {
 
-    VSCF_ASSERT_PTR (sha384_impl);
+    VSCF_ASSERT_PTR(sha384_impl);
 
     if (sha384_impl->info == NULL) {
         return;
     }
 
-    vscf_sha384_cleanup_ctx (sha384_impl);
+    vscf_sha384_cleanup_ctx(sha384_impl);
 
     sha384_impl->info = NULL;
 }
@@ -214,10 +214,10 @@ vscf_sha384_cleanup(vscf_sha384_impl_t *sha384_impl) {
 VSCF_PUBLIC vscf_sha384_impl_t *
 vscf_sha384_new(void) {
 
-    vscf_sha384_impl_t *sha384_impl = (vscf_sha384_impl_t *) vscf_alloc (sizeof (vscf_sha384_impl_t));
+    vscf_sha384_impl_t *sha384_impl = (vscf_sha384_impl_t *) vscf_alloc(sizeof (vscf_sha384_impl_t));
     VSCF_ASSERT_ALLOC(sha384_impl);
 
-    vscf_sha384_init (sha384_impl);
+    vscf_sha384_init(sha384_impl);
 
     sha384_impl->refcnt = 1;
 
@@ -226,7 +226,7 @@ vscf_sha384_new(void) {
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha384_new ()'.
+//  This is a reverse action of the function 'vscf_sha384_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
@@ -234,14 +234,14 @@ VSCF_PUBLIC void
 vscf_sha384_delete(vscf_sha384_impl_t *sha384_impl) {
 
     if (sha384_impl && (--sha384_impl->refcnt == 0)) {
-        vscf_sha384_cleanup (sha384_impl);
-        vscf_dealloc (sha384_impl);
+        vscf_sha384_cleanup(sha384_impl);
+        vscf_dealloc(sha384_impl);
     }
 }
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha384_new ()'.
+//  This is a reverse action of the function 'vscf_sha384_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
@@ -249,12 +249,12 @@ vscf_sha384_delete(vscf_sha384_impl_t *sha384_impl) {
 VSCF_PUBLIC void
 vscf_sha384_destroy(vscf_sha384_impl_t **sha384_impl_ref) {
 
-    VSCF_ASSERT_PTR (sha384_impl_ref);
+    VSCF_ASSERT_PTR(sha384_impl_ref);
 
     vscf_sha384_impl_t *sha384_impl = *sha384_impl_ref;
     *sha384_impl_ref = NULL;
 
-    vscf_sha384_delete (sha384_impl);
+    vscf_sha384_delete(sha384_impl);
 }
 
 //
@@ -301,8 +301,8 @@ vscf_sha384_impl_size(void) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_sha384_impl(vscf_sha384_impl_t *sha384_impl) {
 
-    VSCF_ASSERT_PTR (sha384_impl);
-    return (vscf_impl_t *) (sha384_impl);
+    VSCF_ASSERT_PTR(sha384_impl);
+    return (vscf_impl_t *)(sha384_impl);
 }
 
 
