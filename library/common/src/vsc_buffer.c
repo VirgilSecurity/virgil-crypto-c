@@ -78,9 +78,7 @@ VSC_PUBLIC vsc_buffer_t *
 vsc_buffer_new(void) {
 
     vsc_buffer_t *buffer_ctx = (vsc_buffer_t *) vsc_alloc(sizeof (vsc_buffer_t));
-    if (NULL == buffer_ctx) {
-        return NULL;
-    }
+    VSC_ASSERT_ALLOC(buffer_ctx);
 
     if (vsc_buffer_init(buffer_ctx) != vsc_SUCCESS) {
         vsc_dealloc(buffer_ctx);

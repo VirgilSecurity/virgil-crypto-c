@@ -157,9 +157,7 @@ VSCF_PUBLIC vscf_fake_random_impl_t *
 vscf_fake_random_new(void) {
 
     vscf_fake_random_impl_t *fake_random_impl = (vscf_fake_random_impl_t *) vscf_alloc (sizeof (vscf_fake_random_impl_t));
-    if (NULL == fake_random_impl) {
-        return NULL;
-    }
+    VSCF_ASSERT_ALLOC(fake_random_impl);
 
     vscf_fake_random_init (fake_random_impl);
 

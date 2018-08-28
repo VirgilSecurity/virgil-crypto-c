@@ -97,9 +97,7 @@ VSCP_PUBLIC vscp_pythia_t *
 vscp_pythia_new(void) {
 
     vscp_pythia_t *pythia_ctx = (vscp_pythia_t *) vscp_alloc(sizeof (vscp_pythia_t));
-    if (NULL == pythia_ctx) {
-        return NULL;
-    }
+    VSCP_ASSERT_ALLOC(pythia_ctx);
 
     if (vscp_pythia_init(pythia_ctx) != vscp_SUCCESS) {
         vscp_dealloc(pythia_ctx);
@@ -300,8 +298,8 @@ vscp_pythia_password_update_token_buf_len(void) {
 //  This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_blind(
-        vscp_pythia_t *pythia_ctx, vsc_data_t password, vsc_buffer_t *blinded_password, vsc_buffer_t *blinding_secret) {
+vscp_pythia_blind(vscp_pythia_t *pythia_ctx, vsc_data_t password, vsc_buffer_t *blinded_password,
+        vsc_buffer_t *blinding_secret) {
 
     VSCP_ASSERT_PTR(pythia_ctx);
     VSCP_ASSERT_PTR(password.bytes);

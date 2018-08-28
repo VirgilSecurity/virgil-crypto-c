@@ -336,9 +336,7 @@ VSCF_PUBLIC vscf_rsa_public_key_impl_t *
 vscf_rsa_public_key_new(void) {
 
     vscf_rsa_public_key_impl_t *rsa_public_key_impl = (vscf_rsa_public_key_impl_t *) vscf_alloc (sizeof (vscf_rsa_public_key_impl_t));
-    if (NULL == rsa_public_key_impl) {
-        return NULL;
-    }
+    VSCF_ASSERT_ALLOC(rsa_public_key_impl);
 
     vscf_rsa_public_key_init (rsa_public_key_impl);
 

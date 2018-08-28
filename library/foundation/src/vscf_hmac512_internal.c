@@ -219,9 +219,7 @@ VSCF_PUBLIC vscf_hmac512_impl_t *
 vscf_hmac512_new(void) {
 
     vscf_hmac512_impl_t *hmac512_impl = (vscf_hmac512_impl_t *) vscf_alloc (sizeof (vscf_hmac512_impl_t));
-    if (NULL == hmac512_impl) {
-        return NULL;
-    }
+    VSCF_ASSERT_ALLOC(hmac512_impl);
 
     vscf_hmac512_init (hmac512_impl);
 

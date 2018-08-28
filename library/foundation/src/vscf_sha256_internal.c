@@ -215,9 +215,7 @@ VSCF_PUBLIC vscf_sha256_impl_t *
 vscf_sha256_new(void) {
 
     vscf_sha256_impl_t *sha256_impl = (vscf_sha256_impl_t *) vscf_alloc (sizeof (vscf_sha256_impl_t));
-    if (NULL == sha256_impl) {
-        return NULL;
-    }
+    VSCF_ASSERT_ALLOC(sha256_impl);
 
     vscf_sha256_init (sha256_impl);
 
