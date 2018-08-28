@@ -80,10 +80,7 @@ vsc_buffer_new(void) {
     vsc_buffer_t *buffer_ctx = (vsc_buffer_t *) vsc_alloc(sizeof (vsc_buffer_t));
     VSC_ASSERT_ALLOC(buffer_ctx);
 
-    if (vsc_buffer_init(buffer_ctx) != vsc_SUCCESS) {
-        vsc_dealloc(buffer_ctx);
-        return NULL;
-    }
+    vsc_buffer_init(buffer_ctx);
 
     buffer_ctx->self_dealloc_cb = vsc_dealloc;
 
@@ -134,14 +131,12 @@ vsc_buffer_destroy(vsc_buffer_t **buffer_ctx_ref) {
 //
 //  Perform initialization of pre-allocated context.
 //
-VSC_PUBLIC vsc_error_t
+VSC_PUBLIC void
 vsc_buffer_init(vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
 
     vsc_zeroize(buffer_ctx, sizeof(vsc_buffer_t));
-
-    return vsc_SUCCESS;
 }
 
 //
@@ -167,14 +162,9 @@ VSC_PUBLIC vsc_buffer_t *
 vsc_buffer_new_with_capacity(size_t capacity) {
 
     vsc_buffer_t *buffer_ctx = (vsc_buffer_t *)vsc_alloc(sizeof(vsc_buffer_t) + capacity);
-    if (NULL == buffer_ctx) {
-        return NULL;
-    }
+    VSC_ASSERT_ALLOC(buffer_ctx);
 
-    if (vsc_buffer_init(buffer_ctx) != vsc_SUCCESS) {
-        vsc_dealloc(buffer_ctx);
-        return NULL;
-    }
+    vsc_buffer_init(buffer_ctx);
 
     buffer_ctx->bytes = (byte *)(buffer_ctx) + sizeof(vsc_buffer_t);
     buffer_ctx->capacity = capacity;
@@ -188,8 +178,9 @@ vsc_buffer_new_with_capacity(size_t capacity) {
 //  Allocates inner buffer with a given capacity.
 //  Precondition: buffer is initialized.
 //  Precondition: buffer does not hold any bytes.
+//  Postcondition: inner buffer is allocated.
 //
-VSC_PUBLIC vsc_error_t
+VSC_PUBLIC void
 vsc_buffer_alloc(vsc_buffer_t *buffer_ctx, size_t capacity) {
 
     VSC_ASSERT_PTR(buffer_ctx);
@@ -197,15 +188,11 @@ vsc_buffer_alloc(vsc_buffer_t *buffer_ctx, size_t capacity) {
     VSC_ASSERT(NULL == buffer_ctx->bytes);
 
     buffer_ctx->bytes = (byte *)vsc_alloc(capacity);
-    if (NULL == buffer_ctx->bytes) {
-        return vsc_error_NO_MEMORY;
-    }
+    VSC_ASSERT_ALLOC(buffer_ctx->bytes);
 
     buffer_ctx->capacity = capacity;
     buffer_ctx->len = 0;
     buffer_ctx->bytes_dealloc_cb = vsc_dealloc;
-
-    return vsc_SUCCESS;
 }
 
 //

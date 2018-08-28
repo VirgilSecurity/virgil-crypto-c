@@ -85,7 +85,7 @@ vscp_pythia_ctx_size(void);
 //
 //  Perform initialization of pre-allocated context.
 //
-VSCP_PUBLIC vscp_error_t
+VSCP_PUBLIC void
 vscp_pythia_init(vscp_pythia_t *pythia_ctx);
 
 //

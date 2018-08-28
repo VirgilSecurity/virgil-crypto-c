@@ -83,7 +83,7 @@ vsc_buffer_ctx_size(void);
 //
 //  Perform initialization of pre-allocated context.
 //
-VSC_PUBLIC vsc_error_t
+VSC_PUBLIC void
 vsc_buffer_init(vsc_buffer_t *buffer_ctx);
 
 //
@@ -122,8 +122,9 @@ vsc_buffer_destroy(vsc_buffer_t **buffer_ctx_ref);
 //  Allocates inner buffer with a given capacity.
 //  Precondition: buffer is initialized.
 //  Precondition: buffer does not hold any bytes.
+//  Postcondition: inner buffer is allocated.
 //
-VSC_PUBLIC vsc_error_t
+VSC_PUBLIC void
 vsc_buffer_alloc(vsc_buffer_t *buffer_ctx, size_t capacity);
 
 //

@@ -99,10 +99,7 @@ vscp_pythia_new(void) {
     vscp_pythia_t *pythia_ctx = (vscp_pythia_t *) vscp_alloc(sizeof (vscp_pythia_t));
     VSCP_ASSERT_ALLOC(pythia_ctx);
 
-    if (vscp_pythia_init(pythia_ctx) != vscp_SUCCESS) {
-        vscp_dealloc(pythia_ctx);
-        return NULL;
-    }
+    vscp_pythia_init(pythia_ctx);
 
     pythia_ctx->self_dealloc_cb = vscp_dealloc;
 
@@ -153,13 +150,13 @@ vscp_pythia_destroy(vscp_pythia_t **pythia_ctx_ref) {
 //
 //  Perform initialization of pre-allocated context.
 //
-VSCP_PUBLIC vscp_error_t
+VSCP_PUBLIC void
 vscp_pythia_init(vscp_pythia_t *pythia_ctx) {
 
     VSCP_ASSERT_PTR(pythia_ctx);
 
     if (g_instances++ > 0) {
-        return vscp_SUCCESS;
+        return;
     }
 
     mbedtls_entropy_init(&g_entropy_ctx);
@@ -168,8 +165,6 @@ vscp_pythia_init(vscp_pythia_t *pythia_ctx) {
     const unsigned char pers[] = "vscp_pythia";
     size_t pers_len = sizeof(pers);
     VSCP_ASSERT_OPT(0 == mbedtls_ctr_drbg_seed(&g_rng_ctx, mbedtls_entropy_func, &g_entropy_ctx, pers, pers_len));
-
-    return vscp_SUCCESS;
 }
 
 //
