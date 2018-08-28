@@ -50,6 +50,8 @@
         <context>
             <require header="mbedtls/rsa.h"/>
             <property name="rsa ctx" class="mbedtls_rsa_context" access="readwrite" is_reference="0"/>
+            <property name="gen bitlen" type="size"/>
+            <property name="gen exponent" type="size"/>
         </context>
 
         <dependency name="hash" interface="hash" type="api"/>
@@ -57,7 +59,15 @@
         <dependency name="asn1rd" interface="asn1 reader" type="impl"/>
         <dependency name="asn1wr" interface="asn1 writer" type="impl"/>
 
+        <method name="set keygen params" visibility="public" declaration="public">
+            Setup parameters that is used during key generation.
+
+            <argument name="bitlen" type="size"/>
+            <argument name="exponent" type="size"/>
+        </method>
+
         <interface name="key"/>
+        <interface name="generate key"/>
         <interface name="private key"/>
         <interface name="decrypt2"/>
         <interface name="sign"/>

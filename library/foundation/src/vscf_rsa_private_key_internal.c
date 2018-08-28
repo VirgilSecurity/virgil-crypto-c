@@ -56,6 +56,7 @@
 #include "vscf_rsa_private_key.h"
 #include "vscf_rsa_private_key_impl.h"
 #include "vscf_key_api.h"
+#include "vscf_generate_key_api.h"
 #include "vscf_private_key_api.h"
 #include "vscf_decrypt2_api.h"
 #include "vscf_sign_api.h"
@@ -95,6 +96,26 @@ static const vscf_key_api_t key_api = {
     //  Length of the key in bits.
     //
     (vscf_key_api_key_bitlen_fn)vscf_rsa_private_key_key_bitlen
+};
+
+//
+//  Configuration of the interface API 'generate key api'.
+//
+static const vscf_generate_key_api_t generate_key_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'generate_key' MUST be equal to the 'vscf_api_tag_GENERATE_KEY'.
+    //
+    vscf_api_tag_GENERATE_KEY,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_RSA_PRIVATE_KEY,
+    //
+    //  Generate new private or secret key.
+    //  Note, this operation can be slow.
+    //
+    (vscf_generate_key_api_generate_key_fn)vscf_rsa_private_key_generate_key
 };
 
 //
@@ -213,6 +234,7 @@ static const vscf_import_private_key_api_t import_private_key_api = {
 //
 static const vscf_api_t *api_array[] = {
     (const vscf_api_t *)&key_api,
+    (const vscf_api_t *)&generate_key_api,
     (const vscf_api_t *)&private_key_api,
     (const vscf_api_t *)&decrypt2_api,
     (const vscf_api_t *)&sign_api,

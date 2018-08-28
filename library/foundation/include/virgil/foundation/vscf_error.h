@@ -118,7 +118,11 @@ enum vscf_error_t {
     //
     //  Underlying random operation returns error.
     //
-    vscf_error_RANDOM_FAILED = -207
+    vscf_error_RANDOM_FAILED = -207,
+    //
+    //  Generation of the private or secret key failed.
+    //
+    vscf_error_KEY_GENERATION_FAILED = -208
 };
 typedef enum vscf_error_t vscf_error_t;
 

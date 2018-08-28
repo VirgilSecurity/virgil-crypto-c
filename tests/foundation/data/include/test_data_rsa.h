@@ -39,9 +39,13 @@
 //
 //  PKCS#1 binary format
 //
+extern const byte test_rsa_RANDOM_BYTES[];
+extern const byte test_rsa_256_GENERATED_PRIVATE_KEY_PKCS1[];
 extern const byte test_rsa_2048_PUBLIC_KEY_PKCS1[];
 extern const byte test_rsa_2048_PRIVATE_KEY_PKCS1[];
 
+extern const size_t test_rsa_RANDOM_BYTES_LEN;
+extern const size_t test_rsa_256_GENERATED_PRIVATE_KEY_PKCS1_LEN;
 extern const size_t test_rsa_2048_PUBLIC_KEY_PKCS1_LEN;
 extern const size_t test_rsa_2048_PRIVATE_KEY_PKCS1_LEN;
 

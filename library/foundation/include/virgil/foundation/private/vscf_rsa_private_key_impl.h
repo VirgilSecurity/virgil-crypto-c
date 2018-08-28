@@ -109,6 +109,14 @@ struct vscf_rsa_private_key_impl_t {
     //
     mbedtls_rsa_context rsa_ctx;
     //
+    //  Implementation specific context.
+    //
+    size_t gen_bitlen;
+    //
+    //  Implementation specific context.
+    //
+    size_t gen_exponent;
+    //
     //  Ownership status of the dependency to the interface 'random'.
     //
     bool is_owning_random:1;

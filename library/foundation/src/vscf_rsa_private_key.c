@@ -94,6 +94,9 @@ vscf_rsa_private_key_init_ctx(vscf_rsa_private_key_impl_t *rsa_private_key_impl)
     VSCF_ASSERT_PTR(rsa_private_key_impl);
 
     mbedtls_rsa_init(&rsa_private_key_impl->rsa_ctx, MBEDTLS_RSA_PKCS_V21, MBEDTLS_MD_NONE);
+
+    rsa_private_key_impl->gen_bitlen = 4096;
+    rsa_private_key_impl->gen_exponent = 65537;
 }
 
 //
@@ -105,6 +108,22 @@ vscf_rsa_private_key_cleanup_ctx(vscf_rsa_private_key_impl_t *rsa_private_key_im
     VSCF_ASSERT_PTR(rsa_private_key_impl);
 
     mbedtls_rsa_free(&rsa_private_key_impl->rsa_ctx);
+}
+
+//
+//  Setup parameters that is used during key generation.
+//
+VSCF_PUBLIC void
+vscf_rsa_private_key_set_keygen_params(
+        vscf_rsa_private_key_impl_t *rsa_private_key_impl, size_t bitlen, size_t exponent) {
+
+    VSCF_ASSERT_PTR(rsa_private_key_impl);
+    VSCF_ASSERT(bitlen >= 128 && bitlen <= 16384);
+    VSCF_ASSERT(bitlen % 2 == 0);
+    VSCF_ASSERT(exponent >= 3);
+
+    rsa_private_key_impl->gen_bitlen = bitlen;
+    rsa_private_key_impl->gen_exponent = exponent;
 }
 
 //
@@ -127,6 +146,21 @@ vscf_rsa_private_key_key_bitlen(vscf_rsa_private_key_impl_t *rsa_private_key_imp
     VSCF_ASSERT_PTR(rsa_private_key_impl);
 
     return 8 * mbedtls_rsa_get_len(&rsa_private_key_impl->rsa_ctx);
+}
+
+//
+//  Generate new private or secret key.
+//  Note, this operation can be slow.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_rsa_private_key_generate_key(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
+
+    VSCF_ASSERT_PTR(rsa_private_key_impl);
+
+    int ret = mbedtls_rsa_gen_key(&rsa_private_key_impl->rsa_ctx, (mbedtls_random_cb)vscf_random,
+            rsa_private_key_impl->random, rsa_private_key_impl->gen_bitlen, rsa_private_key_impl->gen_exponent);
+
+    return ret == 0 ? vscf_SUCCESS : vscf_error_KEY_GENERATION_FAILED;
 }
 
 //

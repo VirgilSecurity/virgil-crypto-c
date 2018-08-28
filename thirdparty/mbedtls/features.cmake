@@ -56,6 +56,7 @@ option(MBEDTLS_PKCS1_V21 "" ON)
 option(MBEDTLS_OID_C "" ON)
 option(MBEDTLS_ASN1_PARSE_C "" ON)
 option(MBEDTLS_ASN1_WRITE_C "" ON)
+option(MBEDTLS_GENPRIME "" ON)
 option(MBEDTLS_RSA_C "" ON)
 option(MBEDTLS_CTR_DRBG_C "" ON)
 option(MBEDTLS_ENTROPY_C "" ON)
@@ -75,6 +76,7 @@ mark_as_advanced(
         MBEDTLS_OID_C
         MBEDTLS_ASN1_PARSE_C
         MBEDTLS_ASN1_WRITE_C
+        MBEDTLS_GENPRIME
         MBEDTLS_RSA_C
         MBEDTLS_CTR_DRBG_C
         MBEDTLS_ENTROPY_C
@@ -107,6 +109,15 @@ if(MBEDTLS_RSA_C AND NOT MBEDTLS_PKCS1_V21)
     message("--")
     message("Feature MBEDTLS_RSA_C depends on the feature:")
     message("     MBEDTLS_PKCS1_V21 - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(MBEDTLS_RSA_C AND NOT MBEDTLS_GENPRIME)
+    message("-- error --")
+    message("--")
+    message("Feature MBEDTLS_RSA_C depends on the feature:")
+    message("     MBEDTLS_GENPRIME - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

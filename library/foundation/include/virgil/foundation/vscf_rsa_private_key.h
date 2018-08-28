@@ -57,6 +57,7 @@
 #include "vscf_hash.h"
 #include "vscf_impl.h"
 #include "vscf_key.h"
+#include "vscf_generate_key.h"
 #include "vscf_private_key.h"
 #include "vscf_decrypt2.h"
 #include "vscf_sign.h"
@@ -187,6 +188,13 @@ VSCF_PUBLIC void
 vscf_rsa_private_key_take_asn1_writer(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vscf_impl_t **asn1wr_ref);
 
 //
+//  Setup parameters that is used during key generation.
+//
+VSCF_PUBLIC void
+vscf_rsa_private_key_set_keygen_params(vscf_rsa_private_key_impl_t *rsa_private_key_impl, size_t bitlen,
+        size_t exponent);
+
+//
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
@@ -197,6 +205,13 @@ vscf_rsa_private_key_key_len(vscf_rsa_private_key_impl_t *rsa_private_key_impl);
 //
 VSCF_PUBLIC size_t
 vscf_rsa_private_key_key_bitlen(vscf_rsa_private_key_impl_t *rsa_private_key_impl);
+
+//
+//  Generate new private or secret key.
+//  Note, this operation can be slow.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_rsa_private_key_generate_key(vscf_rsa_private_key_impl_t *rsa_private_key_impl);
 
 //
 //  Extract public part of the key.
