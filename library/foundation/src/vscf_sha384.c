@@ -101,7 +101,7 @@ vscf_sha384_hash(const byte *data, size_t data_len, byte *digest, size_t digest_
 
     VSCF_ASSERT_PTR(data);
     VSCF_ASSERT_PTR(digest);
-    VSCF_ASSERT_OPT(digest_len >= vscf_sha384_DIGEST_SIZE);
+    VSCF_ASSERT_OPT(digest_len >= vscf_sha384_DIGEST_LEN);
 
     const int is384 = 1;
     mbedtls_sha512(data, data_len, digest, is384);
@@ -139,7 +139,7 @@ vscf_sha384_finish(vscf_sha384_impl_t *sha384_impl, byte *digest, size_t digest_
 
     VSCF_ASSERT_PTR(sha384_impl);
     VSCF_ASSERT_PTR(digest);
-    VSCF_ASSERT_OPT(digest_len >= vscf_sha384_DIGEST_SIZE);
+    VSCF_ASSERT_OPT(digest_len >= vscf_sha384_DIGEST_LEN);
 
     mbedtls_sha512_finish(&sha384_impl->hash_ctx, digest);
 }

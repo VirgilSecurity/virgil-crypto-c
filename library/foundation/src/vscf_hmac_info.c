@@ -62,14 +62,14 @@
 // --------------------------------------------------------------------------
 
 //
-//  Returns constant 'digest size'.
+//  Returns constant 'digest len'.
 //
 VSCF_PUBLIC size_t
-vscf_hmac_info_digest_size(const vscf_hmac_info_api_t *hmac_info_api) {
+vscf_hmac_info_digest_len(const vscf_hmac_info_api_t *hmac_info_api) {
 
     VSCF_ASSERT_PTR (hmac_info_api);
 
-    return hmac_info_api->digest_size;
+    return hmac_info_api->digest_len;
 }
 
 //

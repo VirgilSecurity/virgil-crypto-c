@@ -84,9 +84,9 @@ struct vscf_hmac_info_api_t {
     //
     vscf_impl_tag_t impl_tag;
     //
-    //  Size of the digest (hmac output).
+    //  Size of the digest (hmac output) in bytes.
     //
-    size_t digest_size;
+    size_t digest_len;
 };
 
 

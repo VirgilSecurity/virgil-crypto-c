@@ -84,8 +84,8 @@ test__hmac_info_api__always__returns_not_null(void) {
 
 
 void
-test__hmac224_DIGEST_SIZE__always__equals_28(void) {
-    TEST_ASSERT_EQUAL(28, vscf_hmac224_DIGEST_SIZE);
+test__hmac224_DIGEST_LEN__always__equals_28(void) {
+    TEST_ASSERT_EQUAL(28, vscf_hmac224_DIGEST_LEN);
 }
 
 
@@ -95,10 +95,10 @@ test__hmac224_DIGEST_SIZE__always__equals_28(void) {
 void
 test__hmac__vector_1__success(void) {
 
-    byte digest[vscf_hmac224_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_hmac224_DIGEST_LEN] = {0x00};
 
     vscf_hmac224_hmac(test_hmac224_KEY_1_INPUT, test_hmac224_KEY_1_INPUT_LEN, test_hmac224_VECTOR_1_INPUT,
-            test_hmac224_VECTOR_1_INPUT_LEN, digest, vscf_hmac224_DIGEST_SIZE);
+            test_hmac224_VECTOR_1_INPUT_LEN, digest, vscf_hmac224_DIGEST_LEN);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac224_VECTOR_1_DIGEST, digest, test_hmac224_VECTOR_1_DIGEST_LEN);
 }
@@ -106,10 +106,10 @@ test__hmac__vector_1__success(void) {
 void
 test__hmac__vector_2__success(void) {
 
-    byte digest[vscf_hmac224_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_hmac224_DIGEST_LEN] = {0x00};
 
     vscf_hmac224_hmac(test_hmac224_KEY_2_INPUT, test_hmac224_KEY_2_INPUT_LEN, test_hmac224_VECTOR_2_INPUT,
-            test_hmac224_VECTOR_2_INPUT_LEN, digest, vscf_hmac224_DIGEST_SIZE);
+            test_hmac224_VECTOR_2_INPUT_LEN, digest, vscf_hmac224_DIGEST_LEN);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac224_VECTOR_2_DIGEST, digest, test_hmac224_VECTOR_2_DIGEST_LEN);
 }
@@ -117,10 +117,10 @@ test__hmac__vector_2__success(void) {
 void
 test__hmac__vector_3__success(void) {
 
-    byte digest[vscf_hmac224_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_hmac224_DIGEST_LEN] = {0x00};
 
     vscf_hmac224_hmac(test_hmac224_KEY_3_INPUT, test_hmac224_KEY_3_INPUT_LEN, test_hmac224_VECTOR_3_INPUT,
-            test_hmac224_VECTOR_3_INPUT_LEN, digest, vscf_hmac224_DIGEST_SIZE);
+            test_hmac224_VECTOR_3_INPUT_LEN, digest, vscf_hmac224_DIGEST_LEN);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac224_VECTOR_3_DIGEST, digest, test_hmac224_VECTOR_3_DIGEST_LEN);
 }
@@ -132,14 +132,14 @@ test__hmac__vector_3__success(void) {
 void
 test__hmac_stream__vector_1_success(void) {
 
-    byte digest[vscf_hmac224_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_hmac224_DIGEST_LEN] = {0x00};
 
     vscf_hmac224_impl_t *hmac224_impl = vscf_hmac224_new();
 
     vscf_hmac224_reset(hmac224_impl);
     vscf_hmac224_start(hmac224_impl, test_hmac224_KEY_1_INPUT, test_hmac224_KEY_1_INPUT_LEN);
     vscf_hmac224_update(hmac224_impl, test_hmac224_VECTOR_1_INPUT, test_hmac224_VECTOR_1_INPUT_LEN);
-    vscf_hmac224_finish(hmac224_impl, digest, vscf_hmac224_DIGEST_SIZE);
+    vscf_hmac224_finish(hmac224_impl, digest, vscf_hmac224_DIGEST_LEN);
 
     vscf_hmac224_destroy(&hmac224_impl);
 
@@ -149,14 +149,14 @@ test__hmac_stream__vector_1_success(void) {
 void
 test__hmac_stream__vector_2_success(void) {
 
-    byte digest[vscf_hmac224_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_hmac224_DIGEST_LEN] = {0x00};
 
     vscf_hmac224_impl_t *hmac224_impl = vscf_hmac224_new();
 
     vscf_hmac224_reset(hmac224_impl);
     vscf_hmac224_start(hmac224_impl, test_hmac224_KEY_2_INPUT, test_hmac224_KEY_2_INPUT_LEN);
     vscf_hmac224_update(hmac224_impl, test_hmac224_VECTOR_2_INPUT, test_hmac224_VECTOR_2_INPUT_LEN);
-    vscf_hmac224_finish(hmac224_impl, digest, vscf_hmac224_DIGEST_SIZE);
+    vscf_hmac224_finish(hmac224_impl, digest, vscf_hmac224_DIGEST_LEN);
 
     vscf_hmac224_destroy(&hmac224_impl);
 
@@ -166,14 +166,14 @@ test__hmac_stream__vector_2_success(void) {
 void
 test__hmac_stream__vector_3_success(void) {
 
-    byte digest[vscf_hmac224_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_hmac224_DIGEST_LEN] = {0x00};
 
     vscf_hmac224_impl_t *hmac224_impl = vscf_hmac224_new();
 
     vscf_hmac224_reset(hmac224_impl);
     vscf_hmac224_start(hmac224_impl, test_hmac224_KEY_3_INPUT, test_hmac224_KEY_3_INPUT_LEN);
     vscf_hmac224_update(hmac224_impl, test_hmac224_VECTOR_3_INPUT, test_hmac224_VECTOR_3_INPUT_LEN);
-    vscf_hmac224_finish(hmac224_impl, digest, vscf_hmac224_DIGEST_SIZE);
+    vscf_hmac224_finish(hmac224_impl, digest, vscf_hmac224_DIGEST_LEN);
 
     vscf_hmac224_destroy(&hmac224_impl);
 
@@ -195,7 +195,7 @@ main(void) {
     RUN_TEST(test__impl__null_arg__call_assert);
 
     RUN_TEST(test__hmac_info_api__always__returns_not_null);
-    RUN_TEST(test__hmac224_DIGEST_SIZE__always__equals_28);
+    RUN_TEST(test__hmac224_DIGEST_LEN__always__equals_28);
 
     RUN_TEST(test__hmac__vector_1__success);
     RUN_TEST(test__hmac__vector_2__success);

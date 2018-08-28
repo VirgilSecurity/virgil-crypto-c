@@ -85,7 +85,7 @@ vscf_kdf2_derive(vscf_kdf2_impl_t *kdf2_impl, const byte *data, size_t data_len,
 
 
     // Get HASH parameters
-    size_t digest_len = vscf_hash_info_digest_size(vscf_hash_info_api(kdf2_impl->hash));
+    size_t digest_len = vscf_hash_info_digest_len(vscf_hash_info_api(kdf2_impl->hash));
     unsigned char *digest = vscf_alloc(digest_len);
 
     // Get KDF parameters

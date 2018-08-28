@@ -62,14 +62,14 @@
 // --------------------------------------------------------------------------
 
 //
-//  Returns constant 'digest size'.
+//  Returns constant 'digest len'.
 //
 VSCF_PUBLIC size_t
-vscf_hash_info_digest_size(const vscf_hash_info_api_t *hash_info_api) {
+vscf_hash_info_digest_len(const vscf_hash_info_api_t *hash_info_api) {
 
     VSCF_ASSERT_PTR (hash_info_api);
 
-    return hash_info_api->digest_size;
+    return hash_info_api->digest_len;
 }
 
 //

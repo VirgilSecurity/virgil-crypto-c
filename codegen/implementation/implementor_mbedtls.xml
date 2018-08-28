@@ -14,7 +14,7 @@
         </context>
 
         <interface name="hmac info">
-            <constant name="digest size" value="28"/>
+            <constant name="digest len" value="28"/>
         </interface>
 
         <interface name="hmac"/>
@@ -34,7 +34,7 @@
         </context>
 
         <interface name="hmac info">
-            <constant name="digest size" value="32"/>
+            <constant name="digest len" value="32"/>
         </interface>
 
         <interface name="hmac"/>
@@ -54,7 +54,7 @@
         </context>
 
         <interface name="hmac info">
-            <constant name="digest size" value="48"/>
+            <constant name="digest len" value="48"/>
         </interface>
 
         <interface name="hmac"/>
@@ -74,7 +74,7 @@
         </context>
 
         <interface name="hmac info">
-            <constant name="digest size" value="64"/>
+            <constant name="digest len" value="64"/>
         </interface>
 
         <interface name="hmac"/>
@@ -93,7 +93,7 @@
         </context>
 
         <interface name="hash info">
-            <constant name="digest size" value="28"/>
+            <constant name="digest len" value="28"/>
         </interface>
 
         <interface name="hash"/>
@@ -112,7 +112,7 @@
         </context>
 
         <interface name="hash info">
-            <constant name="digest size" value="32"/>
+            <constant name="digest len" value="32"/>
         </interface>
 
         <interface name="hash"/>
@@ -131,7 +131,7 @@
         </context>
 
         <interface name="hash info">
-            <constant name="digest size" value="48"/>
+            <constant name="digest len" value="48"/>
         </interface>
 
         <interface name="hash"/>
@@ -150,7 +150,7 @@
         </context>
 
         <interface name="hash info">
-            <constant name="digest size" value="64"/>
+            <constant name="digest len" value="64"/>
         </interface>
 
         <interface name="hash"/>

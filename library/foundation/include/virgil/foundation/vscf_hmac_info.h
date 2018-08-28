@@ -75,10 +75,10 @@ extern "C" {
 typedef struct vscf_hmac_info_api_t vscf_hmac_info_api_t;
 
 //
-//  Returns constant 'digest size'.
+//  Returns constant 'digest len'.
 //
 VSCF_PUBLIC size_t
-vscf_hmac_info_digest_size(const vscf_hmac_info_api_t *hmac_info_api);
+vscf_hmac_info_digest_len(const vscf_hmac_info_api_t *hmac_info_api);
 
 //
 //  Return hmac info API, or NULL if it is not implemented.

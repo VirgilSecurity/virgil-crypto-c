@@ -84,8 +84,8 @@ test__hmac_info_api__always__returns_not_null(void) {
 
 
 void
-test__hmac512_DIGEST_SIZE__always__equals_64(void) {
-    TEST_ASSERT_EQUAL(64, vscf_hmac512_DIGEST_SIZE);
+test__hmac512_DIGEST_LEN__always__equals_64(void) {
+    TEST_ASSERT_EQUAL(64, vscf_hmac512_DIGEST_LEN);
 }
 
 
@@ -95,10 +95,10 @@ test__hmac512_DIGEST_SIZE__always__equals_64(void) {
 void
 test__hmac__vector_1__success(void) {
 
-    byte digest[vscf_hmac512_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_hmac512_DIGEST_LEN] = {0x00};
 
     vscf_hmac512_hmac(test_hmac512_KEY_1_INPUT, test_hmac512_KEY_1_INPUT_LEN, test_hmac512_VECTOR_1_INPUT,
-            test_hmac512_VECTOR_1_INPUT_LEN, digest, vscf_hmac512_DIGEST_SIZE);
+            test_hmac512_VECTOR_1_INPUT_LEN, digest, vscf_hmac512_DIGEST_LEN);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac512_VECTOR_1_DIGEST, digest, test_hmac512_VECTOR_1_DIGEST_LEN);
 }
@@ -106,10 +106,10 @@ test__hmac__vector_1__success(void) {
 void
 test__hmac__vector_2__success(void) {
 
-    byte digest[vscf_hmac512_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_hmac512_DIGEST_LEN] = {0x00};
 
     vscf_hmac512_hmac(test_hmac512_KEY_2_INPUT, test_hmac512_KEY_2_INPUT_LEN, test_hmac512_VECTOR_2_INPUT,
-            test_hmac512_VECTOR_2_INPUT_LEN, digest, vscf_hmac512_DIGEST_SIZE);
+            test_hmac512_VECTOR_2_INPUT_LEN, digest, vscf_hmac512_DIGEST_LEN);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac512_VECTOR_2_DIGEST, digest, test_hmac512_VECTOR_2_DIGEST_LEN);
 }
@@ -117,10 +117,10 @@ test__hmac__vector_2__success(void) {
 void
 test__hmac__vector_3__success(void) {
 
-    byte digest[vscf_hmac512_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_hmac512_DIGEST_LEN] = {0x00};
 
     vscf_hmac512_hmac(test_hmac512_KEY_3_INPUT, test_hmac512_KEY_3_INPUT_LEN, test_hmac512_VECTOR_3_INPUT,
-            test_hmac512_VECTOR_3_INPUT_LEN, digest, vscf_hmac512_DIGEST_SIZE);
+            test_hmac512_VECTOR_3_INPUT_LEN, digest, vscf_hmac512_DIGEST_LEN);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac512_VECTOR_3_DIGEST, digest, test_hmac512_VECTOR_3_DIGEST_LEN);
 }
@@ -132,14 +132,14 @@ test__hmac__vector_3__success(void) {
 void
 test__hmac_stream__vector_1_success(void) {
 
-    byte digest[vscf_hmac512_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_hmac512_DIGEST_LEN] = {0x00};
 
     vscf_hmac512_impl_t *hmac512_impl = vscf_hmac512_new();
 
     vscf_hmac512_reset(hmac512_impl);
     vscf_hmac512_start(hmac512_impl, test_hmac512_KEY_1_INPUT, test_hmac512_KEY_1_INPUT_LEN);
     vscf_hmac512_update(hmac512_impl, test_hmac512_VECTOR_1_INPUT, test_hmac512_VECTOR_1_INPUT_LEN);
-    vscf_hmac512_finish(hmac512_impl, digest, vscf_hmac512_DIGEST_SIZE);
+    vscf_hmac512_finish(hmac512_impl, digest, vscf_hmac512_DIGEST_LEN);
 
     vscf_hmac512_destroy(&hmac512_impl);
 
@@ -149,14 +149,14 @@ test__hmac_stream__vector_1_success(void) {
 void
 test__hmac_stream__vector_2_success(void) {
 
-    byte digest[vscf_hmac512_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_hmac512_DIGEST_LEN] = {0x00};
 
     vscf_hmac512_impl_t *hmac512_impl = vscf_hmac512_new();
 
     vscf_hmac512_reset(hmac512_impl);
     vscf_hmac512_start(hmac512_impl, test_hmac512_KEY_2_INPUT, test_hmac512_KEY_2_INPUT_LEN);
     vscf_hmac512_update(hmac512_impl, test_hmac512_VECTOR_2_INPUT, test_hmac512_VECTOR_2_INPUT_LEN);
-    vscf_hmac512_finish(hmac512_impl, digest, vscf_hmac512_DIGEST_SIZE);
+    vscf_hmac512_finish(hmac512_impl, digest, vscf_hmac512_DIGEST_LEN);
 
     vscf_hmac512_destroy(&hmac512_impl);
 
@@ -166,14 +166,14 @@ test__hmac_stream__vector_2_success(void) {
 void
 test__hmac_stream__vector_3_success(void) {
 
-    byte digest[vscf_hmac512_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_hmac512_DIGEST_LEN] = {0x00};
 
     vscf_hmac512_impl_t *hmac512_impl = vscf_hmac512_new();
 
     vscf_hmac512_reset(hmac512_impl);
     vscf_hmac512_start(hmac512_impl, test_hmac512_KEY_3_INPUT, test_hmac512_KEY_3_INPUT_LEN);
     vscf_hmac512_update(hmac512_impl, test_hmac512_VECTOR_3_INPUT, test_hmac512_VECTOR_3_INPUT_LEN);
-    vscf_hmac512_finish(hmac512_impl, digest, vscf_hmac512_DIGEST_SIZE);
+    vscf_hmac512_finish(hmac512_impl, digest, vscf_hmac512_DIGEST_LEN);
 
     vscf_hmac512_destroy(&hmac512_impl);
 
@@ -194,7 +194,7 @@ main(void) {
     RUN_TEST(test__impl__null_arg__call_assert);
 
     RUN_TEST(test__hmac_info_api__always__returns_not_null);
-    RUN_TEST(test__hmac512_DIGEST_SIZE__always__equals_64);
+    RUN_TEST(test__hmac512_DIGEST_LEN__always__equals_64);
 
     RUN_TEST(test__hmac__vector_1__success);
     RUN_TEST(test__hmac__vector_2__success);

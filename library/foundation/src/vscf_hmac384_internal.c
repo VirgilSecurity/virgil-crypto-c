@@ -81,9 +81,9 @@ static const vscf_hmac_info_api_t hmac_info_api = {
     //
     vscf_impl_tag_HMAC384,
     //
-    //  Size of the digest (hmac output).
+    //  Size of the digest (hmac output) in bytes.
     //
-    vscf_hmac384_DIGEST_SIZE
+    vscf_hmac384_DIGEST_LEN
 };
 
 //

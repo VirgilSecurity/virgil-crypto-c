@@ -99,7 +99,7 @@ vscf_hmac224_cleanup_ctx(vscf_hmac224_impl_t *hmac224_impl) {
 VSCF_PUBLIC void
 vscf_hmac224_hmac(const byte *key, size_t key_len, const byte *data, size_t data_len, byte *hmac, size_t hmac_len) {
 
-    VSCF_ASSERT_OPT(hmac_len >= vscf_hmac224_DIGEST_SIZE);
+    VSCF_ASSERT_OPT(hmac_len >= vscf_hmac224_DIGEST_LEN);
 
     mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA224), key, key_len, data, data_len, hmac);
 }
@@ -137,7 +137,7 @@ vscf_hmac224_update(vscf_hmac224_impl_t *hmac224_impl, const byte *data, size_t 
 VSCF_PUBLIC void
 vscf_hmac224_finish(vscf_hmac224_impl_t *hmac224_impl, byte *hmac, size_t hmac_len) {
 
-    VSCF_ASSERT_OPT(hmac_len >= vscf_hmac224_DIGEST_SIZE);
+    VSCF_ASSERT_OPT(hmac_len >= vscf_hmac224_DIGEST_LEN);
 
     mbedtls_md_hmac_finish(&hmac224_impl->hmac_ctx, hmac);
 }

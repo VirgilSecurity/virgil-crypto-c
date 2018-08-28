@@ -49,8 +49,8 @@
 //  Over implementation: 'sha256'.
 // --------------------------------------------------------------------------
 void
-test__digest_size__sha256__returns_32(void) {
-    TEST_ASSERT_EQUAL(32, vscf_hash_info_digest_size(vscf_sha256_hash_info_api()));
+test__digest_len__sha256__returns_32(void) {
+    TEST_ASSERT_EQUAL(32, vscf_hash_info_digest_len(vscf_sha256_hash_info_api()));
 }
 
 void
@@ -74,7 +74,7 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__digest_size__sha256__returns_32);
+    RUN_TEST(test__digest_len__sha256__returns_32);
     RUN_TEST(test__api__sha256__returns_not_null);
     RUN_TEST(test__api_tag__sha256__equals_api_tag_HASH_INFO);
 #else
