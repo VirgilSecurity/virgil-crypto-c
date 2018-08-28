@@ -76,7 +76,7 @@
     <interface name="decrypt2"/>
     <interface name="sign"/>
     <interface name="verify"/>
-    <interface name="generate private key"/>
+    <interface name="generate key"/>
     <interface name="compute shared key"/>
     <interface name="export public key"/>
     <interface name="export private key"/>

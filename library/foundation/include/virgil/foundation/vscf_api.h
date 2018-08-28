@@ -91,7 +91,7 @@ enum vscf_api_tag_t {
     vscf_api_tag_EX_KDF,
     vscf_api_tag_EXPORT_PRIVATE_KEY,
     vscf_api_tag_EXPORT_PUBLIC_KEY,
-    vscf_api_tag_GENERATE_PRIVATE_KEY,
+    vscf_api_tag_GENERATE_KEY,
     vscf_api_tag_HASH,
     vscf_api_tag_HASH_INFO,
     vscf_api_tag_HASH_STREAM,
