@@ -36,12 +36,6 @@
 // --------------------------------------------------------------------------
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'generate private key' API.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -49,8 +43,24 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_generate_private_key_api.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Interface for private or secret key generation.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_GENERATE_KEY_H_INCLUDED
+#define VSCF_GENERATE_KEY_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_error.h"
+#include "vscf_impl.h"
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -59,9 +69,55 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Contains API requirements of the interface 'generate key'.
+//
+typedef struct vscf_generate_key_api_t vscf_generate_key_api_t;
+
+//
+//  Generate new private or secret key.
+//  Note, this operation can be slow.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_generate_key(vscf_impl_t *impl);
+
+//
+//  Return generate key API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_generate_key_api_t *
+vscf_generate_key_api(vscf_impl_t *impl);
+
+//
+//  Check if given object implements interface 'generate key'.
+//
+VSCF_PUBLIC bool
+vscf_generate_key_is_implemented(vscf_impl_t *impl);
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_generate_key_api_tag(const vscf_generate_key_api_t *generate_key_api);
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_generate_key_impl_tag(const vscf_generate_key_api_t *generate_key_api);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_GENERATE_KEY_H_INCLUDED
 //  @end

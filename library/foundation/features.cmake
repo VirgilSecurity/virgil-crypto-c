@@ -70,7 +70,7 @@ option(VSCF_ENCRYPT2 "Enable interface 'encrypt2'." ON)
 option(VSCF_DECRYPT2 "Enable interface 'decrypt2'." ON)
 option(VSCF_SIGN "Enable interface 'sign'." ON)
 option(VSCF_VERIFY "Enable interface 'verify'." ON)
-option(VSCF_GENERATE_PRIVATE_KEY "Enable interface 'generate private key'." ON)
+option(VSCF_GENERATE_KEY "Enable interface 'generate key'." ON)
 option(VSCF_COMPUTE_SHARED_KEY "Enable interface 'compute shared key'." ON)
 option(VSCF_EXPORT_PUBLIC_KEY "Enable interface 'export public key'." ON)
 option(VSCF_EXPORT_PRIVATE_KEY "Enable interface 'export private key'." ON)
@@ -128,7 +128,7 @@ mark_as_advanced(
         VSCF_DECRYPT2
         VSCF_SIGN
         VSCF_VERIFY
-        VSCF_GENERATE_PRIVATE_KEY
+        VSCF_GENERATE_KEY
         VSCF_COMPUTE_SHARED_KEY
         VSCF_EXPORT_PUBLIC_KEY
         VSCF_EXPORT_PRIVATE_KEY

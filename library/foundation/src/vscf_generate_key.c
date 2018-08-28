@@ -36,6 +36,12 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Interface for private or secret key generation.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,24 +49,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Private interface for private key generation.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_GENERATE_PRIVATE_KEY_H_INCLUDED
-#define VSCF_GENERATE_PRIVATE_KEY_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_error.h"
-#include "vscf_impl.h"
+#include "vscf_generate_key.h"
+#include "vscf_assert.h"
+#include "vscf_generate_key_api.h"
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -70,54 +62,67 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'generate private key'.
-//
-typedef struct vscf_generate_private_key_api_t vscf_generate_private_key_api_t;
-
-//
-//  Generate new private key.
+//  Generate new private or secret key.
 //  Note, this operation can be slow.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_generate_private_key(vscf_impl_t *impl);
+vscf_generate_key(vscf_impl_t *impl) {
+
+    const vscf_generate_key_api_t *generate_key_api = vscf_generate_key_api (impl);
+    VSCF_ASSERT_PTR (generate_key_api);
+
+    VSCF_ASSERT_PTR (generate_key_api->generate_key_cb);
+    return generate_key_api->generate_key_cb (impl);
+}
 
 //
-//  Return generate private key API, or NULL if it is not implemented.
+//  Return generate key API, or NULL if it is not implemented.
 //
-VSCF_PUBLIC const vscf_generate_private_key_api_t *
-vscf_generate_private_key_api(vscf_impl_t *impl);
+VSCF_PUBLIC const vscf_generate_key_api_t *
+vscf_generate_key_api(vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_GENERATE_KEY);
+    return (const vscf_generate_key_api_t *) api;
+}
 
 //
-//  Check if given object implements interface 'generate private key'.
+//  Check if given object implements interface 'generate key'.
 //
 VSCF_PUBLIC bool
-vscf_generate_private_key_is_implemented(vscf_impl_t *impl);
+vscf_generate_key_is_implemented(vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    return vscf_impl_api (impl, vscf_api_tag_GENERATE_KEY) != NULL;
+}
 
 //
 //  Returns interface unique identifier.
 //
 VSCF_PUBLIC vscf_api_tag_t
-vscf_generate_private_key_api_tag(const vscf_generate_private_key_api_t *generate_private_key_api);
+vscf_generate_key_api_tag(const vscf_generate_key_api_t *generate_key_api) {
+
+    VSCF_ASSERT_PTR (generate_key_api);
+
+    return generate_key_api->api_tag;
+}
 
 //
 //  Returns implementation unique identifier.
 //
 VSCF_PUBLIC vscf_impl_tag_t
-vscf_generate_private_key_impl_tag(const vscf_generate_private_key_api_t *generate_private_key_api);
+vscf_generate_key_impl_tag(const vscf_generate_key_api_t *generate_key_api) {
+
+    VSCF_ASSERT_PTR (generate_key_api);
+
+    return generate_key_api->impl_tag;
+}
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_GENERATE_PRIVATE_KEY_H_INCLUDED
 //  @end

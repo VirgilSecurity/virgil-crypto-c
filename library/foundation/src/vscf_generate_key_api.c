@@ -36,6 +36,12 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Interface 'generate key' API.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,25 +49,8 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'generate private key' API.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_GENERATE_PRIVATE_KEY_API_H_INCLUDED
-#define VSCF_GENERATE_PRIVATE_KEY_API_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_error.h"
-#include "vscf_api.h"
-#include "vscf_impl.h"
+#include "vscf_generate_key_api.h"
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -70,45 +59,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Callback. Generate new private key.
-//          Note, this operation can be slow.
-//
-typedef vscf_error_t (*vscf_generate_private_key_api_generate_private_key_fn)(vscf_impl_t *impl);
-
-//
-//  Contains API requirements of the interface 'generate private key'.
-//
-struct vscf_generate_private_key_api_t {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'generate_private_key' MUST be equal to the 'vscf_api_tag_GENERATE_PRIVATE_KEY'.
-    //
-    vscf_api_tag_t api_tag;
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_t impl_tag;
-    //
-    //  Generate new private key.
-    //  Note, this operation can be slow.
-    //
-    vscf_generate_private_key_api_generate_private_key_fn generate_private_key_cb;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_GENERATE_PRIVATE_KEY_API_H_INCLUDED
 //  @end
