@@ -26,10 +26,13 @@
 
     <feature name="ASN1 WRITE C"/>
 
+    <feature name="GENPRIME"/>
+
     <feature name="RSA C">
         <require feature="BIGNUM C"/>
         <require feature="OID C"/>
         <require feature="PKCS1 V21"/>
+        <require feature="GENPRIME"/>
     </feature>
 
     <feature name="CTR_DRBG C">

@@ -104,7 +104,7 @@ vscf_fake_random_setup_source_byte(vscf_fake_random_impl_t *fake_random_impl, by
 
     VSCF_ASSERT_PTR(fake_random_impl);
 
-    (void)vscf_fake_random_init_ctx(fake_random_impl);
+    vscf_fake_random_init_ctx(fake_random_impl);
 
     fake_random_impl->byte_source = byte_source;
 }
@@ -118,13 +118,13 @@ vscf_fake_random_setup_source_data(vscf_fake_random_impl_t *fake_random_impl, vs
 
     VSCF_ASSERT_PTR(fake_random_impl);
 
-    (void)vscf_fake_random_init_ctx(fake_random_impl);
+    vscf_fake_random_init_ctx(fake_random_impl);
 
     fake_random_impl->data_source = data_source;
 }
 
 //
-//  Generate rnadom bytes.
+//  Generate random bytes.
 //
 VSCF_PUBLIC vscf_error_t
 vscf_fake_random_random(vscf_fake_random_impl_t *fake_random_impl, byte *data, size_t data_len) {

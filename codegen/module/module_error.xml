@@ -53,5 +53,9 @@
         <constant name="random failed" value="-207">
             Underlying random operation returns error.
         </constant>
+
+        <constant name="key generation failed" value="-208">
+            Generation of the private or secret key failed.
+        </constant>
     </enum>
 </module>

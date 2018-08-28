@@ -212,6 +212,41 @@ test__rsa_private_key_sign__with_imported_2048_PRIVATE_KEY_PKCS1_and_random_AB_a
     vscf_rsa_private_key_destroy(&private_key_impl);
 }
 
+void
+test__rsa_private_key_generate_key__bitlen_256_and_exponent_3__exported_equals_256_GENERATED_PRIVATE_KEY_PKCS1(void) {
+
+    //  Setup dependencies
+    vscf_rsa_private_key_impl_t *private_key_impl = vscf_rsa_private_key_new();
+    vscf_impl_t *asn1wr = vscf_asn1wr_impl(vscf_asn1wr_new());
+    vscf_rsa_private_key_take_asn1_writer(private_key_impl, &asn1wr);
+
+    vscf_fake_random_impl_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_data(fake_random, vsc_data(test_rsa_RANDOM_BYTES, test_rsa_RANDOM_BYTES_LEN));
+    vscf_rsa_private_key_use_random(private_key_impl, vscf_fake_random_impl(fake_random));
+
+    //  Generate
+    vscf_rsa_private_key_set_keygen_params(private_key_impl, 256, 3);
+    vscf_error_t gen_res = vscf_rsa_private_key_generate_key(private_key_impl);
+
+    //  Check
+    TEST_ASSERT_EQUAL(vscf_SUCCESS, gen_res);
+
+    vsc_buffer_t *exported_key_buf =
+            vsc_buffer_new_with_capacity(vscf_rsa_private_key_exported_private_key_len(private_key_impl));
+
+    vscf_error_t export_res = vscf_rsa_private_key_export_private_key(private_key_impl, exported_key_buf);
+
+    TEST_ASSERT_EQUAL(vscf_SUCCESS, export_res);
+    TEST_ASSERT_EQUAL(test_rsa_256_GENERATED_PRIVATE_KEY_PKCS1_LEN, vsc_buffer_len(exported_key_buf));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_rsa_256_GENERATED_PRIVATE_KEY_PKCS1, vsc_buffer_bytes(exported_key_buf),
+            vsc_buffer_len(exported_key_buf));
+
+    //  Cleanup
+    vsc_buffer_destroy(&exported_key_buf);
+    vscf_fake_random_destroy(&fake_random);
+    vscf_rsa_private_key_destroy(&private_key_impl);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -229,6 +264,7 @@ main(void) {
     RUN_TEST(test__rsa_private_key_decrypt__with_imported_2048_PRIVATE_KEY_PKCS1_and_2048_ENCRYPTED_DATA_1_and_random_AB_and_hash_sha512__returns_DATA_1);
     RUN_TEST(test__rsa_private_key_extract_public_key__from_imported_2048_PRIVATE_KEY_PKCS1__when_exported_equals_2048_PUBLIC_KEY_PKCS1);
     RUN_TEST(test__rsa_private_key_sign__with_imported_2048_PRIVATE_KEY_PKCS1_and_random_AB_and_hash_sha512_and_DATA_1__equals_2048_DATA_1_SIGNATURE);
+    RUN_TEST(test__rsa_private_key_generate_key__bitlen_256_and_exponent_3__exported_equals_256_GENERATED_PRIVATE_KEY_PKCS1);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
