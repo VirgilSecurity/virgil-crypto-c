@@ -139,7 +139,7 @@ vscf_rsa_public_key_encrypt(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
 
-    VSCF_ASSERT_OPT(vsc_buffer_available_len(out) >= vscf_rsa_public_key_key_len(rsa_public_key_impl));
+    VSCF_ASSERT_OPT(vsc_buffer_left(out) >= vscf_rsa_public_key_key_len(rsa_public_key_impl));
 
     size_t hash_len = vscf_hash_info_digest_size(vscf_hash_hash_info_api(rsa_public_key_impl->hash));
     VSCF_ASSERT_OPT(vscf_rsa_public_key_key_len(rsa_public_key_impl) >= data.len + 2 * hash_len + 2);
@@ -148,8 +148,7 @@ vscf_rsa_public_key_encrypt(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc
     mbedtls_rsa_set_padding(&rsa_public_key_impl->rsa_ctx, MBEDTLS_RSA_PKCS_V21, md_alg);
 
     int result = mbedtls_rsa_rsaes_oaep_encrypt(&rsa_public_key_impl->rsa_ctx, (mbedtls_random_cb)vscf_random,
-            rsa_public_key_impl->random, MBEDTLS_RSA_PUBLIC, NULL, 0, data.len, data.bytes,
-            vsc_buffer_available_ptr(out));
+            rsa_public_key_impl->random, MBEDTLS_RSA_PUBLIC, NULL, 0, data.len, data.bytes, vsc_buffer_ptr(out));
 
     switch (result) {
     case 0:
@@ -196,8 +195,8 @@ vscf_rsa_public_key_verify(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc_
     vsc_buffer_t *data_hash_buf = vsc_buffer_new_with_capacity(data_hash_len);
     VSCF_ASSERT_PTR(data_hash_buf);
 
-    vscf_hash(rsa_public_key_impl->hash, data.bytes, data.len, vsc_buffer_available_ptr(data_hash_buf),
-            vsc_buffer_available_len(data_hash_buf));
+    vscf_hash(rsa_public_key_impl->hash, data.bytes, data.len, vsc_buffer_ptr(data_hash_buf),
+            vsc_buffer_left(data_hash_buf));
 
     vsc_buffer_reserve(data_hash_buf, data_hash_len);
 

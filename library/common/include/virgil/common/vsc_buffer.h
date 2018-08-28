@@ -181,16 +181,16 @@ VSC_PUBLIC size_t
 vsc_buffer_len(const vsc_buffer_t *buffer_ctx);
 
 //
-//  Returns length of available bytes - bytes that are not in use yet.
+//  Returns length of left bytes - bytes that are not in use yet.
 //
 VSC_PUBLIC size_t
-vsc_buffer_available_len(const vsc_buffer_t *buffer_ctx);
+vsc_buffer_left(const vsc_buffer_t *buffer_ctx);
 
 //
-//  Returns pointer to the first available byte to be written.
+//  Returns pointer to the current wirte position.
 //
 VSC_PUBLIC byte *
-vsc_buffer_available_ptr(vsc_buffer_t *buffer_ctx);
+vsc_buffer_ptr(vsc_buffer_t *buffer_ctx);
 
 //
 //  Increase used bytes by given length.
