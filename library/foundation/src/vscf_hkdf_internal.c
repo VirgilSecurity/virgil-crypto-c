@@ -128,15 +128,11 @@ vscf_hkdf_init(vscf_hkdf_impl_t *hkdf_impl) {
     hkdf_impl->info = &info;
 
     hkdf_impl->hmac = NULL;
-
-    hkdf_impl->is_owning_hmac = false;
 }
 
 //
-//  Cleanup implementation context and it's dependencies.
+//  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_hkdf_init()'.
-//  All dependencies that is under ownership will be destroyed.
-//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_hkdf_cleanup(vscf_hkdf_impl_t *hkdf_impl) {
@@ -147,17 +143,9 @@ vscf_hkdf_cleanup(vscf_hkdf_impl_t *hkdf_impl) {
         return;
     }
 
-    //   Cleanup dependency: 'hmac'.
+    //   Release dependency: 'hmac'.
     if (hkdf_impl->hmac) {
-
-        if (hkdf_impl->is_owning_hmac) {
-            vscf_impl_destroy(&hkdf_impl->hmac);
-
-        } else {
-            hkdf_impl->hmac = NULL;
-        }
-
-        hkdf_impl->is_owning_hmac = 0;
+        vscf_impl_destroy(&hkdf_impl->hmac);
     }
 
     hkdf_impl->info = NULL;
@@ -183,8 +171,6 @@ vscf_hkdf_new(void) {
 //
 //  Delete given implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_hkdf_new()'.
-//  All dependencies that is not under ownership will be cleaned up.
-//  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
 vscf_hkdf_delete(vscf_hkdf_impl_t *hkdf_impl) {
@@ -198,8 +184,6 @@ vscf_hkdf_delete(vscf_hkdf_impl_t *hkdf_impl) {
 //
 //  Destroy given implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_hkdf_new()'.
-//  All dependencies that is not under ownership will be cleaned up.
-//  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
@@ -225,7 +209,7 @@ vscf_hkdf_copy(vscf_hkdf_impl_t *hkdf_impl) {
 }
 
 //
-//  Setup dependency to the interface 'hmac stream' and keep ownership.
+//  Setup dependency to the interface 'hmac stream' with shared ownership.
 //
 VSCF_PUBLIC void
 vscf_hkdf_use_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hmac) {
@@ -236,30 +220,23 @@ vscf_hkdf_use_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hmac) {
 
     VSCF_ASSERT(vscf_hmac_stream_is_implemented(hmac));
 
-    hkdf_impl->hmac = hmac;
-
-    hkdf_impl->is_owning_hmac = 0;
+    hkdf_impl->hmac = vscf_impl_copy(hmac);
 }
 
 //
 //  Setup dependency to the interface 'hmac stream' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_hkdf_take_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t **hmac_ref) {
+vscf_hkdf_take_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hmac) {
 
     VSCF_ASSERT_PTR(hkdf_impl);
-    VSCF_ASSERT_PTR(hmac_ref);
-    VSCF_ASSERT_PTR(hkdf_impl->hmac == NULL);
-
-    vscf_impl_t *hmac = *hmac_ref;
-    *hmac_ref = NULL;
     VSCF_ASSERT_PTR(hmac);
+    VSCF_ASSERT_PTR(hkdf_impl->hmac == NULL);
 
     VSCF_ASSERT(vscf_hmac_stream_is_implemented(hmac));
 
     hkdf_impl->hmac = hmac;
-
-    hkdf_impl->is_owning_hmac = 1;
 }
 
 //

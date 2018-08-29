@@ -89,10 +89,6 @@ struct vscf_hkdf_impl_t {
     //  Dependency to the interface 'hmac stream'.
     //
     vscf_impl_t *hmac;
-    //
-    //  Ownership status of the dependency to the interface 'hmac stream'.
-    //
-    bool is_owning_hmac:1;
 };
 
 

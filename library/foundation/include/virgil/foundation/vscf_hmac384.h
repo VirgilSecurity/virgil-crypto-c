@@ -103,10 +103,8 @@ VSCF_PUBLIC void
 vscf_hmac384_init(vscf_hmac384_impl_t *hmac384_impl);
 
 //
-//  Cleanup implementation context and it's dependencies.
+//  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_hmac384_init()'.
-//  All dependencies that is under ownership will be destroyed.
-//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_hmac384_cleanup(vscf_hmac384_impl_t *hmac384_impl);
@@ -121,8 +119,6 @@ vscf_hmac384_new(void);
 //
 //  Delete given implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_hmac384_new()'.
-//  All dependencies that is not under ownership will be cleaned up.
-//  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
 vscf_hmac384_delete(vscf_hmac384_impl_t *hmac384_impl);
@@ -130,8 +126,6 @@ vscf_hmac384_delete(vscf_hmac384_impl_t *hmac384_impl);
 //
 //  Destroy given implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_hmac384_new()'.
-//  All dependencies that is not under ownership will be cleaned up.
-//  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void

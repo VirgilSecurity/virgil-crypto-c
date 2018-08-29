@@ -192,10 +192,8 @@ vscf_hmac512_init(vscf_hmac512_impl_t *hmac512_impl) {
 }
 
 //
-//  Cleanup implementation context and it's dependencies.
+//  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_hmac512_init()'.
-//  All dependencies that is under ownership will be destroyed.
-//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_hmac512_cleanup(vscf_hmac512_impl_t *hmac512_impl) {
@@ -231,8 +229,6 @@ vscf_hmac512_new(void) {
 //
 //  Delete given implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_hmac512_new()'.
-//  All dependencies that is not under ownership will be cleaned up.
-//  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
 vscf_hmac512_delete(vscf_hmac512_impl_t *hmac512_impl) {
@@ -246,8 +242,6 @@ vscf_hmac512_delete(vscf_hmac512_impl_t *hmac512_impl) {
 //
 //  Destroy given implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_hmac512_new()'.
-//  All dependencies that is not under ownership will be cleaned up.
-//  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void

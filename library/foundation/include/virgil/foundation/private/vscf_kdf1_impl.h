@@ -89,10 +89,6 @@ struct vscf_kdf1_impl_t {
     //  Dependency to the interface 'hash stream'.
     //
     vscf_impl_t *hash;
-    //
-    //  Ownership status of the dependency to the interface 'hash stream'.
-    //
-    bool is_owning_hash:1;
 };
 
 

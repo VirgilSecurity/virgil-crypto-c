@@ -108,18 +108,6 @@ struct vscf_rsa_public_key_impl_t {
     //  Implementation specific context.
     //
     mbedtls_rsa_context rsa_ctx;
-    //
-    //  Ownership status of the dependency to the interface 'random'.
-    //
-    bool is_owning_random:1;
-    //
-    //  Ownership status of the dependency to the interface 'asn1 reader'.
-    //
-    bool is_owning_asn1rd:1;
-    //
-    //  Ownership status of the dependency to the interface 'asn1 writer'.
-    //
-    bool is_owning_asn1wr:1;
 };
 
 
