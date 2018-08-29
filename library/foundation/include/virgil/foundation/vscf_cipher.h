@@ -96,10 +96,40 @@ VSCF_PUBLIC const vscf_cipher_api_t *
 vscf_cipher_api(vscf_impl_t *impl);
 
 //
+//  Return encrypt API.
+//
+VSCF_PUBLIC const vscf_encrypt_api_t *
+vscf_cipher_encrypt_api(const vscf_cipher_api_t *cipher_api);
+
+//
+//  Return decrypt API.
+//
+VSCF_PUBLIC const vscf_decrypt_api_t *
+vscf_cipher_decrypt_api(const vscf_cipher_api_t *cipher_api);
+
+//
+//  Return cipher info API.
+//
+VSCF_PUBLIC const vscf_cipher_info_api_t *
+vscf_cipher_cipher_info_api(const vscf_cipher_api_t *cipher_api);
+
+//
 //  Check if given object implements interface 'cipher'.
 //
 VSCF_PUBLIC bool
 vscf_cipher_is_implemented(vscf_impl_t *impl);
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_cipher_api_tag(const vscf_cipher_api_t *cipher_api);
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_cipher_impl_tag(const vscf_cipher_api_t *cipher_api);
 
 
 // --------------------------------------------------------------------------

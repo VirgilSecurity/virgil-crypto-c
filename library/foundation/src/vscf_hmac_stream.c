@@ -126,6 +126,17 @@ vscf_hmac_stream_api(vscf_impl_t *impl) {
 }
 
 //
+//  Return hmac info API.
+//
+VSCF_PUBLIC const vscf_hmac_info_api_t *
+vscf_hmac_stream_hmac_info_api(const vscf_hmac_stream_api_t *hmac_stream_api) {
+
+    VSCF_ASSERT_PTR (hmac_stream_api);
+
+    return hmac_stream_api->hmac_info_api;
+}
+
+//
 //  Check if given object implements interface 'hmac stream'.
 //
 VSCF_PUBLIC bool
@@ -134,6 +145,28 @@ vscf_hmac_stream_is_implemented(vscf_impl_t *impl) {
     VSCF_ASSERT_PTR (impl);
 
     return vscf_impl_api (impl, vscf_api_tag_HMAC_STREAM) != NULL;
+}
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_hmac_stream_api_tag(const vscf_hmac_stream_api_t *hmac_stream_api) {
+
+    VSCF_ASSERT_PTR (hmac_stream_api);
+
+    return hmac_stream_api->api_tag;
+}
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_hmac_stream_impl_tag(const vscf_hmac_stream_api_t *hmac_stream_api) {
+
+    VSCF_ASSERT_PTR (hmac_stream_api);
+
+    return hmac_stream_api->impl_tag;
 }
 
 

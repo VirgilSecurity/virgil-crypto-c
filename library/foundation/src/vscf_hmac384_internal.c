@@ -77,9 +77,13 @@ static const vscf_hmac_info_api_t hmac_info_api = {
     //
     vscf_api_tag_HMAC_INFO,
     //
-    //  Size of the digest (hmac output).
+    //  Implementation unique identifier, MUST be second in the structure.
     //
-    vscf_hmac384_DIGEST_SIZE
+    vscf_impl_tag_HMAC384,
+    //
+    //  Size of the digest (hmac output) in bytes.
+    //
+    vscf_hmac384_DIGEST_LEN
 };
 
 //
@@ -91,6 +95,10 @@ static const vscf_hmac_api_t hmac_api = {
     //  For interface 'hmac' MUST be equal to the 'vscf_api_tag_HMAC'.
     //
     vscf_api_tag_HMAC,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_HMAC384,
     //
     //  Link to the inherited interface API 'hmac info'.
     //
@@ -110,6 +118,10 @@ static const vscf_hmac_stream_api_t hmac_stream_api = {
     //  For interface 'hmac_stream' MUST be equal to the 'vscf_api_tag_HMAC_STREAM'.
     //
     vscf_api_tag_HMAC_STREAM,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_HMAC384,
     //
     //  Link to the inherited interface API 'hmac info'.
     //
@@ -156,7 +168,7 @@ static const vscf_impl_info_t info = {
     //
     api_array,
     //
-    //  Erase inner state in a secure manner.
+    //  Release acquired inner resources.
     //
     (vscf_impl_cleanup_fn)vscf_hmac384_cleanup,
     //
@@ -168,33 +180,33 @@ static const vscf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_hmac384_init(vscf_hmac384_impl_t *hmac384_impl) {
 
-    VSCF_ASSERT_PTR (hmac384_impl);
-    VSCF_ASSERT_PTR (hmac384_impl->info == NULL);
+    VSCF_ASSERT_PTR(hmac384_impl);
+    VSCF_ASSERT_PTR(hmac384_impl->info == NULL);
 
     hmac384_impl->info = &info;
 
-    return vscf_hmac384_init_ctx (hmac384_impl);
+    vscf_hmac384_init_ctx(hmac384_impl);
 }
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hmac384_init ()'.
-//  All dependencies that is not under ownership will be cleaned up.
+//  This is a reverse action of the function 'vscf_hmac384_init()'.
 //  All dependencies that is under ownership will be destroyed.
+//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_hmac384_cleanup(vscf_hmac384_impl_t *hmac384_impl) {
 
-    VSCF_ASSERT_PTR (hmac384_impl);
+    VSCF_ASSERT_PTR(hmac384_impl);
 
     if (hmac384_impl->info == NULL) {
         return;
     }
 
-    vscf_hmac384_cleanup_ctx (hmac384_impl);
+    vscf_hmac384_cleanup_ctx(hmac384_impl);
 
     hmac384_impl->info = NULL;
 }
@@ -206,50 +218,58 @@ vscf_hmac384_cleanup(vscf_hmac384_impl_t *hmac384_impl) {
 VSCF_PUBLIC vscf_hmac384_impl_t *
 vscf_hmac384_new(void) {
 
-    vscf_hmac384_impl_t *hmac384_impl = (vscf_hmac384_impl_t *) vscf_alloc (sizeof (vscf_hmac384_impl_t));
-    if (NULL == hmac384_impl) {
-        return NULL;
-    }
+    vscf_hmac384_impl_t *hmac384_impl = (vscf_hmac384_impl_t *) vscf_alloc(sizeof (vscf_hmac384_impl_t));
+    VSCF_ASSERT_ALLOC(hmac384_impl);
 
-    if (vscf_hmac384_init (hmac384_impl) != vscf_SUCCESS) {
-        vscf_dealloc(hmac384_impl);
-        return NULL;
-    }
+    vscf_hmac384_init(hmac384_impl);
+
+    hmac384_impl->refcnt = 1;
 
     return hmac384_impl;
 }
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hmac384_new ()'.
+//  This is a reverse action of the function 'vscf_hmac384_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
 vscf_hmac384_delete(vscf_hmac384_impl_t *hmac384_impl) {
 
-    if (hmac384_impl) {
-        vscf_hmac384_cleanup (hmac384_impl);
-        vscf_dealloc (hmac384_impl);
+    if (hmac384_impl && (--hmac384_impl->refcnt == 0)) {
+        vscf_hmac384_cleanup(hmac384_impl);
+        vscf_dealloc(hmac384_impl);
     }
 }
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hmac384_new ()'.
+//  This is a reverse action of the function 'vscf_hmac384_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_hmac384_destroy(vscf_hmac384_impl_t * *hmac384_impl_ref) {
+vscf_hmac384_destroy(vscf_hmac384_impl_t **hmac384_impl_ref) {
 
-    VSCF_ASSERT_PTR (hmac384_impl_ref);
+    VSCF_ASSERT_PTR(hmac384_impl_ref);
 
     vscf_hmac384_impl_t *hmac384_impl = *hmac384_impl_ref;
     *hmac384_impl_ref = NULL;
 
-    vscf_hmac384_delete (hmac384_impl);
+    vscf_hmac384_delete(hmac384_impl);
+}
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_hmac384_impl_t *
+vscf_hmac384_copy(vscf_hmac384_impl_t *hmac384_impl) {
+
+    // Proxy to the parent implementation.
+    return (vscf_hmac384_impl_t *)vscf_impl_copy((vscf_impl_t *)hmac384_impl);
 }
 
 //
@@ -285,8 +305,8 @@ vscf_hmac384_impl_size(void) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_hmac384_impl(vscf_hmac384_impl_t *hmac384_impl) {
 
-    VSCF_ASSERT_PTR (hmac384_impl);
-    return (vscf_impl_t *) (hmac384_impl);
+    VSCF_ASSERT_PTR(hmac384_impl);
+    return (vscf_impl_t *)(hmac384_impl);
 }
 
 

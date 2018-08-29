@@ -66,6 +66,33 @@
     <interface name="hmac info"/>
     <interface name="hmac stream"/>
     <interface name="kdf"/>
+    <interface name="random"/>
+
+    <interface name="error context"/>
+    <interface name="key"/>
+    <interface name="public key"/>
+    <interface name="private key"/>
+    <interface name="encrypt2"/>
+    <interface name="decrypt2"/>
+    <interface name="sign"/>
+    <interface name="verify"/>
+    <interface name="generate key"/>
+    <interface name="compute shared key"/>
+    <interface name="export public key"/>
+    <interface name="export private key"/>
+    <interface name="import public key"/>
+    <interface name="import private key"/>
+    <interface name="key reader"/>
+    <interface name="key writer"/>
+
+    <interface name="asn1 reader"/>
+    <interface name="asn1 writer"/>
+
+    <class name="error"/>
+    <class name="asn1"/>
+    <class name="mbedtls bignum asn1 writer"/>
+    <class name="mbedtls bignum asn1 reader"/>
+    <class name="mbedtls md"/>
 
     <module name="assert"/>
     <module name="error"/>
@@ -73,5 +100,6 @@
     <module name="memory"/>
 
     <implementor name="mbedtls"/>
+    <implementor name="mbedtls pk"/>
     <implementor name="virgil"/>
 </project>

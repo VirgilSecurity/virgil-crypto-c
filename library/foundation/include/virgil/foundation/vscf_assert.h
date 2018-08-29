@@ -120,6 +120,17 @@ extern "C" {
     } while (false)
 
 //
+//  Assert that memory was successfully allocated.
+//  This macros is enabled by default and can be disabled by special macros.
+//
+#define VSCF_ASSERT_ALLOC(X)                                                     \
+    do {                                                                         \
+        if (!(X)) {                                                              \
+            vscf_assert_trigger ("No memory", VSCF_FILE_PATH_OR_NAME, __LINE__); \
+        }                                                                        \
+    } while (false)
+
+//
 //  Assertion handler callback type.
 //
 typedef void (*vscf_assert_handler_fn)(const char *message, const char *file, int line);

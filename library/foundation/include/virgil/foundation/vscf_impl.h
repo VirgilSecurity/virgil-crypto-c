@@ -76,6 +76,9 @@ extern "C" {
 enum vscf_impl_tag_t {
     vscf_impl_tag_BEGIN = 0,
     vscf_impl_tag_AES256_GCM,
+    vscf_impl_tag_ASN1RD,
+    vscf_impl_tag_ASN1WR,
+    vscf_impl_tag_FAKE_RANDOM,
     vscf_impl_tag_HKDF,
     vscf_impl_tag_HMAC224,
     vscf_impl_tag_HMAC256,
@@ -83,6 +86,8 @@ enum vscf_impl_tag_t {
     vscf_impl_tag_HMAC512,
     vscf_impl_tag_KDF1,
     vscf_impl_tag_KDF2,
+    vscf_impl_tag_RSA_PRIVATE_KEY,
+    vscf_impl_tag_RSA_PUBLIC_KEY,
     vscf_impl_tag_SHA224,
     vscf_impl_tag_SHA256,
     vscf_impl_tag_SHA384,
@@ -136,7 +141,14 @@ vscf_impl_delete(vscf_impl_t *impl);
 //  Destroy implementation object and it's dependencies.
 //
 VSCF_PUBLIC void
-vscf_impl_destroy(vscf_impl_t * *impl_ref);
+vscf_impl_destroy(vscf_impl_t **impl_ref);
+
+//
+//  Copy implementation object by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_impl_copy(vscf_impl_t *impl);
 
 
 // --------------------------------------------------------------------------

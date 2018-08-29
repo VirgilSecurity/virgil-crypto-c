@@ -56,7 +56,7 @@ function _X13_add_context_struct (class, declaration, definition, destination, m
     new struct to my.destination
         . = "Handle '$(my.class.name:)' context."
         .name = my.class.name
-        .of_class = my.class.name
+        .of_class = my.class.of_class ?
         .declaration = my.declaration
         .definition = my.definition
 
@@ -99,6 +99,33 @@ function _X13_add_method_context_size (class, destination, meta)
             "
         endnew
     endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+function _X13_resolve_argument_ctx (argument, meta)
+    check_arguments (my, "argument, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    scope my.argument
+        .name ?= my.names.class_argument_ctx
+        .class = my.refs.class_struct_ctx # redefine placeholder class='context'
+        .access ?= "readwrite"
+    endscope
+endfunction
+
+# ---------------------------------------------------------------------------
+function _X13_resolve_return_ctx (ret, meta)
+    check_arguments (my, "ret, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    scope my.ret
+        .class = my.refs.class_struct_ctx # redefine placeholder class='context'
+        .access ?= "disown"
+    endscope
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -154,7 +181,6 @@ function _X13_add_method_init (class, destination, meta)
         .name = my.names.method_init
 
         _X13_add_argument_ctx (method, my.meta)
-        _X13_add_return_error (method, my.meta)
 
         new code to method
             .type = "stub"
@@ -162,8 +188,6 @@ function _X13_add_method_init (class, destination, meta)
             .(c_class_assert_macros_ptr)($(my.refs.class_argument_ctx));
 
             //  TODO: This is STUB. Implement me.
-
-            return .(c_class_error_enum_error_constant_bad_arguments);
             "
         endnew
     endnew
@@ -212,14 +236,9 @@ function _X13_add_method_new (class, destination, meta)
 
             . = "\
             $(my.type_ctx) *$(my.arg_ctx:) = ($(my.type_ctx) *) .(c_global_method_alloc)(sizeof ($(my.type_ctx)));
-            if (NULL == $(my.arg_ctx:)) {
-                return NULL;
-            }
+            .(c_class_assert_macros_alloc)($(my.arg_ctx:));
 
-            if ($(my.refs.c_class_method_init)($(my.arg_ctx:)) != .(c_global_enum_error_constant_success)) {
-                .(c_global_method_dealloc)($(my.arg_ctx:));
-                return NULL;
-            }
+            $(my.refs.c_class_method_init)($(my.arg_ctx:));
 
             $(my.arg_ctx:)->$(my.refs.c_class_property_self_dealloc) = .(c_global_method_dealloc);
 
@@ -326,16 +345,20 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-#
+#   Copy class methods with context resolution.
 # ---------------------------------------------------------------------------
 function _X13_add_method (method, destination, meta)
     check_arguments (my, "method, destination, meta", my)
 
     my.copied_method = item_copy_to (my.method, my.destination)
 
-    if my.copied_method.context = "class"
-        _X13_add_argument_ctx (my.copied_method, my.meta)
-    endif
+    for my.copied_method.argument where string_equal(0.class, "context")
+        _X13_resolve_argument_ctx (argument, my.meta)
+    endfor
+
+    for my.copied_method.return where string_equal(0.class, "context")
+        _X13_resolve_return_ctx (return, my.meta)
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -370,6 +393,7 @@ function c_module_class_create_module_public (class, destination, meta)
         .feature = my.class.name
         .of_class = my.class.of_class ?
         .c_prefix = my.class.c_prefix ?
+        .scope = my.class.scope ?
 
         new require to module
             .module = my.names.module_library
@@ -406,7 +430,7 @@ function c_module_class_create_module_public (class, destination, meta)
         endif
 
 
-        if my.class.context <> "none"
+        if my.class.context <> "none" & my.class.context <> "public"
             _X13_add_method_context_size (my.class, module, my.meta)
         endif
 

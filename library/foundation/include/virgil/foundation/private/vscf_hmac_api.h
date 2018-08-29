@@ -87,6 +87,10 @@ struct vscf_hmac_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Link to the inherited interface API 'hmac info'.
     //
     const vscf_hmac_info_api_t *hmac_info_api;

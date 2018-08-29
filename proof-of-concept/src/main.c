@@ -90,13 +90,13 @@ int main (void) {
     test_asn1_reader ();
 
 #if 0
-    uint8_t *digest = vsf_alloc (vsf_sha256_DIGEST_SIZE);
+    uint8_t *digest = vsf_alloc (vsf_sha256_DIGEST_LEN);
     uint8_t data[3] = {0x01, 0x02, 0x03};
 
     void* hash = (void *) vsf_sha256_new();
 
 
-    vsf_buffer_use(hash, digest, vsf_sha256_DIGEST_SIZE);
+    vsf_buffer_use(hash, digest, vsf_sha256_DIGEST_LEN);
     VSF_ASSERT (digest != NULL);
 
     vsf_hash_start (hash);
@@ -107,7 +107,7 @@ int main (void) {
 
 
     print_buf ("SHA256", vsf_buffer_data (hash), vsf_buffer_used_size (hash));
-    print_buf ("SHA256", digest, vsf_sha256_DIGEST_SIZE);
+    print_buf ("SHA256", digest, vsf_sha256_DIGEST_LEN);
 
     vsf_destroy (&hash);
     vsf_dealloc (digest);

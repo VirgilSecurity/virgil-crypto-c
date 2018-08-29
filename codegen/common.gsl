@@ -54,7 +54,7 @@ function check_argument (argument_scope, argument_name, caller)
     if ! defined (my.argument_scope.$(my.argument_name))
         abort "[$("FATAL":upper,block%-8s)]\
             $("Argument '$(my.argument_name:)' is not defined":no,block%-120s) \
-            $(name (my.caller ? my.argument_scope):block) ()"
+            $(name (my.caller ? my.argument_scope):block)()"
     endif
 endfunction
 
@@ -348,7 +348,7 @@ function _C23_echo (text, level, caller)
 
     my.text = code_collapse_spaces (my.text)
 
-    my.caller_echo_str = defined (my.caller) ?? "$(name (my.caller)) ()" ? ""
+    my.caller_echo_str = defined (my.caller) ?? "$(name (my.caller))()" ? ""
 
     if string.length (my.text) > 120 | string_multiline (my.text)
         my.echo_text = "[$(my.level:upper,block%-8s)]$(" ":no,block%-124s)$(my.caller_echo_str:block)"
@@ -373,7 +373,7 @@ function _C23_echo_item (item, level, caller)
         return
     endif
 
-    my.caller_echo_str = defined (my.caller) ?? "$(name (my.caller)) ()" ? ""
+    my.caller_echo_str = defined (my.caller) ?? "$(name (my.caller))()" ? ""
 
     my.echo_text = "[$(my.level:upper,block%-8s)]\
         $("Dump item <$(name (my.item))/>...":no,block%-120s) \

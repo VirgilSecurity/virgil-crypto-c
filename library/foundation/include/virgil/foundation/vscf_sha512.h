@@ -76,7 +76,7 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
-    vscf_sha512_DIGEST_SIZE = 64
+    vscf_sha512_DIGEST_LEN = 64
 };
 
 //
@@ -99,14 +99,14 @@ vscf_sha512_impl(vscf_sha512_impl_t *sha512_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_sha512_init(vscf_sha512_impl_t *sha512_impl);
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha512_init ()'.
-//  All dependencies that is not under ownership will be cleaned up.
+//  This is a reverse action of the function 'vscf_sha512_init()'.
 //  All dependencies that is under ownership will be destroyed.
+//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_sha512_cleanup(vscf_sha512_impl_t *sha512_impl);
@@ -120,7 +120,7 @@ vscf_sha512_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha512_new ()'.
+//  This is a reverse action of the function 'vscf_sha512_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
@@ -129,13 +129,20 @@ vscf_sha512_delete(vscf_sha512_impl_t *sha512_impl);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha512_new ()'.
+//  This is a reverse action of the function 'vscf_sha512_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_sha512_destroy(vscf_sha512_impl_t * *sha512_impl_ref);
+vscf_sha512_destroy(vscf_sha512_impl_t **sha512_impl_ref);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_sha512_impl_t *
+vscf_sha512_copy(vscf_sha512_impl_t *sha512_impl);
 
 //
 //  Returns instance of the implemented interface 'hash info'.

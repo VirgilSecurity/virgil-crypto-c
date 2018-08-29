@@ -84,8 +84,8 @@ test__hash_info_api__always__returns_not_null(void) {
 
 
 void
-test__sha384_DIGEST_SIZE__always__equals_48(void) {
-    TEST_ASSERT_EQUAL(48, vscf_sha384_DIGEST_SIZE);
+test__sha384_DIGEST_LEN__always__equals_48(void) {
+    TEST_ASSERT_EQUAL(48, vscf_sha384_DIGEST_LEN);
 }
 
 
@@ -102,9 +102,9 @@ test__hash_api__always__returns_not_null(void) {
 void
 test__hash__vector_1__success(void) {
 
-    byte digest[vscf_sha384_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_sha384_DIGEST_LEN] = {0x00};
 
-    vscf_sha384_hash(test_sha384_VECTOR_1_INPUT, test_sha384_VECTOR_1_INPUT_LEN, digest, vscf_sha384_DIGEST_SIZE);
+    vscf_sha384_hash(test_sha384_VECTOR_1_INPUT, test_sha384_VECTOR_1_INPUT_LEN, digest, vscf_sha384_DIGEST_LEN);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha384_VECTOR_1_DIGEST, digest, test_sha384_VECTOR_1_DIGEST_LEN);
 }
@@ -112,9 +112,9 @@ test__hash__vector_1__success(void) {
 void
 test__hash__vector_2__success(void) {
 
-    byte digest[vscf_sha384_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_sha384_DIGEST_LEN] = {0x00};
 
-    vscf_sha384_hash(test_sha384_VECTOR_2_INPUT, test_sha384_VECTOR_2_INPUT_LEN, digest, vscf_sha384_DIGEST_SIZE);
+    vscf_sha384_hash(test_sha384_VECTOR_2_INPUT, test_sha384_VECTOR_2_INPUT_LEN, digest, vscf_sha384_DIGEST_LEN);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha384_VECTOR_2_DIGEST, digest, test_sha384_VECTOR_2_DIGEST_LEN);
 }
@@ -122,9 +122,9 @@ test__hash__vector_2__success(void) {
 void
 test__hash__vector_3__success(void) {
 
-    byte digest[vscf_sha384_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_sha384_DIGEST_LEN] = {0x00};
 
-    vscf_sha384_hash(test_sha384_VECTOR_3_INPUT, test_sha384_VECTOR_3_INPUT_LEN, digest, vscf_sha384_DIGEST_SIZE);
+    vscf_sha384_hash(test_sha384_VECTOR_3_INPUT, test_sha384_VECTOR_3_INPUT_LEN, digest, vscf_sha384_DIGEST_LEN);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha384_VECTOR_3_DIGEST, digest, test_sha384_VECTOR_3_DIGEST_LEN);
 }
@@ -135,13 +135,13 @@ test__hash__vector_3__success(void) {
 void
 test__hash_stream__vector_1__success(void) {
 
-    byte digest[vscf_sha384_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_sha384_DIGEST_LEN] = {0x00};
 
     vscf_sha384_impl_t *sha384_impl = vscf_sha384_new();
 
     vscf_sha384_start(sha384_impl);
     vscf_sha384_update(sha384_impl, test_sha384_VECTOR_1_INPUT, test_sha384_VECTOR_1_INPUT_LEN);
-    vscf_sha384_finish(sha384_impl, digest, vscf_sha384_DIGEST_SIZE);
+    vscf_sha384_finish(sha384_impl, digest, vscf_sha384_DIGEST_LEN);
 
     vscf_sha384_destroy(&sha384_impl);
 
@@ -151,13 +151,13 @@ test__hash_stream__vector_1__success(void) {
 void
 test__hash_stream__vector_2__success(void) {
 
-    byte digest[vscf_sha384_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_sha384_DIGEST_LEN] = {0x00};
 
     vscf_sha384_impl_t *sha384_impl = vscf_sha384_new();
 
     vscf_sha384_start(sha384_impl);
     vscf_sha384_update(sha384_impl, test_sha384_VECTOR_2_INPUT, test_sha384_VECTOR_2_INPUT_LEN);
-    vscf_sha384_finish(sha384_impl, digest, vscf_sha384_DIGEST_SIZE);
+    vscf_sha384_finish(sha384_impl, digest, vscf_sha384_DIGEST_LEN);
 
     vscf_sha384_destroy(&sha384_impl);
 
@@ -167,13 +167,13 @@ test__hash_stream__vector_2__success(void) {
 void
 test__hash_stream__vector_3__success(void) {
 
-    byte digest[vscf_sha384_DIGEST_SIZE] = {0x00};
+    byte digest[vscf_sha384_DIGEST_LEN] = {0x00};
 
     vscf_sha384_impl_t *sha384_impl = vscf_sha384_new();
 
     vscf_sha384_start(sha384_impl);
     vscf_sha384_update(sha384_impl, test_sha384_VECTOR_3_INPUT, test_sha384_VECTOR_3_INPUT_LEN);
-    vscf_sha384_finish(sha384_impl, digest, vscf_sha384_DIGEST_SIZE);
+    vscf_sha384_finish(sha384_impl, digest, vscf_sha384_DIGEST_LEN);
 
     vscf_sha384_destroy(&sha384_impl);
 
@@ -195,7 +195,7 @@ main(void) {
     RUN_TEST(test__impl__null_arg__call_assert);
 
     RUN_TEST(test__hash_info_api__always__returns_not_null);
-    RUN_TEST(test__sha384_DIGEST_SIZE__always__equals_48);
+    RUN_TEST(test__sha384_DIGEST_LEN__always__equals_48);
 
     RUN_TEST(test__hash_api__always__returns_not_null);
     RUN_TEST(test__hash__vector_1__success);

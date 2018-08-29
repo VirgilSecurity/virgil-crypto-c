@@ -46,6 +46,7 @@ gsl from "common.gsl"
 gsl from "interface.gsl"
 gsl from "component.gsl"
 gsl from "c_component.gsl"
+gsl from "project_common.gsl"
 
 # ---------------------------------------------------------------------------
 #   Check that all interfaces are implemented explicitly.
@@ -195,6 +196,18 @@ function implementation_resolve_method (method, parent)
 
     my.method.declaration ?= "private"
     my.method.definition ?= "private"
+    my.method.context ?= "impl"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve model: implementation.require.
+# ---------------------------------------------------------------------------
+function implementation_resolve_require (require, parent)
+    check_arguments (my, "require, parent", my)
+
+    if has_one_of_attribute(my.require, "header, interface, class")
+        my.require.scope ?= "private"
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -249,6 +262,11 @@ function implementation_resolve (implementation, parent, project)
         implementation_resolve_method (method, my.implementation)
     endfor
 
+    for my.implementation.require
+        implementation_resolve_require (require, my.implementation)
+    endfor
+
+    project_common_resolve_dependecies_for (my.implementation)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -286,6 +304,18 @@ function implementation_create_feature (implementation, destination)
 
         for my.implementation.require where defined (0.feature)
             copy require to feature
+        endfor
+
+        for my.implementation.require where defined (0.class)
+            new require to feature
+                .feature = -1.class
+            endnew
+        endfor
+
+        for my.implementation.require where defined (0.interface)
+            new require to feature
+                .feature = -1.interface
+            endnew
         endfor
 
         for my.implementation.dependency

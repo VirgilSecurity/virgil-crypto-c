@@ -76,7 +76,7 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
-    vscf_hmac384_DIGEST_SIZE = 48
+    vscf_hmac384_DIGEST_LEN = 48
 };
 
 //
@@ -99,14 +99,14 @@ vscf_hmac384_impl(vscf_hmac384_impl_t *hmac384_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_hmac384_init(vscf_hmac384_impl_t *hmac384_impl);
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hmac384_init ()'.
-//  All dependencies that is not under ownership will be cleaned up.
+//  This is a reverse action of the function 'vscf_hmac384_init()'.
 //  All dependencies that is under ownership will be destroyed.
+//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_hmac384_cleanup(vscf_hmac384_impl_t *hmac384_impl);
@@ -120,7 +120,7 @@ vscf_hmac384_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hmac384_new ()'.
+//  This is a reverse action of the function 'vscf_hmac384_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
@@ -129,13 +129,20 @@ vscf_hmac384_delete(vscf_hmac384_impl_t *hmac384_impl);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hmac384_new ()'.
+//  This is a reverse action of the function 'vscf_hmac384_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_hmac384_destroy(vscf_hmac384_impl_t * *hmac384_impl_ref);
+vscf_hmac384_destroy(vscf_hmac384_impl_t **hmac384_impl_ref);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_hmac384_impl_t *
+vscf_hmac384_copy(vscf_hmac384_impl_t *hmac384_impl);
 
 //
 //  Returns instance of the implemented interface 'hmac info'.

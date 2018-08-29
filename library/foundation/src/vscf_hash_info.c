@@ -62,14 +62,14 @@
 // --------------------------------------------------------------------------
 
 //
-//  Returns constant 'digest size'.
+//  Returns constant 'digest len'.
 //
 VSCF_PUBLIC size_t
-vscf_hash_info_digest_size(const vscf_hash_info_api_t *hash_info_api) {
+vscf_hash_info_digest_len(const vscf_hash_info_api_t *hash_info_api) {
 
     VSCF_ASSERT_PTR (hash_info_api);
 
-    return hash_info_api->digest_size;
+    return hash_info_api->digest_len;
 }
 
 //
@@ -93,6 +93,28 @@ vscf_hash_info_is_implemented(vscf_impl_t *impl) {
     VSCF_ASSERT_PTR (impl);
 
     return vscf_impl_api (impl, vscf_api_tag_HASH_INFO) != NULL;
+}
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_hash_info_api_tag(const vscf_hash_info_api_t *hash_info_api) {
+
+    VSCF_ASSERT_PTR (hash_info_api);
+
+    return hash_info_api->api_tag;
+}
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_hash_info_impl_tag(const vscf_hash_info_api_t *hash_info_api) {
+
+    VSCF_ASSERT_PTR (hash_info_api);
+
+    return hash_info_api->impl_tag;
 }
 
 

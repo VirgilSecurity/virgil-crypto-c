@@ -83,7 +83,7 @@ vsc_buffer_ctx_size(void);
 //
 //  Perform initialization of pre-allocated context.
 //
-VSC_PUBLIC vsc_error_t
+VSC_PUBLIC void
 vsc_buffer_init(vsc_buffer_t *buffer_ctx);
 
 //
@@ -116,14 +116,15 @@ vsc_buffer_delete(vsc_buffer_t *buffer_ctx);
 //  This is a reverse action of the function 'vsc_buffer_new ()'.
 //
 VSC_PUBLIC void
-vsc_buffer_destroy(vsc_buffer_t * *buffer_ctx_ref);
+vsc_buffer_destroy(vsc_buffer_t **buffer_ctx_ref);
 
 //
 //  Allocates inner buffer with a given capacity.
 //  Precondition: buffer is initialized.
 //  Precondition: buffer does not hold any bytes.
+//  Postcondition: inner buffer is allocated.
 //
-VSC_PUBLIC vsc_error_t
+VSC_PUBLIC void
 vsc_buffer_alloc(vsc_buffer_t *buffer_ctx, size_t capacity);
 
 //
@@ -145,28 +146,58 @@ VSC_PUBLIC void
 vsc_buffer_take(vsc_buffer_t *buffer_ctx, byte *bytes, size_t bytes_len, vsc_dealloc_fn dealloc_cb);
 
 //
+//  Returns true if buffer full.
+//
+VSC_PUBLIC bool
+vsc_buffer_is_full(const vsc_buffer_t *buffer_ctx);
+
+//
+//  Returns true if buffer is configured and has valid internal states.
+//
+VSC_PUBLIC bool
+vsc_buffer_is_valid(const vsc_buffer_t *buffer_ctx);
+
+//
 //  Returns underlying buffer bytes.
 //
 VSC_PUBLIC const byte *
-vsc_buffer_bytes(vsc_buffer_t *buffer_ctx);
+vsc_buffer_bytes(const vsc_buffer_t *buffer_ctx);
 
 //
 //  Returns underlying buffer bytes as object.
 //
 VSC_PUBLIC vsc_data_t
-vsc_buffer_data(vsc_buffer_t *buffer_ctx);
+vsc_buffer_data(const vsc_buffer_t *buffer_ctx);
 
 //
 //  Returns buffer capacity.
 //
 VSC_PUBLIC size_t
-vsc_buffer_capacity(vsc_buffer_t *buffer_ctx);
+vsc_buffer_capacity(const vsc_buffer_t *buffer_ctx);
 
 //
 //  Returns buffer length - length of bytes actually used.
 //
 VSC_PUBLIC size_t
-vsc_buffer_len(vsc_buffer_t *buffer_ctx);
+vsc_buffer_len(const vsc_buffer_t *buffer_ctx);
+
+//
+//  Returns length of left bytes - bytes that are not in use yet.
+//
+VSC_PUBLIC size_t
+vsc_buffer_left(const vsc_buffer_t *buffer_ctx);
+
+//
+//  Returns pointer to the current wirte position.
+//
+VSC_PUBLIC byte *
+vsc_buffer_ptr(vsc_buffer_t *buffer_ctx);
+
+//
+//  Increase used bytes by given length.
+//
+VSC_PUBLIC void
+vsc_buffer_reserve(vsc_buffer_t *buffer_ctx, size_t len);
 
 
 // --------------------------------------------------------------------------

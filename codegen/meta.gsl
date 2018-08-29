@@ -138,6 +138,7 @@ function _X17_add_entity_common (meta)
 
         _X17_add_smart_name (entity, "struct", "info")
         _X17_add_smart_name (entity, "property", "info")
+        _X17_add_name (entity, "property ref counter", "refcnt")
 
         _X17_add_smart_name (entity, "method", "cleanup")
         _X17_add_smart_name (entity, "method", "delete")
@@ -148,6 +149,7 @@ function _X17_add_entity_common (meta)
         _X17_add_smart_name (entity, "method", "take")
         _X17_add_smart_name (entity, "method", "init ctx")
         _X17_add_smart_name (entity, "method", "cleanup ctx")
+        _X17_add_smart_name (entity, "method", "copy")
 
         _X17_add_smart_name (entity, "enum", "tag")
         _X17_add_smart_name (entity, "enum constant", "begin")
@@ -173,13 +175,14 @@ function _X17_add_entity_api (meta)
         .is_active = 1
 
         _X17_add_smart_linked_name (entity, "class", "api")
-        _X17_add_smart_linked_name (entity, "method", "api")
-        _X17_add_smart_linked_name (entity, "struct", "api")
         _X17_add_smart_linked_name (entity, "module", "api")
         _X17_add_smart_linked_name (entity, "module", "api private")
-        _X17_add_smart_linked_name (entity, "argument", "api tag")
-        _X17_add_smart_linked_name (entity, "property", "api tag")
-        _X17_add_smart_linked_name (entity, "property", "api array")
+
+        _X17_add_smart_name (entity, "method", "api")
+        _X17_add_smart_name (entity, "struct", "api")
+        _X17_add_smart_name (entity, "argument", "api tag")
+        _X17_add_smart_name (entity, "property", "api tag")
+        _X17_add_smart_name (entity, "property", "api array")
 
         _X17_add_smart_link (entity, "class api struct api")
         _X17_add_smart_link (entity, "class api enum tag")
@@ -207,12 +210,13 @@ function _X17_add_entity_impl (meta)
         .is_active = 1
 
         _X17_add_smart_linked_name (entity, "class", "impl")
-        _X17_add_smart_linked_name (entity, "struct", "impl")
-        _X17_add_smart_linked_name (entity, "type", "impl")
         _X17_add_smart_linked_name (entity, "module", "impl")
         _X17_add_smart_linked_name (entity, "module", "impl private")
-        _X17_add_smart_linked_name (entity, "argument", "impl")
-        _X17_add_smart_linked_name (entity, "property", "impl tag")
+
+        _X17_add_smart_name (entity, "struct", "impl")
+        _X17_add_smart_name (entity, "type", "impl")
+        _X17_add_smart_name (entity, "argument", "impl")
+        _X17_add_smart_name (entity, "property", "impl tag")
 
         _X17_add_smart_name (entity, "method", "impl")
         _X17_add_smart_name (entity, "method", "impl size")
@@ -224,6 +228,9 @@ function _X17_add_entity_impl (meta)
         _X17_add_smart_link (entity, "class impl struct impl")
         _X17_add_smart_link (entity, "class impl struct info")
 
+        _X17_add_smart_link (entity, "class impl enum tag")
+        _X17_add_smart_link (entity, "class impl enum tag constant begin")
+        _X17_add_smart_link (entity, "class impl enum tag constant end")
         return entity
     endnew
 endfunction
@@ -264,13 +271,24 @@ function _X17_add_entity_interface (meta, interface)
         _X17_add_name (entity, "interface struct api", my.api_name)
         _X17_add_link (entity, "interface struct api", make_id ("class", my.api_name, "struct", my.api_name))
 
-        #   Inherited interface
-        for my.interface.inherit
-            my.inherit_api_name = cat (inherit.interface, "api")
+        _X17_add_link (entity, "interface property api tag", \
+                make_id ("class", my.api_name, "struct", my.api_name, "property api tag"))
 
-            _X17_add_smart_linked_name (entity, "property inherited", my.inherit_api_name)
-            _X17_add_link (entity, "class inherited $(my.inherit_api_name) ", \
-                    make_id ("class", my.inherit_api_name, "struct", my.inherit_api_name))
+        _X17_add_link (entity, "interface property impl tag", \
+                make_id ("class", my.api_name, "struct", my.api_name, "property impl tag"))
+
+        #   Inherited interface
+        for my.interface.inherit as inherited
+            my.inherited_interface_name = cat (inherited.interface, "api")
+
+            _X17_add_name (entity, "interface property inherited $(inherited.interface)", my.inherited_interface_name)
+            _X17_add_name (entity, "interface method inherited $(inherited.interface)", my.inherited_interface_name)
+
+            _X17_add_link (entity, "interface property inherited $(inherited.interface) ", \
+                    make_id ("class", my.api_name, "struct", my.api_name, "property", my.inherited_interface_name))
+
+            _X17_add_link (entity, "interface class inherited $(inherited.interface) ", \
+                    make_id ("class", my.inherited_interface_name, "struct", my.inherited_interface_name))
         endfor
 
         #   Constants
@@ -367,7 +385,17 @@ function _X17_add_entity_implementation (meta, implementation)
             _X17_add_link (entity, "implementation property $(dependency.name)", \
                     make_id ("class", my.name, "struct", "impl", "property", dependency.name))
 
-            if dependency.type = "impl"
+            if dependency.type = "api"
+                _X17_add_name (entity, "implementation method use $(dependency.interface)", \
+                        cat ("use", dependency.interface, "api"))
+
+                _X17_add_link (entity, "implementation method use $(dependency.interface)", \
+                        make_id ("class", my.name, "method", "use", dependency.interface, "api"))
+
+                _X17_add_link (entity, "implementation dependency class $(dependency.interface)", \
+                        make_id ("class", dependency.interface, "api", "struct", dependency.interface, "api"))
+
+            elsif dependency.type = "impl"
                 _X17_add_name (entity, "implementation property is owning $(dependency.name)", \
                     cat ("is owning", dependency.name))
 
@@ -375,27 +403,20 @@ function _X17_add_entity_implementation (meta, implementation)
                         make_id ("class", my.name, "struct", "impl", "property", "is owning", dependency.name))
 
 
-                if dependency.type = "api"
-                    _X17_add_name (entity, "implementation method use $(dependency.interface)", \
-                            cat ("use", dependency.interface, "api"))
+                _X17_add_name (entity, "implementation method use $(dependency.interface)", \
+                        cat ("use", dependency.interface))
 
-                    _X17_add_link (entity, "implementation method use $(dependency.interface)", \
-                            make_id ("class", my.name, "method", "use", dependency.interface, "api"))
+                _X17_add_link (entity, "implementation method use $(dependency.interface)", \
+                        make_id ("class", my.name, "method", "use", dependency.interface))
 
-                elsif dependency.type = "impl"
-                    _X17_add_name (entity, "implementation method use $(dependency.interface)", \
-                            cat ("use", dependency.interface))
+                _X17_add_name (entity, "implementation method take $(dependency.interface)", \
+                        cat ("take", dependency.interface))
 
-                    _X17_add_link (entity, "implementation method use $(dependency.interface)", \
-                            make_id ("class", my.name, "method", "use", dependency.interface))
+                _X17_add_link (entity, "implementation method take $(dependency.interface)", \
+                        make_id ("class", my.name, "method", "take", dependency.interface))
 
-                    _X17_add_name (entity, "implementation method take $(dependency.interface)", \
-                            cat ("take", dependency.interface))
-
-                    _X17_add_link (entity, "implementation method take $(dependency.interface)", \
-                            make_id ("class", my.name, "method", "take", dependency.interface))
-                endif
-
+                _X17_add_link (entity, "implementation dependency class $(dependency.interface)", \
+                        make_id ("class impl struct impl"))
             endif
         endfor
 

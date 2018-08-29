@@ -75,6 +75,39 @@ vscf_cipher_auth_api(vscf_impl_t *impl) {
 }
 
 //
+//  Return cipher auth info API.
+//
+VSCF_PUBLIC const vscf_cipher_auth_info_api_t *
+vscf_cipher_auth_cipher_auth_info_api(const vscf_cipher_auth_api_t *cipher_auth_api) {
+
+    VSCF_ASSERT_PTR (cipher_auth_api);
+
+    return cipher_auth_api->cipher_auth_info_api;
+}
+
+//
+//  Return auth encrypt API.
+//
+VSCF_PUBLIC const vscf_auth_encrypt_api_t *
+vscf_cipher_auth_auth_encrypt_api(const vscf_cipher_auth_api_t *cipher_auth_api) {
+
+    VSCF_ASSERT_PTR (cipher_auth_api);
+
+    return cipher_auth_api->auth_encrypt_api;
+}
+
+//
+//  Return auth decrypt API.
+//
+VSCF_PUBLIC const vscf_auth_decrypt_api_t *
+vscf_cipher_auth_auth_decrypt_api(const vscf_cipher_auth_api_t *cipher_auth_api) {
+
+    VSCF_ASSERT_PTR (cipher_auth_api);
+
+    return cipher_auth_api->auth_decrypt_api;
+}
+
+//
 //  Check if given object implements interface 'cipher auth'.
 //
 VSCF_PUBLIC bool
@@ -83,6 +116,28 @@ vscf_cipher_auth_is_implemented(vscf_impl_t *impl) {
     VSCF_ASSERT_PTR (impl);
 
     return vscf_impl_api (impl, vscf_api_tag_CIPHER_AUTH) != NULL;
+}
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_cipher_auth_api_tag(const vscf_cipher_auth_api_t *cipher_auth_api) {
+
+    VSCF_ASSERT_PTR (cipher_auth_api);
+
+    return cipher_auth_api->api_tag;
+}
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_cipher_auth_impl_tag(const vscf_cipher_auth_api_t *cipher_auth_api) {
+
+    VSCF_ASSERT_PTR (cipher_auth_api);
+
+    return cipher_auth_api->impl_tag;
 }
 
 

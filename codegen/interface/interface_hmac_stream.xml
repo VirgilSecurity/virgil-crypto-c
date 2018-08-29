@@ -2,7 +2,7 @@
     Provides interface to the hmac (messege digest) algorithms.
 
     <inherit interface="hmac info" />
-    
+
     <method name="reset">
         Reset HMAC.
     </method>
@@ -27,7 +27,7 @@
         Accompilsh HMAC and return it's result (a message digest).
 
         <argument name="hmac" type="data" access="writeonly">
-            <array length="known" length_constant="hash info digest size" />
+            <array length="known" length_constant="hash info digest len"/>
         </argument>
 
         <argument name="hmac len" type="size"/>

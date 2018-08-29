@@ -76,7 +76,7 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
-    vscf_sha224_DIGEST_SIZE = 28
+    vscf_sha224_DIGEST_LEN = 28
 };
 
 //
@@ -99,14 +99,14 @@ vscf_sha224_impl(vscf_sha224_impl_t *sha224_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_sha224_init(vscf_sha224_impl_t *sha224_impl);
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha224_init ()'.
-//  All dependencies that is not under ownership will be cleaned up.
+//  This is a reverse action of the function 'vscf_sha224_init()'.
 //  All dependencies that is under ownership will be destroyed.
+//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_sha224_cleanup(vscf_sha224_impl_t *sha224_impl);
@@ -120,7 +120,7 @@ vscf_sha224_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha224_new ()'.
+//  This is a reverse action of the function 'vscf_sha224_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
@@ -129,13 +129,20 @@ vscf_sha224_delete(vscf_sha224_impl_t *sha224_impl);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha224_new ()'.
+//  This is a reverse action of the function 'vscf_sha224_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_sha224_destroy(vscf_sha224_impl_t * *sha224_impl_ref);
+vscf_sha224_destroy(vscf_sha224_impl_t **sha224_impl_ref);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_sha224_impl_t *
+vscf_sha224_copy(vscf_sha224_impl_t *sha224_impl);
 
 //
 //  Returns instance of the implemented interface 'hash info'.

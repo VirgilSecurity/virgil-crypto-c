@@ -90,14 +90,14 @@ vscf_kdf2_impl(vscf_kdf2_impl_t *kdf2_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_kdf2_init(vscf_kdf2_impl_t *kdf2_impl);
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_kdf2_init ()'.
-//  All dependencies that is not under ownership will be cleaned up.
+//  This is a reverse action of the function 'vscf_kdf2_init()'.
 //  All dependencies that is under ownership will be destroyed.
+//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_kdf2_cleanup(vscf_kdf2_impl_t *kdf2_impl);
@@ -111,7 +111,7 @@ vscf_kdf2_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_kdf2_new ()'.
+//  This is a reverse action of the function 'vscf_kdf2_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
@@ -120,13 +120,20 @@ vscf_kdf2_delete(vscf_kdf2_impl_t *kdf2_impl);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_kdf2_new ()'.
+//  This is a reverse action of the function 'vscf_kdf2_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_kdf2_destroy(vscf_kdf2_impl_t * *kdf2_impl_ref);
+vscf_kdf2_destroy(vscf_kdf2_impl_t **kdf2_impl_ref);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_kdf2_impl_t *
+vscf_kdf2_copy(vscf_kdf2_impl_t *kdf2_impl);
 
 //
 //  Setup dependency to the interface 'hash stream' and keep ownership.
@@ -138,7 +145,7 @@ vscf_kdf2_use_hash_stream(vscf_kdf2_impl_t *kdf2_impl, vscf_impl_t *hash);
 //  Setup dependency to the interface 'hash stream' and transfer ownership.
 //
 VSCF_PUBLIC void
-vscf_kdf2_take_hash_stream(vscf_kdf2_impl_t *kdf2_impl, vscf_impl_t * *hash_ref);
+vscf_kdf2_take_hash_stream(vscf_kdf2_impl_t *kdf2_impl, vscf_impl_t **hash_ref);
 
 //
 //  Calculate hash over given data.

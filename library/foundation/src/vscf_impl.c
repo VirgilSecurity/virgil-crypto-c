@@ -132,7 +132,7 @@ vscf_impl_delete(vscf_impl_t *impl) {
 //  Destroy implementation object and it's dependencies.
 //
 VSCF_PUBLIC void
-vscf_impl_destroy(vscf_impl_t * *impl_ref) {
+vscf_impl_destroy(vscf_impl_t **impl_ref) {
 
     VSCF_ASSERT_PTR (impl_ref);
 
@@ -140,6 +140,20 @@ vscf_impl_destroy(vscf_impl_t * *impl_ref) {
     *impl_ref = NULL;
 
     vscf_impl_delete (impl);
+}
+
+//
+//  Copy implementation object by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_impl_copy(vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    ++impl->refcnt;
+
+    return impl;
 }
 
 

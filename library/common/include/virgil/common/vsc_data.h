@@ -84,16 +84,22 @@ struct vsc_data_t {
 typedef struct vsc_data_t vsc_data_t;
 
 //
-//  Return size of 'vsc_data_t'.
+//  Returns true if underlying byte array is defined.
 //
-VSC_PUBLIC size_t
-vsc_data_ctx_size(void);
+VSC_PUBLIC bool
+vsc_data_is_valid(vsc_data_t data_ctx);
 
 //
 //  Creates data from the preallocated bytes.
 //
 VSC_PUBLIC vsc_data_t
 vsc_data(const byte *bytes, size_t len);
+
+//
+//  Creates emty data.
+//
+VSC_PUBLIC vsc_data_t
+vsc_data_empty(void);
 
 
 // --------------------------------------------------------------------------

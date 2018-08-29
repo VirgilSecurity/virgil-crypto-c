@@ -51,6 +51,13 @@ option(MBEDTLS_CIPHER_C "" ON)
 option(MBEDTLS_AES_C "" ON)
 option(MBEDTLS_GCM_C "" ON)
 option(MBEDTLS_MD_C "" ON)
+option(MBEDTLS_BIGNUM_C "" ON)
+option(MBEDTLS_PKCS1_V21 "" ON)
+option(MBEDTLS_OID_C "" ON)
+option(MBEDTLS_ASN1_PARSE_C "" ON)
+option(MBEDTLS_ASN1_WRITE_C "" ON)
+option(MBEDTLS_GENPRIME "" ON)
+option(MBEDTLS_RSA_C "" ON)
 option(MBEDTLS_CTR_DRBG_C "" ON)
 option(MBEDTLS_ENTROPY_C "" ON)
 option(MBEDTLS_SHA256_ALT "" OFF)
@@ -64,6 +71,13 @@ mark_as_advanced(
         MBEDTLS_AES_C
         MBEDTLS_GCM_C
         MBEDTLS_MD_C
+        MBEDTLS_BIGNUM_C
+        MBEDTLS_PKCS1_V21
+        MBEDTLS_OID_C
+        MBEDTLS_ASN1_PARSE_C
+        MBEDTLS_ASN1_WRITE_C
+        MBEDTLS_GENPRIME
+        MBEDTLS_RSA_C
         MBEDTLS_CTR_DRBG_C
         MBEDTLS_ENTROPY_C
         MBEDTLS_SHA256_ALT
@@ -71,6 +85,42 @@ mark_as_advanced(
         MBEDTLS_AES_ALT
         MBEDTLS_GCM_ALT
         )
+
+if(MBEDTLS_RSA_C AND NOT MBEDTLS_BIGNUM_C)
+    message("-- error --")
+    message("--")
+    message("Feature MBEDTLS_RSA_C depends on the feature:")
+    message("     MBEDTLS_BIGNUM_C - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(MBEDTLS_RSA_C AND NOT MBEDTLS_OID_C)
+    message("-- error --")
+    message("--")
+    message("Feature MBEDTLS_RSA_C depends on the feature:")
+    message("     MBEDTLS_OID_C - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(MBEDTLS_RSA_C AND NOT MBEDTLS_PKCS1_V21)
+    message("-- error --")
+    message("--")
+    message("Feature MBEDTLS_RSA_C depends on the feature:")
+    message("     MBEDTLS_PKCS1_V21 - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(MBEDTLS_RSA_C AND NOT MBEDTLS_GENPRIME)
+    message("-- error --")
+    message("--")
+    message("Feature MBEDTLS_RSA_C depends on the feature:")
+    message("     MBEDTLS_GENPRIME - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
 
 if(MBEDTLS_CTR_DRBG_C AND NOT MBEDTLS_ENTROPY_C)
     message("-- error --")

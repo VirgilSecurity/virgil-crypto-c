@@ -120,7 +120,16 @@ function _L23_add_interface_api_type (interface, declaration, definition, destin
             .name = my.names.property_api_tag
             .enum = my.refs.class_api_enum_tag
             .value = my.refs.interface_constant_tag
-            .tag = "tag"
+            .tag = "api_tag"
+        endnew
+
+        new property to struct
+            . = "\
+            Implementation unique identifier, MUST be second in the structure.
+            "
+            .name = my.names.property_impl_tag
+            .enum = my.refs.class_impl_enum_tag
+            .tag = "impl_tag"
         endnew
 
         for my.interface.inherit
@@ -128,8 +137,8 @@ function _L23_add_interface_api_type (interface, declaration, definition, destin
 
             new property to struct
                 . = "Link to the inherited interface API '$(inherit.interface:)'."
-                .name = my.names.property_inherited_$(make_id (inherit.interface))_api
-                .class = my.refs.class_inherited_$(make_id (inherit.interface))_api
+                .name = my.names.interface_property_inherited_$(make_id (inherit.interface))
+                .class = my.refs.interface_class_inherited_$(make_id (inherit.interface))
                 .tag = "api"
             endnew
         endfor
@@ -207,7 +216,7 @@ function _L23_add_stateful_methods (interface, destination, meta)
 
         component_create_argument_impl (my.proxy_method, my.meta)
 
-        my.has_return = count (method.[return], defined (type) & type <> "nothing")
+        my.has_return = count (method.[return], ! string_in (0.type ?, "nothing"))
         my.callback = "$(my.api_name:)->$(c_format_callback_name (method.name))"
         my.callback_parameters = _L23_format_proxy_arguments (my.proxy_method, string_indent (my.callback, 1), ";")
 
@@ -242,7 +251,7 @@ function _L23_add_stateless_methods (interface, destination, meta)
         my.api_name = ".(_argument_$(my.names.c_interface_struct_api:))"
         my.api_type = my.refs.c_interface_struct_api
 
-        my.has_return = count (method.[return], defined (type) & type <> "nothing")
+        my.has_return = count (method.[return], ! string_in (0.type ?, "nothing"))
         my.callback = "$(my.api_name:)->$(c_format_callback_name (method.name))"
         my.callback_parameters = _L23_format_proxy_arguments (my.proxy_method, string_indent (my.callback, 1), ";")
 
@@ -331,6 +340,41 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
+#   Add method(s) that returns 'API' to the inherited interfaces.
+# ---------------------------------------------------------------------------
+function _L23_add_method_get_inherited_api (interface, destination, meta)
+    check_arguments (my, "interface, destination, meta")
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    for my.interface.inherit as inherited
+        new method to my.destination
+            . = "Return $(inherited.interface:) API."
+
+            .name = my.names.interface_method_inherited_$(make_id (inherited.interface))
+
+            interface_create_api_argument(my.interface, method, my.meta)
+
+            new return
+                .class = my.refs.interface_class_inherited_$(make_id (inherited.interface))
+            endnew
+
+            my.api_name = ".(_argument_$(my.names.c_interface_struct_api:))"
+
+            new code to method
+                . = "\
+                .(c_class_assert_macros_ptr) ($(my.api_name:));
+
+                return $(my.api_name:)->$(my.refs.c_interface_property_inherited_$(make_id (inherited.interface)));
+                "
+            endnew
+        endnew
+    endfor
+endfunction
+
+
+# ---------------------------------------------------------------------------
 #   Add method that check if 'API' is implemented.
 # ---------------------------------------------------------------------------
 function _L23_add_method_check_api (interface, destination, meta)
@@ -357,6 +401,72 @@ function _L23_add_method_check_api (interface, destination, meta)
             .(c_class_assert_macros_ptr) (.(_argument_impl));
 
             return .(c_class_impl_method_api) (.(_argument_impl), $(my.refs.c_interface_constant_tag)) != NULL;
+            "
+        endnew
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add method that returns interface unique identifier.
+# ---------------------------------------------------------------------------
+function _L23_add_method_get_api_tag (interface, destination, meta)
+    check_arguments (my, "interface. destination, meta")
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        . = "Returns interface unique identifier."
+        .name = my.names.property_api_tag
+
+
+        interface_create_api_argument (my.interface, method, my.meta)
+
+        new return to method
+            .enum = my.refs.class_api_enum_tag
+        endnew
+
+        my.api_name = ".(_argument_$(my.names.c_interface_struct_api:))"
+
+        new code to method
+            . = "\
+            .(c_class_assert_macros_ptr) ($(my.api_name:));
+
+            return $(my.api_name:)->$(my.refs.c_interface_property_api_tag);
+            "
+        endnew
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add method that returns implementation unique identifier.
+# ---------------------------------------------------------------------------
+function _L23_add_method_get_impl_tag (interface, destination, meta)
+    check_arguments (my, "interface. destination, meta")
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        . = "Returns implementation unique identifier."
+        .name = my.names.property_impl_tag
+
+
+        interface_create_api_argument (my.interface, method, my.meta)
+
+        new return to method
+            .enum = my.refs.class_impl_enum_tag
+        endnew
+
+        my.api_name = ".(_argument_$(my.names.c_interface_struct_api:))"
+
+        new code to method
+            . = "\
+            .(c_class_assert_macros_ptr) ($(my.api_name:));
+
+            return $(my.api_name:)->$(my.refs.c_interface_property_impl_tag);
             "
         endnew
     endnew
@@ -419,7 +529,10 @@ function c_module_interface_create_module_public (interface, destination, meta)
         _L23_add_stateless_methods (my.interface, module, my.meta)
         _L23_add_stateless_getters (my.interface, module, my.meta)
         _L23_add_method_get_api (my.interface, module, my.meta)
+        _L23_add_method_get_inherited_api (my.interface, module, my.meta)
         _L23_add_method_check_api (my.interface, module, my.meta)
+        _L23_add_method_get_api_tag (my.interface, module, my.meta)
+        _L23_add_method_get_impl_tag (my.interface, module, my.meta)
     endnew
 endfunction
 
