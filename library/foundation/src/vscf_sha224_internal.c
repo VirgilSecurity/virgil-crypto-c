@@ -188,10 +188,8 @@ vscf_sha224_init(vscf_sha224_impl_t *sha224_impl) {
 }
 
 //
-//  Cleanup implementation context and it's dependencies.
+//  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_sha224_init()'.
-//  All dependencies that is under ownership will be destroyed.
-//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_sha224_cleanup(vscf_sha224_impl_t *sha224_impl) {
@@ -227,8 +225,6 @@ vscf_sha224_new(void) {
 //
 //  Delete given implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_sha224_new()'.
-//  All dependencies that is not under ownership will be cleaned up.
-//  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
 vscf_sha224_delete(vscf_sha224_impl_t *sha224_impl) {
@@ -242,8 +238,6 @@ vscf_sha224_delete(vscf_sha224_impl_t *sha224_impl) {
 //
 //  Destroy given implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_sha224_new()'.
-//  All dependencies that is not under ownership will be cleaned up.
-//  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void

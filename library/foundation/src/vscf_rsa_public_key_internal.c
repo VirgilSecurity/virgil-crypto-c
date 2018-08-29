@@ -255,20 +255,12 @@ vscf_rsa_public_key_init(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
     rsa_public_key_impl->asn1wr = NULL;
 
-    rsa_public_key_impl->is_owning_random = false;
-
-    rsa_public_key_impl->is_owning_asn1rd = false;
-
-    rsa_public_key_impl->is_owning_asn1wr = false;
-
     vscf_rsa_public_key_init_ctx(rsa_public_key_impl);
 }
 
 //
-//  Cleanup implementation context and it's dependencies.
+//  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_rsa_public_key_init()'.
-//  All dependencies that is under ownership will be destroyed.
-//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_rsa_public_key_cleanup(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
@@ -279,43 +271,19 @@ vscf_rsa_public_key_cleanup(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
         return;
     }
 
-    //   Cleanup dependency: 'random'.
+    //   Release dependency: 'random'.
     if (rsa_public_key_impl->random) {
-
-        if (rsa_public_key_impl->is_owning_random) {
-            vscf_impl_destroy(&rsa_public_key_impl->random);
-
-        } else {
-            rsa_public_key_impl->random = NULL;
-        }
-
-        rsa_public_key_impl->is_owning_random = 0;
+        vscf_impl_destroy(&rsa_public_key_impl->random);
     }
 
-    //   Cleanup dependency: 'asn1rd'.
+    //   Release dependency: 'asn1rd'.
     if (rsa_public_key_impl->asn1rd) {
-
-        if (rsa_public_key_impl->is_owning_asn1rd) {
-            vscf_impl_destroy(&rsa_public_key_impl->asn1rd);
-
-        } else {
-            rsa_public_key_impl->asn1rd = NULL;
-        }
-
-        rsa_public_key_impl->is_owning_asn1rd = 0;
+        vscf_impl_destroy(&rsa_public_key_impl->asn1rd);
     }
 
-    //   Cleanup dependency: 'asn1wr'.
+    //   Release dependency: 'asn1wr'.
     if (rsa_public_key_impl->asn1wr) {
-
-        if (rsa_public_key_impl->is_owning_asn1wr) {
-            vscf_impl_destroy(&rsa_public_key_impl->asn1wr);
-
-        } else {
-            rsa_public_key_impl->asn1wr = NULL;
-        }
-
-        rsa_public_key_impl->is_owning_asn1wr = 0;
+        vscf_impl_destroy(&rsa_public_key_impl->asn1wr);
     }
 
     //   Release dependency: 'hash'.
@@ -348,8 +316,6 @@ vscf_rsa_public_key_new(void) {
 //
 //  Delete given implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_rsa_public_key_new()'.
-//  All dependencies that is not under ownership will be cleaned up.
-//  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
 vscf_rsa_public_key_delete(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
@@ -363,8 +329,6 @@ vscf_rsa_public_key_delete(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 //
 //  Destroy given implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_rsa_public_key_new()'.
-//  All dependencies that is not under ownership will be cleaned up.
-//  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
@@ -399,7 +363,7 @@ vscf_rsa_public_key_public_key_api(void) {
 }
 
 //
-//  Setup dependency to the interface 'hash' and keep ownership.
+//  Setup dependency to the interface 'hash' with shared ownership.
 //
 VSCF_PUBLIC void
 vscf_rsa_public_key_use_hash_api(vscf_rsa_public_key_impl_t *rsa_public_key_impl, const vscf_hash_api_t *hash) {
@@ -412,7 +376,7 @@ vscf_rsa_public_key_use_hash_api(vscf_rsa_public_key_impl_t *rsa_public_key_impl
 }
 
 //
-//  Setup dependency to the interface 'random' and keep ownership.
+//  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCF_PUBLIC void
 vscf_rsa_public_key_use_random(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *random) {
@@ -423,34 +387,27 @@ vscf_rsa_public_key_use_random(vscf_rsa_public_key_impl_t *rsa_public_key_impl, 
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
-    rsa_public_key_impl->random = random;
-
-    rsa_public_key_impl->is_owning_random = 0;
+    rsa_public_key_impl->random = vscf_impl_copy(random);
 }
 
 //
 //  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_take_random(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t **random_ref) {
+vscf_rsa_public_key_take_random(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *random) {
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
-    VSCF_ASSERT_PTR(random_ref);
-    VSCF_ASSERT_PTR(rsa_public_key_impl->random == NULL);
-
-    vscf_impl_t *random = *random_ref;
-    *random_ref = NULL;
     VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT_PTR(rsa_public_key_impl->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
     rsa_public_key_impl->random = random;
-
-    rsa_public_key_impl->is_owning_random = 1;
 }
 
 //
-//  Setup dependency to the interface 'asn1 reader' and keep ownership.
+//  Setup dependency to the interface 'asn1 reader' with shared ownership.
 //
 VSCF_PUBLIC void
 vscf_rsa_public_key_use_asn1_reader(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1rd) {
@@ -461,34 +418,27 @@ vscf_rsa_public_key_use_asn1_reader(vscf_rsa_public_key_impl_t *rsa_public_key_i
 
     VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1rd));
 
-    rsa_public_key_impl->asn1rd = asn1rd;
-
-    rsa_public_key_impl->is_owning_asn1rd = 0;
+    rsa_public_key_impl->asn1rd = vscf_impl_copy(asn1rd);
 }
 
 //
 //  Setup dependency to the interface 'asn1 reader' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_take_asn1_reader(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t **asn1rd_ref) {
+vscf_rsa_public_key_take_asn1_reader(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1rd) {
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
-    VSCF_ASSERT_PTR(asn1rd_ref);
-    VSCF_ASSERT_PTR(rsa_public_key_impl->asn1rd == NULL);
-
-    vscf_impl_t *asn1rd = *asn1rd_ref;
-    *asn1rd_ref = NULL;
     VSCF_ASSERT_PTR(asn1rd);
+    VSCF_ASSERT_PTR(rsa_public_key_impl->asn1rd == NULL);
 
     VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1rd));
 
     rsa_public_key_impl->asn1rd = asn1rd;
-
-    rsa_public_key_impl->is_owning_asn1rd = 1;
 }
 
 //
-//  Setup dependency to the interface 'asn1 writer' and keep ownership.
+//  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
 VSCF_PUBLIC void
 vscf_rsa_public_key_use_asn1_writer(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1wr) {
@@ -499,30 +449,23 @@ vscf_rsa_public_key_use_asn1_writer(vscf_rsa_public_key_impl_t *rsa_public_key_i
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1wr));
 
-    rsa_public_key_impl->asn1wr = asn1wr;
-
-    rsa_public_key_impl->is_owning_asn1wr = 0;
+    rsa_public_key_impl->asn1wr = vscf_impl_copy(asn1wr);
 }
 
 //
 //  Setup dependency to the interface 'asn1 writer' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_take_asn1_writer(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t **asn1wr_ref) {
+vscf_rsa_public_key_take_asn1_writer(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1wr) {
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
-    VSCF_ASSERT_PTR(asn1wr_ref);
-    VSCF_ASSERT_PTR(rsa_public_key_impl->asn1wr == NULL);
-
-    vscf_impl_t *asn1wr = *asn1wr_ref;
-    *asn1wr_ref = NULL;
     VSCF_ASSERT_PTR(asn1wr);
+    VSCF_ASSERT_PTR(rsa_public_key_impl->asn1wr == NULL);
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1wr));
 
     rsa_public_key_impl->asn1wr = asn1wr;
-
-    rsa_public_key_impl->is_owning_asn1wr = 1;
 }
 
 //

@@ -490,15 +490,6 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
                 my.property. ?= "Implementation specific context."
             endfor
         endfor
-
-        for my.impl.dependency where type = "impl"
-            new property to struct
-                . = "Ownership status of the dependency to the interface '$(dependency.interface:)'."
-                .name = my.names.implementation_property_is_owning_$(make_id (dependency.name))
-                .type = "boolean"
-                .bits = "1"
-            endnew
-        endfor
     endnew
 endfunction
 
@@ -618,15 +609,6 @@ function _Z19_add_method_init (impl, declaration, definition, destination, meta)
                 "
             endfor
 
-            for my.impl.dependency where type = "impl"
-                my.is_owning_dependency = my.refs.c_implementation_property_is_owning_$(make_id (dependency.name))
-
-                my.impl_init_dependencies += "\
-
-                    $(my.arg_impl)->$(my.is_owning_dependency) = false;
-                "
-            endfor
-
             if _Z19_has_underlying_context (my.impl)
                 my.impl_end = "\
                     $(my.refs.c_implementation_method_init_ctx)($(my.arg_impl));
@@ -658,10 +640,8 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
         .definition = my.definition
 
         . = "\
-        Cleanup implementation context and it's dependencies.
+        Cleanup implementation context and release dependencies.
         This is a reverse action of the function '$(my.refs.c_implementation_method_init)()'.
-        All dependencies that is under ownership will be destroyed.
-        All dependencies that is not under ownership will untouched.
         "
 
         _Z19_add_argument_impl (method, my.meta)
@@ -680,22 +660,13 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
 
             for my.impl.dependency where type = "impl"
                 my.dependency = my.refs.c_implementation_property_$(make_id (dependency.name))
-                my.is_owning_dependency = my.refs.c_implementation_property_is_owning_$(make_id (dependency.name))
 
                 my.impl_cleanup_dependencies ?= ""
                 my.impl_cleanup_dependencies += "\
 
-                    //   Cleanup dependency: '$(dependency.name)'.
+                    //   Release dependency: '$(dependency.name)'.
                     if ($(my.arg_impl)->$(my.dependency)) {
-
-                        if ($(my.arg_impl)->$(my.is_owning_dependency)) {
-                            .(c_class_impl_method_destroy)(&$(my.arg_impl)->$(my.dependency));
-
-                        } else {
-                            $(my.arg_impl)->$(my.dependency) = NULL;
-                        }
-
-                        $(my.arg_impl)->$(my.is_owning_dependency) = 0;
+                        .(c_class_impl_method_destroy)(&$(my.arg_impl)->$(my.dependency));
                     }
                 "
             endfor
@@ -788,8 +759,6 @@ function _Z19_add_method_delete (impl, declaration, definition, destination, met
         . = "\
         Delete given implementation context and it's dependencies.
         This is a reverse action of the function '$(my.refs.c_implementation_method_new)()'.
-        All dependencies that is not under ownership will be cleaned up.
-        All dependencies that is under ownership will be destroyed.
         "
 
         _Z19_add_argument_impl (method, my.meta)
@@ -822,8 +791,6 @@ function _Z19_add_method_destroy (impl, declaration, definition, destination, me
         . = "\
         Destroy given implementation context and it's dependencies.
         This is a reverse action of the function '$(my.refs.c_implementation_method_new)()'.
-        All dependencies that is not under ownership will be cleaned up.
-        All dependencies that is under ownership will be destroyed.
         Given reference is nullified.
         "
 
@@ -992,7 +959,7 @@ function _Z19_add_method_use_dependency (dependency, declaration, definition, de
 
     new method to my.destination
         . = "\
-        Setup dependency to the interface '$(my.dependency.interface:)' and keep ownership.
+        Setup dependency to the interface '$(my.dependency.interface:)' with shared ownership.
         "
         .name = my.names.implementation_method_use_$(make_id (dependency.interface))
         .definition = my.definition
@@ -1015,31 +982,20 @@ function _Z19_add_method_use_dependency (dependency, declaration, definition, de
             "
 
             if my.dependency.type = "impl"
-                my.impl_check_dependency_interface = "\
+                my.impl_setup_dependency = "\
                 .(c_class_assert_macros_assert)($(my.refs.c_interface_method_is_implemented)($(my.arg_dependency:)));
+
+                $(my.full_dependency) = .(c_class_impl_method_copy)($(my.arg_dependency));
                 "
-            endif
-
-            my.impl_setup_dependency = "\
-                $(my.full_dependency) = $(my.arg_dependency);
-            "
-
-            if my.dependency.type = "impl"
-                my.property_is_owning_dependency = \
-                        my.refs.c_implementation_property_is_owning_$(make_id (my.dependency.name))
-
-                my.is_owning_dependency = "$(my.arg_impl)->$(my.property_is_owning_dependency)"
-
-                my.impl_setup_dependency_ownage = "\
-                    $(my.is_owning_dependency) = 0;
+            else
+                my.impl_setup_dependency = "\
+                    $(my.full_dependency) = $(my.arg_dependency);
                 "
             endif
 
             my.method_body = ""
             my.method_body += format_left (my.impl_check_precondition) + terminator
-            my.method_body += format_left (my.impl_check_dependency_interface) + terminator ? ""
             my.method_body += format_left (my.impl_setup_dependency) + terminator
-            my.method_body += format_left (my.impl_setup_dependency_ownage) + terminator ? ""
 
             . = my.method_body
         endnew
@@ -1061,6 +1017,7 @@ function _Z19_add_method_take_dependency (dependency, declaration, definition, d
     new method to my.destination
         . = "\
         Setup dependency to the interface '$(my.dependency.interface)' and transfer ownership.
+        Note, transfer ownership does not mean that object is uniquely owned by the target object.
         "
         .name = my.names.implementation_method_take_$(make_id (dependency.interface))
         .definition = my.definition
@@ -1069,26 +1026,18 @@ function _Z19_add_method_take_dependency (dependency, declaration, definition, d
         my.arg_impl = _Z19_add_argument_impl (method, my.meta)
 
         my.argument = _Z19_add_dependency_argument (my.dependency, method, my.arg_impl, my.meta)
-        my.argument.access = "disown"
 
         new code to method
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
-            my.arg_dependency_ref = ".(_argument_$(make_id (my.dependency.name)))"
+            my.arg_dependency = ".(_argument_$(make_id (my.dependency.name)))"
             my.type_dependency = my.refs.c_class_impl_struct_impl
-            my.arg_dependency = make_id (my.dependency.name)
             my.property_dependency = my.refs.c_implementation_property_$(make_id (my.dependency.name))
             my.full_dependency = "$(my.arg_impl)->$(my.property_dependency:)"
 
             my.impl_check_precondition = "\
                 .(c_class_assert_macros_ptr)($(my.arg_impl));
-                .(c_class_assert_macros_ptr)($(my.arg_dependency_ref));
-                .(c_class_assert_macros_ptr)($(my.full_dependency:) == NULL);
-            "
-
-            my.impl_check_dependency = "\
-                $(my.type_dependency) *$(my.arg_dependency) = *$(my.arg_dependency_ref);
-                *$(my.arg_dependency_ref) = NULL;
                 .(c_class_assert_macros_ptr)($(my.arg_dependency:));
+                .(c_class_assert_macros_ptr)($(my.full_dependency:) == NULL);
             "
 
             if my.dependency.type = "impl"
@@ -1101,23 +1050,10 @@ function _Z19_add_method_take_dependency (dependency, declaration, definition, d
                 $(my.full_dependency:) = $(my.arg_dependency);
             "
 
-            if my.dependency.type = "impl"
-                my.property_is_owning_dependency = \
-                        my.refs.c_implementation_property_is_owning_$(make_id (my.dependency.name))
-
-                my.is_owning_dependency = "$(my.arg_impl)->$(my.property_is_owning_dependency)"
-
-                my.impl_setup_dependency_ownage = "\
-                    $(my.is_owning_dependency) = 1;
-                "
-            endif
-
             my.method_body = ""
             my.method_body += format_left (my.impl_check_precondition) + terminator
-            my.method_body += format_left (my.impl_check_dependency) + terminator
             my.method_body += format_left (my.impl_check_dependency_interface) + terminator ? ""
             my.method_body += format_left (my.impl_setup_dependency) + terminator
-            my.method_body += format_left (my.impl_setup_dependency_ownage) + terminator ? ""
 
             . = my.method_body
         endnew

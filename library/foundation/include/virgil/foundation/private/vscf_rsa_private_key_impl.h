@@ -116,18 +116,6 @@ struct vscf_rsa_private_key_impl_t {
     //  Implementation specific context.
     //
     size_t gen_exponent;
-    //
-    //  Ownership status of the dependency to the interface 'random'.
-    //
-    bool is_owning_random:1;
-    //
-    //  Ownership status of the dependency to the interface 'asn1 reader'.
-    //
-    bool is_owning_asn1rd:1;
-    //
-    //  Ownership status of the dependency to the interface 'asn1 writer'.
-    //
-    bool is_owning_asn1wr:1;
 };
 
 

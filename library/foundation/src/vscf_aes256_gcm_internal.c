@@ -327,10 +327,8 @@ vscf_aes256_gcm_init(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 }
 
 //
-//  Cleanup implementation context and it's dependencies.
+//  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_aes256_gcm_init()'.
-//  All dependencies that is under ownership will be destroyed.
-//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_aes256_gcm_cleanup(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
@@ -366,8 +364,6 @@ vscf_aes256_gcm_new(void) {
 //
 //  Delete given implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_aes256_gcm_new()'.
-//  All dependencies that is not under ownership will be cleaned up.
-//  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
 vscf_aes256_gcm_delete(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
@@ -381,8 +377,6 @@ vscf_aes256_gcm_delete(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 //
 //  Destroy given implementation context and it's dependencies.
 //  This is a reverse action of the function 'vscf_aes256_gcm_new()'.
-//  All dependencies that is not under ownership will be cleaned up.
-//  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
