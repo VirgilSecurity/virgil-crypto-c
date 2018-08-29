@@ -1,0 +1,9 @@
+<interface name="error context">
+    This interface force implementor to hold last error in the context.
+
+    <method name="error">
+        Return last occurred error.
+
+        <return type="error"/>
+    </method>
+</interface>

@@ -108,14 +108,14 @@ vscf_aes256_gcm_impl(vscf_aes256_gcm_impl_t *aes256_gcm_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_aes256_gcm_init(vscf_aes256_gcm_impl_t *aes256_gcm_impl);
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_aes256_gcm_init ()'.
-//  All dependencies that is not under ownership will be cleaned up.
+//  This is a reverse action of the function 'vscf_aes256_gcm_init()'.
 //  All dependencies that is under ownership will be destroyed.
+//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_aes256_gcm_cleanup(vscf_aes256_gcm_impl_t *aes256_gcm_impl);
@@ -129,7 +129,7 @@ vscf_aes256_gcm_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_aes256_gcm_new ()'.
+//  This is a reverse action of the function 'vscf_aes256_gcm_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
@@ -138,13 +138,20 @@ vscf_aes256_gcm_delete(vscf_aes256_gcm_impl_t *aes256_gcm_impl);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_aes256_gcm_new ()'.
+//  This is a reverse action of the function 'vscf_aes256_gcm_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_aes256_gcm_destroy(vscf_aes256_gcm_impl_t * *aes256_gcm_impl_ref);
+vscf_aes256_gcm_destroy(vscf_aes256_gcm_impl_t **aes256_gcm_impl_ref);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_aes256_gcm_impl_t *
+vscf_aes256_gcm_copy(vscf_aes256_gcm_impl_t *aes256_gcm_impl);
 
 //
 //  Returns instance of the implemented interface 'cipher info'.

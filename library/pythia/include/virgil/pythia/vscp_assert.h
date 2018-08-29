@@ -120,6 +120,17 @@ extern "C" {
     } while (false)
 
 //
+//  Assert that memory was successfully allocated.
+//  This macros is enabled by default and can be disabled by special macros.
+//
+#define VSCP_ASSERT_ALLOC(X)                                                     \
+    do {                                                                         \
+        if (!(X)) {                                                              \
+            vscp_assert_trigger ("No memory", VSCP_FILE_PATH_OR_NAME, __LINE__); \
+        }                                                                        \
+    } while (false)
+
+//
 //  Assertion handler callback type.
 //
 typedef void (*vscp_assert_handler_fn)(const char *message, const char *file, int line);

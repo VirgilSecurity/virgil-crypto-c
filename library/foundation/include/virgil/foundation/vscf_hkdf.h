@@ -90,14 +90,14 @@ vscf_hkdf_impl(vscf_hkdf_impl_t *hkdf_impl);
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_hkdf_init(vscf_hkdf_impl_t *hkdf_impl);
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hkdf_init ()'.
-//  All dependencies that is not under ownership will be cleaned up.
+//  This is a reverse action of the function 'vscf_hkdf_init()'.
 //  All dependencies that is under ownership will be destroyed.
+//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_hkdf_cleanup(vscf_hkdf_impl_t *hkdf_impl);
@@ -111,7 +111,7 @@ vscf_hkdf_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hkdf_new ()'.
+//  This is a reverse action of the function 'vscf_hkdf_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
@@ -120,13 +120,20 @@ vscf_hkdf_delete(vscf_hkdf_impl_t *hkdf_impl);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hkdf_new ()'.
+//  This is a reverse action of the function 'vscf_hkdf_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_hkdf_destroy(vscf_hkdf_impl_t * *hkdf_impl_ref);
+vscf_hkdf_destroy(vscf_hkdf_impl_t **hkdf_impl_ref);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_hkdf_impl_t *
+vscf_hkdf_copy(vscf_hkdf_impl_t *hkdf_impl);
 
 //
 //  Setup dependency to the interface 'hmac stream' and keep ownership.
@@ -138,7 +145,7 @@ vscf_hkdf_use_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hmac);
 //  Setup dependency to the interface 'hmac stream' and transfer ownership.
 //
 VSCF_PUBLIC void
-vscf_hkdf_take_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t * *hmac_ref);
+vscf_hkdf_take_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t **hmac_ref);
 
 //
 //  Calculate hash over given data.

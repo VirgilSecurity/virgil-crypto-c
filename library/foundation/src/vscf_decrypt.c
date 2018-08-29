@@ -112,6 +112,28 @@ vscf_decrypt_is_implemented(vscf_impl_t *impl) {
     return vscf_impl_api (impl, vscf_api_tag_DECRYPT) != NULL;
 }
 
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_decrypt_api_tag(const vscf_decrypt_api_t *decrypt_api) {
+
+    VSCF_ASSERT_PTR (decrypt_api);
+
+    return decrypt_api->api_tag;
+}
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_decrypt_impl_tag(const vscf_decrypt_api_t *decrypt_api) {
+
+    VSCF_ASSERT_PTR (decrypt_api);
+
+    return decrypt_api->impl_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

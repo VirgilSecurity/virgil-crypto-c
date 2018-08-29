@@ -78,13 +78,51 @@ enum vscf_error_t {
     //
     vscf_error_BAD_ARGUMENTS = -1,
     //
-    //  Memory allocation failed.
+    //  Can be used to define that not all context prerequisites are satisfied.
+    //  Note, this error should not be returned if assertions is enabled.
     //
-    vscf_error_NO_MEMORY = -100,
+    vscf_error_UNINITIALIZED = -2,
     //
-    //  Authentication failed during decryption
+    //  Define that error code from one of third-party module was not handled.
+    //  Note, this error should not be returned if assertions is enabled.
     //
-    vscf_error_AUTH_FAILED = -201
+    vscf_error_UNHANDLED_THIRDPARTY_ERROR = -3,
+    //
+    //  Buffer capacity is not enaugh to hold result.
+    //
+    vscf_error_SMALL_BUFFER = -101,
+    //
+    //  Authentication failed during decryption.
+    //
+    vscf_error_AUTH_FAILED = -201,
+    //
+    //  Attempt to read data out of buffer bounds.
+    //
+    vscf_error_OUT_OF_DATA = -202,
+    //
+    //  ASN.1 encoded data is corrupted.
+    //
+    vscf_error_BAD_ASN1 = -203,
+    //
+    //  ASN.1 representation of PKCS#1 public key is corrupted.
+    //
+    vscf_error_BAD_PKCS1_PUBLIC_KEY = -204,
+    //
+    //  ASN.1 representation of PKCS#1 private key is corrupted.
+    //
+    vscf_error_BAD_PKCS1_PRIVATE_KEY = -205,
+    //
+    //  Encrypted data is corrupted.
+    //
+    vscf_error_BAD_ENCRYPTED_DATA = -206,
+    //
+    //  Underlying random operation returns error.
+    //
+    vscf_error_RANDOM_FAILED = -207,
+    //
+    //  Generation of the private or secret key failed.
+    //
+    vscf_error_KEY_GENERATION_FAILED = -208
 };
 typedef enum vscf_error_t vscf_error_t;
 

@@ -67,6 +67,14 @@ function _C12_add_type_self (meta, destination)
             .name = my.names.property_api_tag
             .enum = my.refs.class_api_enum_tag
         endnew
+
+        new property
+            . = "\
+            Implementation unique identifier.
+            "
+            .name = my.names.property_impl_tag
+            .enum = my.refs.class_impl_enum_tag
+        endnew
     endnew
 endfunction
 
@@ -95,6 +103,10 @@ function c_module_api_private_create (meta, destination)
 
         new require
             .module = my.names.module_api
+        endnew
+
+        new require
+            .module = my.names.module_impl
         endnew
 
         _C12_add_type_self (my.meta, module)

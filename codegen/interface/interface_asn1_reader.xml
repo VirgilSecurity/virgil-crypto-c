@@ -1,0 +1,109 @@
+<interface name="asn1 reader">
+    Provides interface to the ASN.1 reader.
+    Note, that all "read" methods move reading position forward.
+    Note, that all "get" do not change reading position.
+
+
+
+    <method name="reset">
+        Reset all internal states and prepare to new ASN.1 reading operations.
+
+        <argument name="data" class="data"/>
+    </method>
+
+
+    <method name="error">
+        Return last error.
+
+        <return type="error"/>
+    </method>
+
+
+    <method name="get tag">
+        Get tag of the current ASN.1 element.
+
+        <return type="integer"/>
+    </method>
+
+
+    <method name="get len">
+        Get length of the current ASN.1 element.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="read tag">
+        Read ASN.1 type: TAG.
+        Return element length.
+
+        <argument name="tag" type="integer"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="read int">
+        Read ASN.1 type: INTEGER.
+
+        <return type="integer"/>
+    </method>
+
+
+    <method name="read bool">
+        Read ASN.1 type: BOOLEAN.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="read null">
+        Read ASN.1 type: NULL.
+    </method>
+
+
+    <method name="read octet str">
+        Read ASN.1 type: OCTET STRING.
+
+        <argument name="value" class="buffer"/>
+    </method>
+
+
+    <method name="read utf8 str">
+        Read ASN.1 type: UTF8String.
+
+        <argument name="value" class="buffer"/>
+    </method>
+
+
+    <method name="read oid">
+        Read ASN.1 type: OID.
+
+        <argument name="value" class="buffer"/>
+    </method>
+
+
+    <method name="read data">
+        Read raw data of given length.
+
+        <argument name="len" type="size"/>
+
+        <return class="data"/>
+    </method>
+
+
+    <method name="read sequence">
+        Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+        Return element length.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="read set">
+        Read ASN.1 type: CONSTRUCTED | SET.
+        Return element length.
+
+        <return type="size"/>
+    </method>
+</interface>

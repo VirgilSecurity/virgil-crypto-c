@@ -80,9 +80,13 @@ struct vscf_hmac_info_api_t {
     //
     vscf_api_tag_t api_tag;
     //
-    //  Size of the digest (hmac output).
+    //  Implementation unique identifier, MUST be second in the structure.
     //
-    size_t digest_size;
+    vscf_impl_tag_t impl_tag;
+    //
+    //  Size of the digest (hmac output) in bytes.
+    //
+    size_t digest_len;
 };
 
 

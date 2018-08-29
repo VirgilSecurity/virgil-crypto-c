@@ -88,6 +88,10 @@ struct vscf_auth_decrypt_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Decrypt given data.
     //  If 'tag' is not give, then it will be taken from the 'enc'.
     //

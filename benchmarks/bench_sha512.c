@@ -49,20 +49,20 @@
 
 void benchmark_sha512_native(void * data, size_t data_size)
 {
-    byte digest[vscf_sha512_DIGEST_SIZE] = { 0x00 };
+    byte digest[vscf_sha512_DIGEST_LEN] = { 0x00 };
 
-    vscf_sha512_hash(data, data_size, digest, vscf_sha512_DIGEST_SIZE);
+    vscf_sha512_hash(data, data_size, digest, vscf_sha512_DIGEST_LEN);
 }
 
 void benchmark_sha512_interface(void * data, size_t data_size)
 {
-    byte digest[vscf_sha512_DIGEST_SIZE] = { 0x00 };
+    byte digest[vscf_sha512_DIGEST_LEN] = { 0x00 };
 
     vscf_impl_t *impl = vscf_sha512_impl(vscf_sha512_new());
 
     vscf_hash_stream_start (impl);
     vscf_hash_stream_update (impl, data, data_size);
-    vscf_hash_stream_finish(impl, digest, vscf_sha512_DIGEST_SIZE);
+    vscf_hash_stream_finish(impl, digest, vscf_sha512_DIGEST_LEN);
 
     vscf_impl_destroy (&impl);
 }

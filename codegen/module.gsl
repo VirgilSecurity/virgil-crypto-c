@@ -52,6 +52,64 @@ gsl from "common.gsl"
 gsl from "component.gsl"
 
 
+function _K24_resolve_dependency_to_inner_class(instance, scope, module, source)
+    check_arguments (my, "instance, module, source", my)
+
+    my.class = my.source->class(class.name = my.instance.class) ?
+
+    if ! defined (my.class)
+        return
+    endif
+
+    my.instance.class = ref (make_id ("class", my.class.name, "struct", my.class.name))
+
+    my.require = my.module->require (string_equal(require.class ?, my.class.name)) ?
+
+    if ! defined (my.require)
+        new require to my.module
+            .class = my.class.name
+            .scope = my.scope ?
+        endnew
+    endif
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   If one of the module inner components refer to other module, then perform
+#   name resolution and add 'require' component.
+# ---------------------------------------------------------------------------
+function module_resolve_inner_dependencies (module, source)
+    check_arguments (my, "module, source", my)
+
+    for my.module.method
+        for method.argument where defined(0.class)
+            _K24_resolve_dependency_to_inner_class(argument, method.declaration, my.module, my.source)
+        endfor
+
+        for method.return where defined(0.class)
+            _K24_resolve_dependency_to_inner_class(return, method.declaration, my.module, my.source)
+        endfor
+    endfor
+
+    for my.module.callback
+        for callback.argument where defined(0.class)
+            _K24_resolve_dependency_to_inner_class(argument, callback.declaration, my.module, my.source)
+        endfor
+
+        for callback.return where defined(0.class)
+            _K24_resolve_dependency_to_inner_class(return, callback.declaration, my.module, my.source)
+        endfor
+    endfor
+
+    for my.module.struct
+        for struct.property where defined(0.class)
+            _K24_resolve_dependency_to_inner_class(property, struct.definition ? "private", my.module, my.source)
+        endfor
+    endfor
+endfunction
+
+
+
 # ---------------------------------------------------------------------------
 #   Resolve component: module.
 # ---------------------------------------------------------------------------
@@ -80,6 +138,10 @@ function foreach_module_resolve (source, project)
 
     for my.source.module
         module_resolve (module, my.project)
+    endfor
+
+    for my.source.module
+        module_resolve_inner_dependencies (module, my.source)
     endfor
 endfunction
 

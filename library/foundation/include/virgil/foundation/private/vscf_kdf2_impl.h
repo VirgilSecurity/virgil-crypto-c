@@ -82,6 +82,10 @@ struct vscf_kdf2_impl_t {
     //
     const vscf_impl_info_t *info;
     //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
     //  Dependency to the interface 'hash stream'.
     //
     vscf_impl_t *hash;

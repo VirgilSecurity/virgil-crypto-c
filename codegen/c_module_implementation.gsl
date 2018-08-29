@@ -94,8 +94,11 @@ function _Z19_add_instance_interface_api (impl, interface_api, destination, meta
             my.value = item_copy_to (property, variable, "value")
 
             scope my.value
-                if property.tag = "tag"
+                if property.tag = "api_tag"
                     .value = property.value #   Actually this attribute already there
+
+                elsif property.tag = "impl_tag"
+                    .value = my.refs.implementation_constant_tag
 
                 elsif property.tag = "api"
                     .value = my.refs.implementation_variable_$(make_id (property.name))
@@ -194,7 +197,7 @@ function _Z19_add_instance_impl_info (impl, source, destination, meta)
         for my.impl_info.property
             my.value = item_copy_to (property, variable, "value")
             scope my.value
-                if property.tag = "tag"
+                if property.tag = "impl_tag"
                     .value = my.refs.implementation_constant_tag
 
                 elsif property.tag = "api_array"
@@ -285,6 +288,10 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
         endnew
     endfor
 
+    for my.impl.require where has_one_of_attribute (require, "module, header, interface, class")
+        copy require to my.destination
+    endfor
+
     if _Z19_has_methods_with_context_impl (my.impl)
         new require to my.destination
             .module = my.names.implementation_module_impl
@@ -295,7 +302,6 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
             .module = my.names.implementation_module_internal
             .scope = "private"
         endnew
-
     endif
 endfunction
 
@@ -396,20 +402,19 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-function _Z19_add_dependency_argument (require, destination, after_argument, meta)
-    check_arguments (my, "require, destination, meta", my)
+function _Z19_add_dependency_argument (dependency, destination, after_argument, meta)
+    check_arguments (my, "dependency, destination, meta", my)
 
     my.refs = meta_refs (my.meta)
 
     my.argument = item_prepend_new ("argument", my.destination, my.after_argument)
 
     scope my.argument
-        .name = my.require.name
-        if my.require.type = "impl"
-            .class = my.refs.class_impl_struct_impl
+        .name = my.dependency.name
+        .class = my.refs.implementation_dependency_class_$(make_id (my.dependency.interface))
+        if my.dependency.type = "impl"
             .access = "readwrite"
-        elsif my.require.type = "api"
-            .class = ".($(make_id ("class", my.require.name, "struct", my.require.name)))"
+        elsif my.dependency.type = "api"
             .access = "readonly"
         endif
     endscope
@@ -452,6 +457,12 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
             . = "Compile-time known information about this implementation."
             .name = my.names.property_info
             .class = my.refs.class_impl_struct_info
+        endnew
+
+        new property to struct
+            . = "Reference counter."
+            .name = my.names.property_ref_counter
+            .type = "size"
         endnew
 
         for my.impl.dependency where type = "impl"
@@ -560,8 +571,8 @@ function _Z19_add_method_impl_type_cast (impl, declaration, definition, destinat
         my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
         new code to method
             . = "\
-            .(c_class_assert_macros_ptr) ($(my.arg_impl));
-            return (.(c_class_impl_struct_impl) *) ($(my.arg_impl));
+            .(c_class_assert_macros_ptr)($(my.arg_impl));
+            return (.(c_class_impl_struct_impl) *)($(my.arg_impl));
             "
         endnew
 
@@ -587,33 +598,45 @@ function _Z19_add_method_init (impl, declaration, definition, destination, meta)
 
         _Z19_add_argument_impl (method, my.meta)
 
-        new return to method
-            .type="error"
-        endnew
-
         new code to method
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
 
             my.impl_begin = "\
-                .(c_class_assert_macros_ptr) ($(my.arg_impl));
-                .(c_class_assert_macros_ptr) ($(my.arg_impl)->$(my.names.c_property_info:) == NULL);
+                .(c_class_assert_macros_ptr)($(my.arg_impl));
+                .(c_class_assert_macros_ptr)($(my.arg_impl)->$(my.names.c_property_info:) == NULL);
 
                 $(my.arg_impl)->$(my.names.c_property_info:) = &$(my.refs.c_implementation_variable_info);
             "
 
+            for my.impl.dependency
+                my.dependency = my.refs.c_implementation_property_$(make_id (dependency.name))
+
+                my.impl_init_dependencies ?= ""
+                my.impl_init_dependencies += "\
+
+                    $(my.arg_impl)->$(my.dependency) = NULL;
+                "
+            endfor
+
+            for my.impl.dependency where type = "impl"
+                my.is_owning_dependency = my.refs.c_implementation_property_is_owning_$(make_id (dependency.name))
+
+                my.impl_init_dependencies += "\
+
+                    $(my.arg_impl)->$(my.is_owning_dependency) = false;
+                "
+            endfor
+
             if _Z19_has_underlying_context (my.impl)
                 my.impl_end = "\
-                    return $(my.refs.c_implementation_method_init_ctx) ($(my.arg_impl));
-                "
-            else
-                my.impl_end = "\
-                    return .(c_global_enum_error_constant_success);
+                    $(my.refs.c_implementation_method_init_ctx)($(my.arg_impl));
                 "
             endif
 
             my.method_body = ""
             my.method_body += format_left (my.impl_begin) + terminator
-            my.method_body += format_left (my.impl_end) + terminator
+            my.method_body += format_left (my.impl_init_dependencies) + terminator ? ""
+            my.method_body += format_left (my.impl_end) + terminator ? ""
 
             . = my.method_body
         endnew
@@ -636,9 +659,9 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
 
         . = "\
         Cleanup implementation context and it's dependencies.
-        This is a reverse action of the function '$(my.refs.c_implementation_method_init) ()'.
-        All dependencies that is not under ownership will be cleaned up.
+        This is a reverse action of the function '$(my.refs.c_implementation_method_init)()'.
         All dependencies that is under ownership will be destroyed.
+        All dependencies that is not under ownership will untouched.
         "
 
         _Z19_add_argument_impl (method, my.meta)
@@ -647,7 +670,7 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
 
             my.impl_check_precondition = "\
-                .(c_class_assert_macros_ptr) ($(my.arg_impl));
+                .(c_class_assert_macros_ptr)($(my.arg_impl));
 
                 if ($(my.arg_impl)->$(my.names.c_property_info:) == NULL) {
                     return;
@@ -666,10 +689,9 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
                     if ($(my.arg_impl)->$(my.dependency)) {
 
                         if ($(my.arg_impl)->$(my.is_owning_dependency)) {
-                            .(c_class_impl_method_destroy) (&$(my.arg_impl)->$(my.dependency));
+                            .(c_class_impl_method_destroy)(&$(my.arg_impl)->$(my.dependency));
 
                         } else {
-                            .(c_class_impl_method_cleanup) ($(my.arg_impl)->$(my.dependency));
                             $(my.arg_impl)->$(my.dependency) = NULL;
                         }
 
@@ -693,7 +715,7 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
 
             if _Z19_has_underlying_context (my.impl)
                 my.impl_cleanup_ctx = "\
-                    $(my.refs.c_implementation_method_cleanup_ctx) ($(my.arg_impl));
+                    $(my.refs.c_implementation_method_cleanup_ctx)($(my.arg_impl));
                 "
             endif
 
@@ -738,15 +760,12 @@ function _Z19_add_method_new (impl, declaration, definition, destination, meta)
             my.arg_impl = my.names.c_implementation_argument_impl
 
             . = "\
-            $(my.type_impl) *$(my.arg_impl:) = ($(my.type_impl) *) .(c_global_method_alloc) (sizeof ($(my.type_impl)));
-            if (NULL == $(my.arg_impl:)) {
-                return NULL;
-            }
+            $(my.type_impl) *$(my.arg_impl:) = ($(my.type_impl) *) .(c_global_method_alloc)(sizeof ($(my.type_impl)));
+            .(c_class_assert_macros_alloc)($(my.arg_impl:));
 
-            if ($(my.refs.c_implementation_method_init) ($(my.arg_impl:)) != .(c_global_enum_error_constant_success)) {
-                .(c_global_method_dealloc)($(my.arg_impl:));
-                return NULL;
-            }
+            $(my.refs.c_implementation_method_init)($(my.arg_impl:));
+
+            $(my.arg_impl:)->$(my.names.c_property_ref_counter:) = 1;
 
             return $(my.arg_impl:);
             "
@@ -768,7 +787,7 @@ function _Z19_add_method_delete (impl, declaration, definition, destination, met
 
         . = "\
         Delete given implementation context and it's dependencies.
-        This is a reverse action of the function '$(my.refs.c_implementation_method_new) ()'.
+        This is a reverse action of the function '$(my.refs.c_implementation_method_new)()'.
         All dependencies that is not under ownership will be cleaned up.
         All dependencies that is under ownership will be destroyed.
         "
@@ -779,9 +798,9 @@ function _Z19_add_method_delete (impl, declaration, definition, destination, met
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
 
             . = "\
-            if ($(my.arg_impl)) {
-                $(my.refs.c_implementation_method_cleanup) ($(my.arg_impl));
-                .(c_global_method_dealloc) ($(my.arg_impl));
+            if ($(my.arg_impl) && (--$(my.arg_impl)->$(my.names.c_property_ref_counter) == 0)) {
+                $(my.refs.c_implementation_method_cleanup)($(my.arg_impl));
+                .(c_global_method_dealloc)($(my.arg_impl));
             }
             "
         endnew
@@ -802,7 +821,7 @@ function _Z19_add_method_destroy (impl, declaration, definition, destination, me
 
         . = "\
         Destroy given implementation context and it's dependencies.
-        This is a reverse action of the function '$(my.refs.c_implementation_method_new) ()'.
+        This is a reverse action of the function '$(my.refs.c_implementation_method_new)()'.
         All dependencies that is not under ownership will be cleaned up.
         All dependencies that is under ownership will be destroyed.
         Given reference is nullified.
@@ -816,17 +835,50 @@ function _Z19_add_method_destroy (impl, declaration, definition, destination, me
             my.type_impl = my.refs.c_implementation_struct_impl
 
             . = "\
-            .(c_class_assert_macros_ptr) ($(my.arg_impl_ref));
+            .(c_class_assert_macros_ptr)($(my.arg_impl_ref));
 
             $(my.type_impl) *$(my.arg_impl:) = *$(my.arg_impl_ref);
             *$(my.arg_impl_ref) = NULL;
 
-            $(my.refs.c_implementation_method_delete) ($(my.arg_impl:));
+            $(my.refs.c_implementation_method_delete)($(my.arg_impl:));
             "
         endnew
     endnew
 endfunction
 
+# ---------------------------------------------------------------------------
+function _Z19_add_method_copy (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        .name = my.names.method_destroy
+        .declaration = my.declaration
+        .definition = my.definition
+
+        . = "
+        Copy given implementation context by increasing reference counter.
+        If deep copy is required interface 'clonable' can be used.
+        "
+
+        .name = my.names.method_copy
+
+        _Z19_add_argument_impl (method, my.meta)
+        _Z19_add_return_impl (method, my.meta)
+
+        new code to method
+            my.arg_impl = my.names.c_implementation_argument_impl
+            my.type_impl = my.refs.c_implementation_struct_impl
+
+            . = "\
+            // Proxy to the parent implementation.
+            return ($(my.type_impl) *).(c_class_impl_method_copy)((.(c_class_impl_struct_impl) *)$(my.arg_impl));
+            "
+        endnew
+    endnew
+endfunction
 
 # ---------------------------------------------------------------------------
 function _Z19_add_lifecycle_methods (impl, declaration, definition, destination, meta)
@@ -837,6 +889,7 @@ function _Z19_add_lifecycle_methods (impl, declaration, definition, destination,
     _Z19_add_method_new (my.impl, my.declaration, my.definition, my.destination, my.meta)
     _Z19_add_method_delete (my.impl, my.declaration, my.definition, my.destination, my.meta)
     _Z19_add_method_destroy (my.impl, my.declaration, my.definition, my.destination, my.meta)
+    _Z19_add_method_copy (my.impl, my.declaration, my.definition, my.destination, my.meta)
 endfunction
 
 
@@ -854,10 +907,6 @@ function _Z19_add_method_init_ctx (impl, declaration, definition, destination, m
         .visibility = "private"
 
         _Z19_add_argument_impl (method, my.meta)
-
-        new return to method
-            .type="error"
-        endnew
     endnew
 endfunction
 
@@ -960,14 +1009,14 @@ function _Z19_add_method_use_dependency (dependency, declaration, definition, de
             my.full_dependency = "$(my.arg_impl)->$(my.property_dependency)"
 
             my.impl_check_precondition = "\
-                .(c_class_assert_macros_ptr) ($(my.arg_impl));
-                .(c_class_assert_macros_ptr) ($(my.arg_dependency));
-                .(c_class_assert_macros_ptr) ($(my.full_dependency) == NULL);
+                .(c_class_assert_macros_ptr)($(my.arg_impl));
+                .(c_class_assert_macros_ptr)($(my.arg_dependency));
+                .(c_class_assert_macros_ptr)($(my.full_dependency) == NULL);
             "
 
             if my.dependency.type = "impl"
                 my.impl_check_dependency_interface = "\
-                .(c_class_assert_macros_assert) ($(my.refs.c_interface_method_is_implemented) ($(my.arg_dependency:)));
+                .(c_class_assert_macros_assert)($(my.refs.c_interface_method_is_implemented)($(my.arg_dependency:)));
                 "
             endif
 
@@ -1031,20 +1080,20 @@ function _Z19_add_method_take_dependency (dependency, declaration, definition, d
             my.full_dependency = "$(my.arg_impl)->$(my.property_dependency:)"
 
             my.impl_check_precondition = "\
-                .(c_class_assert_macros_ptr) ($(my.arg_impl));
-                .(c_class_assert_macros_ptr) ($(my.arg_dependency_ref));
-                .(c_class_assert_macros_ptr) ($(my.full_dependency:) == NULL);
+                .(c_class_assert_macros_ptr)($(my.arg_impl));
+                .(c_class_assert_macros_ptr)($(my.arg_dependency_ref));
+                .(c_class_assert_macros_ptr)($(my.full_dependency:) == NULL);
             "
 
             my.impl_check_dependency = "\
                 $(my.type_dependency) *$(my.arg_dependency) = *$(my.arg_dependency_ref);
                 *$(my.arg_dependency_ref) = NULL;
-                .(c_class_assert_macros_ptr) ($(my.arg_dependency:));
+                .(c_class_assert_macros_ptr)($(my.arg_dependency:));
             "
 
             if my.dependency.type = "impl"
                 my.impl_check_dependency_interface = "\
-                .(c_class_assert_macros_assert) ($(my.refs.c_interface_method_is_implemented) ($(my.arg_dependency:)));
+                .(c_class_assert_macros_assert)($(my.refs.c_interface_method_is_implemented)($(my.arg_dependency:)));
                 "
             endif
 

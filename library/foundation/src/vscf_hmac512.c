@@ -74,23 +74,14 @@
 //
 //  Provides initialization of the implementation specific context.
 //
-VSCF_PRIVATE vscf_error_t
+VSCF_PRIVATE void
 vscf_hmac512_init_ctx(vscf_hmac512_impl_t *hmac512_impl) {
 
     mbedtls_md_init(&hmac512_impl->hmac_ctx);
     int result = mbedtls_md_setup(&hmac512_impl->hmac_ctx, mbedtls_md_info_from_type(MBEDTLS_MD_SHA512), 1);
 
-    switch (result) {
-    case 0:
-        return vscf_SUCCESS;
-
-    case MBEDTLS_ERR_MD_ALLOC_FAILED:
-        return vscf_error_NO_MEMORY;
-
-    default:
-        VSCF_ASSERT(result && "mbedtls error");
-        return vscf_error_BAD_ARGUMENTS;
-    }
+    VSCF_ASSERT_ALLOC(result != MBEDTLS_ERR_MD_ALLOC_FAILED);
+    VSCF_ASSERT(result == 0 && "unhandled mbedtls error");
 }
 
 //
@@ -108,7 +99,7 @@ vscf_hmac512_cleanup_ctx(vscf_hmac512_impl_t *hmac512_impl) {
 VSCF_PUBLIC void
 vscf_hmac512_hmac(const byte *key, size_t key_len, const byte *data, size_t data_len, byte *hmac, size_t hmac_len) {
 
-    VSCF_ASSERT_OPT(hmac_len >= vscf_hmac512_DIGEST_SIZE);
+    VSCF_ASSERT_OPT(hmac_len >= vscf_hmac512_DIGEST_LEN);
 
     mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA512), key, key_len, data, data_len, hmac);
 }
@@ -146,7 +137,7 @@ vscf_hmac512_update(vscf_hmac512_impl_t *hmac512_impl, const byte *data, size_t 
 VSCF_PUBLIC void
 vscf_hmac512_finish(vscf_hmac512_impl_t *hmac512_impl, byte *hmac, size_t hmac_len) {
 
-    VSCF_ASSERT_OPT(hmac_len >= vscf_hmac512_DIGEST_SIZE);
+    VSCF_ASSERT_OPT(hmac_len >= vscf_hmac512_DIGEST_LEN);
 
     mbedtls_md_hmac_finish(&hmac512_impl->hmac_ctx, hmac);
 }

@@ -100,10 +100,28 @@ VSCF_PUBLIC const vscf_hash_stream_api_t *
 vscf_hash_stream_api(vscf_impl_t *impl);
 
 //
+//  Return hash info API.
+//
+VSCF_PUBLIC const vscf_hash_info_api_t *
+vscf_hash_stream_hash_info_api(const vscf_hash_stream_api_t *hash_stream_api);
+
+//
 //  Check if given object implements interface 'hash stream'.
 //
 VSCF_PUBLIC bool
 vscf_hash_stream_is_implemented(vscf_impl_t *impl);
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_hash_stream_api_tag(const vscf_hash_stream_api_t *hash_stream_api);
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_hash_stream_impl_tag(const vscf_hash_stream_api_t *hash_stream_api);
 
 
 // --------------------------------------------------------------------------

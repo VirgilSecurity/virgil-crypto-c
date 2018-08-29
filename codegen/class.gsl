@@ -51,6 +51,7 @@
 gsl from "common.gsl"
 gsl from "component.gsl"
 gsl from "meta.gsl"
+gsl from "project_common.gsl"
 
 # ---------------------------------------------------------------------------
 #   Return class as shortened XML string with required attributes.
@@ -67,15 +68,6 @@ function class_dump (class)
     my.class_dump = "<$(name (my.class))$(my.class_info)/>"
 
     return my.class_dump
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Resolve attribute: method.context.
-# ---------------------------------------------------------------------------
-function _B18_resolve_method_attr_context (method, parent)
-    check_arguments (my, "method, parent", my)
-
-    my.method.context ?= "class"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -167,10 +159,9 @@ function class_resolve (class, project)
     class_resolve_attr_c_prefix (my.class, my.project)
     class_resolve_attr_project (my.class, my.project)
 
-    for my.class.method
-        _B18_resolve_method_attr_context (method, my.class)
-    endfor
+    project_common_resolve_dependecies_for (my.class)
 endfunction
+
 
 # ---------------------------------------------------------------------------
 #   Resolve all 'class' entries within 'source'
@@ -207,6 +198,18 @@ function class_create_feature (class, destination)
 
         for my.class.require where defined (0.feature)
             copy require to feature
+        endfor
+
+        for my.class.require where defined (0.class)
+            new require to feature
+                .feature = -1.class
+            endnew
+        endfor
+
+        for my.class.require where defined (0.interface)
+            new require to feature
+                .feature = -1.interface
+            endnew
         endfor
     endnew
 endfunction

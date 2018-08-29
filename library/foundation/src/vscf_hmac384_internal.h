@@ -73,7 +73,7 @@ extern "C" {
 //
 //  Provides initialization of the implementation specific context.
 //
-VSCF_PRIVATE vscf_error_t
+VSCF_PRIVATE void
 vscf_hmac384_init_ctx(vscf_hmac384_impl_t *hmac384_impl);
 
 //

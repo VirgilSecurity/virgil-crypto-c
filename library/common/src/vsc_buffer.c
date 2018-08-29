@@ -78,14 +78,9 @@ VSC_PUBLIC vsc_buffer_t *
 vsc_buffer_new(void) {
 
     vsc_buffer_t *buffer_ctx = (vsc_buffer_t *) vsc_alloc(sizeof (vsc_buffer_t));
-    if (NULL == buffer_ctx) {
-        return NULL;
-    }
+    VSC_ASSERT_ALLOC(buffer_ctx);
 
-    if (vsc_buffer_init(buffer_ctx) != vsc_SUCCESS) {
-        vsc_dealloc(buffer_ctx);
-        return NULL;
-    }
+    vsc_buffer_init(buffer_ctx);
 
     buffer_ctx->self_dealloc_cb = vsc_dealloc;
 
@@ -115,7 +110,7 @@ vsc_buffer_delete(vsc_buffer_t *buffer_ctx) {
 //  This is a reverse action of the function 'vsc_buffer_new ()'.
 //
 VSC_PUBLIC void
-vsc_buffer_destroy(vsc_buffer_t * *buffer_ctx_ref) {
+vsc_buffer_destroy(vsc_buffer_t **buffer_ctx_ref) {
 
     VSC_ASSERT_PTR(buffer_ctx_ref);
 
@@ -136,14 +131,12 @@ vsc_buffer_destroy(vsc_buffer_t * *buffer_ctx_ref) {
 //
 //  Perform initialization of pre-allocated context.
 //
-VSC_PUBLIC vsc_error_t
+VSC_PUBLIC void
 vsc_buffer_init(vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
 
     vsc_zeroize(buffer_ctx, sizeof(vsc_buffer_t));
-
-    return vsc_SUCCESS;
 }
 
 //
@@ -169,14 +162,9 @@ VSC_PUBLIC vsc_buffer_t *
 vsc_buffer_new_with_capacity(size_t capacity) {
 
     vsc_buffer_t *buffer_ctx = (vsc_buffer_t *)vsc_alloc(sizeof(vsc_buffer_t) + capacity);
-    if (NULL == buffer_ctx) {
-        return NULL;
-    }
+    VSC_ASSERT_ALLOC(buffer_ctx);
 
-    if (vsc_buffer_init(buffer_ctx) != vsc_SUCCESS) {
-        vsc_dealloc(buffer_ctx);
-        return NULL;
-    }
+    vsc_buffer_init(buffer_ctx);
 
     buffer_ctx->bytes = (byte *)(buffer_ctx) + sizeof(vsc_buffer_t);
     buffer_ctx->capacity = capacity;
@@ -190,8 +178,9 @@ vsc_buffer_new_with_capacity(size_t capacity) {
 //  Allocates inner buffer with a given capacity.
 //  Precondition: buffer is initialized.
 //  Precondition: buffer does not hold any bytes.
+//  Postcondition: inner buffer is allocated.
 //
-VSC_PUBLIC vsc_error_t
+VSC_PUBLIC void
 vsc_buffer_alloc(vsc_buffer_t *buffer_ctx, size_t capacity) {
 
     VSC_ASSERT_PTR(buffer_ctx);
@@ -199,15 +188,11 @@ vsc_buffer_alloc(vsc_buffer_t *buffer_ctx, size_t capacity) {
     VSC_ASSERT(NULL == buffer_ctx->bytes);
 
     buffer_ctx->bytes = (byte *)vsc_alloc(capacity);
-    if (NULL == buffer_ctx->bytes) {
-        return vsc_error_NO_MEMORY;
-    }
+    VSC_ASSERT_ALLOC(buffer_ctx->bytes);
 
     buffer_ctx->capacity = capacity;
     buffer_ctx->len = 0;
     buffer_ctx->bytes_dealloc_cb = vsc_dealloc;
-
-    return vsc_SUCCESS;
 }
 
 //
@@ -252,13 +237,36 @@ vsc_buffer_take(vsc_buffer_t *buffer_ctx, byte *bytes, size_t bytes_len, vsc_dea
 }
 
 //
+//  Returns true if buffer full.
+//
+VSC_PUBLIC bool
+vsc_buffer_is_full(const vsc_buffer_t *buffer_ctx) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
+
+    return buffer_ctx->len == buffer_ctx->capacity;
+}
+
+//
+//  Returns true if buffer is configured and has valid internal states.
+//
+VSC_PUBLIC bool
+vsc_buffer_is_valid(const vsc_buffer_t *buffer_ctx) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+
+    return (buffer_ctx->bytes != NULL) && (buffer_ctx->capacity > 0) && (buffer_ctx->len <= buffer_ctx->capacity);
+}
+
+//
 //  Returns underlying buffer bytes.
 //
 VSC_PUBLIC const byte *
-vsc_buffer_bytes(vsc_buffer_t *buffer_ctx) {
+vsc_buffer_bytes(const vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
-    VSC_ASSERT_PTR(buffer_ctx->bytes);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
 
     return buffer_ctx->bytes;
 }
@@ -267,10 +275,10 @@ vsc_buffer_bytes(vsc_buffer_t *buffer_ctx) {
 //  Returns underlying buffer bytes as object.
 //
 VSC_PUBLIC vsc_data_t
-vsc_buffer_data(vsc_buffer_t *buffer_ctx) {
+vsc_buffer_data(const vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
-    VSC_ASSERT_PTR(buffer_ctx->bytes);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
 
     return vsc_data(buffer_ctx->bytes, buffer_ctx->len);
 }
@@ -279,10 +287,10 @@ vsc_buffer_data(vsc_buffer_t *buffer_ctx) {
 //  Returns buffer capacity.
 //
 VSC_PUBLIC size_t
-vsc_buffer_capacity(vsc_buffer_t *buffer_ctx) {
+vsc_buffer_capacity(const vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
-    VSC_ASSERT_PTR(buffer_ctx->bytes);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
 
     return buffer_ctx->capacity;
 }
@@ -291,10 +299,47 @@ vsc_buffer_capacity(vsc_buffer_t *buffer_ctx) {
 //  Returns buffer length - length of bytes actually used.
 //
 VSC_PUBLIC size_t
-vsc_buffer_len(vsc_buffer_t *buffer_ctx) {
+vsc_buffer_len(const vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
-    VSC_ASSERT_PTR(buffer_ctx->bytes);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
 
     return buffer_ctx->len;
+}
+
+//
+//  Returns length of left bytes - bytes that are not in use yet.
+//
+VSC_PUBLIC size_t
+vsc_buffer_left(const vsc_buffer_t *buffer_ctx) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
+
+    return (size_t)(buffer_ctx->capacity - buffer_ctx->len);
+}
+
+//
+//  Returns pointer to the current wirte position.
+//
+VSC_PUBLIC byte *
+vsc_buffer_ptr(vsc_buffer_t *buffer_ctx) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
+    VSC_ASSERT(!vsc_buffer_is_full(buffer_ctx));
+
+    return buffer_ctx->bytes + buffer_ctx->len;
+}
+
+//
+//  Increase used bytes by given length.
+//
+VSC_PUBLIC void
+vsc_buffer_reserve(vsc_buffer_t *buffer_ctx, size_t len) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT(len <= vsc_buffer_left(buffer_ctx));
+
+    buffer_ctx->len += len;
 }

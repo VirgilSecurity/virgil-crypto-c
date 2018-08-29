@@ -55,6 +55,7 @@
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_api.h"
+#include "vscf_impl.h"
 //  @end
 
 
@@ -78,6 +79,10 @@ struct vscf_api_t {
     //  Interface unique identifier.
     //
     vscf_api_tag_t api_tag;
+    //
+    //  Implementation unique identifier.
+    //
+    vscf_impl_tag_t impl_tag;
 };
 
 

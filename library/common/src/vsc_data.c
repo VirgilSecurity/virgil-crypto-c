@@ -61,15 +61,6 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Return size of 'vsc_data_t'.
-//
-VSC_PUBLIC size_t
-vsc_data_ctx_size(void) {
-
-    return sizeof(vsc_data_t);
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -77,6 +68,15 @@ vsc_data_ctx_size(void) {
 // --------------------------------------------------------------------------
 //  @end
 
+
+//
+//  Returns true if underlying byte array is defined.
+//
+VSC_PUBLIC bool
+vsc_data_is_valid(vsc_data_t data_ctx) {
+
+    return data_ctx.bytes != NULL;
+}
 
 //
 //  Creates data from the preallocated bytes.
@@ -87,4 +87,13 @@ vsc_data(const byte *bytes, size_t len) {
     VSC_ASSERT_PTR(bytes);
 
     return (vsc_data_t){bytes, len};
+}
+
+//
+//  Creates emty data.
+//
+VSC_PUBLIC vsc_data_t
+vsc_data_empty(void) {
+
+    return (vsc_data_t){NULL, 0};
 }

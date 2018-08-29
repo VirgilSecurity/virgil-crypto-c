@@ -41,6 +41,7 @@
 # ---------------------------------------------------------------------------
 
 gsl from "common.gsl"
+gsl from "project_common.gsl"
 
 
 # ---------------------------------------------------------------------------
@@ -58,7 +59,7 @@ endfunction
 function interface_resolve_constant (constant, parent)
     check_arguments (my, "constant, parent", my)
 
-    #   Do nothing at this moment.
+    my.constant.type ?= "size"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -101,6 +102,8 @@ function interface_resolve (interface, project)
     for my.interface.method
         interface_resolve_method (method, my.interface)
     endfor
+
+    project_common_resolve_dependecies_for (my.interface)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -172,6 +175,10 @@ function interface_create_feature (interface, destination)
             new require to feature
                 .feature = inherit.interface
             endnew
+        endfor
+
+        for my.interface.require where defined (0.feature)
+            copy require to feature
         endfor
     endnew
 endfunction

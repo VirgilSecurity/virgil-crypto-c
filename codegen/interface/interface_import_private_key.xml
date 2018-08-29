@@ -1,0 +1,14 @@
+<interface name="import private key">
+    Provide interface for importing private key from the binary format.
+    Binary format must be defined in the key specification.
+    For instance, RSA private key must be imported from the format defined in
+    RFC 3447 Appendix A.1.2.
+
+    <method name="import private key">
+        Import private key from the binary format.
+
+        <argument name="data" class="data"/>
+
+        <return type="error"/>
+    </method>
+</interface>

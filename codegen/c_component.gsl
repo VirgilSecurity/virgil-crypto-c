@@ -559,8 +559,9 @@ function c_component_map_instance_attr_is_const (c_instance, instance)
     check_arguments (my, "c_instance, instance", my)
 
     if my.instance.access = "readonly" & (\
-            (defined (my.instance.class)) | \
             (count (my.instance.string)) | \
+            (defined (my.instance.class) & \
+                    (!item_in(my.instance, "argument, return") | is_true(my.instance.is_reference))) | \
             (defined (my.instance.type) & count (my.instance.array)) | \
             (defined (my.instance.enum) & count (my.instance.array)))
         my.c_instance.is_const_type = "1"
@@ -656,9 +657,27 @@ endfunction
 function c_component_create_include (require, destination)
     check_arguments (my, "require, destination", my)
 
+    if ! has_one_of_attribute (my.require, "module, header, interface, class")
+        return
+    endif
+
     new c_include to my.destination
-        .file = c_ref ("module_$(make_id (my.require.module))") + ".h"
-        .is_system = "0"
+        if defined (my.require.module)
+            .file = c_ref ("module_$(make_id (my.require.module))") + ".h"
+            .is_system = "0"
+
+        elsif defined (my.require.interface)
+            .file = c_ref ("module_$(make_id (my.require.interface))") + ".h"
+            .is_system = "0"
+
+        elsif defined (my.require.class)
+            .file = c_ref ("module_$(make_id (my.require.class))") + ".h"
+            .is_system = "0"
+
+        elsif defined (my.require.header)
+            .file = my.require.header
+            .is_system = "1"
+        endif
 
         c_component_resolve_include (c_include)
         c_component_map_attr_scope (c_include, my.require)

@@ -1,0 +1,16 @@
+<interface name="key">
+    Common information about asymmetric key.
+
+    <method name="key len">
+        Length of the key in bytes.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="key bitlen">
+        Length of the key in bits.
+
+        <return type="size"/>
+    </method>
+</interface>

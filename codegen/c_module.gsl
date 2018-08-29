@@ -46,6 +46,76 @@ gsl from "c_component.gsl"
 gsl from "c_formatter.gsl"
 
 
+function _X11_update_c_include_scope (c_include,c_instance, class_name, scope)
+    check_arguments (my, "c_include, c_instance, class_name, scope", my)
+
+    if ! string_in (my.c_instance.class ?, my.class_name)
+        return
+    endif
+
+    if my.c_include.scope = "public"
+        return
+    endif
+
+    if string_in (my.scope, "public, private")
+        my.c_include.scope = my.scope
+    endif
+endfunction
+
+
+function _X11_add_c_include_for_common_class (module, c_module, class_name)
+    check_arguments (my, "module, c_module, class_name", my)
+
+    new c_include to my.c_module
+        .file = "virgil/common/vsc_$(my.class_name:).h"
+        .is_system = "1"
+        .scope = "none"
+
+        my.c_include = c_include
+    endnew
+
+    for my.module.struct
+        for struct.property
+            _X11_update_c_include_scope (my.c_include, property, my.class_name, struct.definition)
+        endfor
+    endfor
+
+    for my.module.method
+        for method.argument
+            _X11_update_c_include_scope (my.c_include, argument, my.class_name, method.declaration)
+        endfor
+
+        for method.return
+            _X11_update_c_include_scope (my.c_include, return, my.class_name, method.declaration)
+        endfor
+    endfor
+
+    for my.module.callback
+        for callback.argument
+            _X11_update_c_include_scope (my.c_include, argument, my.class_name, callback.declaration)
+        endfor
+
+        for callback.return
+            _X11_update_c_include_scope (my.c_include, return, my.class_name, callback.declaration)
+        endfor
+    endfor
+
+    if my.c_include.scope = "none"
+        delete my.c_include
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Inspect inner components for use special classes: data, buffer, and
+#   add correspond headers.
+# ---------------------------------------------------------------------------
+function c_module_add_special_includes (module, c_module)
+    check_arguments (my, "module, c_module", my)
+
+    _X11_add_c_include_for_common_class (my.module, my.c_module, "data")
+    _X11_add_c_include_for_common_class (my.module, my.c_module, "buffer")
+endfunction
+
 # ---------------------------------------------------------------------------
 #   Add 'c_license' to destination.
 # ---------------------------------------------------------------------------
@@ -78,7 +148,7 @@ endfunction
 function c_module_add_includes (module, destination)
     check_arguments (my, "module, destination", my)
 
-    for my.module.require where defined (0.module)
+    for my.module.require
         c_component_create_include (require, my.destination)
     endfor
 
@@ -86,6 +156,8 @@ function c_module_add_includes (module, destination)
         my.c_include = item_copy_to (source, my.destination)
         c_component_resolve_include (my.c_include)
     endfor
+
+    c_module_add_special_includes (my.module, my.destination)
 endfunction
 
 # ---------------------------------------------------------------------------

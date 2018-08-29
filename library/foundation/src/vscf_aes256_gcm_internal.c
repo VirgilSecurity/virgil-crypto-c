@@ -82,6 +82,10 @@ static const vscf_encrypt_api_t encrypt_api = {
     //
     vscf_api_tag_ENCRYPT,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
+    //
     //  Encrypt given data.
     //
     (vscf_encrypt_api_encrypt_fn)vscf_aes256_gcm_encrypt,
@@ -103,6 +107,10 @@ static const vscf_decrypt_api_t decrypt_api = {
     //
     vscf_api_tag_DECRYPT,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
+    //
     //  Decrypt given data.
     //
     (vscf_decrypt_api_decrypt_fn)vscf_aes256_gcm_decrypt,
@@ -123,6 +131,10 @@ static const vscf_cipher_info_api_t cipher_info_api = {
     //  For interface 'cipher_info' MUST be equal to the 'vscf_api_tag_CIPHER_INFO'.
     //
     vscf_api_tag_CIPHER_INFO,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
     //
     //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
     //
@@ -150,6 +162,10 @@ static const vscf_cipher_api_t cipher_api = {
     //  For interface 'cipher' MUST be equal to the 'vscf_api_tag_CIPHER'.
     //
     vscf_api_tag_CIPHER,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
     //
     //  Link to the inherited interface API 'encrypt'.
     //
@@ -182,6 +198,10 @@ static const vscf_cipher_auth_info_api_t cipher_auth_info_api = {
     //
     vscf_api_tag_CIPHER_AUTH_INFO,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
+    //
     //  Defines authentication tag length in bytes.
     //
     vscf_aes256_gcm_AUTH_TAG_LEN
@@ -196,6 +216,10 @@ static const vscf_auth_encrypt_api_t auth_encrypt_api = {
     //  For interface 'auth_encrypt' MUST be equal to the 'vscf_api_tag_AUTH_ENCRYPT'.
     //
     vscf_api_tag_AUTH_ENCRYPT,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
     //
     //  Encrypt given data.
     //  If 'tag' is not give, then it will written to the 'enc'.
@@ -213,6 +237,10 @@ static const vscf_auth_decrypt_api_t auth_decrypt_api = {
     //
     vscf_api_tag_AUTH_DECRYPT,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
+    //
     //  Decrypt given data.
     //  If 'tag' is not give, then it will be taken from the 'enc'.
     //
@@ -228,6 +256,10 @@ static const vscf_cipher_auth_api_t cipher_auth_api = {
     //  For interface 'cipher_auth' MUST be equal to the 'vscf_api_tag_CIPHER_AUTH'.
     //
     vscf_api_tag_CIPHER_AUTH,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_GCM,
     //
     //  Link to the inherited interface API 'cipher auth info'.
     //
@@ -271,7 +303,7 @@ static const vscf_impl_info_t info = {
     //
     api_array,
     //
-    //  Erase inner state in a secure manner.
+    //  Release acquired inner resources.
     //
     (vscf_impl_cleanup_fn)vscf_aes256_gcm_cleanup,
     //
@@ -283,33 +315,33 @@ static const vscf_impl_info_t info = {
 //
 //  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC vscf_error_t
+VSCF_PUBLIC void
 vscf_aes256_gcm_init(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 
-    VSCF_ASSERT_PTR (aes256_gcm_impl);
-    VSCF_ASSERT_PTR (aes256_gcm_impl->info == NULL);
+    VSCF_ASSERT_PTR(aes256_gcm_impl);
+    VSCF_ASSERT_PTR(aes256_gcm_impl->info == NULL);
 
     aes256_gcm_impl->info = &info;
 
-    return vscf_aes256_gcm_init_ctx (aes256_gcm_impl);
+    vscf_aes256_gcm_init_ctx(aes256_gcm_impl);
 }
 
 //
 //  Cleanup implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_aes256_gcm_init ()'.
-//  All dependencies that is not under ownership will be cleaned up.
+//  This is a reverse action of the function 'vscf_aes256_gcm_init()'.
 //  All dependencies that is under ownership will be destroyed.
+//  All dependencies that is not under ownership will untouched.
 //
 VSCF_PUBLIC void
 vscf_aes256_gcm_cleanup(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 
-    VSCF_ASSERT_PTR (aes256_gcm_impl);
+    VSCF_ASSERT_PTR(aes256_gcm_impl);
 
     if (aes256_gcm_impl->info == NULL) {
         return;
     }
 
-    vscf_aes256_gcm_cleanup_ctx (aes256_gcm_impl);
+    vscf_aes256_gcm_cleanup_ctx(aes256_gcm_impl);
 
     aes256_gcm_impl->info = NULL;
 }
@@ -321,50 +353,58 @@ vscf_aes256_gcm_cleanup(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 VSCF_PUBLIC vscf_aes256_gcm_impl_t *
 vscf_aes256_gcm_new(void) {
 
-    vscf_aes256_gcm_impl_t *aes256_gcm_impl = (vscf_aes256_gcm_impl_t *) vscf_alloc (sizeof (vscf_aes256_gcm_impl_t));
-    if (NULL == aes256_gcm_impl) {
-        return NULL;
-    }
+    vscf_aes256_gcm_impl_t *aes256_gcm_impl = (vscf_aes256_gcm_impl_t *) vscf_alloc(sizeof (vscf_aes256_gcm_impl_t));
+    VSCF_ASSERT_ALLOC(aes256_gcm_impl);
 
-    if (vscf_aes256_gcm_init (aes256_gcm_impl) != vscf_SUCCESS) {
-        vscf_dealloc(aes256_gcm_impl);
-        return NULL;
-    }
+    vscf_aes256_gcm_init(aes256_gcm_impl);
+
+    aes256_gcm_impl->refcnt = 1;
 
     return aes256_gcm_impl;
 }
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_aes256_gcm_new ()'.
+//  This is a reverse action of the function 'vscf_aes256_gcm_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //
 VSCF_PUBLIC void
 vscf_aes256_gcm_delete(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 
-    if (aes256_gcm_impl) {
-        vscf_aes256_gcm_cleanup (aes256_gcm_impl);
-        vscf_dealloc (aes256_gcm_impl);
+    if (aes256_gcm_impl && (--aes256_gcm_impl->refcnt == 0)) {
+        vscf_aes256_gcm_cleanup(aes256_gcm_impl);
+        vscf_dealloc(aes256_gcm_impl);
     }
 }
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_aes256_gcm_new ()'.
+//  This is a reverse action of the function 'vscf_aes256_gcm_new()'.
 //  All dependencies that is not under ownership will be cleaned up.
 //  All dependencies that is under ownership will be destroyed.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_aes256_gcm_destroy(vscf_aes256_gcm_impl_t * *aes256_gcm_impl_ref) {
+vscf_aes256_gcm_destroy(vscf_aes256_gcm_impl_t **aes256_gcm_impl_ref) {
 
-    VSCF_ASSERT_PTR (aes256_gcm_impl_ref);
+    VSCF_ASSERT_PTR(aes256_gcm_impl_ref);
 
     vscf_aes256_gcm_impl_t *aes256_gcm_impl = *aes256_gcm_impl_ref;
     *aes256_gcm_impl_ref = NULL;
 
-    vscf_aes256_gcm_delete (aes256_gcm_impl);
+    vscf_aes256_gcm_delete(aes256_gcm_impl);
+}
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_aes256_gcm_impl_t *
+vscf_aes256_gcm_copy(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
+
+    // Proxy to the parent implementation.
+    return (vscf_aes256_gcm_impl_t *)vscf_impl_copy((vscf_impl_t *)aes256_gcm_impl);
 }
 
 //
@@ -409,8 +449,8 @@ vscf_aes256_gcm_impl_size(void) {
 VSCF_PUBLIC vscf_impl_t *
 vscf_aes256_gcm_impl(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 
-    VSCF_ASSERT_PTR (aes256_gcm_impl);
-    return (vscf_impl_t *) (aes256_gcm_impl);
+    VSCF_ASSERT_PTR(aes256_gcm_impl);
+    return (vscf_impl_t *)(aes256_gcm_impl);
 }
 
 
