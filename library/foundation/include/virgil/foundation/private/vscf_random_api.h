@@ -71,7 +71,7 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Generate rnadom bytes.
+//  Callback. Generate random bytes.
 //
 typedef vscf_error_t (*vscf_random_api_random_fn)(vscf_impl_t *impl, byte *data, size_t data_len);
 
@@ -89,7 +89,7 @@ struct vscf_random_api_t {
     //
     vscf_impl_tag_t impl_tag;
     //
-    //  Generate rnadom bytes.
+    //  Generate random bytes.
     //
     vscf_random_api_random_fn random_cb;
 };

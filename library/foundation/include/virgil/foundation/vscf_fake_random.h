@@ -151,7 +151,7 @@ VSCF_PUBLIC void
 vscf_fake_random_setup_source_data(vscf_fake_random_impl_t *fake_random_impl, vsc_data_t data_source);
 
 //
-//  Generate rnadom bytes.
+//  Generate random bytes.
 //
 VSCF_PUBLIC vscf_error_t
 vscf_fake_random_random(vscf_fake_random_impl_t *fake_random_impl, byte *data, size_t data_len);

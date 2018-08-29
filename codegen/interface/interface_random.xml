@@ -2,7 +2,7 @@
     Common interface to get random data.
 
     <method name="random">
-        Generate rnadom bytes.
+        Generate random bytes.
 
         <argument name="data" type="data" access="writeonly"/>
         <argument name="data len" type="size"/>

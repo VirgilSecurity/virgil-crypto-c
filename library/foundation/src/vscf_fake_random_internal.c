@@ -79,7 +79,7 @@ static const vscf_random_api_t random_api = {
     //
     vscf_impl_tag_FAKE_RANDOM,
     //
-    //  Generate rnadom bytes.
+    //  Generate random bytes.
     //
     (vscf_random_api_random_fn)vscf_fake_random_random
 };
