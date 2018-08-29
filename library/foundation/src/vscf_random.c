@@ -62,7 +62,7 @@
 // --------------------------------------------------------------------------
 
 //
-//  Generate rnadom bytes.
+//  Generate random bytes.
 //
 VSCF_PUBLIC vscf_error_t
 vscf_random(vscf_impl_t *impl, byte *data, size_t data_len) {
