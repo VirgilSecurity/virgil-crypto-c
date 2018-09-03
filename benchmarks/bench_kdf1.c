@@ -54,14 +54,13 @@ void benchmark_kdf1_native(void * data, size_t data_size)
     //vscf_sha224_hash(data, data_size, digest, vscf_sha224_DIGEST_LEN);
 }
 
-void benchmark_kdf1_interface(void * data, size_t data_size)
+void benchmark_kdf1_interface(void * data, data_size_t data_size)
 {
     byte *key = vscf_alloc(test_kdf1_VECTOR_1_KEY_LEN);
 
     vscf_kdf1_impl_t *kdf1_impl = vscf_kdf1_new();
-    vscf_impl_t *sha256_impl = vscf_sha256_impl(vscf_sha256_new());
 
-    vscf_kdf1_take_hash_stream(kdf1_impl, &sha256_impl);
+    vscf_kdf1_take_hash_stream(kdf1_impl, vscf_sha256_impl(vscf_sha256_new());
 
     vscf_kdf1_derive(kdf1_impl, data, data_size, key, test_kdf1_VECTOR_1_KEY_LEN);
 
