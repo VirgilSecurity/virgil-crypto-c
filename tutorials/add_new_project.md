@@ -8,11 +8,11 @@
 
 Add file `project_<name>.xml` to the `codegen/project`.
 
-Specify required modultes, classes, interfaces.
+Specify required modules, classes, interfaces.
 
 Add correspond entity `project` to file `codegen/main.xml`
 
-Run codegeneration script `codegen.sh`.
+Run code generation script `codegen.sh`.
 
 ## 2. Add CMake files
 
