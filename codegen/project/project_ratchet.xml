@@ -1,4 +1,16 @@
-<main script="main.gsl" work_path="generated/main" echo_level="trace">
+<project
+    name="ratchet"
+    brief="Implementation of the double ratchet algorithm."
+    namespace="virgil"
+    prefix="vscr"
+    path="../library/ratchet"
+    inc_path = "../library/ratchet/include/virgil/ratchet/"
+    inc_private_path = "../library/ratchet/include/virgil/ratchet/private/"
+    src_path = "../library/ratchet/src/"
+    work_path = "generated/ratchet/">
+
+    <version major = "0" minor = "1" path = "0" />
+
     <license>
         Copyright (C) 2015-2018 Virgil Security Inc.
 
@@ -35,10 +47,7 @@
         Lead Maintainer: Virgil Security Inc. &lt;support@virgilsecurity.com&gt;
     </license>
 
-    <external library="mbedtls"/>
-
-    <project name="common"/>
-    <project name="foundation"/>
-    <project name="pythia"/>
-    <project name="ratchet"/>
-</main>
+    <module name="assert"/>
+    <module name="library"/>
+    <module name="memory"/>
+</project>

@@ -60,6 +60,7 @@ option(ENABLE_BENCHMARKS "On/Off build library benchmarks." ON)
 option(VIRGIL_LIB_COMMON "Build 'common' library" ON)
 option(VIRGIL_LIB_FOUNDATION "Build 'foundation' library" ON)
 option(VIRGIL_LIB_PYTHIA "Build 'pythia' library" ON)
+option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" ON)
 
 #
 # Wrappers
@@ -140,6 +141,10 @@ endif()
 
 if(VIRGIL_LIB_PYTHIA)
     add_subdirectory ("library/pythia")
+endif()
+
+if(VIRGIL_LIB_RATCHET)
+    add_subdirectory("library/ratchet")
 endif()
 
 
