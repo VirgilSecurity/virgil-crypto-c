@@ -134,7 +134,7 @@ function c_features_create (source, destination)
     check_arguments (my, "source, destination", my)
 
     for my.source.features
-        echo_trace ("Createing <c_features/> from <$(name (features)) name=\"$(features.name:)/>\"", my)
+        echo_trace ("Creating <c_features/> from <$(name (features)) name=\"$(features.name:)/>\"", my)
 
         new c_features to my.destination
             .name = component_landlord_name (features)
