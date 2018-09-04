@@ -96,10 +96,22 @@ VSC_PUBLIC vsc_data_t
 vsc_data(const byte *bytes, size_t len);
 
 //
-//  Creates emty data.
+//  Creates empty data.
 //
 VSC_PUBLIC vsc_data_t
 vsc_data_empty(void);
+
+//
+//  Return underlying data slice starting from beginning.
+//
+VSC_PUBLIC vsc_data_t
+vsc_data_slice_beg(vsc_data_t data_ctx, size_t offset, size_t len);
+
+//
+//  Return underlying data slice starting from ending.
+//
+VSC_PUBLIC vsc_data_t
+vsc_data_slice_end(vsc_data_t data_ctx, size_t offset, size_t len);
 
 
 // --------------------------------------------------------------------------
