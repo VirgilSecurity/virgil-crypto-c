@@ -57,7 +57,7 @@
 #include "vscf_rsa_public_key_impl.h"
 #include "vscf_key_api.h"
 #include "vscf_public_key_api.h"
-#include "vscf_encrypt2_api.h"
+#include "vscf_encrypt_api.h"
 #include "vscf_verify_api.h"
 #include "vscf_export_public_key_api.h"
 #include "vscf_import_public_key_api.h"
@@ -117,14 +117,14 @@ static const vscf_public_key_api_t public_key_api = {
 };
 
 //
-//  Configuration of the interface API 'encrypt2 api'.
+//  Configuration of the interface API 'encrypt api'.
 //
-static const vscf_encrypt2_api_t encrypt2_api = {
+static const vscf_encrypt_api_t encrypt_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'encrypt2' MUST be equal to the 'vscf_api_tag_ENCRYPT2'.
+    //  For interface 'encrypt' MUST be equal to the 'vscf_api_tag_ENCRYPT'.
     //
-    vscf_api_tag_ENCRYPT2,
+    vscf_api_tag_ENCRYPT,
     //
     //  Implementation unique identifier, MUST be second in the structure.
     //
@@ -132,11 +132,11 @@ static const vscf_encrypt2_api_t encrypt2_api = {
     //
     //  Encrypt given data.
     //
-    (vscf_encrypt2_api_encrypt_fn)vscf_rsa_public_key_encrypt,
+    (vscf_encrypt_api_encrypt_fn)vscf_rsa_public_key_encrypt,
     //
     //  Calculate required buffer length to hold the encrypted data.
     //
-    (vscf_encrypt2_api_encrypted_len_fn)vscf_rsa_public_key_encrypted_len
+    (vscf_encrypt_api_encrypted_len_fn)vscf_rsa_public_key_encrypted_len
 };
 
 //
@@ -206,7 +206,7 @@ static const vscf_import_public_key_api_t import_public_key_api = {
 static const vscf_api_t *api_array[] = {
     (const vscf_api_t *)&key_api,
     (const vscf_api_t *)&public_key_api,
-    (const vscf_api_t *)&encrypt2_api,
+    (const vscf_api_t *)&encrypt_api,
     (const vscf_api_t *)&verify_api,
     (const vscf_api_t *)&export_public_key_api,
     (const vscf_api_t *)&import_public_key_api,

@@ -55,6 +55,9 @@
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
+
+#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -78,15 +81,13 @@ typedef struct vscf_decrypt_api_t vscf_decrypt_api_t;
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_decrypt(vscf_impl_t *impl, const byte *enc, size_t enc_len, byte *plain, size_t plain_len, size_t *out_len);
+vscf_decrypt(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Calculate required buffer length to hold the decrypted data.
-//  If argument 'auth tag len' is 0, then returned length
-//  adjusted to cut of auth tag length.
 //
 VSCF_PUBLIC size_t
-vscf_decrypt_required_dec_len(vscf_impl_t *impl, size_t enc_len, size_t auth_tag_len);
+vscf_decrypt_decrypted_len(vscf_impl_t *impl, size_t data_len);
 
 //
 //  Return decrypt API, or NULL if it is not implemented.

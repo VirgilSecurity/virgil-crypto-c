@@ -8,14 +8,12 @@
     <method name="set nonce">
         Setup IV or nonce.
 
-        <argument name="nonce" type="data"/>
-        <argument name="nonce len" type="size"/>
+        <argument name="nonce" class="data"/>
     </method>
 
     <method name="set key">
         Set cipher encryption / decryption key.
 
-        <argument name="key" type="data"/>
-        <argument name="key len" type="size"/>
+        <argument name="key" class="data"/>
     </method>
 </interface>

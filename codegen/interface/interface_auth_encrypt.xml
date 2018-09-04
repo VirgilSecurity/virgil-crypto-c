@@ -5,22 +5,20 @@
         Encrypt given data.
         If 'tag' is not give, then it will written to the 'enc'.
 
-        <argument name="data" type="data"/>
-        <argument name="data len" type="size"/>
-
-        <argument name="auth data" type="data"/>
-        <argument name="auth data len" type="size"/>
-
-        <argument name="enc" type="data" access="writeonly"/>
-        <argument name="enc len" type="size"/>
-        <argument name="out len" type="size" access="writeonly" is_reference="1"/>
-
-        <argument name="tag" type="data" access="writeonly">
-            <array length="known"/>
-        </argument>
-
-        <argument name="tag len" type="size"/>
+        <argument name="data" class="data"/>
+        <argument name="auth data" class="data"/>
+        <argument name="out" class="buffer"/>
+        <argument name="tag" class="buffer"/>
 
         <return type="error"/>
+    </method>
+
+
+    <method name="auth encrypted len" context="impl">
+        Calculate required buffer length to hold the authenticated encrypted data.
+
+        <argument name="data len" type="size"/>
+
+        <return type="size"/>
     </method>
 </interface>

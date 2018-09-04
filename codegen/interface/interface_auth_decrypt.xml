@@ -5,19 +5,20 @@
         Decrypt given data.
         If 'tag' is not give, then it will be taken from the 'enc'.
 
-        <argument name="enc" type="data"/>
-        <argument name="enc len" type="size"/>
-
-        <argument name="auth data" type="data"/>
-        <argument name="auth data len" type="size"/>
-
-        <argument name="tag" type="data"/>
-        <argument name="tag len" type="size"/>
-
-        <argument name="dec" type="data" access="writeonly"/>
-        <argument name="dec len" type="size"/>
-        <argument name="out len" type="size" access="writeonly" is_reference="1"/>
+        <argument name="data" class="data"/>
+        <argument name="auth data" class="data"/>
+        <argument name="tag" class="data"/>
+        <argument name="out" class="buffer"/>
 
         <return type="error"/>
+    </method>
+
+
+    <method name="auth decrypted len" context="impl">
+        Calculate required buffer length to hold the authenticated decrypted data.
+
+        <argument name="data len" type="size"/>
+
+        <return type="size"/>
     </method>
 </interface>

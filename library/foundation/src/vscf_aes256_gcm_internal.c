@@ -91,10 +91,8 @@ static const vscf_encrypt_api_t encrypt_api = {
     (vscf_encrypt_api_encrypt_fn)vscf_aes256_gcm_encrypt,
     //
     //  Calculate required buffer length to hold the encrypted data.
-    //  If argument 'auth tag len' is 0, then returned length
-    //  adjusted to hold auth tag as well.
     //
-    (vscf_encrypt_api_required_enc_len_fn)vscf_aes256_gcm_required_enc_len
+    (vscf_encrypt_api_encrypted_len_fn)vscf_aes256_gcm_encrypted_len
 };
 
 //
@@ -116,10 +114,8 @@ static const vscf_decrypt_api_t decrypt_api = {
     (vscf_decrypt_api_decrypt_fn)vscf_aes256_gcm_decrypt,
     //
     //  Calculate required buffer length to hold the decrypted data.
-    //  If argument 'auth tag len' is 0, then returned length
-    //  adjusted to cut of auth tag length.
     //
-    (vscf_decrypt_api_required_dec_len_fn)vscf_aes256_gcm_required_dec_len
+    (vscf_decrypt_api_decrypted_len_fn)vscf_aes256_gcm_decrypted_len
 };
 
 //
@@ -224,7 +220,11 @@ static const vscf_auth_encrypt_api_t auth_encrypt_api = {
     //  Encrypt given data.
     //  If 'tag' is not give, then it will written to the 'enc'.
     //
-    (vscf_auth_encrypt_api_auth_encrypt_fn)vscf_aes256_gcm_auth_encrypt
+    (vscf_auth_encrypt_api_auth_encrypt_fn)vscf_aes256_gcm_auth_encrypt,
+    //
+    //  Calculate required buffer length to hold the authenticated encrypted data.
+    //
+    (vscf_auth_encrypt_api_auth_encrypted_len_fn)vscf_aes256_gcm_auth_encrypted_len
 };
 
 //
@@ -244,7 +244,11 @@ static const vscf_auth_decrypt_api_t auth_decrypt_api = {
     //  Decrypt given data.
     //  If 'tag' is not give, then it will be taken from the 'enc'.
     //
-    (vscf_auth_decrypt_api_auth_decrypt_fn)vscf_aes256_gcm_auth_decrypt
+    (vscf_auth_decrypt_api_auth_decrypt_fn)vscf_aes256_gcm_auth_decrypt,
+    //
+    //  Calculate required buffer length to hold the authenticated decrypted data.
+    //
+    (vscf_auth_decrypt_api_auth_decrypted_len_fn)vscf_aes256_gcm_auth_decrypted_len
 };
 
 //

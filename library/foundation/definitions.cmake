@@ -72,8 +72,6 @@ target_compile_definitions(foundation
             "VSCF_KEY=$<BOOL:${VSCF_KEY}>"
             "VSCF_PUBLIC_KEY=$<BOOL:${VSCF_PUBLIC_KEY}>"
             "VSCF_PRIVATE_KEY=$<BOOL:${VSCF_PRIVATE_KEY}>"
-            "VSCF_ENCRYPT2=$<BOOL:${VSCF_ENCRYPT2}>"
-            "VSCF_DECRYPT2=$<BOOL:${VSCF_DECRYPT2}>"
             "VSCF_SIGN=$<BOOL:${VSCF_SIGN}>"
             "VSCF_VERIFY=$<BOOL:${VSCF_VERIFY}>"
             "VSCF_GENERATE_KEY=$<BOOL:${VSCF_GENERATE_KEY}>"

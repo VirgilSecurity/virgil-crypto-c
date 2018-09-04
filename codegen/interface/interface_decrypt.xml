@@ -4,24 +4,18 @@
     <method name="decrypt" context="impl">
         Decrypt given data.
 
-        <argument name="enc" type="data"/>
-        <argument name="enc len" type="size"/>
-
-        <argument name="plain" type="data" access="writeonly"/>
-        <argument name="plain len" type="size"/>
-        <argument name="out len" type="size" access="writeonly" is_reference="1"/>
+        <argument name="data" class="data"/>
+        <argument name="out" class="buffer"/>
 
         <return type="error"/>
     </method>
 
 
-    <method name="required dec len" context="impl">
+    <method name="decrypted len" context="impl">
         Calculate required buffer length to hold the decrypted data.
-        If argument 'auth tag len' is 0, then returned length
-        adjusted to cut of auth tag length.
 
-        <argument name="enc len" type="size"/>
-        <argument name="auth tag len" type="size"/>
+        <argument name="data len" type="size"/>
+
         <return type="size"/>
     </method>
 </interface>

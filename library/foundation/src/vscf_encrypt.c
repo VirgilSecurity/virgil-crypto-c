@@ -65,28 +65,26 @@
 //  Encrypt given data.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_encrypt(vscf_impl_t *impl, const byte *data, size_t data_len, byte *enc, size_t enc_len, size_t *out_len) {
+vscf_encrypt(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out) {
 
     const vscf_encrypt_api_t *encrypt_api = vscf_encrypt_api (impl);
     VSCF_ASSERT_PTR (encrypt_api);
 
     VSCF_ASSERT_PTR (encrypt_api->encrypt_cb);
-    return encrypt_api->encrypt_cb (impl, data, data_len, enc, enc_len, out_len);
+    return encrypt_api->encrypt_cb (impl, data, out);
 }
 
 //
 //  Calculate required buffer length to hold the encrypted data.
-//  If argument 'auth tag len' is 0, then returned length
-//  adjusted to hold auth tag as well.
 //
 VSCF_PUBLIC size_t
-vscf_encrypt_required_enc_len(vscf_impl_t *impl, size_t data_len, size_t auth_tag_len) {
+vscf_encrypt_encrypted_len(vscf_impl_t *impl, size_t data_len) {
 
     const vscf_encrypt_api_t *encrypt_api = vscf_encrypt_api (impl);
     VSCF_ASSERT_PTR (encrypt_api);
 
-    VSCF_ASSERT_PTR (encrypt_api->required_enc_len_cb);
-    return encrypt_api->required_enc_len_cb (impl, data_len, auth_tag_len);
+    VSCF_ASSERT_PTR (encrypt_api->encrypted_len_cb);
+    return encrypt_api->encrypted_len_cb (impl, data_len);
 }
 
 //
