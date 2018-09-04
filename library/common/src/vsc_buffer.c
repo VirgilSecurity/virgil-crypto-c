@@ -256,7 +256,7 @@ vsc_buffer_is_valid(const vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
 
-    return (buffer_ctx->bytes != NULL) && (buffer_ctx->capacity > 0) && (buffer_ctx->len <= buffer_ctx->capacity);
+    return (buffer_ctx->bytes != NULL) && (buffer_ctx->len <= buffer_ctx->capacity);
 }
 
 //
@@ -327,7 +327,6 @@ vsc_buffer_ptr(vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
     VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
-    VSC_ASSERT(!vsc_buffer_is_full(buffer_ctx));
 
     return buffer_ctx->bytes + buffer_ctx->len;
 }
