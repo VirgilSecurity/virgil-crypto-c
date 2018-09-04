@@ -11,7 +11,7 @@
         cmake_target="pythia_wrap"
         >
 
-    <version major="0" minor="2" path="0" />
+    <version major="0" minor="2" patch="0" />
 
     <license>
         Copyright (C) 2015-2018 Virgil Security Inc.
