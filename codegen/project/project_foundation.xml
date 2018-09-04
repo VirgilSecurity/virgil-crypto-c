@@ -1,16 +1,16 @@
 <project
-        name = "foundation"
-        brief = "Virgil Security Crypto Foundation"
-        namespace = "virgil"
-        prefix = "vscf"
-        path = "../library/foundation/"
-        inc_path = "../library/foundation/include/virgil/foundation/"
-        inc_private_path = "../library/foundation/include/virgil/foundation/private/"
-        src_path = "../library/foundation/src/"
-        work_path = "generated/foundation/"
+        name="foundation"
+        brief="Virgil Security Crypto Foundation"
+        namespace="virgil"
+        prefix="vscf"
+        path="../library/foundation/"
+        inc_path="../library/foundation/include/virgil/foundation/"
+        inc_private_path="../library/foundation/include/virgil/foundation/private/"
+        src_path="../library/foundation/src/"
+        work_path="generated/foundation/"
         >
 
-    <version major = "5" minor = "0" path = "1" />
+    <version major="5" minor="0" path="1" />
 
     <license>
         Copyright (C) 2015-2018 Virgil Security Inc.

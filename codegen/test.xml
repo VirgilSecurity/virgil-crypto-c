@@ -1,18 +1,18 @@
-<test script = "test.gsl" echo_level = "debug">
+<test script="test.gsl" echo_level="debug">
     <project
-            name = "vsf"
-            brief = "Virgil Security Foundation"
-            namespace = "virgil"
-            prefix = "vsf"
-            inc_path = "test/include/virgil/"
-            inc_private_path = "test/include/virgil/private"
-            src_path = "test/src/"
-            work_path = "test/gsl/"
-            TODO = "Next attributes must be resolved via GSL."
-            c_library_header = "vsf_library.h"
+            name="vsf"
+            brief="Virgil Security Foundation"
+            namespace="virgil"
+            prefix="vsf"
+            inc_path="test/include/virgil/"
+            inc_private_path="test/include/virgil/private"
+            src_path="test/src/"
+            work_path="test/gsl/"
+            TODO="Next attributes must be resolved via GSL."
+            c_library_header="vsf_library.h"
             >
 
-        <version major = "5" minor = "0" path = "1" />
+        <version major="5" minor="0" path="1" />
 
         <license>
             Copyright (C) 2015-2018 Virgil Security Inc.
