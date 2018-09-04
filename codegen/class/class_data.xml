@@ -30,7 +30,29 @@
 
 
     <method name="empty">
-        Creates emty data.
+        Creates empty data.
+
+        <return class="context" access="readonly" is_reference="0"/>
+    </method>
+
+
+    <method name="slice beg">
+        Return underlying data slice starting from beginning.
+
+        <argument class="context" access="readonly" is_reference="0"/>
+        <argument name="offset" type="size"/>
+        <argument name="len" type="size"/>
+
+        <return class="context" access="readonly" is_reference="0"/>
+    </method>
+
+
+    <method name="slice end">
+        Return underlying data slice starting from ending.
+
+        <argument class="context" access="readonly" is_reference="0"/>
+        <argument name="offset" type="size"/>
+        <argument name="len" type="size"/>
 
         <return class="context" access="readonly" is_reference="0"/>
     </method>
