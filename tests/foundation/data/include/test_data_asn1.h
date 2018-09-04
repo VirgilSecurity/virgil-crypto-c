@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#include "test_data_types.h"
+#include "vsc_data.h"
 
 
 //
