@@ -1,16 +1,16 @@
 <project
-        name = "common"
-        brief = "Virgil Security Crypto Common"
-        namespace = "virgil"
-        prefix = "vsc"
-        path = "../library/common/"
-        inc_path = "../library/common/include/virgil/common/"
-        inc_private_path = "../library/common/include/virgil/common/private/"
-        src_path = "../library/common/src/"
-        work_path = "generated/common/"
+        name="common"
+        brief="Virgil Security Crypto Common"
+        namespace="virgil"
+        prefix="vsc"
+        path="../library/common/"
+        inc_path="../library/common/include/virgil/common/"
+        inc_private_path="../library/common/include/virgil/common/private/"
+        src_path="../library/common/src/"
+        work_path="generated/common/"
         >
 
-    <version major = "0" minor = "1" path = "0" />
+    <version major="0" minor="1" path="0" />
 
     <license>
         Copyright (C) 2015-2018 Virgil Security Inc.
