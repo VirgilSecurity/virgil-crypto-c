@@ -72,8 +72,6 @@
     <interface name="key"/>
     <interface name="public key"/>
     <interface name="private key"/>
-    <interface name="encrypt2"/>
-    <interface name="decrypt2"/>
     <interface name="sign"/>
     <interface name="verify"/>
     <interface name="generate key"/>

@@ -58,7 +58,7 @@
 #include "vscf_key_api.h"
 #include "vscf_generate_key_api.h"
 #include "vscf_private_key_api.h"
-#include "vscf_decrypt2_api.h"
+#include "vscf_decrypt_api.h"
 #include "vscf_sign_api.h"
 #include "vscf_export_private_key_api.h"
 #include "vscf_import_private_key_api.h"
@@ -142,14 +142,14 @@ static const vscf_private_key_api_t private_key_api = {
 };
 
 //
-//  Configuration of the interface API 'decrypt2 api'.
+//  Configuration of the interface API 'decrypt api'.
 //
-static const vscf_decrypt2_api_t decrypt2_api = {
+static const vscf_decrypt_api_t decrypt_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'decrypt2' MUST be equal to the 'vscf_api_tag_DECRYPT2'.
+    //  For interface 'decrypt' MUST be equal to the 'vscf_api_tag_DECRYPT'.
     //
-    vscf_api_tag_DECRYPT2,
+    vscf_api_tag_DECRYPT,
     //
     //  Implementation unique identifier, MUST be second in the structure.
     //
@@ -157,11 +157,11 @@ static const vscf_decrypt2_api_t decrypt2_api = {
     //
     //  Decrypt given data.
     //
-    (vscf_decrypt2_api_decrypt_fn)vscf_rsa_private_key_decrypt,
+    (vscf_decrypt_api_decrypt_fn)vscf_rsa_private_key_decrypt,
     //
     //  Calculate required buffer length to hold the decrypted data.
     //
-    (vscf_decrypt2_api_decrypted_len_fn)vscf_rsa_private_key_decrypted_len
+    (vscf_decrypt_api_decrypted_len_fn)vscf_rsa_private_key_decrypted_len
 };
 
 //
@@ -236,7 +236,7 @@ static const vscf_api_t *api_array[] = {
     (const vscf_api_t *)&key_api,
     (const vscf_api_t *)&generate_key_api,
     (const vscf_api_t *)&private_key_api,
-    (const vscf_api_t *)&decrypt2_api,
+    (const vscf_api_t *)&decrypt_api,
     (const vscf_api_t *)&sign_api,
     (const vscf_api_t *)&export_private_key_api,
     (const vscf_api_t *)&import_private_key_api,

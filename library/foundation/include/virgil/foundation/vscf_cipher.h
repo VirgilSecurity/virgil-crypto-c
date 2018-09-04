@@ -58,6 +58,8 @@
 #include "vscf_encrypt.h"
 #include "vscf_decrypt.h"
 #include "vscf_cipher_info.h"
+
+#include <virgil/common/vsc_data.h>
 //  @end
 
 
@@ -81,13 +83,13 @@ typedef struct vscf_cipher_api_t vscf_cipher_api_t;
 //  Setup IV or nonce.
 //
 VSCF_PUBLIC void
-vscf_cipher_set_nonce(vscf_impl_t *impl, const byte *nonce, size_t nonce_len);
+vscf_cipher_set_nonce(vscf_impl_t *impl, vsc_data_t nonce);
 
 //
 //  Set cipher encryption / decryption key.
 //
 VSCF_PUBLIC void
-vscf_cipher_set_key(vscf_impl_t *impl, const byte *key, size_t key_len);
+vscf_cipher_set_key(vscf_impl_t *impl, vsc_data_t key);
 
 //
 //  Return cipher API, or NULL if it is not implemented.

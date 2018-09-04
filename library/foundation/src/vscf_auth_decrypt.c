@@ -66,14 +66,26 @@
 //  If 'tag' is not give, then it will be taken from the 'enc'.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_auth_decrypt(vscf_impl_t *impl, const byte *enc, size_t enc_len, const byte *auth_data, size_t auth_data_len,
-        const byte *tag, size_t tag_len, byte *dec, size_t dec_len, size_t *out_len) {
+vscf_auth_decrypt(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data, vsc_data_t tag, vsc_buffer_t *out) {
 
     const vscf_auth_decrypt_api_t *auth_decrypt_api = vscf_auth_decrypt_api (impl);
     VSCF_ASSERT_PTR (auth_decrypt_api);
 
     VSCF_ASSERT_PTR (auth_decrypt_api->auth_decrypt_cb);
-    return auth_decrypt_api->auth_decrypt_cb (impl, enc, enc_len, auth_data, auth_data_len, tag, tag_len, dec, dec_len, out_len);
+    return auth_decrypt_api->auth_decrypt_cb (impl, data, auth_data, tag, out);
+}
+
+//
+//  Calculate required buffer length to hold the authenticated decrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_auth_decrypt_auth_decrypted_len(vscf_impl_t *impl, size_t data_len) {
+
+    const vscf_auth_decrypt_api_t *auth_decrypt_api = vscf_auth_decrypt_api (impl);
+    VSCF_ASSERT_PTR (auth_decrypt_api);
+
+    VSCF_ASSERT_PTR (auth_decrypt_api->auth_decrypted_len_cb);
+    return auth_decrypt_api->auth_decrypted_len_cb (impl, data_len);
 }
 
 //
