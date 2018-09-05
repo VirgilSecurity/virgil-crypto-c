@@ -122,9 +122,7 @@ vscr_olm_message_destroy(vscr_olm_message_t **olm_message_ctx_ref) {
 VSCR_PUBLIC void
 vscr_olm_message_init(vscr_olm_message_t *olm_message_ctx) {
 
-    VSCR_ASSERT_PTR(olm_message_ctx);
-
-    //  TODO: This is STUB. Implement me.
+    VSCR_UNUSED(olm_message_ctx);
 }
 
 //
@@ -132,8 +130,6 @@ vscr_olm_message_init(vscr_olm_message_t *olm_message_ctx) {
 //
 VSCR_PUBLIC void
 vscr_olm_message_cleanup(vscr_olm_message_t *olm_message_ctx) {
-
-    //  TODO: This is STUB. Implement me.
 
     VSCR_UNUSED(olm_message_ctx);
 }
@@ -201,15 +197,13 @@ vscr_olm_message_serialize(vscr_olm_message_t *olm_message_ctx, vsc_buffer_t *ou
     return vscr_SUCCESS;
 }
 
-VSCR_PUBLIC const vscr_olm_message_t *
+VSCR_PUBLIC vscr_olm_message_t *
 vscr_olm_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
 
     VSCR_ASSERT(vsc_data_is_valid(input));
 
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     vscf_impl_t *asn1rd_impl = vscf_asn1rd_impl(asn1rd);
-
-    vscr_olm_message_t *olm_message = vscr_olm_message_new();
 
     uint8_t version = (uint8_t)vscf_asn1_reader_read_int(asn1rd_impl);
 
@@ -233,7 +227,5 @@ vscr_olm_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
 
     vscf_asn1rd_destroy(&asn1rd);
 
-    olm_message = vscr_olm_message_new_with_members(version, counter, &public_key, &cipher_text);
-
-    return olm_message;
+    return vscr_olm_message_new_with_members(version, counter, &public_key, &cipher_text);
 }
