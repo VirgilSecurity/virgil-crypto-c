@@ -124,7 +124,7 @@ vscr_olm_message_destroy(vscr_olm_message_t **olm_message_ctx_ref);
 VSCR_PUBLIC vscr_error_t
 vscr_olm_message_serialize(vscr_olm_message_t *olm_message_ctx, vsc_buffer_t *output);
 
-VSCR_PUBLIC const vscr_olm_message_t *
+VSCR_PUBLIC vscr_olm_message_t *
 vscr_olm_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx);
 
 

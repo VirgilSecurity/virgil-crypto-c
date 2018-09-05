@@ -27,7 +27,7 @@
         <argument name="input" class="data"/>
         <argument name="err ctx" class="error ctx" access="writeonly"/>
 
-        <return class="olm message"/>
+        <return class="olm message" access="disown"/>
     </method>
 
 </class>
