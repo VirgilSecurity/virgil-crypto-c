@@ -1,70 +1,70 @@
-<interface name = "list">
+<interface name="list">
     Provides interface to the Linked List.
 
-    <method name = "add">
+    <method name="add">
         Add item to any position
 
-        <argument name = "item" type = "vsf_buffer"  io = "in" />
-        <argument name = "pos" type = "integer"  io = "in" />
+        <argument name="item" type="vsf_buffer"  io="in" />
+        <argument name="pos" type="integer"  io="in" />
     </method>
 
-    <method name = "add_first">
+    <method name="add_first">
         Add item to head
 
-        <argument name = "item" type = "vsf_buffer" io = "in" />
+        <argument name="item" type="vsf_buffer" io="in" />
     </method>
 
-    <method name = "add_last">
+    <method name="add_last">
         Add item to tail
 
-        <argument name = "item" type = "vsf_buffer" io = "in" />
+        <argument name="item" type="vsf_buffer" io="in" />
     </method>
 
-    <method name = "get">
+    <method name="get">
         Get item from specific position
 
-        <argument name = "pos" type = "integer" io = "in" />
+        <argument name="pos" type="integer" io="in" />
 
-        <return name = "res" type = "vsf_buffer" />
+        <return name="res" type="vsf_buffer" />
     </method>
 
-    <method name = "get_first">
+    <method name="get_first">
         Get item from head
 
-        <return name = "res" type = "vsf_buffer" />
+        <return name="res" type="vsf_buffer" />
     </method>
 
-    <method name = "get_last">
+    <method name="get_last">
         Get item from tail
 
-        <return name = "res" type = "vsf_buffer" />
+        <return name="res" type="vsf_buffer" />
     </method>
 
-    <method name = "remove">
+    <method name="remove">
         Get item and remove it from any position
 
-        <argument name = "pos" type = "integer" io = "in" />
+        <argument name="pos" type="integer" io="in" />
 
-        <return name = "res" type = "vsf_buffer" />
+        <return name="res" type="vsf_buffer" />
     </method>
 
-    <method name = "remove_first">
+    <method name="remove_first">
         Get and remove item from head
 
-        <return name = "res" type = "vsf_buffer" io = "in" />
+        <return name="res" type="vsf_buffer" io="in" />
     </method>
 
-    <method name = "remove_last">
+    <method name="remove_last">
         Get and remove item from tail
 
-        <return name = "res" type = "vsf_buffer" />
+        <return name="res" type="vsf_buffer" />
     </method>
 
-    <method name = "display">
+    <method name="display">
         Display the items in the list as byte array
     </method>
 
-    <method name = "display_strings">
+    <method name="display_strings">
          Display the strings in the list
     </method>
 

@@ -1,16 +1,16 @@
-<interface name = "cms">
+<interface name="cms">
     Provides interface to the CMS functionallity.
 
-    <method name = "read">
+    <method name="read">
         Read CMS data.
 
-        <return name = "res" type = "integer" />
+        <return name="res" type="integer" />
     </method>
 
-    <method name = "write">
+    <method name="write">
         Write CMS data.
 
-        <return name = "res" type = "integer" />
+        <return name="res" type="integer" />
     </method>
 
 </interface>

@@ -59,6 +59,8 @@
 #include "vscf_encrypt.h"
 #include "vscf_decrypt.h"
 #include "vscf_cipher_info.h"
+
+#include <virgil/common/vsc_data.h>
 //  @end
 
 
@@ -76,12 +78,12 @@ extern "C" {
 //
 //  Callback. Setup IV or nonce.
 //
-typedef void (*vscf_cipher_api_set_nonce_fn)(vscf_impl_t *impl, const byte *nonce, size_t nonce_len);
+typedef void (*vscf_cipher_api_set_nonce_fn)(vscf_impl_t *impl, vsc_data_t nonce);
 
 //
 //  Callback. Set cipher encryption / decryption key.
 //
-typedef void (*vscf_cipher_api_set_key_fn)(vscf_impl_t *impl, const byte *key, size_t key_len);
+typedef void (*vscf_cipher_api_set_key_fn)(vscf_impl_t *impl, vsc_data_t key);
 
 //
 //  Contains API requirements of the interface 'cipher'.

@@ -55,6 +55,9 @@
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
+
+#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -79,8 +82,13 @@ typedef struct vscf_auth_decrypt_api_t vscf_auth_decrypt_api_t;
 //  If 'tag' is not give, then it will be taken from the 'enc'.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_auth_decrypt(vscf_impl_t *impl, const byte *enc, size_t enc_len, const byte *auth_data, size_t auth_data_len,
-        const byte *tag, size_t tag_len, byte *dec, size_t dec_len, size_t *out_len);
+vscf_auth_decrypt(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data, vsc_data_t tag, vsc_buffer_t *out);
+
+//
+//  Calculate required buffer length to hold the authenticated decrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_auth_decrypt_auth_decrypted_len(vscf_impl_t *impl, size_t data_len);
 
 //
 //  Return auth decrypt API, or NULL if it is not implemented.

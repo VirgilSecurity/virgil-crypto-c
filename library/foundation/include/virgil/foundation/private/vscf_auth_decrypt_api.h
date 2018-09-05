@@ -56,6 +56,9 @@
 #include "vscf_error.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
+
+#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -74,9 +77,13 @@ extern "C" {
 //  Callback. Decrypt given data.
 //          If 'tag' is not give, then it will be taken from the 'enc'.
 //
-typedef vscf_error_t (*vscf_auth_decrypt_api_auth_decrypt_fn)(vscf_impl_t *impl, const byte *enc, size_t enc_len,
-        const byte *auth_data, size_t auth_data_len, const byte *tag, size_t tag_len, byte *dec, size_t dec_len,
-        size_t *out_len);
+typedef vscf_error_t (*vscf_auth_decrypt_api_auth_decrypt_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data,
+        vsc_data_t tag, vsc_buffer_t *out);
+
+//
+//  Callback. Calculate required buffer length to hold the authenticated decrypted data.
+//
+typedef size_t (*vscf_auth_decrypt_api_auth_decrypted_len_fn)(vscf_impl_t *impl, size_t data_len);
 
 //
 //  Contains API requirements of the interface 'auth decrypt'.
@@ -96,6 +103,10 @@ struct vscf_auth_decrypt_api_t {
     //  If 'tag' is not give, then it will be taken from the 'enc'.
     //
     vscf_auth_decrypt_api_auth_decrypt_fn auth_decrypt_cb;
+    //
+    //  Calculate required buffer length to hold the authenticated decrypted data.
+    //
+    vscf_auth_decrypt_api_auth_decrypted_len_fn auth_decrypted_len_cb;
 };
 
 

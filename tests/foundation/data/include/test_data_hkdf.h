@@ -34,7 +34,7 @@
 
 
 
-#include "test_data_types.h"
+#include "vsc_data.h"
 
 //
 //  Test Vector 1
