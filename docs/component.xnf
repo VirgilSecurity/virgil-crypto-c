@@ -154,6 +154,10 @@
            can be used.
     </attr>
 
+    <attr name="implementation">
+        Defines specific implementation name.
+    </attr>
+
     <attr name="size">
         Define size of the primitive type or enum in bytes.
 

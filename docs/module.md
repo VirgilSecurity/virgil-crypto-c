@@ -17,10 +17,12 @@ attribute names are case-sensitive and we use only lower-case names.
             [name]>
           <constant .../>
        </enum>
-       <variable is_reference name [class] [type] [callback] [size] [access] [definition] [declaration]
-            [visibility] [c_prefix] [of_class] [uid] [feature] [enum]>
-          <value is_reference value [class] [enum] [callback] [size] [access] [type]>
-             <cast is_reference [access] [class] [enum] [callback] [size] [type]>
+       <variable is_reference name [class] [type] [callback] [implementation] [size] [access]
+            [definition] [declaration] [visibility] [c_prefix] [of_class] [uid]
+            [feature] [enum]>
+          <value is_reference value [class] [enum] [callback] [implementation] [size] [access]
+               [type]>
+             <cast is_reference [access] [class] [enum] [callback] [implementation] [size] [type]>
                 <string [access] [length]/>
                 <array [access] [length] [length_constant]/>
              </cast>
@@ -31,17 +33,19 @@ attribute names are case-sensitive and we use only lower-case names.
           <array .../>
        </variable>
        <struct name [definition] [visibility] [c_prefix] [of_class] [uid] [feature] [declaration]>
-          <property is_reference name [type] [class] [enum] [callback] [size] [uid] [access] [bits]>
+          <property is_reference name [type] [class] [enum] [callback] [implementation] [size] [uid]
+               [access] [bits]>
              <string .../>
              <array .../>
           </property>
        </struct>
        <callback name [declaration] [of_class] [uid] [feature] [c_prefix]>
-          <return is_reference [access] [class] [enum] [callback] [size] [type]>
+          <return is_reference [access] [class] [enum] [callback] [implementation] [size] [type]>
              <string .../>
              <array .../>
           </return>
-          <argument is_reference name [type] [class] [enum] [callback] [size] [uid] [access]>
+          <argument name is_reference [uid] [class] [enum] [callback] [implementation] [size] [access]
+               [type]>
              <string .../>
              <array .../>
           </argument>
@@ -377,6 +381,7 @@ attributes for the component. Defines global variable.
       [ class = "..." ]
       [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
       [ callback = "..." ]
+      [ implementation = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
       [ definition = "public | private | external"  ("private") ]
@@ -440,6 +445,10 @@ callback:
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
     one third party type can be used. The callback attribute is optional.
+
+implementation:
+    Defines specific implementation name. The implementation attribute is
+    optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -522,6 +531,7 @@ variable value.
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
+      [ implementation = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
@@ -579,6 +589,10 @@ callback:
     during context resolution step. 2. Any other value will be used as-is. So
     one third party type can be used. The callback attribute is optional.
 
+implementation:
+    Defines specific implementation name. The implementation attribute is
+    optional.
+
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
     optional. It can take one of the following values:
@@ -615,6 +629,7 @@ type to the type defined in this entity.
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
+      [ implementation = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
         >
@@ -669,6 +684,10 @@ callback:
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
     one third party type can be used. The callback attribute is optional.
+
+implementation:
+    Defines specific implementation name. The implementation attribute is
+    optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -845,6 +864,7 @@ property.
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
+      [ implementation = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ uid = "..." ]
       [ access = "readonly | writeonly | readwrite | disown" ]
@@ -905,6 +925,10 @@ callback:
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
     one third party type can be used. The callback attribute is optional.
+
+implementation:
+    Defines specific implementation name. The implementation attribute is
+    optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -994,6 +1018,7 @@ Defines attributes that related to the instance type. Defines return type.
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
+      [ implementation = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
         >
@@ -1049,6 +1074,10 @@ callback:
     during context resolution step. 2. Any other value will be used as-is. So
     one third party type can be used. The callback attribute is optional.
 
+implementation:
+    Defines specific implementation name. The implementation attribute is
+    optional.
+
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
     optional. It can take one of the following values:
@@ -1077,15 +1106,16 @@ Defines attributes that related to the instance type. Defines argument as
 name, type, and usage information.
 
     <argument
-        is_reference = "0 | 1"
         name = "..."
-      [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
+        is_reference = "0 | 1"
+      [ uid = "..." ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
+      [ implementation = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ uid = "..." ]
       [ access = "readonly | writeonly | readwrite | disown" ]
+      [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
         >
         <string>, optional
         <array>, optional
@@ -1142,6 +1172,10 @@ callback:
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
     one third party type can be used. The callback attribute is optional.
+
+implementation:
+    Defines specific implementation name. The implementation attribute is
+    optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
