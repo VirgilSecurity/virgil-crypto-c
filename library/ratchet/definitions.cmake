@@ -51,4 +51,6 @@ endif()
 
 target_compile_definitions(ratchet
         PUBLIC
+            "VSCR_ERROR_CTX=$<BOOL:${VSCR_ERROR_CTX}>"
+            "VSCR_OLM_MESSAGE=$<BOOL:${VSCR_OLM_MESSAGE}>"
         )

@@ -9,7 +9,7 @@
     src_path = "../library/ratchet/src/"
     work_path = "generated/ratchet/">
 
-    <version major = "0" minor = "1" path = "0" />
+    <version major = "0" minor = "1" patch = "0" />
 
     <license>
         Copyright (C) 2015-2018 Virgil Security Inc.
@@ -50,4 +50,8 @@
     <module name="assert"/>
     <module name="library"/>
     <module name="memory"/>
+    <module name="olm message error"/>
+
+    <class name="error"/>
+    <class name="olm message"/>
 </project>

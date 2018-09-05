@@ -54,8 +54,14 @@ target_sources(ratchet
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_assert.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_library.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_memory.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_error.h"
+            "$<$<BOOL:${VSCR_ERROR_CTX}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_error_ctx.h>"
+            "$<$<BOOL:${VSCR_OLM_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_olm_message.h>"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_library.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_memory.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscr_error.c"
+            "$<$<BOOL:${VSCR_ERROR_CTX}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_error_ctx.c>"
+            "$<$<BOOL:${VSCR_OLM_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_olm_message.c>"
         )

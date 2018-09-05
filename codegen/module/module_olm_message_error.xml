@@ -1,0 +1,15 @@
+<module name="error">
+    <enum name="error" definition="public">
+        <constant name="success" of_class="global" value="0">
+            No errors was occurred.
+        </constant>
+
+        <constant name="asn1 write error" of_class="global" value="1">
+            Error during ASN.1 serialization
+        </constant>
+
+        <constant name="asn1 read error" of_class="global" value="1">
+            Error during ASN.1 deserialization
+        </constant>
+    </enum>
+</module>

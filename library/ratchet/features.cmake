@@ -45,3 +45,27 @@
 
 include_guard()
 
+option(VSCR_ERROR_CTX "Enable class 'error ctx'." ON)
+option(VSCR_OLM_MESSAGE "Enable class 'olm message'." ON)
+mark_as_advanced(
+        VSCR_ERROR_CTX
+        VSCR_OLM_MESSAGE
+        )
+
+if(VSCR_OLM_MESSAGE AND NOT VSC_DATA)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_OLM_MESSAGE depends on the feature:")
+    message("     VSC_DATA - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_OLM_MESSAGE AND NOT VSC_BUFFER)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_OLM_MESSAGE depends on the feature:")
+    message("     VSC_BUFFER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
