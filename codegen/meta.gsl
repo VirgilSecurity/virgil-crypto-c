@@ -562,7 +562,7 @@ function meta_find_entity (meta, name, caller)
         return my.entity
     endif
 
-    echo_fatal ("Entity with name '$(my.name:) is not found.", my.caller ? my)
+    echo_fatal ("Entity with name '$(my.name:)' is not found.", my.caller ? my)
 endfunction
 
 # ---------------------------------------------------------------------------
