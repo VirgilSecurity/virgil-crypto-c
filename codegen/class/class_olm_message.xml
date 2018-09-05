@@ -1,0 +1,33 @@
+<class name="olm message" context="public">
+
+    <require header="virgil/foundation/vscf_asn1wr.h" scope="private"/>
+    <require header="virgil/foundation/vscf_asn1rd.h" scope="private"/>
+    <require header="virgil/foundation/vscf_error_ctx.h" scope="private"/>
+
+    <property name="version" type="size" size="1"/>
+    <property name="counter" type="size" size="4"/>
+    <property name="public key" class="buffer"/>
+    <property name="cipher text" class="buffer"/>
+
+    <constructor name="with members">
+        <argument name="version" type="size" size="1"/>
+        <argument name="counter" type="size" size="4"/>
+        <argument name="public key" class="buffer" access="disown"/>
+        <argument name="cipher text" class="buffer" access="disown"/>
+    </constructor>
+
+    <method name="serialize">
+        <argument class="context"/>
+        <argument name="output" class="buffer"/>
+
+        <return type="error"/>
+    </method>
+
+    <method name="deserialize">
+        <argument name="input" class="data"/>
+        <argument name="err ctx" class="error ctx" access="writeonly"/>
+
+        <return class="olm message"/>
+    </method>
+
+</class>
