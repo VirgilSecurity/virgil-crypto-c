@@ -1,17 +1,17 @@
 <project
-        name = "pythia"
-        brief = "Virgil Security Crypto Pythia"
-        namespace = "virgil"
-        prefix = "vscp"
-        path = "../library/pythia/"
-        inc_path = "../library/pythia/include/virgil/pythia/"
-        inc_private_path = "../library/pythia/include/virgil/pythia/private/"
-        src_path = "../library/pythia/src/"
-        work_path = "generated/pythia/"
-        cmake_target = "pythia_wrap"
+        name="pythia"
+        brief="Virgil Security Crypto Pythia"
+        namespace="virgil"
+        prefix="vscp"
+        path="../library/pythia/"
+        inc_path="../library/pythia/include/virgil/pythia/"
+        inc_private_path="../library/pythia/include/virgil/pythia/private/"
+        src_path="../library/pythia/src/"
+        work_path="generated/pythia/"
+        cmake_target="pythia_wrap"
         >
 
-    <version major = "0" minor = "2" path = "0" />
+    <version major="0" minor="2" patch="0" />
 
     <license>
         Copyright (C) 2015-2018 Virgil Security Inc.

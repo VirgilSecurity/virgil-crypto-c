@@ -58,7 +58,7 @@
 #include "vscf_impl.h"
 #include "vscf_key.h"
 #include "vscf_public_key.h"
-#include "vscf_encrypt2.h"
+#include "vscf_encrypt.h"
 #include "vscf_verify.h"
 #include "vscf_export_public_key.h"
 #include "vscf_import_public_key.h"

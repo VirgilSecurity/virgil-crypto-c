@@ -56,6 +56,9 @@
 #include "vscf_error.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
+
+#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -74,9 +77,13 @@ extern "C" {
 //  Callback. Encrypt given data.
 //          If 'tag' is not give, then it will written to the 'enc'.
 //
-typedef vscf_error_t (*vscf_auth_encrypt_api_auth_encrypt_fn)(vscf_impl_t *impl, const byte *data, size_t data_len,
-        const byte *auth_data, size_t auth_data_len, byte *enc, size_t enc_len, size_t *out_len, byte *tag,
-        size_t tag_len);
+typedef vscf_error_t (*vscf_auth_encrypt_api_auth_encrypt_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data,
+        vsc_buffer_t *out, vsc_buffer_t *tag);
+
+//
+//  Callback. Calculate required buffer length to hold the authenticated encrypted data.
+//
+typedef size_t (*vscf_auth_encrypt_api_auth_encrypted_len_fn)(vscf_impl_t *impl, size_t data_len);
 
 //
 //  Contains API requirements of the interface 'auth encrypt'.
@@ -96,6 +103,10 @@ struct vscf_auth_encrypt_api_t {
     //  If 'tag' is not give, then it will written to the 'enc'.
     //
     vscf_auth_encrypt_api_auth_encrypt_fn auth_encrypt_cb;
+    //
+    //  Calculate required buffer length to hold the authenticated encrypted data.
+    //
+    vscf_auth_encrypt_api_auth_encrypted_len_fn auth_encrypted_len_cb;
 };
 
 

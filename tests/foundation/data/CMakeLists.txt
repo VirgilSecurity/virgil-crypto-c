@@ -53,7 +53,6 @@ target_sources(test_data
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_sha256.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_sha384.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_sha512.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_types.h"
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_aes256_gcm.c"
@@ -75,3 +74,5 @@ target_sources(test_data
 target_include_directories(test_data
         PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         )
+
+target_link_libraries(test_data vsc::common)

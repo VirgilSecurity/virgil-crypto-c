@@ -59,7 +59,7 @@
 #include "vscf_key.h"
 #include "vscf_generate_key.h"
 #include "vscf_private_key.h"
-#include "vscf_decrypt2.h"
+#include "vscf_decrypt.h"
 #include "vscf_sign.h"
 #include "vscf_export_private_key.h"
 #include "vscf_import_private_key.h"

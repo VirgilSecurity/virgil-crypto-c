@@ -65,28 +65,26 @@
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_decrypt(vscf_impl_t *impl, const byte *enc, size_t enc_len, byte *plain, size_t plain_len, size_t *out_len) {
+vscf_decrypt(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out) {
 
     const vscf_decrypt_api_t *decrypt_api = vscf_decrypt_api (impl);
     VSCF_ASSERT_PTR (decrypt_api);
 
     VSCF_ASSERT_PTR (decrypt_api->decrypt_cb);
-    return decrypt_api->decrypt_cb (impl, enc, enc_len, plain, plain_len, out_len);
+    return decrypt_api->decrypt_cb (impl, data, out);
 }
 
 //
 //  Calculate required buffer length to hold the decrypted data.
-//  If argument 'auth tag len' is 0, then returned length
-//  adjusted to cut of auth tag length.
 //
 VSCF_PUBLIC size_t
-vscf_decrypt_required_dec_len(vscf_impl_t *impl, size_t enc_len, size_t auth_tag_len) {
+vscf_decrypt_decrypted_len(vscf_impl_t *impl, size_t data_len) {
 
     const vscf_decrypt_api_t *decrypt_api = vscf_decrypt_api (impl);
     VSCF_ASSERT_PTR (decrypt_api);
 
-    VSCF_ASSERT_PTR (decrypt_api->required_dec_len_cb);
-    return decrypt_api->required_dec_len_cb (impl, enc_len, auth_tag_len);
+    VSCF_ASSERT_PTR (decrypt_api->decrypted_len_cb);
+    return decrypt_api->decrypted_len_cb (impl, data_len);
 }
 
 //

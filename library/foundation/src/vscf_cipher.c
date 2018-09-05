@@ -65,26 +65,26 @@
 //  Setup IV or nonce.
 //
 VSCF_PUBLIC void
-vscf_cipher_set_nonce(vscf_impl_t *impl, const byte *nonce, size_t nonce_len) {
+vscf_cipher_set_nonce(vscf_impl_t *impl, vsc_data_t nonce) {
 
     const vscf_cipher_api_t *cipher_api = vscf_cipher_api (impl);
     VSCF_ASSERT_PTR (cipher_api);
 
     VSCF_ASSERT_PTR (cipher_api->set_nonce_cb);
-    cipher_api->set_nonce_cb (impl, nonce, nonce_len);
+    cipher_api->set_nonce_cb (impl, nonce);
 }
 
 //
 //  Set cipher encryption / decryption key.
 //
 VSCF_PUBLIC void
-vscf_cipher_set_key(vscf_impl_t *impl, const byte *key, size_t key_len) {
+vscf_cipher_set_key(vscf_impl_t *impl, vsc_data_t key) {
 
     const vscf_cipher_api_t *cipher_api = vscf_cipher_api (impl);
     VSCF_ASSERT_PTR (cipher_api);
 
     VSCF_ASSERT_PTR (cipher_api->set_key_cb);
-    cipher_api->set_key_cb (impl, key, key_len);
+    cipher_api->set_key_cb (impl, key);
 }
 
 //

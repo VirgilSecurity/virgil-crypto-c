@@ -90,10 +90,34 @@ vsc_data(const byte *bytes, size_t len) {
 }
 
 //
-//  Creates emty data.
+//  Creates empty data.
 //
 VSC_PUBLIC vsc_data_t
 vsc_data_empty(void) {
 
     return (vsc_data_t){NULL, 0};
+}
+
+//
+//  Return underlying data slice starting from beginning.
+//
+VSC_PUBLIC vsc_data_t
+vsc_data_slice_beg(vsc_data_t data_ctx, size_t offset, size_t len) {
+
+    VSC_ASSERT(vsc_data_is_valid(data_ctx));
+    VSC_ASSERT(data_ctx.len >= offset + len);
+
+    return (vsc_data_t){data_ctx.bytes + offset, len};
+}
+
+//
+//  Return underlying data slice starting from ending.
+//
+VSC_PUBLIC vsc_data_t
+vsc_data_slice_end(vsc_data_t data_ctx, size_t offset, size_t len) {
+
+    VSC_ASSERT(vsc_data_is_valid(data_ctx));
+    VSC_ASSERT(data_ctx.len >= offset + len);
+
+    return (vsc_data_t){data_ctx.bytes + data_ctx.len - offset - len, len};
 }
