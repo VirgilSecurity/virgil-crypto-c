@@ -4,6 +4,8 @@
     <require header="virgil/foundation/vscf_asn1rd.h" scope="private"/>
     <require header="virgil/foundation/vscf_error_ctx.h" scope="private"/>
 
+    <constant name="public key length" definition="public" value="32"/>
+
     <property name="version" type="size" size="1"/>
     <property name="counter" type="size" size="4"/>
     <property name="public key" class="buffer"/>
@@ -15,6 +17,12 @@
         <argument name="public key" class="buffer" access="disown"/>
         <argument name="cipher text" class="buffer" access="disown"/>
     </constructor>
+
+    <method name="serialize len">
+        <argument class="context" access="readonly"/>
+
+        <return type="size"/>
+    </method>
 
     <method name="serialize">
         <argument class="context"/>

@@ -133,7 +133,7 @@ endif()
 #
 # Add library alias
 #
-add_library(vsc::racthet ALIAS ratchet)
+add_library(vsc::ratchet ALIAS ratchet)
 
 #
 # Format code

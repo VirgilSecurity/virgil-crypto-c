@@ -34,23 +34,19 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_c_integration_tests VERSION 0.1.0 LANGUAGES C)
+project(test_data_ratchet VERSION 0.1.0 LANGUAGES C)
 
-add_subdirectory(unity)
-add_subdirectory(test_utils)
+add_library(test_data_ratchet "")
+target_sources(test_data_ratchet
+        PRIVATE
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_olm_message.h"
 
-if(TARGET vsc::common)
-    add_subdirectory(common)
-endif()
+        PRIVATE
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_olm_message.c"
+        )
 
-if(TARGET vsc::foundation)
-    add_subdirectory(foundation)
-endif()
+target_include_directories(test_data_ratchet
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        )
 
-if(TARGET vsc::pythia)
-    add_subdirectory(pythia)
-endif()
-
-if(TARGET vsc::ratchet)
-    add_subdirectory(ratchet)
-endif()
+target_link_libraries(test_data_ratchet vsc::common)
