@@ -132,6 +132,9 @@ VSCR_PUBLIC void
 vscr_olm_message_cleanup(vscr_olm_message_t *olm_message_ctx) {
 
     VSCR_UNUSED(olm_message_ctx);
+
+    vsc_buffer_destroy(&olm_message_ctx->public_key);
+    vsc_buffer_destroy(&olm_message_ctx->cipher_text);
 }
 
 VSCR_PUBLIC vscr_olm_message_t *
@@ -140,6 +143,7 @@ vscr_olm_message_new_with_members(uint8_t version, uint32_t counter, vsc_buffer_
 
     VSCR_ASSERT_PTR(public_key_ref);
     VSCR_ASSERT(vsc_buffer_is_valid(*public_key_ref));
+    VSCR_ASSERT(vsc_buffer_len(*public_key_ref) == vscr_olm_message_PUBLIC_KEY_LENGTH);
 
     VSCR_ASSERT_PTR(cipher_text_ref);
     VSCR_ASSERT(vsc_buffer_is_valid(*cipher_text_ref));
@@ -156,6 +160,24 @@ vscr_olm_message_new_with_members(uint8_t version, uint32_t counter, vsc_buffer_
     return olm_message;
 }
 
+VSCR_PUBLIC size_t
+vscr_olm_message_serialize_len(const vscr_olm_message_t *olm_message_ctx) {
+
+    //  OLMMessage ::= SEQUENCE {
+    //       version INTEGER,
+    //       counter INTEGER,
+    //       public_key OCTET_STRING,
+    //       cipher_text OCTET_STRING }
+
+    size_t top_sequence_len = 2 /* SEQUENCE */
+                              + 1 + 1 + sizeof(olm_message_ctx->version)
+                              + 1 + 1 + sizeof(olm_message_ctx->counter)
+                              + 1 + 1 + vsc_buffer_len(olm_message_ctx->public_key)
+                              + 1 + 3 + vsc_buffer_len(olm_message_ctx->cipher_text);
+
+    return top_sequence_len;
+}
+
 VSCR_PUBLIC vscr_error_t
 vscr_olm_message_serialize(vscr_olm_message_t *olm_message_ctx, vsc_buffer_t *output) {
 
@@ -169,14 +191,17 @@ vscr_olm_message_serialize(vscr_olm_message_t *olm_message_ctx, vsc_buffer_t *ou
 
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     vscf_impl_t *asn1wr_impl = vscf_asn1wr_impl(asn1wr);
+    asn1wr = NULL;
 
     vscf_asn1_writer_reset(asn1wr_impl, output);
 
     size_t top_sequence_len = 0;
 
-    top_sequence_len += vscf_asn1_writer_write_octet_str(asn1wr_impl, vsc_buffer_data(olm_message_ctx->cipher_text));
+    top_sequence_len += vscf_asn1_writer_write_octet_str(asn1wr_impl,
+                                                         vsc_buffer_data(olm_message_ctx->cipher_text));
 
-    top_sequence_len += vscf_asn1_writer_write_octet_str(asn1wr_impl, vsc_buffer_data(olm_message_ctx->public_key));
+    top_sequence_len += vscf_asn1_writer_write_octet_str(asn1wr_impl,
+                                                         vsc_buffer_data(olm_message_ctx->public_key));
 
     top_sequence_len += vscf_asn1_writer_write_int(asn1wr_impl, (int)olm_message_ctx->counter);
 
@@ -185,14 +210,14 @@ vscr_olm_message_serialize(vscr_olm_message_t *olm_message_ctx, vsc_buffer_t *ou
     vscf_asn1_writer_write_sequence(asn1wr_impl, top_sequence_len);
 
     if (vscf_asn1_writer_error(asn1wr_impl) != vscf_SUCCESS) {
-        vscf_asn1wr_destroy(&asn1wr);
+        vscf_impl_destroy(&asn1wr_impl);
 
         return vscr_ASN1_WRITE_ERROR;
     }
 
     vscf_asn1_writer_seal(asn1wr_impl);
 
-    vscf_asn1wr_destroy(&asn1wr);
+    vscf_impl_destroy(&asn1wr_impl);
 
     return vscr_SUCCESS;
 }
@@ -204,12 +229,17 @@ vscr_olm_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
 
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     vscf_impl_t *asn1rd_impl = vscf_asn1rd_impl(asn1rd);
+    asn1rd = NULL;
+
+    vscf_asn1_reader_reset(asn1rd_impl, input);
+    vscf_asn1_reader_read_sequence(asn1rd_impl);
 
     uint8_t version = (uint8_t)vscf_asn1_reader_read_int(asn1rd_impl);
 
     uint32_t counter = (uint32_t)vscf_asn1_reader_read_int(asn1rd_impl);
 
     size_t public_key_len = vscf_asn1_reader_get_len(asn1rd_impl);
+    VSCR_ASSERT(public_key_len == vscr_olm_message_PUBLIC_KEY_LENGTH);
     vsc_buffer_t *public_key = vsc_buffer_new_with_capacity(public_key_len);
     vscf_asn1_reader_read_octet_str(asn1rd_impl, public_key);
 
@@ -218,14 +248,14 @@ vscr_olm_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
     vscf_asn1_reader_read_octet_str(asn1rd_impl, cipher_text);
 
     if (vscf_asn1_reader_error(asn1rd_impl) != vscf_SUCCESS) {
-        vscf_asn1rd_destroy(&asn1rd);
+        vscf_impl_destroy(&asn1rd_impl);
 
         VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_ASN1_READ_ERROR);
 
         return NULL;
     }
 
-    vscf_asn1rd_destroy(&asn1rd);
+    vscf_impl_destroy(&asn1rd_impl);
 
     return vscr_olm_message_new_with_members(version, counter, &public_key, &cipher_text);
 }

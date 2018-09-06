@@ -68,6 +68,13 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Public integral constants.
+//
+enum {
+    vscr_olm_message_PUBLIC_KEY_LENGTH = 32
+};
+
+//
 //  Handle 'olm message' context.
 //
 struct vscr_olm_message_t {
@@ -120,6 +127,9 @@ vscr_olm_message_delete(vscr_olm_message_t *olm_message_ctx);
 //
 VSCR_PUBLIC void
 vscr_olm_message_destroy(vscr_olm_message_t **olm_message_ctx_ref);
+
+VSCR_PUBLIC size_t
+vscr_olm_message_serialize_len(const vscr_olm_message_t *olm_message_ctx);
 
 VSCR_PUBLIC vscr_error_t
 vscr_olm_message_serialize(vscr_olm_message_t *olm_message_ctx, vsc_buffer_t *output);
