@@ -295,7 +295,7 @@ vscf_asn1wr_write_len(vscf_asn1wr_impl_t *asn1wr_impl, size_t len) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_int(vscf_asn1wr_impl_t *asn1wr_impl, int value) {
+vscf_asn1wr_write_int(vscf_asn1wr_impl_t *asn1wr_impl, int val) {
 
     VSCF_ASSERT_PTR(asn1wr_impl);
 
@@ -303,13 +303,100 @@ vscf_asn1wr_write_int(vscf_asn1wr_impl_t *asn1wr_impl, int value) {
         return 0;
     }
 
-    int ret = mbedtls_asn1_write_int(&asn1wr_impl->curr, asn1wr_impl->start, value);
+    // Improved implementation taken from MbedTLS PR.
+    //
+    // a better world:
+    //
+    // the loop below terminates after at most sizeof(int)+1 iterations:
+    // because of
+    //
+    //    P >> (8 * sizeof(int)) == 0 for all P >= 0
+    // and
+    //    N >> (8 * sizeof(int)) == -1 for all N < 0
+    //
+    // it is valid to encode and then right shift 8 bits until the result
+    // of the shift operation is either 0 or -1.
+    //
+    // since ASN.1 BER/DER Integer encoding is specified as
+    // two's complement, MSB of leading payload octet must be
+    // 1 for negative and 0 for non-negative integers.
+    //
+    // 7 bit right shift of val and check for 0 or -1 as termination
+    // condition ensures that a padding octet is written if the
+    // MSB of the encoded octet does not match the sign of
+    // the input.
+    //
+    //  for ( ;; )
+    //  {
+    //      if( *p - start < 1 )
+    //          return( MBEDTLS_ERR_ASN1_BUF_TOO_SMALL );
+    //      *--(*p) = (unsigned char)(val & 0xFF);
+    //      len += 1;
+    //
+    //      if( val >> 7 == 0 || val >> 7 == -1 )
+    //          break;
+    //
+    //      val >>= 8;
+    //  }
+    //
+    // reality:
+    //
+    // 1) Arithmethic right shift on signed integers is
+    //    implementation-defined behaviour for negative integers.
+    //
+    // one can emulate arithmetic right shift with sign extension for
+    // negative input by using a logical right shift and then set the
+    // shifted-in bits to one.
+    //
+    // but since
+    // 2) The ISO C standard allows three encoding methods for signed
+    //    integers: two's complement, one's complement and sign/magnitude.
+    //
+    // the two's complement encoding has to be ensured.
+    //
 
-    if (vscf_asn1wr_mbedtls_has_error(asn1wr_impl, ret)) {
+    size_t len = 0;
+    unsigned char **p = &asn1wr_impl->curr;
+    unsigned char *start = asn1wr_impl->start;
+
+    unsigned int v, fix7, fix8, cmp;
+
+    if (val < 0) {
+        v = ~((unsigned int)-val) + 1;
+        fix7 = 0xFE << (sizeof(int) - 1) * 8;
+        fix8 = 0xFF << (sizeof(int) - 1) * 8;
+        cmp = -1;
+    } else {
+        v = (unsigned int)val;
+        fix7 = 0;
+        fix8 = 0;
+        cmp = 0;
+    }
+
+    for (;;) {
+        if (*p - start < 1) {
+            asn1wr_impl->error = vscf_error_SMALL_BUFFER;
+            return 0;
+        }
+
+        *--(*p) = (unsigned char)(v & 0xFF);
+        len += 1;
+
+        if ((v >> 7 | fix7) == cmp) {
+            break;
+        }
+
+        v = v >> 8 | fix8;
+    }
+
+    len += vscf_asn1wr_write_len(asn1wr_impl, len);
+    len += vscf_asn1wr_write_tag(asn1wr_impl, MBEDTLS_ASN1_INTEGER);
+
+    if (vscf_asn1wr_error(asn1wr_impl) != vscf_SUCCESS) {
         return 0;
     }
 
-    return (size_t)ret;
+    return len;
 }
 
 //

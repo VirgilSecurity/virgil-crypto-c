@@ -207,6 +207,15 @@ function component_require_attr_callback (component, caller)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Check required attribute: implemenattion.
+# ---------------------------------------------------------------------------
+function component_require_attr_implementation (component, caller)
+    check_argument (my, "component", my)
+
+    assert_attribute (my.component, "implementation", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Check required attribute: uid.
 # ---------------------------------------------------------------------------
 function component_require_attr_uid (component, caller)
@@ -652,6 +661,18 @@ function component_resolve_instance_attr_callback (instance, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve attribute: instance.implementation.
+# ---------------------------------------------------------------------------
+function component_resolve_instance_attr_implementation (instance, parent)
+    check_arguments (my, "instance, parent")
+
+    component_require_attr_implementation (my.instance, my)
+
+    my.instance.class = ref(make_id("class", my.instance.implementation, "struct", "impl"))
+    my.instance.implementation = # undefined
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve attribute: access.
 # ---------------------------------------------------------------------------
 function component_resolve_instance_attr_access (instance, parent)
@@ -939,6 +960,10 @@ endfunction
 # ---------------------------------------------------------------------------
 function component_resolve_instance (instance, parent)
     check_arguments (my, "instance, parent", my)
+
+    if defined (my.instance.implementation)
+        component_resolve_instance_attr_implementation (my.instance, my.parent)
+    endif
 
     if defined (my.instance.type)
         component_resolve_instance_attr_type (my.instance, my.parent)
