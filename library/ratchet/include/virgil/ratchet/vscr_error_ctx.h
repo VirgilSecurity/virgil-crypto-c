@@ -86,10 +86,10 @@ extern "C" {
 //
 //  Handle 'error ctx' context.
 //
+typedef struct vscr_error_ctx_t vscr_error_ctx_t;
 struct vscr_error_ctx_t {
     vscr_error_t error;
 };
-typedef struct vscr_error_ctx_t vscr_error_ctx_t;
 
 //
 //  Reset context to the "no error" state.
