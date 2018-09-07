@@ -169,9 +169,9 @@ vscr_olm_message_serialize_len(const vscr_olm_message_t *olm_message_ctx) {
     //       public_key OCTET_STRING,
     //       cipher_text OCTET_STRING }
 
-    size_t top_sequence_len = 2 /* SEQUENCE */
-                              + 1 + 1 + sizeof(olm_message_ctx->version)
-                              + 1 + 1 + sizeof(olm_message_ctx->counter)
+    size_t top_sequence_len = 1 + 3 /* SEQUENCE */
+                              + 1 + 1 + 2 /* INTEGER */
+                              + 1 + 1 + 5 /* INTEGER */
                               + 1 + 1 + vsc_buffer_len(olm_message_ctx->public_key)
                               + 1 + 3 + vsc_buffer_len(olm_message_ctx->cipher_text);
 
@@ -203,9 +203,9 @@ vscr_olm_message_serialize(vscr_olm_message_t *olm_message_ctx, vsc_buffer_t *ou
     top_sequence_len += vscf_asn1_writer_write_octet_str(asn1wr_impl,
                                                          vsc_buffer_data(olm_message_ctx->public_key));
 
-    top_sequence_len += vscf_asn1_writer_write_int(asn1wr_impl, (int)olm_message_ctx->counter);
+    top_sequence_len += vscf_asn1_writer_write_uint(asn1wr_impl, olm_message_ctx->counter);
 
-    top_sequence_len += vscf_asn1_writer_write_int(asn1wr_impl, (int)olm_message_ctx->version);
+    top_sequence_len += vscf_asn1_writer_write_uint32(asn1wr_impl, olm_message_ctx->version);
 
     vscf_asn1_writer_write_sequence(asn1wr_impl, top_sequence_len);
 
@@ -234,9 +234,10 @@ vscr_olm_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
     vscf_asn1_reader_reset(asn1rd_impl, input);
     vscf_asn1_reader_read_sequence(asn1rd_impl);
 
-    uint8_t version = (uint8_t)vscf_asn1_reader_read_int(asn1rd_impl);
+    //  FIXME:
+    uint8_t version = (uint8_t)vscf_asn1_reader_read_uint(asn1rd_impl);
 
-    uint32_t counter = (uint32_t)vscf_asn1_reader_read_int(asn1rd_impl);
+    uint32_t counter = vscf_asn1_reader_read_uint32(asn1rd_impl);
 
     size_t public_key_len = vscf_asn1_reader_get_len(asn1rd_impl);
     VSCR_ASSERT(public_key_len == vscr_olm_message_PUBLIC_KEY_LENGTH);
