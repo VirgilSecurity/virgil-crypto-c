@@ -283,17 +283,144 @@ vscf_asn1rd_read_int(vscf_asn1rd_impl_t *asn1rd_impl) {
 
     VSCF_ASSERT_PTR(asn1rd_impl);
 
-    VSCF_ASSERT(asn1rd_impl->error != vscf_error_UNINITIALIZED);
+    int64_t value = vscf_asn1rd_read_int64(asn1rd_impl);
 
     if (asn1rd_impl->error != vscf_SUCCESS) {
         return 0;
     }
 
-    int value = 0;
-    int ret = mbedtls_asn1_get_int(&asn1rd_impl->curr, asn1rd_impl->end, &value);
-
-    if (vscf_asn1rd_mbedtls_has_error(asn1rd_impl, ret)) {
+    if (value > (int64_t)INT_MAX) {
+        asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
+    }
+
+    return (int)value;
+}
+
+//
+//  Read ASN.1 type: INTEGER.
+//
+VSCF_PUBLIC int32_t
+vscf_asn1rd_read_int32(vscf_asn1rd_impl_t *asn1rd_impl) {
+
+    VSCF_ASSERT_PTR(asn1rd_impl);
+
+    int64_t value = vscf_asn1rd_read_int64(asn1rd_impl);
+
+    if (asn1rd_impl->error != vscf_SUCCESS) {
+        return 0;
+    }
+
+    if (value > (int64_t)INT32_MAX) {
+        asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        return 0;
+    }
+
+    return (int32_t)value;
+}
+
+//
+//  Read ASN.1 type: INTEGER.
+//
+VSCF_PUBLIC int64_t
+vscf_asn1rd_read_int64(vscf_asn1rd_impl_t *asn1rd_impl) {
+
+    //  Initial implementation is taken from MbedTLS library.
+
+    VSCF_ASSERT_PTR(asn1rd_impl);
+
+    size_t len = vscf_asn1rd_read_tag(asn1rd_impl, MBEDTLS_ASN1_INTEGER);
+
+    if (asn1rd_impl->error != vscf_SUCCESS) {
+        return 0;
+    }
+
+    if (len == 0 || len > sizeof(int64_t) || (*asn1rd_impl->curr & 0x80) != 0) {
+        asn1rd_impl->error = vscf_error_BAD_ASN1;
+        return 0;
+    }
+
+    int64_t value = 0;
+
+    while (len-- > 0) {
+        value = (value << 8) | (int64_t)(*asn1rd_impl->curr);
+        ++asn1rd_impl->curr;
+    }
+
+    return value;
+}
+
+//
+//  Read ASN.1 type: INTEGER.
+//
+VSCF_PUBLIC unsigned int
+vscf_asn1rd_read_uint(vscf_asn1rd_impl_t *asn1rd_impl) {
+
+    VSCF_ASSERT_PTR(asn1rd_impl);
+
+    uint64_t value = vscf_asn1rd_read_uint64(asn1rd_impl);
+
+    if (asn1rd_impl->error != vscf_SUCCESS) {
+        return 0;
+    }
+
+    if (value > (uint64_t)UINT_MAX) {
+        asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        return 0;
+    }
+
+    return (unsigned int)value;
+}
+
+//
+//  Read ASN.1 type: INTEGER.
+//
+VSCF_PUBLIC uint32_t
+vscf_asn1rd_read_uint32(vscf_asn1rd_impl_t *asn1rd_impl) {
+
+    VSCF_ASSERT_PTR(asn1rd_impl);
+
+    uint64_t value = vscf_asn1rd_read_uint64(asn1rd_impl);
+
+    if (asn1rd_impl->error != vscf_SUCCESS) {
+        return 0;
+    }
+
+    if (value > (uint64_t)UINT32_MAX) {
+        asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        return 0;
+    }
+
+    return (uint32_t)value;
+}
+
+//
+//  Read ASN.1 type: INTEGER.
+//
+VSCF_PUBLIC uint64_t
+vscf_asn1rd_read_uint64(vscf_asn1rd_impl_t *asn1rd_impl) {
+
+    //  Initial implementation is taken from MbedTLS library.
+
+    VSCF_ASSERT_PTR(asn1rd_impl);
+
+    size_t len = vscf_asn1rd_read_tag(asn1rd_impl, MBEDTLS_ASN1_INTEGER);
+
+
+    if (asn1rd_impl->error != vscf_SUCCESS) {
+        return 0;
+    }
+
+    if (len == 0 || len > sizeof(int64_t) || (*asn1rd_impl->curr & 0x80) != 0) {
+        asn1rd_impl->error = vscf_error_BAD_ASN1;
+        return 0;
+    }
+
+    uint64_t value = 0;
+
+    while (len-- > 0) {
+        value = (value << 8) | *asn1rd_impl->curr;
+        ++asn1rd_impl->curr;
     }
 
     return value;

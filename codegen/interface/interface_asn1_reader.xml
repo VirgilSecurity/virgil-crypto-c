@@ -50,6 +50,40 @@
     </method>
 
 
+    <method name="read int32">
+        Read ASN.1 type: INTEGER.
+
+        <return type="integer" size="4"/>
+    </method>
+
+
+    <method name="read int64">
+        Read ASN.1 type: INTEGER.
+
+        <return type="integer" size="8"/>
+    </method>
+
+    <method name="read uint">
+        Read ASN.1 type: INTEGER.
+
+        <return type="unsigned"/>
+    </method>
+
+
+    <method name="read uint32">
+        Read ASN.1 type: INTEGER.
+
+        <return type="unsigned" size="4"/>
+    </method>
+
+
+    <method name="read uint64">
+        Read ASN.1 type: INTEGER.
+
+        <return type="unsigned" size="8"/>
+    </method>
+
+
     <method name="read bool">
         Read ASN.1 type: BOOLEAN.
 

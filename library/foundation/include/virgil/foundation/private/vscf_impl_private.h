@@ -72,6 +72,7 @@ extern "C" {
 //
 //  Contains common properties for any 'API' implementation object.
 //
+typedef struct vscf_impl_info_t vscf_impl_info_t;
 struct vscf_impl_info_t {
     //
     //  Implementation unique identifier, MUST be first in the structure.
@@ -91,7 +92,6 @@ struct vscf_impl_info_t {
     //
     vscf_impl_delete_fn self_delete_cb;
 };
-typedef struct vscf_impl_info_t vscf_impl_info_t;
 
 //
 //  Contains header of any 'API' implementation structure.

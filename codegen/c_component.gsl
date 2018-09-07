@@ -166,7 +166,6 @@ function c_derive_callback_name (callback)
     return c_format_name (my.callback.c_prefix, component_derive_full_name (my.callback), "fn")
 endfunction
 
-
 # ---------------------------------------------------------------------------
 #   Derive C integer type correspond to it's size.
 #   Size: {1, 2, 4, 8}.
@@ -193,6 +192,31 @@ function c_component_derive_integer_type (size)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Derive C unsigned integer type correspond to it's size.
+#   Size: {1, 2, 4, 8}.
+# ---------------------------------------------------------------------------
+function c_component_derive_unsigned_type (size)
+    if defined (my.size)
+        if my.size = "1"
+            return "uint8_t"
+
+        elsif my.size = "2"
+            return "uint16_t"
+
+        elsif my.size = "4"
+            return "uint32_t"
+
+        elsif my.size = "8"
+            return "uint64_t"
+        else
+            echo_fatal ("Unsupported size 'my.size' for C unsigned integers", my)
+        endif
+    else
+        return "unsigned int"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Derive C size type correspond to it's size.
 #   Size: {1, 2, 4, 8}.
 # ---------------------------------------------------------------------------
@@ -210,7 +234,7 @@ function c_component_derive_size_type (size)
         elsif my.size = "8"
             return "uint64_t"
         else
-            echo_fatal ("Unsupported size 'my.size' for C integers", my)
+            echo_fatal ("Unsupported size 'my.size' for C size type", my)
         endif
     else
         return "size_t"
@@ -455,6 +479,9 @@ function c_component_map_instance_attr_type (c_instance, instance)
 
         elsif my.instance.type = "integer"
             my.c_instance.type = c_component_derive_integer_type (my.instance.size ?)
+
+        elsif my.instance.type = "unsigned"
+            my.c_instance.type = c_component_derive_unsigned_type (my.instance.size ?)
 
         elsif my.instance.type = "byte"
             my.c_instance.type = "byte"

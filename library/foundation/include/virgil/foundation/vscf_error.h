@@ -104,25 +104,29 @@ enum vscf_error_t {
     //
     vscf_error_BAD_ASN1 = -203,
     //
+    //  Attempt to read ASN.1 type that is bigger then requested C type.
+    //
+    vscf_error_ASN1_LOSSY_TYPE_NARROWING = -204,
+    //
     //  ASN.1 representation of PKCS#1 public key is corrupted.
     //
-    vscf_error_BAD_PKCS1_PUBLIC_KEY = -204,
+    vscf_error_BAD_PKCS1_PUBLIC_KEY = -205,
     //
     //  ASN.1 representation of PKCS#1 private key is corrupted.
     //
-    vscf_error_BAD_PKCS1_PRIVATE_KEY = -205,
+    vscf_error_BAD_PKCS1_PRIVATE_KEY = -206,
     //
     //  Encrypted data is corrupted.
     //
-    vscf_error_BAD_ENCRYPTED_DATA = -206,
+    vscf_error_BAD_ENCRYPTED_DATA = -207,
     //
     //  Underlying random operation returns error.
     //
-    vscf_error_RANDOM_FAILED = -207,
+    vscf_error_RANDOM_FAILED = -208,
     //
     //  Generation of the private or secret key failed.
     //
-    vscf_error_KEY_GENERATION_FAILED = -208
+    vscf_error_KEY_GENERATION_FAILED = -209
 };
 typedef enum vscf_error_t vscf_error_t;
 

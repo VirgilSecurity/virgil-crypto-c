@@ -71,6 +71,7 @@ extern "C" {
 //
 //  Handle 'data' context.
 //
+typedef struct vsc_data_t vsc_data_t;
 struct vsc_data_t {
     //
     //  Underlying byte array.
@@ -81,7 +82,6 @@ struct vsc_data_t {
     //
     size_t len;
 };
-typedef struct vsc_data_t vsc_data_t;
 
 //
 //  Returns true if underlying byte array is defined.
