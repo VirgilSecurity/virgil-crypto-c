@@ -96,6 +96,10 @@
             Signed integral type.
         </restrict>
 
+        <restrict value="unsigned">
+            Unsigned integral type.
+        </restrict>
+
         <restrict value="size">
             Unsigned integral type for size definition.
         </restrict>

@@ -104,6 +104,26 @@ static const vscf_asn1_reader_api_t asn1_reader_api = {
     //
     (vscf_asn1_reader_api_read_int_fn)vscf_asn1rd_read_int,
     //
+    //  Read ASN.1 type: INTEGER.
+    //
+    (vscf_asn1_reader_api_read_int32_fn)vscf_asn1rd_read_int32,
+    //
+    //  Read ASN.1 type: INTEGER.
+    //
+    (vscf_asn1_reader_api_read_int64_fn)vscf_asn1rd_read_int64,
+    //
+    //  Read ASN.1 type: INTEGER.
+    //
+    (vscf_asn1_reader_api_read_uint_fn)vscf_asn1rd_read_uint,
+    //
+    //  Read ASN.1 type: INTEGER.
+    //
+    (vscf_asn1_reader_api_read_uint32_fn)vscf_asn1rd_read_uint32,
+    //
+    //  Read ASN.1 type: INTEGER.
+    //
+    (vscf_asn1_reader_api_read_uint64_fn)vscf_asn1rd_read_uint64,
+    //
     //  Read ASN.1 type: BOOLEAN.
     //
     (vscf_asn1_reader_api_read_bool_fn)vscf_asn1rd_read_bool,

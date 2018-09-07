@@ -295,13 +295,31 @@ vscf_asn1wr_write_len(vscf_asn1wr_impl_t *asn1wr_impl, size_t len) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_int(vscf_asn1wr_impl_t *asn1wr_impl, int val) {
+vscf_asn1wr_write_int(vscf_asn1wr_impl_t *asn1wr_impl, int value) {
 
     VSCF_ASSERT_PTR(asn1wr_impl);
 
-    if (asn1wr_impl->error != vscf_SUCCESS) {
-        return 0;
-    }
+    return vscf_asn1wr_write_int64(asn1wr_impl, value);
+}
+
+//
+//  Write ASN.1 type: INTEGER.
+//  Return count of written bytes.
+//
+VSCF_PUBLIC size_t
+vscf_asn1wr_write_int32(vscf_asn1wr_impl_t *asn1wr_impl, int32_t value) {
+
+    VSCF_ASSERT_PTR(asn1wr_impl);
+
+    return vscf_asn1wr_write_int64(asn1wr_impl, value);
+}
+
+//
+//  Write ASN.1 type: INTEGER.
+//  Return count of written bytes.
+//
+VSCF_PUBLIC size_t
+vscf_asn1wr_write_int64(vscf_asn1wr_impl_t *asn1wr_impl, int64_t value) {
 
     // Improved implementation taken from MbedTLS PR.
     //
@@ -321,22 +339,22 @@ vscf_asn1wr_write_int(vscf_asn1wr_impl_t *asn1wr_impl, int val) {
     // two's complement, MSB of leading payload octet must be
     // 1 for negative and 0 for non-negative integers.
     //
-    // 7 bit right shift of val and check for 0 or -1 as termination
+    // 7 bit right shift of value and check for 0 or -1 as termination
     // condition ensures that a padding octet is written if the
     // MSB of the encoded octet does not match the sign of
     // the input.
     //
-    //  for ( ;; )
+    //  for (;;)
     //  {
-    //      if( *p - start < 1 )
-    //          return( MBEDTLS_ERR_ASN1_BUF_TOO_SMALL );
-    //      *--(*p) = (unsigned char)(val & 0xFF);
+    //      if(*p - start < 1)
+    //          return(MBEDTLS_ERR_ASN1_BUF_TOO_SMALL);
+    //      *--(*p) = (unsigned char)(value & 0xFF);
     //      len += 1;
     //
-    //      if( val >> 7 == 0 || val >> 7 == -1 )
+    //      if(value >> 7 == 0 || value >> 7 == -1)
     //          break;
     //
-    //      val >>= 8;
+    //      value >>= 8;
     //  }
     //
     // reality:
@@ -355,19 +373,21 @@ vscf_asn1wr_write_int(vscf_asn1wr_impl_t *asn1wr_impl, int val) {
     // the two's complement encoding has to be ensured.
     //
 
+    VSCF_ASSERT_PTR(asn1wr_impl);
+
     size_t len = 0;
     unsigned char **p = &asn1wr_impl->curr;
     unsigned char *start = asn1wr_impl->start;
 
-    unsigned int v, fix7, fix8, cmp;
+    uint64_t v, fix7, fix8, cmp;
 
-    if (val < 0) {
-        v = ~((unsigned int)-val) + 1;
-        fix7 = 0xFE << (sizeof(int) - 1) * 8;
-        fix8 = 0xFF << (sizeof(int) - 1) * 8;
+    if (value < 0) {
+        v = ~((uint64_t)-value) + 1;
+        fix7 = 0xFE00000000000000;
+        fix8 = 0xFF00000000000000;
         cmp = -1;
     } else {
-        v = (unsigned int)val;
+        v = (uint64_t)value;
         fix7 = 0;
         fix8 = 0;
         cmp = 0;
@@ -387,6 +407,72 @@ vscf_asn1wr_write_int(vscf_asn1wr_impl_t *asn1wr_impl, int val) {
         }
 
         v = v >> 8 | fix8;
+    }
+
+    len += vscf_asn1wr_write_len(asn1wr_impl, len);
+    len += vscf_asn1wr_write_tag(asn1wr_impl, MBEDTLS_ASN1_INTEGER);
+
+    if (vscf_asn1wr_error(asn1wr_impl) != vscf_SUCCESS) {
+        return 0;
+    }
+
+    return len;
+}
+
+//
+//  Write ASN.1 type: INTEGER.
+//  Return count of written bytes.
+//
+VSCF_PUBLIC size_t
+vscf_asn1wr_write_uint(vscf_asn1wr_impl_t *asn1wr_impl, unsigned int value) {
+
+    VSCF_ASSERT_PTR(asn1wr_impl);
+
+    return vscf_asn1wr_write_uint64(asn1wr_impl, value);
+}
+
+//
+//  Write ASN.1 type: INTEGER.
+//  Return count of written bytes.
+//
+VSCF_PUBLIC size_t
+vscf_asn1wr_write_uint32(vscf_asn1wr_impl_t *asn1wr_impl, uint32_t value) {
+
+    VSCF_ASSERT_PTR(asn1wr_impl);
+
+    return vscf_asn1wr_write_uint64(asn1wr_impl, value);
+}
+
+//
+//  Write ASN.1 type: INTEGER.
+//  Return count of written bytes.
+//
+VSCF_PUBLIC size_t
+vscf_asn1wr_write_uint64(vscf_asn1wr_impl_t *asn1wr_impl, uint64_t value) {
+
+    //  Short version of vscf_asn1wr_write_int64() function.
+    //  In assumption that given value is unsigned.
+
+    VSCF_ASSERT_PTR(asn1wr_impl);
+
+    size_t len = 0;
+    unsigned char **p = &asn1wr_impl->curr;
+    unsigned char *start = asn1wr_impl->start;
+
+    for (;;) {
+        if (*p - start < 1) {
+            asn1wr_impl->error = vscf_error_SMALL_BUFFER;
+            return 0;
+        }
+
+        *--(*p) = (unsigned char)(value & 0xFF);
+        len += 1;
+
+        if ((value >> 7) == 0) {
+            break;
+        }
+
+        value = value >> 8;
     }
 
     len += vscf_asn1wr_write_len(asn1wr_impl, len);

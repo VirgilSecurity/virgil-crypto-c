@@ -588,7 +588,7 @@ function component_resolve_instance_attr_type (instance, parent)
 
     component_require_attr_type (my.instance, my)
 
-    my.valid_types = "nothing, boolean, integer, size, byte, data, string, error"
+    my.valid_types = "nothing, boolean, integer, unsigned, size, byte, data, string, error"
     if ! string_in (my.instance.type, my.valid_types)
         my.instance_dump = component_instance_dump (my.instance)
 
@@ -717,7 +717,7 @@ function component_resolve_instance_attr_size (instance, parent)
     if defined (my.instance.size)
         my.instance_dump = component_instance_dump (my.instance)
 
-        my.valid_instance_type = "integer, size"
+        my.valid_instance_type = "integer, unsigned, size"
         if ! string_in (my.instance.type ?, my.valid_instance_type)
             echo_fatal ("Illegal attribute 'size' for instance $(my.instance_dump)." + \
                         " Only allowed for instance with type={$(my.valid_instance_type)}", my)
