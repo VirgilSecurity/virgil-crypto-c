@@ -222,7 +222,7 @@ property.
     <property
         is_reference = "0 | 1"
         name = "..."
-      [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -260,6 +260,7 @@ Value: Meaning:
 nothing: The same as a C void type.
 boolean: True / False type.
 integer: Signed integral type.
+unsigned: Unsigned integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.

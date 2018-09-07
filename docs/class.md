@@ -315,7 +315,7 @@ property.
     <property
         is_reference = "0 | 1"
         name = "..."
-      [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -353,6 +353,7 @@ Value: Meaning:
 nothing: The same as a C void type.
 boolean: True / False type.
 integer: Signed integral type.
+unsigned: Unsigned integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
@@ -616,7 +617,7 @@ Defines attributes that related to the instance type. Defines return type.
       [ callback = "..." ]
       [ implementation = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
         >
         <string>, optional
         <array>, optional
@@ -642,6 +643,7 @@ Value: Meaning:
 nothing: The same as a C void type.
 boolean: True / False type.
 integer: Signed integral type.
+unsigned: Unsigned integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
@@ -711,7 +713,7 @@ name, type, and usage information.
       [ implementation = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
         >
         <string>, optional
         <array>, optional
@@ -741,6 +743,7 @@ Value: Meaning:
 nothing: The same as a C void type.
 boolean: True / False type.
 integer: Signed integral type.
+unsigned: Unsigned integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
@@ -891,7 +894,7 @@ attributes for the component. Defines global variable.
         is_reference = "0 | 1"
         name = "..."
       [ class = "..." ]
-      [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ callback = "..." ]
       [ implementation = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
@@ -930,6 +933,7 @@ Value: Meaning:
 nothing: The same as a C void type.
 boolean: True / False type.
 integer: Signed integral type.
+unsigned: Unsigned integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
@@ -1046,7 +1050,7 @@ variable value.
       [ implementation = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
         >
         <cast>, optional
         <string>, optional
@@ -1073,6 +1077,7 @@ Value: Meaning:
 nothing: The same as a C void type.
 boolean: True / False type.
 integer: Signed integral type.
+unsigned: Unsigned integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
@@ -1143,7 +1148,7 @@ type to the type defined in this entity.
       [ callback = "..." ]
       [ implementation = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ type = "nothing | boolean | integer | size | byte | data | string | error" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
         >
         <string>, optional
         <array>, optional
@@ -1169,6 +1174,7 @@ Value: Meaning:
 nothing: The same as a C void type.
 boolean: True / False type.
 integer: Signed integral type.
+unsigned: Unsigned integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 data: Shortcut for the byte array.
