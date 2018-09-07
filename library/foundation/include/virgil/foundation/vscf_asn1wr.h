@@ -179,6 +179,41 @@ VSCF_PUBLIC size_t
 vscf_asn1wr_write_int(vscf_asn1wr_impl_t *asn1wr_impl, int value);
 
 //
+//  Write ASN.1 type: INTEGER.
+//  Return count of written bytes.
+//
+VSCF_PUBLIC size_t
+vscf_asn1wr_write_int32(vscf_asn1wr_impl_t *asn1wr_impl, int32_t value);
+
+//
+//  Write ASN.1 type: INTEGER.
+//  Return count of written bytes.
+//
+VSCF_PUBLIC size_t
+vscf_asn1wr_write_int64(vscf_asn1wr_impl_t *asn1wr_impl, int64_t value);
+
+//
+//  Write ASN.1 type: INTEGER.
+//  Return count of written bytes.
+//
+VSCF_PUBLIC size_t
+vscf_asn1wr_write_uint(vscf_asn1wr_impl_t *asn1wr_impl, unsigned int value);
+
+//
+//  Write ASN.1 type: INTEGER.
+//  Return count of written bytes.
+//
+VSCF_PUBLIC size_t
+vscf_asn1wr_write_uint32(vscf_asn1wr_impl_t *asn1wr_impl, uint32_t value);
+
+//
+//  Write ASN.1 type: INTEGER.
+//  Return count of written bytes.
+//
+VSCF_PUBLIC size_t
+vscf_asn1wr_write_uint64(vscf_asn1wr_impl_t *asn1wr_impl, uint64_t value);
+
+//
 //  Write ASN.1 type: BOOLEAN.
 //  Return count of written bytes.
 //

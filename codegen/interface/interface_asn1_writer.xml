@@ -65,6 +65,56 @@
     </method>
 
 
+    <method name="write int32">
+        Write ASN.1 type: INTEGER.
+        Return count of written bytes.
+
+        <argument name="value" type="integer" size="4"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="write int64">
+        Write ASN.1 type: INTEGER.
+        Return count of written bytes.
+
+        <argument name="value" type="integer" size="8"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="write uint">
+        Write ASN.1 type: INTEGER.
+        Return count of written bytes.
+
+        <argument name="value" type="unsigned"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="write uint32">
+        Write ASN.1 type: INTEGER.
+        Return count of written bytes.
+
+        <argument name="value" type="unsigned" size="4"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="write uint64">
+        Write ASN.1 type: INTEGER.
+        Return count of written bytes.
+
+        <argument name="value" type="unsigned" size="8"/>
+
+        <return type="size"/>
+    </method>
+
+
     <method name="write bool">
         Write ASN.1 type: BOOLEAN.
         Return count of written bytes.

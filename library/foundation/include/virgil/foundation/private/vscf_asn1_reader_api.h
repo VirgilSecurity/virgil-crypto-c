@@ -105,6 +105,31 @@ typedef size_t (*vscf_asn1_reader_api_read_tag_fn)(vscf_impl_t *impl, int tag);
 typedef int (*vscf_asn1_reader_api_read_int_fn)(vscf_impl_t *impl);
 
 //
+//  Callback. Read ASN.1 type: INTEGER.
+//
+typedef int32_t (*vscf_asn1_reader_api_read_int32_fn)(vscf_impl_t *impl);
+
+//
+//  Callback. Read ASN.1 type: INTEGER.
+//
+typedef int64_t (*vscf_asn1_reader_api_read_int64_fn)(vscf_impl_t *impl);
+
+//
+//  Callback. Read ASN.1 type: INTEGER.
+//
+typedef unsigned int (*vscf_asn1_reader_api_read_uint_fn)(vscf_impl_t *impl);
+
+//
+//  Callback. Read ASN.1 type: INTEGER.
+//
+typedef uint32_t (*vscf_asn1_reader_api_read_uint32_fn)(vscf_impl_t *impl);
+
+//
+//  Callback. Read ASN.1 type: INTEGER.
+//
+typedef uint64_t (*vscf_asn1_reader_api_read_uint64_fn)(vscf_impl_t *impl);
+
+//
 //  Callback. Read ASN.1 type: BOOLEAN.
 //
 typedef bool (*vscf_asn1_reader_api_read_bool_fn)(vscf_impl_t *impl);
@@ -184,6 +209,26 @@ struct vscf_asn1_reader_api_t {
     //  Read ASN.1 type: INTEGER.
     //
     vscf_asn1_reader_api_read_int_fn read_int_cb;
+    //
+    //  Read ASN.1 type: INTEGER.
+    //
+    vscf_asn1_reader_api_read_int32_fn read_int32_cb;
+    //
+    //  Read ASN.1 type: INTEGER.
+    //
+    vscf_asn1_reader_api_read_int64_fn read_int64_cb;
+    //
+    //  Read ASN.1 type: INTEGER.
+    //
+    vscf_asn1_reader_api_read_uint_fn read_uint_cb;
+    //
+    //  Read ASN.1 type: INTEGER.
+    //
+    vscf_asn1_reader_api_read_uint32_fn read_uint32_cb;
+    //
+    //  Read ASN.1 type: INTEGER.
+    //
+    vscf_asn1_reader_api_read_uint64_fn read_uint64_cb;
     //
     //  Read ASN.1 type: BOOLEAN.
     //

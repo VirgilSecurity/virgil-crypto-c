@@ -170,6 +170,36 @@ VSCF_PUBLIC int
 vscf_asn1rd_read_int(vscf_asn1rd_impl_t *asn1rd_impl);
 
 //
+//  Read ASN.1 type: INTEGER.
+//
+VSCF_PUBLIC int32_t
+vscf_asn1rd_read_int32(vscf_asn1rd_impl_t *asn1rd_impl);
+
+//
+//  Read ASN.1 type: INTEGER.
+//
+VSCF_PUBLIC int64_t
+vscf_asn1rd_read_int64(vscf_asn1rd_impl_t *asn1rd_impl);
+
+//
+//  Read ASN.1 type: INTEGER.
+//
+VSCF_PUBLIC unsigned int
+vscf_asn1rd_read_uint(vscf_asn1rd_impl_t *asn1rd_impl);
+
+//
+//  Read ASN.1 type: INTEGER.
+//
+VSCF_PUBLIC uint32_t
+vscf_asn1rd_read_uint32(vscf_asn1rd_impl_t *asn1rd_impl);
+
+//
+//  Read ASN.1 type: INTEGER.
+//
+VSCF_PUBLIC uint64_t
+vscf_asn1rd_read_uint64(vscf_asn1rd_impl_t *asn1rd_impl);
+
+//
 //  Read ASN.1 type: BOOLEAN.
 //
 VSCF_PUBLIC bool
