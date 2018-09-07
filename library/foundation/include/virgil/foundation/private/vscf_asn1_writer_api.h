@@ -113,6 +113,36 @@ typedef size_t (*vscf_asn1_writer_api_write_len_fn)(vscf_impl_t *impl, size_t le
 typedef size_t (*vscf_asn1_writer_api_write_int_fn)(vscf_impl_t *impl, int value);
 
 //
+//  Callback. Write ASN.1 type: INTEGER.
+//          Return count of written bytes.
+//
+typedef size_t (*vscf_asn1_writer_api_write_int32_fn)(vscf_impl_t *impl, int32_t value);
+
+//
+//  Callback. Write ASN.1 type: INTEGER.
+//          Return count of written bytes.
+//
+typedef size_t (*vscf_asn1_writer_api_write_int64_fn)(vscf_impl_t *impl, int64_t value);
+
+//
+//  Callback. Write ASN.1 type: INTEGER.
+//          Return count of written bytes.
+//
+typedef size_t (*vscf_asn1_writer_api_write_uint_fn)(vscf_impl_t *impl, unsigned int value);
+
+//
+//  Callback. Write ASN.1 type: INTEGER.
+//          Return count of written bytes.
+//
+typedef size_t (*vscf_asn1_writer_api_write_uint32_fn)(vscf_impl_t *impl, uint32_t value);
+
+//
+//  Callback. Write ASN.1 type: INTEGER.
+//          Return count of written bytes.
+//
+typedef size_t (*vscf_asn1_writer_api_write_uint64_fn)(vscf_impl_t *impl, uint64_t value);
+
+//
 //  Callback. Write ASN.1 type: BOOLEAN.
 //          Return count of written bytes.
 //
@@ -198,6 +228,31 @@ struct vscf_asn1_writer_api_t {
     //  Return count of written bytes.
     //
     vscf_asn1_writer_api_write_int_fn write_int_cb;
+    //
+    //  Write ASN.1 type: INTEGER.
+    //  Return count of written bytes.
+    //
+    vscf_asn1_writer_api_write_int32_fn write_int32_cb;
+    //
+    //  Write ASN.1 type: INTEGER.
+    //  Return count of written bytes.
+    //
+    vscf_asn1_writer_api_write_int64_fn write_int64_cb;
+    //
+    //  Write ASN.1 type: INTEGER.
+    //  Return count of written bytes.
+    //
+    vscf_asn1_writer_api_write_uint_fn write_uint_cb;
+    //
+    //  Write ASN.1 type: INTEGER.
+    //  Return count of written bytes.
+    //
+    vscf_asn1_writer_api_write_uint32_fn write_uint32_cb;
+    //
+    //  Write ASN.1 type: INTEGER.
+    //  Return count of written bytes.
+    //
+    vscf_asn1_writer_api_write_uint64_fn write_uint64_cb;
     //
     //  Write ASN.1 type: BOOLEAN.
     //  Return count of written bytes.
