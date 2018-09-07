@@ -77,6 +77,7 @@ enum {
 //
 //  Handle 'olm message' context.
 //
+typedef struct vscr_olm_message_t vscr_olm_message_t;
 struct vscr_olm_message_t {
     uint8_t version;
 
@@ -90,7 +91,6 @@ struct vscr_olm_message_t {
     //
     vscr_dealloc_fn self_dealloc_cb;
 };
-typedef struct vscr_olm_message_t vscr_olm_message_t;
 
 //
 //  Perform initialization of pre-allocated context.
