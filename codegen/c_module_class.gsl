@@ -475,6 +475,14 @@ function c_module_class_create_module_public (class, destination, meta)
         for my.class.macroses
             copy macroses to module
         endfor
+
+        for my.class.struct
+            copy struct to module
+        endfor
+
+        for my.class.variable
+            copy variable to module
+        endfor
     endnew
 endfunction
 
