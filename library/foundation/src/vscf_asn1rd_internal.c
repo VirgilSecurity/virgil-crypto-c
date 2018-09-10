@@ -106,6 +106,14 @@ static const vscf_asn1_reader_api_t asn1_reader_api = {
     //
     //  Read ASN.1 type: INTEGER.
     //
+    (vscf_asn1_reader_api_read_int8_fn)vscf_asn1rd_read_int8,
+    //
+    //  Read ASN.1 type: INTEGER.
+    //
+    (vscf_asn1_reader_api_read_int16_fn)vscf_asn1rd_read_int16,
+    //
+    //  Read ASN.1 type: INTEGER.
+    //
     (vscf_asn1_reader_api_read_int32_fn)vscf_asn1rd_read_int32,
     //
     //  Read ASN.1 type: INTEGER.
@@ -115,6 +123,14 @@ static const vscf_asn1_reader_api_t asn1_reader_api = {
     //  Read ASN.1 type: INTEGER.
     //
     (vscf_asn1_reader_api_read_uint_fn)vscf_asn1rd_read_uint,
+    //
+    //  Read ASN.1 type: INTEGER.
+    //
+    (vscf_asn1_reader_api_read_uint8_fn)vscf_asn1rd_read_uint8,
+    //
+    //  Read ASN.1 type: INTEGER.
+    //
+    (vscf_asn1_reader_api_read_uint16_fn)vscf_asn1rd_read_uint16,
     //
     //  Read ASN.1 type: INTEGER.
     //

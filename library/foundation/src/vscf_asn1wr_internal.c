@@ -114,6 +114,16 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     //  Write ASN.1 type: INTEGER.
     //  Return count of written bytes.
     //
+    (vscf_asn1_writer_api_write_int8_fn)vscf_asn1wr_write_int8,
+    //
+    //  Write ASN.1 type: INTEGER.
+    //  Return count of written bytes.
+    //
+    (vscf_asn1_writer_api_write_int16_fn)vscf_asn1wr_write_int16,
+    //
+    //  Write ASN.1 type: INTEGER.
+    //  Return count of written bytes.
+    //
     (vscf_asn1_writer_api_write_int32_fn)vscf_asn1wr_write_int32,
     //
     //  Write ASN.1 type: INTEGER.
@@ -125,6 +135,16 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     //  Return count of written bytes.
     //
     (vscf_asn1_writer_api_write_uint_fn)vscf_asn1wr_write_uint,
+    //
+    //  Write ASN.1 type: INTEGER.
+    //  Return count of written bytes.
+    //
+    (vscf_asn1_writer_api_write_uint8_fn)vscf_asn1wr_write_uint8,
+    //
+    //  Write ASN.1 type: INTEGER.
+    //  Return count of written bytes.
+    //
+    (vscf_asn1_writer_api_write_uint16_fn)vscf_asn1wr_write_uint16,
     //
     //  Write ASN.1 type: INTEGER.
     //  Return count of written bytes.
