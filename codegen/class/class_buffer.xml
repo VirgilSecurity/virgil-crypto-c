@@ -138,4 +138,20 @@
         <argument class="context"/>
         <argument name="len" type="size"/>
     </method>
+
+
+    <method name="reset">
+        Reset to the initial state.
+        After reset inner buffer can be re-used.
+
+        <argument class="context"/>
+    </method>
+
+
+    <method name="erase">
+        Zeroing buffer in secure manner.
+        <!-- And reset to the initial state. -->
+
+        <argument class="context"/>
+    </method>
 </class>

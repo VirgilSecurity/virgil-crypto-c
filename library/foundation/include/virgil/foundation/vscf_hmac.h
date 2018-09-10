@@ -56,6 +56,9 @@
 #include "vscf_error.h"
 #include "vscf_impl.h"
 #include "vscf_hmac_info.h"
+
+#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -79,8 +82,7 @@ typedef struct vscf_hmac_api_t vscf_hmac_api_t;
 //  Calculate hmac over given data.
 //
 VSCF_PUBLIC void
-vscf_hmac(const vscf_hmac_api_t *hmac_api, const byte *key, size_t key_len, const byte *data, size_t data_len,
-        byte *hmac, size_t hmac_len);
+vscf_hmac(const vscf_hmac_api_t *hmac_api, vsc_data_t key, vsc_data_t data, vsc_buffer_t *hmac);
 
 //
 //  Return hmac API, or NULL if it is not implemented.

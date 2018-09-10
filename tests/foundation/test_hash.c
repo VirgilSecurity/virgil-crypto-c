@@ -63,34 +63,40 @@ test__api_tag__sha256__equals_api_tag_HASH(void) {
 void
 test__hash__sha256_vector_1__success(void) {
 
-    byte digest[vscf_sha256_DIGEST_LEN] = {0x00};
+    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha256_DIGEST_LEN);
 
-    vscf_hash(vscf_sha256_hash_api(), test_sha256_VECTOR_1_INPUT, test_sha256_VECTOR_1_INPUT_LEN, digest,
-            vscf_sha256_DIGEST_LEN);
+    vscf_hash(vscf_sha256_hash_api(), test_sha256_VECTOR_1_INPUT, digest);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_1_DIGEST, digest, test_sha256_VECTOR_1_DIGEST_LEN);
+    TEST_ASSERT_EQUAL(test_sha256_VECTOR_1_DIGEST.len, vsc_buffer_len(digest));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_1_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
+
+    vsc_buffer_destroy(&digest);
 }
 
 void
 test__hash__sha256_vector_2__success(void) {
 
-    byte digest[vscf_sha256_DIGEST_LEN] = {0x00};
+    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha256_DIGEST_LEN);
 
-    vscf_hash(vscf_sha256_hash_api(), test_sha256_VECTOR_2_INPUT, test_sha256_VECTOR_2_INPUT_LEN, digest,
-            vscf_sha256_DIGEST_LEN);
+    vscf_hash(vscf_sha256_hash_api(), test_sha256_VECTOR_2_INPUT, digest);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_2_DIGEST, digest, test_sha256_VECTOR_2_DIGEST_LEN);
+    TEST_ASSERT_EQUAL(test_sha256_VECTOR_2_DIGEST.len, vsc_buffer_len(digest));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_2_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
+
+    vsc_buffer_destroy(&digest);
 }
 
 void
 test__hash__sha256_vector_3__success(void) {
 
-    byte digest[vscf_sha256_DIGEST_LEN] = {0x00};
+    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha256_DIGEST_LEN);
 
-    vscf_hash(vscf_sha256_hash_api(), test_sha256_VECTOR_3_INPUT, test_sha256_VECTOR_3_INPUT_LEN, digest,
-            vscf_sha256_DIGEST_LEN);
+    vscf_hash(vscf_sha256_hash_api(), test_sha256_VECTOR_3_INPUT, digest);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_3_DIGEST, digest, test_sha256_VECTOR_3_DIGEST_LEN);
+    TEST_ASSERT_EQUAL(test_sha256_VECTOR_3_DIGEST.len, vsc_buffer_len(digest));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_3_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
+
+    vsc_buffer_destroy(&digest);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE

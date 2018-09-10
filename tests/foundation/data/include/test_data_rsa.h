@@ -35,27 +35,18 @@
 
 #include "vsc_data.h"
 
-
 //
 //  PKCS#1 binary format
 //
-extern const byte test_rsa_RANDOM_BYTES[];
-extern const byte test_rsa_256_GENERATED_PRIVATE_KEY_PKCS1[];
-extern const byte test_rsa_2048_PUBLIC_KEY_PKCS1[];
-extern const byte test_rsa_2048_PRIVATE_KEY_PKCS1[];
-
-extern const size_t test_rsa_RANDOM_BYTES_LEN;
-extern const size_t test_rsa_256_GENERATED_PRIVATE_KEY_PKCS1_LEN;
-extern const size_t test_rsa_2048_PUBLIC_KEY_PKCS1_LEN;
-extern const size_t test_rsa_2048_PRIVATE_KEY_PKCS1_LEN;
+extern const vsc_data_t test_rsa_RANDOM;
+extern const vsc_data_t test_rsa_256_GENERATED_PRIVATE_KEY_PKCS1;
+extern const vsc_data_t test_rsa_2048_PUBLIC_KEY_PKCS1;
+extern const vsc_data_t test_rsa_2048_PRIVATE_KEY_PKCS1;
 
 //
 //  Test data
 //
-extern const byte test_rsa_DATA_1[];
-extern const byte test_rsa_2048_ENCRYPTED_DATA_1[];
-extern const byte test_rsa_2048_DATA_1_SIGNATURE[];
+extern const vsc_data_t test_rsa_DATA_1;
+extern const vsc_data_t test_rsa_2048_ENCRYPTED_DATA_1;
+extern const vsc_data_t test_rsa_2048_DATA_1_SIGNATURE;
 
-extern const size_t test_rsa_DATA_1_LEN;
-extern const size_t test_rsa_2048_ENCRYPTED_DATA_1_LEN;
-extern const size_t test_rsa_2048_DATA_1_SIGNATURE_LEN;

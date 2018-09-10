@@ -33,30 +33,24 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#include "bench_data_types.h"
+#include <virgil/common/vsc_data.h>
 
 
 //
 //  Test Vector 1
 //
-extern const byte test_sha512_VECTOR_1_INPUT[];
-extern const byte test_sha512_VECTOR_1_DIGEST[];
-extern const size_t test_sha512_VECTOR_1_INPUT_LEN;
-extern const size_t test_sha512_VECTOR_1_DIGEST_LEN;
+extern const vsc_data_t test_sha512_VECTOR_1_INPUT;
+extern const vsc_data_t test_sha512_VECTOR_1_DIGEST;
 
 
 //
 //  Test Vector 2
 //
-extern const byte test_sha512_VECTOR_2_INPUT[];
-extern const byte test_sha512_VECTOR_2_DIGEST[];
-extern const size_t test_sha512_VECTOR_2_INPUT_LEN;
-extern const size_t test_sha512_VECTOR_2_DIGEST_LEN;
+extern const vsc_data_t test_sha512_VECTOR_2_INPUT;
+extern const vsc_data_t test_sha512_VECTOR_2_DIGEST;
 
 //
 //  Test Vector 3
 //
-extern const byte test_sha512_VECTOR_3_INPUT[];
-extern const byte test_sha512_VECTOR_3_DIGEST[];
-extern const size_t test_sha512_VECTOR_3_INPUT_LEN;
-extern const size_t test_sha512_VECTOR_3_DIGEST_LEN;
+extern const vsc_data_t test_sha512_VECTOR_3_INPUT;
+extern const vsc_data_t test_sha512_VECTOR_3_DIGEST;

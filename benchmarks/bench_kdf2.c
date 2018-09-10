@@ -49,23 +49,28 @@
 
 void benchmark_kdf2_native(void * data, size_t data_size)
 {
-    //byte digest[vscf_sha224_DIGEST_LEN] = { 0x00 };
+    vscf_kdf2_impl_t *kdf2_impl = vscf_kdf2_new();
+    vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_kdf2_VECTOR_1_KEY.len);
 
-    //vscf_sha224_hash(data, data_size, digest, vscf_sha224_DIGEST_LEN);
+    vscf_kdf2_take_hash_stream(kdf2_impl, vscf_sha256_impl(vscf_sha256_new()));
+
+    vscf_kdf2_derive(kdf2_impl, *(vsc_data_t *)data, key, vsc_buffer_capacity(key));
+
+    vsc_buffer_destroy(&key);
+    vscf_kdf2_destroy(&kdf2_impl);
 }
 
 void benchmark_kdf2_interface(void * data, size_t data_size)
 {
-    byte *key = vscf_alloc(test_kdf2_VECTOR_1_KEY_LEN);
-
     vscf_kdf2_impl_t *kdf2_impl = vscf_kdf2_new();
+    vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_kdf2_VECTOR_1_KEY.len);
+
     vscf_kdf2_take_hash_stream(kdf2_impl, vscf_sha256_impl(vscf_sha256_new()));
 
-    vscf_kdf2_derive(kdf2_impl, data, data_size, key, test_kdf2_VECTOR_1_KEY_LEN);
+    vscf_kdf_derive(vscf_kdf2_impl(kdf2_impl), *(vsc_data_t *)data, key, vsc_buffer_capacity(key));
 
+    vsc_buffer_destroy(&key);
     vscf_kdf2_destroy(&kdf2_impl);
-
-    vscf_dealloc(key);
 }
 
 // --------------------------------------------------------------------------
@@ -73,6 +78,6 @@ void benchmark_kdf2_interface(void * data, size_t data_size)
 // --------------------------------------------------------------------------
 
 int main (void) {
-    //benchmark2(benchmark_kdf1_native, "SHA224 (native)", benchmark_kdf1_interface, "(interface)", (void*) test_kdf1_VECTOR_1_DATA, test_kdf1_VECTOR_1_DATA_LEN, 1000000);
-    benchmark(benchmark_kdf2_interface, (void*) test_kdf2_VECTOR_1_DATA, test_kdf2_VECTOR_1_DATA_LEN, 1000000);
+    benchmark(benchmark_kdf2_native, (void *)&test_kdf2_VECTOR_1_DATA, 0, 1000000);
+    benchmark(benchmark_kdf2_interface, (void *)&test_kdf2_VECTOR_1_DATA, 0, 1000000);
 }

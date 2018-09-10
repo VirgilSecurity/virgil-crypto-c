@@ -58,6 +58,9 @@
 #include "vscf_hash_info.h"
 #include "vscf_hash.h"
 #include "vscf_hash_stream.h"
+
+#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -154,7 +157,7 @@ vscf_sha256_hash_api(void);
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
-vscf_sha256_hash(const byte *data, size_t data_len, byte *digest, size_t digest_len);
+vscf_sha256_hash(vsc_data_t data, vsc_buffer_t *digest);
 
 //
 //  Start a new hashing.
@@ -166,13 +169,13 @@ vscf_sha256_start(vscf_sha256_impl_t *sha256_impl);
 //  Add given data to the hash.
 //
 VSCF_PUBLIC void
-vscf_sha256_update(vscf_sha256_impl_t *sha256_impl, const byte *data, size_t data_len);
+vscf_sha256_update(vscf_sha256_impl_t *sha256_impl, vsc_data_t data);
 
 //
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_sha256_finish(vscf_sha256_impl_t *sha256_impl, byte *digest, size_t digest_len);
+vscf_sha256_finish(vscf_sha256_impl_t *sha256_impl, vsc_buffer_t *digest);
 
 
 // --------------------------------------------------------------------------

@@ -283,10 +283,7 @@ vscf_rsa_private_key_sign(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vsc
     vsc_buffer_t *data_hash_buf = vsc_buffer_new_with_capacity(data_hash_len);
     VSCF_ASSERT_PTR(data_hash_buf);
 
-    vscf_hash(rsa_private_key_impl->hash, data.bytes, data.len, vsc_buffer_ptr(data_hash_buf),
-            vsc_buffer_left(data_hash_buf));
-
-    vsc_buffer_reserve(data_hash_buf, data_hash_len);
+    vscf_hash(rsa_private_key_impl->hash, data, data_hash_buf);
 
     //  Sign
     mbedtls_rsa_context *rsa_ctx = &rsa_private_key_impl->rsa_ctx;

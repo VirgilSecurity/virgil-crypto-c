@@ -56,6 +56,9 @@
 #include "vscf_error.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
+
+#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -73,7 +76,7 @@ extern "C" {
 //
 //  Callback. Calculate hash over given data.
 //
-typedef void (*vscf_kdf_api_derive_fn)(vscf_impl_t *impl, const byte *data, size_t data_len, byte *key, size_t key_len);
+typedef void (*vscf_kdf_api_derive_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *key, size_t key_len);
 
 //
 //  Contains API requirements of the interface 'kdf'.

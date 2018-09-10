@@ -95,34 +95,40 @@ test__hmac256_DIGEST_LEN__always__equals_32(void) {
 void
 test__hmac__vector_1__success(void) {
 
-    byte digest[vscf_hmac256_DIGEST_LEN] = {0x00};
+    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hmac256_DIGEST_LEN);
 
-    vscf_hmac256_hmac(test_hmac256_KEY_1_INPUT, test_hmac256_KEY_1_INPUT_LEN, test_hmac256_VECTOR_1_INPUT,
-            test_hmac256_VECTOR_1_INPUT_LEN, digest, vscf_hmac256_DIGEST_LEN);
+    vscf_hmac256_hmac(test_hmac256_KEY_1_INPUT, test_hmac256_VECTOR_1_INPUT, digest);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac256_VECTOR_1_DIGEST, digest, test_hmac256_VECTOR_1_DIGEST_LEN);
+    TEST_ASSERT_EQUAL(test_hmac256_VECTOR_1_DIGEST.len, vsc_buffer_len(digest));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac256_VECTOR_1_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
+
+    vsc_buffer_destroy(&digest);
 }
 
 void
 test__hmac__vector_2__success(void) {
 
-    byte digest[vscf_hmac256_DIGEST_LEN] = {0x00};
+    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hmac256_DIGEST_LEN);
 
-    vscf_hmac256_hmac(test_hmac256_KEY_2_INPUT, test_hmac256_KEY_2_INPUT_LEN, test_hmac256_VECTOR_2_INPUT,
-            test_hmac256_VECTOR_2_INPUT_LEN, digest, vscf_hmac256_DIGEST_LEN);
+    vscf_hmac256_hmac(test_hmac256_KEY_2_INPUT, test_hmac256_VECTOR_2_INPUT, digest);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac256_VECTOR_2_DIGEST, digest, test_hmac256_VECTOR_2_DIGEST_LEN);
+    TEST_ASSERT_EQUAL(test_hmac256_VECTOR_2_DIGEST.len, vsc_buffer_len(digest));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac256_VECTOR_2_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
+
+    vsc_buffer_destroy(&digest);
 }
 
 void
 test__hmac__vector_3__success(void) {
 
-    byte digest[vscf_hmac256_DIGEST_LEN] = {0x00};
+    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hmac256_DIGEST_LEN);
 
-    vscf_hmac256_hmac(test_hmac256_KEY_3_INPUT, test_hmac256_KEY_3_INPUT_LEN, test_hmac256_VECTOR_3_INPUT,
-            test_hmac256_VECTOR_3_INPUT_LEN, digest, vscf_hmac256_DIGEST_LEN);
+    vscf_hmac256_hmac(test_hmac256_KEY_3_INPUT, test_hmac256_VECTOR_3_INPUT, digest);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac256_VECTOR_3_DIGEST, digest, test_hmac256_VECTOR_3_DIGEST_LEN);
+    TEST_ASSERT_EQUAL(test_hmac256_VECTOR_3_DIGEST.len, vsc_buffer_len(digest));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac256_VECTOR_3_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
+
+    vsc_buffer_destroy(&digest);
 }
 
 
@@ -132,52 +138,55 @@ test__hmac__vector_3__success(void) {
 void
 test__hmac_stream__vector_1_success(void) {
 
-    byte digest[vscf_hmac256_DIGEST_LEN] = {0x00};
-
     vscf_hmac256_impl_t *hmac256_impl = vscf_hmac256_new();
+    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hmac256_DIGEST_LEN);
 
     vscf_hmac256_reset(hmac256_impl);
-    vscf_hmac256_start(hmac256_impl, test_hmac256_KEY_1_INPUT, test_hmac256_KEY_1_INPUT_LEN);
-    vscf_hmac256_update(hmac256_impl, test_hmac256_VECTOR_1_INPUT, test_hmac256_VECTOR_1_INPUT_LEN);
-    vscf_hmac256_finish(hmac256_impl, digest, vscf_hmac256_DIGEST_LEN);
+    vscf_hmac256_start(hmac256_impl, test_hmac256_KEY_1_INPUT);
+    vscf_hmac256_update(hmac256_impl, test_hmac256_VECTOR_1_INPUT);
+    vscf_hmac256_finish(hmac256_impl, digest);
 
+    TEST_ASSERT_EQUAL(test_hmac256_VECTOR_1_DIGEST.len, vsc_buffer_len(digest));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac256_VECTOR_1_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
+
+    vsc_buffer_destroy(&digest);
     vscf_hmac256_destroy(&hmac256_impl);
-
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac256_VECTOR_1_DIGEST, digest, test_hmac256_VECTOR_1_DIGEST_LEN);
 }
 
 void
 test__hmac_stream__vector_2_success(void) {
 
-    byte digest[vscf_hmac256_DIGEST_LEN] = {0x00};
-
     vscf_hmac256_impl_t *hmac256_impl = vscf_hmac256_new();
+    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hmac256_DIGEST_LEN);
 
     vscf_hmac256_reset(hmac256_impl);
-    vscf_hmac256_start(hmac256_impl, test_hmac256_KEY_2_INPUT, test_hmac256_KEY_2_INPUT_LEN);
-    vscf_hmac256_update(hmac256_impl, test_hmac256_VECTOR_2_INPUT, test_hmac256_VECTOR_2_INPUT_LEN);
-    vscf_hmac256_finish(hmac256_impl, digest, vscf_hmac256_DIGEST_LEN);
+    vscf_hmac256_start(hmac256_impl, test_hmac256_KEY_2_INPUT);
+    vscf_hmac256_update(hmac256_impl, test_hmac256_VECTOR_2_INPUT);
+    vscf_hmac256_finish(hmac256_impl, digest);
 
+    TEST_ASSERT_EQUAL(test_hmac256_VECTOR_2_DIGEST.len, vsc_buffer_len(digest));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac256_VECTOR_2_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
+
+    vsc_buffer_destroy(&digest);
     vscf_hmac256_destroy(&hmac256_impl);
-
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac256_VECTOR_2_DIGEST, digest, test_hmac256_VECTOR_2_DIGEST_LEN);
 }
 
 void
 test__hmac_stream__vector_3_success(void) {
 
-    byte digest[vscf_hmac256_DIGEST_LEN] = {0x00};
-
     vscf_hmac256_impl_t *hmac256_impl = vscf_hmac256_new();
+    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hmac256_DIGEST_LEN);
 
     vscf_hmac256_reset(hmac256_impl);
-    vscf_hmac256_start(hmac256_impl, test_hmac256_KEY_3_INPUT, test_hmac256_KEY_3_INPUT_LEN);
-    vscf_hmac256_update(hmac256_impl, test_hmac256_VECTOR_3_INPUT, test_hmac256_VECTOR_3_INPUT_LEN);
-    vscf_hmac256_finish(hmac256_impl, digest, vscf_hmac256_DIGEST_LEN);
+    vscf_hmac256_start(hmac256_impl, test_hmac256_KEY_3_INPUT);
+    vscf_hmac256_update(hmac256_impl, test_hmac256_VECTOR_3_INPUT);
+    vscf_hmac256_finish(hmac256_impl, digest);
 
+    TEST_ASSERT_EQUAL(test_hmac256_VECTOR_3_DIGEST.len, vsc_buffer_len(digest));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac256_VECTOR_3_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
+
+    vsc_buffer_destroy(&digest);
     vscf_hmac256_destroy(&hmac256_impl);
-
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac256_VECTOR_3_DIGEST, digest, test_hmac256_VECTOR_3_DIGEST_LEN);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE

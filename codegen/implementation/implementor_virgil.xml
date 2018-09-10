@@ -13,22 +13,17 @@
         <method name="extract" context="impl">
             Extracts fixed-length pseudorandom key from keying material.
 
-            <argument name="data" type="data"/>
-            <argument name="data len" type="size"/>
-            <argument name="salt" type="data"/>
-            <argument name="salt len" type="size"/>
-            <argument name="pr key" type="data" access="writeonly"/>
-            <argument name="pr key len" type="size"/>
+            <argument name="data" class="data"/>
+            <argument name="salt" class="data"/>
+            <argument name="pr key" class="buffer"/>
         </method>
 
         <method name="expand" context="impl">
             Expands the pseudorandom key to the desired length.
 
-            <argument name="pr key" type="data" access="readwrite"/>
-            <argument name="pr key len" type="size"/>
-            <argument name="info" type="data"/>
-            <argument name="info len" type="size"/>
-            <argument name="key" type="data" access="writeonly"/>
+            <argument name="pr key" class="buffer"/>
+            <argument name="info" class="data"/>
+            <argument name="key" class="buffer"/>
             <argument name="key len" type="size"/>
         </method>
     </implementation>

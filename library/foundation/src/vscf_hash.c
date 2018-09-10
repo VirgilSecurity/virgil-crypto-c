@@ -65,12 +65,12 @@
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
-vscf_hash(const vscf_hash_api_t *hash_api, const byte *data, size_t data_len, byte *digest, size_t digest_len) {
+vscf_hash(const vscf_hash_api_t *hash_api, vsc_data_t data, vsc_buffer_t *digest) {
 
     VSCF_ASSERT_PTR (hash_api);
 
     VSCF_ASSERT_PTR (hash_api->hash_cb);
-    hash_api->hash_cb (data, data_len, digest, digest_len);
+    hash_api->hash_cb (data, digest);
 }
 
 //

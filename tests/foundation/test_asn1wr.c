@@ -57,16 +57,16 @@ test__asn1wr_seal__argument_integer_2_and_buffer_capacity_ia_doubled__returns_en
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
 
-    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(2 * test_asn1_encoded_INT_2_LEN);
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(2 * test_asn1_encoded_INT_2.len);
 
     vscf_asn1wr_reset(asn1wr, asn1);
 
     size_t len = vscf_asn1wr_write_int(asn1wr, 2);
     vscf_asn1wr_seal(asn1wr);
 
-    TEST_ASSERT_EQUAL(test_asn1_encoded_INT_2_LEN, len);
-    TEST_ASSERT_EQUAL(test_asn1_encoded_INT_2_LEN, vsc_buffer_len(asn1));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_INT_2, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT_2.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT_2.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_INT_2.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
 
     vsc_buffer_destroy(&asn1);
     vscf_asn1wr_destroy(&asn1wr);
@@ -122,16 +122,16 @@ test__asn1wr_write_int__argument_integer_2__returns_encoded_integer_2(void) {
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
 
-    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_INT_2_LEN);
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_INT_2.len);
 
     vscf_asn1wr_reset(asn1wr, asn1);
 
     size_t len = vscf_asn1wr_write_int(asn1wr, 2);
     vscf_asn1wr_seal(asn1wr);
 
-    TEST_ASSERT_EQUAL(test_asn1_encoded_INT_2_LEN, len);
-    TEST_ASSERT_EQUAL(test_asn1_encoded_INT_2_LEN, vsc_buffer_len(asn1));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_INT_2, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT_2.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT_2.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_INT_2.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
 
     vsc_buffer_destroy(&asn1);
     vscf_asn1wr_destroy(&asn1wr);
@@ -143,16 +143,16 @@ test__asn1wr_write_bool__argument_bool_false__returns_encoded_bool_false(void) {
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
 
-    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_BOOLEAN_FALSE_LEN);
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_BOOLEAN_FALSE.len);
 
     vscf_asn1wr_reset(asn1wr, asn1);
 
     size_t len = vscf_asn1wr_write_bool(asn1wr, false);
     vscf_asn1wr_seal(asn1wr);
 
-    TEST_ASSERT_EQUAL(test_asn1_encoded_BOOLEAN_FALSE_LEN, len);
-    TEST_ASSERT_EQUAL(test_asn1_encoded_BOOLEAN_FALSE_LEN, vsc_buffer_len(asn1));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_BOOLEAN_FALSE, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL(test_asn1_encoded_BOOLEAN_FALSE.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_BOOLEAN_FALSE.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_BOOLEAN_FALSE.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
 
     vsc_buffer_destroy(&asn1);
     vscf_asn1wr_destroy(&asn1wr);
@@ -164,16 +164,16 @@ test__asn1wr_write_bool__argument_bool_true__returns_encoded_bool_true(void) {
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
 
-    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_BOOLEAN_TRUE_LEN);
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_BOOLEAN_TRUE.len);
 
     vscf_asn1wr_reset(asn1wr, asn1);
 
     size_t len = vscf_asn1wr_write_bool(asn1wr, true);
     vscf_asn1wr_seal(asn1wr);
 
-    TEST_ASSERT_EQUAL(test_asn1_encoded_BOOLEAN_TRUE_LEN, len);
-    TEST_ASSERT_EQUAL(test_asn1_encoded_BOOLEAN_TRUE_LEN, vsc_buffer_len(asn1));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_BOOLEAN_TRUE, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL(test_asn1_encoded_BOOLEAN_TRUE.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_BOOLEAN_TRUE.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_BOOLEAN_TRUE.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
 
     vsc_buffer_destroy(&asn1);
     vscf_asn1wr_destroy(&asn1wr);
@@ -185,16 +185,16 @@ test__asn1wr_write_null__argument_null__returns_encoded_null(void) {
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
 
-    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_NULL_LEN);
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_NULL.len);
 
     vscf_asn1wr_reset(asn1wr, asn1);
 
     size_t len = vscf_asn1wr_write_null(asn1wr);
     vscf_asn1wr_seal(asn1wr);
 
-    TEST_ASSERT_EQUAL(test_asn1_encoded_NULL_LEN, len);
-    TEST_ASSERT_EQUAL(test_asn1_encoded_NULL_LEN, vsc_buffer_len(asn1));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_NULL, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL(test_asn1_encoded_NULL.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_NULL.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_NULL.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
 
     vsc_buffer_destroy(&asn1);
     vscf_asn1wr_destroy(&asn1wr);
@@ -206,17 +206,16 @@ test__asn1wr_write_octet_str__argument_octet_string__returns_encoded_octet_strin
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
 
-    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_OCTET_STRING_LEN);
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_OCTET_STRING.len);
 
     vscf_asn1wr_reset(asn1wr, asn1);
 
-    size_t len = vscf_asn1wr_write_octet_str(
-            asn1wr, vsc_data(test_asn1_decoded_OCTET_STRING, test_asn1_decoded_OCTET_STRING_LEN));
+    size_t len = vscf_asn1wr_write_octet_str(asn1wr, test_asn1_decoded_OCTET_STRING);
     vscf_asn1wr_seal(asn1wr);
 
-    TEST_ASSERT_EQUAL(test_asn1_encoded_OCTET_STRING_LEN, len);
-    TEST_ASSERT_EQUAL(test_asn1_encoded_OCTET_STRING_LEN, vsc_buffer_len(asn1));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_OCTET_STRING, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL(test_asn1_encoded_OCTET_STRING.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_OCTET_STRING.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_OCTET_STRING.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
 
     vsc_buffer_destroy(&asn1);
     vscf_asn1wr_destroy(&asn1wr);
@@ -228,17 +227,16 @@ test__asn1wr_write_utf8_str_argument_utf8_string__returns_encoded_utf8_string(vo
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
 
-    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_UTF8_STRING_LEN);
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_UTF8_STRING.len);
 
     vscf_asn1wr_reset(asn1wr, asn1);
 
-    size_t len = vscf_asn1wr_write_utf8_str(
-            asn1wr, vsc_data(test_asn1_decoded_UTF8_STRING, test_asn1_decoded_UTF8_STRING_LEN));
+    size_t len = vscf_asn1wr_write_utf8_str(asn1wr, test_asn1_decoded_UTF8_STRING);
     vscf_asn1wr_seal(asn1wr);
 
-    TEST_ASSERT_EQUAL(test_asn1_encoded_UTF8_STRING_LEN, len);
-    TEST_ASSERT_EQUAL(test_asn1_encoded_UTF8_STRING_LEN, vsc_buffer_len(asn1));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_UTF8_STRING, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL(test_asn1_encoded_UTF8_STRING.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_UTF8_STRING.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_UTF8_STRING.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
 
     vsc_buffer_destroy(&asn1);
     vscf_asn1wr_destroy(&asn1wr);
@@ -250,17 +248,16 @@ test__asn1wr_write_oid__argument_oid_sha256__returns_encoded_oid_sha256(void) {
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
 
-    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_OID_SHA256_LEN);
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_OID_SHA256.len);
 
     vscf_asn1wr_reset(asn1wr, asn1);
 
-    size_t len =
-            vscf_asn1wr_write_oid(asn1wr, vsc_data(test_asn1_decoded_OID_SHA256, test_asn1_decoded_OID_SHA256_LEN));
+    size_t len = vscf_asn1wr_write_oid(asn1wr, test_asn1_decoded_OID_SHA256);
     vscf_asn1wr_seal(asn1wr);
 
-    TEST_ASSERT_EQUAL(test_asn1_encoded_OID_SHA256_LEN, len);
-    TEST_ASSERT_EQUAL(test_asn1_encoded_OID_SHA256_LEN, vsc_buffer_len(asn1));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_OID_SHA256, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL(test_asn1_encoded_OID_SHA256.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_OID_SHA256.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_OID_SHA256.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
 
     vsc_buffer_destroy(&asn1);
     vscf_asn1wr_destroy(&asn1wr);
@@ -272,16 +269,17 @@ test__asn1wr_write_sequence__argument_len_32__returns_encoded_sequence_with_len_
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
 
-    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_SEQUENCE_WITH_LEN_32_LEN);
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_SEQUENCE_WITH_LEN_32.len);
 
     vscf_asn1wr_reset(asn1wr, asn1);
 
     size_t len = vscf_asn1wr_write_sequence(asn1wr, 32);
     vscf_asn1wr_seal(asn1wr);
 
-    TEST_ASSERT_EQUAL(test_asn1_encoded_SEQUENCE_WITH_LEN_32_LEN, len);
-    TEST_ASSERT_EQUAL(test_asn1_encoded_SEQUENCE_WITH_LEN_32_LEN, vsc_buffer_len(asn1));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_SEQUENCE_WITH_LEN_32, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL(test_asn1_encoded_SEQUENCE_WITH_LEN_32.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_SEQUENCE_WITH_LEN_32.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(
+            test_asn1_encoded_SEQUENCE_WITH_LEN_32.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
 
     vsc_buffer_destroy(&asn1);
     vscf_asn1wr_destroy(&asn1wr);
@@ -293,16 +291,16 @@ test__asn1wr_write_set__argument_len_32__returns_encoded_set_with_len_32(void) {
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
 
-    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_SET_WITH_LEN_32_LEN);
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_SET_WITH_LEN_32.len);
 
     vscf_asn1wr_reset(asn1wr, asn1);
 
     size_t len = vscf_asn1wr_write_set(asn1wr, 32);
     vscf_asn1wr_seal(asn1wr);
 
-    TEST_ASSERT_EQUAL(test_asn1_encoded_SET_WITH_LEN_32_LEN, len);
-    TEST_ASSERT_EQUAL(test_asn1_encoded_SET_WITH_LEN_32_LEN, vsc_buffer_len(asn1));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_SET_WITH_LEN_32, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL(test_asn1_encoded_SET_WITH_LEN_32.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_SET_WITH_LEN_32.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_SET_WITH_LEN_32.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
 
     vsc_buffer_destroy(&asn1);
     vscf_asn1wr_destroy(&asn1wr);

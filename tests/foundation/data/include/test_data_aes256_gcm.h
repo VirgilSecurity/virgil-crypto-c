@@ -33,7 +33,6 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-
 #include "vsc_data.h"
 
 //
@@ -47,7 +46,6 @@ extern const vsc_data_t test_aes256_gcm_VECTOR_1_ENC;
 extern const vsc_data_t test_aes256_gcm_VECTOR_1_AUTH_TAG;
 extern const vsc_data_t test_aes256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG;
 
-
 //
 //  Test vector 2
 //  AES-GCM NIST Validation (AES-256,128,0,1024,128) #0
@@ -58,7 +56,6 @@ extern const vsc_data_t test_aes256_gcm_VECTOR_2_NONCE;
 extern const vsc_data_t test_aes256_gcm_VECTOR_2_ADD;
 extern const vsc_data_t test_aes256_gcm_VECTOR_2_ENC;
 extern const vsc_data_t test_aes256_gcm_VECTOR_2_AUTH_TAG;
-
 
 //
 //  Test vector 3

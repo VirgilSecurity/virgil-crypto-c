@@ -56,6 +56,9 @@
 #include "vscf_error.h"
 #include "vscf_impl.h"
 #include "vscf_kdf.h"
+
+#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -146,7 +149,7 @@ vscf_kdf2_take_hash_stream(vscf_kdf2_impl_t *kdf2_impl, vscf_impl_t *hash);
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
-vscf_kdf2_derive(vscf_kdf2_impl_t *kdf2_impl, const byte *data, size_t data_len, byte *key, size_t key_len);
+vscf_kdf2_derive(vscf_kdf2_impl_t *kdf2_impl, vsc_data_t data, vsc_buffer_t *key, size_t key_len);
 
 
 // --------------------------------------------------------------------------

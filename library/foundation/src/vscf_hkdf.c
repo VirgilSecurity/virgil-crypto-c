@@ -75,15 +75,13 @@ enum {
 //  Extracts fixed-length pseudorandom key from keying material.
 //
 static void
-vscf_hkdf_extract(vscf_hkdf_impl_t *hkdf_impl, const byte *data, size_t data_len, const byte *salt, size_t salt_len,
-        byte *pr_key, size_t pr_key_len);
+vscf_hkdf_extract(vscf_hkdf_impl_t *hkdf_impl, vsc_data_t data, vsc_data_t salt, vsc_buffer_t *pr_key);
 
 //
 //  Expands the pseudorandom key to the desired length.
 //
 static void
-vscf_hkdf_expand(vscf_hkdf_impl_t *hkdf_impl, byte *pr_key, size_t pr_key_len, const byte *info, size_t info_len,
-        byte *key, size_t key_len);
+vscf_hkdf_expand(vscf_hkdf_impl_t *hkdf_impl, vsc_buffer_t *pr_key, vsc_data_t info, vsc_buffer_t *key, size_t key_len);
 
 
 // --------------------------------------------------------------------------
@@ -97,66 +95,70 @@ vscf_hkdf_expand(vscf_hkdf_impl_t *hkdf_impl, byte *pr_key, size_t pr_key_len, c
 //  Extracts fixed-length pseudorandom key from keying material.
 //
 static void
-vscf_hkdf_extract(vscf_hkdf_impl_t *hkdf_impl, const byte *data, size_t data_len, const byte *salt, size_t salt_len,
-        byte *pr_key, size_t pr_key_len) {
+vscf_hkdf_extract(vscf_hkdf_impl_t *hkdf_impl, vsc_data_t data, vsc_data_t salt, vsc_buffer_t *pr_key) {
 
     vscf_hmac_stream_reset(hkdf_impl->hmac);
-    vscf_hmac_stream_start(hkdf_impl->hmac, salt, salt_len);
-    vscf_hmac_stream_update(hkdf_impl->hmac, data, data_len);
-    vscf_hmac_stream_finish(hkdf_impl->hmac, pr_key, pr_key_len);
+    vscf_hmac_stream_start(hkdf_impl->hmac, salt);
+    vscf_hmac_stream_update(hkdf_impl->hmac, data);
+    vscf_hmac_stream_finish(hkdf_impl->hmac, pr_key);
 }
 
 //
 //  Expands the pseudorandom key to the desired length.
 //
 static void
-vscf_hkdf_expand(vscf_hkdf_impl_t *hkdf_impl, byte *pr_key, size_t pr_key_len, const byte *info, size_t info_len,
-        byte *key, size_t key_len) {
+vscf_hkdf_expand(
+        vscf_hkdf_impl_t *hkdf_impl, vsc_buffer_t *pr_key, vsc_data_t info, vsc_buffer_t *key, size_t key_len) {
 
     unsigned char counter = 0x00;
-    vscf_hmac_stream_start(hkdf_impl->hmac, pr_key, pr_key_len);
+    size_t hmac_len = vscf_hmac_info_digest_len(vscf_hmac_info_api(hkdf_impl->hmac));
+
+    vscf_hmac_stream_start(hkdf_impl->hmac, vsc_buffer_data(pr_key));
+    vsc_data_t previous_mac = vsc_data_empty();
     do {
         ++counter;
-        size_t need = key_len - ((counter - 1) * pr_key_len);
+        size_t need = key_len - ((counter - 1) * hmac_len);
         vscf_hmac_stream_reset(hkdf_impl->hmac);
-        if (counter > 1) {
-            vscf_hmac_stream_update(hkdf_impl->hmac, key + ((counter - 2) * pr_key_len), pr_key_len);
-        }
-        vscf_hmac_stream_update(hkdf_impl->hmac, info, info_len);
-        vscf_hmac_stream_update(hkdf_impl->hmac, &counter, 1);
+        vscf_hmac_stream_update(hkdf_impl->hmac, previous_mac);
+        vscf_hmac_stream_update(hkdf_impl->hmac, info);
+        vscf_hmac_stream_update(hkdf_impl->hmac, vsc_data(&counter, 1));
 
-        if (need >= pr_key_len) {
-            vscf_hmac_stream_finish(hkdf_impl->hmac, key + ((counter - 1) * pr_key_len), pr_key_len);
+        if (need >= hmac_len) {
+            vscf_hmac_stream_finish(hkdf_impl->hmac, key);
+            previous_mac = vsc_data(vsc_buffer_ptr(key) - hmac_len, hmac_len);
         } else {
-            vscf_hmac_stream_finish(hkdf_impl->hmac, pr_key, pr_key_len);
-            memcpy(key + ((counter - 1) * pr_key_len), pr_key, need);
+            vsc_buffer_reset(pr_key);
+            vscf_hmac_stream_finish(hkdf_impl->hmac, pr_key);
+            memcpy(vsc_buffer_ptr(key), vsc_buffer_bytes(pr_key), need);
+            vsc_buffer_reserve(key, need);
         }
-    } while (counter * pr_key_len < key_len);
+    } while (counter * hmac_len < key_len);
 }
 
 //
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
-vscf_hkdf_derive(vscf_hkdf_impl_t *hkdf_impl, const byte *data, size_t data_len, const byte *salt, size_t salt_len,
-        const byte *info, size_t info_len, byte *key, size_t key_len) {
+vscf_hkdf_derive(vscf_hkdf_impl_t *hkdf_impl, vsc_data_t data, vsc_data_t salt, vsc_data_t info, vsc_buffer_t *key,
+        size_t key_len) {
 
     VSCF_ASSERT_PTR(hkdf_impl);
     VSCF_ASSERT_PTR(hkdf_impl->hmac);
-    VSCF_ASSERT_PTR(data);
-    VSCF_ASSERT_PTR(salt);
-    VSCF_ASSERT_PTR(info);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT(vsc_data_is_valid(salt));
+    VSCF_ASSERT(vsc_data_is_valid(info));
     VSCF_ASSERT_PTR(key);
+    VSCF_ASSERT(key_len > 0);
+    VSCF_ASSERT(vsc_buffer_left(key) >= key_len);
+
 
     size_t pr_key_len = vscf_hmac_info_digest_len(vscf_hmac_info_api(hkdf_impl->hmac));
     VSCF_ASSERT_OPT(key_len <= vscf_hkdf_HASH_COUNTER_MAX * pr_key_len);
 
-    unsigned char *pr_key = vscf_alloc(pr_key_len);
-    VSCF_ASSERT_PTR(pr_key);
+    vsc_buffer_t *pr_key = vsc_buffer_new_with_capacity(pr_key_len);
 
-    vscf_hkdf_extract(hkdf_impl, data, data_len, salt, salt_len, pr_key, pr_key_len);
+    vscf_hkdf_extract(hkdf_impl, data, salt, pr_key);
+    vscf_hkdf_expand(hkdf_impl, pr_key, info, key, key_len);
 
-    vscf_hkdf_expand(hkdf_impl, pr_key, pr_key_len, info, info_len, key, key_len);
-
-    vscf_dealloc(pr_key);
+    vsc_buffer_destroy(&pr_key);
 }

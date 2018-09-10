@@ -58,6 +58,9 @@
 #include "vscf_hmac_info.h"
 #include "vscf_hmac.h"
 #include "vscf_hmac_stream.h"
+
+#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -154,7 +157,7 @@ vscf_hmac512_hmac_api(void);
 //  Calculate hmac over given data.
 //
 VSCF_PUBLIC void
-vscf_hmac512_hmac(const byte *key, size_t key_len, const byte *data, size_t data_len, byte *hmac, size_t hmac_len);
+vscf_hmac512_hmac(vsc_data_t key, vsc_data_t data, vsc_buffer_t *hmac);
 
 //
 //  Reset HMAC.
@@ -166,19 +169,19 @@ vscf_hmac512_reset(vscf_hmac512_impl_t *hmac512_impl);
 //  Start a new HMAC.
 //
 VSCF_PUBLIC void
-vscf_hmac512_start(vscf_hmac512_impl_t *hmac512_impl, const byte *key, size_t key_len);
+vscf_hmac512_start(vscf_hmac512_impl_t *hmac512_impl, vsc_data_t key);
 
 //
 //  Add given data to the HMAC.
 //
 VSCF_PUBLIC void
-vscf_hmac512_update(vscf_hmac512_impl_t *hmac512_impl, const byte *data, size_t data_len);
+vscf_hmac512_update(vscf_hmac512_impl_t *hmac512_impl, vsc_data_t data);
 
 //
 //  Accompilsh HMAC and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_hmac512_finish(vscf_hmac512_impl_t *hmac512_impl, byte *hmac, size_t hmac_len);
+vscf_hmac512_finish(vscf_hmac512_impl_t *hmac512_impl, vsc_buffer_t *hmac);
 
 
 // --------------------------------------------------------------------------

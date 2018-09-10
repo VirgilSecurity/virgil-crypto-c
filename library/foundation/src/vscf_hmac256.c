@@ -97,11 +97,17 @@ vscf_hmac256_cleanup_ctx(vscf_hmac256_impl_t *hmac256_impl) {
 //  Calculate hmac over given data.
 //
 VSCF_PUBLIC void
-vscf_hmac256_hmac(const byte *key, size_t key_len, const byte *data, size_t data_len, byte *hmac, size_t hmac_len) {
+vscf_hmac256_hmac(vsc_data_t key, vsc_data_t data, vsc_buffer_t *hmac) {
 
-    VSCF_ASSERT_OPT(hmac_len >= vscf_hmac256_DIGEST_LEN);
+    VSCF_ASSERT(vsc_data_is_valid(key));
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT(vsc_buffer_is_valid(hmac));
+    VSCF_ASSERT(vsc_buffer_left(hmac) >= vscf_hmac256_DIGEST_LEN);
 
-    mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), key, key_len, data, data_len, hmac);
+    mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), key.bytes, key.len, data.bytes, data.len,
+            vsc_buffer_ptr(hmac));
+
+    vsc_buffer_reserve(hmac, vscf_hmac256_DIGEST_LEN);
 }
 
 //
@@ -110,6 +116,8 @@ vscf_hmac256_hmac(const byte *key, size_t key_len, const byte *data, size_t data
 VSCF_PUBLIC void
 vscf_hmac256_reset(vscf_hmac256_impl_t *hmac256_impl) {
 
+    VSCF_ASSERT_PTR(hmac256_impl);
+
     mbedtls_md_hmac_reset(&hmac256_impl->hmac_ctx);
 }
 
@@ -117,27 +125,37 @@ vscf_hmac256_reset(vscf_hmac256_impl_t *hmac256_impl) {
 //  Start a new HMAC.
 //
 VSCF_PUBLIC void
-vscf_hmac256_start(vscf_hmac256_impl_t *hmac256_impl, const byte *key, size_t key_len) {
+vscf_hmac256_start(vscf_hmac256_impl_t *hmac256_impl, vsc_data_t key) {
 
-    mbedtls_md_hmac_starts(&hmac256_impl->hmac_ctx, key, key_len);
+    VSCF_ASSERT_PTR(hmac256_impl);
+    VSCF_ASSERT(vsc_data_is_valid(key));
+
+    mbedtls_md_hmac_starts(&hmac256_impl->hmac_ctx, key.bytes, key.len);
 }
 
 //
 //  Add given data to the HMAC.
 //
 VSCF_PUBLIC void
-vscf_hmac256_update(vscf_hmac256_impl_t *hmac256_impl, const byte *data, size_t data_len) {
+vscf_hmac256_update(vscf_hmac256_impl_t *hmac256_impl, vsc_data_t data) {
 
-    mbedtls_md_hmac_update(&hmac256_impl->hmac_ctx, data, data_len);
+    VSCF_ASSERT_PTR(hmac256_impl);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+
+    mbedtls_md_hmac_update(&hmac256_impl->hmac_ctx, data.bytes, data.len);
 }
 
 //
 //  Accompilsh HMAC and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_hmac256_finish(vscf_hmac256_impl_t *hmac256_impl, byte *hmac, size_t hmac_len) {
+vscf_hmac256_finish(vscf_hmac256_impl_t *hmac256_impl, vsc_buffer_t *hmac) {
 
-    VSCF_ASSERT_OPT(hmac_len >= vscf_hmac256_DIGEST_LEN);
+    VSCF_ASSERT_PTR(hmac256_impl);
+    VSCF_ASSERT(vsc_buffer_is_valid(hmac));
 
-    mbedtls_md_hmac_finish(&hmac256_impl->hmac_ctx, hmac);
+    VSCF_ASSERT(vsc_buffer_left(hmac) >= vscf_hmac256_DIGEST_LEN);
+
+    mbedtls_md_hmac_finish(&hmac256_impl->hmac_ctx, vsc_buffer_ptr(hmac));
+    vsc_buffer_reserve(hmac, vscf_hmac256_DIGEST_LEN);
 }

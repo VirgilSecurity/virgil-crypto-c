@@ -4,9 +4,8 @@
     <method name="derive" context="impl">
         Calculate hash over given data.
 
-        <argument name="data" type="data"/>
-        <argument name="data len" type="size"/>
-        <argument name="key" type="data" access="writeonly"/>
+        <argument name="data" class="data"/>
+        <argument name="key" class="buffer"/>
         <argument name="key len" type="size"/>
     </method>
 </interface>

@@ -78,26 +78,26 @@ vscf_hash_stream_start(vscf_impl_t *impl) {
 //  Add given data to the hash.
 //
 VSCF_PUBLIC void
-vscf_hash_stream_update(vscf_impl_t *impl, const byte *data, size_t data_len) {
+vscf_hash_stream_update(vscf_impl_t *impl, vsc_data_t data) {
 
     const vscf_hash_stream_api_t *hash_stream_api = vscf_hash_stream_api (impl);
     VSCF_ASSERT_PTR (hash_stream_api);
 
     VSCF_ASSERT_PTR (hash_stream_api->update_cb);
-    hash_stream_api->update_cb (impl, data, data_len);
+    hash_stream_api->update_cb (impl, data);
 }
 
 //
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_hash_stream_finish(vscf_impl_t *impl, byte *digest, size_t digest_len) {
+vscf_hash_stream_finish(vscf_impl_t *impl, vsc_buffer_t *digest) {
 
     const vscf_hash_stream_api_t *hash_stream_api = vscf_hash_stream_api (impl);
     VSCF_ASSERT_PTR (hash_stream_api);
 
     VSCF_ASSERT_PTR (hash_stream_api->finish_cb);
-    hash_stream_api->finish_cb (impl, digest, digest_len);
+    hash_stream_api->finish_cb (impl, digest);
 }
 
 //

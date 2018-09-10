@@ -47,23 +47,25 @@
 // Test implementation helpers & lifecycle functions.
 // --------------------------------------------------------------------------
 
-void benchmark_sha512_native(void * data, size_t data_size)
+void benchmark_sha512_native(void *data, size_t data_size)
 {
-    byte digest[vscf_sha512_DIGEST_LEN] = { 0x00 };
+    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
 
-    vscf_sha512_hash(data, data_size, digest, vscf_sha512_DIGEST_LEN);
+    vscf_sha512_hash(*(vsc_data_t *)data, digest);
+
+    vsc_buffer_destroy(&digest);
 }
 
 void benchmark_sha512_interface(void * data, size_t data_size)
 {
-    byte digest[vscf_sha512_DIGEST_LEN] = { 0x00 };
-
-    vscf_impl_t *impl = vscf_sha512_impl(vscf_sha512_new());
+    vscf_impl_t *impl = vscf_sha512_impl (vscf_sha512_new ());
+    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
 
     vscf_hash_stream_start (impl);
-    vscf_hash_stream_update (impl, data, data_size);
-    vscf_hash_stream_finish(impl, digest, vscf_sha512_DIGEST_LEN);
+    vscf_hash_stream_update (impl, *(vsc_data_t *)data);
+    vscf_hash_stream_finish (impl, digest);
 
+    vsc_buffer_destroy(&digest);
     vscf_impl_destroy (&impl);
 }
 
@@ -72,5 +74,5 @@ void benchmark_sha512_interface(void * data, size_t data_size)
 // --------------------------------------------------------------------------
 
 int main (void) {
-    benchmark2(benchmark_sha512_native, "SHA512 (native)", benchmark_sha512_interface, "(interface)", (void*) test_sha512_VECTOR_1_DIGEST, test_sha512_VECTOR_1_DIGEST_LEN, 1000000);
+    benchmark2(benchmark_sha512_native,"SHA512 (native)",benchmark_sha512_interface,"(interface)",(void*)&test_sha512_VECTOR_1_DIGEST, 0, 1000000);
 }
