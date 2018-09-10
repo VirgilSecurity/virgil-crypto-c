@@ -1,0 +1,6 @@
+<class name="olm kdf info" context="public">
+
+    <property name="root info" class="data"/>
+    <property name="ratchet info" class="data"/>
+
+</class>

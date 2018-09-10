@@ -1,0 +1,58 @@
+<class name="ratchet" context="public">
+
+    <require header="virgil/foundation/vscf_hmac256.h" scope="public"/>
+    <require header="virgil/foundation/vscf_hkdf.h" scope="public"/>
+
+    <require header="virgil/foundation/vscf_error_ctx.h" scope="private"/>
+    <require class="olm message key" scope="public"/>
+    <require class="olm kdf info" scope="public"/>
+    <require class="olm sender chain" scope="public"/>
+    <require class="olm chain key" scope="public"/>
+
+    <constant name="olm shared key length" value="vscf_hmac256_DIGEST_LEN"/>
+
+    <variable name="olm chain key seed" type="unsigned" size="1" declaration="private" definition="private">
+        <array length="derived"/>
+        <value value="0x02"/>
+    </variable>
+
+    <variable name="olm message key seed" type="unsigned" size="1" declaration="private" definition="private">
+        <array length="derived"/>
+        <value value="0x01"/>
+    </variable>
+
+    <property name="kdf info" class="olm kdf info" access="readwrite"/>
+    <property name="sender chain" class="olm sender chain" access="readwrite"/>
+    <property name="receiver chains" class="olm receiver chain list node" access="readwrite"/>
+    <property name="root key" class="buffer" access="readwrite"/>
+
+    <method name="advance root chain">
+        <argument class="context" access="readwrite"/>
+    </method>
+
+    <method name="create message key">
+        <argument class="context" access="readwrite"/>
+        <argument name="message key" class="olm message key" access="readwrite"/>
+    </method>
+
+    <method name="advance chain key">
+        <argument name="chain key" class="olm chain key" access="readwrite"/>
+    </method>
+
+    <method name="encrypt">
+        <argument class="context"/>
+        <argument name="plain text" class="data"/>
+        <argument name="cipher text" class="buffer"/>
+
+        <return type="error"/>
+    </method>
+
+    <method name="decrypt">
+        <argument class="context"/>
+        <argument name="cipher text" class="data"/>
+        <argument name="plain text" class="buffer"/>
+
+        <return type="error"/>
+    </method>
+
+</class>
