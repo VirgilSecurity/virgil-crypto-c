@@ -95,6 +95,8 @@
         <allow entity="method"/>
         <allow entity="macros"/>
         <allow entity="macroses"/>
+        <allow entity="struct"/>
+        <allow entity="variable"/>
     </entity>
 
     <include filename="common.xnf"/>

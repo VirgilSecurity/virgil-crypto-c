@@ -50,6 +50,20 @@
     </method>
 
 
+    <method name="read int8">
+        Read ASN.1 type: INTEGER.
+
+        <return type="integer" size="1"/>
+    </method>
+
+
+    <method name="read int16">
+        Read ASN.1 type: INTEGER.
+
+        <return type="integer" size="2"/>
+    </method>
+
+
     <method name="read int32">
         Read ASN.1 type: INTEGER.
 
@@ -67,6 +81,20 @@
         Read ASN.1 type: INTEGER.
 
         <return type="unsigned"/>
+    </method>
+
+
+    <method name="read uint8">
+        Read ASN.1 type: INTEGER.
+
+        <return type="unsigned" size="1"/>
+    </method>
+
+
+    <method name="read uint16">
+        Read ASN.1 type: INTEGER.
+
+        <return type="unsigned" size="2"/>
     </method>
 
 

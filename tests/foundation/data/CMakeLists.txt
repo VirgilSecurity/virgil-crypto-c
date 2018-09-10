@@ -36,8 +36,8 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(test_data VERSION 0.1.0 LANGUAGES C)
 
-add_library(test_data "")
-target_sources(test_data
+add_library(test_data_foundation "")
+target_sources(test_data_foundation
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_aes256_gcm.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_asn1.h"
@@ -71,8 +71,8 @@ target_sources(test_data
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_sha512.c"
         )
 
-target_include_directories(test_data
+target_include_directories(test_data_foundation
         PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         )
 
-target_link_libraries(test_data vsc::common)
+target_link_libraries(test_data_foundation vsc::common)

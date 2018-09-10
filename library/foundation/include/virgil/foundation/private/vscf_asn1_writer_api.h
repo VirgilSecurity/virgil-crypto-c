@@ -116,6 +116,18 @@ typedef size_t (*vscf_asn1_writer_api_write_int_fn)(vscf_impl_t *impl, int value
 //  Callback. Write ASN.1 type: INTEGER.
 //          Return count of written bytes.
 //
+typedef size_t (*vscf_asn1_writer_api_write_int8_fn)(vscf_impl_t *impl, int8_t value);
+
+//
+//  Callback. Write ASN.1 type: INTEGER.
+//          Return count of written bytes.
+//
+typedef size_t (*vscf_asn1_writer_api_write_int16_fn)(vscf_impl_t *impl, int16_t value);
+
+//
+//  Callback. Write ASN.1 type: INTEGER.
+//          Return count of written bytes.
+//
 typedef size_t (*vscf_asn1_writer_api_write_int32_fn)(vscf_impl_t *impl, int32_t value);
 
 //
@@ -129,6 +141,18 @@ typedef size_t (*vscf_asn1_writer_api_write_int64_fn)(vscf_impl_t *impl, int64_t
 //          Return count of written bytes.
 //
 typedef size_t (*vscf_asn1_writer_api_write_uint_fn)(vscf_impl_t *impl, unsigned int value);
+
+//
+//  Callback. Write ASN.1 type: INTEGER.
+//          Return count of written bytes.
+//
+typedef size_t (*vscf_asn1_writer_api_write_uint8_fn)(vscf_impl_t *impl, uint8_t value);
+
+//
+//  Callback. Write ASN.1 type: INTEGER.
+//          Return count of written bytes.
+//
+typedef size_t (*vscf_asn1_writer_api_write_uint16_fn)(vscf_impl_t *impl, uint16_t value);
 
 //
 //  Callback. Write ASN.1 type: INTEGER.
@@ -232,6 +256,16 @@ struct vscf_asn1_writer_api_t {
     //  Write ASN.1 type: INTEGER.
     //  Return count of written bytes.
     //
+    vscf_asn1_writer_api_write_int8_fn write_int8_cb;
+    //
+    //  Write ASN.1 type: INTEGER.
+    //  Return count of written bytes.
+    //
+    vscf_asn1_writer_api_write_int16_fn write_int16_cb;
+    //
+    //  Write ASN.1 type: INTEGER.
+    //  Return count of written bytes.
+    //
     vscf_asn1_writer_api_write_int32_fn write_int32_cb;
     //
     //  Write ASN.1 type: INTEGER.
@@ -243,6 +277,16 @@ struct vscf_asn1_writer_api_t {
     //  Return count of written bytes.
     //
     vscf_asn1_writer_api_write_uint_fn write_uint_cb;
+    //
+    //  Write ASN.1 type: INTEGER.
+    //  Return count of written bytes.
+    //
+    vscf_asn1_writer_api_write_uint8_fn write_uint8_cb;
+    //
+    //  Write ASN.1 type: INTEGER.
+    //  Return count of written bytes.
+    //
+    vscf_asn1_writer_api_write_uint16_fn write_uint16_cb;
     //
     //  Write ASN.1 type: INTEGER.
     //  Return count of written bytes.

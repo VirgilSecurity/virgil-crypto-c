@@ -65,6 +65,26 @@
     </method>
 
 
+    <method name="write int8">
+        Write ASN.1 type: INTEGER.
+        Return count of written bytes.
+
+        <argument name="value" type="integer" size="1"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="write int16">
+        Write ASN.1 type: INTEGER.
+        Return count of written bytes.
+
+        <argument name="value" type="integer" size="2"/>
+
+        <return type="size"/>
+    </method>
+
+
     <method name="write int32">
         Write ASN.1 type: INTEGER.
         Return count of written bytes.
@@ -90,6 +110,26 @@
         Return count of written bytes.
 
         <argument name="value" type="unsigned"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="write uint8">
+        Write ASN.1 type: INTEGER.
+        Return count of written bytes.
+
+        <argument name="value" type="unsigned" size="1"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="write uint16">
+        Write ASN.1 type: INTEGER.
+        Return count of written bytes.
+
+        <argument name="value" type="unsigned" size="2"/>
 
         <return type="size"/>
     </method>
