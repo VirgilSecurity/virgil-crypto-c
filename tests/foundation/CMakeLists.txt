@@ -40,7 +40,7 @@ add_subdirectory(data)
 
 macro(_add_test test)
     add_executable(${test} ${test}.c)
-    target_link_libraries(${test} unity test_utils test_data vsc::foundation)
+    target_link_libraries(${test} unity test_utils test_data_foundation vsc::foundation)
     set_target_properties(${test} PROPERTIES C_STANDARD "99")
     add_test (NAME ${test} COMMAND ${test})
 
