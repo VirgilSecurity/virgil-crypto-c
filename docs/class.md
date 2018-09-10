@@ -60,6 +60,10 @@ attribute names are case-sensitive and we use only lower-case names.
           <macros .../>
           <code .../>
        </macroses>
+       <struct name [definition] [visibility] [c_prefix] [of_class] [uid] [feature] [declaration]>
+          <property .../>
+       </struct>
+       <variable .../>
     </class>
 
 Detailed specifications
@@ -92,6 +96,8 @@ Defines class type.
         <method>
         <macros>
         <macroses>
+        <struct>
+        <variable>
     </class>
 
 The class item can have these attributes:
@@ -1344,4 +1350,73 @@ Value: Meaning:
 public: Component definition is visible for outside world.
 private: Component definition is hidden in a correspond source file.
 external: Component definition is located somewhere.
+
+
+The 'struct' item
+-----------------
+
+Groups common attributes for the component. Defines struct type.
+
+    <struct
+        name = "..."
+      [ definition = "public | private | external"  ("private") ]
+      [ visibility = "public | private"  ("public") ]
+      [ c_prefix = "..." ]
+      [ of_class = "..." ]
+      [ uid = "..." ]
+      [ feature = "..." ]
+      [ declaration = "public | private | external"  ("public") ]
+        >
+        <property>
+    </struct>
+
+The struct item can have these attributes:
+
+definition:
+    Defines where component will be defined. This attribute must not be
+    inherited. The definition attribute is optional. Its default value is
+    "private". It can take one of the following values:
+
+Value: Meaning:
+public: Component definition is visible for outside world.
+private: Component definition is hidden in a correspond source file.
+external: Component definition is located somewhere.
+
+declaration:
+    Defines where component will be declared. This attribute must not be
+    inherited. The declaration attribute is optional. Its default value is
+    "public". It can take one of the following values:
+
+Value: Meaning:
+public: Component declaration is visible for outside world.
+private: Component declaration is hidden in a correspond source file.
+external: Component declaration is located somewhere.
+
+visibility:
+    Defines symbol binary visibility. This attribute must not be inherited.
+    The visibility attribute is optional. Its default value is "public". It
+    can take one of the following values:
+
+Value: Meaning:
+public: Symbols of the types and methods are visible in a binary file.
+private: Symbols of the types and methods are hidden in a binary file.
+
+c_prefix:
+    Prefix that is used for C name resolution. The c_prefix attribute is
+    optional.
+
+of_class:
+    Defines class name that a component belongs to. This attributes is used
+    for inner components name resolution. The of_class attribute is optional.
+
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.
+
+feature:
+    In-project feature name that is implemented. This attribute is used for
+    feature-based compilation. The feature attribute is optional.
+
+name:
+    Structure name. The name attribute is required.
 
