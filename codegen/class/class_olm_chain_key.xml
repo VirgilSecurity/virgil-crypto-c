@@ -1,0 +1,6 @@
+<class name="olm chain key" context="public">
+
+    <property name="index" type="size" size="4"/>
+    <property name="key" class="buffer"/>
+
+</class>

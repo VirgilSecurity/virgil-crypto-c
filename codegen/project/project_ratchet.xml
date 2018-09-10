@@ -53,5 +53,12 @@
     <module name="olm message error"/>
 
     <class name="error"/>
+    <class name="olm chain key"/>
+    <class name="olm message key"/>
+    <class name="olm kdf info"/>
+    <class name="olm receiver chain"/>
+    <class name="olm receiver chain list node"/>
+    <class name="olm sender chain"/>
     <class name="olm message"/>
+    <class name="ratchet"/>
 </project>
