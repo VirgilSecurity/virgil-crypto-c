@@ -163,6 +163,34 @@ vscf_asn1_writer_write_int(vscf_impl_t *impl, int value) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
+vscf_asn1_writer_write_int8(vscf_impl_t *impl, int8_t value) {
+
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    VSCF_ASSERT_PTR (asn1_writer_api);
+
+    VSCF_ASSERT_PTR (asn1_writer_api->write_int8_cb);
+    return asn1_writer_api->write_int8_cb (impl, value);
+}
+
+//
+//  Write ASN.1 type: INTEGER.
+//  Return count of written bytes.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_writer_write_int16(vscf_impl_t *impl, int16_t value) {
+
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    VSCF_ASSERT_PTR (asn1_writer_api);
+
+    VSCF_ASSERT_PTR (asn1_writer_api->write_int16_cb);
+    return asn1_writer_api->write_int16_cb (impl, value);
+}
+
+//
+//  Write ASN.1 type: INTEGER.
+//  Return count of written bytes.
+//
+VSCF_PUBLIC size_t
 vscf_asn1_writer_write_int32(vscf_impl_t *impl, int32_t value) {
 
     const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
@@ -198,6 +226,34 @@ vscf_asn1_writer_write_uint(vscf_impl_t *impl, unsigned int value) {
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_uint_cb);
     return asn1_writer_api->write_uint_cb (impl, value);
+}
+
+//
+//  Write ASN.1 type: INTEGER.
+//  Return count of written bytes.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_writer_write_uint8(vscf_impl_t *impl, uint8_t value) {
+
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    VSCF_ASSERT_PTR (asn1_writer_api);
+
+    VSCF_ASSERT_PTR (asn1_writer_api->write_uint8_cb);
+    return asn1_writer_api->write_uint8_cb (impl, value);
+}
+
+//
+//  Write ASN.1 type: INTEGER.
+//  Return count of written bytes.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_writer_write_uint16(vscf_impl_t *impl, uint16_t value) {
+
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    VSCF_ASSERT_PTR (asn1_writer_api);
+
+    VSCF_ASSERT_PTR (asn1_writer_api->write_uint16_cb);
+    return asn1_writer_api->write_uint16_cb (impl, value);
 }
 
 //

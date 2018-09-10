@@ -300,6 +300,50 @@ vscf_asn1rd_read_int(vscf_asn1rd_impl_t *asn1rd_impl) {
 //
 //  Read ASN.1 type: INTEGER.
 //
+VSCF_PUBLIC int8_t
+vscf_asn1rd_read_int8(vscf_asn1rd_impl_t *asn1rd_impl) {
+
+    VSCF_ASSERT_PTR(asn1rd_impl);
+
+    int64_t value = vscf_asn1rd_read_int64(asn1rd_impl);
+
+    if (asn1rd_impl->error != vscf_SUCCESS) {
+        return 0;
+    }
+
+    if (value > (int64_t)INT8_MAX) {
+        asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        return 0;
+    }
+
+    return (int8_t)value;
+}
+
+//
+//  Read ASN.1 type: INTEGER.
+//
+VSCF_PUBLIC int16_t
+vscf_asn1rd_read_int16(vscf_asn1rd_impl_t *asn1rd_impl) {
+
+    VSCF_ASSERT_PTR(asn1rd_impl);
+
+    int64_t value = vscf_asn1rd_read_int64(asn1rd_impl);
+
+    if (asn1rd_impl->error != vscf_SUCCESS) {
+        return 0;
+    }
+
+    if (value > (int64_t)INT16_MAX) {
+        asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        return 0;
+    }
+
+    return (int16_t)value;
+}
+
+//
+//  Read ASN.1 type: INTEGER.
+//
 VSCF_PUBLIC int32_t
 vscf_asn1rd_read_int32(vscf_asn1rd_impl_t *asn1rd_impl) {
 
@@ -370,6 +414,50 @@ vscf_asn1rd_read_uint(vscf_asn1rd_impl_t *asn1rd_impl) {
     }
 
     return (unsigned int)value;
+}
+
+//
+//  Read ASN.1 type: INTEGER.
+//
+VSCF_PUBLIC uint8_t
+vscf_asn1rd_read_uint8(vscf_asn1rd_impl_t *asn1rd_impl) {
+
+    VSCF_ASSERT_PTR(asn1rd_impl);
+
+    uint64_t value = vscf_asn1rd_read_uint64(asn1rd_impl);
+
+    if (asn1rd_impl->error != vscf_SUCCESS) {
+        return 0;
+    }
+
+    if (value > (uint64_t)UINT8_MAX) {
+        asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        return 0;
+    }
+
+    return (uint8_t)value;
+}
+
+//
+//  Read ASN.1 type: INTEGER.
+//
+VSCF_PUBLIC uint16_t
+vscf_asn1rd_read_uint16(vscf_asn1rd_impl_t *asn1rd_impl) {
+
+    VSCF_ASSERT_PTR(asn1rd_impl);
+
+    uint64_t value = vscf_asn1rd_read_uint64(asn1rd_impl);
+
+    if (asn1rd_impl->error != vscf_SUCCESS) {
+        return 0;
+    }
+
+    if (value > (uint64_t)UINT16_MAX) {
+        asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        return 0;
+    }
+
+    return (uint16_t)value;
 }
 
 //

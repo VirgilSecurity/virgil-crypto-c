@@ -145,6 +145,32 @@ vscf_asn1_reader_read_int(vscf_impl_t *impl) {
 //
 //  Read ASN.1 type: INTEGER.
 //
+VSCF_PUBLIC int8_t
+vscf_asn1_reader_read_int8(vscf_impl_t *impl) {
+
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    VSCF_ASSERT_PTR (asn1_reader_api);
+
+    VSCF_ASSERT_PTR (asn1_reader_api->read_int8_cb);
+    return asn1_reader_api->read_int8_cb (impl);
+}
+
+//
+//  Read ASN.1 type: INTEGER.
+//
+VSCF_PUBLIC int16_t
+vscf_asn1_reader_read_int16(vscf_impl_t *impl) {
+
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    VSCF_ASSERT_PTR (asn1_reader_api);
+
+    VSCF_ASSERT_PTR (asn1_reader_api->read_int16_cb);
+    return asn1_reader_api->read_int16_cb (impl);
+}
+
+//
+//  Read ASN.1 type: INTEGER.
+//
 VSCF_PUBLIC int32_t
 vscf_asn1_reader_read_int32(vscf_impl_t *impl) {
 
@@ -179,6 +205,32 @@ vscf_asn1_reader_read_uint(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_uint_cb);
     return asn1_reader_api->read_uint_cb (impl);
+}
+
+//
+//  Read ASN.1 type: INTEGER.
+//
+VSCF_PUBLIC uint8_t
+vscf_asn1_reader_read_uint8(vscf_impl_t *impl) {
+
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    VSCF_ASSERT_PTR (asn1_reader_api);
+
+    VSCF_ASSERT_PTR (asn1_reader_api->read_uint8_cb);
+    return asn1_reader_api->read_uint8_cb (impl);
+}
+
+//
+//  Read ASN.1 type: INTEGER.
+//
+VSCF_PUBLIC uint16_t
+vscf_asn1_reader_read_uint16(vscf_impl_t *impl) {
+
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    VSCF_ASSERT_PTR (asn1_reader_api);
+
+    VSCF_ASSERT_PTR (asn1_reader_api->read_uint16_cb);
+    return asn1_reader_api->read_uint16_cb (impl);
 }
 
 //
