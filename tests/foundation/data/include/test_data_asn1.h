@@ -35,44 +35,29 @@
 
 #include "vsc_data.h"
 
-
 //
 //  Primitive types
 //
-extern const byte test_asn1_encoded_INT_2[];
-extern const byte test_asn1_encoded_BOOLEAN_TRUE[];
-extern const byte test_asn1_encoded_BOOLEAN_FALSE[];
-extern const byte test_asn1_encoded_NULL[];
-
-extern const size_t test_asn1_encoded_INT_2_LEN;
-extern const size_t test_asn1_encoded_BOOLEAN_TRUE_LEN;
-extern const size_t test_asn1_encoded_BOOLEAN_FALSE_LEN;
-extern const size_t test_asn1_encoded_NULL_LEN;
+extern const vsc_data_t test_asn1_encoded_INT_2;
+extern const vsc_data_t test_asn1_encoded_BOOLEAN_TRUE;
+extern const vsc_data_t test_asn1_encoded_BOOLEAN_FALSE;
+extern const vsc_data_t test_asn1_encoded_NULL;
 
 
 //
 // Strings
 //
-extern const byte test_asn1_encoded_OCTET_STRING[];
-extern const byte test_asn1_decoded_OCTET_STRING[];
-extern const byte test_asn1_encoded_UTF8_STRING[];
-extern const byte test_asn1_decoded_UTF8_STRING[];
-extern const byte test_asn1_encoded_OID_SHA256[];
-extern const byte test_asn1_decoded_OID_SHA256[];
-
-extern const size_t test_asn1_encoded_OCTET_STRING_LEN;
-extern const size_t test_asn1_decoded_OCTET_STRING_LEN;
-extern const size_t test_asn1_encoded_UTF8_STRING_LEN;
-extern const size_t test_asn1_decoded_UTF8_STRING_LEN;
-extern const size_t test_asn1_encoded_OID_SHA256_LEN;
-extern const size_t test_asn1_decoded_OID_SHA256_LEN;
+extern const vsc_data_t test_asn1_encoded_OCTET_STRING;
+extern const vsc_data_t test_asn1_decoded_OCTET_STRING;
+extern const vsc_data_t test_asn1_encoded_UTF8_STRING;
+extern const vsc_data_t test_asn1_decoded_UTF8_STRING;
+extern const vsc_data_t test_asn1_encoded_OID_SHA256;
+extern const vsc_data_t test_asn1_decoded_OID_SHA256;
 
 //
 // Containers
 //
-extern const byte test_asn1_encoded_SEQUENCE_WITH_LEN_32[];
-extern const byte test_asn1_encoded_SET_WITH_LEN_32[];
+extern const vsc_data_t test_asn1_encoded_SEQUENCE_WITH_LEN_32;
+extern const vsc_data_t test_asn1_encoded_SET_WITH_LEN_32;
 
-extern const size_t test_asn1_encoded_SEQUENCE_WITH_LEN_32_LEN;
-extern const size_t test_asn1_encoded_SET_WITH_LEN_32_LEN;
 

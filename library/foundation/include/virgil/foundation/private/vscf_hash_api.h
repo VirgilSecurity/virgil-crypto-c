@@ -57,6 +57,9 @@
 #include "vscf_api.h"
 #include "vscf_impl.h"
 #include "vscf_hash_info.h"
+
+#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -74,7 +77,7 @@ extern "C" {
 //
 //  Callback. Calculate hash over given data.
 //
-typedef void (*vscf_hash_api_hash_fn)(const byte *data, size_t data_len, byte *digest, size_t digest_len);
+typedef void (*vscf_hash_api_hash_fn)(vsc_data_t data, vsc_buffer_t *digest);
 
 //
 //  Contains API requirements of the interface 'hash'.

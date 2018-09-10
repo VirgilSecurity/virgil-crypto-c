@@ -76,46 +76,48 @@
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
-vscf_kdf1_derive(vscf_kdf1_impl_t *kdf1_impl, const byte *data, size_t data_len, byte *key, size_t key_len) {
+vscf_kdf1_derive(vscf_kdf1_impl_t *kdf1_impl, vsc_data_t data, vsc_buffer_t *key, size_t key_len) {
 
     VSCF_ASSERT_PTR(kdf1_impl);
     VSCF_ASSERT_PTR(kdf1_impl->hash);
-    VSCF_ASSERT_PTR(data);
-    VSCF_ASSERT_PTR(key);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT(vsc_buffer_is_valid(key));
+    VSCF_ASSERT(vsc_buffer_left(key) >= key_len);
 
 
     // Get HASH parameters
     size_t digest_len = vscf_hash_info_digest_len(vscf_hash_info_api(kdf1_impl->hash));
-    unsigned char *digest = vscf_alloc(digest_len);
 
     // Get KDF parameters
-    size_t counter = 0;
     size_t counter_len = VSCF_CEIL(key_len, digest_len);
-    size_t current_key_len = 0;
+    size_t key_left_len = key_len;
     unsigned char counter_string[4] = {0x0};
 
     // Start hashing
-    for (; counter < counter_len; ++counter) {
+    for (size_t counter = 0; counter < counter_len; ++counter) {
         counter_string[0] = (unsigned char)((counter >> 24) & 255);
         counter_string[1] = (unsigned char)((counter >> 16) & 255);
         counter_string[2] = (unsigned char)((counter >> 8)) & 255;
         counter_string[3] = (unsigned char)(counter & 255);
 
         vscf_hash_stream_start(kdf1_impl->hash);
-        vscf_hash_stream_update(kdf1_impl->hash, data, data_len);
-        vscf_hash_stream_update(kdf1_impl->hash, counter_string, sizeof(counter_string));
+        vscf_hash_stream_update(kdf1_impl->hash, data);
+        vscf_hash_stream_update(kdf1_impl->hash, vsc_data(counter_string, sizeof(counter_string)));
 
-        if (current_key_len + digest_len <= key_len) {
-            vscf_hash_stream_finish(kdf1_impl->hash, key + current_key_len, digest_len);
-            current_key_len += digest_len;
+        if (digest_len <= key_left_len) {
+            vscf_hash_stream_finish(kdf1_impl->hash, key);
+            key_left_len -= digest_len;
 
         } else {
-            vscf_hash_stream_finish(kdf1_impl->hash, digest, digest_len);
-            memcpy(key + current_key_len, digest, key_len - current_key_len);
-            current_key_len = key_len;
+            vsc_buffer_t *digest = vsc_buffer_new_with_capacity(digest_len);
+
+            vscf_hash_stream_finish(kdf1_impl->hash, digest);
+            memcpy(vsc_buffer_ptr(key), vsc_buffer_bytes(digest), key_left_len);
+            vsc_buffer_reserve(key, key_left_len);
+            key_left_len = 0;
+
+            vsc_buffer_erase(digest);
+            vsc_buffer_destroy(&digest);
         }
     }
-
-    vscf_erase(digest, data_len);
-    vscf_dealloc(digest);
 }

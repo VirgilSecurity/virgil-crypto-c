@@ -56,6 +56,9 @@
 #include "vscf_error.h"
 #include "vscf_impl.h"
 #include "vscf_hmac_info.h"
+
+#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -85,19 +88,19 @@ vscf_hmac_stream_reset(vscf_impl_t *impl);
 //  Start a new HMAC.
 //
 VSCF_PUBLIC void
-vscf_hmac_stream_start(vscf_impl_t *impl, const byte *key, size_t key_len);
+vscf_hmac_stream_start(vscf_impl_t *impl, vsc_data_t key);
 
 //
 //  Add given data to the HMAC.
 //
 VSCF_PUBLIC void
-vscf_hmac_stream_update(vscf_impl_t *impl, const byte *data, size_t data_len);
+vscf_hmac_stream_update(vscf_impl_t *impl, vsc_data_t data);
 
 //
 //  Accompilsh HMAC and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_hmac_stream_finish(vscf_impl_t *impl, byte *hmac, size_t hmac_len);
+vscf_hmac_stream_finish(vscf_impl_t *impl, vsc_buffer_t *hmac);
 
 //
 //  Return hmac stream API, or NULL if it is not implemented.

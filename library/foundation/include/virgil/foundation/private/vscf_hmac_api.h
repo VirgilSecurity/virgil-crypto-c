@@ -57,6 +57,9 @@
 #include "vscf_api.h"
 #include "vscf_impl.h"
 #include "vscf_hmac_info.h"
+
+#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -74,8 +77,7 @@ extern "C" {
 //
 //  Callback. Calculate hmac over given data.
 //
-typedef void (*vscf_hmac_api_hmac_fn)(const byte *key, size_t key_len, const byte *data, size_t data_len, byte *hmac,
-        size_t hmac_len);
+typedef void (*vscf_hmac_api_hmac_fn)(vsc_data_t key, vsc_data_t data, vsc_buffer_t *hmac);
 
 //
 //  Contains API requirements of the interface 'hmac'.

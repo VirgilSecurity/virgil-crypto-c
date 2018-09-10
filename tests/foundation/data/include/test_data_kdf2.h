@@ -35,27 +35,20 @@
 
 #include "vsc_data.h"
 
-
 //
 //  Test Vector 1
 //
-extern const byte test_kdf2_VECTOR_1_DATA[];
-extern const byte test_kdf2_VECTOR_1_KEY[];
-extern const size_t test_kdf2_VECTOR_1_DATA_LEN;
-extern const size_t test_kdf2_VECTOR_1_KEY_LEN;
+extern const vsc_data_t test_kdf2_VECTOR_1_DATA;
+extern const vsc_data_t test_kdf2_VECTOR_1_KEY;
 
 //
 //  Test Vector 2
 //
-extern const byte test_kdf2_VECTOR_2_DATA[];
-extern const byte test_kdf2_VECTOR_2_KEY[];
-extern const size_t test_kdf2_VECTOR_2_DATA_LEN;
-extern const size_t test_kdf2_VECTOR_2_KEY_LEN;
+extern const vsc_data_t test_kdf2_VECTOR_2_DATA;
+extern const vsc_data_t test_kdf2_VECTOR_2_KEY;
 
 //
 //  Test Vector 3
 //
-extern const byte test_kdf2_VECTOR_3_DATA[];
-extern const byte test_kdf2_VECTOR_3_KEY[];
-extern const size_t test_kdf2_VECTOR_3_DATA_LEN;
-extern const size_t test_kdf2_VECTOR_3_KEY_LEN;
+extern const vsc_data_t test_kdf2_VECTOR_3_DATA;
+extern const vsc_data_t test_kdf2_VECTOR_3_KEY;

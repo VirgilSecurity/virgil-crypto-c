@@ -6,18 +6,8 @@
     <method name="hmac" context="api">
         Calculate hmac over given data.
 
-        <argument name="key" type="data"/>
-
-        <argument name="key len" type="size"/>
-
-        <argument name="data" type="data"/>
-
-        <argument name="data len" type="size"/>
-
-        <argument name="hmac" type="data" access="writeonly">
-            <array length="known"/>
-        </argument>
-
-        <argument name="hmac len" type="size"/>
+        <argument name="key" class="data"/>
+        <argument name="data" class="data"/>
+        <argument name="hmac" class="buffer"/>
     </method>
 </interface>

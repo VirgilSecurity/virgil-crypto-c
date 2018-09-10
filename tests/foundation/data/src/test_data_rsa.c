@@ -1062,8 +1062,12 @@ const byte test_rsa_RANDOM_BYTES[] = {
     0x05, 0x08, 0xa7, 0x9f, 0x37, 0x59, 0xdd, 0x2f,
 };
 
+const vsc_data_t test_rsa_RANDOM = {
+    test_rsa_RANDOM_BYTES, sizeof(test_rsa_RANDOM_BYTES)
+};
 
-const byte test_rsa_2048_PUBLIC_KEY_PKCS1[] = {
+
+const byte test_rsa_2048_PUBLIC_KEY_PKCS1_BYTES[] = {
     0x30, 0x82, 0x01, 0x09, 0x02, 0x82, 0x01, 0x00,
     0x53, 0x7c, 0xc7, 0xe8, 0xfb, 0x4b, 0x09, 0x75,
     0x73, 0x9f, 0x3f, 0xf6, 0x13, 0xd0, 0x1a, 0x98,
@@ -1100,7 +1104,11 @@ const byte test_rsa_2048_PUBLIC_KEY_PKCS1[] = {
     0x02, 0x03, 0x01, 0x00, 0x01
 };
 
-const byte test_rsa_2048_PRIVATE_KEY_PKCS1[] = {
+const vsc_data_t test_rsa_2048_PUBLIC_KEY_PKCS1 = {
+    test_rsa_2048_PUBLIC_KEY_PKCS1_BYTES, sizeof(test_rsa_2048_PUBLIC_KEY_PKCS1_BYTES)
+};
+
+const byte test_rsa_2048_PRIVATE_KEY_PKCS1_BYTES[] = {
     0x30, 0x82, 0x04, 0xa2, 0x02, 0x01, 0x00, 0x02,
     0x82, 0x01, 0x00, 0x53, 0x7c, 0xc7, 0xe8, 0xfb,
     0x4b, 0x09, 0x75, 0x73, 0x9f, 0x3f, 0xf6, 0x13,
@@ -1252,7 +1260,11 @@ const byte test_rsa_2048_PRIVATE_KEY_PKCS1[] = {
     0x21, 0x39, 0x93, 0xe8, 0x03, 0x01
 };
 
-const byte test_rsa_256_GENERATED_PRIVATE_KEY_PKCS1[] = {
+const vsc_data_t test_rsa_2048_PRIVATE_KEY_PKCS1 = {
+    test_rsa_2048_PRIVATE_KEY_PKCS1_BYTES, sizeof(test_rsa_2048_PRIVATE_KEY_PKCS1_BYTES)
+};
+
+const byte test_rsa_256_GENERATED_PRIVATE_KEY_PKCS1_BYTES[] = {
     0x30, 0x81, 0xaa, 0x02, 0x01, 0x00, 0x02, 0x21,
     0x00, 0xb0, 0xea, 0x0b, 0xd4, 0x22, 0xe2, 0x53,
     0x4f, 0x61, 0x14, 0x82, 0xed, 0x28, 0xa3, 0x2e,
@@ -1277,20 +1289,24 @@ const byte test_rsa_256_GENERATED_PRIVATE_KEY_PKCS1[] = {
     0x67, 0x18, 0xf4, 0xd6, 0xdf
 };
 
-const size_t test_rsa_RANDOM_BYTES_LEN = sizeof(test_rsa_RANDOM_BYTES);
-const size_t test_rsa_256_GENERATED_PRIVATE_KEY_PKCS1_LEN = sizeof(test_rsa_256_GENERATED_PRIVATE_KEY_PKCS1);
-const size_t test_rsa_2048_PUBLIC_KEY_PKCS1_LEN = sizeof(test_rsa_2048_PUBLIC_KEY_PKCS1);
-const size_t test_rsa_2048_PRIVATE_KEY_PKCS1_LEN = sizeof(test_rsa_2048_PRIVATE_KEY_PKCS1);
+const vsc_data_t test_rsa_256_GENERATED_PRIVATE_KEY_PKCS1 = {
+    test_rsa_256_GENERATED_PRIVATE_KEY_PKCS1_BYTES, sizeof(test_rsa_256_GENERATED_PRIVATE_KEY_PKCS1_BYTES)
+};
+
 
 //
 //  Test data
 //
-const byte test_rsa_DATA_1[] = {
+const byte test_rsa_DATA_1_BYTES[] = {
     0x45, 0x6E, 0x63, 0x72, 0x79, 0x70, 0x74, 0x20,
     0x6D, 0x65, 0x21
 };
 
-const byte test_rsa_2048_ENCRYPTED_DATA_1[] = {
+const vsc_data_t test_rsa_DATA_1 = {
+    test_rsa_DATA_1_BYTES, sizeof(test_rsa_DATA_1_BYTES)
+};
+
+const byte test_rsa_2048_ENCRYPTED_DATA_1_BYTES[] = {
     0x39, 0xcf, 0xfa, 0x1d, 0xca, 0xe1, 0xf3, 0x14,
     0x50, 0x00, 0xd9, 0xa7, 0x3e, 0x14, 0xac, 0x5e,
     0x8e, 0x80, 0xe6, 0xc3, 0x7e, 0x64, 0x91, 0x0f,
@@ -1325,7 +1341,11 @@ const byte test_rsa_2048_ENCRYPTED_DATA_1[] = {
     0xc2, 0x41, 0xbf, 0xaf, 0x3f, 0xf1, 0x89, 0xe6
 };
 
-const byte test_rsa_2048_DATA_1_SIGNATURE[] = {
+const vsc_data_t test_rsa_2048_ENCRYPTED_DATA_1 = {
+    test_rsa_2048_ENCRYPTED_DATA_1_BYTES, sizeof(test_rsa_2048_ENCRYPTED_DATA_1_BYTES)
+};
+
+const byte test_rsa_2048_DATA_1_SIGNATURE_BYTES[] = {
     0x0a, 0x14, 0xd1, 0x69, 0x39, 0x61, 0x62, 0xc9,
     0x06, 0xe5, 0xd8, 0x15, 0xa4, 0x22, 0x38, 0xa6,
     0x86, 0x14, 0x21, 0x8d, 0x20, 0x4f, 0x58, 0x43,
@@ -1360,6 +1380,7 @@ const byte test_rsa_2048_DATA_1_SIGNATURE[] = {
     0x9c, 0xc2, 0xcb, 0x47, 0xda, 0x8b, 0x54, 0x18,
 };
 
-const size_t test_rsa_DATA_1_LEN = sizeof(test_rsa_DATA_1);
-const size_t test_rsa_2048_ENCRYPTED_DATA_1_LEN = sizeof(test_rsa_2048_ENCRYPTED_DATA_1);
-const size_t test_rsa_2048_DATA_1_SIGNATURE_LEN = sizeof(test_rsa_2048_DATA_1_SIGNATURE);
+const vsc_data_t test_rsa_2048_DATA_1_SIGNATURE = {
+    test_rsa_2048_DATA_1_SIGNATURE_BYTES, sizeof(test_rsa_2048_DATA_1_SIGNATURE_BYTES)
+};
+
