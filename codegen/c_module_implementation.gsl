@@ -1062,6 +1062,50 @@ function _Z19_add_method_take_dependency (dependency, declaration, definition, d
     meta_deactivate_entity (my.meta, my.dependency.interface)
 endfunction
 
+# ---------------------------------------------------------------------------
+function _Z19_add_method_release_dependency (dependency, declaration, definition, destination, meta)
+    check_arguments (my, "dependency, declaration, definition, destination, meta", my)
+
+    meta_activate_entity (my.meta, my.dependency.interface)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        . = "\
+        Release dependency of the interface '$(my.dependency.interface)'.
+        "
+        .name = my.names.implementation_method_release_$(make_id (dependency.interface))
+        .definition = my.definition
+        .declaration = my.declaration
+
+        _Z19_add_argument_impl (method, my.meta)
+
+        my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
+        my.property_dependency = my.refs.c_implementation_property_$(make_id (dependency.name))
+
+        new code to method
+            if my.dependency.type = "impl"
+                . = "\
+
+                    if ($(my.arg_impl)->$(my.property_dependency)) {
+                        .(c_class_impl_method_destroy)(&$(my.arg_impl)->$(my.property_dependency));
+                    }
+                "
+            else
+                . = "\
+
+                    if ($(my.arg_impl)->$(my.property_dependency)) {
+                        $(my.arg_impl)->$(my.property_dependency) = NULL;
+                    }
+                "
+            endif
+        endnew
+    endnew
+
+    meta_deactivate_entity (my.meta, my.dependency.interface)
+endfunction
+
 
 # ---------------------------------------------------------------------------
 #   Add dependency management functions.
@@ -1076,6 +1120,8 @@ function _Z19_add_dependency_methods (impl, declaration, definition, destination
         if dependency.type = "impl"
             _Z19_add_method_take_dependency (dependency, my.declaration, my.definition, my.destination, my.meta)
         endif
+
+        _Z19_add_method_release_dependency (dependency, my.declaration, my.definition, my.destination, my.meta)
     endfor
 endfunction
 
