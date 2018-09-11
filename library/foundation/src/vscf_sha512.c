@@ -38,7 +38,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'sha224' implementation.
+//  This module contains 'sha512' implementation.
 // --------------------------------------------------------------------------
 
 
