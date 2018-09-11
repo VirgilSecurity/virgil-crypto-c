@@ -145,6 +145,12 @@ VSCF_PUBLIC void
 vscf_rsa_public_key_use_hash_api(vscf_rsa_public_key_impl_t *rsa_public_key_impl, const vscf_hash_api_t *hash);
 
 //
+//  Release dependency of the interface 'hash'.
+//
+VSCF_PUBLIC void
+vscf_rsa_public_key_release_hash_api(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
+
+//
 //  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCF_PUBLIC void
@@ -156,6 +162,12 @@ vscf_rsa_public_key_use_random(vscf_rsa_public_key_impl_t *rsa_public_key_impl, 
 //
 VSCF_PUBLIC void
 vscf_rsa_public_key_take_random(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *random);
+
+//
+//  Release dependency of the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_rsa_public_key_release_random(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
 
 //
 //  Setup dependency to the interface 'asn1 reader' with shared ownership.
@@ -171,6 +183,12 @@ VSCF_PUBLIC void
 vscf_rsa_public_key_take_asn1_reader(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1rd);
 
 //
+//  Release dependency of the interface 'asn1 reader'.
+//
+VSCF_PUBLIC void
+vscf_rsa_public_key_release_asn1_reader(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
+
+//
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
 VSCF_PUBLIC void
@@ -182,6 +200,12 @@ vscf_rsa_public_key_use_asn1_writer(vscf_rsa_public_key_impl_t *rsa_public_key_i
 //
 VSCF_PUBLIC void
 vscf_rsa_public_key_take_asn1_writer(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1wr);
+
+//
+//  Release dependency of the interface 'asn1 writer'.
+//
+VSCF_PUBLIC void
+vscf_rsa_public_key_release_asn1_writer(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
 
 //
 //  Returns instance of the implemented interface 'public key'.

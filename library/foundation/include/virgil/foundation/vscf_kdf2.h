@@ -146,6 +146,12 @@ VSCF_PUBLIC void
 vscf_kdf2_take_hash_stream(vscf_kdf2_impl_t *kdf2_impl, vscf_impl_t *hash);
 
 //
+//  Release dependency of the interface 'hash stream'.
+//
+VSCF_PUBLIC void
+vscf_kdf2_release_hash_stream(vscf_kdf2_impl_t *kdf2_impl);
+
+//
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void

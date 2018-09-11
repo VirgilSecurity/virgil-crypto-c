@@ -146,6 +146,12 @@ VSCF_PUBLIC void
 vscf_hkdf_take_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hmac);
 
 //
+//  Release dependency of the interface 'hmac stream'.
+//
+VSCF_PUBLIC void
+vscf_hkdf_release_hmac_stream(vscf_hkdf_impl_t *hkdf_impl);
+
+//
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void

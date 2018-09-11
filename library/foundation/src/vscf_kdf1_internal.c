@@ -240,6 +240,17 @@ vscf_kdf1_take_hash_stream(vscf_kdf1_impl_t *kdf1_impl, vscf_impl_t *hash) {
 }
 
 //
+//  Release dependency of the interface 'hash stream'.
+//
+VSCF_PUBLIC void
+vscf_kdf1_release_hash_stream(vscf_kdf1_impl_t *kdf1_impl) {
+
+    if (kdf1_impl->hash) {
+        vscf_impl_destroy(&kdf1_impl->hash);
+    }
+}
+
+//
 //  Return size of 'vscf_kdf1_impl_t' type.
 //
 VSCF_PUBLIC size_t
