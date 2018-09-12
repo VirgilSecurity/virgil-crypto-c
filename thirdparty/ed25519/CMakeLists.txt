@@ -63,6 +63,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 target_include_directories(ed25519
         PUBLIC
             "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/ed25519>"
             "$<$<AND:$<BUILD_INTERFACE:1>,$<BOOL:ED25519_REF10>>:${CMAKE_CURRENT_LIST_DIR}/ref10>"
             "$<$<AND:$<BUILD_INTERFACE:1>,$<BOOL:ED25519_AMD64_RADIX_64_24K>>:${CMAKE_CURRENT_LIST_DIR}/amd64_64_24k>"
             "$<$<AND:$<BUILD_INTERFACE:1>,$<BOOL:AMD64_RADIX_51_30K>>:${CMAKE_CURRENT_LIST_DIR}/amd64_51_30k>"
