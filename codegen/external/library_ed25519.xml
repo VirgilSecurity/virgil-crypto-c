@@ -1,0 +1,27 @@
+<library
+        name="ed25519"
+        path="../thirdparty/ed25519/">
+
+    External library initially taken from: https://ed25519.cr.yp.to
+    And improved by Virgil Security Inc.
+
+    <feature name="REF10">
+        Using REF10 implementation of ed25519.
+    </feature>
+
+    <feature name="AMD64 RADIX 64 24K" default="off">
+        Using radix 2^64 and a 24KB precomputed table optimized
+        implementation of ed25519 curve on the x86_64 processor.
+    </feature>
+
+    <feature name="AMD64 RADIX 51 30K" default="off">
+        Using radix 2^51 and a 30KB precomputed table optimized
+        implementation of ed25519 curve on the x86_64 processor.
+    </feature>
+
+    <require>
+        <alternative feature="REF10"/>
+        <alternative feature="AMD64 RADIX 64 24K"/>
+        <alternative feature="AMD64 RADIX 51 30K"/>
+    </require>
+</library>
