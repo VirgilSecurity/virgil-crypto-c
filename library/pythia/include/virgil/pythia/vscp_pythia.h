@@ -115,6 +115,12 @@ VSCP_PUBLIC void
 vscp_pythia_destroy(vscp_pythia_t **pythia_ctx_ref);
 
 //
+//  Copy given class context by increasing reference counter.
+//
+VSCP_PUBLIC vscp_pythia_t *
+vscp_pythia_copy(vscp_pythia_t *pythia_ctx);
+
+//
 //  Performs global initialization of the pythia library.
 //  Must be called once for entire application at startup.
 //

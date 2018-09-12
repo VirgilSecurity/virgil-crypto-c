@@ -82,6 +82,7 @@ vsc_buffer_new(void) {
 
     vsc_buffer_init(buffer_ctx);
 
+    buffer_ctx->refcnt = 1;
     buffer_ctx->self_dealloc_cb = vsc_dealloc;
 
     return buffer_ctx;
@@ -94,14 +95,13 @@ vsc_buffer_new(void) {
 VSC_PUBLIC void
 vsc_buffer_delete(vsc_buffer_t *buffer_ctx) {
 
-    if (NULL == buffer_ctx) {
-        return;
-    }
+    if (buffer_ctx && (--buffer_ctx->refcnt == 0)) {
 
-    vsc_buffer_cleanup(buffer_ctx);
+        vsc_buffer_cleanup(buffer_ctx);
 
-    if (buffer_ctx->self_dealloc_cb != NULL) {
-         buffer_ctx->self_dealloc_cb(buffer_ctx);
+        if (buffer_ctx->self_dealloc_cb != NULL) {
+             buffer_ctx->self_dealloc_cb(buffer_ctx);
+        }
     }
 }
 
@@ -118,6 +118,19 @@ vsc_buffer_destroy(vsc_buffer_t **buffer_ctx_ref) {
     *buffer_ctx_ref = NULL;
 
     vsc_buffer_delete(buffer_ctx);
+}
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSC_PUBLIC vsc_buffer_t *
+vsc_buffer_copy(vsc_buffer_t *buffer_ctx) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+
+    ++buffer_ctx->refcnt;
+
+    return buffer_ctx;
 }
 
 
@@ -169,6 +182,7 @@ vsc_buffer_new_with_capacity(size_t capacity) {
     buffer_ctx->bytes = (byte *)(buffer_ctx) + sizeof(vsc_buffer_t);
     buffer_ctx->capacity = capacity;
     buffer_ctx->self_dealloc_cb = vsc_dealloc;
+    buffer_ctx->refcnt = 1;
     buffer_ctx->bytes_dealloc_cb = NULL;
 
     return buffer_ctx;

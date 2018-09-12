@@ -109,6 +109,7 @@ vscp_pythia_new(void) {
 
     vscp_pythia_init(pythia_ctx);
 
+    pythia_ctx->refcnt = 1;
     pythia_ctx->self_dealloc_cb = vscp_dealloc;
 
     return pythia_ctx;
@@ -121,14 +122,13 @@ vscp_pythia_new(void) {
 VSCP_PUBLIC void
 vscp_pythia_delete(vscp_pythia_t *pythia_ctx) {
 
-    if (NULL == pythia_ctx) {
-        return;
-    }
+    if (pythia_ctx && (--pythia_ctx->refcnt == 0)) {
 
-    vscp_pythia_cleanup(pythia_ctx);
+        vscp_pythia_cleanup(pythia_ctx);
 
-    if (pythia_ctx->self_dealloc_cb != NULL) {
-         pythia_ctx->self_dealloc_cb(pythia_ctx);
+        if (pythia_ctx->self_dealloc_cb != NULL) {
+             pythia_ctx->self_dealloc_cb(pythia_ctx);
+        }
     }
 }
 
@@ -145,6 +145,19 @@ vscp_pythia_destroy(vscp_pythia_t **pythia_ctx_ref) {
     *pythia_ctx_ref = NULL;
 
     vscp_pythia_delete(pythia_ctx);
+}
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCP_PUBLIC vscp_pythia_t *
+vscp_pythia_copy(vscp_pythia_t *pythia_ctx) {
+
+    VSCP_ASSERT_PTR(pythia_ctx);
+
+    ++pythia_ctx->refcnt;
+
+    return pythia_ctx;
 }
 
 
