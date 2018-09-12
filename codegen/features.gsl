@@ -119,6 +119,19 @@ function _D25_resolve_feature (feature, parent)
     endfor
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Resolve component: feature.
+# ---------------------------------------------------------------------------
+function _D25_resolve_require (require, parent)
+    check_arguments (my, "require, parent", my)
+
+    component_resolve_landlord (my.require, my.parent)
+
+    for my.require.alternative
+        component_resolve_alternative (alternative, my.require)
+    endfor
+endfunction
+
 
 # ---------------------------------------------------------------------------
 #   Resolve component: features.
@@ -135,6 +148,10 @@ function features_resolve (features, parent)
 
     for my.features.feature
         _D25_resolve_feature (feature, my.features)
+    endfor
+
+    for my.features.require
+        _D25_resolve_require (require, my.features)
     endfor
 
 endfunction

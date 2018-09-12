@@ -60,6 +60,7 @@ option(ENABLE_BENCHMARKS "On/Off build library benchmarks." ON)
 option(VIRGIL_LIB_COMMON "Build 'common' library" ON)
 option(VIRGIL_LIB_FOUNDATION "Build 'foundation' library" ON)
 option(VIRGIL_LIB_PYTHIA "Build 'pythia' library" ON)
+option(VIRGIL_LIB_ED25519 "Build 'ed25519' library" ON)
 
 #
 # Wrappers
@@ -123,6 +124,13 @@ endif()
 #
 if(VIRGIL_LIB_PYTHIA)
     add_subdirectory ("thirdparty/pythia")
+endif()
+
+#
+# Ed25519
+#
+if(VIRGIL_LIB_ED25519)
+    add_subdirectory ("thirdparty/ed25519")
 endif()
 
 
