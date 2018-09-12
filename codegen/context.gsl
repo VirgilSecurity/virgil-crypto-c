@@ -153,27 +153,4 @@ function context_append_hierarchy (context, item)
     endfor
 endfunction
 
-# ---------------------------------------------------------------------------
-#   Update context with 'feature' items.
-# ---------------------------------------------------------------------------
-function context_append_features (context, source)
-    check_arguments (my, "context, source", my)
-
-    for my.source.feature
-
-    endfor
-
-    #   Extract uid and name for current item
-    if defined (my.item.uid)
-        assert_attribute (my.item, "name", my)
-
-        my.context.$(my.item.uid) = my.item.name
-    endif
-
-    #   Dive in recursion
-    for my.item. as child_item where is_item (child_item)
-        context_append_hierarchy (my.context, child_item)
-    endfor
-endfunction
-
 .endtemplate
