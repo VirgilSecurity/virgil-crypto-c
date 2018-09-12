@@ -34,6 +34,7 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 #   -------------------------------------------------------------------------
+#   @end
 
 
 include_guard()
@@ -42,11 +43,12 @@ if(NOT TARGET ed25519)
     message(FATAL_ERROR "Expected target 'ed25519' to be defined first.")
 endif()
 
+
 target_sources(ed25519
         PRIVATE
             # COMMON
-            "${CMAKE_CURRENT_LIST_DIR}/include/ed25519.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/ed25519_sha512.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/ed25519/ed25519.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/ed25519/ed25519_sha512.h"
             "${CMAKE_CURRENT_LIST_DIR}/common/ed25519_sha512.c"
 
             # REF10

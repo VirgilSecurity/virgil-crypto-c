@@ -34,6 +34,7 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 #   -------------------------------------------------------------------------
+#   @end
 
 
 include_guard()
@@ -55,10 +56,10 @@ mark_as_advanced(
         )
 
 
-if(NOT ED25519_REF10 AND NOT ED25519_AMD64_RADIX_64_24K AND NOT ED25519_AMD64_RADIX_51_30K)
+if(NOT (ED25519_REF10 OR ED25519_AMD64_RADIX_64_24K OR ED25519_AMD64_RADIX_51_30K))
     message("-- error --")
     message("--")
-    message("All features are disabled. Require one of the features to be enabled:")
+    message("All features are disabled. One of the features must be enabled:")
     message("     ED25519_REF10, ED25519_AMD64_RADIX_64_24K, ED25519_AMD64_RADIX_51_30K.")
     message("--")
     message(FATAL_ERROR)
