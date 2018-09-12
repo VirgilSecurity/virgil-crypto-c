@@ -97,14 +97,15 @@ vscf_sha224_cleanup_ctx(vscf_sha224_impl_t *sha224_impl) {
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
-vscf_sha224_hash(const byte *data, size_t data_len, byte *digest, size_t digest_len) {
+vscf_sha224_hash(vsc_data_t data, vsc_buffer_t *digest) {
 
-    VSCF_ASSERT_PTR(data);
-    VSCF_ASSERT_PTR(digest);
-    VSCF_ASSERT_OPT(digest_len >= vscf_sha224_DIGEST_LEN);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT(vsc_buffer_is_valid(digest));
+    VSCF_ASSERT(vsc_buffer_left(digest) >= vscf_sha224_DIGEST_LEN);
 
     const int is224 = 1;
-    mbedtls_sha256(data, data_len, digest, is224);
+    mbedtls_sha256(data.bytes, data.len, vsc_buffer_ptr(digest), is224);
+    vsc_buffer_reserve(digest, vscf_sha224_DIGEST_LEN);
 }
 
 //
@@ -123,23 +124,24 @@ vscf_sha224_start(vscf_sha224_impl_t *sha224_impl) {
 //  Add given data to the hash.
 //
 VSCF_PUBLIC void
-vscf_sha224_update(vscf_sha224_impl_t *sha224_impl, const byte *data, size_t data_len) {
+vscf_sha224_update(vscf_sha224_impl_t *sha224_impl, vsc_data_t data) {
 
     VSCF_ASSERT_PTR(sha224_impl);
-    VSCF_ASSERT_PTR(data);
+    VSCF_ASSERT(vsc_data_is_valid(data));
 
-    mbedtls_sha256_update(&sha224_impl->hash_ctx, data, data_len);
+    mbedtls_sha256_update(&sha224_impl->hash_ctx, data.bytes, data.len);
 }
 
 //
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_sha224_finish(vscf_sha224_impl_t *sha224_impl, byte *digest, size_t digest_len) {
+vscf_sha224_finish(vscf_sha224_impl_t *sha224_impl, vsc_buffer_t *digest) {
 
     VSCF_ASSERT_PTR(sha224_impl);
-    VSCF_ASSERT_PTR(digest);
-    VSCF_ASSERT_OPT(digest_len >= vscf_sha224_DIGEST_LEN);
+    VSCF_ASSERT(vsc_buffer_is_valid(digest));
+    VSCF_ASSERT(vsc_buffer_left(digest) >= vscf_sha224_DIGEST_LEN);
 
-    mbedtls_sha256_finish(&sha224_impl->hash_ctx, digest);
+    mbedtls_sha256_finish(&sha224_impl->hash_ctx, vsc_buffer_ptr(digest));
+    vsc_buffer_reserve(digest, vscf_sha224_DIGEST_LEN);
 }

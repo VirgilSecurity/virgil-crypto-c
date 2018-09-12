@@ -57,6 +57,9 @@
 #include "vscf_api.h"
 #include "vscf_impl.h"
 #include "vscf_hash_info.h"
+
+#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -79,12 +82,12 @@ typedef void (*vscf_hash_stream_api_start_fn)(vscf_impl_t *impl);
 //
 //  Callback. Add given data to the hash.
 //
-typedef void (*vscf_hash_stream_api_update_fn)(vscf_impl_t *impl, const byte *data, size_t data_len);
+typedef void (*vscf_hash_stream_api_update_fn)(vscf_impl_t *impl, vsc_data_t data);
 
 //
 //  Callback. Accompilsh hashing and return it's result (a message digest).
 //
-typedef void (*vscf_hash_stream_api_finish_fn)(vscf_impl_t *impl, byte *digest, size_t digest_len);
+typedef void (*vscf_hash_stream_api_finish_fn)(vscf_impl_t *impl, vsc_buffer_t *digest);
 
 //
 //  Contains API requirements of the interface 'hash stream'.

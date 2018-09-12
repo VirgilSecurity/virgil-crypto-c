@@ -38,44 +38,62 @@
 //
 //  Test Vector 1
 //
-const byte test_sha224_VECTOR_1_INPUT[] = {};
+const byte test_sha224_VECTOR_1_INPUT_BYTES[] = {};
 
-const byte test_sha224_VECTOR_1_DIGEST[] = {
+const vsc_data_t test_sha224_VECTOR_1_INPUT = {
+    test_sha224_VECTOR_1_INPUT_BYTES, sizeof(test_sha224_VECTOR_1_INPUT_BYTES)
+};
+
+const byte test_sha224_VECTOR_1_DIGEST_BYTES[] = {
     0xd1, 0x4a, 0x02, 0x8c, 0x2a, 0x3a, 0x2b, 0xc9,
     0x47, 0x61, 0x02, 0xbb, 0x28, 0x82, 0x34, 0xc4,
     0x15, 0xa2, 0xb0, 0x1f, 0x82, 0x8e, 0xa6, 0x2a,
     0xc5, 0xb3, 0xe4, 0x2f,
 };
 
-const size_t test_sha224_VECTOR_1_INPUT_LEN = sizeof(test_sha224_VECTOR_1_INPUT);
-const size_t test_sha224_VECTOR_1_DIGEST_LEN = sizeof(test_sha224_VECTOR_1_DIGEST);
+const vsc_data_t test_sha224_VECTOR_1_DIGEST = {
+    test_sha224_VECTOR_1_DIGEST_BYTES, sizeof(test_sha224_VECTOR_1_DIGEST_BYTES)
+};
+
 
 //
 //  Test Vector 2
 //
-const byte test_sha224_VECTOR_2_INPUT[] = { 0x84 };
+const byte test_sha224_VECTOR_2_INPUT_BYTES[] = { 0x84 };
 
-const byte test_sha224_VECTOR_2_DIGEST[] = {
+const vsc_data_t test_sha224_VECTOR_2_INPUT = {
+    test_sha224_VECTOR_2_INPUT_BYTES, sizeof(test_sha224_VECTOR_2_INPUT_BYTES)
+};
+
+const byte test_sha224_VECTOR_2_DIGEST_BYTES[] = {
     0x3c, 0xd3, 0x69, 0x21, 0xdf, 0x5d, 0x69, 0x63,
     0xe7, 0x37, 0x39, 0xcf, 0x4d, 0x20, 0x21, 0x1e,
     0x2d, 0x88, 0x77, 0xc1, 0x9c, 0xff, 0x08, 0x7a,
     0xde, 0x9d, 0x0e, 0x3a,
 };
 
-const size_t test_sha224_VECTOR_2_INPUT_LEN = sizeof(test_sha224_VECTOR_2_INPUT);
-const size_t test_sha224_VECTOR_2_DIGEST_LEN = sizeof(test_sha224_VECTOR_2_DIGEST);
+const vsc_data_t test_sha224_VECTOR_2_DIGEST = {
+    test_sha224_VECTOR_2_DIGEST_BYTES, sizeof(test_sha224_VECTOR_2_DIGEST_BYTES)
+};
+
 
 //
 //  Test Vector 3
 //
-const byte test_sha224_VECTOR_3_INPUT[] = { 0x5c, 0x7b };
+const byte test_sha224_VECTOR_3_INPUT_BYTES[] = { 0x5c, 0x7b };
 
-const byte test_sha224_VECTOR_3_DIGEST[] = {
+const vsc_data_t test_sha224_VECTOR_3_INPUT = {
+    test_sha224_VECTOR_3_INPUT_BYTES, sizeof(test_sha224_VECTOR_3_INPUT_BYTES)
+};
+
+const byte test_sha224_VECTOR_3_DIGEST_BYTES[] = {
     0xda, 0xff, 0x9b, 0xce, 0x68, 0x5e, 0xb8, 0x31,
     0xf9, 0x7f, 0xc1, 0x22, 0x5b, 0x03, 0xc2, 0x75,
     0xa6, 0xc1, 0x12, 0xe2, 0xd6, 0xe7, 0x6f, 0x5f,
     0xaf, 0x7a, 0x36, 0xe6,
 };
 
-const size_t test_sha224_VECTOR_3_INPUT_LEN = sizeof(test_sha224_VECTOR_3_INPUT);
-const size_t test_sha224_VECTOR_3_DIGEST_LEN = sizeof(test_sha224_VECTOR_3_DIGEST);
+const vsc_data_t test_sha224_VECTOR_3_DIGEST = {
+    test_sha224_VECTOR_3_DIGEST_BYTES, sizeof(test_sha224_VECTOR_3_DIGEST_BYTES)
+};
+

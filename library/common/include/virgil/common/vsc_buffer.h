@@ -199,6 +199,19 @@ vsc_buffer_ptr(vsc_buffer_t *buffer_ctx);
 VSC_PUBLIC void
 vsc_buffer_reserve(vsc_buffer_t *buffer_ctx, size_t len);
 
+//
+//  Reset to the initial state.
+//  After reset inner buffer can be re-used.
+//
+VSC_PUBLIC void
+vsc_buffer_reset(vsc_buffer_t *buffer_ctx);
+
+//
+//  Zeroing buffer in secure manner.
+//
+VSC_PUBLIC void
+vsc_buffer_erase(vsc_buffer_t *buffer_ctx);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

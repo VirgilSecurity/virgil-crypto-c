@@ -78,39 +78,39 @@ vscf_hmac_stream_reset(vscf_impl_t *impl) {
 //  Start a new HMAC.
 //
 VSCF_PUBLIC void
-vscf_hmac_stream_start(vscf_impl_t *impl, const byte *key, size_t key_len) {
+vscf_hmac_stream_start(vscf_impl_t *impl, vsc_data_t key) {
 
     const vscf_hmac_stream_api_t *hmac_stream_api = vscf_hmac_stream_api (impl);
     VSCF_ASSERT_PTR (hmac_stream_api);
 
     VSCF_ASSERT_PTR (hmac_stream_api->start_cb);
-    hmac_stream_api->start_cb (impl, key, key_len);
+    hmac_stream_api->start_cb (impl, key);
 }
 
 //
 //  Add given data to the HMAC.
 //
 VSCF_PUBLIC void
-vscf_hmac_stream_update(vscf_impl_t *impl, const byte *data, size_t data_len) {
+vscf_hmac_stream_update(vscf_impl_t *impl, vsc_data_t data) {
 
     const vscf_hmac_stream_api_t *hmac_stream_api = vscf_hmac_stream_api (impl);
     VSCF_ASSERT_PTR (hmac_stream_api);
 
     VSCF_ASSERT_PTR (hmac_stream_api->update_cb);
-    hmac_stream_api->update_cb (impl, data, data_len);
+    hmac_stream_api->update_cb (impl, data);
 }
 
 //
 //  Accompilsh HMAC and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_hmac_stream_finish(vscf_impl_t *impl, byte *hmac, size_t hmac_len) {
+vscf_hmac_stream_finish(vscf_impl_t *impl, vsc_buffer_t *hmac) {
 
     const vscf_hmac_stream_api_t *hmac_stream_api = vscf_hmac_stream_api (impl);
     VSCF_ASSERT_PTR (hmac_stream_api);
 
     VSCF_ASSERT_PTR (hmac_stream_api->finish_cb);
-    hmac_stream_api->finish_cb (impl, hmac, hmac_len);
+    hmac_stream_api->finish_cb (impl, hmac);
 }
 
 //

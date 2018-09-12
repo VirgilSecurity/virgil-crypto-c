@@ -397,6 +397,17 @@ vscf_rsa_private_key_use_hash_api(vscf_rsa_private_key_impl_t *rsa_private_key_i
 }
 
 //
+//  Release dependency of the interface 'hash'.
+//
+VSCF_PUBLIC void
+vscf_rsa_private_key_release_hash_api(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
+
+    if (rsa_private_key_impl->hash) {
+        rsa_private_key_impl->hash = NULL;
+    }
+}
+
+//
 //  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCF_PUBLIC void
@@ -425,6 +436,17 @@ vscf_rsa_private_key_take_random(vscf_rsa_private_key_impl_t *rsa_private_key_im
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
     rsa_private_key_impl->random = random;
+}
+
+//
+//  Release dependency of the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_rsa_private_key_release_random(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
+
+    if (rsa_private_key_impl->random) {
+        vscf_impl_destroy(&rsa_private_key_impl->random);
+    }
 }
 
 //
@@ -459,6 +481,17 @@ vscf_rsa_private_key_take_asn1_reader(vscf_rsa_private_key_impl_t *rsa_private_k
 }
 
 //
+//  Release dependency of the interface 'asn1 reader'.
+//
+VSCF_PUBLIC void
+vscf_rsa_private_key_release_asn1_reader(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
+
+    if (rsa_private_key_impl->asn1rd) {
+        vscf_impl_destroy(&rsa_private_key_impl->asn1rd);
+    }
+}
+
+//
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
 VSCF_PUBLIC void
@@ -487,6 +520,17 @@ vscf_rsa_private_key_take_asn1_writer(vscf_rsa_private_key_impl_t *rsa_private_k
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1wr));
 
     rsa_private_key_impl->asn1wr = asn1wr;
+}
+
+//
+//  Release dependency of the interface 'asn1 writer'.
+//
+VSCF_PUBLIC void
+vscf_rsa_private_key_release_asn1_writer(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
+
+    if (rsa_private_key_impl->asn1wr) {
+        vscf_impl_destroy(&rsa_private_key_impl->asn1wr);
+    }
 }
 
 //

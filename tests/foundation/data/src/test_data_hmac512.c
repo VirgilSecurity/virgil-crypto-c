@@ -39,14 +39,22 @@
 //
 //  Test Vector 1
 //
-const byte test_hmac512_KEY_1_INPUT[] = {
+const byte test_hmac512_KEY_1_INPUT_BYTES[] = {
     0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
     0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
     0x0b, 0x0b, 0x0b, 0x0b,
 };
-const byte test_hmac512_VECTOR_1_INPUT[] = { 0x48, 0x69, 0x20, 0x54, 0x68, 0x65, 0x72, 0x65 };
 
-const byte test_hmac512_VECTOR_1_DIGEST[] = {
+const vsc_data_t test_hmac512_KEY_1_INPUT = {
+    test_hmac512_KEY_1_INPUT_BYTES, sizeof(test_hmac512_KEY_1_INPUT_BYTES)
+};
+const byte test_hmac512_VECTOR_1_INPUT_BYTES[] = { 0x48, 0x69, 0x20, 0x54, 0x68, 0x65, 0x72, 0x65 };
+
+const vsc_data_t test_hmac512_VECTOR_1_INPUT = {
+    test_hmac512_VECTOR_1_INPUT_BYTES, sizeof(test_hmac512_VECTOR_1_INPUT_BYTES)
+};
+
+const byte test_hmac512_VECTOR_1_DIGEST_BYTES[] = {
     0x87, 0xaa, 0x7c, 0xde, 0xa5, 0xef, 0x61, 0x9d,
     0x4f, 0xf0, 0xb4, 0x24, 0x1a, 0x1d, 0x6c, 0xb0,
     0x23, 0x79, 0xf4, 0xe2, 0xce, 0x4e, 0xc2, 0x78,
@@ -57,23 +65,32 @@ const byte test_hmac512_VECTOR_1_DIGEST[] = {
     0x2e, 0x69, 0x6c, 0x20, 0x3a, 0x12, 0x68, 0x54,
 };
 
-const size_t test_hmac512_KEY_1_INPUT_LEN = sizeof(test_hmac512_KEY_1_INPUT);
-const size_t test_hmac512_VECTOR_1_INPUT_LEN = sizeof(test_hmac512_VECTOR_1_INPUT);
-const size_t test_hmac512_VECTOR_1_DIGEST_LEN = sizeof(test_hmac512_VECTOR_1_DIGEST);
+const vsc_data_t test_hmac512_VECTOR_1_DIGEST = {
+    test_hmac512_VECTOR_1_DIGEST_BYTES, sizeof(test_hmac512_VECTOR_1_DIGEST_BYTES)
+};
+
 
 //
 //  Test Vector 2
 //
-const byte test_hmac512_KEY_2_INPUT[] = {
+const byte test_hmac512_KEY_2_INPUT_BYTES[] = {
     0x4a, 0x65, 0x66, 0x65,
 };
-const byte test_hmac512_VECTOR_2_INPUT[] = {
+
+const vsc_data_t test_hmac512_KEY_2_INPUT = {
+    test_hmac512_KEY_2_INPUT_BYTES, sizeof(test_hmac512_KEY_2_INPUT_BYTES)
+};
+const byte test_hmac512_VECTOR_2_INPUT_BYTES[] = {
     0x77, 0x68, 0x61, 0x74, 0x20, 0x64, 0x6f, 0x20,
     0x79, 0x61, 0x20, 0x77, 0x61, 0x6e, 0x74, 0x20,
     0x66, 0x6f, 0x72, 0x20, 0x6e, 0x6f, 0x74, 0x68,
     0x69, 0x6e, 0x67, 0x3f };
 
-const byte test_hmac512_VECTOR_2_DIGEST[] = {
+const vsc_data_t test_hmac512_VECTOR_2_INPUT = {
+    test_hmac512_VECTOR_2_INPUT_BYTES, sizeof(test_hmac512_VECTOR_2_INPUT_BYTES)
+};
+
+const byte test_hmac512_VECTOR_2_DIGEST_BYTES[] = {
     0x16, 0x4b, 0x7a, 0x7b, 0xfc, 0xf8, 0x19, 0xe2,
     0xe3, 0x95, 0xfb, 0xe7, 0x3b, 0x56, 0xe0, 0xa3,
     0x87, 0xbd, 0x64, 0x22, 0x2e, 0x83, 0x1f, 0xd6,
@@ -84,19 +101,24 @@ const byte test_hmac512_VECTOR_2_DIGEST[] = {
     0x63, 0x6e, 0x07, 0x0a, 0x38, 0xbc, 0xe7, 0x37,
 };
 
-const size_t test_hmac512_KEY_2_INPUT_LEN = sizeof(test_hmac512_KEY_2_INPUT);
-const size_t test_hmac512_VECTOR_2_INPUT_LEN = sizeof(test_hmac512_VECTOR_2_INPUT);
-const size_t test_hmac512_VECTOR_2_DIGEST_LEN = sizeof(test_hmac512_VECTOR_2_DIGEST);
+const vsc_data_t test_hmac512_VECTOR_2_DIGEST = {
+    test_hmac512_VECTOR_2_DIGEST_BYTES, sizeof(test_hmac512_VECTOR_2_DIGEST_BYTES)
+};
+
 
 //
 //  Test Vector 3
 //
-const byte test_hmac512_KEY_3_INPUT[] = {
+const byte test_hmac512_KEY_3_INPUT_BYTES[] = {
     0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
     0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
     0xaa, 0xaa, 0xaa, 0xaa,
 };
-const byte test_hmac512_VECTOR_3_INPUT[] = {
+
+const vsc_data_t test_hmac512_KEY_3_INPUT = {
+    test_hmac512_KEY_3_INPUT_BYTES, sizeof(test_hmac512_KEY_3_INPUT_BYTES)
+};
+const byte test_hmac512_VECTOR_3_INPUT_BYTES[] = {
     0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd,
     0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd,
     0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd, 0xdd,
@@ -106,7 +128,11 @@ const byte test_hmac512_VECTOR_3_INPUT[] = {
     0xdd, 0xdd,
 };
 
-const byte test_hmac512_VECTOR_3_DIGEST[] = {
+const vsc_data_t test_hmac512_VECTOR_3_INPUT = {
+    test_hmac512_VECTOR_3_INPUT_BYTES, sizeof(test_hmac512_VECTOR_3_INPUT_BYTES)
+};
+
+const byte test_hmac512_VECTOR_3_DIGEST_BYTES[] = {
     0xfa, 0x73, 0xb0, 0x08, 0x9d, 0x56, 0xa2, 0x84,
     0xef, 0xb0, 0xf0, 0x75, 0x6c, 0x89, 0x0b, 0xe9,
     0xb1, 0xb5, 0xdb, 0xdd, 0x8e, 0xe8, 0x1a, 0x36,
@@ -117,7 +143,8 @@ const byte test_hmac512_VECTOR_3_DIGEST[] = {
     0x74, 0x27, 0x88, 0x59, 0xe1, 0x32, 0x92, 0xfb,
 };
 
-const size_t test_hmac512_KEY_3_INPUT_LEN = sizeof(test_hmac512_KEY_3_INPUT);
-const size_t test_hmac512_VECTOR_3_INPUT_LEN = sizeof(test_hmac512_VECTOR_3_INPUT);
-const size_t test_hmac512_VECTOR_3_DIGEST_LEN = sizeof(test_hmac512_VECTOR_3_DIGEST);
+const vsc_data_t test_hmac512_VECTOR_3_DIGEST = {
+    test_hmac512_VECTOR_3_DIGEST_BYTES, sizeof(test_hmac512_VECTOR_3_DIGEST_BYTES)
+};
+
 

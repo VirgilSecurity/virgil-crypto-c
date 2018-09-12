@@ -57,7 +57,7 @@ test__asn1rd_get_tag__encoded_integer_2__returns_tag_integer(void) {
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
 
-    vscf_asn1rd_reset(asn1rd, vsc_data(test_asn1_encoded_INT_2, test_asn1_encoded_INT_2_LEN));
+    vscf_asn1rd_reset(asn1rd, test_asn1_encoded_INT_2);
 
     int tag = vscf_asn1rd_get_tag(asn1rd);
 
@@ -72,7 +72,7 @@ test__asn1rd_get_len__encoded_integer_2__returns_1(void) {
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
 
-    vscf_asn1rd_reset(asn1rd, vsc_data(test_asn1_encoded_INT_2, test_asn1_encoded_INT_2_LEN));
+    vscf_asn1rd_reset(asn1rd, test_asn1_encoded_INT_2);
 
     size_t len = vscf_asn1rd_get_len(asn1rd);
 
@@ -91,7 +91,7 @@ test__asn1rd_read_int__encoded_integer_2__returns_2(void) {
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
 
-    vscf_asn1rd_reset(asn1rd, vsc_data(test_asn1_encoded_INT_2, test_asn1_encoded_INT_2_LEN));
+    vscf_asn1rd_reset(asn1rd, test_asn1_encoded_INT_2);
 
     int value = vscf_asn1rd_read_int(asn1rd);
 
@@ -107,7 +107,7 @@ test__asn1rd_read_bool__encoded_boolean_true__returns_true(void) {
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
 
-    vscf_asn1rd_reset(asn1rd, vsc_data(test_asn1_encoded_BOOLEAN_TRUE, test_asn1_encoded_BOOLEAN_TRUE_LEN));
+    vscf_asn1rd_reset(asn1rd, test_asn1_encoded_BOOLEAN_TRUE);
 
     bool value = vscf_asn1rd_read_bool(asn1rd);
 
@@ -122,7 +122,7 @@ test__asn1rd_read_bool__encoded_boolean_false__returns_false(void) {
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
 
-    vscf_asn1rd_reset(asn1rd, vsc_data(test_asn1_encoded_BOOLEAN_FALSE, test_asn1_encoded_BOOLEAN_FALSE_LEN));
+    vscf_asn1rd_reset(asn1rd, test_asn1_encoded_BOOLEAN_FALSE);
 
     bool value = vscf_asn1rd_read_bool(asn1rd);
 
@@ -137,7 +137,7 @@ test__asn1rd_read_tag__encoded_boolean_false__returns_1(void) {
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
 
-    vscf_asn1rd_reset(asn1rd, vsc_data(test_asn1_encoded_BOOLEAN_FALSE, test_asn1_encoded_BOOLEAN_FALSE_LEN));
+    vscf_asn1rd_reset(asn1rd, test_asn1_encoded_BOOLEAN_FALSE);
 
     size_t tag_len = vscf_asn1rd_read_tag(asn1rd, vscf_asn1_tag_BOOLEAN);
 
@@ -152,7 +152,7 @@ test__asn1rd_read_octet_str__encoded_octet_string__returns_decoded_octet_string(
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
 
-    vscf_asn1rd_reset(asn1rd, vsc_data(test_asn1_encoded_OCTET_STRING, test_asn1_encoded_OCTET_STRING_LEN));
+    vscf_asn1rd_reset(asn1rd, test_asn1_encoded_OCTET_STRING);
 
     size_t len = vscf_asn1rd_get_len(asn1rd);
     vsc_buffer_t *decoded_string = vsc_buffer_new_with_capacity(len);
@@ -160,9 +160,9 @@ test__asn1rd_read_octet_str__encoded_octet_string__returns_decoded_octet_string(
 
     vscf_asn1rd_read_octet_str(asn1rd, decoded_string);
 
-    TEST_ASSERT_EQUAL(test_asn1_decoded_OCTET_STRING_LEN, vsc_buffer_len(decoded_string));
+    TEST_ASSERT_EQUAL(test_asn1_decoded_OCTET_STRING.len, vsc_buffer_len(decoded_string));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(
-            test_asn1_decoded_OCTET_STRING, vsc_buffer_bytes(decoded_string), vsc_buffer_len(decoded_string));
+            test_asn1_decoded_OCTET_STRING.bytes, vsc_buffer_bytes(decoded_string), vsc_buffer_len(decoded_string));
 
     vsc_buffer_destroy(&decoded_string);
     vscf_asn1rd_destroy(&asn1rd);
@@ -174,7 +174,7 @@ test__asn1rd_read_utf8_str__encoded_utf8_string__returns_string_test(void) {
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
 
-    vscf_asn1rd_reset(asn1rd, vsc_data(test_asn1_encoded_UTF8_STRING, test_asn1_encoded_UTF8_STRING_LEN));
+    vscf_asn1rd_reset(asn1rd, test_asn1_encoded_UTF8_STRING);
 
     size_t len = vscf_asn1rd_get_len(asn1rd);
     vsc_buffer_t *decoded_string = vsc_buffer_new_with_capacity(len);
@@ -182,9 +182,9 @@ test__asn1rd_read_utf8_str__encoded_utf8_string__returns_string_test(void) {
 
     vscf_asn1rd_read_utf8_str(asn1rd, decoded_string);
 
-    TEST_ASSERT_EQUAL(test_asn1_decoded_UTF8_STRING_LEN, vsc_buffer_len(decoded_string));
+    TEST_ASSERT_EQUAL(test_asn1_decoded_UTF8_STRING.len, vsc_buffer_len(decoded_string));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(
-            test_asn1_decoded_UTF8_STRING, vsc_buffer_bytes(decoded_string), vsc_buffer_len(decoded_string));
+            test_asn1_decoded_UTF8_STRING.bytes, vsc_buffer_bytes(decoded_string), vsc_buffer_len(decoded_string));
 
     vsc_buffer_destroy(&decoded_string);
     vscf_asn1rd_destroy(&asn1rd);
@@ -196,7 +196,7 @@ test__asn1rd_read_oid__encoded_oid_sha256_returns_decoded_oid_sha256(void) {
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
 
-    vscf_asn1rd_reset(asn1rd, vsc_data(test_asn1_encoded_OID_SHA256, test_asn1_encoded_OID_SHA256_LEN));
+    vscf_asn1rd_reset(asn1rd, test_asn1_encoded_OID_SHA256);
 
     size_t len = vscf_asn1rd_get_len(asn1rd);
     vsc_buffer_t *decoded_oid = vsc_buffer_new_with_capacity(len);
@@ -204,9 +204,9 @@ test__asn1rd_read_oid__encoded_oid_sha256_returns_decoded_oid_sha256(void) {
 
     vscf_asn1rd_read_oid(asn1rd, decoded_oid);
 
-    TEST_ASSERT_EQUAL(test_asn1_decoded_OID_SHA256_LEN, vsc_buffer_len(decoded_oid));
+    TEST_ASSERT_EQUAL(test_asn1_decoded_OID_SHA256.len, vsc_buffer_len(decoded_oid));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(
-            test_asn1_decoded_OID_SHA256, vsc_buffer_bytes(decoded_oid), vsc_buffer_len(decoded_oid));
+            test_asn1_decoded_OID_SHA256.bytes, vsc_buffer_bytes(decoded_oid), vsc_buffer_len(decoded_oid));
 
     vsc_buffer_destroy(&decoded_oid);
     vscf_asn1rd_destroy(&asn1rd);
@@ -222,7 +222,7 @@ test__asn1rd_error__after_read_null__returns_SUCCESS(void) {
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
 
-    vscf_asn1rd_reset(asn1rd, vsc_data(test_asn1_encoded_NULL, test_asn1_encoded_NULL_LEN));
+    vscf_asn1rd_reset(asn1rd, test_asn1_encoded_NULL);
 
     vscf_asn1rd_read_null(asn1rd);
 
@@ -239,7 +239,7 @@ test__asn1rd_error__after_read_int_twice__returns_OUT_OF_DATA(void) {
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
 
-    vscf_asn1rd_reset(asn1rd, vsc_data(test_asn1_encoded_INT_2, test_asn1_encoded_INT_2_LEN));
+    vscf_asn1rd_reset(asn1rd, test_asn1_encoded_INT_2);
 
     (void)vscf_asn1rd_read_int(asn1rd);
     (void)vscf_asn1rd_read_int(asn1rd);
@@ -257,7 +257,7 @@ test__asn1rd_error__after_read_int_from_encoded_boolean_true__returns_BAD_ASN1(v
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
 
-    vscf_asn1rd_reset(asn1rd, vsc_data(test_asn1_encoded_BOOLEAN_TRUE, test_asn1_encoded_BOOLEAN_TRUE_LEN));
+    vscf_asn1rd_reset(asn1rd, test_asn1_encoded_BOOLEAN_TRUE);
 
     (void)vscf_asn1rd_read_int(asn1rd);
 

@@ -38,74 +38,110 @@
 //
 //  Primitive types
 //
-const byte test_asn1_encoded_INT_2[] = {
+const byte test_asn1_encoded_INT_2_BYTES[] = {
     0x02, 0x01, 0x02
 };
 
-const byte test_asn1_encoded_BOOLEAN_TRUE[] = {
+const vsc_data_t test_asn1_encoded_INT_2 = {
+    test_asn1_encoded_INT_2_BYTES, sizeof(test_asn1_encoded_INT_2_BYTES)
+};
+
+const byte test_asn1_encoded_BOOLEAN_TRUE_BYTES[] = {
     0x01, 0x01, 0xFF
 };
 
-const byte test_asn1_encoded_BOOLEAN_FALSE[] = {
+const vsc_data_t test_asn1_encoded_BOOLEAN_TRUE = {
+    test_asn1_encoded_BOOLEAN_TRUE_BYTES, sizeof(test_asn1_encoded_BOOLEAN_TRUE_BYTES)
+};
+
+const byte test_asn1_encoded_BOOLEAN_FALSE_BYTES[] = {
     0x01, 0x01, 0x00
 };
 
-const byte test_asn1_encoded_NULL[] = {
+const vsc_data_t test_asn1_encoded_BOOLEAN_FALSE = {
+    test_asn1_encoded_BOOLEAN_FALSE_BYTES, sizeof(test_asn1_encoded_BOOLEAN_FALSE_BYTES)
+};
+
+const byte test_asn1_encoded_NULL_BYTES[] = {
     0x05, 00
 };
 
-const size_t test_asn1_encoded_INT_2_LEN = sizeof(test_asn1_encoded_INT_2);
-const size_t test_asn1_encoded_BOOLEAN_TRUE_LEN = sizeof(test_asn1_encoded_BOOLEAN_TRUE);
-const size_t test_asn1_encoded_BOOLEAN_FALSE_LEN = sizeof(test_asn1_encoded_BOOLEAN_FALSE);
-const size_t test_asn1_encoded_NULL_LEN = sizeof(test_asn1_encoded_NULL);
+const vsc_data_t test_asn1_encoded_NULL = {
+    test_asn1_encoded_NULL_BYTES, sizeof(test_asn1_encoded_NULL_BYTES)
+};
+
 
 
 //
 // Strings
 //
-const byte test_asn1_encoded_OCTET_STRING[] = {
+const byte test_asn1_encoded_OCTET_STRING_BYTES[] = {
     0x04, 0x04, 0xFF, 0x01, 0x02, 0x03
 };
 
-const byte test_asn1_decoded_OCTET_STRING[] = {
+const vsc_data_t test_asn1_encoded_OCTET_STRING = {
+    test_asn1_encoded_OCTET_STRING_BYTES, sizeof(test_asn1_encoded_OCTET_STRING_BYTES)
+};
+
+const byte test_asn1_decoded_OCTET_STRING_BYTES[] = {
     0xFF, 0x01, 0x02, 0x03
 };
 
-const byte test_asn1_encoded_UTF8_STRING[] = {
+const vsc_data_t test_asn1_decoded_OCTET_STRING = {
+    test_asn1_decoded_OCTET_STRING_BYTES, sizeof(test_asn1_decoded_OCTET_STRING_BYTES)
+};
+
+const byte test_asn1_encoded_UTF8_STRING_BYTES[] = {
     0x0C, 0x04, 0x54, 0x45, 0x53, 0x54
 };
 
-const byte test_asn1_decoded_UTF8_STRING[] = {
+const vsc_data_t test_asn1_encoded_UTF8_STRING = {
+    test_asn1_encoded_UTF8_STRING_BYTES, sizeof(test_asn1_encoded_UTF8_STRING_BYTES)
+};
+
+const byte test_asn1_decoded_UTF8_STRING_BYTES[] = {
     0x54, 0x45, 0x53, 0x54
 };
 
-const byte test_asn1_encoded_OID_SHA256[] = {
+const vsc_data_t test_asn1_decoded_UTF8_STRING = {
+    test_asn1_decoded_UTF8_STRING_BYTES, sizeof(test_asn1_decoded_UTF8_STRING_BYTES)
+};
+
+const byte test_asn1_encoded_OID_SHA256_BYTES[] = {
     0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03,
     0x04, 0x02, 0x01
 };
 
-const byte test_asn1_decoded_OID_SHA256[] = {
+const vsc_data_t test_asn1_encoded_OID_SHA256 = {
+    test_asn1_encoded_OID_SHA256_BYTES, sizeof(test_asn1_encoded_OID_SHA256_BYTES)
+};
+
+const byte test_asn1_decoded_OID_SHA256_BYTES[] = {
     0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02,
     0x01
 };
 
-const size_t test_asn1_encoded_OCTET_STRING_LEN = sizeof(test_asn1_encoded_OCTET_STRING);
-const size_t test_asn1_decoded_OCTET_STRING_LEN = sizeof(test_asn1_decoded_OCTET_STRING);
-const size_t test_asn1_encoded_UTF8_STRING_LEN = sizeof(test_asn1_encoded_UTF8_STRING);
-const size_t test_asn1_decoded_UTF8_STRING_LEN = sizeof(test_asn1_decoded_UTF8_STRING);
-const size_t test_asn1_encoded_OID_SHA256_LEN = sizeof(test_asn1_encoded_OID_SHA256);
-const size_t test_asn1_decoded_OID_SHA256_LEN = sizeof(test_asn1_decoded_OID_SHA256);
+const vsc_data_t test_asn1_decoded_OID_SHA256 = {
+    test_asn1_decoded_OID_SHA256_BYTES, sizeof(test_asn1_decoded_OID_SHA256_BYTES)
+};
+
 
 //
 // Containers
 //
-const byte test_asn1_encoded_SEQUENCE_WITH_LEN_32[] = {
+const byte test_asn1_encoded_SEQUENCE_WITH_LEN_32_BYTES[] = {
     0x30, 0x20
 };
 
-const byte test_asn1_encoded_SET_WITH_LEN_32[] = {
+const vsc_data_t test_asn1_encoded_SEQUENCE_WITH_LEN_32 = {
+    test_asn1_encoded_SEQUENCE_WITH_LEN_32_BYTES, sizeof(test_asn1_encoded_SEQUENCE_WITH_LEN_32_BYTES)
+};
+
+const byte test_asn1_encoded_SET_WITH_LEN_32_BYTES[] = {
     0x31, 0x20
 };
 
-const size_t test_asn1_encoded_SEQUENCE_WITH_LEN_32_LEN = sizeof(test_asn1_encoded_SEQUENCE_WITH_LEN_32);
-const size_t test_asn1_encoded_SET_WITH_LEN_32_LEN = sizeof(test_asn1_encoded_SET_WITH_LEN_32);
+const vsc_data_t test_asn1_encoded_SET_WITH_LEN_32 = {
+    test_asn1_encoded_SET_WITH_LEN_32_BYTES, sizeof(test_asn1_encoded_SET_WITH_LEN_32_BYTES)
+};
+

@@ -33,55 +33,36 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-
 #include "vsc_data.h"
 
 //
 //  Test Vector 1
 //
-
-extern const byte test_hkdf_VECTOR_1_KEY[];
-extern const byte test_hkdf_VECTOR_1_SALT[];
-extern const byte test_hkdf_VECTOR_1_INFO[];
-extern const byte test_hkdf_VECTOR_1_DERIVED_DATA[];
-extern const size_t test_hkdf_VECTOR_1_KEY_LEN;
-extern const size_t test_hkdf_VECTOR_1_SALT_LEN;
-extern const size_t test_hkdf_VECTOR_1_INFO_LEN;
-extern const size_t test_hkdf_VECTOR_1_DERIVED_DATA_LEN;
-
+extern const vsc_data_t test_hkdf_VECTOR_1_KEY;
+extern const vsc_data_t test_hkdf_VECTOR_1_SALT;
+extern const vsc_data_t test_hkdf_VECTOR_1_INFO;
+extern const vsc_data_t test_hkdf_VECTOR_1_DERIVED_DATA;
 
 //
 //  Test Vector 2
 //
-extern const byte test_hkdf_VECTOR_2_KEY[];
-extern const byte test_hkdf_VECTOR_2_SALT[];
-extern const byte test_hkdf_VECTOR_2_INFO[];
-extern const byte test_hkdf_VECTOR_2_DERIVED_DATA[];
-extern const size_t test_hkdf_VECTOR_2_KEY_LEN;
-extern const size_t test_hkdf_VECTOR_2_SALT_LEN;
-extern const size_t test_hkdf_VECTOR_2_INFO_LEN;
-extern const size_t test_hkdf_VECTOR_2_DERIVED_DATA_LEN;
+extern const vsc_data_t test_hkdf_VECTOR_2_KEY;
+extern const vsc_data_t test_hkdf_VECTOR_2_SALT;
+extern const vsc_data_t test_hkdf_VECTOR_2_INFO;
+extern const vsc_data_t test_hkdf_VECTOR_2_DERIVED_DATA;
 
 //
 //  Test Vector 3
 //
-extern const byte test_hkdf_VECTOR_3_KEY[];
-extern const byte test_hkdf_VECTOR_3_SALT[];
-extern const byte test_hkdf_VECTOR_3_INFO[];
-extern const byte test_hkdf_VECTOR_3_DERIVED_DATA[];
-extern const size_t test_hkdf_VECTOR_3_KEY_LEN;
-extern const size_t test_hkdf_VECTOR_3_SALT_LEN;
-extern const size_t test_hkdf_VECTOR_3_INFO_LEN;
-extern const size_t test_hkdf_VECTOR_3_DERIVED_DATA_LEN;
+extern const vsc_data_t test_hkdf_VECTOR_3_KEY;
+extern const vsc_data_t test_hkdf_VECTOR_3_SALT;
+extern const vsc_data_t test_hkdf_VECTOR_3_INFO;
+extern const vsc_data_t test_hkdf_VECTOR_3_DERIVED_DATA;
 
 //
 //  Test Vector 4
 //
-extern const byte test_hkdf_VECTOR_4_KEY[];
-extern const byte test_hkdf_VECTOR_4_SALT[];
-extern const byte test_hkdf_VECTOR_4_INFO[];
-extern const byte test_hkdf_VECTOR_4_DERIVED_DATA[];
-extern const size_t test_hkdf_VECTOR_4_KEY_LEN;
-extern const size_t test_hkdf_VECTOR_4_SALT_LEN;
-extern const size_t test_hkdf_VECTOR_4_INFO_LEN;
-extern const size_t test_hkdf_VECTOR_4_DERIVED_DATA_LEN;
+extern const vsc_data_t test_hkdf_VECTOR_4_KEY;
+extern const vsc_data_t test_hkdf_VECTOR_4_SALT;
+extern const vsc_data_t test_hkdf_VECTOR_4_INFO;
+extern const vsc_data_t test_hkdf_VECTOR_4_DERIVED_DATA;

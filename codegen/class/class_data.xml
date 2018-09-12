@@ -12,6 +12,14 @@
     </property>
 
 
+    <variable name="empty data" type="byte" declaration="private" definition="private">
+        Byte array that is used as "empty array" mark.
+
+        <array length="derived"/>
+        <value value="0x00"/>
+    </variable>
+
+
     <method name="is valid">
         Returns true if underlying byte array is defined.
 

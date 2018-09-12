@@ -100,7 +100,7 @@ test__hmac__vector_1__success(void) {
     vscf_hmac384_hmac(test_hmac384_KEY_1_INPUT, test_hmac384_KEY_1_INPUT_LEN, test_hmac384_VECTOR_1_INPUT,
             test_hmac384_VECTOR_1_INPUT_LEN, digest, vscf_hmac384_DIGEST_LEN);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac384_VECTOR_1_DIGEST, digest, test_hmac384_VECTOR_1_DIGEST_LEN);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac384_VECTOR_1_DIGEST.bytes, digest, test_hmac384_VECTOR_1_DIGEST_LEN);
 }
 
 void
@@ -111,7 +111,7 @@ test__hmac__vector_2__success(void) {
     vscf_hmac384_hmac(test_hmac384_KEY_2_INPUT, test_hmac384_KEY_2_INPUT_LEN, test_hmac384_VECTOR_2_INPUT,
             test_hmac384_VECTOR_2_INPUT_LEN, digest, vscf_hmac384_DIGEST_LEN);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac384_VECTOR_2_DIGEST, digest, test_hmac384_VECTOR_2_DIGEST_LEN);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac384_VECTOR_2_DIGEST.bytes, digest, test_hmac384_VECTOR_2_DIGEST_LEN);
 }
 
 void
@@ -122,7 +122,7 @@ test__hmac__vector_3__success(void) {
     vscf_hmac384_hmac(test_hmac384_KEY_3_INPUT, test_hmac384_KEY_3_INPUT_LEN, test_hmac384_VECTOR_3_INPUT,
             test_hmac384_VECTOR_3_INPUT_LEN, digest, vscf_hmac384_DIGEST_LEN);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac384_VECTOR_3_DIGEST, digest, test_hmac384_VECTOR_3_DIGEST_LEN);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac384_VECTOR_3_DIGEST.bytes, digest, test_hmac384_VECTOR_3_DIGEST_LEN);
 }
 
 
@@ -143,7 +143,7 @@ test__hmac_stream__vector_1_success(void) {
 
     vscf_hmac384_destroy(&hmac384_impl);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac384_VECTOR_1_DIGEST, digest, test_hmac384_VECTOR_1_DIGEST_LEN);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac384_VECTOR_1_DIGEST.bytes, digest, test_hmac384_VECTOR_1_DIGEST_LEN);
 }
 
 void
@@ -160,7 +160,7 @@ test__hmac_stream__vector_2_success(void) {
 
     vscf_hmac384_destroy(&hmac384_impl);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac384_VECTOR_2_DIGEST, digest, test_hmac384_VECTOR_2_DIGEST_LEN);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac384_VECTOR_2_DIGEST.bytes, digest, test_hmac384_VECTOR_2_DIGEST_LEN);
 }
 
 void
@@ -177,7 +177,7 @@ test__hmac_stream__vector_3_success(void) {
 
     vscf_hmac384_destroy(&hmac384_impl);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac384_VECTOR_3_DIGEST, digest, test_hmac384_VECTOR_3_DIGEST_LEN);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac384_VECTOR_3_DIGEST.bytes, digest, test_hmac384_VECTOR_3_DIGEST_LEN);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE

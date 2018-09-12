@@ -55,6 +55,9 @@
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
+
+#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -78,7 +81,7 @@ typedef struct vscf_kdf_api_t vscf_kdf_api_t;
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
-vscf_kdf_derive(vscf_impl_t *impl, const byte *data, size_t data_len, byte *key, size_t key_len);
+vscf_kdf_derive(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *key, size_t key_len);
 
 //
 //  Return kdf API, or NULL if it is not implemented.

@@ -4,13 +4,10 @@
     <method name="derive" context="impl">
         Calculate hash over given data.
 
-        <argument name="data" type="data"/>
-        <argument name="data len" type="size"/>
-        <argument name="salt" type="data"/>
-        <argument name="salt len" type="size"/>
-        <argument name="info" type="data"/>
-        <argument name="info len" type="size"/>
-        <argument name="key" type="data" access="writeonly"/>
-        <argument name="key len" type="size"/>
+        <argument name="data" class="data"/>
+        <argument name="salt" class="data"/>
+        <argument name="info" class="data"/>
+        <argument name="key" class="buffer"/>
+        <argument name="key len" type="size" />
     </method>
 </interface>
