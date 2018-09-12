@@ -304,7 +304,7 @@ int ed25519_verify(
  * @param[in] secret_key Curve25519 secret key.
  * @return 0 if success, non zero - otherwise.
  */
-int mbedtls_curve25519_get_pubkey(unsigned char public_key[32], const unsigned char secret_key[32]) {
+int curve25519_get_pubkey(unsigned char public_key[32], const unsigned char secret_key[32]) {
     sc25519 scsk;
     ge25519 gepk;
 
@@ -326,7 +326,7 @@ int mbedtls_curve25519_get_pubkey(unsigned char public_key[32], const unsigned c
     return 0;
 }
 
-int mbedtls_curve25519_key_exchange(
+int curve25519_key_exchange(
         unsigned char shared_secret[32], const unsigned char public_key[32], const unsigned char secret_key[32]) {
 
     fe25519 x1;
@@ -402,7 +402,7 @@ int mbedtls_curve25519_key_exchange(
 /*
  * edwardsY = (montgomeryX - 1)*inverse(montgomeryX + 1) mod p
  */
-static int mbedtls_x25519_ext_montgomery_to_edwards_pubkey(
+static int x25519_ext_montgomery_to_edwards_pubkey(
         unsigned char ed_public_key[32], const unsigned char curve_public_key[32]) {
 
     fe25519 mont_x, mont_x_minus_one, mont_x_plus_one, inv_mont_x_plus_one, one, ed_y;
@@ -462,7 +462,7 @@ static int ed25519_sign_az(
     return 0;
 }
 
-int mbedtls_curve25519_sign(
+int curve25519_sign(
         unsigned char signature[64],
         const unsigned char secret_key[32],
         const unsigned char* msg, size_t msg_len)
@@ -494,7 +494,7 @@ int mbedtls_curve25519_sign(
 }
 
 
-int mbedtls_curve25519_verify(
+int curve25519_verify(
         const unsigned char signature[64],
         const unsigned char public_key[32],
         const unsigned char* msg, size_t msg_len)
@@ -503,7 +503,7 @@ int mbedtls_curve25519_verify(
 
     unsigned char fixed_signature[64];
 
-    mbedtls_x25519_ext_montgomery_to_edwards_pubkey(ed_public_key, public_key);
+    x25519_ext_montgomery_to_edwards_pubkey(ed_public_key, public_key);
     ed_public_key[31] |= (signature[63] & 0x80);
 
     memmove(fixed_signature, signature, 64);
