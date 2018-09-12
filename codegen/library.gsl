@@ -172,6 +172,10 @@ function library_create_features (library, destination)
             copy feature to features
         endfor
 
+        for my.library.require
+            copy require to features
+        endfor
+
         return features
     endnew
 endfunction
