@@ -9,10 +9,22 @@
     <c_include file="mbedtls/entropy.h" scope="private" is_system="1"/>
 
 
-    <macros name="buffer from data" definition="private">
+    <macros name="buffer from data" definition="private" is_method="1">
+        Create puthia_buf_t object initializer from common class 'buffer'.
 
         <code>
-            #define .(c_class_pythia_macros_buffer_from_data) (X) {.p = (uint8_t *)X.bytes, .allocated = X.len, .len = X.len}
+            #define .(c_class_pythia_macros_buffer_from_data) (X) \
+                    {.p = (uint8_t *)X.bytes, .allocated = X.len, .len = X.len}
+        </code>
+    </macros>
+
+
+    <macros name="buffer from buffer" definition="private" is_method="1">
+        Create puthia_buf_t object initializer from common class 'buffer'.
+
+        <code>
+            #define .(c_class_pythia_macros_buffer_from_buffer) (X) \
+                    {.p = (uint8_t *)vsc_buffer_ptr(X), .allocated = vsc_buffer_left(X), .len = 0}
         </code>
     </macros>
 
