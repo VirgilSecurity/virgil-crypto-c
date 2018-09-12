@@ -118,6 +118,10 @@ function project_create_features (project, destination)
             copy feature to features
         endfor
 
+        for my.project.require
+            copy require to features
+        endfor
+
         return features
     endnew
 endfunction

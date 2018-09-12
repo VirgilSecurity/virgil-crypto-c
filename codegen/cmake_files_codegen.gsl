@@ -129,6 +129,65 @@ function cmake_generate_features (source, license)
             cmake_insert_if (last(), ")", 2)
         endfor
 
+
+        for c_features.c_require where count (c_require.c_alternative, defined(c_alternative.feature))
+
+            my.alternatives = XML.new("alternatives")
+            for c_require.c_alternative
+                copy c_alternative to my.alternatives
+            endfor
+
+            for my.alternatives.c_alternative as first
+                for my.alternatives.c_alternative as second
+                    if first.feature = second.feature
+                        next
+                    endif
+
+                    newline ()
+
+                    cmake_insert (" \
+                        if($(first.feature:) AND $(second.feature:))
+                            message(\"-- error --\")
+                            message(\"--\")
+                            message(\"Feature $(first.feature:) is enabled and alternative feature:\")
+                            message(\"    $(second.feature:) is enabled too.\")
+                            message(\"--\")
+                            message(FATAL_ERROR)
+                        endif()
+                    ")
+                endfor
+
+                delete first
+            endfor
+
+
+            for c_require.c_alternative
+
+                if first ()
+                    my.alternative_any_enabled = c_alternative.feature
+                    my.alternatives = c_alternative.feature
+                else
+                    my.alternative_any_enabled += " OR " + c_alternative.feature
+                    my.alternatives += ", " + c_alternative.feature
+                endif
+
+                newline_if(last())
+                cmake_insert_if (last(), " \
+                    if(NOT ($(my.alternative_any_enabled:)))
+                        message(\"-- error --\")
+                        message(\"--\")
+                        message(\"One of the features must be enabled:\")
+                        message(\"    $(my.alternatives:).\")
+                        message(\"--\")
+                        message(FATAL_ERROR)
+                    endif()
+                ")
+
+                my.previous_alternative = c_alternative
+            endfor
+        endfor
+
+
         for c_features.c_feature where count (c_feature.c_require)
             for c_feature.c_require
                 newline ()

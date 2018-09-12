@@ -145,6 +145,10 @@ function c_features_create (source, destination)
             for features.feature
                 c_feature_create (feature, c_features)
             endfor
+
+            for features.require
+                _F21_create_require (require, c_features)
+            endfor
         endnew
     endfor
 endfunction
