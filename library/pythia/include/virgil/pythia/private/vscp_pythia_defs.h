@@ -75,6 +75,10 @@ struct vscp_pythia_t {
     //  Function do deallocate self context.
     //
     vscp_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
 };
 
 

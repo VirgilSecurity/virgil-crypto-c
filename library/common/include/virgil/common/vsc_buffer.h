@@ -119,6 +119,12 @@ VSC_PUBLIC void
 vsc_buffer_destroy(vsc_buffer_t **buffer_ctx_ref);
 
 //
+//  Copy given class context by increasing reference counter.
+//
+VSC_PUBLIC vsc_buffer_t *
+vsc_buffer_copy(vsc_buffer_t *buffer_ctx);
+
+//
 //  Allocates inner buffer with a given capacity.
 //  Precondition: buffer is initialized.
 //  Precondition: buffer does not hold any bytes.
