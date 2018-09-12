@@ -61,49 +61,52 @@ test__is_implemented__sha256__returns_true(void) {
 void
 test__hash__sha256_vector_1__success(void) {
 
-    byte digest[vscf_sha256_DIGEST_LEN] = {0x00};
-
     vscf_impl_t *impl = vscf_sha256_impl(vscf_sha256_new());
+    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha256_DIGEST_LEN);
 
     vscf_hash_stream_start(impl);
-    vscf_hash_stream_update(impl, test_sha256_VECTOR_1_INPUT, test_sha256_VECTOR_1_INPUT_LEN);
-    vscf_hash_stream_finish(impl, digest, vscf_sha256_DIGEST_LEN);
+    vscf_hash_stream_update(impl, test_sha256_VECTOR_1_INPUT);
+    vscf_hash_stream_finish(impl, digest);
 
+    TEST_ASSERT_EQUAL(test_sha256_VECTOR_1_DIGEST.len, vsc_buffer_len(digest));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_1_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
+
+    vsc_buffer_destroy(&digest);
     vscf_impl_destroy(&impl);
-
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_1_DIGEST, digest, test_sha256_VECTOR_1_DIGEST_LEN);
 }
 
 void
 test__hash__sha256_vector_2__success(void) {
 
-    byte digest[vscf_sha256_DIGEST_LEN] = {0x00};
-
     vscf_impl_t *impl = vscf_sha256_impl(vscf_sha256_new());
+    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha256_DIGEST_LEN);
 
     vscf_hash_stream_start(impl);
-    vscf_hash_stream_update(impl, test_sha256_VECTOR_2_INPUT, test_sha256_VECTOR_2_INPUT_LEN);
-    vscf_hash_stream_finish(impl, digest, vscf_sha256_DIGEST_LEN);
+    vscf_hash_stream_update(impl, test_sha256_VECTOR_2_INPUT);
+    vscf_hash_stream_finish(impl, digest);
 
+    TEST_ASSERT_EQUAL(test_sha256_VECTOR_2_DIGEST.len, vsc_buffer_len(digest));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_2_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
+
+    vsc_buffer_destroy(&digest);
     vscf_impl_destroy(&impl);
-
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_2_DIGEST, digest, test_sha256_VECTOR_2_DIGEST_LEN);
 }
 
 void
 test__hash__sha256_vector_3__success(void) {
 
-    byte digest[vscf_sha256_DIGEST_LEN] = {0x00};
-
     vscf_impl_t *impl = vscf_sha256_impl(vscf_sha256_new());
+    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha256_DIGEST_LEN);
 
     vscf_hash_stream_start(impl);
-    vscf_hash_stream_update(impl, test_sha256_VECTOR_3_INPUT, test_sha256_VECTOR_3_INPUT_LEN);
-    vscf_hash_stream_finish(impl, digest, vscf_sha256_DIGEST_LEN);
+    vscf_hash_stream_update(impl, test_sha256_VECTOR_3_INPUT);
+    vscf_hash_stream_finish(impl, digest);
 
+    TEST_ASSERT_EQUAL(test_sha256_VECTOR_3_DIGEST.len, vsc_buffer_len(digest));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_3_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
+
+    vsc_buffer_destroy(&digest);
     vscf_impl_destroy(&impl);
-
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_3_DIGEST, digest, test_sha256_VECTOR_3_DIGEST_LEN);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE

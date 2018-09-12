@@ -65,13 +65,12 @@
 //  Calculate hmac over given data.
 //
 VSCF_PUBLIC void
-vscf_hmac(const vscf_hmac_api_t *hmac_api, const byte *key, size_t key_len, const byte *data, size_t data_len,
-        byte *hmac, size_t hmac_len) {
+vscf_hmac(const vscf_hmac_api_t *hmac_api, vsc_data_t key, vsc_data_t data, vsc_buffer_t *hmac) {
 
     VSCF_ASSERT_PTR (hmac_api);
 
     VSCF_ASSERT_PTR (hmac_api->hmac_cb);
-    hmac_api->hmac_cb (key, key_len, data, data_len, hmac, hmac_len);
+    hmac_api->hmac_cb (key, data, hmac);
 }
 
 //

@@ -61,6 +61,13 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Byte array that is used as "empty array" mark.
+//
+static const byte empty_data[] = {
+    0x00
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -95,7 +102,7 @@ vsc_data(const byte *bytes, size_t len) {
 VSC_PUBLIC vsc_data_t
 vsc_data_empty(void) {
 
-    return (vsc_data_t){NULL, 0};
+    return (vsc_data_t){empty_data, 0};
 }
 
 //

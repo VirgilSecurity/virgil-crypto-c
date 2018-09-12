@@ -195,10 +195,7 @@ vscf_rsa_public_key_verify(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc_
     vsc_buffer_t *data_hash_buf = vsc_buffer_new_with_capacity(data_hash_len);
     VSCF_ASSERT_PTR(data_hash_buf);
 
-    vscf_hash(rsa_public_key_impl->hash, data.bytes, data.len, vsc_buffer_ptr(data_hash_buf),
-            vsc_buffer_left(data_hash_buf));
-
-    vsc_buffer_reserve(data_hash_buf, data_hash_len);
+    vscf_hash(rsa_public_key_impl->hash, data, data_hash_buf);
 
     //  Verify
     mbedtls_md_type_t md_alg = vscf_mbedtls_md_map_impl_tag(vscf_hash_impl_tag(rsa_public_key_impl->hash));

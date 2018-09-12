@@ -2,26 +2,6 @@
     Provide implementation based on the library ARM mbedTLS.
 
 
-    <implementation name="hmac224">
-        This is MbedTLS implementation of HMAC224.
-
-        <require library="mbedtls" feature="MD C"/>
-        <require library="mbedtls" feature="SHA256 C"/>
-
-        <context>
-            <require header="mbedtls/md.h"/>
-            <property name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
-        </context>
-
-        <interface name="hmac info">
-            <constant name="digest len" value="28"/>
-        </interface>
-
-        <interface name="hmac"/>
-        <interface name="hmac stream"/>
-    </implementation>
-
-
     <implementation name="hmac256">
         This is MbedTLS implementation of HMAC256.
 
@@ -35,46 +15,6 @@
 
         <interface name="hmac info">
             <constant name="digest len" value="32"/>
-        </interface>
-
-        <interface name="hmac"/>
-        <interface name="hmac stream"/>
-    </implementation>
-
-
-    <implementation name="hmac384">
-        This is MbedTLS implementation of HMAC384.
-
-        <require library="mbedtls" feature="MD C"/>
-        <require library="mbedtls" feature="SHA512 C"/>
-
-        <context>
-            <require header="mbedtls/md.h"/>
-            <property name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
-        </context>
-
-        <interface name="hmac info">
-            <constant name="digest len" value="48"/>
-        </interface>
-
-        <interface name="hmac"/>
-        <interface name="hmac stream"/>
-    </implementation>
-
-
-    <implementation name="hmac512">
-        This is MbedTLS implementation of HMAC512.
-
-        <require library="mbedtls" feature="MD C"/>
-        <require library="mbedtls" feature="SHA512 C"/>
-
-        <context>
-            <require header="mbedtls/md.h"/>
-            <property name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
-        </context>
-
-        <interface name="hmac info">
-            <constant name="digest len" value="64"/>
         </interface>
 
         <interface name="hmac"/>

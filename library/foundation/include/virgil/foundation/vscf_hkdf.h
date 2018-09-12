@@ -56,6 +56,9 @@
 #include "vscf_error.h"
 #include "vscf_impl.h"
 #include "vscf_ex_kdf.h"
+
+#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -143,11 +146,17 @@ VSCF_PUBLIC void
 vscf_hkdf_take_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hmac);
 
 //
+//  Release dependency of the interface 'hmac stream'.
+//
+VSCF_PUBLIC void
+vscf_hkdf_release_hmac_stream(vscf_hkdf_impl_t *hkdf_impl);
+
+//
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
-vscf_hkdf_derive(vscf_hkdf_impl_t *hkdf_impl, const byte *data, size_t data_len, const byte *salt, size_t salt_len,
-        const byte *info, size_t info_len, byte *key, size_t key_len);
+vscf_hkdf_derive(vscf_hkdf_impl_t *hkdf_impl, vsc_data_t data, vsc_data_t salt, vsc_data_t info, vsc_buffer_t *key,
+        size_t key_len);
 
 
 // --------------------------------------------------------------------------

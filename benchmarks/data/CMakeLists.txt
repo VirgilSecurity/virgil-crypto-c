@@ -45,7 +45,6 @@ target_sources(benchmark_data
         "${CMAKE_CURRENT_LIST_DIR}/include/bench_data_sha256.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/bench_data_sha384.h"
         "${CMAKE_CURRENT_LIST_DIR}/include/bench_data_sha512.h"
-        "${CMAKE_CURRENT_LIST_DIR}/include/bench_data_types.h"
 
         PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/src/bench_data_kdf1.c"
@@ -59,3 +58,5 @@ target_sources(benchmark_data
 target_include_directories(benchmark_data
         PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         )
+
+target_link_libraries(benchmark_data vsc::common)

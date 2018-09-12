@@ -97,7 +97,7 @@ vscf_hmac384_cleanup_ctx(vscf_hmac384_impl_t *hmac384_impl) {
 //  Calculate hmac over given data.
 //
 VSCF_PUBLIC void
-vscf_hmac384_hmac(const byte *key, size_t key_len, const byte *data, size_t data_len, byte *hmac, size_t hmac_len) {
+vscf_hmac384_hmac(vsc_data_t key, vsc_data_t data, vsc_buffer_t *hmac) {
 
     VSCF_ASSERT_OPT(hmac_len >= vscf_hmac384_DIGEST_LEN);
 
@@ -117,7 +117,7 @@ vscf_hmac384_reset(vscf_hmac384_impl_t *hmac384_impl) {
 //  Start a new HMAC.
 //
 VSCF_PUBLIC void
-vscf_hmac384_start(vscf_hmac384_impl_t *hmac384_impl, const byte *key, size_t key_len) {
+vscf_hmac384_start(vscf_hmac384_impl_t *hmac384_impl, vsc_data_t key) {
 
     mbedtls_md_hmac_starts(&hmac384_impl->hmac_ctx, key, key_len);
 }
@@ -126,7 +126,7 @@ vscf_hmac384_start(vscf_hmac384_impl_t *hmac384_impl, const byte *key, size_t ke
 //  Add given data to the HMAC.
 //
 VSCF_PUBLIC void
-vscf_hmac384_update(vscf_hmac384_impl_t *hmac384_impl, const byte *data, size_t data_len) {
+vscf_hmac384_update(vscf_hmac384_impl_t *hmac384_impl, vsc_data_t data) {
 
     mbedtls_md_hmac_update(&hmac384_impl->hmac_ctx, data, data_len);
 }
@@ -135,7 +135,7 @@ vscf_hmac384_update(vscf_hmac384_impl_t *hmac384_impl, const byte *data, size_t 
 //  Accompilsh HMAC and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_hmac384_finish(vscf_hmac384_impl_t *hmac384_impl, byte *hmac, size_t hmac_len) {
+vscf_hmac384_finish(vscf_hmac384_impl_t *hmac384_impl, vsc_buffer_t *hmac) {
 
     VSCF_ASSERT_OPT(hmac_len >= vscf_hmac384_DIGEST_LEN);
 

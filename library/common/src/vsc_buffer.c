@@ -342,3 +342,30 @@ vsc_buffer_reserve(vsc_buffer_t *buffer_ctx, size_t len) {
 
     buffer_ctx->len += len;
 }
+
+//
+//  Reset to the initial state.
+//  After reset inner buffer can be re-used.
+//
+VSC_PUBLIC void
+vsc_buffer_reset(vsc_buffer_t *buffer_ctx) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
+
+    buffer_ctx->len = 0;
+}
+
+//
+//  Zeroing buffer in secure manner.
+//
+VSC_PUBLIC void
+vsc_buffer_erase(vsc_buffer_t *buffer_ctx) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
+
+    buffer_ctx->len = 0;
+
+    vsc_erase(buffer_ctx->bytes, buffer_ctx->capacity);
+}

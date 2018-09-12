@@ -37,7 +37,7 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCF_KDF1 &&VSCF_SHA256
+#define TEST_DEPENDENCIES_AVAILABLE VSCF_KDF2 &&VSCF_SHA256
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_kdf1.h"
@@ -54,55 +54,55 @@
 void
 test__derive__sha256_vector_1__success(void) {
 
-    byte *key = vscf_alloc(test_kdf1_VECTOR_1_KEY_LEN);
-
     vscf_kdf1_impl_t *kdf1_impl = vscf_kdf1_new();
+    vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_kdf1_VECTOR_1_KEY.len);
 
     vscf_kdf1_take_hash_stream(kdf1_impl, vscf_sha256_impl(vscf_sha256_new()));
 
-    vscf_kdf1_derive(kdf1_impl, test_kdf1_VECTOR_1_DATA, test_kdf1_VECTOR_1_DATA_LEN, key, test_kdf1_VECTOR_1_KEY_LEN);
+    vscf_kdf1_derive(kdf1_impl, test_kdf1_VECTOR_1_DATA, key, test_kdf1_VECTOR_1_KEY.len);
 
     vscf_kdf1_destroy(&kdf1_impl);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_kdf1_VECTOR_1_KEY, key, test_kdf1_VECTOR_1_KEY_LEN);
+    TEST_ASSERT_EQUAL(test_kdf1_VECTOR_1_KEY.len, vsc_buffer_len(key));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_kdf1_VECTOR_1_KEY.bytes, vsc_buffer_bytes(key), vsc_buffer_len(key));
 
-    vscf_dealloc(key);
+    vsc_buffer_destroy(&key);
 }
 
 void
 test__derive__sha256_vector_2__success(void) {
 
-    byte *key = vscf_alloc(test_kdf1_VECTOR_2_KEY_LEN);
-
     vscf_kdf1_impl_t *kdf1_impl = vscf_kdf1_new();
+    vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_kdf1_VECTOR_2_KEY.len);
 
     vscf_kdf1_take_hash_stream(kdf1_impl, vscf_sha256_impl(vscf_sha256_new()));
 
-    vscf_kdf1_derive(kdf1_impl, test_kdf1_VECTOR_2_DATA, test_kdf1_VECTOR_2_DATA_LEN, key, test_kdf1_VECTOR_2_KEY_LEN);
+    vscf_kdf1_derive(kdf1_impl, test_kdf1_VECTOR_2_DATA, key, test_kdf1_VECTOR_2_KEY.len);
 
     vscf_kdf1_destroy(&kdf1_impl);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_kdf1_VECTOR_2_KEY, key, test_kdf1_VECTOR_2_KEY_LEN);
+    TEST_ASSERT_EQUAL(test_kdf1_VECTOR_2_KEY.len, vsc_buffer_len(key));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_kdf1_VECTOR_2_KEY.bytes, vsc_buffer_bytes(key), vsc_buffer_len(key));
 
-    vscf_dealloc(key);
+    vsc_buffer_destroy(&key);
 }
 
 void
 test__derive__sha256_vector_3__success(void) {
 
-    byte *key = vscf_alloc(test_kdf1_VECTOR_3_KEY_LEN);
-
     vscf_kdf1_impl_t *kdf1_impl = vscf_kdf1_new();
+    vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_kdf1_VECTOR_3_KEY.len);
 
     vscf_kdf1_take_hash_stream(kdf1_impl, vscf_sha256_impl(vscf_sha256_new()));
 
-    vscf_kdf1_derive(kdf1_impl, test_kdf1_VECTOR_3_DATA, test_kdf1_VECTOR_3_DATA_LEN, key, test_kdf1_VECTOR_3_KEY_LEN);
+    vscf_kdf1_derive(kdf1_impl, test_kdf1_VECTOR_3_DATA, key, test_kdf1_VECTOR_3_KEY.len);
 
     vscf_kdf1_destroy(&kdf1_impl);
 
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_kdf1_VECTOR_3_KEY, key, test_kdf1_VECTOR_3_KEY_LEN);
+    TEST_ASSERT_EQUAL(test_kdf1_VECTOR_3_KEY.len, vsc_buffer_len(key));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_kdf1_VECTOR_3_KEY.bytes, vsc_buffer_bytes(key), vsc_buffer_len(key));
 
-    vscf_dealloc(key);
+    vsc_buffer_destroy(&key);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE

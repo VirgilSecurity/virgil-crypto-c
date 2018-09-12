@@ -56,6 +56,9 @@
 #include "vscf_error.h"
 #include "vscf_impl.h"
 #include "vscf_hash_info.h"
+
+#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -79,7 +82,7 @@ typedef struct vscf_hash_api_t vscf_hash_api_t;
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
-vscf_hash(const vscf_hash_api_t *hash_api, const byte *data, size_t data_len, byte *digest, size_t digest_len);
+vscf_hash(const vscf_hash_api_t *hash_api, vsc_data_t data, vsc_buffer_t *digest);
 
 //
 //  Return hash API, or NULL if it is not implemented.

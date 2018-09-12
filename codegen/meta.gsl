@@ -392,6 +392,12 @@ function _X17_add_entity_implementation (meta, implementation)
                 _X17_add_link (entity, "implementation method use $(dependency.interface)", \
                         make_id ("class", my.name, "method", "use", dependency.interface, "api"))
 
+                _X17_add_name (entity, "implementation method release $(dependency.interface)", \
+                        cat ("release", dependency.interface, "api"))
+
+                _X17_add_link (entity, "implementation method release $(dependency.interface)", \
+                        make_id ("class", my.name, "method", "release", dependency.interface, "api"))
+
                 _X17_add_link (entity, "implementation dependency class $(dependency.interface)", \
                         make_id ("class", dependency.interface, "api", "struct", dependency.interface, "api"))
 
@@ -414,6 +420,12 @@ function _X17_add_entity_implementation (meta, implementation)
 
                 _X17_add_link (entity, "implementation method take $(dependency.interface)", \
                         make_id ("class", my.name, "method", "take", dependency.interface))
+
+                _X17_add_name (entity, "implementation method release $(dependency.interface)", \
+                        cat ("release", dependency.interface))
+
+                _X17_add_link (entity, "implementation method release $(dependency.interface)", \
+                        make_id ("class", my.name, "method", "release", dependency.interface))
 
                 _X17_add_link (entity, "implementation dependency class $(dependency.interface)", \
                         make_id ("class impl struct impl"))
