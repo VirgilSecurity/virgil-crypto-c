@@ -72,6 +72,14 @@ extern "C" {
 //
 struct vsc_buffer_t {
     //
+    //  Function do deallocate self context.
+    //
+    vsc_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
     //  Underlying byte array.
     //
     byte *bytes;
@@ -87,10 +95,6 @@ struct vsc_buffer_t {
     //  Function do deallocate underlying byte array.
     //
     vsc_dealloc_fn bytes_dealloc_cb;
-    //
-    //  Function do deallocate self context.
-    //
-    vsc_dealloc_fn self_dealloc_cb;
 };
 
 

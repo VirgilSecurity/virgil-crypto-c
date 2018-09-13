@@ -73,7 +73,15 @@ static __thread size_t g_instances = 0;
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Create puthia_buf_t object initializer from common class 'buffer'.
+//
 #define VSCP_PYTHIA_BUFFER_FROM_DATA(X) {.p = (uint8_t *)X.bytes, .allocated = X.len, .len = X.len}
+
+//
+//  Create puthia_buf_t object initializer from common class 'buffer'.
+//
+#define VSCP_PYTHIA_BUFFER_FROM_BUFFER(X) {.p = (uint8_t *)vsc_buffer_ptr(X), .allocated = vsc_buffer_left(X), .len = 0}
 
 //
 //  Callback for the pythia random.
@@ -101,6 +109,7 @@ vscp_pythia_new(void) {
 
     vscp_pythia_init(pythia_ctx);
 
+    pythia_ctx->refcnt = 1;
     pythia_ctx->self_dealloc_cb = vscp_dealloc;
 
     return pythia_ctx;
@@ -113,14 +122,13 @@ vscp_pythia_new(void) {
 VSCP_PUBLIC void
 vscp_pythia_delete(vscp_pythia_t *pythia_ctx) {
 
-    if (NULL == pythia_ctx) {
-        return;
-    }
+    if (pythia_ctx && (--pythia_ctx->refcnt == 0)) {
 
-    vscp_pythia_cleanup(pythia_ctx);
+        vscp_pythia_cleanup(pythia_ctx);
 
-    if (pythia_ctx->self_dealloc_cb != NULL) {
-         pythia_ctx->self_dealloc_cb(pythia_ctx);
+        if (pythia_ctx->self_dealloc_cb != NULL) {
+             pythia_ctx->self_dealloc_cb(pythia_ctx);
+        }
     }
 }
 
@@ -137,6 +145,19 @@ vscp_pythia_destroy(vscp_pythia_t **pythia_ctx_ref) {
     *pythia_ctx_ref = NULL;
 
     vscp_pythia_delete(pythia_ctx);
+}
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCP_PUBLIC vscp_pythia_t *
+vscp_pythia_copy(vscp_pythia_t *pythia_ctx) {
+
+    VSCP_ASSERT_PTR(pythia_ctx);
+
+    ++pythia_ctx->refcnt;
+
+    return pythia_ctx;
 }
 
 
@@ -301,16 +322,21 @@ vscp_pythia_blind(
     VSCP_ASSERT_PTR(blinded_password);
     VSCP_ASSERT_PTR(blinding_secret);
 
-    VSCP_ASSERT(vsc_buffer_capacity(blinded_password) >= vscp_pythia_blinded_password_buf_len());
-    VSCP_ASSERT(vsc_buffer_capacity(blinding_secret) >= vscp_pythia_blinding_secret_buf_len());
+    VSCP_ASSERT(vsc_buffer_left(blinded_password) >= vscp_pythia_blinded_password_buf_len());
+    VSCP_ASSERT(vsc_buffer_left(blinding_secret) >= vscp_pythia_blinding_secret_buf_len());
 
 
     const pythia_buf_t password_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(password);
 
+    pythia_buf_t blinded_password_buf = VSCP_PYTHIA_BUFFER_FROM_BUFFER(blinded_password);
+    pythia_buf_t blinding_secret_buf = VSCP_PYTHIA_BUFFER_FROM_BUFFER(blinding_secret);
 
-    if (0 != pythia_w_blind(&password_buf, (pythia_buf_t *)blinded_password, (pythia_buf_t *)blinding_secret)) {
+    if (0 != pythia_w_blind(&password_buf, &blinded_password_buf, &blinding_secret_buf)) {
         return vscp_error_PYTHIA_INNER_FAIL;
     }
+
+    vsc_buffer_reserve(blinded_password, blinded_password_buf.len);
+    vsc_buffer_reserve(blinding_secret, blinding_secret_buf.len);
 
     return vscp_SUCCESS;
 }
@@ -327,16 +353,19 @@ vscp_pythia_deblind(vscp_pythia_t *pythia_ctx, vsc_data_t transformed_password, 
     VSCP_ASSERT_PTR(blinding_secret.bytes);
     VSCP_ASSERT_PTR(deblinded_password);
 
-    VSCP_ASSERT(vsc_buffer_capacity(deblinded_password) >= vscp_pythia_deblinded_password_buf_len());
+    VSCP_ASSERT(vsc_buffer_left(deblinded_password) >= vscp_pythia_deblinded_password_buf_len());
 
 
     const pythia_buf_t transformed_password_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(transformed_password);
     const pythia_buf_t blinding_secret_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(blinding_secret);
 
+    pythia_buf_t deblinded_password_buf = VSCP_PYTHIA_BUFFER_FROM_BUFFER(deblinded_password);
 
-    if (0 != pythia_w_deblind(&transformed_password_buf, &blinding_secret_buf, (pythia_buf_t *)deblinded_password)) {
+    if (0 != pythia_w_deblind(&transformed_password_buf, &blinding_secret_buf, &deblinded_password_buf)) {
         return vscp_error_PYTHIA_INNER_FAIL;
     }
+
+    vsc_buffer_reserve(deblinded_password, deblinded_password_buf.len);
 
     return vscp_SUCCESS;
 }
@@ -356,19 +385,24 @@ vscp_pythia_compute_transformation_key_pair(vscp_pythia_t *pythia_ctx, vsc_data_
     VSCP_ASSERT_PTR(transformation_private_key);
     VSCP_ASSERT_PTR(transformation_public_key);
 
-    VSCP_ASSERT(vsc_buffer_capacity(transformation_private_key) >= vscp_pythia_transformation_private_key_buf_len());
-    VSCP_ASSERT(vsc_buffer_capacity(transformation_public_key) >= vscp_pythia_transformation_public_key_buf_len());
+    VSCP_ASSERT(vsc_buffer_left(transformation_private_key) >= vscp_pythia_transformation_private_key_buf_len());
+    VSCP_ASSERT(vsc_buffer_left(transformation_public_key) >= vscp_pythia_transformation_public_key_buf_len());
 
     const pythia_buf_t transformation_key_id_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(transformation_key_id);
     const pythia_buf_t pythia_secret_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(pythia_secret);
     const pythia_buf_t pythia_scope_secret_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(pythia_scope_secret);
 
+    pythia_buf_t transformation_private_key_buf = VSCP_PYTHIA_BUFFER_FROM_BUFFER(transformation_private_key);
+    pythia_buf_t transformation_public_key_buf = VSCP_PYTHIA_BUFFER_FROM_BUFFER(transformation_public_key);
+
     if (0 != pythia_w_compute_transformation_key_pair(&transformation_key_id_buf, &pythia_secret_buf,
-                     &pythia_scope_secret_buf, (pythia_buf_t *)transformation_private_key,
-                     (pythia_buf_t *)transformation_public_key)) {
+                     &pythia_scope_secret_buf, &transformation_private_key_buf, &transformation_public_key_buf)) {
 
         return vscp_error_PYTHIA_INNER_FAIL;
     }
+
+    vsc_buffer_reserve(transformation_private_key, transformation_private_key_buf.len);
+    vsc_buffer_reserve(transformation_public_key, transformation_public_key_buf.len);
 
     return vscp_SUCCESS;
 }
@@ -387,18 +421,24 @@ vscp_pythia_transform(vscp_pythia_t *pythia_ctx, vsc_data_t blinded_password, vs
     VSCP_ASSERT_PTR(transformed_password);
     VSCP_ASSERT_PTR(transformed_tweak);
 
-    VSCP_ASSERT(vsc_buffer_capacity(transformed_password) >= vscp_pythia_transformed_password_buf_len());
-    VSCP_ASSERT(vsc_buffer_capacity(transformed_tweak) >= vscp_pythia_transformed_tweak_buf_len());
+    VSCP_ASSERT(vsc_buffer_left(transformed_password) >= vscp_pythia_transformed_password_buf_len());
+    VSCP_ASSERT(vsc_buffer_left(transformed_tweak) >= vscp_pythia_transformed_tweak_buf_len());
 
     const pythia_buf_t blinded_password_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(blinded_password);
     const pythia_buf_t tweak_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(tweak);
     const pythia_buf_t transformation_private_key_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(transformation_private_key);
 
+    pythia_buf_t transformed_password_buf = VSCP_PYTHIA_BUFFER_FROM_BUFFER(transformed_password);
+    pythia_buf_t transformed_tweak_buf = VSCP_PYTHIA_BUFFER_FROM_BUFFER(transformed_tweak);
+
     if (0 != pythia_w_transform(&blinded_password_buf, &tweak_buf, &transformation_private_key_buf,
-                     (pythia_buf_t *)transformed_password, (pythia_buf_t *)transformed_tweak)) {
+                     &transformed_password_buf, &transformed_tweak_buf)) {
 
         return vscp_error_PYTHIA_INNER_FAIL;
     }
+
+    vsc_buffer_reserve(transformed_password, transformed_password_buf.len);
+    vsc_buffer_reserve(transformed_tweak, transformed_tweak_buf.len);
 
     return vscp_SUCCESS;
 }
@@ -420,8 +460,8 @@ vscp_pythia_prove(vscp_pythia_t *pythia_ctx, vsc_data_t transformed_password, vs
     VSCP_ASSERT_PTR(proof_value_c);
     VSCP_ASSERT_PTR(proof_value_u);
 
-    VSCP_ASSERT(vsc_buffer_capacity(proof_value_c) >= vscp_pythia_proof_value_buf_len());
-    VSCP_ASSERT(vsc_buffer_capacity(proof_value_u) >= vscp_pythia_proof_value_buf_len());
+    VSCP_ASSERT(vsc_buffer_left(proof_value_c) >= vscp_pythia_proof_value_buf_len());
+    VSCP_ASSERT(vsc_buffer_left(proof_value_u) >= vscp_pythia_proof_value_buf_len());
 
     const pythia_buf_t transformed_password_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(transformed_password);
     const pythia_buf_t blinded_password_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(blinded_password);
@@ -429,12 +469,18 @@ vscp_pythia_prove(vscp_pythia_t *pythia_ctx, vsc_data_t transformed_password, vs
     const pythia_buf_t transformation_private_key_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(transformation_private_key);
     const pythia_buf_t transformation_public_key_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(transformation_public_key);
 
+    pythia_buf_t proof_value_c_buf = VSCP_PYTHIA_BUFFER_FROM_BUFFER(proof_value_c);
+    pythia_buf_t proof_value_u_buf = VSCP_PYTHIA_BUFFER_FROM_BUFFER(proof_value_u);
+
     if (0 != pythia_w_prove(&transformed_password_buf, &blinded_password_buf, &transformed_tweak_buf,
-                     &transformation_private_key_buf, &transformation_public_key_buf, (pythia_buf_t *)proof_value_c,
-                     (pythia_buf_t *)proof_value_u)) {
+                     &transformation_private_key_buf, &transformation_public_key_buf, &proof_value_c_buf,
+                     &proof_value_u_buf)) {
 
         return vscp_error_PYTHIA_INNER_FAIL;
     }
+
+    vsc_buffer_reserve(proof_value_c, proof_value_c_buf.len);
+    vsc_buffer_reserve(proof_value_u, proof_value_u_buf.len);
 
     return vscp_SUCCESS;
 }
@@ -492,7 +538,7 @@ vscp_pythia_get_password_update_token(vscp_pythia_t *pythia_ctx, vsc_data_t prev
     VSCP_ASSERT_PTR(new_transformation_private_key.bytes);
     VSCP_ASSERT_PTR(password_update_token);
 
-    VSCP_ASSERT(vsc_buffer_capacity(password_update_token) >= vscp_pythia_proof_value_buf_len());
+    VSCP_ASSERT(vsc_buffer_left(password_update_token) >= vscp_pythia_proof_value_buf_len());
 
     const pythia_buf_t previous_transformation_private_key_buf =
             VSCP_PYTHIA_BUFFER_FROM_DATA(previous_transformation_private_key);
@@ -500,12 +546,15 @@ vscp_pythia_get_password_update_token(vscp_pythia_t *pythia_ctx, vsc_data_t prev
     const pythia_buf_t new_transformation_private_key_buf =
             VSCP_PYTHIA_BUFFER_FROM_DATA(new_transformation_private_key);
 
+    pythia_buf_t password_update_token_buf = VSCP_PYTHIA_BUFFER_FROM_BUFFER(password_update_token);
 
     if (0 != pythia_w_get_password_update_token(&previous_transformation_private_key_buf,
-                     &new_transformation_private_key_buf, (pythia_buf_t *)password_update_token)) {
+                     &new_transformation_private_key_buf, &password_update_token_buf)) {
 
         return vscp_error_PYTHIA_INNER_FAIL;
     }
+
+    vsc_buffer_reserve(password_update_token, password_update_token_buf.len);
 
     return vscp_SUCCESS;
 }
@@ -523,17 +572,20 @@ vscp_pythia_update_deblinded_with_token(vscp_pythia_t *pythia_ctx, vsc_data_t de
     VSCP_ASSERT_PTR(password_update_token.bytes);
     VSCP_ASSERT_PTR(updated_deblinded_password);
 
-    VSCP_ASSERT(vsc_buffer_capacity(updated_deblinded_password) >= vscp_pythia_deblinded_password_buf_len());
+    VSCP_ASSERT(vsc_buffer_left(updated_deblinded_password) >= vscp_pythia_deblinded_password_buf_len());
 
     const pythia_buf_t deblinded_password_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(deblinded_password);
     const pythia_buf_t password_update_token_buf = VSCP_PYTHIA_BUFFER_FROM_DATA(password_update_token);
 
+    pythia_buf_t updated_deblinded_password_buf = VSCP_PYTHIA_BUFFER_FROM_BUFFER(updated_deblinded_password);
 
     if (0 != pythia_w_update_deblinded_with_token(
-                     &deblinded_password_buf, &password_update_token_buf, (pythia_buf_t *)updated_deblinded_password)) {
+                     &deblinded_password_buf, &password_update_token_buf, &updated_deblinded_password_buf)) {
 
         return vscp_error_PYTHIA_INNER_FAIL;
     }
+
+    vsc_buffer_reserve(updated_deblinded_password, updated_deblinded_password_buf.len);
 
     return vscp_SUCCESS;
 }
