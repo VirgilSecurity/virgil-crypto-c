@@ -89,7 +89,7 @@ VSCP_PUBLIC void
 vscp_pythia_init(vscp_pythia_t *pythia_ctx);
 
 //
-//  Release all inner resources.
+//  Release all inner resources including class dependencies.
 //
 VSCP_PUBLIC void
 vscp_pythia_cleanup(vscp_pythia_t *pythia_ctx);
@@ -101,7 +101,7 @@ VSCP_PUBLIC vscp_pythia_t *
 vscp_pythia_new(void);
 
 //
-//  Release all inner resorces and deallocate context if needed.
+//  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCP_PUBLIC void
