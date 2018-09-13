@@ -380,13 +380,13 @@ function c_insert_method_argument_check (c_method)
     check_argument (my, "c_method")
 
     for my.c_method.c_argument where accessed_by = "pointer"
-        insert_code (" \
+        insert_code ("\
             .(c_class_assert_macros) ($(c_argument.name:));
         ", 1)
     endfor
 
     for my.c_method.c_argument where accessed_by = "reference"
-        insert_code (" \
+        insert_code ("\
             .(c_class_assert_macros) ($(c_argument.name:));
             .(c_class_assert_macros) (*$(c_argument.name:));
         ", 1)

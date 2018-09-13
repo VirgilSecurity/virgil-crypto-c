@@ -145,7 +145,7 @@ function cmake_generate_features (source, license)
 
                     newline ()
 
-                    cmake_insert (" \
+                    cmake_insert ("\
                         if($(first.feature:) AND $(second.feature:))
                             message(\"-- error --\")
                             message(\"--\")
@@ -172,7 +172,7 @@ function cmake_generate_features (source, license)
                 endif
 
                 newline_if(last())
-                cmake_insert_if (last(), " \
+                cmake_insert_if (last(), "\
                     if(NOT ($(my.alternative_any_enabled:)))
                         message(\"-- error --\")
                         message(\"--\")
@@ -203,7 +203,7 @@ function cmake_generate_features (source, license)
 
                     my.alternative_enabled += " AND NOT " + c_alternative.feature
 
-                    cmake_insert_if (last(), " \
+                    cmake_insert_if (last(), "\
                         if($(c_feature.name:)$(my.alternative_enabled:))
                             message(\"-- error --\")
                             message(\"--\")
@@ -214,7 +214,7 @@ function cmake_generate_features (source, license)
                         endif()
                     ")
                 else
-                    cmake_insert (" \
+                    cmake_insert ("\
                         if($(c_feature.name:) AND NOT $(c_require.feature:))
                             message(\"-- error --\")
                             message(\"--\")
