@@ -137,9 +137,7 @@ vscf_hkdf_init(vscf_hkdf_impl_t *hkdf_impl) {
 VSCF_PUBLIC void
 vscf_hkdf_cleanup(vscf_hkdf_impl_t *hkdf_impl) {
 
-    VSCF_ASSERT_PTR(hkdf_impl);
-
-    if (hkdf_impl->info == NULL) {
+    if (hkdf_impl == NULL || hkdf_impl->info == NULL) {
         return;
     }
 

@@ -194,9 +194,7 @@ vscf_sha384_init(vscf_sha384_impl_t *sha384_impl) {
 VSCF_PUBLIC void
 vscf_sha384_cleanup(vscf_sha384_impl_t *sha384_impl) {
 
-    VSCF_ASSERT_PTR(sha384_impl);
-
-    if (sha384_impl->info == NULL) {
+    if (sha384_impl == NULL || sha384_impl->info == NULL) {
         return;
     }
 

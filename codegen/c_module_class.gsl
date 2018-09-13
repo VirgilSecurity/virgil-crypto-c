@@ -238,7 +238,9 @@ function _X13_add_method_cleanup (class, destination, meta)
             my.type_ctx = my.refs.c_class_struct_ctx
 
             my.impl_check_precondition = "\
-                .(c_class_assert_macros_ptr)($(my.arg_ctx));
+                if ($(my.arg_ctx) == NULL) {
+                    return;
+                }
 
                 if ($(my.arg_ctx)->$(my.names.c_property_ref_counter:) == 0) {
                     return;
@@ -443,6 +445,10 @@ function _X13_add_method_delete (class, destination, meta)
             my.arg_ctx = my.refs.class_argument_ctx
 
             . = "\
+            if ($(my.arg_ctx) == NULL) {
+                return;
+            }
+
             $(my.refs.c_class_method_cleanup)($(my.arg_ctx));
 
             .(c_global_callback_dealloc) self_dealloc_cb = $(my.arg_ctx:)->$(my.refs.c_class_property_self_dealloc);
