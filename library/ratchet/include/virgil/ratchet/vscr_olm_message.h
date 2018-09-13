@@ -78,19 +78,12 @@ enum {
 //  Handle 'olm message' context.
 //
 typedef struct vscr_olm_message_t vscr_olm_message_t;
-struct vscr_olm_message_t {
-    uint8_t version;
 
-    uint32_t counter;
-
-    vsc_buffer_t *public_key;
-
-    vsc_buffer_t *cipher_text;
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-};
+//
+//  Return size of 'vscr_olm_message_t'.
+//
+VSCR_PUBLIC size_t
+vscr_olm_message_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
@@ -99,7 +92,7 @@ VSCR_PUBLIC void
 vscr_olm_message_init(vscr_olm_message_t *olm_message_ctx);
 
 //
-//  Release all inner resources.
+//  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
 vscr_olm_message_cleanup(vscr_olm_message_t *olm_message_ctx);
@@ -111,11 +104,11 @@ VSCR_PUBLIC vscr_olm_message_t *
 vscr_olm_message_new(void);
 
 VSCR_PUBLIC vscr_olm_message_t *
-vscr_olm_message_new_with_members(uint8_t version, uint32_t counter, vsc_buffer_t **public_key_ref,
-        vsc_buffer_t **cipher_text_ref);
+vscr_olm_message_new_with_members(uint8_t version, uint32_t counter, vsc_buffer_t *public_key,
+        vsc_buffer_t *cipher_text);
 
 //
-//  Release all inner resorces and deallocate context if needed.
+//  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
@@ -127,6 +120,12 @@ vscr_olm_message_delete(vscr_olm_message_t *olm_message_ctx);
 //
 VSCR_PUBLIC void
 vscr_olm_message_destroy(vscr_olm_message_t **olm_message_ctx_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCR_PUBLIC vscr_olm_message_t *
+vscr_olm_message_copy(vscr_olm_message_t *olm_message_ctx);
 
 VSCR_PUBLIC size_t
 vscr_olm_message_serialize_len(const vscr_olm_message_t *olm_message_ctx);

@@ -1,4 +1,4 @@
-<class name="olm message" context="public">
+<class name="olm message" context="private">
 
     <require header="virgil/foundation/vscf_asn1wr.h" scope="private"/>
     <require header="virgil/foundation/vscf_asn1rd.h" scope="private"/>
@@ -14,8 +14,8 @@
     <constructor name="with members">
         <argument name="version" type="size" size="1"/>
         <argument name="counter" type="size" size="4"/>
-        <argument name="public key" class="buffer" access="disown"/>
-        <argument name="cipher text" class="buffer" access="disown"/>
+        <argument name="public key" class="buffer"/>
+        <argument name="cipher text" class="buffer"/>
     </constructor>
 
     <method name="serialize len">

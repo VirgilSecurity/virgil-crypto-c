@@ -69,13 +69,18 @@ extern "C" {
 //
 typedef struct vscr_olm_message_key_t vscr_olm_message_key_t;
 struct vscr_olm_message_key_t {
-    uint32_t index;
-
-    vsc_buffer_t *key;
     //
     //  Function do deallocate self context.
     //
     vscr_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+
+    uint32_t index;
+
+    vsc_buffer_t *key;
 };
 
 //
@@ -85,7 +90,7 @@ VSCR_PUBLIC void
 vscr_olm_message_key_init(vscr_olm_message_key_t *olm_message_key_ctx);
 
 //
-//  Release all inner resources.
+//  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
 vscr_olm_message_key_cleanup(vscr_olm_message_key_t *olm_message_key_ctx);
@@ -97,7 +102,7 @@ VSCR_PUBLIC vscr_olm_message_key_t *
 vscr_olm_message_key_new(void);
 
 //
-//  Release all inner resorces and deallocate context if needed.
+//  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
@@ -109,6 +114,12 @@ vscr_olm_message_key_delete(vscr_olm_message_key_t *olm_message_key_ctx);
 //
 VSCR_PUBLIC void
 vscr_olm_message_key_destroy(vscr_olm_message_key_t **olm_message_key_ctx_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCR_PUBLIC vscr_olm_message_key_t *
+vscr_olm_message_key_copy(vscr_olm_message_key_t *olm_message_key_ctx);
 
 
 // --------------------------------------------------------------------------

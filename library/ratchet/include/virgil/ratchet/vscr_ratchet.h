@@ -48,10 +48,12 @@
 
 #include "vscr_library.h"
 #include "vscr_error.h"
+#include "vscr_olm_message.h"
 #include "vscr_olm_message_key.h"
 #include "vscr_olm_kdf_info.h"
 #include "vscr_olm_sender_chain.h"
 #include "vscr_olm_chain_key.h"
+#include "vscr_olm_cipher.h"
 #include "vscr_olm_receiver_chain_list_node.h"
 
 #include <virgil/foundation/vscf_hmac256.h>
@@ -76,6 +78,7 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
+    vscr_ratchet_OLM_MESSAGE_VERSION = 1,
     vscr_ratchet_OLM_SHARED_KEY_LENGTH = vscf_hmac256_DIGEST_LEN
 };
 
@@ -84,6 +87,17 @@ enum {
 //
 typedef struct vscr_ratchet_t vscr_ratchet_t;
 struct vscr_ratchet_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscr_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+
+    vscr_olm_cipher_t *cipher;
+
     vscr_olm_kdf_info_t *kdf_info;
 
     vscr_olm_sender_chain_t *sender_chain;
@@ -91,10 +105,6 @@ struct vscr_ratchet_t {
     vscr_olm_receiver_chain_list_node_t *receiver_chains;
 
     vsc_buffer_t *root_key;
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
 };
 
 //
@@ -104,7 +114,7 @@ VSCR_PUBLIC void
 vscr_ratchet_init(vscr_ratchet_t *ratchet_ctx);
 
 //
-//  Release all inner resources.
+//  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
 vscr_ratchet_cleanup(vscr_ratchet_t *ratchet_ctx);
@@ -116,7 +126,7 @@ VSCR_PUBLIC vscr_ratchet_t *
 vscr_ratchet_new(void);
 
 //
-//  Release all inner resorces and deallocate context if needed.
+//  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
@@ -129,14 +139,20 @@ vscr_ratchet_delete(vscr_ratchet_t *ratchet_ctx);
 VSCR_PUBLIC void
 vscr_ratchet_destroy(vscr_ratchet_t **ratchet_ctx_ref);
 
-VSCR_PUBLIC void
-vscr_ratchet_advance_root_chain(vscr_ratchet_t *ratchet_ctx);
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCR_PUBLIC vscr_ratchet_t *
+vscr_ratchet_copy(vscr_ratchet_t *ratchet_ctx);
 
 VSCR_PUBLIC void
-vscr_ratchet_create_message_key(vscr_ratchet_t *ratchet_ctx, vscr_olm_message_key_t *message_key);
+vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_private_key);
 
 VSCR_PUBLIC void
-vscr_ratchet_advance_chain_key(vscr_olm_chain_key_t *chain_key);
+vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key);
+
+VSCR_PUBLIC size_t
+vscr_ratchet_encrypt_len(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text);
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_encrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text, vsc_buffer_t *cipher_text);

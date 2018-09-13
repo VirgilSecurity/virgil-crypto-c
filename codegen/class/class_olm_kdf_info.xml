@@ -1,6 +1,6 @@
 <class name="olm kdf info" context="public">
 
-    <property name="root info" class="data"/>
-    <property name="ratchet info" class="data"/>
+    <property name="root info" class="buffer" access="readwrite"/>
+    <property name="ratchet info" class="buffer" access="readwrite"/>
 
 </class>

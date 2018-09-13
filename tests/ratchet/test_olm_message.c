@@ -39,6 +39,7 @@
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_OLM_MESSAGE
 #if TEST_DEPENDENCIES_AVAILABLE
 
+#include <virgil/ratchet/private/vscr_olm_message_defs.h>
 #include "vscr_olm_message.h"
 #include "test_data_olm_message.h"
 
@@ -53,7 +54,7 @@ test__1(void) {
     vsc_buffer_reserve(cipher_text, test_olm_message_cipher_text.len);
 
     vscr_olm_message_t *msg1 = vscr_olm_message_new_with_members(test_olm_message_version, test_olm_message_counter,
-                                                                 &public_key, &cipher_text);
+                                                                 public_key, cipher_text);
 
     TEST_ASSERT_EQUAL_INT(test_olm_message_version, msg1->version);
     TEST_ASSERT_EQUAL_INT(test_olm_message_counter, msg1->counter);
@@ -94,7 +95,7 @@ test__2(void) {
 
     vscr_olm_message_t *msg1 = vscr_olm_message_new_with_members(test_olm_message_version_big,
                                                                  test_olm_message_counter_big,
-                                                                 &public_key, &cipher_text);
+                                                                 public_key, cipher_text);
 
     TEST_ASSERT_EQUAL_INT(test_olm_message_version_big, msg1->version);
     TEST_ASSERT_EQUAL_INT(test_olm_message_counter_big, msg1->counter);

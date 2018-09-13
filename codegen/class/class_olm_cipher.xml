@@ -1,0 +1,13 @@
+<class name="olm cipher" context="public">
+
+    <require header="virgil/foundation/vscf_error_ctx.h" scope="private"/>
+
+    <method name="encrypt">
+        <argument class="context"/>
+        <argument name="key" class="data"/>
+        <argument name="plain text" class="data"/>
+
+        <return class="buffer"/>
+    </method>
+
+</class>

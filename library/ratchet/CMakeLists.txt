@@ -57,6 +57,14 @@ if(NOT TARGET vsc::foundation)
 endif()
 
 #
+# ed25519
+#
+if(NOT TARGET ed25519)
+    message(FATAL_ERROR
+            "Required library 'ed25519' is not found - looking for target 'ed25519'.")
+endif()
+
+#
 # Options
 #
 include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
@@ -88,7 +96,7 @@ target_include_directories(ratchet
 #
 # Link to dependencies
 #
-target_link_libraries(ratchet PUBLIC vsc::common vsc::foundation)
+target_link_libraries(ratchet PUBLIC vsc::common vsc::foundation ed25519)
 
 #
 # Define specific compilation and linkage flags.

@@ -53,6 +53,7 @@
     <module name="olm message error"/>
 
     <class name="error"/>
+    <class name="olm cipher"/>
     <class name="olm chain key"/>
     <class name="olm message key"/>
     <class name="olm kdf info"/>

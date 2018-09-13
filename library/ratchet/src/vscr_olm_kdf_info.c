@@ -56,6 +56,56 @@
 // --------------------------------------------------------------------------
 
 //
+//  Perform context specific initialization.
+//  Note, this method is called automatically when method vscr_olm_kdf_info_init() is called.
+//  Note, that context is already zeroed.
+//
+static void
+vscr_olm_kdf_info_init_ctx(vscr_olm_kdf_info_t *olm_kdf_info_ctx);
+
+//
+//  Release all inner resources.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+static void
+vscr_olm_kdf_info_cleanup_ctx(vscr_olm_kdf_info_t *olm_kdf_info_ctx);
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCR_PUBLIC void
+vscr_olm_kdf_info_init(vscr_olm_kdf_info_t *olm_kdf_info_ctx) {
+
+    VSCR_ASSERT_PTR(olm_kdf_info_ctx);
+
+    vscr_zeroize(olm_kdf_info_ctx, sizeof(vscr_olm_kdf_info_t));
+
+    olm_kdf_info_ctx->refcnt = 1;
+
+    vscr_olm_kdf_info_init_ctx(olm_kdf_info_ctx);
+}
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCR_PUBLIC void
+vscr_olm_kdf_info_cleanup(vscr_olm_kdf_info_t *olm_kdf_info_ctx) {
+
+    VSCR_ASSERT_PTR(olm_kdf_info_ctx);
+
+    if (olm_kdf_info_ctx->refcnt == 0) {
+        return;
+    }
+
+    if (--olm_kdf_info_ctx->refcnt == 0) {
+        vscr_olm_kdf_info_cleanup_ctx(olm_kdf_info_ctx);
+
+        vscr_zeroize(olm_kdf_info_ctx, sizeof(vscr_olm_kdf_info_t));
+    }
+}
+
+//
 //  Allocate context and perform it's initialization.
 //
 VSCR_PUBLIC vscr_olm_kdf_info_t *
@@ -72,20 +122,18 @@ vscr_olm_kdf_info_new(void) {
 }
 
 //
-//  Release all inner resorces and deallocate context if needed.
+//  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
 vscr_olm_kdf_info_delete(vscr_olm_kdf_info_t *olm_kdf_info_ctx) {
 
-    if (NULL == olm_kdf_info_ctx) {
-        return;
-    }
-
     vscr_olm_kdf_info_cleanup(olm_kdf_info_ctx);
 
-    if (olm_kdf_info_ctx->self_dealloc_cb != NULL) {
-         olm_kdf_info_ctx->self_dealloc_cb(olm_kdf_info_ctx);
+    vscr_dealloc_fn self_dealloc_cb = olm_kdf_info_ctx->self_dealloc_cb;
+
+    if (olm_kdf_info_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(olm_kdf_info_ctx);
     }
 }
 
@@ -104,6 +152,19 @@ vscr_olm_kdf_info_destroy(vscr_olm_kdf_info_t **olm_kdf_info_ctx_ref) {
     vscr_olm_kdf_info_delete(olm_kdf_info_ctx);
 }
 
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCR_PUBLIC vscr_olm_kdf_info_t *
+vscr_olm_kdf_info_copy(vscr_olm_kdf_info_t *olm_kdf_info_ctx) {
+
+    VSCR_ASSERT_PTR(olm_kdf_info_ctx);
+
+    ++olm_kdf_info_ctx->refcnt;
+
+    return olm_kdf_info_ctx;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -113,22 +174,25 @@ vscr_olm_kdf_info_destroy(vscr_olm_kdf_info_t **olm_kdf_info_ctx_ref) {
 
 
 //
-//  Perform initialization of pre-allocated context.
+//  Perform context specific initialization.
+//  Note, this method is called automatically when method vscr_olm_kdf_info_init() is called.
+//  Note, that context is already zeroed.
 //
-VSCR_PUBLIC void
-vscr_olm_kdf_info_init(vscr_olm_kdf_info_t *olm_kdf_info_ctx) {
+static void
+vscr_olm_kdf_info_init_ctx(vscr_olm_kdf_info_t *olm_kdf_info_ctx) {
 
-    VSCR_ASSERT_PTR(olm_kdf_info_ctx);
-
-    //  TODO: This is STUB. Implement me.
+    olm_kdf_info_ctx->root_info = NULL;
+    olm_kdf_info_ctx->ratchet_info = NULL;
 }
 
 //
 //  Release all inner resources.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
 //
-VSCR_PUBLIC void
-vscr_olm_kdf_info_cleanup(vscr_olm_kdf_info_t *olm_kdf_info_ctx) {
+static void
+vscr_olm_kdf_info_cleanup_ctx(vscr_olm_kdf_info_t *olm_kdf_info_ctx) {
 
-    VSCR_UNUSED(olm_kdf_info_ctx);
-    //  TODO: This is STUB. Implement me.
+    vsc_buffer_destroy(&olm_kdf_info_ctx->root_info);
+    vsc_buffer_destroy(&olm_kdf_info_ctx->ratchet_info);
 }
