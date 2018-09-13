@@ -261,10 +261,30 @@ function string_rtrim (str)
     return string.trim (my.str)
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Remove spaces and new lines left and right to the string.
+# ---------------------------------------------------------------------------
 function string_trim (str)
     check_argument (my, "str")
 
     return string_ltrim (string_rtrim (my.str))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Remove empty lines before string and after string.
+# ---------------------------------------------------------------------------
+function string_trim_empty_lines (str)
+    check_argument (my, "str")
+
+    while regexp.match ("^([ ]*$(terminator))", my.str, my.raw_line)
+        if ! string.prefixed(my.str, my.raw_line)
+            last
+        endif
+
+        my.str = string.search_replace (my.str, my.raw_line, "")
+    endwhile
+
+    return string_rtrim (my.str)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -273,7 +293,7 @@ endfunction
 function string_indent (str, tab_count, tab_size)
     my.str ?= ""
     my.str = "$(my.str:left, no)"
-    my.str = string_trim (my.str)
+    my.str = string_trim_empty_lines (my.str)
     my.indent = tabs (my.tab_count, my.tab_size)
     return my.indent + string.replace (my.str, "$(terminator)|$(terminator)$(my.indent)")
 endfunction
