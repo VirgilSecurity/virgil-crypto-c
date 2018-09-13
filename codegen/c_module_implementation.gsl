@@ -767,7 +767,7 @@ function _Z19_add_method_delete (impl, declaration, definition, destination, met
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
 
             . = "\
-            if ($(my.arg_impl) && (--$(my.arg_impl)->$(my.names.c_property_ref_counter) == 0)) {
+            if ($(my.arg_impl) && (--$(my.arg_impl)->$(my.names.c_property_ref_counter:) == 0)) {
                 $(my.refs.c_implementation_method_cleanup)($(my.arg_impl));
                 .(c_global_method_dealloc)($(my.arg_impl));
             }
@@ -821,7 +821,7 @@ function _Z19_add_method_copy (impl, declaration, definition, destination, meta)
     my.refs = meta_refs (my.meta)
 
     new method to my.destination
-        .name = my.names.method_destroy
+        .name = my.names.method_copy
         .declaration = my.declaration
         .definition = my.definition
 
@@ -829,8 +829,6 @@ function _Z19_add_method_copy (impl, declaration, definition, destination, meta)
         Copy given implementation context by increasing reference counter.
         If deep copy is required interface 'clonable' can be used.
         "
-
-        .name = my.names.method_copy
 
         _Z19_add_argument_impl (method, my.meta)
         _Z19_add_return_impl (method, my.meta)
