@@ -201,11 +201,17 @@ function _X13_add_method_init (class, destination, meta)
         _X13_add_argument_ctx (method, my.meta)
 
         new code to method
-            .type = "stub"
-            . = "
-            .(c_class_assert_macros_ptr)($(my.refs.class_argument_ctx));
+            my.arg_ctx = my.refs.class_argument_ctx
+            my.type_ctx = my.refs.c_class_struct_ctx
 
-            //  TODO: This is STUB. Implement me.
+            . = "\
+                .(c_class_assert_macros_ptr)($(my.arg_ctx));
+
+                .(c_global_method_zeroize)($(my.arg_ctx), sizeof($(my.type_ctx)));
+
+                $(my.arg_ctx)->$(my.names.c_property_ref_counter:) = 1;
+
+                $(my.refs.c_class_method_init_ctx)($(my.arg_ctx));
             "
         endnew
     endnew
@@ -221,13 +227,123 @@ function _X13_add_method_cleanup (class, destination, meta)
 
     new method to my.destination
         . = "\
-        Release all inner resources.
+        Release all inner resources including class dependencies.
         "
         .name = my.names.method_cleanup
 
         _X13_add_argument_ctx (method, my.meta)
+
+        new code to method
+            my.arg_ctx = my.refs.class_argument_ctx
+            my.type_ctx = my.refs.c_class_struct_ctx
+
+            my.impl_check_precondition = "\
+                .(c_class_assert_macros_ptr)($(my.arg_ctx));
+
+                if ($(my.arg_ctx)->$(my.names.c_property_ref_counter:) == 0) {
+                    return;
+                }
+            "
+
+            my.impl_cleanup_begin = "\
+                if (--$(my.arg_ctx)->$(my.names.c_property_ref_counter:) == 0) {
+                    $(my.refs.c_class_method_cleanup_ctx)($(my.arg_ctx));
+            "
+
+            for my.class.dependency where defined(class)
+                my.method_delete = my.refs.c_class_method_delete_dependency_$(make_id (dependency.class))
+                my.property_dependency = my.refs.c_class_property_dependency_$(make_id (dependency.class))
+
+                my.impl_cleanup_dependencies ?= ""
+                my.impl_cleanup_dependencies += "\
+
+                    $(my.method_delete)($(my.arg_ctx:)->$(my.property_dependency));
+                "
+            endfor
+
+            my.impl_cleanup_end = "\
+                    .(c_global_method_zeroize)($(my.arg_ctx), sizeof($(my.type_ctx)));
+                }
+            "
+
+            my.method_body = ""
+            my.method_body += format_left (my.impl_check_precondition) + terminator
+            my.method_body += format_left (my.impl_cleanup_begin) + terminator
+            my.method_body += format_left (my.impl_cleanup_dependencies) + terminator ? ""
+            my.method_body += format_left (my.impl_cleanup_end) + terminator
+
+            . = my.method_body
+        endnew
     endnew
 endfunction
+
+
+# ---------------------------------------------------------------------------
+function _X13_add_method_init_ctx (class, destination, meta)
+    check_arguments (my, "class, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+
+    new method to my.destination
+        .name = my.names.method_init_ctx
+        .definition = "private"
+        .declaration = "private"
+
+        . = "\
+            Perform context specific initialization.
+            Note, this method is called automatically when method $(my.refs.c_class_method_init)() is called.
+            Note, that context is already zeroed.
+        "
+
+        _X13_add_argument_ctx (method, my.meta)
+
+        new code to method
+            .type = "stub"
+
+            . = "\
+                .(c_class_assert_macros_ptr)($(my.refs.class_argument_ctx));
+
+                //  TODO: Perform additional context initialization.
+            "
+        endnew
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+function _X13_add_method_cleanup_ctx (class, destination, meta)
+    check_arguments (my, "class, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        .name = my.names.method_cleanup_ctx
+        .definition = "private"
+        .declaration = "private"
+
+        . = "\
+            Release all inner resources.
+            Note, this method is called automatically once when class is completely cleaning up.
+            Note, that context will be zeroed automatically next this method.
+        "
+
+        _X13_add_argument_ctx (method, my.meta)
+
+        new code to method
+            .type = "stub"
+
+            . = "\
+                .(c_class_assert_macros_ptr)($(my.refs.class_argument_ctx));
+
+                //  TODO: Release all inner resources.
+            "
+        endnew
+    endnew
+endfunction
+
 
 
 # ---------------------------------------------------------------------------
@@ -255,7 +371,6 @@ function _X13_add_method_new (class, destination, meta)
 
             $(my.refs.c_class_method_init)($(my.arg_ctx:));
 
-            $(my.arg_ctx:)->$(my.names.c_property_ref_counter:) = 1;
             $(my.arg_ctx:)->$(my.refs.c_class_property_self_dealloc) = .(c_global_method_dealloc);
 
             return $(my.arg_ctx:);
@@ -318,7 +433,7 @@ function _X13_add_method_delete (class, destination, meta)
         .name = my.names.method_delete
 
         . = "\
-        Release all inner resorces and deallocate context if needed.
+        Release all inner resources and deallocate context if needed.
         It is safe to call this method even if context was allocated by the caller.
         "
 
@@ -328,13 +443,12 @@ function _X13_add_method_delete (class, destination, meta)
             my.arg_ctx = my.refs.class_argument_ctx
 
             . = "\
-            if ($(my.arg_ctx) && (--$(my.arg_ctx)->$(my.names.c_property_ref_counter:) == 0)) {
+            $(my.refs.c_class_method_cleanup)($(my.arg_ctx));
 
-                $(my.refs.c_class_method_cleanup)($(my.arg_ctx));
+            .(c_global_callback_dealloc) self_dealloc_cb = $(my.arg_ctx:)->$(my.refs.c_class_property_self_dealloc);
 
-                if ( $(my.arg_ctx:)->$(my.refs.c_class_property_self_dealloc) != NULL) {
-                     $(my.arg_ctx:)->$(my.refs.c_class_property_self_dealloc)($(my.arg_ctx));
-                }
+            if ($(my.arg_ctx)->$(my.names.c_property_ref_counter:) == 0 && self_dealloc_cb != NULL) {
+                self_dealloc_cb($(my.arg_ctx));
             }
             "
         endnew
@@ -431,7 +545,9 @@ function _X13_add_lifecycle_methods (class, destination, meta)
     check_arguments (my, "class, destination, meta", my)
 
     _X13_add_method_init (my.class, my.destination, my.meta)
+    _X13_add_method_init_ctx (my.class, my.destination, my.meta)
     _X13_add_method_cleanup (my.class, my.destination, my.meta)
+    _X13_add_method_cleanup_ctx (my.class, my.destination, my.meta)
     _X13_add_method_new (my.class, my.destination, my.meta)
 
     for my.class.constructor

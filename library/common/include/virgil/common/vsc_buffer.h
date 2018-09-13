@@ -87,7 +87,7 @@ VSC_PUBLIC void
 vsc_buffer_init(vsc_buffer_t *buffer_ctx);
 
 //
-//  Release all inner resources.
+//  Release all inner resources including class dependencies.
 //
 VSC_PUBLIC void
 vsc_buffer_cleanup(vsc_buffer_t *buffer_ctx);
@@ -105,7 +105,7 @@ VSC_PUBLIC vsc_buffer_t *
 vsc_buffer_new_with_capacity(size_t capacity);
 
 //
-//  Release all inner resorces and deallocate context if needed.
+//  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSC_PUBLIC void
