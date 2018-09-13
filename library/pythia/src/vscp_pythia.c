@@ -84,6 +84,22 @@ static __thread size_t g_instances = 0;
 #define VSCP_PYTHIA_BUFFER_FROM_BUFFER(X) {.p = (uint8_t *)vsc_buffer_ptr(X), .allocated = vsc_buffer_left(X), .len = 0}
 
 //
+//  Perform context specific initialization.
+//  Note, this method is called automatically when method vscp_pythia_init() is called.
+//  Note, that context is already zeroed.
+//
+static void
+vscp_pythia_init_ctx(vscp_pythia_t *pythia_ctx);
+
+//
+//  Release all inner resources.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+static void
+vscp_pythia_cleanup_ctx(vscp_pythia_t *pythia_ctx);
+
+//
 //  Callback for the pythia random.
 //
 static void
@@ -99,6 +115,40 @@ vscp_pythia_ctx_size(void) {
 }
 
 //
+//  Perform initialization of pre-allocated context.
+//
+VSCP_PUBLIC void
+vscp_pythia_init(vscp_pythia_t *pythia_ctx) {
+
+    VSCP_ASSERT_PTR(pythia_ctx);
+
+    vscp_zeroize(pythia_ctx, sizeof(vscp_pythia_t));
+
+    pythia_ctx->refcnt = 1;
+
+    vscp_pythia_init_ctx(pythia_ctx);
+}
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCP_PUBLIC void
+vscp_pythia_cleanup(vscp_pythia_t *pythia_ctx) {
+
+    VSCP_ASSERT_PTR(pythia_ctx);
+
+    if (pythia_ctx->refcnt == 0) {
+        return;
+    }
+
+    if (--pythia_ctx->refcnt == 0) {
+        vscp_pythia_cleanup_ctx(pythia_ctx);
+
+        vscp_zeroize(pythia_ctx, sizeof(vscp_pythia_t));
+    }
+}
+
+//
 //  Allocate context and perform it's initialization.
 //
 VSCP_PUBLIC vscp_pythia_t *
@@ -109,26 +159,24 @@ vscp_pythia_new(void) {
 
     vscp_pythia_init(pythia_ctx);
 
-    pythia_ctx->refcnt = 1;
     pythia_ctx->self_dealloc_cb = vscp_dealloc;
 
     return pythia_ctx;
 }
 
 //
-//  Release all inner resorces and deallocate context if needed.
+//  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCP_PUBLIC void
 vscp_pythia_delete(vscp_pythia_t *pythia_ctx) {
 
-    if (pythia_ctx && (--pythia_ctx->refcnt == 0)) {
+    vscp_pythia_cleanup(pythia_ctx);
 
-        vscp_pythia_cleanup(pythia_ctx);
+    vscp_dealloc_fn self_dealloc_cb = pythia_ctx->self_dealloc_cb;
 
-        if (pythia_ctx->self_dealloc_cb != NULL) {
-             pythia_ctx->self_dealloc_cb(pythia_ctx);
-        }
+    if (pythia_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(pythia_ctx);
     }
 }
 
@@ -169,10 +217,12 @@ vscp_pythia_copy(vscp_pythia_t *pythia_ctx) {
 
 
 //
-//  Perform initialization of pre-allocated context.
+//  Perform context specific initialization.
+//  Note, this method is called automatically when method vscp_pythia_init() is called.
+//  Note, that context is already zeroed.
 //
-VSCP_PUBLIC void
-vscp_pythia_init(vscp_pythia_t *pythia_ctx) {
+static void
+vscp_pythia_init_ctx(vscp_pythia_t *pythia_ctx) {
 
     VSCP_ASSERT_PTR(pythia_ctx);
 
@@ -190,9 +240,11 @@ vscp_pythia_init(vscp_pythia_t *pythia_ctx) {
 
 //
 //  Release all inner resources.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
 //
-VSCP_PUBLIC void
-vscp_pythia_cleanup(vscp_pythia_t *pythia_ctx) {
+static void
+vscp_pythia_cleanup_ctx(vscp_pythia_t *pythia_ctx) {
 
     VSCP_ASSERT_PTR(pythia_ctx);
 
