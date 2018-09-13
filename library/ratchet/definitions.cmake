@@ -52,6 +52,7 @@ endif()
 target_compile_definitions(ratchet
         PUBLIC
             "VSCR_ERROR_CTX=$<BOOL:${VSCR_ERROR_CTX}>"
+            "VSCR_OLM_CIPHER=$<BOOL:${VSCR_OLM_CIPHER}>"
             "VSCR_OLM_CHAIN_KEY=$<BOOL:${VSCR_OLM_CHAIN_KEY}>"
             "VSCR_OLM_MESSAGE_KEY=$<BOOL:${VSCR_OLM_MESSAGE_KEY}>"
             "VSCR_OLM_KDF_INFO=$<BOOL:${VSCR_OLM_KDF_INFO}>"

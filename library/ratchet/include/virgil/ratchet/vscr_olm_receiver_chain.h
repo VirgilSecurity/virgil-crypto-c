@@ -50,7 +50,7 @@
 #include "vscr_error.h"
 #include "vscr_olm_chain_key.h"
 
-#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -70,13 +70,18 @@ extern "C" {
 //
 typedef struct vscr_olm_receiver_chain_t vscr_olm_receiver_chain_t;
 struct vscr_olm_receiver_chain_t {
-    vsc_data_t ratchet_public_key;
-
-    vscr_olm_chain_key_t *chain_key;
     //
     //  Function do deallocate self context.
     //
     vscr_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+
+    vsc_buffer_t *ratchet_public_key;
+
+    vscr_olm_chain_key_t *chain_key;
 };
 
 //
@@ -86,7 +91,7 @@ VSCR_PUBLIC void
 vscr_olm_receiver_chain_init(vscr_olm_receiver_chain_t *olm_receiver_chain_ctx);
 
 //
-//  Release all inner resources.
+//  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
 vscr_olm_receiver_chain_cleanup(vscr_olm_receiver_chain_t *olm_receiver_chain_ctx);
@@ -98,7 +103,7 @@ VSCR_PUBLIC vscr_olm_receiver_chain_t *
 vscr_olm_receiver_chain_new(void);
 
 //
-//  Release all inner resorces and deallocate context if needed.
+//  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
@@ -110,6 +115,12 @@ vscr_olm_receiver_chain_delete(vscr_olm_receiver_chain_t *olm_receiver_chain_ctx
 //
 VSCR_PUBLIC void
 vscr_olm_receiver_chain_destroy(vscr_olm_receiver_chain_t **olm_receiver_chain_ctx_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCR_PUBLIC vscr_olm_receiver_chain_t *
+vscr_olm_receiver_chain_copy(vscr_olm_receiver_chain_t *olm_receiver_chain_ctx);
 
 
 // --------------------------------------------------------------------------

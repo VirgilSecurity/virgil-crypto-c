@@ -49,7 +49,7 @@
 #include "vscr_library.h"
 #include "vscr_error.h"
 
-#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -69,13 +69,18 @@ extern "C" {
 //
 typedef struct vscr_olm_kdf_info_t vscr_olm_kdf_info_t;
 struct vscr_olm_kdf_info_t {
-    const vsc_data_t root_info;
-
-    const vsc_data_t ratchet_info;
     //
     //  Function do deallocate self context.
     //
     vscr_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+
+    vsc_buffer_t *root_info;
+
+    vsc_buffer_t *ratchet_info;
 };
 
 //
@@ -85,7 +90,7 @@ VSCR_PUBLIC void
 vscr_olm_kdf_info_init(vscr_olm_kdf_info_t *olm_kdf_info_ctx);
 
 //
-//  Release all inner resources.
+//  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
 vscr_olm_kdf_info_cleanup(vscr_olm_kdf_info_t *olm_kdf_info_ctx);
@@ -97,7 +102,7 @@ VSCR_PUBLIC vscr_olm_kdf_info_t *
 vscr_olm_kdf_info_new(void);
 
 //
-//  Release all inner resorces and deallocate context if needed.
+//  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
@@ -109,6 +114,12 @@ vscr_olm_kdf_info_delete(vscr_olm_kdf_info_t *olm_kdf_info_ctx);
 //
 VSCR_PUBLIC void
 vscr_olm_kdf_info_destroy(vscr_olm_kdf_info_t **olm_kdf_info_ctx_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCR_PUBLIC vscr_olm_kdf_info_t *
+vscr_olm_kdf_info_copy(vscr_olm_kdf_info_t *olm_kdf_info_ctx);
 
 
 // --------------------------------------------------------------------------

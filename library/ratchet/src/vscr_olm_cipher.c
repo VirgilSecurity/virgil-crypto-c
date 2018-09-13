@@ -43,7 +43,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscr_olm_receiver_chain_list_node.h"
+#include "vscr_olm_cipher.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 
@@ -59,11 +59,11 @@
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_olm_receiver_chain_list_node_init() is called.
+//  Note, this method is called automatically when method vscr_olm_cipher_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_olm_receiver_chain_list_node_init_ctx(vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx);
+vscr_olm_cipher_init_ctx(vscr_olm_cipher_t *olm_cipher_ctx);
 
 //
 //  Release all inner resources.
@@ -71,56 +71,56 @@ vscr_olm_receiver_chain_list_node_init_ctx(vscr_olm_receiver_chain_list_node_t *
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_olm_receiver_chain_list_node_cleanup_ctx(vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx);
+vscr_olm_cipher_cleanup_ctx(vscr_olm_cipher_t *olm_cipher_ctx);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_olm_receiver_chain_list_node_init(vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx) {
+vscr_olm_cipher_init(vscr_olm_cipher_t *olm_cipher_ctx) {
 
-    VSCR_ASSERT_PTR(olm_receiver_chain_list_node_ctx);
+    VSCR_ASSERT_PTR(olm_cipher_ctx);
 
-    vscr_zeroize(olm_receiver_chain_list_node_ctx, sizeof(vscr_olm_receiver_chain_list_node_t));
+    vscr_zeroize(olm_cipher_ctx, sizeof(vscr_olm_cipher_t));
 
-    olm_receiver_chain_list_node_ctx->refcnt = 1;
+    olm_cipher_ctx->refcnt = 1;
 
-    vscr_olm_receiver_chain_list_node_init_ctx(olm_receiver_chain_list_node_ctx);
+    vscr_olm_cipher_init_ctx(olm_cipher_ctx);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_olm_receiver_chain_list_node_cleanup(vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx) {
+vscr_olm_cipher_cleanup(vscr_olm_cipher_t *olm_cipher_ctx) {
 
-    VSCR_ASSERT_PTR(olm_receiver_chain_list_node_ctx);
+    VSCR_ASSERT_PTR(olm_cipher_ctx);
 
-    if (olm_receiver_chain_list_node_ctx->refcnt == 0) {
+    if (olm_cipher_ctx->refcnt == 0) {
         return;
     }
 
-    if (--olm_receiver_chain_list_node_ctx->refcnt == 0) {
-        vscr_olm_receiver_chain_list_node_cleanup_ctx(olm_receiver_chain_list_node_ctx);
+    if (--olm_cipher_ctx->refcnt == 0) {
+        vscr_olm_cipher_cleanup_ctx(olm_cipher_ctx);
 
-        vscr_zeroize(olm_receiver_chain_list_node_ctx, sizeof(vscr_olm_receiver_chain_list_node_t));
+        vscr_zeroize(olm_cipher_ctx, sizeof(vscr_olm_cipher_t));
     }
 }
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_olm_receiver_chain_list_node_t *
-vscr_olm_receiver_chain_list_node_new(void) {
+VSCR_PUBLIC vscr_olm_cipher_t *
+vscr_olm_cipher_new(void) {
 
-    vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx = (vscr_olm_receiver_chain_list_node_t *) vscr_alloc(sizeof (vscr_olm_receiver_chain_list_node_t));
-    VSCR_ASSERT_ALLOC(olm_receiver_chain_list_node_ctx);
+    vscr_olm_cipher_t *olm_cipher_ctx = (vscr_olm_cipher_t *) vscr_alloc(sizeof (vscr_olm_cipher_t));
+    VSCR_ASSERT_ALLOC(olm_cipher_ctx);
 
-    vscr_olm_receiver_chain_list_node_init(olm_receiver_chain_list_node_ctx);
+    vscr_olm_cipher_init(olm_cipher_ctx);
 
-    olm_receiver_chain_list_node_ctx->self_dealloc_cb = vscr_dealloc;
+    olm_cipher_ctx->self_dealloc_cb = vscr_dealloc;
 
-    return olm_receiver_chain_list_node_ctx;
+    return olm_cipher_ctx;
 }
 
 //
@@ -128,43 +128,43 @@ vscr_olm_receiver_chain_list_node_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_olm_receiver_chain_list_node_delete(vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx) {
+vscr_olm_cipher_delete(vscr_olm_cipher_t *olm_cipher_ctx) {
 
-    vscr_olm_receiver_chain_list_node_cleanup(olm_receiver_chain_list_node_ctx);
+    vscr_olm_cipher_cleanup(olm_cipher_ctx);
 
-    vscr_dealloc_fn self_dealloc_cb = olm_receiver_chain_list_node_ctx->self_dealloc_cb;
+    vscr_dealloc_fn self_dealloc_cb = olm_cipher_ctx->self_dealloc_cb;
 
-    if (olm_receiver_chain_list_node_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(olm_receiver_chain_list_node_ctx);
+    if (olm_cipher_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(olm_cipher_ctx);
     }
 }
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_olm_receiver_chain_list_node_new ()'.
+//  This is a reverse action of the function 'vscr_olm_cipher_new ()'.
 //
 VSCR_PUBLIC void
-vscr_olm_receiver_chain_list_node_destroy(vscr_olm_receiver_chain_list_node_t **olm_receiver_chain_list_node_ctx_ref) {
+vscr_olm_cipher_destroy(vscr_olm_cipher_t **olm_cipher_ctx_ref) {
 
-    VSCR_ASSERT_PTR(olm_receiver_chain_list_node_ctx_ref);
+    VSCR_ASSERT_PTR(olm_cipher_ctx_ref);
 
-    vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx = *olm_receiver_chain_list_node_ctx_ref;
-    *olm_receiver_chain_list_node_ctx_ref = NULL;
+    vscr_olm_cipher_t *olm_cipher_ctx = *olm_cipher_ctx_ref;
+    *olm_cipher_ctx_ref = NULL;
 
-    vscr_olm_receiver_chain_list_node_delete(olm_receiver_chain_list_node_ctx);
+    vscr_olm_cipher_delete(olm_cipher_ctx);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_olm_receiver_chain_list_node_t *
-vscr_olm_receiver_chain_list_node_copy(vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx) {
+VSCR_PUBLIC vscr_olm_cipher_t *
+vscr_olm_cipher_copy(vscr_olm_cipher_t *olm_cipher_ctx) {
 
-    VSCR_ASSERT_PTR(olm_receiver_chain_list_node_ctx);
+    VSCR_ASSERT_PTR(olm_cipher_ctx);
 
-    ++olm_receiver_chain_list_node_ctx->refcnt;
+    ++olm_cipher_ctx->refcnt;
 
-    return olm_receiver_chain_list_node_ctx;
+    return olm_cipher_ctx;
 }
 
 
@@ -177,14 +177,13 @@ vscr_olm_receiver_chain_list_node_copy(vscr_olm_receiver_chain_list_node_t *olm_
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_olm_receiver_chain_list_node_init() is called.
+//  Note, this method is called automatically when method vscr_olm_cipher_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_olm_receiver_chain_list_node_init_ctx(vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx) {
+vscr_olm_cipher_init_ctx(vscr_olm_cipher_t *olm_cipher_ctx) {
 
-    olm_receiver_chain_list_node_ctx->next = NULL;
-    olm_receiver_chain_list_node_ctx->value = NULL;
+    VSCR_UNUSED(olm_cipher_ctx);
 }
 
 //
@@ -193,8 +192,18 @@ vscr_olm_receiver_chain_list_node_init_ctx(vscr_olm_receiver_chain_list_node_t *
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_olm_receiver_chain_list_node_cleanup_ctx(vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx) {
+vscr_olm_cipher_cleanup_ctx(vscr_olm_cipher_t *olm_cipher_ctx) {
 
-    vscr_olm_receiver_chain_destroy(&olm_receiver_chain_list_node_ctx->value);
-    vscr_olm_receiver_chain_list_node_destroy(&olm_receiver_chain_list_node_ctx->next);
+    VSCR_UNUSED(olm_cipher_ctx);
+}
+
+VSCR_PUBLIC vsc_buffer_t *
+vscr_olm_cipher_encrypt(vscr_olm_cipher_t *olm_cipher_ctx, vsc_data_t key, vsc_data_t plain_text) {
+
+    VSCR_UNUSED(olm_cipher_ctx);
+    VSCR_UNUSED(key);
+    VSCR_UNUSED(plain_text);
+
+    return vsc_buffer_new();
+    //  TODO: This is STUB. Implement me.
 }

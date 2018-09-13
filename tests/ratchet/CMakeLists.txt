@@ -50,3 +50,4 @@ macro(_add_test test)
 endmacro()
 
 _add_test (test_olm_message)
+_add_test (test_ratchet)

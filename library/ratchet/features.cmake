@@ -46,6 +46,7 @@
 include_guard()
 
 option(VSCR_ERROR_CTX "Enable class 'error ctx'." ON)
+option(VSCR_OLM_CIPHER "Enable class 'olm cipher'." ON)
 option(VSCR_OLM_CHAIN_KEY "Enable class 'olm chain key'." ON)
 option(VSCR_OLM_MESSAGE_KEY "Enable class 'olm message key'." ON)
 option(VSCR_OLM_KDF_INFO "Enable class 'olm kdf info'." ON)
@@ -56,6 +57,7 @@ option(VSCR_OLM_MESSAGE "Enable class 'olm message'." ON)
 option(VSCR_RATCHET "Enable class 'ratchet'." ON)
 mark_as_advanced(
         VSCR_ERROR_CTX
+        VSCR_OLM_CIPHER
         VSCR_OLM_CHAIN_KEY
         VSCR_OLM_MESSAGE_KEY
         VSCR_OLM_KDF_INFO
@@ -65,6 +67,15 @@ mark_as_advanced(
         VSCR_OLM_MESSAGE
         VSCR_RATCHET
         )
+
+if(VSCR_OLM_CIPHER AND NOT VSC_DATA)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_OLM_CIPHER depends on the feature:")
+    message("     VSC_DATA - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
 
 if(VSCR_OLM_RECEIVER_CHAIN_LIST_NODE AND NOT VSCR_OLM_RECEIVER_CHAIN)
     message("-- error --")
@@ -111,6 +122,15 @@ if(VSCR_RATCHET AND NOT VSC_BUFFER)
     message(FATAL_ERROR)
 endif()
 
+if(VSCR_RATCHET AND NOT VSCR_OLM_MESSAGE)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET depends on the feature:")
+    message("     VSCR_OLM_MESSAGE - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCR_RATCHET AND NOT VSCR_OLM_MESSAGE_KEY)
     message("-- error --")
     message("--")
@@ -143,6 +163,15 @@ if(VSCR_RATCHET AND NOT VSCR_OLM_CHAIN_KEY)
     message("--")
     message("Feature VSCR_RATCHET depends on the feature:")
     message("     VSCR_OLM_CHAIN_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET AND NOT VSCR_OLM_CIPHER)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET depends on the feature:")
+    message("     VSCR_OLM_CIPHER - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

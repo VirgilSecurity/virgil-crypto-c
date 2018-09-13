@@ -2,7 +2,8 @@
 
     <require header="virgil/foundation/vscf_error_ctx.h" scope="private"/>
 
-    <property name="ratchet private key" class="data" access="readwrite"/>
+    <property name="ratchet private key" class="buffer" access="readwrite"/>
+    <property name="ratchet public key" class="buffer" access="readwrite"/>
     <property name="chain key" class="olm chain key" access="readwrite"/>
 
 </class>
