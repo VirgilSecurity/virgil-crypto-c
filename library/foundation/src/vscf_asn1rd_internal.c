@@ -227,9 +227,7 @@ vscf_asn1rd_init(vscf_asn1rd_impl_t *asn1rd_impl) {
 VSCF_PUBLIC void
 vscf_asn1rd_cleanup(vscf_asn1rd_impl_t *asn1rd_impl) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
-
-    if (asn1rd_impl->info == NULL) {
+    if (asn1rd_impl == NULL || asn1rd_impl->info == NULL) {
         return;
     }
 

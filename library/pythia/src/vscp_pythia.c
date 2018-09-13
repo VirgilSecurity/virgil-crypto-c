@@ -135,7 +135,9 @@ vscp_pythia_init(vscp_pythia_t *pythia_ctx) {
 VSCP_PUBLIC void
 vscp_pythia_cleanup(vscp_pythia_t *pythia_ctx) {
 
-    VSCP_ASSERT_PTR(pythia_ctx);
+    if (pythia_ctx == NULL) {
+        return;
+    }
 
     if (pythia_ctx->refcnt == 0) {
         return;
@@ -170,6 +172,10 @@ vscp_pythia_new(void) {
 //
 VSCP_PUBLIC void
 vscp_pythia_delete(vscp_pythia_t *pythia_ctx) {
+
+    if (pythia_ctx == NULL) {
+        return;
+    }
 
     vscp_pythia_cleanup(pythia_ctx);
 

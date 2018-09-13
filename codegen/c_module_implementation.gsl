@@ -650,9 +650,7 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
 
             my.impl_check_precondition = "\
-                .(c_class_assert_macros_ptr)($(my.arg_impl));
-
-                if ($(my.arg_impl)->$(my.names.c_property_info:) == NULL) {
+                if ($(my.arg_impl) == NULL || $(my.arg_impl)->$(my.names.c_property_info:) == NULL) {
                     return;
                 }
             "

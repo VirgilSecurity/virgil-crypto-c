@@ -194,9 +194,7 @@ vscf_sha256_init(vscf_sha256_impl_t *sha256_impl) {
 VSCF_PUBLIC void
 vscf_sha256_cleanup(vscf_sha256_impl_t *sha256_impl) {
 
-    VSCF_ASSERT_PTR(sha256_impl);
-
-    if (sha256_impl->info == NULL) {
+    if (sha256_impl == NULL || sha256_impl->info == NULL) {
         return;
     }
 

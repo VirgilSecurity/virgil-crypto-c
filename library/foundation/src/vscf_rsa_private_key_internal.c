@@ -295,9 +295,7 @@ vscf_rsa_private_key_init(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
 VSCF_PUBLIC void
 vscf_rsa_private_key_cleanup(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
 
-    VSCF_ASSERT_PTR(rsa_private_key_impl);
-
-    if (rsa_private_key_impl->info == NULL) {
+    if (rsa_private_key_impl == NULL || rsa_private_key_impl->info == NULL) {
         return;
     }
 
