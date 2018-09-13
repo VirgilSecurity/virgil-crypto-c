@@ -198,9 +198,7 @@ vscf_hmac256_init(vscf_hmac256_impl_t *hmac256_impl) {
 VSCF_PUBLIC void
 vscf_hmac256_cleanup(vscf_hmac256_impl_t *hmac256_impl) {
 
-    VSCF_ASSERT_PTR(hmac256_impl);
-
-    if (hmac256_impl->info == NULL) {
+    if (hmac256_impl == NULL || hmac256_impl->info == NULL) {
         return;
     }
 

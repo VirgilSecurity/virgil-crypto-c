@@ -265,9 +265,7 @@ vscf_rsa_public_key_init(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 VSCF_PUBLIC void
 vscf_rsa_public_key_cleanup(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
-    VSCF_ASSERT_PTR(rsa_public_key_impl);
-
-    if (rsa_public_key_impl->info == NULL) {
+    if (rsa_public_key_impl == NULL || rsa_public_key_impl->info == NULL) {
         return;
     }
 

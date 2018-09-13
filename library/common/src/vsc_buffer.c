@@ -108,7 +108,9 @@ vsc_buffer_init(vsc_buffer_t *buffer_ctx) {
 VSC_PUBLIC void
 vsc_buffer_cleanup(vsc_buffer_t *buffer_ctx) {
 
-    VSC_ASSERT_PTR(buffer_ctx);
+    if (buffer_ctx == NULL) {
+        return;
+    }
 
     if (buffer_ctx->refcnt == 0) {
         return;
@@ -143,6 +145,10 @@ vsc_buffer_new(void) {
 //
 VSC_PUBLIC void
 vsc_buffer_delete(vsc_buffer_t *buffer_ctx) {
+
+    if (buffer_ctx == NULL) {
+        return;
+    }
 
     vsc_buffer_cleanup(buffer_ctx);
 

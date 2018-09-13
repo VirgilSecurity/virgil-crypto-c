@@ -137,9 +137,7 @@ vscf_kdf2_init(vscf_kdf2_impl_t *kdf2_impl) {
 VSCF_PUBLIC void
 vscf_kdf2_cleanup(vscf_kdf2_impl_t *kdf2_impl) {
 
-    VSCF_ASSERT_PTR(kdf2_impl);
-
-    if (kdf2_impl->info == NULL) {
+    if (kdf2_impl == NULL || kdf2_impl->info == NULL) {
         return;
     }
 

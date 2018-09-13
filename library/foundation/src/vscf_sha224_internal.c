@@ -194,9 +194,7 @@ vscf_sha224_init(vscf_sha224_impl_t *sha224_impl) {
 VSCF_PUBLIC void
 vscf_sha224_cleanup(vscf_sha224_impl_t *sha224_impl) {
 
-    VSCF_ASSERT_PTR(sha224_impl);
-
-    if (sha224_impl->info == NULL) {
+    if (sha224_impl == NULL || sha224_impl->info == NULL) {
         return;
     }
 

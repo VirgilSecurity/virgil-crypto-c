@@ -136,9 +136,7 @@ vscf_fake_random_init(vscf_fake_random_impl_t *fake_random_impl) {
 VSCF_PUBLIC void
 vscf_fake_random_cleanup(vscf_fake_random_impl_t *fake_random_impl) {
 
-    VSCF_ASSERT_PTR(fake_random_impl);
-
-    if (fake_random_impl->info == NULL) {
+    if (fake_random_impl == NULL || fake_random_impl->info == NULL) {
         return;
     }
 

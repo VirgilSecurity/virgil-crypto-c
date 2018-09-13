@@ -243,9 +243,7 @@ vscf_asn1wr_init(vscf_asn1wr_impl_t *asn1wr_impl) {
 VSCF_PUBLIC void
 vscf_asn1wr_cleanup(vscf_asn1wr_impl_t *asn1wr_impl) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
-
-    if (asn1wr_impl->info == NULL) {
+    if (asn1wr_impl == NULL || asn1wr_impl->info == NULL) {
         return;
     }
 
