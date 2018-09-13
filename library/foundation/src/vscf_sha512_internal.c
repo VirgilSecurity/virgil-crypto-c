@@ -194,9 +194,7 @@ vscf_sha512_init(vscf_sha512_impl_t *sha512_impl) {
 VSCF_PUBLIC void
 vscf_sha512_cleanup(vscf_sha512_impl_t *sha512_impl) {
 
-    VSCF_ASSERT_PTR(sha512_impl);
-
-    if (sha512_impl->info == NULL) {
+    if (sha512_impl == NULL || sha512_impl->info == NULL) {
         return;
     }
 
