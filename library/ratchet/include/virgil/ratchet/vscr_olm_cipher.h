@@ -118,8 +118,12 @@ vscr_olm_cipher_destroy(vscr_olm_cipher_t **olm_cipher_ctx_ref);
 VSCR_PUBLIC vscr_olm_cipher_t *
 vscr_olm_cipher_copy(vscr_olm_cipher_t *olm_cipher_ctx);
 
-VSCR_PUBLIC vsc_buffer_t *
-vscr_olm_cipher_encrypt(vscr_olm_cipher_t *olm_cipher_ctx, vsc_data_t key, vsc_data_t plain_text);
+VSCR_PUBLIC vscr_error_t
+vscr_olm_cipher_encrypt(vscr_olm_cipher_t *olm_cipher_ctx, vsc_data_t key, vsc_data_t plain_text, vsc_buffer_t *buffer);
+
+VSCR_PUBLIC vscr_error_t
+vscr_olm_cipher_decrypt(vscr_olm_cipher_t *olm_cipher_ctx, vsc_data_t key, vsc_data_t cipher_text,
+        vsc_buffer_t *buffer);
 
 
 // --------------------------------------------------------------------------

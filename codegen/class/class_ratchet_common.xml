@@ -1,0 +1,12 @@
+<class name="ratchet common" context="public">
+
+    <require header="virgil/foundation/vscf_hmac256.h" scope="public"/>
+    <require header="virgil/foundation/vscf_hkdf.h" scope="public"/>
+
+    <constant name="olm message version" value="1"/>
+    <constant name="olm shared key length" value="vscf_hmac256_DIGEST_LEN"/>
+    <constant name="max skipped messaged" value="40"/>
+    <constant name="max receivers chains" value="5"/>
+    <constant name="max message gap" value="2000"/>
+
+</class>

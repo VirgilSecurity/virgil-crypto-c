@@ -50,8 +50,9 @@
     <module name="assert"/>
     <module name="library"/>
     <module name="memory"/>
-    <module name="olm message error"/>
+    <module name="ratchet error"/>
 
+    <class name="ratchet common"/>
     <class name="error"/>
     <class name="olm cipher"/>
     <class name="olm chain key"/>
@@ -59,6 +60,8 @@
     <class name="olm kdf info"/>
     <class name="olm receiver chain"/>
     <class name="olm receiver chain list node"/>
+    <class name="olm skipped message key"/>
+    <class name="olm skipped message key list node"/>
     <class name="olm sender chain"/>
     <class name="olm message"/>
     <class name="ratchet"/>

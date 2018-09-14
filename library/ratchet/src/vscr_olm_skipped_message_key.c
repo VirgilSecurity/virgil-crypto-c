@@ -43,7 +43,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscr_olm_receiver_chain_list_node.h"
+#include "vscr_olm_skipped_message_key.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 //  @end
@@ -57,11 +57,11 @@
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_olm_receiver_chain_list_node_init() is called.
+//  Note, this method is called automatically when method vscr_olm_skipped_message_key_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_olm_receiver_chain_list_node_init_ctx(vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx);
+vscr_olm_skipped_message_key_init_ctx(vscr_olm_skipped_message_key_t *olm_skipped_message_key_ctx);
 
 //
 //  Release all inner resources.
@@ -69,58 +69,58 @@ vscr_olm_receiver_chain_list_node_init_ctx(vscr_olm_receiver_chain_list_node_t *
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_olm_receiver_chain_list_node_cleanup_ctx(vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx);
+vscr_olm_skipped_message_key_cleanup_ctx(vscr_olm_skipped_message_key_t *olm_skipped_message_key_ctx);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_olm_receiver_chain_list_node_init(vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx) {
+vscr_olm_skipped_message_key_init(vscr_olm_skipped_message_key_t *olm_skipped_message_key_ctx) {
 
-    VSCR_ASSERT_PTR(olm_receiver_chain_list_node_ctx);
+    VSCR_ASSERT_PTR(olm_skipped_message_key_ctx);
 
-    vscr_zeroize(olm_receiver_chain_list_node_ctx, sizeof(vscr_olm_receiver_chain_list_node_t));
+    vscr_zeroize(olm_skipped_message_key_ctx, sizeof(vscr_olm_skipped_message_key_t));
 
-    olm_receiver_chain_list_node_ctx->refcnt = 1;
+    olm_skipped_message_key_ctx->refcnt = 1;
 
-    vscr_olm_receiver_chain_list_node_init_ctx(olm_receiver_chain_list_node_ctx);
+    vscr_olm_skipped_message_key_init_ctx(olm_skipped_message_key_ctx);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_olm_receiver_chain_list_node_cleanup(vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx) {
+vscr_olm_skipped_message_key_cleanup(vscr_olm_skipped_message_key_t *olm_skipped_message_key_ctx) {
 
-    if (olm_receiver_chain_list_node_ctx == NULL) {
+    if (olm_skipped_message_key_ctx == NULL) {
         return;
     }
 
-    if (olm_receiver_chain_list_node_ctx->refcnt == 0) {
+    if (olm_skipped_message_key_ctx->refcnt == 0) {
         return;
     }
 
-    if (--olm_receiver_chain_list_node_ctx->refcnt == 0) {
-        vscr_olm_receiver_chain_list_node_cleanup_ctx(olm_receiver_chain_list_node_ctx);
+    if (--olm_skipped_message_key_ctx->refcnt == 0) {
+        vscr_olm_skipped_message_key_cleanup_ctx(olm_skipped_message_key_ctx);
 
-        vscr_zeroize(olm_receiver_chain_list_node_ctx, sizeof(vscr_olm_receiver_chain_list_node_t));
+        vscr_zeroize(olm_skipped_message_key_ctx, sizeof(vscr_olm_skipped_message_key_t));
     }
 }
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_olm_receiver_chain_list_node_t *
-vscr_olm_receiver_chain_list_node_new(void) {
+VSCR_PUBLIC vscr_olm_skipped_message_key_t *
+vscr_olm_skipped_message_key_new(void) {
 
-    vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx = (vscr_olm_receiver_chain_list_node_t *) vscr_alloc(sizeof (vscr_olm_receiver_chain_list_node_t));
-    VSCR_ASSERT_ALLOC(olm_receiver_chain_list_node_ctx);
+    vscr_olm_skipped_message_key_t *olm_skipped_message_key_ctx = (vscr_olm_skipped_message_key_t *) vscr_alloc(sizeof (vscr_olm_skipped_message_key_t));
+    VSCR_ASSERT_ALLOC(olm_skipped_message_key_ctx);
 
-    vscr_olm_receiver_chain_list_node_init(olm_receiver_chain_list_node_ctx);
+    vscr_olm_skipped_message_key_init(olm_skipped_message_key_ctx);
 
-    olm_receiver_chain_list_node_ctx->self_dealloc_cb = vscr_dealloc;
+    olm_skipped_message_key_ctx->self_dealloc_cb = vscr_dealloc;
 
-    return olm_receiver_chain_list_node_ctx;
+    return olm_skipped_message_key_ctx;
 }
 
 //
@@ -128,47 +128,47 @@ vscr_olm_receiver_chain_list_node_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_olm_receiver_chain_list_node_delete(vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx) {
+vscr_olm_skipped_message_key_delete(vscr_olm_skipped_message_key_t *olm_skipped_message_key_ctx) {
 
-    if (olm_receiver_chain_list_node_ctx == NULL) {
+    if (olm_skipped_message_key_ctx == NULL) {
         return;
     }
 
-    vscr_olm_receiver_chain_list_node_cleanup(olm_receiver_chain_list_node_ctx);
+    vscr_olm_skipped_message_key_cleanup(olm_skipped_message_key_ctx);
 
-    vscr_dealloc_fn self_dealloc_cb = olm_receiver_chain_list_node_ctx->self_dealloc_cb;
+    vscr_dealloc_fn self_dealloc_cb = olm_skipped_message_key_ctx->self_dealloc_cb;
 
-    if (olm_receiver_chain_list_node_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(olm_receiver_chain_list_node_ctx);
+    if (olm_skipped_message_key_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(olm_skipped_message_key_ctx);
     }
 }
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_olm_receiver_chain_list_node_new ()'.
+//  This is a reverse action of the function 'vscr_olm_skipped_message_key_new ()'.
 //
 VSCR_PUBLIC void
-vscr_olm_receiver_chain_list_node_destroy(vscr_olm_receiver_chain_list_node_t **olm_receiver_chain_list_node_ctx_ref) {
+vscr_olm_skipped_message_key_destroy(vscr_olm_skipped_message_key_t **olm_skipped_message_key_ctx_ref) {
 
-    VSCR_ASSERT_PTR(olm_receiver_chain_list_node_ctx_ref);
+    VSCR_ASSERT_PTR(olm_skipped_message_key_ctx_ref);
 
-    vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx = *olm_receiver_chain_list_node_ctx_ref;
-    *olm_receiver_chain_list_node_ctx_ref = NULL;
+    vscr_olm_skipped_message_key_t *olm_skipped_message_key_ctx = *olm_skipped_message_key_ctx_ref;
+    *olm_skipped_message_key_ctx_ref = NULL;
 
-    vscr_olm_receiver_chain_list_node_delete(olm_receiver_chain_list_node_ctx);
+    vscr_olm_skipped_message_key_delete(olm_skipped_message_key_ctx);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_olm_receiver_chain_list_node_t *
-vscr_olm_receiver_chain_list_node_copy(vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx) {
+VSCR_PUBLIC vscr_olm_skipped_message_key_t *
+vscr_olm_skipped_message_key_copy(vscr_olm_skipped_message_key_t *olm_skipped_message_key_ctx) {
 
-    VSCR_ASSERT_PTR(olm_receiver_chain_list_node_ctx);
+    VSCR_ASSERT_PTR(olm_skipped_message_key_ctx);
 
-    ++olm_receiver_chain_list_node_ctx->refcnt;
+    ++olm_skipped_message_key_ctx->refcnt;
 
-    return olm_receiver_chain_list_node_ctx;
+    return olm_skipped_message_key_ctx;
 }
 
 
@@ -181,14 +181,15 @@ vscr_olm_receiver_chain_list_node_copy(vscr_olm_receiver_chain_list_node_t *olm_
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_olm_receiver_chain_list_node_init() is called.
+//  Note, this method is called automatically when method vscr_olm_skipped_message_key_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_olm_receiver_chain_list_node_init_ctx(vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx) {
+vscr_olm_skipped_message_key_init_ctx(vscr_olm_skipped_message_key_t *olm_skipped_message_key_ctx) {
 
-    olm_receiver_chain_list_node_ctx->next = NULL;
-    olm_receiver_chain_list_node_ctx->value = NULL;
+    VSCR_ASSERT_PTR(olm_skipped_message_key_ctx);
+
+    //  TODO: Perform additional context initialization.
 }
 
 //
@@ -197,8 +198,9 @@ vscr_olm_receiver_chain_list_node_init_ctx(vscr_olm_receiver_chain_list_node_t *
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_olm_receiver_chain_list_node_cleanup_ctx(vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx) {
+vscr_olm_skipped_message_key_cleanup_ctx(vscr_olm_skipped_message_key_t *olm_skipped_message_key_ctx) {
 
-    vscr_olm_receiver_chain_destroy(&olm_receiver_chain_list_node_ctx->value);
-    vscr_olm_receiver_chain_list_node_destroy(&olm_receiver_chain_list_node_ctx->next);
+    VSCR_ASSERT_PTR(olm_skipped_message_key_ctx);
+
+    //  TODO: Release all inner resources.
 }

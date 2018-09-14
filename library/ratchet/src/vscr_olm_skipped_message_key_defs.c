@@ -36,6 +36,12 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'olm skipped message key' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,18 +49,8 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_OLM_MESSAGE_KEY_H_INCLUDED
-#define VSCR_OLM_MESSAGE_KEY_H_INCLUDED
-
-#include "vscr_library.h"
-#include "vscr_error.h"
-#include "vscr_ratchet_common.h"
+#include "vscr_olm_skipped_message_key_defs.h"
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -63,76 +59,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'olm message key' context.
-//
-typedef struct vscr_olm_message_key_t vscr_olm_message_key_t;
-struct vscr_olm_message_key_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    uint32_t index;
-
-    byte key[vscr_ratchet_common_OLM_SHARED_KEY_LENGTH];
-};
-
-//
-//  Perform initialization of pre-allocated context.
-//
-VSCR_PUBLIC void
-vscr_olm_message_key_init(vscr_olm_message_key_t *olm_message_key_ctx);
-
-//
-//  Release all inner resources including class dependencies.
-//
-VSCR_PUBLIC void
-vscr_olm_message_key_cleanup(vscr_olm_message_key_t *olm_message_key_ctx);
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCR_PUBLIC vscr_olm_message_key_t *
-vscr_olm_message_key_new(void);
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
-//
-VSCR_PUBLIC void
-vscr_olm_message_key_delete(vscr_olm_message_key_t *olm_message_key_ctx);
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_olm_message_key_new ()'.
-//
-VSCR_PUBLIC void
-vscr_olm_message_key_destroy(vscr_olm_message_key_t **olm_message_key_ctx_ref);
-
-//
-//  Copy given class context by increasing reference counter.
-//
-VSCR_PUBLIC vscr_olm_message_key_t *
-vscr_olm_message_key_copy(vscr_olm_message_key_t *olm_message_key_ctx);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCR_OLM_MESSAGE_KEY_H_INCLUDED
 //  @end

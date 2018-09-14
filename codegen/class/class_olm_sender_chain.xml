@@ -4,6 +4,6 @@
 
     <property name="ratchet private key" class="buffer" access="readwrite"/>
     <property name="ratchet public key" class="buffer" access="readwrite"/>
-    <property name="chain key" class="olm chain key" access="readwrite"/>
+    <property name="chain key" class="olm chain key" access="readwrite" is_reference="0"/>
 
 </class>

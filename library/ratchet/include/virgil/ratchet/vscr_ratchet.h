@@ -48,6 +48,7 @@
 
 #include "vscr_library.h"
 #include "vscr_error.h"
+#include "vscr_ratchet_common.h"
 #include "vscr_olm_message.h"
 #include "vscr_olm_message_key.h"
 #include "vscr_olm_kdf_info.h"
@@ -55,6 +56,7 @@
 #include "vscr_olm_chain_key.h"
 #include "vscr_olm_cipher.h"
 #include "vscr_olm_receiver_chain_list_node.h"
+#include "vscr_olm_skipped_message_key_list_node.h"
 
 #include <virgil/foundation/vscf_hmac256.h>
 #include <virgil/foundation/vscf_hkdf.h>
@@ -79,7 +81,10 @@ extern "C" {
 //
 enum {
     vscr_ratchet_OLM_MESSAGE_VERSION = 1,
-    vscr_ratchet_OLM_SHARED_KEY_LENGTH = vscf_hmac256_DIGEST_LEN
+    vscr_ratchet_OLM_SHARED_KEY_LENGTH = vscf_hmac256_DIGEST_LEN,
+    vscr_ratchet_MAX_SKIPPED_MESSAGED = 40,
+    vscr_ratchet_MAX_RECEIVERS_CHAINS = 5,
+    vscr_ratchet_MAX_MESSAGE_GAP = 2000
 };
 
 //
@@ -104,7 +109,9 @@ struct vscr_ratchet_t {
 
     vscr_olm_receiver_chain_list_node_t *receiver_chains;
 
-    vsc_buffer_t *root_key;
+    vscr_olm_skipped_message_key_list_node_t *skipped_message_keys;
+
+    byte root_key[vscr_ratchet_common_OLM_SHARED_KEY_LENGTH];
 };
 
 //
@@ -146,16 +153,19 @@ VSCR_PUBLIC vscr_ratchet_t *
 vscr_ratchet_copy(vscr_ratchet_t *ratchet_ctx);
 
 VSCR_PUBLIC void
-vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_private_key);
+vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key);
 
 VSCR_PUBLIC void
-vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key);
+vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_private_key);
 
 VSCR_PUBLIC size_t
 vscr_ratchet_encrypt_len(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text);
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_encrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text, vsc_buffer_t *cipher_text);
+
+VSCR_PUBLIC size_t
+vscr_ratchet_decrypt_len(vscr_ratchet_t *ratchet_ctx, vsc_data_t cipher_text);
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t cipher_text, vsc_buffer_t *plain_text);

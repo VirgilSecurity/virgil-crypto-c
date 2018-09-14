@@ -1,0 +1,8 @@
+<class name="olm skipped message key list node" context="public">
+
+    <require class="olm skipped message key list node" scope="public"/>
+
+    <property name="value" class="olm skipped message key" access="readwrite"/>
+    <property name="next" class="olm skipped message key list node" access="readwrite"/>
+
+</class>

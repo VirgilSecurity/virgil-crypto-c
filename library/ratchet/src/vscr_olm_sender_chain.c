@@ -94,7 +94,9 @@ vscr_olm_sender_chain_init(vscr_olm_sender_chain_t *olm_sender_chain_ctx) {
 VSCR_PUBLIC void
 vscr_olm_sender_chain_cleanup(vscr_olm_sender_chain_t *olm_sender_chain_ctx) {
 
-    VSCR_ASSERT_PTR(olm_sender_chain_ctx);
+    if (olm_sender_chain_ctx == NULL) {
+        return;
+    }
 
     if (olm_sender_chain_ctx->refcnt == 0) {
         return;
@@ -129,6 +131,10 @@ vscr_olm_sender_chain_new(void) {
 //
 VSCR_PUBLIC void
 vscr_olm_sender_chain_delete(vscr_olm_sender_chain_t *olm_sender_chain_ctx) {
+
+    if (olm_sender_chain_ctx == NULL) {
+        return;
+    }
 
     vscr_olm_sender_chain_cleanup(olm_sender_chain_ctx);
 
@@ -183,9 +189,7 @@ vscr_olm_sender_chain_copy(vscr_olm_sender_chain_t *olm_sender_chain_ctx) {
 static void
 vscr_olm_sender_chain_init_ctx(vscr_olm_sender_chain_t *olm_sender_chain_ctx) {
 
-    olm_sender_chain_ctx->ratchet_public_key = NULL;
-    olm_sender_chain_ctx->chain_key = NULL;
-    olm_sender_chain_ctx->ratchet_private_key = NULL;
+    VSCR_UNUSED(olm_sender_chain_ctx);
 }
 
 //
@@ -196,7 +200,9 @@ vscr_olm_sender_chain_init_ctx(vscr_olm_sender_chain_t *olm_sender_chain_ctx) {
 static void
 vscr_olm_sender_chain_cleanup_ctx(vscr_olm_sender_chain_t *olm_sender_chain_ctx) {
 
-    vsc_buffer_destroy(&olm_sender_chain_ctx->ratchet_private_key);
-    vscr_olm_chain_key_destroy(&olm_sender_chain_ctx->chain_key);
+    vscr_olm_chain_key_cleanup(&olm_sender_chain_ctx->chain_key);
+    vsc_buffer_erase(olm_sender_chain_ctx->ratchet_public_key);
+    vsc_buffer_erase(olm_sender_chain_ctx->ratchet_private_key);
     vsc_buffer_destroy(&olm_sender_chain_ctx->ratchet_public_key);
+    vsc_buffer_destroy(&olm_sender_chain_ctx->ratchet_private_key);
 }
