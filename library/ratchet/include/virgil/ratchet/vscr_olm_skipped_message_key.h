@@ -81,7 +81,7 @@ struct vscr_olm_skipped_message_key_t {
 
     vsc_buffer_t *ratchet_public_key;
 
-    const vscr_olm_message_key_t *message_key;
+    vscr_olm_message_key_t *message_key;
 };
 
 //

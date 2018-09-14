@@ -77,17 +77,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Public integral constants.
-//
-enum {
-    vscr_ratchet_OLM_MESSAGE_VERSION = 1,
-    vscr_ratchet_OLM_SHARED_KEY_LENGTH = vscf_hmac256_DIGEST_LEN,
-    vscr_ratchet_MAX_SKIPPED_MESSAGED = 40,
-    vscr_ratchet_MAX_RECEIVERS_CHAINS = 5,
-    vscr_ratchet_MAX_MESSAGE_GAP = 2000
-};
-
-//
 //  Handle 'ratchet' context.
 //
 typedef struct vscr_ratchet_t vscr_ratchet_t;

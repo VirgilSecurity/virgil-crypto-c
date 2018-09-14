@@ -195,9 +195,7 @@ static void
 vscr_olm_skipped_message_key_list_node_init_ctx(
         vscr_olm_skipped_message_key_list_node_t *olm_skipped_message_key_list_node_ctx) {
 
-    VSCR_ASSERT_PTR(olm_skipped_message_key_list_node_ctx);
-
-    //  TODO: Perform additional context initialization.
+    VSCR_UNUSED(olm_skipped_message_key_list_node_ctx);
 }
 
 //
@@ -209,7 +207,6 @@ static void
 vscr_olm_skipped_message_key_list_node_cleanup_ctx(
         vscr_olm_skipped_message_key_list_node_t *olm_skipped_message_key_list_node_ctx) {
 
-    VSCR_ASSERT_PTR(olm_skipped_message_key_list_node_ctx);
-
-    //  TODO: Release all inner resources.
+    vscr_olm_skipped_message_key_destroy(&olm_skipped_message_key_list_node_ctx->value);
+    vscr_olm_skipped_message_key_list_node_destroy(&olm_skipped_message_key_list_node_ctx->next);
 }
