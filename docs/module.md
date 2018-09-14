@@ -140,8 +140,8 @@ name:
 The 'require' item
 ------------------
 
-Defines whom component belongs to. Base attributes for require. Defines
-dependency to: module, header, feature.
+Base attributes for require. Defines dependency to: module, header,
+feature.
 
     <require
       [ scope = "public | private | internal"  ("public") ]
@@ -171,11 +171,11 @@ private: Component is visible for outside world via private interface.
 internal: Component is visible only within library or a specific source file.
 
 project:
-    Defines project name that component belongs to. The project attribute is
+    Defines project name that component refers to. The project attribute is
     optional.
 
 library:
-    Defines libary name that component belongs to. The library attribute is
+    Defines library name that component refers to. The library attribute is
     optional.
 
 module:
@@ -197,8 +197,8 @@ class:
 The 'alternative' item
 ----------------------
 
-Defines whom component belongs to. Base attributes for require. Define
-alternative requirements that can be used, and in fact replace each other.
+Base attributes for require. Define alternative requirements that can be
+used, and in fact replace each other.
 
     <alternative
       [ scope = "public | private | internal"  ("public") ]
@@ -226,11 +226,11 @@ private: Component is visible for outside world via private interface.
 internal: Component is visible only within library or a specific source file.
 
 project:
-    Defines project name that component belongs to. The project attribute is
+    Defines project name that component refers to. The project attribute is
     optional.
 
 library:
-    Defines libary name that component belongs to. The library attribute is
+    Defines library name that component refers to. The library attribute is
     optional.
 
 module:
@@ -468,7 +468,7 @@ is_reference:
     take one of the following values:
 
 Value: Meaning:
-0: Instance is not a refernce.
+0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
 definition:
@@ -612,7 +612,7 @@ is_reference:
     take one of the following values:
 
 Value: Meaning:
-0: Instance is not a refernce.
+0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
 value:
@@ -709,7 +709,7 @@ is_reference:
     take one of the following values:
 
 Value: Meaning:
-0: Instance is not a refernce.
+0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
 
@@ -951,7 +951,7 @@ is_reference:
     take one of the following values:
 
 Value: Meaning:
-0: Instance is not a refernce.
+0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
 name:
@@ -1100,7 +1100,7 @@ is_reference:
     take one of the following values:
 
 Value: Meaning:
-0: Instance is not a refernce.
+0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
 
@@ -1200,7 +1200,7 @@ is_reference:
     take one of the following values:
 
 Value: Meaning:
-0: Instance is not a refernce.
+0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
 name:
@@ -1387,7 +1387,7 @@ Value: Meaning:
 The 'macroses' item
 -------------------
 
-Group a set of macroses with common implemenatation.
+Group a set of macroses with common implementation.
 
     <macroses
       [ definition = "public | private | external"  ("private") ]

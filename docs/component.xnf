@@ -190,7 +190,7 @@
         For 'class'    - default is '1'.
 
         <restrict value="0">
-            Instance is not a refernce.
+            Instance is not a reference.
         </restrict>
 
         <restrict value="1">
@@ -545,10 +545,37 @@
 
 
 <entity name="macroses">
-    Group a set of macroses with common implemenatation.
+    Group a set of macroses with common implementation.
 
     <inherit entity="definition"/>
 
     <allow entity="macros" occurs="1+"/>
     <allow entity="code" occurs="1"/>
 </entity>
+
+
+<entity name="dependency">
+    Defines dependency to interface or class.
+
+    <attr name="name" required="1">
+        Dependency name - used for properties and methods names.
+    </attr>
+
+    <attr name="interface">
+        Defines name of the interface depends on.
+        Dependency is taken as implementation object.
+    </attr>
+
+    <attr name="api">
+        Defines name of the interface depends on.
+        Dependency is taken as interface api object.
+    </attr>
+
+    <attr name="class">
+        Defines name of the class depends on.
+        Dependency is taken as class context object.
+    </attr>
+
+    <inherit entity="landlord"/>
+</entity>
+

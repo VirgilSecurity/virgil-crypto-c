@@ -291,7 +291,7 @@ is_reference:
     take one of the following values:
 
 Value: Meaning:
-0: Instance is not a refernce.
+0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
 
@@ -463,7 +463,7 @@ is_reference:
     take one of the following values:
 
 Value: Meaning:
-0: Instance is not a refernce.
+0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
 name:
@@ -569,7 +569,7 @@ is_reference:
     take one of the following values:
 
 Value: Meaning:
-0: Instance is not a refernce.
+0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
 definition:
@@ -713,7 +713,7 @@ is_reference:
     take one of the following values:
 
 Value: Meaning:
-0: Instance is not a refernce.
+0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
 value:
@@ -810,7 +810,7 @@ is_reference:
     take one of the following values:
 
 Value: Meaning:
-0: Instance is not a refernce.
+0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
 
