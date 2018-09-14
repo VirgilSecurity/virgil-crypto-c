@@ -94,7 +94,9 @@ vscr_olm_cipher_init(vscr_olm_cipher_t *olm_cipher_ctx) {
 VSCR_PUBLIC void
 vscr_olm_cipher_cleanup(vscr_olm_cipher_t *olm_cipher_ctx) {
 
-    VSCR_ASSERT_PTR(olm_cipher_ctx);
+    if (olm_cipher_ctx == NULL) {
+        return;
+    }
 
     if (olm_cipher_ctx->refcnt == 0) {
         return;
@@ -129,6 +131,10 @@ vscr_olm_cipher_new(void) {
 //
 VSCR_PUBLIC void
 vscr_olm_cipher_delete(vscr_olm_cipher_t *olm_cipher_ctx) {
+
+    if (olm_cipher_ctx == NULL) {
+        return;
+    }
 
     vscr_olm_cipher_cleanup(olm_cipher_ctx);
 
@@ -197,13 +203,34 @@ vscr_olm_cipher_cleanup_ctx(vscr_olm_cipher_t *olm_cipher_ctx) {
     VSCR_UNUSED(olm_cipher_ctx);
 }
 
-VSCR_PUBLIC vsc_buffer_t *
-vscr_olm_cipher_encrypt(vscr_olm_cipher_t *olm_cipher_ctx, vsc_data_t key, vsc_data_t plain_text) {
+VSCR_PUBLIC vscr_error_t
+vscr_olm_cipher_encrypt(vscr_olm_cipher_t *olm_cipher_ctx, vsc_data_t key, vsc_data_t plain_text,
+        vsc_buffer_t *buffer) {
 
     VSCR_UNUSED(olm_cipher_ctx);
     VSCR_UNUSED(key);
-    VSCR_UNUSED(plain_text);
 
-    return vsc_buffer_new();
+    VSCR_ASSERT(vsc_buffer_left(buffer) > plain_text.len);
+
+    memcpy(vsc_buffer_ptr(buffer), plain_text.bytes, plain_text.len);
+    vsc_buffer_reserve(buffer, plain_text.len);
+
+    return vscr_SUCCESS;
+    //  TODO: This is STUB. Implement me.
+}
+
+VSCR_PUBLIC vscr_error_t
+vscr_olm_cipher_decrypt(vscr_olm_cipher_t *olm_cipher_ctx, vsc_data_t key, vsc_data_t cipher_text,
+        vsc_buffer_t *buffer) {
+
+    VSCR_UNUSED(olm_cipher_ctx);
+    VSCR_UNUSED(key);
+
+    VSCR_ASSERT(vsc_buffer_left(buffer) > cipher_text.len);
+
+    memcpy(vsc_buffer_ptr(buffer), cipher_text.bytes, cipher_text.len);
+    vsc_buffer_reserve(buffer, cipher_text.len);
+
+    return vscr_SUCCESS;
     //  TODO: This is STUB. Implement me.
 }

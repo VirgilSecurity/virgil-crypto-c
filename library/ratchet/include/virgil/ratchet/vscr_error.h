@@ -71,7 +71,15 @@ enum vscr_error_t {
     //
     //  Error during ASN.1 deserialization
     //
-    vscr_ASN1_READ_ERROR = 1
+    vscr_ASN1_READ_ERROR = 2,
+    //
+    //  Message version doesn't match
+    //
+    vscr_MESSAGE_VERSION_DOESN_T_MATCH = 3,
+    //
+    //  Bad message
+    //
+    vscr_BAD_MESSAGE = 4
 };
 typedef enum vscr_error_t vscr_error_t;
 

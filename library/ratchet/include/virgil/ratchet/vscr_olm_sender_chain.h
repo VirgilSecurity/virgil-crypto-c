@@ -83,7 +83,7 @@ struct vscr_olm_sender_chain_t {
 
     vsc_buffer_t *ratchet_public_key;
 
-    vscr_olm_chain_key_t *chain_key;
+    vscr_olm_chain_key_t chain_key;
 };
 
 //

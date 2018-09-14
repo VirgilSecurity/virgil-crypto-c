@@ -48,8 +48,7 @@
 
 #include "vscr_library.h"
 #include "vscr_error.h"
-
-#include <virgil/common/vsc_buffer.h>
+#include "vscr_ratchet_common.h"
 //  @end
 
 
@@ -80,7 +79,7 @@ struct vscr_olm_chain_key_t {
 
     uint32_t index;
 
-    vsc_buffer_t *key;
+    byte key[vscr_ratchet_common_OLM_SHARED_KEY_LENGTH];
 };
 
 //
@@ -120,6 +119,9 @@ vscr_olm_chain_key_destroy(vscr_olm_chain_key_t **olm_chain_key_ctx_ref);
 //
 VSCR_PUBLIC vscr_olm_chain_key_t *
 vscr_olm_chain_key_copy(vscr_olm_chain_key_t *olm_chain_key_ctx);
+
+VSCR_PUBLIC void
+vscr_olm_chain_key_clone(const vscr_olm_chain_key_t *olm_chain_key_ctx, vscr_olm_chain_key_t *clone);
 
 
 // --------------------------------------------------------------------------

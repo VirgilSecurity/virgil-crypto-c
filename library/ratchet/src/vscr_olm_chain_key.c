@@ -92,7 +92,9 @@ vscr_olm_chain_key_init(vscr_olm_chain_key_t *olm_chain_key_ctx) {
 VSCR_PUBLIC void
 vscr_olm_chain_key_cleanup(vscr_olm_chain_key_t *olm_chain_key_ctx) {
 
-    VSCR_ASSERT_PTR(olm_chain_key_ctx);
+    if (olm_chain_key_ctx == NULL) {
+        return;
+    }
 
     if (olm_chain_key_ctx->refcnt == 0) {
         return;
@@ -127,6 +129,10 @@ vscr_olm_chain_key_new(void) {
 //
 VSCR_PUBLIC void
 vscr_olm_chain_key_delete(vscr_olm_chain_key_t *olm_chain_key_ctx) {
+
+    if (olm_chain_key_ctx == NULL) {
+        return;
+    }
 
     vscr_olm_chain_key_cleanup(olm_chain_key_ctx);
 
@@ -181,8 +187,7 @@ vscr_olm_chain_key_copy(vscr_olm_chain_key_t *olm_chain_key_ctx) {
 static void
 vscr_olm_chain_key_init_ctx(vscr_olm_chain_key_t *olm_chain_key_ctx) {
 
-    olm_chain_key_ctx->index = 0;
-    olm_chain_key_ctx->key = NULL;
+    VSCR_UNUSED(olm_chain_key_ctx);
 }
 
 //
@@ -193,5 +198,15 @@ vscr_olm_chain_key_init_ctx(vscr_olm_chain_key_t *olm_chain_key_ctx) {
 static void
 vscr_olm_chain_key_cleanup_ctx(vscr_olm_chain_key_t *olm_chain_key_ctx) {
 
-    vsc_buffer_destroy(&olm_chain_key_ctx->key);
+    vscr_zeroize(olm_chain_key_ctx->key, vscr_ratchet_common_OLM_SHARED_KEY_LENGTH);
+}
+
+VSCR_PUBLIC void
+vscr_olm_chain_key_clone(const vscr_olm_chain_key_t *olm_chain_key_ctx, vscr_olm_chain_key_t *clone) {
+
+    VSCR_ASSERT_PTR(olm_chain_key_ctx);
+    VSCR_ASSERT_PTR(clone);
+
+    clone->index = olm_chain_key_ctx->index;
+    memcpy(clone->key, olm_chain_key_ctx->key, vscr_ratchet_common_OLM_SHARED_KEY_LENGTH);
 }

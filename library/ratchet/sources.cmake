@@ -65,7 +65,10 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_OLM_RECEIVER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_olm_receiver_chain.h>"
             "$<$<BOOL:${VSCR_OLM_RECEIVER_CHAIN_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_olm_receiver_chain_list_node.h>"
             "$<$<BOOL:${VSCR_OLM_SENDER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_olm_sender_chain.h>"
+            "$<$<BOOL:${VSCR_OLM_SKIPPED_MESSAGE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_olm_skipped_message_key.h>"
+            "$<$<BOOL:${VSCR_OLM_SKIPPED_MESSAGE_KEY_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_olm_skipped_message_key_list_node.h>"
             "$<$<BOOL:${VSCR_RATCHET}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_ratchet.h>"
+            "$<$<BOOL:${VSCR_RATCHET_COMMON}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_ratchet_common.h>"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_library.c"
@@ -81,5 +84,8 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_OLM_RECEIVER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_olm_receiver_chain.c>"
             "$<$<BOOL:${VSCR_OLM_RECEIVER_CHAIN_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_olm_receiver_chain_list_node.c>"
             "$<$<BOOL:${VSCR_OLM_SENDER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_olm_sender_chain.c>"
+            "$<$<BOOL:${VSCR_OLM_SKIPPED_MESSAGE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_olm_skipped_message_key.c>"
+            "$<$<BOOL:${VSCR_OLM_SKIPPED_MESSAGE_KEY_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_olm_skipped_message_key_list_node.c>"
             "$<$<BOOL:${VSCR_RATCHET}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet.c>"
+            "$<$<BOOL:${VSCR_RATCHET_COMMON}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_common.c>"
         )

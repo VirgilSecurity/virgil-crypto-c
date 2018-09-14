@@ -7,7 +7,19 @@
         <argument name="key" class="data"/>
         <argument name="plain text" class="data"/>
 
-        <return class="buffer"/>
+        <argument name="buffer" class="buffer" access="readwrite"/>
+
+        <return type="error"/>
+    </method>
+
+    <method name="decrypt">
+        <argument class="context"/>
+        <argument name="key" class="data"/>
+        <argument name="cipher text" class="data"/>
+
+        <argument name="buffer" class="buffer" access="readwrite"/>
+
+        <return type="error"/>
     </method>
 
 </class>

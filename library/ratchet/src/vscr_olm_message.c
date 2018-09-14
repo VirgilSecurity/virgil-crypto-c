@@ -106,7 +106,9 @@ vscr_olm_message_init(vscr_olm_message_t *olm_message_ctx) {
 VSCR_PUBLIC void
 vscr_olm_message_cleanup(vscr_olm_message_t *olm_message_ctx) {
 
-    VSCR_ASSERT_PTR(olm_message_ctx);
+    if (olm_message_ctx == NULL) {
+        return;
+    }
 
     if (olm_message_ctx->refcnt == 0) {
         return;
@@ -141,6 +143,10 @@ vscr_olm_message_new(void) {
 //
 VSCR_PUBLIC void
 vscr_olm_message_delete(vscr_olm_message_t *olm_message_ctx) {
+
+    if (olm_message_ctx == NULL) {
+        return;
+    }
 
     vscr_olm_message_cleanup(olm_message_ctx);
 

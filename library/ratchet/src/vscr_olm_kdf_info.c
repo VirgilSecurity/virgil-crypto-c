@@ -92,7 +92,9 @@ vscr_olm_kdf_info_init(vscr_olm_kdf_info_t *olm_kdf_info_ctx) {
 VSCR_PUBLIC void
 vscr_olm_kdf_info_cleanup(vscr_olm_kdf_info_t *olm_kdf_info_ctx) {
 
-    VSCR_ASSERT_PTR(olm_kdf_info_ctx);
+    if (olm_kdf_info_ctx == NULL) {
+        return;
+    }
 
     if (olm_kdf_info_ctx->refcnt == 0) {
         return;
@@ -127,6 +129,10 @@ vscr_olm_kdf_info_new(void) {
 //
 VSCR_PUBLIC void
 vscr_olm_kdf_info_delete(vscr_olm_kdf_info_t *olm_kdf_info_ctx) {
+
+    if (olm_kdf_info_ctx == NULL) {
+        return;
+    }
 
     vscr_olm_kdf_info_cleanup(olm_kdf_info_ctx);
 

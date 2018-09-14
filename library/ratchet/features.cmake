@@ -45,6 +45,7 @@
 
 include_guard()
 
+option(VSCR_RATCHET_COMMON "Enable class 'ratchet common'." ON)
 option(VSCR_ERROR_CTX "Enable class 'error ctx'." ON)
 option(VSCR_OLM_CIPHER "Enable class 'olm cipher'." ON)
 option(VSCR_OLM_CHAIN_KEY "Enable class 'olm chain key'." ON)
@@ -52,10 +53,13 @@ option(VSCR_OLM_MESSAGE_KEY "Enable class 'olm message key'." ON)
 option(VSCR_OLM_KDF_INFO "Enable class 'olm kdf info'." ON)
 option(VSCR_OLM_RECEIVER_CHAIN "Enable class 'olm receiver chain'." ON)
 option(VSCR_OLM_RECEIVER_CHAIN_LIST_NODE "Enable class 'olm receiver chain list node'." ON)
+option(VSCR_OLM_SKIPPED_MESSAGE_KEY "Enable class 'olm skipped message key'." ON)
+option(VSCR_OLM_SKIPPED_MESSAGE_KEY_LIST_NODE "Enable class 'olm skipped message key list node'." ON)
 option(VSCR_OLM_SENDER_CHAIN "Enable class 'olm sender chain'." ON)
 option(VSCR_OLM_MESSAGE "Enable class 'olm message'." ON)
 option(VSCR_RATCHET "Enable class 'ratchet'." ON)
 mark_as_advanced(
+        VSCR_RATCHET_COMMON
         VSCR_ERROR_CTX
         VSCR_OLM_CIPHER
         VSCR_OLM_CHAIN_KEY
@@ -63,6 +67,8 @@ mark_as_advanced(
         VSCR_OLM_KDF_INFO
         VSCR_OLM_RECEIVER_CHAIN
         VSCR_OLM_RECEIVER_CHAIN_LIST_NODE
+        VSCR_OLM_SKIPPED_MESSAGE_KEY
+        VSCR_OLM_SKIPPED_MESSAGE_KEY_LIST_NODE
         VSCR_OLM_SENDER_CHAIN
         VSCR_OLM_MESSAGE
         VSCR_RATCHET
@@ -77,11 +83,47 @@ if(VSCR_OLM_CIPHER AND NOT VSC_DATA)
     message(FATAL_ERROR)
 endif()
 
+if(VSCR_OLM_CIPHER AND NOT VSC_BUFFER)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_OLM_CIPHER depends on the feature:")
+    message("     VSC_BUFFER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_OLM_CHAIN_KEY AND NOT VSCR_RATCHET_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_OLM_CHAIN_KEY depends on the feature:")
+    message("     VSCR_RATCHET_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_OLM_MESSAGE_KEY AND NOT VSCR_RATCHET_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_OLM_MESSAGE_KEY depends on the feature:")
+    message("     VSCR_RATCHET_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCR_OLM_RECEIVER_CHAIN_LIST_NODE AND NOT VSCR_OLM_RECEIVER_CHAIN)
     message("-- error --")
     message("--")
     message("Feature VSCR_OLM_RECEIVER_CHAIN_LIST_NODE depends on the feature:")
     message("     VSCR_OLM_RECEIVER_CHAIN - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_OLM_SKIPPED_MESSAGE_KEY_LIST_NODE AND NOT VSCR_OLM_SKIPPED_MESSAGE_KEY_LIST_NODE)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_OLM_SKIPPED_MESSAGE_KEY_LIST_NODE depends on the feature:")
+    message("     VSCR_OLM_SKIPPED_MESSAGE_KEY_LIST_NODE - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -118,6 +160,15 @@ if(VSCR_RATCHET AND NOT VSC_BUFFER)
     message("--")
     message("Feature VSCR_RATCHET depends on the feature:")
     message("     VSC_BUFFER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET AND NOT VSCR_RATCHET_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET depends on the feature:")
+    message("     VSCR_RATCHET_COMMON - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
