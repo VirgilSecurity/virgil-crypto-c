@@ -51,7 +51,6 @@
 
 #include "vscf_encrypt.h"
 #include "vscf_assert.h"
-#include "vscf_encrypt_api.h"
 //  @end
 
 

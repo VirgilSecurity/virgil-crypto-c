@@ -42,6 +42,7 @@
 
 
 gsl from "common.gsl"
+gsl from "component.gsl"
 gsl from "c_formatter.gsl"
 
 
@@ -385,50 +386,44 @@ function _X17_add_entity_implementation (meta, implementation)
             _X17_add_link (entity, "implementation property $(dependency.name)", \
                     make_id ("class", my.name, "struct", "impl", "property", dependency.name))
 
-            if dependency.type = "api"
-                _X17_add_name (entity, "implementation method use $(dependency.interface)", \
-                        cat ("use", dependency.interface, "api"))
+            _X17_add_name (entity, "implementation property is owning $(dependency.name)", \
+                cat ("is owning", dependency.name))
 
-                _X17_add_link (entity, "implementation method use $(dependency.interface)", \
-                        make_id ("class", my.name, "method", "use", dependency.interface, "api"))
-
-                _X17_add_name (entity, "implementation method release $(dependency.interface)", \
-                        cat ("release", dependency.interface, "api"))
-
-                _X17_add_link (entity, "implementation method release $(dependency.interface)", \
-                        make_id ("class", my.name, "method", "release", dependency.interface, "api"))
-
-                _X17_add_link (entity, "implementation dependency class $(dependency.interface)", \
-                        make_id ("class", dependency.interface, "api", "struct", dependency.interface, "api"))
-
-            elsif dependency.type = "impl"
-                _X17_add_name (entity, "implementation property is owning $(dependency.name)", \
-                    cat ("is owning", dependency.name))
-
-                _X17_add_link (entity, "implementation property is owning $(dependency.name)", \
-                        make_id ("class", my.name, "struct", "impl", "property", "is owning", dependency.name))
+            _X17_add_link (entity, "implementation property is owning $(dependency.name)", \
+                    make_id ("class", my.name, "struct", "impl", "property", "is owning", dependency.name))
 
 
-                _X17_add_name (entity, "implementation method use $(dependency.interface)", \
-                        cat ("use", dependency.interface))
+            _X17_add_name (entity, "implementation method use $(dependency.type_name)", \
+                    cat ("use", dependency.type_name))
 
-                _X17_add_link (entity, "implementation method use $(dependency.interface)", \
-                        make_id ("class", my.name, "method", "use", dependency.interface))
+            _X17_add_link (entity, "implementation method use $(dependency.type_name)", \
+                    make_id ("class", my.name, "method", "use", dependency.type_name))
 
-                _X17_add_name (entity, "implementation method take $(dependency.interface)", \
-                        cat ("take", dependency.interface))
+            _X17_add_name (entity, "implementation method take $(dependency.type_name)", \
+                    cat ("take", dependency.type_name))
 
-                _X17_add_link (entity, "implementation method take $(dependency.interface)", \
-                        make_id ("class", my.name, "method", "take", dependency.interface))
+            _X17_add_link (entity, "implementation method take $(dependency.type_name)", \
+                    make_id ("class", my.name, "method", "take", dependency.type_name))
 
-                _X17_add_name (entity, "implementation method release $(dependency.interface)", \
-                        cat ("release", dependency.interface))
+            _X17_add_name (entity, "implementation method release $(dependency.type_name)", \
+                    cat ("release", dependency.type_name))
 
-                _X17_add_link (entity, "implementation method release $(dependency.interface)", \
-                        make_id ("class", my.name, "method", "release", dependency.interface))
+            _X17_add_link (entity, "implementation method release $(dependency.type_name)", \
+                    make_id ("class", my.name, "method", "release", dependency.type_name))
 
-                _X17_add_link (entity, "implementation dependency class $(dependency.interface)", \
-                        make_id ("class impl struct impl"))
+            if defined(dependency.interface)
+                _X17_add_link (entity, "implementation method copy $(dependency.type_name)", \
+                        make_id ("class impl method copy"))
+
+                _X17_add_link (entity, "implementation method destroy $(dependency.type_name)", \
+                        make_id ("class impl method destroy"))
+
+            elsif defined(dependency.class) | defined(dependency.impl)
+                _X17_add_link (entity, "implementation method copy $(dependency.type_name)", \
+                        make_id ("class", dependency.type_name, "method", "copy"))
+
+                _X17_add_link (entity, "implementation method destroy $(dependency.type_name)", \
+                        make_id ("class", dependency.type_name, "method", "destroy"))
             endif
         endfor
 

@@ -86,7 +86,7 @@ struct vscf_kdf2_impl_t {
     //
     size_t refcnt;
     //
-    //  Dependency to the interface 'hash stream'.
+    //  Dependency to the 'hash stream'.
     //
     vscf_impl_t *hash;
 };

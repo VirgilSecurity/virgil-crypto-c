@@ -51,7 +51,6 @@
 
 #include "vscf_generate_key.h"
 #include "vscf_assert.h"
-#include "vscf_generate_key_api.h"
 //  @end
 
 

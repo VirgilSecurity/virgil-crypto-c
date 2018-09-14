@@ -142,16 +142,6 @@ function implementation_resolve_attr_dependency_type (require, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve model: implementation.dependency.
-# ---------------------------------------------------------------------------
-function implementation_resolve_dependency (dependency, parent)
-    check_arguments (my, "dependency, parent", my)
-
-    c_component_require_attr_name (my.dependency, my)
-    implementation_resolve_attr_dependency_type (my.dependency, my.parent)
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Resolve model: implementation.macros.
 # ---------------------------------------------------------------------------
 function implementation_resolve_macros (macros, parent)
@@ -239,7 +229,7 @@ function implementation_resolve (implementation, parent, project)
     endfor
 
     for my.implementation.dependency
-        implementation_resolve_dependency (dependency, my.implementation)
+        component_resolve_dependency (dependency, my.implementation)
     endfor
 
     for my.implementation.constant
@@ -320,7 +310,7 @@ function implementation_create_feature (implementation, destination)
 
         for my.implementation.dependency
             new require to feature
-                .feature = dependency.interface
+                .feature = dependency.type_name
             endnew
         endfor
     endnew

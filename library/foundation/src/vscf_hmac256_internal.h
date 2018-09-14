@@ -56,6 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_hmac256.h"
+#include "vscf_hmac256.h"
 //  @end
 
 

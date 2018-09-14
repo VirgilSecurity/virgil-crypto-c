@@ -54,8 +54,8 @@
 
 #include "vscf_library.h"
 #include "vscf_error.h"
+#include "vscf_impl_private.h"
 #include "vscf_impl.h"
-#include "vscf_random.h"
 
 #include <virgil/common/vsc_data.h>
 //  @end

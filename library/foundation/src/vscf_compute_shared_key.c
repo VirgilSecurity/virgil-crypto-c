@@ -52,7 +52,6 @@
 
 #include "vscf_compute_shared_key.h"
 #include "vscf_assert.h"
-#include "vscf_compute_shared_key_api.h"
 //  @end
 
 

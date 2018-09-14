@@ -54,8 +54,8 @@
 
 #include "vscf_library.h"
 #include "vscf_error.h"
+#include "vscf_impl_private.h"
 #include "vscf_impl.h"
-#include "vscf_ex_kdf.h"
 
 #include <virgil/common/vsc_data.h>
 #include <virgil/common/vsc_buffer.h>
@@ -146,7 +146,7 @@ VSCF_PUBLIC void
 vscf_hkdf_take_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hmac);
 
 //
-//  Release dependency of the interface 'hmac stream'.
+//  Release dependency to the interface 'hmac stream'.
 //
 VSCF_PUBLIC void
 vscf_hkdf_release_hmac_stream(vscf_hkdf_impl_t *hkdf_impl);

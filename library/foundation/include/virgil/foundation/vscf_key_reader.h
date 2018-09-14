@@ -55,7 +55,9 @@
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
+#include "vscf_key_reader_api.h"
 #include "vscf_error_context.h"
+#include "vscf_api.h"
 
 #include <virgil/common/vsc_data.h>
 //  @end

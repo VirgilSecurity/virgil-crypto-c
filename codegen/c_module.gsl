@@ -277,4 +277,60 @@ function c_module_resolve (source)
     #   but this can be chnged in the future, so keep this function alive.
 endfunction
 
+# ---------------------------------------------------------------------------
+#
+# ---------------------------------------------------------------------------
+function c_module_update_type_header_map(c_module, c_type_header_map)
+    check_arguments (my, "c_module, c_type_header_map", my)
+
+    for my.c_module. as c_type where item_in(c_type, "c_enum, c_struct, c_callback, c_method") & defined(c_type.name)
+
+        new map to my.c_type_header_map
+            .type = c_type.name
+            .header = my.c_module.c_include_file
+            .has_declaration = string_equal(c_type.declaration, "public")
+            .has_definition = string_equal(c_type.definition, "public")
+        endnew
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#
+# ---------------------------------------------------------------------------
+function c_module_add_headers(c_module, c_type_header_map)
+    check_arguments (my, "c_module, c_type_header_map", my)
+
+    for my.c_module. as c_type where item_in(c_type, "c_struct, c_callback, c_method")
+        for c_type. as c_instance where item_in(c_instance, "c_variable, c_argument, c_return, c_property")
+
+            my.map = my.c_type_header_map->map(type = c_instance.type & has_declaration = "1") ?
+
+            if ! defined(my.map)
+                next
+            endif
+
+            my.c_include = my.c_module->c_include(file = my.map.header) ?
+
+            if ! defined(my.c_include)
+                new c_include to c_module
+                    .file = my.map.header
+                    .is_system = "0"
+                    .scope = "private"
+
+                    my.c_include = c_include
+                endnew
+            endif
+
+            if my.c_include.file = my.c_module.c_include_file
+                next
+            endif
+
+            if my.c_include.scope = "private" & c_type.declaration = "public"
+                my.c_include.scope = "public"
+            endif
+        endfor
+    endfor
+endfunction
+
+
 .endtemplate

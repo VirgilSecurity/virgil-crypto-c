@@ -55,8 +55,10 @@
 #include "vscf_assert.h"
 #include "vscf_hkdf.h"
 #include "vscf_hkdf_impl.h"
+#include "vscf_ex_kdf.h"
 #include "vscf_ex_kdf_api.h"
 #include "vscf_hmac_stream.h"
+#include "vscf_impl.h"
 //  @end
 
 
@@ -141,10 +143,7 @@ vscf_hkdf_cleanup(vscf_hkdf_impl_t *hkdf_impl) {
         return;
     }
 
-    //   Release dependency: 'hmac'.
-    if (hkdf_impl->hmac) {
-        vscf_impl_destroy(&hkdf_impl->hmac);
-    }
+    vscf_hkdf_release_hmac_stream(hkdf_impl);
 
     hkdf_impl->info = NULL;
 }
@@ -238,14 +237,14 @@ vscf_hkdf_take_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hmac) {
 }
 
 //
-//  Release dependency of the interface 'hmac stream'.
+//  Release dependency to the interface 'hmac stream'.
 //
 VSCF_PUBLIC void
 vscf_hkdf_release_hmac_stream(vscf_hkdf_impl_t *hkdf_impl) {
 
-    if (hkdf_impl->hmac) {
-        vscf_impl_destroy(&hkdf_impl->hmac);
-    }
+    VSCF_ASSERT_PTR(hkdf_impl);
+
+    vscf_impl_destroy(&hkdf_impl->hmac);
 }
 
 //

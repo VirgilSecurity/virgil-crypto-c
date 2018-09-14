@@ -997,6 +997,46 @@ function component_resolve_instance (instance, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve abstract component: dependency
+# ---------------------------------------------------------------------------
+function component_resolve_dependency (dependency, parent)
+    check_arguments (my, "dependency, parent", my)
+
+    assert_attribute (my.parent, "project", my)
+    assert_attribute (my.dependency, "name", my)
+    assert_attribute_one_of (my.dependency, "interface, api, class, impl")
+
+    scope my.dependency
+        .access ?= "readwrite"
+        .type_name = 0.interface ? 0.api ? 0.class ? 0.impl
+
+        if defined(0.interface)
+            .uid = make_id ("class impl struct impl")
+
+        elsif defined(0.api)
+            .uid = make_id ("class", .type_name, "api", "struct", .type_name, "api")
+
+        else
+            .uid = make_id ("class", .type_name, "struct", .type_name)
+        endif
+
+        if defined(0.interface)
+            .type_kind = "interface"
+
+        elsif defined(0.api)
+            .type_kind = "interface api"
+
+        elsif defined(0.class)
+            .type_kind = "class"
+
+        elsif defined(0.impl)
+            .type_kind = "implementation"
+        endif
+
+    endscope
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Inherit parent 'instance' attributes.
 #   Note, parent mast also be an 'instance'.
 # ---------------------------------------------------------------------------

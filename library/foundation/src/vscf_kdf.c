@@ -51,7 +51,6 @@
 
 #include "vscf_kdf.h"
 #include "vscf_assert.h"
-#include "vscf_kdf_api.h"
 //  @end
 
 

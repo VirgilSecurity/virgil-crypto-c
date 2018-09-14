@@ -43,6 +43,7 @@
 
 #include "vscf_assert.h"
 
+#include "vscf_export_public_key.h"
 #include "vscf_rsa_private_key.h"
 #include "vscf_rsa_public_key.h"
 #include "vscf_asn1rd.h"
@@ -101,7 +102,7 @@ test__rsa_private_key_decrypt__with_imported_2048_PRIVATE_KEY_PKCS1_and_2048_ENC
     vscf_rsa_private_key_impl_t *private_key_impl = vscf_rsa_private_key_new();
 
     vscf_rsa_private_key_take_asn1_reader(private_key_impl, vscf_asn1rd_impl(vscf_asn1rd_new()));
-    vscf_rsa_private_key_use_hash_api(private_key_impl, vscf_sha512_hash_api());
+    vscf_rsa_private_key_use_hash(private_key_impl, vscf_sha512_hash_api());
 
     vscf_fake_random_impl_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_byte(fake_random, 0xAB);
@@ -167,7 +168,7 @@ test__rsa_private_key_sign__with_imported_2048_PRIVATE_KEY_PKCS1_and_random_AB_a
     vscf_rsa_private_key_impl_t *private_key_impl = vscf_rsa_private_key_new();
 
     vscf_rsa_private_key_take_asn1_reader(private_key_impl, vscf_asn1rd_impl(vscf_asn1rd_new()));
-    vscf_rsa_private_key_use_hash_api(private_key_impl, vscf_sha512_hash_api());
+    vscf_rsa_private_key_use_hash(private_key_impl, vscf_sha512_hash_api());
 
     vscf_fake_random_impl_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_byte(fake_random, 0xAB);

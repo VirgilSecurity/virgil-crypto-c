@@ -5,8 +5,9 @@
         Virgil Security implementation of the HKDF (RFC 6234) algorithm.
 
         <interface name="ex_kdf"/>
+        <require module="hmac stream" scope="private"/>
 
-        <dependency name="hmac" interface="hmac stream" type="impl"/>
+        <dependency name="hmac" interface="hmac stream"/>
 
         <constant name="hash counter max" value="255"/>
 
@@ -34,7 +35,7 @@
 
         <interface name="kdf"/>
 
-        <dependency name="hash" interface="hash stream" type="impl"/>
+        <dependency name="hash" interface="hash stream"/>
     </implementation>
 
 
@@ -43,7 +44,7 @@
 
         <interface name="kdf"/>
 
-        <dependency name="hash" interface="hash stream" type="impl"/>
+        <dependency name="hash" interface="hash stream"/>
     </implementation>
 
 

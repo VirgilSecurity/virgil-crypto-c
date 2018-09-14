@@ -51,7 +51,6 @@
 
 #include "vscf_key_reader.h"
 #include "vscf_assert.h"
-#include "vscf_key_reader_api.h"
 //  @end
 
 

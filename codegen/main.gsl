@@ -177,13 +177,25 @@ function process_project (project, features_list, echo_level)
     context_append_hierarchy (my.context, my.root)
     item_save_to_file (my.context, "context.xml", my.project.work_path)
 
-    #   Generate code.
+    #   Resolve modules.
+    my.c_type_header_map = XML.new("c_type_header_map")
+
     for my.root.c_module
         my.c_module_resolved = \
                 context_inject_to_lang_module (my.context, c_module, my.project.work_path)
         move my.c_module_resolved before c_module
         delete c_module
+
+        c_module_update_type_header_map(my.c_module_resolved, my.c_type_header_map)
     endfor
+
+    for my.root.c_module
+        c_module_add_headers(c_module, my.c_type_header_map)
+    endfor
+
+    item_save_to_file (my.c_type_header_map, "c_type_header_map.xml", my.project.work_path)
+
+    #   Generate code.
     c_module_generate_sources (my.root)
 
     #   Generare CMake files.
