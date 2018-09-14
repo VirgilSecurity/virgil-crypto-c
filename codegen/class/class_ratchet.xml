@@ -13,12 +13,6 @@
     <require class="olm chain key" scope="public"/>
     <require class="olm cipher" scope="public"/>
 
-    <constant name="olm message version" value="1"/>
-    <constant name="olm shared key length" value="vscf_hmac256_DIGEST_LEN"/>
-    <constant name="max skipped messaged" value="40"/>
-    <constant name="max receivers chains" value="5"/>
-    <constant name="max message gap" value="2000"/>
-
     <variable name="olm chain key seed" type="unsigned" size="1" declaration="private" definition="private">
         <array length="derived"/>
         <value value="0x02"/>
@@ -131,6 +125,21 @@
         <argument name="message" class="olm message" access="readonly"/>
 
         <return class="olm skipped message key" access="readwrite"/>
+    </method>
+
+    <method name="erase skipped message key" declaration="private">
+        <argument class="context"/>
+        <argument name="skipped message key" class="olm skipped message key" access="readwrite"/>
+    </method>
+
+    <method name="add receiver chain" declaration="private">
+        <argument class="context"/>
+        <argument name="receiver chain" class="olm receiver chain" access="disown"/>
+    </method>
+
+    <method name="add skipped message key" declaration="private">
+        <argument class="context"/>
+        <argument name="skipped message key" class="olm skipped message key" access="disown"/>
     </method>
 
 </class>

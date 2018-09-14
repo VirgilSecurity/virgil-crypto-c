@@ -1,6 +1,6 @@
 <class name="olm skipped message key" context="public">
 
     <property name="ratchet public key" class="buffer"/>
-    <property name="message key" class="olm message key"/>
+    <property name="message key" class="olm message key" access="readwrite"/>
 
 </class>

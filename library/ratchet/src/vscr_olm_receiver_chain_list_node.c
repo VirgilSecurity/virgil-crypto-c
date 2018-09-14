@@ -187,8 +187,7 @@ vscr_olm_receiver_chain_list_node_copy(vscr_olm_receiver_chain_list_node_t *olm_
 static void
 vscr_olm_receiver_chain_list_node_init_ctx(vscr_olm_receiver_chain_list_node_t *olm_receiver_chain_list_node_ctx) {
 
-    olm_receiver_chain_list_node_ctx->next = NULL;
-    olm_receiver_chain_list_node_ctx->value = NULL;
+    VSCR_UNUSED(olm_receiver_chain_list_node_ctx);
 }
 
 //
