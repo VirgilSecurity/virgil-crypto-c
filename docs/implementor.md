@@ -23,7 +23,7 @@ attribute names are case-sensitive and we use only lower-case names.
           <interface name>
              <constant name [c_prefix] [of_class] [uid] [feature] [definition] [value]/>
           </interface>
-          <dependency name interface [type]/>
+          <dependency name [library] [project] [interface] [api] [class]/>
           <require .../>
        </implementation>
     </implementor>
@@ -104,8 +104,8 @@ Defines specific underlying implementation context.
 The 'require' item
 ------------------
 
-Defines whom component belongs to. Base attributes for require. Defines
-dependency to: module, header, feature.
+Base attributes for require. Defines dependency to: module, header,
+feature.
 
     <require
       [ scope = "public | private | internal"  ("public") ]
@@ -135,11 +135,11 @@ private: Component is visible for outside world via private interface.
 internal: Component is visible only within library or a specific source file.
 
 project:
-    Defines project name that component belongs to. The project attribute is
+    Defines project name that component refers to. The project attribute is
     optional.
 
 library:
-    Defines libary name that component belongs to. The library attribute is
+    Defines library name that component refers to. The library attribute is
     optional.
 
 module:
@@ -161,8 +161,8 @@ class:
 The 'alternative' item
 ----------------------
 
-Defines whom component belongs to. Base attributes for require. Define
-alternative requirements that can be used, and in fact replace each other.
+Base attributes for require. Define alternative requirements that can be
+used, and in fact replace each other.
 
     <alternative
       [ scope = "public | private | internal"  ("public") ]
@@ -190,11 +190,11 @@ private: Component is visible for outside world via private interface.
 internal: Component is visible only within library or a specific source file.
 
 project:
-    Defines project name that component belongs to. The project attribute is
+    Defines project name that component refers to. The project attribute is
     optional.
 
 library:
-    Defines libary name that component belongs to. The library attribute is
+    Defines library name that component refers to. The library attribute is
     optional.
 
 module:
@@ -310,7 +310,7 @@ is_reference:
     take one of the following values:
 
 Value: Meaning:
-0: Instance is not a refernce.
+0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
 name:
@@ -464,29 +464,40 @@ value:
 The 'dependency' item
 ---------------------
 
-Defines implementation dependency.
+Defines dependency to interface or class.
 
     <dependency
         name = "..."
-        interface = "..."
-      [ type = "api | impl"  ("api") ]
+      [ library = "..." ]
+      [ project = "..." ]
+      [ interface = "..." ]
+      [ api = "..." ]
+      [ class = "..." ]
         />
 
 The dependency item can have these attributes:
+
+project:
+    Defines project name that component refers to. The project attribute is
+    optional.
+
+library:
+    Defines library name that component refers to. The library attribute is
+    optional.
 
 name:
     Dependency name - used for properties and methods names. The name
     attribute is required.
 
 interface:
-    Dependency interface - used for type deduction and includes. The
-    interface attribute is required.
+    Defines name of the interface depends on. Dependency is taken as
+    implementation object. The interface attribute is optional.
 
-type:
-    Dependency type. The type attribute is optional. Its default value is
-    "api". It can take one of the following values:
+api:
+    Defines name of the interface depends on. Dependency is taken as
+    interface api object. The api attribute is optional.
 
-Value: Meaning:
-api: Dependency is an interface API object.
-impl: Dependency is an implementation object.
+class:
+    Defines name of the class depends on. Dependency is taken as class
+    context object. The class attribute is optional.
 

@@ -101,31 +101,6 @@
     </entity>
 
 
-    <entity name="dependency">
-        Defines implementation dependency.
-
-        <attr name="name" required="1">
-            Dependency name - used for properties and methods names.
-        </attr>
-
-        <attr name="interface" required="1">
-            Dependency interface - used for type deduction and includes.
-        </attr>
-
-        <attr name="type" default="api">
-            Dependency type.
-
-            <restrict value="api">
-                Dependency is an interface API object.
-            </restrict>
-
-            <restrict value="impl">
-                Dependency is an implementation object.
-            </restrict>
-        </attr>
-    </entity>
-
-
     <include filename="common.xnf"/>
     <include filename="component.xnf"/>
 </xnf>
