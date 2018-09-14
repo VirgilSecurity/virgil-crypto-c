@@ -35,6 +35,7 @@
 #include "vscf_hash_info.h"
 #include "vscf_hash.h"
 #include "vscf_hash_stream.h"
+#include "vscf_kdf.h"
 #include "vscf_kdf2.h"
 #include "vscf_sha256.h"
 #include "vscf_assert.h"

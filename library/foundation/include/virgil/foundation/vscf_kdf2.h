@@ -54,8 +54,8 @@
 
 #include "vscf_library.h"
 #include "vscf_error.h"
+#include "vscf_impl_private.h"
 #include "vscf_impl.h"
-#include "vscf_kdf.h"
 
 #include <virgil/common/vsc_data.h>
 #include <virgil/common/vsc_buffer.h>
@@ -146,7 +146,7 @@ VSCF_PUBLIC void
 vscf_kdf2_take_hash_stream(vscf_kdf2_impl_t *kdf2_impl, vscf_impl_t *hash);
 
 //
-//  Release dependency of the interface 'hash stream'.
+//  Release dependency to the interface 'hash stream'.
 //
 VSCF_PUBLIC void
 vscf_kdf2_release_hash_stream(vscf_kdf2_impl_t *kdf2_impl);

@@ -52,17 +52,17 @@
 #include "vscf_rsa_private_key.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_random.h"
-#include "vscf_asn1_reader.h"
-#include "vscf_asn1_writer.h"
 #include "vscf_asn1.h"
 #include "vscf_mbedtls_bignum_asn1_writer.h"
 #include "vscf_mbedtls_bignum_asn1_reader.h"
 #include "vscf_mbedtls_md.h"
+#include "vscf_export_public_key.h"
+#include "vscf_random.h"
+#include "vscf_asn1_reader.h"
+#include "vscf_asn1_writer.h"
 #include "vscf_rsa_private_key_impl.h"
 #include "vscf_rsa_private_key_internal.h"
 
-#include <virgil/common/private/vsc_buffer_defs.h>
 #include <virgil/foundation/private/vscf_rsa_public_key_impl.h>
 #include <mbedtls/bignum.h>
 //  @end
@@ -191,7 +191,7 @@ vscf_rsa_private_key_extract_public_key(vscf_rsa_private_key_impl_t *rsa_private
     rsa_public_ctx->len = rsa_private_ctx->len;
 
     if (rsa_private_key_impl->hash) {
-        vscf_rsa_public_key_use_hash_api(rsa_public_key_impl, rsa_private_key_impl->hash);
+        vscf_rsa_public_key_use_hash(rsa_public_key_impl, rsa_private_key_impl->hash);
     }
 
     if (rsa_private_key_impl->random) {

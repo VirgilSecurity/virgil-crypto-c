@@ -53,6 +53,7 @@
 #include "vscf_assert.h"
 #include "vscf_memory.h"
 #include "vscf_hmac_stream.h"
+#include "vscf_hmac_stream.h"
 #include "vscf_hkdf_impl.h"
 #include "vscf_hkdf_internal.h"
 //  @end

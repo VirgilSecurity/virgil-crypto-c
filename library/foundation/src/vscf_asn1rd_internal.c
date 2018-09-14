@@ -53,9 +53,10 @@
 #include "vscf_asn1rd_internal.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_asn1rd.h"
 #include "vscf_asn1rd_impl.h"
+#include "vscf_asn1_reader.h"
 #include "vscf_asn1_reader_api.h"
+#include "vscf_impl.h"
 //  @end
 
 

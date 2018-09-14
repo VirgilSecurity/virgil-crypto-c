@@ -55,8 +55,10 @@
 #include "vscf_assert.h"
 #include "vscf_kdf2.h"
 #include "vscf_kdf2_impl.h"
+#include "vscf_kdf.h"
 #include "vscf_kdf_api.h"
 #include "vscf_hash_stream.h"
+#include "vscf_impl.h"
 //  @end
 
 
@@ -141,10 +143,7 @@ vscf_kdf2_cleanup(vscf_kdf2_impl_t *kdf2_impl) {
         return;
     }
 
-    //   Release dependency: 'hash'.
-    if (kdf2_impl->hash) {
-        vscf_impl_destroy(&kdf2_impl->hash);
-    }
+    vscf_kdf2_release_hash_stream(kdf2_impl);
 
     kdf2_impl->info = NULL;
 }
@@ -238,14 +237,14 @@ vscf_kdf2_take_hash_stream(vscf_kdf2_impl_t *kdf2_impl, vscf_impl_t *hash) {
 }
 
 //
-//  Release dependency of the interface 'hash stream'.
+//  Release dependency to the interface 'hash stream'.
 //
 VSCF_PUBLIC void
 vscf_kdf2_release_hash_stream(vscf_kdf2_impl_t *kdf2_impl) {
 
-    if (kdf2_impl->hash) {
-        vscf_impl_destroy(&kdf2_impl->hash);
-    }
+    VSCF_ASSERT_PTR(kdf2_impl);
+
+    vscf_impl_destroy(&kdf2_impl->hash);
 }
 
 //

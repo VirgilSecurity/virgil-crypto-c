@@ -51,7 +51,6 @@
 
 #include "vscf_hash.h"
 #include "vscf_assert.h"
-#include "vscf_hash_api.h"
 //  @end
 
 

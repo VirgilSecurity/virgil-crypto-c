@@ -54,15 +54,9 @@
 
 #include "vscf_library.h"
 #include "vscf_error.h"
+#include "vscf_impl_private.h"
 #include "vscf_hash.h"
 #include "vscf_impl.h"
-#include "vscf_key.h"
-#include "vscf_generate_key.h"
-#include "vscf_private_key.h"
-#include "vscf_decrypt.h"
-#include "vscf_sign.h"
-#include "vscf_export_private_key.h"
-#include "vscf_import_private_key.h"
 
 #include <virgil/common/vsc_data.h>
 #include <virgil/common/vsc_buffer.h>
@@ -140,16 +134,16 @@ VSCF_PUBLIC vscf_rsa_private_key_impl_t *
 vscf_rsa_private_key_copy(vscf_rsa_private_key_impl_t *rsa_private_key_impl);
 
 //
-//  Setup dependency to the interface 'hash' with shared ownership.
+//  Setup dependency to the interface api 'hash' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_use_hash_api(vscf_rsa_private_key_impl_t *rsa_private_key_impl, const vscf_hash_api_t *hash);
+vscf_rsa_private_key_use_hash(vscf_rsa_private_key_impl_t *rsa_private_key_impl, const vscf_hash_api_t *hash);
 
 //
-//  Release dependency of the interface 'hash'.
+//  Release dependency to the interface api 'hash'.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_release_hash_api(vscf_rsa_private_key_impl_t *rsa_private_key_impl);
+vscf_rsa_private_key_release_hash(vscf_rsa_private_key_impl_t *rsa_private_key_impl);
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.
@@ -165,7 +159,7 @@ VSCF_PUBLIC void
 vscf_rsa_private_key_take_random(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vscf_impl_t *random);
 
 //
-//  Release dependency of the interface 'random'.
+//  Release dependency to the interface 'random'.
 //
 VSCF_PUBLIC void
 vscf_rsa_private_key_release_random(vscf_rsa_private_key_impl_t *rsa_private_key_impl);
@@ -184,7 +178,7 @@ VSCF_PUBLIC void
 vscf_rsa_private_key_take_asn1_reader(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vscf_impl_t *asn1rd);
 
 //
-//  Release dependency of the interface 'asn1 reader'.
+//  Release dependency to the interface 'asn1 reader'.
 //
 VSCF_PUBLIC void
 vscf_rsa_private_key_release_asn1_reader(vscf_rsa_private_key_impl_t *rsa_private_key_impl);
@@ -203,7 +197,7 @@ VSCF_PUBLIC void
 vscf_rsa_private_key_take_asn1_writer(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vscf_impl_t *asn1wr);
 
 //
-//  Release dependency of the interface 'asn1 writer'.
+//  Release dependency to the interface 'asn1 writer'.
 //
 VSCF_PUBLIC void
 vscf_rsa_private_key_release_asn1_writer(vscf_rsa_private_key_impl_t *rsa_private_key_impl);

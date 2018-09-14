@@ -98,7 +98,7 @@ test__rsa_public_key_encrypt__with_imported_2048_PUBLIC_KEY_PKCS1_and_DATA_1_and
     vscf_rsa_public_key_impl_t *public_key_impl = vscf_rsa_public_key_new();
 
     vscf_rsa_public_key_take_asn1_reader(public_key_impl, vscf_asn1rd_impl(vscf_asn1rd_new()));
-    vscf_rsa_public_key_use_hash_api(public_key_impl, vscf_sha512_hash_api());
+    vscf_rsa_public_key_use_hash(public_key_impl, vscf_sha512_hash_api());
 
     vscf_fake_random_impl_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_byte(fake_random, 0xAB);
@@ -133,7 +133,7 @@ test__rsa_public_key_verify__with_imported_2048_PUBLIC_KEY_PKCS1_and_random_AB_a
     vscf_rsa_public_key_impl_t *public_key_impl = vscf_rsa_public_key_new();
 
     vscf_rsa_public_key_take_asn1_reader(public_key_impl, vscf_asn1rd_impl(vscf_asn1rd_new()));
-    vscf_rsa_public_key_use_hash_api(public_key_impl, vscf_sha512_hash_api());
+    vscf_rsa_public_key_use_hash(public_key_impl, vscf_sha512_hash_api());
 
     vscf_fake_random_impl_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_byte(fake_random, 0xAB);

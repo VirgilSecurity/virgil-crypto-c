@@ -54,7 +54,6 @@
 
 #include "vscf_export_private_key.h"
 #include "vscf_assert.h"
-#include "vscf_export_private_key_api.h"
 //  @end
 
 

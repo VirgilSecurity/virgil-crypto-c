@@ -51,7 +51,6 @@
 
 #include "vscf_random.h"
 #include "vscf_assert.h"
-#include "vscf_random_api.h"
 //  @end
 
 

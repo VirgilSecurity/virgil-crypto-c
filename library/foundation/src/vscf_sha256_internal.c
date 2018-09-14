@@ -53,11 +53,14 @@
 #include "vscf_sha256_internal.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_sha256.h"
 #include "vscf_sha256_impl.h"
+#include "vscf_hash_info.h"
 #include "vscf_hash_info_api.h"
+#include "vscf_hash.h"
 #include "vscf_hash_api.h"
+#include "vscf_hash_stream.h"
 #include "vscf_hash_stream_api.h"
+#include "vscf_impl.h"
 //  @end
 
 

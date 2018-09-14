@@ -54,7 +54,6 @@
 
 #include "vscf_import_public_key.h"
 #include "vscf_assert.h"
-#include "vscf_import_public_key_api.h"
 //  @end
 
 

@@ -53,9 +53,10 @@
 #include "vscf_fake_random_internal.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_fake_random.h"
 #include "vscf_fake_random_impl.h"
+#include "vscf_random.h"
 #include "vscf_random_api.h"
+#include "vscf_impl.h"
 //  @end
 
 
