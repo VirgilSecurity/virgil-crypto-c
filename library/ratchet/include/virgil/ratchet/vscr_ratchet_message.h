@@ -43,14 +43,16 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_COMMON_H_INCLUDED
-#define VSCR_RATCHET_COMMON_H_INCLUDED
+#ifndef VSCR_RATCHET_MESSAGE_H_INCLUDED
+#define VSCR_RATCHET_MESSAGE_H_INCLUDED
 
 #include "vscr_library.h"
 #include "vscr_error.h"
+#include "vscr_error_ctx.h"
+#include "vscr_ratchet_message.h"
 
-#include <virgil/foundation/vscf_hmac256.h>
-#include <virgil/foundation/vscf_hkdf.h>
+#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -69,18 +71,14 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
-    vscr_ratchet_common_RATCHET_MESSAGE_VERSION = 1,
-    vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH = vscf_hmac256_DIGEST_LEN,
-    vscr_ratchet_common_MAX_SKIPPED_MESSAGES = 40,
-    vscr_ratchet_common_MAX_RECEIVERS_CHAINS = 5,
-    vscr_ratchet_common_MAX_MESSAGE_GAP = 2000
+    vscr_ratchet_message_PUBLIC_KEY_LENGTH = 32
 };
 
 //
-//  Handle 'ratchet common' context.
+//  Handle 'ratchet message' context.
 //
-typedef struct vscr_ratchet_common_t vscr_ratchet_common_t;
-struct vscr_ratchet_common_t {
+typedef struct vscr_ratchet_message_t vscr_ratchet_message_t;
+struct vscr_ratchet_message_t {
     //
     //  Function do deallocate self context.
     //
@@ -89,45 +87,66 @@ struct vscr_ratchet_common_t {
     //  Reference counter.
     //
     size_t refcnt;
+
+    uint8_t version;
+
+    uint32_t counter;
+
+    vsc_buffer_t *public_key;
+
+    vsc_buffer_t *cipher_text;
 };
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_common_init(vscr_ratchet_common_t *ratchet_common_ctx);
+vscr_ratchet_message_init(vscr_ratchet_message_t *ratchet_message_ctx);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_common_cleanup(vscr_ratchet_common_t *ratchet_common_ctx);
+vscr_ratchet_message_cleanup(vscr_ratchet_message_t *ratchet_message_ctx);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_common_t *
-vscr_ratchet_common_new(void);
+VSCR_PUBLIC vscr_ratchet_message_t *
+vscr_ratchet_message_new(void);
+
+VSCR_PUBLIC vscr_ratchet_message_t *
+vscr_ratchet_message_new_with_members(uint8_t version, uint32_t counter, vsc_buffer_t *public_key,
+        vsc_buffer_t *cipher_text);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_common_delete(vscr_ratchet_common_t *ratchet_common_ctx);
+vscr_ratchet_message_delete(vscr_ratchet_message_t *ratchet_message_ctx);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_common_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_message_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_common_destroy(vscr_ratchet_common_t **ratchet_common_ctx_ref);
+vscr_ratchet_message_destroy(vscr_ratchet_message_t **ratchet_message_ctx_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_common_t *
-vscr_ratchet_common_copy(vscr_ratchet_common_t *ratchet_common_ctx);
+VSCR_PUBLIC vscr_ratchet_message_t *
+vscr_ratchet_message_copy(vscr_ratchet_message_t *ratchet_message_ctx);
+
+VSCR_PUBLIC size_t
+vscr_ratchet_message_serialize_len(const vscr_ratchet_message_t *ratchet_message_ctx);
+
+VSCR_PUBLIC vscr_error_t
+vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message_ctx, vsc_buffer_t *output);
+
+VSCR_PUBLIC vscr_ratchet_message_t *
+vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx);
 
 
 // --------------------------------------------------------------------------
@@ -143,5 +162,5 @@ vscr_ratchet_common_copy(vscr_ratchet_common_t *ratchet_common_ctx);
 
 
 //  @footer
-#endif // VSCR_RATCHET_COMMON_H_INCLUDED
+#endif // VSCR_RATCHET_MESSAGE_H_INCLUDED
 //  @end

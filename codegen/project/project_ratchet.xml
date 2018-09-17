@@ -54,15 +54,15 @@
 
     <class name="ratchet common"/>
     <class name="error"/>
-    <class name="olm cipher"/>
-    <class name="olm chain key"/>
-    <class name="olm message key"/>
-    <class name="olm kdf info"/>
-    <class name="olm receiver chain"/>
-    <class name="olm receiver chain list node"/>
-    <class name="olm skipped message key"/>
-    <class name="olm skipped message key list node"/>
-    <class name="olm sender chain"/>
-    <class name="olm message"/>
+    <class name="ratchet cipher"/>
+    <class name="ratchet chain key"/>
+    <class name="ratchet message key"/>
+    <class name="ratchet kdf info"/>
+    <class name="ratchet receiver chain"/>
+    <class name="ratchet receiver chain list node"/>
+    <class name="ratchet skipped message key"/>
+    <class name="ratchet skipped message key list node"/>
+    <class name="ratchet sender chain"/>
+    <class name="ratchet message"/>
     <class name="ratchet"/>
 </project>

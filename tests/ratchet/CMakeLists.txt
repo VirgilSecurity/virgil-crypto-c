@@ -49,5 +49,5 @@ macro(_add_test test)
     endif()
 endmacro()
 
-_add_test (test_olm_message)
+_add_test (test_ratchet_message)
 _add_test (test_ratchet)
