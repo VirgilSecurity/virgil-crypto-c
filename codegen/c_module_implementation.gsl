@@ -1225,7 +1225,7 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
         _Z19_add_enums (my.impl, module, my.meta)
         _Z19_add_macroses (my.impl, module, my.meta)
         _Z19_add_methods (my.impl, module, my.meta)
-        _Z19_add_interface_methods (my.impl, "public", module, my.meta)
+        _Z19_add_interface_methods (my.impl, "private", module, my.meta)
     endnew
 endfunction
 
