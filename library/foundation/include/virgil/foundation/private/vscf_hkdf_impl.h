@@ -59,6 +59,7 @@
 #include "vscf_error.h"
 #include "vscf_impl_private.h"
 #include "vscf_hkdf.h"
+#include "vscf_impl.h"
 //  @end
 
 

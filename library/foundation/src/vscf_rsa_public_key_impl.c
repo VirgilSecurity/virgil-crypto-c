@@ -53,8 +53,6 @@
 // --------------------------------------------------------------------------
 
 #include "vscf_rsa_public_key_impl.h"
-#include "vscf_hash.h"
-#include "vscf_impl.h"
 //  @end
 
 

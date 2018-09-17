@@ -55,7 +55,6 @@
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
-#include "vscf_cipher_api.h"
 #include "vscf_encrypt.h"
 #include "vscf_decrypt.h"
 #include "vscf_cipher_info.h"

@@ -55,7 +55,6 @@
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
-#include "vscf_generate_key_api.h"
 #include "vscf_api.h"
 //  @end
 

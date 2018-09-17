@@ -51,6 +51,7 @@
 
 #include "vscf_hmac.h"
 #include "vscf_assert.h"
+#include "vscf_hmac_api.h"
 //  @end
 
 
