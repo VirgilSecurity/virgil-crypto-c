@@ -195,9 +195,7 @@ endfunction
 function implementation_resolve_require (require, parent)
     check_arguments (my, "require, parent", my)
 
-    if has_one_of_attribute(my.require, "header, interface, class")
-        my.require.scope ?= "private"
-    endif
+    my.require.scope ?= "private"
 endfunction
 
 # ---------------------------------------------------------------------------
