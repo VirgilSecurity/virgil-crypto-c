@@ -34,6 +34,18 @@
 
 #include "test_data_ratchet.h"
 
+const byte test_ratchet_plain_text1_BYTES[] = "Hello, this is first test message";
+
+const byte test_ratchet_plain_text2_BYTES[] = "Test message number two";
+
+const vsc_data_t test_ratchet_plain_text1 = {
+        test_ratchet_plain_text1_BYTES, sizeof(test_ratchet_plain_text1_BYTES)
+};
+
+const vsc_data_t test_ratchet_plain_text2 = {
+        test_ratchet_plain_text2_BYTES, sizeof(test_ratchet_plain_text2_BYTES)
+};
+
 const byte test_ratchet_kdf_info_root_BYTES[] = {
         0x31, 0xe0, 0x20, 0x5a,
 };

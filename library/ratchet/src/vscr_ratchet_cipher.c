@@ -212,6 +212,12 @@ vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_data_
 
     VSCR_ASSERT(vsc_buffer_left(buffer) > plain_text.len);
 
+    memcpy(vsc_buffer_ptr(buffer), &key.len, 1);
+    vsc_buffer_reserve(buffer, 1);
+
+    memcpy(vsc_buffer_ptr(buffer), key.bytes, key.len);
+    vsc_buffer_reserve(buffer, key.len);
+
     memcpy(vsc_buffer_ptr(buffer), plain_text.bytes, plain_text.len);
     vsc_buffer_reserve(buffer, plain_text.len);
 
@@ -228,8 +234,15 @@ vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_data_
 
     VSCR_ASSERT(vsc_buffer_left(buffer) > cipher_text.len);
 
-    memcpy(vsc_buffer_ptr(buffer), cipher_text.bytes, cipher_text.len);
-    vsc_buffer_reserve(buffer, cipher_text.len);
+    uint8_t key_len = cipher_text.bytes[0];
+    VSCR_ASSERT(key_len == key.len);
+
+    const byte *key_bytes = cipher_text.bytes + 1;
+
+    VSCR_ASSERT(memcmp(key_bytes, key.bytes, key.len) == 0);
+
+    memcpy(vsc_buffer_ptr(buffer), cipher_text.bytes + 1 + key.len, cipher_text.len - 1 - key_len);
+    vsc_buffer_reserve(buffer, cipher_text.len - 1 - key_len);
 
     return vscr_SUCCESS;
     //  TODO: This is STUB. Implement me.

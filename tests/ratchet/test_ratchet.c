@@ -64,9 +64,6 @@ test__1(void) {
 
     initialize(ratchet_alice, ratchet_bob);
 
-    byte plain_text_str[5] = "test";
-    vsc_data_t plain_text = vsc_data(plain_text_str, 4);
-
     vsc_buffer_t *ratchet_private_key = vsc_buffer_new_with_capacity(test_ratchet_ratchet_private_key.len);
     memcpy(vsc_buffer_ptr(ratchet_private_key), test_ratchet_ratchet_private_key.bytes, test_ratchet_ratchet_private_key.len);
     vsc_buffer_reserve(ratchet_private_key, test_ratchet_ratchet_private_key.len);
@@ -75,11 +72,11 @@ test__1(void) {
     curve25519_get_pubkey(vsc_buffer_ptr(ratchet_public_key), test_ratchet_ratchet_private_key.bytes);
     vsc_buffer_reserve(ratchet_public_key, test_ratchet_ratchet_private_key.len);
 
-    size_t cipher_text_len = vscr_ratchet_encrypt_len(ratchet_alice, plain_text);
+    size_t cipher_text_len = vscr_ratchet_encrypt_len(ratchet_alice, test_ratchet_plain_text1);
     vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(cipher_text_len);
 
     vscr_ratchet_initiate(ratchet_alice, test_ratchet_shared_secret, ratchet_private_key);
-    vscr_error_t result = vscr_ratchet_encrypt(ratchet_alice, plain_text, cipher_text);
+    vscr_error_t result = vscr_ratchet_encrypt(ratchet_alice, test_ratchet_plain_text1, cipher_text);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
     vscr_ratchet_respond(ratchet_bob, test_ratchet_shared_secret, ratchet_public_key);
@@ -88,15 +85,30 @@ test__1(void) {
     result = vscr_ratchet_decrypt(ratchet_bob, vsc_buffer_data(cipher_text), decrypted);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
-    TEST_ASSERT_EQUAL_INT(plain_text.len, vsc_buffer_len(decrypted));
-    TEST_ASSERT_EQUAL_MEMORY(plain_text.bytes, vsc_buffer_bytes(decrypted), plain_text.len);
+    TEST_ASSERT_EQUAL_INT(test_ratchet_plain_text1.len, vsc_buffer_len(decrypted));
+    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_plain_text1.bytes, vsc_buffer_bytes(decrypted), test_ratchet_plain_text1.len);
+
+    size_t cipher_text2_len = vscr_ratchet_encrypt_len(ratchet_bob, test_ratchet_plain_text2);
+    vsc_buffer_t *cipher_text2 = vsc_buffer_new_with_capacity(cipher_text2_len);
+    result = vscr_ratchet_encrypt(ratchet_bob, test_ratchet_plain_text2, cipher_text2);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
+
+    size_t plain_text2_len = vscr_ratchet_decrypt_len(ratchet_alice, vsc_buffer_data(cipher_text2));
+    vsc_buffer_t *decrypted2 = vsc_buffer_new_with_capacity(plain_text2_len);
+    result = vscr_ratchet_decrypt(ratchet_alice, vsc_buffer_data(cipher_text2), decrypted2);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
+
+    TEST_ASSERT_EQUAL_INT(test_ratchet_plain_text2.len, vsc_buffer_len(decrypted2));
+    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_plain_text2.bytes, vsc_buffer_bytes(decrypted2), test_ratchet_plain_text2.len);
 
     vscr_ratchet_destroy(&ratchet_alice);
     vscr_ratchet_destroy(&ratchet_bob);
     vsc_buffer_destroy(&cipher_text);
+    vsc_buffer_destroy(&cipher_text2);
     vsc_buffer_destroy(&ratchet_private_key);
     vsc_buffer_destroy(&ratchet_public_key);
     vsc_buffer_destroy(&decrypted);
+    vsc_buffer_destroy(&decrypted2);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
