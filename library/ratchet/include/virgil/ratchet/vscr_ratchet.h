@@ -49,14 +49,14 @@
 #include "vscr_library.h"
 #include "vscr_error.h"
 #include "vscr_ratchet_common.h"
-#include "vscr_olm_message.h"
-#include "vscr_olm_message_key.h"
-#include "vscr_olm_kdf_info.h"
-#include "vscr_olm_sender_chain.h"
-#include "vscr_olm_chain_key.h"
-#include "vscr_olm_cipher.h"
-#include "vscr_olm_receiver_chain_list_node.h"
-#include "vscr_olm_skipped_message_key_list_node.h"
+#include "vscr_ratchet_message.h"
+#include "vscr_ratchet_message_key.h"
+#include "vscr_ratchet_kdf_info.h"
+#include "vscr_ratchet_sender_chain.h"
+#include "vscr_ratchet_chain_key.h"
+#include "vscr_ratchet_cipher.h"
+#include "vscr_ratchet_receiver_chain_list_node.h"
+#include "vscr_ratchet_skipped_message_key_list_node.h"
 
 #include <virgil/foundation/vscf_hmac256.h>
 #include <virgil/foundation/vscf_hkdf.h>
@@ -90,17 +90,17 @@ struct vscr_ratchet_t {
     //
     size_t refcnt;
 
-    vscr_olm_cipher_t *cipher;
+    vscr_ratchet_cipher_t *cipher;
 
-    vscr_olm_kdf_info_t *kdf_info;
+    vscr_ratchet_kdf_info_t *kdf_info;
 
-    vscr_olm_sender_chain_t *sender_chain;
+    vscr_ratchet_sender_chain_t *sender_chain;
 
-    vscr_olm_receiver_chain_list_node_t *receiver_chains;
+    vscr_ratchet_receiver_chain_list_node_t *receiver_chains;
 
-    vscr_olm_skipped_message_key_list_node_t *skipped_message_keys;
+    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_keys;
 
-    byte root_key[vscr_ratchet_common_OLM_SHARED_KEY_LENGTH];
+    byte root_key[vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH];
 };
 
 //

@@ -43,9 +43,11 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscr_ratchet_common.h"
+#include "vscr_ratchet_cipher.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
+
+#include <virgil/foundation/vscf_error_ctx.h>
 //  @end
 
 
@@ -57,11 +59,11 @@
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_common_init() is called.
+//  Note, this method is called automatically when method vscr_ratchet_cipher_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_common_init_ctx(vscr_ratchet_common_t *ratchet_common_ctx);
+vscr_ratchet_cipher_init_ctx(vscr_ratchet_cipher_t *ratchet_cipher_ctx);
 
 //
 //  Release all inner resources.
@@ -69,58 +71,58 @@ vscr_ratchet_common_init_ctx(vscr_ratchet_common_t *ratchet_common_ctx);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_common_cleanup_ctx(vscr_ratchet_common_t *ratchet_common_ctx);
+vscr_ratchet_cipher_cleanup_ctx(vscr_ratchet_cipher_t *ratchet_cipher_ctx);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_common_init(vscr_ratchet_common_t *ratchet_common_ctx) {
+vscr_ratchet_cipher_init(vscr_ratchet_cipher_t *ratchet_cipher_ctx) {
 
-    VSCR_ASSERT_PTR(ratchet_common_ctx);
+    VSCR_ASSERT_PTR(ratchet_cipher_ctx);
 
-    vscr_zeroize(ratchet_common_ctx, sizeof(vscr_ratchet_common_t));
+    vscr_zeroize(ratchet_cipher_ctx, sizeof(vscr_ratchet_cipher_t));
 
-    ratchet_common_ctx->refcnt = 1;
+    ratchet_cipher_ctx->refcnt = 1;
 
-    vscr_ratchet_common_init_ctx(ratchet_common_ctx);
+    vscr_ratchet_cipher_init_ctx(ratchet_cipher_ctx);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_common_cleanup(vscr_ratchet_common_t *ratchet_common_ctx) {
+vscr_ratchet_cipher_cleanup(vscr_ratchet_cipher_t *ratchet_cipher_ctx) {
 
-    if (ratchet_common_ctx == NULL) {
+    if (ratchet_cipher_ctx == NULL) {
         return;
     }
 
-    if (ratchet_common_ctx->refcnt == 0) {
+    if (ratchet_cipher_ctx->refcnt == 0) {
         return;
     }
 
-    if (--ratchet_common_ctx->refcnt == 0) {
-        vscr_ratchet_common_cleanup_ctx(ratchet_common_ctx);
+    if (--ratchet_cipher_ctx->refcnt == 0) {
+        vscr_ratchet_cipher_cleanup_ctx(ratchet_cipher_ctx);
 
-        vscr_zeroize(ratchet_common_ctx, sizeof(vscr_ratchet_common_t));
+        vscr_zeroize(ratchet_cipher_ctx, sizeof(vscr_ratchet_cipher_t));
     }
 }
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_common_t *
-vscr_ratchet_common_new(void) {
+VSCR_PUBLIC vscr_ratchet_cipher_t *
+vscr_ratchet_cipher_new(void) {
 
-    vscr_ratchet_common_t *ratchet_common_ctx = (vscr_ratchet_common_t *) vscr_alloc(sizeof (vscr_ratchet_common_t));
-    VSCR_ASSERT_ALLOC(ratchet_common_ctx);
+    vscr_ratchet_cipher_t *ratchet_cipher_ctx = (vscr_ratchet_cipher_t *) vscr_alloc(sizeof (vscr_ratchet_cipher_t));
+    VSCR_ASSERT_ALLOC(ratchet_cipher_ctx);
 
-    vscr_ratchet_common_init(ratchet_common_ctx);
+    vscr_ratchet_cipher_init(ratchet_cipher_ctx);
 
-    ratchet_common_ctx->self_dealloc_cb = vscr_dealloc;
+    ratchet_cipher_ctx->self_dealloc_cb = vscr_dealloc;
 
-    return ratchet_common_ctx;
+    return ratchet_cipher_ctx;
 }
 
 //
@@ -128,47 +130,47 @@ vscr_ratchet_common_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_common_delete(vscr_ratchet_common_t *ratchet_common_ctx) {
+vscr_ratchet_cipher_delete(vscr_ratchet_cipher_t *ratchet_cipher_ctx) {
 
-    if (ratchet_common_ctx == NULL) {
+    if (ratchet_cipher_ctx == NULL) {
         return;
     }
 
-    vscr_ratchet_common_cleanup(ratchet_common_ctx);
+    vscr_ratchet_cipher_cleanup(ratchet_cipher_ctx);
 
-    vscr_dealloc_fn self_dealloc_cb = ratchet_common_ctx->self_dealloc_cb;
+    vscr_dealloc_fn self_dealloc_cb = ratchet_cipher_ctx->self_dealloc_cb;
 
-    if (ratchet_common_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(ratchet_common_ctx);
+    if (ratchet_cipher_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(ratchet_cipher_ctx);
     }
 }
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_common_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_cipher_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_common_destroy(vscr_ratchet_common_t **ratchet_common_ctx_ref) {
+vscr_ratchet_cipher_destroy(vscr_ratchet_cipher_t **ratchet_cipher_ctx_ref) {
 
-    VSCR_ASSERT_PTR(ratchet_common_ctx_ref);
+    VSCR_ASSERT_PTR(ratchet_cipher_ctx_ref);
 
-    vscr_ratchet_common_t *ratchet_common_ctx = *ratchet_common_ctx_ref;
-    *ratchet_common_ctx_ref = NULL;
+    vscr_ratchet_cipher_t *ratchet_cipher_ctx = *ratchet_cipher_ctx_ref;
+    *ratchet_cipher_ctx_ref = NULL;
 
-    vscr_ratchet_common_delete(ratchet_common_ctx);
+    vscr_ratchet_cipher_delete(ratchet_cipher_ctx);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_common_t *
-vscr_ratchet_common_copy(vscr_ratchet_common_t *ratchet_common_ctx) {
+VSCR_PUBLIC vscr_ratchet_cipher_t *
+vscr_ratchet_cipher_copy(vscr_ratchet_cipher_t *ratchet_cipher_ctx) {
 
-    VSCR_ASSERT_PTR(ratchet_common_ctx);
+    VSCR_ASSERT_PTR(ratchet_cipher_ctx);
 
-    ++ratchet_common_ctx->refcnt;
+    ++ratchet_cipher_ctx->refcnt;
 
-    return ratchet_common_ctx;
+    return ratchet_cipher_ctx;
 }
 
 
@@ -181,13 +183,13 @@ vscr_ratchet_common_copy(vscr_ratchet_common_t *ratchet_common_ctx) {
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_common_init() is called.
+//  Note, this method is called automatically when method vscr_ratchet_cipher_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_common_init_ctx(vscr_ratchet_common_t *ratchet_common_ctx) {
+vscr_ratchet_cipher_init_ctx(vscr_ratchet_cipher_t *ratchet_cipher_ctx) {
 
-    VSCR_ASSERT_PTR(ratchet_common_ctx);
+    VSCR_ASSERT_PTR(ratchet_cipher_ctx);
 }
 
 //
@@ -196,7 +198,39 @@ vscr_ratchet_common_init_ctx(vscr_ratchet_common_t *ratchet_common_ctx) {
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_common_cleanup_ctx(vscr_ratchet_common_t *ratchet_common_ctx) {
+vscr_ratchet_cipher_cleanup_ctx(vscr_ratchet_cipher_t *ratchet_cipher_ctx) {
 
-    VSCR_ASSERT_PTR(ratchet_common_ctx);
+    VSCR_ASSERT_PTR(ratchet_cipher_ctx);
+}
+
+VSCR_PUBLIC vscr_error_t
+vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_data_t key, vsc_data_t plain_text,
+        vsc_buffer_t *buffer) {
+
+    VSCR_UNUSED(ratchet_cipher_ctx);
+    VSCR_UNUSED(key);
+
+    VSCR_ASSERT(vsc_buffer_left(buffer) > plain_text.len);
+
+    memcpy(vsc_buffer_ptr(buffer), plain_text.bytes, plain_text.len);
+    vsc_buffer_reserve(buffer, plain_text.len);
+
+    return vscr_SUCCESS;
+    //  TODO: This is STUB. Implement me.
+}
+
+VSCR_PUBLIC vscr_error_t
+vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_data_t key, vsc_data_t cipher_text,
+        vsc_buffer_t *buffer) {
+
+    VSCR_UNUSED(ratchet_cipher_ctx);
+    VSCR_UNUSED(key);
+
+    VSCR_ASSERT(vsc_buffer_left(buffer) > cipher_text.len);
+
+    memcpy(vsc_buffer_ptr(buffer), cipher_text.bytes, cipher_text.len);
+    vsc_buffer_reserve(buffer, cipher_text.len);
+
+    return vscr_SUCCESS;
+    //  TODO: This is STUB. Implement me.
 }

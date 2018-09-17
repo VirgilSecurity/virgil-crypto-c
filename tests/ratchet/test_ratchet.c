@@ -44,7 +44,7 @@
 #include "test_data_ratchet.h"
 
 static void initialize(vscr_ratchet_t *ratchet_alice, vscr_ratchet_t *ratchet_bob) {
-    vscr_olm_kdf_info_t *kdf_info = vscr_olm_kdf_info_new();
+    vscr_ratchet_kdf_info_t *kdf_info = vscr_ratchet_kdf_info_new();
     kdf_info->root_info = vsc_buffer_new_with_capacity(test_ratchet_kdf_info_root.len);
     memcpy(vsc_buffer_ptr(kdf_info->root_info), test_ratchet_kdf_info_root.bytes, test_ratchet_kdf_info_root.len);
     vsc_buffer_reserve(kdf_info->root_info, test_ratchet_kdf_info_root.len);
@@ -52,9 +52,9 @@ static void initialize(vscr_ratchet_t *ratchet_alice, vscr_ratchet_t *ratchet_bo
     memcpy(vsc_buffer_ptr(kdf_info->ratchet_info), test_ratchet_kdf_info_ratchet.bytes, test_ratchet_kdf_info_ratchet.len);
     vsc_buffer_reserve(kdf_info->ratchet_info, test_ratchet_kdf_info_ratchet.len);
 
-    ratchet_alice->kdf_info = vscr_olm_kdf_info_copy(kdf_info);
-    ratchet_bob->kdf_info = vscr_olm_kdf_info_copy(kdf_info);
-    vscr_olm_kdf_info_destroy(&kdf_info);
+    ratchet_alice->kdf_info = vscr_ratchet_kdf_info_copy(kdf_info);
+    ratchet_bob->kdf_info = vscr_ratchet_kdf_info_copy(kdf_info);
+    vscr_ratchet_kdf_info_destroy(&kdf_info);
 }
 
 void

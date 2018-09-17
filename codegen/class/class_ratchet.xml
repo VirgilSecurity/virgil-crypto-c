@@ -6,30 +6,30 @@
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
 
     <require class="ratchet common" scope="public"/>
-    <require class="olm message" scope="public"/>
-    <require class="olm message key" scope="public"/>
-    <require class="olm kdf info" scope="public"/>
-    <require class="olm sender chain" scope="public"/>
-    <require class="olm chain key" scope="public"/>
-    <require class="olm cipher" scope="public"/>
+    <require class="ratchet message" scope="public"/>
+    <require class="ratchet message key" scope="public"/>
+    <require class="ratchet kdf info" scope="public"/>
+    <require class="ratchet sender chain" scope="public"/>
+    <require class="ratchet chain key" scope="public"/>
+    <require class="ratchet cipher" scope="public"/>
 
-    <variable name="olm chain key seed" type="unsigned" size="1" declaration="private" definition="private">
+    <variable name="ratchet chain key seed" type="unsigned" size="1" declaration="private" definition="private">
         <array length="derived"/>
         <value value="0x02"/>
     </variable>
 
-    <variable name="olm message key seed" type="unsigned" size="1" declaration="private" definition="private">
+    <variable name="ratchet message key seed" type="unsigned" size="1" declaration="private" definition="private">
         <array length="derived"/>
         <value value="0x01"/>
     </variable>
 
-    <property name="cipher" class="olm cipher" access="readwrite"/>
-    <property name="kdf info" class="olm kdf info" access="readwrite"/>
-    <property name="sender chain" class="olm sender chain" access="readwrite"/>
-    <property name="receiver chains" class="olm receiver chain list node" access="readwrite"/>
-    <property name="skipped message keys" class="olm skipped message key list node" access="readwrite"/>
+    <property name="cipher" class="ratchet cipher" access="readwrite"/>
+    <property name="kdf info" class="ratchet kdf info" access="readwrite"/>
+    <property name="sender chain" class="ratchet sender chain" access="readwrite"/>
+    <property name="receiver chains" class="ratchet receiver chain list node" access="readwrite"/>
+    <property name="skipped message keys" class="ratchet skipped message key list node" access="readwrite"/>
     <property name="root key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_constant_olm_shared_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_shared_key_length)"/>
     </property>
 
     <method name="create chain key" declaration="private">
@@ -38,26 +38,26 @@
         <argument name="public key" class="buffer" access="readonly"/>
 
         <argument name="new root key" type="byte" access="readwrite">
-            <array length="fixed" length_constant=".(class_ratchet_common_constant_olm_shared_key_length)"/>
+            <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_shared_key_length)"/>
         </argument>
 
-        <argument name="chain key" class="olm chain key" access="readwrite"/>
+        <argument name="chain key" class="ratchet chain key" access="readwrite"/>
     </method>
 
     <method name="advance chain key" declaration="private">
-        <argument name="chain key" class="olm chain key" access="readwrite"/>
+        <argument name="chain key" class="ratchet chain key" access="readwrite"/>
     </method>
 
     <method name="create message key" declaration="private">
-        <argument name="chain key" class="olm chain key"/>
+        <argument name="chain key" class="ratchet chain key"/>
 
-        <return class="olm message key" access="readwrite"/>
+        <return class="ratchet message key" access="readwrite"/>
     </method>
 
     <method name="decrypt for existing chain" declaration="private">
         <argument class="context"/>
-        <argument name="chain key" class="olm chain key"/>
-        <argument name="message" class="olm message"/>
+        <argument name="chain key" class="ratchet chain key"/>
+        <argument name="message" class="ratchet message"/>
         <argument name="buffer" class="buffer"/>
 
         <return type="error"/>
@@ -65,7 +65,7 @@
 
     <method name="decrypt for new chain" declaration="private">
         <argument class="context"/>
-        <argument name="message" class="olm message"/>
+        <argument name="message" class="ratchet message"/>
         <argument name="buffer" class="buffer"/>
 
         <return type="error"/>
@@ -115,31 +115,31 @@
 
     <method name="find receiver chain" declaration="private">
         <argument class="context"/>
-        <argument name="message" class="olm message" access="readonly"/>
+        <argument name="message" class="ratchet message" access="readonly"/>
 
-        <return class="olm receiver chain" access="readwrite"/>
+        <return class="ratchet receiver chain" access="readwrite"/>
     </method>
 
     <method name="find skipped message key" declaration="private">
         <argument class="context"/>
-        <argument name="message" class="olm message" access="readonly"/>
+        <argument name="message" class="ratchet message" access="readonly"/>
 
-        <return class="olm skipped message key" access="readwrite"/>
+        <return class="ratchet skipped message key" access="readwrite"/>
     </method>
 
     <method name="erase skipped message key" declaration="private">
         <argument class="context"/>
-        <argument name="skipped message key" class="olm skipped message key" access="readwrite"/>
+        <argument name="skipped message key" class="ratchet skipped message key" access="readwrite"/>
     </method>
 
     <method name="add receiver chain" declaration="private">
         <argument class="context"/>
-        <argument name="receiver chain" class="olm receiver chain" access="disown"/>
+        <argument name="receiver chain" class="ratchet receiver chain" access="disown"/>
     </method>
 
     <method name="add skipped message key" declaration="private">
         <argument class="context"/>
-        <argument name="skipped message key" class="olm skipped message key" access="disown"/>
+        <argument name="skipped message key" class="ratchet skipped message key" access="disown"/>
     </method>
 
 </class>

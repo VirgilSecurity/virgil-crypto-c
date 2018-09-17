@@ -1,8 +1,0 @@
-<class name="olm receiver chain list node" context="public">
-
-    <require class="olm receiver chain" scope="public"/>
-
-    <property name="value" class="olm receiver chain" access="readwrite"/>
-    <property name="next" class="olm receiver chain list node" access="readwrite"/>
-
-</class>
