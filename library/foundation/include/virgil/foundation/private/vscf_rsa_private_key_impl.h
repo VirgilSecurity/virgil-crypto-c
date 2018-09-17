@@ -59,6 +59,8 @@
 #include "vscf_error.h"
 #include "vscf_impl_private.h"
 #include "vscf_rsa_private_key.h"
+#include "vscf_hash.h"
+#include "vscf_impl.h"
 
 #include <mbedtls/rsa.h>
 //  @end

@@ -51,6 +51,7 @@
 
 #include "vscf_auth_decrypt.h"
 #include "vscf_assert.h"
+#include "vscf_auth_decrypt_api.h"
 //  @end
 
 

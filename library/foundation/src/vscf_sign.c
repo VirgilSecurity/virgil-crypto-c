@@ -51,6 +51,7 @@
 
 #include "vscf_sign.h"
 #include "vscf_assert.h"
+#include "vscf_sign_api.h"
 //  @end
 
 

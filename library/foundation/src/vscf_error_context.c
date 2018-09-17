@@ -51,6 +51,7 @@
 
 #include "vscf_error_context.h"
 #include "vscf_assert.h"
+#include "vscf_error_context_api.h"
 //  @end
 
 

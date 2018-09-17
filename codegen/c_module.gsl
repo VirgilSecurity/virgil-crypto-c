@@ -304,8 +304,17 @@ function c_module_add_headers(c_module, c_type_header_map)
     for my.c_module. as c_type where item_in(c_type, "c_struct, c_callback, c_method")
         for c_type. as c_instance where item_in(c_instance, "c_variable, c_argument, c_return, c_property")
 
+            if item_in (c_type, "c_struct") & c_type.definition = "external"
+                next
+            endif
+
+            my.c_instance_is_public = \
+                    (item_in (c_type, "c_struct") & c_type.definition = "public") | \
+                    (item_in (c_type, "c_callback, c_method") & c_type.declaration = "public")
+
             my.header_with_declaration = my.c_type_header_map.$(make_id(c_instance.type, "decl")) ?
             my.header_with_definition = my.c_type_header_map.$(make_id(c_instance.type, "def")) ?
+
 
             #   Process header with declaration.
             if defined (my.header_with_declaration)
@@ -315,7 +324,7 @@ function c_module_add_headers(c_module, c_type_header_map)
                     new c_include to my.c_module
                         .file = my.header_with_declaration
                         .scope = "private"
-                        .is_system = is_true ()
+                        .is_system = "0"
 
                         my.c_include = c_include
                     endnew
@@ -325,7 +334,7 @@ function c_module_add_headers(c_module, c_type_header_map)
                     next
                 endif
 
-                if my.c_include.scope = "private" & c_type.declaration = "public"
+                if my.c_include.scope = "private" & my.c_instance_is_public
                     my.c_include.scope = "public"
                 endif
             endif
@@ -348,7 +357,8 @@ function c_module_add_headers(c_module, c_type_header_map)
                     next
                 endif
 
-                if my.c_include.scope = "private" & string_equal (c_instance.need_definition, "public")
+                if my.c_include.scope = "private" & my.c_instance_is_public & \
+                         string_equal (c_instance.need_definition, "public")
                     my.c_include.scope = "public"
                 endif
             endif

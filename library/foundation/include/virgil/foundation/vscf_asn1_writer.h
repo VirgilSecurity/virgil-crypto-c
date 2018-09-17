@@ -57,7 +57,6 @@
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
-#include "vscf_asn1_writer_api.h"
 #include "vscf_api.h"
 
 #include <virgil/common/vsc_data.h>

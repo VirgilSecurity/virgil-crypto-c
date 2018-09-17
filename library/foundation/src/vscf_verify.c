@@ -51,6 +51,7 @@
 
 #include "vscf_verify.h"
 #include "vscf_assert.h"
+#include "vscf_verify_api.h"
 //  @end
 
 

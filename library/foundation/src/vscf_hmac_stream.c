@@ -51,6 +51,7 @@
 
 #include "vscf_hmac_stream.h"
 #include "vscf_assert.h"
+#include "vscf_hmac_stream_api.h"
 //  @end
 
 
