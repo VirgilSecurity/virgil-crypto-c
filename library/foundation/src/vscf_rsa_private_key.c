@@ -56,14 +56,13 @@
 #include "vscf_mbedtls_bignum_asn1_writer.h"
 #include "vscf_mbedtls_bignum_asn1_reader.h"
 #include "vscf_mbedtls_md.h"
-#include "vscf_export_public_key.h"
+#include "vscf_rsa_public_key_impl.h"
 #include "vscf_random.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_rsa_private_key_impl.h"
 #include "vscf_rsa_private_key_internal.h"
 
-#include <virgil/foundation/private/vscf_rsa_public_key_impl.h>
 #include <mbedtls/bignum.h>
 //  @end
 

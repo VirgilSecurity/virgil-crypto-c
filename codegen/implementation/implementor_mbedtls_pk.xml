@@ -41,10 +41,8 @@
         <require class="mbedtls bignum asn1 writer"/>
         <require class="mbedtls bignum asn1 reader"/>
         <require class="mbedtls md"/>
+        <require module="rsa public key impl"/>
 
-        <require module="export public key" scope="private"/>
-
-        <require header="virgil/foundation/private/vscf_rsa_public_key_impl.h"/>
         <require header="mbedtls/bignum.h"/>
 
         <context>
