@@ -37,6 +37,8 @@
 
 #include "vsc_data.h"
 
+extern const vsc_data_t test_ratchet_plain_text1;
+extern const vsc_data_t test_ratchet_plain_text2;
 extern const vsc_data_t test_ratchet_kdf_info_root;
 extern const vsc_data_t test_ratchet_kdf_info_ratchet;
 extern const vsc_data_t test_ratchet_shared_secret;
