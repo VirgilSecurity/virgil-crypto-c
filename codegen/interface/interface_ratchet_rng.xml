@@ -1,0 +1,9 @@
+<interface name="ratchet rng">
+    Interface for ratchet rng
+    <method name="generate random data" context="impl">
+
+        Interface for ratchet rng
+        <argument name="size" type="size"/>
+        <argument name="random" class="buffer"/>
+    </method>
+</interface>

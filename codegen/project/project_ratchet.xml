@@ -47,6 +47,10 @@
         Lead Maintainer: Virgil Security Inc. &lt;support@virgilsecurity.com&gt;
     </license>
 
+    <interface name="ratchet rng"/>
+
+    <implementor name="virgil ratchet"/>
+
     <module name="assert"/>
     <module name="library"/>
     <module name="memory"/>

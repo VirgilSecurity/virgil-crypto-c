@@ -1,3 +1,5 @@
+//  @license
+// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2018 Virgil Security Inc.
 //
 //  All rights reserved.
@@ -31,18 +33,38 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+// --------------------------------------------------------------------------
 
-#ifndef VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_H
-#define VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_H
 
-#include "vsc_data.h"
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'virgil ratchet fake rng' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
 
-extern const vsc_data_t test_ratchet_random_data;
-extern const vsc_data_t test_ratchet_plain_text1;
-extern const vsc_data_t test_ratchet_plain_text2;
-extern const vsc_data_t test_ratchet_kdf_info_root;
-extern const vsc_data_t test_ratchet_kdf_info_ratchet;
-extern const vsc_data_t test_ratchet_shared_secret;
-extern const vsc_data_t test_ratchet_ratchet_private_key;
 
-#endif //VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_H
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
+
+#include "vscr_virgil_ratchet_fake_rng_impl.h"
+//  @end
+
+
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
+
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end

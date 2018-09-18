@@ -45,6 +45,8 @@
 
 include_guard()
 
+option(VSCR_RATCHET_RNG "Enable interface 'ratchet rng'." ON)
+option(VSCR_VIRGIL_RATCHET_FAKE_RNG "Enable implementation 'virgil ratchet fake rng'." ON)
 option(VSCR_RATCHET_COMMON "Enable class 'ratchet common'." ON)
 option(VSCR_ERROR_CTX "Enable class 'error ctx'." ON)
 option(VSCR_RATCHET_CIPHER "Enable class 'ratchet cipher'." ON)
@@ -59,6 +61,8 @@ option(VSCR_RATCHET_SENDER_CHAIN "Enable class 'ratchet sender chain'." ON)
 option(VSCR_RATCHET_MESSAGE "Enable class 'ratchet message'." ON)
 option(VSCR_RATCHET "Enable class 'ratchet'." ON)
 mark_as_advanced(
+        VSCR_RATCHET_RNG
+        VSCR_VIRGIL_RATCHET_FAKE_RNG
         VSCR_RATCHET_COMMON
         VSCR_ERROR_CTX
         VSCR_RATCHET_CIPHER
@@ -73,6 +77,15 @@ mark_as_advanced(
         VSCR_RATCHET_MESSAGE
         VSCR_RATCHET
         )
+
+if(VSCR_RATCHET_RNG AND NOT VSC_BUFFER)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_RNG depends on the feature:")
+    message("     VSC_BUFFER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
 
 if(VSCR_RATCHET_CIPHER AND NOT VSC_DATA)
     message("-- error --")
@@ -223,6 +236,15 @@ if(VSCR_RATCHET AND NOT VSCR_RATCHET_CIPHER)
     message("--")
     message("Feature VSCR_RATCHET depends on the feature:")
     message("     VSCR_RATCHET_CIPHER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET AND NOT VSCR_RATCHET_RNG)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET depends on the feature:")
+    message("     VSCR_RATCHET_RNG - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

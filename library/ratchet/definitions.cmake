@@ -51,6 +51,8 @@ endif()
 
 target_compile_definitions(ratchet
         PUBLIC
+            "VSCR_RATCHET_RNG=$<BOOL:${VSCR_RATCHET_RNG}>"
+            "VSCR_VIRGIL_RATCHET_FAKE_RNG=$<BOOL:${VSCR_VIRGIL_RATCHET_FAKE_RNG}>"
             "VSCR_RATCHET_COMMON=$<BOOL:${VSCR_RATCHET_COMMON}>"
             "VSCR_ERROR_CTX=$<BOOL:${VSCR_ERROR_CTX}>"
             "VSCR_RATCHET_CIPHER=$<BOOL:${VSCR_RATCHET_CIPHER}>"
