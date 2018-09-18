@@ -1,3 +1,5 @@
+//  @license
+// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2018 Virgil Security Inc.
 //
 //  All rights reserved.
@@ -31,18 +33,56 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+// --------------------------------------------------------------------------
 
-#ifndef VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_H
-#define VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_H
 
-#include "vsc_data.h"
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
 
-extern const vsc_data_t test_ratchet_random_data;
-extern const vsc_data_t test_ratchet_plain_text1;
-extern const vsc_data_t test_ratchet_plain_text2;
-extern const vsc_data_t test_ratchet_kdf_info_root;
-extern const vsc_data_t test_ratchet_kdf_info_ratchet;
-extern const vsc_data_t test_ratchet_shared_secret;
-extern const vsc_data_t test_ratchet_ratchet_private_key;
 
-#endif //VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_H
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
+// --------------------------------------------------------------------------
+
+#ifndef VSCR_VIRGIL_RATCHET_FAKE_RNG_INTERNAL_H_INCLUDED
+#define VSCR_VIRGIL_RATCHET_FAKE_RNG_INTERNAL_H_INCLUDED
+
+#include "vscr_library.h"
+#include "vscr_error.h"
+#include "vscr_virgil_ratchet_fake_rng.h"
+//  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
+
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCR_VIRGIL_RATCHET_FAKE_RNG_INTERNAL_H_INCLUDED
+//  @end

@@ -12,6 +12,8 @@
     <require class="ratchet sender chain" scope="public"/>
     <require class="ratchet chain key" scope="public"/>
     <require class="ratchet cipher" scope="public"/>
+    <require interface="ratchet rng" scope="private"/>
+    <require module="impl"/>
 
     <variable name="ratchet chain key seed" type="unsigned" size="1" declaration="private" definition="private">
         <array length="derived"/>
@@ -23,6 +25,7 @@
         <value value="0x01"/>
     </variable>
 
+    <property name="rng" class="impl" access="readwrite"/>
     <property name="cipher" class="ratchet cipher" access="readwrite"/>
     <property name="kdf info" class="ratchet kdf info" access="readwrite"/>
     <property name="sender chain" class="ratchet sender chain" access="readwrite"/>
@@ -134,12 +137,12 @@
 
     <method name="add receiver chain" declaration="private">
         <argument class="context"/>
-        <argument name="receiver chain" class="ratchet receiver chain" access="disown"/>
+        <argument name="receiver chain" class="ratchet receiver chain" access="readwrite"/>
     </method>
 
     <method name="add skipped message key" declaration="private">
         <argument class="context"/>
-        <argument name="skipped message key" class="ratchet skipped message key" access="disown"/>
+        <argument name="skipped message key" class="ratchet skipped message key" access="readwrite"/>
     </method>
 
 </class>

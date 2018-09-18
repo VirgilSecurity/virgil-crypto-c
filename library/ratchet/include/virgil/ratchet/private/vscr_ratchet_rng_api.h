@@ -43,25 +43,20 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_H_INCLUDED
-#define VSCR_RATCHET_H_INCLUDED
+
+//  @description
+// --------------------------------------------------------------------------
+//  Interface 'ratchet rng' API.
+// --------------------------------------------------------------------------
+
+#ifndef VSCR_RATCHET_RNG_API_H_INCLUDED
+#define VSCR_RATCHET_RNG_API_H_INCLUDED
 
 #include "vscr_library.h"
 #include "vscr_error.h"
-#include "vscr_ratchet_common.h"
-#include "vscr_ratchet_message.h"
-#include "vscr_ratchet_message_key.h"
-#include "vscr_ratchet_kdf_info.h"
-#include "vscr_ratchet_sender_chain.h"
-#include "vscr_ratchet_chain_key.h"
-#include "vscr_ratchet_cipher.h"
+#include "vscr_api.h"
 #include "vscr_impl.h"
-#include "vscr_ratchet_receiver_chain_list_node.h"
-#include "vscr_ratchet_skipped_message_key_list_node.h"
 
-#include <virgil/foundation/vscf_hmac256.h>
-#include <virgil/foundation/vscf_hkdf.h>
-#include <virgil/common/vsc_data.h>
 #include <virgil/common/vsc_buffer.h>
 //  @end
 
@@ -78,89 +73,28 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet' context.
+//  Callback. Interface for ratchet rng
 //
-typedef struct vscr_ratchet_t vscr_ratchet_t;
-struct vscr_ratchet_t {
+typedef void (*vscr_ratchet_rng_api_generate_random_data_fn)(vscr_impl_t *impl, size_t size, vsc_buffer_t *random);
+
+//
+//  Contains API requirements of the interface 'ratchet rng'.
+//
+struct vscr_ratchet_rng_api_t {
     //
-    //  Function do deallocate self context.
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'ratchet_rng' MUST be equal to the 'vscr_api_tag_RATCHET_RNG'.
     //
-    vscr_dealloc_fn self_dealloc_cb;
+    vscr_api_tag_t api_tag;
     //
-    //  Reference counter.
+    //  Implementation unique identifier, MUST be second in the structure.
     //
-    size_t refcnt;
-
-    vscr_impl_t *rng;
-
-    vscr_ratchet_cipher_t *cipher;
-
-    vscr_ratchet_kdf_info_t *kdf_info;
-
-    vscr_ratchet_sender_chain_t *sender_chain;
-
-    vscr_ratchet_receiver_chain_list_node_t *receiver_chains;
-
-    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_keys;
-
-    byte root_key[vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH];
+    vscr_impl_tag_t impl_tag;
+    //
+    //  Interface for ratchet rng
+    //
+    vscr_ratchet_rng_api_generate_random_data_fn generate_random_data_cb;
 };
-
-//
-//  Perform initialization of pre-allocated context.
-//
-VSCR_PUBLIC void
-vscr_ratchet_init(vscr_ratchet_t *ratchet_ctx);
-
-//
-//  Release all inner resources including class dependencies.
-//
-VSCR_PUBLIC void
-vscr_ratchet_cleanup(vscr_ratchet_t *ratchet_ctx);
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCR_PUBLIC vscr_ratchet_t *
-vscr_ratchet_new(void);
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
-//
-VSCR_PUBLIC void
-vscr_ratchet_delete(vscr_ratchet_t *ratchet_ctx);
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_new ()'.
-//
-VSCR_PUBLIC void
-vscr_ratchet_destroy(vscr_ratchet_t **ratchet_ctx_ref);
-
-//
-//  Copy given class context by increasing reference counter.
-//
-VSCR_PUBLIC vscr_ratchet_t *
-vscr_ratchet_copy(vscr_ratchet_t *ratchet_ctx);
-
-VSCR_PUBLIC void
-vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key);
-
-VSCR_PUBLIC void
-vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_private_key);
-
-VSCR_PUBLIC size_t
-vscr_ratchet_encrypt_len(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text);
-
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_encrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text, vsc_buffer_t *cipher_text);
-
-VSCR_PUBLIC size_t
-vscr_ratchet_decrypt_len(vscr_ratchet_t *ratchet_ctx, vsc_data_t cipher_text);
-
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t cipher_text, vsc_buffer_t *plain_text);
 
 
 // --------------------------------------------------------------------------
@@ -176,5 +110,5 @@ vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t cipher_text, vsc_bu
 
 
 //  @footer
-#endif // VSCR_RATCHET_H_INCLUDED
+#endif // VSCR_RATCHET_RNG_API_H_INCLUDED
 //  @end

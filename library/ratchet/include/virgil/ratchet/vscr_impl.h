@@ -43,26 +43,19 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_H_INCLUDED
-#define VSCR_RATCHET_H_INCLUDED
+
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains common functionality for all 'implementation' object.
+//  It is also enumerate all available implementations within crypto libary.
+// --------------------------------------------------------------------------
+
+#ifndef VSCR_IMPL_H_INCLUDED
+#define VSCR_IMPL_H_INCLUDED
 
 #include "vscr_library.h"
 #include "vscr_error.h"
-#include "vscr_ratchet_common.h"
-#include "vscr_ratchet_message.h"
-#include "vscr_ratchet_message_key.h"
-#include "vscr_ratchet_kdf_info.h"
-#include "vscr_ratchet_sender_chain.h"
-#include "vscr_ratchet_chain_key.h"
-#include "vscr_ratchet_cipher.h"
-#include "vscr_impl.h"
-#include "vscr_ratchet_receiver_chain_list_node.h"
-#include "vscr_ratchet_skipped_message_key_list_node.h"
-
-#include <virgil/foundation/vscf_hmac256.h>
-#include <virgil/foundation/vscf_hkdf.h>
-#include <virgil/common/vsc_data.h>
-#include <virgil/common/vsc_buffer.h>
+#include "vscr_api.h"
 //  @end
 
 
@@ -78,89 +71,68 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet' context.
+//  Enumerates all possible implementations within crypto library.
 //
-typedef struct vscr_ratchet_t vscr_ratchet_t;
-struct vscr_ratchet_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    vscr_impl_t *rng;
-
-    vscr_ratchet_cipher_t *cipher;
-
-    vscr_ratchet_kdf_info_t *kdf_info;
-
-    vscr_ratchet_sender_chain_t *sender_chain;
-
-    vscr_ratchet_receiver_chain_list_node_t *receiver_chains;
-
-    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_keys;
-
-    byte root_key[vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH];
+enum vscr_impl_tag_t {
+    vscr_impl_tag_BEGIN = 0,
+    vscr_impl_tag_VIRGIL_RATCHET_FAKE_RNG,
+    vscr_impl_tag_END
 };
+typedef enum vscr_impl_tag_t vscr_impl_tag_t;
 
 //
-//  Perform initialization of pre-allocated context.
+//  Generic type for any 'implementation'.
+//
+typedef struct vscr_impl_t vscr_impl_t;
+
+//
+//  Callback type for cleanup action.
+//
+typedef void (*vscr_impl_cleanup_fn)(vscr_impl_t *impl);
+
+//
+//  Callback type for delete action.
+//
+typedef void (*vscr_impl_delete_fn)(vscr_impl_t *impl);
+
+//
+//  Return 'API' object that is fulfiled with a meta information
+//  specific to the given implementation object.
+//  Or NULL if object does not implement requested 'API'.
+//
+VSCR_PUBLIC const vscr_api_t *
+vscr_impl_api(vscr_impl_t *impl, vscr_api_tag_t api_tag);
+
+//
+//  Return unique 'Implementation TAG'.
+//
+VSCR_PUBLIC vscr_impl_tag_t
+vscr_impl_tag(vscr_impl_t *impl);
+
+//
+//  Cleanup implementation object and it's dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_init(vscr_ratchet_t *ratchet_ctx);
+vscr_impl_cleanup(vscr_impl_t *impl);
 
 //
-//  Release all inner resources including class dependencies.
-//
-VSCR_PUBLIC void
-vscr_ratchet_cleanup(vscr_ratchet_t *ratchet_ctx);
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCR_PUBLIC vscr_ratchet_t *
-vscr_ratchet_new(void);
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  Delete implementation object and it's dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_delete(vscr_ratchet_t *ratchet_ctx);
+vscr_impl_delete(vscr_impl_t *impl);
 
 //
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_new ()'.
+//  Destroy implementation object and it's dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_destroy(vscr_ratchet_t **ratchet_ctx_ref);
+vscr_impl_destroy(vscr_impl_t **impl_ref);
 
 //
-//  Copy given class context by increasing reference counter.
+//  Copy implementation object by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
 //
-VSCR_PUBLIC vscr_ratchet_t *
-vscr_ratchet_copy(vscr_ratchet_t *ratchet_ctx);
-
-VSCR_PUBLIC void
-vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key);
-
-VSCR_PUBLIC void
-vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_private_key);
-
-VSCR_PUBLIC size_t
-vscr_ratchet_encrypt_len(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text);
-
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_encrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text, vsc_buffer_t *cipher_text);
-
-VSCR_PUBLIC size_t
-vscr_ratchet_decrypt_len(vscr_ratchet_t *ratchet_ctx, vsc_data_t cipher_text);
-
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t cipher_text, vsc_buffer_t *plain_text);
+VSCR_PUBLIC vscr_impl_t *
+vscr_impl_copy(vscr_impl_t *impl);
 
 
 // --------------------------------------------------------------------------
@@ -176,5 +148,5 @@ vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t cipher_text, vsc_bu
 
 
 //  @footer
-#endif // VSCR_RATCHET_H_INCLUDED
+#endif // VSCR_IMPL_H_INCLUDED
 //  @end
