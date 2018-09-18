@@ -9,8 +9,10 @@ attribute names are case-sensitive and we use only lower-case names.
 
     <library name path [prefix]>
        <feature name [library] [project] [prefix] [default]>
-          <require [scope] [project] [library] [module] [header] [feature] [interface] [class]>
-             <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]/>
+          <require [scope] [project] [library] [module] [header] [feature] [interface] [class]
+               [implementation]>
+             <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]
+                  [implementation]/>
           </require>
        </feature>
     </library>
@@ -105,6 +107,7 @@ feature.
       [ feature = "..." ]
       [ interface = "..." ]
       [ class = "..." ]
+      [ implementation = "..." ]
         >
         <alternative>
     </require>
@@ -146,6 +149,9 @@ interface:
 class:
     Required class name. The class attribute is optional.
 
+implementation:
+    Required implementation name. The implementation attribute is optional.
+
 
 The 'alternative' item
 ----------------------
@@ -162,6 +168,7 @@ used, and in fact replace each other.
       [ feature = "..." ]
       [ interface = "..." ]
       [ class = "..." ]
+      [ implementation = "..." ]
         />
 
 The alternative item can have these attributes:
@@ -200,4 +207,7 @@ interface:
 
 class:
     Required class name. The class attribute is optional.
+
+implementation:
+    Required implementation name. The implementation attribute is optional.
 

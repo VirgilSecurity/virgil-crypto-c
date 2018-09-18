@@ -57,7 +57,7 @@
             </restrict>
 
             <restrict value="1">
-                Implementor is not default, so it's name will will be prefixed as usual.
+                Implementor is default, so it's name will not be prefixed to types and functions.
             </restrict>
         </attr>
 

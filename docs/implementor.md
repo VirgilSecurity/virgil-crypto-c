@@ -11,11 +11,13 @@ attribute names are case-sensitive and we use only lower-case names.
     <implementor name [is_default]>
        <implementation name [project]>
           <context>
-             <require [scope] [project] [library] [module] [header] [feature] [interface] [class]>
-                <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]/>
+             <require [scope] [project] [library] [module] [header] [feature] [interface] [class]
+                  [implementation]>
+                <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]
+                     [implementation]/>
              </require>
-             <property is_reference name [type] [class] [enum] [callback] [implementation] [size] [uid]
-                  [access] [bits]>
+             <property is_reference name [type] [class] [enum] [callback] [impl] [size] [uid] [access]
+                  [bits]>
                 <string [access] [length]/>
                 <array [access] [length] [length_constant]/>
              </property>
@@ -23,7 +25,7 @@ attribute names are case-sensitive and we use only lower-case names.
           <interface name>
              <constant name [c_prefix] [of_class] [uid] [feature] [definition] [value]/>
           </interface>
-          <dependency name [library] [project] [interface] [api] [class]/>
+          <dependency name [library] [project] [interface] [api] [class] [impl] [type_name]/>
           <require .../>
        </implementation>
     </implementor>
@@ -62,7 +64,7 @@ is_default:
 
 Value: Meaning:
 0: Implementor is not default, so it's name will be prefixed to types and functions.
-1: Implementor is not default, so it's name will will be prefixed as usual.
+1: Implementor is default, so it's name will not be prefixed to types and functions.
 
 
 The 'implementation' item
@@ -116,6 +118,7 @@ feature.
       [ feature = "..." ]
       [ interface = "..." ]
       [ class = "..." ]
+      [ implementation = "..." ]
         >
         <alternative>
     </require>
@@ -157,6 +160,9 @@ interface:
 class:
     Required class name. The class attribute is optional.
 
+implementation:
+    Required implementation name. The implementation attribute is optional.
+
 
 The 'alternative' item
 ----------------------
@@ -173,6 +179,7 @@ used, and in fact replace each other.
       [ feature = "..." ]
       [ interface = "..." ]
       [ class = "..." ]
+      [ implementation = "..." ]
         />
 
 The alternative item can have these attributes:
@@ -212,6 +219,9 @@ interface:
 class:
     Required class name. The class attribute is optional.
 
+implementation:
+    Required implementation name. The implementation attribute is optional.
+
 
 The 'property' item
 -------------------
@@ -226,7 +236,7 @@ property.
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
-      [ implementation = "..." ]
+      [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ uid = "..." ]
       [ access = "readonly | writeonly | readwrite | disown" ]
@@ -287,11 +297,10 @@ callback:
     Defines instance as a callback. 1. If value in a format .(uid), then it
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The callback attribute is optional.
+    any third party type can be used. The callback attribute is optional.
 
-implementation:
-    Defines specific implementation name. The implementation attribute is
-    optional.
+impl:
+    Defines specific implementation name. The impl attribute is optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -473,6 +482,8 @@ Defines dependency to interface or class.
       [ interface = "..." ]
       [ api = "..." ]
       [ class = "..." ]
+      [ impl = "..." ]
+      [ type_name = "..." ]
         />
 
 The dependency item can have these attributes:
@@ -500,4 +511,12 @@ api:
 class:
     Defines name of the class depends on. Dependency is taken as class
     context object. The class attribute is optional.
+
+impl:
+    Defines name of the implementation depends on. Dependency is taken as
+    specific implementation object. The impl attribute is optional.
+
+type_name:
+    This is auto-resolve attribute! It is equal to the one of the attributes:
+    {interface, api, class}. The type_name attribute is optional.
 
