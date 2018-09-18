@@ -1,0 +1,154 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   This is GSL file that maintain information about projects API and
+#   projects resolution context.
+#
+#   Private function prefix is: F17.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+
+gsl from "common.gsl"
+
+
+# ---------------------------------------------------------------------------
+#   Return active project.
+# ---------------------------------------------------------------------------
+function _F17_get_active_project (projects_api)
+    check_arguments (my, "projects_api", my)
+
+    assert_attribute (my.projects_api, "active_project", my)
+
+    my.project = my.projects_api->project (name = my.projects_api.active_project) ?
+
+    if ! defined (my.project)
+        echo_fatal ("Active project is defined, but missed within 'projects_api'.", my)
+    endif
+
+    return my.project
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Load existing <projects_api/> entity or create new one.
+# ---------------------------------------------------------------------------
+function projects_api_load (work_path)
+    my.dir_path = directory.resolve (my.work_path) ?
+    my.file_path = "$(my.dir_path?:)projects_api.xml"
+
+    if file.exists (my.file_path)
+        my.projects_api = item_load_from_file(my.file_path)
+    else
+        my.projects_api = XML.new("projects_api")
+    endif
+
+    return my.projects_api
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Save <projects_api/> entity to the file at given path.
+# ---------------------------------------------------------------------------
+function projects_api_save (projects_api, work_path)
+    check_arguments (my, "projects_api", my)
+
+    item_save_to_file(my.projects_api, "projects_api.xml", my.work_path)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Reset all information about given project and set this project as active.
+# ---------------------------------------------------------------------------
+function projects_api_reset_project (projects_api, project)
+    check_arguments (my, "projects_api, project", my)
+
+    my.project_entry = my.projects_api->project (name = my.project.name) ?
+
+    if defined (my.project_entry)
+        delete my.project_entry
+    endif
+
+    new project to my.projects_api
+        .name = my.project.name
+    endnew
+
+    my.projects_api.active_project = my.project.name
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Return resulution context of the active project.
+# ---------------------------------------------------------------------------
+function projects_api_get_resolution_context (projects_api)
+    check_arguments (my, "projects_api", my)
+
+    my.project = _F17_get_active_project (my.projects_api)
+
+    my.resolution_context = my.project->context ?
+
+    if ! defined (my.resolution_context)
+        new context to my.project
+            my.resolution_context = context
+        endnew
+    endif
+
+    return my.resolution_context
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Return type -> header map of the active project.
+# ---------------------------------------------------------------------------
+function projects_api_get_type_header_map (projects_api)
+    check_arguments (my, "projects_api", my)
+
+    my.project = _F17_get_active_project (my.projects_api)
+
+    my.type_header_map = my.project->type_header_map ?
+
+    if ! defined (my.type_header_map)
+        new type_header_map to my.project
+            my.type_header_map = type_header_map
+        endnew
+    endif
+
+    return my.type_header_map
+endfunction
+
+
+.endtemplate
