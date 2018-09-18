@@ -190,6 +190,8 @@ static void
 vscr_ratchet_sender_chain_init_ctx(vscr_ratchet_sender_chain_t *ratchet_sender_chain_ctx) {
 
     VSCR_ASSERT_PTR(ratchet_sender_chain_ctx);
+
+    vscr_ratchet_chain_key_init(&ratchet_sender_chain_ctx->chain_key);
 }
 
 //
@@ -203,6 +205,7 @@ vscr_ratchet_sender_chain_cleanup_ctx(vscr_ratchet_sender_chain_t *ratchet_sende
     VSCR_ASSERT_PTR(ratchet_sender_chain_ctx);
 
     vsc_buffer_destroy(&ratchet_sender_chain_ctx->public_key);
+    vsc_buffer_erase(ratchet_sender_chain_ctx->private_key);
     vsc_buffer_destroy(&ratchet_sender_chain_ctx->private_key);
     vscr_ratchet_chain_key_cleanup(&ratchet_sender_chain_ctx->chain_key);
 }

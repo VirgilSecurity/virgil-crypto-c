@@ -201,6 +201,5 @@ vscr_ratchet_skipped_message_key_cleanup_ctx(vscr_ratchet_skipped_message_key_t 
     VSCR_ASSERT_PTR(ratchet_skipped_message_key_ctx);
 
     vscr_ratchet_message_key_destroy(&ratchet_skipped_message_key_ctx->message_key);
-    vsc_buffer_erase(ratchet_skipped_message_key_ctx->public_key);
     vsc_buffer_destroy(&ratchet_skipped_message_key_ctx->public_key);
 }
