@@ -277,29 +277,12 @@ function c_module_resolve (source)
     #   but this can be chnged in the future, so keep this function alive.
 endfunction
 
-# ---------------------------------------------------------------------------
-#
-# ---------------------------------------------------------------------------
-function c_module_update_type_header_map(c_module, c_type_header_map)
-    check_arguments (my, "c_module, c_type_header_map", my)
-
-
-    for my.c_module. as c_type where item_in(c_type, "c_enum, c_struct, c_callback, c_method") & defined(c_type.name)
-        if string_equal(c_type.declaration, "public")
-            my.c_type_header_map.$(make_id(c_type.name, "decl")) = my.c_module.c_include_file
-        endif
-
-        if string_equal(c_type.definition, "public")
-            my.c_type_header_map.$(make_id(c_type.name, "def")) = my.c_module.c_include_file
-        endif
-    endfor
-endfunction
 
 # ---------------------------------------------------------------------------
-#
+#   Add missed headers based on the used types.
 # ---------------------------------------------------------------------------
-function c_module_add_headers(c_module, c_type_header_map)
-    check_arguments (my, "c_module, c_type_header_map", my)
+function c_module_add_headers (c_module, header_resolution_map)
+    check_arguments (my, "c_module, header_resolution_map", my)
 
     for my.c_module. as c_type where item_in(c_type, "c_struct, c_callback, c_method")
         for c_type. as c_instance where item_in(c_instance, "c_variable, c_argument, c_return, c_property")
@@ -312,8 +295,13 @@ function c_module_add_headers(c_module, c_type_header_map)
                     (item_in (c_type, "c_struct") & c_type.definition = "public") | \
                     (item_in (c_type, "c_callback, c_method") & c_type.declaration = "public")
 
-            my.header_with_declaration = my.c_type_header_map.$(make_id(c_instance.type, "decl")) ?
-            my.header_with_definition = my.c_type_header_map.$(make_id(c_instance.type, "def")) ?
+            my.header_with_declaration = my.header_resolution_map.$(make_id(c_instance.type, "decl")) ?
+            my.header_with_declaration_is_system = \
+                    my.header_resolution_map.$(make_id(c_instance.type, "decl is system")) ?
+
+            my.header_with_definition = my.header_resolution_map.$(make_id(c_instance.type, "def")) ?
+            my.header_with_definition_is_system = \
+                    my.header_resolution_map.$(make_id(c_instance.type, "def is system")) ?
 
 
             #   Process header with declaration.
@@ -324,7 +312,7 @@ function c_module_add_headers(c_module, c_type_header_map)
                     new c_include to my.c_module
                         .file = my.header_with_declaration
                         .scope = "private"
-                        .is_system = "0"
+                        .is_system = my.header_with_declaration_is_system
 
                         my.c_include = c_include
                     endnew
@@ -347,7 +335,7 @@ function c_module_add_headers(c_module, c_type_header_map)
                     new c_include to my.c_module
                         .file = my.header_with_definition
                         .scope = "private"
-                        .is_system = "0"
+                        .is_system = my.header_with_definition_is_system
 
                         my.c_include = c_include
                     endnew

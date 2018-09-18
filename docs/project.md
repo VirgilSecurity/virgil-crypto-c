@@ -7,7 +7,8 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <project name brief prefix namespace path inc_path inc_private_path src_path work_path>
+    <project name brief prefix namespace path inc_path inc_private_path src_path work_path
+         [install_private_headers_dir] [install_headers_dir]>
        <interface name/>
        <implementor name/>
        <module name/>
@@ -43,6 +44,8 @@ Define project as set of interfaces, implementators and modules.
         inc_private_path = "..."
         src_path = "..."
         work_path = "..."
+      [ install_private_headers_dir = "..." ]
+      [ install_headers_dir = "..." ]
         >
         <interface>
         <implementor>
@@ -79,6 +82,14 @@ inc_private_path:
 src_path:
     Path to the directory with source files. The src_path attribute is
     required.
+
+install_headers_dir:
+    Relative directory where headers will be installed. The
+    install_headers_dir attribute is optional.
+
+install_private_headers_dir:
+    Relative directory where private headers will be installed. The
+    install_private_headers_dir attribute is optional.
 
 work_path:
     Path to the directory, that is used to hold temporary files. The

@@ -45,6 +45,7 @@
 
 
 gsl from "common.gsl"
+gsl from "context.gsl"
 
 
 # ---------------------------------------------------------------------------
@@ -105,6 +106,10 @@ function projects_api_reset_project (projects_api, project)
 
     new project to my.projects_api
         .name = my.project.name
+        .install_headers_dir = my.project.install_headers_dir
+        .install_private_headers_dir = my.project.install_private_headers_dir
+
+        context_append_project (project, my.project)
     endnew
 
     my.projects_api.active_project = my.project.name
@@ -112,43 +117,102 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-#   Return resulution context of the active project.
-# ---------------------------------------------------------------------------
-function projects_api_get_resolution_context (projects_api)
-    check_arguments (my, "projects_api", my)
-
-    my.project = _F17_get_active_project (my.projects_api)
-
-    my.resolution_context = my.project->context ?
-
-    if ! defined (my.resolution_context)
-        new context to my.project
-            my.resolution_context = context
-        endnew
-    endif
-
-    return my.resolution_context
-endfunction
-
-
-# ---------------------------------------------------------------------------
 #   Return type -> header map of the active project.
 # ---------------------------------------------------------------------------
-function projects_api_get_type_header_map (projects_api)
+function projects_api_build_header_resolution_map (projects_api)
     check_arguments (my, "projects_api", my)
+
+    my.resolution_map = XML.new ("header_resolution_map")
+
+    for my.projects_api.project
+        my.public_prefix = (project.name <> my.projects_api.active_project) ?? project.install_headers_dir ? ""
+        my.private_prefix = (project.name <> my.projects_api.active_project) ?? project.install_private_headers_dir ? ""
+
+        for project.header
+            if (project.name <> my.projects_api.active_project) & (header.scope = "internal")
+                next
+
+            elsif header.scope = "public"
+                my.file = my.public_prefix + header.file
+
+            elsif header.scope = "private"
+                my.file = my.private_prefix + header.file
+            endif
+
+            for header.declaration
+                my.resolution_map.$(declaration.type:)_decl = my.file
+                my.resolution_map.$(declaration.type:)_decl_is_system = ! string_empty (my.prefix)
+            endfor
+
+            for header.definition
+                my.resolution_map.$(definition.type:)_def = my.file
+                my.resolution_map.$(definition.type:)_def_is_system = ! string_empty (my.prefix)
+            endfor
+        endfor
+    endfor
+
+    return my.resolution_map
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Return global resolution context, that contains all uid to name maps.
+# ---------------------------------------------------------------------------
+function projects_api_build_type_resolution_map (projects_api)
+    check_arguments (my, "projects_api", my)
+
+    my.resolution_map = XML.new ("type_resolution_map")
+
+    for my.projects_api.project
+        my.prefix = (project.name <> my.projects_api.active_project) ?? make_id ("project", project.name) ?
+
+        for project.uid
+            my.resolution_map.$(make_id (my.prefix, uid.uid)) = uid.ref
+        endfor
+    endfor
+
+    return my.resolution_map
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Traverse all known entries within source and collect meta information
+#   about types.
+# ---------------------------------------------------------------------------
+function projects_api_collect_info (projects_api, source)
+    check_arguments (my, "projects_api, source", my)
 
     my.project = _F17_get_active_project (my.projects_api)
 
-    my.type_header_map = my.project->type_header_map ?
+    context_append_hierarchy (my.project, my.source)
 
-    if ! defined (my.type_header_map)
-        new type_header_map to my.project
-            my.type_header_map = type_header_map
-        endnew
-    endif
+    #   Process <c_module/> entries.
+    for my.source.c_module
+        my.header = my.project->header (file = c_module.c_include_file) ?
 
-    return my.type_header_map
+        if ! defined (my.header)
+            new header to my.project
+                .file = c_module.c_include_file
+                .scope = c_module.scope
+
+                my.header = header
+            endnew
+        endif
+
+        for c_module. as c_type where item_in(c_type, "c_enum, c_struct, c_callback, c_method") & defined(c_type.name)
+            if string_equal(c_type.declaration, "public")
+                new declaration to my.header
+                    .type = c_type.name
+                endnew
+            endif
+
+            if string_equal(c_type.definition, "public")
+                new definition to my.header
+                    .type = c_type.name
+                endnew
+            endif
+        endfor
+    endfor
 endfunction
-
 
 .endtemplate

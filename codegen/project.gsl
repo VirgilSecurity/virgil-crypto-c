@@ -55,6 +55,8 @@ function project_resolve (project)
     endif
 
     assert_item (my.project, "version", my)
+    assert_attribute (my.project, "name", my)
+    assert_attribute (my.project, "namespace", my)
     assert_attribute (my.project, "path", my)
     assert_attribute (my.project, "inc_path", my)
     assert_attribute (my.project, "inc_private_path", my)
@@ -72,6 +74,9 @@ function project_resolve (project)
 
     my.project.version_string = "$(my.version.major:).$(my.version.minor:).$(my.version.patch:)"
     my.project.cmake_target ?= "$(my.project.name:c)"
+
+    my.project.install_headers_dir ?= "$(my.project.namespace:c)/$(my.project.name:c)/"
+    my.project.install_private_headers_dir ?= "$(my.project.namespace:c)/$(my.project.name:c)/private/"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -85,19 +90,6 @@ function project_generate_structure (project)
     directory.create (my.project.inc_private_path)
     directory.create (my.project.src_path)
     directory.create (my.project.work_path)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Update resolution context with a project information.
-# ---------------------------------------------------------------------------
-function project_update_context (project, context)
-    check_argument (my, "project")
-    check_argument (my, "context")
-
-    my.context.project_version_major = my.project.version_major
-    my.context.project_version_minor = my.project.version_minor
-    my.context.project_version_patch = my.project.version_patch
-    my.context.project_version_string = my.project.version_string
 endfunction
 
 # ---------------------------------------------------------------------------
