@@ -52,6 +52,7 @@ gsl from "class.gsl"
 gsl from "context.gsl"
 gsl from "meta.gsl"
 gsl from "features.gsl"
+gsl from "projects_api.gsl"
 
 gsl from "c_features.gsl"
 gsl from "c_module.gsl"
@@ -75,14 +76,15 @@ gsl from "cmake_files_codegen.gsl"
 # ###########################################################################
 
 
-function process_project (project, features_list, echo_level)
-    check_arguments (my, "project, features_list, echo_level", my)
+function process_project (project, features_list, projects_api, echo_level)
+    check_arguments (my, "project, features_list, projects_api, echo_level", my)
 
     #   Create my.root eleement where all models will be created.
     my.root = XML.new ("my.root")
 
     #   Create element that holds resolution context.
-    my.context = XML.new ("context")
+    projects_api_reset_project (my.projects_api, my.project)
+    my.context = projects_api_get_resolution_context (my.projects_api)
 
     #   Load project's components.
     for my.project.interface
@@ -165,20 +167,17 @@ function process_project (project, features_list, echo_level)
     #   Process lang_modules.
     c_module_resolve (my.root)
 
-
     #   At this point all elements are created and resolved.
     if my.echo_level = "debug"
         item_save_to_file (my.root, "root.xml", my.project.work_path)
     endif
 
-
     #   Fullfil context with models name.
     context_resolve_refs (my.context, my.root)
     context_append_hierarchy (my.context, my.root)
-    item_save_to_file (my.context, "context.xml", my.project.work_path)
 
     #   Resolve modules.
-    my.c_type_header_map = XML.new("c_type_header_map")
+    my.c_type_header_map = projects_api_get_type_header_map (my.projects_api)
 
     for my.root.c_module
         my.c_module_resolved = \
@@ -186,14 +185,12 @@ function process_project (project, features_list, echo_level)
         move my.c_module_resolved before c_module
         delete c_module
 
-        c_module_update_type_header_map(my.c_module_resolved, my.c_type_header_map)
+        c_module_update_type_header_map (my.c_module_resolved, my.c_type_header_map)
     endfor
 
     for my.root.c_module
-        c_module_add_headers(c_module, my.c_type_header_map)
+        c_module_add_headers (c_module, my.c_type_header_map)
     endfor
-
-    item_save_to_file (my.c_type_header_map, "c_type_header_map.xml", my.project.work_path)
 
     #   Generate code.
     c_module_generate_sources (my.root)
@@ -216,15 +213,20 @@ endfunction
 # ---------------------------------------------------------------------------
 function run_main ()
     main.echo_level ?= "fatal"
+    main.work_path ?= "generated"
 
     #   Create container where all features will be located
     my.features_list = XML.new("features_list")
 
+    my.projects_api = projects_api_load (main.work_path)
+
     #   Process code generation
     for main.project
         my.loaded_project = item_load_from_file ("project/$(make_id ("project", project.name)).xml")
-        process_project (my.loaded_project, my.features_list, main.echo_level)
+        process_project (my.loaded_project, my.features_list, my.projects_api, main.echo_level)
     endfor
+
+    projects_api_save (my.projects_api, main.work_path)
 
     for main.external where defined (library)
         my.loaded_library = item_load_from_file ("external/$(make_id ("library", external.library)).xml")
