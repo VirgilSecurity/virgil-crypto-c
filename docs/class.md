@@ -8,13 +8,15 @@ required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
     <class name [of_class] [scope] [project] [c_prefix] [context] [lifecycle]>
-       <require [scope] [project] [library] [module] [header] [feature] [interface] [class]>
-          <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]/>
+       <require [scope] [project] [library] [module] [header] [feature] [interface] [class]
+            [implementation]>
+          <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]
+               [implementation]/>
        </require>
-       <dependency name [library] [project] [interface] [api] [class]/>
+       <dependency name [library] [project] [interface] [api] [class] [impl] [type_name]/>
        <constant name [c_prefix] [of_class] [uid] [feature] [definition] [value]/>
-       <property is_reference name [type] [class] [enum] [callback] [implementation] [size] [uid]
-            [access] [bits]>
+       <property is_reference name [type] [class] [enum] [callback] [impl] [size] [uid] [access]
+            [bits]>
           <string [access] [length]/>
           <array [access] [length] [length_constant]/>
        </property>
@@ -23,12 +25,11 @@ attribute names are case-sensitive and we use only lower-case names.
           <constant .../>
        </enum>
        <callback name [declaration] [of_class] [uid] [feature] [c_prefix]>
-          <return is_reference [access] [class] [enum] [callback] [implementation] [size] [type]>
+          <return is_reference [access] [class] [enum] [callback] [impl] [size] [type]>
              <string .../>
              <array .../>
           </return>
-          <argument name is_reference [uid] [class] [enum] [callback] [implementation] [size] [access]
-               [type]>
+          <argument name is_reference [uid] [class] [enum] [callback] [impl] [size] [access] [type]>
              <string .../>
              <array .../>
           </argument>
@@ -37,12 +38,11 @@ attribute names are case-sensitive and we use only lower-case names.
             [context]>
           <return .../>
           <argument .../>
-          <variable is_reference name [class] [type] [callback] [implementation] [size] [access]
-               [definition] [declaration] [visibility] [c_prefix] [of_class]
-               [uid] [feature] [enum]>
-             <value is_reference value [class] [enum] [callback] [implementation] [size] [access]
-                  [type]>
-                <cast is_reference [access] [class] [enum] [callback] [implementation] [size] [type]>
+          <variable is_reference name [class] [type] [callback] [impl] [size] [access] [definition]
+               [declaration] [visibility] [c_prefix] [of_class] [uid] [feature]
+               [enum]>
+             <value is_reference value [class] [enum] [callback] [impl] [size] [access] [type]>
+                <cast is_reference [access] [class] [enum] [callback] [impl] [size] [type]>
                    <string .../>
                    <array .../>
                 </cast>
@@ -166,6 +166,7 @@ feature.
       [ feature = "..." ]
       [ interface = "..." ]
       [ class = "..." ]
+      [ implementation = "..." ]
         >
         <alternative>
     </require>
@@ -207,6 +208,9 @@ interface:
 class:
     Required class name. The class attribute is optional.
 
+implementation:
+    Required implementation name. The implementation attribute is optional.
+
 
 The 'alternative' item
 ----------------------
@@ -223,6 +227,7 @@ used, and in fact replace each other.
       [ feature = "..." ]
       [ interface = "..." ]
       [ class = "..." ]
+      [ implementation = "..." ]
         />
 
 The alternative item can have these attributes:
@@ -262,6 +267,9 @@ interface:
 class:
     Required class name. The class attribute is optional.
 
+implementation:
+    Required implementation name. The implementation attribute is optional.
+
 
 The 'dependency' item
 ---------------------
@@ -275,6 +283,8 @@ Defines dependency to interface or class.
       [ interface = "..." ]
       [ api = "..." ]
       [ class = "..." ]
+      [ impl = "..." ]
+      [ type_name = "..." ]
         />
 
 The dependency item can have these attributes:
@@ -302,6 +312,14 @@ api:
 class:
     Defines name of the class depends on. Dependency is taken as class
     context object. The class attribute is optional.
+
+impl:
+    Defines name of the implementation depends on. Dependency is taken as
+    specific implementation object. The impl attribute is optional.
+
+type_name:
+    This is auto-resolve attribute! It is equal to the one of the attributes:
+    {interface, api, class}. The type_name attribute is optional.
 
 
 The 'constant' item
@@ -368,7 +386,7 @@ property.
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
-      [ implementation = "..." ]
+      [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ uid = "..." ]
       [ access = "readonly | writeonly | readwrite | disown" ]
@@ -429,11 +447,10 @@ callback:
     Defines instance as a callback. 1. If value in a format .(uid), then it
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The callback attribute is optional.
+    any third party type can be used. The callback attribute is optional.
 
-implementation:
-    Defines specific implementation name. The implementation attribute is
-    optional.
+impl:
+    Defines specific implementation name. The impl attribute is optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -664,7 +681,7 @@ Defines attributes that related to the instance type. Defines return type.
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
-      [ implementation = "..." ]
+      [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
         >
@@ -719,11 +736,10 @@ callback:
     Defines instance as a callback. 1. If value in a format .(uid), then it
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The callback attribute is optional.
+    any third party type can be used. The callback attribute is optional.
 
-implementation:
-    Defines specific implementation name. The implementation attribute is
-    optional.
+impl:
+    Defines specific implementation name. The impl attribute is optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -759,7 +775,7 @@ name, type, and usage information.
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
-      [ implementation = "..." ]
+      [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
@@ -819,11 +835,10 @@ callback:
     Defines instance as a callback. 1. If value in a format .(uid), then it
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The callback attribute is optional.
+    any third party type can be used. The callback attribute is optional.
 
-implementation:
-    Defines specific implementation name. The implementation attribute is
-    optional.
+impl:
+    Defines specific implementation name. The impl attribute is optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -945,7 +960,7 @@ attributes for the component. Defines global variable.
       [ class = "..." ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ callback = "..." ]
-      [ implementation = "..." ]
+      [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
       [ definition = "public | private | external"  ("private") ]
@@ -1009,11 +1024,10 @@ callback:
     Defines instance as a callback. 1. If value in a format .(uid), then it
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The callback attribute is optional.
+    any third party type can be used. The callback attribute is optional.
 
-implementation:
-    Defines specific implementation name. The implementation attribute is
-    optional.
+impl:
+    Defines specific implementation name. The impl attribute is optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -1096,7 +1110,7 @@ variable value.
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
-      [ implementation = "..." ]
+      [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
@@ -1153,11 +1167,10 @@ callback:
     Defines instance as a callback. 1. If value in a format .(uid), then it
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The callback attribute is optional.
+    any third party type can be used. The callback attribute is optional.
 
-implementation:
-    Defines specific implementation name. The implementation attribute is
-    optional.
+impl:
+    Defines specific implementation name. The impl attribute is optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -1195,7 +1208,7 @@ type to the type defined in this entity.
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
-      [ implementation = "..." ]
+      [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
         >
@@ -1250,11 +1263,10 @@ callback:
     Defines instance as a callback. 1. If value in a format .(uid), then it
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The callback attribute is optional.
+    any third party type can be used. The callback attribute is optional.
 
-implementation:
-    Defines specific implementation name. The implementation attribute is
-    optional.
+impl:
+    Defines specific implementation name. The impl attribute is optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is

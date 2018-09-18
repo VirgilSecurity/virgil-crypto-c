@@ -586,7 +586,7 @@
         Dependency is taken as specific implementation object.
     </attr>
 
-    <attr attr="type_name">
+    <attr name="type_name">
         This is auto-resolve attribute!
         It is equal to the one of the attributes: {interface, api, class}.
     </attr>
