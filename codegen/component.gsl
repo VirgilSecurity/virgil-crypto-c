@@ -1456,4 +1456,27 @@ function component_create_argument_impl_ref (destination, meta)
 endfunction
 
 
+# ---------------------------------------------------------------------------
+#   Replace shorten refs, i.e. '.(_argument_impl)' with fully qualified ref.
+# ---------------------------------------------------------------------------
+function foreach_component_resolve_shortcut_refs (component, lang, hierarchy_uid)
+    check_arguments (my, "component")
+
+    my.lang ?= my.component.lang ?
+
+    my.hierarchy_uid = my.component.uid ? my.hierarchy_uid ?
+
+    if defined (my.component.) & defined (my.hierarchy_uid)
+        while regexp.match ("(\\.\\(_([\\w]+)\\))", my.component., my.shorten_ref, my.shorten_uid)
+            my.full_uid = make_id (my.hierarchy_uid, my.shorten_uid)
+            my.full_ref = my.lang ?? lang_ref (my.full_uid, my.lang) ? ref (my.full_uid)
+            my.component. = string.replace (my.component., "$(my.shorten_ref:)|$(my.full_ref)")
+        endwhile
+    endif
+
+    for my.component. as inner_component where is_item (inner_component)
+        foreach_component_resolve_shortcut_refs (inner_component, my.lang, my.hierarchy_uid)
+    endfor
+endfunction
+
 .endtemplate
