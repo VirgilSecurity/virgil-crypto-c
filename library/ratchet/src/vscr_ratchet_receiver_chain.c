@@ -190,6 +190,8 @@ static void
 vscr_ratchet_receiver_chain_init_ctx(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain_ctx) {
 
     VSCR_ASSERT_PTR(ratchet_receiver_chain_ctx);
+
+    vscr_ratchet_chain_key_init(&ratchet_receiver_chain_ctx->chain_key);
 }
 
 //

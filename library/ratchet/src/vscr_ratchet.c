@@ -255,12 +255,12 @@ vscr_ratchet_init_ctx(vscr_ratchet_t *ratchet_ctx) {
 static void
 vscr_ratchet_cleanup_ctx(vscr_ratchet_t *ratchet_ctx) {
 
-    vscr_zeroize(ratchet_ctx->root_key, vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
-    vscr_ratchet_sender_chain_destroy(&ratchet_ctx->sender_chain);
+    vscr_impl_destroy(&ratchet_ctx->rng);
     vscr_ratchet_cipher_destroy(&ratchet_ctx->cipher);
     vscr_ratchet_kdf_info_destroy(&ratchet_ctx->kdf_info);
+    vscr_ratchet_sender_chain_destroy(&ratchet_ctx->sender_chain);
     vscr_ratchet_receiver_chain_list_node_destroy(&ratchet_ctx->receiver_chains);
-    vscr_impl_destroy(&ratchet_ctx->rng);
+    vscr_ratchet_skipped_message_key_list_node_destroy(&ratchet_ctx->skipped_message_keys);
 }
 
 static void
@@ -298,7 +298,9 @@ vscr_ratchet_create_chain_key(const vscr_ratchet_t *ratchet_ctx, const vsc_buffe
     chain_key->index = 0;
 
     vscf_hkdf_destroy(&hkdf);
+    vsc_buffer_erase(secret);
     vsc_buffer_destroy(&secret);
+    vsc_buffer_erase(derived_secret);
     vsc_buffer_destroy(&derived_secret);
 }
 
