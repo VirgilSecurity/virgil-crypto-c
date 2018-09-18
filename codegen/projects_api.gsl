@@ -125,11 +125,13 @@ function projects_api_build_header_resolution_map (projects_api)
     my.resolution_map = XML.new ("header_resolution_map")
 
     for my.projects_api.project
-        my.public_prefix = (project.name <> my.projects_api.active_project) ?? project.install_headers_dir ? ""
-        my.private_prefix = (project.name <> my.projects_api.active_project) ?? project.install_private_headers_dir ? ""
+        my.is_external_project = (project.name = my.projects_api.active_project) ?? "0" ? "1"
+
+        my.public_prefix = my.is_external_project ?? project.install_headers_dir ? ""
+        my.private_prefix = my.is_external_project ?? project.install_private_headers_dir ? ""
 
         for project.header
-            if (project.name <> my.projects_api.active_project) & (header.scope = "internal")
+            if my.is_external_project & header.scope = "internal"
                 next
 
             elsif header.scope = "public"
@@ -141,12 +143,12 @@ function projects_api_build_header_resolution_map (projects_api)
 
             for header.declaration
                 my.resolution_map.$(declaration.type:)_decl = my.file
-                my.resolution_map.$(declaration.type:)_decl_is_system = ! string_empty (my.prefix)
+                my.resolution_map.$(declaration.type:)_decl_is_system = my.is_external_project
             endfor
 
             for header.definition
                 my.resolution_map.$(definition.type:)_def = my.file
-                my.resolution_map.$(definition.type:)_def_is_system = ! string_empty (my.prefix)
+                my.resolution_map.$(definition.type:)_def_is_system = my.is_external_project
             endfor
         endfor
     endfor

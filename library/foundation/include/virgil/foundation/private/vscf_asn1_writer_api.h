@@ -57,8 +57,8 @@
 #include "vscf_api.h"
 #include "vscf_impl.h"
 
-#include <virgil/common/vsc_data.h>
 #include <virgil/common/vsc_buffer.h>
+#include <virgil/common/vsc_data.h>
 //  @end
 
 
