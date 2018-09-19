@@ -58,7 +58,7 @@ void
 test__rsa_private_key_key_len__imported_2048_PRIVATE_KEY_PKCS1__returns_256(void) {
     vscf_rsa_private_key_impl_t *private_key_impl = vscf_rsa_private_key_new();
 
-    vscf_rsa_private_key_take_asn1_reader(private_key_impl, vscf_asn1rd_impl(vscf_asn1rd_new()));
+    vscf_rsa_private_key_take_asn1rd(private_key_impl, vscf_asn1rd_impl(vscf_asn1rd_new()));
 
     vscf_error_t result = vscf_rsa_private_key_import_private_key(private_key_impl, test_rsa_2048_PRIVATE_KEY_PKCS1);
     VSCF_ASSERT(result == vscf_SUCCESS);
@@ -74,8 +74,8 @@ test__rsa_private_key_export_private_key__from_imported_2048_PRIVATE_KEY_PKCS1__
     vscf_impl_t *asn1rd = vscf_asn1rd_impl(vscf_asn1rd_new());
     vscf_impl_t *asn1wr = vscf_asn1wr_impl(vscf_asn1wr_new());
 
-    vscf_rsa_private_key_take_asn1_reader(private_key_impl, vscf_asn1rd_impl(vscf_asn1rd_new()));
-    vscf_rsa_private_key_take_asn1_writer(private_key_impl, vscf_asn1wr_impl(vscf_asn1wr_new()));
+    vscf_rsa_private_key_take_asn1rd(private_key_impl, vscf_asn1rd_impl(vscf_asn1rd_new()));
+    vscf_rsa_private_key_take_asn1wr(private_key_impl, vscf_asn1wr_impl(vscf_asn1wr_new()));
 
     vscf_error_t result = vscf_rsa_private_key_import_private_key(private_key_impl, test_rsa_2048_PRIVATE_KEY_PKCS1);
     VSCF_ASSERT(result == vscf_SUCCESS);
@@ -101,7 +101,7 @@ test__rsa_private_key_decrypt__with_imported_2048_PRIVATE_KEY_PKCS1_and_2048_ENC
     //  Setup dependencies
     vscf_rsa_private_key_impl_t *private_key_impl = vscf_rsa_private_key_new();
 
-    vscf_rsa_private_key_take_asn1_reader(private_key_impl, vscf_asn1rd_impl(vscf_asn1rd_new()));
+    vscf_rsa_private_key_take_asn1rd(private_key_impl, vscf_asn1rd_impl(vscf_asn1rd_new()));
     vscf_rsa_private_key_use_hash(private_key_impl, vscf_sha512_hash_api());
 
     vscf_fake_random_impl_t *fake_random = vscf_fake_random_new();
@@ -133,8 +133,8 @@ test__rsa_private_key_extract_public_key__from_imported_2048_PRIVATE_KEY_PKCS1__
     //  Setup dependencies
     vscf_rsa_private_key_impl_t *private_key_impl = vscf_rsa_private_key_new();
 
-    vscf_rsa_private_key_take_asn1_reader(private_key_impl, vscf_asn1rd_impl(vscf_asn1rd_new()));
-    vscf_rsa_private_key_take_asn1_writer(private_key_impl, vscf_asn1wr_impl(vscf_asn1wr_new()));
+    vscf_rsa_private_key_take_asn1rd(private_key_impl, vscf_asn1rd_impl(vscf_asn1rd_new()));
+    vscf_rsa_private_key_take_asn1wr(private_key_impl, vscf_asn1wr_impl(vscf_asn1wr_new()));
 
     //  Import private key
     vscf_error_t result = vscf_rsa_private_key_import_private_key(private_key_impl, test_rsa_2048_PRIVATE_KEY_PKCS1);
@@ -167,7 +167,7 @@ test__rsa_private_key_sign__with_imported_2048_PRIVATE_KEY_PKCS1_and_random_AB_a
     //  Setup dependencies
     vscf_rsa_private_key_impl_t *private_key_impl = vscf_rsa_private_key_new();
 
-    vscf_rsa_private_key_take_asn1_reader(private_key_impl, vscf_asn1rd_impl(vscf_asn1rd_new()));
+    vscf_rsa_private_key_take_asn1rd(private_key_impl, vscf_asn1rd_impl(vscf_asn1rd_new()));
     vscf_rsa_private_key_use_hash(private_key_impl, vscf_sha512_hash_api());
 
     vscf_fake_random_impl_t *fake_random = vscf_fake_random_new();
@@ -199,7 +199,7 @@ test__rsa_private_key_generate_key__bitlen_256_and_exponent_3__exported_equals_2
     //  Setup dependencies
     vscf_rsa_private_key_impl_t *private_key_impl = vscf_rsa_private_key_new();
 
-    vscf_rsa_private_key_take_asn1_writer(private_key_impl, vscf_asn1wr_impl(vscf_asn1wr_new()));
+    vscf_rsa_private_key_take_asn1wr(private_key_impl, vscf_asn1wr_impl(vscf_asn1wr_new()));
 
     vscf_fake_random_impl_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_data(fake_random, test_rsa_RANDOM);

@@ -216,6 +216,8 @@ vscf_asn1rd_init(vscf_asn1rd_impl_t *asn1rd_impl) {
     VSCF_ASSERT_PTR(asn1rd_impl);
     VSCF_ASSERT_PTR(asn1rd_impl->info == NULL);
 
+    vscf_zeroize (asn1rd_impl, sizeof(vscf_asn1rd_impl_t));
+
     asn1rd_impl->info = &info;
 
     vscf_asn1rd_init_ctx(asn1rd_impl);

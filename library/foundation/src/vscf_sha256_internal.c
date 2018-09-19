@@ -185,6 +185,8 @@ vscf_sha256_init(vscf_sha256_impl_t *sha256_impl) {
     VSCF_ASSERT_PTR(sha256_impl);
     VSCF_ASSERT_PTR(sha256_impl->info == NULL);
 
+    vscf_zeroize (sha256_impl, sizeof(vscf_sha256_impl_t));
+
     sha256_impl->info = &info;
 
     vscf_sha256_init_ctx(sha256_impl);

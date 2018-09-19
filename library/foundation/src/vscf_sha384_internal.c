@@ -185,6 +185,8 @@ vscf_sha384_init(vscf_sha384_impl_t *sha384_impl) {
     VSCF_ASSERT_PTR(sha384_impl);
     VSCF_ASSERT_PTR(sha384_impl->info == NULL);
 
+    vscf_zeroize (sha384_impl, sizeof(vscf_sha384_impl_t));
+
     sha384_impl->info = &info;
 
     vscf_sha384_init_ctx(sha384_impl);

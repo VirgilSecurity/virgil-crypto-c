@@ -185,6 +185,8 @@ vscf_sha512_init(vscf_sha512_impl_t *sha512_impl) {
     VSCF_ASSERT_PTR(sha512_impl);
     VSCF_ASSERT_PTR(sha512_impl->info == NULL);
 
+    vscf_zeroize (sha512_impl, sizeof(vscf_sha512_impl_t));
+
     sha512_impl->info = &info;
 
     vscf_sha512_init_ctx(sha512_impl);

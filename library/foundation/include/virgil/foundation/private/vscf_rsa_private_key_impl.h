@@ -98,11 +98,11 @@ struct vscf_rsa_private_key_impl_t {
     //
     vscf_impl_t *random;
     //
-    //  Dependency to the 'asn1 reader'.
+    //  Dependency to the 'asn1rd'.
     //
     vscf_impl_t *asn1rd;
     //
-    //  Dependency to the 'asn1 writer'.
+    //  Dependency to the 'asn1wr'.
     //
     vscf_impl_t *asn1wr;
     //

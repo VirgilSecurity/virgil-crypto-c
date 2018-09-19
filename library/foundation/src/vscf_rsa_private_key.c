@@ -198,11 +198,11 @@ vscf_rsa_private_key_extract_public_key(vscf_rsa_private_key_impl_t *rsa_private
     }
 
     if (rsa_private_key_impl->asn1rd) {
-        vscf_rsa_public_key_use_asn1_reader(rsa_public_key_impl, rsa_private_key_impl->asn1rd);
+        vscf_rsa_public_key_use_asn1rd(rsa_public_key_impl, rsa_private_key_impl->asn1rd);
     }
 
     if (rsa_private_key_impl->asn1wr) {
-        vscf_rsa_public_key_use_asn1_writer(rsa_public_key_impl, rsa_private_key_impl->asn1wr);
+        vscf_rsa_public_key_use_asn1wr(rsa_public_key_impl, rsa_private_key_impl->asn1wr);
     }
 
     return vscf_rsa_public_key_impl(rsa_public_key_impl);

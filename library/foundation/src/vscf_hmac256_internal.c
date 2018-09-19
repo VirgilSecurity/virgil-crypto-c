@@ -189,6 +189,8 @@ vscf_hmac256_init(vscf_hmac256_impl_t *hmac256_impl) {
     VSCF_ASSERT_PTR(hmac256_impl);
     VSCF_ASSERT_PTR(hmac256_impl->info == NULL);
 
+    vscf_zeroize (hmac256_impl, sizeof(vscf_hmac256_impl_t));
+
     hmac256_impl->info = &info;
 
     vscf_hmac256_init_ctx(hmac256_impl);

@@ -127,9 +127,9 @@ vscf_kdf2_init(vscf_kdf2_impl_t *kdf2_impl) {
     VSCF_ASSERT_PTR(kdf2_impl);
     VSCF_ASSERT_PTR(kdf2_impl->info == NULL);
 
-    kdf2_impl->info = &info;
+    vscf_zeroize (kdf2_impl, sizeof(vscf_kdf2_impl_t));
 
-    kdf2_impl->hash = NULL;
+    kdf2_impl->info = &info;
 }
 
 //
@@ -143,7 +143,7 @@ vscf_kdf2_cleanup(vscf_kdf2_impl_t *kdf2_impl) {
         return;
     }
 
-    vscf_kdf2_release_hash_stream(kdf2_impl);
+    vscf_kdf2_release_hash(kdf2_impl);
 
     kdf2_impl->info = NULL;
 }
@@ -206,48 +206,6 @@ vscf_kdf2_copy(vscf_kdf2_impl_t *kdf2_impl) {
 }
 
 //
-//  Setup dependency to the interface 'hash stream' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_kdf2_use_hash_stream(vscf_kdf2_impl_t *kdf2_impl, vscf_impl_t *hash) {
-
-    VSCF_ASSERT_PTR(kdf2_impl);
-    VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT_PTR(kdf2_impl->hash == NULL);
-
-    VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
-
-    kdf2_impl->hash = vscf_impl_copy(hash);
-}
-
-//
-//  Setup dependency to the interface 'hash stream' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_kdf2_take_hash_stream(vscf_kdf2_impl_t *kdf2_impl, vscf_impl_t *hash) {
-
-    VSCF_ASSERT_PTR(kdf2_impl);
-    VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT_PTR(kdf2_impl->hash == NULL);
-
-    VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
-
-    kdf2_impl->hash = hash;
-}
-
-//
-//  Release dependency to the interface 'hash stream'.
-//
-VSCF_PUBLIC void
-vscf_kdf2_release_hash_stream(vscf_kdf2_impl_t *kdf2_impl) {
-
-    VSCF_ASSERT_PTR(kdf2_impl);
-
-    vscf_impl_destroy(&kdf2_impl->hash);
-}
-
-//
 //  Return size of 'vscf_kdf2_impl_t' type.
 //
 VSCF_PUBLIC size_t
@@ -264,6 +222,48 @@ vscf_kdf2_impl(vscf_kdf2_impl_t *kdf2_impl) {
 
     VSCF_ASSERT_PTR(kdf2_impl);
     return (vscf_impl_t *)(kdf2_impl);
+}
+
+//
+//  Setup dependency to the interface 'hash stream' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_kdf2_use_hash(vscf_kdf2_impl_t *kdf2_impl, vscf_impl_t *hash) {
+
+    VSCF_ASSERT_PTR(kdf2_impl);
+    VSCF_ASSERT_PTR(hash);
+    VSCF_ASSERT_PTR(kdf2_impl->hash == NULL);
+
+    VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
+
+    kdf2_impl->hash = vscf_impl_copy(hash);
+}
+
+//
+//  Setup dependency to the interface 'hash stream' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_kdf2_take_hash(vscf_kdf2_impl_t *kdf2_impl, vscf_impl_t *hash) {
+
+    VSCF_ASSERT_PTR(kdf2_impl);
+    VSCF_ASSERT_PTR(hash);
+    VSCF_ASSERT_PTR(kdf2_impl->hash == NULL);
+
+    VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
+
+    kdf2_impl->hash = hash;
+}
+
+//
+//  Release dependency to the interface 'hash stream'.
+//
+VSCF_PUBLIC void
+vscf_kdf2_release_hash(vscf_kdf2_impl_t *kdf2_impl) {
+
+    VSCF_ASSERT_PTR(kdf2_impl);
+
+    vscf_impl_destroy(&kdf2_impl->hash);
 }
 
 

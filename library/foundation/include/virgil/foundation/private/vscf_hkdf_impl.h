@@ -87,7 +87,7 @@ struct vscf_hkdf_impl_t {
     //
     size_t refcnt;
     //
-    //  Dependency to the 'hmac stream'.
+    //  Dependency to the 'hmac'.
     //
     vscf_impl_t *hmac;
 };

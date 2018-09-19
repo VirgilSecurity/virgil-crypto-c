@@ -282,15 +282,9 @@ vscf_rsa_private_key_init(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
     VSCF_ASSERT_PTR(rsa_private_key_impl);
     VSCF_ASSERT_PTR(rsa_private_key_impl->info == NULL);
 
+    vscf_zeroize (rsa_private_key_impl, sizeof(vscf_rsa_private_key_impl_t));
+
     rsa_private_key_impl->info = &info;
-
-    rsa_private_key_impl->hash = NULL;
-
-    rsa_private_key_impl->random = NULL;
-
-    rsa_private_key_impl->asn1rd = NULL;
-
-    rsa_private_key_impl->asn1wr = NULL;
 
     vscf_rsa_private_key_init_ctx(rsa_private_key_impl);
 }
@@ -308,8 +302,8 @@ vscf_rsa_private_key_cleanup(vscf_rsa_private_key_impl_t *rsa_private_key_impl) 
 
     vscf_rsa_private_key_release_hash(rsa_private_key_impl);
     vscf_rsa_private_key_release_random(rsa_private_key_impl);
-    vscf_rsa_private_key_release_asn1_reader(rsa_private_key_impl);
-    vscf_rsa_private_key_release_asn1_writer(rsa_private_key_impl);
+    vscf_rsa_private_key_release_asn1rd(rsa_private_key_impl);
+    vscf_rsa_private_key_release_asn1wr(rsa_private_key_impl);
 
     vscf_rsa_private_key_cleanup_ctx(rsa_private_key_impl);
 
@@ -371,6 +365,25 @@ vscf_rsa_private_key_copy(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
 
     // Proxy to the parent implementation.
     return (vscf_rsa_private_key_impl_t *)vscf_impl_copy((vscf_impl_t *)rsa_private_key_impl);
+}
+
+//
+//  Return size of 'vscf_rsa_private_key_impl_t' type.
+//
+VSCF_PUBLIC size_t
+vscf_rsa_private_key_impl_size(void) {
+
+    return sizeof (vscf_rsa_private_key_impl_t);
+}
+
+//
+//  Cast to the 'vscf_impl_t' type.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_rsa_private_key_impl(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
+
+    VSCF_ASSERT_PTR(rsa_private_key_impl);
+    return (vscf_impl_t *)(rsa_private_key_impl);
 }
 
 //
@@ -443,7 +456,7 @@ vscf_rsa_private_key_release_random(vscf_rsa_private_key_impl_t *rsa_private_key
 //  Setup dependency to the interface 'asn1 reader' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_use_asn1_reader(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vscf_impl_t *asn1rd) {
+vscf_rsa_private_key_use_asn1rd(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vscf_impl_t *asn1rd) {
 
     VSCF_ASSERT_PTR(rsa_private_key_impl);
     VSCF_ASSERT_PTR(asn1rd);
@@ -459,7 +472,7 @@ vscf_rsa_private_key_use_asn1_reader(vscf_rsa_private_key_impl_t *rsa_private_ke
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_take_asn1_reader(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vscf_impl_t *asn1rd) {
+vscf_rsa_private_key_take_asn1rd(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vscf_impl_t *asn1rd) {
 
     VSCF_ASSERT_PTR(rsa_private_key_impl);
     VSCF_ASSERT_PTR(asn1rd);
@@ -474,7 +487,7 @@ vscf_rsa_private_key_take_asn1_reader(vscf_rsa_private_key_impl_t *rsa_private_k
 //  Release dependency to the interface 'asn1 reader'.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_release_asn1_reader(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
+vscf_rsa_private_key_release_asn1rd(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
 
     VSCF_ASSERT_PTR(rsa_private_key_impl);
 
@@ -485,7 +498,7 @@ vscf_rsa_private_key_release_asn1_reader(vscf_rsa_private_key_impl_t *rsa_privat
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_use_asn1_writer(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vscf_impl_t *asn1wr) {
+vscf_rsa_private_key_use_asn1wr(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vscf_impl_t *asn1wr) {
 
     VSCF_ASSERT_PTR(rsa_private_key_impl);
     VSCF_ASSERT_PTR(asn1wr);
@@ -501,7 +514,7 @@ vscf_rsa_private_key_use_asn1_writer(vscf_rsa_private_key_impl_t *rsa_private_ke
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_take_asn1_writer(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vscf_impl_t *asn1wr) {
+vscf_rsa_private_key_take_asn1wr(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vscf_impl_t *asn1wr) {
 
     VSCF_ASSERT_PTR(rsa_private_key_impl);
     VSCF_ASSERT_PTR(asn1wr);
@@ -516,30 +529,11 @@ vscf_rsa_private_key_take_asn1_writer(vscf_rsa_private_key_impl_t *rsa_private_k
 //  Release dependency to the interface 'asn1 writer'.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_release_asn1_writer(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
+vscf_rsa_private_key_release_asn1wr(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
 
     VSCF_ASSERT_PTR(rsa_private_key_impl);
 
     vscf_impl_destroy(&rsa_private_key_impl->asn1wr);
-}
-
-//
-//  Return size of 'vscf_rsa_private_key_impl_t' type.
-//
-VSCF_PUBLIC size_t
-vscf_rsa_private_key_impl_size(void) {
-
-    return sizeof (vscf_rsa_private_key_impl_t);
-}
-
-//
-//  Cast to the 'vscf_impl_t' type.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_rsa_private_key_impl(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
-
-    VSCF_ASSERT_PTR(rsa_private_key_impl);
-    return (vscf_impl_t *)(rsa_private_key_impl);
 }
 
 
