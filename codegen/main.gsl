@@ -121,11 +121,10 @@ function process_project (project, features_list, projects_api, echo_level)
     foreach_module_create_feature (my.root, my.project)
     foreach_class_create_feature (my.root, my.project)
 
-    #   Grpup features within one component.
-    project_create_features (my.project, my.features_list)
+    #   Group features within one component.
+    features_list_update_from_project (my.features_list, my.project)
 
-
-    #   Create meta informtation about high level entities.
+    #   Create meta information about high level entities.
     my.meta = meta_create ()
     foreach_interface_update_meta (my.root, my.meta)
     foreach_implementation_update_meta (my.root, my.meta)
@@ -201,7 +200,7 @@ function process_project (project, features_list, projects_api, echo_level)
     #   Generate code.
     c_module_generate_sources (my.root)
 
-    #   Generare CMake files.
+    #   Generate CMake files.
     cmake_generate_sources (my.root, my.project)
 endfunction
 
@@ -210,29 +209,28 @@ function process_library (library, features_list, echo_level)
     check_arguments (my, "library, features_list, echo_level", my)
 
     library_resolve (my.library)
-    library_create_features (my.library, my.features_list)
+    features_list_update_from_library (my.features_list, my.library)
 endfunction
 
 
 # ---------------------------------------------------------------------------
-#   Entrypoint.
+#   Entry point.
 # ---------------------------------------------------------------------------
 function run_main ()
     main.echo_level ?= "fatal"
     main.work_path ?= "generated"
 
-    #   Create container where all features will be located
-    my.features_list = XML.new("features_list")
+    #   Create container where all features will be located.
+    my.features_list = features_list_load (main.work_path)
 
+    #   Create container where projects API will be located.
     my.projects_api = projects_api_load (main.work_path)
 
-    #   Process code generation
+    #   Process code generation.
     for main.project
         my.loaded_project = item_load_from_file ("project/$(make_id ("project", project.name)).xml")
         process_project (my.loaded_project, my.features_list, my.projects_api, main.echo_level)
     endfor
-
-    projects_api_save (my.projects_api, main.work_path)
 
     for main.external where defined (library)
         my.loaded_library = item_load_from_file ("external/$(make_id ("library", external.library)).xml")
@@ -241,7 +239,11 @@ function run_main ()
 
     #   Create context and populate it with features.
     foreach_features_resolve (my.features_list)
+
     c_features_create (my.features_list, my.features_list)
+
+    projects_api_save (my.projects_api, main.work_path)
+    features_list_save (my.features_list, main.work_path)
 
     projects_api_collect_info (my.projects_api, my.features_list)
     my.resolution_map = projects_api_build_type_resolution_map (my.projects_api)
