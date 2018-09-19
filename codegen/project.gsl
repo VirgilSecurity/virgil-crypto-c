@@ -92,30 +92,4 @@ function project_generate_structure (project)
     directory.create (my.project.work_path)
 endfunction
 
-# ---------------------------------------------------------------------------
-#   Add 'features' from project to destination.
-# ---------------------------------------------------------------------------
-function project_create_features (project, destination)
-    check_arguments (my, "project, destination", my)
-
-    echo_trace ("Create <features/> for <project name=\"$(my.project.name)\"", my)
-
-    new features to my.destination
-        .prefix = my.project.prefix ?
-        .path = my.project.path
-        .project = my.project.name
-        .cmake_target = my.project.cmake_target ?
-
-        for my.project.feature
-            copy feature to features
-        endfor
-
-        for my.project.require
-            copy require to features
-        endfor
-
-        return features
-    endnew
-endfunction
-
 .endtemplate
