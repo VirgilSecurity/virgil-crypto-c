@@ -243,9 +243,8 @@ function run_main ()
     foreach_features_resolve (my.features_list)
     c_features_create (my.features_list, my.features_list)
 
-    my.context = XML.new ("context")
-    context_append_hierarchy (my.context, my.features_list)
-    my.resolution_map = context_build_resolution_map (my.context)
+    projects_api_collect_info (my.projects_api, my.features_list)
+    my.resolution_map = projects_api_build_type_resolution_map (my.projects_api)
 
     my.features_list_resolved = resolution_map_apply_to (my.resolution_map, my.features_list, main.work_path)
 
