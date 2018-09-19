@@ -53,7 +53,7 @@ void benchmark_kdf1_native(void * data, size_t data_size)
     vscf_kdf1_impl_t *kdf1_impl = vscf_kdf1_new();
     vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_kdf1_VECTOR_1_KEY.len);
 
-    vscf_kdf1_take_hash_stream(kdf1_impl, vscf_sha256_impl(vscf_sha256_new()));
+    vscf_kdf1_take_hash(kdf1_impl, vscf_sha256_impl(vscf_sha256_new()));
 
     vscf_kdf1_derive(kdf1_impl, *(vsc_data_t *)data, key, vsc_buffer_capacity(key));
 
@@ -66,7 +66,7 @@ void benchmark_kdf1_interface(void * data, size_t data_size)
     vscf_kdf1_impl_t *kdf1_impl = vscf_kdf1_new();
     vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_kdf1_VECTOR_1_KEY.len);
 
-    vscf_kdf1_take_hash_stream(kdf1_impl, vscf_sha256_impl(vscf_sha256_new()));
+    vscf_kdf1_take_hash(kdf1_impl, vscf_sha256_impl(vscf_sha256_new()));
 
     vscf_kdf_derive(vscf_kdf1_impl(kdf1_impl), *(vsc_data_t *)data, key, vsc_buffer_capacity(key));
 

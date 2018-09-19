@@ -185,6 +185,8 @@ vscf_sha224_init(vscf_sha224_impl_t *sha224_impl) {
     VSCF_ASSERT_PTR(sha224_impl);
     VSCF_ASSERT_PTR(sha224_impl->info == NULL);
 
+    vscf_zeroize (sha224_impl, sizeof(vscf_sha224_impl_t));
+
     sha224_impl->info = &info;
 
     vscf_sha224_init_ctx(sha224_impl);

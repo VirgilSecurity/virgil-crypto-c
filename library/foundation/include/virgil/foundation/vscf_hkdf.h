@@ -135,20 +135,20 @@ vscf_hkdf_copy(vscf_hkdf_impl_t *hkdf_impl);
 //  Setup dependency to the interface 'hmac stream' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_hkdf_use_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hmac);
+vscf_hkdf_use_hmac(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hmac);
 
 //
 //  Setup dependency to the interface 'hmac stream' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_hkdf_take_hmac_stream(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hmac);
+vscf_hkdf_take_hmac(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hmac);
 
 //
 //  Release dependency to the interface 'hmac stream'.
 //
 VSCF_PUBLIC void
-vscf_hkdf_release_hmac_stream(vscf_hkdf_impl_t *hkdf_impl);
+vscf_hkdf_release_hmac(vscf_hkdf_impl_t *hkdf_impl);
 
 //
 //  Calculate hash over given data.
