@@ -90,19 +90,19 @@ struct vscf_rsa_private_key_impl_t {
     //
     size_t refcnt;
     //
-    //  Dependency to the 'hash'.
+    //  Dependency to the interface api 'hash'.
     //
     const vscf_hash_api_t *hash;
     //
-    //  Dependency to the 'random'.
+    //  Dependency to the interface 'random'.
     //
     vscf_impl_t *random;
     //
-    //  Dependency to the 'asn1rd'.
+    //  Dependency to the interface 'asn1 reader'.
     //
     vscf_impl_t *asn1rd;
     //
-    //  Dependency to the 'asn1wr'.
+    //  Dependency to the interface 'asn1 writer'.
     //
     vscf_impl_t *asn1wr;
     //

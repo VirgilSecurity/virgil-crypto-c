@@ -105,7 +105,7 @@ function c_dependency_add_properties (source, destination, meta)
 
     for my.source.dependency
         new property to my.destination
-            . = "Dependency to the '$(dependency.name:c, lower)'."
+            . = "Dependency to the $(dependency.type_kind:) '$(dependency.type_name:)'."
             .name = dependency.name
             .class = ref (dependency.uid)
             .access = dependency.access
