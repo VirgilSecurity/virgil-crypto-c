@@ -1,8 +1,6 @@
 <class name="buffer" context="private">
     Encapsulates fixed byte array with variable effective data length.
 
-    <require module="data"/>
-
 
     <property name="bytes_dealloc" callback=".(global_callback_dealloc)">
         Function do deallocate underlying byte array.
