@@ -778,12 +778,12 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Trim and adjust content to the leftmost.
 # ---------------------------------------------------------------------------
-function format_left (body)
+function format_left (body, tab_count)
     if ! defined (my.body)
         return
     endif
 
-    return terminator + string_indent (my.body)
+    return terminator + string_indent (my.body, my.tab_count)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1112,26 +1112,34 @@ endfunction
 
 # ---------------------------------------------------------------------------
 #   Wraps given UID as 'Reference UID'.
-#   Argument 'spec' is concatenated to UID if given.
 # ---------------------------------------------------------------------------
 function ref (uid)
-    check_argument (my, "uid")
+    check_argument (my, "uid", my)
 
-    if string_defined (my.spec)
-        return ".($(my.uid:c,lower)_$(my.spec:c, lower))"
-    else
-        return ".($(my.uid:c,lower))"
-    endif
+    return ".($(my.uid:c,lower))"
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Wraps given UID as 'Reference UID' specific for C language.
-#   Argument 'spec' is concatenated to UID if given.
 # ---------------------------------------------------------------------------
-function c_ref (uid, spec)
-    check_argument (my, "uid")
+function c_ref (uid)
+    check_argument (my, "uid", my)
 
-    return ref ("c_" + my.uid, my.spec)
+    return ".(c_$(my.uid:c,lower))"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Wraps given UID as 'Reference UID' specific for C language.
+# ---------------------------------------------------------------------------
+function make_ref (uid, lang)
+    check_argument (my, "uid", my)
+
+    if defined (my.lang) & string.prefixed (my.uid, "_")
+        #    Shortcut
+        return ".($(make_id (my.uid)))"
+    else
+        return ".($(make_id (my.lang, my.uid)))"
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1163,6 +1171,44 @@ function lang_ref (maybe_ref, lang)
     endif
 
     return my.maybe_ref
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Try to insert prefix after <lang> prefix.
+#   Return modified string if success, otherwise return nothing.
+# ---------------------------------------------------------------------------
+function insert_prefix_after_lang_uid (uid, prefix, lang)
+    check_arguments (my, "uid, prefix, lang", my)
+
+    my.lang_prefix = my.lang + "_"
+
+    if string.prefixed (my.uid, my.lang_prefix)
+        return make_id (my.lang, my.prefix, string.search_replace(my.uid, my.lang_prefix, ""))
+    endif
+
+    return
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add given prefix to the uid.
+#   If given uid contains <lang> prefix, then given prefix will be inserted
+#   immediately after it.
+# ---------------------------------------------------------------------------
+function uid_insert_prefix (uid, prefix)
+    check_arguments (my, "uid", my)
+
+    if ! defined (my.prefix)
+        return my.uid
+    endif
+
+    my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "c") ?
+    my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "java") ?
+    my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "csharp") ?
+    my.new_uid ?= make_id (my.prefix, my.uid)
+
+    return my.new_uid
 endfunction
 
 # ---------------------------------------------------------------------------
