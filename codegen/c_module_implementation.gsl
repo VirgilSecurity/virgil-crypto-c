@@ -444,7 +444,7 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
             .type = "size"
         endnew
 
-        c_dependency_add_properties (my.impl, struct)
+        c_dependency_add_properties (my.impl, struct, my.meta)
 
         for my.impl.context
             for context.property

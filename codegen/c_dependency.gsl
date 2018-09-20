@@ -88,8 +88,9 @@ function c_dependency_add_requirements (source, destination)
 
     for my.source.dependency where defined(0.interface)
         new require to my.destination
-            .module = dependency.interface
+            .interface = dependency.interface
             .scope = "private"
+            .project = dependency.project ?
         endnew
     endfor
 endfunction
@@ -99,14 +100,14 @@ endfunction
 #   Add struct property to the destination for each dependency found
 #   within source.
 # ---------------------------------------------------------------------------
-function c_dependency_add_properties (source, destination)
-    check_arguments (my, "source, destination", my)
+function c_dependency_add_properties (source, destination, meta)
+    check_arguments (my, "source, destination, meta", my)
 
     for my.source.dependency
         new property to my.destination
             . = "Dependency to the '$(dependency.name:c, lower)'."
             .name = dependency.name
-            .class = ref(dependency.uid)
+            .class = ref (dependency.uid)
             .access = dependency.access
         endnew
     endfor

@@ -1010,14 +1010,21 @@ function component_resolve_dependency (dependency, parent)
         .access ?= "readwrite"
         .type_name = 0.interface ? 0.api ? 0.class ? 0.impl
 
+        my.project_uid = defined (dependency.project) ?? make_id ("project", dependency.project) ?
+
         if defined(0.interface)
-            .uid = make_id ("class impl struct impl")
+            .uid = make_id (my.project_uid, "class impl struct impl")
 
         elsif defined(0.api)
-            .uid = make_id ("class", .type_name, "api", "struct", .type_name, "api")
+            .uid = make_id (my.project_uid, "class", .type_name, "api", "struct", .type_name, "api")
 
+        elsif defined(0.class)
+            .uid = make_id (my.project_uid, "class", .type_name, "struct", .type_name)
+
+        elsif defined(0.impl)
+            .uid = make_id (my.project_uid, "class", .type_name, "struct", "impl")
         else
-            .uid = make_id ("class", .type_name, "struct", .type_name)
+            echo_fatal ("Unhandled dependency type within code generation.", my)
         endif
 
         if defined(0.interface)
@@ -1327,7 +1334,7 @@ endfunction
 function component_resolve_require_base (require_base, parent)
     check_arguments (my, "require_base, parent", my)
 
-    assert_attribute_one_of (my.require_base, "module, header, feature, interface, class", my)
+    assert_attribute_one_of (my.require_base, "module, header, feature, interface, class, impl", my)
 
     component_resolve_landlord (my.require_base, my.parent)
     component_resolve_attr_scope (my.require_base, my.parent)

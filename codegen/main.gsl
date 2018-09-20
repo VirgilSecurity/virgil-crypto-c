@@ -169,13 +169,14 @@ function process_project (project, features_list, projects_api, echo_level)
         item_save_to_file (my.root, "root.xml", my.project.work_path)
     endif
 
-    if my.echo_level = "trace"
+    if my.echo_level = "debug"
         item_save_to_file (my.project, "project.xml", my.project.work_path)
     endif
 
     #   Perform cross projects name resolution.
     projects_api_reset_project (my.projects_api, my.project)
     projects_api_collect_info (my.projects_api, my.root)
+    projects_api_save (my.projects_api, main.work_path)
 
     #   Resolve modules.
     my.type_resolution_map = projects_api_build_type_resolution_map (my.projects_api)
@@ -192,7 +193,7 @@ function process_project (project, features_list, projects_api, echo_level)
         c_module_add_headers (c_module, my.header_resolution_map)
     endfor
 
-    if my.echo_level = "trace"
+    if my.echo_level = "debug"
         item_save_to_file (my.type_resolution_map, "type_resolution_map.xml", my.project.work_path)
         item_save_to_file (my.header_resolution_map, "header_resolution_map.xml", my.project.work_path)
     endif
