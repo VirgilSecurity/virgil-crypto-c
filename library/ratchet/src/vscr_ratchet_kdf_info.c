@@ -200,4 +200,5 @@ vscr_ratchet_kdf_info_cleanup_ctx(vscr_ratchet_kdf_info_t *ratchet_kdf_info_ctx)
 
     vsc_buffer_destroy(&ratchet_kdf_info_ctx->root_info);
     vsc_buffer_destroy(&ratchet_kdf_info_ctx->ratchet_info);
+    vsc_buffer_destroy(&ratchet_kdf_info_ctx->cipher_info);
 }

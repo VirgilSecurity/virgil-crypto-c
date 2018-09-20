@@ -141,7 +141,7 @@ VSCR_PUBLIC vscr_ratchet_message_t *
 vscr_ratchet_message_copy(vscr_ratchet_message_t *ratchet_message_ctx);
 
 VSCR_PUBLIC size_t
-vscr_ratchet_message_serialize_len(const vscr_ratchet_message_t *ratchet_message_ctx);
+vscr_ratchet_message_serialize_len(size_t cipher_text_len);
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message_ctx, vsc_buffer_t *output);

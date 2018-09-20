@@ -49,9 +49,10 @@
 #include "vscr_library.h"
 #include "vscr_error.h"
 
+#include <virgil/foundation/vscf_aes256_gcm.h>
 #include <virgil/foundation/vscf_error_ctx.h>
-#include <virgil/common/vsc_data.h>
 #include <virgil/common/vsc_buffer.h>
+#include <virgil/common/vsc_data.h>
 //  @end
 
 
@@ -79,6 +80,12 @@ struct vscr_ratchet_cipher_t {
     //  Reference counter.
     //
     size_t refcnt;
+    //
+    //  Dependency to the 'aes256_gcm'.
+    //
+    vscf_aes256_gcm_impl_t *aes256_gcm;
+
+    vsc_buffer_t *kdf_info;
 };
 
 //
@@ -118,6 +125,31 @@ vscr_ratchet_cipher_destroy(vscr_ratchet_cipher_t **ratchet_cipher_ctx_ref);
 //
 VSCR_PUBLIC vscr_ratchet_cipher_t *
 vscr_ratchet_cipher_copy(vscr_ratchet_cipher_t *ratchet_cipher_ctx);
+
+//
+//  Setup dependency to the implementation 'aes256 gcm' with shared ownership.
+//
+VSCR_PUBLIC void
+vscr_ratchet_cipher_use_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vscf_aes256_gcm_impl_t *aes256_gcm);
+
+//
+//  Setup dependency to the implementation 'aes256 gcm' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCR_PUBLIC void
+vscr_ratchet_cipher_take_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vscf_aes256_gcm_impl_t *aes256_gcm);
+
+//
+//  Release dependency to the implementation 'aes256 gcm'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_cipher_release_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher_ctx);
+
+VSCR_PUBLIC size_t
+vscr_ratchet_cipher_encrypt_len(vscr_ratchet_cipher_t *ratchet_cipher_ctx, size_t plain_text_len);
+
+VSCR_PUBLIC size_t
+vscr_ratchet_cipher_decrypt_len(vscr_ratchet_cipher_t *ratchet_cipher_ctx, size_t cipher_text_len);
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_data_t key, vsc_data_t plain_text,

@@ -2,5 +2,6 @@
 
     <property name="root info" class="buffer" access="readwrite"/>
     <property name="ratchet info" class="buffer" access="readwrite"/>
+    <property name="cipher info" class="buffer" access="readwrite"/>
 
 </class>
