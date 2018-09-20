@@ -216,8 +216,14 @@ vsc_buffer_cleanup_ctx(vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
 
-    if (buffer_ctx->bytes != NULL && buffer_ctx->bytes_dealloc_cb != NULL) {
-        buffer_ctx->bytes_dealloc_cb(buffer_ctx->bytes);
+    if (buffer_ctx->bytes != NULL) {
+        if (buffer_ctx->is_secure) {
+            vsc_buffer_erase(buffer_ctx);
+        }
+
+        if (buffer_ctx->bytes_dealloc_cb != NULL) {
+            buffer_ctx->bytes_dealloc_cb(buffer_ctx->bytes);
+        }
     }
 }
 
@@ -299,6 +305,18 @@ vsc_buffer_take(vsc_buffer_t *buffer_ctx, byte *bytes, size_t bytes_len, vsc_dea
     buffer_ctx->capacity = bytes_len;
     buffer_ctx->len = 0;
     buffer_ctx->bytes_dealloc_cb = dealloc_cb;
+}
+
+//
+//  Tell buffer that it holds sensitive that must be erased
+//  in a secure manner during destruction.
+//
+VSC_PUBLIC void
+vsc_buffer_make_secure(vsc_buffer_t *buffer_ctx) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+
+    buffer_ctx->is_secure = true;
 }
 
 //

@@ -19,6 +19,12 @@
     </property>
 
 
+    <property name="is secure" type="boolean">
+        Defines that buffer holds sensitive data that must be erased
+        in a secure manner.
+    </property>
+
+
     <property name="bytes_dealloc" callback=".(global_callback_dealloc)">
         Function do deallocate underlying byte array.
     </property>
@@ -64,6 +70,14 @@
         <argument name="bytes" type="data" access="readwrite"/>
         <argument name="bytes len" type="size"/>
         <argument name="dealloc" callback=".(global_callback_dealloc)"/>
+    </method>
+
+
+    <method name="make secure">
+        Tell buffer that it holds sensitive that must be erased
+        in a secure manner during destruction.
+
+        <argument class="context"/>
     </method>
 
 
