@@ -69,4 +69,5 @@
     <class name="ratchet sender chain"/>
     <class name="ratchet message"/>
     <class name="ratchet"/>
+    <class name="ratchet session"/>
 </project>

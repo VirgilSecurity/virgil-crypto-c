@@ -49,6 +49,7 @@
 #include "vscr_library.h"
 #include "vscr_error.h"
 
+#include <virgil/foundation/vscf_error_ctx.h>
 #include <virgil/common/vsc_data.h>
 #include <virgil/common/vsc_buffer.h>
 //  @end

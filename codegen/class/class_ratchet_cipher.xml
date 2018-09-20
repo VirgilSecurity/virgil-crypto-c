@@ -1,6 +1,6 @@
 <class name="ratchet cipher" context="public">
 
-    <require header="virgil/foundation/vscf_error_ctx.h" scope="private"/>
+    <require header="virgil/foundation/vscf_error_ctx.h" scope="public"/>
 
     <method name="encrypt">
         <argument class="context"/>

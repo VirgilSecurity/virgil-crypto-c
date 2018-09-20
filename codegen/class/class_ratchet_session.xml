@@ -1,0 +1,24 @@
+<class name="ratchet session" context="private">
+
+    <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
+
+    <dependency name="rng" interface="ratchet rng"/>
+    <dependency class="ratchet" name="ratchet"/>
+
+    <method name="initiate">
+        <argument class="context"/>
+        <argument name="sender identity private key" class="buffer"/>
+        <argument name="receiver identity public key" class="buffer"/>
+        <argument name="receiver long term public key" class="buffer"/>
+        <argument name="receiver one time public key" class="buffer"/>
+    </method>
+
+    <method name="respond">
+        <argument class="context"/>
+        <argument name="sender identity public key" class="buffer"/>
+        <argument name="receiver identity private key" class="buffer"/>
+        <argument name="receiver long term public key" class="buffer"/>
+        <argument name="receiver one time public key" class="buffer"/>
+    </method>
+
+</class>

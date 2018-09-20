@@ -47,16 +47,12 @@
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 #include "vscr_ratchet_rng.h"
+#include "vscr_ratchet_defs.h"
 #include "vscr_ratchet_receiver_chain.h"
 #include "vscr_ratchet_skipped_message_key.h"
 
-#include <virgil/foundation/vscf_error_ctx.h>
 #include <ed25519/ed25519.h>
 //  @end
-
-
-//#include <virgil/common/private/vsc_buffer_defs.h>
-//#include <virgil/ratchet/private/vscr_ratchet_message_defs.h>
 
 
 //  @generated
@@ -126,6 +122,15 @@ static const uint8_t ratchet_message_key_seed[] = {
 };
 
 //
+//  Return size of 'vscr_ratchet_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_ctx_size(void) {
+
+    return sizeof(vscr_ratchet_t);
+}
+
+//
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
@@ -156,6 +161,13 @@ vscr_ratchet_cleanup(vscr_ratchet_t *ratchet_ctx) {
 
     if (--ratchet_ctx->refcnt == 0) {
         vscr_ratchet_cleanup_ctx(ratchet_ctx);
+
+        vscr_ratchet_release_rng(ratchet_ctx);
+        vscr_ratchet_release_cipher(ratchet_ctx);
+        vscr_ratchet_release_kdf_info(ratchet_ctx);
+        vscr_ratchet_release_sender_chain(ratchet_ctx);
+        vscr_ratchet_release_receiver_chains(ratchet_ctx);
+        vscr_ratchet_release_skipped_message_keys(ratchet_ctx);
 
         vscr_zeroize(ratchet_ctx, sizeof(vscr_ratchet_t));
     }
@@ -225,6 +237,242 @@ vscr_ratchet_copy(vscr_ratchet_t *ratchet_ctx) {
     return ratchet_ctx;
 }
 
+//
+//  Setup dependency to the interface 'ratchet rng' with shared ownership.
+//
+VSCR_PUBLIC void
+vscr_ratchet_use_rng(vscr_ratchet_t *ratchet_ctx, vscr_impl_t *rng) {
+
+    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(rng);
+    VSCR_ASSERT_PTR(ratchet_ctx->rng == NULL);
+
+    VSCR_ASSERT(vscr_ratchet_rng_is_implemented(rng));
+
+    ratchet_ctx->rng = vscr_impl_copy(rng);
+}
+
+//
+//  Setup dependency to the interface 'ratchet rng' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCR_PUBLIC void
+vscr_ratchet_take_rng(vscr_ratchet_t *ratchet_ctx, vscr_impl_t *rng) {
+
+    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(rng);
+    VSCR_ASSERT_PTR(ratchet_ctx->rng == NULL);
+
+    VSCR_ASSERT(vscr_ratchet_rng_is_implemented(rng));
+
+    ratchet_ctx->rng = rng;
+}
+
+//
+//  Release dependency to the interface 'ratchet rng'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_release_rng(vscr_ratchet_t *ratchet_ctx) {
+
+    VSCR_ASSERT_PTR(ratchet_ctx);
+
+    vscr_impl_destroy(&ratchet_ctx->rng);
+}
+
+//
+//  Setup dependency to the class 'ratchet cipher' with shared ownership.
+//
+VSCR_PUBLIC void
+vscr_ratchet_use_cipher(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_cipher_t *cipher) {
+
+    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(cipher);
+    VSCR_ASSERT_PTR(ratchet_ctx->cipher == NULL);
+
+    ratchet_ctx->cipher = vscr_ratchet_cipher_copy(cipher);
+}
+
+//
+//  Setup dependency to the class 'ratchet cipher' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCR_PUBLIC void
+vscr_ratchet_take_cipher(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_cipher_t *cipher) {
+
+    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(cipher);
+    VSCR_ASSERT_PTR(ratchet_ctx->cipher == NULL);
+
+    ratchet_ctx->cipher = cipher;
+}
+
+//
+//  Release dependency to the class 'ratchet cipher'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_release_cipher(vscr_ratchet_t *ratchet_ctx) {
+
+    VSCR_ASSERT_PTR(ratchet_ctx);
+
+    vscr_ratchet_cipher_destroy(&ratchet_ctx->cipher);
+}
+
+//
+//  Setup dependency to the class 'ratchet kdf info' with shared ownership.
+//
+VSCR_PUBLIC void
+vscr_ratchet_use_kdf_info(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_kdf_info_t *kdf_info) {
+
+    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(kdf_info);
+    VSCR_ASSERT_PTR(ratchet_ctx->kdf_info == NULL);
+
+    ratchet_ctx->kdf_info = vscr_ratchet_kdf_info_copy(kdf_info);
+}
+
+//
+//  Setup dependency to the class 'ratchet kdf info' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCR_PUBLIC void
+vscr_ratchet_take_kdf_info(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_kdf_info_t *kdf_info) {
+
+    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(kdf_info);
+    VSCR_ASSERT_PTR(ratchet_ctx->kdf_info == NULL);
+
+    ratchet_ctx->kdf_info = kdf_info;
+}
+
+//
+//  Release dependency to the class 'ratchet kdf info'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_release_kdf_info(vscr_ratchet_t *ratchet_ctx) {
+
+    VSCR_ASSERT_PTR(ratchet_ctx);
+
+    vscr_ratchet_kdf_info_destroy(&ratchet_ctx->kdf_info);
+}
+
+//
+//  Setup dependency to the class 'ratchet sender chain' with shared ownership.
+//
+VSCR_PUBLIC void
+vscr_ratchet_use_sender_chain(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_sender_chain_t *sender_chain) {
+
+    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(sender_chain);
+    VSCR_ASSERT_PTR(ratchet_ctx->sender_chain == NULL);
+
+    ratchet_ctx->sender_chain = vscr_ratchet_sender_chain_copy(sender_chain);
+}
+
+//
+//  Setup dependency to the class 'ratchet sender chain' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCR_PUBLIC void
+vscr_ratchet_take_sender_chain(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_sender_chain_t *sender_chain) {
+
+    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(sender_chain);
+    VSCR_ASSERT_PTR(ratchet_ctx->sender_chain == NULL);
+
+    ratchet_ctx->sender_chain = sender_chain;
+}
+
+//
+//  Release dependency to the class 'ratchet sender chain'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_release_sender_chain(vscr_ratchet_t *ratchet_ctx) {
+
+    VSCR_ASSERT_PTR(ratchet_ctx);
+
+    vscr_ratchet_sender_chain_destroy(&ratchet_ctx->sender_chain);
+}
+
+//
+//  Setup dependency to the class 'ratchet receiver chain list node' with shared ownership.
+//
+VSCR_PUBLIC void
+vscr_ratchet_use_receiver_chains(vscr_ratchet_t *ratchet_ctx,
+        vscr_ratchet_receiver_chain_list_node_t *receiver_chains) {
+
+    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(receiver_chains);
+    VSCR_ASSERT_PTR(ratchet_ctx->receiver_chains == NULL);
+
+    ratchet_ctx->receiver_chains = vscr_ratchet_receiver_chain_list_node_copy(receiver_chains);
+}
+
+//
+//  Setup dependency to the class 'ratchet receiver chain list node' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCR_PUBLIC void
+vscr_ratchet_take_receiver_chains(vscr_ratchet_t *ratchet_ctx,
+        vscr_ratchet_receiver_chain_list_node_t *receiver_chains) {
+
+    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(receiver_chains);
+    VSCR_ASSERT_PTR(ratchet_ctx->receiver_chains == NULL);
+
+    ratchet_ctx->receiver_chains = receiver_chains;
+}
+
+//
+//  Release dependency to the class 'ratchet receiver chain list node'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_release_receiver_chains(vscr_ratchet_t *ratchet_ctx) {
+
+    VSCR_ASSERT_PTR(ratchet_ctx);
+
+    vscr_ratchet_receiver_chain_list_node_destroy(&ratchet_ctx->receiver_chains);
+}
+
+//
+//  Setup dependency to the class 'ratchet skipped message key list node' with shared ownership.
+//
+VSCR_PUBLIC void
+vscr_ratchet_use_skipped_message_keys(vscr_ratchet_t *ratchet_ctx,
+        vscr_ratchet_skipped_message_key_list_node_t *skipped_message_keys) {
+
+    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(skipped_message_keys);
+    VSCR_ASSERT_PTR(ratchet_ctx->skipped_message_keys == NULL);
+
+    ratchet_ctx->skipped_message_keys = vscr_ratchet_skipped_message_key_list_node_copy(skipped_message_keys);
+}
+
+//
+//  Setup dependency to the class 'ratchet skipped message key list node' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCR_PUBLIC void
+vscr_ratchet_take_skipped_message_keys(vscr_ratchet_t *ratchet_ctx,
+        vscr_ratchet_skipped_message_key_list_node_t *skipped_message_keys) {
+
+    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(skipped_message_keys);
+    VSCR_ASSERT_PTR(ratchet_ctx->skipped_message_keys == NULL);
+
+    ratchet_ctx->skipped_message_keys = skipped_message_keys;
+}
+
+//
+//  Release dependency to the class 'ratchet skipped message key list node'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_release_skipped_message_keys(vscr_ratchet_t *ratchet_ctx) {
+
+    VSCR_ASSERT_PTR(ratchet_ctx);
+
+    vscr_ratchet_skipped_message_key_list_node_destroy(&ratchet_ctx->skipped_message_keys);
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -241,10 +489,7 @@ vscr_ratchet_copy(vscr_ratchet_t *ratchet_ctx) {
 static void
 vscr_ratchet_init_ctx(vscr_ratchet_t *ratchet_ctx) {
 
-    ratchet_ctx->sender_chain = NULL;
-    ratchet_ctx->cipher = NULL;
-    ratchet_ctx->kdf_info = NULL;
-    ratchet_ctx->receiver_chains = NULL;
+    VSCR_UNUSED(ratchet_ctx);
 }
 
 //
@@ -255,12 +500,7 @@ vscr_ratchet_init_ctx(vscr_ratchet_t *ratchet_ctx) {
 static void
 vscr_ratchet_cleanup_ctx(vscr_ratchet_t *ratchet_ctx) {
 
-    vscr_impl_destroy(&ratchet_ctx->rng);
-    vscr_ratchet_cipher_destroy(&ratchet_ctx->cipher);
-    vscr_ratchet_kdf_info_destroy(&ratchet_ctx->kdf_info);
-    vscr_ratchet_sender_chain_destroy(&ratchet_ctx->sender_chain);
-    vscr_ratchet_receiver_chain_list_node_destroy(&ratchet_ctx->receiver_chains);
-    vscr_ratchet_skipped_message_key_list_node_destroy(&ratchet_ctx->skipped_message_keys);
+    VSCR_UNUSED(ratchet_ctx);
 }
 
 static void
@@ -280,7 +520,7 @@ vscr_ratchet_create_chain_key(const vscr_ratchet_t *ratchet_ctx, const vsc_buffe
                             vsc_buffer_bytes(private_key));
 
     vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
-    vscf_hkdf_take_hmac_stream(hkdf, vscf_hmac256_impl(vscf_hmac256_new()));
+    vscf_hkdf_take_hmac(hkdf, vscf_hmac256_impl(vscf_hmac256_new()));
 
     vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(2 * vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
     vscf_hkdf_derive(hkdf,
@@ -429,7 +669,7 @@ vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_
     VSCR_ASSERT(!ratchet_ctx->receiver_chains);
 
     vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
-    vscf_hkdf_take_hmac_stream(hkdf, vscf_hmac256_impl(vscf_hmac256_new()));
+    vscf_hkdf_take_hmac(hkdf, vscf_hmac256_impl(vscf_hmac256_new()));
 
     vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(2 * vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
     vscf_hkdf_derive(hkdf,
@@ -464,12 +704,12 @@ vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc
     VSCR_ASSERT_PTR(ratchet_ctx);
     VSCR_ASSERT_PTR(ratchet_private_key);
     VSCR_ASSERT(vsc_buffer_len(ratchet_private_key) == ED25519_KEY_LEN);
-    VSCR_ASSERT(shared_secret.len == 3 * ED25519_DH_LEN);
+    VSCR_ASSERT(shared_secret.len == 3 * ED25519_DH_LEN || shared_secret.len == 4 * ED25519_DH_LEN);
 
     VSCR_ASSERT_PTR(!ratchet_ctx->sender_chain);
 
     vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
-    vscf_hkdf_take_hmac_stream(hkdf, vscf_hmac256_impl(vscf_hmac256_new()));
+    vscf_hkdf_take_hmac(hkdf, vscf_hmac256_impl(vscf_hmac256_new()));
 
     vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(2 * vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
     vscf_hkdf_derive(hkdf,

@@ -66,4 +66,5 @@ target_compile_definitions(ratchet
             "VSCR_RATCHET_SENDER_CHAIN=$<BOOL:${VSCR_RATCHET_SENDER_CHAIN}>"
             "VSCR_RATCHET_MESSAGE=$<BOOL:${VSCR_RATCHET_MESSAGE}>"
             "VSCR_RATCHET=$<BOOL:${VSCR_RATCHET}>"
+            "VSCR_RATCHET_SESSION=$<BOOL:${VSCR_RATCHET_SESSION}>"
         )

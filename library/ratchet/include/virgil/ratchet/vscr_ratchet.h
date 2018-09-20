@@ -51,18 +51,19 @@
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_message.h"
 #include "vscr_ratchet_message_key.h"
+#include "vscr_ratchet_chain_key.h"
+#include "vscr_impl.h"
+#include "vscr_ratchet_cipher.h"
 #include "vscr_ratchet_kdf_info.h"
 #include "vscr_ratchet_sender_chain.h"
-#include "vscr_ratchet_chain_key.h"
-#include "vscr_ratchet_cipher.h"
-#include "vscr_impl.h"
 #include "vscr_ratchet_receiver_chain_list_node.h"
 #include "vscr_ratchet_skipped_message_key_list_node.h"
 
 #include <virgil/foundation/vscf_hmac256.h>
 #include <virgil/foundation/vscf_hkdf.h>
-#include <virgil/common/vsc_data.h>
+#include <virgil/foundation/vscf_error_ctx.h>
 #include <virgil/common/vsc_buffer.h>
+#include <virgil/common/vsc_data.h>
 //  @end
 
 
@@ -81,30 +82,12 @@ extern "C" {
 //  Handle 'ratchet' context.
 //
 typedef struct vscr_ratchet_t vscr_ratchet_t;
-struct vscr_ratchet_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
 
-    vscr_impl_t *rng;
-
-    vscr_ratchet_cipher_t *cipher;
-
-    vscr_ratchet_kdf_info_t *kdf_info;
-
-    vscr_ratchet_sender_chain_t *sender_chain;
-
-    vscr_ratchet_receiver_chain_list_node_t *receiver_chains;
-
-    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_keys;
-
-    byte root_key[vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH];
-};
+//
+//  Return size of 'vscr_ratchet_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
@@ -143,6 +126,123 @@ vscr_ratchet_destroy(vscr_ratchet_t **ratchet_ctx_ref);
 //
 VSCR_PUBLIC vscr_ratchet_t *
 vscr_ratchet_copy(vscr_ratchet_t *ratchet_ctx);
+
+//
+//  Setup dependency to the interface 'ratchet rng' with shared ownership.
+//
+VSCR_PUBLIC void
+vscr_ratchet_use_rng(vscr_ratchet_t *ratchet_ctx, vscr_impl_t *rng);
+
+//
+//  Setup dependency to the interface 'ratchet rng' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCR_PUBLIC void
+vscr_ratchet_take_rng(vscr_ratchet_t *ratchet_ctx, vscr_impl_t *rng);
+
+//
+//  Release dependency to the interface 'ratchet rng'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_release_rng(vscr_ratchet_t *ratchet_ctx);
+
+//
+//  Setup dependency to the class 'ratchet cipher' with shared ownership.
+//
+VSCR_PUBLIC void
+vscr_ratchet_use_cipher(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_cipher_t *cipher);
+
+//
+//  Setup dependency to the class 'ratchet cipher' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCR_PUBLIC void
+vscr_ratchet_take_cipher(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_cipher_t *cipher);
+
+//
+//  Release dependency to the class 'ratchet cipher'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_release_cipher(vscr_ratchet_t *ratchet_ctx);
+
+//
+//  Setup dependency to the class 'ratchet kdf info' with shared ownership.
+//
+VSCR_PUBLIC void
+vscr_ratchet_use_kdf_info(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_kdf_info_t *kdf_info);
+
+//
+//  Setup dependency to the class 'ratchet kdf info' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCR_PUBLIC void
+vscr_ratchet_take_kdf_info(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_kdf_info_t *kdf_info);
+
+//
+//  Release dependency to the class 'ratchet kdf info'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_release_kdf_info(vscr_ratchet_t *ratchet_ctx);
+
+//
+//  Setup dependency to the class 'ratchet sender chain' with shared ownership.
+//
+VSCR_PUBLIC void
+vscr_ratchet_use_sender_chain(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_sender_chain_t *sender_chain);
+
+//
+//  Setup dependency to the class 'ratchet sender chain' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCR_PUBLIC void
+vscr_ratchet_take_sender_chain(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_sender_chain_t *sender_chain);
+
+//
+//  Release dependency to the class 'ratchet sender chain'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_release_sender_chain(vscr_ratchet_t *ratchet_ctx);
+
+//
+//  Setup dependency to the class 'ratchet receiver chain list node' with shared ownership.
+//
+VSCR_PUBLIC void
+vscr_ratchet_use_receiver_chains(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_receiver_chain_list_node_t *receiver_chains);
+
+//
+//  Setup dependency to the class 'ratchet receiver chain list node' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCR_PUBLIC void
+vscr_ratchet_take_receiver_chains(vscr_ratchet_t *ratchet_ctx,
+        vscr_ratchet_receiver_chain_list_node_t *receiver_chains);
+
+//
+//  Release dependency to the class 'ratchet receiver chain list node'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_release_receiver_chains(vscr_ratchet_t *ratchet_ctx);
+
+//
+//  Setup dependency to the class 'ratchet skipped message key list node' with shared ownership.
+//
+VSCR_PUBLIC void
+vscr_ratchet_use_skipped_message_keys(vscr_ratchet_t *ratchet_ctx,
+        vscr_ratchet_skipped_message_key_list_node_t *skipped_message_keys);
+
+//
+//  Setup dependency to the class 'ratchet skipped message key list node' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCR_PUBLIC void
+vscr_ratchet_take_skipped_message_keys(vscr_ratchet_t *ratchet_ctx,
+        vscr_ratchet_skipped_message_key_list_node_t *skipped_message_keys);
+
+//
+//  Release dependency to the class 'ratchet skipped message key list node'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_release_skipped_message_keys(vscr_ratchet_t *ratchet_ctx);
 
 VSCR_PUBLIC void
 vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key);
