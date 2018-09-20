@@ -4,6 +4,11 @@
     <require module="data"/>
 
 
+    <property name="bytes_dealloc" callback=".(global_callback_dealloc)">
+        Function do deallocate underlying byte array.
+    </property>
+
+
     <property name="bytes" type="data" access="readwrite">
         Underlying byte array.
     </property>
@@ -22,11 +27,6 @@
     <property name="is secure" type="boolean">
         Defines that buffer holds sensitive data that must be erased
         in a secure manner.
-    </property>
-
-
-    <property name="bytes_dealloc" callback=".(global_callback_dealloc)">
-        Function do deallocate underlying byte array.
     </property>
 
 

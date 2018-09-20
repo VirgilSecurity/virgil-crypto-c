@@ -80,6 +80,10 @@ struct vsc_buffer_t {
     //
     size_t refcnt;
     //
+    //  Function do deallocate underlying byte array.
+    //
+    vsc_dealloc_fn bytes_dealloc_cb;
+    //
     //  Underlying byte array.
     //
     byte *bytes;
@@ -96,10 +100,6 @@ struct vsc_buffer_t {
     //  in a secure manner.
     //
     bool is_secure;
-    //
-    //  Function do deallocate underlying byte array.
-    //
-    vsc_dealloc_fn bytes_dealloc_cb;
 };
 
 
