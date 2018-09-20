@@ -92,6 +92,11 @@ struct vsc_buffer_t {
     //
     size_t len;
     //
+    //  Defines that buffer holds sensitive data that must be erased
+    //  in a secure manner.
+    //
+    bool is_secure;
+    //
     //  Function do deallocate underlying byte array.
     //
     vsc_dealloc_fn bytes_dealloc_cb;
