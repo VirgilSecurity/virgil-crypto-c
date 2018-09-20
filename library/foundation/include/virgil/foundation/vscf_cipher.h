@@ -58,6 +58,7 @@
 #include "vscf_encrypt.h"
 #include "vscf_decrypt.h"
 #include "vscf_cipher_info.h"
+#include "vscf_api.h"
 
 #include <virgil/common/vsc_data.h>
 //  @end

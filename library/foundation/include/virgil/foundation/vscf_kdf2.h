@@ -55,7 +55,6 @@
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
-#include "vscf_kdf.h"
 
 #include <virgil/common/vsc_data.h>
 #include <virgil/common/vsc_buffer.h>
@@ -136,20 +135,20 @@ vscf_kdf2_copy(vscf_kdf2_impl_t *kdf2_impl);
 //  Setup dependency to the interface 'hash stream' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_kdf2_use_hash_stream(vscf_kdf2_impl_t *kdf2_impl, vscf_impl_t *hash);
+vscf_kdf2_use_hash(vscf_kdf2_impl_t *kdf2_impl, vscf_impl_t *hash);
 
 //
 //  Setup dependency to the interface 'hash stream' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_kdf2_take_hash_stream(vscf_kdf2_impl_t *kdf2_impl, vscf_impl_t *hash);
+vscf_kdf2_take_hash(vscf_kdf2_impl_t *kdf2_impl, vscf_impl_t *hash);
 
 //
-//  Release dependency of the interface 'hash stream'.
+//  Release dependency to the interface 'hash stream'.
 //
 VSCF_PUBLIC void
-vscf_kdf2_release_hash_stream(vscf_kdf2_impl_t *kdf2_impl);
+vscf_kdf2_release_hash(vscf_kdf2_impl_t *kdf2_impl);
 
 //
 //  Calculate hash over given data.

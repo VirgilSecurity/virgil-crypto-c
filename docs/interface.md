@@ -11,21 +11,19 @@ attribute names are case-sensitive and we use only lower-case names.
        <constant name [c_prefix] [of_class] [uid] [feature] [definition] [value]/>
        <method name [declaration] [visibility] [c_prefix] [of_class] [uid] [feature] [definition]
             [context]>
-          <return is_reference [access] [class] [enum] [callback] [implementation] [size] [type]>
+          <return is_reference [access] [class] [enum] [callback] [impl] [size] [type]>
              <string [access] [length]/>
              <array [access] [length] [length_constant]/>
           </return>
-          <argument name is_reference [uid] [class] [enum] [callback] [implementation] [size] [access]
-               [type]>
+          <argument name is_reference [uid] [class] [enum] [callback] [impl] [size] [access] [type]>
              <string .../>
              <array .../>
           </argument>
-          <variable is_reference name [class] [type] [callback] [implementation] [size] [access]
-               [definition] [declaration] [visibility] [c_prefix] [of_class]
-               [uid] [feature] [enum]>
-             <value is_reference value [class] [enum] [callback] [implementation] [size] [access]
-                  [type]>
-                <cast is_reference [access] [class] [enum] [callback] [implementation] [size] [type]>
+          <variable is_reference name [class] [type] [callback] [impl] [size] [access] [definition]
+               [declaration] [visibility] [c_prefix] [of_class] [uid] [feature]
+               [enum]>
+             <value is_reference value [class] [enum] [callback] [impl] [size] [access] [type]>
+                <cast is_reference [access] [class] [enum] [callback] [impl] [size] [type]>
                    <string .../>
                    <array .../>
                 </cast>
@@ -213,7 +211,7 @@ Defines attributes that related to the instance type. Defines return type.
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
-      [ implementation = "..." ]
+      [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
         >
@@ -268,11 +266,10 @@ callback:
     Defines instance as a callback. 1. If value in a format .(uid), then it
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The callback attribute is optional.
+    any third party type can be used. The callback attribute is optional.
 
-implementation:
-    Defines specific implementation name. The implementation attribute is
-    optional.
+impl:
+    Defines specific implementation name. The impl attribute is optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -291,7 +288,7 @@ is_reference:
     take one of the following values:
 
 Value: Meaning:
-0: Instance is not a refernce.
+0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
 
@@ -380,7 +377,7 @@ name, type, and usage information.
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
-      [ implementation = "..." ]
+      [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
@@ -440,11 +437,10 @@ callback:
     Defines instance as a callback. 1. If value in a format .(uid), then it
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The callback attribute is optional.
+    any third party type can be used. The callback attribute is optional.
 
-implementation:
-    Defines specific implementation name. The implementation attribute is
-    optional.
+impl:
+    Defines specific implementation name. The impl attribute is optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -463,7 +459,7 @@ is_reference:
     take one of the following values:
 
 Value: Meaning:
-0: Instance is not a refernce.
+0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
 name:
@@ -482,7 +478,7 @@ attributes for the component. Defines global variable.
       [ class = "..." ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ callback = "..." ]
-      [ implementation = "..." ]
+      [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
       [ definition = "public | private | external"  ("private") ]
@@ -546,11 +542,10 @@ callback:
     Defines instance as a callback. 1. If value in a format .(uid), then it
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The callback attribute is optional.
+    any third party type can be used. The callback attribute is optional.
 
-implementation:
-    Defines specific implementation name. The implementation attribute is
-    optional.
+impl:
+    Defines specific implementation name. The impl attribute is optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -569,7 +564,7 @@ is_reference:
     take one of the following values:
 
 Value: Meaning:
-0: Instance is not a refernce.
+0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
 definition:
@@ -633,7 +628,7 @@ variable value.
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
-      [ implementation = "..." ]
+      [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
@@ -690,11 +685,10 @@ callback:
     Defines instance as a callback. 1. If value in a format .(uid), then it
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The callback attribute is optional.
+    any third party type can be used. The callback attribute is optional.
 
-implementation:
-    Defines specific implementation name. The implementation attribute is
-    optional.
+impl:
+    Defines specific implementation name. The impl attribute is optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -713,7 +707,7 @@ is_reference:
     take one of the following values:
 
 Value: Meaning:
-0: Instance is not a refernce.
+0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
 value:
@@ -732,7 +726,7 @@ type to the type defined in this entity.
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
-      [ implementation = "..." ]
+      [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
         >
@@ -787,11 +781,10 @@ callback:
     Defines instance as a callback. 1. If value in a format .(uid), then it
     treated as a reference to the in-project callback and will be substituted
     during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The callback attribute is optional.
+    any third party type can be used. The callback attribute is optional.
 
-implementation:
-    Defines specific implementation name. The implementation attribute is
-    optional.
+impl:
+    Defines specific implementation name. The impl attribute is optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -810,7 +803,7 @@ is_reference:
     take one of the following values:
 
 Value: Meaning:
-0: Instance is not a refernce.
+0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
 

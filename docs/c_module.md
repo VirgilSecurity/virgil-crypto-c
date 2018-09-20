@@ -7,7 +7,7 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <c_module output_source_file once_guard name header_file source_file output_header_file
+    <c_module output_source_file once_guard id name header_file source_file output_header_file
          [of_class] [scope]>
        <c_include file [feature] [scope] [is_system]/>
        <c_alias type name [declaration]/>
@@ -66,6 +66,7 @@ Base model for C language code generation.
     <c_module
         output_source_file = "..."
         once_guard = "..."
+        id = "..."
         name = "..."
         header_file = "..."
         source_file = "..."
@@ -102,8 +103,11 @@ public: Component is visible for outside world.
 private: Component is visible for outside world via private interface.
 internal: Component is visible only within library or a specific source file.
 
+id:
+    Short module name. The id attribute is required.
+
 name:
-    Short module name. The name attribute is required.
+    Complete module name. The name attribute is required.
 
 header_file:
     Name of the generated header file without path. The header_file attribute

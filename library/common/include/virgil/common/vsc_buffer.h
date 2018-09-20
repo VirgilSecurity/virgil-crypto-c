@@ -152,6 +152,13 @@ VSC_PUBLIC void
 vsc_buffer_take(vsc_buffer_t *buffer_ctx, byte *bytes, size_t bytes_len, vsc_dealloc_fn dealloc_cb);
 
 //
+//  Tell buffer that it holds sensitive that must be erased
+//  in a secure manner during destruction.
+//
+VSC_PUBLIC void
+vsc_buffer_make_secure(vsc_buffer_t *buffer_ctx);
+
+//
 //  Returns true if buffer full.
 //
 VSC_PUBLIC bool

@@ -51,7 +51,7 @@
 gsl from "common.gsl"
 gsl from "component.gsl"
 
-
+# TODO ---- NEED TO SAFE REMOVE ----- START ----
 function _K24_resolve_dependency_to_inner_class(instance, scope, module, source)
     check_arguments (my, "instance, module, source", my)
 
@@ -108,6 +108,28 @@ function module_resolve_inner_dependencies (module, source)
     endfor
 endfunction
 
+
+function module_resolve_header (module)
+    check_arguments (my, "module", my)
+
+    my.header = my.module->header ?
+
+    if ! count (my.module.header)
+        new header to my.module
+            .name = my.module.name
+        endnew
+    endif
+
+    assert_attribute (my.module->header, "name", my)
+    assert_attribute (my.module, "c_prefix", my)
+
+    scope my.module->header
+        .c_prefix ?= my.module.c_prefix
+        .uid = make_id ("header", 0.name)
+        .scope = my.module.scope ?
+    endscope
+endfunction
+# TODO ---- NEED TO SAFE REMOVE ----- END ----
 
 
 # ---------------------------------------------------------------------------

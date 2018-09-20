@@ -35,6 +35,7 @@
 #include "vscf_hash_info.h"
 #include "vscf_hash.h"
 #include "vscf_hash_stream.h"
+#include "vscf_kdf.h"
 #include "vscf_kdf2.h"
 #include "vscf_sha256.h"
 #include "vscf_assert.h"
@@ -52,7 +53,7 @@ void benchmark_kdf2_native(void * data, size_t data_size)
     vscf_kdf2_impl_t *kdf2_impl = vscf_kdf2_new();
     vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_kdf2_VECTOR_1_KEY.len);
 
-    vscf_kdf2_take_hash_stream(kdf2_impl, vscf_sha256_impl(vscf_sha256_new()));
+    vscf_kdf2_take_hash(kdf2_impl, vscf_sha256_impl(vscf_sha256_new()));
 
     vscf_kdf2_derive(kdf2_impl, *(vsc_data_t *)data, key, vsc_buffer_capacity(key));
 
@@ -65,7 +66,7 @@ void benchmark_kdf2_interface(void * data, size_t data_size)
     vscf_kdf2_impl_t *kdf2_impl = vscf_kdf2_new();
     vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_kdf2_VECTOR_1_KEY.len);
 
-    vscf_kdf2_take_hash_stream(kdf2_impl, vscf_sha256_impl(vscf_sha256_new()));
+    vscf_kdf2_take_hash(kdf2_impl, vscf_sha256_impl(vscf_sha256_new()));
 
     vscf_kdf_derive(vscf_kdf2_impl(kdf2_impl), *(vsc_data_t *)data, key, vsc_buffer_capacity(key));
 

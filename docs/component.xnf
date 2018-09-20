@@ -126,7 +126,7 @@
 
         Possible values are:
             * any    - Any class or type.
-            * data - Special class "data" that is used as an input byte array.
+            * data   - Special class "data" that is used as an input byte array.
             * buffer - Special class "buffer" that is used as an output byte array.
             * impl   - Universal implementation class.
 
@@ -154,12 +154,13 @@
         1. If value in a format .(uid), then it treated as a reference to
            the in-project callback and will be substituted during context
            resolution step.
-        2. Any other value will be used as-is. So one third party type
+        2. Any other value will be used as-is. So any third party type
            can be used.
     </attr>
 
-    <attr name="implementation">
+    <attr name="impl">
         Defines specific implementation name.
+
     </attr>
 
     <attr name="size">
@@ -190,7 +191,7 @@
         For 'class'    - default is '1'.
 
         <restrict value="0">
-            Instance is not a refernce.
+            Instance is not a reference.
         </restrict>
 
         <restrict value="1">
@@ -324,6 +325,10 @@
 
     <attr name="class">
         Required class name.
+    </attr>
+
+    <attr name="impl">
+        Required implementation name.
     </attr>
 
     <inherit entity="landlord"/>
@@ -545,10 +550,47 @@
 
 
 <entity name="macroses">
-    Group a set of macroses with common implemenatation.
+    Group a set of macroses with common implementation.
 
     <inherit entity="definition"/>
 
     <allow entity="macros" occurs="1+"/>
     <allow entity="code" occurs="1"/>
 </entity>
+
+
+<entity name="dependency">
+    Defines dependency to interface or class.
+
+    <attr name="name" required="1">
+        Dependency name - used for properties and methods names.
+    </attr>
+
+    <attr name="interface">
+        Defines name of the interface depends on.
+        Dependency is taken as implementation object.
+    </attr>
+
+    <attr name="api">
+        Defines name of the interface depends on.
+        Dependency is taken as interface api object.
+    </attr>
+
+    <attr name="class">
+        Defines name of the class depends on.
+        Dependency is taken as class context object.
+    </attr>
+
+    <attr name="impl">
+        Defines name of the implementation depends on.
+        Dependency is taken as specific implementation object.
+    </attr>
+
+    <attr name="type_name">
+        This is auto-resolve attribute!
+        It is equal to the one of the attributes: {interface, api, class}.
+    </attr>
+
+    <inherit entity="landlord"/>
+</entity>
+

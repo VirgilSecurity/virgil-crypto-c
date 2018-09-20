@@ -111,7 +111,7 @@ function cmake_generate_features (source, license)
     check_arguments (my, "source, license", my)
 
     for my.source.c_features
-        echo_trace ("Generate 'features.cmake' from <$(name (c_features)) name = \"$(c_features.name:)/>\"", my)
+        echo_trace ("Generate 'features.cmake' from <$(name (c_features)) name = \"$(c_features.name:)\"/>", my)
 
         my.cmake_file = "$(directory.resolve (c_features.path))features.cmake"
 
@@ -240,6 +240,8 @@ function cmake_generate_sources (source, project)
 
     my.cmake_file = "$(directory.resolve (my.project.path))sources.cmake"
 
+    echo_trace ("Generate '$(my.cmake_file:)'", my)
+
     output my.cmake_file
 
     cmake_insert_prologue (my.project->license.)
@@ -273,7 +275,7 @@ function cmake_generate_definitions (source, license)
     check_arguments (my, "source, license", my)
 
     for my.source.c_features where landlord = "project"
-        echo_trace ("Generate 'definitions.cmake' from <$(name (c_features)) name = \"$(c_features.name:)/>\"", my)
+        echo_trace ("Generate 'definitions.cmake' from <$(name (c_features)) name = \"$(c_features.name:)\"/>", my)
 
         my.cmake_file = "$(directory.resolve (c_features.path))definitions.cmake"
 

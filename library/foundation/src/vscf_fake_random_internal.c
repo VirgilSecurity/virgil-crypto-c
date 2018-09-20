@@ -53,9 +53,10 @@
 #include "vscf_fake_random_internal.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_fake_random.h"
 #include "vscf_fake_random_impl.h"
+#include "vscf_random.h"
 #include "vscf_random_api.h"
+#include "vscf_impl.h"
 //  @end
 
 
@@ -123,6 +124,8 @@ vscf_fake_random_init(vscf_fake_random_impl_t *fake_random_impl) {
 
     VSCF_ASSERT_PTR(fake_random_impl);
     VSCF_ASSERT_PTR(fake_random_impl->info == NULL);
+
+    vscf_zeroize (fake_random_impl, sizeof(vscf_fake_random_impl_t));
 
     fake_random_impl->info = &info;
 
