@@ -187,8 +187,7 @@ vscr_ratchet_kdf_info_copy(vscr_ratchet_kdf_info_t *ratchet_kdf_info_ctx) {
 static void
 vscr_ratchet_kdf_info_init_ctx(vscr_ratchet_kdf_info_t *ratchet_kdf_info_ctx) {
 
-    ratchet_kdf_info_ctx->root_info = NULL;
-    ratchet_kdf_info_ctx->ratchet_info = NULL;
+    VSCR_UNUSED(ratchet_kdf_info_ctx);
 }
 
 //

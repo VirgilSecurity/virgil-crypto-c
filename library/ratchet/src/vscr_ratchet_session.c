@@ -284,9 +284,6 @@ static void
 vscr_ratchet_session_init_ctx(vscr_ratchet_session_t *ratchet_session_ctx) {
 
     VSCR_ASSERT_PTR(ratchet_session_ctx);
-
-    // TODO: Proper initialization
-    ratchet_session_ctx->ratchet = vscr_ratchet_new();
 }
 
 //
@@ -298,9 +295,6 @@ static void
 vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *ratchet_session_ctx) {
 
     VSCR_ASSERT_PTR(ratchet_session_ctx);
-
-    vscr_ratchet_destroy(&ratchet_session_ctx->ratchet);
-    vscr_impl_destroy(&ratchet_session_ctx->rng);
 }
 
 VSCR_PUBLIC void
@@ -324,9 +318,11 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session_ctx, vsc_b
     }
 
     vsc_buffer_t *ephemeral_private_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
+    vsc_buffer_make_secure(ephemeral_private_key);
     vscr_ratchet_rng_generate_random_data(ratchet_session_ctx->rng, ED25519_KEY_LEN, ephemeral_private_key);;
 
     vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_count * ED25519_KEY_LEN);
+    vsc_buffer_make_secure(shared_secret);
     curve25519_key_exchange(vsc_buffer_ptr(shared_secret),
                             vsc_buffer_bytes(receiver_long_term_public_key),
                             vsc_buffer_bytes(sender_identity_private_key));
@@ -351,7 +347,6 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session_ctx, vsc_b
 
     vscr_ratchet_initiate(ratchet_session_ctx->ratchet, vsc_buffer_data(shared_secret), ephemeral_private_key);
 
-    vsc_buffer_erase(shared_secret);
     vsc_buffer_destroy(&shared_secret);
     vsc_buffer_destroy(&ephemeral_private_key);
 }
