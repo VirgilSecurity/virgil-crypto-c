@@ -19,5 +19,9 @@
         <constant name="bad message" of_class="global" value="4">
             Bad message
         </constant>
+
+        <constant name="aes error" of_class="global" value="5">
+            AES error
+        </constant>
     </enum>
 </module>

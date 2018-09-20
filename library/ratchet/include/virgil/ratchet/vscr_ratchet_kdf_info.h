@@ -81,6 +81,8 @@ struct vscr_ratchet_kdf_info_t {
     vsc_buffer_t *root_info;
 
     vsc_buffer_t *ratchet_info;
+
+    vsc_buffer_t *cipher_info;
 };
 
 //

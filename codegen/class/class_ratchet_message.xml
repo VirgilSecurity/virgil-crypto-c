@@ -19,7 +19,7 @@
     </constructor>
 
     <method name="serialize len">
-        <argument class="context" access="readonly"/>
+        <argument name="cipher text len" type="size"/>
 
         <return type="size"/>
     </method>

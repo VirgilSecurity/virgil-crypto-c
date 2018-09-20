@@ -51,6 +51,8 @@
 #include "vscr_ratchet_receiver_chain.h"
 #include "vscr_ratchet_skipped_message_key.h"
 
+#include <virgil/foundation/vscf_hmac256.h>
+#include <virgil/foundation/vscf_hkdf.h>
 #include <ed25519/ed25519.h>
 //  @end
 
@@ -325,6 +327,7 @@ vscr_ratchet_use_kdf_info(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_kdf_info_t *
     VSCR_ASSERT_PTR(ratchet_ctx->kdf_info == NULL);
 
     ratchet_ctx->kdf_info = vscr_ratchet_kdf_info_copy(kdf_info);
+    ratchet_ctx->cipher->kdf_info = vsc_buffer_copy(kdf_info->cipher_info);
 }
 
 //
@@ -339,6 +342,7 @@ vscr_ratchet_take_kdf_info(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_kdf_info_t 
     VSCR_ASSERT_PTR(ratchet_ctx->kdf_info == NULL);
 
     ratchet_ctx->kdf_info = kdf_info;
+    ratchet_ctx->cipher->kdf_info = vsc_buffer_copy(kdf_info->cipher_info);
 }
 
 //
@@ -369,6 +373,8 @@ static void
 vscr_ratchet_init_ctx(vscr_ratchet_t *ratchet_ctx) {
 
     VSCR_UNUSED(ratchet_ctx);
+
+    vscr_ratchet_take_cipher(ratchet_ctx, vscr_ratchet_cipher_new());
 }
 
 //
@@ -496,9 +502,9 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *ratchet_ctx, const vscr_
     vscr_ratchet_message_key_t *message_key = vscr_ratchet_create_message_key(new_chain_key);
 
     vscr_error_t result = vscr_ratchet_cipher_decrypt(ratchet_ctx->cipher,
-                                                  vsc_data(message_key->key, sizeof(message_key->key)),
-                                                  vsc_buffer_data(message->cipher_text),
-                                                  buffer);
+                                                      vsc_data(message_key->key, sizeof(message_key->key)),
+                                                      vsc_buffer_data(message->cipher_text),
+                                                      buffer);
 
     vscr_ratchet_chain_key_destroy(&new_chain_key);
     vscr_ratchet_message_key_destroy(&message_key);
@@ -618,20 +624,18 @@ vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc
 }
 
 VSCR_PUBLIC size_t
-vscr_ratchet_encrypt_len(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text) {
+vscr_ratchet_encrypt_len(vscr_ratchet_t *ratchet_ctx, size_t plain_text_len) {
 
-    VSCR_UNUSED(ratchet_ctx);
-    VSCR_UNUSED(plain_text);
-    //  TODO: This is STUB. Implement me.
-    return 500;
+    VSCR_ASSERT_PTR(ratchet_ctx);
+
+    return vscr_ratchet_message_serialize_len(vscr_ratchet_cipher_encrypt_len(ratchet_ctx->cipher, plain_text_len));
 }
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_encrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text, vsc_buffer_t *cipher_text) {
 
     VSCR_ASSERT_PTR(ratchet_ctx);
-    size_t len = vscr_ratchet_encrypt_len(ratchet_ctx, plain_text);
-    VSCR_ASSERT(vsc_buffer_left(cipher_text) >= len);
+    VSCR_ASSERT(vsc_buffer_left(cipher_text) >= vscr_ratchet_encrypt_len(ratchet_ctx, plain_text.len));
 
     if (!ratchet_ctx->sender_chain) {
         vsc_buffer_t *ratchet_private_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
@@ -658,8 +662,7 @@ vscr_ratchet_encrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text, vsc_buf
 
     vscr_ratchet_advance_chain_key(&ratchet_ctx->sender_chain->chain_key);
 
-    // FIXME
-    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(500);
+    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vscr_ratchet_cipher_encrypt_len(ratchet_ctx->cipher, plain_text.len));
     vscr_error_t result = vscr_ratchet_cipher_encrypt(ratchet_ctx->cipher,
                                                   vsc_data(message_key->key, sizeof(message_key->key)),
                                                   plain_text,
@@ -684,12 +687,12 @@ vscr_ratchet_encrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text, vsc_buf
 }
 
 VSCR_PUBLIC size_t
-vscr_ratchet_decrypt_len(vscr_ratchet_t *ratchet_ctx, vsc_data_t cipher_text) {
+vscr_ratchet_decrypt_len(vscr_ratchet_t *ratchet_ctx, size_t cipher_text_len) {
 
-    VSCR_UNUSED(ratchet_ctx);
-    VSCR_UNUSED(cipher_text);
-    //  TODO: This is STUB. Implement me.
-    return 500;
+    VSCR_ASSERT_PTR(ratchet_ctx);
+
+    // TODO: Optimize, real cipher text length is smaller
+    return vscr_ratchet_cipher_decrypt_len(ratchet_ctx->cipher, cipher_text_len);
 }
 
 VSCR_PUBLIC vscr_error_t
@@ -709,7 +712,7 @@ vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t cipher_text, vsc_bu
         return vscr_MESSAGE_VERSION_DOESN_T_MATCH;
     }
 
-    VSCR_ASSERT(vsc_buffer_left(plain_text) >= vscr_ratchet_decrypt_len(ratchet_ctx, cipher_text));
+    VSCR_ASSERT(vsc_buffer_left(plain_text) >= vscr_ratchet_decrypt_len(ratchet_ctx, cipher_text.len));
 
     vscr_error_t result;
 

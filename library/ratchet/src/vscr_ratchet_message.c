@@ -223,7 +223,7 @@ vscr_ratchet_message_new_with_members(uint8_t version, uint32_t counter, vsc_buf
 }
 
 VSCR_PUBLIC size_t
-vscr_ratchet_message_serialize_len(const vscr_ratchet_message_t *ratchet_message_ctx) {
+vscr_ratchet_message_serialize_len(size_t cipher_text_len) {
 
     //  RATCHETMessage ::= SEQUENCE {
     //       version INTEGER,
@@ -234,8 +234,8 @@ vscr_ratchet_message_serialize_len(const vscr_ratchet_message_t *ratchet_message
     size_t top_sequence_len = 1 + 3 /* SEQUENCE */
                               + 1 + 1 + 2 /* INTEGER */
                               + 1 + 1 + 5 /* INTEGER */
-                              + 1 + 1 + vsc_buffer_len(ratchet_message_ctx->public_key)
-                              + 1 + 3 + vsc_buffer_len(ratchet_message_ctx->cipher_text);
+                              + 1 + 1 + vscr_ratchet_message_PUBLIC_KEY_LENGTH
+                              + 1 + 3 + cipher_text_len;
 
     return top_sequence_len;
 }
@@ -249,7 +249,7 @@ vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message_ctx, vsc_
     //       public_key OCTET_STRING,
     //       cipher_text OCTET_STRING }
 
-    VSCR_ASSERT(vsc_buffer_left(output) >= vscr_ratchet_message_serialize_len(ratchet_message_ctx));
+    VSCR_ASSERT(vsc_buffer_left(output) >= vscr_ratchet_message_serialize_len(vsc_buffer_len(ratchet_message_ctx->cipher_text)));
 
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
 

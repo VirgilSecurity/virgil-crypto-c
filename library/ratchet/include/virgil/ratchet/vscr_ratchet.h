@@ -56,8 +56,6 @@
 #include "vscr_ratchet_cipher.h"
 #include "vscr_ratchet_kdf_info.h"
 
-#include <virgil/foundation/vscf_hmac256.h>
-#include <virgil/foundation/vscf_hkdf.h>
 #include <virgil/foundation/vscf_error_ctx.h>
 #include <virgil/common/vsc_buffer.h>
 #include <virgil/common/vsc_data.h>
@@ -188,13 +186,13 @@ VSCR_PUBLIC void
 vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_private_key);
 
 VSCR_PUBLIC size_t
-vscr_ratchet_encrypt_len(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text);
+vscr_ratchet_encrypt_len(vscr_ratchet_t *ratchet_ctx, size_t plain_text_len);
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_encrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text, vsc_buffer_t *cipher_text);
 
 VSCR_PUBLIC size_t
-vscr_ratchet_decrypt_len(vscr_ratchet_t *ratchet_ctx, vsc_data_t cipher_text);
+vscr_ratchet_decrypt_len(vscr_ratchet_t *ratchet_ctx, size_t cipher_text_len);
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t cipher_text, vsc_buffer_t *plain_text);

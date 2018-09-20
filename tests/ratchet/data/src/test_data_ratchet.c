@@ -54,6 +54,10 @@ const byte test_ratchet_kdf_info_ratchet_BYTES[] = {
         0xbf, 0x49, 0xc6, 0x1f,
 };
 
+const byte test_ratchet_kdf_info_cipher_BYTES[] = {
+        0xd6, 0xc9, 0x97, 0x9c,
+};
+
 const byte test_ratchet_shared_secret_BYTES[] = {
         0x9b, 0x5b, 0xb8, 0xf5, 0x2b, 0xb9, 0x42, 0x41,
         0x7f, 0x2d, 0x4f, 0x5c, 0x6e, 0xe6, 0xfa, 0xd2,
@@ -82,6 +86,10 @@ const vsc_data_t test_ratchet_kdf_info_root = {
 
 const vsc_data_t test_ratchet_kdf_info_ratchet = {
         test_ratchet_kdf_info_ratchet_BYTES, sizeof(test_ratchet_kdf_info_ratchet_BYTES)
+};
+
+const vsc_data_t test_ratchet_kdf_info_cipher = {
+        test_ratchet_kdf_info_cipher_BYTES, sizeof(test_ratchet_kdf_info_cipher_BYTES)
 };
 
 const vsc_data_t test_ratchet_shared_secret = {

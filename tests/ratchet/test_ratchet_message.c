@@ -32,6 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include <virgil/common/private/vsc_buffer_defs.h>
 #include "unity.h"
 #include "test_utils.h"
 
@@ -61,7 +62,7 @@ test__1(void) {
     TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->cipher_text), test_ratchet_message_cipher_text.bytes, test_ratchet_message_cipher_text.len);
     TEST_ASSERT_EQUAL_INT(test_ratchet_message_cipher_text.len, vsc_buffer_len(msg1->cipher_text));
 
-    size_t len = vscr_ratchet_message_serialize_len(msg1);
+    size_t len = vscr_ratchet_message_serialize_len(msg1->cipher_text->len);
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(len);
 
     TEST_ASSERT_EQUAL(vscr_ratchet_message_serialize(msg1, buffer), vscr_SUCCESS);
@@ -102,7 +103,7 @@ test__2(void) {
     TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->cipher_text), test_ratchet_message_cipher_text_big.bytes, test_ratchet_message_cipher_text_big.len);
     TEST_ASSERT_EQUAL_INT(test_ratchet_message_cipher_text_big.len, vsc_buffer_len(msg1->cipher_text));
 
-    size_t len = vscr_ratchet_message_serialize_len(msg1);
+    size_t len = vscr_ratchet_message_serialize_len(msg1->cipher_text->len);
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(len);
 
     TEST_ASSERT_EQUAL(vscr_ratchet_message_serialize(msg1, buffer), vscr_SUCCESS);
