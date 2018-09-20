@@ -997,6 +997,53 @@ function component_resolve_instance (instance, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve abstract component: dependency
+# ---------------------------------------------------------------------------
+function component_resolve_dependency (dependency, parent)
+    check_arguments (my, "dependency, parent", my)
+
+    assert_attribute (my.parent, "project", my)
+    assert_attribute (my.dependency, "name", my)
+    assert_attribute_one_of (my.dependency, "interface, api, class, impl")
+
+    scope my.dependency
+        .access ?= "readwrite"
+        .type_name = 0.interface ? 0.api ? 0.class ? 0.impl
+
+        my.project_uid = defined (dependency.project) ?? make_id ("project", dependency.project) ?
+
+        if defined(0.interface)
+            .uid = make_id (my.project_uid, "class impl struct impl")
+
+        elsif defined(0.api)
+            .uid = make_id (my.project_uid, "class", .type_name, "api", "struct", .type_name, "api")
+
+        elsif defined(0.class)
+            .uid = make_id (my.project_uid, "class", .type_name, "struct", .type_name)
+
+        elsif defined(0.impl)
+            .uid = make_id (my.project_uid, "class", .type_name, "struct", "impl")
+        else
+            echo_fatal ("Unhandled dependency type within code generation.", my)
+        endif
+
+        if defined(0.interface)
+            .type_kind = "interface"
+
+        elsif defined(0.api)
+            .type_kind = "interface api"
+
+        elsif defined(0.class)
+            .type_kind = "class"
+
+        elsif defined(0.impl)
+            .type_kind = "implementation"
+        endif
+
+    endscope
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Inherit parent 'instance' attributes.
 #   Note, parent mast also be an 'instance'.
 # ---------------------------------------------------------------------------
@@ -1287,7 +1334,7 @@ endfunction
 function component_resolve_require_base (require_base, parent)
     check_arguments (my, "require_base, parent", my)
 
-    assert_attribute_one_of (my.require_base, "module, header, feature, interface, class", my)
+    assert_attribute_one_of (my.require_base, "module, header, feature, interface, class, impl", my)
 
     component_resolve_landlord (my.require_base, my.parent)
     component_resolve_attr_scope (my.require_base, my.parent)
@@ -1415,5 +1462,28 @@ function component_create_argument_impl_ref (destination, meta)
     endnew
 endfunction
 
+
+# ---------------------------------------------------------------------------
+#   Replace shorten refs, i.e. '.(_argument_impl)' with fully qualified ref.
+# ---------------------------------------------------------------------------
+function foreach_component_resolve_shortcut_refs (component, lang, hierarchy_uid)
+    check_arguments (my, "component")
+
+    my.lang ?= my.component.lang ?
+
+    my.hierarchy_uid = my.component.uid ? my.hierarchy_uid ?
+
+    if defined (my.component.) & defined (my.hierarchy_uid)
+        while regexp.match ("(\\.\\(_([\\w]+)\\))", my.component., my.shorten_ref, my.shorten_uid)
+            my.full_uid = make_id (my.hierarchy_uid, my.shorten_uid)
+            my.full_ref = my.lang ?? lang_ref (my.full_uid, my.lang) ? ref (my.full_uid)
+            my.component. = string.replace (my.component., "$(my.shorten_ref:)|$(my.full_ref)")
+        endwhile
+    endif
+
+    for my.component. as inner_component where is_item (inner_component)
+        foreach_component_resolve_shortcut_refs (inner_component, my.lang, my.hierarchy_uid)
+    endfor
+endfunction
 
 .endtemplate

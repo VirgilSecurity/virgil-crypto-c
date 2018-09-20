@@ -60,6 +60,7 @@
 #include "vscf_impl_private.h"
 #include "vscf_rsa_public_key.h"
 #include "vscf_hash.h"
+#include "vscf_impl.h"
 
 #include <mbedtls/rsa.h>
 //  @end
@@ -89,21 +90,21 @@ struct vscf_rsa_public_key_impl_t {
     //
     size_t refcnt;
     //
-    //  Dependency to the interface 'random'.
+    //  Dependency to the 'hash'.
+    //
+    const vscf_hash_api_t *hash;
+    //
+    //  Dependency to the 'random'.
     //
     vscf_impl_t *random;
     //
-    //  Dependency to the interface 'asn1 reader'.
+    //  Dependency to the 'asn1rd'.
     //
     vscf_impl_t *asn1rd;
     //
-    //  Dependency to the interface 'asn1 writer'.
+    //  Dependency to the 'asn1wr'.
     //
     vscf_impl_t *asn1wr;
-    //
-    //  Dependency to the interface api 'hash'.
-    //
-    const vscf_hash_api_t *hash;
     //
     //  Implementation specific context.
     //

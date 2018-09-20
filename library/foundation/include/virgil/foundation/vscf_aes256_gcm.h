@@ -55,13 +55,8 @@
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
-#include "vscf_encrypt.h"
-#include "vscf_decrypt.h"
 #include "vscf_cipher_info.h"
-#include "vscf_cipher.h"
 #include "vscf_cipher_auth_info.h"
-#include "vscf_auth_encrypt.h"
-#include "vscf_auth_decrypt.h"
 #include "vscf_cipher_auth.h"
 
 #include <virgil/common/vsc_data.h>

@@ -53,11 +53,14 @@
 #include "vscf_hmac256_internal.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_hmac256.h"
 #include "vscf_hmac256_impl.h"
+#include "vscf_hmac_info.h"
 #include "vscf_hmac_info_api.h"
+#include "vscf_hmac.h"
 #include "vscf_hmac_api.h"
+#include "vscf_hmac_stream.h"
 #include "vscf_hmac_stream_api.h"
+#include "vscf_impl.h"
 //  @end
 
 
@@ -185,6 +188,8 @@ vscf_hmac256_init(vscf_hmac256_impl_t *hmac256_impl) {
 
     VSCF_ASSERT_PTR(hmac256_impl);
     VSCF_ASSERT_PTR(hmac256_impl->info == NULL);
+
+    vscf_zeroize (hmac256_impl, sizeof(vscf_hmac256_impl_t));
 
     hmac256_impl->info = &info;
 

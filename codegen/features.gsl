@@ -168,4 +168,99 @@ function foreach_features_resolve (source)
 endfunction
 
 
+# ---------------------------------------------------------------------------
+#   Load existing <features_list/> entity or create new one.
+# ---------------------------------------------------------------------------
+function features_list_load (work_path)
+    my.dir_path = directory.resolve (my.work_path) ?
+    my.file_path = "$(my.dir_path?:)features_list.xml"
+
+    if file.exists (my.file_path)
+        my.features_list = item_load_from_file(my.file_path)
+    else
+        my.features_list = XML.new("features_list")
+    endif
+
+    return my.features_list
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Save <features_list/> entity to the file at given path.
+# ---------------------------------------------------------------------------
+function features_list_save (features_list, work_path)
+    check_arguments (my, "features_list", my)
+
+    item_save_to_file(my.features_list, "features_list.xml", my.work_path)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Inspect library features and add them to the list.
+# ---------------------------------------------------------------------------
+function features_list_update_from_library (features_list, library)
+    check_arguments (my, "features_list, library", my)
+
+    echo_trace ("Create <features/> for <library name=\"$(my.library.name)\"", my)
+
+    #   Clean first
+    for my.features_list.features where string_equal(0.library ?, my.library.name)
+        delete features
+    endfor
+
+    for my.features_list.c_features where (0.name = my.library.name) & (0.landlord = "library")
+        delete c_features
+    endfor
+
+    #   Grab features
+    new features to my.features_list
+        .prefix = my.library.prefix ?
+        .path = my.library.path
+        .library = my.library.name
+
+        for my.library.feature
+            copy feature to features
+        endfor
+
+        for my.library.require
+            copy require to features
+        endfor
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Inspect project features and add them to the list.
+# ---------------------------------------------------------------------------
+function features_list_update_from_project (features_list, project)
+    check_arguments (my, "features_list, project", my)
+
+    echo_trace ("Create <features/> for <project name=\"$(my.project.name)\"", my)
+
+    #   Clean first
+    for my.features_list.features where string_equal(0.project ?, my.project.name)
+        delete features
+    endfor
+
+    for my.features_list.c_features where (0.name = my.project.name) & (0.landlord = "project")
+        delete c_features
+    endfor
+
+    #   Grab features
+    new features to my.features_list
+        .prefix = my.project.prefix ?
+        .path = my.project.path
+        .project = my.project.name
+        .cmake_target = my.project.cmake_target
+
+        for my.project.feature
+            copy feature to features
+        endfor
+
+        for my.project.require
+            copy require to features
+        endfor
+    endnew
+endfunction
+
 .endtemplate

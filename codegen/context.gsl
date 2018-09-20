@@ -43,18 +43,20 @@
 gsl from "common.gsl"
 
 # ---------------------------------------------------------------------------
-#   Read source file then inject variables from the context and store result
-#   to the destination file.
-#   Context defines variables as key-value pairs defined as attributes.
+#   Read source file then apply resolution map and store result to the
+#   destination file.
+#
+#   Note, resolution map defines variables as key-value pairs defined
+#   as attributes.
 # ---------------------------------------------------------------------------
-.macro context_inject (context, source_file, destination_file)
-.   check_arguments (my, "context, source_file, destination_file", my)
+.macro resolution_map_apply (resolution_map, source_file, destination_file)
+.   check_arguments (my, "resolution_map, source_file, destination_file", my)
 .   my.default_gsl_substitute = [gsl].substitute
 .   my.default_gsl_ignorecase = [gsl].ignorecase
 .   [gsl].substitute = ".("
 .   [gsl].ignorecase = "0"
 .   output my.destination_file
-.       scope my.context
+.       scope my.resolution_map
 .           gsl from my.source_file
 .       endscope
 .   close
@@ -64,13 +66,13 @@ gsl from "common.gsl"
 
 
 # ---------------------------------------------------------------------------
-#   Inject context variables to given model.
+#   Apply resolution map to given model.
 #   Note, this function create temporary files in the work dir.
 # ---------------------------------------------------------------------------
-function context_inject_to (context, model, work_dir)
-    check_arguments (my, "context, model, work_dir", my)
+function resolution_map_apply_to (resolution_map, model, work_dir)
+    check_arguments (my, "resolution_map, model, work_dir", my)
 
-    echo_trace ("Inject context to <$(name (my.model)) name=\"$(my.model.name?:)\"/>", my)
+    echo_trace ("Apply resolution map to <$(name (my.model)) name=\"$(my.model.name?:)\"/>", my)
 
     my.work_dir = directory.resolve (my.work_dir) ?
 
@@ -83,42 +85,20 @@ function context_inject_to (context, model, work_dir)
 
     item_save_to_file (my.model, my.init_file_path)
 
-    context_inject (my.context, my.init_file_path, my.final_file_path)
+    resolution_map_apply (my.resolution_map, my.init_file_path, my.final_file_path)
 
     return item_load_from_file (my.final_file_path)
 endfunction
 
-# ---------------------------------------------------------------------------
-#   Replace shorten refs, i.e. '.(_argument_impl)' with fully qualified ref.
-# ---------------------------------------------------------------------------
-function context_resolve_refs (context, model, lang, hierarchy_uid)
-    check_arguments (my, "context, model")
-
-    my.lang ?= my.model.lang ?
-
-    my.hierarchy_uid = my.model.uid ? my.hierarchy_uid ?
-
-    if defined (my.model.) & defined (my.hierarchy_uid)
-        while regexp.match ("(\\.\\(_([\\w]+)\\))", my.model., my.shorten_ref, my.shorten_uid)
-            my.full_uid = make_id (my.hierarchy_uid, my.shorten_uid)
-            my.full_ref = my.lang ?? lang_ref (my.full_uid, my.lang) ? ref (my.full_uid)
-            my.model. = string.replace (my.model., "$(my.shorten_ref:)|$(my.full_ref)")
-        endwhile
-    endif
-
-    for my.model. as item where is_item (item)
-        context_resolve_refs (my.context, item, my.lang, my.hierarchy_uid)
-    endfor
-endfunction
 
 # ---------------------------------------------------------------------------
-#   Inject context variables to the '<lang>_module'.
+#   Apply resolution map to the '<lang>_module'.
 #   Note, this function create temporary files in the work dir.
 # ---------------------------------------------------------------------------
-function context_inject_to_lang_module (context, lang_module, work_dir)
-    check_arguments (my, "lang_module, context, work_dir", my)
+function resolution_map_apply_to_lang_module (resolution_map, lang_module, work_dir)
+    check_arguments (my, "lang_module, resolution_map, work_dir", my)
 
-    echo_trace ("Inject context to <$(name (my.lang_module)) name=\"$(my.lang_module.name:)\"/>", my)
+    echo_trace ("Apply resolution map to <$(name (my.lang_module)) name=\"$(my.lang_module.name:)\"/>", my)
 
     my.init_module_file_path = \
             "$(my.work_dir?:)c_module_$(my.lang_module.name:)_unresolved.xml"
@@ -129,9 +109,41 @@ function context_inject_to_lang_module (context, lang_module, work_dir)
 
     item_save_to_file (my.lang_module, my.init_module_file_path)
 
-    context_inject (my.context, my.init_module_file_path, my.final_module_file_path)
+    resolution_map_apply (my.resolution_map, my.init_module_file_path, my.final_module_file_path)
 
     return item_load_from_file (my.final_module_file_path)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Update resolution context with a project information.
+# ---------------------------------------------------------------------------
+function context_append_project (context, project)
+    check_arguments (my, "context, project", my)
+
+    assert_attribute (my.project, "version_major", my)
+    assert_attribute (my.project, "version_minor", my)
+    assert_attribute (my.project, "version_patch", my)
+    assert_attribute (my.project, "version_string", my)
+
+    new uid to my.context
+        .uid = "project_version_major"
+        .ref = my.project.version_major
+    endnew
+
+    new uid to my.context
+        .uid = "project_version_minor"
+        .ref = my.project.version_minor
+    endnew
+
+    new uid to my.context
+        .uid = "project_version_patch"
+        .ref = my.project.version_patch
+    endnew
+
+    new uid to my.context
+        .uid = "project_version_string"
+        .ref = my.project.version_string
+    endnew
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -144,13 +156,31 @@ function context_append_hierarchy (context, item)
     if defined (my.item.uid)
         assert_attribute (my.item, "name", my)
 
-        my.context.$(my.item.uid) = my.item.name
+        new uid to my.context
+            .uid = my.item.uid
+            .ref = my.item.name
+        endnew
     endif
 
     #   Dive in recursion
     for my.item. as child_item where is_item (child_item)
         context_append_hierarchy (my.context, child_item)
     endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Build resolution context.
+# ---------------------------------------------------------------------------
+function context_build_resolution_map (context)
+    check_arguments (my, "context", my)
+
+    my.resolution_map = XML.new ("resolution_map")
+
+    for my.context.uid
+        my.resolution_map.$(make_id (my.prefix, uid.uid)) = uid.ref
+    endfor
+
+    return my.resolution_map
 endfunction
 
 .endtemplate

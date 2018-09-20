@@ -1,7 +1,10 @@
 <class name="buffer" context="private">
     Encapsulates fixed byte array with variable effective data length.
 
-    <require module="data"/>
+
+    <property name="bytes_dealloc" callback=".(global_callback_dealloc)">
+        Function do deallocate underlying byte array.
+    </property>
 
 
     <property name="bytes" type="data" access="readwrite">
@@ -19,8 +22,9 @@
     </property>
 
 
-    <property name="bytes_dealloc" callback=".(global_callback_dealloc)">
-        Function do deallocate underlying byte array.
+    <property name="is secure" type="boolean">
+        Defines that buffer holds sensitive data that must be erased
+        in a secure manner.
     </property>
 
 
@@ -64,6 +68,14 @@
         <argument name="bytes" type="data" access="readwrite"/>
         <argument name="bytes len" type="size"/>
         <argument name="dealloc" callback=".(global_callback_dealloc)"/>
+    </method>
+
+
+    <method name="make secure">
+        Tell buffer that it holds sensitive that must be erased
+        in a secure manner during destruction.
+
+        <argument class="context"/>
     </method>
 
 

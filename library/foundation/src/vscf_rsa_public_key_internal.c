@@ -53,18 +53,24 @@
 #include "vscf_rsa_public_key_internal.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_rsa_public_key.h"
 #include "vscf_rsa_public_key_impl.h"
+#include "vscf_key.h"
 #include "vscf_key_api.h"
+#include "vscf_public_key.h"
 #include "vscf_public_key_api.h"
+#include "vscf_encrypt.h"
 #include "vscf_encrypt_api.h"
+#include "vscf_verify.h"
 #include "vscf_verify_api.h"
+#include "vscf_export_public_key.h"
 #include "vscf_export_public_key_api.h"
+#include "vscf_import_public_key.h"
 #include "vscf_import_public_key_api.h"
 #include "vscf_hash.h"
 #include "vscf_random.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_asn1_writer.h"
+#include "vscf_impl.h"
 //  @end
 
 
@@ -245,15 +251,9 @@ vscf_rsa_public_key_init(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
     VSCF_ASSERT_PTR(rsa_public_key_impl);
     VSCF_ASSERT_PTR(rsa_public_key_impl->info == NULL);
 
+    vscf_zeroize (rsa_public_key_impl, sizeof(vscf_rsa_public_key_impl_t));
+
     rsa_public_key_impl->info = &info;
-
-    rsa_public_key_impl->hash = NULL;
-
-    rsa_public_key_impl->random = NULL;
-
-    rsa_public_key_impl->asn1rd = NULL;
-
-    rsa_public_key_impl->asn1wr = NULL;
 
     vscf_rsa_public_key_init_ctx(rsa_public_key_impl);
 }
@@ -269,25 +269,10 @@ vscf_rsa_public_key_cleanup(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
         return;
     }
 
-    //   Release dependency: 'random'.
-    if (rsa_public_key_impl->random) {
-        vscf_impl_destroy(&rsa_public_key_impl->random);
-    }
-
-    //   Release dependency: 'asn1rd'.
-    if (rsa_public_key_impl->asn1rd) {
-        vscf_impl_destroy(&rsa_public_key_impl->asn1rd);
-    }
-
-    //   Release dependency: 'asn1wr'.
-    if (rsa_public_key_impl->asn1wr) {
-        vscf_impl_destroy(&rsa_public_key_impl->asn1wr);
-    }
-
-    //   Release dependency: 'hash'.
-    if (rsa_public_key_impl->hash) {
-        rsa_public_key_impl->hash = NULL;
-    }
+    vscf_rsa_public_key_release_hash(rsa_public_key_impl);
+    vscf_rsa_public_key_release_random(rsa_public_key_impl);
+    vscf_rsa_public_key_release_asn1rd(rsa_public_key_impl);
+    vscf_rsa_public_key_release_asn1wr(rsa_public_key_impl);
 
     vscf_rsa_public_key_cleanup_ctx(rsa_public_key_impl);
 
@@ -361,10 +346,29 @@ vscf_rsa_public_key_public_key_api(void) {
 }
 
 //
-//  Setup dependency to the interface 'hash' with shared ownership.
+//  Return size of 'vscf_rsa_public_key_impl_t' type.
+//
+VSCF_PUBLIC size_t
+vscf_rsa_public_key_impl_size(void) {
+
+    return sizeof (vscf_rsa_public_key_impl_t);
+}
+
+//
+//  Cast to the 'vscf_impl_t' type.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_rsa_public_key_impl(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
+
+    VSCF_ASSERT_PTR(rsa_public_key_impl);
+    return (vscf_impl_t *)(rsa_public_key_impl);
+}
+
+//
+//  Setup dependency to the interface api 'hash' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_use_hash_api(vscf_rsa_public_key_impl_t *rsa_public_key_impl, const vscf_hash_api_t *hash) {
+vscf_rsa_public_key_use_hash(vscf_rsa_public_key_impl_t *rsa_public_key_impl, const vscf_hash_api_t *hash) {
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
     VSCF_ASSERT_PTR(hash);
@@ -374,14 +378,14 @@ vscf_rsa_public_key_use_hash_api(vscf_rsa_public_key_impl_t *rsa_public_key_impl
 }
 
 //
-//  Release dependency of the interface 'hash'.
+//  Release dependency to the interface api 'hash'.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_release_hash_api(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
+vscf_rsa_public_key_release_hash(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
-    if (rsa_public_key_impl->hash) {
-        rsa_public_key_impl->hash = NULL;
-    }
+    VSCF_ASSERT_PTR(rsa_public_key_impl);
+
+    rsa_public_key_impl->hash = NULL;
 }
 
 //
@@ -416,21 +420,21 @@ vscf_rsa_public_key_take_random(vscf_rsa_public_key_impl_t *rsa_public_key_impl,
 }
 
 //
-//  Release dependency of the interface 'random'.
+//  Release dependency to the interface 'random'.
 //
 VSCF_PUBLIC void
 vscf_rsa_public_key_release_random(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
-    if (rsa_public_key_impl->random) {
-        vscf_impl_destroy(&rsa_public_key_impl->random);
-    }
+    VSCF_ASSERT_PTR(rsa_public_key_impl);
+
+    vscf_impl_destroy(&rsa_public_key_impl->random);
 }
 
 //
 //  Setup dependency to the interface 'asn1 reader' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_use_asn1_reader(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1rd) {
+vscf_rsa_public_key_use_asn1rd(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1rd) {
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
     VSCF_ASSERT_PTR(asn1rd);
@@ -446,7 +450,7 @@ vscf_rsa_public_key_use_asn1_reader(vscf_rsa_public_key_impl_t *rsa_public_key_i
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_take_asn1_reader(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1rd) {
+vscf_rsa_public_key_take_asn1rd(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1rd) {
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
     VSCF_ASSERT_PTR(asn1rd);
@@ -458,21 +462,21 @@ vscf_rsa_public_key_take_asn1_reader(vscf_rsa_public_key_impl_t *rsa_public_key_
 }
 
 //
-//  Release dependency of the interface 'asn1 reader'.
+//  Release dependency to the interface 'asn1 reader'.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_release_asn1_reader(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
+vscf_rsa_public_key_release_asn1rd(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
-    if (rsa_public_key_impl->asn1rd) {
-        vscf_impl_destroy(&rsa_public_key_impl->asn1rd);
-    }
+    VSCF_ASSERT_PTR(rsa_public_key_impl);
+
+    vscf_impl_destroy(&rsa_public_key_impl->asn1rd);
 }
 
 //
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_use_asn1_writer(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1wr) {
+vscf_rsa_public_key_use_asn1wr(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1wr) {
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
     VSCF_ASSERT_PTR(asn1wr);
@@ -488,7 +492,7 @@ vscf_rsa_public_key_use_asn1_writer(vscf_rsa_public_key_impl_t *rsa_public_key_i
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_take_asn1_writer(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1wr) {
+vscf_rsa_public_key_take_asn1wr(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vscf_impl_t *asn1wr) {
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
     VSCF_ASSERT_PTR(asn1wr);
@@ -500,33 +504,14 @@ vscf_rsa_public_key_take_asn1_writer(vscf_rsa_public_key_impl_t *rsa_public_key_
 }
 
 //
-//  Release dependency of the interface 'asn1 writer'.
+//  Release dependency to the interface 'asn1 writer'.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_release_asn1_writer(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
-
-    if (rsa_public_key_impl->asn1wr) {
-        vscf_impl_destroy(&rsa_public_key_impl->asn1wr);
-    }
-}
-
-//
-//  Return size of 'vscf_rsa_public_key_impl_t' type.
-//
-VSCF_PUBLIC size_t
-vscf_rsa_public_key_impl_size(void) {
-
-    return sizeof (vscf_rsa_public_key_impl_t);
-}
-
-//
-//  Cast to the 'vscf_impl_t' type.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_rsa_public_key_impl(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
+vscf_rsa_public_key_release_asn1wr(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
-    return (vscf_impl_t *)(rsa_public_key_impl);
+
+    vscf_impl_destroy(&rsa_public_key_impl->asn1wr);
 }
 
 

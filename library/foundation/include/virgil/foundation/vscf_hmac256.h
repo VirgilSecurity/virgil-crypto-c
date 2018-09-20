@@ -57,7 +57,6 @@
 #include "vscf_impl.h"
 #include "vscf_hmac_info.h"
 #include "vscf_hmac.h"
-#include "vscf_hmac_stream.h"
 
 #include <virgil/common/vsc_data.h>
 #include <virgil/common/vsc_buffer.h>

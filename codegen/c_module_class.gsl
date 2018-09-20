@@ -44,6 +44,7 @@
 
 
 gsl from "common.gsl"
+gsl from "c_dependency.gsl"
 
 # ---------------------------------------------------------------------------
 #   Add model 'struct' that handles class context.
@@ -75,6 +76,8 @@ function _X13_add_context_struct (class, declaration, definition, destination, m
                 .type = "size"
             endnew
         endif
+
+        c_dependency_add_properties (my.class, struct, my.meta)
 
         for my.class.property
             copy property to struct
@@ -252,15 +255,13 @@ function _X13_add_method_cleanup (class, destination, meta)
                     $(my.refs.c_class_method_cleanup_ctx)($(my.arg_ctx));
             "
 
-            for my.class.dependency where defined(class)
-                my.method_delete = my.refs.c_class_method_delete_dependency_$(make_id (dependency.class))
-                my.property_dependency = my.refs.c_class_property_dependency_$(make_id (dependency.class))
+            for my.class.dependency
+                my.dependency = my.refs.c_dependency_property_$(make_id (dependency.name))
+                my.method_dependency_release = my.refs.c_dependency_method_release_$(make_id (dependency.name))
 
                 my.impl_cleanup_dependencies ?= ""
                 my.impl_cleanup_dependencies += "\
-
-                    $(my.method_delete)($(my.arg_ctx:)->$(my.property_dependency));
-                "
+                        $(my.method_dependency_release)($(my.arg_ctx));$(terminator)"
             endfor
 
             my.impl_cleanup_end = "\
@@ -271,7 +272,7 @@ function _X13_add_method_cleanup (class, destination, meta)
             my.method_body = ""
             my.method_body += format_left (my.impl_check_precondition) + terminator
             my.method_body += format_left (my.impl_cleanup_begin) + terminator
-            my.method_body += format_left (my.impl_cleanup_dependencies) + terminator ? ""
+            my.method_body += format_left (my.impl_cleanup_dependencies, 1) + terminator ? ""
             my.method_body += format_left (my.impl_cleanup_end) + terminator
 
             . = my.method_body
@@ -563,6 +564,8 @@ function _X13_add_lifecycle_methods (class, destination, meta)
     _X13_add_method_delete (my.class, my.destination, my.meta)
     _X13_add_method_destroy (my.class, my.destination, my.meta)
     _X13_add_method_copy (my.class, my.destination, my.meta)
+
+    c_dependency_add_methods (my.class, "public", "private", my.destination, my.meta)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -599,6 +602,7 @@ function c_module_class_create_module_public (class, destination, meta)
             .scope = "private"
         endnew
 
+        c_dependency_add_requirements (my.class, module)
 
         if my.class.context = "public"
             _X13_add_context_struct (my.class, "public", "public", module, my.meta)

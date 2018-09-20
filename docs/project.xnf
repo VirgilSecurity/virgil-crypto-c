@@ -77,6 +77,14 @@
             Path to the directory with source files.
         </attr>
 
+        <attr name="install_headers_dir">
+            Relative directory where headers will be installed.
+        </attr>
+
+        <attr name="install_private_headers_dir">
+            Relative directory where private headers will be installed.
+        </attr>
+
         <attr name="work_path" required="1">
             Path to the directory, that is used to hold temporary files.
         </attr>

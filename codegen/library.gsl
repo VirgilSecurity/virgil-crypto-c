@@ -154,30 +154,4 @@ function foreach_library_resolve (source, project)
     endfor
 endfunction
 
-
-# ---------------------------------------------------------------------------
-#   Add 'features' from library to destination.
-# ---------------------------------------------------------------------------
-function library_create_features (library, destination)
-    check_arguments (my, "library, destination", my)
-
-    echo_trace ("Create <features/> for <library name=\"$(my.library.name)\"", my)
-
-    new features to my.destination
-        .prefix = my.library.prefix ?
-        .path = my.library.path
-        .library = my.library.name
-
-        for my.library.feature
-            copy feature to features
-        endfor
-
-        for my.library.require
-            copy require to features
-        endfor
-
-        return features
-    endnew
-endfunction
-
 .endtemplate

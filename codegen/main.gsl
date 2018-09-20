@@ -52,6 +52,7 @@ gsl from "class.gsl"
 gsl from "context.gsl"
 gsl from "meta.gsl"
 gsl from "features.gsl"
+gsl from "projects_api.gsl"
 
 gsl from "c_features.gsl"
 gsl from "c_module.gsl"
@@ -75,14 +76,11 @@ gsl from "cmake_files_codegen.gsl"
 # ###########################################################################
 
 
-function process_project (project, features_list, echo_level)
-    check_arguments (my, "project, features_list, echo_level", my)
+function process_project (project, features_list, projects_api, echo_level)
+    check_arguments (my, "project, features_list, projects_api, echo_level", my)
 
     #   Create my.root eleement where all models will be created.
     my.root = XML.new ("my.root")
-
-    #   Create element that holds resolution context.
-    my.context = XML.new ("context")
 
     #   Load project's components.
     for my.project.interface
@@ -104,7 +102,6 @@ function process_project (project, features_list, echo_level)
     #   Process project.
     project_resolve (my.project)
     project_generate_structure (my.project)
-    project_update_context (my.project, my.context)
 
     #   Process Interface / Implementation.
     foreach_interface_resolve (my.root, my.project)
@@ -124,11 +121,10 @@ function process_project (project, features_list, echo_level)
     foreach_module_create_feature (my.root, my.project)
     foreach_class_create_feature (my.root, my.project)
 
-    #   Grpup features within one component.
-    project_create_features (my.project, my.features_list)
+    #   Group features within one component.
+    features_list_update_from_project (my.features_list, my.project)
 
-
-    #   Create meta informtation about high level entities.
+    #   Create meta information about high level entities.
     my.meta = meta_create ()
     foreach_interface_update_meta (my.root, my.meta)
     foreach_implementation_update_meta (my.root, my.meta)
@@ -165,28 +161,47 @@ function process_project (project, features_list, echo_level)
     #   Process lang_modules.
     c_module_resolve (my.root)
 
+    #   Resolve shortcuts for all modules.
+    foreach_component_resolve_shortcut_refs (my.root)
 
     #   At this point all elements are created and resolved.
     if my.echo_level = "debug"
         item_save_to_file (my.root, "root.xml", my.project.work_path)
     endif
 
+    if my.echo_level = "debug"
+        item_save_to_file (my.project, "project.xml", my.project.work_path)
+    endif
 
-    #   Fullfil context with models name.
-    context_resolve_refs (my.context, my.root)
-    context_append_hierarchy (my.context, my.root)
-    item_save_to_file (my.context, "context.xml", my.project.work_path)
+    #   Perform cross projects name resolution.
+    projects_api_reset_project (my.projects_api, my.project)
+    projects_api_collect_info (my.projects_api, my.root)
+    projects_api_save (my.projects_api, main.work_path)
 
-    #   Generate code.
+    #   Resolve modules.
+    my.type_resolution_map = projects_api_build_type_resolution_map (my.projects_api)
+
     for my.root.c_module
         my.c_module_resolved = \
-                context_inject_to_lang_module (my.context, c_module, my.project.work_path)
+                resolution_map_apply_to_lang_module (my.type_resolution_map, c_module, my.project.work_path)
         move my.c_module_resolved before c_module
         delete c_module
     endfor
+
+    my.header_resolution_map = projects_api_build_header_resolution_map (my.projects_api)
+    for my.root.c_module
+        c_module_add_headers (c_module, my.header_resolution_map)
+    endfor
+
+    if my.echo_level = "debug"
+        item_save_to_file (my.type_resolution_map, "type_resolution_map.xml", my.project.work_path)
+        item_save_to_file (my.header_resolution_map, "header_resolution_map.xml", my.project.work_path)
+    endif
+
+    #   Generate code.
     c_module_generate_sources (my.root)
 
-    #   Generare CMake files.
+    #   Generate CMake files.
     cmake_generate_sources (my.root, my.project)
 endfunction
 
@@ -195,23 +210,27 @@ function process_library (library, features_list, echo_level)
     check_arguments (my, "library, features_list, echo_level", my)
 
     library_resolve (my.library)
-    library_create_features (my.library, my.features_list)
+    features_list_update_from_library (my.features_list, my.library)
 endfunction
 
 
 # ---------------------------------------------------------------------------
-#   Entrypoint.
+#   Entry point.
 # ---------------------------------------------------------------------------
 function run_main ()
     main.echo_level ?= "fatal"
+    main.work_path ?= "generated"
 
-    #   Create container where all features will be located
-    my.features_list = XML.new("features_list")
+    #   Create container where all features will be located.
+    my.features_list = features_list_load (main.work_path)
 
-    #   Process code generation
+    #   Create container where projects API will be located.
+    my.projects_api = projects_api_load (main.work_path)
+
+    #   Process code generation.
     for main.project
         my.loaded_project = item_load_from_file ("project/$(make_id ("project", project.name)).xml")
-        process_project (my.loaded_project, my.features_list, main.echo_level)
+        process_project (my.loaded_project, my.features_list, my.projects_api, main.echo_level)
     endfor
 
     for main.external where defined (library)
@@ -221,12 +240,16 @@ function run_main ()
 
     #   Create context and populate it with features.
     foreach_features_resolve (my.features_list)
+
     c_features_create (my.features_list, my.features_list)
 
-    my.context = XML.new ("context")
-    context_append_hierarchy (my.context, my.features_list)
+    projects_api_save (my.projects_api, main.work_path)
+    features_list_save (my.features_list, main.work_path)
 
-    my.features_list_resolved = context_inject_to (my.context, my.features_list, main.work_path)
+    projects_api_collect_info (my.projects_api, my.features_list)
+    my.resolution_map = projects_api_build_type_resolution_map (my.projects_api)
+
+    my.features_list_resolved = resolution_map_apply_to (my.resolution_map, my.features_list, main.work_path)
 
     #   Generate cmake files for features.
     cmake_generate_features (my.features_list_resolved, main->license)
