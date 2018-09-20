@@ -53,12 +53,12 @@
 #define VSCR_RATCHET_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_impl.h"
-#include "vscr_ratchet_cipher.h"
-#include "vscr_ratchet_kdf_info.h"
 #include "vscr_ratchet_sender_chain.h"
 #include "vscr_ratchet_receiver_chain_list_node.h"
 #include "vscr_ratchet_skipped_message_key_list_node.h"
+#include "vscr_impl.h"
+#include "vscr_ratchet_cipher.h"
+#include "vscr_ratchet_kdf_info.h"
 //  @end
 
 
@@ -97,17 +97,11 @@ struct vscr_ratchet_t {
     //  Dependency to the 'kdf_info'.
     //
     vscr_ratchet_kdf_info_t *kdf_info;
-    //
-    //  Dependency to the 'sender_chain'.
-    //
+
     vscr_ratchet_sender_chain_t *sender_chain;
-    //
-    //  Dependency to the 'receiver_chains'.
-    //
+
     vscr_ratchet_receiver_chain_list_node_t *receiver_chains;
-    //
-    //  Dependency to the 'skipped_message_keys'.
-    //
+
     vscr_ratchet_skipped_message_key_list_node_t *skipped_message_keys;
 
     byte root_key[vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH];
