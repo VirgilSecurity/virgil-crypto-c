@@ -46,76 +46,6 @@ gsl from "c_component.gsl"
 gsl from "c_formatter.gsl"
 
 
-function _X11_update_c_include_scope (c_include,c_instance, class_name, scope)
-    check_arguments (my, "c_include, c_instance, class_name, scope", my)
-
-    if ! string_in (my.c_instance.class ?, my.class_name)
-        return
-    endif
-
-    if my.c_include.scope = "public"
-        return
-    endif
-
-    if string_in (my.scope, "public, private")
-        my.c_include.scope = my.scope
-    endif
-endfunction
-
-
-function _X11_add_c_include_for_common_class (module, c_module, class_name)
-    check_arguments (my, "module, c_module, class_name", my)
-
-    new c_include to my.c_module
-        .file = "virgil/common/vsc_$(my.class_name:).h"
-        .is_system = "1"
-        .scope = "none"
-
-        my.c_include = c_include
-    endnew
-
-    for my.module.struct
-        for struct.property
-            _X11_update_c_include_scope (my.c_include, property, my.class_name, struct.definition)
-        endfor
-    endfor
-
-    for my.module.method
-        for method.argument
-            _X11_update_c_include_scope (my.c_include, argument, my.class_name, method.declaration)
-        endfor
-
-        for method.return
-            _X11_update_c_include_scope (my.c_include, return, my.class_name, method.declaration)
-        endfor
-    endfor
-
-    for my.module.callback
-        for callback.argument
-            _X11_update_c_include_scope (my.c_include, argument, my.class_name, callback.declaration)
-        endfor
-
-        for callback.return
-            _X11_update_c_include_scope (my.c_include, return, my.class_name, callback.declaration)
-        endfor
-    endfor
-
-    if my.c_include.scope = "none"
-        delete my.c_include
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Inspect inner components for use special classes: data, buffer, and
-#   add correspond headers.
-# ---------------------------------------------------------------------------
-function c_module_add_special_includes (module, c_module)
-    check_arguments (my, "module, c_module", my)
-
-    _X11_add_c_include_for_common_class (my.module, my.c_module, "data")
-    _X11_add_c_include_for_common_class (my.module, my.c_module, "buffer")
-endfunction
-
 # ---------------------------------------------------------------------------
 #   Add 'c_license' to destination.
 # ---------------------------------------------------------------------------
@@ -156,8 +86,6 @@ function c_module_add_includes (module, destination)
         my.c_include = item_copy_to (source, my.destination)
         c_component_resolve_include (my.c_include)
     endfor
-
-    c_module_add_special_includes (my.module, my.destination)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -175,6 +103,7 @@ function c_module_create (source, destination, project)
 
         new c_module to my.destination
             .lang = "C"
+            .id = module.name
             .name = c_format_name (module.c_prefix, module.name)
             .class = c_format_name (module.class)
             .scope = module.scope
@@ -275,6 +204,83 @@ endfunction
 function c_module_resolve (source)
     #   Components are created already resolved at this moment,
     #   but this can be chnged in the future, so keep this function alive.
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add missed headers based on the used types.
+# ---------------------------------------------------------------------------
+function c_module_add_headers (c_module, header_resolution_map)
+    check_arguments (my, "c_module, header_resolution_map", my)
+
+    for my.c_module. as c_type where item_in(c_type, "c_struct, c_callback, c_method")
+        for c_type. as c_instance where item_in(c_instance, "c_variable, c_argument, c_return, c_property")
+
+            if item_in (c_type, "c_struct") & c_type.definition = "external"
+                next
+            endif
+
+            my.c_instance_is_public = \
+                    (item_in (c_type, "c_struct") & c_type.definition = "public") | \
+                    (item_in (c_type, "c_callback, c_method") & c_type.declaration = "public")
+
+            my.header_with_declaration = my.header_resolution_map.$(make_id(c_instance.type, "decl")) ?
+            my.header_with_declaration_is_system = \
+                    my.header_resolution_map.$(make_id(c_instance.type, "decl is system")) ?
+
+            my.header_with_definition = my.header_resolution_map.$(make_id(c_instance.type, "def")) ?
+            my.header_with_definition_is_system = \
+                    my.header_resolution_map.$(make_id(c_instance.type, "def is system")) ?
+
+
+            #   Process header with declaration.
+            if defined (my.header_with_declaration)
+                my.c_include = my.c_module->c_include(file = my.header_with_declaration) ?
+
+                if ! defined (my.c_include)
+                    new c_include to my.c_module
+                        .file = my.header_with_declaration
+                        .scope = "private"
+                        .is_system = my.header_with_declaration_is_system
+
+                        my.c_include = c_include
+                    endnew
+                endif
+
+                if my.c_include.file = my.c_module.c_include_file
+                    next
+                endif
+
+                if my.c_include.scope = "private" & my.c_instance_is_public
+                    my.c_include.scope = "public"
+                endif
+            endif
+
+            #   Process header with definition.
+            if defined (my.header_with_definition) & defined (c_instance.need_definition)
+                my.c_include = my.c_module->c_include(file = my.header_with_definition) ?
+
+                if ! defined (my.c_include)
+                    new c_include to my.c_module
+                        .file = my.header_with_definition
+                        .scope = "private"
+                        .is_system = my.header_with_definition_is_system
+
+                        my.c_include = c_include
+                    endnew
+                endif
+
+                if my.c_include.file = my.c_module.c_include_file
+                    next
+                endif
+
+                if my.c_include.scope = "private" & my.c_instance_is_public & \
+                         string_equal (c_instance.need_definition, "public")
+                    my.c_include.scope = "public"
+                endif
+            endif
+        endfor
+    endfor
 endfunction
 
 .endtemplate

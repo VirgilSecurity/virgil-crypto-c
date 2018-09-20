@@ -77,7 +77,7 @@ function _L23_format_proxy_arguments (method, beginning, ending, tab_count, line
     my.indent = tabs (my.tab_count)
     for my.method.argument
         my.adding_line = ""
-        my.adding_line += ref ("_argument", argument.name)
+        my.adding_line += ref (make_id ("_argument", argument.name))
         if ! last ()
             my.adding_line += ","
         else

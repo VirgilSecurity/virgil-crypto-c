@@ -190,13 +190,11 @@
 </entity>
 
 <entity name="landlord" abstract="1">
-    Defines whom component belongs to.
-
     <attr name="project">
-        Defines project name that component belongs to.
+        Defines project name that component refers to.
     </attr>
 
     <attr name="library">
-        Defines libary name that component belongs to.
+        Defines library name that component refers to.
     </attr>
 </entity>

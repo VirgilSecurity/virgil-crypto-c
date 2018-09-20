@@ -18,10 +18,10 @@
             <property name="rsa ctx" class="mbedtls_rsa_context" access="readwrite" is_reference="0"/>
         </context>
 
-        <dependency name="hash" interface="hash" type="api"/>
-        <dependency name="random" interface="random" type="impl"/>
-        <dependency name="asn1rd" interface="asn1 reader" type="impl"/>
-        <dependency name="asn1wr" interface="asn1 writer" type="impl"/>
+        <dependency name="hash" api="hash" access="readonly"/>
+        <dependency name="random" interface="random"/>
+        <dependency name="asn1rd" interface="asn1 reader"/>
+        <dependency name="asn1wr" interface="asn1 writer"/>
 
         <interface name="key"/>
         <interface name="public key"/>
@@ -41,9 +41,7 @@
         <require class="mbedtls bignum asn1 writer"/>
         <require class="mbedtls bignum asn1 reader"/>
         <require class="mbedtls md"/>
-
-        <require header="virgil/common/private/vsc_buffer_defs.h"/>
-        <require header="virgil/foundation/private/vscf_rsa_public_key_impl.h"/>
+        <require module="rsa public key impl"/>
 
         <require header="mbedtls/bignum.h"/>
 
@@ -54,10 +52,10 @@
             <property name="gen exponent" type="size"/>
         </context>
 
-        <dependency name="hash" interface="hash" type="api"/>
-        <dependency name="random" interface="random" type="impl"/>
-        <dependency name="asn1rd" interface="asn1 reader" type="impl"/>
-        <dependency name="asn1wr" interface="asn1 writer" type="impl"/>
+        <dependency name="hash" api="hash" access="readonly"/>
+        <dependency name="random" interface="random"/>
+        <dependency name="asn1rd" interface="asn1 reader"/>
+        <dependency name="asn1wr" interface="asn1 writer"/>
 
         <method name="set keygen params" visibility="public" declaration="public">
             Setup parameters that is used during key generation.

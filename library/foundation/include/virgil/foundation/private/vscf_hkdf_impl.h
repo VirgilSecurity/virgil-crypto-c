@@ -59,6 +59,7 @@
 #include "vscf_error.h"
 #include "vscf_impl_private.h"
 #include "vscf_hkdf.h"
+#include "vscf_impl.h"
 //  @end
 
 
@@ -86,7 +87,7 @@ struct vscf_hkdf_impl_t {
     //
     size_t refcnt;
     //
-    //  Dependency to the interface 'hmac stream'.
+    //  Dependency to the 'hmac'.
     //
     vscf_impl_t *hmac;
 };

@@ -1,0 +1,301 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   This helper module that adds all required dependency properties and
+#   dependency management functions to the implementation context, or
+#   class context.
+#
+#   Private function prefix is: C19.
+# ---------------------------------------------------------------------------
+#   This is a code generator helper built using the iMatix GSL code
+#   generation language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+
+gsl from "common.gsl"
+
+# ---------------------------------------------------------------------------
+#   Add argument that holds 'context'.
+# ---------------------------------------------------------------------------
+function c_dependency_add_argument_context (destination, meta)
+    check_arguments (my, "destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new argument to my.destination
+        .name = my.names.argument_context
+        .class = my.refs.argument_context_type
+        .access = "readwrite"
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add argument that holds 'context'.
+# ---------------------------------------------------------------------------
+function c_dependency_add_argument_dependency (dependency, destination, meta)
+    check_arguments (my, "dependency, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new argument to my.destination
+        .name = dependency.name
+        .class = my.refs.dependency_type_$(make_id (dependency.name))
+        .access = dependency.access
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add <require/> if needed for each dependency found
+#   within source.
+# ---------------------------------------------------------------------------
+function c_dependency_add_requirements (source, destination)
+    check_arguments (my, "source, destination", my)
+
+    for my.source.dependency where defined(0.interface)
+        new require to my.destination
+            .interface = dependency.interface
+            .scope = "private"
+            .project = dependency.project ?
+        endnew
+    endfor
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add struct property to the destination for each dependency found
+#   within source.
+# ---------------------------------------------------------------------------
+function c_dependency_add_properties (source, destination, meta)
+    check_arguments (my, "source, destination, meta", my)
+
+    for my.source.dependency
+        new property to my.destination
+            . = "Dependency to the '$(dependency.name:c, lower)'."
+            .name = dependency.name
+            .class = ref (dependency.uid)
+            .access = dependency.access
+        endnew
+    endfor
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add functions that 'use' dependency.
+# ---------------------------------------------------------------------------
+function c_dependency_add_method_use (dependency, declaration, definition, destination, meta)
+    check_arguments (my, "dependency, declaration, definition, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        . = "\
+        Setup dependency to the $(my.dependency.type_kind:) '$(my.dependency.type_name:)' with shared ownership.
+        "
+
+        .name = my.names.dependency_method_use_$(make_id (dependency.name))
+        .definition = my.definition
+        .declaration = my.declaration
+
+        c_dependency_add_argument_context (method, my.meta)
+        c_dependency_add_argument_dependency (my.dependency, method, my.meta)
+
+        new code to method
+            my.dependency_arg = ".(_argument_$(make_id (my.dependency.name)))"
+            my.dependency_property = my.names.c_dependency_property_$(make_id (my.dependency.name))
+            my.full_dependency = "$(my.refs.c_argument_context)->$(my.dependency_property)"
+
+            my.method_dependency_copy = my.refs.c_dependency_method_copy_$(make_id (my.dependency.name)) ?
+            my.method_dependency_check = my.refs.c_dependency_method_check_$(make_id (my.dependency.name)) ?
+
+            my.impl_check_precondition = "\
+                .(c_class_assert_macros_ptr)($(my.refs.c_argument_context));
+                .(c_class_assert_macros_ptr)($(my.dependency_arg));
+                .(c_class_assert_macros_ptr)($(my.full_dependency) == NULL);
+            "
+
+            if defined(my.method_dependency_check)
+                my.impl_check_dependency = "\
+                    .(c_class_assert_macros_assert)($(my.method_dependency_check)($(my.dependency_arg:)));
+                "
+            endif
+
+            if defined(my.method_dependency_copy)
+                my.impl_setup_dependency = "\
+                    $(my.full_dependency) = $(my.method_dependency_copy)($(my.dependency_arg));
+                "
+            else
+                my.impl_setup_dependency = "\
+                    $(my.full_dependency) = $(my.dependency_arg);
+                "
+            endif
+
+            my.method_body = ""
+            my.method_body += format_left (my.impl_check_precondition) + terminator
+            my.method_body += format_left (my.impl_check_dependency) + terminator ? ""
+            my.method_body += format_left (my.impl_setup_dependency) + terminator
+
+            . = my.method_body
+        endnew
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add functions that 'take' dependency.
+# ---------------------------------------------------------------------------
+function c_dependency_add_method_take (dependency, declaration, definition, destination, meta)
+    check_arguments (my, "dependency, declaration, definition, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        . = "\
+        Setup dependency to the $(my.dependency.type_kind:) '$(my.dependency.type_name)' and transfer ownership.
+        Note, transfer ownership does not mean that object is uniquely owned by the target object.
+        "
+
+        .name = my.names.dependency_method_take_$(make_id (dependency.name))
+        .definition = my.definition
+        .declaration = my.declaration
+
+        c_dependency_add_argument_context (method, my.meta)
+        c_dependency_add_argument_dependency (my.dependency, method, my.meta)
+
+        new code to method
+            my.dependency_arg = ".(_argument_$(make_id (my.dependency.name)))"
+            my.dependency_property = my.names.c_dependency_property_$(make_id (my.dependency.name))
+            my.full_dependency = "$(my.refs.c_argument_context)->$(my.dependency_property)"
+
+            my.method_dependency_check = my.refs.c_dependency_method_check_$(make_id (my.dependency.name)) ?
+
+            my.impl_check_precondition = "\
+                .(c_class_assert_macros_ptr)($(my.refs.c_argument_context));
+                .(c_class_assert_macros_ptr)($(my.dependency_arg));
+                .(c_class_assert_macros_ptr)($(my.full_dependency) == NULL);
+            "
+
+            if defined(my.method_dependency_check)
+                my.impl_check_dependency = "\
+                    .(c_class_assert_macros_assert)($(my.method_dependency_check)($(my.dependency_arg:)));
+                "
+            endif
+
+            my.impl_setup_dependency = "\
+                $(my.full_dependency) = $(my.dependency_arg);
+            "
+
+            my.method_body = ""
+            my.method_body += format_left (my.impl_check_precondition) + terminator
+            my.method_body += format_left (my.impl_check_dependency) + terminator ? ""
+            my.method_body += format_left (my.impl_setup_dependency) + terminator
+
+            . = my.method_body
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add functions that 'release' dependency.
+# ---------------------------------------------------------------------------
+function c_dependency_add_method_release (dependency, declaration, definition, destination, meta)
+    check_arguments (my, "dependency, declaration, definition, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        . = "\
+        Release dependency to the $(my.dependency.type_kind:) '$(my.dependency.type_name)'.
+        "
+
+        .name = my.names.dependency_method_release_$(make_id (dependency.name))
+        .definition = my.definition
+        .declaration = my.declaration
+
+        c_dependency_add_argument_context (method, my.meta)
+
+        new code to method
+            my.dependency_property = my.names.c_dependency_property_$(make_id (my.dependency.name))
+            my.full_dependency = "$(my.refs.c_argument_context)->$(my.dependency_property)"
+
+            my.method_dependency_destroy = my.refs.c_dependency_method_destroy_$(make_id (my.dependency.name)) ?
+
+            my.impl_check_precondition = "\
+                .(c_class_assert_macros_ptr)($(my.refs.c_argument_context));
+            "
+
+            if defined(my.method_dependency_destroy)
+                my.impl_destroy = "\
+                    $(my.method_dependency_destroy)(&$(my.full_dependency:));
+                "
+            else
+                my.impl_destroy = "\
+                    $(my.full_dependency:) = NULL;
+                "
+            endif
+
+            my.method_body = ""
+            my.method_body += format_left (my.impl_check_precondition) + terminator
+            my.method_body += format_left (my.impl_destroy) + terminator
+
+            . = my.method_body
+        endnew
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add dependency management functions.
+# ---------------------------------------------------------------------------
+function c_dependency_add_methods (source, declaration, definition, destination, meta)
+    check_arguments (my, "source, declaration, definition, destination, meta", my)
+
+    for my.source.dependency
+        c_dependency_add_method_use (dependency, my.declaration, my.definition, my.destination, my.meta)
+
+        if has_one_of_attribute (dependency, "interface, class, impl")
+            c_dependency_add_method_take (dependency, my.declaration, my.definition, my.destination, my.meta)
+        endif
+
+        c_dependency_add_method_release (dependency, my.declaration, my.definition, my.destination, my.meta)
+    endfor
+endfunction
+
+.endtemplate

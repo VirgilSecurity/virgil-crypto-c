@@ -69,7 +69,7 @@ endfunction
 #   Insert given body with given indent.
 # ---------------------------------------------------------------------------
 function cmake_insert (body, tab_count)
-    check_argument (my, "body")
+    check_argument (my, "body", my)
 
     my.body = string_indent (my.body, my.tab_count)
     my.body = string_multi_rtrim (my.body)

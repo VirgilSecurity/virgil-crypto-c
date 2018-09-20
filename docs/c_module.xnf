@@ -43,8 +43,12 @@
     <entity name = "c_module">
         Base model for C language code generation.
 
-        <attr name="name" required="1">
+        <attr name="id" required="1">
             Short module name.
+        </attr>
+
+        <attr name="name" required="1">
+            Complete module name.
         </attr>
 
         <attr name="header_file" required="1">

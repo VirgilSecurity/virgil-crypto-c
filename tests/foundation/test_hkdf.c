@@ -57,7 +57,7 @@ test__derive__sha256_vector_1__success(void) {
     vscf_hkdf_impl_t *hkdf_impl = vscf_hkdf_new();
     vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_hkdf_VECTOR_1_DERIVED_DATA.len);
 
-    vscf_hkdf_take_hmac_stream(hkdf_impl, vscf_hmac256_impl(vscf_hmac256_new()));
+    vscf_hkdf_take_hmac(hkdf_impl, vscf_hmac256_impl(vscf_hmac256_new()));
 
     vscf_hkdf_derive(hkdf_impl, test_hkdf_VECTOR_1_KEY, test_hkdf_VECTOR_1_SALT, test_hkdf_VECTOR_1_INFO, key,
             test_hkdf_VECTOR_1_DERIVED_DATA.len);
@@ -75,7 +75,7 @@ test__derive__sha256_vector_2__success(void) {
     vscf_hkdf_impl_t *hkdf_impl = vscf_hkdf_new();
     vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_hkdf_VECTOR_2_DERIVED_DATA.len);
 
-    vscf_hkdf_take_hmac_stream(hkdf_impl, vscf_hmac256_impl(vscf_hmac256_new()));
+    vscf_hkdf_take_hmac(hkdf_impl, vscf_hmac256_impl(vscf_hmac256_new()));
 
     vscf_hkdf_derive(hkdf_impl, test_hkdf_VECTOR_2_KEY, test_hkdf_VECTOR_2_SALT, test_hkdf_VECTOR_2_INFO, key,
             test_hkdf_VECTOR_2_DERIVED_DATA.len);
@@ -93,7 +93,7 @@ test__derive__sha256_vector_3__success(void) {
     vscf_hkdf_impl_t *hkdf_impl = vscf_hkdf_new();
     vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_hkdf_VECTOR_3_DERIVED_DATA.len);
 
-    vscf_hkdf_take_hmac_stream(hkdf_impl, vscf_hmac256_impl(vscf_hmac256_new()));
+    vscf_hkdf_take_hmac(hkdf_impl, vscf_hmac256_impl(vscf_hmac256_new()));
 
     vscf_hkdf_derive(hkdf_impl, test_hkdf_VECTOR_3_KEY, test_hkdf_VECTOR_3_SALT, test_hkdf_VECTOR_3_INFO, key,
             test_hkdf_VECTOR_3_DERIVED_DATA.len);

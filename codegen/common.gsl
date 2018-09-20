@@ -70,35 +70,35 @@ function check_arguments (argument_scope, argument_list, caller)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Retrun true if given value is defined and non zero.
+#   Return true if given value is defined and non zero.
 # ---------------------------------------------------------------------------
 function is_true (x)
     return defined (my.x) & my.x <> 0
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Retrun true if both values are defined and non zero.
+#   Return true if both values are defined and non zero.
 # ---------------------------------------------------------------------------
 function is_true_both (x, y)
     return is_true (my.x) & is_true (my.y)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Retrun true if given value is not defined or is zero.
+#   Return true if given value is not defined or is zero.
 # ---------------------------------------------------------------------------
 function is_false (x)
     return ! defined (my.x) | my.x = 0
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Retrun true if both values are not defined or are zeroes.
+#   Return true if both values are not defined or are zeroed.
 # ---------------------------------------------------------------------------
 function is_false_both (x, y)
     return is_false (my.x) & is_false (my.y)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return true value if given string is empty after triming.
+#   Return true value if given string is empty after trimming.
 # ---------------------------------------------------------------------------
 function string_empty (str)
     return ! defined (my.str) | (string.length (string.trim (my.str)) = 0)
@@ -106,14 +106,14 @@ endfunction
 
 # ---------------------------------------------------------------------------
 #   Return true value if given string is defined
-#   and not empty after triming.
+#   and not empty after trimming.
 # ---------------------------------------------------------------------------
 function string_defined (str)
     return defined (my.str) & (string.length (string.trim (my.str)) > 0)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Retrun true if both string are defined and equal.
+#   Return true if both string are defined and equal.
 # ---------------------------------------------------------------------------
 function string_equal (str1, str2)
     return defined (my.str1) & defined (my.str2) & (string.lexcmp(my.str1, my.str2) = 0)
@@ -121,7 +121,7 @@ endfunction
 
 # ---------------------------------------------------------------------------
 #   Return true if given string is in the list.
-#   List is as a comma separated alphanum strings.
+#   List is as a comma separated alphanumeric strings.
 #   i.e "public, private".
 #   Note, comparison is case insensitive.
 # ---------------------------------------------------------------------------
@@ -226,7 +226,7 @@ function string_collapse_spaces (str)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Remove trailing whitespaces for each line of multi-line string.
+#   Remove trailing white-spaces for each line of multi-line string.
 # ---------------------------------------------------------------------------
 function string_multi_rtrim (str)
     while regexp.match ("(.*[ ]+$(terminator))", my.str, my.raw_line)
@@ -328,8 +328,8 @@ function code_collapse_spaces (str)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return true if message with given level shoud be printed.
-#   Allowed levels are (lower level activates all apper levels):
+#   Return true if message with given level should be printed.
+#   Allowed levels are (lower level activates all upper levels):
 #       - fatal
 #       - error
 #       - warning
@@ -352,7 +352,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Print given text if next precondition are satisfied:
 #       - text is defined;
-#       - echo_level is active - see _C23_echo_is_level_active() finction.
+#       - echo_level is active - see _C23_echo_is_level_active() function.
 #   Argument 'caller' is a function, that call this function.
 # ---------------------------------------------------------------------------
 function _C23_echo (text, level, caller)
@@ -778,12 +778,12 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Trim and adjust content to the leftmost.
 # ---------------------------------------------------------------------------
-function format_left (body)
+function format_left (body, tab_count)
     if ! defined (my.body)
         return
     endif
 
-    return terminator + string_indent (my.body)
+    return terminator + string_indent (my.body, my.tab_count)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -848,7 +848,7 @@ function xml_string_adjust (str, tab_count, next_tab_count, prefix, tab_size)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Remove XML Prolog from the given file.
+#   Remove XML Prologue from the given file.
 #   This action is required if given XML file acts as GSL model.
 # ---------------------------------------------------------------------------
 function xml_file_remove_prolog (file_name)
@@ -865,7 +865,7 @@ function xml_file_remove_prolog (file_name)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Prepend new component with given a 'name' to the 'parent_data', or
+#   Perpend new component with given a 'name' to the 'parent_data', or
 #   insert after given component if it is defined.
 # ---------------------------------------------------------------------------
 function item_prepend_new (name, parent_data, after_item)
@@ -889,7 +889,7 @@ endfunction
 
 # ---------------------------------------------------------------------------
 #   Replacement for GSL built-in '.copy <from-scope> to <parent-data>'.
-#   Return refrence to the copied element.
+#   Return reference to the copied element.
 # ---------------------------------------------------------------------------
 function item_copy_to (item, destination, alias)
     check_argument (my, "item")
@@ -990,7 +990,7 @@ function item_save_to_file (model, file_name, dir_path)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Load XML models loaded from files loacated within 'dir_path'
+#   Load XML models loaded from files located within 'dir_path'
 #   and matched given pattern to the 'destination'.
 # ---------------------------------------------------------------------------
 function item_load_from_file_pattern (pattern, destination, dir_path)
@@ -1083,7 +1083,7 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-#   Return 'uid' as concatinated C like string.
+#   Return 'uid' as concatenated C like string.
 # ---------------------------------------------------------------------------
 function make_id (part1, part2, part3, part4, part5, part6, part7, part8)
     return "$(cat (\
@@ -1093,7 +1093,7 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-#   Reurn true if given value is uid reference in format: .(<uid>)
+#   Return true if given value is uid reference in format: .(<uid>)
 # ---------------------------------------------------------------------------
 function is_ref (maybe_ref)
     check_argument (my, "maybe_ref", my)
@@ -1102,7 +1102,7 @@ function is_ref (maybe_ref)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Reurn true if given value contains uid reference of format: .(<uid>)
+#   Return true if given value contains uid reference of format: .(<uid>)
 # ---------------------------------------------------------------------------
 function has_ref (maybe_ref)
     check_argument (my, "maybe_ref", my)
@@ -1111,31 +1111,39 @@ function has_ref (maybe_ref)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Wrapes given UID as 'Reference UID'.
-#   Argument 'spec' is concatinated to UID if given.
+#   Wraps given UID as 'Reference UID'.
 # ---------------------------------------------------------------------------
-function ref (uid, spec)
-    check_argument (my, "uid")
+function ref (uid)
+    check_argument (my, "uid", my)
 
-    if string_defined (my.spec)
-        return ".($(my.uid:c,lower)_$(my.spec:c, lower))"
+    return ".($(my.uid:c,lower))"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Wraps given UID as 'Reference UID' specific for C language.
+# ---------------------------------------------------------------------------
+function c_ref (uid)
+    check_argument (my, "uid", my)
+
+    return ".(c_$(my.uid:c,lower))"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Wraps given UID as 'Reference UID' specific for C language.
+# ---------------------------------------------------------------------------
+function make_ref (uid, lang)
+    check_argument (my, "uid", my)
+
+    if defined (my.lang) & string.prefixed (my.uid, "_")
+        #    Shortcut
+        return ".($(make_id (my.uid)))"
     else
-        return ".($(my.uid:c,lower))"
+        return ".($(make_id (my.lang, my.uid)))"
     endif
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Wrapes given UID as 'Reference UID' specific for C language.
-#   Argument 'spec' is concatinated to UID if given.
-# ---------------------------------------------------------------------------
-function c_ref (uid, spec)
-    check_argument (my, "uid")
-
-    return ref ("c_" + my.uid, my.spec)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   If given first parameter contains universal ref of foramt .(<uid>), then
+#   If given first parameter contains universal ref of format .(<uid>), then
 #   return language specific ref of format .(<lang>_<uid>).
 # ---------------------------------------------------------------------------
 function lang_ref (maybe_ref, lang)
@@ -1163,6 +1171,44 @@ function lang_ref (maybe_ref, lang)
     endif
 
     return my.maybe_ref
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Try to insert prefix after <lang> prefix.
+#   Return modified string if success, otherwise return nothing.
+# ---------------------------------------------------------------------------
+function insert_prefix_after_lang_uid (uid, prefix, lang)
+    check_arguments (my, "uid, prefix, lang", my)
+
+    my.lang_prefix = my.lang + "_"
+
+    if string.prefixed (my.uid, my.lang_prefix)
+        return make_id (my.lang, my.prefix, string.search_replace(my.uid, my.lang_prefix, ""))
+    endif
+
+    return
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add given prefix to the uid.
+#   If given uid contains <lang> prefix, then given prefix will be inserted
+#   immediately after it.
+# ---------------------------------------------------------------------------
+function uid_insert_prefix (uid, prefix)
+    check_arguments (my, "uid", my)
+
+    if ! defined (my.prefix)
+        return my.uid
+    endif
+
+    my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "c") ?
+    my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "java") ?
+    my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "csharp") ?
+    my.new_uid ?= make_id (my.prefix, my.uid)
+
+    return my.new_uid
 endfunction
 
 # ---------------------------------------------------------------------------
