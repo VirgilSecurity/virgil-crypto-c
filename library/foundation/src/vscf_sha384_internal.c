@@ -53,11 +53,14 @@
 #include "vscf_sha384_internal.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_sha384.h"
 #include "vscf_sha384_impl.h"
+#include "vscf_hash_info.h"
 #include "vscf_hash_info_api.h"
+#include "vscf_hash.h"
 #include "vscf_hash_api.h"
+#include "vscf_hash_stream.h"
 #include "vscf_hash_stream_api.h"
+#include "vscf_impl.h"
 //  @end
 
 
@@ -181,6 +184,8 @@ vscf_sha384_init(vscf_sha384_impl_t *sha384_impl) {
 
     VSCF_ASSERT_PTR(sha384_impl);
     VSCF_ASSERT_PTR(sha384_impl->info == NULL);
+
+    vscf_zeroize (sha384_impl, sizeof(vscf_sha384_impl_t));
 
     sha384_impl->info = &info;
 

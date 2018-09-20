@@ -7,13 +7,16 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <project name brief prefix namespace path inc_path inc_private_path src_path work_path>
+    <project name brief prefix namespace path inc_path inc_private_path src_path work_path
+         [install_private_headers_dir] [install_headers_dir]>
        <interface name/>
        <implementor name/>
        <module name/>
        <feature name [library] [project] [prefix] [default]>
-          <require [scope] [project] [library] [module] [header] [feature] [interface] [class]>
-             <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]/>
+          <require [scope] [project] [library] [module] [header] [feature] [interface] [class]
+               [impl]>
+             <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]
+                  [impl]/>
           </require>
        </feature>
     </project>
@@ -41,6 +44,8 @@ Define project as set of interfaces, implementators and modules.
         inc_private_path = "..."
         src_path = "..."
         work_path = "..."
+      [ install_private_headers_dir = "..." ]
+      [ install_headers_dir = "..." ]
         >
         <interface>
         <implementor>
@@ -77,6 +82,14 @@ inc_private_path:
 src_path:
     Path to the directory with source files. The src_path attribute is
     required.
+
+install_headers_dir:
+    Relative directory where headers will be installed. The
+    install_headers_dir attribute is optional.
+
+install_private_headers_dir:
+    Relative directory where private headers will be installed. The
+    install_private_headers_dir attribute is optional.
 
 work_path:
     Path to the directory, that is used to hold temporary files. The
@@ -131,7 +144,7 @@ name:
 The 'feature' item
 ------------------
 
-Defines whom component belongs to. Define provided feature.
+Define provided feature.
 
     <feature
         name = "..."
@@ -146,11 +159,11 @@ Defines whom component belongs to. Define provided feature.
 The feature item can have these attributes:
 
 project:
-    Defines project name that component belongs to. The project attribute is
+    Defines project name that component refers to. The project attribute is
     optional.
 
 library:
-    Defines libary name that component belongs to. The library attribute is
+    Defines library name that component refers to. The library attribute is
     optional.
 
 name:
@@ -172,8 +185,8 @@ off: Feature is disabled by default.
 The 'require' item
 ------------------
 
-Defines whom component belongs to. Base attributes for require. Defines
-dependency to: module, header, feature.
+Base attributes for require. Defines dependency to: module, header,
+feature.
 
     <require
       [ scope = "public | private | internal"  ("public") ]
@@ -184,6 +197,7 @@ dependency to: module, header, feature.
       [ feature = "..." ]
       [ interface = "..." ]
       [ class = "..." ]
+      [ impl = "..." ]
         >
         <alternative>
     </require>
@@ -203,11 +217,11 @@ private: Component is visible for outside world via private interface.
 internal: Component is visible only within library or a specific source file.
 
 project:
-    Defines project name that component belongs to. The project attribute is
+    Defines project name that component refers to. The project attribute is
     optional.
 
 library:
-    Defines libary name that component belongs to. The library attribute is
+    Defines library name that component refers to. The library attribute is
     optional.
 
 module:
@@ -225,12 +239,15 @@ interface:
 class:
     Required class name. The class attribute is optional.
 
+impl:
+    Required implementation name. The impl attribute is optional.
+
 
 The 'alternative' item
 ----------------------
 
-Defines whom component belongs to. Base attributes for require. Define
-alternative requirements that can be used, and in fact replace each other.
+Base attributes for require. Define alternative requirements that can be
+used, and in fact replace each other.
 
     <alternative
       [ scope = "public | private | internal"  ("public") ]
@@ -241,6 +258,7 @@ alternative requirements that can be used, and in fact replace each other.
       [ feature = "..." ]
       [ interface = "..." ]
       [ class = "..." ]
+      [ impl = "..." ]
         />
 
 The alternative item can have these attributes:
@@ -258,11 +276,11 @@ private: Component is visible for outside world via private interface.
 internal: Component is visible only within library or a specific source file.
 
 project:
-    Defines project name that component belongs to. The project attribute is
+    Defines project name that component refers to. The project attribute is
     optional.
 
 library:
-    Defines libary name that component belongs to. The library attribute is
+    Defines library name that component refers to. The library attribute is
     optional.
 
 module:
@@ -279,4 +297,7 @@ interface:
 
 class:
     Required class name. The class attribute is optional.
+
+impl:
+    Required implementation name. The impl attribute is optional.
 

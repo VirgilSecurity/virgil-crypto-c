@@ -59,6 +59,7 @@
 #include "vscf_error.h"
 #include "vscf_impl_private.h"
 #include "vscf_kdf2.h"
+#include "vscf_impl.h"
 //  @end
 
 
@@ -86,7 +87,7 @@ struct vscf_kdf2_impl_t {
     //
     size_t refcnt;
     //
-    //  Dependency to the interface 'hash stream'.
+    //  Dependency to the 'hash'.
     //
     vscf_impl_t *hash;
 };

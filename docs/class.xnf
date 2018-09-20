@@ -88,6 +88,7 @@
         <inherit entity="c_prefix"/>
 
         <allow entity="require"/>
+        <allow entity="dependency"/>
         <allow entity="constant"/>
         <allow entity="property"/>
         <allow entity="enum"/>

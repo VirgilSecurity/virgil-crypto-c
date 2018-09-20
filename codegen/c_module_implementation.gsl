@@ -49,6 +49,7 @@
 
 gsl from "common.gsl"
 gsl from "component.gsl"
+gsl from "c_dependency.gsl"
 gsl from "c_module_interface.gsl"
 
 # ---------------------------------------------------------------------------
@@ -249,9 +250,9 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
         .module = my.names.module_library
     endnew
 
-        new require
-            .module = my.names.module_error
-        endnew
+    new require
+        .module = my.names.module_error
+    endnew
 
     new require to my.destination
         .module = my.names.module_assert
@@ -263,34 +264,11 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
         .scope = "private"
     endnew
 
-    for my.impl.dependency where type = "api"
-        new require to my.destination
-            .module = dependency.interface
-        endnew
-    endfor
-
-    for my.impl.dependency where type = "impl"
-        new require to my.destination
-            .module = dependency.interface
-            .scope = "private"
-        endnew
-    endfor
-
-    if count (my.impl.dependency, type = "impl") | _Z19_has_methods_with_context_impl (my.impl)
-        new require to my.destination
-            .module = my.names.module_impl
-        endnew
-    endif
-
-    for my.impl.interface
-        new require to my.destination
-            .module = interface.name
-        endnew
-    endfor
-
-    for my.impl.require where has_one_of_attribute (require, "module, header, interface, class")
+    for my.impl.require
         copy require to my.destination
     endfor
+
+    c_dependency_add_requirements (my.impl, my.destination)
 
     if _Z19_has_methods_with_context_impl (my.impl)
         new require to my.destination
@@ -352,13 +330,18 @@ function _Z19_add_includes_for_module_internal (impl, destination, meta)
         my.entity_names = meta_entity_names (my.meta, interface.name)
 
         new require to my.destination
+            .module = my.entity_names.interface_module
+            .scope = "private"
+        endnew
+
+        new require to my.destination
             .module = my.entity_names.interface_module_api
             .scope = "private"
         endnew
     endfor
 
     for my.impl.dependency
-        my.entity_names = meta_entity_names (my.meta, dependency.interface)
+        my.entity_names = meta_entity_names (my.meta, dependency.type_name)
 
         new require to my.destination
             .module = my.entity_names.interface_module
@@ -402,7 +385,7 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-function _Z19_add_dependency_argument (dependency, destination, after_argument, meta)
+function c_dependency_add_argument (dependency, destination, after_argument, meta)
     check_arguments (my, "dependency, destination, meta", my)
 
     my.refs = meta_refs (my.meta)
@@ -411,12 +394,8 @@ function _Z19_add_dependency_argument (dependency, destination, after_argument, 
 
     scope my.argument
         .name = my.dependency.name
-        .class = my.refs.implementation_dependency_class_$(make_id (my.dependency.interface))
-        if my.dependency.type = "impl"
-            .access = "readwrite"
-        elsif my.dependency.type = "api"
-            .access = "readonly"
-        endif
+        .class = ref(my.dependency.uid)
+        .access = dependency.access
     endscope
 
     return my.argument
@@ -465,24 +444,7 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
             .type = "size"
         endnew
 
-        for my.impl.dependency where type = "impl"
-            new property to struct
-                . = "Dependency to the interface '$(dependency.interface:)'."
-                .name = my.names.implementation_property_$(make_id (dependency.name))
-                .class = my.refs.class_impl_struct_impl
-                .access = "readwrite"
-            endnew
-        endfor
-
-        for my.impl.dependency where type = "api"
-            new property to struct
-                . = "Dependency to the interface api '$(dependency.interface:)'."
-                .name = my.names.implementation_property_$(make_id (dependency.name))
-                .class = ".($(make_id (\
-                        "class", dependency.interface, my.names.struct_api, \
-                        "struct", dependency.interface, my.names.struct_api)))"
-            endnew
-        endfor
+        c_dependency_add_properties (my.impl, struct, my.meta)
 
         for my.impl.context
             for context.property
@@ -591,23 +553,16 @@ function _Z19_add_method_init (impl, declaration, definition, destination, meta)
 
         new code to method
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
+            my.type_impl = my.refs.c_implementation_struct_impl
 
             my.impl_begin = "\
                 .(c_class_assert_macros_ptr)($(my.arg_impl));
                 .(c_class_assert_macros_ptr)($(my.arg_impl)->$(my.names.c_property_info:) == NULL);
 
+                .(c_global_method_zeroize) ($(my.arg_impl), sizeof($(my.type_impl)));
+
                 $(my.arg_impl)->$(my.names.c_property_info:) = &$(my.refs.c_implementation_variable_info);
             "
-
-            for my.impl.dependency
-                my.dependency = my.refs.c_implementation_property_$(make_id (dependency.name))
-
-                my.impl_init_dependencies ?= ""
-                my.impl_init_dependencies += "\
-
-                    $(my.arg_impl)->$(my.dependency) = NULL;
-                "
-            endfor
 
             if _Z19_has_underlying_context (my.impl)
                 my.impl_end = "\
@@ -617,7 +572,6 @@ function _Z19_add_method_init (impl, declaration, definition, destination, meta)
 
             my.method_body = ""
             my.method_body += format_left (my.impl_begin) + terminator
-            my.method_body += format_left (my.impl_init_dependencies) + terminator ? ""
             my.method_body += format_left (my.impl_end) + terminator ? ""
 
             . = my.method_body
@@ -655,31 +609,13 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
                 }
             "
 
-
-            for my.impl.dependency where type = "impl"
-                my.dependency = my.refs.c_implementation_property_$(make_id (dependency.name))
+            for my.impl.dependency
+                my.dependency = my.refs.c_dependency_property_$(make_id (dependency.name))
+                my.method_dependency_release = my.refs.c_dependency_method_release_$(make_id (dependency.name))
 
                 my.impl_cleanup_dependencies ?= ""
                 my.impl_cleanup_dependencies += "\
-
-                    //   Release dependency: '$(dependency.name)'.
-                    if ($(my.arg_impl)->$(my.dependency)) {
-                        .(c_class_impl_method_destroy)(&$(my.arg_impl)->$(my.dependency));
-                    }
-                "
-            endfor
-
-            for my.impl.dependency where type = "api"
-                my.dependency = my.refs.c_implementation_property_$(make_id (dependency.name))
-
-                my.impl_cleanup_dependencies_api ?= ""
-                my.impl_cleanup_dependencies_api += "\
-
-                    //   Release dependency: '$(dependency.name)'.
-                    if ($(my.arg_impl)->$(my.dependency)) {
-                        $(my.arg_impl)->$(my.dependency) = NULL;
-                    }
-                "
+                        $(my.method_dependency_release)($(my.arg_impl));$(terminator)"
             endfor
 
             if _Z19_has_underlying_context (my.impl)
@@ -695,7 +631,6 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
             my.method_body = ""
             my.method_body += format_left (my.impl_check_precondition) + terminator
             my.method_body += format_left (my.impl_cleanup_dependencies) + terminator ? ""
-            my.method_body += format_left (my.impl_cleanup_dependencies_api) + terminator ? ""
             my.method_body += format_left (my.impl_cleanup_ctx) + terminator ? ""
             my.method_body += format_left (my.impl_cleanup_info)
 
@@ -907,7 +842,7 @@ function _Z19_define_interface_method_with_api_context (method, impl, meta)
     check_arguments (my, "method, impl, meta", my)
 
     for my.impl.dependency
-        my.after_argument = _Z19_add_dependency_argument (dependency, my.method, my.after_argument, my.meta)
+        my.after_argument = c_dependency_add_argument (dependency, my.method, my.after_argument, my.meta)
     endfor
 endfunction
 
@@ -942,185 +877,6 @@ function _Z19_add_interface_methods (impl, definition, destination, meta)
         endfor
     endfor
 endfunction
-
-
-# ---------------------------------------------------------------------------
-function _Z19_add_method_use_dependency (dependency, declaration, definition, destination, meta)
-    check_arguments (my, "dependency, declaration, definition, destination, meta", my)
-
-    meta_activate_entity (my.meta, my.dependency.interface)
-
-    my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
-
-    new method to my.destination
-        . = "\
-        Setup dependency to the interface '$(my.dependency.interface:)' with shared ownership.
-        "
-        .name = my.names.implementation_method_use_$(make_id (dependency.interface))
-        .definition = my.definition
-        .declaration = my.declaration
-
-
-        my.arg_impl = _Z19_add_argument_impl (method, my.meta)
-        _Z19_add_dependency_argument (my.dependency, method, my.arg_impl, my.meta)
-
-        new code to method
-            my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
-            my.arg_dependency = ".(_argument_$(make_id (my.dependency.name)))"
-            my.property_dependency = my.refs.c_implementation_property_$(make_id (my.dependency.name))
-            my.full_dependency = "$(my.arg_impl)->$(my.property_dependency)"
-
-            my.impl_check_precondition = "\
-                .(c_class_assert_macros_ptr)($(my.arg_impl));
-                .(c_class_assert_macros_ptr)($(my.arg_dependency));
-                .(c_class_assert_macros_ptr)($(my.full_dependency) == NULL);
-            "
-
-            if my.dependency.type = "impl"
-                my.impl_setup_dependency = "\
-                .(c_class_assert_macros_assert)($(my.refs.c_interface_method_is_implemented)($(my.arg_dependency:)));
-
-                $(my.full_dependency) = .(c_class_impl_method_copy)($(my.arg_dependency));
-                "
-            else
-                my.impl_setup_dependency = "\
-                    $(my.full_dependency) = $(my.arg_dependency);
-                "
-            endif
-
-            my.method_body = ""
-            my.method_body += format_left (my.impl_check_precondition) + terminator
-            my.method_body += format_left (my.impl_setup_dependency) + terminator
-
-            . = my.method_body
-        endnew
-    endnew
-
-    meta_deactivate_entity (my.meta, my.dependency.interface)
-endfunction
-
-
-# ---------------------------------------------------------------------------
-function _Z19_add_method_take_dependency (dependency, declaration, definition, destination, meta)
-    check_arguments (my, "dependency, declaration, definition, destination, meta", my)
-
-    meta_activate_entity (my.meta, my.dependency.interface)
-
-    my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
-
-    new method to my.destination
-        . = "\
-        Setup dependency to the interface '$(my.dependency.interface)' and transfer ownership.
-        Note, transfer ownership does not mean that object is uniquely owned by the target object.
-        "
-        .name = my.names.implementation_method_take_$(make_id (dependency.interface))
-        .definition = my.definition
-        .declaration = my.declaration
-
-        my.arg_impl = _Z19_add_argument_impl (method, my.meta)
-
-        my.argument = _Z19_add_dependency_argument (my.dependency, method, my.arg_impl, my.meta)
-
-        new code to method
-            my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
-            my.arg_dependency = ".(_argument_$(make_id (my.dependency.name)))"
-            my.type_dependency = my.refs.c_class_impl_struct_impl
-            my.property_dependency = my.refs.c_implementation_property_$(make_id (my.dependency.name))
-            my.full_dependency = "$(my.arg_impl)->$(my.property_dependency:)"
-
-            my.impl_check_precondition = "\
-                .(c_class_assert_macros_ptr)($(my.arg_impl));
-                .(c_class_assert_macros_ptr)($(my.arg_dependency:));
-                .(c_class_assert_macros_ptr)($(my.full_dependency:) == NULL);
-            "
-
-            if my.dependency.type = "impl"
-                my.impl_check_dependency_interface = "\
-                .(c_class_assert_macros_assert)($(my.refs.c_interface_method_is_implemented)($(my.arg_dependency:)));
-                "
-            endif
-
-            my.impl_setup_dependency = "\
-                $(my.full_dependency:) = $(my.arg_dependency);
-            "
-
-            my.method_body = ""
-            my.method_body += format_left (my.impl_check_precondition) + terminator
-            my.method_body += format_left (my.impl_check_dependency_interface) + terminator ? ""
-            my.method_body += format_left (my.impl_setup_dependency) + terminator
-
-            . = my.method_body
-        endnew
-    endnew
-
-    meta_deactivate_entity (my.meta, my.dependency.interface)
-endfunction
-
-# ---------------------------------------------------------------------------
-function _Z19_add_method_release_dependency (dependency, declaration, definition, destination, meta)
-    check_arguments (my, "dependency, declaration, definition, destination, meta", my)
-
-    meta_activate_entity (my.meta, my.dependency.interface)
-
-    my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
-
-    new method to my.destination
-        . = "\
-        Release dependency of the interface '$(my.dependency.interface)'.
-        "
-        .name = my.names.implementation_method_release_$(make_id (dependency.interface))
-        .definition = my.definition
-        .declaration = my.declaration
-
-        _Z19_add_argument_impl (method, my.meta)
-
-        my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
-        my.property_dependency = my.refs.c_implementation_property_$(make_id (dependency.name))
-
-        new code to method
-            if my.dependency.type = "impl"
-                . = "\
-
-                    if ($(my.arg_impl)->$(my.property_dependency)) {
-                        .(c_class_impl_method_destroy)(&$(my.arg_impl)->$(my.property_dependency));
-                    }
-                "
-            else
-                . = "\
-
-                    if ($(my.arg_impl)->$(my.property_dependency)) {
-                        $(my.arg_impl)->$(my.property_dependency) = NULL;
-                    }
-                "
-            endif
-        endnew
-    endnew
-
-    meta_deactivate_entity (my.meta, my.dependency.interface)
-endfunction
-
-
-# ---------------------------------------------------------------------------
-#   Add dependency management functions.
-# ---------------------------------------------------------------------------
-function _Z19_add_dependency_methods (impl, declaration, definition, destination, meta)
-    check_arguments (my, "impl, declaration, definition, destination, meta", my)
-
-    for my.impl.dependency
-
-        _Z19_add_method_use_dependency (dependency, my.declaration, my.definition, my.destination, my.meta)
-
-        if dependency.type = "impl"
-            _Z19_add_method_take_dependency (dependency, my.declaration, my.definition, my.destination, my.meta)
-        endif
-
-        _Z19_add_method_release_dependency (dependency, my.declaration, my.definition, my.destination, my.meta)
-    endfor
-endfunction
-
 
 # ---------------------------------------------------------------------------
 #   Add dependency management functions.
@@ -1248,7 +1004,7 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
             endif
 
             _Z19_add_lifecycle_methods (my.impl, "public", "external", module, my.meta)
-            _Z19_add_dependency_methods (my.impl, "public", "external", module, my.meta)
+            c_dependency_add_methods (my.impl, "public", "external", module, my.meta)
         endif
 
         _Z19_add_interface_api_methods (my.impl, "public", "external", module, my.meta)
@@ -1256,7 +1012,7 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
         _Z19_add_enums (my.impl, module, my.meta)
         _Z19_add_macroses (my.impl, module, my.meta)
         _Z19_add_methods (my.impl, module, my.meta)
-        _Z19_add_interface_methods (my.impl, "public", module, my.meta)
+        _Z19_add_interface_methods (my.impl, "private", module, my.meta)
     endnew
 endfunction
 
@@ -1299,12 +1055,6 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
         new require to module
             .module = my.names.implementation_module
         endnew
-
-        for my.impl.dependency where type = "api"
-            new require to module
-                .module = dependency.interface
-            endnew
-        endfor
 
         for my.impl.context
             for context.require where defined (require.header)
@@ -1358,9 +1108,10 @@ function c_module_implementation_create_module_internal (impl, source, destinati
 
             _Z19_add_lifecycle_methods (my.impl, "external", "private", module, my.meta)
             _Z19_add_interface_api_methods (my.impl, "external", "private", module, my.meta)
-            _Z19_add_dependency_methods (my.impl, "external", "private", module, my.meta)
             _Z19_add_method_impl_type_size (my.impl, "external", "private", module, my.meta)
             _Z19_add_method_impl_type_cast (my.impl, "external", "private", module, my.meta)
+
+            c_dependency_add_methods (my.impl, "external", "private", module, my.meta)
 
         else
             _Z19_add_includes_for_module_internal (my.impl, module, my.meta)

@@ -46,7 +46,6 @@ gsl from "common.gsl"
 gsl from "interface.gsl"
 gsl from "component.gsl"
 gsl from "c_component.gsl"
-gsl from "project_common.gsl"
 
 # ---------------------------------------------------------------------------
 #   Check that all interfaces are implemented explicitly.
@@ -142,16 +141,6 @@ function implementation_resolve_attr_dependency_type (require, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve model: implementation.dependency.
-# ---------------------------------------------------------------------------
-function implementation_resolve_dependency (dependency, parent)
-    check_arguments (my, "dependency, parent", my)
-
-    c_component_require_attr_name (my.dependency, my)
-    implementation_resolve_attr_dependency_type (my.dependency, my.parent)
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Resolve model: implementation.macros.
 # ---------------------------------------------------------------------------
 function implementation_resolve_macros (macros, parent)
@@ -205,9 +194,7 @@ endfunction
 function implementation_resolve_require (require, parent)
     check_arguments (my, "require, parent", my)
 
-    if has_one_of_attribute(my.require, "header, interface, class")
-        my.require.scope ?= "private"
-    endif
+    my.require.scope ?= "private"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -239,7 +226,7 @@ function implementation_resolve (implementation, parent, project)
     endfor
 
     for my.implementation.dependency
-        implementation_resolve_dependency (dependency, my.implementation)
+        component_resolve_dependency (dependency, my.implementation)
     endfor
 
     for my.implementation.constant
@@ -265,8 +252,6 @@ function implementation_resolve (implementation, parent, project)
     for my.implementation.require
         implementation_resolve_require (require, my.implementation)
     endfor
-
-    project_common_resolve_dependecies_for (my.implementation)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -320,7 +305,7 @@ function implementation_create_feature (implementation, destination)
 
         for my.implementation.dependency
             new require to feature
-                .feature = dependency.interface
+                .feature = dependency.type_name
             endnew
         endfor
     endnew

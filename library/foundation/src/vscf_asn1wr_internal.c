@@ -53,9 +53,10 @@
 #include "vscf_asn1wr_internal.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_asn1wr.h"
 #include "vscf_asn1wr_impl.h"
+#include "vscf_asn1_writer.h"
 #include "vscf_asn1_writer_api.h"
+#include "vscf_impl.h"
 //  @end
 
 
@@ -230,6 +231,8 @@ vscf_asn1wr_init(vscf_asn1wr_impl_t *asn1wr_impl) {
 
     VSCF_ASSERT_PTR(asn1wr_impl);
     VSCF_ASSERT_PTR(asn1wr_impl->info == NULL);
+
+    vscf_zeroize (asn1wr_impl, sizeof(vscf_asn1wr_impl_t));
 
     asn1wr_impl->info = &info;
 
