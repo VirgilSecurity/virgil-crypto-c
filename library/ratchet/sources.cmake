@@ -66,6 +66,7 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_VIRGIL_RATCHET_FAKE_RNG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/private/vscr_virgil_ratchet_fake_rng_impl.h>"
             "$<$<BOOL:${VSCR_ERROR_CTX}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_error_ctx.h>"
             "$<$<BOOL:${VSCR_RATCHET}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_ratchet.h>"
+            "$<$<BOOL:${VSCR_RATCHET}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/private/vscr_ratchet_defs.h>"
             "$<$<BOOL:${VSCR_RATCHET_CHAIN_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_ratchet_chain_key.h>"
             "$<$<BOOL:${VSCR_RATCHET_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_ratchet_cipher.h>"
             "$<$<BOOL:${VSCR_RATCHET_COMMON}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_ratchet_common.h>"
@@ -75,6 +76,8 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_ratchet_receiver_chain.h>"
             "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAIN_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_ratchet_receiver_chain_list_node.h>"
             "$<$<BOOL:${VSCR_RATCHET_SENDER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_ratchet_sender_chain.h>"
+            "$<$<BOOL:${VSCR_RATCHET_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_ratchet_session.h>"
+            "$<$<BOOL:${VSCR_RATCHET_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/private/vscr_ratchet_session_defs.h>"
             "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_ratchet_skipped_message_key.h>"
             "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/ratchet/vscr_ratchet_skipped_message_key_list_node.h>"
 
@@ -93,6 +96,7 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_VIRGIL_RATCHET_FAKE_RNG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_virgil_ratchet_fake_rng_impl.c>"
             "$<$<BOOL:${VSCR_ERROR_CTX}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_error_ctx.c>"
             "$<$<BOOL:${VSCR_RATCHET}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet.c>"
+            "$<$<BOOL:${VSCR_RATCHET}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_defs.c>"
             "$<$<BOOL:${VSCR_RATCHET_CHAIN_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_chain_key.c>"
             "$<$<BOOL:${VSCR_RATCHET_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_cipher.c>"
             "$<$<BOOL:${VSCR_RATCHET_COMMON}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_common.c>"
@@ -102,6 +106,8 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_receiver_chain.c>"
             "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAIN_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_receiver_chain_list_node.c>"
             "$<$<BOOL:${VSCR_RATCHET_SENDER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_sender_chain.c>"
+            "$<$<BOOL:${VSCR_RATCHET_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_session.c>"
+            "$<$<BOOL:${VSCR_RATCHET_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_session_defs.c>"
             "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_skipped_message_key.c>"
             "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_skipped_message_key_list_node.c>"
         )

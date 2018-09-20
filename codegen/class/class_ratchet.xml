@@ -1,19 +1,14 @@
-<class name="ratchet" context="public">
+<class name="ratchet" context="private">
 
     <require header="virgil/foundation/vscf_hmac256.h" scope="public"/>
     <require header="virgil/foundation/vscf_hkdf.h" scope="public"/>
-    <require header="virgil/foundation/vscf_error_ctx.h" scope="private"/>
+    <require header="virgil/foundation/vscf_error_ctx.h" scope="public"/>
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
 
     <require class="ratchet common" scope="public"/>
     <require class="ratchet message" scope="public"/>
     <require class="ratchet message key" scope="public"/>
-    <require class="ratchet kdf info" scope="public"/>
-    <require class="ratchet sender chain" scope="public"/>
     <require class="ratchet chain key" scope="public"/>
-    <require class="ratchet cipher" scope="public"/>
-    <require interface="ratchet rng" scope="private"/>
-    <require module="impl"/>
 
     <variable name="ratchet chain key seed" type="unsigned" size="1" declaration="private" definition="private">
         <array length="derived"/>
@@ -25,12 +20,12 @@
         <value value="0x01"/>
     </variable>
 
-    <property name="rng" class="impl" access="readwrite"/>
-    <property name="cipher" class="ratchet cipher" access="readwrite"/>
-    <property name="kdf info" class="ratchet kdf info" access="readwrite"/>
-    <property name="sender chain" class="ratchet sender chain" access="readwrite"/>
-    <property name="receiver chains" class="ratchet receiver chain list node" access="readwrite"/>
-    <property name="skipped message keys" class="ratchet skipped message key list node" access="readwrite"/>
+    <dependency name="rng" interface="ratchet rng" access="readwrite"/>
+    <dependency name="cipher" class="ratchet cipher" access="readwrite"/>
+    <dependency name="kdf info" class="ratchet kdf info" access="readwrite"/>
+    <dependency name="sender chain" class="ratchet sender chain" access="readwrite"/>
+    <dependency name="receiver chains" class="ratchet receiver chain list node" access="readwrite"/>
+    <dependency name="skipped message keys" class="ratchet skipped message key list node" access="readwrite"/>
     <property name="root key" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_shared_key_length)"/>
     </property>

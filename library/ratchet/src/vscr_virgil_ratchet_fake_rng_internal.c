@@ -55,7 +55,9 @@
 #include "vscr_assert.h"
 #include "vscr_virgil_ratchet_fake_rng.h"
 #include "vscr_virgil_ratchet_fake_rng_impl.h"
+#include "vscr_ratchet_rng.h"
 #include "vscr_ratchet_rng_api.h"
+#include "vscr_impl.h"
 //  @end
 
 
@@ -123,6 +125,8 @@ vscr_virgil_ratchet_fake_rng_init(vscr_virgil_ratchet_fake_rng_impl_t *virgil_ra
 
     VSCR_ASSERT_PTR(virgil_ratchet_fake_rng_impl);
     VSCR_ASSERT_PTR(virgil_ratchet_fake_rng_impl->info == NULL);
+
+    vscr_zeroize (virgil_ratchet_fake_rng_impl, sizeof(vscr_virgil_ratchet_fake_rng_impl_t));
 
     virgil_ratchet_fake_rng_impl->info = &info;
 }

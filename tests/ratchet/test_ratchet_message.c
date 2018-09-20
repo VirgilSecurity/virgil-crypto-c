@@ -32,7 +32,6 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/common/private/vsc_buffer_defs.h>
 #include "unity.h"
 #include "test_utils.h"
 
@@ -57,9 +56,9 @@ test__1(void) {
 
     TEST_ASSERT_EQUAL_INT(test_ratchet_message_version, msg1->version);
     TEST_ASSERT_EQUAL_INT(test_ratchet_message_counter, msg1->counter);
-    TEST_ASSERT_EQUAL_MEMORY(msg1->public_key->bytes, test_ratchet_message_public_key.bytes, test_ratchet_message_public_key.len);
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->public_key), test_ratchet_message_public_key.bytes, test_ratchet_message_public_key.len);
     TEST_ASSERT_EQUAL_INT(32, vsc_buffer_len(msg1->public_key));
-    TEST_ASSERT_EQUAL_MEMORY(msg1->cipher_text->bytes, test_ratchet_message_cipher_text.bytes, test_ratchet_message_cipher_text.len);
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->cipher_text), test_ratchet_message_cipher_text.bytes, test_ratchet_message_cipher_text.len);
     TEST_ASSERT_EQUAL_INT(test_ratchet_message_cipher_text.len, vsc_buffer_len(msg1->cipher_text));
 
     size_t len = vscr_ratchet_message_serialize_len(msg1);
@@ -73,10 +72,10 @@ test__1(void) {
 
     TEST_ASSERT_EQUAL(err_ctx.error, vscr_SUCCESS);
 
-    TEST_ASSERT_EQUAL_INT(msg1->public_key->len, msg2->public_key->len);
-    TEST_ASSERT_EQUAL_MEMORY(msg1->public_key->bytes, msg2->public_key->bytes, msg1->public_key->len);
-    TEST_ASSERT_EQUAL_INT(msg1->cipher_text->len, msg2->cipher_text->len);
-    TEST_ASSERT_EQUAL_MEMORY(msg1->cipher_text->bytes, msg2->cipher_text->bytes, msg1->cipher_text->len);
+    TEST_ASSERT_EQUAL_INT(vsc_buffer_len(msg1->public_key), vsc_buffer_len(msg2->public_key));
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->public_key), vsc_buffer_bytes(msg2->public_key), vsc_buffer_len(msg1->public_key));
+    TEST_ASSERT_EQUAL_INT(vsc_buffer_len(msg1->cipher_text), vsc_buffer_len(msg2->cipher_text));
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->cipher_text), vsc_buffer_bytes(msg2->cipher_text), vsc_buffer_len(msg1->cipher_text));
 
     vscr_ratchet_message_destroy(&msg1);
     vscr_ratchet_message_destroy(&msg2);
@@ -98,9 +97,9 @@ test__2(void) {
 
     TEST_ASSERT_EQUAL_INT(test_ratchet_message_version_big, msg1->version);
     TEST_ASSERT_EQUAL_INT(test_ratchet_message_counter_big, msg1->counter);
-    TEST_ASSERT_EQUAL_MEMORY(msg1->public_key->bytes, test_ratchet_message_public_key.bytes, test_ratchet_message_public_key.len);
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->public_key), test_ratchet_message_public_key.bytes, test_ratchet_message_public_key.len);
     TEST_ASSERT_EQUAL_INT(32, vsc_buffer_len(msg1->public_key));
-    TEST_ASSERT_EQUAL_MEMORY(msg1->cipher_text->bytes, test_ratchet_message_cipher_text_big.bytes, test_ratchet_message_cipher_text_big.len);
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->cipher_text), test_ratchet_message_cipher_text_big.bytes, test_ratchet_message_cipher_text_big.len);
     TEST_ASSERT_EQUAL_INT(test_ratchet_message_cipher_text_big.len, vsc_buffer_len(msg1->cipher_text));
 
     size_t len = vscr_ratchet_message_serialize_len(msg1);
@@ -114,10 +113,10 @@ test__2(void) {
 
     TEST_ASSERT_EQUAL(err_ctx.error, vscr_SUCCESS);
 
-    TEST_ASSERT_EQUAL_INT(msg1->public_key->len, msg2->public_key->len);
-    TEST_ASSERT_EQUAL_MEMORY(msg1->public_key->bytes, msg2->public_key->bytes, msg1->public_key->len);
-    TEST_ASSERT_EQUAL_INT(msg1->cipher_text->len, msg2->cipher_text->len);
-    TEST_ASSERT_EQUAL_MEMORY(msg1->cipher_text->bytes, msg2->cipher_text->bytes, msg1->cipher_text->len);
+    TEST_ASSERT_EQUAL_INT(vsc_buffer_len(msg1->public_key), vsc_buffer_len(msg2->public_key));
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->public_key), vsc_buffer_bytes(msg2->public_key), vsc_buffer_len(msg1->public_key));
+    TEST_ASSERT_EQUAL_INT(vsc_buffer_len(msg1->cipher_text), vsc_buffer_len(msg2->cipher_text));
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->cipher_text), vsc_buffer_bytes(msg2->cipher_text), vsc_buffer_len(msg1->cipher_text));
 
     vscr_ratchet_message_destroy(&msg1);
     vscr_ratchet_message_destroy(&msg2);

@@ -46,16 +46,19 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains Private API common for all 'implementation' objects.
+//  Class 'ratchet' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_IMPL_PRIVATE_H_INCLUDED
-#define VSCR_IMPL_PRIVATE_H_INCLUDED
+#ifndef VSCR_RATCHET_DEFS_H_INCLUDED
+#define VSCR_RATCHET_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_error.h"
 #include "vscr_impl.h"
-#include "vscr_api.h"
+#include "vscr_ratchet_cipher.h"
+#include "vscr_ratchet_kdf_info.h"
+#include "vscr_ratchet_sender_chain.h"
+#include "vscr_ratchet_receiver_chain_list_node.h"
+#include "vscr_ratchet_skipped_message_key_list_node.h"
 //  @end
 
 
@@ -71,42 +74,43 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains common properties for any 'API' implementation object.
+//  Handle 'ratchet' context.
 //
-typedef struct vscr_impl_info_t vscr_impl_info_t;
-struct vscr_impl_info_t {
+struct vscr_ratchet_t {
     //
-    //  Implementation unique identifier, MUST be first in the structure.
+    //  Function do deallocate self context.
     //
-    vscr_impl_tag_t impl_tag;
-    //
-    //  NULL terminated array of the implemented interfaces.
-    //  MUST be second in the structure.
-    //
-    const vscr_api_t **api_array;
-    //
-    //  Release acquired inner resources.
-    //
-    vscr_impl_cleanup_fn self_cleanup_cb;
-    //
-    //  Self destruction, according to destruction policy.
-    //
-    vscr_impl_delete_fn self_delete_cb;
-};
-
-//
-//  Contains header of any 'API' implementation structure.
-//  It is used for runtime type casting and checking.
-//
-struct vscr_impl_t {
-    //
-    //  Compile-time known information.
-    //
-    const vscr_impl_info_t *info;
+    vscr_dealloc_fn self_dealloc_cb;
     //
     //  Reference counter.
     //
     size_t refcnt;
+    //
+    //  Dependency to the 'rng'.
+    //
+    vscr_impl_t *rng;
+    //
+    //  Dependency to the 'cipher'.
+    //
+    vscr_ratchet_cipher_t *cipher;
+    //
+    //  Dependency to the 'kdf_info'.
+    //
+    vscr_ratchet_kdf_info_t *kdf_info;
+    //
+    //  Dependency to the 'sender_chain'.
+    //
+    vscr_ratchet_sender_chain_t *sender_chain;
+    //
+    //  Dependency to the 'receiver_chains'.
+    //
+    vscr_ratchet_receiver_chain_list_node_t *receiver_chains;
+    //
+    //  Dependency to the 'skipped_message_keys'.
+    //
+    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_keys;
+
+    byte root_key[vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH];
 };
 
 
@@ -123,5 +127,5 @@ struct vscr_impl_t {
 
 
 //  @footer
-#endif // VSCR_IMPL_PRIVATE_H_INCLUDED
+#endif // VSCR_RATCHET_DEFS_H_INCLUDED
 //  @end

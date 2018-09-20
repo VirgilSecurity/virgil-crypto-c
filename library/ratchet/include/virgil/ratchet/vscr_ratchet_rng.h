@@ -55,6 +55,7 @@
 #include "vscr_library.h"
 #include "vscr_error.h"
 #include "vscr_impl.h"
+#include "vscr_api.h"
 
 #include <virgil/common/vsc_buffer.h>
 //  @end

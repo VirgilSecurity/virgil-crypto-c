@@ -49,7 +49,6 @@
 
 #include <virgil/foundation/vscf_asn1wr.h>
 #include <virgil/foundation/vscf_asn1rd.h>
-#include <virgil/foundation/vscf_error_ctx.h>
 //  @end
 
 
@@ -253,34 +252,32 @@ vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message_ctx, vsc_
     VSCR_ASSERT(vsc_buffer_left(output) >= vscr_ratchet_message_serialize_len(ratchet_message_ctx));
 
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
-    vscf_impl_t *asn1wr_impl = vscf_asn1wr_impl(asn1wr);
-    asn1wr = NULL;
 
-    vscf_asn1_writer_reset(asn1wr_impl, output);
+    vscf_asn1wr_reset(asn1wr, output);
 
     size_t top_sequence_len = 0;
 
-    top_sequence_len += vscf_asn1_writer_write_octet_str(asn1wr_impl,
-                                                         vsc_buffer_data(ratchet_message_ctx->cipher_text));
+    top_sequence_len += vscf_asn1wr_write_octet_str(asn1wr,
+                                                    vsc_buffer_data(ratchet_message_ctx->cipher_text));
 
-    top_sequence_len += vscf_asn1_writer_write_octet_str(asn1wr_impl,
-                                                         vsc_buffer_data(ratchet_message_ctx->public_key));
+    top_sequence_len += vscf_asn1wr_write_octet_str(asn1wr,
+                                                    vsc_buffer_data(ratchet_message_ctx->public_key));
 
-    top_sequence_len += vscf_asn1_writer_write_uint32(asn1wr_impl, ratchet_message_ctx->counter);
+    top_sequence_len += vscf_asn1wr_write_uint32(asn1wr, ratchet_message_ctx->counter);
 
-    top_sequence_len += vscf_asn1_writer_write_uint8(asn1wr_impl, ratchet_message_ctx->version);
+    top_sequence_len += vscf_asn1wr_write_uint8(asn1wr, ratchet_message_ctx->version);
 
-    vscf_asn1_writer_write_sequence(asn1wr_impl, top_sequence_len);
+    vscf_asn1wr_write_sequence(asn1wr, top_sequence_len);
 
-    if (vscf_asn1_writer_error(asn1wr_impl) != vscf_SUCCESS) {
-        vscf_impl_destroy(&asn1wr_impl);
+    if (vscf_asn1wr_error(asn1wr) != vscf_SUCCESS) {
+        vscf_asn1wr_destroy(&asn1wr);
 
         return vscr_ASN1_WRITE_ERROR;
     }
 
-    vscf_asn1_writer_seal(asn1wr_impl);
+    vscf_asn1wr_seal(asn1wr);
 
-    vscf_impl_destroy(&asn1wr_impl);
+    vscf_asn1wr_destroy(&asn1wr);
 
     return vscr_SUCCESS;
 }
@@ -291,29 +288,27 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
     VSCR_ASSERT(vsc_data_is_valid(input));
 
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
-    vscf_impl_t *asn1rd_impl = vscf_asn1rd_impl(asn1rd);
-    asn1rd = NULL;
 
-    vscf_asn1_reader_reset(asn1rd_impl, input);
-    vscf_asn1_reader_read_sequence(asn1rd_impl);
+    vscf_asn1rd_reset(asn1rd, input);
+    vscf_asn1rd_read_sequence(asn1rd);
 
-    uint8_t version = vscf_asn1_reader_read_uint8(asn1rd_impl);
+    uint8_t version = vscf_asn1rd_read_uint8(asn1rd);
 
-    uint32_t counter = vscf_asn1_reader_read_uint32(asn1rd_impl);
+    uint32_t counter = vscf_asn1rd_read_uint32(asn1rd);
 
-    size_t public_key_len = vscf_asn1_reader_get_len(asn1rd_impl);
+    size_t public_key_len = vscf_asn1rd_get_len(asn1rd);
     VSCR_ASSERT(public_key_len == vscr_ratchet_message_PUBLIC_KEY_LENGTH);
     vsc_buffer_t *public_key = vsc_buffer_new_with_capacity(public_key_len);
-    vscf_asn1_reader_read_octet_str(asn1rd_impl, public_key);
+    vscf_asn1rd_read_octet_str(asn1rd, public_key);
 
-    size_t cipher_text_len = vscf_asn1_reader_get_len(asn1rd_impl);
+    size_t cipher_text_len = vscf_asn1rd_get_len(asn1rd);
     vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(cipher_text_len);
-    vscf_asn1_reader_read_octet_str(asn1rd_impl, cipher_text);
+    vscf_asn1rd_read_octet_str(asn1rd, cipher_text);
 
-    if (vscf_asn1_reader_error(asn1rd_impl) != vscf_SUCCESS) {
+    if (vscf_asn1rd_error(asn1rd) != vscf_SUCCESS) {
         vsc_buffer_destroy(&public_key);
         vsc_buffer_destroy(&cipher_text);
-        vscf_impl_destroy(&asn1rd_impl);
+        vscf_asn1rd_destroy(&asn1rd);
 
         VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_ASN1_READ_ERROR);
 
@@ -324,7 +319,7 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
 
     vsc_buffer_destroy(&public_key);
     vsc_buffer_destroy(&cipher_text);
-    vscf_impl_destroy(&asn1rd_impl);
+    vscf_asn1rd_destroy(&asn1rd);
 
     return msg;
 }

@@ -46,8 +46,6 @@
 #include "vscr_ratchet_sender_chain.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-
-#include <virgil/foundation/vscf_error_ctx.h>
 //  @end
 
 

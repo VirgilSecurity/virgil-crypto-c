@@ -32,7 +32,6 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/common/private/vsc_buffer_defs.h>
 #include <ed25519/ed25519.h>
 #include "unity.h"
 #include "test_utils.h"
@@ -40,6 +39,7 @@
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
+#include "vscr_ratchet_rng.h"
 #include "vscr_ratchet.h"
 #include "vscr_virgil_ratchet_fake_rng_impl.h"
 #include "test_data_ratchet.h"
@@ -53,12 +53,12 @@ static void initialize(vscr_ratchet_t *ratchet_alice, vscr_ratchet_t *ratchet_bo
     memcpy(vsc_buffer_ptr(kdf_info->ratchet_info), test_ratchet_kdf_info_ratchet.bytes, test_ratchet_kdf_info_ratchet.len);
     vsc_buffer_reserve(kdf_info->ratchet_info, test_ratchet_kdf_info_ratchet.len);
 
-    ratchet_alice->kdf_info = vscr_ratchet_kdf_info_copy(kdf_info);
-    ratchet_bob->kdf_info = vscr_ratchet_kdf_info_copy(kdf_info);
+    vscr_ratchet_use_kdf_info(ratchet_alice, kdf_info);
+    vscr_ratchet_use_kdf_info(ratchet_bob, kdf_info);
     vscr_ratchet_kdf_info_destroy(&kdf_info);
 
-    ratchet_alice->rng = vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new());
-    ratchet_bob->rng = vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new());
+    vscr_ratchet_take_rng(ratchet_alice, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
+    vscr_ratchet_take_rng(ratchet_bob, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
 
     vsc_buffer_t *ratchet_private_key = vsc_buffer_new_with_capacity(test_ratchet_ratchet_private_key.len);
     memcpy(vsc_buffer_ptr(ratchet_private_key), test_ratchet_ratchet_private_key.bytes, test_ratchet_ratchet_private_key.len);

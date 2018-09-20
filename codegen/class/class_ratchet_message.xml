@@ -2,7 +2,7 @@
 
     <require header="virgil/foundation/vscf_asn1wr.h" scope="private"/>
     <require header="virgil/foundation/vscf_asn1rd.h" scope="private"/>
-    <require header="virgil/foundation/vscf_error_ctx.h" scope="private"/>
+    <require header="virgil/foundation/vscf_error_ctx.h" scope="public"/>
 
     <constant name="public key length" definition="public" value="32"/>
 
