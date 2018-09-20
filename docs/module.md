@@ -10,9 +10,9 @@ attribute names are case-sensitive and we use only lower-case names.
 
     <module name [c_prefix] [uid] [feature] [scope] [of_class]>
        <require [scope] [project] [library] [module] [header] [feature] [interface] [class]
-            [implementation]>
+            [impl]>
           <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]
-               [implementation]/>
+               [impl]/>
        </require>
        <constant name [c_prefix] [of_class] [uid] [feature] [definition] [value]/>
        <enum [definition] [declaration] [visibility] [c_prefix] [of_class] [uid] [feature]
@@ -152,7 +152,7 @@ feature.
       [ feature = "..." ]
       [ interface = "..." ]
       [ class = "..." ]
-      [ implementation = "..." ]
+      [ impl = "..." ]
         >
         <alternative>
     </require>
@@ -194,8 +194,8 @@ interface:
 class:
     Required class name. The class attribute is optional.
 
-implementation:
-    Required implementation name. The implementation attribute is optional.
+impl:
+    Required implementation name. The impl attribute is optional.
 
 
 The 'alternative' item
@@ -213,7 +213,7 @@ used, and in fact replace each other.
       [ feature = "..." ]
       [ interface = "..." ]
       [ class = "..." ]
-      [ implementation = "..." ]
+      [ impl = "..." ]
         />
 
 The alternative item can have these attributes:
@@ -253,8 +253,8 @@ interface:
 class:
     Required class name. The class attribute is optional.
 
-implementation:
-    Required implementation name. The implementation attribute is optional.
+impl:
+    Required implementation name. The impl attribute is optional.
 
 
 The 'constant' item

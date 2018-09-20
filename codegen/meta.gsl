@@ -58,15 +58,9 @@ function _X17_add_link (entity, id, uid, project_name)
 
     new link to my.entity
         .id = make_id (my.id)
-        .uid = my.uid
-        .ref = ref (make_id (my.project_uid, my.uid))
-
-        if string.prefixed (my.uid, "_")
-            #    Shortcut
-            .c_ref = .ref
-        else
-            .c_ref = ref (make_id (my.project_uid, "c", my.uid))
-        endif
+        .uid = make_id (my.project_uid, my.uid)
+        .ref = make_ref (.uid)
+        .c_ref = make_ref (.uid, "c")
     endnew
 endfunction
 
@@ -348,35 +342,35 @@ function _X17_add_dependencies (entity, source, class_uid_prefix, property_uid_p
 
         _X17_add_name (entity, "dependency method use $(dependency.name)", cat ("use", dependency.name))
         _X17_add_link (entity, "dependency method use $(dependency.name)", \
-                make_id (my.class_uid_prefix, "method", "use", dependency.name), dependencies.project)
+                make_id (my.class_uid_prefix, "method", "use", dependency.name))
 
         if has_one_of_attribute (dependency, "interface, impl, class")
             _X17_add_name (entity, "dependency method take $(dependency.name)", cat ("take", dependency.name))
             _X17_add_link (entity, "dependency method take $(dependency.name)", \
-                    make_id (my.class_uid_prefix, "method", "take", dependency.name), dependencies.project)
+                    make_id (my.class_uid_prefix, "method", "take", dependency.name))
         endif
 
         _X17_add_name (entity, "dependency method release $(dependency.name)", cat ("release", dependency.name))
         _X17_add_link (entity, "dependency method release $(dependency.name)", \
-                make_id (my.class_uid_prefix, "method", "release", dependency.name), dependencies.project)
+                make_id (my.class_uid_prefix, "method", "release", dependency.name))
 
 
         if defined(dependency.interface)
             _X17_add_link (entity, "dependency method copy $(dependency.name)", \
-                    make_id ("class impl method copy"), dependencies.project)
+                    make_id ("class impl method copy"), dependency.project)
 
             _X17_add_link (entity, "dependency method destroy $(dependency.name)", \
-                    make_id ("class impl method destroy"), dependencies.project)
+                    make_id ("class impl method destroy"), dependency.project)
 
             _X17_add_link (entity, "dependency method check $(dependency.name)", \
-                    make_id ("class", dependency.interface, "method", "is implemented"), dependencies.project)
+                    make_id ("class", dependency.type_name, "method", "is implemented"), dependency.project)
 
         elsif defined(dependency.class) | defined(dependency.impl)
             _X17_add_link (entity, "dependency method copy $(dependency.name)", \
-                    make_id ("class", dependency.name, "method", "copy"), dependencies.project)
+                    make_id ("class", dependency.type_name, "method", "copy"), dependency.project)
 
             _X17_add_link (entity, "dependency method destroy $(dependency.name)", \
-                    make_id ("class", dependency.name, "method", "destroy"), dependencies.project)
+                    make_id ("class", dependency.type_name, "method", "destroy"), dependency.project)
         endif
     endfor
 endfunction
@@ -482,6 +476,10 @@ function _X17_add_entity_class (meta, class)
     new entity to my.meta
         .id = my.id
 
+        _X17_add_name (entity, "argument context", cat (my.class.name, "ctx"))
+        _X17_add_link (entity, "argument context", "_argument_$(make_id (my.class.name, "ctx"))")
+        _X17_add_link (entity, "argument context type", make_id ("class", my.class.name, "struct", my.class.name))
+
         _X17_add_smart_name (entity, "class method", "ctx size")
 
         _X17_add_name (entity, "class module", my.class.name)
@@ -499,6 +497,10 @@ function _X17_add_entity_class (meta, class)
         _X17_add_smart_name (entity, "class property", "self dealloc")
         _X17_add_link (entity, "class property self dealloc", \
                 make_id ("class", my.class.name, "struct", my.class.name, "property", "self dealloc"))
+
+        my.class_uid_prefix = "class $(my.class.name)"
+        my.property_uid_prefix = "class $(my.class.name) struct ctx property"
+        _X17_add_dependencies (entity, my.class, my.class_uid_prefix, my.property_uid_prefix)
 
         return entity
     endnew

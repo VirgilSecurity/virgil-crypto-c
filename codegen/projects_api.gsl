@@ -166,10 +166,36 @@ function projects_api_build_type_resolution_map (projects_api)
     my.resolution_map = XML.new ("type_resolution_map")
 
     for my.projects_api.project
-        my.prefix = (project.name <> my.projects_api.active_project) ?? make_id ("project", project.name) ?
+
+        #   Process uids.
+        my.project_prefix = (project.name <> my.projects_api.active_project) ?? make_id ("project", project.name) ?
 
         for project.uid
-            my.resolution_map.$(make_id (my.prefix, uid.uid)) = uid.ref
+            my.resolution_map.$(uid_insert_prefix (uid.uid, my.project_prefix)) = uid.ref
+        endfor
+
+
+        #   Process headers.
+        my.is_external_project = (project.name = my.projects_api.active_project) ?? "0" ? "1"
+        my.public_prefix = my.is_external_project ?? project.install_headers_dir ? ""
+        my.private_prefix = my.is_external_project ?? project.install_private_headers_dir ? ""
+
+        for project.header
+            if my.is_external_project & header.scope = "internal"
+                next
+            endif
+
+            if header.scope = "public"
+                my.header_file = my.public_prefix + header.file
+
+            elsif header.scope = "private"
+                my.header_file = my.private_prefix + header.file
+            else
+                my.header_file = header.file
+            endif
+
+            my.key = make_id ("c", my.project_prefix, "header", header.name)
+            my.resolution_map.$(my.key:) = my.header_file
         endfor
     endfor
 
@@ -194,6 +220,7 @@ function projects_api_collect_info (projects_api, source)
 
         if ! defined (my.header)
             new header to my.project
+                .name = c_module.id
                 .file = c_module.c_include_file
                 .scope = c_module.scope
 

@@ -46,7 +46,6 @@ gsl from "common.gsl"
 gsl from "interface.gsl"
 gsl from "component.gsl"
 gsl from "c_component.gsl"
-gsl from "project_common.gsl"
 
 # ---------------------------------------------------------------------------
 #   Check that all interfaces are implemented explicitly.
@@ -253,8 +252,6 @@ function implementation_resolve (implementation, parent, project)
     for my.implementation.require
         implementation_resolve_require (require, my.implementation)
     endfor
-
-    project_common_resolve_dependecies_for (my.implementation)
 endfunction
 
 # ---------------------------------------------------------------------------

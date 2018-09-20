@@ -327,7 +327,7 @@
         Required class name.
     </attr>
 
-    <attr name="implementation">
+    <attr name="impl">
         Required implementation name.
     </attr>
 
