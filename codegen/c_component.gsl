@@ -491,36 +491,28 @@ function c_component_map_instance_attr_type (c_instance, instance)
         elsif my.instance.type = "char"
             my.c_instance.type = "char"
 
-        elsif my.instance.type = "error"
-            my.c_instance.type = ".(c_class_error_enum_error)"
-
         else
             echo_fatal ("Unsupported instance type '$(my.instance.type)' for C language.", my)
         endif
 
     elsif defined (my.instance.class)
 
-        if my.instance.class = "data"
-            my.c_instance.type = "vsc_data_t"
-
-        elsif my.instance.class = "buffer"
-            my.c_instance.type = "vsc_buffer_t"
-
-        elsif my.instance.class = "impl"
-            my.c_instance.type = ".(c_class_impl_struct_impl)"
-
-        elsif my.instance.class = "any"
+        if my.instance.class = "any"
             my.c_instance.type = "void"
 
         else
             my.c_instance.type = c_component_wrap_uid (my.instance.class)
         endif
 
-    elsif defined (my.instance.enum)
-        my.c_instance.type = c_component_wrap_uid (my.instance.enum)
-
-    elsif defined (my.instance.callback)
-        my.c_instance.type = c_component_wrap_uid (my.instance.callback)
+    elsif has_one_of_attribute (my.instance, "enum, callback, interface, api, impl")
+        my.c_instance.type = c_component_wrap_uid (\
+                my.instance.enum ? \
+                my.instance.callback ? \
+                my.instance.interface ? \
+                my.instance.api ? \
+                my.instance.impl)
+    else
+        echo_fatal ("Unreacheable code, component_resolve_instance() must handle this.", my)
     endif
 endfunction
 
@@ -540,6 +532,15 @@ function c_component_map_instance_attr_type_is (c_instance, instance)
         my.c_instance.type_is = "any"
 
     elsif defined (my.instance.class)
+        my.c_instance.type_is = "class"
+
+    elsif defined (my.instance.interface)
+        my.c_instance.type_is = "class"
+
+    elsif defined (my.instance.api)
+        my.c_instance.type_is = "class"
+
+    elsif defined (my.instance.impl)
         my.c_instance.type_is = "class"
 
     else
@@ -611,7 +612,7 @@ function c_component_map_instance_attr_is_const (c_instance, instance)
 
     if my.instance.access = "readonly" & (\
             (count (my.instance.string)) | \
-            (defined (my.instance.class) & \
+            (has_one_of_attribute (my.instance, "class, interface, api, impl") & \
                     (!item_in(my.instance, "argument, return") | is_true(my.instance.is_reference))) | \
             (defined (my.instance.type) & count (my.instance.array)) | \
             (defined (my.instance.enum) & count (my.instance.array)))

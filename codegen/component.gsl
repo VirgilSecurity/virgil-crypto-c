@@ -463,6 +463,40 @@ function component_derive_full_name (component)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   If attribute 'project' is defined within <instance/> then return project
+#   prefix, otherwise return empty string.
+# ---------------------------------------------------------------------------
+function component_derive_instance_project_uid (instance, parent)
+    check_arguments (my, "instance, parent", my)
+
+    return defined (my.instance.project) ?? make_id ("project", my.instance.project) ? ""
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Crate uid based on the given options.
+#   Examples:
+#       {struct, buffer, buffer} - returns "class_buffer_struct_buffer"
+#       {struct, inner/buffer, buffer} - returns "class_inner_struct_buffer"
+#       {enum, impl/tag,} - returns "class_impl_enum_tag"
+#       {struct, codes,} - returns "global_struct_codes"
+# ---------------------------------------------------------------------------
+function component_derive_instance_type_uid (type_id, type_value, of_class)
+    check_arguments (my, "type_id, type_value", my)
+
+    if regexp.match ("([^\/]+)\/(.+)", my.type_value, my.group1, my.group2)
+        my.of_class = my.group1
+        my.type_value = my.group2
+    endif
+
+    if defined (my.of_class)
+        return make_id ("class", my.of_class, my.type_id, my.type_value)
+
+    else
+        return make_id ("global", my.type_id, my.type_value)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve attribute: lang.
 # ---------------------------------------------------------------------------
 function component_resolve_attr_lang (component, parent)
@@ -617,59 +651,125 @@ function component_resolve_instance_attr_type (instance, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve attribute: class.
+#   Resolve attribute: instance.class.
 # ---------------------------------------------------------------------------
 function component_resolve_instance_attr_class (instance, parent)
-    check_arguments (my, "instance, parent")
+    check_arguments (my, "instance, parent", my)
 
     component_require_attr_class (my.instance, my)
 
     if my.instance.class = "data"
+        my.instance.project ?= "common"
         my.instance.access ?= "readonly"
         my.instance.is_reference = "0"
 
     elsif my.instance.class = "buffer"
+        my.instance.project ?= "common"
         my.instance.access ?= "readwrite"
         my.instance.is_reference = "1"
     endif
+
+    if my.instance.class = "any" | is_ref (my.instance.class) | defined (my.instance.library)
+        return
+    endif
+
+    my.project_uid = component_derive_instance_project_uid (my.instance, my.parent)
+    my.type_uid = component_derive_instance_type_uid ("struct", my.instance.class, my.instance.class)
+    my.instance.class = make_ref (make_id(my.project_uid, my.type_uid))
 endfunction
 
+
 # ---------------------------------------------------------------------------
-#   Resolve attribute: enum.
+#   Resolve attribute: instance.enum.
 # ---------------------------------------------------------------------------
 function component_resolve_instance_attr_enum (instance, parent)
-    check_arguments (my, "instance, parent")
+    check_arguments (my, "instance, parent", my)
 
     component_require_attr_enum (my.instance, my)
 
-    #   Resolve enum shortcuts
-    if my.instance.enum = "api tag"
-        my.instance.enum = ".(class_api_enum_tag)"
-
-    elsif my.instance.enum = "impl tag"
-        my.instance.enum = ".(class_impl_enum_tag)"
+    if is_ref (my.instance.enum) | defined (my.instance.library)
+        return
     endif
+
+    if my.instance.enum = "error"
+        my.instance.enum = "error/error"
+    endif
+
+    my.project_uid = component_derive_instance_project_uid (my.instance, my.parent)
+    my.type_uid = component_derive_instance_type_uid ("enum", my.instance.enum, my.instance.enum)
+    my.instance.enum = make_ref (make_id(my.project_uid, my.type_uid))
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve attribute: callback.
+#   Resolve attribute: instance.callback.
 # ---------------------------------------------------------------------------
 function component_resolve_instance_attr_callback (instance, parent)
-    check_arguments (my, "instance, parent")
+    check_arguments (my, "instance, parent", my)
 
     component_require_attr_callback (my.instance, my)
+
+    if is_ref (my.instance.callback) | defined (my.instance.library)
+        return
+    endif
+
+    my.project_uid = component_derive_instance_project_uid (my.instance, my.parent)
+    my.type_uid = component_derive_instance_type_uid ("callback", my.instance.callback, my.instance.callback)
+    my.instance.callback = make_ref (make_id(my.project_uid, my.type_uid))
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve attribute: instance.implementation.
+#   Resolve attribute: instance.interface.
 # ---------------------------------------------------------------------------
-function component_resolve_instance_attr_implementation (instance, parent)
-    check_arguments (my, "instance, parent")
+function component_resolve_instance_attr_interface (instance, parent)
+    check_arguments (my, "instance, parent", my)
 
-    component_require_attr_implementation (my.instance, my)
+    assert_attribute (my.instance, "interface", my)
 
-    my.instance.class = ref(make_id("class", my.instance.implementation, "struct", "impl"))
-    my.instance.implementation = # undefined
+    if is_ref (my.instance.interface) | defined (my.instance.library)
+        return
+    endif
+
+    my.project_uid = component_derive_instance_project_uid (my.instance, my.parent)
+    my.type_uid = component_derive_instance_type_uid ("struct", "impl", "impl")
+    my.instance.interface = make_ref (make_id(my.project_uid, my.type_uid))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: instance.api.
+# ---------------------------------------------------------------------------
+function component_resolve_instance_attr_api (instance, parent)
+    check_arguments (my, "instance, parent", my)
+
+    assert_attribute (my.instance, "api", my)
+
+    #    Force readonly access for interface API
+    my.instance.access = "readonly"
+
+    if is_ref (my.instance.api) | defined (my.instance.library)
+        return
+    endif
+
+    my.project_uid = component_derive_instance_project_uid (my.instance, my.parent)
+    my.type = cat (my.instance.api, "api")
+    my.type_uid = component_derive_instance_type_uid ("struct", my.type, my.type)
+    my.instance.api = make_ref (make_id(my.project_uid, my.type_uid))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: instance.impl.
+# ---------------------------------------------------------------------------
+function component_resolve_instance_attr_impl (instance, parent)
+    check_arguments (my, "instance, parent", my)
+
+    assert_attribute (my.instance, "impl", my)
+
+    if is_ref (my.instance.impl) | defined (my.instance.library)
+        return
+    endif
+
+    my.project_uid = component_derive_instance_project_uid (my.instance, my.parent)
+    my.type_uid = component_derive_instance_type_uid ("struct", "impl", my.instance.impl)
+    my.instance.impl = make_ref (make_id(my.project_uid, my.type_uid))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -738,11 +838,12 @@ endfunction
 #       For 'enum'     - default is '0'.
 #       For 'callback' - default is '0'.
 #       For 'class'    - default is '1'.
+#       For 'struct'   - default is '1'.
 # ---------------------------------------------------------------------------
 function component_resolve_instance_attr_is_reference (instance, parent)
     check_arguments (my, "instance, parent")
 
-    my.instance.is_reference ?= defined (my.instance.class)
+    my.instance.is_reference ?= has_one_of_attribute (my.instance, "class, interface, api, impl")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -961,10 +1062,6 @@ endfunction
 function component_resolve_instance (instance, parent)
     check_arguments (my, "instance, parent", my)
 
-    if defined (my.instance.implementation)
-        component_resolve_instance_attr_implementation (my.instance, my.parent)
-    endif
-
     if defined (my.instance.type)
         component_resolve_instance_attr_type (my.instance, my.parent)
 
@@ -977,10 +1074,19 @@ function component_resolve_instance (instance, parent)
     elsif defined (my.instance.callback)
         component_resolve_instance_attr_callback (my.instance, my.parent)
 
+    elsif defined (my.instance.interface)
+        component_resolve_instance_attr_interface (my.instance, my.parent)
+
+    elsif defined (my.instance.api)
+        component_resolve_instance_attr_api (my.instance, my.parent)
+
+    elsif defined (my.instance.impl)
+        component_resolve_instance_attr_impl (my.instance, my.parent)
+
     else
         echo_fatal ("Component that inherit 'instance' must define one" + \
-                    " of the attribute {type, class, enum, callback}" + terminator + \
-                    component_instance_dump (my.instance))
+                    " of the attribute {type, class, enum, callback, interface, api, impl}" + \
+                    terminator + component_instance_dump (my.instance))
     endif
 
     component_resolve_instance_attr_access (my.instance, my.parent)
@@ -994,6 +1100,9 @@ function component_resolve_instance (instance, parent)
     if count (my.instance.array)
         component_resolve_array (my.instance->array, my.instance)
     endif
+
+    # Landlord MUST NOT be inherited by now.
+    # component_resolve_landlord (my.instance, my.parent)
 endfunction
 
 # ---------------------------------------------------------------------------

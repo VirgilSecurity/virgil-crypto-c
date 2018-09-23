@@ -13,7 +13,7 @@
         Returns size of written data.
 
         <argument name="asn1wr" class="impl" access="readwrite"/>
-        <argument name="bignum" class="mbedtls_mpi"/>
+        <argument name="bignum" class="mbedtls_mpi" library="mbedtls"/>
         <argument name="error" class="error ctx" access="readwrite"/>
         <return type="size"/>
     </method>

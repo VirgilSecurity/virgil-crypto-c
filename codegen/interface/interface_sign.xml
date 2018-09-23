@@ -8,7 +8,7 @@
 
         <argument name="signature" class="buffer"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
 
