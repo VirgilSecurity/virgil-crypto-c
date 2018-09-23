@@ -10,7 +10,8 @@
 
         <context>
             <require header="mbedtls/md.h"/>
-            <property name="hmac ctx" class="mbedtls_md_context_t" access="readwrite" is_reference="0"/>
+            <property name="hmac ctx" class="mbedtls_md_context_t" library="mbedtls"
+                    access="readwrite" is_reference="0"/>
         </context>
 
         <interface name="hmac info">
@@ -29,7 +30,8 @@
 
         <context>
             <require header="mbedtls/sha256.h"/>
-            <property name="hash ctx" class="mbedtls_sha256_context" access="readwrite" is_reference="0"/>
+            <property name="hash ctx" class="mbedtls_sha256_context" library="mbedtls"
+                    access="readwrite" is_reference="0"/>
         </context>
 
         <interface name="hash info">
@@ -48,7 +50,8 @@
 
         <context>
             <require header="mbedtls/sha256.h"/>
-            <property name="hash ctx" class="mbedtls_sha256_context" access="readwrite" is_reference="0"/>
+            <property name="hash ctx" class="mbedtls_sha256_context" library="mbedtls"
+                    access="readwrite" is_reference="0"/>
         </context>
 
         <interface name="hash info">
@@ -67,7 +70,8 @@
 
         <context>
             <require header="mbedtls/sha512.h"/>
-            <property name="hash ctx" class="mbedtls_sha512_context" access="readwrite" is_reference="0"/>
+            <property name="hash ctx" class="mbedtls_sha512_context" library="mbedtls"
+                    access="readwrite" is_reference="0"/>
         </context>
 
         <interface name="hash info">
@@ -86,7 +90,8 @@
 
         <context>
             <require header="mbedtls/sha512.h"/>
-            <property name="hash ctx" class="mbedtls_sha512_context" access="readwrite" is_reference="0"/>
+            <property name="hash ctx" class="mbedtls_sha512_context" library="mbedtls"
+                    access="readwrite" is_reference="0"/>
         </context>
 
         <interface name="hash info">
@@ -108,7 +113,8 @@
         <context name="aes256 gcm">
             <require header="mbedtls/cipher.h"/>
 
-            <property name="cipher ctx" class="mbedtls_cipher_context_t" access="readwrite" is_reference="0"/>
+            <property name="cipher ctx" class="mbedtls_cipher_context_t" library="mbedtls"
+                    access="readwrite" is_reference="0"/>
 
             <property name="key" type="data" access="readwrite">
                 <array length="fixed" length_constant=".(class_aes256_gcm_constant_key_len)"/>
@@ -153,7 +159,7 @@
         <context>
             <property name="curr" type="data" access="readwrite"/>
             <property name="end" type="data"/>
-            <property name="error" type="error"/>
+            <property name="error" enum="error"/>
         </context>
 
         <interface name="asn1 reader"/>
@@ -189,7 +195,7 @@
             <property name="out" class="buffer"/>
             <property name="start" type="data" access="readwrite"/>
             <property name="curr" type="data" access="readwrite"/>
-            <property name="error" type="error"/>
+            <property name="error" enum="error"/>
         </context>
 
         <interface name="asn1 writer"/>

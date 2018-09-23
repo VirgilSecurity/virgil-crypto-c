@@ -4,7 +4,7 @@
     In this way operation is successful if all steps are successful, otherwise
     last occurred error code can be obtained.
 
-    <property name="error" type="error"/>
+    <property name="error" enum="error"/>
 
 
     <method name="reset">
@@ -18,7 +18,7 @@
         Update context with given error.
 
         <argument class="context"/>
-        <argument name="error" type="error"/>
+        <argument name="error" enum="error"/>
     </method>
 
 
@@ -42,6 +42,6 @@
         Reset context to the "no error" state.
 
         <argument class="context" access="readonly"/>
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 </class>

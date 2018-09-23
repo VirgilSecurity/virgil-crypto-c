@@ -10,7 +10,7 @@
 
         <argument name="shared key" class="buffer"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
 

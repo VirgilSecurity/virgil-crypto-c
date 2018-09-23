@@ -1,13 +1,12 @@
 <class name="mbedtls md" scope="internal">
     Bridge between MbedTLS MD module and virgil foundation.
 
-    <require module="impl"/>
     <require header="mbedtls/md.h"/>
 
     <method name="map impl tag">
         Map implementation tag to correspond 'mbedtls_md_type_t'.
 
-        <argument name="impl tag" enum="impl tag"/>
-        <return enum="mbedtls_md_type_t"/>
+        <argument name="impl tag" enum="impl/tag"/>
+        <return enum="mbedtls_md_type_t" library="mbedtls"/>
     </method>
 </class>

@@ -9,7 +9,7 @@
 
         <argument name="out" class="buffer"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
     <method name="exported public key len">

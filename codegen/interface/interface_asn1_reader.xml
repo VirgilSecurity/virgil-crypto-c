@@ -15,7 +15,7 @@
     <method name="error">
         Return last error.
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
 

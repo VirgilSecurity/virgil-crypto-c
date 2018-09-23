@@ -134,8 +134,10 @@
             1. If value in a format .(uid), then it treated as a reference to
                the in-project class and will be substituted during context
                resolution step.
-            2. Any other value will be used as-is. So one third party type
-               can be used.
+            2. If attribute 'library' is defined, then it treated as third-party
+               library class and will be used as-is.
+            3. Any other value will be treated as cross-project class name and
+               will be converted to the .(uid).
     </attr>
 
     <attr name="enum">
@@ -144,8 +146,10 @@
         1. If value in a format .(uid), then it treated as a reference to
            the in-project enumeration and will be substituted during context
            resolution step.
-        2. Any other value will be used as-is. So one third party type
-           can be used.
+        2. If attribute 'library' is defined, then it treated as third-party
+           library class and will be used as-is.
+        3. Any other value will be treated as cross-project class name and
+           will be converted to the .(uid).
     </attr>
 
     <attr name="callback">
@@ -154,13 +158,22 @@
         1. If value in a format .(uid), then it treated as a reference to
            the in-project callback and will be substituted during context
            resolution step.
-        2. Any other value will be used as-is. So any third party type
-           can be used.
+        2. If attribute 'library' is defined, then it treated as third-party
+           library class and will be used as-is.
+        3. Any other value will be treated as cross-project class name and
+           will be converted to the .(uid).
+    </attr>
+
+    <attr name="interface">
+        Defines instance as implementation of specific interface.
+    </attr>
+
+    <attr name="api">
+        Defines instance as specific interface api.
     </attr>
 
     <attr name="impl">
-        Defines specific implementation name.
-
+        Defines instance as specific implementation.
     </attr>
 
     <attr name="size">
@@ -200,6 +213,7 @@
     </attr>
 
     <inherit entity="access"/>
+    <inherit entity="landlord"/>
 
     <allow entity="string" occurs="0/1"/>
     <allow entity="array" occurs="0/1"/>

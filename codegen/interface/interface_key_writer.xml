@@ -7,7 +7,7 @@
 
         <argument name="out" class="buffer"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
 
@@ -16,7 +16,7 @@
 
         <argument name="out" class="buffer"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
 
