@@ -557,7 +557,6 @@ function _Z19_add_method_init (impl, declaration, definition, destination, meta)
 
             my.impl_begin = "\
                 .(c_class_assert_macros_ptr)($(my.arg_impl));
-                .(c_class_assert_macros_ptr)($(my.arg_impl)->$(my.names.c_property_info:) == NULL);
 
                 .(c_global_method_zeroize) ($(my.arg_impl), sizeof($(my.type_impl)));
 
