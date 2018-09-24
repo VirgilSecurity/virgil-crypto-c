@@ -1,7 +1,0 @@
-<interface name="hmac info">
-    Provide details about implemented hash algorithm.
-
-    <constant name="digest len" type="size">
-        Size of the digest (hmac output) in bytes.
-    </constant>
-</interface>

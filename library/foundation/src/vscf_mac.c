@@ -38,7 +38,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'hmac256' implementation.
+//  Provides interface to the stateless MAC (message authentication code) algorithms.
 // --------------------------------------------------------------------------
 
 
@@ -49,11 +49,9 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_hmac256.h"
+#include "vscf_mac.h"
 #include "vscf_assert.h"
-#include "vscf_memory.h"
-#include "vscf_hmac256_impl.h"
-#include "vscf_hmac256_internal.h"
+#include "vscf_mac_api.h"
 //  @end
 
 
@@ -63,99 +61,77 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Calculate MAC over given data.
+//
+VSCF_PUBLIC void
+vscf_mac(const vscf_mac_api_t *mac_api, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac) {
+
+    VSCF_ASSERT_PTR (mac_api);
+
+    VSCF_ASSERT_PTR (mac_api->mac_cb);
+    mac_api->mac_cb (key, data, mac);
+}
+
+//
+//  Return mac API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_mac_api_t *
+vscf_mac_api(vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_MAC);
+    return (const vscf_mac_api_t *) api;
+}
+
+//
+//  Return mac info API.
+//
+VSCF_PUBLIC const vscf_mac_info_api_t *
+vscf_mac_mac_info_api(const vscf_mac_api_t *mac_api) {
+
+    VSCF_ASSERT_PTR (mac_api);
+
+    return mac_api->mac_info_api;
+}
+
+//
+//  Check if given object implements interface 'mac'.
+//
+VSCF_PUBLIC bool
+vscf_mac_is_implemented(vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    return vscf_impl_api (impl, vscf_api_tag_MAC) != NULL;
+}
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_mac_api_tag(const vscf_mac_api_t *mac_api) {
+
+    VSCF_ASSERT_PTR (mac_api);
+
+    return mac_api->api_tag;
+}
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_mac_impl_tag(const vscf_mac_api_t *mac_api) {
+
+    VSCF_ASSERT_PTR (mac_api);
+
+    return mac_api->impl_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
-
-//
-//  Provides initialization of the implementation specific context.
-//
-VSCF_PRIVATE void
-vscf_hmac256_init_ctx(vscf_hmac256_impl_t *hmac256_impl) {
-
-    mbedtls_md_init(&hmac256_impl->hmac_ctx);
-    int result = mbedtls_md_setup(&hmac256_impl->hmac_ctx, mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), 1);
-
-    VSCF_ASSERT_ALLOC(result != MBEDTLS_ERR_MD_ALLOC_FAILED);
-    VSCF_ASSERT(result == 0 && "unhandled mbedtls error");
-}
-
-//
-//  Provides cleanup of the implementation specific context.
-//
-VSCF_PRIVATE void
-vscf_hmac256_cleanup_ctx(vscf_hmac256_impl_t *hmac256_impl) {
-
-    mbedtls_md_free(&hmac256_impl->hmac_ctx);
-}
-
-//
-//  Calculate hmac over given data.
-//
-VSCF_PUBLIC void
-vscf_hmac256_hmac(vsc_data_t key, vsc_data_t data, vsc_buffer_t *hmac) {
-
-    VSCF_ASSERT(vsc_data_is_valid(key));
-    VSCF_ASSERT(vsc_data_is_valid(data));
-    VSCF_ASSERT(vsc_buffer_is_valid(hmac));
-    VSCF_ASSERT(vsc_buffer_left(hmac) >= vscf_hmac256_DIGEST_LEN);
-
-    mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), key.bytes, key.len, data.bytes, data.len,
-            vsc_buffer_ptr(hmac));
-
-    vsc_buffer_reserve(hmac, vscf_hmac256_DIGEST_LEN);
-}
-
-//
-//  Reset HMAC.
-//
-VSCF_PUBLIC void
-vscf_hmac256_reset(vscf_hmac256_impl_t *hmac256_impl) {
-
-    VSCF_ASSERT_PTR(hmac256_impl);
-
-    mbedtls_md_hmac_reset(&hmac256_impl->hmac_ctx);
-}
-
-//
-//  Start a new HMAC.
-//
-VSCF_PUBLIC void
-vscf_hmac256_start(vscf_hmac256_impl_t *hmac256_impl, vsc_data_t key) {
-
-    VSCF_ASSERT_PTR(hmac256_impl);
-    VSCF_ASSERT(vsc_data_is_valid(key));
-
-    mbedtls_md_hmac_starts(&hmac256_impl->hmac_ctx, key.bytes, key.len);
-}
-
-//
-//  Add given data to the HMAC.
-//
-VSCF_PUBLIC void
-vscf_hmac256_update(vscf_hmac256_impl_t *hmac256_impl, vsc_data_t data) {
-
-    VSCF_ASSERT_PTR(hmac256_impl);
-    VSCF_ASSERT(vsc_data_is_valid(data));
-
-    mbedtls_md_hmac_update(&hmac256_impl->hmac_ctx, data.bytes, data.len);
-}
-
-//
-//  Accompilsh HMAC and return it's result (a message digest).
-//
-VSCF_PUBLIC void
-vscf_hmac256_finish(vscf_hmac256_impl_t *hmac256_impl, vsc_buffer_t *hmac) {
-
-    VSCF_ASSERT_PTR(hmac256_impl);
-    VSCF_ASSERT(vsc_buffer_is_valid(hmac));
-
-    VSCF_ASSERT(vsc_buffer_left(hmac) >= vscf_hmac256_DIGEST_LEN);
-
-    mbedtls_md_hmac_finish(&hmac256_impl->hmac_ctx, vsc_buffer_ptr(hmac));
-    vsc_buffer_reserve(hmac, vscf_hmac256_DIGEST_LEN);
-}

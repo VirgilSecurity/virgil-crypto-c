@@ -36,15 +36,6 @@
 // --------------------------------------------------------------------------
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Types of the 'hmac384' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -52,8 +43,25 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_hmac384_impl.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Provide details about implemented MAC (message authentication code) algorithm.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_MAC_INFO_H_INCLUDED
+#define VSCF_MAC_INFO_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_error.h"
+#include "vscf_impl.h"
+#include "vscf_api.h"
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -62,9 +70,54 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Contains API requirements of the interface 'mac info'.
+//
+typedef struct vscf_mac_info_api_t vscf_mac_info_api_t;
+
+//
+//  Size of the digest (mac output) in bytes.
+//
+VSCF_PUBLIC size_t
+vscf_mac_info_digest_len(vscf_impl_t *impl);
+
+//
+//  Return mac info API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_mac_info_api_t *
+vscf_mac_info_api(vscf_impl_t *impl);
+
+//
+//  Check if given object implements interface 'mac info'.
+//
+VSCF_PUBLIC bool
+vscf_mac_info_is_implemented(vscf_impl_t *impl);
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_mac_info_api_tag(const vscf_mac_info_api_t *mac_info_api);
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_mac_info_impl_tag(const vscf_mac_info_api_t *mac_info_api);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_MAC_INFO_H_INCLUDED
 //  @end

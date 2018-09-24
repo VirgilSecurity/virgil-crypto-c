@@ -86,7 +86,11 @@ static const vscf_hash_info_api_t hash_info_api = {
     //
     //  Length of the digest (hashing output) in bytes.
     //
-    vscf_sha224_DIGEST_LEN
+    vscf_sha224_DIGEST_LEN,
+    //
+    //  Block length of the digest function in bytes.
+    //
+    vscf_sha224_BLOCK_LEN
 };
 
 //
@@ -183,7 +187,6 @@ VSCF_PUBLIC void
 vscf_sha224_init(vscf_sha224_impl_t *sha224_impl) {
 
     VSCF_ASSERT_PTR(sha224_impl);
-    VSCF_ASSERT_PTR(sha224_impl->info == NULL);
 
     vscf_zeroize (sha224_impl, sizeof(vscf_sha224_impl_t));
 

@@ -230,7 +230,6 @@ VSCF_PUBLIC void
 vscf_asn1wr_init(vscf_asn1wr_impl_t *asn1wr_impl) {
 
     VSCF_ASSERT_PTR(asn1wr_impl);
-    VSCF_ASSERT_PTR(asn1wr_impl->info == NULL);
 
     vscf_zeroize (asn1wr_impl, sizeof(vscf_asn1wr_impl_t));
 

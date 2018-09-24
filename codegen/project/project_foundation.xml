@@ -62,9 +62,9 @@
     <interface name="hash"/>
     <interface name="hash info"/>
     <interface name="hash stream"/>
-    <interface name="hmac"/>
-    <interface name="hmac info"/>
-    <interface name="hmac stream"/>
+    <interface name="mac"/>
+    <interface name="mac info"/>
+    <interface name="mac stream"/>
     <interface name="kdf"/>
     <interface name="random"/>
 

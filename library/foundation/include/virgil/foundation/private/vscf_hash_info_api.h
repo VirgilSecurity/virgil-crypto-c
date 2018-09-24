@@ -87,6 +87,10 @@ struct vscf_hash_info_api_t {
     //  Length of the digest (hashing output) in bytes.
     //
     size_t digest_len;
+    //
+    //  Block length of the digest function in bytes.
+    //
+    size_t block_len;
 };
 
 

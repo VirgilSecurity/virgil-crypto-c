@@ -125,7 +125,6 @@ VSCF_PUBLIC void
 vscf_kdf1_init(vscf_kdf1_impl_t *kdf1_impl) {
 
     VSCF_ASSERT_PTR(kdf1_impl);
-    VSCF_ASSERT_PTR(kdf1_impl->info == NULL);
 
     vscf_zeroize (kdf1_impl, sizeof(vscf_kdf1_impl_t));
 
