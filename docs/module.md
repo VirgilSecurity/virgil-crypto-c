@@ -19,13 +19,13 @@ attribute names are case-sensitive and we use only lower-case names.
             [name]>
           <constant .../>
        </enum>
-       <variable is_reference name [access] [type] [library] [enum] [callback] [interface] [api]
-            [impl] [size] [project] [definition] [declaration] [visibility] [c_prefix]
-            [of_class] [uid] [feature] [class]>
-          <value value is_reference [project] [type] [class] [enum] [callback] [interface] [api]
-               [impl] [size] [library] [access]>
-             <cast is_reference [library] [project] [type] [class] [enum] [callback] [interface]
-                  [api] [impl] [size] [access]>
+       <variable name is_reference [library] [type] [project] [enum] [callback] [interface] [api]
+            [impl] [size] [access] [need_definition] [definition] [declaration]
+            [visibility] [c_prefix] [of_class] [uid] [feature] [class]>
+          <value is_reference value [library] [type] [class] [enum] [callback] [interface] [api]
+               [impl] [size] [project] [need_definition] [access]>
+             <cast is_reference [project] [access] [type] [class] [enum] [callback] [interface]
+                  [api] [impl] [size] [library] [need_definition]>
                 <string [access] [length]/>
                 <array [access] [length] [length_constant]/>
              </cast>
@@ -36,20 +36,20 @@ attribute names are case-sensitive and we use only lower-case names.
           <array .../>
        </variable>
        <struct name [definition] [visibility] [c_prefix] [of_class] [uid] [feature] [declaration]>
-          <property name is_reference [uid] [access] [type] [class] [enum] [callback] [interface]
-               [api] [impl] [size] [project] [library] [bits]>
+          <property is_reference name [project] [access] [type] [class] [enum] [callback] [interface]
+               [api] [impl] [size] [uid] [need_definition] [library] [bits]>
              <string .../>
              <array .../>
           </property>
        </struct>
        <callback name [declaration] [of_class] [uid] [feature] [c_prefix]>
-          <return is_reference [library] [project] [type] [class] [enum] [callback] [interface]
-               [api] [impl] [size] [access]>
+          <return is_reference [project] [access] [type] [class] [enum] [callback] [interface]
+               [api] [impl] [size] [library] [need_definition]>
              <string .../>
              <array .../>
           </return>
-          <argument name is_reference [uid] [access] [type] [class] [enum] [callback] [interface]
-               [api] [impl] [size] [project] [library]>
+          <argument name is_reference [library] [uid] [type] [class] [enum] [callback] [interface]
+               [api] [impl] [size] [project] [need_definition] [access]>
              <string .../>
              <array .../>
           </argument>
@@ -388,18 +388,19 @@ Defines attributes that related to the instance type. Groups common
 attributes for the component. Defines global variable.
 
     <variable
-        is_reference = "0 | 1"
         name = "..."
-      [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
+        is_reference = "0 | 1"
       [ library = "..." ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
+      [ project = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
       [ interface = "..." ]
       [ api = "..." ]
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ project = "..." ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ need_definition = "public | private" ]
       [ definition = "public | private | external"  ("private") ]
       [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
@@ -509,6 +510,14 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
+need_definition:
+    Defines if instance requires type definition. The need_definition
+    attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+public: Instance type definition is used within private scope.
+private: Instance type definition is used within private scope.
+
 definition:
     Defines where component will be defined. This attribute must not be
     inherited. The definition attribute is optional. Its default value is
@@ -565,9 +574,9 @@ Defines attributes that related to the instance type. Initialization
 variable value.
 
     <value
-        value = "..."
         is_reference = "0 | 1"
-      [ project = "..." ]
+        value = "..."
+      [ library = "..." ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ class = "..." ]
       [ enum = "..." ]
@@ -576,7 +585,8 @@ variable value.
       [ api = "..." ]
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ library = "..." ]
+      [ project = "..." ]
+      [ need_definition = "public | private" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
         >
         <cast>, optional
@@ -679,6 +689,14 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
+need_definition:
+    Defines if instance requires type definition. The need_definition
+    attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+public: Instance type definition is used within private scope.
+private: Instance type definition is used within private scope.
+
 value:
     Initialization value. The value attribute is required.
 
@@ -691,8 +709,8 @@ type to the type defined in this entity.
 
     <cast
         is_reference = "0 | 1"
-      [ library = "..." ]
       [ project = "..." ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ class = "..." ]
       [ enum = "..." ]
@@ -701,7 +719,8 @@ type to the type defined in this entity.
       [ api = "..." ]
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ library = "..." ]
+      [ need_definition = "public | private" ]
         >
         <string>, optional
         <array>, optional
@@ -801,6 +820,14 @@ is_reference:
 Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
+
+need_definition:
+    Defines if instance requires type definition. The need_definition
+    attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+public: Instance type definition is used within private scope.
+private: Instance type definition is used within private scope.
 
 
 The 'string' item
@@ -951,9 +978,9 @@ Defines attributes that related to the instance type. Defines struct
 property.
 
     <property
-        name = "..."
         is_reference = "0 | 1"
-      [ uid = "..." ]
+        name = "..."
+      [ project = "..." ]
       [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ class = "..." ]
@@ -963,7 +990,8 @@ property.
       [ api = "..." ]
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ project = "..." ]
+      [ uid = "..." ]
+      [ need_definition = "public | private" ]
       [ library = "..." ]
       [ bits = "..." ]
         >
@@ -1070,6 +1098,14 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
+need_definition:
+    Defines if instance requires type definition. The need_definition
+    attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+public: Instance type definition is used within private scope.
+private: Instance type definition is used within private scope.
+
 name:
     Property name. The name attribute is required.
 
@@ -1134,8 +1170,8 @@ Defines attributes that related to the instance type. Defines return type.
 
     <return
         is_reference = "0 | 1"
-      [ library = "..." ]
       [ project = "..." ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ class = "..." ]
       [ enum = "..." ]
@@ -1144,7 +1180,8 @@ Defines attributes that related to the instance type. Defines return type.
       [ api = "..." ]
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ library = "..." ]
+      [ need_definition = "public | private" ]
         >
         <string>, optional
         <array>, optional
@@ -1245,6 +1282,14 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
+need_definition:
+    Defines if instance requires type definition. The need_definition
+    attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+public: Instance type definition is used within private scope.
+private: Instance type definition is used within private scope.
+
 
 The 'argument' item
 -------------------
@@ -1255,8 +1300,8 @@ name, type, and usage information.
     <argument
         name = "..."
         is_reference = "0 | 1"
+      [ library = "..." ]
       [ uid = "..." ]
-      [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ class = "..." ]
       [ enum = "..." ]
@@ -1266,7 +1311,8 @@ name, type, and usage information.
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ project = "..." ]
-      [ library = "..." ]
+      [ need_definition = "public | private" ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
         >
         <string>, optional
         <array>, optional
@@ -1370,6 +1416,14 @@ is_reference:
 Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
+
+need_definition:
+    Defines if instance requires type definition. The need_definition
+    attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+public: Instance type definition is used within private scope.
+private: Instance type definition is used within private scope.
 
 name:
     Argument name. The name attribute is required.

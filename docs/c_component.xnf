@@ -147,6 +147,18 @@
         Defines reference constness.
         TODO: Define if this attribute is useless.
     </attr>
+
+    <attr name="need_definition">
+        Defines if instance requires type definition.
+
+        <restrict value="public">
+            Instance type definition is used within private scope.
+        </restrict>
+
+        <restrict value="private">
+            Instance type definition is used within private scope.
+        </restrict>
+    </attr>
 </entity>
 
 

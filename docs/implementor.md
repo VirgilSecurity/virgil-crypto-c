@@ -16,8 +16,8 @@ attribute names are case-sensitive and we use only lower-case names.
                 <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]
                      [impl]/>
              </require>
-             <property name is_reference [uid] [access] [type] [class] [enum] [callback] [interface]
-                  [api] [impl] [size] [project] [library] [bits]>
+             <property is_reference name [project] [access] [type] [class] [enum] [callback] [interface]
+                  [api] [impl] [size] [uid] [need_definition] [library] [bits]>
                 <string [access] [length]/>
                 <array [access] [length] [length_constant]/>
              </property>
@@ -230,9 +230,9 @@ Defines attributes that related to the instance type. Defines struct
 property.
 
     <property
-        name = "..."
         is_reference = "0 | 1"
-      [ uid = "..." ]
+        name = "..."
+      [ project = "..." ]
       [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ class = "..." ]
@@ -242,7 +242,8 @@ property.
       [ api = "..." ]
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ project = "..." ]
+      [ uid = "..." ]
+      [ need_definition = "public | private" ]
       [ library = "..." ]
       [ bits = "..." ]
         >
@@ -348,6 +349,14 @@ is_reference:
 Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
+
+need_definition:
+    Defines if instance requires type definition. The need_definition
+    attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+public: Instance type definition is used within private scope.
+private: Instance type definition is used within private scope.
 
 name:
     Property name. The name attribute is required.
