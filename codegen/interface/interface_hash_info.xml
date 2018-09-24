@@ -4,4 +4,8 @@
     <constant name="digest len" type="size">
         Length of the digest (hashing output) in bytes.
     </constant>
+
+    <constant name="block len" type="size">
+        Block length of the digest function in bytes.
+    </constant>
 </interface>

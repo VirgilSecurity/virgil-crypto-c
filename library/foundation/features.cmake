@@ -53,13 +53,13 @@ option(VSCF_CIPHER_AUTH_INFO "Enable interface 'cipher auth info'." ON)
 option(VSCF_CIPHER_INFO "Enable interface 'cipher info'." ON)
 option(VSCF_DECRYPT "Enable interface 'decrypt'." ON)
 option(VSCF_ENCRYPT "Enable interface 'encrypt'." ON)
-option(VSCF_EX_KDF "Enable interface 'ex_kdf'." ON)
+option(VSCF_EX_KDF "Enable interface 'ex kdf'." ON)
 option(VSCF_HASH "Enable interface 'hash'." ON)
 option(VSCF_HASH_INFO "Enable interface 'hash info'." ON)
 option(VSCF_HASH_STREAM "Enable interface 'hash stream'." ON)
-option(VSCF_HMAC "Enable interface 'hmac'." ON)
-option(VSCF_HMAC_INFO "Enable interface 'hmac info'." ON)
-option(VSCF_HMAC_STREAM "Enable interface 'hmac stream'." ON)
+option(VSCF_MAC "Enable interface 'mac'." ON)
+option(VSCF_MAC_INFO "Enable interface 'mac info'." ON)
+option(VSCF_MAC_STREAM "Enable interface 'mac stream'." ON)
 option(VSCF_KDF "Enable interface 'kdf'." ON)
 option(VSCF_RANDOM "Enable interface 'random'." ON)
 option(VSCF_ERROR_CONTEXT "Enable interface 'error context'." ON)
@@ -78,7 +78,6 @@ option(VSCF_KEY_READER "Enable interface 'key reader'." ON)
 option(VSCF_KEY_WRITER "Enable interface 'key writer'." ON)
 option(VSCF_ASN1_READER "Enable interface 'asn1 reader'." ON)
 option(VSCF_ASN1_WRITER "Enable interface 'asn1 writer'." ON)
-option(VSCF_HMAC256 "Enable implementation 'hmac256'." ON)
 option(VSCF_SHA224 "Enable implementation 'sha224'." ON)
 option(VSCF_SHA256 "Enable implementation 'sha256'." ON)
 option(VSCF_SHA384 "Enable implementation 'sha384'." ON)
@@ -88,6 +87,7 @@ option(VSCF_ASN1RD "Enable implementation 'asn1rd'." ON)
 option(VSCF_ASN1WR "Enable implementation 'asn1wr'." ON)
 option(VSCF_RSA_PUBLIC_KEY "Enable implementation 'rsa public key'." ON)
 option(VSCF_RSA_PRIVATE_KEY "Enable implementation 'rsa private key'." ON)
+option(VSCF_HMAC "Enable implementation 'hmac'." ON)
 option(VSCF_HKDF "Enable implementation 'hkdf'." ON)
 option(VSCF_KDF1 "Enable implementation 'kdf1'." ON)
 option(VSCF_KDF2 "Enable implementation 'kdf2'." ON)
@@ -110,9 +110,9 @@ mark_as_advanced(
         VSCF_HASH
         VSCF_HASH_INFO
         VSCF_HASH_STREAM
-        VSCF_HMAC
-        VSCF_HMAC_INFO
-        VSCF_HMAC_STREAM
+        VSCF_MAC
+        VSCF_MAC_INFO
+        VSCF_MAC_STREAM
         VSCF_KDF
         VSCF_RANDOM
         VSCF_ERROR_CONTEXT
@@ -131,7 +131,6 @@ mark_as_advanced(
         VSCF_KEY_WRITER
         VSCF_ASN1_READER
         VSCF_ASN1_WRITER
-        VSCF_HMAC256
         VSCF_SHA224
         VSCF_SHA256
         VSCF_SHA384
@@ -141,6 +140,7 @@ mark_as_advanced(
         VSCF_ASN1WR
         VSCF_RSA_PUBLIC_KEY
         VSCF_RSA_PRIVATE_KEY
+        VSCF_HMAC
         VSCF_HKDF
         VSCF_KDF1
         VSCF_KDF2
@@ -224,20 +224,20 @@ if(VSCF_HASH_STREAM AND NOT VSCF_HASH_INFO)
     message(FATAL_ERROR)
 endif()
 
-if(VSCF_HMAC AND NOT VSCF_HMAC_INFO)
+if(VSCF_MAC AND NOT VSCF_MAC_INFO)
     message("-- error --")
     message("--")
-    message("Feature VSCF_HMAC depends on the feature:")
-    message("     VSCF_HMAC_INFO - which is disabled.")
+    message("Feature VSCF_MAC depends on the feature:")
+    message("     VSCF_MAC_INFO - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
 
-if(VSCF_HMAC_STREAM AND NOT VSCF_HMAC_INFO)
+if(VSCF_MAC_STREAM AND NOT VSCF_MAC_INFO)
     message("-- error --")
     message("--")
-    message("Feature VSCF_HMAC_STREAM depends on the feature:")
-    message("     VSCF_HMAC_INFO - which is disabled.")
+    message("Feature VSCF_MAC_STREAM depends on the feature:")
+    message("     VSCF_MAC_INFO - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -265,24 +265,6 @@ if(VSCF_KEY_READER AND NOT VSCF_ERROR_CONTEXT)
     message("--")
     message("Feature VSCF_KEY_READER depends on the feature:")
     message("     VSCF_ERROR_CONTEXT - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_HMAC256 AND NOT MBEDTLS_MD_C)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_HMAC256 depends on the feature:")
-    message("     MBEDTLS_MD_C - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_HMAC256 AND NOT MBEDTLS_SHA256_C)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_HMAC256 depends on the feature:")
-    message("     MBEDTLS_SHA256_C - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -566,11 +548,20 @@ if(VSCF_RSA_PRIVATE_KEY AND NOT VSCF_ASN1_WRITER)
     message(FATAL_ERROR)
 endif()
 
-if(VSCF_HKDF AND NOT VSCF_HMAC_STREAM)
+if(VSCF_HMAC AND NOT VSCF_HASH_STREAM)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_HMAC depends on the feature:")
+    message("     VSCF_HASH_STREAM - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_HKDF AND NOT VSCF_HASH_STREAM)
     message("-- error --")
     message("--")
     message("Feature VSCF_HKDF depends on the feature:")
-    message("     VSCF_HMAC_STREAM - which is disabled.")
+    message("     VSCF_HASH_STREAM - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

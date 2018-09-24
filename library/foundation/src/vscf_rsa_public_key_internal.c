@@ -249,7 +249,6 @@ VSCF_PUBLIC void
 vscf_rsa_public_key_init(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
-    VSCF_ASSERT_PTR(rsa_public_key_impl->info == NULL);
 
     vscf_zeroize (rsa_public_key_impl, sizeof(vscf_rsa_public_key_impl_t));
 

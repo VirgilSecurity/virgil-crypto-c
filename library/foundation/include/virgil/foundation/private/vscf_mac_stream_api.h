@@ -46,17 +46,17 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface 'hmac' API.
+//  Interface 'mac stream' API.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_HMAC_API_H_INCLUDED
-#define VSCF_HMAC_API_H_INCLUDED
+#ifndef VSCF_MAC_STREAM_API_H_INCLUDED
+#define VSCF_MAC_STREAM_API_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_hmac_info.h"
+#include "vscf_mac_info.h"
 
 #include <virgil/common/vsc_data.h>
 #include <virgil/common/vsc_buffer.h>
@@ -75,17 +75,33 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Calculate hmac over given data.
+//  Callback. Start a new MAC.
 //
-typedef void (*vscf_hmac_api_hmac_fn)(vsc_data_t key, vsc_data_t data, vsc_buffer_t *hmac);
+typedef void (*vscf_mac_stream_api_start_fn)(vscf_impl_t *impl, vsc_data_t key);
 
 //
-//  Contains API requirements of the interface 'hmac'.
+//  Callback. Add given data to the MAC.
 //
-struct vscf_hmac_api_t {
+typedef void (*vscf_mac_stream_api_update_fn)(vscf_impl_t *impl, vsc_data_t data);
+
+//
+//  Callback. Accomplish MAC and return it's result (a message digest).
+//
+typedef void (*vscf_mac_stream_api_finish_fn)(vscf_impl_t *impl, vsc_buffer_t *mac);
+
+//
+//  Callback. Prepare to authenticate a new message with the same key
+//          as the previous MAC operation.
+//
+typedef void (*vscf_mac_stream_api_reset_fn)(vscf_impl_t *impl);
+
+//
+//  Contains API requirements of the interface 'mac stream'.
+//
+struct vscf_mac_stream_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'hmac' MUST be equal to the 'vscf_api_tag_HMAC'.
+    //  For interface 'mac_stream' MUST be equal to the 'vscf_api_tag_MAC_STREAM'.
     //
     vscf_api_tag_t api_tag;
     //
@@ -93,13 +109,26 @@ struct vscf_hmac_api_t {
     //
     vscf_impl_tag_t impl_tag;
     //
-    //  Link to the inherited interface API 'hmac info'.
+    //  Link to the inherited interface API 'mac info'.
     //
-    const vscf_hmac_info_api_t *hmac_info_api;
+    const vscf_mac_info_api_t *mac_info_api;
     //
-    //  Calculate hmac over given data.
+    //  Start a new MAC.
     //
-    vscf_hmac_api_hmac_fn hmac_cb;
+    vscf_mac_stream_api_start_fn start_cb;
+    //
+    //  Add given data to the MAC.
+    //
+    vscf_mac_stream_api_update_fn update_cb;
+    //
+    //  Accomplish MAC and return it's result (a message digest).
+    //
+    vscf_mac_stream_api_finish_fn finish_cb;
+    //
+    //  Prepare to authenticate a new message with the same key
+    //  as the previous MAC operation.
+    //
+    vscf_mac_stream_api_reset_fn reset_cb;
 };
 
 
@@ -116,5 +145,5 @@ struct vscf_hmac_api_t {
 
 
 //  @footer
-#endif // VSCF_HMAC_API_H_INCLUDED
+#endif // VSCF_MAC_STREAM_API_H_INCLUDED
 //  @end

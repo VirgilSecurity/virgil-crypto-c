@@ -94,10 +94,6 @@ endfunction
 # ---------------------------------------------------------------------------
 function implementation_resolve_context (context, parent)
     check_arguments (my, "context, parent", my)
-
-    for my.context.require where defined (require.header)
-        implementation_resolve_context_require (require, my.context)
-    endfor
 endfunction
 
 # ---------------------------------------------------------------------------

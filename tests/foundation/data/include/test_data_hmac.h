@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2018 Virgil Security Inc.
 //
 //  All rights reserved.
@@ -33,38 +31,27 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-// --------------------------------------------------------------------------
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Types of the 'hmac224' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
-// --------------------------------------------------------------------------
+#include "vsc_data.h"
 
+//
+//  Test Vector 1
+//
+extern const vsc_data_t test_hmac_SHA256_VECTOR_1_KEY;
+extern const vsc_data_t test_hmac_SHA256_VECTOR_1_DATA;
+extern const vsc_data_t test_hmac_SHA256_VECTOR_1_DIGEST;
 
-//  @warning
-// --------------------------------------------------------------------------
-//  This file is partially generated.
-//  Generated blocks are enclosed between tags [@<tag>, @end].
-//  User's code can be added between tags [@end, @<tag>].
-// --------------------------------------------------------------------------
+//
+//  Test Vector 2
+//
+extern const vsc_data_t test_hmac_SHA256_VECTOR_2_KEY;
+extern const vsc_data_t test_hmac_SHA256_VECTOR_2_DATA;
+extern const vsc_data_t test_hmac_SHA256_VECTOR_2_DIGEST;
 
-#include "vscf_hmac224_impl.h"
-//  @end
-
-
-//  @generated
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated section start.
-// --------------------------------------------------------------------------
-
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
+//
+//  Test Vector 3
+//
+extern const vsc_data_t test_hmac_SHA256_VECTOR_3_KEY;
+extern const vsc_data_t test_hmac_SHA256_VECTOR_3_DATA;
+extern const vsc_data_t test_hmac_SHA256_VECTOR_3_DIGEST;

@@ -56,6 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_hkdf.h"
+#include "vscf_hkdf.h"
 //  @end
 
 
@@ -69,6 +70,18 @@ extern "C" {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Provides initialization of the implementation specific context.
+//
+VSCF_PRIVATE void
+vscf_hkdf_init_ctx(vscf_hkdf_impl_t *hkdf_impl);
+
+//
+//  Provides cleanup of the implementation specific context.
+//
+VSCF_PRIVATE void
+vscf_hkdf_cleanup_ctx(vscf_hkdf_impl_t *hkdf_impl);
 
 
 // --------------------------------------------------------------------------

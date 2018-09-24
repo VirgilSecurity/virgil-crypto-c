@@ -123,7 +123,6 @@ VSCF_PUBLIC void
 vscf_fake_random_init(vscf_fake_random_impl_t *fake_random_impl) {
 
     VSCF_ASSERT_PTR(fake_random_impl);
-    VSCF_ASSERT_PTR(fake_random_impl->info == NULL);
 
     vscf_zeroize (fake_random_impl, sizeof(vscf_fake_random_impl_t));
 

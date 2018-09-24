@@ -331,7 +331,6 @@ VSCF_PUBLIC void
 vscf_aes256_gcm_init(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 
     VSCF_ASSERT_PTR(aes256_gcm_impl);
-    VSCF_ASSERT_PTR(aes256_gcm_impl->info == NULL);
 
     vscf_zeroize (aes256_gcm_impl, sizeof(vscf_aes256_gcm_impl_t));
 

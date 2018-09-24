@@ -36,15 +36,6 @@
 // --------------------------------------------------------------------------
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Types of the 'hmac256' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -52,8 +43,26 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_hmac256_impl.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_HMAC_INTERNAL_H_INCLUDED
+#define VSCF_HMAC_INTERNAL_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_error.h"
+#include "vscf_hmac.h"
+#include "vscf_hmac.h"
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -62,9 +71,31 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Provides initialization of the implementation specific context.
+//
+VSCF_PRIVATE void
+vscf_hmac_init_ctx(vscf_hmac_impl_t *hmac_impl);
+
+//
+//  Provides cleanup of the implementation specific context.
+//
+VSCF_PRIVATE void
+vscf_hmac_cleanup_ctx(vscf_hmac_impl_t *hmac_impl);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_HMAC_INTERNAL_H_INCLUDED
 //  @end

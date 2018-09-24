@@ -38,7 +38,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'hmac512' implementation.
+//  Provide details about implemented MAC (message authentication code) algorithm.
 // --------------------------------------------------------------------------
 
 
@@ -49,11 +49,9 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_hmac512.h"
+#include "vscf_mac_info.h"
 #include "vscf_assert.h"
-#include "vscf_memory.h"
-#include "vscf_hmac512_impl.h"
-#include "vscf_hmac512_internal.h"
+#include "vscf_mac_info_api.h"
 //  @end
 
 
@@ -63,81 +61,67 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Size of the digest (mac output) in bytes.
+//
+VSCF_PUBLIC size_t
+vscf_mac_info_digest_len(vscf_impl_t *impl) {
+
+    const vscf_mac_info_api_t *mac_info_api = vscf_mac_info_api (impl);
+    VSCF_ASSERT_PTR (mac_info_api);
+
+    VSCF_ASSERT_PTR (mac_info_api->digest_len_cb);
+    return mac_info_api->digest_len_cb (impl);
+}
+
+//
+//  Return mac info API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_mac_info_api_t *
+vscf_mac_info_api(vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_MAC_INFO);
+    return (const vscf_mac_info_api_t *) api;
+}
+
+//
+//  Check if given object implements interface 'mac info'.
+//
+VSCF_PUBLIC bool
+vscf_mac_info_is_implemented(vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    return vscf_impl_api (impl, vscf_api_tag_MAC_INFO) != NULL;
+}
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_mac_info_api_tag(const vscf_mac_info_api_t *mac_info_api) {
+
+    VSCF_ASSERT_PTR (mac_info_api);
+
+    return mac_info_api->api_tag;
+}
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_mac_info_impl_tag(const vscf_mac_info_api_t *mac_info_api) {
+
+    VSCF_ASSERT_PTR (mac_info_api);
+
+    return mac_info_api->impl_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
-
-//
-//  Provides initialization of the implementation specific context.
-//
-VSCF_PRIVATE void
-vscf_hmac512_init_ctx(vscf_hmac512_impl_t *hmac512_impl) {
-
-    mbedtls_md_init(&hmac512_impl->hmac_ctx);
-    int result = mbedtls_md_setup(&hmac512_impl->hmac_ctx, mbedtls_md_info_from_type(MBEDTLS_MD_SHA512), 1);
-
-    VSCF_ASSERT_ALLOC(result != MBEDTLS_ERR_MD_ALLOC_FAILED);
-    VSCF_ASSERT(result == 0 && "unhandled mbedtls error");
-}
-
-//
-//  Provides cleanup of the implementation specific context.
-//
-VSCF_PRIVATE void
-vscf_hmac512_cleanup_ctx(vscf_hmac512_impl_t *hmac512_impl) {
-
-    mbedtls_md_free(&hmac512_impl->hmac_ctx);
-}
-
-//
-//  Calculate hmac over given data.
-//
-VSCF_PUBLIC void
-vscf_hmac512_hmac(vsc_data_t key, vsc_data_t data, vsc_buffer_t *hmac) {
-
-    VSCF_ASSERT_OPT(hmac_len >= vscf_hmac512_DIGEST_LEN);
-
-    mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA512), key, key_len, data, data_len, hmac);
-}
-
-//
-//  Reset HMAC.
-//
-VSCF_PUBLIC void
-vscf_hmac512_reset(vscf_hmac512_impl_t *hmac512_impl) {
-
-    mbedtls_md_hmac_reset(&hmac512_impl->hmac_ctx);
-}
-
-//
-//  Start a new HMAC.
-//
-VSCF_PUBLIC void
-vscf_hmac512_start(vscf_hmac512_impl_t *hmac512_impl, vsc_data_t key) {
-
-    mbedtls_md_hmac_starts(&hmac512_impl->hmac_ctx, key, key_len);
-}
-
-//
-//  Add given data to the HMAC.
-//
-VSCF_PUBLIC void
-vscf_hmac512_update(vscf_hmac512_impl_t *hmac512_impl, vsc_data_t data) {
-
-    mbedtls_md_hmac_update(&hmac512_impl->hmac_ctx, data, data_len);
-}
-
-//
-//  Accompilsh HMAC and return it's result (a message digest).
-//
-VSCF_PUBLIC void
-vscf_hmac512_finish(vscf_hmac512_impl_t *hmac512_impl, vsc_buffer_t *hmac) {
-
-    VSCF_ASSERT_OPT(hmac_len >= vscf_hmac512_DIGEST_LEN);
-
-    mbedtls_md_hmac_finish(&hmac512_impl->hmac_ctx, hmac);
-}

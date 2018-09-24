@@ -46,16 +46,22 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains logic for interface/implementation architecture.
-//  Do not use this module in any part of the code.
+//  Types of the 'hmac' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_HMAC224_INTERNAL_H_INCLUDED
-#define VSCF_HMAC224_INTERNAL_H_INCLUDED
+#ifndef VSCF_HMAC_IMPL_H_INCLUDED
+#define VSCF_HMAC_IMPL_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_error.h"
-#include "vscf_hmac224.h"
+#include "vscf_impl_private.h"
+#include "vscf_hmac.h"
+#include "vscf_impl.h"
+
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -71,16 +77,26 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Provides initialization of the implementation specific context.
+//  Handles implementation details.
 //
-VSCF_PRIVATE void
-vscf_hmac224_init_ctx(vscf_hmac224_impl_t *hmac224_impl);
-
-//
-//  Provides cleanup of the implementation specific context.
-//
-VSCF_PRIVATE void
-vscf_hmac224_cleanup_ctx(vscf_hmac224_impl_t *hmac224_impl);
+struct vscf_hmac_impl_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Dependency to the interface 'hash stream'.
+    //
+    vscf_impl_t *hash;
+    //
+    //  Implementation specific context.
+    //
+    vsc_buffer_t *ipad;
+};
 
 
 // --------------------------------------------------------------------------
@@ -96,5 +112,5 @@ vscf_hmac224_cleanup_ctx(vscf_hmac224_impl_t *hmac224_impl);
 
 
 //  @footer
-#endif // VSCF_HMAC224_INTERNAL_H_INCLUDED
+#endif // VSCF_HMAC_IMPL_H_INCLUDED
 //  @end
