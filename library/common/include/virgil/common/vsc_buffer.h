@@ -207,10 +207,28 @@ VSC_PUBLIC byte *
 vsc_buffer_ptr(vsc_buffer_t *buffer_ctx);
 
 //
+//  Returns writable pointer to the buffer first element.
+//
+VSC_PUBLIC byte *
+vsc_buffer_begin(vsc_buffer_t *buffer_ctx);
+
+//
 //  Increase used bytes by given length.
 //
 VSC_PUBLIC void
 vsc_buffer_reserve(vsc_buffer_t *buffer_ctx, size_t len);
+
+//
+//  Increase used bytes by given length.
+//
+VSC_PUBLIC void
+vsc_buffer_increase_used_bytes(vsc_buffer_t *buffer_ctx, size_t len);
+
+//
+//  Decrease used bytes by given length.
+//
+VSC_PUBLIC void
+vsc_buffer_decrease_used_bytes(vsc_buffer_t *buffer_ctx, size_t len);
 
 //
 //  Reset to the initial state.
