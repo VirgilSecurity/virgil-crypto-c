@@ -71,8 +71,6 @@ test__rsa_private_key_key_len__imported_2048_PRIVATE_KEY_PKCS1__returns_256(void
 void
 test__rsa_private_key_export_private_key__from_imported_2048_PRIVATE_KEY_PKCS1__expected_equal(void) {
     vscf_rsa_private_key_impl_t *private_key_impl = vscf_rsa_private_key_new();
-    vscf_impl_t *asn1rd = vscf_asn1rd_impl(vscf_asn1rd_new());
-    vscf_impl_t *asn1wr = vscf_asn1wr_impl(vscf_asn1wr_new());
 
     vscf_rsa_private_key_take_asn1rd(private_key_impl, vscf_asn1rd_impl(vscf_asn1rd_new()));
     vscf_rsa_private_key_take_asn1wr(private_key_impl, vscf_asn1wr_impl(vscf_asn1wr_new()));

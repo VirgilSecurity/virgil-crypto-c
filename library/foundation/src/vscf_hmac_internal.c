@@ -190,9 +190,10 @@ vscf_hmac_init(vscf_hmac_impl_t *hmac_impl) {
 
     VSCF_ASSERT_PTR(hmac_impl);
 
-    vscf_zeroize (hmac_impl, sizeof(vscf_hmac_impl_t));
+    vscf_zeroize(hmac_impl, sizeof(vscf_hmac_impl_t));
 
     hmac_impl->info = &info;
+    hmac_impl->refcnt = 1;
 
     vscf_hmac_init_ctx(hmac_impl);
 }
@@ -208,11 +209,19 @@ vscf_hmac_cleanup(vscf_hmac_impl_t *hmac_impl) {
         return;
     }
 
+    if (hmac_impl->refcnt == 0) {
+        return;
+    }
+
+    if (--hmac_impl->refcnt > 0) {
+        return;
+    }
+
     vscf_hmac_release_hash(hmac_impl);
 
     vscf_hmac_cleanup_ctx(hmac_impl);
 
-    hmac_impl->info = NULL;
+    vscf_zeroize(hmac_impl, sizeof(vscf_hmac_impl_t));
 }
 
 //
@@ -227,8 +236,6 @@ vscf_hmac_new(void) {
 
     vscf_hmac_init(hmac_impl);
 
-    hmac_impl->refcnt = 1;
-
     return hmac_impl;
 }
 
@@ -239,8 +246,9 @@ vscf_hmac_new(void) {
 VSCF_PUBLIC void
 vscf_hmac_delete(vscf_hmac_impl_t *hmac_impl) {
 
-    if (hmac_impl && (--hmac_impl->refcnt == 0)) {
-        vscf_hmac_cleanup(hmac_impl);
+    vscf_hmac_cleanup(hmac_impl);
+
+    if (hmac_impl && (hmac_impl->refcnt == 0)) {
         vscf_dealloc(hmac_impl);
     }
 }

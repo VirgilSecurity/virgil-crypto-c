@@ -450,9 +450,9 @@ function _X13_add_method_delete (class, destination, meta)
                 return;
             }
 
-            $(my.refs.c_class_method_cleanup)($(my.arg_ctx));
-
             .(c_global_callback_dealloc) self_dealloc_cb = $(my.arg_ctx:)->$(my.refs.c_class_property_self_dealloc);
+
+            $(my.refs.c_class_method_cleanup)($(my.arg_ctx));
 
             if ($(my.arg_ctx)->$(my.names.c_property_ref_counter:) == 0 && self_dealloc_cb != NULL) {
                 self_dealloc_cb($(my.arg_ctx));

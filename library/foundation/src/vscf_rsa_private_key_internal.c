@@ -281,9 +281,10 @@ vscf_rsa_private_key_init(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
 
     VSCF_ASSERT_PTR(rsa_private_key_impl);
 
-    vscf_zeroize (rsa_private_key_impl, sizeof(vscf_rsa_private_key_impl_t));
+    vscf_zeroize(rsa_private_key_impl, sizeof(vscf_rsa_private_key_impl_t));
 
     rsa_private_key_impl->info = &info;
+    rsa_private_key_impl->refcnt = 1;
 
     vscf_rsa_private_key_init_ctx(rsa_private_key_impl);
 }
@@ -299,6 +300,14 @@ vscf_rsa_private_key_cleanup(vscf_rsa_private_key_impl_t *rsa_private_key_impl) 
         return;
     }
 
+    if (rsa_private_key_impl->refcnt == 0) {
+        return;
+    }
+
+    if (--rsa_private_key_impl->refcnt > 0) {
+        return;
+    }
+
     vscf_rsa_private_key_release_hash(rsa_private_key_impl);
     vscf_rsa_private_key_release_random(rsa_private_key_impl);
     vscf_rsa_private_key_release_asn1rd(rsa_private_key_impl);
@@ -306,7 +315,7 @@ vscf_rsa_private_key_cleanup(vscf_rsa_private_key_impl_t *rsa_private_key_impl) 
 
     vscf_rsa_private_key_cleanup_ctx(rsa_private_key_impl);
 
-    rsa_private_key_impl->info = NULL;
+    vscf_zeroize(rsa_private_key_impl, sizeof(vscf_rsa_private_key_impl_t));
 }
 
 //
@@ -321,8 +330,6 @@ vscf_rsa_private_key_new(void) {
 
     vscf_rsa_private_key_init(rsa_private_key_impl);
 
-    rsa_private_key_impl->refcnt = 1;
-
     return rsa_private_key_impl;
 }
 
@@ -333,8 +340,9 @@ vscf_rsa_private_key_new(void) {
 VSCF_PUBLIC void
 vscf_rsa_private_key_delete(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
 
-    if (rsa_private_key_impl && (--rsa_private_key_impl->refcnt == 0)) {
-        vscf_rsa_private_key_cleanup(rsa_private_key_impl);
+    vscf_rsa_private_key_cleanup(rsa_private_key_impl);
+
+    if (rsa_private_key_impl && (rsa_private_key_impl->refcnt == 0)) {
         vscf_dealloc(rsa_private_key_impl);
     }
 }

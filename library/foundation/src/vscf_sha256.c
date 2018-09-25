@@ -73,6 +73,8 @@
 
 //
 //  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_sha256_init() is called.
+//  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
 vscf_sha256_init_ctx(vscf_sha256_impl_t *sha256_impl) {
@@ -83,7 +85,9 @@ vscf_sha256_init_ctx(vscf_sha256_impl_t *sha256_impl) {
 }
 
 //
-//  Provides cleanup of the implementation specific context.
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
 vscf_sha256_cleanup_ctx(vscf_sha256_impl_t *sha256_impl) {

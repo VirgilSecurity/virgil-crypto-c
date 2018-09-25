@@ -558,9 +558,10 @@ function _Z19_add_method_init (impl, declaration, definition, destination, meta)
             my.impl_begin = "\
                 .(c_class_assert_macros_ptr)($(my.arg_impl));
 
-                .(c_global_method_zeroize) ($(my.arg_impl), sizeof($(my.type_impl)));
+                .(c_global_method_zeroize)($(my.arg_impl), sizeof($(my.type_impl)));
 
                 $(my.arg_impl)->$(my.names.c_property_info:) = &$(my.refs.c_implementation_variable_info);
+                $(my.arg_impl)->$(my.names.c_property_ref_counter:) = 1;
             "
 
             if _Z19_has_underlying_context (my.impl)
@@ -601,9 +602,18 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
 
         new code to method
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
+            my.type_impl = my.refs.c_implementation_struct_impl
 
             my.impl_check_precondition = "\
                 if ($(my.arg_impl) == NULL || $(my.arg_impl)->$(my.names.c_property_info:) == NULL) {
+                    return;
+                }
+
+                if ($(my.arg_impl)->$(my.names.c_property_ref_counter:) == 0) {
+                    return;
+                }
+
+                if (--$(my.arg_impl)->$(my.names.c_property_ref_counter:) > 0) {
                     return;
                 }
             "
@@ -623,15 +633,15 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
                 "
             endif
 
-            my.impl_cleanup_info = "\
-                $(my.arg_impl)->$(my.names.c_property_info:) = NULL;
+            my.impl_zeroize = "\
+                .(c_global_method_zeroize)($(my.arg_impl), sizeof($(my.type_impl)));
             "
 
             my.method_body = ""
             my.method_body += format_left (my.impl_check_precondition) + terminator
             my.method_body += format_left (my.impl_cleanup_dependencies) + terminator ? ""
             my.method_body += format_left (my.impl_cleanup_ctx) + terminator ? ""
-            my.method_body += format_left (my.impl_cleanup_info)
+            my.method_body += format_left (my.impl_zeroize)
 
             . = my.method_body
         endnew
@@ -668,8 +678,6 @@ function _Z19_add_method_new (impl, declaration, definition, destination, meta)
 
             $(my.refs.c_implementation_method_init)($(my.arg_impl:));
 
-            $(my.arg_impl:)->$(my.names.c_property_ref_counter:) = 1;
-
             return $(my.arg_impl:);
             "
         endnew
@@ -699,8 +707,9 @@ function _Z19_add_method_delete (impl, declaration, definition, destination, met
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
 
             . = "\
-            if ($(my.arg_impl) && (--$(my.arg_impl)->$(my.names.c_property_ref_counter:) == 0)) {
-                $(my.refs.c_implementation_method_cleanup)($(my.arg_impl));
+            $(my.refs.c_implementation_method_cleanup)($(my.arg_impl));
+
+            if ($(my.arg_impl) && ($(my.arg_impl)->$(my.names.c_property_ref_counter:) == 0)) {
                 .(c_global_method_dealloc)($(my.arg_impl));
             }
             "
@@ -795,9 +804,14 @@ function _Z19_add_method_init_ctx (impl, declaration, definition, destination, m
     check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
     my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
 
     new method to my.destination
-        . = "Provides initialization of the implementation specific context."
+        . = "\
+            Provides initialization of the implementation specific context.
+            Note, this method is called automatically when method $(my.refs.c_implementation_method_init)() is called.
+            Note, that context is already zeroed.
+        "
         .name = my.names.method_init_ctx
         .declaration = my.declaration
         .definition = my.definition
@@ -815,7 +829,11 @@ function _Z19_add_method_cleanup_ctx (impl, declaration, definition, destination
     my.names = meta_names (my.meta)
 
     new method to my.destination
-        . = "Provides cleanup of the implementation specific context."
+        . = "\
+            Release resources of the implementation specific context.
+            Note, this method is called automatically once when class is completely cleaning up.
+            Note, that context will be zeroed automatically next this method.
+        "
         .name = my.names.method_cleanup_ctx
         .declaration = my.declaration
         .definition = my.definition
