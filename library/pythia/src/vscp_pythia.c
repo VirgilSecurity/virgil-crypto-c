@@ -177,9 +177,9 @@ vscp_pythia_delete(vscp_pythia_t *pythia_ctx) {
         return;
     }
 
-    vscp_pythia_cleanup(pythia_ctx);
-
     vscp_dealloc_fn self_dealloc_cb = pythia_ctx->self_dealloc_cb;
+
+    vscp_pythia_cleanup(pythia_ctx);
 
     if (pythia_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
         self_dealloc_cb(pythia_ctx);

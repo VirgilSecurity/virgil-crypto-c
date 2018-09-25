@@ -125,9 +125,10 @@ vscf_hkdf_init(vscf_hkdf_impl_t *hkdf_impl) {
 
     VSCF_ASSERT_PTR(hkdf_impl);
 
-    vscf_zeroize (hkdf_impl, sizeof(vscf_hkdf_impl_t));
+    vscf_zeroize(hkdf_impl, sizeof(vscf_hkdf_impl_t));
 
     hkdf_impl->info = &info;
+    hkdf_impl->refcnt = 1;
 
     vscf_hkdf_init_ctx(hkdf_impl);
 }
@@ -143,11 +144,19 @@ vscf_hkdf_cleanup(vscf_hkdf_impl_t *hkdf_impl) {
         return;
     }
 
+    if (hkdf_impl->refcnt == 0) {
+        return;
+    }
+
+    if (--hkdf_impl->refcnt > 0) {
+        return;
+    }
+
     vscf_hkdf_release_hash(hkdf_impl);
 
     vscf_hkdf_cleanup_ctx(hkdf_impl);
 
-    hkdf_impl->info = NULL;
+    vscf_zeroize(hkdf_impl, sizeof(vscf_hkdf_impl_t));
 }
 
 //
@@ -162,8 +171,6 @@ vscf_hkdf_new(void) {
 
     vscf_hkdf_init(hkdf_impl);
 
-    hkdf_impl->refcnt = 1;
-
     return hkdf_impl;
 }
 
@@ -174,8 +181,9 @@ vscf_hkdf_new(void) {
 VSCF_PUBLIC void
 vscf_hkdf_delete(vscf_hkdf_impl_t *hkdf_impl) {
 
-    if (hkdf_impl && (--hkdf_impl->refcnt == 0)) {
-        vscf_hkdf_cleanup(hkdf_impl);
+    vscf_hkdf_cleanup(hkdf_impl);
+
+    if (hkdf_impl && (hkdf_impl->refcnt == 0)) {
         vscf_dealloc(hkdf_impl);
     }
 }

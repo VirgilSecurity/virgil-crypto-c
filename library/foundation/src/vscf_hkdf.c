@@ -93,6 +93,8 @@ vscf_hkdf_expand(vscf_hkdf_impl_t *hkdf_impl, vsc_buffer_t *pr_key, vsc_data_t i
 
 //
 //  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_hkdf_init() is called.
+//  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
 vscf_hkdf_init_ctx(vscf_hkdf_impl_t *hkdf_impl) {
@@ -103,7 +105,9 @@ vscf_hkdf_init_ctx(vscf_hkdf_impl_t *hkdf_impl) {
 }
 
 //
-//  Provides cleanup of the implementation specific context.
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
 vscf_hkdf_cleanup_ctx(vscf_hkdf_impl_t *hkdf_impl) {

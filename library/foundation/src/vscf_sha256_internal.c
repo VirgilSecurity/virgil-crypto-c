@@ -188,9 +188,10 @@ vscf_sha256_init(vscf_sha256_impl_t *sha256_impl) {
 
     VSCF_ASSERT_PTR(sha256_impl);
 
-    vscf_zeroize (sha256_impl, sizeof(vscf_sha256_impl_t));
+    vscf_zeroize(sha256_impl, sizeof(vscf_sha256_impl_t));
 
     sha256_impl->info = &info;
+    sha256_impl->refcnt = 1;
 
     vscf_sha256_init_ctx(sha256_impl);
 }
@@ -206,9 +207,17 @@ vscf_sha256_cleanup(vscf_sha256_impl_t *sha256_impl) {
         return;
     }
 
+    if (sha256_impl->refcnt == 0) {
+        return;
+    }
+
+    if (--sha256_impl->refcnt > 0) {
+        return;
+    }
+
     vscf_sha256_cleanup_ctx(sha256_impl);
 
-    sha256_impl->info = NULL;
+    vscf_zeroize(sha256_impl, sizeof(vscf_sha256_impl_t));
 }
 
 //
@@ -223,8 +232,6 @@ vscf_sha256_new(void) {
 
     vscf_sha256_init(sha256_impl);
 
-    sha256_impl->refcnt = 1;
-
     return sha256_impl;
 }
 
@@ -235,8 +242,9 @@ vscf_sha256_new(void) {
 VSCF_PUBLIC void
 vscf_sha256_delete(vscf_sha256_impl_t *sha256_impl) {
 
-    if (sha256_impl && (--sha256_impl->refcnt == 0)) {
-        vscf_sha256_cleanup(sha256_impl);
+    vscf_sha256_cleanup(sha256_impl);
+
+    if (sha256_impl && (sha256_impl->refcnt == 0)) {
         vscf_dealloc(sha256_impl);
     }
 }

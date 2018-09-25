@@ -150,9 +150,9 @@ vsc_buffer_delete(vsc_buffer_t *buffer_ctx) {
         return;
     }
 
-    vsc_buffer_cleanup(buffer_ctx);
-
     vsc_dealloc_fn self_dealloc_cb = buffer_ctx->self_dealloc_cb;
+
+    vsc_buffer_cleanup(buffer_ctx);
 
     if (buffer_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
         self_dealloc_cb(buffer_ctx);
