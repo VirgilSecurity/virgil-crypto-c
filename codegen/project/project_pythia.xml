@@ -54,4 +54,7 @@
     <module name="library"/>
     <module name="memory"/>
     <class name="pythia"/>
+
+    <interface name="hash info"/>
+    <interface name="hash stream"/>
 </project>
