@@ -13,7 +13,7 @@
         Client side must check state of 'asn1rd' to define result of reading.
 
         <argument name="asn1rd" class="impl" access="readwrite"/>
-        <argument name="bignum" class="mbedtls_mpi" access="readwrite"/>
+        <argument name="bignum" class="mbedtls_mpi" library="mbedtls" access="readwrite"/>
         <argument name="error" class="error ctx" access="readwrite"/>
     </method>
 </class>

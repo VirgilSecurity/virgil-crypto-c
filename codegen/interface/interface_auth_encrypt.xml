@@ -10,7 +10,7 @@
         <argument name="out" class="buffer"/>
         <argument name="tag" class="buffer"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
 

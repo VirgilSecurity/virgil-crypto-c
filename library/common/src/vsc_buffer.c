@@ -150,9 +150,9 @@ vsc_buffer_delete(vsc_buffer_t *buffer_ctx) {
         return;
     }
 
-    vsc_buffer_cleanup(buffer_ctx);
-
     vsc_dealloc_fn self_dealloc_cb = buffer_ctx->self_dealloc_cb;
+
+    vsc_buffer_cleanup(buffer_ctx);
 
     if (buffer_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
         self_dealloc_cb(buffer_ctx);
@@ -415,6 +415,18 @@ vsc_buffer_ptr(vsc_buffer_t *buffer_ctx) {
 }
 
 //
+//  Returns writable pointer to the buffer first element.
+//
+VSC_PUBLIC byte *
+vsc_buffer_begin(vsc_buffer_t *buffer_ctx) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
+
+    return buffer_ctx->bytes;
+}
+
+//
 //  Increase used bytes by given length.
 //
 VSC_PUBLIC void
@@ -424,6 +436,30 @@ vsc_buffer_reserve(vsc_buffer_t *buffer_ctx, size_t len) {
     VSC_ASSERT(len <= vsc_buffer_left(buffer_ctx));
 
     buffer_ctx->len += len;
+}
+
+//
+//  Increase used bytes by given length.
+//
+VSC_PUBLIC void
+vsc_buffer_increase_used_bytes(vsc_buffer_t *buffer_ctx, size_t len) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT(len <= vsc_buffer_left(buffer_ctx));
+
+    buffer_ctx->len += len;
+}
+
+//
+//  Decrease used bytes by given length.
+//
+VSC_PUBLIC void
+vsc_buffer_decrease_used_bytes(vsc_buffer_t *buffer_ctx, size_t len) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT(len <= buffer_ctx->len);
+
+    buffer_ctx->len -= len;
 }
 
 //

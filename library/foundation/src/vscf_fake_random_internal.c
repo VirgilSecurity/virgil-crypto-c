@@ -123,11 +123,11 @@ VSCF_PUBLIC void
 vscf_fake_random_init(vscf_fake_random_impl_t *fake_random_impl) {
 
     VSCF_ASSERT_PTR(fake_random_impl);
-    VSCF_ASSERT_PTR(fake_random_impl->info == NULL);
 
-    vscf_zeroize (fake_random_impl, sizeof(vscf_fake_random_impl_t));
+    vscf_zeroize(fake_random_impl, sizeof(vscf_fake_random_impl_t));
 
     fake_random_impl->info = &info;
+    fake_random_impl->refcnt = 1;
 
     vscf_fake_random_init_ctx(fake_random_impl);
 }
@@ -143,9 +143,17 @@ vscf_fake_random_cleanup(vscf_fake_random_impl_t *fake_random_impl) {
         return;
     }
 
+    if (fake_random_impl->refcnt == 0) {
+        return;
+    }
+
+    if (--fake_random_impl->refcnt > 0) {
+        return;
+    }
+
     vscf_fake_random_cleanup_ctx(fake_random_impl);
 
-    fake_random_impl->info = NULL;
+    vscf_zeroize(fake_random_impl, sizeof(vscf_fake_random_impl_t));
 }
 
 //
@@ -160,8 +168,6 @@ vscf_fake_random_new(void) {
 
     vscf_fake_random_init(fake_random_impl);
 
-    fake_random_impl->refcnt = 1;
-
     return fake_random_impl;
 }
 
@@ -172,8 +178,9 @@ vscf_fake_random_new(void) {
 VSCF_PUBLIC void
 vscf_fake_random_delete(vscf_fake_random_impl_t *fake_random_impl) {
 
-    if (fake_random_impl && (--fake_random_impl->refcnt == 0)) {
-        vscf_fake_random_cleanup(fake_random_impl);
+    vscf_fake_random_cleanup(fake_random_impl);
+
+    if (fake_random_impl && (fake_random_impl->refcnt == 0)) {
         vscf_dealloc(fake_random_impl);
     }
 }

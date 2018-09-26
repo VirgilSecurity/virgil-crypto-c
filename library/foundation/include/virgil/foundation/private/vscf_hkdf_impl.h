@@ -60,6 +60,8 @@
 #include "vscf_impl_private.h"
 #include "vscf_hkdf.h"
 #include "vscf_impl.h"
+#include "vscf_hmac.h"
+#include "vscf_hmac_impl.h"
 //  @end
 
 
@@ -87,9 +89,13 @@ struct vscf_hkdf_impl_t {
     //
     size_t refcnt;
     //
-    //  Dependency to the 'hmac'.
+    //  Dependency to the interface 'hash stream'.
     //
-    vscf_impl_t *hmac;
+    vscf_impl_t *hash;
+    //
+    //  Implementation specific context.
+    //
+    vscf_hmac_impl_t hmac;
 };
 
 

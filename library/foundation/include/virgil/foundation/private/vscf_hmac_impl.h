@@ -36,15 +36,6 @@
 // --------------------------------------------------------------------------
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Types of the 'hmac256' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -52,8 +43,31 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_hmac256_impl.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'hmac' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_HMAC_IMPL_H_INCLUDED
+#define VSCF_HMAC_IMPL_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_error.h"
+#include "vscf_impl_private.h"
+#include "vscf_hmac.h"
+#include "vscf_impl.h"
+
+#include <virgil/common/vsc_buffer.h>
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -62,9 +76,41 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handles implementation details.
+//
+struct vscf_hmac_impl_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Dependency to the interface 'hash stream'.
+    //
+    vscf_impl_t *hash;
+    //
+    //  Implementation specific context.
+    //
+    vsc_buffer_t *ipad;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_HMAC_IMPL_H_INCLUDED
 //  @end

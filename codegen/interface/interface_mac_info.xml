@@ -1,0 +1,9 @@
+<interface name="mac info">
+    Provide details about implemented MAC (message authentication code) algorithm.
+
+    <method name="digest len">
+        Size of the digest (mac output) in bytes.
+
+        <return type="size"/>
+    </method>
+</interface>

@@ -1,13 +1,31 @@
 <implementor name="virgil" is_default="1">
     Provide implementation based on the Virgil Security implementations.
 
+    <implementation name="hmac">
+        Virgil Security implementation of HMAC algorithm (RFC 2104) (FIPS PUB 198-1).
+
+        <dependency name="hash" interface="hash stream"/>
+
+        <context>
+            <property name="ipad" class="buffer"/>
+        </context>
+
+        <interface name="mac info"/>
+        <interface name="mac"/>
+        <interface name="mac stream"/>
+    </implementation>
+
+
     <implementation name="hkdf">
         Virgil Security implementation of the HKDF (RFC 6234) algorithm.
 
-        <interface name="ex_kdf"/>
-        <require module="hmac stream" scope="private"/>
+        <interface name="ex kdf"/>
 
-        <dependency name="hmac" interface="hmac stream"/>
+        <dependency name="hash" interface="hash stream"/>
+
+        <context>
+            <property name="hmac" impl="hmac" access="readwrite" is_reference="0" need_definition="public"/>
+        </context>
 
         <constant name="hash counter max" value="255"/>
 

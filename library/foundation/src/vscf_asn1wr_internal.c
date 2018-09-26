@@ -230,11 +230,11 @@ VSCF_PUBLIC void
 vscf_asn1wr_init(vscf_asn1wr_impl_t *asn1wr_impl) {
 
     VSCF_ASSERT_PTR(asn1wr_impl);
-    VSCF_ASSERT_PTR(asn1wr_impl->info == NULL);
 
-    vscf_zeroize (asn1wr_impl, sizeof(vscf_asn1wr_impl_t));
+    vscf_zeroize(asn1wr_impl, sizeof(vscf_asn1wr_impl_t));
 
     asn1wr_impl->info = &info;
+    asn1wr_impl->refcnt = 1;
 
     vscf_asn1wr_init_ctx(asn1wr_impl);
 }
@@ -250,9 +250,17 @@ vscf_asn1wr_cleanup(vscf_asn1wr_impl_t *asn1wr_impl) {
         return;
     }
 
+    if (asn1wr_impl->refcnt == 0) {
+        return;
+    }
+
+    if (--asn1wr_impl->refcnt > 0) {
+        return;
+    }
+
     vscf_asn1wr_cleanup_ctx(asn1wr_impl);
 
-    asn1wr_impl->info = NULL;
+    vscf_zeroize(asn1wr_impl, sizeof(vscf_asn1wr_impl_t));
 }
 
 //
@@ -267,8 +275,6 @@ vscf_asn1wr_new(void) {
 
     vscf_asn1wr_init(asn1wr_impl);
 
-    asn1wr_impl->refcnt = 1;
-
     return asn1wr_impl;
 }
 
@@ -279,8 +285,9 @@ vscf_asn1wr_new(void) {
 VSCF_PUBLIC void
 vscf_asn1wr_delete(vscf_asn1wr_impl_t *asn1wr_impl) {
 
-    if (asn1wr_impl && (--asn1wr_impl->refcnt == 0)) {
-        vscf_asn1wr_cleanup(asn1wr_impl);
+    vscf_asn1wr_cleanup(asn1wr_impl);
+
+    if (asn1wr_impl && (asn1wr_impl->refcnt == 0)) {
         vscf_dealloc(asn1wr_impl);
     }
 }

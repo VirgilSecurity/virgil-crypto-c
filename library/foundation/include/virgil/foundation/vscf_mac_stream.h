@@ -46,18 +46,17 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'hmac512' implementation.
+//  Provides interface to the MAC (message authentication code) algorithms.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_HMAC512_H_INCLUDED
-#define VSCF_HMAC512_H_INCLUDED
+#ifndef VSCF_MAC_STREAM_H_INCLUDED
+#define VSCF_MAC_STREAM_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
-#include "vscf_hmac_info.h"
-#include "vscf_hmac.h"
-#include "vscf_hmac_stream.h"
+#include "vscf_mac_info.h"
+#include "vscf_api.h"
 
 #include <virgil/common/vsc_data.h>
 #include <virgil/common/vsc_buffer.h>
@@ -76,112 +75,64 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Public integral constants.
+//  Contains API requirements of the interface 'mac stream'.
 //
-enum {
-    vscf_hmac512_DIGEST_LEN = 64
-};
+typedef struct vscf_mac_stream_api_t vscf_mac_stream_api_t;
 
 //
-//  Handles implementation details.
-//
-typedef struct vscf_hmac512_impl_t vscf_hmac512_impl_t;
-
-//
-//  Return size of 'vscf_hmac512_impl_t' type.
-//
-VSCF_PUBLIC size_t
-vscf_hmac512_impl_size(void);
-
-//
-//  Cast to the 'vscf_impl_t' type.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_hmac512_impl(vscf_hmac512_impl_t *hmac512_impl);
-
-//
-//  Perform initialization of preallocated implementation context.
+//  Start a new MAC.
 //
 VSCF_PUBLIC void
-vscf_hmac512_init(vscf_hmac512_impl_t *hmac512_impl);
+vscf_mac_stream_start(vscf_impl_t *impl, vsc_data_t key);
 
 //
-//  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_hmac512_init()'.
+//  Add given data to the MAC.
 //
 VSCF_PUBLIC void
-vscf_hmac512_cleanup(vscf_hmac512_impl_t *hmac512_impl);
+vscf_mac_stream_update(vscf_impl_t *impl, vsc_data_t data);
 
 //
-//  Allocate implementation context and perform it's initialization.
-//  Postcondition: check memory allocation result.
-//
-VSCF_PUBLIC vscf_hmac512_impl_t *
-vscf_hmac512_new(void);
-
-//
-//  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hmac512_new()'.
+//  Accomplish MAC and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_hmac512_delete(vscf_hmac512_impl_t *hmac512_impl);
+vscf_mac_stream_finish(vscf_impl_t *impl, vsc_buffer_t *mac);
 
 //
-//  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hmac512_new()'.
-//  Given reference is nullified.
+//  Prepare to authenticate a new message with the same key
+//  as the previous MAC operation.
 //
 VSCF_PUBLIC void
-vscf_hmac512_destroy(vscf_hmac512_impl_t **hmac512_impl_ref);
+vscf_mac_stream_reset(vscf_impl_t *impl);
 
 //
-//  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
+//  Return mac stream API, or NULL if it is not implemented.
 //
-VSCF_PUBLIC vscf_hmac512_impl_t *
-vscf_hmac512_copy(vscf_hmac512_impl_t *hmac512_impl);
+VSCF_PUBLIC const vscf_mac_stream_api_t *
+vscf_mac_stream_api(vscf_impl_t *impl);
 
 //
-//  Returns instance of the implemented interface 'hmac info'.
+//  Return mac info API.
 //
-VSCF_PUBLIC const vscf_hmac_info_api_t *
-vscf_hmac512_hmac_info_api(void);
+VSCF_PUBLIC const vscf_mac_info_api_t *
+vscf_mac_stream_mac_info_api(const vscf_mac_stream_api_t *mac_stream_api);
 
 //
-//  Returns instance of the implemented interface 'hmac'.
+//  Check if given object implements interface 'mac stream'.
 //
-VSCF_PUBLIC const vscf_hmac_api_t *
-vscf_hmac512_hmac_api(void);
+VSCF_PUBLIC bool
+vscf_mac_stream_is_implemented(vscf_impl_t *impl);
 
 //
-//  Calculate hmac over given data.
+//  Returns interface unique identifier.
 //
-VSCF_PUBLIC void
-vscf_hmac512_hmac(vsc_data_t key, vsc_data_t data, vsc_buffer_t *hmac);
+VSCF_PUBLIC vscf_api_tag_t
+vscf_mac_stream_api_tag(const vscf_mac_stream_api_t *mac_stream_api);
 
 //
-//  Reset HMAC.
+//  Returns implementation unique identifier.
 //
-VSCF_PUBLIC void
-vscf_hmac512_reset(vscf_hmac512_impl_t *hmac512_impl);
-
-//
-//  Start a new HMAC.
-//
-VSCF_PUBLIC void
-vscf_hmac512_start(vscf_hmac512_impl_t *hmac512_impl, vsc_data_t key);
-
-//
-//  Add given data to the HMAC.
-//
-VSCF_PUBLIC void
-vscf_hmac512_update(vscf_hmac512_impl_t *hmac512_impl, vsc_data_t data);
-
-//
-//  Accompilsh HMAC and return it's result (a message digest).
-//
-VSCF_PUBLIC void
-vscf_hmac512_finish(vscf_hmac512_impl_t *hmac512_impl, vsc_buffer_t *hmac);
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_mac_stream_impl_tag(const vscf_mac_stream_api_t *mac_stream_api);
 
 
 // --------------------------------------------------------------------------
@@ -197,5 +148,5 @@ vscf_hmac512_finish(vscf_hmac512_impl_t *hmac512_impl, vsc_buffer_t *hmac);
 
 
 //  @footer
-#endif // VSCF_HMAC512_H_INCLUDED
+#endif // VSCF_MAC_STREAM_H_INCLUDED
 //  @end

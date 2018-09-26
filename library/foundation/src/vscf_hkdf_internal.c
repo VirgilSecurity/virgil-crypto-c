@@ -53,11 +53,10 @@
 #include "vscf_hkdf_internal.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_hkdf.h"
 #include "vscf_hkdf_impl.h"
 #include "vscf_ex_kdf.h"
 #include "vscf_ex_kdf_api.h"
-#include "vscf_hmac_stream.h"
+#include "vscf_hash_stream.h"
 #include "vscf_impl.h"
 //  @end
 
@@ -69,7 +68,7 @@
 // --------------------------------------------------------------------------
 
 //
-//  Configuration of the interface API 'ex_kdf api'.
+//  Configuration of the interface API 'ex kdf api'.
 //
 static const vscf_ex_kdf_api_t ex_kdf_api = {
     //
@@ -125,11 +124,13 @@ VSCF_PUBLIC void
 vscf_hkdf_init(vscf_hkdf_impl_t *hkdf_impl) {
 
     VSCF_ASSERT_PTR(hkdf_impl);
-    VSCF_ASSERT_PTR(hkdf_impl->info == NULL);
 
-    vscf_zeroize (hkdf_impl, sizeof(vscf_hkdf_impl_t));
+    vscf_zeroize(hkdf_impl, sizeof(vscf_hkdf_impl_t));
 
     hkdf_impl->info = &info;
+    hkdf_impl->refcnt = 1;
+
+    vscf_hkdf_init_ctx(hkdf_impl);
 }
 
 //
@@ -143,9 +144,19 @@ vscf_hkdf_cleanup(vscf_hkdf_impl_t *hkdf_impl) {
         return;
     }
 
-    vscf_hkdf_release_hmac(hkdf_impl);
+    if (hkdf_impl->refcnt == 0) {
+        return;
+    }
 
-    hkdf_impl->info = NULL;
+    if (--hkdf_impl->refcnt > 0) {
+        return;
+    }
+
+    vscf_hkdf_release_hash(hkdf_impl);
+
+    vscf_hkdf_cleanup_ctx(hkdf_impl);
+
+    vscf_zeroize(hkdf_impl, sizeof(vscf_hkdf_impl_t));
 }
 
 //
@@ -160,8 +171,6 @@ vscf_hkdf_new(void) {
 
     vscf_hkdf_init(hkdf_impl);
 
-    hkdf_impl->refcnt = 1;
-
     return hkdf_impl;
 }
 
@@ -172,8 +181,9 @@ vscf_hkdf_new(void) {
 VSCF_PUBLIC void
 vscf_hkdf_delete(vscf_hkdf_impl_t *hkdf_impl) {
 
-    if (hkdf_impl && (--hkdf_impl->refcnt == 0)) {
-        vscf_hkdf_cleanup(hkdf_impl);
+    vscf_hkdf_cleanup(hkdf_impl);
+
+    if (hkdf_impl && (hkdf_impl->refcnt == 0)) {
         vscf_dealloc(hkdf_impl);
     }
 }
@@ -225,45 +235,45 @@ vscf_hkdf_impl(vscf_hkdf_impl_t *hkdf_impl) {
 }
 
 //
-//  Setup dependency to the interface 'hmac stream' with shared ownership.
+//  Setup dependency to the interface 'hash stream' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_hkdf_use_hmac(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hmac) {
+vscf_hkdf_use_hash(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hash) {
 
     VSCF_ASSERT_PTR(hkdf_impl);
-    VSCF_ASSERT_PTR(hmac);
-    VSCF_ASSERT_PTR(hkdf_impl->hmac == NULL);
+    VSCF_ASSERT_PTR(hash);
+    VSCF_ASSERT_PTR(hkdf_impl->hash == NULL);
 
-    VSCF_ASSERT(vscf_hmac_stream_is_implemented(hmac));
+    VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
 
-    hkdf_impl->hmac = vscf_impl_copy(hmac);
+    hkdf_impl->hash = vscf_impl_copy(hash);
 }
 
 //
-//  Setup dependency to the interface 'hmac stream' and transfer ownership.
+//  Setup dependency to the interface 'hash stream' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_hkdf_take_hmac(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hmac) {
+vscf_hkdf_take_hash(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hash) {
 
     VSCF_ASSERT_PTR(hkdf_impl);
-    VSCF_ASSERT_PTR(hmac);
-    VSCF_ASSERT_PTR(hkdf_impl->hmac == NULL);
+    VSCF_ASSERT_PTR(hash);
+    VSCF_ASSERT_PTR(hkdf_impl->hash == NULL);
 
-    VSCF_ASSERT(vscf_hmac_stream_is_implemented(hmac));
+    VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
 
-    hkdf_impl->hmac = hmac;
+    hkdf_impl->hash = hash;
 }
 
 //
-//  Release dependency to the interface 'hmac stream'.
+//  Release dependency to the interface 'hash stream'.
 //
 VSCF_PUBLIC void
-vscf_hkdf_release_hmac(vscf_hkdf_impl_t *hkdf_impl) {
+vscf_hkdf_release_hash(vscf_hkdf_impl_t *hkdf_impl) {
 
     VSCF_ASSERT_PTR(hkdf_impl);
 
-    vscf_impl_destroy(&hkdf_impl->hmac);
+    vscf_impl_destroy(&hkdf_impl->hash);
 }
 
 

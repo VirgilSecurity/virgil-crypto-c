@@ -7,6 +7,6 @@
         <argument name="data" type="data" access="writeonly"/>
         <argument name="data len" type="size"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 </interface>

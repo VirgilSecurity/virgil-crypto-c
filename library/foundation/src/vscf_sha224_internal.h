@@ -73,12 +73,16 @@ extern "C" {
 
 //
 //  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_sha224_init() is called.
+//  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
 vscf_sha224_init_ctx(vscf_sha224_impl_t *sha224_impl);
 
 //
-//  Provides cleanup of the implementation specific context.
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
 vscf_sha224_cleanup_ctx(vscf_sha224_impl_t *sha224_impl);

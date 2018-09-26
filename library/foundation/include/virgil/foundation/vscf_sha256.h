@@ -78,7 +78,8 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
-    vscf_sha256_DIGEST_LEN = 32
+    vscf_sha256_DIGEST_LEN = 32,
+    vscf_sha256_BLOCK_LEN = 64
 };
 
 //

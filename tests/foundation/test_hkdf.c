@@ -37,13 +37,14 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCF_HKDF &&VSCF_HMAC256
+#define TEST_DEPENDENCIES_AVAILABLE VSCF_HKDF &&VSCF_HMAC &&VSCF_SHA256
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_hkdf.h"
-#include "vscf_hmac256.h"
+#include "vscf_hmac.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_sha256.h"
 
 #include "test_data_hkdf.h"
 
@@ -52,12 +53,12 @@
 // Test implementation of the interface 'hkdf'.
 // --------------------------------------------------------------------------
 void
-test__derive__sha256_vector_1__success(void) {
+test__hkdf_derive__sha256_vector_1__success(void) {
 
     vscf_hkdf_impl_t *hkdf_impl = vscf_hkdf_new();
     vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_hkdf_VECTOR_1_DERIVED_DATA.len);
 
-    vscf_hkdf_take_hmac(hkdf_impl, vscf_hmac256_impl(vscf_hmac256_new()));
+    vscf_hkdf_take_hash(hkdf_impl, vscf_sha256_impl(vscf_sha256_new()));
 
     vscf_hkdf_derive(hkdf_impl, test_hkdf_VECTOR_1_KEY, test_hkdf_VECTOR_1_SALT, test_hkdf_VECTOR_1_INFO, key,
             test_hkdf_VECTOR_1_DERIVED_DATA.len);
@@ -70,12 +71,12 @@ test__derive__sha256_vector_1__success(void) {
 }
 
 void
-test__derive__sha256_vector_2__success(void) {
+test__hkdf_derive__sha256_vector_2__success(void) {
 
     vscf_hkdf_impl_t *hkdf_impl = vscf_hkdf_new();
     vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_hkdf_VECTOR_2_DERIVED_DATA.len);
 
-    vscf_hkdf_take_hmac(hkdf_impl, vscf_hmac256_impl(vscf_hmac256_new()));
+    vscf_hkdf_take_hash(hkdf_impl, vscf_sha256_impl(vscf_sha256_new()));
 
     vscf_hkdf_derive(hkdf_impl, test_hkdf_VECTOR_2_KEY, test_hkdf_VECTOR_2_SALT, test_hkdf_VECTOR_2_INFO, key,
             test_hkdf_VECTOR_2_DERIVED_DATA.len);
@@ -88,12 +89,12 @@ test__derive__sha256_vector_2__success(void) {
 }
 
 void
-test__derive__sha256_vector_3__success(void) {
+test__hkdf_derive__sha256_vector_3__success(void) {
 
     vscf_hkdf_impl_t *hkdf_impl = vscf_hkdf_new();
     vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_hkdf_VECTOR_3_DERIVED_DATA.len);
 
-    vscf_hkdf_take_hmac(hkdf_impl, vscf_hmac256_impl(vscf_hmac256_new()));
+    vscf_hkdf_take_hash(hkdf_impl, vscf_sha256_impl(vscf_sha256_new()));
 
     vscf_hkdf_derive(hkdf_impl, test_hkdf_VECTOR_3_KEY, test_hkdf_VECTOR_3_SALT, test_hkdf_VECTOR_3_INFO, key,
             test_hkdf_VECTOR_3_DERIVED_DATA.len);
@@ -116,9 +117,9 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__derive__sha256_vector_1__success);
-    RUN_TEST(test__derive__sha256_vector_2__success);
-    RUN_TEST(test__derive__sha256_vector_3__success);
+    RUN_TEST(test__hkdf_derive__sha256_vector_1__success);
+    RUN_TEST(test__hkdf_derive__sha256_vector_2__success);
+    RUN_TEST(test__hkdf_derive__sha256_vector_3__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

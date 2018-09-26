@@ -38,7 +38,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'hmac224' implementation.
+//  Interface 'mac stream' API.
 // --------------------------------------------------------------------------
 
 
@@ -49,11 +49,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_hmac224.h"
-#include "vscf_assert.h"
-#include "vscf_memory.h"
-#include "vscf_hmac224_impl.h"
-#include "vscf_hmac224_internal.h"
+#include "vscf_mac_stream_api.h"
 //  @end
 
 
@@ -69,75 +65,3 @@
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
-
-//
-//  Provides initialization of the implementation specific context.
-//
-VSCF_PRIVATE void
-vscf_hmac224_init_ctx(vscf_hmac224_impl_t *hmac224_impl) {
-
-    mbedtls_md_init(&hmac224_impl->hmac_ctx);
-    int result = mbedtls_md_setup(&hmac224_impl->hmac_ctx, mbedtls_md_info_from_type(MBEDTLS_MD_SHA224), 1);
-
-    VSCF_ASSERT_ALLOC(result != MBEDTLS_ERR_MD_ALLOC_FAILED);
-    VSCF_ASSERT(result == 0 && "unhandled mbedtls error");
-}
-
-//
-//  Provides cleanup of the implementation specific context.
-//
-VSCF_PRIVATE void
-vscf_hmac224_cleanup_ctx(vscf_hmac224_impl_t *hmac224_impl) {
-
-    mbedtls_md_free(&hmac224_impl->hmac_ctx);
-}
-
-//
-//  Calculate hmac over given data.
-//
-VSCF_PUBLIC void
-vscf_hmac224_hmac(vsc_data_t key, vsc_data_t data, vsc_buffer_t *hmac) {
-
-    VSCF_ASSERT_OPT(hmac_len >= vscf_hmac224_DIGEST_LEN);
-
-    mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA224), key, key_len, data, data_len, hmac);
-}
-
-//
-//  Reset HMAC.
-//
-VSCF_PUBLIC void
-vscf_hmac224_reset(vscf_hmac224_impl_t *hmac224_impl) {
-
-    mbedtls_md_hmac_reset(&hmac224_impl->hmac_ctx);
-}
-
-//
-//  Start a new HMAC.
-//
-VSCF_PUBLIC void
-vscf_hmac224_start(vscf_hmac224_impl_t *hmac224_impl, vsc_data_t key) {
-
-    mbedtls_md_hmac_starts(&hmac224_impl->hmac_ctx, key, key_len);
-}
-
-//
-//  Add given data to the HMAC.
-//
-VSCF_PUBLIC void
-vscf_hmac224_update(vscf_hmac224_impl_t *hmac224_impl, vsc_data_t data) {
-
-    mbedtls_md_hmac_update(&hmac224_impl->hmac_ctx, data, data_len);
-}
-
-//
-//  Accompilsh HMAC and return it's result (a message digest).
-//
-VSCF_PUBLIC void
-vscf_hmac224_finish(vscf_hmac224_impl_t *hmac224_impl, vsc_buffer_t *hmac) {
-
-    VSCF_ASSERT_OPT(hmac_len >= vscf_hmac224_DIGEST_LEN);
-
-    mbedtls_md_hmac_finish(&hmac224_impl->hmac_ctx, hmac);
-}

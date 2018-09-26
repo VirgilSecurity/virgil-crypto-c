@@ -46,21 +46,16 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'hmac256' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
+//  Interface 'mac info' API.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_HMAC256_IMPL_H_INCLUDED
-#define VSCF_HMAC256_IMPL_H_INCLUDED
+#ifndef VSCF_MAC_INFO_API_H_INCLUDED
+#define VSCF_MAC_INFO_API_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_error.h"
-#include "vscf_impl_private.h"
-#include "vscf_hmac256.h"
-
-#include <mbedtls/md.h>
+#include "vscf_api.h"
+#include "vscf_impl.h"
 //  @end
 
 
@@ -76,21 +71,27 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Callback. Size of the digest (mac output) in bytes.
 //
-struct vscf_hmac256_impl_t {
+typedef size_t (*vscf_mac_info_api_digest_len_fn)(vscf_impl_t *impl);
+
+//
+//  Contains API requirements of the interface 'mac info'.
+//
+struct vscf_mac_info_api_t {
     //
-    //  Compile-time known information about this implementation.
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'mac_info' MUST be equal to the 'vscf_api_tag_MAC_INFO'.
     //
-    const vscf_impl_info_t *info;
+    vscf_api_tag_t api_tag;
     //
-    //  Reference counter.
+    //  Implementation unique identifier, MUST be second in the structure.
     //
-    size_t refcnt;
+    vscf_impl_tag_t impl_tag;
     //
-    //  Implementation specific context.
+    //  Size of the digest (mac output) in bytes.
     //
-    mbedtls_md_context_t hmac_ctx;
+    vscf_mac_info_api_digest_len_fn digest_len_cb;
 };
 
 
@@ -107,5 +108,5 @@ struct vscf_hmac256_impl_t {
 
 
 //  @footer
-#endif // VSCF_HMAC256_IMPL_H_INCLUDED
+#endif // VSCF_MAC_INFO_API_H_INCLUDED
 //  @end

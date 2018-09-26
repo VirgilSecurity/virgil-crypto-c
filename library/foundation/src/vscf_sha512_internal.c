@@ -86,7 +86,11 @@ static const vscf_hash_info_api_t hash_info_api = {
     //
     //  Length of the digest (hashing output) in bytes.
     //
-    vscf_sha512_DIGEST_LEN
+    vscf_sha512_DIGEST_LEN,
+    //
+    //  Block length of the digest function in bytes.
+    //
+    vscf_sha512_BLOCK_LEN
 };
 
 //
@@ -183,11 +187,11 @@ VSCF_PUBLIC void
 vscf_sha512_init(vscf_sha512_impl_t *sha512_impl) {
 
     VSCF_ASSERT_PTR(sha512_impl);
-    VSCF_ASSERT_PTR(sha512_impl->info == NULL);
 
-    vscf_zeroize (sha512_impl, sizeof(vscf_sha512_impl_t));
+    vscf_zeroize(sha512_impl, sizeof(vscf_sha512_impl_t));
 
     sha512_impl->info = &info;
+    sha512_impl->refcnt = 1;
 
     vscf_sha512_init_ctx(sha512_impl);
 }
@@ -203,9 +207,17 @@ vscf_sha512_cleanup(vscf_sha512_impl_t *sha512_impl) {
         return;
     }
 
+    if (sha512_impl->refcnt == 0) {
+        return;
+    }
+
+    if (--sha512_impl->refcnt > 0) {
+        return;
+    }
+
     vscf_sha512_cleanup_ctx(sha512_impl);
 
-    sha512_impl->info = NULL;
+    vscf_zeroize(sha512_impl, sizeof(vscf_sha512_impl_t));
 }
 
 //
@@ -220,8 +232,6 @@ vscf_sha512_new(void) {
 
     vscf_sha512_init(sha512_impl);
 
-    sha512_impl->refcnt = 1;
-
     return sha512_impl;
 }
 
@@ -232,8 +242,9 @@ vscf_sha512_new(void) {
 VSCF_PUBLIC void
 vscf_sha512_delete(vscf_sha512_impl_t *sha512_impl) {
 
-    if (sha512_impl && (--sha512_impl->refcnt == 0)) {
-        vscf_sha512_cleanup(sha512_impl);
+    vscf_sha512_cleanup(sha512_impl);
+
+    if (sha512_impl && (sha512_impl->refcnt == 0)) {
         vscf_dealloc(sha512_impl);
     }
 }
