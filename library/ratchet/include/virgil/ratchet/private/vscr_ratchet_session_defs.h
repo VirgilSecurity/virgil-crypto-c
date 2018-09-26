@@ -55,6 +55,8 @@
 #include "vscr_library.h"
 #include "vscr_impl.h"
 #include "vscr_ratchet.h"
+
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -89,6 +91,16 @@ struct vscr_ratchet_session_t {
     //  Dependency to the 'ratchet'.
     //
     vscr_ratchet_t *ratchet;
+
+    bool received_first_response;
+
+    vsc_buffer_t *sender_identity_public_key;
+
+    vsc_buffer_t *sender_ephemeral_public_key;
+
+    vsc_buffer_t *receiver_longterm_public_key;
+
+    vsc_buffer_t *receiver_onetime_public_key;
 };
 
 

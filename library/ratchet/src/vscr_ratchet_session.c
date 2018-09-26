@@ -48,6 +48,7 @@
 #include "vscr_assert.h"
 #include "vscr_ratchet_rng.h"
 #include "vscr_ratchet_session_defs.h"
+#include "vscr_ratchet_prekey_message.h"
 
 #include <ed25519/ed25519.h>
 //  @end
@@ -295,6 +296,11 @@ static void
 vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *ratchet_session_ctx) {
 
     VSCR_ASSERT_PTR(ratchet_session_ctx);
+
+    vsc_buffer_destroy(&ratchet_session_ctx->sender_identity_public_key);
+    vsc_buffer_destroy(&ratchet_session_ctx->sender_ephemeral_public_key);
+    vsc_buffer_destroy(&ratchet_session_ctx->receiver_longterm_public_key);
+    vsc_buffer_destroy(&ratchet_session_ctx->receiver_onetime_public_key);
 }
 
 VSCR_PUBLIC void
@@ -343,7 +349,19 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session_ctx, vsc_b
                                 vsc_buffer_bytes(receiver_one_time_public_key),
                                 vsc_buffer_bytes(ephemeral_private_key));
         vsc_buffer_reserve(shared_secret, ED25519_KEY_LEN);
+
+        ratchet_session_ctx->receiver_onetime_public_key = vsc_buffer_copy(receiver_one_time_public_key);
     }
+
+    ratchet_session_ctx->sender_identity_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
+    curve25519_get_pubkey(vsc_buffer_ptr(ratchet_session_ctx->sender_identity_public_key), vsc_buffer_bytes(sender_identity_private_key));
+    vsc_buffer_reserve(ratchet_session_ctx->sender_identity_public_key, ED25519_KEY_LEN);
+
+    ratchet_session_ctx->sender_ephemeral_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
+    curve25519_get_pubkey(vsc_buffer_ptr(ratchet_session_ctx->sender_ephemeral_public_key), vsc_buffer_bytes(ephemeral_private_key));
+    vsc_buffer_reserve(ratchet_session_ctx->sender_ephemeral_public_key, ED25519_KEY_LEN);
+
+    ratchet_session_ctx->receiver_longterm_public_key = vsc_buffer_copy(receiver_long_term_public_key);
 
     vscr_ratchet_initiate(ratchet_session_ctx->ratchet, vsc_buffer_data(shared_secret), ephemeral_private_key);
 
@@ -361,5 +379,74 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session_ctx, vsc_bu
     VSCR_UNUSED(receiver_identity_private_key);
     VSCR_UNUSED(receiver_long_term_public_key);
     VSCR_UNUSED(receiver_one_time_public_key);
+}
+
+VSCR_PUBLIC size_t
+vscr_ratchet_session_encrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, size_t plain_text_len) {
+
+    VSCR_UNUSED(ratchet_session_ctx);
+    VSCR_UNUSED(plain_text_len);
+
+    return 500;
+    //  TODO: This is STUB. Implement me.
+}
+
+VSCR_PUBLIC vscr_error_t
+vscr_ratchet_session_encrypt(vscr_ratchet_session_t *ratchet_session_ctx, vsc_data_t plain_text,
+        vsc_buffer_t *cipher_text) {
+
+    VSCR_ASSERT_PTR(ratchet_session_ctx);
+
+    vscr_error_t result;
+
+    if (ratchet_session_ctx->received_first_response) {
+        // FIXME
+        VSCR_ASSERT(vsc_buffer_left(cipher_text) > vscr_ratchet_encrypt_len(ratchet_session_ctx->ratchet, plain_text.len));
+
+        result = vscr_ratchet_encrypt(ratchet_session_ctx->ratchet, plain_text, cipher_text);
+    }
+    else {
+        size_t len = vscr_ratchet_encrypt_len(ratchet_session_ctx->ratchet, plain_text.len);
+        vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(len);
+
+        result = vscr_ratchet_encrypt(ratchet_session_ctx->ratchet, plain_text, buffer);
+        // TODO:
+        vscr_ratchet_prekey_message_t *prekey_message =
+                vscr_ratchet_prekey_message_new_with_members(vscr_ratchet_common_RATCHET_PROTOCOL_VERSION,
+                                                             ratchet_session_ctx->sender_identity_public_key,
+                                                             ratchet_session_ctx->receiver_longterm_public_key,
+                                                             ratchet_session_ctx->receiver_onetime_public_key,
+                                                             buffer);
+        // FIXME
+        VSCR_ASSERT(vsc_buffer_left(cipher_text) > vscr_ratchet_prekey_message_serialize_len(vsc_buffer_len(buffer)));
+
+        vscr_ratchet_prekey_message_serialize(prekey_message, cipher_text);
+
+        vsc_buffer_destroy(&buffer);
+    }
+
+    return result;
+}
+
+VSCR_PUBLIC size_t
+vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, size_t cipher_text_len) {
+
+    VSCR_UNUSED(ratchet_session_ctx);
+    VSCR_UNUSED(cipher_text_len);
+
+    return 500;
+    //  TODO: This is STUB. Implement me.
+}
+
+VSCR_PUBLIC vscr_error_t
+vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session_ctx, vsc_data_t cipher_text,
+        vsc_buffer_t *plain_text) {
+
+    VSCR_UNUSED(ratchet_session_ctx);
+    VSCR_UNUSED(cipher_text);
+    VSCR_UNUSED(plain_text);
+
+    return vscr_SUCCESS;
+
     //  TODO: This is STUB. Implement me.
 }

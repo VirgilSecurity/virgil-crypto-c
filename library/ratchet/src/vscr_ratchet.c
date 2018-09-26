@@ -327,7 +327,6 @@ vscr_ratchet_use_kdf_info(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_kdf_info_t *
     VSCR_ASSERT_PTR(ratchet_ctx->kdf_info == NULL);
 
     ratchet_ctx->kdf_info = vscr_ratchet_kdf_info_copy(kdf_info);
-    ratchet_ctx->cipher->kdf_info = vsc_buffer_copy(kdf_info->cipher_info);
 }
 
 //
@@ -342,7 +341,6 @@ vscr_ratchet_take_kdf_info(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_kdf_info_t 
     VSCR_ASSERT_PTR(ratchet_ctx->kdf_info == NULL);
 
     ratchet_ctx->kdf_info = kdf_info;
-    ratchet_ctx->cipher->kdf_info = vsc_buffer_copy(kdf_info->cipher_info);
 }
 
 //
@@ -373,8 +371,6 @@ static void
 vscr_ratchet_init_ctx(vscr_ratchet_t *ratchet_ctx) {
 
     VSCR_UNUSED(ratchet_ctx);
-
-    vscr_ratchet_take_cipher(ratchet_ctx, vscr_ratchet_cipher_new());
 }
 
 //

@@ -41,10 +41,12 @@ target_sources(test_data_ratchet
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_message.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_session.h"
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_message.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_session.c"
         )
 
 target_include_directories(test_data_ratchet
