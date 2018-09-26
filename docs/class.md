@@ -15,8 +15,8 @@ attribute names are case-sensitive and we use only lower-case names.
        </require>
        <dependency name [library] [project] [interface] [api] [class] [impl] [type_name]/>
        <constant name [c_prefix] [of_class] [uid] [feature] [definition] [value]/>
-       <property is_reference name [type] [class] [enum] [callback] [impl] [size] [uid] [access]
-            [bits]>
+       <property is_reference name [project] [access] [type] [class] [enum] [callback] [interface]
+            [api] [impl] [size] [uid] [need_definition] [library] [bits]>
           <string [access] [length]/>
           <array [access] [length] [length_constant]/>
        </property>
@@ -25,11 +25,13 @@ attribute names are case-sensitive and we use only lower-case names.
           <constant .../>
        </enum>
        <callback name [declaration] [of_class] [uid] [feature] [c_prefix]>
-          <return is_reference [access] [class] [enum] [callback] [impl] [size] [type]>
+          <return is_reference [project] [access] [type] [class] [enum] [callback] [interface]
+               [api] [impl] [size] [library] [need_definition]>
              <string .../>
              <array .../>
           </return>
-          <argument name is_reference [uid] [class] [enum] [callback] [impl] [size] [access] [type]>
+          <argument name is_reference [library] [uid] [type] [class] [enum] [callback] [interface]
+               [api] [impl] [size] [project] [need_definition] [access]>
              <string .../>
              <array .../>
           </argument>
@@ -38,11 +40,13 @@ attribute names are case-sensitive and we use only lower-case names.
             [context]>
           <return .../>
           <argument .../>
-          <variable is_reference name [class] [type] [callback] [impl] [size] [access] [definition]
-               [declaration] [visibility] [c_prefix] [of_class] [uid] [feature]
-               [enum]>
-             <value is_reference value [class] [enum] [callback] [impl] [size] [access] [type]>
-                <cast is_reference [access] [class] [enum] [callback] [impl] [size] [type]>
+          <variable name is_reference [library] [type] [project] [enum] [callback] [interface] [api]
+               [impl] [size] [access] [need_definition] [definition] [declaration]
+               [visibility] [c_prefix] [of_class] [uid] [feature] [class]>
+             <value is_reference value [library] [type] [class] [enum] [callback] [interface] [api]
+                  [impl] [size] [project] [need_definition] [access]>
+                <cast is_reference [project] [access] [type] [class] [enum] [callback] [interface]
+                     [api] [impl] [size] [library] [need_definition]>
                    <string .../>
                    <array .../>
                 </cast>
@@ -382,14 +386,19 @@ property.
     <property
         is_reference = "0 | 1"
         name = "..."
+      [ project = "..." ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
+      [ interface = "..." ]
+      [ api = "..." ]
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ uid = "..." ]
-      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ need_definition = "public | private" ]
+      [ library = "..." ]
       [ bits = "..." ]
         >
         <string>, optional
@@ -401,6 +410,14 @@ The property item can have these attributes:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+project:
+    Defines project name that component refers to. The project attribute is
+    optional.
+
+library:
+    Defines library name that component refers to. The library attribute is
+    optional.
 
 access:
     Defines access rights to the instance and/or array of instances. The
@@ -434,23 +451,38 @@ class:
     Universal implementation class. If value differs from the listed above
     then next algorithm applied: 1. If value in a format .(uid), then it
     treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The class attribute is optional.
+    during context resolution step. 2. If attribute 'library' is defined,
+    then it treated as third-party library class and will be used as-is. 3.
+    Any other value will be treated as cross-project class name and will be
+    converted to the .(uid). The class attribute is optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
     as a reference to the in-project enumeration and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The enum attribute is optional.
+    during context resolution step. 2. If attribute 'library' is defined,
+    then it treated as third-party library class and will be used as-is. 3.
+    Any other value will be treated as cross-project class name and will be
+    converted to the .(uid). The enum attribute is optional.
 
 callback:
     Defines instance as a callback. 1. If value in a format .(uid), then it
     treated as a reference to the in-project callback and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    any third party type can be used. The callback attribute is optional.
+    during context resolution step. 2. If attribute 'library' is defined,
+    then it treated as third-party library class and will be used as-is. 3.
+    Any other value will be treated as cross-project class name and will be
+    converted to the .(uid). The callback attribute is optional.
+
+interface:
+    Defines instance as implementation of specific interface. The interface
+    attribute is optional.
+
+api:
+    Defines instance as specific interface api. The api attribute is
+    optional.
 
 impl:
-    Defines specific implementation name. The impl attribute is optional.
+    Defines instance as specific implementation. The impl attribute is
+    optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -471,6 +503,14 @@ is_reference:
 Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
+
+need_definition:
+    Defines if instance requires type definition. The need_definition
+    attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+public: Instance type definition is used within private scope.
+private: Instance type definition is used within private scope.
 
 name:
     Property name. The name attribute is required.
@@ -677,19 +717,32 @@ Defines attributes that related to the instance type. Defines return type.
 
     <return
         is_reference = "0 | 1"
+      [ project = "..." ]
       [ access = "readonly | writeonly | readwrite | disown" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
+      [ interface = "..." ]
+      [ api = "..." ]
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
+      [ library = "..." ]
+      [ need_definition = "public | private" ]
         >
         <string>, optional
         <array>, optional
     </return>
 
 The return item can have these attributes:
+
+project:
+    Defines project name that component refers to. The project attribute is
+    optional.
+
+library:
+    Defines library name that component refers to. The library attribute is
+    optional.
 
 access:
     Defines access rights to the instance and/or array of instances. The
@@ -723,23 +776,38 @@ class:
     Universal implementation class. If value differs from the listed above
     then next algorithm applied: 1. If value in a format .(uid), then it
     treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The class attribute is optional.
+    during context resolution step. 2. If attribute 'library' is defined,
+    then it treated as third-party library class and will be used as-is. 3.
+    Any other value will be treated as cross-project class name and will be
+    converted to the .(uid). The class attribute is optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
     as a reference to the in-project enumeration and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The enum attribute is optional.
+    during context resolution step. 2. If attribute 'library' is defined,
+    then it treated as third-party library class and will be used as-is. 3.
+    Any other value will be treated as cross-project class name and will be
+    converted to the .(uid). The enum attribute is optional.
 
 callback:
     Defines instance as a callback. 1. If value in a format .(uid), then it
     treated as a reference to the in-project callback and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    any third party type can be used. The callback attribute is optional.
+    during context resolution step. 2. If attribute 'library' is defined,
+    then it treated as third-party library class and will be used as-is. 3.
+    Any other value will be treated as cross-project class name and will be
+    converted to the .(uid). The callback attribute is optional.
+
+interface:
+    Defines instance as implementation of specific interface. The interface
+    attribute is optional.
+
+api:
+    Defines instance as specific interface api. The api attribute is
+    optional.
 
 impl:
-    Defines specific implementation name. The impl attribute is optional.
+    Defines instance as specific implementation. The impl attribute is
+    optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -760,6 +828,14 @@ is_reference:
 Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
+
+need_definition:
+    Defines if instance requires type definition. The need_definition
+    attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+public: Instance type definition is used within private scope.
+private: Instance type definition is used within private scope.
 
 
 The 'argument' item
@@ -771,14 +847,19 @@ name, type, and usage information.
     <argument
         name = "..."
         is_reference = "0 | 1"
+      [ library = "..." ]
       [ uid = "..." ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
+      [ interface = "..." ]
+      [ api = "..." ]
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
+      [ project = "..." ]
+      [ need_definition = "public | private" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
         >
         <string>, optional
         <array>, optional
@@ -789,6 +870,14 @@ The argument item can have these attributes:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+project:
+    Defines project name that component refers to. The project attribute is
+    optional.
+
+library:
+    Defines library name that component refers to. The library attribute is
+    optional.
 
 access:
     Defines access rights to the instance and/or array of instances. The
@@ -822,23 +911,38 @@ class:
     Universal implementation class. If value differs from the listed above
     then next algorithm applied: 1. If value in a format .(uid), then it
     treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The class attribute is optional.
+    during context resolution step. 2. If attribute 'library' is defined,
+    then it treated as third-party library class and will be used as-is. 3.
+    Any other value will be treated as cross-project class name and will be
+    converted to the .(uid). The class attribute is optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
     as a reference to the in-project enumeration and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The enum attribute is optional.
+    during context resolution step. 2. If attribute 'library' is defined,
+    then it treated as third-party library class and will be used as-is. 3.
+    Any other value will be treated as cross-project class name and will be
+    converted to the .(uid). The enum attribute is optional.
 
 callback:
     Defines instance as a callback. 1. If value in a format .(uid), then it
     treated as a reference to the in-project callback and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    any third party type can be used. The callback attribute is optional.
+    during context resolution step. 2. If attribute 'library' is defined,
+    then it treated as third-party library class and will be used as-is. 3.
+    Any other value will be treated as cross-project class name and will be
+    converted to the .(uid). The callback attribute is optional.
+
+interface:
+    Defines instance as implementation of specific interface. The interface
+    attribute is optional.
+
+api:
+    Defines instance as specific interface api. The api attribute is
+    optional.
 
 impl:
-    Defines specific implementation name. The impl attribute is optional.
+    Defines instance as specific implementation. The impl attribute is
+    optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -859,6 +963,14 @@ is_reference:
 Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
+
+need_definition:
+    Defines if instance requires type definition. The need_definition
+    attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+public: Instance type definition is used within private scope.
+private: Instance type definition is used within private scope.
 
 name:
     Argument name. The name attribute is required.
@@ -955,14 +1067,19 @@ Defines attributes that related to the instance type. Groups common
 attributes for the component. Defines global variable.
 
     <variable
-        is_reference = "0 | 1"
         name = "..."
-      [ class = "..." ]
+        is_reference = "0 | 1"
+      [ library = "..." ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
+      [ project = "..." ]
+      [ enum = "..." ]
       [ callback = "..." ]
+      [ interface = "..." ]
+      [ api = "..." ]
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
+      [ need_definition = "public | private" ]
       [ definition = "public | private | external"  ("private") ]
       [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
@@ -970,7 +1087,7 @@ attributes for the component. Defines global variable.
       [ of_class = "..." ]
       [ uid = "..." ]
       [ feature = "..." ]
-      [ enum = "..." ]
+      [ class = "..." ]
         >
         <value>, 1 or more
         <string>, optional
@@ -978,6 +1095,14 @@ attributes for the component. Defines global variable.
     </variable>
 
 The variable item can have these attributes:
+
+project:
+    Defines project name that component refers to. The project attribute is
+    optional.
+
+library:
+    Defines library name that component refers to. The library attribute is
+    optional.
 
 access:
     Defines access rights to the instance and/or array of instances. The
@@ -1011,23 +1136,38 @@ class:
     Universal implementation class. If value differs from the listed above
     then next algorithm applied: 1. If value in a format .(uid), then it
     treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The class attribute is optional.
+    during context resolution step. 2. If attribute 'library' is defined,
+    then it treated as third-party library class and will be used as-is. 3.
+    Any other value will be treated as cross-project class name and will be
+    converted to the .(uid). The class attribute is optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
     as a reference to the in-project enumeration and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The enum attribute is optional.
+    during context resolution step. 2. If attribute 'library' is defined,
+    then it treated as third-party library class and will be used as-is. 3.
+    Any other value will be treated as cross-project class name and will be
+    converted to the .(uid). The enum attribute is optional.
 
 callback:
     Defines instance as a callback. 1. If value in a format .(uid), then it
     treated as a reference to the in-project callback and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    any third party type can be used. The callback attribute is optional.
+    during context resolution step. 2. If attribute 'library' is defined,
+    then it treated as third-party library class and will be used as-is. 3.
+    Any other value will be treated as cross-project class name and will be
+    converted to the .(uid). The callback attribute is optional.
+
+interface:
+    Defines instance as implementation of specific interface. The interface
+    attribute is optional.
+
+api:
+    Defines instance as specific interface api. The api attribute is
+    optional.
 
 impl:
-    Defines specific implementation name. The impl attribute is optional.
+    Defines instance as specific implementation. The impl attribute is
+    optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -1048,6 +1188,14 @@ is_reference:
 Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
+
+need_definition:
+    Defines if instance requires type definition. The need_definition
+    attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+public: Instance type definition is used within private scope.
+private: Instance type definition is used within private scope.
 
 definition:
     Defines where component will be defined. This attribute must not be
@@ -1107,13 +1255,18 @@ variable value.
     <value
         is_reference = "0 | 1"
         value = "..."
+      [ library = "..." ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
+      [ interface = "..." ]
+      [ api = "..." ]
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
+      [ project = "..." ]
+      [ need_definition = "public | private" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
         >
         <cast>, optional
         <string>, optional
@@ -1121,6 +1274,14 @@ variable value.
     </value>
 
 The value item can have these attributes:
+
+project:
+    Defines project name that component refers to. The project attribute is
+    optional.
+
+library:
+    Defines library name that component refers to. The library attribute is
+    optional.
 
 access:
     Defines access rights to the instance and/or array of instances. The
@@ -1154,23 +1315,38 @@ class:
     Universal implementation class. If value differs from the listed above
     then next algorithm applied: 1. If value in a format .(uid), then it
     treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The class attribute is optional.
+    during context resolution step. 2. If attribute 'library' is defined,
+    then it treated as third-party library class and will be used as-is. 3.
+    Any other value will be treated as cross-project class name and will be
+    converted to the .(uid). The class attribute is optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
     as a reference to the in-project enumeration and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The enum attribute is optional.
+    during context resolution step. 2. If attribute 'library' is defined,
+    then it treated as third-party library class and will be used as-is. 3.
+    Any other value will be treated as cross-project class name and will be
+    converted to the .(uid). The enum attribute is optional.
 
 callback:
     Defines instance as a callback. 1. If value in a format .(uid), then it
     treated as a reference to the in-project callback and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    any third party type can be used. The callback attribute is optional.
+    during context resolution step. 2. If attribute 'library' is defined,
+    then it treated as third-party library class and will be used as-is. 3.
+    Any other value will be treated as cross-project class name and will be
+    converted to the .(uid). The callback attribute is optional.
+
+interface:
+    Defines instance as implementation of specific interface. The interface
+    attribute is optional.
+
+api:
+    Defines instance as specific interface api. The api attribute is
+    optional.
 
 impl:
-    Defines specific implementation name. The impl attribute is optional.
+    Defines instance as specific implementation. The impl attribute is
+    optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -1191,6 +1367,14 @@ is_reference:
 Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
+
+need_definition:
+    Defines if instance requires type definition. The need_definition
+    attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+public: Instance type definition is used within private scope.
+private: Instance type definition is used within private scope.
 
 value:
     Initialization value. The value attribute is required.
@@ -1204,19 +1388,32 @@ type to the type defined in this entity.
 
     <cast
         is_reference = "0 | 1"
+      [ project = "..." ]
       [ access = "readonly | writeonly | readwrite | disown" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
+      [ interface = "..." ]
+      [ api = "..." ]
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
+      [ library = "..." ]
+      [ need_definition = "public | private" ]
         >
         <string>, optional
         <array>, optional
     </cast>
 
 The cast item can have these attributes:
+
+project:
+    Defines project name that component refers to. The project attribute is
+    optional.
+
+library:
+    Defines library name that component refers to. The library attribute is
+    optional.
 
 access:
     Defines access rights to the instance and/or array of instances. The
@@ -1250,23 +1447,38 @@ class:
     Universal implementation class. If value differs from the listed above
     then next algorithm applied: 1. If value in a format .(uid), then it
     treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The class attribute is optional.
+    during context resolution step. 2. If attribute 'library' is defined,
+    then it treated as third-party library class and will be used as-is. 3.
+    Any other value will be treated as cross-project class name and will be
+    converted to the .(uid). The class attribute is optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
     as a reference to the in-project enumeration and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    one third party type can be used. The enum attribute is optional.
+    during context resolution step. 2. If attribute 'library' is defined,
+    then it treated as third-party library class and will be used as-is. 3.
+    Any other value will be treated as cross-project class name and will be
+    converted to the .(uid). The enum attribute is optional.
 
 callback:
     Defines instance as a callback. 1. If value in a format .(uid), then it
     treated as a reference to the in-project callback and will be substituted
-    during context resolution step. 2. Any other value will be used as-is. So
-    any third party type can be used. The callback attribute is optional.
+    during context resolution step. 2. If attribute 'library' is defined,
+    then it treated as third-party library class and will be used as-is. 3.
+    Any other value will be treated as cross-project class name and will be
+    converted to the .(uid). The callback attribute is optional.
+
+interface:
+    Defines instance as implementation of specific interface. The interface
+    attribute is optional.
+
+api:
+    Defines instance as specific interface api. The api attribute is
+    optional.
 
 impl:
-    Defines specific implementation name. The impl attribute is optional.
+    Defines instance as specific implementation. The impl attribute is
+    optional.
 
 size:
     Define size of the primitive type or enum in bytes. The size attribute is
@@ -1287,6 +1499,14 @@ is_reference:
 Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
+
+need_definition:
+    Defines if instance requires type definition. The need_definition
+    attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+public: Instance type definition is used within private scope.
+private: Instance type definition is used within private scope.
 
 
 The 'code' item

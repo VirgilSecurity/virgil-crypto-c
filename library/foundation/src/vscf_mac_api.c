@@ -36,6 +36,12 @@
 // --------------------------------------------------------------------------
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Interface 'mac' API.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,25 +49,8 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  This module contains logic for interface/implementation architecture.
-//  Do not use this module in any part of the code.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_HMAC384_INTERNAL_H_INCLUDED
-#define VSCF_HMAC384_INTERNAL_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_error.h"
-#include "vscf_hmac384.h"
+#include "vscf_mac_api.h"
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -70,31 +59,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Provides initialization of the implementation specific context.
-//
-VSCF_PRIVATE void
-vscf_hmac384_init_ctx(vscf_hmac384_impl_t *hmac384_impl);
-
-//
-//  Provides cleanup of the implementation specific context.
-//
-VSCF_PRIVATE void
-vscf_hmac384_cleanup_ctx(vscf_hmac384_impl_t *hmac384_impl);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_HMAC384_INTERNAL_H_INCLUDED
 //  @end

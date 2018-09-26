@@ -189,6 +189,7 @@
     <inherit entity="lang"/>
 </entity>
 
+
 <entity name="landlord" abstract="1">
     <attr name="project">
         Defines project name that component refers to.

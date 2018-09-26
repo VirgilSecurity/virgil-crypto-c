@@ -82,6 +82,12 @@ VSCF_PUBLIC size_t
 vscf_hash_info_digest_len(const vscf_hash_info_api_t *hash_info_api);
 
 //
+//  Returns constant 'block len'.
+//
+VSCF_PUBLIC size_t
+vscf_hash_info_block_len(const vscf_hash_info_api_t *hash_info_api);
+
+//
 //  Return hash info API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_hash_info_api_t *

@@ -7,7 +7,7 @@
         <argument name="data" class="data"/>
         <argument name="out" class="buffer"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
 

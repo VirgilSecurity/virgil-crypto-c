@@ -331,11 +331,11 @@ VSCF_PUBLIC void
 vscf_aes256_gcm_init(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 
     VSCF_ASSERT_PTR(aes256_gcm_impl);
-    VSCF_ASSERT_PTR(aes256_gcm_impl->info == NULL);
 
-    vscf_zeroize (aes256_gcm_impl, sizeof(vscf_aes256_gcm_impl_t));
+    vscf_zeroize(aes256_gcm_impl, sizeof(vscf_aes256_gcm_impl_t));
 
     aes256_gcm_impl->info = &info;
+    aes256_gcm_impl->refcnt = 1;
 
     vscf_aes256_gcm_init_ctx(aes256_gcm_impl);
 }
@@ -351,9 +351,17 @@ vscf_aes256_gcm_cleanup(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
         return;
     }
 
+    if (aes256_gcm_impl->refcnt == 0) {
+        return;
+    }
+
+    if (--aes256_gcm_impl->refcnt > 0) {
+        return;
+    }
+
     vscf_aes256_gcm_cleanup_ctx(aes256_gcm_impl);
 
-    aes256_gcm_impl->info = NULL;
+    vscf_zeroize(aes256_gcm_impl, sizeof(vscf_aes256_gcm_impl_t));
 }
 
 //
@@ -368,8 +376,6 @@ vscf_aes256_gcm_new(void) {
 
     vscf_aes256_gcm_init(aes256_gcm_impl);
 
-    aes256_gcm_impl->refcnt = 1;
-
     return aes256_gcm_impl;
 }
 
@@ -380,8 +386,9 @@ vscf_aes256_gcm_new(void) {
 VSCF_PUBLIC void
 vscf_aes256_gcm_delete(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 
-    if (aes256_gcm_impl && (--aes256_gcm_impl->refcnt == 0)) {
-        vscf_aes256_gcm_cleanup(aes256_gcm_impl);
+    vscf_aes256_gcm_cleanup(aes256_gcm_impl);
+
+    if (aes256_gcm_impl && (aes256_gcm_impl->refcnt == 0)) {
         vscf_dealloc(aes256_gcm_impl);
     }
 }

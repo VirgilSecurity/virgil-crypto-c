@@ -16,25 +16,25 @@ attribute names are case-sensitive and we use only lower-case names.
        </c_enum>
        <c_struct name [definition] [declaration] [uid] [feature]>
           <c_property type type_is name [array] [string] [length] [is_const_type] [is_const_pointer]
-               [is_const_array] [is_const_string] [is_const_reference] [feature]
-               [uid] [accessed_by] [bits]/>
+               [is_const_array] [is_const_string] [is_const_reference] [need_definition]
+               [feature] [uid] [accessed_by] [bits]/>
        </c_struct>
        <c_variable type type_is name [accessed_by] [string] [length] [is_const_type] [is_const_pointer]
-            [is_const_array] [is_const_string] [is_const_reference] [feature]
-            [definition] [declaration] [visibility] [uid] [array]>
+            [is_const_array] [is_const_string] [is_const_reference] [need_definition]
+            [feature] [definition] [declaration] [visibility] [uid] [array]>
           <c_value value>
              <c_cast type type_is [accessed_by] [array] [string] [length] [is_const_type] [is_const_pointer]
-                  [is_const_array] [is_const_string] [is_const_reference]/>
+                  [is_const_array] [is_const_string] [is_const_reference] [need_definition]/>
           </c_value>
           <c_modifier [value]/>
        </c_variable>
        <c_method name [feature] [definition] [declaration] [visibility] [uid]>
           <c_modifier .../>
           <c_return type type_is [accessed_by] [array] [string] [length] [is_const_type] [is_const_pointer]
-               [is_const_array] [is_const_string] [is_const_reference]/>
+               [is_const_array] [is_const_string] [is_const_reference] [need_definition]/>
           <c_argument type type_is name [array] [string] [length] [is_const_type] [is_const_pointer]
-               [is_const_array] [is_const_string] [is_const_reference] [uid]
-               [accessed_by]/>
+               [is_const_array] [is_const_string] [is_const_reference] [need_definition]
+               [uid] [accessed_by]/>
           <c_precondition [position]/>
        </c_method>
        <c_callback name [uid] [declaration]>
@@ -373,6 +373,7 @@ the structure type.
       [ is_const_array = "..." ]
       [ is_const_string = "..." ]
       [ is_const_reference = "..." ]
+      [ need_definition = "public | private" ]
       [ feature = "..." ]
       [ uid = "..." ]
       [ accessed_by = "value | pointer | reference"  ("value") ]
@@ -445,6 +446,14 @@ is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
     The is_const_reference attribute is optional.
 
+need_definition:
+    Defines if instance requires type definition. The need_definition
+    attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+public: Instance type definition is used within private scope.
+private: Instance type definition is used within private scope.
+
 feature:
     Defines feature name. Component that holds this attribute should be
     wrapped with #if <feature> #endif macros. The feature attribute is
@@ -480,6 +489,7 @@ variable.
       [ is_const_array = "..." ]
       [ is_const_string = "..." ]
       [ is_const_reference = "..." ]
+      [ need_definition = "public | private" ]
       [ feature = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ declaration = "public | private | external"  ("public") ]
@@ -556,6 +566,14 @@ is_const_string:
 is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
     The is_const_reference attribute is optional.
+
+need_definition:
+    Defines if instance requires type definition. The need_definition
+    attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+public: Instance type definition is used within private scope.
+private: Instance type definition is used within private scope.
 
 feature:
     Defines feature name. Component that holds this attribute should be
@@ -634,6 +652,7 @@ defined in this entity.
       [ is_const_array = "..." ]
       [ is_const_string = "..." ]
       [ is_const_reference = "..." ]
+      [ need_definition = "public | private" ]
         />
 
 The c_cast item can have these attributes:
@@ -701,6 +720,14 @@ is_const_string:
 is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
     The is_const_reference attribute is optional.
+
+need_definition:
+    Defines if instance requires type definition. The need_definition
+    attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+public: Instance type definition is used within private scope.
+private: Instance type definition is used within private scope.
 
 
 The 'c_modifier' item
@@ -799,6 +826,7 @@ Defines a type of outer component. Defines return type.
       [ is_const_array = "..." ]
       [ is_const_string = "..." ]
       [ is_const_reference = "..." ]
+      [ need_definition = "public | private" ]
         />
 
 The c_return item can have these attributes:
@@ -867,6 +895,14 @@ is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
     The is_const_reference attribute is optional.
 
+need_definition:
+    Defines if instance requires type definition. The need_definition
+    attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+public: Instance type definition is used within private scope.
+private: Instance type definition is used within private scope.
+
 
 The 'c_argument' item
 ---------------------
@@ -885,6 +921,7 @@ Defines a type of outer component. Defines method or callback argument.
       [ is_const_array = "..." ]
       [ is_const_string = "..." ]
       [ is_const_reference = "..." ]
+      [ need_definition = "public | private" ]
       [ uid = "..." ]
       [ accessed_by = "value | pointer | reference"  ("value") ]
         />
@@ -954,6 +991,14 @@ is_const_string:
 is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
     The is_const_reference attribute is optional.
+
+need_definition:
+    Defines if instance requires type definition. The need_definition
+    attribute is optional. It can take one of the following values:
+
+Value: Meaning:
+public: Instance type definition is used within private scope.
+private: Instance type definition is used within private scope.
 
 uid:
     Unique component identifier represents name that uniquely identifies

@@ -50,12 +50,13 @@
 //  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_HMAC224_INTERNAL_H_INCLUDED
-#define VSCF_HMAC224_INTERNAL_H_INCLUDED
+#ifndef VSCF_HMAC_INTERNAL_H_INCLUDED
+#define VSCF_HMAC_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_error.h"
-#include "vscf_hmac224.h"
+#include "vscf_hmac.h"
+#include "vscf_hmac.h"
 //  @end
 
 
@@ -72,15 +73,19 @@ extern "C" {
 
 //
 //  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_hmac_init() is called.
+//  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_hmac224_init_ctx(vscf_hmac224_impl_t *hmac224_impl);
+vscf_hmac_init_ctx(vscf_hmac_impl_t *hmac_impl);
 
 //
-//  Provides cleanup of the implementation specific context.
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_hmac224_cleanup_ctx(vscf_hmac224_impl_t *hmac224_impl);
+vscf_hmac_cleanup_ctx(vscf_hmac_impl_t *hmac_impl);
 
 
 // --------------------------------------------------------------------------
@@ -96,5 +101,5 @@ vscf_hmac224_cleanup_ctx(vscf_hmac224_impl_t *hmac224_impl);
 
 
 //  @footer
-#endif // VSCF_HMAC224_INTERNAL_H_INCLUDED
+#endif // VSCF_HMAC_INTERNAL_H_INCLUDED
 //  @end

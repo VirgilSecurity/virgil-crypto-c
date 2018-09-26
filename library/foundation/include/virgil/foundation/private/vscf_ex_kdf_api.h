@@ -46,7 +46,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface 'ex_kdf' API.
+//  Interface 'ex kdf' API.
 // --------------------------------------------------------------------------
 
 #ifndef VSCF_EX_KDF_API_H_INCLUDED
@@ -80,7 +80,7 @@ typedef void (*vscf_ex_kdf_api_derive_fn)(vscf_impl_t *impl, vsc_data_t data, vs
         vsc_buffer_t *key, size_t key_len);
 
 //
-//  Contains API requirements of the interface 'ex_kdf'.
+//  Contains API requirements of the interface 'ex kdf'.
 //
 struct vscf_ex_kdf_api_t {
     //

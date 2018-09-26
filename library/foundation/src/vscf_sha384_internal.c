@@ -86,7 +86,11 @@ static const vscf_hash_info_api_t hash_info_api = {
     //
     //  Length of the digest (hashing output) in bytes.
     //
-    vscf_sha384_DIGEST_LEN
+    vscf_sha384_DIGEST_LEN,
+    //
+    //  Block length of the digest function in bytes.
+    //
+    vscf_sha384_BLOCK_LEN
 };
 
 //
@@ -183,11 +187,11 @@ VSCF_PUBLIC void
 vscf_sha384_init(vscf_sha384_impl_t *sha384_impl) {
 
     VSCF_ASSERT_PTR(sha384_impl);
-    VSCF_ASSERT_PTR(sha384_impl->info == NULL);
 
-    vscf_zeroize (sha384_impl, sizeof(vscf_sha384_impl_t));
+    vscf_zeroize(sha384_impl, sizeof(vscf_sha384_impl_t));
 
     sha384_impl->info = &info;
+    sha384_impl->refcnt = 1;
 
     vscf_sha384_init_ctx(sha384_impl);
 }
@@ -203,9 +207,17 @@ vscf_sha384_cleanup(vscf_sha384_impl_t *sha384_impl) {
         return;
     }
 
+    if (sha384_impl->refcnt == 0) {
+        return;
+    }
+
+    if (--sha384_impl->refcnt > 0) {
+        return;
+    }
+
     vscf_sha384_cleanup_ctx(sha384_impl);
 
-    sha384_impl->info = NULL;
+    vscf_zeroize(sha384_impl, sizeof(vscf_sha384_impl_t));
 }
 
 //
@@ -220,8 +232,6 @@ vscf_sha384_new(void) {
 
     vscf_sha384_init(sha384_impl);
 
-    sha384_impl->refcnt = 1;
-
     return sha384_impl;
 }
 
@@ -232,8 +242,9 @@ vscf_sha384_new(void) {
 VSCF_PUBLIC void
 vscf_sha384_delete(vscf_sha384_impl_t *sha384_impl) {
 
-    if (sha384_impl && (--sha384_impl->refcnt == 0)) {
-        vscf_sha384_cleanup(sha384_impl);
+    vscf_sha384_cleanup(sha384_impl);
+
+    if (sha384_impl && (sha384_impl->refcnt == 0)) {
         vscf_dealloc(sha384_impl);
     }
 }

@@ -249,11 +249,11 @@ VSCF_PUBLIC void
 vscf_rsa_public_key_init(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
     VSCF_ASSERT_PTR(rsa_public_key_impl);
-    VSCF_ASSERT_PTR(rsa_public_key_impl->info == NULL);
 
-    vscf_zeroize (rsa_public_key_impl, sizeof(vscf_rsa_public_key_impl_t));
+    vscf_zeroize(rsa_public_key_impl, sizeof(vscf_rsa_public_key_impl_t));
 
     rsa_public_key_impl->info = &info;
+    rsa_public_key_impl->refcnt = 1;
 
     vscf_rsa_public_key_init_ctx(rsa_public_key_impl);
 }
@@ -269,6 +269,14 @@ vscf_rsa_public_key_cleanup(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
         return;
     }
 
+    if (rsa_public_key_impl->refcnt == 0) {
+        return;
+    }
+
+    if (--rsa_public_key_impl->refcnt > 0) {
+        return;
+    }
+
     vscf_rsa_public_key_release_hash(rsa_public_key_impl);
     vscf_rsa_public_key_release_random(rsa_public_key_impl);
     vscf_rsa_public_key_release_asn1rd(rsa_public_key_impl);
@@ -276,7 +284,7 @@ vscf_rsa_public_key_cleanup(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
     vscf_rsa_public_key_cleanup_ctx(rsa_public_key_impl);
 
-    rsa_public_key_impl->info = NULL;
+    vscf_zeroize(rsa_public_key_impl, sizeof(vscf_rsa_public_key_impl_t));
 }
 
 //
@@ -291,8 +299,6 @@ vscf_rsa_public_key_new(void) {
 
     vscf_rsa_public_key_init(rsa_public_key_impl);
 
-    rsa_public_key_impl->refcnt = 1;
-
     return rsa_public_key_impl;
 }
 
@@ -303,8 +309,9 @@ vscf_rsa_public_key_new(void) {
 VSCF_PUBLIC void
 vscf_rsa_public_key_delete(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
-    if (rsa_public_key_impl && (--rsa_public_key_impl->refcnt == 0)) {
-        vscf_rsa_public_key_cleanup(rsa_public_key_impl);
+    vscf_rsa_public_key_cleanup(rsa_public_key_impl);
+
+    if (rsa_public_key_impl && (rsa_public_key_impl->refcnt == 0)) {
         vscf_dealloc(rsa_public_key_impl);
     }
 }

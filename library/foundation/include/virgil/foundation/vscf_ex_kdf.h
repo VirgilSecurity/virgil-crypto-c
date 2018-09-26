@@ -74,7 +74,7 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'ex_kdf'.
+//  Contains API requirements of the interface 'ex kdf'.
 //
 typedef struct vscf_ex_kdf_api_t vscf_ex_kdf_api_t;
 
@@ -86,13 +86,13 @@ vscf_ex_kdf_derive(vscf_impl_t *impl, vsc_data_t data, vsc_data_t salt, vsc_data
         size_t key_len);
 
 //
-//  Return ex_kdf API, or NULL if it is not implemented.
+//  Return ex kdf API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_ex_kdf_api_t *
 vscf_ex_kdf_api(vscf_impl_t *impl);
 
 //
-//  Check if given object implements interface 'ex_kdf'.
+//  Check if given object implements interface 'ex kdf'.
 //
 VSCF_PUBLIC bool
 vscf_ex_kdf_is_implemented(vscf_impl_t *impl);

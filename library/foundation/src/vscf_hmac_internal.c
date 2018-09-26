@@ -50,16 +50,17 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_sha256_internal.h"
+#include "vscf_hmac_internal.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_sha256_impl.h"
-#include "vscf_hash_info.h"
-#include "vscf_hash_info_api.h"
-#include "vscf_hash.h"
-#include "vscf_hash_api.h"
+#include "vscf_hmac_impl.h"
+#include "vscf_mac_info.h"
+#include "vscf_mac_info_api.h"
+#include "vscf_mac.h"
+#include "vscf_mac_api.h"
+#include "vscf_mac_stream.h"
+#include "vscf_mac_stream_api.h"
 #include "vscf_hash_stream.h"
-#include "vscf_hash_stream_api.h"
 #include "vscf_impl.h"
 //  @end
 
@@ -71,100 +72,101 @@
 // --------------------------------------------------------------------------
 
 //
-//  Configuration of the interface API 'hash info api'.
+//  Configuration of the interface API 'mac info api'.
 //
-static const vscf_hash_info_api_t hash_info_api = {
+static const vscf_mac_info_api_t mac_info_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'hash_info' MUST be equal to the 'vscf_api_tag_HASH_INFO'.
+    //  For interface 'mac_info' MUST be equal to the 'vscf_api_tag_MAC_INFO'.
     //
-    vscf_api_tag_HASH_INFO,
+    vscf_api_tag_MAC_INFO,
     //
     //  Implementation unique identifier, MUST be second in the structure.
     //
-    vscf_impl_tag_SHA256,
+    vscf_impl_tag_HMAC,
     //
-    //  Length of the digest (hashing output) in bytes.
+    //  Size of the digest (mac output) in bytes.
     //
-    vscf_sha256_DIGEST_LEN,
-    //
-    //  Block length of the digest function in bytes.
-    //
-    vscf_sha256_BLOCK_LEN
+    (vscf_mac_info_api_digest_len_fn)vscf_hmac_digest_len
 };
 
 //
-//  Configuration of the interface API 'hash api'.
+//  Configuration of the interface API 'mac api'.
 //
-static const vscf_hash_api_t hash_api = {
+static const vscf_mac_api_t mac_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'hash' MUST be equal to the 'vscf_api_tag_HASH'.
+    //  For interface 'mac' MUST be equal to the 'vscf_api_tag_MAC'.
     //
-    vscf_api_tag_HASH,
+    vscf_api_tag_MAC,
     //
     //  Implementation unique identifier, MUST be second in the structure.
     //
-    vscf_impl_tag_SHA256,
+    vscf_impl_tag_HMAC,
     //
-    //  Link to the inherited interface API 'hash info'.
+    //  Link to the inherited interface API 'mac info'.
     //
-    &hash_info_api,
+    &mac_info_api,
     //
-    //  Calculate hash over given data.
+    //  Calculate MAC over given data.
     //
-    (vscf_hash_api_hash_fn)vscf_sha256_hash
+    (vscf_mac_api_mac_fn)vscf_hmac_mac
 };
 
 //
-//  Configuration of the interface API 'hash stream api'.
+//  Configuration of the interface API 'mac stream api'.
 //
-static const vscf_hash_stream_api_t hash_stream_api = {
+static const vscf_mac_stream_api_t mac_stream_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'hash_stream' MUST be equal to the 'vscf_api_tag_HASH_STREAM'.
+    //  For interface 'mac_stream' MUST be equal to the 'vscf_api_tag_MAC_STREAM'.
     //
-    vscf_api_tag_HASH_STREAM,
+    vscf_api_tag_MAC_STREAM,
     //
     //  Implementation unique identifier, MUST be second in the structure.
     //
-    vscf_impl_tag_SHA256,
+    vscf_impl_tag_HMAC,
     //
-    //  Link to the inherited interface API 'hash info'.
+    //  Link to the inherited interface API 'mac info'.
     //
-    &hash_info_api,
+    &mac_info_api,
     //
-    //  Start a new hashing.
+    //  Start a new MAC.
     //
-    (vscf_hash_stream_api_start_fn)vscf_sha256_start,
+    (vscf_mac_stream_api_start_fn)vscf_hmac_start,
     //
-    //  Add given data to the hash.
+    //  Add given data to the MAC.
     //
-    (vscf_hash_stream_api_update_fn)vscf_sha256_update,
+    (vscf_mac_stream_api_update_fn)vscf_hmac_update,
     //
-    //  Accompilsh hashing and return it's result (a message digest).
+    //  Accomplish MAC and return it's result (a message digest).
     //
-    (vscf_hash_stream_api_finish_fn)vscf_sha256_finish
+    (vscf_mac_stream_api_finish_fn)vscf_hmac_finish,
+    //
+    //  Prepare to authenticate a new message with the same key
+    //  as the previous MAC operation.
+    //
+    (vscf_mac_stream_api_reset_fn)vscf_hmac_reset
 };
 
 //
 //  Null-terminated array of the implemented 'Interface API' instances.
 //
 static const vscf_api_t *api_array[] = {
-    (const vscf_api_t *)&hash_info_api,
-    (const vscf_api_t *)&hash_api,
-    (const vscf_api_t *)&hash_stream_api,
+    (const vscf_api_t *)&mac_info_api,
+    (const vscf_api_t *)&mac_api,
+    (const vscf_api_t *)&mac_stream_api,
     NULL
 };
 
 //
-//  Compile-time known information about 'sha256' implementation.
+//  Compile-time known information about 'hmac' implementation.
 //
 static const vscf_impl_info_t info = {
     //
     //  Implementation unique identifier, MUST be first in the structure.
     //
-    vscf_impl_tag_SHA256,
+    vscf_impl_tag_HMAC,
     //
     //  NULL terminated array of the implemented interfaces.
     //  MUST be second in the structure.
@@ -173,144 +175,179 @@ static const vscf_impl_info_t info = {
     //
     //  Release acquired inner resources.
     //
-    (vscf_impl_cleanup_fn)vscf_sha256_cleanup,
+    (vscf_impl_cleanup_fn)vscf_hmac_cleanup,
     //
     //  Self destruction, according to destruction policy.
     //
-    (vscf_impl_delete_fn)vscf_sha256_delete
+    (vscf_impl_delete_fn)vscf_hmac_delete
 };
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_sha256_init(vscf_sha256_impl_t *sha256_impl) {
+vscf_hmac_init(vscf_hmac_impl_t *hmac_impl) {
 
-    VSCF_ASSERT_PTR(sha256_impl);
+    VSCF_ASSERT_PTR(hmac_impl);
 
-    vscf_zeroize(sha256_impl, sizeof(vscf_sha256_impl_t));
+    vscf_zeroize(hmac_impl, sizeof(vscf_hmac_impl_t));
 
-    sha256_impl->info = &info;
-    sha256_impl->refcnt = 1;
+    hmac_impl->info = &info;
+    hmac_impl->refcnt = 1;
 
-    vscf_sha256_init_ctx(sha256_impl);
+    vscf_hmac_init_ctx(hmac_impl);
 }
 
 //
 //  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_sha256_init()'.
+//  This is a reverse action of the function 'vscf_hmac_init()'.
 //
 VSCF_PUBLIC void
-vscf_sha256_cleanup(vscf_sha256_impl_t *sha256_impl) {
+vscf_hmac_cleanup(vscf_hmac_impl_t *hmac_impl) {
 
-    if (sha256_impl == NULL || sha256_impl->info == NULL) {
+    if (hmac_impl == NULL || hmac_impl->info == NULL) {
         return;
     }
 
-    if (sha256_impl->refcnt == 0) {
+    if (hmac_impl->refcnt == 0) {
         return;
     }
 
-    if (--sha256_impl->refcnt > 0) {
+    if (--hmac_impl->refcnt > 0) {
         return;
     }
 
-    vscf_sha256_cleanup_ctx(sha256_impl);
+    vscf_hmac_release_hash(hmac_impl);
 
-    vscf_zeroize(sha256_impl, sizeof(vscf_sha256_impl_t));
+    vscf_hmac_cleanup_ctx(hmac_impl);
+
+    vscf_zeroize(hmac_impl, sizeof(vscf_hmac_impl_t));
 }
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_sha256_impl_t *
-vscf_sha256_new(void) {
+VSCF_PUBLIC vscf_hmac_impl_t *
+vscf_hmac_new(void) {
 
-    vscf_sha256_impl_t *sha256_impl = (vscf_sha256_impl_t *) vscf_alloc(sizeof (vscf_sha256_impl_t));
-    VSCF_ASSERT_ALLOC(sha256_impl);
+    vscf_hmac_impl_t *hmac_impl = (vscf_hmac_impl_t *) vscf_alloc(sizeof (vscf_hmac_impl_t));
+    VSCF_ASSERT_ALLOC(hmac_impl);
 
-    vscf_sha256_init(sha256_impl);
+    vscf_hmac_init(hmac_impl);
 
-    return sha256_impl;
+    return hmac_impl;
 }
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha256_new()'.
+//  This is a reverse action of the function 'vscf_hmac_new()'.
 //
 VSCF_PUBLIC void
-vscf_sha256_delete(vscf_sha256_impl_t *sha256_impl) {
+vscf_hmac_delete(vscf_hmac_impl_t *hmac_impl) {
 
-    vscf_sha256_cleanup(sha256_impl);
+    vscf_hmac_cleanup(hmac_impl);
 
-    if (sha256_impl && (sha256_impl->refcnt == 0)) {
-        vscf_dealloc(sha256_impl);
+    if (hmac_impl && (hmac_impl->refcnt == 0)) {
+        vscf_dealloc(hmac_impl);
     }
 }
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha256_new()'.
+//  This is a reverse action of the function 'vscf_hmac_new()'.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_sha256_destroy(vscf_sha256_impl_t **sha256_impl_ref) {
+vscf_hmac_destroy(vscf_hmac_impl_t **hmac_impl_ref) {
 
-    VSCF_ASSERT_PTR(sha256_impl_ref);
+    VSCF_ASSERT_PTR(hmac_impl_ref);
 
-    vscf_sha256_impl_t *sha256_impl = *sha256_impl_ref;
-    *sha256_impl_ref = NULL;
+    vscf_hmac_impl_t *hmac_impl = *hmac_impl_ref;
+    *hmac_impl_ref = NULL;
 
-    vscf_sha256_delete(sha256_impl);
+    vscf_hmac_delete(hmac_impl);
 }
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_sha256_impl_t *
-vscf_sha256_copy(vscf_sha256_impl_t *sha256_impl) {
+VSCF_PUBLIC vscf_hmac_impl_t *
+vscf_hmac_copy(vscf_hmac_impl_t *hmac_impl) {
 
     // Proxy to the parent implementation.
-    return (vscf_sha256_impl_t *)vscf_impl_copy((vscf_impl_t *)sha256_impl);
+    return (vscf_hmac_impl_t *)vscf_impl_copy((vscf_impl_t *)hmac_impl);
 }
 
 //
-//  Returns instance of the implemented interface 'hash info'.
+//  Returns instance of the implemented interface 'mac'.
 //
-VSCF_PUBLIC const vscf_hash_info_api_t *
-vscf_sha256_hash_info_api(void) {
+VSCF_PUBLIC const vscf_mac_api_t *
+vscf_hmac_mac_api(void) {
 
-    return &hash_info_api;
+    return &mac_api;
 }
 
 //
-//  Returns instance of the implemented interface 'hash'.
-//
-VSCF_PUBLIC const vscf_hash_api_t *
-vscf_sha256_hash_api(void) {
-
-    return &hash_api;
-}
-
-//
-//  Return size of 'vscf_sha256_impl_t' type.
+//  Return size of 'vscf_hmac_impl_t' type.
 //
 VSCF_PUBLIC size_t
-vscf_sha256_impl_size(void) {
+vscf_hmac_impl_size(void) {
 
-    return sizeof (vscf_sha256_impl_t);
+    return sizeof (vscf_hmac_impl_t);
 }
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_sha256_impl(vscf_sha256_impl_t *sha256_impl) {
+vscf_hmac_impl(vscf_hmac_impl_t *hmac_impl) {
 
-    VSCF_ASSERT_PTR(sha256_impl);
-    return (vscf_impl_t *)(sha256_impl);
+    VSCF_ASSERT_PTR(hmac_impl);
+    return (vscf_impl_t *)(hmac_impl);
+}
+
+//
+//  Setup dependency to the interface 'hash stream' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_hmac_use_hash(vscf_hmac_impl_t *hmac_impl, vscf_impl_t *hash) {
+
+    VSCF_ASSERT_PTR(hmac_impl);
+    VSCF_ASSERT_PTR(hash);
+    VSCF_ASSERT_PTR(hmac_impl->hash == NULL);
+
+    VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
+
+    hmac_impl->hash = vscf_impl_copy(hash);
+}
+
+//
+//  Setup dependency to the interface 'hash stream' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_hmac_take_hash(vscf_hmac_impl_t *hmac_impl, vscf_impl_t *hash) {
+
+    VSCF_ASSERT_PTR(hmac_impl);
+    VSCF_ASSERT_PTR(hash);
+    VSCF_ASSERT_PTR(hmac_impl->hash == NULL);
+
+    VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
+
+    hmac_impl->hash = hash;
+}
+
+//
+//  Release dependency to the interface 'hash stream'.
+//
+VSCF_PUBLIC void
+vscf_hmac_release_hash(vscf_hmac_impl_t *hmac_impl) {
+
+    VSCF_ASSERT_PTR(hmac_impl);
+
+    vscf_impl_destroy(&hmac_impl->hash);
 }
 
 

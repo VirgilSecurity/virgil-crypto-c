@@ -46,21 +46,20 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'hmac384' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
+//  Interface 'mac' API.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_HMAC384_IMPL_H_INCLUDED
-#define VSCF_HMAC384_IMPL_H_INCLUDED
+#ifndef VSCF_MAC_API_H_INCLUDED
+#define VSCF_MAC_API_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_error.h"
-#include "vscf_impl_private.h"
-#include "vscf_hmac384.h"
+#include "vscf_api.h"
+#include "vscf_impl.h"
+#include "vscf_mac_info.h"
 
-#include <mbedtls/md.h>
+#include <virgil/common/vsc_data.h>
+#include <virgil/common/vsc_buffer.h>
 //  @end
 
 
@@ -76,21 +75,31 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Callback. Calculate MAC over given data.
 //
-struct vscf_hmac384_impl_t {
+typedef void (*vscf_mac_api_mac_fn)(vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac);
+
+//
+//  Contains API requirements of the interface 'mac'.
+//
+struct vscf_mac_api_t {
     //
-    //  Compile-time known information about this implementation.
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'mac' MUST be equal to the 'vscf_api_tag_MAC'.
     //
-    const vscf_impl_info_t *info;
+    vscf_api_tag_t api_tag;
     //
-    //  Reference counter.
+    //  Implementation unique identifier, MUST be second in the structure.
     //
-    size_t refcnt;
+    vscf_impl_tag_t impl_tag;
     //
-    //  Implementation specific context.
+    //  Link to the inherited interface API 'mac info'.
     //
-    mbedtls_md_context_t hmac_ctx;
+    const vscf_mac_info_api_t *mac_info_api;
+    //
+    //  Calculate MAC over given data.
+    //
+    vscf_mac_api_mac_fn mac_cb;
 };
 
 
@@ -107,5 +116,5 @@ struct vscf_hmac384_impl_t {
 
 
 //  @footer
-#endif // VSCF_HMAC384_IMPL_H_INCLUDED
+#endif // VSCF_MAC_API_H_INCLUDED
 //  @end

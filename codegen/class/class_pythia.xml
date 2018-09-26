@@ -107,7 +107,7 @@
         <argument name="blinded password" class="buffer"/>
         <argument name="blinding secret" class="buffer"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
 
@@ -119,7 +119,7 @@
         <argument name="blinding secret" class="data"/>
         <argument name="deblinded password" class="buffer"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
 
@@ -133,7 +133,7 @@
         <argument name="transformation private key" class="buffer"/>
         <argument name="transformation public key" class="buffer"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
 
@@ -147,7 +147,7 @@
         <argument name="transformed password" class="buffer"/>
         <argument name="transformed tweak" class="buffer"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
 
@@ -163,7 +163,7 @@
         <argument name="proof_value_c" class="buffer"/>
         <argument name="proof_value_u" class="buffer"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
 
@@ -179,7 +179,7 @@
         <argument name="proof value c" class="data"/>
         <argument name="proof value u" class="data"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
 
@@ -194,7 +194,7 @@
         <argument name="new transformation private key" class="data"/>
         <argument name="password update token" class="buffer"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
 
@@ -207,7 +207,7 @@
         <argument name="password update token" class="data"/>
         <argument name="updated deblinded password" class="buffer"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
 

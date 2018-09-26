@@ -9,6 +9,6 @@
 
         <argument name="data" class="data"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 </interface>
