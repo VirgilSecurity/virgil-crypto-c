@@ -55,16 +55,20 @@ static void initialize(vscr_ratchet_t *ratchet_alice, vscr_ratchet_t *ratchet_bo
     kdf_info->ratchet_info = vsc_buffer_new_with_capacity(test_ratchet_kdf_info_ratchet.len);
     memcpy(vsc_buffer_ptr(kdf_info->ratchet_info), test_ratchet_kdf_info_ratchet.bytes, test_ratchet_kdf_info_ratchet.len);
     vsc_buffer_reserve(kdf_info->ratchet_info, test_ratchet_kdf_info_ratchet.len);
-    kdf_info->cipher_info = vsc_buffer_new_with_capacity(test_ratchet_kdf_info_cipher.len);
-    memcpy(vsc_buffer_ptr(kdf_info->cipher_info), test_ratchet_kdf_info_cipher.bytes, test_ratchet_kdf_info_cipher.len);
-    vsc_buffer_reserve(kdf_info->cipher_info, test_ratchet_kdf_info_cipher.len);
 
+    vscr_ratchet_cipher_t *ratchet_cipher = vscr_ratchet_cipher_new();
+    ratchet_cipher->kdf_info= vsc_buffer_new_with_capacity(test_ratchet_kdf_info_cipher.len);
+    memcpy(vsc_buffer_ptr(ratchet_cipher->kdf_info), test_ratchet_kdf_info_cipher.bytes, test_ratchet_kdf_info_cipher.len);
+    vsc_buffer_reserve(ratchet_cipher->kdf_info, test_ratchet_kdf_info_cipher.len);
+    vscr_ratchet_use_cipher(ratchet_alice, ratchet_cipher);
+    vscr_ratchet_use_cipher(ratchet_bob, ratchet_cipher);
+    vscr_ratchet_cipher_destroy(&ratchet_cipher);
     vscr_ratchet_use_kdf_info(ratchet_alice, kdf_info);
     vscr_ratchet_use_kdf_info(ratchet_bob, kdf_info);
     vscr_ratchet_kdf_info_destroy(&kdf_info);
 
-    vscr_ratchet_take_rng(ratchet_alice, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
-    vscr_ratchet_take_rng(ratchet_bob, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
+    vscr_ratchet_use_rng(ratchet_alice, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
+    vscr_ratchet_use_rng(ratchet_bob, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
 
     vsc_buffer_t *ratchet_private_key = vsc_buffer_new_with_capacity(test_ratchet_ratchet_private_key.len);
     memcpy(vsc_buffer_ptr(ratchet_private_key), test_ratchet_ratchet_private_key.bytes, test_ratchet_ratchet_private_key.len);
