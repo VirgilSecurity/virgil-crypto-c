@@ -57,4 +57,6 @@
 
     <interface name="hash info"/>
     <interface name="hash stream"/>
+
+    <wrapper lang="swift"/>
 </project>

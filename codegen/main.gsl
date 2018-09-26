@@ -53,6 +53,7 @@ gsl from "context.gsl"
 gsl from "meta.gsl"
 gsl from "features.gsl"
 gsl from "projects_api.gsl"
+gsl from "wrapper.gsl"
 
 gsl from "c_features.gsl"
 gsl from "c_module.gsl"
@@ -148,7 +149,7 @@ function process_project (project, features_list, projects_api, echo_level)
         c_module_implementation_create (my.root, my.root, my.meta)
     endif
 
-    #   Create modules from the clsses.
+    #   Create modules from the classes.
     c_module_class_create (my.root, my.root, my.meta)
 
     #   Process modules.
@@ -203,6 +204,24 @@ function process_project (project, features_list, projects_api, echo_level)
 
     #   Generate CMake files.
     cmake_generate_sources (my.root, my.project)
+
+    #   Generate wrappers code.
+    for my.project.wrapper as wrapper_link
+        echo_info ("Processing wrapper <wrapper lang=\"$(wrapper_link.lang:)\"/>")
+
+        my.wrapper = item_load_from_file ("wrapper/$(make_id ("wrapper", wrapper_link.lang)).xml")
+
+        my.wrappers_destination = XML.new(make_id(my.wrapper.lang, "wrapper", project.name))
+
+        wrapper_resolve (my.wrapper, my.project)
+        wrapper_module_interface_create (my.wrapper, my.root, my.wrappers_destination, my.meta)
+        wrapper_resolve_modules(my.wrapper, my.wrappers_destination)
+        wrapper_generate_project(my.wrapper, my.wrappers_destination)
+        wrapper_generate_sources(my.wrapper, my.wrappers_destination)
+
+        delete my.wrapper
+        delete my.wrappers_destination
+    endfor
 endfunction
 
 
