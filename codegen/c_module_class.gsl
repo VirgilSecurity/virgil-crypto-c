@@ -408,15 +408,9 @@ function _X13_add_constructor (class, constructor, destination, meta)
             my.arg_ctx = my.names.c_class_argument_ctx
 
             . = "\
-            $(my.type_ctx) *$(my.arg_ctx:) = ($(my.type_ctx) *) .(c_global_method_alloc)(sizeof ($(my.type_ctx)));
-            .(c_class_assert_macros_alloc)($(my.arg_ctx:));
-
-            $(my.refs.c_class_method_init)($(my.arg_ctx:));
+            $(my.type_ctx) *$(my.arg_ctx:) = $(my.refs.c_class_method_new)();
 
             //   TODO: Perform additional initialization.
-
-            $(my.arg_ctx:)->$(my.names.c_property_ref_counter:) = 1;
-            $(my.arg_ctx:)->$(my.refs.c_class_property_self_dealloc) = .(c_global_method_dealloc);
 
             return $(my.arg_ctx:);
             "
