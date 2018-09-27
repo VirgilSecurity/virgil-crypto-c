@@ -38,7 +38,7 @@
     <external library="mbedtls"/>
     <external library="ed25519"/>
 
-    <project name="common"/>
-    <project name="foundation"/>
+    <!-- <project name="common"/> -->
+    <!-- <project name="foundation"/> -->
     <project name="pythia"/>
 </main>

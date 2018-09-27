@@ -214,8 +214,16 @@ function process_project (project, features_list, projects_api, echo_level)
         my.wrappers_destination = XML.new(make_id(my.wrapper.lang, "wrapper", project.name))
 
         wrapper_resolve (my.wrapper, my.project)
-        wrapper_module_interface_create (my.wrapper, my.root, my.wrappers_destination, my.meta)
-        wrapper_resolve_modules(my.wrapper, my.wrappers_destination)
+        wrapper_foreach_interface_create_module (my.wrapper, my.root, my.wrappers_destination, my.meta)
+        wrapper_foreach_module_resolve(my.wrapper, my.wrappers_destination)
+
+        if my.echo_level = "trace"
+            for my.wrappers_destination. as wrapper_module
+                item_save_to_file (wrapper_module, \
+                        make_id (my.wrapper.lang, "module", wrapper_module.name) + ".xml", my.project.work_path)
+            endfor
+        endif
+
         wrapper_generate_project(my.wrapper, my.wrappers_destination)
         wrapper_generate_sources(my.wrapper, my.wrappers_destination)
 

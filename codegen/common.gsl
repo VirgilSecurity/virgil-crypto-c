@@ -455,6 +455,19 @@ function assert_attribute (attribute_scope, attribute_name, caller)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Abort if one of the attributes from the given list is not defined within
+#   given scope.
+# ---------------------------------------------------------------------------
+function assert_attributes (attribute_scope, attribute_list, caller)
+    check_arguments (my, "attribute_scope, attribute_list", my.caller)
+
+    while regexp.match ("([\\w]+)", my.attribute_list, my.attribute_name)
+        my.attribute_list = string.search_replace (my.attribute_list, my.attribute_name, "")
+        assert_attribute (my.attribute_scope, my.attribute_name, my.caller)
+    endwhile
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Abort if attribute with given name is not defined within given scope or
 #   attribute is not a number.
 # ---------------------------------------------------------------------------

@@ -1,0 +1,139 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Functions for Swift primitives generation: protocol, class, enum, etc.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+
+gsl from "common.gsl"
+gsl from "common.gsl"
+
+# ---------------------------------------------------------------------------
+#   Insert description of the given object.
+# ---------------------------------------------------------------------------
+function swift_insert_description (obj, tab_count)
+    my.desciption = my.obj. ?
+    my.tab_count ?= 0
+    if string_empty (my.desciption)
+        return
+    endif
+    insert_code (my.desciption, my.tab_count)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted multiline commented string.
+# ---------------------------------------------------------------------------
+function swift_format_comment (str)
+    if ! defined (my.str)
+        return
+    endif
+
+    my.str = string_indent (my.str)
+    my.str = "/// $(my.str:left, block, no)$(terminator)"
+    my.str = string_multi_rtrim (my.str)
+
+    return my.str
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return multiline formatted string with license.
+# ---------------------------------------------------------------------------
+function swift_format_license(license)
+    return swift_format_comment (my.license) ?
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert: license + caution + description
+# ---------------------------------------------------------------------------
+function swift_insert_prologue (swift_module)
+    check_arguments (my, "swift_module", my)
+
+    assert_item (my.swift_module, "swift_license", my)
+
+    swift_insert_description (my.swift_module->swift_license)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: import
+# ---------------------------------------------------------------------------
+function swift_insert_import (swift_import)
+    check_arguments (my, "swift_import", my)
+
+    assert_attribute (my.swift_import, "framework", my)
+
+    insert_code ("import $(my.swift_import.framework:)")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: property
+# ---------------------------------------------------------------------------
+function swift_insert_protocol_property (swift_property)
+    check_arguments (my, "swift_property", my)
+
+    assert_attributes (my.swift_property, "name, type, visibility", my)
+
+    my.property_modifiers = (my.swift_property.access = "readonly") ?? "{ get }" ? "{ get set }"
+
+    insert_code("\
+        @objc $(my.swift_property.visibility:) \
+             var $(my.swift_property.name:): $(my.swift_property.type:) $(my.property_modifiers:);
+    ", 1)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: protocol
+# ---------------------------------------------------------------------------
+function swift_insert_protocol (swift_protocol)
+    check_arguments (my, "swift_protocol", my)
+
+    assert_attributes (my.swift_protocol, "name, objc_name, visibility", my)
+
+    swift_insert_description(my.swift_protocol)
+    insert_code ("\
+        @objc($(my.swift_protocol.objc_name:)) $(my.swift_protocol.visibility:) protocol $(my.swift_protocol.name:) {
+    ")
+
+    for my.swift_protocol.swift_property
+        swift_insert_protocol_property (swift_property)
+    endfor
+
+    insert_code ("}")
+endfunction
+
+.endtemplate
