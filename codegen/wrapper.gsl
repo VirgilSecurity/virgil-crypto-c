@@ -34,18 +34,30 @@
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 # ---------------------------------------------------------------------------
+#   Contains generic API for wrapper generation for any supported language.
+#
+#   To add new supported language do next:
+#       1. Create file `<lang>.gsl` with methods:
+#           - <lang>_foreach_interface_create_module(wrapper, source, destination, meta)
+#           - <lang>_foreach_module_resolve(wrapper, source)
+#           - <lang>_generate_project(wrapper, source)
+#           - <lang>_generate_sources(wrapper, source)
+#
+#       2. Add `gsl from "<lang>.gsl"` to this file.
+#       3. Create file `wrapper/wrapper_<lang>.xml`
+#       4. Add entity `<wrapper lang="<lang>"/>` to your project.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
 #   language. See https://github.com/imatix/gsl for details.
 # ---------------------------------------------------------------------------
 
 gsl from "common.gsl"
-gsl from "wrapper_swift.gsl"
+gsl from "swift.gsl"
 
 function wrapper_resolve (wrapper, project)
     check_arguments (my, "wrapper, project", my)
 
-    my.proxy_func = make_id("wrapper", my.wrapper.lang, "resolve")
+    my.proxy_func = make_id(my.wrapper.lang, "resolve")
     if macro (my.proxy_func)
         $(my.proxy_func:) (my.wrapper, my.project)
     else
@@ -54,10 +66,10 @@ function wrapper_resolve (wrapper, project)
 endfunction
 
 
-function wrapper_module_interface_create (wrapper, source, destination, meta)
+function wrapper_foreach_interface_create_module (wrapper, source, destination, meta)
     check_arguments (my, "wrapper, source, destination, meta", my)
 
-    my.proxy_func = make_id("wrapper", my.wrapper.lang, "module_interface_create")
+    my.proxy_func = make_id(my.wrapper.lang, "foreach_interface_create_module")
     if macro (my.proxy_func)
         $(my.proxy_func:) (my.wrapper, my.source, my.destination, my.meta)
     else
@@ -66,10 +78,10 @@ function wrapper_module_interface_create (wrapper, source, destination, meta)
 endfunction
 
 
-function wrapper_resolve_modules(wrapper, source)
+function wrapper_foreach_module_resolve(wrapper, source)
     check_arguments (my, "wrapper, source", my)
 
-    my.proxy_func = make_id("wrapper", my.wrapper.lang, "resolve_modules")
+    my.proxy_func = make_id(my.wrapper.lang, "foreach_module_resolve")
     if macro (my.proxy_func)
         $(my.proxy_func:) (my.wrapper, my.source)
     else
@@ -81,7 +93,7 @@ endfunction
 function wrapper_generate_project(wrapper, source)
     check_arguments (my, "wrapper, source", my)
 
-    my.proxy_func = make_id("wrapper", my.wrapper.lang, "generate_project")
+    my.proxy_func = make_id(my.wrapper.lang, "generate_project")
     if macro (my.proxy_func)
         $(my.proxy_func:) (my.wrapper, my.source)
     else
@@ -93,7 +105,7 @@ endfunction
 function wrapper_generate_sources(wrapper, source)
     check_arguments (my, "wrapper, source", my)
 
-    my.proxy_func = make_id("wrapper", my.wrapper.lang, "generate_sources")
+    my.proxy_func = make_id(my.wrapper.lang, "generate_sources")
     if macro (my.proxy_func)
         $(my.proxy_func:) (my.wrapper, my.source)
     else

@@ -1,0 +1,354 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Contains API for Swift wrapper generation.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+gsl from "swift_codegen.gsl"
+
+# ===========================================================================
+#   Name and type derivation.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#
+# ---------------------------------------------------------------------------
+function swift_derive_module_name (type)
+    check_arguments (my, "type", my)
+
+    assert_attribute (my.type, "name", my)
+
+    return "$(my.type.name:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#
+# ---------------------------------------------------------------------------
+function swift_derive_constant_name (instance, wrapper)
+    return ""
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return mapped constant type.
+# ---------------------------------------------------------------------------
+function swift_derive_constant_type (instance, wrapper)
+    check_arguments (my, "instance, wrapper", my)
+
+    return "Int"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted instance name.
+# ---------------------------------------------------------------------------
+function swift_derive_instance_name (instance, wrapper)
+    check_arguments (my, "instance, wrapper", my)
+
+    assert_attribute (my.instance, "name", my)
+
+    return "$(my.instance.name:Camel)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return mapped instance type.
+# ---------------------------------------------------------------------------
+function swift_derive_instance_type (instance, wrapper)
+    check_arguments (my, "instance, wrapper", my)
+
+    assert_attribute (my.instance, "name", my)
+
+    return ""
+endfunction
+
+# ---------------------------------------------------------------------------
+#
+# ---------------------------------------------------------------------------
+function swift_derive_method_name (method, wrapper)
+    return ""
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the Swift protocol.
+# ---------------------------------------------------------------------------
+function swift_derive_protocol_name (interface, wrapper)
+    return "$(my.interface.name:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the Objective-C protocol.
+# ---------------------------------------------------------------------------
+function swift_derive_protocol_objc_name (interface, wrapper)
+    return "$(my.wrapper.prefix:UPPER)$(my.interface.name:Pascal)"
+endfunction
+
+# ===========================================================================
+#   Attribute mapping.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Map attribute 'access' of <component/> to <swift_component/>.
+# ---------------------------------------------------------------------------
+function swift_map_attr_access (swift_component, component)
+    check_arguments (my, "swift_component, component", my)
+
+    assert_attribute (my.component, "access", my)
+
+    my.swift_component.access = my.component.access
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Map attribute 'visibility' of <component/> to <swift_component/>.
+# ---------------------------------------------------------------------------
+function swift_map_attr_visibility (swift_component, component)
+    check_arguments (my, "swift_component, component", my)
+
+    assert_attribute (my.component, "visibility", my)
+
+    #   TODO: make mapping more accurate.
+    my.swift_component.visibility = my.component.visibility
+endfunction
+
+
+# ===========================================================================
+#   Component resolution.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Setup and check default and automatically resolved attributes.
+# ---------------------------------------------------------------------------
+function swift_resolve (wrapper, project)
+    check_arguments (my, "wrapper, project", my)
+
+    assert_attribute (my.wrapper, "lang", my)
+    assert_attribute (my.project, "name", my)
+    assert_attribute (my.project, "prefix", my)
+    assert_item (my.project, "license", my)
+
+    my.wrapper.prefix = my.project.prefix
+    my.wrapper.source_dir = "../wrapper/$(my.wrapper.lang:c, lower)/$(my.project.name:c,lower)/"
+    copy my.project->license to my.wrapper
+endfunction
+
+function swift_foreach_module_resolve (wrapper, source)
+    check_arguments (my, "wrapper, source", my)
+
+    # TODO: Add UIDS
+endfunction
+
+
+# ===========================================================================
+#   Component creation.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Create entity <swift_property/> from the entity <instance/>.
+# ---------------------------------------------------------------------------
+function swift_wrapper_create_property_from_constant (wrapper, constant, destination, meta)
+    check_arguments (my, "wrapper, constant, destination, meta", my)
+
+    new swift_property to my.destination
+        . = swift_format_comment (my.constant) ?
+        .name = swift_derive_instance_name (my.constant, my.wrapper)
+        .type = swift_derive_constant_type (my.constant, my.wrapper)
+        .visibility = "public"
+        .access = "readonly"
+
+        return swift_property
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <swift_property/> from the entity <instance/>.
+# ---------------------------------------------------------------------------
+function swift_wrapper_create_property_from_instance (wrapper, instance, destination, meta)
+    check_arguments (my, "wrapper, instance, destination, meta", my)
+
+    assert_attribute (my.instance, "access", my)
+
+    new swift_property to my.destination
+        . = swift_format_comment (my.instance) ?
+        .name = swift_derive_instance_name (my.instance, my.wrapper)
+        .type = swift_derive_instance_type (my.instance, my.wrapper)
+
+        swift_map_attr_access (swift_property, my.instance)
+        swift_map_attr_visibility (swift_property, my.instance)
+
+        new swift_getter to swift_property
+        endnew
+
+        if my.instance.access <> "readonly"
+            new swift_setter to swift_property
+            endnew
+        endif
+
+        return swift_property
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <swift_method/> from the entity <method/>.
+# ---------------------------------------------------------------------------
+function swift_wrapper_create_method (wrapper, method, destination, meta)
+    check_arguments (my, "wrapper, method, destination, meta", my)
+
+    new swift_method to my.destination
+        . = swift_format_comment (my.method) ?
+        .name = swift_derive_method_name (method, my.wrapper)
+
+        swift_map_attr_visibility (swift_method, my.method)
+
+        return swift_method
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create module with Swift protocol from the abstract 'interface' notion.
+# ---------------------------------------------------------------------------
+function swift_create_interface_module (wrapper, interface, destination, meta)
+    check_arguments (my, "wrapper, interface, destination, meta", my)
+
+    new swift_module to my.destination
+        .name = swift_derive_module_name (my.interface)
+        .source_file_name = 0.name + ".swift"
+        .source_file_path = my.wrapper.source_dir + 0.source_file_name
+
+        new swift_license to swift_module
+            . = swift_format_license (my.wrapper->license.) ?
+        endnew
+
+        new swift_import to swift_module
+            .framework = "Foundation"
+        endnew
+
+        new swift_protocol to swift_module
+            . = swift_format_comment (my.interface) ?
+            .name = swift_derive_protocol_name (my.interface, my.wrapper)
+            .objc_name = swift_derive_protocol_objc_name (my.interface, my.wrapper)
+
+            swift_map_attr_visibility (swift_protocol, my.interface)
+
+            for my.interface.constant
+                swift_wrapper_create_property_from_constant (my.wrapper, constant, swift_protocol, my.meta)
+            endfor
+
+            for my.interface.method
+                swift_wrapper_create_method (my.wrapper, method, swift_protocol, my.meta)
+            endfor
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   For each abstract interface create correspond Swift protocol.
+# ---------------------------------------------------------------------------
+function swift_foreach_interface_create_module (wrapper, source, destination, meta)
+    check_arguments (my, "wrapper, source, destination, meta", my)
+
+    for my.source.interface
+        swift_create_interface_module (my.wrapper, interface, my.destination, my.meta)
+    endfor
+endfunction
+
+
+# ===========================================================================
+#   Code generation.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Generate project files.
+# ---------------------------------------------------------------------------
+function swift_generate_project (wrapper, source)
+    check_arguments (my, "wrapper, source", my)
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate source files from <swift_module/> entities.
+# ---------------------------------------------------------------------------
+function swift_generate_sources (wrapper, source)
+    check_arguments (my, "wrapper, source", my)
+
+    assert_attribute (my.wrapper, "source_dir", my)
+
+    if -1 = directory.create (my.wrapper.source_dir)
+        echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
+    endif
+
+    for my.source.swift_module
+        echo_trace ("Generate Swift files from <$(name (swift_module)) name = \"$(c_module.name:)\"/>", my)
+
+        output swift_module.source_file_path
+
+        swift_insert_prologue (swift_module)
+        newline(2)
+
+        for swift_module.swift_import
+            swift_insert_import (swift_import)
+            newline()
+        endfor
+
+        for swift_module.swift_enum
+            swift_insert_enum (swift_enum)
+            newline()
+        endfor
+
+        for swift_module.swift_protocol
+            swift_insert_protocol (swift_protocol)
+            newline()
+        endfor
+
+        for swift_module.swift_class
+            swift_insert_class (swift_class)
+            newline()
+        endfor
+
+        for swift_module.swift_struct
+            swift_insert_struct (swift_struct)
+            newline()
+        endfor
+
+        for swift_module.swift_extension
+            swift_insert_extension (swift_extension)
+            newline()
+        endfor
+    endfor
+endfunction
+
+
+.endtemplate

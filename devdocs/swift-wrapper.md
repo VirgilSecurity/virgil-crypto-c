@@ -41,7 +41,7 @@ This document describes step-by-step instruction for adding Swift wrapper.
 ### Interface generation model
 
 ```xml
-<swift_module name="JobMaker" file="src/Job/JobMaker.swift">
+<swift_module name="JobMaker" source_file_name="JobMaker.swift" source_file_path="src/Job/JobMaker.swift">
     <swift_license>
         /// BSD-3 Clause License
     </swift_license>
