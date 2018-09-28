@@ -208,10 +208,6 @@ function features_list_update_from_library (features_list, library)
         delete features
     endfor
 
-    for my.features_list.c_features where (0.name = my.library.name) & (0.landlord = "library")
-        delete c_features
-    endfor
-
     #   Grab features
     new features to my.features_list
         .prefix = my.library.prefix ?
@@ -240,10 +236,6 @@ function features_list_update_from_project (features_list, project)
     #   Clean first
     for my.features_list.features where string_equal(0.project ?, my.project.name)
         delete features
-    endfor
-
-    for my.features_list.c_features where (0.name = my.project.name) & (0.landlord = "project")
-        delete c_features
     endfor
 
     #   Grab features
