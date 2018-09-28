@@ -666,7 +666,7 @@ function component_resolve_instance_attr_class (instance, parent)
 
     elsif my.instance.class = "buffer"
         my.instance.project ?= "common"
-        my.instance.access ?= "readwrite"
+        my.instance.access ?= "writeonly"
         my.instance.is_reference = "1"
     endif
 
