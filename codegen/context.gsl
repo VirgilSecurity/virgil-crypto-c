@@ -100,12 +100,9 @@ function resolution_map_apply_to_lang_module (resolution_map, lang_module, work_
 
     echo_trace ("Apply resolution map to <$(name (my.lang_module)) name=\"$(my.lang_module.name:)\"/>", my)
 
-    my.init_module_file_path = \
-            "$(my.work_dir?:)c_module_$(my.lang_module.name:)_unresolved.xml"
-
-    my.final_module_file_path = \
-            "$(my.work_dir?:)c_module_$(my.lang_module.name:).xml"
-
+    my.lang_module_id = make_id (name (my.lang_module), my.lang_module.name)
+    my.init_module_file_path = "$(my.work_dir?:)$(my.lang_module_id:)_unresolved.xml"
+    my.final_module_file_path = "$(my.work_dir?:)$(my.lang_module_id:).xml"
 
     item_save_to_file (my.lang_module, my.init_module_file_path)
 
