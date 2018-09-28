@@ -36,6 +36,6 @@
 import Foundation
 
 /// Provide interface to calculate hash (message digest) over a stream.
-@objc(VSCPHashStream) public protocol HashStream {
+@objc(VSCPHashStream) public protocol HashStream : HashInfo {
 }
 

@@ -111,8 +111,7 @@ function swift_insert_protocol_property (swift_property)
     my.property_modifiers = (my.swift_property.access = "readonly") ?? "{ get }" ? "{ get set }"
 
     insert_code("\
-        @objc $(my.swift_property.visibility:) \
-             var $(my.swift_property.name:): $(my.swift_property.type:) $(my.property_modifiers:);
+        @objc var $(my.swift_property.name:): $(my.swift_property.type:) $(my.property_modifiers:);
     ", 1)
 endfunction
 
@@ -124,9 +123,18 @@ function swift_insert_protocol (swift_protocol)
 
     assert_attributes (my.swift_protocol, "name, objc_name, visibility", my)
 
+    for my.swift_protocol.swift_inherit
+        my.swift_inheritance_list ?= ": "
+        my.swift_inheritance_list += swift_inherit.type
+        if ! last()
+            my.swift_inheritance_list += ", "
+        endif
+    endfor
+
     swift_insert_description(my.swift_protocol)
     insert_code ("\
-        @objc($(my.swift_protocol.objc_name:)) $(my.swift_protocol.visibility:) protocol $(my.swift_protocol.name:) {
+        @objc($(my.swift_protocol.objc_name:)) $(my.swift_protocol.visibility:) protocol $(my.swift_protocol.name:) \
+                $(my.swift_inheritance_list?:) {
     ")
 
     for my.swift_protocol.swift_property

@@ -107,7 +107,11 @@ endfunction
 #   Return formatted name of the Swift protocol.
 # ---------------------------------------------------------------------------
 function swift_derive_protocol_name (interface, wrapper)
-    return "$(my.interface.name:Pascal)"
+    check_arguments (my, "interface, wrapper", my)
+
+    assert_attribute_one_of (my.interface, "name, interface", my)
+
+    return "$(my.interface.name ? my.interface.interface:Pascal)"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -177,6 +181,19 @@ endfunction
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
+#   Create entity <swift_inherit/> from the entity <inherit/>.
+# ---------------------------------------------------------------------------
+function swift_wrapper_create_inherit (wrapper, inherit, destination, meta)
+    check_arguments (my, "wrapper, inherit, destination, meta", my)
+
+    new swift_inherit to my.destination
+        .type = swift_derive_protocol_name (my.inherit, my.wrapper)
+
+        return swift_inherit
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create entity <swift_property/> from the entity <instance/>.
 # ---------------------------------------------------------------------------
 function swift_wrapper_create_property_from_constant (wrapper, constant, destination, meta)
@@ -207,7 +224,6 @@ function swift_wrapper_create_property_from_instance (wrapper, instance, destina
         .type = swift_derive_instance_type (my.instance, my.wrapper)
 
         swift_map_attr_access (swift_property, my.instance)
-        swift_map_attr_visibility (swift_property, my.instance)
 
         new swift_getter to swift_property
         endnew
@@ -262,6 +278,10 @@ function swift_create_interface_module (wrapper, interface, destination, meta)
             .objc_name = swift_derive_protocol_objc_name (my.interface, my.wrapper)
 
             swift_map_attr_visibility (swift_protocol, my.interface)
+
+            for my.interface.inherit
+                swift_wrapper_create_inherit (my.wrapper, inherit, swift_protocol, my.meta)
+            endfor
 
             for my.interface.constant
                 swift_wrapper_create_property_from_constant (my.wrapper, constant, swift_protocol, my.meta)

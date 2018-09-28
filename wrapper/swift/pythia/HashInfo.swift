@@ -37,7 +37,7 @@ import Foundation
 
 /// Provide details about implemented hash algorithm.
 @objc(VSCPHashInfo) public protocol HashInfo {
-    @objc public var digestLen: Int { get };
-    @objc public var blockLen: Int { get };
+    @objc var digestLen: Int { get };
+    @objc var blockLen: Int { get };
 }
 
