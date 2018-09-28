@@ -194,11 +194,6 @@ function process_project (project, features_list, projects_api, echo_level)
         c_module_add_headers (c_module, my.header_resolution_map)
     endfor
 
-    if my.echo_level = "debug"
-        item_save_to_file (my.type_resolution_map, "type_resolution_map.xml", my.project.work_path)
-        item_save_to_file (my.header_resolution_map, "header_resolution_map.xml", my.project.work_path)
-    endif
-
     #   Generate code.
     c_module_generate_sources (my.root)
 
@@ -210,19 +205,21 @@ function process_project (project, features_list, projects_api, echo_level)
         echo_info ("Processing wrapper <wrapper lang=\"$(wrapper_link.lang:)\"/>")
 
         my.wrapper = item_load_from_file ("wrapper/$(make_id ("wrapper", wrapper_link.lang)).xml")
-
         my.wrappers_destination = XML.new(make_id(my.wrapper.lang, "wrapper", project.name))
+        my.type_resolution_map = projects_api_build_type_resolution_map (my.projects_api)
 
         wrapper_resolve (my.wrapper, my.project)
         wrapper_foreach_interface_create_module (my.wrapper, my.root, my.wrappers_destination, my.meta)
         wrapper_foreach_module_resolve(my.wrapper, my.wrappers_destination)
+        projects_api_collect_info (my.projects_api, my.wrappers_destination)
+        projects_api_save (my.projects_api, main.work_path)
 
-        if my.echo_level = "trace"
-            for my.wrappers_destination. as wrapper_module
-                item_save_to_file (wrapper_module, \
-                        make_id (my.wrapper.lang, "module", wrapper_module.name) + ".xml", my.project.work_path)
-            endfor
-        endif
+        for my.wrappers_destination.$(make_id (my.wrapper.lang, "module")) as wrapper_module
+            my.wrapper_module_resolved = \
+                    resolution_map_apply_to_lang_module (my.type_resolution_map, wrapper_module, my.project.work_path)
+            move my.wrapper_module_resolved before wrapper_module
+            delete wrapper_module
+        endfor
 
         wrapper_generate_project(my.wrapper, my.wrappers_destination)
         wrapper_generate_sources(my.wrapper, my.wrappers_destination)
@@ -230,6 +227,11 @@ function process_project (project, features_list, projects_api, echo_level)
         delete my.wrapper
         delete my.wrappers_destination
     endfor
+
+    if my.echo_level = "debug"
+        item_save_to_file (my.type_resolution_map, "type_resolution_map.xml", my.project.work_path)
+        item_save_to_file (my.header_resolution_map, "header_resolution_map.xml", my.project.work_path)
+    endif
 endfunction
 
 
@@ -281,7 +283,6 @@ function run_main ()
     #   Generate cmake files for features.
     cmake_generate_features (my.features_list_resolved, main->license)
     cmake_generate_definitions (my.features_list_resolved, main->license)
-
 endfunction
 
 # ---------------------------------------------------------------------------
