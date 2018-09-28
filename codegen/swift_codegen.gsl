@@ -44,6 +44,81 @@
 gsl from "common.gsl"
 gsl from "common.gsl"
 
+# ===========================================================================
+#   Format.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Return formatted list of arguments without braces.
+# ---------------------------------------------------------------------------
+function swift_format_argument_list (swift_method)
+    check_arguments (my, "swift_method", my)
+
+    for my.swift_method.swift_argument
+        my.arg_list ?= ""
+        my.arg_list += "$(swift_argument.name:): $(swift_argument.type:)"
+        if ! last()
+            my.arg_list += ", "
+        endif
+    endfor
+
+    return my.arg_list
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted list of returned value(s).
+# ---------------------------------------------------------------------------
+function swift_format_return_list (swift_method)
+    check_arguments (my, "swift_method", my)
+
+    my.is_tuple = count (my.swift_method.swift_return) > 1 ?? "1" ? "0"
+
+    for my.swift_method.swift_return
+        my.return_list ?= ""
+
+        if my.is_tuple
+            my.return_list += "$(swift_return.name:): $(swift_return.type:)"
+        else
+            my.return_list += "$(swift_return.type:)"
+        endif
+
+        if ! last()
+            my.return_list += ", "
+        endif
+    endfor
+
+    if defined (my.return_list) & my.is_tuple
+        my.return_list = "(" + my.return_list + ")"
+    endif
+
+    if defined (my.return_list)
+        my.return_list = " -> " + my.return_list
+    endif
+
+    return my.return_list
+endfunction
+
+
+# ===========================================================================
+#   Generate.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Insert given multiline code.
+# ---------------------------------------------------------------------------
+function swift_insert_code (code, tab_count)
+    check_argument (my, "code", my)
+
+    my.code = "$(my.code:left,no)"
+    my.code = string_trim (my.code)
+    my.code = code_collapse_spaces (my.code)
+
+    my.code = string_indent (my.code, my.tab_count)
+    my.code = string_multi_rtrim (my.code)
+
+    out (my.code)
+endfunction
+
 # ---------------------------------------------------------------------------
 #   Insert description of the given object.
 # ---------------------------------------------------------------------------
@@ -53,7 +128,7 @@ function swift_insert_description (obj, tab_count)
     if string_empty (my.desciption)
         return
     endif
-    insert_code (my.desciption, my.tab_count)
+    swift_insert_code (my.desciption, my.tab_count)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -97,7 +172,7 @@ function swift_insert_import (swift_import)
 
     assert_attribute (my.swift_import, "framework", my)
 
-    insert_code ("import $(my.swift_import.framework:)")
+    swift_insert_code ("import $(my.swift_import.framework:)")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -110,8 +185,27 @@ function swift_insert_protocol_property (swift_property)
 
     my.property_modifiers = (my.swift_property.access = "readonly") ?? "{ get }" ? "{ get set }"
 
-    insert_code("\
+    swift_insert_code("\
         @objc var $(my.swift_property.name:): $(my.swift_property.type:) $(my.property_modifiers:);
+    ", 1)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: method
+# ---------------------------------------------------------------------------
+function swift_insert_protocol_method (swift_method)
+    check_arguments (my, "swift_method", my)
+
+    assert_attributes (my.swift_method, "name", my)
+
+    my.method_modifiers = ""
+    my.method_args = swift_format_argument_list(my.swift_method) ?
+    my.method_return = swift_format_return_list(my.swift_method) ?
+    my.method_throws = my.swift_method.throws ?? "throws" ?
+
+    swift_insert_code("\
+        @objc func $(my.method_modifiers:) $(my.swift_method.name:)($(my.method_args?:)) $(my.method_throws?:) \
+                $(my.method_return?:)
     ", 1)
 endfunction
 
@@ -132,7 +226,7 @@ function swift_insert_protocol (swift_protocol)
     endfor
 
     swift_insert_description(my.swift_protocol)
-    insert_code ("\
+    swift_insert_code ("\
         @objc($(my.swift_protocol.objc_name:)) $(my.swift_protocol.visibility:) protocol $(my.swift_protocol.name:) \
                 $(my.swift_inheritance_list?:) {
     ")
@@ -141,7 +235,11 @@ function swift_insert_protocol (swift_protocol)
         swift_insert_protocol_property (swift_property)
     endfor
 
-    insert_code ("}")
+    for my.swift_protocol.swift_method
+        swift_insert_protocol_method (swift_method)
+    endfor
+
+    swift_insert_code ("}")
 endfunction
 
 .endtemplate

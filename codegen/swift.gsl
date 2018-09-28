@@ -48,7 +48,7 @@ gsl from "swift_codegen.gsl"
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
-#
+#   Return formatted module name.
 # ---------------------------------------------------------------------------
 function swift_derive_module_name (type)
     check_arguments (my, "type", my)
@@ -59,10 +59,12 @@ function swift_derive_module_name (type)
 endfunction
 
 # ---------------------------------------------------------------------------
-#
+#   Return formatted constant name.
 # ---------------------------------------------------------------------------
 function swift_derive_constant_name (instance, wrapper)
-    return ""
+    assert_attribute (my.instance, "name", my)
+
+    return "$(my.instance.name:Camel)"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -93,14 +95,20 @@ function swift_derive_instance_type (instance, wrapper)
 
     assert_attribute (my.instance, "name", my)
 
-    return ""
+    if string_in (my.instance.class, "data, buffer")
+        return "Data"
+    endif
+
+    return "Unknown"
 endfunction
 
 # ---------------------------------------------------------------------------
-#
+#   Return formatted method name.
 # ---------------------------------------------------------------------------
 function swift_derive_method_name (method, wrapper)
-    return ""
+    check_arguments (my, "method, wrapper", my)
+
+    return "$(my.method.name:Camel)"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -146,6 +154,15 @@ function swift_map_attr_visibility (swift_component, component)
 
     #   TODO: make mapping more accurate.
     my.swift_component.visibility = my.component.visibility
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Map <instance/> attributes to the <swift_instance/> attributes.
+# ---------------------------------------------------------------------------
+function swift_map_instance (swift_instance, instance, wrapper)
+    check_arguments (my, "swift_instance, instance, wrapper", my)
+
+    my.swift_instance.type = swift_derive_instance_type (my.instance, my.wrapper)
 endfunction
 
 
@@ -201,7 +218,7 @@ function swift_wrapper_create_property_from_constant (wrapper, constant, destina
 
     new swift_property to my.destination
         . = swift_format_comment (my.constant) ?
-        .name = swift_derive_instance_name (my.constant, my.wrapper)
+        .name = swift_derive_constant_name (my.constant, my.wrapper)
         .type = swift_derive_constant_type (my.constant, my.wrapper)
         .visibility = "public"
         .access = "readonly"
@@ -238,6 +255,48 @@ function swift_wrapper_create_property_from_instance (wrapper, instance, destina
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Create entity <swift_argument/> from the entity <argument/>.
+# ---------------------------------------------------------------------------
+function swift_wrapper_create_argument (wrapper, argument, destination, meta)
+    check_arguments (my, "wrapper, argument, destination, meta", my)
+
+    assert_attributes (my.argument, "name", my)
+
+    new swift_argument to my.destination
+        .name = swift_derive_instance_name (my.argument, my.wrapper)
+
+        swift_map_instance (swift_argument, my.argument, my.wrapper)
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <swift_return/> from the entity <argument/>.
+# ---------------------------------------------------------------------------
+function swift_wrapper_create_return_from_argument (wrapper, argument, destination, meta)
+    check_arguments (my, "wrapper, argument, destination, meta", my)
+
+    assert_attributes (my.argument, "name", my)
+
+    new swift_return to my.destination
+        .name = swift_derive_instance_name (my.argument, my.wrapper)
+
+        swift_map_instance (swift_return, my.argument, my.wrapper)
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <swift_return/> from the entity <return/>if it is not
+#   an error, otherwise nothing is created.
+# ---------------------------------------------------------------------------
+function swift_wrapper_create_return (wrapper, return, destination, meta)
+    check_arguments (my, "wrapper, return, destination, meta", my)
+
+    new swift_return to my.destination
+        swift_map_instance (swift_return, my.return, my.wrapper)
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create entity <swift_method/> from the entity <method/>.
 # ---------------------------------------------------------------------------
 function swift_wrapper_create_method (wrapper, method, destination, meta)
@@ -246,8 +305,21 @@ function swift_wrapper_create_method (wrapper, method, destination, meta)
     new swift_method to my.destination
         . = swift_format_comment (my.method) ?
         .name = swift_derive_method_name (method, my.wrapper)
+        .throws = count (my.method.return, string_equal (return.enum, "error")) ?? "1" ? "0"
 
         swift_map_attr_visibility (swift_method, my.method)
+
+        for my.method.argument
+            if argument.access = "readonly"
+                swift_wrapper_create_argument (my.wrapper, argument, swift_method, my.meta)
+            else
+                swift_wrapper_create_return_from_argument (my.wrapper, argument, swift_method, my.meta)
+            endif
+        endfor
+
+        for my.method.return where ! string_equal (return.enum, "error")
+            swift_wrapper_create_return (my.wrapper, return, swift_method, my.meta)
+        endfor
 
         return swift_method
     endnew
