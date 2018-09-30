@@ -142,7 +142,7 @@ VSCR_PUBLIC vscr_ratchet_prekey_message_t *
 vscr_ratchet_prekey_message_copy(vscr_ratchet_prekey_message_t *ratchet_prekey_message_ctx);
 
 VSCR_PUBLIC size_t
-vscr_ratchet_prekey_message_serialize_len(size_t cipher_text_len);
+vscr_ratchet_prekey_message_serialize_len(size_t message_len);
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_prekey_message_serialize(vscr_ratchet_prekey_message_t *ratchet_prekey_message_ctx, vsc_buffer_t *output);

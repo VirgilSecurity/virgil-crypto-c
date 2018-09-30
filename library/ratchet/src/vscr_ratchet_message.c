@@ -249,6 +249,8 @@ vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message_ctx, vsc_
     //       public_key OCTET_STRING,
     //       cipher_text OCTET_STRING }
 
+    VSCR_ASSERT_PTR(ratchet_message_ctx);
+
     VSCR_ASSERT(vsc_buffer_left(output) >= vscr_ratchet_message_serialize_len(vsc_buffer_len(ratchet_message_ctx->cipher_text)));
 
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
@@ -272,6 +274,7 @@ vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message_ctx, vsc_
     if (vscf_asn1wr_error(asn1wr) != vscf_SUCCESS) {
         vscf_asn1wr_destroy(&asn1wr);
 
+        // FIXME
         return vscr_ASN1_WRITE_ERROR;
     }
 
@@ -297,6 +300,7 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
     uint32_t counter = vscf_asn1rd_read_uint32(asn1rd);
 
     size_t public_key_len = vscf_asn1rd_get_len(asn1rd);
+    // FIXME: Should not crash
     VSCR_ASSERT(public_key_len == vscr_ratchet_message_PUBLIC_KEY_LENGTH);
     vsc_buffer_t *public_key = vsc_buffer_new_with_capacity(public_key_len);
     vscf_asn1rd_read_octet_str(asn1rd, public_key);
@@ -310,6 +314,7 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
         vsc_buffer_destroy(&cipher_text);
         vscf_asn1rd_destroy(&asn1rd);
 
+        // FIXME
         VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_ASN1_READ_ERROR);
 
         return NULL;
