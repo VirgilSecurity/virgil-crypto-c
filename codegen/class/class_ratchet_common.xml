@@ -1,7 +1,8 @@
 <class name="ratchet common" context="public">
 
-    <constant name="ratchet message version" value="1"/>
+    <constant name="ratchet regular message version" value="1"/>
     <constant name="ratchet protocol version" value="1"/>
+    <constant name="ratchet message version" value="1"/>
     <constant name="ratchet shared key length" value="32"/>
     <constant name="max skipped messages" value="40"/>
     <constant name="max receivers chains" value="5"/>
