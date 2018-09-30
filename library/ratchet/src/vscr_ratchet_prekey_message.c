@@ -191,8 +191,6 @@ static void
 vscr_ratchet_prekey_message_init_ctx(vscr_ratchet_prekey_message_t *ratchet_prekey_message_ctx) {
 
     VSCR_ASSERT_PTR(ratchet_prekey_message_ctx);
-
-    //  TODO: Perform additional context initialization.
 }
 
 //
@@ -205,7 +203,10 @@ vscr_ratchet_prekey_message_cleanup_ctx(vscr_ratchet_prekey_message_t *ratchet_p
 
     VSCR_ASSERT_PTR(ratchet_prekey_message_ctx);
 
-    //  TODO: Release all inner resources.
+    vsc_buffer_destroy(&ratchet_prekey_message_ctx->message);
+    vsc_buffer_destroy(&ratchet_prekey_message_ctx->identity_key);
+    vsc_buffer_destroy(&ratchet_prekey_message_ctx->long_term_key);
+    vsc_buffer_destroy(&ratchet_prekey_message_ctx->one_time_key);
 }
 
 VSCR_PUBLIC vscr_ratchet_prekey_message_t *

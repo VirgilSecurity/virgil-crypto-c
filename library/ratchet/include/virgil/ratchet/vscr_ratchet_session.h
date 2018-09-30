@@ -51,6 +51,7 @@
 #include "vscr_ratchet_common.h"
 #include "vscr_impl.h"
 #include "vscr_ratchet.h"
+#include "vscr_ratchet_message.h"
 
 #include <virgil/foundation/vscf_error_ctx.h>
 #include <virgil/common/vsc_buffer.h>
@@ -174,10 +175,10 @@ vscr_ratchet_session_encrypt(vscr_ratchet_session_t *ratchet_session_ctx, vsc_da
         vsc_buffer_t *cipher_text);
 
 VSCR_PUBLIC size_t
-vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, size_t cipher_text_len);
+vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, const vscr_ratchet_message_t *message);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session_ctx, vsc_data_t cipher_text,
+vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session_ctx, const vscr_ratchet_message_t *message,
         vsc_buffer_t *plain_text);
 
 

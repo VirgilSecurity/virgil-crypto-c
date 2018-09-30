@@ -191,8 +191,6 @@ static void
 vscr_ratchet_message_init_ctx(vscr_ratchet_message_t *ratchet_message_ctx) {
 
     VSCR_ASSERT_PTR(ratchet_message_ctx);
-
-    //  TODO: Perform additional context initialization.
 }
 
 //
