@@ -136,44 +136,6 @@ function _Z19_add_instances_of_interface_api (impl, source, destination, meta)
     endfor
 endfunction
 
-# ---------------------------------------------------------------------------
-#   Add instance that is array of the implemented 'Interface API' instances.
-# ---------------------------------------------------------------------------
-function _Z19_add_instance_array_of_interface_api (impl, destination, meta)
-    check_arguments (my, "impl, destination, meta", my)
-
-    my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
-
-    new variable to my.destination
-        . = "Null-terminated array of the implemented 'Interface API' instances."
-        .name = my.names.implementation_variable_api_array
-        .class = my.refs.class_api_struct_api
-        .declaration = "private"
-        .definition = "private"
-
-        new array to variable
-            .length = "derived"
-            .access = "readonly"
-        endnew
-
-        for my.impl.interface
-            new value to variable
-                .value = my.refs.implementation_variable_$(make_id (interface.name))_api
-
-                new cast to value
-                    .class = my.refs.class_api_struct_api
-                    .access = "readonly"
-                endnew
-            endnew
-        endfor
-
-        new value to variable
-            .value = "NULL"
-        endnew
-    endnew
-endfunction
-
 
 # ---------------------------------------------------------------------------
 #   Add instance of the 'Implementation Info' class.
@@ -201,8 +163,8 @@ function _Z19_add_instance_impl_info (impl, source, destination, meta)
                 if property.tag = "impl_tag"
                     .value = my.refs.implementation_constant_tag
 
-                elsif property.tag = "api_array"
-                    .value = my.refs.implementation_variable_api_array
+                elsif property.tag = "find_api"
+                    .value = my.refs.implementation_method_find_api
 
                 elsif property.tag = "self_cleanup"
                     .value = my.refs.implementation_method_cleanup
@@ -233,7 +195,6 @@ function _Z19_add_instances (impl, source, destination, meta)
     check_arguments (my, "impl, source, destination, meta", my)
 
     _Z19_add_instances_of_interface_api (my.impl, my.source, my.destination, my.meta)
-    _Z19_add_instance_array_of_interface_api (my.impl, my.destination, my.meta)
     _Z19_add_instance_impl_info (my.impl, my.source, my.destination, my.meta)
 endfunction
 
@@ -787,6 +748,56 @@ function _Z19_add_method_copy (impl, declaration, definition, destination, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
+function _Z19_add_method_find_api (impl, destination, meta)
+    check_arguments (my, "impl, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        .name = my.names.method_find_api
+        .declaration = "private"
+        .definition = "private"
+
+        new argument to method
+            .name = my.names.argument_api_tag
+            .enum = ".(class_api_enum_tag)"
+        endnew
+
+        new return to method
+            .class = ".(class_api_struct_api)"
+        endnew
+
+        new code to method
+            my.impl_switch_api_start = "\
+                switch(.(_argument_api_tag)) {
+            "
+
+            for my.impl.interface by name
+                my.impl_switch_api_case ?= ""
+                my.impl_switch_api_case += "\
+                    case $(my.refs.c_interface_api_tag_$(make_id (interface.name))):
+                        return (const .(c_class_api_struct_api) *)\
+                            &$(my.refs.c_implementation_variable_$(make_id (interface.name))_api);$(terminator)"
+            endfor
+
+            my.impl_switch_api_end = "\
+                    default:
+                        return NULL;
+                }
+            "
+
+            my.method_body = ""
+            my.method_body += format_left (my.impl_switch_api_start)
+            my.method_body += format_left (my.impl_switch_api_case, 1)
+            my.method_body += format_left (my.impl_switch_api_end)
+
+            . = my.method_body
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 function _Z19_add_lifecycle_methods (impl, declaration, definition, destination, meta)
     check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
@@ -1135,6 +1146,8 @@ function c_module_implementation_create_module_internal (impl, source, destinati
             _Z19_add_instances_of_interface_api (my.impl, my.source, module, my.meta)
             _Z19_add_interface_api_methods (my.impl, "external", "private", module, my.meta)
         endif
+
+        _Z19_add_method_find_api (my.impl, module, my.meta)
     endnew
 endfunction
 

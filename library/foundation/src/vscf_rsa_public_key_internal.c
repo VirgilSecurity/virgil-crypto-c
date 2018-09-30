@@ -71,6 +71,7 @@
 #include "vscf_asn1_reader.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_impl.h"
+#include "vscf_api.h"
 //  @end
 
 
@@ -79,6 +80,9 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+static const vscf_api_t *
+vscf_rsa_public_key_find_api(vscf_api_tag_t api_tag);
 
 //
 //  Configuration of the interface API 'key api'.
@@ -207,19 +211,6 @@ static const vscf_import_public_key_api_t import_public_key_api = {
 };
 
 //
-//  Null-terminated array of the implemented 'Interface API' instances.
-//
-static const vscf_api_t *api_array[] = {
-    (const vscf_api_t *)&key_api,
-    (const vscf_api_t *)&public_key_api,
-    (const vscf_api_t *)&encrypt_api,
-    (const vscf_api_t *)&verify_api,
-    (const vscf_api_t *)&export_public_key_api,
-    (const vscf_api_t *)&import_public_key_api,
-    NULL
-};
-
-//
 //  Compile-time known information about 'rsa public key' implementation.
 //
 static const vscf_impl_info_t info = {
@@ -228,10 +219,10 @@ static const vscf_impl_info_t info = {
     //
     vscf_impl_tag_RSA_PUBLIC_KEY,
     //
-    //  NULL terminated array of the implemented interfaces.
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
     //
-    api_array,
+    vscf_rsa_public_key_find_api,
     //
     //  Release acquired inner resources.
     //
@@ -519,6 +510,27 @@ vscf_rsa_public_key_release_asn1wr(vscf_rsa_public_key_impl_t *rsa_public_key_im
     VSCF_ASSERT_PTR(rsa_public_key_impl);
 
     vscf_impl_destroy(&rsa_public_key_impl->asn1wr);
+}
+
+static const vscf_api_t *
+vscf_rsa_public_key_find_api(vscf_api_tag_t api_tag) {
+
+    switch(api_tag) {
+        case vscf_api_tag_ENCRYPT:
+            return (const vscf_api_t *) &encrypt_api;
+        case vscf_api_tag_EXPORT_PUBLIC_KEY:
+            return (const vscf_api_t *) &export_public_key_api;
+        case vscf_api_tag_IMPORT_PUBLIC_KEY:
+            return (const vscf_api_t *) &import_public_key_api;
+        case vscf_api_tag_KEY:
+            return (const vscf_api_t *) &key_api;
+        case vscf_api_tag_PUBLIC_KEY:
+            return (const vscf_api_t *) &public_key_api;
+        case vscf_api_tag_VERIFY:
+            return (const vscf_api_t *) &verify_api;
+        default:
+            return NULL;
+    }
 }
 
 

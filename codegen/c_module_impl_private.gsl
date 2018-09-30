@@ -42,6 +42,8 @@
 # ---------------------------------------------------------------------------
 
 gsl from "common.gsl"
+gsl from "component.gsl"
+gsl from "meta.gsl"
 
 
 # ---------------------------------------------------------------------------
@@ -71,17 +73,13 @@ function _A12_add_struct_info (meta, destination)
 
         new property
             . = "\
-            NULL terminated array of the implemented interfaces.
+            Callback that returns API of the requested interface if implemented, otherwise - NULL.
             MUST be second in the structure.
             "
 
-            .name = my.names.property_api_array
-            .class = ".(class_api_struct_api)"
-            .tag = "api_array"
-
-            new array to property
-                .length = "null_terminated"
-            endnew
+            .name = my.names.property_find_api
+            .callback = ".(class_impl_callback_find_api)"
+            .tag = "find_api"
         endnew
 
         new property
@@ -138,6 +136,68 @@ function  _A12_add_struct_impl (meta, destination)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Define callback 'cleanup'
+# ---------------------------------------------------------------------------
+function _A12_add_callback_cleanup (meta, destination)
+    check_arguments (my, "meta, destination", my)
+
+    my.names = meta_names (my.meta)
+
+    new callback to my.destination
+        . = "Callback type for $(my.names.method_cleanup) action."
+
+        .name = my.names.method_cleanup
+
+        component_create_argument_impl (callback, my.meta)
+    endnew
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Define callback 'delete'
+# ---------------------------------------------------------------------------
+function _A12_add_callback_delete (meta, destination)
+    check_arguments (my, "meta, destination", my)
+
+    my.names = meta_names (my.meta)
+
+    new callback to my.destination
+        . = "Callback type for $(my.names.method_delete) action."
+
+        .name = my.names.method_delete
+
+        component_create_argument_impl (callback, my.meta)
+    endnew
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add callback 'find api'.
+# ---------------------------------------------------------------------------
+function _A12_add_callback_find_api (meta, destination)
+    check_arguments (my, "meta, destination", my)
+
+    my.names = meta_names (my.meta)
+
+    new callback to my.destination
+        . = "\
+            Returns API of the requested interface if implemented,
+            otherwise - NULL.
+        "
+        .name = my.names.property_find_api
+
+        new argument to callback
+            .name = my.names.argument_api_tag
+            .enum = ".(class_api_enum_tag)"
+        endnew
+
+        new return to callback
+            .class = ".(class_api_struct_api)"
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create module with private functionality common for all
 #   'implementation' objects.
 # ---------------------------------------------------------------------------
@@ -171,6 +231,9 @@ function c_module_impl_private_create (meta, destination)
 
         _A12_add_struct_info (my.meta, module)
         _A12_add_struct_impl (my.meta, module)
+        _A12_add_callback_cleanup (my.meta, module)
+        _A12_add_callback_delete (my.meta, module)
+        _A12_add_callback_find_api (my.meta, module)
     endnew
 endfunction
 

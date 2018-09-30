@@ -73,6 +73,7 @@
 #include "vscf_asn1_reader.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_impl.h"
+#include "vscf_api.h"
 //  @end
 
 
@@ -81,6 +82,9 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+static const vscf_api_t *
+vscf_rsa_private_key_find_api(vscf_api_tag_t api_tag);
 
 //
 //  Configuration of the interface API 'key api'.
@@ -237,20 +241,6 @@ static const vscf_import_private_key_api_t import_private_key_api = {
 };
 
 //
-//  Null-terminated array of the implemented 'Interface API' instances.
-//
-static const vscf_api_t *api_array[] = {
-    (const vscf_api_t *)&key_api,
-    (const vscf_api_t *)&generate_key_api,
-    (const vscf_api_t *)&private_key_api,
-    (const vscf_api_t *)&decrypt_api,
-    (const vscf_api_t *)&sign_api,
-    (const vscf_api_t *)&export_private_key_api,
-    (const vscf_api_t *)&import_private_key_api,
-    NULL
-};
-
-//
 //  Compile-time known information about 'rsa private key' implementation.
 //
 static const vscf_impl_info_t info = {
@@ -259,10 +249,10 @@ static const vscf_impl_info_t info = {
     //
     vscf_impl_tag_RSA_PRIVATE_KEY,
     //
-    //  NULL terminated array of the implemented interfaces.
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
     //
-    api_array,
+    vscf_rsa_private_key_find_api,
     //
     //  Release acquired inner resources.
     //
@@ -541,6 +531,29 @@ vscf_rsa_private_key_release_asn1wr(vscf_rsa_private_key_impl_t *rsa_private_key
     VSCF_ASSERT_PTR(rsa_private_key_impl);
 
     vscf_impl_destroy(&rsa_private_key_impl->asn1wr);
+}
+
+static const vscf_api_t *
+vscf_rsa_private_key_find_api(vscf_api_tag_t api_tag) {
+
+    switch(api_tag) {
+        case vscf_api_tag_DECRYPT:
+            return (const vscf_api_t *) &decrypt_api;
+        case vscf_api_tag_EXPORT_PRIVATE_KEY:
+            return (const vscf_api_t *) &export_private_key_api;
+        case vscf_api_tag_GENERATE_KEY:
+            return (const vscf_api_t *) &generate_key_api;
+        case vscf_api_tag_IMPORT_PRIVATE_KEY:
+            return (const vscf_api_t *) &import_private_key_api;
+        case vscf_api_tag_KEY:
+            return (const vscf_api_t *) &key_api;
+        case vscf_api_tag_PRIVATE_KEY:
+            return (const vscf_api_t *) &private_key_api;
+        case vscf_api_tag_SIGN:
+            return (const vscf_api_t *) &sign_api;
+        default:
+            return NULL;
+    }
 }
 
 

@@ -185,7 +185,8 @@ function _X17_add_entity_api (meta)
         _X17_add_smart_name (entity, "struct", "api")
         _X17_add_smart_name (entity, "argument", "api tag")
         _X17_add_smart_name (entity, "property", "api tag")
-        _X17_add_smart_name (entity, "property", "api array")
+        _X17_add_smart_name (entity, "property", "find api")
+        _X17_add_smart_name (entity, "method", "find api")
 
         _X17_add_smart_link (entity, "class api struct api")
         _X17_add_smart_link (entity, "class api enum tag")
@@ -417,6 +418,7 @@ function _X17_add_entity_implementation (meta, implementation)
         _X17_add_link (entity, "implementation method new", make_id ("class", my.name, "method new"))
         _X17_add_link (entity, "implementation method delete", make_id ("class", my.name, "method delete"))
         _X17_add_link (entity, "implementation method destroy", make_id ("class", my.name, "method destroy"))
+        _X17_add_link (entity, "implementation method find api", make_id ("class", my.name, "method find api"))
 
         #   Private variables
         _X17_add_smart_name (entity, "implementation variable", "api array")
@@ -431,6 +433,9 @@ function _X17_add_entity_implementation (meta, implementation)
             _X17_add_link (entity, \
                     "implementation variable $(interface.name) api", \
                     make_id ("class", my.name, "variable", interface.name, "api"))
+
+            _X17_add_link (entity, \
+                    "interface api tag $(interface.name)", make_id ("class api enum tag constant", interface.name))
 
             for interface.constant
                 _X17_add_link (entity, \
