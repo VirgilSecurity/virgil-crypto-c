@@ -784,27 +784,28 @@ function component_resolve_instance_attr_access (instance, parent)
     my.valid_access_argument = "readonly, writeonly, readwrite, disown"
     my.valid_access_variable = "readonly, readwrite"
     my.valid_access_return = "readonly, readwrite, disown"
+    my.instance_dump = component_instance_dump (my.instance)
 
     if item_in (my.instance, "argument") & \
             ! string_in (my.instance.access, my.valid_access_argument)
 
         echo_fatal ( \
             "Invalid value '$(my.instance.access)' of attribute '$(name (my.instance)).access'." + \
-            " Expected {$(my.valid_access_argument)}")
+            " Expected {$(my.valid_access_argument)}. Instance: $(my.instance_dump:)")
 
     elsif item_in (my.instance, "variable, property") & \
             ! string_in (my.instance.access, my.valid_access_variable)
 
         echo_fatal ( \
             "Invalid value '$(my.instance.access)' of attribute '$(name (my.instance)).access'." + \
-            " Expected {$(my.valid_access_variable)}")
+            " Expected {$(my.valid_access_variable)}. Instance: $(my.instance_dump:)")
 
     elsif item_in (my.instance, "return") & \
             ! string_in (my.instance.access, my.valid_access_return)
 
         echo_fatal ( \
             "Invalid value '$(my.instance.access)' of attribute '$(name (my.instance)).access'." + \
-            " Expected {$(my.valid_access_return)}")
+            " Expected {$(my.valid_access_return)}. Instance: $(my.instance_dump:)")
     endif
 
 endfunction
