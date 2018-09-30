@@ -48,14 +48,14 @@
 
     <method name="decrypt len">
         <argument class="context"/>
-        <argument name="cipher text len" type="size"/>
+        <argument name="message" class="ratchet message"/>
 
         <return type="size"/>
     </method>
 
     <method name="decrypt">
         <argument class="context"/>
-        <argument name="cipher text" class="data"/>
+        <argument name="message" class="ratchet message"/>
         <argument name="plain text" class="buffer" access="readwrite"/>
 
         <return enum="error"/>
