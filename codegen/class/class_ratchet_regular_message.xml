@@ -1,4 +1,4 @@
-<class name="ratchet message" context="public">
+<class name="ratchet regular message" context="public">
 
     <require header="virgil/foundation/vscf_asn1wr.h" scope="private"/>
     <require header="virgil/foundation/vscf_asn1rd.h" scope="private"/>
@@ -35,7 +35,7 @@
         <argument name="input" class="data"/>
         <argument name="err ctx" class="error ctx" access="writeonly"/>
 
-        <return class="ratchet message" access="disown"/>
+        <return class="ratchet regular message" access="disown"/>
     </method>
 
 </class>

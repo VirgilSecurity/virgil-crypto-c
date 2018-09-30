@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2018 Virgil Security Inc.
 //
 //  All rights reserved.
@@ -33,35 +31,20 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-// --------------------------------------------------------------------------
+
+#ifndef VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_MESSAGE_H
+#define VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_MESSAGE_H
+
+#include "vsc_data.h"
+
+extern const uint8_t test_ratchet_regular_message_version;
+extern const uint32_t test_ratchet_regular_message_counter;
+extern const vsc_data_t test_ratchet_regular_message_public_key;
+extern const vsc_data_t test_ratchet_regular_message_cipher_text;
+
+extern const uint8_t test_ratchet_regular_message_version_big;
+extern const uint32_t test_ratchet_regular_message_counter_big;
+extern const vsc_data_t test_ratchet_regular_message_cipher_text_big;
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'ratchet message' types definition.
-// --------------------------------------------------------------------------
-
-
-//  @warning
-// --------------------------------------------------------------------------
-//  This file is partially generated.
-//  Generated blocks are enclosed between tags [@<tag>, @end].
-//  User's code can be added between tags [@end, @<tag>].
-// --------------------------------------------------------------------------
-
-#include "vscr_ratchet_message_defs.h"
-//  @end
-
-
-//  @generated
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated section start.
-// --------------------------------------------------------------------------
-
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
+#endif //VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_MESSAGE_H

@@ -32,30 +32,19 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include "test_data_ratchet_message.h"
+#include "test_data_ratchet_regular_message.h"
 
-const byte test_ratchet_random_data_BYTES[] = {
-        0xf3, 0x34, 0x6a, 0x84, 0xd4, 0x2f, 0x9f, 0x54,
-        0xf6, 0xa7, 0x17, 0x1d, 0xe7, 0xd2, 0x8a, 0x32,
-        0x0f, 0x7a, 0xe0, 0x5e, 0x1b, 0xe1, 0x65, 0xf7,
-        0x9f, 0x70, 0xbb, 0x46, 0x89, 0xe0, 0x4e, 0x66,
-};
+const uint8_t test_ratchet_regular_message_version = 5;
+const uint32_t test_ratchet_regular_message_counter = 10;
 
-const vsc_data_t test_ratchet_random_data = {
-        test_ratchet_random_data_BYTES, sizeof(test_ratchet_random_data_BYTES)
-};
-
-const uint8_t test_ratchet_message_version = 5;
-const uint32_t test_ratchet_message_counter = 10;
-
-const byte test_ratchet_message_public_key_BYTES[] = {
+const byte test_ratchet_regular_message_public_key_BYTES[] = {
         0x00, 0x89, 0xff, 0x4a, 0xdb, 0x93, 0xf7, 0x93,
         0xd0, 0xbe, 0x11, 0xc7, 0x41, 0xff, 0x55, 0x86,
         0x76, 0x3c, 0x75, 0x45, 0x64, 0x77, 0x12, 0x8c,
         0xb3, 0xcd, 0xc8, 0xc7, 0x1e, 0xad, 0x5a, 0x69,
 };
 
-const byte test_ratchet_message_cipher_text_BYTES[] = {
+const byte test_ratchet_regular_message_cipher_text_BYTES[] = {
         0x56, 0x83, 0x3a, 0x7a, 0x1c, 0xdb, 0x2e, 0xc9,
         0x91, 0xca, 0x33, 0x8c, 0xd4, 0xa2, 0xed, 0x66,
         0x37, 0x70, 0x40, 0x0f, 0xab, 0x2c, 0xd7, 0x98,
@@ -66,18 +55,18 @@ const byte test_ratchet_message_cipher_text_BYTES[] = {
         0xd2, 0xb8, 0x51, 0xbc, 0x15, 0xb6, 0xfe, 0xf5,
 };
 
-const vsc_data_t test_ratchet_message_public_key = {
-        test_ratchet_message_public_key_BYTES, sizeof(test_ratchet_message_public_key_BYTES)
+const vsc_data_t test_ratchet_regular_message_public_key = {
+        test_ratchet_regular_message_public_key_BYTES, sizeof(test_ratchet_regular_message_public_key_BYTES)
 };
 
-const vsc_data_t test_ratchet_message_cipher_text = {
-        test_ratchet_message_cipher_text_BYTES, sizeof(test_ratchet_message_cipher_text_BYTES)
+const vsc_data_t test_ratchet_regular_message_cipher_text = {
+        test_ratchet_regular_message_cipher_text_BYTES, sizeof(test_ratchet_regular_message_cipher_text_BYTES)
 };
 
-const uint8_t test_ratchet_message_version_big = 252;
-const uint32_t test_ratchet_message_counter_big = 4294967290;
+const uint8_t test_ratchet_regular_message_version_big = 252;
+const uint32_t test_ratchet_regular_message_counter_big = 4294967290;
 
-const byte test_ratchet_message_cipher_text_big_BYTES[] = {
+const byte test_ratchet_regular_message_cipher_text_big_BYTES[] = {
         0x56, 0x83, 0x3a, 0x7a, 0x1c, 0xdb, 0x2e, 0xc9,
         0x91, 0xca, 0x33, 0x8c, 0xd4, 0xa2, 0xed, 0x66,
         0x37, 0x70, 0x40, 0x0f, 0xab, 0x2c, 0xd7, 0x98,
@@ -4176,6 +4165,6 @@ const byte test_ratchet_message_cipher_text_big_BYTES[] = {
         0xd2, 0xb8, 0x51, 0xbc, 0x15, 0xb6, 0xfe, 0xf5,
 };
 
-const vsc_data_t test_ratchet_message_cipher_text_big = {
-        test_ratchet_message_cipher_text_big_BYTES, sizeof(test_ratchet_message_cipher_text_big_BYTES)
+const vsc_data_t test_ratchet_regular_message_cipher_text_big = {
+        test_ratchet_regular_message_cipher_text_big_BYTES, sizeof(test_ratchet_regular_message_cipher_text_big_BYTES)
 };

@@ -43,8 +43,8 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_MESSAGE_H_INCLUDED
-#define VSCR_RATCHET_MESSAGE_H_INCLUDED
+#ifndef VSCR_RATCHET_REGULAR_MESSAGE_H_INCLUDED
+#define VSCR_RATCHET_REGULAR_MESSAGE_H_INCLUDED
 
 #include "vscr_library.h"
 #include "vscr_error.h"
@@ -71,14 +71,14 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
-    vscr_ratchet_message_PUBLIC_KEY_LENGTH = 32
+    vscr_ratchet_regular_message_PUBLIC_KEY_LENGTH = 32
 };
 
 //
-//  Handle 'ratchet message' context.
+//  Handle 'ratchet regular message' context.
 //
-typedef struct vscr_ratchet_message_t vscr_ratchet_message_t;
-struct vscr_ratchet_message_t {
+typedef struct vscr_ratchet_regular_message_t vscr_ratchet_regular_message_t;
+struct vscr_ratchet_regular_message_t {
     //
     //  Function do deallocate self context.
     //
@@ -101,22 +101,22 @@ struct vscr_ratchet_message_t {
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_init(vscr_ratchet_message_t *ratchet_message_ctx);
+vscr_ratchet_regular_message_init(vscr_ratchet_regular_message_t *ratchet_regular_message_ctx);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_cleanup(vscr_ratchet_message_t *ratchet_message_ctx);
+vscr_ratchet_regular_message_cleanup(vscr_ratchet_regular_message_t *ratchet_regular_message_ctx);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_message_t *
-vscr_ratchet_message_new(void);
+VSCR_PUBLIC vscr_ratchet_regular_message_t *
+vscr_ratchet_regular_message_new(void);
 
-VSCR_PUBLIC vscr_ratchet_message_t *
-vscr_ratchet_message_new_with_members(uint8_t version, uint32_t counter, vsc_buffer_t *public_key,
+VSCR_PUBLIC vscr_ratchet_regular_message_t *
+vscr_ratchet_regular_message_new_with_members(uint8_t version, uint32_t counter, vsc_buffer_t *public_key,
         vsc_buffer_t *cipher_text);
 
 //
@@ -124,29 +124,30 @@ vscr_ratchet_message_new_with_members(uint8_t version, uint32_t counter, vsc_buf
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_delete(vscr_ratchet_message_t *ratchet_message_ctx);
+vscr_ratchet_regular_message_delete(vscr_ratchet_regular_message_t *ratchet_regular_message_ctx);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_message_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_regular_message_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_destroy(vscr_ratchet_message_t **ratchet_message_ctx_ref);
+vscr_ratchet_regular_message_destroy(vscr_ratchet_regular_message_t **ratchet_regular_message_ctx_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_message_t *
-vscr_ratchet_message_copy(vscr_ratchet_message_t *ratchet_message_ctx);
+VSCR_PUBLIC vscr_ratchet_regular_message_t *
+vscr_ratchet_regular_message_copy(vscr_ratchet_regular_message_t *ratchet_regular_message_ctx);
 
 VSCR_PUBLIC size_t
-vscr_ratchet_message_serialize_len(size_t cipher_text_len);
+vscr_ratchet_regular_message_serialize_len(size_t cipher_text_len);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message_ctx, vsc_buffer_t *output);
+vscr_ratchet_regular_message_serialize(vscr_ratchet_regular_message_t *ratchet_regular_message_ctx,
+        vsc_buffer_t *output);
 
-VSCR_PUBLIC vscr_ratchet_message_t *
-vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx);
+VSCR_PUBLIC vscr_ratchet_regular_message_t *
+vscr_ratchet_regular_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx);
 
 
 // --------------------------------------------------------------------------
@@ -162,5 +163,5 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx);
 
 
 //  @footer
-#endif // VSCR_RATCHET_MESSAGE_H_INCLUDED
+#endif // VSCR_RATCHET_REGULAR_MESSAGE_H_INCLUDED
 //  @end
