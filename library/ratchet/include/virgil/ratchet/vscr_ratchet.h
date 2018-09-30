@@ -49,7 +49,7 @@
 #include "vscr_library.h"
 #include "vscr_error.h"
 #include "vscr_ratchet_common.h"
-#include "vscr_ratchet_message.h"
+#include "vscr_ratchet_regular_message.h"
 #include "vscr_ratchet_message_key.h"
 #include "vscr_ratchet_chain_key.h"
 #include "vscr_impl.h"

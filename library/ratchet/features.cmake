@@ -58,8 +58,8 @@ option(VSCR_RATCHET_RECEIVER_CHAIN_LIST_NODE "Enable class 'ratchet receiver cha
 option(VSCR_RATCHET_SKIPPED_MESSAGE_KEY "Enable class 'ratchet skipped message key'." ON)
 option(VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE "Enable class 'ratchet skipped message key list node'." ON)
 option(VSCR_RATCHET_SENDER_CHAIN "Enable class 'ratchet sender chain'." ON)
+option(VSCR_RATCHET_REGULAR_MESSAGE "Enable class 'ratchet regular message'." ON)
 option(VSCR_RATCHET_PREKEY_MESSAGE "Enable class 'ratchet prekey message'." ON)
-option(VSCR_RATCHET_MESSAGE "Enable class 'ratchet message'." ON)
 option(VSCR_RATCHET "Enable class 'ratchet'." ON)
 option(VSCR_RATCHET_SESSION "Enable class 'ratchet session'." ON)
 mark_as_advanced(
@@ -76,8 +76,8 @@ mark_as_advanced(
         VSCR_RATCHET_SKIPPED_MESSAGE_KEY
         VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE
         VSCR_RATCHET_SENDER_CHAIN
+        VSCR_RATCHET_REGULAR_MESSAGE
         VSCR_RATCHET_PREKEY_MESSAGE
-        VSCR_RATCHET_MESSAGE
         VSCR_RATCHET
         VSCR_RATCHET_SESSION
         )
@@ -127,11 +127,11 @@ if(VSCR_RATCHET AND NOT VSCR_RATCHET_COMMON)
     message(FATAL_ERROR)
 endif()
 
-if(VSCR_RATCHET AND NOT VSCR_RATCHET_MESSAGE)
+if(VSCR_RATCHET AND NOT VSCR_RATCHET_REGULAR_MESSAGE)
     message("-- error --")
     message("--")
     message("Feature VSCR_RATCHET depends on the feature:")
-    message("     VSCR_RATCHET_MESSAGE - which is disabled.")
+    message("     VSCR_RATCHET_REGULAR_MESSAGE - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
