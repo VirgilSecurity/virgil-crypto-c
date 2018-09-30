@@ -139,9 +139,9 @@ vscr_ratchet_skipped_message_key_list_node_delete(
         return;
     }
 
-    vscr_ratchet_skipped_message_key_list_node_cleanup(ratchet_skipped_message_key_list_node_ctx);
-
     vscr_dealloc_fn self_dealloc_cb = ratchet_skipped_message_key_list_node_ctx->self_dealloc_cb;
+
+    vscr_ratchet_skipped_message_key_list_node_cleanup(ratchet_skipped_message_key_list_node_ctx);
 
     if (ratchet_skipped_message_key_list_node_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
         self_dealloc_cb(ratchet_skipped_message_key_list_node_ctx);

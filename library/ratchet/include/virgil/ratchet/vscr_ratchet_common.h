@@ -48,9 +48,6 @@
 
 #include "vscr_library.h"
 #include "vscr_error.h"
-
-#include <virgil/foundation/vscf_hmac256.h>
-#include <virgil/foundation/vscf_hkdf.h>
 //  @end
 
 
@@ -71,7 +68,7 @@ extern "C" {
 enum {
     vscr_ratchet_common_RATCHET_MESSAGE_VERSION = 1,
     vscr_ratchet_common_RATCHET_PROTOCOL_VERSION = 1,
-    vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH = vscf_hmac256_DIGEST_LEN,
+    vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH = 32,
     vscr_ratchet_common_MAX_SKIPPED_MESSAGES = 40,
     vscr_ratchet_common_MAX_RECEIVERS_CHAINS = 5,
     vscr_ratchet_common_MAX_MESSAGE_GAP = 2000

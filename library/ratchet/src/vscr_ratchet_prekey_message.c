@@ -137,9 +137,9 @@ vscr_ratchet_prekey_message_delete(vscr_ratchet_prekey_message_t *ratchet_prekey
         return;
     }
 
-    vscr_ratchet_prekey_message_cleanup(ratchet_prekey_message_ctx);
-
     vscr_dealloc_fn self_dealloc_cb = ratchet_prekey_message_ctx->self_dealloc_cb;
+
+    vscr_ratchet_prekey_message_cleanup(ratchet_prekey_message_ctx);
 
     if (ratchet_prekey_message_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
         self_dealloc_cb(ratchet_prekey_message_ctx);
@@ -246,7 +246,7 @@ vscr_ratchet_prekey_message_serialize(vscr_ratchet_prekey_message_t *ratchet_pre
     VSCR_UNUSED(ratchet_prekey_message_ctx);
     VSCR_UNUSED(output);
 
-    return vscr_SUCCESS;
+    return vscr_WRONG_MESSAGE_FORMAT;
     //  TODO: This is STUB. Implement me.
 }
 
@@ -255,6 +255,8 @@ vscr_ratchet_prekey_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_
 
     VSCR_UNUSED(input);
     VSCR_UNUSED(err_ctx);
+
+    VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_WRONG_MESSAGE_FORMAT);
 
     return vscr_ratchet_prekey_message_new();
     //  TODO: This is STUB. Implement me.

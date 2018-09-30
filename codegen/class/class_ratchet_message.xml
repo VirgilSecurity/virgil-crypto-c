@@ -28,7 +28,7 @@
         <argument class="context"/>
         <argument name="output" class="buffer"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
     <method name="deserialize">

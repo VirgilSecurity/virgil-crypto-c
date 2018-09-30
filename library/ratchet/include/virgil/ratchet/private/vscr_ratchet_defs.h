@@ -53,12 +53,12 @@
 #define VSCR_RATCHET_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_sender_chain.h"
-#include "vscr_ratchet_receiver_chain_list_node.h"
-#include "vscr_ratchet_skipped_message_key_list_node.h"
 #include "vscr_impl.h"
 #include "vscr_ratchet_cipher.h"
 #include "vscr_ratchet_kdf_info.h"
+#include "vscr_ratchet_sender_chain.h"
+#include "vscr_ratchet_receiver_chain_list_node.h"
+#include "vscr_ratchet_skipped_message_key_list_node.h"
 //  @end
 
 
@@ -86,15 +86,15 @@ struct vscr_ratchet_t {
     //
     size_t refcnt;
     //
-    //  Dependency to the 'rng'.
+    //  Dependency to the interface 'ratchet rng'.
     //
     vscr_impl_t *rng;
     //
-    //  Dependency to the 'cipher'.
+    //  Dependency to the class 'ratchet cipher'.
     //
     vscr_ratchet_cipher_t *cipher;
     //
-    //  Dependency to the 'kdf_info'.
+    //  Dependency to the class 'ratchet kdf info'.
     //
     vscr_ratchet_kdf_info_t *kdf_info;
 

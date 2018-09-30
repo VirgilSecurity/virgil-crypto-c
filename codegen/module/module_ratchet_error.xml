@@ -23,5 +23,9 @@
         <constant name="aes error" of_class="global" value="5">
             AES error
         </constant>
+
+        <constant name="wrong message format" of_class="global" value="6">
+            Wrong message format
+        </constant>
     </enum>
 </module>

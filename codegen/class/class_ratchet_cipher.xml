@@ -1,6 +1,6 @@
 <class name="ratchet cipher" context="public">
 
-    <require header="virgil/foundation/vscf_hmac256.h" scope="private"/>
+    <require header="virgil/foundation/vscf_sha256.h" scope="private"/>
     <require header="virgil/foundation/vscf_hkdf.h" scope="private"/>
     <require header="virgil/foundation/vscf_aes256_gcm.h" scope="private"/>
     <require header="virgil/foundation/vscf_error_ctx.h" scope="public"/>
@@ -29,7 +29,7 @@
 
         <argument name="buffer" class="buffer" access="readwrite"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
     <method name="decrypt">
@@ -39,7 +39,7 @@
 
         <argument name="buffer" class="buffer" access="readwrite"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
 </class>

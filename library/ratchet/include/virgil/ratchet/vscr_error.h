@@ -83,7 +83,11 @@ enum vscr_error_t {
     //
     //  AES error
     //
-    vscr_AES_ERROR = 5
+    vscr_AES_ERROR = 5,
+    //
+    //  Wrong message format
+    //
+    vscr_WRONG_MESSAGE_FORMAT = 6
 };
 typedef enum vscr_error_t vscr_error_t;
 

@@ -25,9 +25,10 @@
     <method name="respond">
         <argument class="context"/>
         <argument name="sender identity public key" class="buffer"/>
+        <argument name="sender ephemeral public key" class="buffer"/>
         <argument name="receiver identity private key" class="buffer"/>
-        <argument name="receiver long term public key" class="buffer"/>
-        <argument name="receiver one time public key" class="buffer"/>
+        <argument name="receiver long term private key" class="buffer"/>
+        <argument name="receiver one time private key" class="buffer"/>
     </method>
 
     <method name="encrypt len">
@@ -42,7 +43,7 @@
         <argument name="plain text" class="data"/>
         <argument name="cipher text" class="buffer" access="readwrite"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
     <method name="decrypt len">
@@ -57,7 +58,7 @@
         <argument name="cipher text" class="data"/>
         <argument name="plain text" class="buffer" access="readwrite"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
 </class>

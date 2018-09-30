@@ -81,7 +81,7 @@ struct vscr_ratchet_cipher_t {
     //
     size_t refcnt;
     //
-    //  Dependency to the 'aes256_gcm'.
+    //  Dependency to the implementation 'aes256 gcm'.
     //
     vscf_aes256_gcm_impl_t *aes256_gcm;
 

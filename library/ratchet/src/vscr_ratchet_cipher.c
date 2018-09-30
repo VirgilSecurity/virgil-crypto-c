@@ -47,7 +47,7 @@
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 
-#include <virgil/foundation/vscf_hmac256.h>
+#include <virgil/foundation/vscf_sha256.h>
 #include <virgil/foundation/vscf_hkdf.h>
 //  @end
 
@@ -60,7 +60,7 @@ vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_
     VSCR_ASSERT_PTR(ratchet_cipher_ctx->aes256_gcm);
 
     vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
-    vscf_hkdf_take_hmac(hkdf, vscf_hmac256_impl(vscf_hmac256_new()));
+    vscf_hkdf_take_hash(hkdf, vscf_sha256_impl(vscf_sha256_new()));
 
     vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(vscf_aes256_gcm_KEY_LEN + vscf_aes256_gcm_NONCE_LEN);
     vsc_buffer_make_secure(derived_secret);
@@ -167,9 +167,9 @@ vscr_ratchet_cipher_delete(vscr_ratchet_cipher_t *ratchet_cipher_ctx) {
         return;
     }
 
-    vscr_ratchet_cipher_cleanup(ratchet_cipher_ctx);
-
     vscr_dealloc_fn self_dealloc_cb = ratchet_cipher_ctx->self_dealloc_cb;
+
+    vscr_ratchet_cipher_cleanup(ratchet_cipher_ctx);
 
     if (ratchet_cipher_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
         self_dealloc_cb(ratchet_cipher_ctx);

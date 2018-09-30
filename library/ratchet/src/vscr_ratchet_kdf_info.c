@@ -134,9 +134,9 @@ vscr_ratchet_kdf_info_delete(vscr_ratchet_kdf_info_t *ratchet_kdf_info_ctx) {
         return;
     }
 
-    vscr_ratchet_kdf_info_cleanup(ratchet_kdf_info_ctx);
-
     vscr_dealloc_fn self_dealloc_cb = ratchet_kdf_info_ctx->self_dealloc_cb;
+
+    vscr_ratchet_kdf_info_cleanup(ratchet_kdf_info_ctx);
 
     if (ratchet_kdf_info_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
         self_dealloc_cb(ratchet_kdf_info_ctx);

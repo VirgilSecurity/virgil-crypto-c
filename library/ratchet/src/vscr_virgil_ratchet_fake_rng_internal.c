@@ -124,11 +124,11 @@ VSCR_PUBLIC void
 vscr_virgil_ratchet_fake_rng_init(vscr_virgil_ratchet_fake_rng_impl_t *virgil_ratchet_fake_rng_impl) {
 
     VSCR_ASSERT_PTR(virgil_ratchet_fake_rng_impl);
-    VSCR_ASSERT_PTR(virgil_ratchet_fake_rng_impl->info == NULL);
 
-    vscr_zeroize (virgil_ratchet_fake_rng_impl, sizeof(vscr_virgil_ratchet_fake_rng_impl_t));
+    vscr_zeroize(virgil_ratchet_fake_rng_impl, sizeof(vscr_virgil_ratchet_fake_rng_impl_t));
 
     virgil_ratchet_fake_rng_impl->info = &info;
+    virgil_ratchet_fake_rng_impl->refcnt = 1;
 }
 
 //
@@ -142,7 +142,15 @@ vscr_virgil_ratchet_fake_rng_cleanup(vscr_virgil_ratchet_fake_rng_impl_t *virgil
         return;
     }
 
-    virgil_ratchet_fake_rng_impl->info = NULL;
+    if (virgil_ratchet_fake_rng_impl->refcnt == 0) {
+        return;
+    }
+
+    if (--virgil_ratchet_fake_rng_impl->refcnt > 0) {
+        return;
+    }
+
+    vscr_zeroize(virgil_ratchet_fake_rng_impl, sizeof(vscr_virgil_ratchet_fake_rng_impl_t));
 }
 
 //
@@ -157,8 +165,6 @@ vscr_virgil_ratchet_fake_rng_new(void) {
 
     vscr_virgil_ratchet_fake_rng_init(virgil_ratchet_fake_rng_impl);
 
-    virgil_ratchet_fake_rng_impl->refcnt = 1;
-
     return virgil_ratchet_fake_rng_impl;
 }
 
@@ -169,8 +175,9 @@ vscr_virgil_ratchet_fake_rng_new(void) {
 VSCR_PUBLIC void
 vscr_virgil_ratchet_fake_rng_delete(vscr_virgil_ratchet_fake_rng_impl_t *virgil_ratchet_fake_rng_impl) {
 
-    if (virgil_ratchet_fake_rng_impl && (--virgil_ratchet_fake_rng_impl->refcnt == 0)) {
-        vscr_virgil_ratchet_fake_rng_cleanup(virgil_ratchet_fake_rng_impl);
+    vscr_virgil_ratchet_fake_rng_cleanup(virgil_ratchet_fake_rng_impl);
+
+    if (virgil_ratchet_fake_rng_impl && (virgil_ratchet_fake_rng_impl->refcnt == 0)) {
         vscr_dealloc(virgil_ratchet_fake_rng_impl);
     }
 }
