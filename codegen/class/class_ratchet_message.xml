@@ -1,0 +1,40 @@
+<class name="ratchet message" context="public">
+
+    <require header="virgil/foundation/vscf_asn1wr.h" scope="private"/>
+    <require header="virgil/foundation/vscf_asn1rd.h" scope="private"/>
+    <require header="virgil/foundation/vscf_error_ctx.h" scope="public"/>
+
+    <constant name="type regular" definition="public" value="0"/>
+    <constant name="type prekey" definition="public" value="1"/>
+
+    <property name="version" type="size" size="1"/>
+    <property name="type" type="size" size="1"/>
+    <property name="message" class="buffer"/>
+
+    <constructor name="with members">
+        <argument name="version" type="size" size="1"/>
+        <argument name="type" type="size" size="1"/>
+        <argument name="message" class="buffer"/>
+    </constructor>
+
+    <method name="serialize len">
+        <argument name="message len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+    <method name="serialize">
+        <argument class="context"/>
+        <argument name="output" class="buffer"/>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="deserialize">
+        <argument name="input" class="data"/>
+        <argument name="err ctx" class="error ctx" access="writeonly"/>
+
+        <return class="ratchet message" access="disown"/>
+    </method>
+
+</class>

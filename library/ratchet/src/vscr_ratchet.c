@@ -668,7 +668,7 @@ vscr_ratchet_encrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text, vsc_buf
         return result;
     }
 
-    vscr_ratchet_regular_message_t *msg = vscr_ratchet_regular_message_new_with_members(vscr_ratchet_common_RATCHET_MESSAGE_VERSION,
+    vscr_ratchet_regular_message_t *msg = vscr_ratchet_regular_message_new_with_members(vscr_ratchet_common_RATCHET_REGULAR_MESSAGE_VERSION,
                                                                                         message_key->index,
                                                                                         ratchet_ctx->sender_chain->public_key,
                                                                                         buffer);
@@ -705,7 +705,7 @@ vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t cipher_text, vsc_bu
         return error_ctx.error;
     }
 
-    if (msg->version != vscr_ratchet_common_RATCHET_MESSAGE_VERSION) {
+    if (msg->version != vscr_ratchet_common_RATCHET_REGULAR_MESSAGE_VERSION) {
         return vscr_MESSAGE_VERSION_DOESN_T_MATCH;
     }
 

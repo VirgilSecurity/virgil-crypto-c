@@ -227,7 +227,7 @@ vscr_ratchet_regular_message_new_with_members(uint8_t version, uint32_t counter,
 VSCR_PUBLIC size_t
 vscr_ratchet_regular_message_serialize_len(size_t cipher_text_len) {
 
-    //  RATCHETMessage ::= SEQUENCE {
+    //  RATCHETRegularMessage ::= SEQUENCE {
     //       version INTEGER,
     //       counter INTEGER,
     //       public_key OCTET_STRING,
@@ -246,7 +246,7 @@ VSCR_PUBLIC vscr_error_t
 vscr_ratchet_regular_message_serialize(vscr_ratchet_regular_message_t *ratchet_regular_message_ctx,
         vsc_buffer_t *output) {
 
-    //  RATCHETMessage ::= SEQUENCE {
+    //  RATCHETRegularMessage ::= SEQUENCE {
     //       version INTEGER,
     //       counter INTEGER,
     //       public_key OCTET_STRING,
@@ -290,6 +290,12 @@ vscr_ratchet_regular_message_serialize(vscr_ratchet_regular_message_t *ratchet_r
 
 VSCR_PUBLIC vscr_ratchet_regular_message_t *
 vscr_ratchet_regular_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
+
+    //  RATCHETRegularMessage ::= SEQUENCE {
+    //       version INTEGER,
+    //       counter INTEGER,
+    //       public_key OCTET_STRING,
+    //       cipher_text OCTET_STRING }
 
     VSCR_ASSERT(vsc_data_is_valid(input));
 

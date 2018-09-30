@@ -60,6 +60,7 @@ option(VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE "Enable class 'ratchet skipped
 option(VSCR_RATCHET_SENDER_CHAIN "Enable class 'ratchet sender chain'." ON)
 option(VSCR_RATCHET_REGULAR_MESSAGE "Enable class 'ratchet regular message'." ON)
 option(VSCR_RATCHET_PREKEY_MESSAGE "Enable class 'ratchet prekey message'." ON)
+option(VSCR_RATCHET_MESSAGE "Enable class 'ratchet message'." ON)
 option(VSCR_RATCHET "Enable class 'ratchet'." ON)
 option(VSCR_RATCHET_SESSION "Enable class 'ratchet session'." ON)
 mark_as_advanced(
@@ -78,6 +79,7 @@ mark_as_advanced(
         VSCR_RATCHET_SENDER_CHAIN
         VSCR_RATCHET_REGULAR_MESSAGE
         VSCR_RATCHET_PREKEY_MESSAGE
+        VSCR_RATCHET_MESSAGE
         VSCR_RATCHET
         VSCR_RATCHET_SESSION
         )
