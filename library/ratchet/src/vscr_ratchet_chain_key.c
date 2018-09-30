@@ -134,9 +134,9 @@ vscr_ratchet_chain_key_delete(vscr_ratchet_chain_key_t *ratchet_chain_key_ctx) {
         return;
     }
 
-    vscr_ratchet_chain_key_cleanup(ratchet_chain_key_ctx);
-
     vscr_dealloc_fn self_dealloc_cb = ratchet_chain_key_ctx->self_dealloc_cb;
+
+    vscr_ratchet_chain_key_cleanup(ratchet_chain_key_ctx);
 
     if (ratchet_chain_key_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
         self_dealloc_cb(ratchet_chain_key_ctx);

@@ -134,9 +134,9 @@ vscr_ratchet_common_delete(vscr_ratchet_common_t *ratchet_common_ctx) {
         return;
     }
 
-    vscr_ratchet_common_cleanup(ratchet_common_ctx);
-
     vscr_dealloc_fn self_dealloc_cb = ratchet_common_ctx->self_dealloc_cb;
+
+    vscr_ratchet_common_cleanup(ratchet_common_ctx);
 
     if (ratchet_common_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
         self_dealloc_cb(ratchet_common_ctx);

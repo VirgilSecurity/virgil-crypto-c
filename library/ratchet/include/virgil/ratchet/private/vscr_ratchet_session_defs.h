@@ -84,11 +84,11 @@ struct vscr_ratchet_session_t {
     //
     size_t refcnt;
     //
-    //  Dependency to the 'rng'.
+    //  Dependency to the interface 'ratchet rng'.
     //
     vscr_impl_t *rng;
     //
-    //  Dependency to the 'ratchet'.
+    //  Dependency to the class 'ratchet'.
     //
     vscr_ratchet_t *ratchet;
 

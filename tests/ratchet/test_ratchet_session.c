@@ -35,6 +35,7 @@
 #include <ed25519/ed25519.h>
 #include <test_data_ratchet_session.h>
 #include <test_data_ratchet.h>
+#include <virgil/ratchet/private/vscr_ratchet_session_defs.h>
 #include "unity.h"
 #include "test_utils.h"
 
@@ -133,6 +134,7 @@ test__1(void) {
 
     vscr_ratchet_session_respond(session_bob,
                                  alice_identity_public_key,
+                                 session_alice->sender_ephemeral_public_key,
                                  bob_identity_private_key,
                                  bob_longterm_private_key,
                                  bob_onetime_private_key);

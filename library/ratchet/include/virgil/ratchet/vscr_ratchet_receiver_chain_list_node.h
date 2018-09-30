@@ -49,7 +49,6 @@
 #include "vscr_library.h"
 #include "vscr_error.h"
 #include "vscr_ratchet_receiver_chain.h"
-#include "vscr_ratchet_receiver_chain_list_node.h"
 //  @end
 
 

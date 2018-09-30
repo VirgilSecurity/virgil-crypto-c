@@ -137,9 +137,9 @@ vscr_ratchet_message_delete(vscr_ratchet_message_t *ratchet_message_ctx) {
         return;
     }
 
-    vscr_ratchet_message_cleanup(ratchet_message_ctx);
-
     vscr_dealloc_fn self_dealloc_cb = ratchet_message_ctx->self_dealloc_cb;
+
+    vscr_ratchet_message_cleanup(ratchet_message_ctx);
 
     if (ratchet_message_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
         self_dealloc_cb(ratchet_message_ctx);

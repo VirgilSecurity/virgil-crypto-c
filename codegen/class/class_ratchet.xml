@@ -1,6 +1,7 @@
 <class name="ratchet" context="private">
 
-    <require header="virgil/foundation/vscf_hmac256.h" scope="private"/>
+    <require header="virgil/foundation/vscf_sha256.h" scope="private"/>
+    <require header="virgil/foundation/vscf_hmac.h" scope="private"/>
     <require header="virgil/foundation/vscf_hkdf.h" scope="private"/>
     <require header="virgil/foundation/vscf_error_ctx.h" scope="public"/>
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
@@ -58,7 +59,7 @@
         <argument name="message" class="ratchet message"/>
         <argument name="buffer" class="buffer"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
     <method name="decrypt for new chain" declaration="private">
@@ -66,7 +67,7 @@
         <argument name="message" class="ratchet message"/>
         <argument name="buffer" class="buffer"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
     <method name="respond">
@@ -93,7 +94,7 @@
         <argument name="plain text" class="data"/>
         <argument name="cipher text" class="buffer"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
     <method name="decrypt len">
@@ -108,7 +109,7 @@
         <argument name="cipher text" class="data"/>
         <argument name="plain text" class="buffer"/>
 
-        <return type="error"/>
+        <return enum="error"/>
     </method>
 
     <method name="find receiver chain" declaration="private">
