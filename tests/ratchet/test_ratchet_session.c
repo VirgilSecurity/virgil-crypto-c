@@ -36,6 +36,7 @@
 #include <test_data_ratchet_session.h>
 #include <test_data_ratchet.h>
 #include <virgil/ratchet/private/vscr_ratchet_session_defs.h>
+#include <virgil/ratchet/vscr_ratchet_rng.h>
 #include "unity.h"
 #include "test_utils.h"
 
@@ -79,14 +80,6 @@ static void initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_sessi
 
     vscr_ratchet_take_rng(ratchet_alice, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
     vscr_ratchet_take_rng(ratchet_bob, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
-}
-
-void
-test__1(void) {
-    vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
-    vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
-
-    initialize(session_alice, session_bob);
 
     vsc_buffer_t *alice_identity_private_key = vsc_buffer_new_with_capacity(test_ratchet_session_alice_identity_private_key.len);
     memcpy(vsc_buffer_ptr(alice_identity_private_key), test_ratchet_session_alice_identity_private_key.bytes, test_ratchet_session_alice_identity_private_key.len);
@@ -126,18 +119,35 @@ test__1(void) {
                                   bob_longterm_public_key,
                                   bob_onetime_public_key);
 
-    size_t len1 = vscr_ratchet_session_encrypt_len(session_alice, test_ratchet_plain_text1.len);
-    vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(len1);
-
-    vscr_error_t result = vscr_ratchet_session_encrypt(session_alice, test_ratchet_plain_text1, cipher_text);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
-
     vscr_ratchet_session_respond(session_bob,
                                  alice_identity_public_key,
                                  session_alice->sender_ephemeral_public_key,
                                  bob_identity_private_key,
                                  bob_longterm_private_key,
                                  bob_onetime_private_key);
+
+    vsc_buffer_destroy(&alice_identity_private_key);
+    vsc_buffer_destroy(&alice_identity_public_key);
+    vsc_buffer_destroy(&bob_identity_private_key);
+    vsc_buffer_destroy(&bob_longterm_private_key);
+    vsc_buffer_destroy(&bob_onetime_private_key);
+    vsc_buffer_destroy(&bob_identity_public_key);
+    vsc_buffer_destroy(&bob_longterm_public_key);
+    vsc_buffer_destroy(&bob_onetime_public_key);
+}
+
+void
+test__1(void) {
+    vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
+    vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
+
+    initialize(session_alice, session_bob);
+
+    size_t len1 = vscr_ratchet_session_encrypt_len(session_alice, test_ratchet_plain_text1.len);
+    vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(len1);
+
+    vscr_error_t result = vscr_ratchet_session_encrypt(session_alice, test_ratchet_plain_text1, cipher_text);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
     size_t len2 = vscr_ratchet_session_decrypt_len(session_bob, vsc_buffer_len(cipher_text));
     vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(len2);
@@ -148,16 +158,130 @@ test__1(void) {
     TEST_ASSERT_EQUAL_INT(test_ratchet_plain_text1.len, vsc_buffer_len(plain_text));
     TEST_ASSERT_EQUAL_MEMORY(test_ratchet_plain_text1.bytes, vsc_buffer_bytes(plain_text), test_ratchet_plain_text1.len);
 
-    vsc_buffer_destroy(&alice_identity_private_key);
-    vsc_buffer_destroy(&alice_identity_public_key);
-    vsc_buffer_destroy(&bob_identity_private_key);
-    vsc_buffer_destroy(&bob_longterm_private_key);
-    vsc_buffer_destroy(&bob_onetime_private_key);
-    vsc_buffer_destroy(&bob_identity_public_key);
-    vsc_buffer_destroy(&bob_longterm_public_key);
-    vsc_buffer_destroy(&bob_onetime_public_key);
+
     vsc_buffer_destroy(&cipher_text);
     vsc_buffer_destroy(&plain_text);
+
+    vscr_ratchet_session_destroy(&session_alice);
+    vscr_ratchet_session_destroy(&session_bob);
+}
+
+void
+test__2(void) {
+    vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
+    vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
+
+    initialize(session_alice, session_bob);
+
+    size_t len1 = vscr_ratchet_session_encrypt_len(session_alice, test_ratchet_plain_text1.len);
+    vsc_buffer_t *cipher_text1 = vsc_buffer_new_with_capacity(len1);
+
+    vscr_error_t result = vscr_ratchet_session_encrypt(session_alice, test_ratchet_plain_text1, cipher_text1);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
+
+    size_t len2 = vscr_ratchet_session_decrypt_len(session_bob, vsc_buffer_len(cipher_text1));
+    vsc_buffer_t *plain_text1 = vsc_buffer_new_with_capacity(len2);
+
+    result = vscr_ratchet_session_decrypt(session_bob, vsc_buffer_data(cipher_text1), plain_text1);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
+
+    TEST_ASSERT_EQUAL_INT(test_ratchet_plain_text1.len, vsc_buffer_len(plain_text1));
+    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_plain_text1.bytes, vsc_buffer_bytes(plain_text1), test_ratchet_plain_text1.len);
+
+    size_t len3 = vscr_ratchet_session_encrypt_len(session_bob, test_ratchet_plain_text2.len);
+    vsc_buffer_t *cipher_text2 = vsc_buffer_new_with_capacity(len3);
+
+    result = vscr_ratchet_session_encrypt(session_bob, test_ratchet_plain_text2, cipher_text2);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
+
+    size_t len4 = vscr_ratchet_session_decrypt_len(session_alice, vsc_buffer_len(cipher_text2));
+    vsc_buffer_t *plain_text2 = vsc_buffer_new_with_capacity(len4);
+
+    result = vscr_ratchet_session_decrypt(session_alice, vsc_buffer_data(cipher_text2), plain_text2);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
+
+    TEST_ASSERT_EQUAL_INT(test_ratchet_plain_text2.len, vsc_buffer_len(plain_text2));
+    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_plain_text2.bytes, vsc_buffer_bytes(plain_text2), test_ratchet_plain_text2.len);
+
+    vsc_buffer_destroy(&cipher_text1);
+    vsc_buffer_destroy(&plain_text1);
+    vsc_buffer_destroy(&cipher_text2);
+    vsc_buffer_destroy(&plain_text2);
+
+    vscr_ratchet_session_destroy(&session_alice);
+    vscr_ratchet_session_destroy(&session_bob);
+}
+
+void
+test__3(void) {
+    vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
+    vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
+
+    initialize(session_alice, session_bob);
+
+    // FIXME
+    vscr_impl_t *rng = vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new());
+
+    for (int i = 0; i < 100; i++) {
+        byte rnd_plain_text_len;
+        vsc_buffer_t *fake_buffer1 = vsc_buffer_new();
+        vsc_buffer_use(fake_buffer1, &rnd_plain_text_len, sizeof(rnd_plain_text_len));
+        vscr_ratchet_rng_generate_random_data(rng, sizeof(rnd_plain_text_len), fake_buffer1);
+
+        if (rnd_plain_text_len == 0)
+            rnd_plain_text_len = 10;
+
+        byte dice_rnd;
+        vsc_buffer_t *fake_buffer2 = vsc_buffer_new();
+        vsc_buffer_use(fake_buffer2, &dice_rnd, sizeof(dice_rnd));
+        vscr_ratchet_rng_generate_random_data(rng, sizeof(dice_rnd), fake_buffer2);
+        bool dice = dice_rnd % 2 == 0;
+
+        if (i == 0)
+            dice = true;
+
+        vsc_buffer_destroy(&fake_buffer1);
+        vsc_buffer_destroy(&fake_buffer2);
+
+        vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(rnd_plain_text_len);
+        vscr_ratchet_rng_generate_random_data(rng, vsc_buffer_capacity(plain_text), plain_text);
+
+        vscr_ratchet_session_t *sender, *receiver;
+
+        // Alice sends msg
+        if (dice) {
+            sender = session_alice;
+            receiver = session_bob;
+        }
+        else {
+            sender = session_bob;
+            receiver = session_alice;
+        }
+
+        size_t cipher_text_len = vscr_ratchet_session_encrypt_len(sender, vsc_buffer_len(plain_text));
+        vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(cipher_text_len);
+
+        vscr_error_t result = vscr_ratchet_session_encrypt(sender, vsc_buffer_data(plain_text), cipher_text);
+        TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
+
+        size_t plain_text_len = vscr_ratchet_session_decrypt_len(receiver, vsc_buffer_len(cipher_text));
+        vsc_buffer_t *decrypted = vsc_buffer_new_with_capacity(plain_text_len);
+        result = vscr_ratchet_session_decrypt(receiver, vsc_buffer_data(cipher_text), decrypted);
+        TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
+
+        TEST_ASSERT_EQUAL_INT(vsc_buffer_len(plain_text), vsc_buffer_len(decrypted));
+        TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(plain_text), vsc_buffer_bytes(decrypted),
+                                 vsc_buffer_len(plain_text));
+
+        vsc_buffer_destroy(&plain_text);
+        vsc_buffer_destroy(&cipher_text);
+        vsc_buffer_destroy(&decrypted);
+    }
+
+    vscr_impl_destroy(&rng);
+
+    vscr_ratchet_session_destroy(&session_alice);
+    vscr_ratchet_session_destroy(&session_bob);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
@@ -172,6 +296,8 @@ main(void) {
 
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__1);
+    RUN_TEST(test__2);
+    RUN_TEST(test__3);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

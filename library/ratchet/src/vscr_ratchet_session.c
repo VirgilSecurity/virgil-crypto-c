@@ -431,11 +431,14 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session_ctx, vsc_bu
 VSCR_PUBLIC size_t
 vscr_ratchet_session_encrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, size_t plain_text_len) {
 
-    VSCR_UNUSED(ratchet_session_ctx);
-    VSCR_UNUSED(plain_text_len);
+    VSCR_ASSERT_PTR(ratchet_session_ctx);
 
-    return 500;
-    //  TODO: This is STUB. Implement me.
+    if (ratchet_session_ctx->received_first_response) {
+        return vscr_ratchet_encrypt_len(ratchet_session_ctx->ratchet, plain_text_len);
+    }
+    else {
+        return vscr_ratchet_prekey_message_serialize_len(vscr_ratchet_encrypt_len(ratchet_session_ctx->ratchet, plain_text_len));
+    }
 }
 
 VSCR_PUBLIC vscr_error_t
@@ -446,10 +449,10 @@ vscr_ratchet_session_encrypt(vscr_ratchet_session_t *ratchet_session_ctx, vsc_da
 
     vscr_error_t result;
 
-    if (ratchet_session_ctx->received_first_response) {
-        // FIXME
-        VSCR_ASSERT(vsc_buffer_left(cipher_text) > vscr_ratchet_encrypt_len(ratchet_session_ctx->ratchet, plain_text.len));
+    // FIXME
+    VSCR_ASSERT(vsc_buffer_left(cipher_text) >= vscr_ratchet_session_encrypt_len(ratchet_session_ctx, plain_text.len));
 
+    if (ratchet_session_ctx->received_first_response) {
         result = vscr_ratchet_encrypt(ratchet_session_ctx->ratchet, plain_text, cipher_text);
     }
     else {
@@ -459,16 +462,12 @@ vscr_ratchet_session_encrypt(vscr_ratchet_session_t *ratchet_session_ctx, vsc_da
         result = vscr_ratchet_encrypt(ratchet_session_ctx->ratchet, plain_text, buffer);
 
         if (result == vscr_SUCCESS) {
-            // TODO:
             vscr_ratchet_prekey_message_t *prekey_message =
                     vscr_ratchet_prekey_message_new_with_members(vscr_ratchet_common_RATCHET_PROTOCOL_VERSION,
                                                                  ratchet_session_ctx->sender_identity_public_key,
                                                                  ratchet_session_ctx->receiver_longterm_public_key,
                                                                  ratchet_session_ctx->receiver_onetime_public_key,
                                                                  buffer);
-            // FIXME
-            VSCR_ASSERT(
-                    vsc_buffer_left(cipher_text) > vscr_ratchet_prekey_message_serialize_len(vsc_buffer_len(buffer)));
 
             vscr_ratchet_prekey_message_serialize(prekey_message, cipher_text);
         }
@@ -483,28 +482,23 @@ VSCR_PUBLIC size_t
 vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, size_t cipher_text_len) {
 
     VSCR_UNUSED(ratchet_session_ctx);
-    VSCR_UNUSED(cipher_text_len);
-
-    return 500;
-    //  TODO: This is STUB. Implement me.
+    // TODO: Optimize
+    return cipher_text_len;
 }
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session_ctx, vsc_data_t cipher_text,
         vsc_buffer_t *plain_text) {
 
-    VSCR_UNUSED(ratchet_session_ctx);
-    VSCR_UNUSED(cipher_text);
-    VSCR_UNUSED(plain_text);
-
     vscr_error_t result;
+
+    VSCR_ASSERT(vsc_buffer_left(plain_text) >= vscr_ratchet_session_decrypt_len(ratchet_session_ctx, cipher_text.len));
 
     if (false) {
         // TODO: Regular message
         result = vscr_SUCCESS;
     }
     else {
-        // TODO: Prekey message
         vscr_error_ctx_t error_ctx;
         vscr_error_ctx_reset(&error_ctx);
 
@@ -517,6 +511,9 @@ vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session_ctx, vsc_da
 
         vscr_ratchet_prekey_message_destroy(&prekey_message);
     }
+
+    if (result == vscr_SUCCESS)
+        ratchet_session_ctx->received_first_response = true;
 
     return result;
 }

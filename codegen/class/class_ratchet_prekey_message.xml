@@ -21,7 +21,7 @@
     </constructor>
 
     <method name="serialize len">
-        <argument name="cipher text len" type="size"/>
+        <argument name="message len" type="size"/>
 
         <return type="size"/>
     </method>
