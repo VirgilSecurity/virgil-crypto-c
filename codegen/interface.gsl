@@ -89,7 +89,11 @@ function interface_resolve_instance (instance, parent)
     assert_attribute_one_of (my.instance, "type, class, enum, callback, interface, api, impl", my)
 
     if string_in (my.instance.class, "buffer")
-        my.instance.access ?= "writeonly"
+        if item_in (my.instance, "variable, property")
+            my.instance.access ?= "readwrite"
+        else
+            my.instance.access ?= "writeonly"
+        endif
     endif
 
     component_resolve_instance_attr_access (my.instance, my.parent)
@@ -120,12 +124,10 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Resolve component: return.
 # ---------------------------------------------------------------------------
-function interface_resolve_return (argument, parent)
+function interface_resolve_return (return, parent)
     check_arguments (my, "return, parent", my)
 
-    assert_attribute (my.argument, "name", my)
-
-    interface_resolve_instance (my.argument, my.parent)
+    interface_resolve_instance (my.return, my.parent)
 endfunction
 
 
