@@ -57,6 +57,7 @@
 #include "vscf_asn1_reader.h"
 #include "vscf_asn1_reader_api.h"
 #include "vscf_impl.h"
+#include "vscf_api.h"
 //  @end
 
 
@@ -65,6 +66,9 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+static const vscf_api_t *
+vscf_asn1rd_find_api(vscf_api_tag_t api_tag);
 
 //
 //  Configuration of the interface API 'asn1 reader api'.
@@ -177,14 +181,6 @@ static const vscf_asn1_reader_api_t asn1_reader_api = {
 };
 
 //
-//  Null-terminated array of the implemented 'Interface API' instances.
-//
-static const vscf_api_t *api_array[] = {
-    (const vscf_api_t *)&asn1_reader_api,
-    NULL
-};
-
-//
 //  Compile-time known information about 'asn1rd' implementation.
 //
 static const vscf_impl_info_t info = {
@@ -193,10 +189,10 @@ static const vscf_impl_info_t info = {
     //
     vscf_impl_tag_ASN1RD,
     //
-    //  NULL terminated array of the implemented interfaces.
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
     //
-    api_array,
+    vscf_asn1rd_find_api,
     //
     //  Release acquired inner resources.
     //
@@ -320,6 +316,17 @@ vscf_asn1rd_impl(vscf_asn1rd_impl_t *asn1rd_impl) {
 
     VSCF_ASSERT_PTR(asn1rd_impl);
     return (vscf_impl_t *)(asn1rd_impl);
+}
+
+static const vscf_api_t *
+vscf_asn1rd_find_api(vscf_api_tag_t api_tag) {
+
+    switch(api_tag) {
+        case vscf_api_tag_ASN1_READER:
+            return (const vscf_api_t *) &asn1_reader_api;
+        default:
+            return NULL;
+    }
 }
 
 

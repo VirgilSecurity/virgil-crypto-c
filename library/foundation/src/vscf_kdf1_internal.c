@@ -59,6 +59,7 @@
 #include "vscf_kdf_api.h"
 #include "vscf_hash_stream.h"
 #include "vscf_impl.h"
+#include "vscf_api.h"
 //  @end
 
 
@@ -67,6 +68,9 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+static const vscf_api_t *
+vscf_kdf1_find_api(vscf_api_tag_t api_tag);
 
 //
 //  Configuration of the interface API 'kdf api'.
@@ -88,14 +92,6 @@ static const vscf_kdf_api_t kdf_api = {
 };
 
 //
-//  Null-terminated array of the implemented 'Interface API' instances.
-//
-static const vscf_api_t *api_array[] = {
-    (const vscf_api_t *)&kdf_api,
-    NULL
-};
-
-//
 //  Compile-time known information about 'kdf1' implementation.
 //
 static const vscf_impl_info_t info = {
@@ -104,10 +100,10 @@ static const vscf_impl_info_t info = {
     //
     vscf_impl_tag_KDF1,
     //
-    //  NULL terminated array of the implemented interfaces.
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
     //
-    api_array,
+    vscf_kdf1_find_api,
     //
     //  Release acquired inner resources.
     //
@@ -271,6 +267,17 @@ vscf_kdf1_release_hash(vscf_kdf1_impl_t *kdf1_impl) {
     VSCF_ASSERT_PTR(kdf1_impl);
 
     vscf_impl_destroy(&kdf1_impl->hash);
+}
+
+static const vscf_api_t *
+vscf_kdf1_find_api(vscf_api_tag_t api_tag) {
+
+    switch(api_tag) {
+        case vscf_api_tag_KDF:
+            return (const vscf_api_t *) &kdf_api;
+        default:
+            return NULL;
+    }
 }
 
 
