@@ -71,23 +71,14 @@
 VSCP_PUBLIC const vscp_api_t *
 vscp_impl_api(vscp_impl_t *impl, vscp_api_tag_t api_tag) {
 
-    VSCP_ASSERT_PTR (impl);
-    VSCP_ASSERT_PTR (impl->info);
+    VSCP_ASSERT_PTR(impl);
+    VSCP_ASSERT_PTR(impl->info);
 
-    if (impl->info->api_array == NULL) {
+    if (impl->info->find_api_cb == NULL) {
         return NULL;
     }
 
-    for (const vscp_api_t *const * api_array = impl->info->api_array; *api_array != NULL; ++api_array) {
-
-        const vscp_api_t* api = *api_array;
-
-        if (api->api_tag == api_tag) {
-            return api;
-        }
-    }
-
-    return NULL;
+    return impl->info->find_api_cb(api_tag);
 }
 
 //

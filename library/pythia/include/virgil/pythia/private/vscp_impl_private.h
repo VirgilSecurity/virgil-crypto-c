@@ -71,6 +71,22 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Callback type for cleanup action.
+//
+typedef void (*vscp_impl_cleanup_fn)(vscp_impl_t *impl);
+
+//
+//  Callback type for delete action.
+//
+typedef void (*vscp_impl_delete_fn)(vscp_impl_t *impl);
+
+//
+//  Returns API of the requested interface if implemented,
+//  otherwise - NULL.
+//
+typedef const vscp_api_t * (*vscp_impl_find_api_fn)(vscp_api_tag_t api_tag);
+
+//
 //  Contains common properties for any 'API' implementation object.
 //
 typedef struct vscp_impl_info_t vscp_impl_info_t;
@@ -80,10 +96,10 @@ struct vscp_impl_info_t {
     //
     vscp_impl_tag_t impl_tag;
     //
-    //  NULL terminated array of the implemented interfaces.
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
     //
-    const vscp_api_t **api_array;
+    vscp_impl_find_api_fn find_api_cb;
     //
     //  Release acquired inner resources.
     //
