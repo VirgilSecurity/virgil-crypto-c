@@ -85,7 +85,6 @@ function interface_resolve (interface, project)
 
     assert_attribute (my.interface, "name", my)
 
-    my.interface.project = my.project.name
     my.interface.c_prefix ?= my.project.prefix
     my.interface.uid = make_id ("interface", interface.name)
     my.interface.visibility ?= "public"
@@ -156,13 +155,13 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create 'feature' for given 'interface'.
 # ---------------------------------------------------------------------------
-function interface_create_feature (interface, destination)
-    check_arguments (my, "interface, destination", my)
+function interface_create_feature (interface, project, destination)
+    check_arguments (my, "interface, project, destination", my)
 
     new feature to my.destination
         . = "Enable interface '$(my.interface.name)'."
         .name = my.interface.name
-        .project = my.interface.project
+        .project = my.project.name
 
         for my.interface.inherit
             new require to feature
@@ -179,11 +178,11 @@ endfunction
 # ---------------------------------------------------------------------------
 #   For each 'interface' within 'source' create 'feature'.
 # ---------------------------------------------------------------------------
-function foreach_interface_create_feature (source, destination)
-    check_arguments (my, "source, destination", my)
+function foreach_interface_create_feature (source, project, destination)
+    check_arguments (my, "source, project, destination", my)
 
     for my.source.interface
-        interface_create_feature (interface, my.destination)
+        interface_create_feature (interface, my.project, my.destination)
     endfor
 endfunction
 

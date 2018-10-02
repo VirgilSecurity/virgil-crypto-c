@@ -1170,7 +1170,6 @@ endfunction
 function component_resolve_dependency (dependency, parent)
     check_arguments (my, "dependency, parent", my)
 
-    assert_attribute (my.parent, "project", my)
     assert_attribute (my.dependency, "name", my)
     assert_attribute_one_of (my.dependency, "interface, api, class, impl")
 

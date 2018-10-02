@@ -7,7 +7,7 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <interface [visibility] [uid] [c_prefix] [scope] [project]>
+    <interface [visibility] [uid] [c_prefix] [scope]>
        <constant name [c_prefix] [of_class] [uid] [feature] [definition] [value]/>
        <method name [declaration] [visibility] [c_prefix] [of_class] [uid] [feature] [definition]
             [context]>
@@ -60,7 +60,6 @@ Defines C class interface as a set of constants and methods.
       [ uid = "..." ]
       [ c_prefix = "..." ]
       [ scope = "public | private | internal"  ("public") ]
-      [ project = "..." ]
         >
         <constant>
         <method>
@@ -97,9 +96,6 @@ Value: Meaning:
 public: Component is visible for outside world.
 private: Component is visible for outside world via private interface.
 internal: Component is visible only within library or a specific source file.
-
-project:
-    Parent project name. The project attribute is optional.
 
 
 The 'constant' item

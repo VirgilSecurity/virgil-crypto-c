@@ -7,7 +7,7 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <class name [visibility] [c_prefix] [scope] [project] [uid] [context] [lifecycle]>
+    <class name [uid] [c_prefix] [scope] [visibility] [context] [lifecycle]>
        <require [scope] [project] [library] [module] [header] [feature] [interface] [class]
             [impl]>
           <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]
@@ -86,11 +86,10 @@ Defines class type.
 
     <class
         name = "..."
-      [ visibility = "public | private"  ("public") ]
+      [ uid = "..." ]
       [ c_prefix = "..." ]
       [ scope = "public | private | internal"  ("public") ]
-      [ project = "..." ]
-      [ uid = "..." ]
+      [ visibility = "public | private"  ("public") ]
       [ context = "none | public | private | internal"  ("none") ]
       [ lifecycle = "none | default"  ("default") ]
         >
@@ -137,9 +136,6 @@ Value: Meaning:
 public: Component is visible for outside world.
 private: Component is visible for outside world via private interface.
 internal: Component is visible only within library or a specific source file.
-
-project:
-    Parent project name. The project attribute is optional.
 
 name:
     Short module name. The name attribute is required.
