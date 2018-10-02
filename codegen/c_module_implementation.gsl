@@ -92,7 +92,7 @@ function _Z19_add_instance_interface_api (impl, interface_api, destination, meta
         .is_reference = "0"
 
         for my.interface_api.property
-            my.value = item_copy_to (property, variable, "value")
+            my.value = component_clean_copy (property, variable, "value")
 
             scope my.value
                 if property.tag = "api_tag"
@@ -106,7 +106,7 @@ function _Z19_add_instance_interface_api (impl, interface_api, destination, meta
 
                 elsif property.tag = "method"
                     .value = my.refs.implementation_method_$(make_id (property.name))
-                    item_copy_to (property, value, "cast")
+                    component_clean_copy (property, value, "cast")
 
                 elsif property.tag = "constant"
                     .value = my.refs.implementation_constant_$(make_id (property.name))
@@ -158,7 +158,7 @@ function _Z19_add_instance_impl_info (impl, source, destination, meta)
         .is_reference = "0"
 
         for my.impl_info.property
-            my.value = item_copy_to (property, variable, "value")
+            my.value = component_clean_copy (property, variable, "value")
             scope my.value
                 if property.tag = "impl_tag"
                     .value = my.refs.implementation_constant_tag
@@ -168,11 +168,11 @@ function _Z19_add_instance_impl_info (impl, source, destination, meta)
 
                 elsif property.tag = "self_cleanup"
                     .value = my.refs.implementation_method_cleanup
-                    item_copy_to (property, value, "cast")
+                    component_clean_copy (property, value, "cast")
 
                 elsif property.tag = "self_delete"
                     .value = my.refs.implementation_method_delete
-                    item_copy_to (property, value, "cast")
+                    component_clean_copy (property, value, "cast")
 
                 else
                     my.property_dump = component_instance_dump (property)
@@ -226,7 +226,7 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
     endnew
 
     for my.impl.require
-        copy require to my.destination
+        component_clean_copy (require, my.destination)
     endfor
 
     c_dependency_add_requirements (my.impl, my.destination)
@@ -409,7 +409,7 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
 
         for my.impl.context
             for context.property
-                my.property = item_copy_to (property, struct)
+                my.property = component_clean_copy (property, struct)
                 my.property. ?= "Implementation specific context."
             endfor
         endfor
@@ -423,7 +423,7 @@ function _Z19_add_interface_constants (impl, destination, meta)
 
     for my.impl.interface
         for interface.constant
-            copy constant to my.destination
+            component_clean_copy (constant, my.destination)
         endfor
     endfor
 endfunction
@@ -894,7 +894,7 @@ function _Z19_add_interface_methods (impl, definition, destination, meta)
 
     for my.impl.interface
         for interface.method
-            my.impl_method = item_copy_to (method, my.destination)
+            my.impl_method = component_clean_copy (method, my.destination)
             my.impl_method.definition = my.definition
 
             if method.context = "api"
@@ -946,7 +946,7 @@ function _Z19_add_constants (impl, destination, meta)
     check_arguments (my, "impl, destination, meta", my)
 
     for my.impl.constant
-        copy constant to my.destination
+        component_clean_copy (constant, my.destination)
     endfor
 endfunction
 
@@ -957,7 +957,7 @@ function _Z19_add_enums (impl, destination, meta)
     check_arguments (my, "impl, destination, meta", my)
 
     for my.impl.enum
-        copy enum to my.destination
+        component_clean_copy (enum, my.destination)
     endfor
 endfunction
 
@@ -968,11 +968,11 @@ function _Z19_add_macroses (impl, destination, meta)
     check_arguments (my, "impl, destination, meta", my)
 
     for my.impl.macros
-        copy macros to my.destination
+        component_clean_copy (macros, my.destination)
     endfor
 
     for my.impl.macroses
-        copy macroses to my.destination
+        component_clean_copy (macroses, my.destination)
     endfor
 endfunction
 
@@ -983,7 +983,7 @@ function _Z19_add_methods (impl, destination, meta)
     check_arguments (my, "impl, destination, meta", my)
 
     for my.impl.method
-        my.copied_method = item_copy_to (method, my.destination)
+        my.copied_method = component_clean_copy (method, my.destination)
 
         if (my.copied_method.context = "impl")
             _Z19_add_argument_impl (my.copied_method, my.meta)
