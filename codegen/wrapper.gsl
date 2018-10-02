@@ -38,8 +38,9 @@
 #
 #   To add new supported language do next:
 #       1. Create file `<lang>.gsl` with methods:
-#           - <lang>_foreach_interface_create_module(wrapper, source, destination, meta)
-#           - <lang>_foreach_module_resolve(wrapper, source)
+#           - <lang>_create_interface_module(wrapper, source, destination, meta)
+#           - <lang>_create_class_module(wrapper, source, destination, meta)
+#           - <lang>_module_resolve(wrapper, source)
 #           - <lang>_generate_project(wrapper, source)
 #           - <lang>_generate_sources(wrapper, source)
 #
@@ -69,24 +70,42 @@ endfunction
 function wrapper_foreach_interface_create_module (wrapper, source, destination, meta)
     check_arguments (my, "wrapper, source, destination, meta", my)
 
-    my.proxy_func = make_id(my.wrapper.lang, "foreach_interface_create_module")
-    if macro (my.proxy_func)
-        $(my.proxy_func:) (my.wrapper, my.source, my.destination, my.meta)
-    else
+    my.proxy_func = make_id(my.wrapper.lang, "create_interface_module")
+    if ! macro (my.proxy_func)
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
+
+    for my.source.interface
+        $(my.proxy_func:) (my.wrapper, interface, my.destination, my.meta)
+    endfor
+endfunction
+
+
+function wrapper_foreach_class_create_module (wrapper, source, destination, meta)
+    check_arguments (my, "wrapper, source, destination, meta", my)
+
+    my.proxy_func = make_id(my.wrapper.lang, "create_class_module")
+    if ! macro (my.proxy_func)
+        echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
+    endif
+
+    for my.source.class
+        $(my.proxy_func:) (my.wrapper, class, my.destination, my.meta)
+    endfor
 endfunction
 
 
 function wrapper_foreach_module_resolve(wrapper, source)
     check_arguments (my, "wrapper, source", my)
 
-    my.proxy_func = make_id(my.wrapper.lang, "foreach_module_resolve")
-    if macro (my.proxy_func)
-        $(my.proxy_func:) (my.wrapper, my.source)
-    else
+    my.proxy_func = make_id(my.wrapper.lang, "module_resolve")
+    if ! macro (my.proxy_func)
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
+
+    for my.source.$(make_id (my.wrapper.lang, "module")) as wrapper_module
+        $(my.proxy_func:) (my.wrapper, wrapper_module)
+    endfor
 endfunction
 
 

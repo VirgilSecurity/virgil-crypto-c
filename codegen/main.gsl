@@ -210,6 +210,7 @@ function process_project (project, features_list, projects_api, echo_level)
 
         wrapper_resolve (my.wrapper, my.project)
         wrapper_foreach_interface_create_module (my.wrapper, my.root, my.wrappers_destination, my.meta)
+        wrapper_foreach_class_create_module (my.wrapper, my.root, my.wrappers_destination, my.meta)
         wrapper_foreach_module_resolve(my.wrapper, my.wrappers_destination)
         projects_api_collect_info (my.projects_api, my.wrappers_destination)
         projects_api_save (my.projects_api, main.work_path)
