@@ -709,7 +709,7 @@ function component_resolve_instance_attr_class (instance, parent)
         my.instance.is_reference = "1"
     endif
 
-    if my.instance.class = "any" | is_ref (my.instance.class) | defined (my.instance.library)
+    if string_in (my.instance.class, "any, context") | is_ref (my.instance.class) | defined (my.instance.library)
         return
     endif
 
@@ -1575,6 +1575,10 @@ function foreach_component_resolve (source)
 
     for my.source.features
         component_resolve_features (features, my.source)
+    endfor
+
+    for my.source.dependency
+        component_resolve_dependency (features, my.source)
     endfor
 endfunction
 
