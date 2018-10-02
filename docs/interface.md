@@ -7,7 +7,7 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <interface [project]>
+    <interface [visibility] [uid] [c_prefix] [scope] [project]>
        <constant name [c_prefix] [of_class] [uid] [feature] [definition] [value]/>
        <method name [declaration] [visibility] [c_prefix] [of_class] [uid] [feature] [definition]
             [context]>
@@ -56,6 +56,10 @@ The 'interface' item
 Defines C class interface as a set of constants and methods.
 
     <interface
+      [ visibility = "public | private"  ("public") ]
+      [ uid = "..." ]
+      [ c_prefix = "..." ]
+      [ scope = "public | private | internal"  ("public") ]
       [ project = "..." ]
         >
         <constant>
@@ -63,7 +67,36 @@ Defines C class interface as a set of constants and methods.
         <inherit>
     </interface>
 
-The interface item has this single attribute:
+The interface item can have these attributes:
+
+visibility:
+    Defines symbol binary visibility. This attribute must not be inherited.
+    The visibility attribute is optional. Its default value is "public". It
+    can take one of the following values:
+
+Value: Meaning:
+public: Symbols of the types and methods are visible in a binary file.
+private: Symbols of the types and methods are hidden in a binary file.
+
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.
+
+c_prefix:
+    Prefix that is used for C name resolution. The c_prefix attribute is
+    optional.
+
+scope:
+    Defines component visibility within scope. This attribute must not be
+    inherited. Note, scope attribute can be used for components, that can not
+    be defined in terms of 'declaration' and 'definition'. The scope
+    attribute is optional. Its default value is "public". It can take one of
+    the following values:
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 project:
     Parent project name. The project attribute is optional.
