@@ -503,40 +503,6 @@ function component_derive_full_name (component)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   If attribute 'project' is defined within <instance/> then return project
-#   prefix, otherwise return empty string.
-# ---------------------------------------------------------------------------
-function component_derive_instance_project_uid (instance, parent)
-    check_arguments (my, "instance, parent", my)
-
-    return defined (my.instance.project) ?? make_id ("project", my.instance.project) ? ""
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Crate uid based on the given options.
-#   Examples:
-#       {struct, buffer, buffer} - returns "class_buffer_struct_buffer"
-#       {struct, inner/buffer, buffer} - returns "class_inner_struct_buffer"
-#       {enum, impl/tag,} - returns "class_impl_enum_tag"
-#       {struct, codes,} - returns "global_struct_codes"
-# ---------------------------------------------------------------------------
-function component_derive_instance_type_uid (type_id, type_value, of_class)
-    check_arguments (my, "type_id, type_value", my)
-
-    if regexp.match ("([^\/]+)\/(.+)", my.type_value, my.group1, my.group2)
-        my.of_class = my.group1
-        my.type_value = my.group2
-    endif
-
-    if defined (my.of_class)
-        return make_id ("class", my.of_class, my.type_id, my.type_value)
-
-    else
-        return make_id ("global", my.type_id, my.type_value)
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Resolve attribute: lang.
 # ---------------------------------------------------------------------------
 function component_resolve_attr_lang (component, parent)
@@ -712,10 +678,6 @@ function component_resolve_instance_attr_class (instance, parent)
     if string_in (my.instance.class, "any, context") | is_ref (my.instance.class) | defined (my.instance.library)
         return
     endif
-
-    my.project_uid = component_derive_instance_project_uid (my.instance, my.parent)
-    my.type_uid = component_derive_instance_type_uid ("struct", my.instance.class, my.instance.class)
-    my.instance.class = make_ref (make_id(my.project_uid, my.type_uid))
 endfunction
 
 
@@ -734,10 +696,6 @@ function component_resolve_instance_attr_enum (instance, parent)
     if my.instance.enum = "error"
         my.instance.enum = "error/error"
     endif
-
-    my.project_uid = component_derive_instance_project_uid (my.instance, my.parent)
-    my.type_uid = component_derive_instance_type_uid ("enum", my.instance.enum, my.instance.enum)
-    my.instance.enum = make_ref (make_id(my.project_uid, my.type_uid))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -751,10 +709,6 @@ function component_resolve_instance_attr_callback (instance, parent)
     if is_ref (my.instance.callback) | defined (my.instance.library)
         return
     endif
-
-    my.project_uid = component_derive_instance_project_uid (my.instance, my.parent)
-    my.type_uid = component_derive_instance_type_uid ("callback", my.instance.callback, my.instance.callback)
-    my.instance.callback = make_ref (make_id(my.project_uid, my.type_uid))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -768,10 +722,6 @@ function component_resolve_instance_attr_interface (instance, parent)
     if is_ref (my.instance.interface) | defined (my.instance.library)
         return
     endif
-
-    my.project_uid = component_derive_instance_project_uid (my.instance, my.parent)
-    my.type_uid = component_derive_instance_type_uid ("struct", "impl", "impl")
-    my.instance.interface = make_ref (make_id(my.project_uid, my.type_uid))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -788,11 +738,6 @@ function component_resolve_instance_attr_api (instance, parent)
     if is_ref (my.instance.api) | defined (my.instance.library)
         return
     endif
-
-    my.project_uid = component_derive_instance_project_uid (my.instance, my.parent)
-    my.type = cat (my.instance.api, "api")
-    my.type_uid = component_derive_instance_type_uid ("struct", my.type, my.type)
-    my.instance.api = make_ref (make_id(my.project_uid, my.type_uid))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -806,10 +751,6 @@ function component_resolve_instance_attr_impl (instance, parent)
     if is_ref (my.instance.impl) | defined (my.instance.library)
         return
     endif
-
-    my.project_uid = component_derive_instance_project_uid (my.instance, my.parent)
-    my.type_uid = component_derive_instance_type_uid ("struct", "impl", my.instance.impl)
-    my.instance.impl = make_ref (make_id(my.project_uid, my.type_uid))
 endfunction
 
 # ---------------------------------------------------------------------------
