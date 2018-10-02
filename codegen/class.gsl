@@ -132,7 +132,7 @@ function class_resolve_attr_c_prefix (class, project)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve attribute: class.c_prefix.
+#   Resolve attribute: class.project.
 # ---------------------------------------------------------------------------
 function class_resolve_attr_project (class, project)
     check_arguments (my, "class, project", my)
@@ -140,6 +140,26 @@ function class_resolve_attr_project (class, project)
     my.class.project ?= my.project.name
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Resolve attribute: class.uid.
+# ---------------------------------------------------------------------------
+function class_resolve_attr_uid (class, project)
+    check_arguments (my, "class, project", my)
+
+    my.class.uid = make_id ("class", my.class.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve entity: method.
+# ---------------------------------------------------------------------------
+function class_resolve_method (method, parent)
+    check_arguments (my, "method, parent", my)
+
+    for my.method.argument where string_equal (0.class ?, "context")
+        argument.name ?= "ctx"
+        argument.access ?= "readwrite"
+    endfor
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Resolve component: class.
@@ -152,17 +172,19 @@ function class_resolve (class, project)
     assert_attribute (my.class, "name", my)
 
     component_resolve_attr_scope (my.class)
+    component_resolve_attr_visibility (my.class, my.project)
     class_resolve_attr_context (my.class, my.project)
     class_resolve_attr_lifecycle (my.class, my.project)
-    class_resolve_attr_of_class (my.class, my.project)
     class_resolve_attr_c_prefix (my.class, my.project)
     class_resolve_attr_project (my.class, my.project)
+    class_resolve_attr_uid (my.class, my.project)
 
-    for my.class.dependency
-        component_resolve_dependency (dependency, my.class)
+    for my.class.method
+        class_resolve_method (method, my.class)
     endfor
-endfunction
 
+    foreach_component_resolve (my.class)
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Resolve all 'class' entries within 'source'
