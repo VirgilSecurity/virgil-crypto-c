@@ -242,4 +242,75 @@ function swift_insert_protocol (swift_protocol)
     swift_insert_code ("}")
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Insert statement: class
+# ---------------------------------------------------------------------------
+function swift_insert_class (swift_class)
+    check_arguments (my, "swift_class", my)
+
+    assert_attributes (my.swift_class, "name, objc_name, visibility", my)
+
+    echo_trace ("Inserting class: " + my.swift_class.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate project files.
+# ---------------------------------------------------------------------------
+function swift_generate_project (wrapper, source)
+    check_arguments (my, "wrapper, source", my)
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate source files from <swift_module/> entities.
+# ---------------------------------------------------------------------------
+function swift_generate_sources (wrapper, source)
+    check_arguments (my, "wrapper, source", my)
+
+    assert_attribute (my.wrapper, "source_dir", my)
+
+    if -1 = directory.create (my.wrapper.source_dir)
+        echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
+    endif
+
+    for my.source.swift_module where ! string_in (swift_module.name, "Data, Buffer")
+        echo_trace ("Generate Swift files from <$(name (swift_module)) name = \"$(c_module.name:)\"/>", my)
+
+        output swift_module.source_file_path
+
+        swift_insert_prologue (swift_module)
+        newline(2)
+
+        for swift_module.swift_import
+            swift_insert_import (swift_import)
+            newline()
+        endfor
+
+        for swift_module.swift_enum
+            swift_insert_enum (swift_enum)
+            newline()
+        endfor
+
+        for swift_module.swift_protocol
+            swift_insert_protocol (swift_protocol)
+            newline()
+        endfor
+
+        for swift_module.swift_class
+            swift_insert_class (swift_class)
+            newline()
+        endfor
+
+        for swift_module.swift_struct
+            swift_insert_struct (swift_struct)
+            newline()
+        endfor
+
+        for swift_module.swift_extension
+            swift_insert_extension (swift_extension)
+            newline()
+        endfor
+    endfor
+endfunction
+
 .endtemplate

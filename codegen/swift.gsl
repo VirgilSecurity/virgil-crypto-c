@@ -93,8 +93,6 @@ endfunction
 function swift_derive_instance_type (instance, wrapper)
     check_arguments (my, "instance, wrapper", my)
 
-    assert_attribute (my.instance, "name", my)
-
     if string_in (my.instance.class, "data, buffer")
         return "Data"
     endif
@@ -123,10 +121,32 @@ function swift_derive_protocol_name (interface, wrapper)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return formatted name of the Swift class.
+# ---------------------------------------------------------------------------
+function swift_derive_class_name (class, wrapper)
+    check_arguments (my, "class, wrapper", my)
+
+    assert_attribute_one_of (my.class, "name", my)
+
+    return "$(my.class.name:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return formatted name of the Objective-C protocol.
 # ---------------------------------------------------------------------------
-function swift_derive_protocol_objc_name (interface, wrapper)
-    return "$(my.wrapper.prefix:UPPER)$(my.interface.name:Pascal)"
+function swift_derive_protocol_objc_name (protocol, wrapper)
+    check_arguments (my, "protocol, wrapper", my)
+
+    return "$(my.wrapper.prefix:UPPER)$(my.protocol.name:)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the Objective-C class.
+# ---------------------------------------------------------------------------
+function swift_derive_class_objc_name (class, wrapper)
+    check_arguments (my, "class, wrapper", my)
+
+    return "$(my.wrapper.prefix:UPPER)$(my.class.name:)"
 endfunction
 
 # ===========================================================================
@@ -171,6 +191,33 @@ endfunction
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
+#   Resolve UIDs for given component and all inner components.
+# ---------------------------------------------------------------------------
+function swift_module_resolve_uids (swift_component, parent_uid)
+    check_arguments (my, "swift_component", my)
+
+    if defined (my.parent_uid) & string.prefixed (my.parent_uid, "swift_module")
+        my.parent_uid = # Undefined
+    endif
+
+    my.component_name = name (my.swift_component)
+    if  defined (my.parent_uid) & string.prefixed (my.component_name, "swift_")
+        regexp.match ("swift_(.+)", my.component_name, my.component_name)
+    endif
+
+    my.swift_component.uid = make_id (my.parent_uid, my.component_name, my.swift_component.name)
+
+    for my.swift_component. as inner_component where is_item (inner_component) & defined (inner_component.name)
+        swift_module_resolve_uids (inner_component, my.swift_component.uid)
+    endfor
+endfunction
+
+
+# ===========================================================================
+#   Module resolution.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
 #   Setup and check default and automatically resolved attributes.
 # ---------------------------------------------------------------------------
 function swift_resolve (wrapper, project)
@@ -186,10 +233,20 @@ function swift_resolve (wrapper, project)
     copy my.project->license to my.wrapper
 endfunction
 
-function swift_foreach_module_resolve (wrapper, source)
-    check_arguments (my, "wrapper, source", my)
 
-    # TODO: Add UIDS
+# ---------------------------------------------------------------------------
+#   Add auto-resoving attributes:
+#       - uid.
+# ---------------------------------------------------------------------------
+function swift_module_resolve (wrapper, swift_module)
+    check_arguments (my, "wrapper, swift_module", my)
+
+    assert_attribute (my.swift_module, "name", my)
+
+    echo_trace ("Resolving <$(name (my.swift_module)) name=\"$(my.swift_module.name:)\"/>", my)
+
+    #   Resolve UIDs
+    swift_module_resolve_uids (my.swift_module)
 endfunction
 
 
@@ -347,7 +404,7 @@ function swift_create_interface_module (wrapper, interface, destination, meta)
         new swift_protocol to swift_module
             . = swift_format_comment (my.interface) ?
             .name = swift_derive_protocol_name (my.interface, my.wrapper)
-            .objc_name = swift_derive_protocol_objc_name (my.interface, my.wrapper)
+            .objc_name = swift_derive_protocol_objc_name (swift_protocol, my.wrapper)
 
             swift_map_attr_visibility (swift_protocol, my.interface)
 
@@ -367,80 +424,38 @@ function swift_create_interface_module (wrapper, interface, destination, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   For each abstract interface create correspond Swift protocol.
+#   Create module with Swift class from the abstract 'class' notion.
 # ---------------------------------------------------------------------------
-function swift_foreach_interface_create_module (wrapper, source, destination, meta)
-    check_arguments (my, "wrapper, source, destination, meta", my)
+function swift_create_class_module (wrapper, class, destination, meta)
+    check_arguments (my, "wrapper, class, destination, meta", my)
 
-    for my.source.interface
-        swift_create_interface_module (my.wrapper, interface, my.destination, my.meta)
-    endfor
+    assert_attribute (my.class, "name", my)
+
+    new swift_module to my.destination
+        .name = swift_derive_module_name (my.class)
+        .source_file_name = 0.name + ".swift"
+        .source_file_path = my.wrapper.source_dir + 0.source_file_name
+
+        new swift_license to swift_module
+            . = swift_format_license (my.wrapper->license.) ?
+        endnew
+
+        new swift_import to swift_module
+            .framework = "Foundation"
+        endnew
+
+        new swift_class to swift_module
+            . = swift_format_comment (my.class) ?
+            .name = swift_derive_class_name (my.class, my.wrapper)
+            .objc_name = swift_derive_class_objc_name (swift_class, my.wrapper)
+
+            swift_map_attr_visibility (swift_class, my.class)
+
+            for my.class.method
+                swift_wrapper_create_method (my.wrapper, method, swift_class, my.meta)
+            endfor
+        endnew
+    endnew
 endfunction
-
-
-# ===========================================================================
-#   Code generation.
-# ===========================================================================
-
-# ---------------------------------------------------------------------------
-#   Generate project files.
-# ---------------------------------------------------------------------------
-function swift_generate_project (wrapper, source)
-    check_arguments (my, "wrapper, source", my)
-
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Generate source files from <swift_module/> entities.
-# ---------------------------------------------------------------------------
-function swift_generate_sources (wrapper, source)
-    check_arguments (my, "wrapper, source", my)
-
-    assert_attribute (my.wrapper, "source_dir", my)
-
-    if -1 = directory.create (my.wrapper.source_dir)
-        echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
-    endif
-
-    for my.source.swift_module
-        echo_trace ("Generate Swift files from <$(name (swift_module)) name = \"$(c_module.name:)\"/>", my)
-
-        output swift_module.source_file_path
-
-        swift_insert_prologue (swift_module)
-        newline(2)
-
-        for swift_module.swift_import
-            swift_insert_import (swift_import)
-            newline()
-        endfor
-
-        for swift_module.swift_enum
-            swift_insert_enum (swift_enum)
-            newline()
-        endfor
-
-        for swift_module.swift_protocol
-            swift_insert_protocol (swift_protocol)
-            newline()
-        endfor
-
-        for swift_module.swift_class
-            swift_insert_class (swift_class)
-            newline()
-        endfor
-
-        for swift_module.swift_struct
-            swift_insert_struct (swift_struct)
-            newline()
-        endfor
-
-        for swift_module.swift_extension
-            swift_insert_extension (swift_extension)
-            newline()
-        endfor
-    endfor
-endfunction
-
 
 .endtemplate
