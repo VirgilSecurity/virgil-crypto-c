@@ -9,7 +9,7 @@ required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
     <implementor name [is_default]>
-       <implementation name [project]>
+       <implementation name>
           <context>
              <require [scope] [project] [library] [module] [header] [feature] [interface] [class]
                   [impl]>
@@ -74,7 +74,6 @@ Defines set of the implemented interfaces in a one module.
 
     <implementation
         name = "..."
-      [ project = "..." ]
         >
         <context>, optional
         <interface>, 1 or more
@@ -82,10 +81,7 @@ Defines set of the implemented interfaces in a one module.
         <require>
     </implementation>
 
-The implementation item can have these attributes:
-
-project:
-    Parent project name. The project attribute is optional.
+The implementation item has this single attribute:
 
 name:
     Implementation name. The name attribute is required.

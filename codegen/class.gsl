@@ -132,15 +132,6 @@ function class_resolve_attr_c_prefix (class, project)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve attribute: class.project.
-# ---------------------------------------------------------------------------
-function class_resolve_attr_project (class, project)
-    check_arguments (my, "class, project", my)
-
-    my.class.project ?= my.project.name
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Resolve attribute: class.uid.
 # ---------------------------------------------------------------------------
 function class_resolve_attr_uid (class, project)
@@ -176,7 +167,6 @@ function class_resolve (class, project)
     class_resolve_attr_context (my.class, my.project)
     class_resolve_attr_lifecycle (my.class, my.project)
     class_resolve_attr_c_prefix (my.class, my.project)
-    class_resolve_attr_project (my.class, my.project)
     class_resolve_attr_uid (my.class, my.project)
 
     for my.class.method
@@ -211,13 +201,13 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create 'feature' for given 'class'.
 # ---------------------------------------------------------------------------
-function class_create_feature (class, destination)
-    check_arguments (my, "class, destination", my)
+function class_create_feature (class, project, destination)
+    check_arguments (my, "class, project, destination", my)
 
     new feature to my.destination
         . = "Enable class '$(my.class.name)'."
         .name = my.class.name
-        .project = my.class.project
+        .project = my.project.name
 
         for my.class.require where defined (0.feature)
             copy require to feature
@@ -240,11 +230,11 @@ endfunction
 # ---------------------------------------------------------------------------
 #   For each 'class' within 'source' create 'feature'.
 # ---------------------------------------------------------------------------
-function foreach_class_create_feature (source, destination)
-    check_arguments (my, "source, destination", my)
+function foreach_class_create_feature (source, project, destination)
+    check_arguments (my, "source, project, destination", my)
 
     for my.source.class
-        class_create_feature (class, my.destination)
+        class_create_feature (class, project, my.destination)
     endfor
 endfunction
 

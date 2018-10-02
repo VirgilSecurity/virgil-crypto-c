@@ -117,10 +117,10 @@ function process_project (project, features_list, projects_api, echo_level)
 
 
     #   Create feature per high level component.
-    foreach_interface_create_feature (my.root, my.project)
-    foreach_implementation_create_feature (my.root, my.project)
-    foreach_module_create_feature (my.root, my.project)
-    foreach_class_create_feature (my.root, my.project)
+    foreach_interface_create_feature (my.root, my.project, my.project)
+    foreach_implementation_create_feature (my.root, my.project, my.project)
+    foreach_module_create_feature (my.root, my.project, my.project)
+    foreach_class_create_feature (my.root, my.project, my.project)
 
     #   Group features within one component.
     features_list_update_from_project (my.features_list, my.project)

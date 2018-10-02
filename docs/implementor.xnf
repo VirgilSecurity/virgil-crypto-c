@@ -73,8 +73,6 @@
             Implementation name.
         </attr>
 
-        <inherit entity="project_attr"/>
-
         <allow entity="context" occurs="0/1"/>
         <allow entity="interface" occurs="1+"/>
         <allow entity="dependency" occurs="0+"/>

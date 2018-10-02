@@ -82,7 +82,6 @@
             </restrict>
         </attr>
 
-        <inherit entity="project_attr"/>
         <inherit entity="scope"/>
         <inherit entity="c_prefix"/>
         <inherit entity="uid"/>
