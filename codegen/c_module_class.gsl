@@ -80,7 +80,7 @@ function _X13_add_context_struct (class, declaration, definition, destination, m
         c_dependency_add_properties (my.class, struct, my.meta)
 
         for my.class.property
-            copy property to struct
+            component_clean_copy (property, struct)
         endfor
     endnew
 endfunction
@@ -396,7 +396,7 @@ function _X13_add_constructor (class, constructor, destination, meta)
         . = my.constructor. ?
 
         for my.constructor.argument
-            copy argument to method
+            component_clean_copy (argument, method)
         endfor
 
         _X13_add_return_ctx (method, my.meta)
@@ -625,27 +625,27 @@ function c_module_class_create_module_public (class, destination, meta)
 
 
         for my.class.require
-            copy require to module
+            component_clean_copy (require, module)
         endfor
 
         for my.class.c_include
-            copy c_include to module
+            component_clean_copy (c_include, module)
         endfor
 
         for my.class.constant
-            copy constant to module
+            component_clean_copy (constant, module)
         endfor
 
         for my.class.property
-            copy property to module
+            component_clean_copy (property, module)
         endfor
 
         for my.class.enum
-            copy enum to module
+            component_clean_copy (enum, module)
         endfor
 
         for my.class.callback
-            copy callback to module
+            component_clean_copy (callback, module)
         endfor
 
         for my.class.method
@@ -653,19 +653,19 @@ function c_module_class_create_module_public (class, destination, meta)
         endfor
 
         for my.class.macros
-            copy macros to module
+            component_clean_copy (macros, module)
         endfor
 
         for my.class.macroses
-            copy macroses to module
+            component_clean_copy (macroses, module)
         endfor
 
         for my.class.struct
-            copy struct to module
+            component_clean_copy (struct, module)
         endfor
 
         for my.class.variable
-            copy variable to module
+            component_clean_copy (variable, module)
         endfor
     endnew
 endfunction

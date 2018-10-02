@@ -38,6 +38,7 @@ import Foundation
 /// Provide interface to calculate hash (message digest) over a stream.
 @objc(VSCPHashStream) public protocol HashStream : HashInfo {
     @objc func start()
-    @objc func update(data: Data)
-    @objc func finish() -> Data
+    @objc func update(data: Unknown)
+    @objc func finish() -> Unknown
 }
+

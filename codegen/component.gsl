@@ -80,6 +80,33 @@ function component_dump (component)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Remove linage.
+# ---------------------------------------------------------------------------
+function component_remove_lineage (component)
+    check_arguments (my, "component", my)
+
+    for my.component.lineage
+        delete lineage
+    endfor
+
+    for my.component. as inner_component where is_item (inner_component)
+        component_remove_lineage (inner_component)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Copy given component without lineage.
+# ---------------------------------------------------------------------------
+function component_clean_copy (component, destination, alias)
+    check_arguments (my, "component, destination", my)
+
+    my.copied_component = item_copy_to (my.component, my.destination, my.alias)
+    component_remove_lineage (my.copied_component)
+
+    return my.copied_component
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return instance as shortened XML string with required attributes.
 # ---------------------------------------------------------------------------
 function component_instance_dump (instance)
@@ -341,10 +368,21 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return true if given component does not belong to any class.
 # ---------------------------------------------------------------------------
-function component_is_global (component)
+function component_in_global_scope (component)
     check_argument (my, "component", my)
 
-    return (my.component.of_class ? my.component->lineage.of_class ? "global") = "global"
+    return (my.component.of_class ? my.component->lineage.of_class ? "") = "global"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true if given component belongs to any class.
+# ---------------------------------------------------------------------------
+function component_in_class_scope (component)
+    check_argument (my, "component", my)
+
+    my.of_class = my.component.of_class ? my.component->lineage.of_class ?
+
+    return defined (my.of_class) & my.of_class <> "global" & my.of_class <> ""
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -371,10 +409,11 @@ function component_derive_uid (component)
     my.self_uid = make_id (name (my.component), my.component.name)
 
     #   Define uid scope: class or global
-    if component_is_global (my.component)
-        my.uid_scope = "global"
-    else
+    if component_in_class_scope (my.component)
         my.uid_scope = make_id ("class", my.component.of_class ? my.component->lineage.of_class)
+
+    elsif component_in_global_scope (my.component)
+        my.uid_scope = "global"
     endif
 
     #   Put it together
@@ -426,7 +465,7 @@ endfunction
 #   Return component's name prefix: class name + ancestors.
 #   Rules:
 #       - no prefix if class is 'global';
-#       - class name is ommited if component's name equals to the class name.
+#       - class name is omitted if component's name equals to the class name.
 # ---------------------------------------------------------------------------
 function component_derive_name_prefix (component)
     check_argument (my, "component", my)
@@ -440,7 +479,7 @@ function component_derive_name_prefix (component)
         my.ancestors = cat (my.ancestors, ancestor.name)
     endfor
 
-    if component_is_global (my.component)
+    if component_in_global_scope (my.component)
         return ""
 
     elsif string_equal (my.component.of_class, my.component.name)
@@ -454,8 +493,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return component's full name: class name + ancestors + self name.
 #   Rules:
-#       - class name is ommited if class is 'global';
-#       - class name is ommited if component's name equals to the class name.
+#       - class name is omitted if class is 'global';
+#       - class name is omitted if component's name equals to the class name.
 # ---------------------------------------------------------------------------
 function component_derive_full_name (component)
      check_argument (my, "component", my)
@@ -538,7 +577,7 @@ endfunction
 function component_resolve_attr_of_class (component, parent)
     check_arguments (my, "component, parent", my)
 
-    my.component.of_class ?= my.parent.of_class
+    my.component.of_class ?= my.parent.of_class ?
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1037,7 +1076,7 @@ function component_add_lineage (component, parent)
         endnew
     endif
 
-    my.component->lineage.of_class = my.parent.of_class
+    my.component->lineage.of_class = my.parent.of_class ?
 
     #   Add parent as ancestor
     new ancestor to my.component->lineage
@@ -1223,7 +1262,7 @@ function component_resolve_constant (constant, parent)
 
     component_require_attr_name (my.constant, my)
 
-    if ! item_in (my.parent ?, "enum")
+    if ! item_in (my.parent ?, "enum, interface")
         component_require_attr_value (my.constant, my)
     endif
 
