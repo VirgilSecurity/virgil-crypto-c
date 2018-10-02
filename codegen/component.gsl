@@ -510,7 +510,7 @@ function component_resolve_attr_lang (component, parent)
 
     my.component.lang ?= my.parent.lang ? "c"
 
-    my.valid_langs = "c, java, csharp"
+    my.valid_langs = "c, java, csharp, swift"
 
     if ! string_in (my.component.lang, my.valid_langs)
         my.component_dump = component_dump (my.component)
