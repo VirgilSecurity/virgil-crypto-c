@@ -7,7 +7,7 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <class name [of_class] [scope] [project] [c_prefix] [context] [lifecycle]>
+    <class name [visibility] [c_prefix] [scope] [project] [uid] [context] [lifecycle]>
        <require [scope] [project] [library] [module] [header] [feature] [interface] [class]
             [impl]>
           <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]
@@ -86,10 +86,11 @@ Defines class type.
 
     <class
         name = "..."
-      [ of_class = "..." ]
+      [ visibility = "public | private"  ("public") ]
+      [ c_prefix = "..." ]
       [ scope = "public | private | internal"  ("public") ]
       [ project = "..." ]
-      [ c_prefix = "..." ]
+      [ uid = "..." ]
       [ context = "none | public | private | internal"  ("none") ]
       [ lifecycle = "none | default"  ("default") ]
         >
@@ -108,13 +109,22 @@ Defines class type.
 
 The class item can have these attributes:
 
+visibility:
+    Defines symbol binary visibility. This attribute must not be inherited.
+    The visibility attribute is optional. Its default value is "public". It
+    can take one of the following values:
+
+Value: Meaning:
+public: Symbols of the types and methods are visible in a binary file.
+private: Symbols of the types and methods are hidden in a binary file.
+
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.
+
 c_prefix:
     Prefix that is used for C name resolution. The c_prefix attribute is
     optional.
-
-of_class:
-    Defines class name that a component belongs to. This attributes is used
-    for inner components name resolution. The of_class attribute is optional.
 
 scope:
     Defines component visibility within scope. This attribute must not be
