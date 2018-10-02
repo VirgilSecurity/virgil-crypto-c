@@ -1161,7 +1161,7 @@ endfunction
 function make_ref_c (uid)
     check_argument (my, "uid", my)
 
-    make_ref (my.uid, "c")
+    return make_ref (my.uid, "c")
 endfunction
 
 # ---------------------------------------------------------------------------
