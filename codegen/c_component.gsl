@@ -56,6 +56,40 @@ gsl from "c_formatter.gsl"
 # ###########################################################################
 
 # ---------------------------------------------------------------------------
+#   If attribute 'project' is defined within <instance/> then return project
+#   prefix, otherwise return empty string.
+# ---------------------------------------------------------------------------
+function c_component_derive_instance_project_uid (instance)
+    check_arguments (my, "instance", my)
+
+    return defined (my.instance.project) ?? make_id ("project", my.instance.project) ? ""
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Crate uid based on the given options.
+#   Examples:
+#       {struct, buffer, buffer} - returns "class_buffer_struct_buffer"
+#       {struct, inner/buffer, buffer} - returns "class_inner_struct_buffer"
+#       {enum, impl/tag,} - returns "class_impl_enum_tag"
+#       {struct, codes,} - returns "global_struct_codes"
+# ---------------------------------------------------------------------------
+function c_component_derive_instance_type_uid (type_id, type_value, of_class)
+    check_arguments (my, "type_id, type_value", my)
+
+    if regexp.match ("([^\/]+)\/(.+)", my.type_value, my.group1, my.group2)
+        my.of_class = my.group1
+        my.type_value = my.group2
+    endif
+
+    if defined (my.of_class)
+        return make_id ("class", my.of_class, my.type_id, my.type_value)
+
+    else
+        return make_id ("global", my.type_id, my.type_value)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Derive C style in-project constant full name.
 # ---------------------------------------------------------------------------
 function c_derive_constant_name (constant)
@@ -500,17 +534,67 @@ function c_component_map_instance_attr_type (c_instance, instance)
         if my.instance.class = "any"
             my.c_instance.type = "void"
 
+        elsif is_ref (my.instance.class) | defined (my.instance.library)
+            my.c_instance.type = c_lang_ref (my.instance.class)
+
         else
-            my.c_instance.type = c_component_wrap_uid (my.instance.class)
+            my.project_uid = c_component_derive_instance_project_uid (my.instance)
+            my.type_uid = c_component_derive_instance_type_uid ("struct", my.instance.class, my.instance.class)
+            my.c_instance.type = make_ref_c (make_id(my.project_uid, my.type_uid))
         endif
 
-    elsif has_one_of_attribute (my.instance, "enum, callback, interface, api, impl")
-        my.c_instance.type = c_component_wrap_uid (\
-                my.instance.enum ? \
-                my.instance.callback ? \
-                my.instance.interface ? \
-                my.instance.api ? \
-                my.instance.impl)
+    elsif defined (my.instance.enum)
+        if is_ref (my.instance.enum) | defined (my.instance.library)
+            my.c_instance.type = c_lang_ref (my.instance.enum)
+
+        else
+            my.project_uid = c_component_derive_instance_project_uid (my.instance)
+            my.type_uid = c_component_derive_instance_type_uid ("enum", my.instance.enum, my.instance.enum)
+            my.c_instance.type = make_ref_c (make_id(my.project_uid, my.type_uid))
+        endif
+
+    elsif defined (my.instance.callback)
+        if is_ref (my.instance.callback) | defined (my.instance.library)
+            my.c_instance.type = c_lang_ref (my.instance.callback)
+
+        else
+            my.project_uid = c_component_derive_instance_project_uid (my.instance)
+            my.type_uid = c_component_derive_instance_type_uid ("callback", my.instance.callback, my.instance.callback)
+            my.c_instance.type = make_ref_c (make_id(my.project_uid, my.type_uid))
+        endif
+
+    elsif defined (my.instance.interface)
+        if is_ref (my.instance.interface) | defined (my.instance.library)
+            my.c_instance.type = c_lang_ref (my.instance.interface)
+
+        else
+            my.project_uid = c_component_derive_instance_project_uid (my.instance)
+            my.type_uid = c_component_derive_instance_type_uid ("struct", "impl", "impl")
+            my.c_instance.type = make_ref_c (make_id(my.project_uid, my.type_uid))
+        endif
+
+    elsif defined (my.instance.api)
+        if is_ref (my.instance.api) | defined (my.instance.library)
+            my.c_instance.type = c_lang_ref (my.instance.api)
+
+        else
+            my.project_uid = c_component_derive_instance_project_uid (my.instance)
+            my.type = cat (my.instance.api, "api")
+            my.type_uid = c_component_derive_instance_type_uid ("struct", my.type, my.type)
+            my.c_instance.type = make_ref_c (make_id(my.project_uid, my.type_uid))
+        endif
+
+    elsif defined (my.instance.impl)
+        if is_ref (my.instance.impl) | defined (my.instance.library)
+            my.c_instance.type = c_lang_ref (my.instance.impl)
+
+        else
+            my.project_uid = c_component_derive_instance_project_uid (my.instance)
+            my.type_uid = c_component_derive_instance_type_uid ("struct", "impl", my.instance.impl)
+            my.c_instance.type = make_ref_c (make_id(my.project_uid, my.type_uid))
+
+        endif
+
     else
         echo_fatal ("Unreacheable code, component_resolve_instance() must handle this.", my)
     endif
