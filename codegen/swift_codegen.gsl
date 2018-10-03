@@ -216,6 +216,8 @@ endfunction
 function swift_insert_protocol (swift_protocol)
     check_arguments (my, "swift_protocol", my)
 
+    echo_trace ("Inserting protocol: " + my.swift_protocol.name)
+
     assert_attributes (my.swift_protocol, "name, objc_name, visibility", my)
 
     for my.swift_protocol.swift_inherit
@@ -249,9 +251,9 @@ endfunction
 function swift_insert_class (swift_class)
     check_arguments (my, "swift_class", my)
 
-    assert_attributes (my.swift_class, "name, objc_name, visibility", my)
-
     echo_trace ("Inserting class: " + my.swift_class.name)
+
+    assert_attributes (my.swift_class, "name, objc_name, visibility", my)
 endfunction
 
 # ---------------------------------------------------------------------------

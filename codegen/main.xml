@@ -1,4 +1,4 @@
-<main script="main.gsl" work_path="generated/main" echo_level="trace">
+<main script="main.gsl" work_path="generated/main" echo_level="debug">
     <license>
         Copyright (C) 2015-2018 Virgil Security Inc.
 
@@ -38,7 +38,7 @@
     <external library="mbedtls"/>
     <external library="ed25519"/>
 
-    <!-- <project name="common"/> -->
-    <!-- <project name="foundation"/> -->
+    <project name="common"/>
+    <project name="foundation"/>
     <project name="pythia"/>
 </main>
