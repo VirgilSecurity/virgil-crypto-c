@@ -20,6 +20,8 @@
         <argument name="receiver identity public key" class="buffer"/>
         <argument name="receiver long term public key" class="buffer"/>
         <argument name="receiver one time public key" class="buffer"/>
+
+        <return enum="error"/>
     </method>
 
     <method name="respond">
@@ -29,6 +31,8 @@
         <argument name="receiver identity private key" class="buffer"/>
         <argument name="receiver long term private key" class="buffer"/>
         <argument name="receiver one time private key" class="buffer"/>
+
+        <return enum="error"/>
     </method>
 
     <method name="encrypt len">

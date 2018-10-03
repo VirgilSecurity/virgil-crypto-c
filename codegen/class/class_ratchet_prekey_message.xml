@@ -6,6 +6,10 @@
 
     <constant name="public key length" definition="public" value="32"/>
 
+    <constant name="max message length" definition="public" value="1024 * 1024 * 1024">
+        FIXME
+    </constant>
+
     <property name="protocol version" type="size" size="1"/>
     <property name="identity key" class="buffer"/>
     <property name="long term key" class="buffer"/>

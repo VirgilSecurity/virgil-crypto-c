@@ -157,12 +157,12 @@ vscr_ratchet_session_take_ratchet(vscr_ratchet_session_t *ratchet_session_ctx, v
 VSCR_PUBLIC void
 vscr_ratchet_session_release_ratchet(vscr_ratchet_session_t *ratchet_session_ctx);
 
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session_ctx, vsc_buffer_t *sender_identity_private_key,
         vsc_buffer_t *receiver_identity_public_key, vsc_buffer_t *receiver_long_term_public_key,
         vsc_buffer_t *receiver_one_time_public_key);
 
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session_ctx, vsc_buffer_t *sender_identity_public_key,
         vsc_buffer_t *sender_ephemeral_public_key, vsc_buffer_t *receiver_identity_private_key,
         vsc_buffer_t *receiver_long_term_private_key, vsc_buffer_t *receiver_one_time_private_key);

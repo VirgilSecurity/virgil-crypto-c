@@ -75,10 +75,10 @@ static void initialize(vscr_ratchet_t *ratchet_alice, vscr_ratchet_t *ratchet_bo
     vsc_buffer_reserve(ratchet_private_key, test_ratchet_ratchet_private_key.len);
 
     vsc_buffer_t *ratchet_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
-    curve25519_get_pubkey(vsc_buffer_ptr(ratchet_public_key), test_ratchet_ratchet_private_key.bytes);
+    TEST_ASSERT_EQUAL_INT(0, curve25519_get_pubkey(vsc_buffer_ptr(ratchet_public_key), test_ratchet_ratchet_private_key.bytes));
     vsc_buffer_reserve(ratchet_public_key, test_ratchet_ratchet_private_key.len);
 
-    vscr_ratchet_initiate(ratchet_alice, test_ratchet_shared_secret, ratchet_private_key);
+    TEST_ASSERT_EQUAL_INT(vscr_SUCCESS, vscr_ratchet_initiate(ratchet_alice, test_ratchet_shared_secret, ratchet_private_key));
     vscr_ratchet_respond(ratchet_bob, test_ratchet_shared_secret, ratchet_public_key);
 
     vsc_buffer_destroy(&ratchet_private_key);

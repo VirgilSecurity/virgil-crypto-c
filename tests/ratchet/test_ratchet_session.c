@@ -86,7 +86,7 @@ static void initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_sessi
     vsc_buffer_reserve(alice_identity_private_key, ED25519_KEY_LEN);
 
     vsc_buffer_t *alice_identity_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
-    curve25519_get_pubkey(vsc_buffer_ptr(alice_identity_public_key), vsc_buffer_bytes(alice_identity_private_key));
+    TEST_ASSERT_EQUAL_INT(0, curve25519_get_pubkey(vsc_buffer_ptr(alice_identity_public_key), vsc_buffer_bytes(alice_identity_private_key)));
     vsc_buffer_reserve(alice_identity_public_key, ED25519_KEY_LEN);
 
     vsc_buffer_t *bob_identity_private_key = vsc_buffer_new_with_capacity(test_ratchet_session_bob_identity_private_key.len);
@@ -94,7 +94,7 @@ static void initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_sessi
     vsc_buffer_reserve(bob_identity_private_key, ED25519_KEY_LEN);
 
     vsc_buffer_t *bob_identity_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
-    curve25519_get_pubkey(vsc_buffer_ptr(bob_identity_public_key), vsc_buffer_bytes(bob_identity_private_key));
+    TEST_ASSERT_EQUAL_INT(0, curve25519_get_pubkey(vsc_buffer_ptr(bob_identity_public_key), vsc_buffer_bytes(bob_identity_private_key)));
     vsc_buffer_reserve(bob_identity_public_key, ED25519_KEY_LEN);
 
     vsc_buffer_t *bob_longterm_private_key = vsc_buffer_new_with_capacity(test_ratchet_session_bob_longterm_private_key.len);
@@ -102,7 +102,7 @@ static void initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_sessi
     vsc_buffer_reserve(bob_longterm_private_key, ED25519_KEY_LEN);
 
     vsc_buffer_t *bob_longterm_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
-    curve25519_get_pubkey(vsc_buffer_ptr(bob_longterm_public_key), vsc_buffer_bytes(bob_longterm_private_key));
+    TEST_ASSERT_EQUAL_INT(0, curve25519_get_pubkey(vsc_buffer_ptr(bob_longterm_public_key), vsc_buffer_bytes(bob_longterm_private_key)));
     vsc_buffer_reserve(bob_longterm_public_key, ED25519_KEY_LEN);
 
     vsc_buffer_t *bob_onetime_private_key = vsc_buffer_new_with_capacity(test_ratchet_session_bob_onetime_private_key.len);
@@ -110,21 +110,21 @@ static void initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_sessi
     vsc_buffer_reserve(bob_onetime_private_key, ED25519_KEY_LEN);
 
     vsc_buffer_t *bob_onetime_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
-    curve25519_get_pubkey(vsc_buffer_ptr(bob_onetime_public_key), vsc_buffer_bytes(bob_onetime_private_key));
+    TEST_ASSERT_EQUAL_INT(0, curve25519_get_pubkey(vsc_buffer_ptr(bob_onetime_public_key), vsc_buffer_bytes(bob_onetime_private_key)));
     vsc_buffer_reserve(bob_onetime_public_key, ED25519_KEY_LEN);
 
-    vscr_ratchet_session_initiate(session_alice,
-                                  alice_identity_private_key,
-                                  bob_identity_public_key,
-                                  bob_longterm_public_key,
-                                  bob_onetime_public_key);
+    TEST_ASSERT_EQUAL_INT(vscr_SUCCESS, vscr_ratchet_session_initiate(session_alice,
+                                                                      alice_identity_private_key,
+                                                                      bob_identity_public_key,
+                                                                      bob_longterm_public_key,
+                                                                      bob_onetime_public_key));
 
-    vscr_ratchet_session_respond(session_bob,
-                                 alice_identity_public_key,
-                                 session_alice->sender_ephemeral_public_key,
-                                 bob_identity_private_key,
-                                 bob_longterm_private_key,
-                                 bob_onetime_private_key);
+    TEST_ASSERT_EQUAL_INT(vscr_SUCCESS, vscr_ratchet_session_respond(session_bob,
+                                                                     alice_identity_public_key,
+                                                                     session_alice->sender_ephemeral_public_key,
+                                                                     bob_identity_private_key,
+                                                                     bob_longterm_private_key,
+                                                                     bob_onetime_private_key));
 
     vsc_buffer_destroy(&alice_identity_private_key);
     vsc_buffer_destroy(&alice_identity_public_key);

@@ -71,7 +71,11 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
-    vscr_ratchet_regular_message_PUBLIC_KEY_LENGTH = 32
+    vscr_ratchet_regular_message_PUBLIC_KEY_LENGTH = 32,
+    //
+    //  FIXME
+    //
+    vscr_ratchet_regular_message_MAX_MESSAGE_LENGTH = 1024 * 1024 * 1024
 };
 
 //

@@ -244,7 +244,10 @@ vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message_ctx, vsc_
 
     VSCR_ASSERT_PTR(ratchet_message_ctx);
 
-    VSCR_ASSERT(vsc_buffer_left(output) >= vscr_ratchet_message_serialize_len(vsc_buffer_len(ratchet_message_ctx->message)));
+    if (vsc_buffer_left(output) < vscr_ratchet_message_serialize_len(vsc_buffer_len(ratchet_message_ctx->message))) {
+
+        return vscr_ASN1_WRITE_ERROR;
+    }
 
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
 
@@ -294,10 +297,25 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
 
     uint8_t type = vscf_asn1rd_read_uint8(asn1rd);
 
-    // FIXME: Should not crash
-    VSCR_ASSERT(type == vscr_ratchet_message_TYPE_PREKEY || type == vscr_ratchet_message_TYPE_REGULAR);
+    if (type != vscr_ratchet_message_TYPE_PREKEY && type != vscr_ratchet_message_TYPE_REGULAR) {
+        vscf_asn1rd_destroy(&asn1rd);
+
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_ASN1_READ_ERROR);
+
+        return NULL;
+    }
 
     size_t message_len = vscf_asn1rd_get_len(asn1rd);
+
+    if (message_len > vscr_ratchet_message_MAX_MESSAGE_LENGTH) {
+
+        vscf_asn1rd_destroy(&asn1rd);
+
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_WRONG_MESSAGE_FORMAT);
+
+        return NULL;
+    }
+
     vsc_buffer_t *message = vsc_buffer_new_with_capacity(message_len);
     vscf_asn1rd_read_octet_str(asn1rd, message);
 
@@ -305,7 +323,6 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
         vsc_buffer_destroy(&message);
         vscf_asn1rd_destroy(&asn1rd);
 
-        // FIXME
         VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_ASN1_READ_ERROR);
 
         return NULL;
