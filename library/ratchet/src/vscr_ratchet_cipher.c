@@ -274,6 +274,7 @@ vscr_ratchet_cipher_cleanup_ctx(vscr_ratchet_cipher_t *ratchet_cipher_ctx) {
     VSCR_ASSERT_PTR(ratchet_cipher_ctx);
 
     vsc_buffer_destroy(&ratchet_cipher_ctx->kdf_info);
+    vscf_aes256_gcm_destroy(&ratchet_cipher_ctx->aes256_gcm);
 }
 
 VSCR_PUBLIC size_t

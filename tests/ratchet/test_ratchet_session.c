@@ -53,8 +53,8 @@ static void initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_sessi
     vscr_ratchet_t *ratchet_alice = vscr_ratchet_new();
     vscr_ratchet_t *ratchet_bob = vscr_ratchet_new();
 
-    vscr_ratchet_session_use_ratchet(session_alice, ratchet_alice);
-    vscr_ratchet_session_use_ratchet(session_bob, ratchet_bob);
+    vscr_ratchet_session_take_ratchet(session_alice, ratchet_alice);
+    vscr_ratchet_session_take_ratchet(session_bob, ratchet_bob);
 
     vscr_ratchet_kdf_info_t *kdf_info = vscr_ratchet_kdf_info_new();
     kdf_info->root_info = vsc_buffer_new_with_capacity(test_ratchet_kdf_info_root.len);
@@ -68,7 +68,7 @@ static void initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_sessi
     vsc_buffer_reserve(kdf_info->ratchet_info, test_ratchet_kdf_info_ratchet.len);
 
     vscr_ratchet_cipher_t *ratchet_cipher = vscr_ratchet_cipher_new();
-    ratchet_cipher->kdf_info= vsc_buffer_new_with_capacity(test_ratchet_kdf_info_cipher.len);
+    ratchet_cipher->kdf_info = vsc_buffer_new_with_capacity(test_ratchet_kdf_info_cipher.len);
     memcpy(vsc_buffer_ptr(ratchet_cipher->kdf_info), test_ratchet_kdf_info_cipher.bytes, test_ratchet_kdf_info_cipher.len);
     vsc_buffer_reserve(ratchet_cipher->kdf_info, test_ratchet_kdf_info_cipher.len);
     vscr_ratchet_use_cipher(ratchet_alice, ratchet_cipher);
@@ -129,10 +129,10 @@ static void initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_sessi
     vsc_buffer_destroy(&alice_identity_private_key);
     vsc_buffer_destroy(&alice_identity_public_key);
     vsc_buffer_destroy(&bob_identity_private_key);
-    vsc_buffer_destroy(&bob_longterm_private_key);
-    vsc_buffer_destroy(&bob_onetime_private_key);
     vsc_buffer_destroy(&bob_identity_public_key);
+    vsc_buffer_destroy(&bob_longterm_private_key);
     vsc_buffer_destroy(&bob_longterm_public_key);
+    vsc_buffer_destroy(&bob_onetime_private_key);
     vsc_buffer_destroy(&bob_onetime_public_key);
 }
 

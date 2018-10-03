@@ -301,6 +301,8 @@ vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *ratchet_session_ctx) {
     vsc_buffer_destroy(&ratchet_session_ctx->sender_ephemeral_public_key);
     vsc_buffer_destroy(&ratchet_session_ctx->receiver_longterm_public_key);
     vsc_buffer_destroy(&ratchet_session_ctx->receiver_onetime_public_key);
+    vscr_ratchet_destroy(&ratchet_session_ctx->ratchet);
+    vscr_impl_destroy(&ratchet_session_ctx->rng);
 }
 
 VSCR_PUBLIC vscr_error_t
