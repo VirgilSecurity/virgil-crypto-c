@@ -2,6 +2,7 @@
         name="foundation"
         brief="Virgil Security Crypto Foundation"
         namespace="virgil"
+        package="virgil crypto foundation"
         prefix="vscf"
         path="../library/foundation/"
         inc_path="../library/foundation/include/virgil/foundation/"

@@ -11,37 +11,38 @@ attribute names are case-sensitive and we use only lower-case names.
          [of_class] [scope]>
        <c_include file [feature] [scope] [is_system]/>
        <c_alias type name [declaration]/>
-       <c_enum [feature] [uid] [definition] [declaration] [visibility] [name]>
-          <c_constant name [uid] [definition] [feature] [value]/>
+       <c_enum [feature] [uid] [full_uid] [definition] [declaration] [visibility] [name]>
+          <c_constant name [uid] [full_uid] [definition] [feature] [value]/>
        </c_enum>
-       <c_struct name [definition] [declaration] [uid] [feature]>
+       <c_struct name [feature] [declaration] [uid] [full_uid] [definition]>
           <c_property type type_is name [array] [string] [length] [is_const_type] [is_const_pointer]
                [is_const_array] [is_const_string] [is_const_reference] [need_definition]
-               [feature] [uid] [accessed_by] [bits]/>
+               [feature] [uid] [full_uid] [accessed_by] [bits]/>
        </c_struct>
-       <c_variable type type_is name [accessed_by] [string] [length] [is_const_type] [is_const_pointer]
+       <c_variable type type_is name [array] [accessed_by] [length] [is_const_type] [is_const_pointer]
             [is_const_array] [is_const_string] [is_const_reference] [need_definition]
-            [feature] [definition] [declaration] [visibility] [uid] [array]>
+            [feature] [definition] [declaration] [visibility] [uid] [full_uid]
+            [string]>
           <c_value value>
              <c_cast type type_is [accessed_by] [array] [string] [length] [is_const_type] [is_const_pointer]
                   [is_const_array] [is_const_string] [is_const_reference] [need_definition]/>
           </c_value>
           <c_modifier [value]/>
        </c_variable>
-       <c_method name [feature] [definition] [declaration] [visibility] [uid]>
+       <c_method name [feature] [full_uid] [definition] [declaration] [visibility] [uid]>
           <c_modifier .../>
           <c_return type type_is [accessed_by] [array] [string] [length] [is_const_type] [is_const_pointer]
                [is_const_array] [is_const_string] [is_const_reference] [need_definition]/>
-          <c_argument type type_is name [array] [string] [length] [is_const_type] [is_const_pointer]
+          <c_argument type type_is name [accessed_by] [string] [length] [is_const_type] [is_const_pointer]
                [is_const_array] [is_const_string] [is_const_reference] [need_definition]
-               [uid] [accessed_by]/>
+               [uid] [full_uid] [array]/>
           <c_precondition [position]/>
        </c_method>
-       <c_callback name [uid] [declaration]>
+       <c_callback name [uid] [full_uid] [declaration]>
           <c_return .../>
           <c_argument .../>
        </c_callback>
-       <c_macros [feature] [definition] [uid] [is_method]>
+       <c_macros [feature] [definition] [uid] [full_uid] [is_method]>
           <c_code/>
        </c_macros>
        <c_macroses [definition]>
@@ -211,6 +212,7 @@ Defines feature name. Defines enumeration type.
     <c_enum
       [ feature = "..." ]
       [ uid = "..." ]
+      [ full_uid = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
@@ -229,6 +231,10 @@ feature:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
 
 definition:
     Defines where component will be defined. This attribute must not be
@@ -272,6 +278,7 @@ Defines feature name. Defines integral constant.
     <c_constant
         name = "..."
       [ uid = "..." ]
+      [ full_uid = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ feature = "..." ]
       [ value = "..." ]
@@ -287,6 +294,10 @@ feature:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
 
 definition:
     Defines where component will be defined. This attribute must not be
@@ -312,10 +323,11 @@ Defines feature name. Define structure type.
 
     <c_struct
         name = "..."
-      [ definition = "public | private | external"  ("private") ]
+      [ feature = "..." ]
       [ declaration = "public | private | external"  ("public") ]
       [ uid = "..." ]
-      [ feature = "..." ]
+      [ full_uid = "..." ]
+      [ definition = "public | private | external"  ("private") ]
         >
         <c_property>, 1 or more
     </c_struct>
@@ -351,6 +363,10 @@ uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
 
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
+
 name:
     Structure name. The name attribute is required.
 
@@ -376,6 +392,7 @@ the structure type.
       [ need_definition = "public | private" ]
       [ feature = "..." ]
       [ uid = "..." ]
+      [ full_uid = "..." ]
       [ accessed_by = "value | pointer | reference"  ("value") ]
       [ bits = "..." ]
         />
@@ -463,6 +480,10 @@ uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
 
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
+
 name:
     Property name. The name attribute is required.
 
@@ -481,8 +502,8 @@ variable.
         type = "..."
         type_is = "primitive | class | callback | any"
         name = "..."
+      [ array = "null_terminated | given | fixed | derived" ]
       [ accessed_by = "value | pointer | reference"  ("value") ]
-      [ string = "null_terminated | given | fixed | derived" ]
       [ length = "..." ]
       [ is_const_type = "..." ]
       [ is_const_pointer = "..." ]
@@ -495,7 +516,8 @@ variable.
       [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
       [ uid = "..." ]
-      [ array = "null_terminated | given | fixed | derived" ]
+      [ full_uid = "..." ]
+      [ string = "null_terminated | given | fixed | derived" ]
         >
         <c_value>, 1 or more
         <c_modifier>
@@ -612,6 +634,10 @@ private: Symbols of the types and methods are hidden in a binary file.
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
 
 name:
     Object name. The name attribute is required.
@@ -754,6 +780,7 @@ Defines feature name. Define method signature and implementation
     <c_method
         name = "..."
       [ feature = "..." ]
+      [ full_uid = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
@@ -775,6 +802,10 @@ feature:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
 
 definition:
     Defines where component will be defined. This attribute must not be
@@ -913,7 +944,7 @@ Defines a type of outer component. Defines method or callback argument.
         type = "..."
         type_is = "primitive | class | callback | any"
         name = "..."
-      [ array = "null_terminated | given | fixed | derived" ]
+      [ accessed_by = "value | pointer | reference"  ("value") ]
       [ string = "null_terminated | given | fixed | derived" ]
       [ length = "..." ]
       [ is_const_type = "..." ]
@@ -923,7 +954,8 @@ Defines a type of outer component. Defines method or callback argument.
       [ is_const_reference = "..." ]
       [ need_definition = "public | private" ]
       [ uid = "..." ]
-      [ accessed_by = "value | pointer | reference"  ("value") ]
+      [ full_uid = "..." ]
+      [ array = "null_terminated | given | fixed | derived" ]
         />
 
 The c_argument item can have these attributes:
@@ -1004,6 +1036,10 @@ uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
 
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
+
 name:
     Argument name. The name attribute is required.
 
@@ -1033,6 +1069,7 @@ Define callback type.
     <c_callback
         name = "..."
       [ uid = "..." ]
+      [ full_uid = "..." ]
       [ declaration = "public | private | external"  ("public") ]
         >
         <c_return>, optional
@@ -1055,6 +1092,10 @@ uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
 
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
+
 name:
     Method name. The name attribute is required.
 
@@ -1069,6 +1110,7 @@ method.
       [ feature = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ uid = "..." ]
+      [ full_uid = "..." ]
       [ is_method = "0 | 1"  ("0") ]
         >
         <c_code>, optional
@@ -1094,6 +1136,10 @@ external: Component definition is located somewhere.
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
 
 is_method:
     The is_method attribute is optional. Its default value is "0". It can

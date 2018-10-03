@@ -156,6 +156,7 @@ function context_append_hierarchy (context, item)
         new uid to my.context
             .uid = my.item.uid
             .ref = my.item.name
+            .full_ref = my.item.full_name ?
         endnew
     endif
 

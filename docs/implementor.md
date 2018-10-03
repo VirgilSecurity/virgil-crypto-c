@@ -16,14 +16,15 @@ attribute names are case-sensitive and we use only lower-case names.
                 <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]
                      [impl]/>
              </require>
-             <property is_reference name [project] [access] [type] [class] [enum] [callback] [interface]
-                  [api] [impl] [size] [uid] [need_definition] [library] [bits]>
+             <property is_reference name [full_uid] [library] [access] [type] [class] [enum] [callback]
+                  [interface] [api] [impl] [size] [uid] [need_definition] [project]
+                  [bits]>
                 <string [access] [length]/>
                 <array [access] [length] [length_constant]/>
              </property>
           </context>
           <interface name>
-             <constant name [c_prefix] [of_class] [uid] [feature] [definition] [value]/>
+             <constant name [c_prefix] [of_class] [uid] [full_uid] [feature] [definition] [value]/>
           </interface>
           <dependency name [library] [project] [interface] [api] [class] [impl] [type_name]/>
           <require .../>
@@ -228,7 +229,8 @@ property.
     <property
         is_reference = "0 | 1"
         name = "..."
-      [ project = "..." ]
+      [ full_uid = "..." ]
+      [ library = "..." ]
       [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ class = "..." ]
@@ -240,7 +242,7 @@ property.
       [ size = "1 | 2 | 4 | 8" ]
       [ uid = "..." ]
       [ need_definition = "public | private" ]
-      [ library = "..." ]
+      [ project = "..." ]
       [ bits = "..." ]
         >
         <string>, optional
@@ -252,6 +254,10 @@ The property item can have these attributes:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
 
 project:
     Defines project name that component refers to. The project attribute is
@@ -461,6 +467,7 @@ Groups common attributes for the component. Defines integral constant.
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
+      [ full_uid = "..." ]
       [ feature = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ value = "..." ]
@@ -489,6 +496,10 @@ of_class:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
 
 feature:
     In-project feature name that is implemented. This attribute is used for
