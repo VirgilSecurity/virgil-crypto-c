@@ -1523,7 +1523,7 @@ function foreach_component_resolve (source)
     endfor
 
     for my.source.dependency
-        component_resolve_dependency (features, my.source)
+        component_resolve_dependency (dependency, my.source)
     endfor
 endfunction
 
