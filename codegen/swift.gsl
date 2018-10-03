@@ -327,7 +327,7 @@ function swift_map_instance_type (swift_instance, instance, wrapper)
 
     elsif defined (my.instance.enum)
         if is_ref (my.instance.enum) | defined (my.instance.library)
-            my.swift_instance.type = swift_lang_ref (my.instance.class)
+            my.swift_instance.type = swift_lang_ref (my.instance.enum)
 
         else
             my.swift_instance.type = my.instance.enum
@@ -388,6 +388,8 @@ endfunction
 function swift_resolve (wrapper, project)
     check_arguments (my, "wrapper, project", my)
 
+    echo_info ("Resolve <wrapper lang=\"$(my.wrapper.lang:)\"/> for project: '$(my.project.name:)'", my)
+
     assert_attribute (my.wrapper, "lang", my)
     assert_attribute (my.project, "name", my)
     assert_attribute (my.project, "prefix", my)
@@ -407,9 +409,9 @@ endfunction
 function swift_module_resolve (wrapper, swift_module)
     check_arguments (my, "wrapper, swift_module", my)
 
-    assert_attribute (my.swift_module, "name", my)
-
     echo_trace ("Resolving <$(name (my.swift_module)) name=\"$(my.swift_module.name:)\"/>", my)
+
+    assert_attribute (my.swift_module, "name", my)
 
     #   Resolve UIDs
     swift_module_resolve_uids (my.swift_module)
@@ -440,7 +442,7 @@ function swift_wrapper_create_property_from_constant (wrapper, constant, destina
     check_arguments (my, "wrapper, constant, destination, meta", my)
 
     new swift_property to my.destination
-        . = swift_format_comment (my.constant) ?
+        . = swift_format_description (my.constant) ?
         .name = swift_derive_constant_name (my.constant, my.wrapper)
         .type = swift_derive_constant_type (my.constant, my.wrapper)
         .visibility = "public"
@@ -459,7 +461,7 @@ function swift_wrapper_create_property_from_instance (wrapper, instance, destina
     assert_attribute (my.instance, "access", my)
 
     new swift_property to my.destination
-        . = swift_format_comment (my.instance) ?
+        . = swift_format_description (my.instance) ?
         .name = swift_derive_instance_name (my.instance, my.wrapper)
 
         swift_map_instance (swift_property, my.instance)
@@ -526,7 +528,7 @@ function swift_wrapper_create_method (wrapper, method, destination, meta)
     check_arguments (my, "wrapper, method, destination, meta", my)
 
     new swift_method to my.destination
-        . = swift_format_comment (my.method) ?
+        . = swift_format_description (my.method) ?
         .name = swift_derive_method_name (method, my.wrapper)
         .throws = count (my.method.return, string_equal (return.enum, "error")) ?? "1" ? "0"
 
@@ -562,13 +564,15 @@ endfunction
 function swift_create_interface_module (wrapper, interface, destination, meta)
     check_arguments (my, "wrapper, interface, destination, meta", my)
 
+    echo_info ("Create <swift_module/> from interface: '$(my.interface.name:)'...", my)
+
     new swift_module to my.destination
         .name = swift_derive_module_name (my.interface)
         .source_file_name = 0.name + ".swift"
         .source_file_path = my.wrapper.source_dir + 0.source_file_name
 
         new swift_license to swift_module
-            . = swift_format_license (my.wrapper->license.) ?
+            . = swift_format_license (my.wrapper->license) ?
         endnew
 
         new swift_import to swift_module
@@ -576,7 +580,7 @@ function swift_create_interface_module (wrapper, interface, destination, meta)
         endnew
 
         new swift_protocol to swift_module
-            . = swift_format_comment (my.interface) ?
+            . = swift_format_description (my.interface) ?
             .name = swift_derive_protocol_name (my.interface, my.wrapper)
             .objc_name = swift_derive_protocol_objc_name (swift_protocol, my.wrapper)
 
@@ -595,6 +599,8 @@ function swift_create_interface_module (wrapper, interface, destination, meta)
             endfor
         endnew
     endnew
+
+    echo_debug ("Done", my)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -602,6 +608,8 @@ endfunction
 # ---------------------------------------------------------------------------
 function swift_create_class_module (wrapper, class, destination, meta)
     check_arguments (my, "wrapper, class, destination, meta", my)
+
+    echo_info ("Create <swift_module/> from class: '$(my.class.name:)'", my)
 
     assert_attribute (my.class, "name", my)
 
@@ -616,7 +624,7 @@ function swift_create_class_module (wrapper, class, destination, meta)
         .source_file_path = my.wrapper.source_dir + 0.source_file_name
 
         new swift_license to swift_module
-            . = swift_format_license (my.wrapper->license.) ?
+            . = swift_format_license (my.wrapper->license) ?
         endnew
 
         new swift_import to swift_module
@@ -624,7 +632,7 @@ function swift_create_class_module (wrapper, class, destination, meta)
         endnew
 
         new swift_class to swift_module
-            . = swift_format_comment (my.class) ?
+            . = swift_format_description (my.class) ?
             .name = swift_derive_class_name (my.class, my.wrapper)
             .objc_name = swift_derive_class_objc_name (swift_class, my.wrapper)
             .full_name = "$(my.wrapper.package:).$(0.name:)"
