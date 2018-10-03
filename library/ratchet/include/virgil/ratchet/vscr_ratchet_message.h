@@ -72,7 +72,11 @@ extern "C" {
 //
 enum {
     vscr_ratchet_message_TYPE_REGULAR = 0,
-    vscr_ratchet_message_TYPE_PREKEY = 1
+    vscr_ratchet_message_TYPE_PREKEY = 1,
+    //
+    //  FIXME
+    //
+    vscr_ratchet_message_MAX_MESSAGE_LENGTH = 1024 * 1024 * 1024
 };
 
 //

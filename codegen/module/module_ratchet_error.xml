@@ -27,5 +27,13 @@
         <constant name="wrong message format" of_class="global" value="6">
             Wrong message format
         </constant>
+
+        <constant name="invalid arguments" of_class="global" value="7">
+            Invalid arguments
+        </constant>
+
+        <constant name="curve25519 error" of_class="global" value="8">
+            curve25519 error
+        </constant>
     </enum>
 </module>

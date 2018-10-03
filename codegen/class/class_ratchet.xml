@@ -41,6 +41,8 @@
         </argument>
 
         <argument name="chain key" class="ratchet chain key" access="readwrite"/>
+
+        <return enum="error"/>
     </method>
 
     <method name="advance chain key" declaration="private">
@@ -80,6 +82,8 @@
         <argument class="context"/>
         <argument name="shared secret" class="data"/>
         <argument name="ratchet private key" class="buffer"/>
+
+        <return enum="error"/>
     </method>
 
     <method name="encrypt len">

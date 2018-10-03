@@ -87,7 +87,15 @@ enum vscr_error_t {
     //
     //  Wrong message format
     //
-    vscr_WRONG_MESSAGE_FORMAT = 6
+    vscr_WRONG_MESSAGE_FORMAT = 6,
+    //
+    //  Invalid arguments
+    //
+    vscr_INVALID_ARGUMENTS = 7,
+    //
+    //  curve25519 error
+    //
+    vscr_CURVE25519_ERROR = 8
 };
 typedef enum vscr_error_t vscr_error_t;
 

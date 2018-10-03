@@ -7,6 +7,10 @@
     <constant name="type regular" definition="public" value="0"/>
     <constant name="type prekey" definition="public" value="1"/>
 
+    <constant name="max message length" definition="public" value="1024 * 1024 * 1024">
+        FIXME
+    </constant>
+
     <property name="version" type="size" size="1"/>
     <property name="type" type="size" size="1"/>
     <property name="message" class="buffer"/>
