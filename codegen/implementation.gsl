@@ -199,12 +199,14 @@ endfunction
 function implementation_resolve (implementation, parent, project)
     check_arguments (my, "implementation, parent, project", my)
 
-    component_require_attr_name (my.implementation, my)
-    my.implementation.uid = make_id ("implelemntation", my.implementation.name)
-
     echo_trace ("Resolving implementation: $(my.implementation.name:)", my)
 
+    component_require_attr_name (my.implementation, my)
+
+    my.implementation.scope ?= "public"
+    my.implementation.visibility ?= "public"
     my.implementation.c_prefix ?= my.project.prefix
+    my.implementation.uid = make_id ("implelemntation", my.implementation.name)
 
     for my.implementation.c_include
         implementation_resolve_c_include (c_include, my.implementation)
@@ -249,6 +251,8 @@ function implementation_resolve (implementation, parent, project)
     for my.implementation.require
         implementation_resolve_require (require, my.implementation)
     endfor
+
+    foreach_component_resolve (my.implementation)
 endfunction
 
 # ---------------------------------------------------------------------------

@@ -9,7 +9,7 @@ required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
     <implementor name [is_default]>
-       <implementation name>
+       <implementation name [c_prefix] [full_uid] [visibility] [scope] [uid]>
           <context>
              <require [scope] [project] [library] [module] [header] [feature] [interface] [class]
                   [impl]>
@@ -75,6 +75,11 @@ Defines set of the implemented interfaces in a one module.
 
     <implementation
         name = "..."
+      [ c_prefix = "..." ]
+      [ full_uid = "..." ]
+      [ visibility = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
+      [ uid = "..." ]
         >
         <context>, optional
         <interface>, 1 or more
@@ -82,7 +87,40 @@ Defines set of the implemented interfaces in a one module.
         <require>
     </implementation>
 
-The implementation item has this single attribute:
+The implementation item can have these attributes:
+
+c_prefix:
+    Prefix that is used for C name resolution. The c_prefix attribute is
+    optional.
+
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
+
+visibility:
+    Defines symbol binary visibility. This attribute must not be inherited.
+    The visibility attribute is optional. Its default value is "public". It
+    can take one of the following values:
+
+Value: Meaning:
+public: Symbols of the types and methods are visible in a binary file.
+private: Symbols of the types and methods are hidden in a binary file.
+
+scope:
+    Defines component visibility within scope. This attribute must not be
+    inherited. Note, scope attribute can be used for components, that can not
+    be defined in terms of 'declaration' and 'definition'. The scope
+    attribute is optional. Its default value is "public". It can take one of
+    the following values:
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Implementation name. The name attribute is required.

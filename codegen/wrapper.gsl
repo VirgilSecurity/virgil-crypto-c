@@ -81,6 +81,20 @@ function wrapper_foreach_interface_create_module (wrapper, source, destination, 
 endfunction
 
 
+function wrapper_foreach_implementation_create_module (wrapper, source, destination, meta)
+    check_arguments (my, "wrapper, source, destination, meta", my)
+
+    my.proxy_func = make_id(my.wrapper.lang, "create_implementation_module")
+    if ! macro (my.proxy_func)
+        echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
+    endif
+
+    for my.source.implementation
+        $(my.proxy_func:) (my.wrapper, implementation, my.destination, my.meta)
+    endfor
+endfunction
+
+
 function wrapper_foreach_class_create_module (wrapper, source, destination, meta)
     check_arguments (my, "wrapper, source, destination, meta", my)
 

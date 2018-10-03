@@ -7,7 +7,7 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <interface [visibility] [uid] [full_uid] [c_prefix] [scope]>
+    <interface [c_prefix] [uid] [full_uid] [visibility] [scope]>
        <constant name [c_prefix] [of_class] [uid] [full_uid] [feature] [definition] [value]/>
        <method name [definition] [visibility] [c_prefix] [of_class] [uid] [full_uid] [feature]
             [declaration] [context]>
@@ -57,10 +57,10 @@ The 'interface' item
 Defines C class interface as a set of constants and methods.
 
     <interface
-      [ visibility = "public | private"  ("public") ]
+      [ c_prefix = "..." ]
       [ uid = "..." ]
       [ full_uid = "..." ]
-      [ c_prefix = "..." ]
+      [ visibility = "public | private"  ("public") ]
       [ scope = "public | private | internal"  ("public") ]
         >
         <constant>
@@ -70,14 +70,9 @@ Defines C class interface as a set of constants and methods.
 
 The interface item can have these attributes:
 
-visibility:
-    Defines symbol binary visibility. This attribute must not be inherited.
-    The visibility attribute is optional. Its default value is "public". It
-    can take one of the following values:
-
-Value: Meaning:
-public: Symbols of the types and methods are visible in a binary file.
-private: Symbols of the types and methods are hidden in a binary file.
+c_prefix:
+    Prefix that is used for C name resolution. The c_prefix attribute is
+    optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
@@ -87,9 +82,14 @@ full_uid:
     Unique component identifier represents name that uniquely identifies
     component within projects hierarchy. The full_uid attribute is optional.
 
-c_prefix:
-    Prefix that is used for C name resolution. The c_prefix attribute is
-    optional.
+visibility:
+    Defines symbol binary visibility. This attribute must not be inherited.
+    The visibility attribute is optional. Its default value is "public". It
+    can take one of the following values:
+
+Value: Meaning:
+public: Symbols of the types and methods are visible in a binary file.
+private: Symbols of the types and methods are hidden in a binary file.
 
 scope:
     Defines component visibility within scope. This attribute must not be

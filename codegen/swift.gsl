@@ -276,8 +276,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Map <instance/> attributes to the <swift_instance type=""/> attributes.
 # ---------------------------------------------------------------------------
-function swift_map_instance_type (swift_instance, instance, wrapper)
-    check_arguments (my, "swift_instance, instance, wrapper", my)
+function swift_map_instance_type (swift_instance, instance)
+    check_arguments (my, "swift_instance, instance", my)
 
     if defined (my.instance.type)
         if my.instance.type = "nothing"
@@ -321,7 +321,7 @@ function swift_map_instance_type (swift_instance, instance, wrapper)
 
         else
             my.project_uid = swift_derive_instance_project_uid (my.instance)
-            my.type_uid = make_id ("class", my.instance.class)
+            my.type_uid = make_id ("class", "$(my.instance.class:Pascal)")
             my.swift_instance.type = make_ref_swift (make_id(my.project_uid, my.type_uid))
         endif
 
@@ -345,10 +345,11 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Map <instance/> attributes to the <swift_instance/> attributes.
 # ---------------------------------------------------------------------------
-function swift_map_instance (swift_instance, instance, wrapper)
-    check_arguments (my, "swift_instance, instance, wrapper", my)
+function swift_map_instance (swift_instance, instance)
+    check_arguments (my, "swift_instance, instance", my)
 
-    swift_map_instance_type (my.swift_instance, my.instance, my.wrapper)
+    swift_map_attr_access (my.swift_instance, my.instance)
+    swift_map_instance_type (my.swift_instance, my.instance)
 endfunction
 
 # ===========================================================================
@@ -465,7 +466,6 @@ function swift_wrapper_create_property_from_instance (wrapper, instance, destina
         .name = swift_derive_instance_name (my.instance, my.wrapper)
 
         swift_map_instance (swift_property, my.instance)
-        swift_map_attr_access (swift_property, my.instance)
 
         new swift_getter to swift_property
         endnew
@@ -490,7 +490,7 @@ function swift_wrapper_create_argument (wrapper, argument, destination, meta)
     new swift_argument to my.destination
         .name = swift_derive_instance_name (my.argument, my.wrapper)
 
-        swift_map_instance (swift_argument, my.argument, my.wrapper)
+        swift_map_instance (swift_argument, my.argument)
     endnew
 endfunction
 
@@ -505,7 +505,7 @@ function swift_wrapper_create_return_from_argument (wrapper, argument, destinati
     new swift_return to my.destination
         .name = swift_derive_instance_name (my.argument, my.wrapper)
 
-        swift_map_instance (swift_return, my.argument, my.wrapper)
+        swift_map_instance (swift_return, my.argument)
     endnew
 endfunction
 
@@ -517,7 +517,8 @@ function swift_wrapper_create_return (wrapper, return, destination, meta)
     check_arguments (my, "wrapper, return, destination, meta", my)
 
     new swift_return to my.destination
-        swift_map_instance (swift_return, my.return, my.wrapper)
+        swift_map_instance (swift_return, my.return)
+        swift_return.name ?= "$(swift_return.type:Camel)"
     endnew
 endfunction
 
@@ -559,12 +560,27 @@ function swift_wrapper_create_method (wrapper, method, destination, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Add all required components
+# ---------------------------------------------------------------------------
+function swift_wrapper_inherit_interface (wrapper, interface, swift_class, meta)
+    check_arguments (my, "wrapper, interface, swift_class, meta", my)
+
+    swift_wrapper_create_inherit (my.wrapper, my.interface, my.swift_class, my.meta)
+
+    #   TODO: add constants and methods.
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create module with Swift protocol from the abstract 'interface' notion.
 # ---------------------------------------------------------------------------
 function swift_create_interface_module (wrapper, interface, destination, meta)
     check_arguments (my, "wrapper, interface, destination, meta", my)
 
-    echo_info ("Create <swift_module/> from interface: '$(my.interface.name:)'...", my)
+    if my.interface.scope <> "internal"
+        echo_info ("Create <swift_module/> from interface: '$(my.interface.name:)'", my)
+    else
+        echo_info ("Skip creating <swift_module/> from internal interface: '$(my.interface.name:)'", my)
+    endif
 
     new swift_module to my.destination
         .name = swift_derive_module_name (my.interface)
@@ -604,12 +620,65 @@ function swift_create_interface_module (wrapper, interface, destination, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Create module with Swift class from the abstract 'implementation' notion.
+# ---------------------------------------------------------------------------
+function swift_create_implementation_module (wrapper, implementation, destination, meta)
+    check_arguments (my, "wrapper, implementation, destination, meta", my)
+
+    if my.implementation.scope <> "internal"
+        echo_info ("Create <swift_module/> from implementation: '$(my.implementation.name:)'", my)
+    else
+        echo_info ("Skip creating <swift_module/> from internal implementation: '$(my.implementation.name:)'", my)
+    endif
+
+    new swift_module to my.destination
+        .name = swift_derive_module_name (my.implementation)
+        .source_file_name = 0.name + ".swift"
+        .source_file_path = my.wrapper.source_dir + 0.source_file_name
+
+        new swift_license to swift_module
+            . = swift_format_license (my.wrapper->license) ?
+        endnew
+
+        new swift_import to swift_module
+            .framework = "Foundation"
+        endnew
+
+        new swift_class to swift_module
+            . = swift_format_description (my.implementation) ?
+            .name = swift_derive_class_name (my.implementation, my.wrapper)
+            .objc_name = swift_derive_class_objc_name (swift_class, my.wrapper)
+
+            swift_map_attr_visibility (swift_class, my.implementation)
+
+            for my.implementation.interface
+                swift_wrapper_inherit_interface (my.wrapper, interface, swift_class, my.meta)
+            endfor
+
+            for my.implementation.constant
+                swift_wrapper_create_property_from_constant (my.wrapper, constant, swift_class, my.meta)
+            endfor
+
+            for my.implementation.method
+                swift_wrapper_create_method (my.wrapper, method, swift_class, my.meta)
+            endfor
+        endnew
+    endnew
+
+    echo_debug ("Done", my)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create module with Swift class from the abstract 'class' notion.
 # ---------------------------------------------------------------------------
 function swift_create_class_module (wrapper, class, destination, meta)
     check_arguments (my, "wrapper, class, destination, meta", my)
 
-    echo_info ("Create <swift_module/> from class: '$(my.class.name:)'", my)
+    if my.class.scope <> "internal"
+        echo_info ("Create <swift_module/> from class: '$(my.class.name:)'", my)
+    else
+        echo_info ("Skip creating <swift_module/> from internal class: '$(my.class.name:)'", my)
+    endif
 
     assert_attribute (my.class, "name", my)
 
@@ -644,6 +713,8 @@ function swift_create_class_module (wrapper, class, destination, meta)
             endfor
         endnew
     endnew
+
+    echo_debug ("Done", my)
 endfunction
 
 .endtemplate
