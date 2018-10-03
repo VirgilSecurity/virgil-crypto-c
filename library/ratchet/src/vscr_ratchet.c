@@ -382,6 +382,9 @@ vscr_ratchet_init_ctx(vscr_ratchet_t *ratchet_ctx) {
 static void
 vscr_ratchet_cleanup_ctx(vscr_ratchet_t *ratchet_ctx) {
 
+    vscr_ratchet_kdf_info_destroy(&ratchet_ctx->kdf_info);
+    vscr_impl_destroy(&ratchet_ctx->rng);
+    vscr_ratchet_cipher_destroy(&ratchet_ctx->cipher);
     vscr_ratchet_sender_chain_destroy(&ratchet_ctx->sender_chain);
     vscr_ratchet_receiver_chain_list_node_destroy(&ratchet_ctx->receiver_chains);
     vscr_ratchet_skipped_message_key_list_node_destroy(&ratchet_ctx->skipped_message_keys);
@@ -442,10 +445,12 @@ vscr_ratchet_advance_chain_key(vscr_ratchet_chain_key_t *chain_key) {
 
     vsc_buffer_t *buffer = vsc_buffer_new();
     vsc_buffer_use(buffer, chain_key->key, sizeof(chain_key->key));
-    vscf_hmac_mac(vscf_sha256_impl(vscf_sha256_new()),
+    vscf_impl_t *sha256 = vscf_sha256_impl(vscf_sha256_new());
+    vscf_hmac_mac(sha256,
                   vsc_data(chain_key->key, sizeof(chain_key->key)),
                   vsc_data(ratchet_chain_key_seed, sizeof(ratchet_chain_key_seed)),
                   buffer);
+    vscf_impl_destroy(&sha256);
 
     chain_key->index += 1;
 
@@ -461,10 +466,12 @@ vscr_ratchet_create_message_key(const vscr_ratchet_chain_key_t *chain_key) {
 
     vsc_buffer_t *buffer = vsc_buffer_new();
     vsc_buffer_use(buffer, message_key->key, sizeof(message_key->key));
-    vscf_hmac_mac(vscf_sha256_impl(vscf_sha256_new()),
+    vscf_impl_t *sha256 = vscf_sha256_impl(vscf_sha256_new());
+    vscf_hmac_mac(sha256,
                   vsc_data(chain_key->key, sizeof(chain_key->key)),
                   vsc_data(ratchet_message_key_seed, sizeof(ratchet_message_key_seed)),
                   buffer);
+    vscf_impl_destroy(&sha256);
 
     message_key->index = chain_key->index;
 

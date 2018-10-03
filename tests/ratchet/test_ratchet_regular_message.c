@@ -80,6 +80,10 @@ test__1(void) {
 
     vscr_ratchet_regular_message_destroy(&msg1);
     vscr_ratchet_regular_message_destroy(&msg2);
+
+    vsc_buffer_destroy(&public_key);
+    vsc_buffer_destroy(&cipher_text);
+    vsc_buffer_destroy(&buffer);
 }
 
 void
@@ -121,6 +125,10 @@ test__2(void) {
 
     vscr_ratchet_regular_message_destroy(&msg1);
     vscr_ratchet_regular_message_destroy(&msg2);
+
+    vsc_buffer_destroy(&public_key);
+    vsc_buffer_destroy(&cipher_text);
+    vsc_buffer_destroy(&buffer);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
