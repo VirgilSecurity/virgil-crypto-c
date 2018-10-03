@@ -119,24 +119,14 @@ function _L24_add_method_get_api (meta, destination)
 
         new code
             . = "\
-            .(c_class_assert_macros_ptr) (impl);
-            .(c_class_assert_macros_ptr) (impl->info);
+            .(c_class_assert_macros_ptr)(.(_argument_impl));
+            .(c_class_assert_macros_ptr)(.(_argument_impl)->info);
 
-            if (impl->info->api_array == NULL) {
+            if (.(_argument_impl)->info->find_api_cb == NULL) {
                 return NULL;
             }
 
-            for (const .(c_class_api_struct_api) *const * api_array = \
-                    impl->info->api_array; \ *api_array != NULL; ++api_array) {
-
-                const .(c_class_api_struct_api)* api = *api_array;
-
-                if (api->api_tag == api_tag) {
-                    return api;
-                }
-            }
-
-            return NULL;
+            return .(_argument_impl)->info->find_api_cb(.(_argument_api_tag));
             "
         endnew
     endnew
@@ -291,42 +281,6 @@ function _L24_add_method_copy (meta, destination)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Define callback 'cleanup'
-# ---------------------------------------------------------------------------
-function _L24_add_callback_cleanup (meta, destination)
-    check_arguments (my, "meta, destination", my)
-
-    my.names = meta_names (my.meta)
-
-    new callback to my.destination
-        . = "Callback type for $(my.names.method_cleanup) action."
-
-        .name = my.names.method_cleanup
-
-        component_create_argument_impl (callback, my.meta)
-    endnew
-
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Define callback 'delete'
-# ---------------------------------------------------------------------------
-function _L24_add_callback_delete (meta, destination)
-    check_arguments (my, "meta, destination", my)
-
-    my.names = meta_names (my.meta)
-
-    new callback to my.destination
-        . = "Callback type for $(my.names.method_delete) action."
-
-        .name = my.names.method_delete
-
-        component_create_argument_impl (callback, my.meta)
-    endnew
-
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Create module with functionality common for all 'implementation' objects.
 # ---------------------------------------------------------------------------
 function c_module_impl_create (meta, destination)
@@ -379,8 +333,6 @@ function c_module_impl_create (meta, destination)
         _L24_add_method_delete (my.meta, module)
         _L24_add_method_destroy (my.meta, module)
         _L24_add_method_copy (my.meta, module)
-        _L24_add_callback_cleanup (my.meta, module)
-        _L24_add_callback_delete (my.meta, module)
     endnew
 endfunction
 
