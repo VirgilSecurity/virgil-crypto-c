@@ -335,6 +335,7 @@ endfunction
 #       - warning
 #       - info
 #       - trace
+#       - debug
 # ---------------------------------------------------------------------------
 function _C23_echo_is_level_active (level)
     check_argument (my, "level")
