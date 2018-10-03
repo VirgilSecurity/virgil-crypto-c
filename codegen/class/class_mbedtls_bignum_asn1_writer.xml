@@ -6,13 +6,12 @@
 
     <require interface="asn1 writer" scope="private"/>
     <require class="asn1" scope="private"/>
-    <require module="impl" scope="public"/>
 
     <method name="write asn1" of_class="mbedtls bignum">
         Write given MbedTLS big number as ASN.1 INTEGER type.
         Returns size of written data.
 
-        <argument name="asn1wr" class="impl" access="readwrite"/>
+        <argument name="asn1wr" interface="asn1 writer" access="readwrite"/>
         <argument name="bignum" class="mbedtls_mpi" library="mbedtls"/>
         <argument name="error" class="error ctx" access="readwrite"/>
         <return type="size"/>

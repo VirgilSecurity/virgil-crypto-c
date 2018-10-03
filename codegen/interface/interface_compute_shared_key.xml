@@ -6,7 +6,7 @@
         Compute shared key for 2 asymmetric keys.
         Note, shared key can be used only for symmetric cryptography.
 
-        <argument name="public key" class="impl"/>
+        <argument name="public key" interface="public key"/>
 
         <argument name="shared key" class="buffer"/>
 

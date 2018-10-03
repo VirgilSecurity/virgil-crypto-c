@@ -10,7 +10,7 @@
 
         <argument name="data" class="data"/>
 
-        <return class="impl" access="disown"/>
+        <return interface="public key" access="disown"/>
     </method>
 
 
@@ -19,6 +19,6 @@
 
         <argument name="data" class="data"/>
 
-        <return class="impl" access="disown"/>
+        <return interface="private key" access="disown"/>
     </method>
 </interface>
