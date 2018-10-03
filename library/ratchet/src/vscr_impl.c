@@ -71,23 +71,14 @@
 VSCR_PUBLIC const vscr_api_t *
 vscr_impl_api(vscr_impl_t *impl, vscr_api_tag_t api_tag) {
 
-    VSCR_ASSERT_PTR (impl);
-    VSCR_ASSERT_PTR (impl->info);
+    VSCR_ASSERT_PTR(impl);
+    VSCR_ASSERT_PTR(impl->info);
 
-    if (impl->info->api_array == NULL) {
+    if (impl->info->find_api_cb == NULL) {
         return NULL;
     }
 
-    for (const vscr_api_t *const * api_array = impl->info->api_array; *api_array != NULL; ++api_array) {
-
-        const vscr_api_t* api = *api_array;
-
-        if (api->api_tag == api_tag) {
-            return api;
-        }
-    }
-
-    return NULL;
+    return impl->info->find_api_cb(api_tag);
 }
 
 //
