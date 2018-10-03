@@ -273,7 +273,7 @@ function swift_generate_sources (wrapper, source)
         echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
     endif
 
-    for my.source.swift_module where ! string_in (swift_module.name, "Data, Buffer")
+    for my.source.swift_module
         echo_trace ("Generate Swift files from <$(name (swift_module)) name = \"$(c_module.name:)\"/>", my)
 
         output swift_module.source_file_path

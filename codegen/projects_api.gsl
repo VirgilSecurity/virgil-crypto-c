@@ -106,6 +106,7 @@ function projects_api_reset_project (projects_api, project)
 
     new project to my.projects_api
         .name = my.project.name
+        .package = my.project.package
         .install_headers_dir = my.project.install_headers_dir
         .install_private_headers_dir = my.project.install_private_headers_dir
 
@@ -171,9 +172,12 @@ function projects_api_build_type_resolution_map (projects_api)
         my.project_prefix = (project.name <> my.projects_api.active_project) ?? make_id ("project", project.name) ?
 
         for project.uid
-            my.resolution_map.$(uid_insert_prefix (uid.uid, my.project_prefix)) = uid.ref
+            if defined (my.project_prefix) & defined (uid.full_ref)
+                my.resolution_map.$(uid_insert_prefix (uid.uid, my.project_prefix)) = uid.full_ref
+            else
+                my.resolution_map.$(uid_insert_prefix (uid.uid, my.project_prefix)) = uid.ref
+            endif
         endfor
-
 
         #   Process headers.
         my.is_external_project = (project.name = my.projects_api.active_project) ?? "0" ? "1"

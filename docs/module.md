@@ -8,20 +8,20 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <module name [c_prefix] [uid] [feature] [scope] [of_class]>
+    <module name [c_prefix] [uid] [full_uid] [feature] [scope] [of_class]>
        <require [scope] [project] [library] [module] [header] [feature] [interface] [class]
             [impl]>
           <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]
                [impl]/>
        </require>
-       <constant name [c_prefix] [of_class] [uid] [feature] [definition] [value]/>
-       <enum [definition] [declaration] [visibility] [c_prefix] [of_class] [uid] [feature]
-            [name]>
+       <constant name [c_prefix] [of_class] [uid] [full_uid] [feature] [definition] [value]/>
+       <enum [definition] [declaration] [visibility] [c_prefix] [of_class] [uid] [full_uid]
+            [feature] [name]>
           <constant .../>
        </enum>
-       <variable name is_reference [library] [type] [project] [enum] [callback] [interface] [api]
-            [impl] [size] [access] [need_definition] [definition] [declaration]
-            [visibility] [c_prefix] [of_class] [uid] [feature] [class]>
+       <variable name is_reference [access] [type] [project] [enum] [callback] [interface] [api]
+            [impl] [size] [library] [need_definition] [definition] [declaration]
+            [visibility] [c_prefix] [of_class] [uid] [full_uid] [feature] [class]>
           <value is_reference value [library] [type] [class] [enum] [callback] [interface] [api]
                [impl] [size] [project] [need_definition] [access]>
              <cast is_reference [project] [access] [type] [class] [enum] [callback] [interface]
@@ -35,33 +35,35 @@ attribute names are case-sensitive and we use only lower-case names.
           <string .../>
           <array .../>
        </variable>
-       <struct name [definition] [visibility] [c_prefix] [of_class] [uid] [feature] [declaration]>
-          <property is_reference name [project] [access] [type] [class] [enum] [callback] [interface]
-               [api] [impl] [size] [uid] [need_definition] [library] [bits]>
+       <struct name [definition] [visibility] [c_prefix] [of_class] [uid] [full_uid] [feature]
+            [declaration]>
+          <property is_reference name [full_uid] [library] [access] [type] [class] [enum] [callback]
+               [interface] [api] [impl] [size] [uid] [need_definition] [project]
+               [bits]>
              <string .../>
              <array .../>
           </property>
        </struct>
-       <callback name [declaration] [of_class] [uid] [feature] [c_prefix]>
+       <callback name [declaration] [of_class] [uid] [full_uid] [feature] [c_prefix]>
           <return is_reference [project] [access] [type] [class] [enum] [callback] [interface]
                [api] [impl] [size] [library] [need_definition]>
              <string .../>
              <array .../>
           </return>
-          <argument name is_reference [library] [uid] [type] [class] [enum] [callback] [interface]
-               [api] [impl] [size] [project] [need_definition] [access]>
+          <argument name is_reference [project] [uid] [access] [type] [class] [enum] [callback]
+               [interface] [api] [impl] [size] [full_uid] [need_definition] [library]>
              <string .../>
              <array .../>
           </argument>
        </callback>
-       <method name [declaration] [visibility] [c_prefix] [of_class] [uid] [feature] [definition]
-            [context]>
+       <method name [definition] [visibility] [c_prefix] [of_class] [uid] [full_uid] [feature]
+            [declaration] [context]>
           <return .../>
           <argument .../>
           <variable .../>
           <code [lang] [type]/>
        </method>
-       <macros name [c_prefix] [of_class] [uid] [feature] [definition] [is_method]>
+       <macros name [c_prefix] [of_class] [uid] [full_uid] [feature] [definition] [is_method]>
           <code .../>
        </macros>
        <macroses [definition]>
@@ -92,6 +94,7 @@ generate wrappers for high level languages like C#, Java, Python, etc.
         name = "..."
       [ c_prefix = "..." ]
       [ uid = "..." ]
+      [ full_uid = "..." ]
       [ feature = "..." ]
       [ scope = "public | private | internal"  ("public") ]
       [ of_class = "..." ]
@@ -120,6 +123,10 @@ of_class:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
 
 feature:
     In-project feature name that is implemented. This attribute is used for
@@ -271,6 +278,7 @@ Groups common attributes for the component. Defines integral constant.
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
+      [ full_uid = "..." ]
       [ feature = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ value = "..." ]
@@ -300,6 +308,10 @@ uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
 
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
+
 feature:
     In-project feature name that is implemented. This attribute is used for
     feature-based compilation. The feature attribute is optional.
@@ -324,6 +336,7 @@ Groups common attributes for the component. Defines enumeration type.
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
+      [ full_uid = "..." ]
       [ feature = "..." ]
       [ name = "..." ]
         >
@@ -373,6 +386,10 @@ uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
 
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
+
 feature:
     In-project feature name that is implemented. This attribute is used for
     feature-based compilation. The feature attribute is optional.
@@ -390,7 +407,7 @@ attributes for the component. Defines global variable.
     <variable
         name = "..."
         is_reference = "0 | 1"
-      [ library = "..." ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ project = "..." ]
       [ enum = "..." ]
@@ -399,7 +416,7 @@ attributes for the component. Defines global variable.
       [ api = "..." ]
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ library = "..." ]
       [ need_definition = "public | private" ]
       [ definition = "public | private | external"  ("private") ]
       [ declaration = "public | private | external"  ("public") ]
@@ -407,6 +424,7 @@ attributes for the component. Defines global variable.
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
+      [ full_uid = "..." ]
       [ feature = "..." ]
       [ class = "..." ]
         >
@@ -558,6 +576,10 @@ of_class:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
 
 feature:
     In-project feature name that is implemented. This attribute is used for
@@ -914,6 +936,7 @@ Groups common attributes for the component. Defines struct type.
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
+      [ full_uid = "..." ]
       [ feature = "..." ]
       [ declaration = "public | private | external"  ("public") ]
         >
@@ -963,6 +986,10 @@ uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
 
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
+
 feature:
     In-project feature name that is implemented. This attribute is used for
     feature-based compilation. The feature attribute is optional.
@@ -980,7 +1007,8 @@ property.
     <property
         is_reference = "0 | 1"
         name = "..."
-      [ project = "..." ]
+      [ full_uid = "..." ]
+      [ library = "..." ]
       [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ class = "..." ]
@@ -992,7 +1020,7 @@ property.
       [ size = "1 | 2 | 4 | 8" ]
       [ uid = "..." ]
       [ need_definition = "public | private" ]
-      [ library = "..." ]
+      [ project = "..." ]
       [ bits = "..." ]
         >
         <string>, optional
@@ -1004,6 +1032,10 @@ The property item can have these attributes:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
 
 project:
     Defines project name that component refers to. The project attribute is
@@ -1124,6 +1156,7 @@ Groups common attributes for the component. Defines the callback signature.
       [ declaration = "public | private | external"  ("public") ]
       [ of_class = "..." ]
       [ uid = "..." ]
+      [ full_uid = "..." ]
       [ feature = "..." ]
       [ c_prefix = "..." ]
         >
@@ -1154,6 +1187,10 @@ of_class:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
 
 feature:
     In-project feature name that is implemented. This attribute is used for
@@ -1300,8 +1337,9 @@ name, type, and usage information.
     <argument
         name = "..."
         is_reference = "0 | 1"
-      [ library = "..." ]
+      [ project = "..." ]
       [ uid = "..." ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ class = "..." ]
       [ enum = "..." ]
@@ -1310,9 +1348,9 @@ name, type, and usage information.
       [ api = "..." ]
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ project = "..." ]
+      [ full_uid = "..." ]
       [ need_definition = "public | private" ]
-      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ library = "..." ]
         >
         <string>, optional
         <array>, optional
@@ -1323,6 +1361,10 @@ The argument item can have these attributes:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
 
 project:
     Defines project name that component refers to. The project attribute is
@@ -1437,13 +1479,14 @@ and optionally implementation.
 
     <method
         name = "..."
-      [ declaration = "public | private | external"  ("public") ]
+      [ definition = "public | private | external"  ("private") ]
       [ visibility = "public | private"  ("public") ]
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
+      [ full_uid = "..." ]
       [ feature = "..." ]
-      [ definition = "public | private | external"  ("private") ]
+      [ declaration = "public | private | external"  ("public") ]
       [ context = "none | api | impl"  ("none") ]
         >
         <return>, optional
@@ -1494,6 +1537,10 @@ of_class:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
 
 feature:
     In-project feature name that is implemented. This attribute is used for
@@ -1558,6 +1605,7 @@ optionally implementation.
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
+      [ full_uid = "..." ]
       [ feature = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ is_method = "0 | 1"  ("0") ]
@@ -1588,6 +1636,10 @@ of_class:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
 
 feature:
     In-project feature name that is implemented. This attribute is used for

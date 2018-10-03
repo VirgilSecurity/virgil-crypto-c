@@ -48,6 +48,40 @@ gsl from "swift_codegen.gsl"
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
+#   If attribute 'project' is defined within <instance/> then return project
+#   prefix, otherwise return empty string.
+# ---------------------------------------------------------------------------
+function swift_derive_instance_project_uid (instance)
+    check_arguments (my, "instance", my)
+
+    return defined (my.instance.project) ?? make_id ("project", my.instance.project) ? ""
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Crate uid based on the given options.
+#   Examples:
+#       {struct, buffer, buffer} - returns "class_buffer_struct_buffer"
+#       {struct, inner/buffer, buffer} - returns "class_inner_struct_buffer"
+#       {enum, impl/tag,} - returns "class_impl_enum_tag"
+#       {struct, codes,} - returns "global_struct_codes"
+# ---------------------------------------------------------------------------
+function c_component_derive_instance_type_uid (type_id, type_value, of_class)
+    check_arguments (my, "type_id, type_value", my)
+
+    if regexp.match ("([^\/]+)\/(.+)", my.type_value, my.group1, my.group2)
+        my.of_class = my.group1
+        my.type_value = my.group2
+    endif
+
+    if defined (my.of_class)
+        return make_id ("class", my.of_class, my.type_id, my.type_value)
+
+    else
+        return make_id ("global", my.type_id, my.type_value)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return formatted module name.
 # ---------------------------------------------------------------------------
 function swift_derive_module_name (type)
@@ -88,16 +122,79 @@ function swift_derive_instance_name (instance, wrapper)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return mapped instance type.
+#   Derive Swift integer type correspond to it's size.
+#   Size: {1, 2, 4, 8}.
 # ---------------------------------------------------------------------------
-function swift_derive_instance_type (instance, wrapper)
-    check_arguments (my, "instance, wrapper", my)
+function swift_derive_integer_type (size)
+    if defined (my.size)
+        if my.size = "1"
+            return "Int8"
 
-    if string_in (my.instance.class, "data, buffer")
-        return "Data"
+        elsif my.size = "2"
+            return "Int16"
+
+        elsif my.size = "4"
+            return "Int32"
+
+        elsif my.size = "8"
+            return "Int64"
+        else
+            echo_fatal ("Unsupported size 'my.size' for Swift integers", my)
+        endif
+    else
+        return "Int"
     endif
+endfunction
 
-    return "Unknown"
+# ---------------------------------------------------------------------------
+#   Derive Swift unsigned integer type correspond to it's size.
+#   Size: {1, 2, 4, 8}.
+# ---------------------------------------------------------------------------
+function swift_derive_unsigned_type (size)
+    if defined (my.size)
+        if my.size = "1"
+            return "UInt8"
+
+        elsif my.size = "2"
+            return "UInt16"
+
+        elsif my.size = "4"
+            return "UInt32"
+
+        elsif my.size = "8"
+            return "UInt64"
+        else
+            echo_fatal ("Unsupported size 'my.size' for Swift unsigned integers", my)
+        endif
+    else
+        return "UInt"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Derive Swift size type correspond to it's size.
+#   Note, Swift size type represented as Int type.
+#   Size: {1, 2, 4, 8}.
+# ---------------------------------------------------------------------------
+function swift_derive_size_type (size)
+    if defined (my.size)
+        if my.size = "1"
+            return "Int8"
+
+        elsif my.size = "2"
+            return "Int16"
+
+        elsif my.size = "4"
+            return "Int32"
+
+        elsif my.size = "8"
+            return "Int64"
+        else
+            echo_fatal ("Unsupported size 'my.size' for Swift size type", my)
+        endif
+    else
+        return "Int"
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -177,14 +274,82 @@ function swift_map_attr_visibility (swift_component, component)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Map <instance/> attributes to the <swift_instance type=""/> attributes.
+# ---------------------------------------------------------------------------
+function swift_map_instance_type (swift_instance, instance, wrapper)
+    check_arguments (my, "swift_instance, instance, wrapper", my)
+
+    if defined (my.instance.type)
+        if my.instance.type = "nothing"
+            my.swift_instance.type = "Void"
+
+        elsif my.instance.type = "boolean"
+            my.swift_instance.type = "Bool"
+
+        elsif my.instance.type = "integer"
+            my.swift_instance.type = swift_derive_integer_type (my.instance.size ?)
+
+        elsif my.instance.type = "unsigned"
+            my.swift_instance.type = swift_derive_unsigned_type (my.instance.size ?)
+
+        elsif my.instance.type = "byte"
+            my.swift_instance.type = "UInt8"
+
+        elsif my.instance.type = "size"
+            my.swift_instance.type = swift_derive_size_type (my.instance.size ?)
+
+        elsif my.instance.type = "char"
+            my.swift_instance.type = "Character"
+
+        else
+            echo_fatal ("Unsupported instance type '$(my.instance.type)' for Swift language.", my)
+        endif
+
+    elsif defined (my.instance.class)
+
+        if my.instance.class = "any"
+            my.swift_instance.type = "Any"
+
+        elsif my.instance.class = "data"
+            my.swift_instance.type = "Data"
+
+        elsif my.instance.class = "buffer"
+            my.swift_instance.type = "Data"
+
+        elsif is_ref (my.instance.class) | defined (my.instance.library)
+            my.swift_instance.type = swift_lang_ref (my.instance.class)
+
+        else
+            my.project_uid = swift_derive_instance_project_uid (my.instance)
+            my.type_uid = make_id ("class", my.instance.class)
+            my.swift_instance.type = make_ref_swift (make_id(my.project_uid, my.type_uid))
+        endif
+
+    elsif defined (my.instance.enum)
+        if is_ref (my.instance.enum) | defined (my.instance.library)
+            my.swift_instance.type = swift_lang_ref (my.instance.class)
+
+        else
+            my.swift_instance.type = my.instance.enum
+        endif
+
+    else
+        my.instance_dump = component_instance_dump (my.instance)
+
+        echo_warning ("Unreacheable code, component_resolve_instance() must handle this. $(my.instance_dump:)", my)
+
+        my.swift_instance.type = "Unknown"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Map <instance/> attributes to the <swift_instance/> attributes.
 # ---------------------------------------------------------------------------
 function swift_map_instance (swift_instance, instance, wrapper)
     check_arguments (my, "swift_instance, instance, wrapper", my)
 
-    my.swift_instance.type = swift_derive_instance_type (my.instance, my.wrapper)
+    swift_map_instance_type (my.swift_instance, my.instance, my.wrapper)
 endfunction
-
 
 # ===========================================================================
 #   Component resolution.
@@ -229,7 +394,8 @@ function swift_resolve (wrapper, project)
     assert_item (my.project, "license", my)
 
     my.wrapper.prefix = my.project.prefix
-    my.wrapper.source_dir = "../wrapper/$(my.wrapper.lang:c, lower)/$(my.project.name:c,lower)/"
+    my.wrapper.package = "$(my.project.package:Pascal)"
+    my.wrapper.source_dir = "../wrapper/$(my.wrapper.lang:c,lower)/$(my.wrapper.package:)/"
     copy my.project->license to my.wrapper
 endfunction
 
@@ -295,8 +461,8 @@ function swift_wrapper_create_property_from_instance (wrapper, instance, destina
     new swift_property to my.destination
         . = swift_format_comment (my.instance) ?
         .name = swift_derive_instance_name (my.instance, my.wrapper)
-        .type = swift_derive_instance_type (my.instance, my.wrapper)
 
+        swift_map_instance (swift_property, my.instance)
         swift_map_attr_access (swift_property, my.instance)
 
         new swift_getter to swift_property
@@ -367,7 +533,15 @@ function swift_wrapper_create_method (wrapper, method, destination, meta)
         swift_map_attr_visibility (swift_method, my.method)
 
         for my.method.argument
-            if argument.access = "readonly"
+            if first ()
+                if ! string_in (argument.class, "context")
+                    swift_method.modifier = "static"
+                else
+                    next
+                endif
+            endif
+
+            if argument.access <> "writeonly"
                 swift_wrapper_create_argument (my.wrapper, argument, swift_method, my.meta)
             else
                 swift_wrapper_create_return_from_argument (my.wrapper, argument, swift_method, my.meta)
@@ -431,6 +605,11 @@ function swift_create_class_module (wrapper, class, destination, meta)
 
     assert_attribute (my.class, "name", my)
 
+    if string_in (my.class.name, "data, buffer")
+        #   Do not generate classes that can be mapped to the built-in types.
+        return
+    endif
+
     new swift_module to my.destination
         .name = swift_derive_module_name (my.class)
         .source_file_name = 0.name + ".swift"
@@ -448,6 +627,7 @@ function swift_create_class_module (wrapper, class, destination, meta)
             . = swift_format_comment (my.class) ?
             .name = swift_derive_class_name (my.class, my.wrapper)
             .objc_name = swift_derive_class_objc_name (swift_class, my.wrapper)
+            .full_name = "$(my.wrapper.package:).$(0.name:)"
 
             swift_map_attr_visibility (swift_class, my.class)
 

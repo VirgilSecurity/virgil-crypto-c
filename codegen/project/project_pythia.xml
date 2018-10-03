@@ -2,6 +2,7 @@
         name="pythia"
         brief="Virgil Security Crypto Pythia"
         namespace="virgil"
+        package="virgil crypto pythia"
         prefix="vscp"
         path="../library/pythia/"
         inc_path="../library/pythia/include/virgil/pythia/"

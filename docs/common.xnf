@@ -131,6 +131,11 @@
         Unique component identifier represents name that uniquely identifies
         component within models hierarchy.
     </attr>
+
+    <attr name="full_uid">
+        Unique component identifier represents name that uniquely identifies
+        component within projects hierarchy.
+    </attr>
 </entity>
 
 
