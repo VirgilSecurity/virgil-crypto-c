@@ -71,6 +71,7 @@
 #include "vscf_cipher_auth.h"
 #include "vscf_cipher_auth_api.h"
 #include "vscf_impl.h"
+#include "vscf_api.h"
 //  @end
 
 
@@ -79,6 +80,9 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+static const vscf_api_t *
+vscf_aes256_gcm_find_api(vscf_api_tag_t api_tag);
 
 //
 //  Configuration of the interface API 'encrypt api'.
@@ -287,21 +291,6 @@ static const vscf_cipher_auth_api_t cipher_auth_api = {
 };
 
 //
-//  Null-terminated array of the implemented 'Interface API' instances.
-//
-static const vscf_api_t *api_array[] = {
-    (const vscf_api_t *)&encrypt_api,
-    (const vscf_api_t *)&decrypt_api,
-    (const vscf_api_t *)&cipher_info_api,
-    (const vscf_api_t *)&cipher_api,
-    (const vscf_api_t *)&cipher_auth_info_api,
-    (const vscf_api_t *)&auth_encrypt_api,
-    (const vscf_api_t *)&auth_decrypt_api,
-    (const vscf_api_t *)&cipher_auth_api,
-    NULL
-};
-
-//
 //  Compile-time known information about 'aes256 gcm' implementation.
 //
 static const vscf_impl_info_t info = {
@@ -310,10 +299,10 @@ static const vscf_impl_info_t info = {
     //
     vscf_impl_tag_AES256_GCM,
     //
-    //  NULL terminated array of the implemented interfaces.
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
     //
-    api_array,
+    vscf_aes256_gcm_find_api,
     //
     //  Release acquired inner resources.
     //
@@ -464,6 +453,31 @@ vscf_aes256_gcm_impl(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 
     VSCF_ASSERT_PTR(aes256_gcm_impl);
     return (vscf_impl_t *)(aes256_gcm_impl);
+}
+
+static const vscf_api_t *
+vscf_aes256_gcm_find_api(vscf_api_tag_t api_tag) {
+
+    switch(api_tag) {
+        case vscf_api_tag_AUTH_DECRYPT:
+            return (const vscf_api_t *) &auth_decrypt_api;
+        case vscf_api_tag_AUTH_ENCRYPT:
+            return (const vscf_api_t *) &auth_encrypt_api;
+        case vscf_api_tag_CIPHER:
+            return (const vscf_api_t *) &cipher_api;
+        case vscf_api_tag_CIPHER_AUTH:
+            return (const vscf_api_t *) &cipher_auth_api;
+        case vscf_api_tag_CIPHER_AUTH_INFO:
+            return (const vscf_api_t *) &cipher_auth_info_api;
+        case vscf_api_tag_CIPHER_INFO:
+            return (const vscf_api_t *) &cipher_info_api;
+        case vscf_api_tag_DECRYPT:
+            return (const vscf_api_t *) &decrypt_api;
+        case vscf_api_tag_ENCRYPT:
+            return (const vscf_api_t *) &encrypt_api;
+        default:
+            return NULL;
+    }
 }
 
 

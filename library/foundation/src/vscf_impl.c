@@ -71,23 +71,14 @@
 VSCF_PUBLIC const vscf_api_t *
 vscf_impl_api(vscf_impl_t *impl, vscf_api_tag_t api_tag) {
 
-    VSCF_ASSERT_PTR (impl);
-    VSCF_ASSERT_PTR (impl->info);
+    VSCF_ASSERT_PTR(impl);
+    VSCF_ASSERT_PTR(impl->info);
 
-    if (impl->info->api_array == NULL) {
+    if (impl->info->find_api_cb == NULL) {
         return NULL;
     }
 
-    for (const vscf_api_t *const * api_array = impl->info->api_array; *api_array != NULL; ++api_array) {
-
-        const vscf_api_t* api = *api_array;
-
-        if (api->api_tag == api_tag) {
-            return api;
-        }
-    }
-
-    return NULL;
+    return impl->info->find_api_cb(api_tag);
 }
 
 //

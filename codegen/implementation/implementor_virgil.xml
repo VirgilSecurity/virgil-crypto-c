@@ -7,7 +7,7 @@
         <dependency name="hash" interface="hash stream"/>
 
         <context>
-            <property name="ipad" class="buffer"/>
+            <property name="ipad" class="buffer" access="readwrite"/>
         </context>
 
         <interface name="mac info"/>
