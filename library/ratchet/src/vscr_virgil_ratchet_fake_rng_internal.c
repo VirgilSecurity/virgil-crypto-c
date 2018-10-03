@@ -58,6 +58,7 @@
 #include "vscr_ratchet_rng.h"
 #include "vscr_ratchet_rng_api.h"
 #include "vscr_impl.h"
+#include "vscr_api.h"
 //  @end
 
 
@@ -66,6 +67,9 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+static const vscr_api_t *
+vscr_virgil_ratchet_fake_rng_find_api(vscr_api_tag_t api_tag);
 
 //
 //  Configuration of the interface API 'ratchet rng api'.
@@ -87,14 +91,6 @@ static const vscr_ratchet_rng_api_t ratchet_rng_api = {
 };
 
 //
-//  Null-terminated array of the implemented 'Interface API' instances.
-//
-static const vscr_api_t *api_array[] = {
-    (const vscr_api_t *)&ratchet_rng_api,
-    NULL
-};
-
-//
 //  Compile-time known information about 'virgil ratchet fake rng' implementation.
 //
 static const vscr_impl_info_t info = {
@@ -103,10 +99,10 @@ static const vscr_impl_info_t info = {
     //
     vscr_impl_tag_VIRGIL_RATCHET_FAKE_RNG,
     //
-    //  NULL terminated array of the implemented interfaces.
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
     //
-    api_array,
+    vscr_virgil_ratchet_fake_rng_find_api,
     //
     //  Release acquired inner resources.
     //
@@ -226,6 +222,17 @@ vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_impl_t *virgil_ra
 
     VSCR_ASSERT_PTR(virgil_ratchet_fake_rng_impl);
     return (vscr_impl_t *)(virgil_ratchet_fake_rng_impl);
+}
+
+static const vscr_api_t *
+vscr_virgil_ratchet_fake_rng_find_api(vscr_api_tag_t api_tag) {
+
+    switch(api_tag) {
+        case vscr_api_tag_RATCHET_RNG:
+            return (const vscr_api_t *) &ratchet_rng_api;
+        default:
+            return NULL;
+    }
 }
 
 

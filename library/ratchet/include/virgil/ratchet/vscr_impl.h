@@ -86,16 +86,6 @@ typedef enum vscr_impl_tag_t vscr_impl_tag_t;
 typedef struct vscr_impl_t vscr_impl_t;
 
 //
-//  Callback type for cleanup action.
-//
-typedef void (*vscr_impl_cleanup_fn)(vscr_impl_t *impl);
-
-//
-//  Callback type for delete action.
-//
-typedef void (*vscr_impl_delete_fn)(vscr_impl_t *impl);
-
-//
 //  Return 'API' object that is fulfiled with a meta information
 //  specific to the given implementation object.
 //  Or NULL if object does not implement requested 'API'.
