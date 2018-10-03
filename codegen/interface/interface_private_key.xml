@@ -6,6 +6,6 @@
     <method name="extract public key">
         Extract public part of the key.
 
-        <return class="impl" access="disown"/>
+        <return interface="public key" access="disown"/>
     </method>
 </interface>
