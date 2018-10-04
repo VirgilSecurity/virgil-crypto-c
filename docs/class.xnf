@@ -35,7 +35,7 @@
     Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 -->
 
-<xnf name="interface" script="xnf_gen.gsl" version="1.0a1">
+<xnf name="class" script="xnf_gen.gsl" version="1.0a1">
     Defines class type.
 
     <produce filename="class.md" type="gurudoc" />
