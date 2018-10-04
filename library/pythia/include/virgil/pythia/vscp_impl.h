@@ -54,7 +54,6 @@
 #define VSCP_IMPL_H_INCLUDED
 
 #include "vscp_library.h"
-#include "vscp_error.h"
 #include "vscp_api.h"
 //  @end
 

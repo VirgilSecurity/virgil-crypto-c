@@ -53,9 +53,9 @@
 #define VSCF_KEY_WRITER_API_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
+#include "vscf_error.h"
 
 #include <virgil/common/vsc_buffer.h>
 //  @end

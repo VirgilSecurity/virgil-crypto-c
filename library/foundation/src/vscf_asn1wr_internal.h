@@ -54,7 +54,6 @@
 #define VSCF_ASN1WR_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_asn1wr.h"
 #include "vscf_asn1wr.h"
 //  @end

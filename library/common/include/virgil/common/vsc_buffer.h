@@ -53,7 +53,6 @@
 #define VSC_BUFFER_H_INCLUDED
 
 #include "vsc_library.h"
-#include "vsc_error.h"
 #include "vsc_data.h"
 //  @end
 

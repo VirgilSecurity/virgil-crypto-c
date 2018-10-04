@@ -53,7 +53,6 @@
 #define VSCP_HASH_STREAM_H_INCLUDED
 
 #include "vscp_library.h"
-#include "vscp_error.h"
 #include "vscp_impl.h"
 #include "vscp_hash_info.h"
 #include "vscp_api.h"

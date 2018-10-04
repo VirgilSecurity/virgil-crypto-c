@@ -40,6 +40,6 @@ import Foundation
 /// For instance, RSA private key must be imported from the format defined in
 /// RFC 3447 Appendix A.1.2.
 @objc(VSCFImportPrivateKey) public protocol ImportPrivateKey {
-    @objc func importPrivateKey(data: Data) -> error/error
+    @objc func importPrivateKey(data: Data) throws
 }
 

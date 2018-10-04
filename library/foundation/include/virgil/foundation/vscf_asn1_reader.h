@@ -55,8 +55,8 @@
 #define VSCF_ASN1_READER_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_impl.h"
+#include "vscf_error.h"
 #include "vscf_api.h"
 
 #include <virgil/common/vsc_data.h>

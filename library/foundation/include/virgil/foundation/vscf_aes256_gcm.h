@@ -53,11 +53,11 @@
 #define VSCF_AES256_GCM_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_impl.h"
 #include "vscf_cipher_info.h"
 #include "vscf_cipher_auth_info.h"
 #include "vscf_cipher_auth.h"
+#include "vscf_error.h"
 
 #include <virgil/common/vsc_data.h>
 #include <virgil/common/vsc_buffer.h>

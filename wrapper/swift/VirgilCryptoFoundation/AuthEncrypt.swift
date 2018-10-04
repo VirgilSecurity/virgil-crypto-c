@@ -37,7 +37,7 @@ import Foundation
 
 /// Provide interface for authenticated data encryption.
 @objc(VSCFAuthEncrypt) public protocol AuthEncrypt {
-    @objc func authEncrypt(data: Data, authData: Data) -> (out: Data, tag: Data, errorError: error/error)
+    @objc func authEncrypt(data: Data, authData: Data) throws -> (out: Data, tag: Data)
     @objc func authEncryptedLen(dataLen: Int) -> Int
 }
 

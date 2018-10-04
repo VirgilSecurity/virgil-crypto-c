@@ -40,6 +40,6 @@ import Foundation
 /// For instance, RSA public key must be imported from the format defined in
 /// RFC 3447 Appendix A.1.1.
 @objc(VSCFImportPublicKey) public protocol ImportPublicKey {
-    @objc func importPublicKey(data: Data) -> error/error
+    @objc func importPublicKey(data: Data) throws
 }
 

@@ -697,10 +697,6 @@ function component_resolve_instance_attr_enum (instance, parent)
     if is_ref (my.instance.enum) | defined (my.instance.library)
         return
     endif
-
-    if my.instance.enum = "error"
-        my.instance.enum = "error/error"
-    endif
 endfunction
 
 # ---------------------------------------------------------------------------

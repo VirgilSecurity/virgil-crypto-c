@@ -52,7 +52,6 @@ endif()
 target_sources(pythia_wrap
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_assert.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_error.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_library.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_memory.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_api.h"
@@ -65,9 +64,9 @@ target_sources(pythia_wrap
             "$<$<BOOL:${VSCP_HASH_STREAM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/private/vscp_hash_stream_api.h>"
             "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_pythia.h>"
             "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/private/vscp_pythia_defs.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_error.h"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vscp_assert.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_error.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscp_library.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscp_memory.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscp_api.c"
@@ -80,4 +79,5 @@ target_sources(pythia_wrap
             "$<$<BOOL:${VSCP_HASH_STREAM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscp_hash_stream_api.c>"
             "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/src/vscp_pythia.c>"
             "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/src/vscp_pythia_defs.c>"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_error.c"
         )

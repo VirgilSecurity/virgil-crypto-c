@@ -53,7 +53,6 @@
 #define VSCF_MBEDTLS_BIGNUM_ASN1_READER_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_error_ctx.h"
 #include "vscf_impl.h"
 

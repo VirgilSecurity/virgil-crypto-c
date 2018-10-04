@@ -180,15 +180,6 @@ function _X13_add_argument_ctx_ref (destination, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
-function _X13_add_return_error (destination, meta)
-    check_arguments (my, "destination, meta", my)
-
-    new return to my.destination
-        .type = "error"
-    endnew
-endfunction
-
-# ---------------------------------------------------------------------------
 function _X13_add_method_init (class, destination, meta)
     check_arguments (my, "class, destination, meta", my)
 
@@ -580,10 +571,6 @@ function c_module_class_create_module_public (class, destination, meta)
 
         new require to module
             .module = my.names.module_library
-        endnew
-
-        new require to module
-            .module = my.names.module_error
         endnew
 
         new require to module

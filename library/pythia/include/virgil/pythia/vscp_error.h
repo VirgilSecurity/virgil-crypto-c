@@ -46,7 +46,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Manages pythia error codes.
+//  Defines the library error codes.
 // --------------------------------------------------------------------------
 
 #ifndef VSCP_ERROR_H_INCLUDED
@@ -66,7 +66,7 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Defines pythia error codes.
+//  Defines the library error codes.
 //
 enum vscp_error_t {
     //
@@ -77,10 +77,6 @@ enum vscp_error_t {
     //  This error should not be returned if assertions is enabled.
     //
     vscp_error_BAD_ARGUMENTS = -1,
-    //
-    //  Memory allocation failed.
-    //
-    vscp_error_NO_MEMORY = -100,
     //
     //  Undrlying pythia library returns -1.
     //

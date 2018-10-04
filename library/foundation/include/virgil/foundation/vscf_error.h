@@ -46,7 +46,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Manages library error codes.
+//  Defines library error codes.
 // --------------------------------------------------------------------------
 
 #ifndef VSCF_ERROR_H_INCLUDED

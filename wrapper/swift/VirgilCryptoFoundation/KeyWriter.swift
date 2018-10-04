@@ -37,8 +37,8 @@ import Foundation
 
 /// Provide interface to for key marshaling.
 @objc(VSCFKeyWriter) public protocol KeyWriter {
-    @objc func writePublicKey() -> (out: Data, errorError: error/error)
-    @objc func writePrivateKey() -> (out: Data, errorError: error/error)
+    @objc func writePublicKey() throws -> Data
+    @objc func writePrivateKey() throws -> Data
     @objc func estimatePublicKeyOutLen() -> Int
     @objc func estimatePrivateKeyOutLen() -> Int
 }

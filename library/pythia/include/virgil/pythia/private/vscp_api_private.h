@@ -53,7 +53,6 @@
 #define VSCP_API_PRIVATE_H_INCLUDED
 
 #include "vscp_library.h"
-#include "vscp_error.h"
 #include "vscp_api.h"
 #include "vscp_impl.h"
 //  @end

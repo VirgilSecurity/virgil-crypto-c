@@ -53,7 +53,6 @@
 #define VSCF_ASN1_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 //  @end
 
 
