@@ -54,7 +54,6 @@
 #define VSCF_KDF2_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_kdf2.h"
 //  @end
 

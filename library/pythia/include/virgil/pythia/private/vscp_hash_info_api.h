@@ -53,7 +53,6 @@
 #define VSCP_HASH_INFO_API_H_INCLUDED
 
 #include "vscp_library.h"
-#include "vscp_error.h"
 #include "vscp_api.h"
 #include "vscp_impl.h"
 //  @end

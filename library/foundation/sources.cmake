@@ -52,7 +52,6 @@ endif()
 target_sources(foundation
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_assert.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_error.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_library.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_memory.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_api.h"
@@ -172,9 +171,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_READER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_reader.h>"
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_WRITER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_writer.h>"
             "$<$<BOOL:${VSCF_MBEDTLS_MD}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_md.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/vscf_error.h"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_assert.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_error.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_library.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_memory.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_api.c"
@@ -294,4 +293,5 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_READER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_reader.c>"
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_WRITER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_writer.c>"
             "$<$<BOOL:${VSCF_MBEDTLS_MD}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_md.c>"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_error.c"
         )

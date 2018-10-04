@@ -56,9 +56,9 @@
 #define VSCF_ASN1RD_IMPL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_impl_private.h"
 #include "vscf_asn1rd.h"
+#include "vscf_error.h"
 //  @end
 
 

@@ -54,8 +54,8 @@
 #define VSCF_COMPUTE_SHARED_KEY_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_impl.h"
+#include "vscf_error.h"
 #include "vscf_api.h"
 
 #include <virgil/common/vsc_buffer.h>

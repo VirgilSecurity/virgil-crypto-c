@@ -56,7 +56,6 @@
 #define VSCF_RSA_PRIVATE_KEY_IMPL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_impl_private.h"
 #include "vscf_rsa_private_key.h"
 #include "vscf_hash.h"

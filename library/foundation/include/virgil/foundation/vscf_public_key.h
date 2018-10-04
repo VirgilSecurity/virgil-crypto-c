@@ -53,7 +53,6 @@
 #define VSCF_PUBLIC_KEY_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_impl.h"
 #include "vscf_key.h"
 #include "vscf_api.h"

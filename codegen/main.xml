@@ -35,8 +35,8 @@
         Lead Maintainer: Virgil Security Inc. &lt;support@virgilsecurity.com&gt;
     </license>
 
-    <external library="mbedtls"/>
-    <external library="ed25519"/>
+    <library name="mbedtls"/>
+    <library name="ed25519"/>
 
     <project name="common"/>
     <project name="foundation"/>

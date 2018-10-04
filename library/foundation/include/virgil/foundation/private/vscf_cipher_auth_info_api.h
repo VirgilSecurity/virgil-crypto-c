@@ -53,7 +53,6 @@
 #define VSCF_CIPHER_AUTH_INFO_API_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
 //  @end

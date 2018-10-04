@@ -53,7 +53,6 @@
 #define VSCF_HMAC_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_impl.h"
 #include "vscf_mac.h"
 

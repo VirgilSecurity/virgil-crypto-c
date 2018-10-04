@@ -1,18 +1,17 @@
 <project
-        name="pythia"
-        brief="Virgil Security Crypto Pythia"
+        name="common"
+        brief="Virgil Security Crypto Common"
         namespace="virgil"
-        package="virgil crypto pythia"
-        prefix="vscp"
-        path="../library/pythia/"
-        inc_path="../library/pythia/include/virgil/pythia/"
-        inc_private_path="../library/pythia/include/virgil/pythia/private/"
-        src_path="../library/pythia/src/"
-        work_path="generated/pythia/"
-        cmake_target="pythia_wrap"
+        package="virgil crypto common"
+        prefix="vsc"
+        path="../library/common/"
+        inc_path="../library/common/include/virgil/common/"
+        inc_private_path="../library/common/include/virgil/common/private/"
+        src_path="../library/common/src/"
+        work_path="generated/common/"
         >
 
-    <version major="0" minor="2" patch="0" />
+    <version major="0" minor="1" patch="0" />
 
     <license>
         Copyright (C) 2015-2018 Virgil Security Inc.
@@ -50,14 +49,12 @@
         Lead Maintainer: Virgil Security Inc. &lt;support@virgilsecurity.com&gt;
     </license>
 
-    <module name="assert"/>
-    <module name="pythia error"/>
-    <module name="library"/>
-    <module name="memory"/>
-    <class name="pythia"/>
+    <module name="assert" from="shared"/>
+    <module name="library" from="shared"/>
+    <module name="memory" from="shared"/>
 
-    <interface name="hash info"/>
-    <interface name="hash stream"/>
+    <class name="data"/>
+    <class name="buffer"/>
 
     <wrapper lang="swift"/>
 </project>

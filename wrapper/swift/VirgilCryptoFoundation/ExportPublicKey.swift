@@ -40,7 +40,7 @@ import Foundation
 /// For instance, RSA public key must be exported in format defined in
 /// RFC 3447 Appendix A.1.1.
 @objc(VSCFExportPublicKey) public protocol ExportPublicKey {
-    @objc func exportPublicKey() -> (out: Data, errorError: error/error)
+    @objc func exportPublicKey() throws -> Data
     @objc func exportedPublicKeyLen() -> Int
 }
 

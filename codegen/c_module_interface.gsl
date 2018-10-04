@@ -494,10 +494,6 @@ function c_module_interface_create_module_public (interface, destination, meta)
             .module = my.names.module_library
         endnew
 
-        new require
-            .module = my.names.module_error
-        endnew
-
         new require to module
             .module = my.names.module_assert
             .scope = "private"
@@ -556,10 +552,6 @@ function c_module_interface_create_module_api (interface, destination, meta)
 
         new require to module
             .module = my.names.module_library
-        endnew
-
-        new require
-            .module = my.names.module_error
         endnew
 
         new require to module

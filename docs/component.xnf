@@ -439,6 +439,7 @@
         Object name.
     </attr>
 
+    <inherit entity="scope"/>
     <inherit entity="component"/>
     <inherit entity="visibility"/>
     <inherit entity="declaration"/>

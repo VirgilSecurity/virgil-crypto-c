@@ -38,7 +38,7 @@ import Foundation
 /// Provide interface to compute shared key for 2 asymmetric keys.
 /// Assume that this interface is implemented on the private key.
 @objc(VSCFComputeSharedKey) public protocol ComputeSharedKey {
-    @objc func computeSharedKey(publicKey: Unknown) -> (sharedKey: Data, errorError: error/error)
+    @objc func computeSharedKey(publicKey: Unknown) throws -> Data
     @objc func sharedKeyLen() -> Int
 }
 

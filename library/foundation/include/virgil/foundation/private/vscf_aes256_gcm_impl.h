@@ -56,7 +56,6 @@
 #define VSCF_AES256_GCM_IMPL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_impl_private.h"
 #include "vscf_aes256_gcm.h"
 

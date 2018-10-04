@@ -37,6 +37,6 @@ import Foundation
 
 /// This interface force implementor to hold last error in the context.
 @objc(VSCFErrorContext) public protocol ErrorContext {
-    @objc func error() -> error/error
+    @objc func error() throws
 }
 

@@ -41,7 +41,7 @@ import Foundation
 @objc(VSCFAsn1Writer) public protocol Asn1Writer {
     @objc func reset() -> Data
     @objc func seal()
-    @objc func error() -> error/error
+    @objc func error() throws
     @objc func reserve(len: Int) -> UInt8
     @objc func writeTag(tag: Int) -> Int
     @objc func writeLen(len: Int) -> Int

@@ -40,7 +40,7 @@ import Foundation
 /// Note, that all "get" do not change reading position.
 @objc(VSCFAsn1Reader) public protocol Asn1Reader {
     @objc func reset(data: Data)
-    @objc func error() -> error/error
+    @objc func error() throws
     @objc func getTag() -> Int
     @objc func getLen() -> Int
     @objc func readTag(tag: Int) -> Int
