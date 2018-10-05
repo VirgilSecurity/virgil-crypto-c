@@ -244,6 +244,16 @@ function projects_api_collect_info (projects_api, source)
                     .type = c_type.name
                 endnew
             endif
+
+            for c_type.c_constant
+                new declaration to my.header
+                    .type = c_constant.name
+                endnew
+
+                new definition to my.header
+                    .type = c_constant.name
+                endnew
+            endfor
         endfor
     endfor
 endfunction

@@ -35,4 +35,25 @@
 
 import Foundation
 
+/// Virgil Security implementation of HMAC algorithm (RFC 2104) (FIPS PUB 198-1).
+@objc(VSCFHmac) public class Hmac : MacInfo, Mac, MacStream {
+    @objc func public digestLen() -> Int {
+        //  TODO: Implement me.
+    }
+    @objc func public mac(key: Data, data: Data) -> Data {
+        //  TODO: Implement me.
+    }
+    @objc func public start(key: Data) {
+        //  TODO: Implement me.
+    }
+    @objc func public update(data: Data) {
+        //  TODO: Implement me.
+    }
+    @objc func public finish() -> Data {
+        //  TODO: Implement me.
+    }
+    @objc func public reset() {
+        //  TODO: Implement me.
+    }
+}
 

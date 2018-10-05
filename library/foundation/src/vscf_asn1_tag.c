@@ -38,7 +38,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Encapsulates fixed byte array.
+//  ASN.1 constants.
 // --------------------------------------------------------------------------
 
 
@@ -49,9 +49,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsc_data.h"
-#include "vsc_memory.h"
-#include "vsc_assert.h"
+#include "vscf_asn1_tag.h"
 //  @end
 
 
@@ -61,70 +59,9 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Byte array that is used as "empty array" mark.
-//
-static const byte empty_data[] = {
-    0x00
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
-
-//
-//  Creates data from the preallocated bytes.
-//
-VSC_PUBLIC vsc_data_t
-vsc_data(const byte *bytes, size_t len) {
-
-    VSC_ASSERT_PTR(bytes);
-
-    return (vsc_data_t){bytes, len};
-}
-
-//
-//  Creates empty data.
-//
-VSC_PUBLIC vsc_data_t
-vsc_data_empty(void) {
-
-    return (vsc_data_t){empty_data, 0};
-}
-
-//
-//  Returns true if underlying byte array is defined.
-//
-VSC_PUBLIC bool
-vsc_data_is_valid(vsc_data_t data_ctx) {
-
-    return data_ctx.bytes != NULL;
-}
-
-//
-//  Return underlying data slice starting from beginning.
-//
-VSC_PUBLIC vsc_data_t
-vsc_data_slice_beg(vsc_data_t data_ctx, size_t offset, size_t len) {
-
-    VSC_ASSERT(vsc_data_is_valid(data_ctx));
-    VSC_ASSERT(data_ctx.len >= offset + len);
-
-    return (vsc_data_t){data_ctx.bytes + offset, len};
-}
-
-//
-//  Return underlying data slice starting from ending.
-//
-VSC_PUBLIC vsc_data_t
-vsc_data_slice_end(vsc_data_t data_ctx, size_t offset, size_t len) {
-
-    VSC_ASSERT(vsc_data_is_valid(data_ctx));
-    VSC_ASSERT(data_ctx.len >= offset + len);
-
-    return (vsc_data_t){data_ctx.bytes + data_ctx.len - offset - len, len};
-}

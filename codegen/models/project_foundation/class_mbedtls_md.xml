@@ -3,7 +3,7 @@
 
     <require header="mbedtls/md.h"/>
 
-    <method name="map impl tag">
+    <method name="map impl tag" is_static="1">
         Map implementation tag to correspond 'mbedtls_md_type_t'.
 
         <argument name="impl tag" enum="impl/tag"/>

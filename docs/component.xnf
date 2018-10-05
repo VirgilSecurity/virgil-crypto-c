@@ -129,6 +129,7 @@
             * data   - Special class "data" that is used as an input byte array.
             * buffer - Special class "buffer" that is used as an output byte array.
             * impl   - Universal implementation class.
+            * self   - Allowed within high-level entities, i.e. class, implementation, to refer the context type.
 
         If value differs from the listed above then next algorithm applied:
             1. If value in a format .(uid), then it treated as a reference to
@@ -357,6 +358,10 @@
         Required implementation name.
     </attr>
 
+    <attr name="enum">
+        Required implementation name.
+    </attr>
+
     <inherit entity="landlord"/>
     <inherit entity="scope"/>
 </entity>
@@ -488,19 +493,15 @@
         Method name.
     </attr>
 
-    <attr name="context" default="none">
-        Context meta information about method's first argument.
+    <attr name="is_static" default="0">
+        Defines that method is a class-level method.
 
-        <restrict value="none">
-            Method takes only data arguments (no context).
+        <restrict value="0">
+            Method is a class-level method.
         </restrict>
 
-        <restrict value="api">
-            Method takes interface object as a first argument.
-        </restrict>
-
-        <restrict value="impl">
-            Method takes implementation object as a first argument.
+        <restrict value="1">
+            Method is an object-level method.
         </restrict>
     </attr>
 

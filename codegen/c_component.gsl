@@ -594,7 +594,6 @@ function c_component_map_instance_attr_type (c_instance, instance)
             my.c_instance.type = make_ref_c (make_id(my.project_uid, my.type_uid))
 
         endif
-
     else
         echo_fatal ("Unreacheable code, component_resolve_instance() must handle this.", my)
     endif
@@ -802,7 +801,7 @@ endfunction
 function c_component_create_include (require, destination)
     check_arguments (my, "require, destination", my)
 
-    if ! has_one_of_attribute (my.require, "header, module, interface, class, impl")
+    if ! has_one_of_attribute (my.require, "header, module, interface, class, impl, enum")
         return
     endif
 
@@ -828,6 +827,10 @@ function c_component_create_include (require, destination)
 
         elsif defined (my.require.impl)
             .file = make_ref (make_id (my.project_uid, "header", my.require.impl), "c")
+            .is_system = my.is_system
+
+        elsif defined (my.require.enum)
+            .file = make_ref (make_id (my.project_uid, "header", my.require.enum), "c")
             .is_system = my.is_system
         endif
 

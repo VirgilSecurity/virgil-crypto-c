@@ -5,9 +5,9 @@
     <require header="mbedtls/bignum.h" scope="public"/>
 
     <require interface="asn1 writer" scope="private"/>
-    <require class="asn1" scope="private"/>
+    <require enum="asn1 tag" scope="private"/>
 
-    <method name="write asn1" of_class="mbedtls bignum">
+    <method name="write asn1" of_class="mbedtls bignum" is_static="1">
         Write given MbedTLS big number as ASN.1 INTEGER type.
         Returns size of written data.
 

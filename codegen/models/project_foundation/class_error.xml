@@ -9,15 +9,12 @@
 
     <method name="reset">
         Reset context to the "no error" state.
-
-        <argument class="context"/>
     </method>
 
 
     <method name="update">
         Update context with given error.
 
-        <argument class="context"/>
         <argument name="error" enum="error"/>
     </method>
 
@@ -38,10 +35,9 @@
     </macros>
 
 
-    <method name="error">
+    <method name="error" is_const="1">
         Reset context to the "no error" state.
 
-        <argument class="context" access="readonly"/>
         <return enum="error"/>
     </method>
 </class>

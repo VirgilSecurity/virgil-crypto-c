@@ -41,7 +41,6 @@
         Precondition: buffer does not hold any bytes.
         Postcondition: inner buffer is allocated.
 
-        <argument class="context"/>
         <argument name="capacity" type="size"/>
     </method>
 
@@ -52,7 +51,6 @@
         Precondition: buffer is initialized.
         Precondition: buffer does not hold any bytes.
 
-        <argument class="context"/>
         <argument name="bytes" type="data" access="readwrite"/>
         <argument name="bytes len" type="size"/>
     </method>
@@ -64,7 +62,6 @@
         Precondition: buffer is initialized.
         Precondition: buffer does not hold any bytes.
 
-        <argument class="context"/>
         <argument name="bytes" type="data" access="readwrite"/>
         <argument name="bytes len" type="size"/>
         <argument name="dealloc" callback=".(global_callback_dealloc)"/>
@@ -74,64 +71,55 @@
     <method name="make secure">
         Tell buffer that it holds sensitive that must be erased
         in a secure manner during destruction.
-
-        <argument class="context"/>
     </method>
 
 
-    <method name="is full">
+    <method name="is full" is_const="1">
         Returns true if buffer full.
 
-        <argument class="context" access="readonly"/>
         <return type="boolean"/>
     </method>
 
 
-    <method name="is valid">
+    <method name="is valid" is_const="1">
         Returns true if buffer is configured and has valid internal states.
 
-        <argument class="context" access="readonly"/>
         <return type="boolean"/>
     </method>
 
 
-    <method name="bytes">
+    <method name="bytes" is_const="1">
         Returns underlying buffer bytes.
 
-        <argument class="context" access="readonly"/>
         <return type="data" access="readonly">
             <array access="disown"/>
         </return>
     </method>
 
-    <method name="data">
+    <method name="data" is_const="1">
         Returns underlying buffer bytes as object.
 
-        <argument class="context" access="readonly"/>
         <return class=".(class_data_struct_data)" is_reference="0" access="readwrite"/>
     </method>
 
 
-    <method name="capacity">
+    <method name="capacity" is_const="1">
         Returns buffer capacity.
 
-        <argument class="context" access="readonly"/>
         <return type="size"/>
     </method>
 
 
-    <method name="len">
+    <method name="len" is_const="1">
         Returns buffer length - length of bytes actually used.
 
-        <argument class="context" access="readonly"/>
         <return type="size"/>
     </method>
 
 
-    <method name="left">
+    <method name="left" is_const="1">
         Returns length of left bytes - bytes that are not in use yet.
 
-        <argument class="context" access="readonly"/>
         <return type="size"/>
     </method>
 
@@ -139,7 +127,6 @@
     <method name="ptr">
         Returns pointer to the current wirte position.
 
-        <argument class="context"/>
         <return type="byte" access="readwrite" is_reference="1"/>
     </method>
 
@@ -147,7 +134,6 @@
     <method name="begin">
         Returns writable pointer to the buffer first element.
 
-        <argument class="context"/>
         <return type="byte" access="readwrite" is_reference="1"/>
     </method>
 
@@ -155,7 +141,6 @@
     <method name="reserve">
         Increase used bytes by given length.
 
-        <argument class="context"/>
         <argument name="len" type="size"/>
     </method>
 
@@ -163,7 +148,6 @@
     <method name="increase used bytes">
         Increase used bytes by given length.
 
-        <argument class="context"/>
         <argument name="len" type="size"/>
     </method>
 
@@ -171,7 +155,6 @@
     <method name="decrease used bytes">
         Decrease used bytes by given length.
 
-        <argument class="context"/>
         <argument name="len" type="size"/>
     </method>
 
@@ -180,7 +163,6 @@
         Reset to the initial state.
         After reset inner buffer can be re-used.
 
-        <argument class="context"/>
     </method>
 
 
@@ -188,6 +170,5 @@
         Zeroing buffer in secure manner.
         <!-- And reset to the initial state. -->
 
-        <argument class="context"/>
     </method>
 </class>

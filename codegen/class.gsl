@@ -96,6 +96,15 @@ function class_resolve_attr_context (class, project)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve attribute: class.is_value_type.
+# ---------------------------------------------------------------------------
+function class_resolve_attr_is_value_type (class, project)
+    check_arguments (my, "class, project", my)
+
+    my.class.is_value_type ?= "0"
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve attribute: class.lifecycle.
 # ---------------------------------------------------------------------------
 function class_resolve_attr_lifecycle (class, project)
@@ -165,6 +174,7 @@ function class_resolve (class, project)
     component_resolve_attr_scope (my.class)
     component_resolve_attr_visibility (my.class, my.project)
     class_resolve_attr_context (my.class, my.project)
+    class_resolve_attr_is_value_type (my.class, my.project)
     class_resolve_attr_lifecycle (my.class, my.project)
     class_resolve_attr_c_prefix (my.class, my.project)
     class_resolve_attr_uid (my.class, my.project)

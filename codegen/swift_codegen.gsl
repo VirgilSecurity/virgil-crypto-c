@@ -42,7 +42,6 @@
 
 
 gsl from "common.gsl"
-gsl from "common.gsl"
 
 # ===========================================================================
 #   Format.
@@ -177,7 +176,7 @@ function swift_insert_import (swift_import)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Insert statement: property
+#   Insert statement: protocol.property
 # ---------------------------------------------------------------------------
 function swift_insert_protocol_property (swift_property)
     check_arguments (my, "swift_property", my)
@@ -192,7 +191,7 @@ function swift_insert_protocol_property (swift_property)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Insert statement: method
+#   Insert statement: protocol.method
 # ---------------------------------------------------------------------------
 function swift_insert_protocol_method (swift_method)
     check_arguments (my, "swift_method", my)
@@ -211,12 +210,47 @@ function swift_insert_protocol_method (swift_method)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Insert statement: class.property
+# ---------------------------------------------------------------------------
+function swift_insert_class_property (swift_property)
+    check_arguments (my, "swift_property", my)
+
+    assert_attributes (my.swift_property, "name, type, visibility", my)
+
+    my.property_modifiers = (my.swift_property.access = "readonly") ?? "{ get {} }" ? "{ get {} set {} }"
+
+    swift_insert_code("\
+        @objc var $(my.swift_property.name:): $(my.swift_property.type:) $(my.property_modifiers:);
+    ", 1)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: class.method
+# ---------------------------------------------------------------------------
+function swift_insert_class_method (swift_method)
+    check_arguments (my, "swift_method", my)
+
+    assert_attributes (my.swift_method, "name", my)
+
+    my.method_args = swift_format_argument_list(my.swift_method) ?
+    my.method_return = swift_format_return_list(my.swift_method) ?
+    my.method_throws = my.swift_method.throws ?? "throws" ?
+
+    swift_insert_code("\
+        @objc func $(my.swift_method.visibility?:) $(my.swift_method.modifier?:) \
+                $(my.swift_method.name:)($(my.method_args?:)) $(my.method_throws?:) $(my.method_return?:) {
+            //  TODO: Implement me.
+        }
+    ", 1)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Insert statement: protocol
 # ---------------------------------------------------------------------------
 function swift_insert_protocol (swift_protocol)
     check_arguments (my, "swift_protocol", my)
 
-    echo_trace ("Inserting protocol: " + my.swift_protocol.name)
+    echo_trace ("Generate swift protocol: " + my.swift_protocol.name)
 
     assert_attributes (my.swift_protocol, "name, objc_name, visibility", my)
 
@@ -251,9 +285,33 @@ endfunction
 function swift_insert_class (swift_class)
     check_arguments (my, "swift_class", my)
 
-    echo_trace ("Inserting class: " + my.swift_class.name)
+    echo_trace ("Generate Swift class: " + my.swift_class.name)
 
     assert_attributes (my.swift_class, "name, objc_name, visibility", my)
+
+    for my.swift_class.swift_inherit
+        my.swift_inheritance_list ?= ": "
+        my.swift_inheritance_list += swift_inherit.type
+        if ! last()
+            my.swift_inheritance_list += ", "
+        endif
+    endfor
+
+    swift_insert_description(my.swift_class)
+    swift_insert_code ("\
+        @objc($(my.swift_class.objc_name:)) $(my.swift_class.visibility:) class $(my.swift_class.name:) \
+                $(my.swift_inheritance_list?:) {
+    ")
+
+    for my.swift_class.swift_property
+        swift_insert_class_property (swift_property)
+    endfor
+
+    for my.swift_class.swift_method
+        swift_insert_class_method (swift_method)
+    endfor
+
+    swift_insert_code ("}")
 endfunction
 
 # ---------------------------------------------------------------------------

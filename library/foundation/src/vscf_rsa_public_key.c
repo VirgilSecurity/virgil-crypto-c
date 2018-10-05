@@ -52,7 +52,7 @@
 #include "vscf_rsa_public_key.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_asn1.h"
+#include "vscf_asn1_tag.h"
 #include "vscf_mbedtls_bignum_asn1_writer.h"
 #include "vscf_mbedtls_bignum_asn1_reader.h"
 #include "vscf_mbedtls_md.h"

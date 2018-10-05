@@ -52,7 +52,7 @@
 #include "vscf_asn1wr.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_asn1.h"
+#include "vscf_asn1_tag.h"
 #include "vscf_asn1wr_impl.h"
 #include "vscf_asn1wr_internal.h"
 

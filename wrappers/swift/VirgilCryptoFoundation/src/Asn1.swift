@@ -35,4 +35,7 @@
 
 import Foundation
 
+/// ASN.1 constants.
+@objc(VSCFAsn1) public class Asn1 {
+}
 

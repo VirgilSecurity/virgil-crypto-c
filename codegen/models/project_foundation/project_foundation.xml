@@ -56,6 +56,7 @@
     <module name="memory" from="shared"/>
 
     <enum name="error"/>
+    <enum name="asn1"/>
 
     <interface name="cipher"/>
     <interface name="auth encrypt"/>
@@ -94,7 +95,6 @@
     <interface name="asn1 writer"/>
 
     <class name="error"/>
-    <class name="asn1"/>
     <class name="mbedtls bignum asn1 writer"/>
     <class name="mbedtls bignum asn1 reader"/>
     <class name="mbedtls md"/>

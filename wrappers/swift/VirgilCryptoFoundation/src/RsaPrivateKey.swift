@@ -35,4 +35,42 @@
 
 import Foundation
 
+@objc(VSCFRsaPrivateKey) public class RsaPrivateKey : Key, GenerateKey, PrivateKey, Decrypt, Sign, ExportPrivateKey, ImportPrivateKey {
+    @objc func public keyLen() -> Int {
+        //  TODO: Implement me.
+    }
+    @objc func public keyBitlen() -> Int {
+        //  TODO: Implement me.
+    }
+    @objc func public generateKey() throws {
+        //  TODO: Implement me.
+    }
+    @objc func public extractPublicKey() -> Unknown {
+        //  TODO: Implement me.
+    }
+    @objc func public decrypt(data: Data) throws -> Data {
+        //  TODO: Implement me.
+    }
+    @objc func public decryptedLen(dataLen: Int) -> Int {
+        //  TODO: Implement me.
+    }
+    @objc func public sign(data: Data) throws -> Data {
+        //  TODO: Implement me.
+    }
+    @objc func public signatureLen() -> Int {
+        //  TODO: Implement me.
+    }
+    @objc func public exportPrivateKey() throws -> Data {
+        //  TODO: Implement me.
+    }
+    @objc func public exportedPrivateKeyLen() -> Int {
+        //  TODO: Implement me.
+    }
+    @objc func public importPrivateKey(data: Data) throws {
+        //  TODO: Implement me.
+    }
+    @objc func public setKeygenParams(bitlen: Int, exponent: Int) {
+        //  TODO: Implement me.
+    }
+}
 

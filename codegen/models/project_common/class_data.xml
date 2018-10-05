@@ -1,4 +1,4 @@
-<class name="data" context="public" lifecycle="none">
+<class name="data" context="public" lifecycle="none" is_value_type="1">
     Encapsulates fixed byte array.
 
 
@@ -23,45 +23,39 @@
     <method name="is valid">
         Returns true if underlying byte array is defined.
 
-        <argument class="context" access="readonly" is_reference="0"/>
         <return type="boolean"/>
     </method>
 
 
-    <method name="data">
+    <constructor name="data">
         Creates data from the preallocated bytes.
 
         <argument name="bytes" type="data"/>
         <argument name="len" type="size"/>
-        <return class="context" access="readonly" is_reference="0"/>
-    </method>
+    </constructor>
 
 
-    <method name="empty">
+    <constructor name="empty">
         Creates empty data.
-
-        <return class="context" access="readonly" is_reference="0"/>
-    </method>
+    </constructor>
 
 
-    <method name="slice beg">
+    <method name="slice beg" >
         Return underlying data slice starting from beginning.
 
-        <argument class="context" access="readonly" is_reference="0"/>
         <argument name="offset" type="size"/>
         <argument name="len" type="size"/>
 
-        <return class="context" access="readonly" is_reference="0"/>
+        <return class="self" is_reference="0"/>
     </method>
 
 
     <method name="slice end">
         Return underlying data slice starting from ending.
 
-        <argument class="context" access="readonly" is_reference="0"/>
         <argument name="offset" type="size"/>
         <argument name="len" type="size"/>
 
-        <return class="context" access="readonly" is_reference="0"/>
+        <return class="self" is_reference="0"/>
     </method>
 </class>
