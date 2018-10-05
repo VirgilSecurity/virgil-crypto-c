@@ -35,4 +35,39 @@
 
 import Foundation
 
+/// Implementation of the symmetric cipher AES-256 bit in a GCM mode.
+/// Note, this implementation contains dynamic memory allocations,
+/// this should be improved in the future releases.
+@objc(VSCFAes256Gcm) public class Aes256Gcm : Encrypt, Decrypt, CipherInfo, Cipher, CipherAuthInfo, AuthEncrypt, AuthDecrypt, CipherAuth {
+    @objc func public encrypt(data: Data) throws -> Data {
+        //  TODO: Implement me.
+    }
+    @objc func public encryptedLen(dataLen: Int) -> Int {
+        //  TODO: Implement me.
+    }
+    @objc func public decrypt(data: Data) throws -> Data {
+        //  TODO: Implement me.
+    }
+    @objc func public decryptedLen(dataLen: Int) -> Int {
+        //  TODO: Implement me.
+    }
+    @objc func public setNonce(nonce: Data) {
+        //  TODO: Implement me.
+    }
+    @objc func public setKey(key: Data) {
+        //  TODO: Implement me.
+    }
+    @objc func public authEncrypt(data: Data, authData: Data) throws -> (out: Data, tag: Data) {
+        //  TODO: Implement me.
+    }
+    @objc func public authEncryptedLen(dataLen: Int) -> Int {
+        //  TODO: Implement me.
+    }
+    @objc func public authDecrypt(data: Data, authData: Data, tag: Data) throws -> Data {
+        //  TODO: Implement me.
+    }
+    @objc func public authDecryptedLen(dataLen: Int) -> Int {
+        //  TODO: Implement me.
+    }
+}
 

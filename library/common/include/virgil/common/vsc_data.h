@@ -83,12 +83,6 @@ struct vsc_data_t {
 };
 
 //
-//  Returns true if underlying byte array is defined.
-//
-VSC_PUBLIC bool
-vsc_data_is_valid(vsc_data_t data_ctx);
-
-//
 //  Creates data from the preallocated bytes.
 //
 VSC_PUBLIC vsc_data_t
@@ -99,6 +93,12 @@ vsc_data(const byte *bytes, size_t len);
 //
 VSC_PUBLIC vsc_data_t
 vsc_data_empty(void);
+
+//
+//  Returns true if underlying byte array is defined.
+//
+VSC_PUBLIC bool
+vsc_data_is_valid(vsc_data_t data_ctx);
 
 //
 //  Return underlying data slice starting from beginning.

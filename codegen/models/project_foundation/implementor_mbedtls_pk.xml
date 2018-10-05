@@ -6,7 +6,7 @@
         <require library="mbedtls" feature="BIGNUM C"/>
         <require library="mbedtls" feature="PKCS1 V21"/>
 
-        <require class="asn1"/>
+        <require enum="asn1 tag"/>
         <require class="mbedtls bignum asn1 writer"/>
         <require class="mbedtls bignum asn1 reader"/>
         <require class="mbedtls md"/>
@@ -37,7 +37,7 @@
         <require library="mbedtls" feature="BIGNUM C"/>
         <require library="mbedtls" feature="PKCS1 V21"/>
 
-        <require class="asn1"/>
+        <require enum="asn1 tag"/>
         <require class="mbedtls bignum asn1 writer"/>
         <require class="mbedtls bignum asn1 reader"/>
         <require class="mbedtls md"/>

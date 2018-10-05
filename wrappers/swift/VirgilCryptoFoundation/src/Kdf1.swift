@@ -35,4 +35,10 @@
 
 import Foundation
 
+/// Virgil Security implementation of the KDF1 (ISO-18033-2) algorithm.
+@objc(VSCFKdf1) public class Kdf1 : Kdf {
+    @objc func public derive(data: Data, keyLen: Int) -> Data {
+        //  TODO: Implement me.
+    }
+}
 

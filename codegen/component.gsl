@@ -679,10 +679,6 @@ function component_resolve_instance_attr_class (instance, parent)
         my.instance.access ?= "writeonly"
         my.instance.is_reference = "1"
     endif
-
-    if string_in (my.instance.class, "any, context") | is_ref (my.instance.class) | defined (my.instance.library)
-        return
-    endif
 endfunction
 
 
@@ -948,22 +944,6 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-#   Resolve attribute: method.context.
-# ---------------------------------------------------------------------------
-function component_resolve_method_attr_context (method, parent)
-    check_arguments (my, "method, parent", my)
-
-    my.method.context ?= "none"
-
-    my.valid_context = "none, api, impl"
-
-    if ! string_in (my.method.context, my.valid_context)
-        echo_fatal ("Invalid method attribute context=\"$(my.method.context:)\"." + \
-                    " Expected {$(my.valid_context)}", my)
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Resolve attribute: code.type.
 # ---------------------------------------------------------------------------
 function component_resolve_code_attr_type (code, parent)
@@ -987,6 +967,24 @@ function component_resolve_attr_feature (component, parent)
 
     #   This attribute is optional and can be set by upper models to define,
     #   which feature this component implements.
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: method.is_static.
+# ---------------------------------------------------------------------------
+function component_resolve_method_attr_is_static (method, parent)
+    check_arguments (my, "method, parent", my)
+
+    my.method.is_static ?= "0"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: method.is_const.
+# ---------------------------------------------------------------------------
+function component_resolve_method_attr_is_const (method, parent)
+    check_arguments (my, "method, parent", my)
+
+    my.method.is_const ?= "0"
 endfunction
 
 
@@ -1344,7 +1342,8 @@ function component_resolve_method (method, parent)
     component_resolve_attr_visibility (my.method, my.parent)
     component_resolve_attr_declaration (my.method, my.parent)
     component_resolve_attr_definition (my.method, my.parent)
-    component_resolve_method_attr_context (my.method, my.parent)
+    component_resolve_method_attr_is_static (my.method, my.parent)
+    component_resolve_method_attr_is_const (my.method, my.parent)
 
     for my.method.argument
         component_resolve_argument (argument, my.method)
@@ -1443,7 +1442,7 @@ endfunction
 function component_resolve_require_base (require_base, parent)
     check_arguments (my, "require_base, parent", my)
 
-    assert_attribute_one_of (my.require_base, "module, header, feature, interface, class, impl", my)
+    assert_attribute_one_of (my.require_base, "module, header, feature, interface, class, impl, enum", my)
 
     component_resolve_landlord (my.require_base, my.parent)
     component_resolve_attr_scope (my.require_base, my.parent)

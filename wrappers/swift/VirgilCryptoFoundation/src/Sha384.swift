@@ -35,4 +35,19 @@
 
 import Foundation
 
+/// This is MbedTLS implementation of SHA384.
+@objc(VSCFSha384) public class Sha384 : HashInfo, Hash, HashStream {
+    @objc func public hash(data: Data) -> Data {
+        //  TODO: Implement me.
+    }
+    @objc func public start() {
+        //  TODO: Implement me.
+    }
+    @objc func public update(data: Data) {
+        //  TODO: Implement me.
+    }
+    @objc func public finish() -> Data {
+        //  TODO: Implement me.
+    }
+}
 

@@ -170,7 +170,7 @@ function _L23_add_interface_api_callbacks (interface, destination, meta)
         my.callback = component_clean_copy (method, my.destination, "callback")
         my.callback. = ("Callback. " + string_trim(my.callback.)) ?
 
-        if method.context = "impl"
+        if ! method.is_static
             component_create_argument_impl (my.callback, my.meta)
         endif
     endfor
@@ -207,7 +207,7 @@ function _L23_add_stateful_methods (interface, destination, meta)
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
-    for my.interface.method where context = "impl"
+    for my.interface.method where ! method.is_static
 
         my.api_name = my.names.c_interface_struct_api
         my.api_type = my.refs.c_interface_struct_api
@@ -245,7 +245,7 @@ function _L23_add_stateless_methods (interface, destination, meta)
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
-    for my.interface.method where context = "api"
+    for my.interface.method where method.is_static
         my.proxy_method = component_clean_copy (method, my.destination)
 
         my.api_name = ".(_argument_$(my.names.c_interface_struct_api:))"

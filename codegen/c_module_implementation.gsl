@@ -53,11 +53,11 @@ gsl from "c_dependency.gsl"
 gsl from "c_module_interface.gsl"
 
 # ---------------------------------------------------------------------------
-function _Z19_has_methods_with_context_impl (impl)
+function _Z19_has_non_static_methods (impl)
     check_argument (my, "impl", my)
 
     for my.impl.interface
-        for interface.method where context = "impl"
+        for interface.method where ! method.is_static
             return 1
         endfor
     endfor
@@ -227,7 +227,7 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
 
     c_dependency_add_requirements (my.impl, my.destination)
 
-    if _Z19_has_methods_with_context_impl (my.impl)
+    if _Z19_has_non_static_methods (my.impl)
         new require to my.destination
             .module = my.names.implementation_module_impl
             .scope = "private"
@@ -267,7 +267,7 @@ function _Z19_add_includes_for_module_internal (impl, destination, meta)
         .scope = "private"
     endnew
 
-    if _Z19_has_methods_with_context_impl (my.impl)
+    if _Z19_has_non_static_methods (my.impl)
         new require to my.destination
             .module = my.names.implementation_module
             .scope = "public"
@@ -858,7 +858,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Define interface method that accept 'api' context.
 # ---------------------------------------------------------------------------
-function _Z19_define_interface_method_with_api_context (method, impl, meta)
+function _Z19_define_interface_static_method (method, impl, meta)
     check_arguments (my, "method, impl, meta", my)
 
     for my.impl.dependency
@@ -869,7 +869,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Define interface method that accept 'impl' context.
 # ---------------------------------------------------------------------------
-function _Z19_define_interface_method_with_impl_context (method, impl, meta)
+function _Z19_define_interface_non_static_method (method, impl, meta)
     check_arguments (my, "method, impl, meta", my)
 
     _Z19_add_argument_impl (my.method, my.meta)
@@ -889,10 +889,10 @@ function _Z19_add_interface_methods (impl, definition, destination, meta)
             my.impl_method = component_clean_copy (method, my.destination)
             my.impl_method.definition = my.definition
 
-            if method.context = "api"
-                _Z19_define_interface_method_with_api_context (my.impl_method, my.impl, my.meta)
-            elsif method.context = "impl"
-                _Z19_define_interface_method_with_impl_context (my.impl_method, my.impl, my.meta)
+            if method.is_static
+                _Z19_define_interface_static_method (my.impl_method, my.impl, my.meta)
+            else
+                _Z19_define_interface_non_static_method (my.impl_method, my.impl, my.meta)
             endif
         endfor
     endfor
@@ -904,7 +904,7 @@ endfunction
 function _Z19_add_interface_api_methods (impl, declaration, definition, destination, meta)
     check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
-    for my.impl.interface where ! count (method, method.context = "impl")
+    for my.impl.interface where ! count (method, method.is_static = "0")
         meta_activate_entity (my.meta, interface.name)
 
         my.names = meta_names (my.meta)
@@ -977,7 +977,7 @@ function _Z19_add_methods (impl, destination, meta)
     for my.impl.method
         my.copied_method = component_clean_copy (method, my.destination)
 
-        if (my.copied_method.context = "impl")
+        if ! my.copied_method.is_static
             _Z19_add_argument_impl (my.copied_method, my.meta)
         endif
     endfor
@@ -1014,7 +1014,7 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
         _Z19_add_self_tag (my.impl, my.enum_impl_tag, my.meta)
         _Z19_add_interface_constants (my.impl, module, my.meta)
 
-        if _Z19_has_methods_with_context_impl (my.impl)
+        if _Z19_has_non_static_methods (my.impl)
             _Z19_add_type_impl (my.impl, "public", "external", module, my.meta)
             _Z19_add_method_impl_type_size (my.impl, "public", "external", module, my.meta)
             _Z19_add_method_impl_type_cast (my.impl, "public", "external", module, my.meta)
@@ -1113,7 +1113,7 @@ function c_module_implementation_create_module_internal (impl, source, destinati
         .scope = "internal"
         .feature = my.impl.name
 
-        if _Z19_has_methods_with_context_impl (my.impl)
+        if _Z19_has_non_static_methods (my.impl)
 
             _Z19_add_includes_for_module_internal (my.impl, module, my.meta)
             _Z19_add_instances (my.impl, my.source, module, my.meta)
@@ -1158,7 +1158,7 @@ function c_module_implementation_create (source, destination, meta)
         c_module_implementation_create_module_public (implementation, my.enum_impl_tag, my.destination, my.meta)
         c_module_implementation_create_module_internal (implementation, my.source, my.destination, my.meta)
 
-        if _Z19_has_methods_with_context_impl (implementation)
+        if _Z19_has_non_static_methods (implementation)
             c_module_implementation_create_module_impl (implementation, my.destination, my.meta)
         endif
 

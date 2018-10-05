@@ -3,7 +3,7 @@
 
     <inherit interface="mac info"/>
 
-    <method name="mac" context="api">
+    <method name="mac" is_static="1">
         Calculate MAC over given data.
 
         <argument name="key" class="data"/>

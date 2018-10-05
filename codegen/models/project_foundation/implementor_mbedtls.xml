@@ -134,9 +134,9 @@
         This is MbedTLS implementation of ASN.1 reader.
 
         <require library="mbedtls" feature="ASN1 PARSE C"/>
-        <require class="asn1" scope="private"/>
-        <require header="mbedtls/asn1.h" scope="private"/>
-        <require header="virgil/common/private/vsc_buffer_defs.h" scope="private"/>
+        <require enum="asn1 tag"/>
+        <require header="mbedtls/asn1.h"/>
+        <require header="virgil/common/private/vsc_buffer_defs.h"/>
 
         <context>
             <property name="curr" type="data" access="readwrite"/>
@@ -168,10 +168,10 @@
         This is MbedTLS implementation of ASN.1 writer.
 
         <require library="mbedtls" feature="ASN1 WRITE C"/>
-        <require class="asn1" scope="private"/>
-        <require header="mbedtls/asn1.h" scope="private"/>
-        <require header="mbedtls/asn1write.h" scope="private"/>
-        <require header="virgil/common/private/vsc_buffer_defs.h" scope="private"/>
+        <require enum="asn1 tag"/>
+        <require header="mbedtls/asn1.h"/>
+        <require header="mbedtls/asn1write.h"/>
+        <require header="virgil/common/private/vsc_buffer_defs.h"/>
 
         <context>
             <property name="out" class="buffer" access="readwrite"/>

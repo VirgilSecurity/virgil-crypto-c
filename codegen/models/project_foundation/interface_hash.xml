@@ -3,7 +3,7 @@
 
     <inherit interface="hash info" />
 
-    <method name="hash" context="api">
+    <method name="hash" is_static="1">
         Calculate hash over given data.
 
         <argument name="data" class="data"/>

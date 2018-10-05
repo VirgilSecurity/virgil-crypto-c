@@ -7,11 +7,12 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <class name [visibility] [full_uid] [c_prefix] [scope] [uid] [context] [lifecycle]>
+    <class name [uid] [full_uid] [c_prefix] [scope] [visibility] [context] [lifecycle]
+         [is_value_type]>
        <require [scope] [project] [library] [module] [header] [feature] [interface] [class]
-            [impl]>
+            [impl] [enum]>
           <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]
-               [impl]/>
+               [impl] [enum]/>
        </require>
        <dependency name [library] [project] [interface] [api] [class] [impl] [type_name]/>
        <constant name [c_prefix] [of_class] [uid] [full_uid] [feature] [definition] [value]/>
@@ -22,7 +23,7 @@ attribute names are case-sensitive and we use only lower-case names.
           <array [access] [length] [length_constant]/>
        </property>
        <enum [definition] [declaration] [visibility] [c_prefix] [of_class] [uid] [full_uid]
-            [feature] [name]>
+            [feature] [scope] [name]>
           <constant .../>
        </enum>
        <callback name [declaration] [of_class] [uid] [full_uid] [feature] [c_prefix]>
@@ -38,7 +39,7 @@ attribute names are case-sensitive and we use only lower-case names.
           </argument>
        </callback>
        <method name [definition] [visibility] [c_prefix] [of_class] [uid] [full_uid] [feature]
-            [declaration] [context]>
+            [declaration] [is_static]>
           <return .../>
           <argument .../>
           <variable name is_reference [access] [type] [project] [enum] [callback] [interface] [api]
@@ -89,13 +90,14 @@ Defines class type.
 
     <class
         name = "..."
-      [ visibility = "public | private"  ("public") ]
+      [ uid = "..." ]
       [ full_uid = "..." ]
       [ c_prefix = "..." ]
       [ scope = "public | private | internal"  ("public") ]
-      [ uid = "..." ]
+      [ visibility = "public | private"  ("public") ]
       [ context = "none | public | private | internal"  ("none") ]
       [ lifecycle = "none | default"  ("default") ]
+      [ is_value_type = "0 | 1"  ("0") ]
         >
         <require>
         <dependency>
@@ -168,6 +170,16 @@ Value: Meaning:
 none: Do not generate lifecycle methods.
 default: Generate default lifecycle methods.
 
+is_value_type:
+    Defines that class is used as value type, as so it is passed and return
+    by value. Note, that underlying context is shallow copied. The
+    is_value_type attribute is optional. Its default value is "0". It can
+    take one of the following values:
+
+Value: Meaning:
+0: Class is a reference type.
+1: Class is a value type.
+
 
 The 'require' item
 ------------------
@@ -185,6 +197,7 @@ feature.
       [ interface = "..." ]
       [ class = "..." ]
       [ impl = "..." ]
+      [ enum = "..." ]
         >
         <alternative>
     </require>
@@ -229,6 +242,9 @@ class:
 impl:
     Required implementation name. The impl attribute is optional.
 
+enum:
+    Required implementation name. The enum attribute is optional.
+
 
 The 'alternative' item
 ----------------------
@@ -246,6 +262,7 @@ used, and in fact replace each other.
       [ interface = "..." ]
       [ class = "..." ]
       [ impl = "..." ]
+      [ enum = "..." ]
         />
 
 The alternative item can have these attributes:
@@ -287,6 +304,9 @@ class:
 
 impl:
     Required implementation name. The impl attribute is optional.
+
+enum:
+    Required implementation name. The enum attribute is optional.
 
 
 The 'dependency' item
@@ -472,13 +492,15 @@ class:
     Defines instance class. Possible values are: * any - Any class or type. *
     data - Special class "data" that is used as an input byte array. * buffer
     - Special class "buffer" that is used as an output byte array. * impl -
-    Universal implementation class. If value differs from the listed above
-    then next algorithm applied: 1. If value in a format .(uid), then it
-    treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. If attribute 'library' is defined,
-    then it treated as third-party library class and will be used as-is. 3.
-    Any other value will be treated as cross-project class name and will be
-    converted to the .(uid). The class attribute is optional.
+    Universal implementation class. * self - Allowed within high-level
+    entities, i.e. class, implementation, to refer the context type. If value
+    differs from the listed above then next algorithm applied: 1. If value in
+    a format .(uid), then it treated as a reference to the in-project class
+    and will be substituted during context resolution step. 2. If attribute
+    'library' is defined, then it treated as third-party library class and
+    will be used as-is. 3. Any other value will be treated as cross-project
+    class name and will be converted to the .(uid). The class attribute is
+    optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -630,6 +652,7 @@ Groups common attributes for the component. Defines enumeration type.
       [ uid = "..." ]
       [ full_uid = "..." ]
       [ feature = "..." ]
+      [ scope = "public | private | internal"  ("public") ]
       [ name = "..." ]
         >
         <constant>
@@ -685,6 +708,18 @@ full_uid:
 feature:
     In-project feature name that is implemented. This attribute is used for
     feature-based compilation. The feature attribute is optional.
+
+scope:
+    Defines component visibility within scope. This attribute must not be
+    inherited. Note, scope attribute can be used for components, that can not
+    be defined in terms of 'declaration' and 'definition'. The scope
+    attribute is optional. Its default value is "public". It can take one of
+    the following values:
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Object name. The name attribute is optional.
@@ -807,13 +842,15 @@ class:
     Defines instance class. Possible values are: * any - Any class or type. *
     data - Special class "data" that is used as an input byte array. * buffer
     - Special class "buffer" that is used as an output byte array. * impl -
-    Universal implementation class. If value differs from the listed above
-    then next algorithm applied: 1. If value in a format .(uid), then it
-    treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. If attribute 'library' is defined,
-    then it treated as third-party library class and will be used as-is. 3.
-    Any other value will be treated as cross-project class name and will be
-    converted to the .(uid). The class attribute is optional.
+    Universal implementation class. * self - Allowed within high-level
+    entities, i.e. class, implementation, to refer the context type. If value
+    differs from the listed above then next algorithm applied: 1. If value in
+    a format .(uid), then it treated as a reference to the in-project class
+    and will be substituted during context resolution step. 2. If attribute
+    'library' is defined, then it treated as third-party library class and
+    will be used as-is. 3. Any other value will be treated as cross-project
+    class name and will be converted to the .(uid). The class attribute is
+    optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -947,13 +984,15 @@ class:
     Defines instance class. Possible values are: * any - Any class or type. *
     data - Special class "data" that is used as an input byte array. * buffer
     - Special class "buffer" that is used as an output byte array. * impl -
-    Universal implementation class. If value differs from the listed above
-    then next algorithm applied: 1. If value in a format .(uid), then it
-    treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. If attribute 'library' is defined,
-    then it treated as third-party library class and will be used as-is. 3.
-    Any other value will be treated as cross-project class name and will be
-    converted to the .(uid). The class attribute is optional.
+    Universal implementation class. * self - Allowed within high-level
+    entities, i.e. class, implementation, to refer the context type. If value
+    differs from the listed above then next algorithm applied: 1. If value in
+    a format .(uid), then it treated as a reference to the in-project class
+    and will be substituted during context resolution step. 2. If attribute
+    'library' is defined, then it treated as third-party library class and
+    will be used as-is. 3. Any other value will be treated as cross-project
+    class name and will be converted to the .(uid). The class attribute is
+    optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -1031,7 +1070,7 @@ and optionally implementation.
       [ full_uid = "..." ]
       [ feature = "..." ]
       [ declaration = "public | private | external"  ("public") ]
-      [ context = "none | api | impl"  ("none") ]
+      [ is_static = "0 | 1"  ("0") ]
         >
         <return>, optional
         <argument>
@@ -1093,15 +1132,14 @@ feature:
 name:
     Method name. The name attribute is required.
 
-context:
-    Context meta information about method's first argument. The context
-    attribute is optional. Its default value is "none". It can take one of
-    the following values:
+is_static:
+    Defines that method is a class-level method. The is_static attribute is
+    optional. Its default value is "0". It can take one of the following
+    values:
 
 Value: Meaning:
-none: Method takes only data arguments (no context).
-api: Method takes interface object as a first argument.
-impl: Method takes implementation object as a first argument.
+0: Method is a class-level method.
+1: Method is an object-level method.
 
 
 The 'variable' item
@@ -1178,13 +1216,15 @@ class:
     Defines instance class. Possible values are: * any - Any class or type. *
     data - Special class "data" that is used as an input byte array. * buffer
     - Special class "buffer" that is used as an output byte array. * impl -
-    Universal implementation class. If value differs from the listed above
-    then next algorithm applied: 1. If value in a format .(uid), then it
-    treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. If attribute 'library' is defined,
-    then it treated as third-party library class and will be used as-is. 3.
-    Any other value will be treated as cross-project class name and will be
-    converted to the .(uid). The class attribute is optional.
+    Universal implementation class. * self - Allowed within high-level
+    entities, i.e. class, implementation, to refer the context type. If value
+    differs from the listed above then next algorithm applied: 1. If value in
+    a format .(uid), then it treated as a reference to the in-project class
+    and will be substituted during context resolution step. 2. If attribute
+    'library' is defined, then it treated as third-party library class and
+    will be used as-is. 3. Any other value will be treated as cross-project
+    class name and will be converted to the .(uid). The class attribute is
+    optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -1361,13 +1401,15 @@ class:
     Defines instance class. Possible values are: * any - Any class or type. *
     data - Special class "data" that is used as an input byte array. * buffer
     - Special class "buffer" that is used as an output byte array. * impl -
-    Universal implementation class. If value differs from the listed above
-    then next algorithm applied: 1. If value in a format .(uid), then it
-    treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. If attribute 'library' is defined,
-    then it treated as third-party library class and will be used as-is. 3.
-    Any other value will be treated as cross-project class name and will be
-    converted to the .(uid). The class attribute is optional.
+    Universal implementation class. * self - Allowed within high-level
+    entities, i.e. class, implementation, to refer the context type. If value
+    differs from the listed above then next algorithm applied: 1. If value in
+    a format .(uid), then it treated as a reference to the in-project class
+    and will be substituted during context resolution step. 2. If attribute
+    'library' is defined, then it treated as third-party library class and
+    will be used as-is. 3. Any other value will be treated as cross-project
+    class name and will be converted to the .(uid). The class attribute is
+    optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -1493,13 +1535,15 @@ class:
     Defines instance class. Possible values are: * any - Any class or type. *
     data - Special class "data" that is used as an input byte array. * buffer
     - Special class "buffer" that is used as an output byte array. * impl -
-    Universal implementation class. If value differs from the listed above
-    then next algorithm applied: 1. If value in a format .(uid), then it
-    treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. If attribute 'library' is defined,
-    then it treated as third-party library class and will be used as-is. 3.
-    Any other value will be treated as cross-project class name and will be
-    converted to the .(uid). The class attribute is optional.
+    Universal implementation class. * self - Allowed within high-level
+    entities, i.e. class, implementation, to refer the context type. If value
+    differs from the listed above then next algorithm applied: 1. If value in
+    a format .(uid), then it treated as a reference to the in-project class
+    and will be substituted during context resolution step. 2. If attribute
+    'library' is defined, then it treated as third-party library class and
+    will be used as-is. 3. Any other value will be treated as cross-project
+    class name and will be converted to the .(uid). The class attribute is
+    optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated

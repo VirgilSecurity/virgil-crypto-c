@@ -35,4 +35,19 @@
 
 import Foundation
 
+/// This is MbedTLS implementation of SHA224.
+@objc(VSCFSha224) public class Sha224 : HashInfo, Hash, HashStream {
+    @objc func public hash(data: Data) -> Data {
+        //  TODO: Implement me.
+    }
+    @objc func public start() {
+        //  TODO: Implement me.
+    }
+    @objc func public update(data: Data) {
+        //  TODO: Implement me.
+    }
+    @objc func public finish() -> Data {
+        //  TODO: Implement me.
+    }
+}
 

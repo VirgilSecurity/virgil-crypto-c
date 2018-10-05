@@ -35,4 +35,11 @@
 
 import Foundation
 
+/// Virgil Security implementation of the HKDF (RFC 6234) algorithm.
+@objc(VSCFHkdf) public class Hkdf : ExKdf {
+    @objc var hashCounterMax: Int { get {} };
+    @objc func public derive(data: Data, salt: Data, info: Data, keyLen: Int) -> Data {
+        //  TODO: Implement me.
+    }
+}
 

@@ -35,4 +35,30 @@
 
 import Foundation
 
+@objc(VSCFRsaPublicKey) public class RsaPublicKey : Key, PublicKey, Encrypt, Verify, ExportPublicKey, ImportPublicKey {
+    @objc func public keyLen() -> Int {
+        //  TODO: Implement me.
+    }
+    @objc func public keyBitlen() -> Int {
+        //  TODO: Implement me.
+    }
+    @objc func public encrypt(data: Data) throws -> Data {
+        //  TODO: Implement me.
+    }
+    @objc func public encryptedLen(dataLen: Int) -> Int {
+        //  TODO: Implement me.
+    }
+    @objc func public verify(data: Data, signature: Data) -> Bool {
+        //  TODO: Implement me.
+    }
+    @objc func public exportPublicKey() throws -> Data {
+        //  TODO: Implement me.
+    }
+    @objc func public exportedPublicKeyLen() -> Int {
+        //  TODO: Implement me.
+    }
+    @objc func public importPublicKey(data: Data) throws {
+        //  TODO: Implement me.
+    }
+}
 

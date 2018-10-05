@@ -41,6 +41,8 @@
 # ---------------------------------------------------------------------------
 
 gsl from "common.gsl"
+gsl from "interface.gsl"
+gsl from "component.gsl"
 gsl from "swift_codegen.gsl"
 
 # ===========================================================================
@@ -270,7 +272,7 @@ function swift_map_attr_visibility (swift_component, component)
     assert_attribute (my.component, "visibility", my)
 
     #   TODO: make mapping more accurate.
-    my.swift_component.visibility = my.component.visibility
+    my.swift_component.visibility = my.component.visibility ? "public"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -398,7 +400,7 @@ function swift_resolve (wrapper, project)
 
     my.wrapper.prefix = my.project.prefix
     my.wrapper.package = "$(my.project.package:Pascal)"
-    my.wrapper.source_dir = "../wrapper/$(my.wrapper.lang:c,lower)/$(my.wrapper.package:)/"
+    my.wrapper.source_dir = "../wrappers/$(my.wrapper.lang:c,lower)/$(my.wrapper.package:)/src/"
     copy my.project->license to my.wrapper
 endfunction
 
@@ -535,15 +537,38 @@ function swift_wrapper_create_method (wrapper, method, destination, meta)
 
         swift_map_attr_visibility (swift_method, my.method)
 
-        for my.method.argument
-            if first ()
-                if ! string_in (argument.class, "context")
-                    swift_method.modifier = "static"
-                else
-                    next
-                endif
-            endif
+        swift_method.modifier = my.method.is_static ?? "static" ?
 
+        for my.method.argument
+            if argument.access <> "writeonly"
+                swift_wrapper_create_argument (my.wrapper, argument, swift_method, my.meta)
+            else
+                swift_wrapper_create_return_from_argument (my.wrapper, argument, swift_method, my.meta)
+            endif
+        endfor
+
+        for my.method.return where ! string_equal (return.enum, "error")
+            swift_wrapper_create_return (my.wrapper, return, swift_method, my.meta)
+        endfor
+
+        return swift_method
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <swift_method/> from the entity inetrafce <method/>.
+# ---------------------------------------------------------------------------
+function swift_wrapper_create_implemented_method (wrapper, method, destination, meta)
+    check_arguments (my, "wrapper, method, destination, meta", my)
+
+    new swift_method to my.destination
+        . = swift_format_description (my.method) ?
+        .name = swift_derive_method_name (method, my.wrapper)
+        .throws = count (my.method.return, string_equal (return.enum, "error")) ?? "1" ? "0"
+
+        swift_map_attr_visibility (swift_method, my.method)
+
+        for my.method.argument
             if argument.access <> "writeonly"
                 swift_wrapper_create_argument (my.wrapper, argument, swift_method, my.meta)
             else
@@ -567,7 +592,9 @@ function swift_wrapper_inherit_interface (wrapper, interface, swift_class, meta)
 
     swift_wrapper_create_inherit (my.wrapper, my.interface, my.swift_class, my.meta)
 
-    #   TODO: add constants and methods.
+    for my.interface.method
+        swift_wrapper_create_implemented_method (my.wrapper, method, my.swift_class, my.meta)
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -622,8 +649,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create module with Swift class from the abstract 'implementation' notion.
 # ---------------------------------------------------------------------------
-function swift_create_implementation_module (wrapper, implementation, destination, meta)
-    check_arguments (my, "wrapper, implementation, destination, meta", my)
+function swift_create_implementation_module (wrapper, implementation, interfaces, destination, meta)
+    check_arguments (my, "wrapper, implementation, interfaces, destination, meta", my)
 
     if my.implementation.scope <> "internal"
         echo_info ("Create <swift_module/> from implementation: '$(my.implementation.name:)'", my)
@@ -651,15 +678,16 @@ function swift_create_implementation_module (wrapper, implementation, destinatio
 
             swift_map_attr_visibility (swift_class, my.implementation)
 
-            for my.implementation.interface
-                swift_wrapper_inherit_interface (my.wrapper, interface, swift_class, my.meta)
+            for my.implementation.interface as interface_link
+                my.interface = interface_find (interface_link.name, my.interfaces)
+                swift_wrapper_inherit_interface (my.wrapper, my.interface, swift_class, my.meta)
             endfor
 
             for my.implementation.constant
                 swift_wrapper_create_property_from_constant (my.wrapper, constant, swift_class, my.meta)
             endfor
 
-            for my.implementation.method
+            for my.implementation.method where method.declaration = "public"
                 swift_wrapper_create_method (my.wrapper, method, swift_class, my.meta)
             endfor
         endnew
@@ -708,7 +736,7 @@ function swift_create_class_module (wrapper, class, destination, meta)
 
             swift_map_attr_visibility (swift_class, my.class)
 
-            for my.class.method
+            for my.class.method where method.declaration = "public"
                 swift_wrapper_create_method (my.wrapper, method, swift_class, my.meta)
             endfor
         endnew

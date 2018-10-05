@@ -5,9 +5,9 @@
     <require header="mbedtls/bignum.h" scope="public"/>
 
     <require interface="asn1 reader" scope="private"/>
-    <require class="asn1" scope="private"/>
+    <require enum="asn1 tag" scope="private"/>
 
-    <method name="read asn1" of_class="mbedtls bignum">
+    <method name="read asn1" of_class="mbedtls bignum" is_static="1">
         Restore state of given MbedTLS big number from ASN.1 INTEGER representation.
         Client side must check state of 'asn1rd' to define result of reading.
 

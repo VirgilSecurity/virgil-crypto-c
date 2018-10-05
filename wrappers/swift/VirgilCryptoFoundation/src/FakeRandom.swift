@@ -35,4 +35,16 @@
 
 import Foundation
 
+/// Random number generator that is used for test purposes only.
+@objc(VSCFFakeRandom) public class FakeRandom : Random {
+    @objc func public random(dataLen: Int) throws -> UInt8 {
+        //  TODO: Implement me.
+    }
+    @objc func public setupSourceByte(byteSource: UInt8) {
+        //  TODO: Implement me.
+    }
+    @objc func public setupSourceData(dataSource: Data) {
+        //  TODO: Implement me.
+    }
+}
 

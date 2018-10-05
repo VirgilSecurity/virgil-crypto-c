@@ -43,106 +43,67 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsf_foo.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  ASN.1 constants.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_ASN1_TAG_H_INCLUDED
+#define VSCF_ASN1_TAG_H_INCLUDED
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
 // --------------------------------------------------------------------------
+// clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
 
 //
-//  Private integral constants.
+//  ASN.1 constants.
 //
-enum {
-    //
-    //  Constant that is defined out of a typed enum.
-    //
-    vsf_foo_INTEGRAL_C = 777
+enum vscf_asn1_tag_t {
+    vscf_asn1_tag_BOOLEAN = 0x01,
+    vscf_asn1_tag_INTEGER = 0x02,
+    vscf_asn1_tag_BIT_STRING = 0x03,
+    vscf_asn1_tag_OCTET_STRING = 0x04,
+    vscf_asn1_tag_NULL = 0x05,
+    vscf_asn1_tag_OID = 0x06,
+    vscf_asn1_tag_UTF8_STRING = 0x0C,
+    vscf_asn1_tag_SEQUENCE = 0x10,
+    vscf_asn1_tag_SET = 0x11,
+    vscf_asn1_tag_PRINTABLE_STRING = 0x13,
+    vscf_asn1_tag_T61_STRING = 0x14,
+    vscf_asn1_tag_IA5_STRING = 0x16,
+    vscf_asn1_tag_UTC_TIME = 0x17,
+    vscf_asn1_tag_GENERALIZED_TIME = 0x18,
+    vscf_asn1_tag_UNIVERSAL_STRING = 0x1C,
+    vscf_asn1_tag_BMP_STRING = 0x1E,
+    vscf_asn1_tag_PRIMITIVE = 0x00,
+    vscf_asn1_tag_CONSTRUCTED = 0x20,
+    vscf_asn1_tag_CONTEXT_SPECIFIC = 0x80
 };
-
-//
-//  Enumeration type with private definition.
-//
-enum vsf_foo_bag_t {
-    vsf_foo_bag_ONE = 1,
-    vsf_foo_bag_TWO
-};
-typedef enum vsf_foo_bag_t vsf_foo_bag_t;
-
-//
-//  Structure with a private definition.
-//
-struct vsf_foo_secret_t {
-    //
-    //  Any type is a power of the C language.
-    //
-    const void* any;
-};
-typedef struct vsf_foo_secret_t vsf_foo_secret_t;
-
-//
-//  Global variable that conatins array of strings.
-//  And defined somewhere else.
-//
-VSF_PUBLIC extern const char *const vsf_foo_external_features[];
-
-//
-//  Global variable that conatins derived size array of strings.
-//
-const char *const vsf_foo_features[] = {
-    "This is a string 1",
-    "This is a string 2"
-};
-
-//
-//  Global variable that conatins array of any type.
-//
-static const void* private_api[];
-
-//
-//  Global variable that conatins any class.
-//
-static const void* self_api = private_api[0];
-
-//
-//  Private instantiation if the structure 'vsf_foo_context_t'
-//
-static const vsf_foo_context_t foo_context_inst = {
-    1,
-    255,
-    255
-};
-
-//
-//  Just do nothing.
-//
-VSF_PUBLIC void
-vsf_foo_do_nothing (void) {
-
-    //  Boo.
-}
+typedef enum vscf_asn1_tag_t vscf_asn1_tag_t;
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
+// clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
 
-//
-//  Public visibility.
-//
-VSF_PUBLIC void
-vsf_foo_do_public (void) {
-    //  TODO: This is STUB. Implement me.
+#ifdef __cplusplus
 }
+#endif
 
-//
-//  Private visibility
-//
-VSF_PRIVATE void
-vsf_foo_do_private (void) {
-    //  TODO: This is STUB. Implement me.
-}
+
+//  @footer
+#endif // VSCF_ASN1_TAG_H_INCLUDED
+//  @end

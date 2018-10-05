@@ -12,9 +12,9 @@ attribute names are case-sensitive and we use only lower-case names.
        <implementation name [c_prefix] [full_uid] [visibility] [scope] [uid]>
           <context>
              <require [scope] [project] [library] [module] [header] [feature] [interface] [class]
-                  [impl]>
+                  [impl] [enum]>
                 <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]
-                     [impl]/>
+                     [impl] [enum]/>
              </require>
              <property is_reference name [full_uid] [library] [access] [type] [class] [enum] [callback]
                   [interface] [api] [impl] [size] [uid] [need_definition] [project]
@@ -154,6 +154,7 @@ feature.
       [ interface = "..." ]
       [ class = "..." ]
       [ impl = "..." ]
+      [ enum = "..." ]
         >
         <alternative>
     </require>
@@ -198,6 +199,9 @@ class:
 impl:
     Required implementation name. The impl attribute is optional.
 
+enum:
+    Required implementation name. The enum attribute is optional.
+
 
 The 'alternative' item
 ----------------------
@@ -215,6 +219,7 @@ used, and in fact replace each other.
       [ interface = "..." ]
       [ class = "..." ]
       [ impl = "..." ]
+      [ enum = "..." ]
         />
 
 The alternative item can have these attributes:
@@ -256,6 +261,9 @@ class:
 
 impl:
     Required implementation name. The impl attribute is optional.
+
+enum:
+    Required implementation name. The enum attribute is optional.
 
 
 The 'property' item
@@ -334,13 +342,15 @@ class:
     Defines instance class. Possible values are: * any - Any class or type. *
     data - Special class "data" that is used as an input byte array. * buffer
     - Special class "buffer" that is used as an output byte array. * impl -
-    Universal implementation class. If value differs from the listed above
-    then next algorithm applied: 1. If value in a format .(uid), then it
-    treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. If attribute 'library' is defined,
-    then it treated as third-party library class and will be used as-is. 3.
-    Any other value will be treated as cross-project class name and will be
-    converted to the .(uid). The class attribute is optional.
+    Universal implementation class. * self - Allowed within high-level
+    entities, i.e. class, implementation, to refer the context type. If value
+    differs from the listed above then next algorithm applied: 1. If value in
+    a format .(uid), then it treated as a reference to the in-project class
+    and will be substituted during context resolution step. 2. If attribute
+    'library' is defined, then it treated as third-party library class and
+    will be used as-is. 3. Any other value will be treated as cross-project
+    class name and will be converted to the .(uid). The class attribute is
+    optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated

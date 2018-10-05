@@ -181,7 +181,6 @@ function implementation_resolve_method (method, parent)
 
     my.method.declaration ?= "private"
     my.method.definition ?= "private"
-    my.method.context ?= "impl"
 endfunction
 
 # ---------------------------------------------------------------------------

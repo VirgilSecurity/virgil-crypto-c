@@ -111,8 +111,8 @@ function load_lang_wrapper (wrapper, destination)
 endfunction
 
 
-function process_project (project, features_list, projects_api, echo_level)
-    check_arguments (my, "project, features_list, projects_api, echo_level", my)
+function process_project (project, interfaces, features_list, projects_api, echo_level)
+    check_arguments (my, "project, interfaces, features_list, projects_api, echo_level", my)
 
     #   Create my.root eleement where all models will be created.
     my.root = XML.new ("my.root")
@@ -252,7 +252,7 @@ function process_project (project, features_list, projects_api, echo_level)
         wrapper_resolve (my.wrapper, my.project)
         wrapper_foreach_class_create_module (my.wrapper, my.root, my.wrappers_destination, my.meta)
         wrapper_foreach_interface_create_module (my.wrapper, my.root, my.wrappers_destination, my.meta)
-        wrapper_foreach_implementation_create_module (my.wrapper, my.root, my.wrappers_destination, my.meta)
+        wrapper_foreach_implementation_create_module (my.wrapper, my.root, my.interfaces, my.wrappers_destination, my.meta)
         wrapper_foreach_module_resolve(my.wrapper, my.wrappers_destination)
         projects_api_collect_info (my.projects_api, my.wrappers_destination)
         projects_api_save (my.projects_api, main.work_path)
@@ -301,10 +301,22 @@ function run_main ()
     #   Create container where projects API will be located.
     my.projects_api = projects_api_load (main.work_path)
 
-    #   Process code generation.
+    #   Load and resolve interfaces.
+    #   This is required to generate inherited methods in the wrappers.
+    my.interfaces = XML.new ("interfaces")
     for main.project
         my.loaded_project = load_project_model (project, project)
-        process_project (my.loaded_project, my.features_list, my.projects_api, main.echo_level)
+        project_resolve (my.loaded_project)
+        for my.loaded_project.interface
+            my.loaded_interface = load_project_model (my.loaded_project, interface, my.interfaces)
+            interface_resolve (my.loaded_interface, my.loaded_project)
+        endfor
+    endfor
+
+    #   Process code generation.
+    for main.project where is_true (project.enabled)
+        my.loaded_project = load_project_model (project, project)
+        process_project (my.loaded_project, my.interfaces, my.features_list, my.projects_api, main.echo_level)
     endfor
 
     for main.library

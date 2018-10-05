@@ -75,22 +75,22 @@ function wrapper_foreach_interface_create_module (wrapper, source, destination, 
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
 
-    for my.source.interface
+    for my.source.interface where interface.scope <> "internal"
         $(my.proxy_func:) (my.wrapper, interface, my.destination, my.meta)
     endfor
 endfunction
 
 
-function wrapper_foreach_implementation_create_module (wrapper, source, destination, meta)
-    check_arguments (my, "wrapper, source, destination, meta", my)
+function wrapper_foreach_implementation_create_module (wrapper, source, interfaces, destination, meta)
+    check_arguments (my, "wrapper, source, interfaces, destination, meta", my)
 
     my.proxy_func = make_id(my.wrapper.lang, "create_implementation_module")
     if ! macro (my.proxy_func)
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
 
-    for my.source.implementation
-        $(my.proxy_func:) (my.wrapper, implementation, my.destination, my.meta)
+    for my.source.implementation where implementation.scope <> "internal"
+        $(my.proxy_func:) (my.wrapper, implementation, my.interfaces, my.destination, my.meta)
     endfor
 endfunction
 
@@ -103,7 +103,7 @@ function wrapper_foreach_class_create_module (wrapper, source, destination, meta
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
 
-    for my.source.class
+    for my.source.class where class.scope <> "internal"
         $(my.proxy_func:) (my.wrapper, class, my.destination, my.meta)
     endfor
 endfunction
