@@ -136,7 +136,7 @@
         <require library="mbedtls" feature="ASN1 PARSE C"/>
         <require enum="asn1 tag"/>
         <require header="mbedtls/asn1.h"/>
-        <require header="virgil/common/private/vsc_buffer_defs.h"/>
+        <require module="buffer defs" project="common"/>
 
         <context>
             <property name="curr" type="data" access="readwrite"/>
@@ -171,7 +171,7 @@
         <require enum="asn1 tag"/>
         <require header="mbedtls/asn1.h"/>
         <require header="mbedtls/asn1write.h"/>
-        <require header="virgil/common/private/vsc_buffer_defs.h"/>
+        <require module="buffer defs" project="common"/>
 
         <context>
             <property name="out" class="buffer" access="readwrite"/>

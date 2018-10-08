@@ -51,12 +51,12 @@ endif()
 
 target_sources(common
         PRIVATE
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_assert.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_library.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_memory.h"
-            "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_buffer.h>"
-            "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/private/vsc_buffer_defs.h>"
-            "$<$<BOOL:${VSC_DATA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/vsc_data.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_assert.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_library.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_memory.h"
+            "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_buffer.h>"
+            "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/private/vsc_buffer_defs.h>"
+            "$<$<BOOL:${VSC_DATA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_data.h>"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vsc_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vsc_library.c"
@@ -64,4 +64,13 @@ target_sources(common
             "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsc_buffer.c>"
             "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsc_buffer_defs.c>"
             "$<$<BOOL:${VSC_DATA}>:${CMAKE_CURRENT_LIST_DIR}/src/vsc_data.c>"
+        )
+
+target_include_directories(common
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/private>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
+            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )

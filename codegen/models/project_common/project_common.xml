@@ -1,13 +1,9 @@
 <project
         name="common"
         brief="Virgil Security Crypto Common"
-        namespace="virgil"
-        package="virgil crypto common"
+        namespace="virgil crypto common"
         prefix="vsc"
         path="../library/common/"
-        inc_path="../library/common/include/virgil/common/"
-        inc_private_path="../library/common/include/virgil/common/private/"
-        src_path="../library/common/src/"
         work_path="generated/common/"
         >
 

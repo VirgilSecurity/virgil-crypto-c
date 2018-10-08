@@ -58,7 +58,7 @@
 
 #include <mbedtls/asn1.h>
 #include <mbedtls/asn1write.h>
-#include <virgil/common/private/vsc_buffer_defs.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 //  @end
 
 

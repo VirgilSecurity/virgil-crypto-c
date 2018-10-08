@@ -85,19 +85,6 @@ add_library(pythia_wrap "")
 include("${CMAKE_CURRENT_LIST_DIR}/sources.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 
-
-#
-# Define include headers
-#
-target_include_directories(pythia_wrap
-        PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/private>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
-            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-        )
-
 #
 # Link to dependencies
 #

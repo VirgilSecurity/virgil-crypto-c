@@ -40,7 +40,7 @@
 #define TEST_DEPENDENCIES_AVAILABLE VSCF_ASN1RD
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include "vscf_asn1.h"
+#include "vscf_asn1_tag.h"
 #include "vscf_asn1wr.h"
 #include "vscf_assert.h"
 

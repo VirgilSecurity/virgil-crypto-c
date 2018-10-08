@@ -1,13 +1,9 @@
 <project
         name="foundation"
         brief="Virgil Security Crypto Foundation"
-        namespace="virgil"
-        package="virgil crypto foundation"
+        namespace="virgil crypto foundation"
         prefix="vscf"
         path="../library/foundation/"
-        inc_path="../library/foundation/include/virgil/foundation/"
-        inc_private_path="../library/foundation/include/virgil/foundation/private/"
-        src_path="../library/foundation/src/"
         work_path="generated/foundation/"
         >
 

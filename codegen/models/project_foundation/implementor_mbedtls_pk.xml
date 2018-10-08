@@ -11,8 +11,6 @@
         <require class="mbedtls bignum asn1 reader"/>
         <require class="mbedtls md"/>
 
-        <require header="virgil/common/private/vsc_buffer_defs.h"/>
-
         <context>
             <require header="mbedtls/rsa.h"/>
             <property name="rsa ctx" class="mbedtls_rsa_context" library="mbedtls" access="readwrite" is_reference="0"/>

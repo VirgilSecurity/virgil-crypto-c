@@ -87,7 +87,7 @@ function load_project_model (project, model, destination)
     my.root_path = "models"
     my.from_path = make_id (my.model.[from] ? "project $(my.project.name)")
     my.model_file_name = make_id (name (my.model), my.model.name) + ".xml"
-    my.model_file_path = my.root_path + "/" + my.from_path + "/" + my.model_file_name
+    my.model_file_path = cat_path (my.root_path, my.from_path, my.model_file_name)
 
     return item_load_from_file (my.model_file_path, my.destination)
 endfunction

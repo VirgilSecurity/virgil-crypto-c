@@ -68,16 +68,14 @@ endfunction
 function _Z23_insert_header_file_path (c_module, project, tab_count)
     check_arguments (my, "c_module, project", my)
 
-    my.headers_subdir = "$(my.project.namespace:c)/$(my.project.name:c)"
-
     if my.c_module.scope = "public"
         _Z23_insert_featured_file_path( \
-                "${CMAKE_CURRENT_LIST_DIR}/include/$(my.headers_subdir:)/$(my.c_module.c_include_file)", \
+                "${CMAKE_CURRENT_LIST_DIR}/include/$(my.project.namespace_path:)/$(my.c_module.c_include_file)", \
                  my.c_module.feature, my.tab_count)
 
     elsif my.c_module.scope = "private"
         _Z23_insert_featured_file_path( \
-                "${CMAKE_CURRENT_LIST_DIR}/include/$(my.headers_subdir:)/private/$(my.c_module.c_include_file)", \
+                "${CMAKE_CURRENT_LIST_DIR}/include/$(my.project.namespace_path:)/private/$(my.c_module.c_include_file)", \
                  my.c_module.feature, my.tab_count)
 
     elsif my.c_module.scope = "internal"
@@ -265,6 +263,19 @@ function cmake_generate_sources (source, project)
     endfor
 
     cmake_insert (")", 2)
+
+    newline ()
+
+    cmake_insert("\
+        target_include_directories($(my.project.cmake_target:)
+                PUBLIC
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/$(my.project.namespace_path:)>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/$(my.project.namespace_path:)/private>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
+                    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+                )
+    ")
 endfunction
 
 # ---------------------------------------------------------------------------
