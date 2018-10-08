@@ -51,20 +51,20 @@ endif()
 
 target_sources(pythia_wrap
         PRIVATE
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_assert.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_library.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_memory.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_api.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/private/vscp_api_private.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_impl.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/private/vscp_impl_private.h"
-            "$<$<BOOL:${VSCP_HASH_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_hash_info.h>"
-            "$<$<BOOL:${VSCP_HASH_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/private/vscp_hash_info_api.h>"
-            "$<$<BOOL:${VSCP_HASH_STREAM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_hash_stream.h>"
-            "$<$<BOOL:${VSCP_HASH_STREAM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/private/vscp_hash_stream_api.h>"
-            "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_pythia.h>"
-            "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/private/vscp_pythia_defs.h>"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/vscp_error.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_assert.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_library.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_memory.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_api.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private/vscp_api_private.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_impl.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private/vscp_impl_private.h"
+            "$<$<BOOL:${VSCP_HASH_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_hash_info.h>"
+            "$<$<BOOL:${VSCP_HASH_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private/vscp_hash_info_api.h>"
+            "$<$<BOOL:${VSCP_HASH_STREAM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_hash_stream.h>"
+            "$<$<BOOL:${VSCP_HASH_STREAM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private/vscp_hash_stream_api.h>"
+            "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_pythia.h>"
+            "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private/vscp_pythia_defs.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_error.h"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vscp_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscp_library.c"
@@ -80,4 +80,13 @@ target_sources(pythia_wrap
             "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/src/vscp_pythia.c>"
             "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/src/vscp_pythia_defs.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscp_error.c"
+        )
+
+target_include_directories(pythia_wrap
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
+            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )

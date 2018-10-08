@@ -54,19 +54,6 @@ include("${CMAKE_CURRENT_LIST_DIR}/sources.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 
 #
-# Define include headers
-#
-target_include_directories(common
-        PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/common>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/private>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
-            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-        )
-
-
-#
 # Define specific compilation and linkage flags.
 #
 set_target_properties(common PROPERTIES

@@ -106,7 +106,7 @@ function projects_api_reset_project (projects_api, project)
 
     new project to my.projects_api
         .name = my.project.name
-        .package = my.project.package
+        .namespace = my.project.namespace
         .install_headers_dir = my.project.install_headers_dir
         .install_private_headers_dir = my.project.install_private_headers_dir
 
@@ -128,18 +128,18 @@ function projects_api_build_header_resolution_map (projects_api)
     for my.projects_api.project
         my.is_external_project = (project.name = my.projects_api.active_project) ?? "0" ? "1"
 
-        my.public_prefix = my.is_external_project ?? project.install_headers_dir ? ""
-        my.private_prefix = my.is_external_project ?? project.install_private_headers_dir ? ""
+        my.public_prefix = my.is_external_project ?? project.install_headers_dir ?
+        my.private_prefix = my.is_external_project ?? project.install_private_headers_dir ?
 
         for project.header
             if my.is_external_project & header.scope = "internal"
                 next
 
             elsif header.scope = "public"
-                my.file = my.public_prefix + header.file
+                my.file = cat_path (my.public_prefix, header.file)
 
             elsif header.scope = "private"
-                my.file = my.private_prefix + header.file
+                my.file = cat_path (my.private_prefix, header.file)
             endif
 
             for header.declaration
@@ -181,8 +181,8 @@ function projects_api_build_type_resolution_map (projects_api)
 
         #   Process headers.
         my.is_external_project = (project.name = my.projects_api.active_project) ?? "0" ? "1"
-        my.public_prefix = my.is_external_project ?? project.install_headers_dir ? ""
-        my.private_prefix = my.is_external_project ?? project.install_private_headers_dir ? ""
+        my.public_prefix = my.is_external_project ?? project.install_headers_dir ?
+        my.private_prefix = my.is_external_project ?? project.install_private_headers_dir ?
 
         for project.header
             if my.is_external_project & header.scope = "internal"
@@ -190,10 +190,10 @@ function projects_api_build_type_resolution_map (projects_api)
             endif
 
             if header.scope = "public"
-                my.header_file = my.public_prefix + header.file
+                my.header_file = cat_path (my.public_prefix, header.file)
 
             elsif header.scope = "private"
-                my.header_file = my.private_prefix + header.file
+                my.header_file = cat_path (my.private_prefix, header.file)
             else
                 my.header_file = header.file
             endif

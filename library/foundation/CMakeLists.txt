@@ -72,18 +72,6 @@ include("${CMAKE_CURRENT_LIST_DIR}/sources.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 
 #
-# Define include headers
-#
-target_include_directories(foundation
-        PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/foundation/private>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
-            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-        )
-
-#
 # Link to dependencies
 #
 target_link_libraries(foundation PUBLIC vsc::common mbed::crypto)

@@ -58,10 +58,14 @@ function project_resolve (project)
     assert_attribute (my.project, "name", my)
     assert_attribute (my.project, "namespace", my)
     assert_attribute (my.project, "path", my)
-    assert_attribute (my.project, "inc_path", my)
-    assert_attribute (my.project, "inc_private_path", my)
-    assert_attribute (my.project, "src_path", my)
     assert_attribute (my.project, "work_path", my)
+
+    my.project.namespace_path = string.replace ("$(string_collapse_spaces (my.project.namespace):c,lower)", "_|/")
+    my.project.inc_path ?= cat_path (my.project.path, "include", my.project.namespace_path)
+    my.project.inc_private_path ?= cat_path (my.project.path, "include", my.project.namespace_path, "private")
+    my.project.src_path ?= cat_path (my.project.path, "src")
+    my.project.install_headers_dir ?= cat_path (my.project.namespace_path)
+    my.project.install_private_headers_dir ?= cat_path (my.project.namespace_path, "private")
 
     my.version = my.project->version
     my.version.major ?= 1
@@ -74,9 +78,6 @@ function project_resolve (project)
 
     my.project.version_string = "$(my.version.major:).$(my.version.minor:).$(my.version.patch:)"
     my.project.cmake_target ?= "$(my.project.name:c)"
-
-    my.project.install_headers_dir ?= "$(my.project.namespace:c)/$(my.project.name:c)/"
-    my.project.install_private_headers_dir ?= "$(my.project.namespace:c)/$(my.project.name:c)/private/"
 endfunction
 
 # ---------------------------------------------------------------------------

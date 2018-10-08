@@ -80,8 +80,8 @@ function resolution_map_apply_to (resolution_map, model, work_dir)
         echo_fatal ("Can not create directory: $(my.work_dir:). ", my)
     endif
 
-    my.init_file_path = "$(my.work_dir?:)$(name (my.model))_unresolved.xml"
-    my.final_file_path = "$(my.work_dir?:)$(name (my.model)).xml"
+    my.init_file_path = cat_path (my.work_dir, "$(name (my.model))_unresolved.xml")
+    my.final_file_path = cat_path (my.work_dir, "$(name (my.model)).xml")
 
     item_save_to_file (my.model, my.init_file_path)
 
@@ -101,8 +101,8 @@ function resolution_map_apply_to_lang_module (resolution_map, lang_module, work_
     echo_trace ("Apply resolution map to <$(name (my.lang_module)) name=\"$(my.lang_module.name:)\"/>", my)
 
     my.lang_module_id = make_id (name (my.lang_module), my.lang_module.name)
-    my.init_module_file_path = "$(my.work_dir?:)$(my.lang_module_id:)_unresolved.xml"
-    my.final_module_file_path = "$(my.work_dir?:)$(my.lang_module_id:).xml"
+    my.init_module_file_path = cat_path (my.work_dir, "$(my.lang_module_id:)_unresolved.xml")
+    my.final_module_file_path = cat_path (my.work_dir, "$(my.lang_module_id:).xml")
 
     item_save_to_file (my.lang_module, my.init_module_file_path)
 

@@ -123,8 +123,8 @@ function c_module_create (source, destination, project)
 
             .c_include_file = 0.name + ".h"
             .c_source_file = 0.name + ".c"
-            .header_file = my.resolved_header_path + 0.c_include_file
-            .source_file = my.project.src_path + 0.c_source_file
+            .header_file = cat_path (my.resolved_header_path, 0.c_include_file)
+            .source_file = cat_path (my.project.src_path, 0.c_source_file)
             .once_guard = c_format_name (0.c_include_file, "included")
 
             new c_include
