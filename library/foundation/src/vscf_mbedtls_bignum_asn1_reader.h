@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -57,6 +58,8 @@
 #include "vscf_impl.h"
 
 #include <mbedtls/bignum.h>
+
+// clang-format on
 //  @end
 
 

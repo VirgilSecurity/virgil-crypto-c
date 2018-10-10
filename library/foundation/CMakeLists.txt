@@ -65,6 +65,13 @@ include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 # ---------------------------------------------------------------------------
 
 #
+# Internal configuration
+#
+if(CMAKE_CROSSCOMPILING AND APPLE)
+    set(VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK YES CACHE INTERNAL "")
+endif()
+
+#
 # Define sources
 #
 add_library(foundation "")
@@ -128,6 +135,19 @@ if(COMMAND add_clangformat)
     add_clangformat(foundation)
 endif()
 
+
+# ---------------------------------------------------------------------------
+#   Apple specific
+# ---------------------------------------------------------------------------
+if(CMAKE_CROSSCOMPILING AND APPLE AND COMMAND target_apple_framework)
+    target_apple_framework(foundation
+            NAME VSCFoundation
+            VERSION "A"
+            IDENTIFIER com.virgilsecurity.VSCFoundation
+            )
+endif()
+
+
 # ---------------------------------------------------------------------------
 #   Install library
 # ---------------------------------------------------------------------------
@@ -152,6 +172,7 @@ if(VIRGIL_INSTALL_LIBS)
             EXPORT vsc_foundationTargets
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            FRAMEWORK DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             )
 endif()
 

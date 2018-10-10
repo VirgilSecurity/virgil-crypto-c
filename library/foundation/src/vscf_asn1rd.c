@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -57,7 +58,9 @@
 #include "vscf_asn1rd_internal.h"
 
 #include <mbedtls/asn1.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
+#include <vsc_buffer_defs.h>
+
+// clang-format on
 //  @end
 
 

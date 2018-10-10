@@ -24,7 +24,7 @@
         <dependency name="hash" interface="hash stream"/>
 
         <context>
-            <property name="hmac" impl="hmac" access="readwrite" is_reference="0" need_definition="public"/>
+            <property name="hmac" impl="hmac" access="readwrite" is_reference="0" require_definition="public"/>
         </context>
 
         <constant name="hash counter max" value="255"/>

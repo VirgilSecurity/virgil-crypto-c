@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -52,6 +53,8 @@
 #include "vsc_data.h"
 #include "vsc_memory.h"
 #include "vsc_assert.h"
+
+// clang-format on
 //  @end
 
 

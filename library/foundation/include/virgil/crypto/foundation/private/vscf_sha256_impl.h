@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -60,6 +61,8 @@
 #include "vscf_sha256.h"
 
 #include <mbedtls/sha256.h>
+
+// clang-format on
 //  @end
 
 

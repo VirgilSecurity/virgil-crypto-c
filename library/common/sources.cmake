@@ -49,11 +49,52 @@ if(NOT TARGET common)
     message(FATAL_ERROR "Expected target 'common' to be defined first.")
 endif()
 
+configure_file(
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_platform.h.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/common/vsc_platform.h"
+        )
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_assert.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_library.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_memory.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/common/vsc_platform.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_buffer.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/private/vsc_buffer_defs.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_data.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
 target_sources(common
-        PRIVATE
+    PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_assert.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_library.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_memory.h"
+            "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/common/vsc_platform.h"
             "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_buffer.h>"
             "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/private/vsc_buffer_defs.h>"
             "$<$<BOOL:${VSC_DATA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_data.h>"
@@ -71,6 +112,8 @@ target_include_directories(common
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/private>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/common>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/common/private>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )

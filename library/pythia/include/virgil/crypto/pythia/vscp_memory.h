@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -53,6 +54,8 @@
 #define VSCP_MEMORY_H_INCLUDED
 
 #include "vscp_library.h"
+
+// clang-format on
 //  @end
 
 

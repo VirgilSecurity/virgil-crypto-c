@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -61,6 +62,8 @@
 #include "vscf_impl.h"
 #include "vscf_hmac.h"
 #include "vscf_hmac_impl.h"
+
+// clang-format on
 //  @end
 
 

@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -53,6 +54,8 @@
 #define VSC_BUFFER_DEFS_H_INCLUDED
 
 #include "vsc_library.h"
+
+// clang-format on
 //  @end
 
 

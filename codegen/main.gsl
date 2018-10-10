@@ -60,6 +60,7 @@ gsl from "c_features.gsl"
 gsl from "c_module.gsl"
 gsl from "c_module_codegen.gsl"
 
+gsl from "c_module_platform.gsl"
 gsl from "c_module_api.gsl"
 gsl from "c_module_api_private.gsl"
 gsl from "c_module_impl.gsl"
@@ -168,6 +169,7 @@ function process_project (project, interfaces, features_list, projects_api, echo
 
     #   Create meta information about high level entities.
     my.meta = meta_create ()
+    meta_add_project (my.meta, my.project)
     foreach_interface_update_meta (my.root, my.meta)
     foreach_implementation_update_meta (my.root, my.meta)
     foreach_class_update_meta (my.root, my.meta)
@@ -179,6 +181,8 @@ function process_project (project, interfaces, features_list, projects_api, echo
 
 
     #   Create Interface / Implementation related modules.
+    c_module_platform_create (my.project, my.root, my.meta)
+
     if count (my.root.interface)
         c_module_api_create (my.meta, my.root)
         c_module_api_private_create (my.meta, my.root)
@@ -207,15 +211,6 @@ function process_project (project, interfaces, features_list, projects_api, echo
     #   Resolve shortcuts for all modules.
     foreach_component_resolve_shortcut_refs (my.root)
 
-    #   At this point all elements are created and resolved.
-    if my.echo_level = "debug"
-        item_save_to_file (my.root, "root.xml", my.project.work_path)
-    endif
-
-    if my.echo_level = "debug"
-        item_save_to_file (my.project, "project.xml", my.project.work_path)
-    endif
-
     #   Perform cross projects name resolution.
     projects_api_reset_project (my.projects_api, my.project)
     projects_api_collect_info (my.projects_api, my.root)
@@ -225,22 +220,30 @@ function process_project (project, interfaces, features_list, projects_api, echo
     my.type_resolution_map = projects_api_build_type_resolution_map (my.projects_api)
 
     for my.root.c_module
-        my.c_module_resolved = \
-                resolution_map_apply_to_lang_module (my.type_resolution_map, c_module, my.project.work_path)
-        move my.c_module_resolved before c_module
+        my.resolved_c_module = resolution_map_apply_to_lang_module (\
+                    my.type_resolution_map, c_module, my.project.work_path)
+
+        move my.resolved_c_module before c_module
         delete c_module
+
+        c_module_add_headers (my.resolved_c_module, my.projects_api)
     endfor
 
-    my.header_resolution_map = projects_api_build_header_resolution_map (my.projects_api)
-    for my.root.c_module
-        c_module_add_headers (c_module, my.header_resolution_map)
-    endfor
+    #   At this point all elements are created and resolved.
+    if my.echo_level = "debug"
+        item_save_to_file (my.root, "root.xml", my.project.work_path)
+    endif
+
+    if my.echo_level = "debug"
+        item_save_to_file (my.project, "project.xml", my.project.work_path)
+    endif
 
     #   Generate code.
     c_module_generate_sources (my.root)
 
     #   Generate CMake files.
     cmake_generate_sources (my.root, my.project)
+    cmake_generate_modulemap (my.root, my.project)
 
     #   Generate wrappers code.
     for my.project.wrapper as wrapper_link
@@ -275,7 +278,6 @@ function process_project (project, interfaces, features_list, projects_api, echo
 
     if my.echo_level = "debug"
         item_save_to_file (my.type_resolution_map, "type_resolution_map.xml", my.project.work_path)
-        item_save_to_file (my.header_resolution_map, "header_resolution_map.xml", my.project.work_path)
     endif
 endfunction
 

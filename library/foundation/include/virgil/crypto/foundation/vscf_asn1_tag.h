@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -51,6 +52,8 @@
 
 #ifndef VSCF_ASN1_TAG_H_INCLUDED
 #define VSCF_ASN1_TAG_H_INCLUDED
+
+// clang-format on
 //  @end
 
 

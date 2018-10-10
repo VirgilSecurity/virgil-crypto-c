@@ -12,6 +12,8 @@
     <c_include file="stdlib.h" is_system="1" />
     <c_include file="stdbool.h" is_system="1" />
 
+    <require module="platform"/>
+
     <c_alias name="byte" type="uint8_t" declaration="public">
         //  Portable representation of the byte.
     </c_alias>

@@ -48,6 +48,29 @@ gsl from "cmake_codegen.gsl"
 
 
 # ---------------------------------------------------------------------------
+#   Return formatted file path for CMake
+# ---------------------------------------------------------------------------
+function _Z23_derive_cmake_file_path (c_module, project)
+    check_arguments (my, "c_module, project", my)
+
+    my.base_path = my.c_module.has_cmakedefine ?? "${CMAKE_CURRENT_BINARY_DIR}" ? "${CMAKE_CURRENT_LIST_DIR}"
+
+    if my.c_module.scope = "public"
+        return "$(my.base_path:)/include/$(my.project.namespace_dir:)/$(my.c_module.c_include_file:)"
+
+    elsif my.c_module.scope = "private"
+        return "$(my.base_path:)/include/$(my.project.namespace_dir:)/private/$(my.c_module.c_include_file:)"
+
+    elsif my.c_module.scope = "internal"
+        return "$(my.base_path:)/src/$(my.c_module.c_include_file:)"
+
+    else
+        echo_fatal ("Unexpected c_module.scope=$(my.c_module.scope:)", my)
+    endif
+endfunction
+
+
+# ---------------------------------------------------------------------------
 #   Insert given file path to CMake target_sources() function body.
 #   Note, expected that function scope is already opened.
 # ---------------------------------------------------------------------------
@@ -68,24 +91,8 @@ endfunction
 function _Z23_insert_header_file_path (c_module, project, tab_count)
     check_arguments (my, "c_module, project", my)
 
-    if my.c_module.scope = "public"
-        _Z23_insert_featured_file_path( \
-                "${CMAKE_CURRENT_LIST_DIR}/include/$(my.project.namespace_path:)/$(my.c_module.c_include_file)", \
-                 my.c_module.feature, my.tab_count)
-
-    elsif my.c_module.scope = "private"
-        _Z23_insert_featured_file_path( \
-                "${CMAKE_CURRENT_LIST_DIR}/include/$(my.project.namespace_path:)/private/$(my.c_module.c_include_file)", \
-                 my.c_module.feature, my.tab_count)
-
-    elsif my.c_module.scope = "internal"
-        _Z23_insert_featured_file_path( \
-                "${CMAKE_CURRENT_LIST_DIR}/src/$(my.c_module.c_include_file)", \
-                 my.c_module.feature, my.tab_count)
-
-    else
-        echo_fatal ("Unexpected c_module.scope=$(my.c_module.scope:)", my)
-    endif
+    _Z23_insert_featured_file_path (\
+            _Z23_derive_cmake_file_path (my.c_module, my.project), my.c_module.feature, my.tab_count)
 endfunction
 
 
@@ -95,9 +102,76 @@ endfunction
 function _Z23_insert_source_file_path (c_module, project, tab_count)
     check_arguments (my, "c_module, project", my)
 
-    _Z23_insert_featured_file_path ( \
-            "${CMAKE_CURRENT_LIST_DIR}/src/$(c_module.c_source_file)", \
+    _Z23_insert_featured_file_path ("${CMAKE_CURRENT_LIST_DIR}/src/$(c_module.c_source_file)", \
             my.c_module.feature, my.tab_count)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Insert configure_file() command if necessary.
+# ---------------------------------------------------------------------------
+function _Z23_insert_files_configuration (source, project)
+    check_arguments (my, "source, project", my)
+
+    if ! count (my.source.c_module, c_module.has_cmakedefine)
+        return
+    endif
+
+    cmake_insert ("configure_file(")
+
+    for my.source.c_module where c_module.has_cmakedefine
+        if c_module.scope = "public"
+            my.relative_dir = cat_path ("include", my.project.namespace_dir)
+
+        elsif c_module.scope = "private"
+            my.relative_dir = cat_path ("include", my.project.namespace_dir, "private")
+
+        elsif c_module.scope = "internal"
+            my.relative_dir = cat_path ("src", my.project.namespace_dir)
+
+        else
+            echo_fatal ("Unexpected c_module.scope=$(my.c_module.scope:)", my)
+        endif
+
+        cmake_insert ("\
+            \"${CMAKE_CURRENT_LIST_DIR}/$(my.relative_dir)/$(c_module.c_include_file:).in\"
+            \"${CMAKE_CURRENT_BINARY_DIR}/$(my.relative_dir)/$(c_module.c_include_file:)\"
+        ", 2)
+    endfor
+
+    cmake_insert (")", 2)
+
+    newline ()
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Insert set() command if necessary.
+# ---------------------------------------------------------------------------
+function _Z23_insert_files_apple_configuration (source, project)
+    check_arguments (my, "source, project", my)
+
+    for my.source.c_module
+        my.file_path = _Z23_derive_cmake_file_path (c_module, my.project)
+
+        if c_module.scope = "public"
+            cmake_insert ("\
+                set_property(
+                    SOURCE \"$(my.file_path:)\"
+                    PROPERTY MACOSX_PACKAGE_LOCATION \"Headers\"
+                )
+            ")
+            newline ()
+        elsif c_module.scope = "private"
+            cmake_insert ("\
+                set_property(
+                    SOURCE \"$(my.file_path:)\"
+                    PROPERTY MACOSX_PACKAGE_LOCATION \"PrivateHeaders\"
+                )
+            ")
+            newline ()
+        endif
+    endfor
 endfunction
 
 
@@ -248,16 +322,25 @@ function cmake_generate_sources (source, project)
         if(NOT TARGET $(my.project.cmake_target:))
             message(FATAL_ERROR \"Expected target '$(my.project.cmake_target:)' to be defined first.\")
         endif()
+    ")
 
+    newline ()
+
+
+    _Z23_insert_files_configuration (my.source, my.project)
+
+    _Z23_insert_files_apple_configuration (my.source, my.project)
+
+    cmake_insert ("\
         target_sources($(my.project.cmake_target:)
-                PRIVATE
+            PRIVATE
     ")
 
     for my.source.c_module
         _Z23_insert_header_file_path (c_module, my.project, 3)
     endfor
 
-    for my.source.c_module
+    for my.source.c_module where c_module_need_source (c_module)
         newline_if (first ())
         _Z23_insert_source_file_path (c_module, my.project, 3)
     endfor
@@ -270,8 +353,10 @@ function cmake_generate_sources (source, project)
         target_include_directories($(my.project.cmake_target:)
                 PUBLIC
                     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-                    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/$(my.project.namespace_path:)>
-                    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/$(my.project.namespace_path:)/private>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/$(my.project.namespace_dir:)>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/$(my.project.namespace_dir:)/private>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/$(my.project.namespace_dir:)>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/$(my.project.namespace_dir:)/private>
                     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
                     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
                 )
@@ -301,6 +386,7 @@ function cmake_generate_definitions (source, license)
 
             target_compile_definitions($(c_features.cmake_target:)
                     PUBLIC
+                        $<BUILD_INTERFACE:$(c_features.build_interface:)>
         ")
 
         for c_features.c_feature
@@ -310,6 +396,36 @@ function cmake_generate_definitions (source, license)
         cmake_insert (")", 2)
 
     endfor
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Generate 'module.modulemap' file with project sources.
+#   This file should be included in the Apple Frameworks.
+# ---------------------------------------------------------------------------
+function cmake_generate_modulemap (source, project)
+    check_arguments (my, "source, project", my)
+
+    my.modulemap_file = "$(directory.resolve (my.project.path))module.modulemap"
+
+    echo_trace ("Generate '$(my.modulemap_file:)'", my)
+
+    output my.modulemap_file
+
+    cmake_insert ("\
+        framework module $(my.project.framework:) {
+    ")
+
+    for my.source.c_module where c_module.scope = "public"
+        cmake_insert ("\
+            header \"$(c_module.c_include_file:)\"
+        ", 1)
+    endfor
+
+    cmake_insert ("\
+            export *
+        }
+    ")
 endfunction
 
 .endtemplate
