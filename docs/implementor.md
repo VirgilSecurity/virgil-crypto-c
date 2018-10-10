@@ -17,8 +17,8 @@ attribute names are case-sensitive and we use only lower-case names.
                      [impl] [enum]/>
              </require>
              <property is_reference name [full_uid] [library] [access] [type] [class] [enum] [callback]
-                  [interface] [api] [impl] [size] [uid] [need_definition] [project]
-                  [bits]>
+                  [interface] [api] [impl] [size] [uid] [require_definition]
+                  [project] [bits]>
                 <string [access] [length]/>
                 <array [access] [length] [length_constant]/>
              </property>
@@ -287,7 +287,7 @@ property.
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ uid = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
       [ project = "..." ]
       [ bits = "..." ]
         >
@@ -400,8 +400,8 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:

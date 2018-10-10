@@ -51,7 +51,8 @@ endif()
 
 target_compile_definitions(pythia_wrap
         PUBLIC
-            "VSCP_HASH_INFO=$<BOOL:${VSCP_HASH_INFO}>"
-            "VSCP_HASH_STREAM=$<BOOL:${VSCP_HASH_STREAM}>"
+            $<BUILD_INTERFACE:VSCP_BUILD_INTERFACE>
+            "VSCP_LIBRARY=$<BOOL:${VSCP_LIBRARY}>"
+            "VSCP_MULTI_THREAD=$<BOOL:${VSCP_MULTI_THREAD}>"
             "VSCP_PYTHIA=$<BOOL:${VSCP_PYTHIA}>"
         )

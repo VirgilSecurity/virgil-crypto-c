@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -51,6 +52,8 @@
 
 #ifndef VSCP_ERROR_H_INCLUDED
 #define VSCP_ERROR_H_INCLUDED
+
+// clang-format on
 //  @end
 
 

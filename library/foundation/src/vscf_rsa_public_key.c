@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -61,6 +62,8 @@
 #include "vscf_asn1_writer.h"
 #include "vscf_rsa_public_key_impl.h"
 #include "vscf_rsa_public_key_internal.h"
+
+// clang-format on
 //  @end
 
 

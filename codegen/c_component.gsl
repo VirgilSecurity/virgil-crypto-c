@@ -712,12 +712,12 @@ function c_component_map_instance_attr_is_const (c_instance, instance)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Define attribute: c_instance.need_definition.
+#   Define attribute: c_instance.require_definition.
 # ---------------------------------------------------------------------------
-function c_component_map_instance_attr_need_definition (c_instance, instance)
+function c_component_map_instance_attr_require_definition (c_instance, instance)
     check_arguments (my, "c_instance, instance", my)
 
-    my.c_instance.need_definition ?= my.instance.need_definition ?
+    my.c_instance.require_definition ?= my.instance.require_definition ?
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -732,7 +732,7 @@ function c_component_map_instance (c_instance, instance)
     c_component_map_instance_attr_array (my.c_instance, my.instance)
     c_component_map_instance_attr_string (my.c_instance, my.instance)
     c_component_map_instance_attr_is_const (my.c_instance, my.instance)
-    c_component_map_instance_attr_need_definition (my.c_instance, my.instance)
+    c_component_map_instance_attr_require_definition (my.c_instance, my.instance)
 endfunction
 
 # ---------------------------------------------------------------------------

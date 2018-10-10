@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -56,12 +57,16 @@
 #ifndef VSCF_LIBRARY_H_INCLUDED
 #define VSCF_LIBRARY_H_INCLUDED
 
+#include "vscf_platform.h"
+
 #include <stdint.h>
 #include <stddef.h>
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+
+// clang-format on
 //  @end
 
 

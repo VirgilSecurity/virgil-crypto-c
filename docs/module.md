@@ -8,7 +8,7 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <module name [c_prefix] [uid] [full_uid] [feature] [scope] [of_class]>
+    <module name [of_class] [uid] [full_uid] [feature] [scope] [c_prefix] [has_cmakedefine]>
        <require [scope] [project] [library] [module] [header] [feature] [interface] [class]
             [impl] [enum]>
           <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]
@@ -20,12 +20,12 @@ attribute names are case-sensitive and we use only lower-case names.
           <constant .../>
        </enum>
        <variable name is_reference [access] [type] [project] [enum] [callback] [interface] [api]
-            [impl] [size] [library] [need_definition] [definition] [declaration]
+            [impl] [size] [library] [require_definition] [definition] [declaration]
             [visibility] [c_prefix] [of_class] [uid] [full_uid] [feature] [class]>
           <value is_reference value [library] [type] [class] [enum] [callback] [interface] [api]
-               [impl] [size] [project] [need_definition] [access]>
+               [impl] [size] [project] [require_definition] [access]>
              <cast is_reference [project] [access] [type] [class] [enum] [callback] [interface]
-                  [api] [impl] [size] [library] [need_definition]>
+                  [api] [impl] [size] [library] [require_definition]>
                 <string [access] [length]/>
                 <array [access] [length] [length_constant]/>
              </cast>
@@ -38,7 +38,7 @@ attribute names are case-sensitive and we use only lower-case names.
        <struct name [definition] [visibility] [c_prefix] [of_class] [uid] [full_uid] [feature]
             [declaration]>
           <property is_reference name [full_uid] [library] [access] [type] [class] [enum] [callback]
-               [interface] [api] [impl] [size] [uid] [need_definition] [project]
+               [interface] [api] [impl] [size] [uid] [require_definition] [project]
                [bits]>
              <string .../>
              <array .../>
@@ -46,12 +46,13 @@ attribute names are case-sensitive and we use only lower-case names.
        </struct>
        <callback name [declaration] [of_class] [uid] [full_uid] [feature] [c_prefix]>
           <return is_reference [project] [access] [type] [class] [enum] [callback] [interface]
-               [api] [impl] [size] [library] [need_definition]>
+               [api] [impl] [size] [library] [require_definition]>
              <string .../>
              <array .../>
           </return>
           <argument name is_reference [project] [uid] [access] [type] [class] [enum] [callback]
-               [interface] [api] [impl] [size] [full_uid] [need_definition] [library]>
+               [interface] [api] [impl] [size] [full_uid] [require_definition]
+               [library]>
              <string .../>
              <array .../>
           </argument>
@@ -63,7 +64,7 @@ attribute names are case-sensitive and we use only lower-case names.
           <variable .../>
           <code [lang] [type]/>
        </method>
-       <macros name [c_prefix] [of_class] [uid] [full_uid] [feature] [definition] [is_method]>
+       <macros name [definition] [is_method]>
           <code .../>
        </macros>
        <macroses [definition]>
@@ -92,12 +93,13 @@ generate wrappers for high level languages like C#, Java, Python, etc.
 
     <module
         name = "..."
-      [ c_prefix = "..." ]
+      [ of_class = "..." ]
       [ uid = "..." ]
       [ full_uid = "..." ]
       [ feature = "..." ]
       [ scope = "public | private | internal"  ("public") ]
-      [ of_class = "..." ]
+      [ c_prefix = "..." ]
+      [ has_cmakedefine = "0 | 1"  ("0") ]
         >
         <require>
         <constant>
@@ -146,6 +148,15 @@ internal: Component is visible only within library or a specific source file.
 
 name:
     Short module name. The name attribute is required.
+
+has_cmakedefine:
+    Defines that module must be configured with CMake configure_file()
+    command. The has_cmakedefine attribute is optional. Its default value is
+    "0". It can take one of the following values:
+
+Value: Meaning:
+0: Module does not contain CMake variables and #cmakedefine instructions.
+1: Module contains CMake variables and/or #cmakedefine instructions.
 
 
 The 'require' item
@@ -438,7 +449,7 @@ attributes for the component. Defines global variable.
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ library = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
       [ definition = "public | private | external"  ("private") ]
       [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
@@ -551,8 +562,8 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -631,7 +642,7 @@ variable value.
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ project = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
         >
         <cast>, optional
@@ -736,8 +747,8 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -767,7 +778,7 @@ type to the type defined in this entity.
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ library = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
         >
         <string>, optional
         <array>, optional
@@ -870,8 +881,8 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -1046,7 +1057,7 @@ property.
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ uid = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
       [ project = "..." ]
       [ bits = "..." ]
         >
@@ -1159,8 +1170,8 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -1247,7 +1258,7 @@ Defines attributes that related to the instance type. Defines return type.
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ library = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
         >
         <string>, optional
         <array>, optional
@@ -1350,8 +1361,8 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -1380,7 +1391,7 @@ name, type, and usage information.
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ full_uid = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
       [ library = "..." ]
         >
         <string>, optional
@@ -1492,8 +1503,8 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -1629,16 +1640,10 @@ handwritten: Implementation was written by developer, so it can be extracted and
 The 'macros' item
 -----------------
 
-Groups common attributes for the component. Defines the macros name and
-optionally implementation.
+Defines the macros name and optionally implementation.
 
     <macros
         name = "..."
-      [ c_prefix = "..." ]
-      [ of_class = "..." ]
-      [ uid = "..." ]
-      [ full_uid = "..." ]
-      [ feature = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ is_method = "0 | 1"  ("0") ]
         >
@@ -1656,26 +1661,6 @@ Value: Meaning:
 public: Component definition is visible for outside world.
 private: Component definition is hidden in a correspond source file.
 external: Component definition is located somewhere.
-
-c_prefix:
-    Prefix that is used for C name resolution. The c_prefix attribute is
-    optional.
-
-of_class:
-    Defines class name that a component belongs to. This attributes is used
-    for inner components name resolution. The of_class attribute is optional.
-
-uid:
-    Unique component identifier represents name that uniquely identifies
-    component within models hierarchy. The uid attribute is optional.
-
-full_uid:
-    Unique component identifier represents name that uniquely identifies
-    component within projects hierarchy. The full_uid attribute is optional.
-
-feature:
-    In-project feature name that is implemented. This attribute is used for
-    feature-based compilation. The feature attribute is optional.
 
 name:
     Macros name. The name attribute is required.

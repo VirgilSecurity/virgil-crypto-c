@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -56,6 +57,8 @@
 #include "vscf_library.h"
 #include "vscf_sha512.h"
 #include "vscf_sha512.h"
+
+// clang-format on
 //  @end
 
 

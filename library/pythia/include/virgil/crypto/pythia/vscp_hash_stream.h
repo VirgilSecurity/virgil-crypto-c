@@ -57,8 +57,8 @@
 #include "vscp_hash_info.h"
 #include "vscp_api.h"
 
-#include <virgil/crypto/common/vsc_data.h>
-#include <virgil/crypto/common/vsc_buffer.h>
+#include <.(c_global_macros_project_common_namespace_dir)/vsc_data.h>
+#include <.(c_global_macros_project_common_namespace_dir)/vsc_buffer.h>
 //  @end
 
 

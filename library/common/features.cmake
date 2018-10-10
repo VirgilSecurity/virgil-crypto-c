@@ -45,9 +45,11 @@
 
 include_guard()
 
+option(VSC_LIBRARY "Enable build of the 'common' library" ON)
 option(VSC_DATA "Enable class 'data'." ON)
 option(VSC_BUFFER "Enable class 'buffer'." ON)
 mark_as_advanced(
+        VSC_LIBRARY
         VSC_DATA
         VSC_BUFFER
         )

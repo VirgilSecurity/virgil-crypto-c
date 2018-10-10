@@ -45,20 +45,11 @@
 
 include_guard()
 
-option(VSCP_HASH_INFO "Enable interface 'hash info'." ON)
-option(VSCP_HASH_STREAM "Enable interface 'hash stream'." ON)
+option(VSCP_LIBRARY "Enable build of the 'pythia' library" ON)
+option(VSCP_MULTI_THREAD "Enable multi-threading safety for Pythia library." ON)
 option(VSCP_PYTHIA "Enable class 'pythia'." ON)
 mark_as_advanced(
-        VSCP_HASH_INFO
-        VSCP_HASH_STREAM
+        VSCP_LIBRARY
+        VSCP_MULTI_THREAD
         VSCP_PYTHIA
         )
-
-if(VSCP_HASH_STREAM AND NOT VSCP_HASH_INFO)
-    message("-- error --")
-    message("--")
-    message("Feature VSCP_HASH_STREAM depends on the feature:")
-    message("     VSCP_HASH_INFO - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()

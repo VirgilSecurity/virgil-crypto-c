@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -56,6 +57,8 @@
 #define VSC_ASSERT_H_INCLUDED
 
 #include "vsc_library.h"
+
+// clang-format on
 //  @end
 
 

@@ -124,7 +124,7 @@ function component_instance_dump (instance)
     my.instance_info += " impl=\"$(my.instance.impl)\"" ? ""
     my.instance_info += " bits=\"$(my.instance.bits)\"" ? ""
     my.instance_info += " access=\"$(my.instance.access)\"" ? ""
-    my.instance_info += " need_definition=\"$(my.instance.need_definition)\"" ? ""
+    my.instance_info += " require_definition=\"$(my.instance.require_definition)\"" ? ""
     my.instance_dump = "<$(name (my.instance))$(my.instance_info)/>"
 
     return my.instance_dump
@@ -826,18 +826,18 @@ function component_resolve_instance_attr_is_reference (instance, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve attribute: instance.need_definition.
+#   Resolve attribute: instance.require_definition.
 # ---------------------------------------------------------------------------
-function component_resolve_instance_attr_need_definition (instance, parent)
+function component_resolve_instance_attr_require_definition (instance, parent)
     check_arguments (my, "instance, parent")
 
-    if defined (my.instance.need_definition)
+    if defined (my.instance.require_definition)
         my.instance_dump = component_instance_dump (my.instance)
 
-        my.valid_instance_need_definition = "public, private"
-        if ! string_in (my.instance.need_definition, my.valid_instance_need_definition)
-            echo_fatal ("Illegal attribute 'need_definition' for instance $(my.instance_dump)." + \
-                        " Only allowed for instance with need_definition={$(my.valid_instance_need_definition)}", my)
+        my.valid_instance_require_definition = "public, private"
+        if ! string_in (my.instance.require_definition, my.valid_instance_require_definition)
+            echo_fatal ("Illegal attribute 'require_definition' for instance $(my.instance_dump)." + \
+                        " Only allowed for instance with require_definition={$(my.valid_instance_require_definition)}", my)
         endif
     endif
 endfunction
@@ -1090,7 +1090,7 @@ function component_resolve_instance (instance, parent)
     component_resolve_instance_attr_access (my.instance, my.parent)
     component_resolve_instance_attr_size (my.instance, my.parent)
     component_resolve_instance_attr_is_reference (my.instance, my.parent)
-    component_resolve_instance_attr_need_definition (my.instance, my.parent)
+    component_resolve_instance_attr_require_definition (my.instance, my.parent)
 
     if count (my.instance.string)
         component_resolve_string (my.instance->string, my.instance)

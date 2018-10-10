@@ -49,19 +49,52 @@ if(NOT TARGET pythia_wrap)
     message(FATAL_ERROR "Expected target 'pythia_wrap' to be defined first.")
 endif()
 
+configure_file(
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_platform.h.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/pythia/vscp_platform.h"
+        )
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_assert.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_library.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_memory.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/pythia/vscp_platform.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_pythia.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private/vscp_pythia_defs.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_error.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
 target_sources(pythia_wrap
-        PRIVATE
+    PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_assert.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_library.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_memory.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_api.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private/vscp_api_private.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_impl.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private/vscp_impl_private.h"
-            "$<$<BOOL:${VSCP_HASH_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_hash_info.h>"
-            "$<$<BOOL:${VSCP_HASH_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private/vscp_hash_info_api.h>"
-            "$<$<BOOL:${VSCP_HASH_STREAM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_hash_stream.h>"
-            "$<$<BOOL:${VSCP_HASH_STREAM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private/vscp_hash_stream_api.h>"
+            "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/pythia/vscp_platform.h"
             "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_pythia.h>"
             "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private/vscp_pythia_defs.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/vscp_error.h"
@@ -69,14 +102,6 @@ target_sources(pythia_wrap
             "${CMAKE_CURRENT_LIST_DIR}/src/vscp_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscp_library.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscp_memory.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_api.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_api_private.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_impl.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscp_impl_private.c"
-            "$<$<BOOL:${VSCP_HASH_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscp_hash_info.c>"
-            "$<$<BOOL:${VSCP_HASH_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscp_hash_info_api.c>"
-            "$<$<BOOL:${VSCP_HASH_STREAM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscp_hash_stream.c>"
-            "$<$<BOOL:${VSCP_HASH_STREAM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscp_hash_stream_api.c>"
             "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/src/vscp_pythia.c>"
             "$<$<BOOL:${VSCP_PYTHIA}>:${CMAKE_CURRENT_LIST_DIR}/src/vscp_pythia_defs.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscp_error.c"
@@ -87,6 +112,8 @@ target_include_directories(pythia_wrap
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/pythia/private>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/pythia>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/pythia/private>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )

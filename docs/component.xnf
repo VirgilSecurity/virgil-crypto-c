@@ -213,7 +213,7 @@
         </restrict>
     </attr>
 
-    <attr name="need_definition">
+    <attr name="require_definition">
         Defines if instance requires type definition.
 
         <restrict value="public">
@@ -570,7 +570,6 @@
         </restrict>
     </attr>
 
-    <inherit entity="component"/>
     <inherit entity="definition"/>
 
     <allow entity="code" occurs="0/1"/>

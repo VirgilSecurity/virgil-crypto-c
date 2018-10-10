@@ -88,6 +88,45 @@ function c_module_add_includes (module, destination)
     endfor
 endfunction
 
+
+# ---------------------------------------------------------------------------
+#   Return true if source file for given module must be generated.
+# ---------------------------------------------------------------------------
+function c_module_need_source (c_module)
+    check_arguments (my, "c_module", my)
+
+    if count (my.c_module.c_enum)
+        return "1"
+    endif
+
+    if count (my.c_module.c_struct)
+        return "1"
+    endif
+
+    if count (my.c_module.c_method)
+        return "1"
+    endif
+
+    if count (my.c_module.c_constant)
+        return "1"
+    endif
+
+    if count (my.c_module.c_alias)
+        return "1"
+    endif
+
+    if count (my.c_module.c_variable)
+        return "1"
+    endif
+
+    if count (my.c_module.c_callback)
+        return "1"
+    endif
+
+    return "0"
+endfunction
+
+
 # ---------------------------------------------------------------------------
 #   For each 'module' component create 'c_module'.
 # ---------------------------------------------------------------------------
@@ -102,28 +141,30 @@ function c_module_create (source, destination, project)
                 <$(name (module)) name = \"$(module.name:)\"/>", my)
 
         new c_module to my.destination
+            . = c_format_comment (module.) ?
             .lang = "C"
             .id = module.name
             .name = c_format_name (module.c_prefix, module.name)
             .class = c_format_name (module.class)
             .scope = module.scope
+            .has_cmakedefine = module.has_cmakedefine
 
             c_component_map_attr_uid (c_module, module)
             c_component_map_attr_feature (c_module, module)
 
-            if module.scope = "public"
+            if c_module.scope = "public"
                 my.resolved_header_path = my.project.inc_path
-            elsif module.scope = "private"
+            elsif c_module.scope = "private"
                 my.resolved_header_path = my.project.inc_private_path
             else
                 my.resolved_header_path = my.project.src_path
             endif
 
-            . = c_format_comment (module.) ?
+            my.configuration_suffix = c_module.has_cmakedefine ?? ".in" ? ""
 
             .c_include_file = 0.name + ".h"
             .c_source_file = 0.name + ".c"
-            .header_file = cat_path (my.resolved_header_path, 0.c_include_file)
+            .header_file = cat_path (my.resolved_header_path, 0.c_include_file + my.configuration_suffix)
             .source_file = cat_path (my.project.src_path, 0.c_source_file)
             .once_guard = c_format_name (0.c_include_file, "included")
 
@@ -198,6 +239,7 @@ function c_module_create (source, destination, project)
     endfor
 endfunction
 
+
 # ---------------------------------------------------------------------------
 #   Function that resolves undefined properties within 'c_module'.
 # ---------------------------------------------------------------------------
@@ -208,10 +250,141 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
+#   Change scope of the include file if type appears in the header.
+# ---------------------------------------------------------------------------
+function _M20_c_include_resolve_scope (c_module, c_include, is_public_instance, require_definition)
+    check_arguments (my, "c_module, c_include, is_public_instance", my)
+
+    if my.is_public_instance & (my.c_include.scope = "private") & (my.c_include.file <> my.c_module.c_include_file) & \
+             (! defined (my.require_definition) | my.require_definition = "public")
+        my.c_include.scope = "public"
+    endif
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Append or modify entity <c_include/> based on the given <header_info/>.
+# ---------------------------------------------------------------------------
+function c_module_add_in_project_include_from_header (c_module, header, is_public_instance, projects_api, require_definition)
+    check_arguments (my, "c_module, header, is_public_instance, projects_api", my)
+
+    my.c_include = my.c_module->c_include(file = my.header.file) ?
+
+    if ! defined (my.c_include)
+        new c_include to my.c_module
+            .file = my.header.file
+            .scope = "private"
+            .is_system = "0"
+
+            my.c_include = c_include
+        endnew
+    endif
+
+    _M20_c_include_resolve_scope (my.c_module, my.c_include, my.is_public_instance, my.require_definition)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Append or modify entity <c_include/> based on the given <header_info/>.
+# ---------------------------------------------------------------------------
+function c_module_add_system_include_from_header (c_module, header, is_public_instance, projects_api, require_definition)
+    check_arguments (my, "c_module, header, is_public_instance, projects_api", my)
+
+    my.c_include = my.c_module->c_include(file = my.header.system) ?
+
+    if ! defined (my.c_include)
+        my.condition_uid = make_id ("c global macros import project", my.header.project, "from framework")
+        my.condition = projects_api_find_resolved_name (my.projects_api, my.condition_uid)
+
+        new c_include to my.c_module
+            .file = my.header.system
+            .scope = "private"
+            .is_system = "1"
+            .if = "!" + my.condition
+
+            my.c_include = c_include
+        endnew
+    endif
+
+    _M20_c_include_resolve_scope (my.c_module, my.c_include, my.is_public_instance, my.require_definition)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Append or modify entity <c_include/> based on the given <header_info/>.
+# ---------------------------------------------------------------------------
+function c_module_add_framework_include_from_header (c_module, header, is_public_instance, projects_api, require_definition)
+    check_arguments (my, "c_module, header, is_public_instance, projects_api", my)
+
+    my.c_include = my.c_module->c_include(file = my.header.framework) ?
+
+    if ! defined (my.c_include)
+        my.condition_uid = make_id ("c global macros import project", my.header.project, "from framework")
+        my.condition = projects_api_find_resolved_name (my.projects_api, my.condition_uid)
+
+        new c_include to my.c_module
+            .file = my.header.framework
+            .scope = "private"
+            .is_system = "1"
+            .if = my.condition
+
+            my.c_include = c_include
+        endnew
+    endif
+
+    _M20_c_include_resolve_scope (my.c_module, my.c_include, my.is_public_instance, my.require_definition)
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Append or modify entity <c_include/> based on the given <header_info/>.
+# ---------------------------------------------------------------------------
+function c_module_add_include_from_declaration_header (c_module, header, is_public_instance, projects_api)
+    check_arguments (my, "c_module, header, is_public_instance, projects_api", my)
+
+    if my.header.is_external
+        c_module_add_system_include_from_header (\
+                my.c_module, my.header, my.is_public_instance, my.projects_api)
+
+        c_module_add_framework_include_from_header (\
+                my.c_module, my.header, my.is_public_instance, my.projects_api)
+
+    else
+        c_module_add_in_project_include_from_header (\
+                my.c_module, my.header, my.is_public_instance, my.projects_api)
+    endif
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Append or modify entity <c_include/> based on the given <header_info/>.
+# ---------------------------------------------------------------------------
+function c_module_add_include_from_definition_header (c_module, header, is_public_instance, projects_api, require_definition)
+    check_arguments (my, "c_module, header, is_public_instance, projects_api", my)
+
+    if ! defined (my.require_definition)
+        return
+    endif
+
+    if my.header.is_external
+        c_module_add_system_include_from_header (\
+                my.c_module, my.header, my.is_public_instance, my.projects_api, my.require_definition)
+
+        c_module_add_framework_include_from_header (\
+                my.c_module, my.header, my.is_public_instance, my.projects_api, my.require_definition)
+
+    else
+        c_module_add_in_project_include_from_header (\
+                my.c_module, my.header, my.is_public_instance, my.projects_api, my.require_definition)
+    endif
+endfunction
+
+
+# ---------------------------------------------------------------------------
 #   Add missed headers based on the used types.
 # ---------------------------------------------------------------------------
-function c_module_add_headers (c_module, header_resolution_map)
-    check_arguments (my, "c_module, header_resolution_map", my)
+function c_module_add_headers (c_module, projects_api)
+    check_arguments (my, "c_module, projects_api", my)
 
     for my.c_module. as c_type where item_in(c_type, "c_struct, c_callback, c_method")
         for c_type. as c_instance where item_in(c_instance, "c_variable, c_argument, c_return, c_property")
@@ -220,64 +393,22 @@ function c_module_add_headers (c_module, header_resolution_map)
                 next
             endif
 
-            my.c_instance_is_public = \
+            my.is_public_instance = \
                     (item_in (c_type, "c_struct") & c_type.definition = "public") | \
                     (item_in (c_type, "c_callback, c_method") & c_type.declaration = "public")
 
-            my.header_with_declaration = my.header_resolution_map.$(make_id(c_instance.type, "decl")) ?
-            my.header_with_declaration_is_system = \
-                    my.header_resolution_map.$(make_id(c_instance.type, "decl is system")) ?
+            my.declaration_header = projects_api_find_declaration_header (my.projects_api, c_instance.type) ?
+            my.definition_header = projects_api_find_definition_header (my.projects_api, c_instance.type) ?
 
-            my.header_with_definition = my.header_resolution_map.$(make_id(c_instance.type, "def")) ?
-            my.header_with_definition_is_system = \
-                    my.header_resolution_map.$(make_id(c_instance.type, "def is system")) ?
-
-
-            #   Process header with declaration.
-            if defined (my.header_with_declaration)
-                my.c_include = my.c_module->c_include(file = my.header_with_declaration) ?
-
-                if ! defined (my.c_include)
-                    new c_include to my.c_module
-                        .file = my.header_with_declaration
-                        .scope = "private"
-                        .is_system = my.header_with_declaration_is_system
-
-                        my.c_include = c_include
-                    endnew
-                endif
-
-                if my.c_include.file = my.c_module.c_include_file
-                    next
-                endif
-
-                if my.c_include.scope = "private" & my.c_instance_is_public
-                    my.c_include.scope = "public"
-                endif
+            if defined (my.declaration_header)
+                c_module_add_include_from_declaration_header (\
+                        my.c_module, my.declaration_header, my.is_public_instance, my.projects_api)
             endif
 
-            #   Process header with definition.
-            if defined (my.header_with_definition) & defined (c_instance.need_definition)
-                my.c_include = my.c_module->c_include(file = my.header_with_definition) ?
-
-                if ! defined (my.c_include)
-                    new c_include to my.c_module
-                        .file = my.header_with_definition
-                        .scope = "private"
-                        .is_system = my.header_with_definition_is_system
-
-                        my.c_include = c_include
-                    endnew
-                endif
-
-                if my.c_include.file = my.c_module.c_include_file
-                    next
-                endif
-
-                if my.c_include.scope = "private" & my.c_instance_is_public & \
-                         string_equal (c_instance.need_definition, "public")
-                    my.c_include.scope = "public"
-                endif
+            if defined (my.definition_header)
+                c_module_add_include_from_definition_header (\
+                        my.c_module, my.definition_header, my.is_public_instance, my.projects_api,\
+                        c_instance.require_definition)
             endif
         endfor
     endfor

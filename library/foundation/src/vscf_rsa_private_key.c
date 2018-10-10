@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -64,6 +65,8 @@
 #include "vscf_rsa_private_key_internal.h"
 
 #include <mbedtls/bignum.h>
+
+// clang-format on
 //  @end
 
 

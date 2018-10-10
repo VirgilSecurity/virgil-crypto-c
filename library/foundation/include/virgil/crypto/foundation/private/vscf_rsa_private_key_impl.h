@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -62,6 +63,8 @@
 #include "vscf_impl.h"
 
 #include <mbedtls/rsa.h>
+
+// clang-format on
 //  @end
 
 

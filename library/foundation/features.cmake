@@ -45,6 +45,7 @@
 
 include_guard()
 
+option(VSCF_LIBRARY "Enable build of the 'foundation' library" ON)
 option(VSCF_CIPHER "Enable interface 'cipher'." ON)
 option(VSCF_AUTH_ENCRYPT "Enable interface 'auth encrypt'." ON)
 option(VSCF_AUTH_DECRYPT "Enable interface 'auth decrypt'." ON)
@@ -97,6 +98,7 @@ option(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER "Enable class 'mbedtls bignum asn1 writer
 option(VSCF_MBEDTLS_BIGNUM_ASN1_READER "Enable class 'mbedtls bignum asn1 reader'." ON)
 option(VSCF_MBEDTLS_MD "Enable class 'mbedtls md'." ON)
 mark_as_advanced(
+        VSCF_LIBRARY
         VSCF_CIPHER
         VSCF_AUTH_ENCRYPT
         VSCF_AUTH_DECRYPT

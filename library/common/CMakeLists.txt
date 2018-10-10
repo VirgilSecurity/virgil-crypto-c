@@ -105,6 +105,19 @@ if(COMMAND add_clangformat)
     add_clangformat(common)
 endif()
 
+
+# ---------------------------------------------------------------------------
+#   Apple specific
+# ---------------------------------------------------------------------------
+if(CMAKE_CROSSCOMPILING AND APPLE AND COMMAND target_apple_framework)
+    target_apple_framework(common
+            NAME VSCCommon
+            VERSION "A"
+            IDENTIFIER com.virgilsecurity.VSCCommon
+            )
+endif()
+
+
 # ---------------------------------------------------------------------------
 #   Install library
 # ---------------------------------------------------------------------------
@@ -115,8 +128,9 @@ include (CMakePackageConfigHelpers)
 #
 if(VIRGIL_INSTALL_HDRS)
     install(
-            DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/"
+            DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/" "${CMAKE_CURRENT_BINARY_DIR}/include/"
             DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+            PATTERN "*.h.in" EXCLUDE
             )
 endif()
 
@@ -129,6 +143,7 @@ if(VIRGIL_INSTALL_LIBS)
             EXPORT vsc_commonTargets
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            FRAMEWORK DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             )
 endif()
 

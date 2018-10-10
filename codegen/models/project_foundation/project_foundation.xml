@@ -2,6 +2,7 @@
         name="foundation"
         brief="Virgil Security Crypto Foundation"
         namespace="virgil crypto foundation"
+        framework="VSCFoundation"
         prefix="vscf"
         path="../library/foundation/"
         work_path="generated/foundation/"
@@ -45,7 +46,8 @@
         Lead Maintainer: Virgil Security Inc. &lt;support@virgilsecurity.com&gt;
     </license>
 
-    <library name="mbedtls"/>
+    <require project="common" feature="library"/>
+    <require library="mbedtls" feature="library"/>
 
     <module name="assert" from="shared"/>
     <module name="library" from="shared"/>

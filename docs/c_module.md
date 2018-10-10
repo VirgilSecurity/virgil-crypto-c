@@ -8,7 +8,7 @@ required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
     <c_module output_source_file once_guard id name header_file source_file output_header_file
-         [of_class] [scope]>
+         [of_class] [scope] [has_cmakedefine]>
        <c_include file [feature] [scope] [is_system]/>
        <c_alias type name [declaration]/>
        <c_enum [feature] [uid] [full_uid] [definition] [declaration] [visibility] [name]>
@@ -16,25 +16,25 @@ attribute names are case-sensitive and we use only lower-case names.
        </c_enum>
        <c_struct name [feature] [declaration] [uid] [full_uid] [definition]>
           <c_property type type_is name [array] [string] [length] [is_const_type] [is_const_pointer]
-               [is_const_array] [is_const_string] [is_const_reference] [need_definition]
+               [is_const_array] [is_const_string] [is_const_reference] [require_definition]
                [feature] [uid] [full_uid] [accessed_by] [bits]/>
        </c_struct>
        <c_variable type type_is name [array] [accessed_by] [length] [is_const_type] [is_const_pointer]
-            [is_const_array] [is_const_string] [is_const_reference] [need_definition]
+            [is_const_array] [is_const_string] [is_const_reference] [require_definition]
             [feature] [definition] [declaration] [visibility] [uid] [full_uid]
             [string]>
           <c_value value>
              <c_cast type type_is [accessed_by] [array] [string] [length] [is_const_type] [is_const_pointer]
-                  [is_const_array] [is_const_string] [is_const_reference] [need_definition]/>
+                  [is_const_array] [is_const_string] [is_const_reference] [require_definition]/>
           </c_value>
           <c_modifier [value]/>
        </c_variable>
        <c_method name [feature] [full_uid] [definition] [declaration] [visibility] [uid]>
           <c_modifier .../>
           <c_return type type_is [accessed_by] [array] [string] [length] [is_const_type] [is_const_pointer]
-               [is_const_array] [is_const_string] [is_const_reference] [need_definition]/>
+               [is_const_array] [is_const_string] [is_const_reference] [require_definition]/>
           <c_argument type type_is name [accessed_by] [string] [length] [is_const_type] [is_const_pointer]
-               [is_const_array] [is_const_string] [is_const_reference] [need_definition]
+               [is_const_array] [is_const_string] [is_const_reference] [require_definition]
                [uid] [full_uid] [array]/>
           <c_precondition [position]/>
        </c_method>
@@ -74,6 +74,7 @@ Base model for C language code generation.
         output_header_file = "..."
       [ of_class = "..." ]
       [ scope = "public | private | internal"  ("public") ]
+      [ has_cmakedefine = "0 | 1"  ("0") ]
         >
         <c_include>
         <c_alias>
@@ -129,6 +130,15 @@ output_source_file:
 once_guard:
     String that is used as C header guard. The once_guard attribute is
     required.
+
+has_cmakedefine:
+    Defines that module must be configured with CMake configure_file()
+    command. The has_cmakedefine attribute is optional. Its default value is
+    "0". It can take one of the following values:
+
+Value: Meaning:
+0: Module does not contain CMake variables and #cmakedefine instructions.
+1: Module contains CMake variables and/or #cmakedefine instructions.
 
 
 The 'c_include' item
@@ -389,7 +399,7 @@ the structure type.
       [ is_const_array = "..." ]
       [ is_const_string = "..." ]
       [ is_const_reference = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
       [ feature = "..." ]
       [ uid = "..." ]
       [ full_uid = "..." ]
@@ -463,8 +473,8 @@ is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
     The is_const_reference attribute is optional.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -510,7 +520,7 @@ variable.
       [ is_const_array = "..." ]
       [ is_const_string = "..." ]
       [ is_const_reference = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
       [ feature = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ declaration = "public | private | external"  ("public") ]
@@ -589,8 +599,8 @@ is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
     The is_const_reference attribute is optional.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -678,7 +688,7 @@ defined in this entity.
       [ is_const_array = "..." ]
       [ is_const_string = "..." ]
       [ is_const_reference = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
         />
 
 The c_cast item can have these attributes:
@@ -747,8 +757,8 @@ is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
     The is_const_reference attribute is optional.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -857,7 +867,7 @@ Defines a type of outer component. Defines return type.
       [ is_const_array = "..." ]
       [ is_const_string = "..." ]
       [ is_const_reference = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
         />
 
 The c_return item can have these attributes:
@@ -926,8 +936,8 @@ is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
     The is_const_reference attribute is optional.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -952,7 +962,7 @@ Defines a type of outer component. Defines method or callback argument.
       [ is_const_array = "..." ]
       [ is_const_string = "..." ]
       [ is_const_reference = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
       [ uid = "..." ]
       [ full_uid = "..." ]
       [ array = "null_terminated | given | fixed | derived" ]
@@ -1024,8 +1034,8 @@ is_const_reference:
     Defines reference constness. TODO: Define if this attribute is useless.
     The is_const_reference attribute is optional.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:

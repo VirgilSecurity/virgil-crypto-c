@@ -12,23 +12,24 @@ attribute names are case-sensitive and we use only lower-case names.
        <method name [definition] [visibility] [c_prefix] [of_class] [uid] [full_uid] [feature]
             [declaration] [is_static]>
           <return is_reference [project] [access] [type] [class] [enum] [callback] [interface]
-               [api] [impl] [size] [library] [need_definition]>
+               [api] [impl] [size] [library] [require_definition]>
              <string [access] [length]/>
              <array [access] [length] [length_constant]/>
           </return>
           <argument name is_reference [project] [uid] [access] [type] [class] [enum] [callback]
-               [interface] [api] [impl] [size] [full_uid] [need_definition] [library]>
+               [interface] [api] [impl] [size] [full_uid] [require_definition]
+               [library]>
              <string .../>
              <array .../>
           </argument>
           <variable name is_reference [access] [type] [project] [enum] [callback] [interface] [api]
-               [impl] [size] [library] [need_definition] [definition] [declaration]
+               [impl] [size] [library] [require_definition] [definition] [declaration]
                [visibility] [c_prefix] [of_class] [uid] [full_uid] [feature]
                [class]>
              <value is_reference value [library] [type] [class] [enum] [callback] [interface] [api]
-                  [impl] [size] [project] [need_definition] [access]>
+                  [impl] [size] [project] [require_definition] [access]>
                 <cast is_reference [project] [access] [type] [class] [enum] [callback] [interface]
-                     [api] [impl] [size] [library] [need_definition]>
+                     [api] [impl] [size] [library] [require_definition]>
                    <string .../>
                    <array .../>
                 </cast>
@@ -266,7 +267,7 @@ Defines attributes that related to the instance type. Defines return type.
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ library = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
         >
         <string>, optional
         <array>, optional
@@ -369,8 +370,8 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -471,7 +472,7 @@ name, type, and usage information.
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ full_uid = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
       [ library = "..." ]
         >
         <string>, optional
@@ -583,8 +584,8 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -614,7 +615,7 @@ attributes for the component. Defines global variable.
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ library = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
       [ definition = "public | private | external"  ("private") ]
       [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
@@ -727,8 +728,8 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -807,7 +808,7 @@ variable value.
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ project = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
         >
         <cast>, optional
@@ -912,8 +913,8 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -943,7 +944,7 @@ type to the type defined in this entity.
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ library = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
         >
         <string>, optional
         <array>, optional
@@ -1046,8 +1047,8 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
