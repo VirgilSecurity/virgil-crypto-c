@@ -161,7 +161,6 @@ test__1(void) {
     TEST_ASSERT_EQUAL_INT(test_ratchet_plain_text1.len, vsc_buffer_len(plain_text));
     TEST_ASSERT_EQUAL_MEMORY(test_ratchet_plain_text1.bytes, vsc_buffer_bytes(plain_text), test_ratchet_plain_text1.len);
 
-
     vsc_buffer_destroy(&cipher_text);
     vsc_buffer_destroy(&plain_text);
 
