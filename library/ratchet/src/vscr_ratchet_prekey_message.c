@@ -418,6 +418,7 @@ vscr_ratchet_prekey_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_
     vsc_buffer_destroy(&identity_public_key);
     vsc_buffer_destroy(&long_term_public_key);
     vsc_buffer_destroy(&one_time_public_key);
+    vsc_buffer_destroy(&message);
     vscf_asn1rd_destroy(&asn1rd);
 
     return msg;

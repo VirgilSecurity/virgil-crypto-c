@@ -382,9 +382,6 @@ vscr_ratchet_init_ctx(vscr_ratchet_t *ratchet_ctx) {
 static void
 vscr_ratchet_cleanup_ctx(vscr_ratchet_t *ratchet_ctx) {
 
-    vscr_ratchet_kdf_info_destroy(&ratchet_ctx->kdf_info);
-    vscr_impl_destroy(&ratchet_ctx->rng);
-    vscr_ratchet_cipher_destroy(&ratchet_ctx->cipher);
     vscr_ratchet_sender_chain_destroy(&ratchet_ctx->sender_chain);
     vscr_ratchet_receiver_chain_list_node_destroy(&ratchet_ctx->receiver_chains);
     vscr_ratchet_skipped_message_key_list_node_destroy(&ratchet_ctx->skipped_message_keys);

@@ -203,5 +203,4 @@ vscr_ratchet_receiver_chain_cleanup_ctx(vscr_ratchet_receiver_chain_t *ratchet_r
     VSCR_ASSERT_PTR(ratchet_receiver_chain_ctx);
 
     vsc_buffer_destroy(&ratchet_receiver_chain_ctx->public_key);
-    vscr_ratchet_chain_key_cleanup(&ratchet_receiver_chain_ctx->chain_key);
 }
