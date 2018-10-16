@@ -4,6 +4,7 @@ framework module VSCPythia {
     header "vscp_memory.h"
     header "vscp_platform.h"
     header "vscp_pythia.h"
+    header "vscp_pythia_defs.h"
     header "vscp_error.h"
     export *
 }
