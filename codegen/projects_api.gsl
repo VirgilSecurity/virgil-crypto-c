@@ -146,8 +146,8 @@ function projects_api_build_type_resolution_map (projects_api)
 
         #   Process headers.
         my.is_external_project = (project.name = my.projects_api.active_project) ?? "0" ? "1"
-        my.public_prefix = my.is_external_project ?? project.install_headers_dir ?
-        my.private_prefix = my.is_external_project ?? project.install_private_headers_dir ?
+        my.public_prefix = my.is_external_project ?? project.namespace_dir ?
+        my.private_prefix = my.is_external_project ?? cat_path (project.namespace_dir, "private") ?
 
         for project.header
             if my.is_external_project & header.scope = "internal"
