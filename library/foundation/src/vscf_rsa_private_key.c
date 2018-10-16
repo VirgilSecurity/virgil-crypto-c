@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -52,7 +53,7 @@
 #include "vscf_rsa_private_key.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_asn1.h"
+#include "vscf_asn1_tag.h"
 #include "vscf_mbedtls_bignum_asn1_writer.h"
 #include "vscf_mbedtls_bignum_asn1_reader.h"
 #include "vscf_mbedtls_md.h"
@@ -64,6 +65,8 @@
 #include "vscf_rsa_private_key_internal.h"
 
 #include <mbedtls/bignum.h>
+
+// clang-format on
 //  @end
 
 

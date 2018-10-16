@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -55,6 +56,8 @@
 #include "vscf_assert.h"
 
 #include <stdio.h>
+
+// clang-format on
 //  @end
 
 

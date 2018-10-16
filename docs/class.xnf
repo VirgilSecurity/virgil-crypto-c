@@ -35,7 +35,7 @@
     Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 -->
 
-<xnf name="interface" script="xnf_gen.gsl" version="1.0a1">
+<xnf name="class" script="xnf_gen.gsl" version="1.0a1">
     Defines class type.
 
     <produce filename="class.md" type="gurudoc" />
@@ -82,10 +82,25 @@
             </restrict>
         </attr>
 
-        <inherit entity="project_attr"/>
+
+        <attr name="is_value_type" default="0">
+            Defines that class is used as value type, as so it is passed and return by value.
+            Note, that underlying context is shallow copied.
+
+            <restrict value="0">
+                Class is a reference type.
+            </restrict>
+
+            <restrict value="1">
+                Class is a value type.
+            </restrict>
+        </attr>
+
+
         <inherit entity="scope"/>
-        <inherit entity="of_class"/>
         <inherit entity="c_prefix"/>
+        <inherit entity="uid"/>
+        <inherit entity="visibility"/>
 
         <allow entity="require"/>
         <allow entity="dependency"/>

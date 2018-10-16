@@ -43,7 +43,10 @@
     <entity name="interface">
         Defines C class interface as a set of constants and methods.
 
-        <inherit entity="project_attr"/>
+        <inherit entity="scope"/>
+        <inherit entity="visibility"/>
+        <inherit entity="uid"/>
+        <inherit entity="c_prefix"/>
 
         <allow entity="constant" occurs="0+"/>
         <allow entity="method" occurs="0+"/>

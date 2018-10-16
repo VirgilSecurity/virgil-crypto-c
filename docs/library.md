@@ -10,9 +10,9 @@ attribute names are case-sensitive and we use only lower-case names.
     <library name path [prefix]>
        <feature name [library] [project] [prefix] [default]>
           <require [scope] [project] [library] [module] [header] [feature] [interface] [class]
-               [impl]>
+               [impl] [enum]>
              <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]
-                  [impl]/>
+                  [impl] [enum]/>
           </require>
        </feature>
     </library>
@@ -108,6 +108,7 @@ feature.
       [ interface = "..." ]
       [ class = "..." ]
       [ impl = "..." ]
+      [ enum = "..." ]
         >
         <alternative>
     </require>
@@ -152,6 +153,9 @@ class:
 impl:
     Required implementation name. The impl attribute is optional.
 
+enum:
+    Required implementation name. The enum attribute is optional.
+
 
 The 'alternative' item
 ----------------------
@@ -169,6 +173,7 @@ used, and in fact replace each other.
       [ interface = "..." ]
       [ class = "..." ]
       [ impl = "..." ]
+      [ enum = "..." ]
         />
 
 The alternative item can have these attributes:
@@ -210,4 +215,7 @@ class:
 
 impl:
     Required implementation name. The impl attribute is optional.
+
+enum:
+    Required implementation name. The enum attribute is optional.
 

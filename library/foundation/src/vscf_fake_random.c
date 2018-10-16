@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -54,6 +55,8 @@
 #include "vscf_memory.h"
 #include "vscf_fake_random_impl.h"
 #include "vscf_fake_random_internal.h"
+
+// clang-format on
 //  @end
 
 

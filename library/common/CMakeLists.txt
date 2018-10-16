@@ -54,19 +54,6 @@ include("${CMAKE_CURRENT_LIST_DIR}/sources.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 
 #
-# Define include headers
-#
-target_include_directories(common
-        PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/common>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/private>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
-            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-        )
-
-
-#
 # Define specific compilation and linkage flags.
 #
 set_target_properties(common PROPERTIES
@@ -118,6 +105,19 @@ if(COMMAND add_clangformat)
     add_clangformat(common)
 endif()
 
+
+# ---------------------------------------------------------------------------
+#   Apple specific
+# ---------------------------------------------------------------------------
+if(CMAKE_CROSSCOMPILING AND APPLE AND COMMAND target_apple_framework)
+    target_apple_framework(common
+            NAME VSCCommon
+            VERSION "A"
+            IDENTIFIER com.virgilsecurity.VSCCommon
+            )
+endif()
+
+
 # ---------------------------------------------------------------------------
 #   Install library
 # ---------------------------------------------------------------------------
@@ -128,8 +128,9 @@ include (CMakePackageConfigHelpers)
 #
 if(VIRGIL_INSTALL_HDRS)
     install(
-            DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/"
+            DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/" "${CMAKE_CURRENT_BINARY_DIR}/include/"
             DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+            PATTERN "*.h.in" EXCLUDE
             )
 endif()
 
@@ -142,6 +143,7 @@ if(VIRGIL_INSTALL_LIBS)
             EXPORT vsc_commonTargets
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            FRAMEWORK DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             )
 endif()
 

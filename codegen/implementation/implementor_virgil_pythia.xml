@@ -1,8 +1,0 @@
-<implementor name="virgil pythia" is_default="1">
-    Provide implementation based on the Virgil Security implementation of pythia.
-
-    <implementation name="pythia">
-
-        <interface name="breach-proof"/>
-    </implementation>
-</implementor>

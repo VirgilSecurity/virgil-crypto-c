@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -52,7 +53,7 @@
 #include "vscf_rsa_public_key.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_asn1.h"
+#include "vscf_asn1_tag.h"
 #include "vscf_mbedtls_bignum_asn1_writer.h"
 #include "vscf_mbedtls_bignum_asn1_reader.h"
 #include "vscf_mbedtls_md.h"
@@ -62,7 +63,7 @@
 #include "vscf_rsa_public_key_impl.h"
 #include "vscf_rsa_public_key_internal.h"
 
-#include <virgil/common/private/vsc_buffer_defs.h>
+// clang-format on
 //  @end
 
 
@@ -229,7 +230,7 @@ vscf_rsa_public_key_export_public_key(vscf_rsa_public_key_impl_t *rsa_public_key
     VSCF_ASSERT_PTR(rsa_public_key_impl);
     VSCF_ASSERT_PTR(rsa_public_key_impl->asn1wr);
     VSCF_ASSERT_PTR(out);
-    VSCF_ASSERT_PTR(out->bytes);
+    VSCF_ASSERT_PTR(vsc_buffer_is_valid(out));
 
     VSCF_ASSERT(mbedtls_rsa_check_pubkey(&rsa_public_key_impl->rsa_ctx) == 0);
 

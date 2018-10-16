@@ -137,7 +137,7 @@ function _X17_add_entity_common (meta)
         _X17_add_smart_linked_name (entity, "module", "library")
         _X17_add_smart_linked_name (entity, "module", "assert")
         _X17_add_smart_linked_name (entity, "module", "memory")
-        _X17_add_smart_linked_name (entity, "module", "error")
+        _X17_add_smart_linked_name (entity, "module", "platform")
 
         _X17_add_smart_name (entity, "struct", "info")
         _X17_add_smart_name (entity, "property", "info")
@@ -159,6 +159,34 @@ function _X17_add_entity_common (meta)
         _X17_add_smart_name (entity, "enum constant", "end")
     endnew
 endfunction
+
+# ---------------------------------------------------------------------------
+#   Add item '<entity id = "project name">'.
+# ---------------------------------------------------------------------------
+function _X17_add_entity_project (meta, project)
+    check_arguments (my, "meta, project", my)
+    assert_argument_type (my.meta, "meta", my)
+
+    my.id = make_id ("project", my.project.name)
+
+    if count (my.meta.entity, id = my.id)
+        return #   Already there.
+    endif
+
+    new entity to my.meta
+        .id = my.id
+        .is_active = 1
+
+        for my.project.require where defined (0.project) & string_equal (0.feature, "library")
+            _X17_add_name (entity, "namespace dir project $(require.project)", \
+                    "project $(require.project) namespace dir")
+
+            _X17_add_link (entity, "macros namespace dir project $(require.project)", \
+                    make_id ("global macros project $(require.project) namespace dir"))
+        endfor
+    endnew
+endfunction
+
 
 # ---------------------------------------------------------------------------
 #   Add item '<entity id = "api">'.
@@ -558,6 +586,19 @@ function meta_create ()
     _X17_add_entity_api (my.meta)
     _X17_add_entity_impl (my.meta)
     return my.meta
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add item '<entity id = "interface name plceholder">'.
+# ---------------------------------------------------------------------------
+function meta_add_project (meta, project)
+    check_argument (my, "meta", my)
+    check_argument (my, "project", my)
+    assert_argument_type (my.meta, "meta", my)
+
+    echo_trace ("Update meta with project: $(my.project.name:)", my)
+
+    return _X17_add_entity_project (my.meta, my.project)
 endfunction
 
 # ---------------------------------------------------------------------------

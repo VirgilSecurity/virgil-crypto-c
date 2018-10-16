@@ -153,7 +153,7 @@ function _L23_add_interface_api_type (interface, declaration, definition, destin
         endfor
 
         for my.interface.constant
-            my.property = item_copy_to (constant, struct, "property")
+            my.property = component_clean_copy (constant, struct, "property")
             my.property.tag = "constant"
         endfor
     endnew
@@ -167,10 +167,10 @@ function _L23_add_interface_api_callbacks (interface, destination, meta)
     check_arguments (my, "interface, destination, meta", my)
 
     for my.interface.method
-        my.callback = item_copy_to (method, my.destination, "callback")
+        my.callback = component_clean_copy (method, my.destination, "callback")
         my.callback. = ("Callback. " + string_trim(my.callback.)) ?
 
-        if method.context = "impl"
+        if ! method.is_static
             component_create_argument_impl (my.callback, my.meta)
         endif
     endfor
@@ -207,12 +207,12 @@ function _L23_add_stateful_methods (interface, destination, meta)
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
-    for my.interface.method where context = "impl"
+    for my.interface.method where ! method.is_static
 
         my.api_name = my.names.c_interface_struct_api
         my.api_type = my.refs.c_interface_struct_api
 
-        my.proxy_method = item_copy_to (method, my.destination)
+        my.proxy_method = component_clean_copy (method, my.destination)
 
         component_create_argument_impl (my.proxy_method, my.meta)
 
@@ -245,8 +245,8 @@ function _L23_add_stateless_methods (interface, destination, meta)
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
-    for my.interface.method where context = "api"
-        my.proxy_method = item_copy_to (method, my.destination)
+    for my.interface.method where method.is_static
+        my.proxy_method = component_clean_copy (method, my.destination)
 
         my.api_name = ".(_argument_$(my.names.c_interface_struct_api:))"
         my.api_type = my.refs.c_interface_struct_api
@@ -494,10 +494,6 @@ function c_module_interface_create_module_public (interface, destination, meta)
             .module = my.names.module_library
         endnew
 
-        new require
-            .module = my.names.module_error
-        endnew
-
         new require to module
             .module = my.names.module_assert
             .scope = "private"
@@ -519,7 +515,7 @@ function c_module_interface_create_module_public (interface, destination, meta)
         endfor
 
         for my.interface.require
-            copy require to module
+            component_clean_copy (require, module)
         endfor
 
         my.enum_tag = c_module_api_find_enum_tag (my.destination, my.meta)
@@ -558,10 +554,6 @@ function c_module_interface_create_module_api (interface, destination, meta)
             .module = my.names.module_library
         endnew
 
-        new require
-            .module = my.names.module_error
-        endnew
-
         new require to module
             .module = my.names.module_api
         endnew
@@ -577,7 +569,7 @@ function c_module_interface_create_module_api (interface, destination, meta)
         endfor
 
         for my.interface.require
-            copy require to module
+            component_clean_copy (require, module)
         endfor
 
         _L23_add_interface_api_type (my.interface, "external", "public", module, my.meta)

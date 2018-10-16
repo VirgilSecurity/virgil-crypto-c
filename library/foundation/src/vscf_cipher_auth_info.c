@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -46,6 +47,8 @@
 #include "vscf_cipher_auth_info.h"
 #include "vscf_assert.h"
 #include "vscf_cipher_auth_info_api.h"
+
+// clang-format on
 //  @end
 
 

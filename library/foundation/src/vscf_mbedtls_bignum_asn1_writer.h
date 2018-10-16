@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -53,11 +54,12 @@
 #define VSCF_MBEDTLS_BIGNUM_ASN1_WRITER_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
-#include "vscf_impl.h"
 #include "vscf_error_ctx.h"
+#include "vscf_impl.h"
 
 #include <mbedtls/bignum.h>
+
+// clang-format on
 //  @end
 
 

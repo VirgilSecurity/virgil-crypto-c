@@ -1,0 +1,11 @@
+<interface name="private key">
+    Contains private part of the key.
+
+    <inherit interface="key"/>
+
+    <method name="extract public key">
+        Extract public part of the key.
+
+        <return interface="public key" access="disown"/>
+    </method>
+</interface>

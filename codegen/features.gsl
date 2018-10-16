@@ -214,6 +214,11 @@ function features_list_update_from_library (features_list, library)
         .path = my.library.path
         .library = my.library.name
 
+        new feature to features
+            . = "Enable build of the '$(my.library.name:)' library"
+            .name = "library"
+        endnew
+
         for my.library.feature
             copy feature to features
         endfor
@@ -244,6 +249,11 @@ function features_list_update_from_project (features_list, project)
         .path = my.project.path
         .project = my.project.name
         .cmake_target = my.project.cmake_target
+
+        new feature to features
+            . = "Enable build of the '$(my.project.name:)' library"
+            .name = "library"
+        endnew
 
         for my.project.feature
             copy feature to features

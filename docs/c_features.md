@@ -8,7 +8,7 @@ required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
     <c_features name source path>
-       <c_feature [uid] [name] [default]>
+       <c_feature [uid] [full_uid] [name] [default]>
           <c_require [feature]>
              <c_alternative [feature]/>
           </c_require>
@@ -60,6 +60,7 @@ Defines full qualified feature name.
 
     <c_feature
       [ uid = "..." ]
+      [ full_uid = "..." ]
       [ name = "..." ]
       [ default = "on | off"  ("on") ]
         >
@@ -71,6 +72,10 @@ The c_feature item can have these attributes:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
 
 name:
     Full qualified feature name. The name attribute is optional.
