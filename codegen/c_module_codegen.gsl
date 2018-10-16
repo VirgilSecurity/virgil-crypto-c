@@ -228,7 +228,7 @@ function c_module_generate_sources (source)
             c_module_generate_header (c_module)
         endif
 
-        if string_defined (c_module.source_file)
+        if c_module_need_source (c_module)
             c_module_generate_source (c_module)
         endif
     endfor

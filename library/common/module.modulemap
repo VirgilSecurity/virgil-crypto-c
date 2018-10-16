@@ -1,0 +1,10 @@
+framework module VSCCommon {
+    header "vsc_assert.h"
+    header "vsc_library.h"
+    header "vsc_memory.h"
+    header "vsc_platform.h"
+    header "vsc_buffer.h"
+    header "vsc_buffer_defs.h"
+    header "vsc_data.h"
+    export *
+}

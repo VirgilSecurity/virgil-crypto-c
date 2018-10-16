@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -59,12 +60,22 @@
 #include <pythia/pythia_buf_sizes.h>
 #include <mbedtls/ctr_drbg.h>
 #include <mbedtls/entropy.h>
+
+// clang-format on
 //  @end
 
 
-static __thread mbedtls_entropy_context g_entropy_ctx;
-static __thread mbedtls_ctr_drbg_context g_rng_ctx;
-static __thread size_t g_instances = 0;
+#if VSCP_MULTI_THREAD
+#define VSCP_LOCAL_THREAD_STORAGE __thread
+#else
+#define VSCP_LOCAL_THREAD_STORAGE
+#endif
+
+static VSCP_LOCAL_THREAD_STORAGE mbedtls_entropy_context g_entropy_ctx;
+static VSCP_LOCAL_THREAD_STORAGE mbedtls_ctr_drbg_context g_rng_ctx;
+static VSCP_LOCAL_THREAD_STORAGE size_t g_instances = 0;
+
+#undef VSCP_LOCAL_THREAD_STORAGE
 
 
 //  @generated
@@ -372,8 +383,8 @@ vscp_pythia_password_update_token_buf_len(void) {
 //  This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_blind(
-        vscp_pythia_t *pythia_ctx, vsc_data_t password, vsc_buffer_t *blinded_password, vsc_buffer_t *blinding_secret) {
+vscp_pythia_blind(vscp_pythia_t *pythia_ctx, vsc_data_t password, vsc_buffer_t *blinded_password,
+        vsc_buffer_t *blinding_secret) {
 
     VSCP_ASSERT_PTR(pythia_ctx);
     VSCP_ASSERT_PTR(password.bytes);

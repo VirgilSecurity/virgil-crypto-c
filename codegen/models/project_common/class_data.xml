@@ -1,0 +1,61 @@
+<class name="data" context="public" lifecycle="none" is_value_type="1">
+    Encapsulates fixed byte array.
+
+
+    <property name="bytes" type="data">
+        Underlying byte array.
+    </property>
+
+
+    <property name="len" type="size">
+        Byte array length.
+    </property>
+
+
+    <variable name="empty data" type="byte" declaration="private" definition="private">
+        Byte array that is used as "empty array" mark.
+
+        <array length="derived"/>
+        <value value="0x00"/>
+    </variable>
+
+
+    <method name="is valid">
+        Returns true if underlying byte array is defined.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <constructor name="data">
+        Creates data from the preallocated bytes.
+
+        <argument name="bytes" type="data"/>
+        <argument name="len" type="size"/>
+    </constructor>
+
+
+    <constructor name="empty">
+        Creates empty data.
+    </constructor>
+
+
+    <method name="slice beg" >
+        Return underlying data slice starting from beginning.
+
+        <argument name="offset" type="size"/>
+        <argument name="len" type="size"/>
+
+        <return class="self" is_reference="0"/>
+    </method>
+
+
+    <method name="slice end">
+        Return underlying data slice starting from ending.
+
+        <argument name="offset" type="size"/>
+        <argument name="len" type="size"/>
+
+        <return class="self" is_reference="0"/>
+    </method>
+</class>

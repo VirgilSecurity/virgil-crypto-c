@@ -143,7 +143,7 @@ function string_in (str, list)
     my.list_pattern = "^($(my.list:lower))$"
 
     #   Compare.
-    return regexp.match (my.list_pattern, my.str)
+    return regexp.match (my.list_pattern, "$(my.str:lower)")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -335,6 +335,7 @@ endfunction
 #       - warning
 #       - info
 #       - trace
+#       - debug
 # ---------------------------------------------------------------------------
 function _C23_echo_is_level_active (level)
     check_argument (my, "level")
@@ -452,6 +453,19 @@ function assert_attribute (attribute_scope, attribute_name, caller)
         echo_fatal ("Attribute '$(my.attribute_name:)' is not defined \
                 within <$(name (my.attribute_scope)) $(my.name:)/>", my.caller)
     endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Abort if one of the attributes from the given list is not defined within
+#   given scope.
+# ---------------------------------------------------------------------------
+function assert_attributes (attribute_scope, attribute_list, caller)
+    check_arguments (my, "attribute_scope, attribute_list", my.caller)
+
+    while regexp.match ("([\\w]+)", my.attribute_list, my.attribute_name)
+        my.attribute_list = string.search_replace (my.attribute_list, my.attribute_name, "")
+        assert_attribute (my.attribute_scope, my.attribute_name, my.caller)
+    endwhile
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1039,6 +1053,37 @@ function cat (part1, part2, part3, part4, part5, part6, part7, part8)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return formatted path string.
+#   Note, path is not resolved.
+# ---------------------------------------------------------------------------
+function cat_path (part1, part2, part3, part4, part5, part6, part7, part8)
+    my.result = "$(my.part1 ?:)/$(my.part2 ?:)/$(my.part3 ?:)/$(my.part4 ?:)/" + \
+                "$(my.part5 ?:)/$(my.part6 ?:)/$(my.part7 ?:)/$(my.part8 ?:)/"
+
+    my.result = ""
+    my.result += string_defined (my.part1) ?? (my.part1 + "/") ? ""
+    my.result += string_defined (my.part2) ?? (my.part2 + "/") ? ""
+    my.result += string_defined (my.part3) ?? (my.part3 + "/") ? ""
+    my.result += string_defined (my.part4) ?? (my.part4 + "/") ? ""
+    my.result += string_defined (my.part5) ?? (my.part5 + "/") ? ""
+    my.result += string_defined (my.part6) ?? (my.part6 + "/") ? ""
+    my.result += string_defined (my.part7) ?? (my.part7 + "/") ? ""
+    my.result += string_defined (my.part8) ?? (my.part8 + "/") ? ""
+
+    #   Collapse path separators.
+    while regexp.match ("\/\/", my.result)
+        my.result = string.replace (my.result, "//|/")
+    endwhile
+
+    #   Trim trailing path separator.
+    if regexp.match("(.+)\/$", my.result, my.trimmed_result)
+        my.result = my.trimmed_result
+    endif
+
+    return my.result
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return string with removed sequential duplicated words.
 # ---------------------------------------------------------------------------
 function remove_sequential_duplicated_words (str)
@@ -1148,7 +1193,16 @@ endfunction
 function make_ref_c (uid)
     check_argument (my, "uid", my)
 
-    make_ref (my.uid, "c")
+    return make_ref (my.uid, "c")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Wraps given UID as 'Reference UID' specific for Swift language.
+# ---------------------------------------------------------------------------
+function make_ref_swift (uid)
+    check_argument (my, "uid", my)
+
+    return make_ref (my.uid, "swift")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1159,7 +1213,7 @@ function lang_ref (maybe_ref, lang)
     check_arguments (my, "maybe_ref, lang", my)
 
     my.lang = "$(my.lang:lower)"
-    my.valid_langs = "c, java, csharp"
+    my.valid_langs = "c, java, csharp, swift"
 
     if ! string_in (my.lang, my.valid_langs)
         echo_fatal ("Attempt to resolve reference for invalid language '$(my.lang:)'." + \
@@ -1215,6 +1269,7 @@ function uid_insert_prefix (uid, prefix)
     my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "c") ?
     my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "java") ?
     my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "csharp") ?
+    my.new_uid ?= insert_prefix_after_lang_uid (my.uid, my.prefix, "swift") ?
     my.new_uid ?= make_id (my.prefix, my.uid)
 
     return my.new_uid
@@ -1227,6 +1282,15 @@ function c_lang_ref (maybe_ref)
     check_argument (my, "maybe_ref", my)
 
     return lang_ref (my.maybe_ref, "c")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Shortcut for lang_ref (my.maybe_ref, "swift")
+# ---------------------------------------------------------------------------
+function swift_lang_ref (maybe_ref)
+    check_argument (my, "maybe_ref", my)
+
+    return lang_ref (my.maybe_ref, "swift")
 endfunction
 
 

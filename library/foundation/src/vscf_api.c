@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -51,6 +52,8 @@
 // --------------------------------------------------------------------------
 
 #include "vscf_api.h"
+
+// clang-format on
 //  @end
 
 

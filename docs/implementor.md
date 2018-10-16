@@ -9,21 +9,22 @@ required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
     <implementor name [is_default]>
-       <implementation name [project]>
+       <implementation name [c_prefix] [full_uid] [visibility] [scope] [uid]>
           <context>
              <require [scope] [project] [library] [module] [header] [feature] [interface] [class]
-                  [impl]>
+                  [impl] [enum]>
                 <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]
-                     [impl]/>
+                     [impl] [enum]/>
              </require>
-             <property is_reference name [project] [access] [type] [class] [enum] [callback] [interface]
-                  [api] [impl] [size] [uid] [need_definition] [library] [bits]>
+             <property is_reference name [full_uid] [library] [access] [type] [class] [enum] [callback]
+                  [interface] [api] [impl] [size] [uid] [require_definition]
+                  [project] [bits]>
                 <string [access] [length]/>
                 <array [access] [length] [length_constant]/>
              </property>
           </context>
           <interface name>
-             <constant name [c_prefix] [of_class] [uid] [feature] [definition] [value]/>
+             <constant name [c_prefix] [of_class] [uid] [full_uid] [feature] [definition] [value]/>
           </interface>
           <dependency name [library] [project] [interface] [api] [class] [impl] [type_name]/>
           <require .../>
@@ -74,7 +75,11 @@ Defines set of the implemented interfaces in a one module.
 
     <implementation
         name = "..."
-      [ project = "..." ]
+      [ c_prefix = "..." ]
+      [ full_uid = "..." ]
+      [ visibility = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
+      [ uid = "..." ]
         >
         <context>, optional
         <interface>, 1 or more
@@ -84,8 +89,38 @@ Defines set of the implemented interfaces in a one module.
 
 The implementation item can have these attributes:
 
-project:
-    Parent project name. The project attribute is optional.
+c_prefix:
+    Prefix that is used for C name resolution. The c_prefix attribute is
+    optional.
+
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
+
+visibility:
+    Defines symbol binary visibility. This attribute must not be inherited.
+    The visibility attribute is optional. Its default value is "public". It
+    can take one of the following values:
+
+Value: Meaning:
+public: Symbols of the types and methods are visible in a binary file.
+private: Symbols of the types and methods are hidden in a binary file.
+
+scope:
+    Defines component visibility within scope. This attribute must not be
+    inherited. Note, scope attribute can be used for components, that can not
+    be defined in terms of 'declaration' and 'definition'. The scope
+    attribute is optional. Its default value is "public". It can take one of
+    the following values:
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 name:
     Implementation name. The name attribute is required.
@@ -119,6 +154,7 @@ feature.
       [ interface = "..." ]
       [ class = "..." ]
       [ impl = "..." ]
+      [ enum = "..." ]
         >
         <alternative>
     </require>
@@ -163,6 +199,9 @@ class:
 impl:
     Required implementation name. The impl attribute is optional.
 
+enum:
+    Required implementation name. The enum attribute is optional.
+
 
 The 'alternative' item
 ----------------------
@@ -180,6 +219,7 @@ used, and in fact replace each other.
       [ interface = "..." ]
       [ class = "..." ]
       [ impl = "..." ]
+      [ enum = "..." ]
         />
 
 The alternative item can have these attributes:
@@ -222,6 +262,9 @@ class:
 impl:
     Required implementation name. The impl attribute is optional.
 
+enum:
+    Required implementation name. The enum attribute is optional.
+
 
 The 'property' item
 -------------------
@@ -232,7 +275,8 @@ property.
     <property
         is_reference = "0 | 1"
         name = "..."
-      [ project = "..." ]
+      [ full_uid = "..." ]
+      [ library = "..." ]
       [ access = "readonly | writeonly | readwrite | disown" ]
       [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
       [ class = "..." ]
@@ -243,8 +287,8 @@ property.
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ uid = "..." ]
-      [ need_definition = "public | private" ]
-      [ library = "..." ]
+      [ require_definition = "public | private" ]
+      [ project = "..." ]
       [ bits = "..." ]
         >
         <string>, optional
@@ -256,6 +300,10 @@ The property item can have these attributes:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
 
 project:
     Defines project name that component refers to. The project attribute is
@@ -294,13 +342,15 @@ class:
     Defines instance class. Possible values are: * any - Any class or type. *
     data - Special class "data" that is used as an input byte array. * buffer
     - Special class "buffer" that is used as an output byte array. * impl -
-    Universal implementation class. If value differs from the listed above
-    then next algorithm applied: 1. If value in a format .(uid), then it
-    treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. If attribute 'library' is defined,
-    then it treated as third-party library class and will be used as-is. 3.
-    Any other value will be treated as cross-project class name and will be
-    converted to the .(uid). The class attribute is optional.
+    Universal implementation class. * self - Allowed within high-level
+    entities, i.e. class, implementation, to refer the context type. If value
+    differs from the listed above then next algorithm applied: 1. If value in
+    a format .(uid), then it treated as a reference to the in-project class
+    and will be substituted during context resolution step. 2. If attribute
+    'library' is defined, then it treated as third-party library class and
+    will be used as-is. 3. Any other value will be treated as cross-project
+    class name and will be converted to the .(uid). The class attribute is
+    optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -350,8 +400,8 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -465,6 +515,7 @@ Groups common attributes for the component. Defines integral constant.
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
+      [ full_uid = "..." ]
       [ feature = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ value = "..." ]
@@ -493,6 +544,10 @@ of_class:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
 
 feature:
     In-project feature name that is implemented. This attribute is used for

@@ -44,31 +44,14 @@ gsl from "common.gsl"
 
 
 # ---------------------------------------------------------------------------
-#   Check required attribute: name.
-# ---------------------------------------------------------------------------
-function interface_require_attr_name (component, caller)
-    check_argument (my, "component", my)
-
-    assert_attribute (my.component, "name", my.caller ? my)
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Resolve component: constant.
 # ---------------------------------------------------------------------------
 function interface_resolve_constant (constant, parent)
     check_arguments (my, "constant, parent", my)
 
     my.constant.type ?= "size"
-endfunction
 
-# ---------------------------------------------------------------------------
-#   Resolve attribute: method.context.
-#   Redefine default value of 'method.context' to 'impl' for interface.
-# ---------------------------------------------------------------------------
-function interface_resolve_method_attr_context (method, parent)
-    check_arguments (my, "method, parent", my)
-
-    my.method.context ?= "impl"
+    component_resolve_constant (my.constant, my.parent)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -77,9 +60,8 @@ endfunction
 function interface_resolve_method (method, parent)
     check_arguments (my, "method, parent", my)
 
-    interface_resolve_method_attr_context (my.method, my.parent)
+    component_resolve_method (my.method, my.parent)
 endfunction
-
 
 # ---------------------------------------------------------------------------
 #   Resolve model: interface.
@@ -89,10 +71,12 @@ function interface_resolve (interface, project)
 
     echo_trace ("Resolving interface: $(my.interface.name:)", my)
 
-    interface_require_attr_name (my.interface, my)
+    assert_attribute (my.interface, "name", my)
 
-    my.interface.project = my.project.name
-    my.interface.c_prefix ?= my.project.name
+    my.interface.scope ?= "public"
+    my.interface.visibility ?= "public"
+    my.interface.uid = make_id ("interface", interface.name)
+    my.interface.c_prefix ?= my.project.prefix
 
     for my.interface.constant
         interface_resolve_constant (constant, my.interface)
@@ -122,6 +106,7 @@ function interface_find (name, source)
 
     my.interface = my.source->interface (name = my.name) ?
     if ! defined (my.interface)
+        echo_debug_item (my.source, my)
         echo_fatal ("Interface '$(my.name)' is not found within given source.", my)
     endif
 
@@ -160,13 +145,13 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create 'feature' for given 'interface'.
 # ---------------------------------------------------------------------------
-function interface_create_feature (interface, destination)
-    check_arguments (my, "interface, destination", my)
+function interface_create_feature (interface, project, destination)
+    check_arguments (my, "interface, project, destination", my)
 
     new feature to my.destination
         . = "Enable interface '$(my.interface.name)'."
         .name = my.interface.name
-        .project = my.interface.project
+        .project = my.project.name
 
         for my.interface.inherit
             new require to feature
@@ -183,11 +168,11 @@ endfunction
 # ---------------------------------------------------------------------------
 #   For each 'interface' within 'source' create 'feature'.
 # ---------------------------------------------------------------------------
-function foreach_interface_create_feature (source, destination)
-    check_arguments (my, "source, destination", my)
+function foreach_interface_create_feature (source, project, destination)
+    check_arguments (my, "source, project, destination", my)
 
     for my.source.interface
-        interface_create_feature (interface, my.destination)
+        interface_create_feature (interface, my.project, my.destination)
     endfor
 endfunction
 

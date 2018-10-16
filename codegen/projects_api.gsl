@@ -106,54 +106,20 @@ function projects_api_reset_project (projects_api, project)
 
     new project to my.projects_api
         .name = my.project.name
-        .install_headers_dir = my.project.install_headers_dir
-        .install_private_headers_dir = my.project.install_private_headers_dir
+        .namespace = my.project.namespace
+        .namespace_dir = my.project.namespace_dir
+        .framework = my.project.framework
+
+        for my.project.require where defined (require.project) & string_equal (require.feature, "library")
+            new require to project
+                .project = -1.project
+            endnew
+        endfor
 
         context_append_project (project, my.project)
     endnew
 
     my.projects_api.active_project = my.project.name
-endfunction
-
-
-# ---------------------------------------------------------------------------
-#   Return type -> header map of the active project.
-# ---------------------------------------------------------------------------
-function projects_api_build_header_resolution_map (projects_api)
-    check_arguments (my, "projects_api", my)
-
-    my.resolution_map = XML.new ("header_resolution_map")
-
-    for my.projects_api.project
-        my.is_external_project = (project.name = my.projects_api.active_project) ?? "0" ? "1"
-
-        my.public_prefix = my.is_external_project ?? project.install_headers_dir ? ""
-        my.private_prefix = my.is_external_project ?? project.install_private_headers_dir ? ""
-
-        for project.header
-            if my.is_external_project & header.scope = "internal"
-                next
-
-            elsif header.scope = "public"
-                my.file = my.public_prefix + header.file
-
-            elsif header.scope = "private"
-                my.file = my.private_prefix + header.file
-            endif
-
-            for header.declaration
-                my.resolution_map.$(declaration.type:)_decl = my.file
-                my.resolution_map.$(declaration.type:)_decl_is_system = my.is_external_project
-            endfor
-
-            for header.definition
-                my.resolution_map.$(definition.type:)_def = my.file
-                my.resolution_map.$(definition.type:)_def_is_system = my.is_external_project
-            endfor
-        endfor
-    endfor
-
-    return my.resolution_map
 endfunction
 
 
@@ -171,14 +137,17 @@ function projects_api_build_type_resolution_map (projects_api)
         my.project_prefix = (project.name <> my.projects_api.active_project) ?? make_id ("project", project.name) ?
 
         for project.uid
-            my.resolution_map.$(uid_insert_prefix (uid.uid, my.project_prefix)) = uid.ref
+            if defined (my.project_prefix) & defined (uid.full_ref)
+                my.resolution_map.$(uid_insert_prefix (uid.uid, my.project_prefix)) = uid.full_ref
+            else
+                my.resolution_map.$(uid_insert_prefix (uid.uid, my.project_prefix)) = uid.ref
+            endif
         endfor
-
 
         #   Process headers.
         my.is_external_project = (project.name = my.projects_api.active_project) ?? "0" ? "1"
-        my.public_prefix = my.is_external_project ?? project.install_headers_dir ? ""
-        my.private_prefix = my.is_external_project ?? project.install_private_headers_dir ? ""
+        my.public_prefix = my.is_external_project ?? project.install_headers_dir ?
+        my.private_prefix = my.is_external_project ?? project.install_private_headers_dir ?
 
         for project.header
             if my.is_external_project & header.scope = "internal"
@@ -186,10 +155,10 @@ function projects_api_build_type_resolution_map (projects_api)
             endif
 
             if header.scope = "public"
-                my.header_file = my.public_prefix + header.file
+                my.header_file = cat_path (my.public_prefix, header.file)
 
             elsif header.scope = "private"
-                my.header_file = my.private_prefix + header.file
+                my.header_file = cat_path (my.private_prefix, header.file)
             else
                 my.header_file = header.file
             endif
@@ -240,8 +209,95 @@ function projects_api_collect_info (projects_api, source)
                     .type = c_type.name
                 endnew
             endif
+
+            for c_type.c_constant
+                new declaration to my.header
+                    .type = c_constant.name
+                endnew
+
+                new definition to my.header
+                    .type = c_constant.name
+                endnew
+            endfor
         endfor
     endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Find resolved name based on the given UID in within active project.
+# ---------------------------------------------------------------------------
+function projects_api_find_resolved_name (projects_api, uid)
+    check_arguments (my, "projects_api, uid", my)
+
+    my.active_project = _F17_get_active_project (my.projects_api)
+
+    for my.active_project.uid where uid.uid = my.uid
+        return uid.ref
+    else
+        echo_fatal ("Requested UID '$(my.uid)' is not found", my)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return new XML item with information about header file that contains
+#   given type declaration.
+# ---------------------------------------------------------------------------
+function projects_api_find_declaration_header (projects_api, type_name)
+    check_arguments (my, "projects_api, type_name", my)
+
+    for my.projects_api.project
+        for project.header
+            for header.declaration
+                if declaration.type = my.type_name
+                    my.header_info = XML.new ("header_info")
+
+                    scope my.header_info
+                        .name = header.name
+                        .file = header.file
+                        .system = cat_path (project.namespace_dir, header.file)
+                        .framework = cat_path (project.framework, header.file)
+                        .project = project.name
+                        .is_external = project.name <> my.projects_api.active_project
+                    endscope
+
+                    return my.header_info
+                endif
+            endfor
+        endfor
+    endfor
+
+    return
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return new XML item with information about header file that contains
+#   given type definition.
+# ---------------------------------------------------------------------------
+function projects_api_find_definition_header (projects_api, type_name)
+    check_arguments (my, "projects_api, type_name", my)
+
+    for my.projects_api.project
+        for project.header
+            for header.definition
+                if definition.type = my.type_name
+                    my.header_info = XML.new ("header_info")
+
+                    scope my.header_info
+                        .name = header.name
+                        .file = header.file
+                        .system = cat_path (project.namespace_dir, header.file)
+                        .framework = cat_path (project.framework, header.file)
+                        .project = project.name
+                        .is_external = project.name <> my.projects_api.active_project
+                    endscope
+
+                    return my.header_info
+                endif
+            endfor
+        endfor
+    endfor
+
+    return
 endfunction
 
 .endtemplate

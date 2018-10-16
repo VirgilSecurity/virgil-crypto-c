@@ -1,0 +1,45 @@
+<class name="ratchet regular message" context="public">
+
+    <require header="virgil/foundation/vscf_asn1wr.h" scope="private"/>
+    <require header="virgil/foundation/vscf_asn1rd.h" scope="private"/>
+    <require header="virgil/foundation/vscf_error_ctx.h" scope="public"/>
+
+    <constant name="public key length" definition="public" value="32"/>
+
+    <constant name="max message length" definition="public" value="1024 * 1024 * 1024">
+        FIXME
+    </constant>
+
+    <property name="version" type="size" size="1"/>
+    <property name="counter" type="size" size="4"/>
+    <property name="public key" class="buffer" access="readwrite"/>
+    <property name="cipher text" class="buffer" access="readwrite"/>
+
+    <constructor name="with members">
+        <argument name="version" type="size" size="1"/>
+        <argument name="counter" type="size" size="4"/>
+        <argument name="public key" class="buffer"/>
+        <argument name="cipher text" class="buffer"/>
+    </constructor>
+
+    <method name="serialize len">
+        <argument name="cipher text len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+    <method name="serialize">
+        <argument class="context"/>
+        <argument name="output" class="buffer"/>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="deserialize">
+        <argument name="input" class="data"/>
+        <argument name="err ctx" class="error ctx" access="readwrite"/>
+
+        <return class="ratchet regular message" access="disown"/>
+    </method>
+
+</class>

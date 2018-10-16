@@ -45,6 +45,7 @@
 
 include_guard()
 
+option(VSCF_LIBRARY "Enable build of the 'foundation' library" ON)
 option(VSCF_CIPHER "Enable interface 'cipher'." ON)
 option(VSCF_AUTH_ENCRYPT "Enable interface 'auth encrypt'." ON)
 option(VSCF_AUTH_DECRYPT "Enable interface 'auth decrypt'." ON)
@@ -93,11 +94,11 @@ option(VSCF_KDF1 "Enable implementation 'kdf1'." ON)
 option(VSCF_KDF2 "Enable implementation 'kdf2'." ON)
 option(VSCF_FAKE_RANDOM "Enable implementation 'fake random'." ON)
 option(VSCF_ERROR_CTX "Enable class 'error ctx'." ON)
-option(VSCF_ASN1 "Enable class 'asn1'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER "Enable class 'mbedtls bignum asn1 writer'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_READER "Enable class 'mbedtls bignum asn1 reader'." ON)
 option(VSCF_MBEDTLS_MD "Enable class 'mbedtls md'." ON)
 mark_as_advanced(
+        VSCF_LIBRARY
         VSCF_CIPHER
         VSCF_AUTH_ENCRYPT
         VSCF_AUTH_DECRYPT
@@ -146,7 +147,6 @@ mark_as_advanced(
         VSCF_KDF2
         VSCF_FAKE_RANDOM
         VSCF_ERROR_CTX
-        VSCF_ASN1
         VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
         VSCF_MBEDTLS_BIGNUM_ASN1_READER
         VSCF_MBEDTLS_MD
@@ -323,29 +323,11 @@ if(VSCF_ASN1RD AND NOT MBEDTLS_ASN1_PARSE_C)
     message(FATAL_ERROR)
 endif()
 
-if(VSCF_ASN1RD AND NOT VSCF_ASN1)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_ASN1RD depends on the feature:")
-    message("     VSCF_ASN1 - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
 if(VSCF_ASN1WR AND NOT MBEDTLS_ASN1_WRITE_C)
     message("-- error --")
     message("--")
     message("Feature VSCF_ASN1WR depends on the feature:")
     message("     MBEDTLS_ASN1_WRITE_C - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_ASN1WR AND NOT VSCF_ASN1)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_ASN1WR depends on the feature:")
-    message("     VSCF_ASN1 - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -373,15 +355,6 @@ if(VSCF_RSA_PUBLIC_KEY AND NOT MBEDTLS_PKCS1_V21)
     message("--")
     message("Feature VSCF_RSA_PUBLIC_KEY depends on the feature:")
     message("     MBEDTLS_PKCS1_V21 - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_RSA_PUBLIC_KEY AND NOT VSCF_ASN1)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_RSA_PUBLIC_KEY depends on the feature:")
-    message("     VSCF_ASN1 - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -472,15 +445,6 @@ if(VSCF_RSA_PRIVATE_KEY AND NOT MBEDTLS_PKCS1_V21)
     message("--")
     message("Feature VSCF_RSA_PRIVATE_KEY depends on the feature:")
     message("     MBEDTLS_PKCS1_V21 - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_RSA_PRIVATE_KEY AND NOT VSCF_ASN1)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_RSA_PRIVATE_KEY depends on the feature:")
-    message("     VSCF_ASN1 - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -593,15 +557,6 @@ if(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER AND NOT MBEDTLS_BIGNUM_C)
     message(FATAL_ERROR)
 endif()
 
-if(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER AND NOT VSCF_ASN1)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_MBEDTLS_BIGNUM_ASN1_WRITER depends on the feature:")
-    message("     VSCF_ASN1 - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
 if(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER AND NOT VSCF_ASN1_WRITER)
     message("-- error --")
     message("--")
@@ -616,15 +571,6 @@ if(VSCF_MBEDTLS_BIGNUM_ASN1_READER AND NOT MBEDTLS_BIGNUM_C)
     message("--")
     message("Feature VSCF_MBEDTLS_BIGNUM_ASN1_READER depends on the feature:")
     message("     MBEDTLS_BIGNUM_C - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_MBEDTLS_BIGNUM_ASN1_READER AND NOT VSCF_ASN1)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_MBEDTLS_BIGNUM_ASN1_READER depends on the feature:")
-    message("     VSCF_ASN1 - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

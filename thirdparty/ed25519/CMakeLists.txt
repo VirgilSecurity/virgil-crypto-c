@@ -52,7 +52,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 #
 # Define sources
 #
-add_library(ed25519 "")
+add_library(ed25519 STATIC "")
 include("${CMAKE_CURRENT_LIST_DIR}/sources.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 
