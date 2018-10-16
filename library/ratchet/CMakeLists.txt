@@ -74,6 +74,14 @@ include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 # ---------------------------------------------------------------------------
 
 #
+# Internal configuration
+#
+if(CMAKE_CROSSCOMPILING AND APPLE)
+    set(VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK YES CACHE INTERNAL "")
+    set(VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK YES CACHE INTERNAL "")
+endif()
+
+#
 # Define sources
 #
 add_library(ratchet "")
@@ -152,6 +160,18 @@ endif()
 
 
 # ---------------------------------------------------------------------------
+#   Apple specific
+# ---------------------------------------------------------------------------
+if(CMAKE_CROSSCOMPILING AND APPLE AND COMMAND target_apple_framework)
+    target_apple_framework(ratchet
+            NAME VSCRatchet
+            VERSION "A"
+            IDENTIFIER com.virgilsecurity.VSCRatchet
+            )
+endif()
+
+
+# ---------------------------------------------------------------------------
 #   Install library
 # ---------------------------------------------------------------------------
 include (CMakePackageConfigHelpers)
@@ -175,6 +195,7 @@ if(VIRGIL_INSTALL_LIBS)
             EXPORT vsc_ratchetTargets
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            FRAMEWORK DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             )
 endif()
 
