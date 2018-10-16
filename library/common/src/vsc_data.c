@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -52,6 +53,8 @@
 #include "vsc_data.h"
 #include "vsc_memory.h"
 #include "vsc_assert.h"
+
+// clang-format on
 //  @end
 
 
@@ -77,15 +80,6 @@ static const byte empty_data[] = {
 
 
 //
-//  Returns true if underlying byte array is defined.
-//
-VSC_PUBLIC bool
-vsc_data_is_valid(vsc_data_t data_ctx) {
-
-    return data_ctx.bytes != NULL;
-}
-
-//
 //  Creates data from the preallocated bytes.
 //
 VSC_PUBLIC vsc_data_t
@@ -103,6 +97,15 @@ VSC_PUBLIC vsc_data_t
 vsc_data_empty(void) {
 
     return (vsc_data_t){empty_data, 0};
+}
+
+//
+//  Returns true if underlying byte array is defined.
+//
+VSC_PUBLIC bool
+vsc_data_is_valid(vsc_data_t data_ctx) {
+
+    return data_ctx.bytes != NULL;
 }
 
 //

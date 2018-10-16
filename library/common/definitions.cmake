@@ -51,6 +51,8 @@ endif()
 
 target_compile_definitions(common
         PUBLIC
+            $<BUILD_INTERFACE:VSC_BUILD_INTERFACE>
+            "VSC_LIBRARY=$<BOOL:${VSC_LIBRARY}>"
             "VSC_DATA=$<BOOL:${VSC_DATA}>"
             "VSC_BUFFER=$<BOOL:${VSC_BUFFER}>"
         )

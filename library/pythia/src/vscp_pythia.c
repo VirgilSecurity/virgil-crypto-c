@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -59,12 +60,22 @@
 #include <pythia/pythia_buf_sizes.h>
 #include <mbedtls/ctr_drbg.h>
 #include <mbedtls/entropy.h>
+
+// clang-format on
 //  @end
 
 
-static __thread mbedtls_entropy_context g_entropy_ctx;
-static __thread mbedtls_ctr_drbg_context g_rng_ctx;
-static __thread size_t g_instances = 0;
+#if VSCP_MULTI_THREAD
+#define VSCP_LOCAL_THREAD_STORAGE __thread
+#else
+#define VSCP_LOCAL_THREAD_STORAGE
+#endif
+
+static VSCP_LOCAL_THREAD_STORAGE mbedtls_entropy_context g_entropy_ctx;
+static VSCP_LOCAL_THREAD_STORAGE mbedtls_ctr_drbg_context g_rng_ctx;
+static VSCP_LOCAL_THREAD_STORAGE size_t g_instances = 0;
+
+#undef VSCP_LOCAL_THREAD_STORAGE
 
 
 //  @generated

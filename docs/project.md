@@ -1,4 +1,4 @@
-Define project as set of interfaces, implementators and modules.s
+Define project as set of interfaces, implementors and modules.s
 
 Summary of language
 ===================
@@ -7,16 +7,16 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <project name brief prefix namespace path inc_path inc_private_path src_path work_path
-         [install_private_headers_dir] [install_headers_dir]>
+    <project name brief prefix namespace package path inc_path inc_private_path src_path
+         work_path [install_private_headers_dir] [install_headers_dir]>
        <interface name/>
        <implementor name/>
        <module name/>
        <feature name [library] [project] [prefix] [default]>
           <require [scope] [project] [library] [module] [header] [feature] [interface] [class]
-               [impl]>
+               [impl] [enum]>
              <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]
-                  [impl]/>
+                  [impl] [enum]/>
           </require>
        </feature>
     </project>
@@ -32,13 +32,14 @@ detailed more than once here.
 The 'project' item
 ------------------
 
-Define project as set of interfaces, implementators and modules.
+Define project as set of interfaces, implementors and modules.
 
     <project
         name = "..."
         brief = "..."
         prefix = "..."
         namespace = "..."
+        package = "..."
         path = "..."
         inc_path = "..."
         inc_private_path = "..."
@@ -65,8 +66,12 @@ prefix:
     Prefix for C names within project. The prefix attribute is required.
 
 namespace:
-    Project namespace. This attribute is used to for wrappers that support
-    namesapces. The namespace attribute is required.
+    Project namespace. This attribute is used to resolve path to include
+    directories. The namespace attribute is required.
+
+package:
+    Project package name. This attribute is used to for wrappers that support
+    package and namespace. The package attribute is required.
 
 path:
     Path to the project root directory. The path attribute is required.
@@ -198,6 +203,7 @@ feature.
       [ interface = "..." ]
       [ class = "..." ]
       [ impl = "..." ]
+      [ enum = "..." ]
         >
         <alternative>
     </require>
@@ -242,6 +248,9 @@ class:
 impl:
     Required implementation name. The impl attribute is optional.
 
+enum:
+    Required implementation name. The enum attribute is optional.
+
 
 The 'alternative' item
 ----------------------
@@ -259,6 +268,7 @@ used, and in fact replace each other.
       [ interface = "..." ]
       [ class = "..." ]
       [ impl = "..." ]
+      [ enum = "..." ]
         />
 
 The alternative item can have these attributes:
@@ -300,4 +310,7 @@ class:
 
 impl:
     Required implementation name. The impl attribute is optional.
+
+enum:
+    Required implementation name. The enum attribute is optional.
 

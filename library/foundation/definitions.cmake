@@ -51,6 +51,8 @@ endif()
 
 target_compile_definitions(foundation
         PUBLIC
+            $<BUILD_INTERFACE:VSCF_BUILD_INTERFACE>
+            "VSCF_LIBRARY=$<BOOL:${VSCF_LIBRARY}>"
             "VSCF_CIPHER=$<BOOL:${VSCF_CIPHER}>"
             "VSCF_AUTH_ENCRYPT=$<BOOL:${VSCF_AUTH_ENCRYPT}>"
             "VSCF_AUTH_DECRYPT=$<BOOL:${VSCF_AUTH_DECRYPT}>"
@@ -99,7 +101,6 @@ target_compile_definitions(foundation
             "VSCF_KDF2=$<BOOL:${VSCF_KDF2}>"
             "VSCF_FAKE_RANDOM=$<BOOL:${VSCF_FAKE_RANDOM}>"
             "VSCF_ERROR_CTX=$<BOOL:${VSCF_ERROR_CTX}>"
-            "VSCF_ASN1=$<BOOL:${VSCF_ASN1}>"
             "VSCF_MBEDTLS_BIGNUM_ASN1_WRITER=$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_WRITER}>"
             "VSCF_MBEDTLS_BIGNUM_ASN1_READER=$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_READER}>"
             "VSCF_MBEDTLS_MD=$<BOOL:${VSCF_MBEDTLS_MD}>"
