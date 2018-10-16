@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -47,8 +48,10 @@
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 
-#include <virgil/foundation/vscf_asn1wr.h>
-#include <virgil/foundation/vscf_asn1rd.h>
+#include <vscf_asn1wr.h>
+#include <vscf_asn1rd.h>
+
+// clang-format on
 //  @end
 
 
@@ -226,7 +229,7 @@ vscr_ratchet_message_serialize_len(size_t message_len) {
     //       type INTEGER,
     //       message OCTET_STRING }
 
-    size_t top_sequence_len = 1 + 3 /* SEQUENCE */
+    size_t top_sequence_len = 1 + 3       /* SEQUENCE */
                               + 1 + 1 + 2 /* INTEGER */
                               + 1 + 1 + 2 /* INTEGER */
                               + 1 + 3 + message_len;
@@ -255,8 +258,7 @@ vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message_ctx, vsc_
 
     size_t top_sequence_len = 0;
 
-    top_sequence_len += vscf_asn1wr_write_octet_str(asn1wr,
-                                                    vsc_buffer_data(ratchet_message_ctx->message));
+    top_sequence_len += vscf_asn1wr_write_octet_str(asn1wr, vsc_buffer_data(ratchet_message_ctx->message));
 
     top_sequence_len += vscf_asn1wr_write_uint8(asn1wr, ratchet_message_ctx->type);
 

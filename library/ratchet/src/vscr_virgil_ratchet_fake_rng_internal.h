@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -54,8 +55,9 @@
 #define VSCR_VIRGIL_RATCHET_FAKE_RNG_INTERNAL_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_error.h"
 #include "vscr_virgil_ratchet_fake_rng.h"
+
+// clang-format on
 //  @end
 
 

@@ -5,9 +5,6 @@
     framework="VSCRatchet"
     prefix="vscr"
     path="../library/ratchet"
-    inc_path = "../library/ratchet/include/virgil/ratchet/"
-    inc_private_path = "../library/ratchet/include/virgil/ratchet/private/"
-    src_path = "../library/ratchet/src/"
     work_path = "generated/ratchet/">
 
     <version major = "0" minor = "1" patch = "0" />
@@ -53,10 +50,12 @@
     <implementor name="virgil ratchet"/>
 
     <require project="common" feature="library"/>
+    <require project="foundation" feature="library"/>
 
     <module name="assert" from="shared"/>
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
+
     <enum name="error"/>
 
     <class name="ratchet common"/>

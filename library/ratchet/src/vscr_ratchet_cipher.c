@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -47,8 +48,11 @@
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 
-#include <virgil/foundation/vscf_sha256.h>
-#include <virgil/foundation/vscf_hkdf.h>
+#include <vscf_sha256.h>
+#include <vscf_hkdf.h>
+#include <vscf_aes256_gcm.h>
+
+// clang-format on
 //  @end
 
 
@@ -64,17 +68,15 @@ vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_
 
     vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(vscf_aes256_gcm_KEY_LEN + vscf_aes256_gcm_NONCE_LEN);
     vsc_buffer_make_secure(derived_secret);
-    vscf_hkdf_derive(hkdf,
-                     key, vsc_data_empty(),
-                     vsc_buffer_data(ratchet_cipher_ctx->kdf_info),
-                     derived_secret, vsc_buffer_capacity(derived_secret));
+    vscf_hkdf_derive(hkdf, key, vsc_data_empty(), vsc_buffer_data(ratchet_cipher_ctx->kdf_info), derived_secret,
+            vsc_buffer_capacity(derived_secret));
 
     vscf_hkdf_destroy(&hkdf);
 
     vscf_aes256_gcm_set_key(ratchet_cipher_ctx->aes256_gcm,
-                            vsc_data_slice_beg(vsc_buffer_data(derived_secret), 0, vscf_aes256_gcm_KEY_LEN));
+            vsc_data_slice_beg(vsc_buffer_data(derived_secret), 0, vscf_aes256_gcm_KEY_LEN));
     vscf_aes256_gcm_set_nonce(ratchet_cipher_ctx->aes256_gcm,
-                              vsc_data_slice_beg(vsc_buffer_data(derived_secret), vscf_aes256_gcm_KEY_LEN, vscf_aes256_gcm_NONCE_LEN));
+            vsc_data_slice_beg(vsc_buffer_data(derived_secret), vscf_aes256_gcm_KEY_LEN, vscf_aes256_gcm_NONCE_LEN));
 
     vsc_buffer_destroy(&derived_secret);
 }
@@ -289,8 +291,8 @@ vscr_ratchet_cipher_decrypt_len(vscr_ratchet_cipher_t *ratchet_cipher_ctx, size_
 }
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_data_t key, vsc_data_t plain_text,
-        vsc_buffer_t *buffer) {
+vscr_ratchet_cipher_encrypt(
+        vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_data_t key, vsc_data_t plain_text, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(ratchet_cipher_ctx);
 
@@ -308,8 +310,8 @@ vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_data_
 }
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_data_t key, vsc_data_t cipher_text,
-        vsc_buffer_t *buffer) {
+vscr_ratchet_cipher_decrypt(
+        vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_data_t key, vsc_data_t cipher_text, vsc_buffer_t *buffer) {
 
     VSCR_UNUSED(ratchet_cipher_ctx);
 

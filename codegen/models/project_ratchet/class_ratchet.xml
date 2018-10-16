@@ -1,15 +1,16 @@
 <class name="ratchet" context="private">
 
-    <require header="virgil/foundation/vscf_sha256.h" scope="private"/>
-    <require header="virgil/foundation/vscf_hmac.h" scope="private"/>
-    <require header="virgil/foundation/vscf_hkdf.h" scope="private"/>
-    <require header="virgil/foundation/vscf_error_ctx.h" scope="public"/>
-    <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
+    <require impl="sha256" project="foundation" scope="private"/>
+    <require impl="hmac" project="foundation" scope="private"/>
+    <require impl="hkdf" project="foundation" scope="private"/>
+    <require class="error ctx" project="foundation" scope="public"/>
 
     <require class="ratchet common" scope="public"/>
     <require class="ratchet regular message" scope="public"/>
     <require class="ratchet message key" scope="public"/>
     <require class="ratchet chain key" scope="public"/>
+
+    <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
 
     <variable name="ratchet chain key seed" type="unsigned" size="1" declaration="private" definition="private">
         <array length="derived"/>
@@ -31,8 +32,7 @@
         <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_shared_key_length)"/>
     </property>
 
-    <method name="create chain key" declaration="private">
-        <argument class="context" access="readonly"/>
+    <method name="create chain key" declaration="private" is_const="1">
         <argument name="private key" class="buffer" access="readonly"/>
         <argument name="public key" class="buffer" access="readonly"/>
 
@@ -45,18 +45,17 @@
         <return enum="error"/>
     </method>
 
-    <method name="advance chain key" declaration="private">
+    <method name="advance chain key" declaration="private" is_static="1">
         <argument name="chain key" class="ratchet chain key" access="readwrite"/>
     </method>
 
-    <method name="create message key" declaration="private">
+    <method name="create message key" declaration="private" is_static="1">
         <argument name="chain key" class="ratchet chain key"/>
 
         <return class="ratchet message key" access="readwrite"/>
     </method>
 
     <method name="decrypt for existing chain" declaration="private">
-        <argument class="context"/>
         <argument name="chain key" class="ratchet chain key"/>
         <argument name="message" class="ratchet regular message"/>
         <argument name="buffer" class="buffer"/>
@@ -65,7 +64,6 @@
     </method>
 
     <method name="decrypt for new chain" declaration="private">
-        <argument class="context"/>
         <argument name="message" class="ratchet regular message"/>
         <argument name="buffer" class="buffer"/>
 
@@ -73,13 +71,11 @@
     </method>
 
     <method name="respond">
-        <argument class="context"/>
         <argument name="shared secret" class="data"/>
         <argument name="ratchet public key" class="buffer"/>
     </method>
 
     <method name="initiate">
-        <argument class="context"/>
         <argument name="shared secret" class="data"/>
         <argument name="ratchet private key" class="buffer"/>
 
@@ -87,14 +83,12 @@
     </method>
 
     <method name="encrypt len">
-        <argument class="context"/>
         <argument name="plain text len" type="size"/>
 
         <return type="size"/>
     </method>
 
     <method name="encrypt">
-        <argument class="context"/>
         <argument name="plain text" class="data"/>
         <argument name="cipher text" class="buffer"/>
 
@@ -102,14 +96,12 @@
     </method>
 
     <method name="decrypt len">
-        <argument class="context"/>
         <argument name="cipher text len" type="size"/>
 
         <return type="size"/>
     </method>
 
     <method name="decrypt">
-        <argument class="context"/>
         <argument name="cipher text" class="data"/>
         <argument name="plain text" class="buffer"/>
 
@@ -117,31 +109,26 @@
     </method>
 
     <method name="find receiver chain" declaration="private">
-        <argument class="context"/>
         <argument name="message" class="ratchet regular message" access="readonly"/>
 
         <return class="ratchet receiver chain" access="readwrite"/>
     </method>
 
     <method name="find skipped message key" declaration="private">
-        <argument class="context"/>
         <argument name="message" class="ratchet regular message" access="readonly"/>
 
         <return class="ratchet skipped message key" access="readwrite"/>
     </method>
 
     <method name="erase skipped message key" declaration="private">
-        <argument class="context"/>
         <argument name="skipped message key" class="ratchet skipped message key" access="readwrite"/>
     </method>
 
     <method name="add receiver chain" declaration="private">
-        <argument class="context"/>
         <argument name="receiver chain" class="ratchet receiver chain" access="readwrite"/>
     </method>
 
     <method name="add skipped message key" declaration="private">
-        <argument class="context"/>
         <argument name="skipped message key" class="ratchet skipped message key" access="readwrite"/>
     </method>
 

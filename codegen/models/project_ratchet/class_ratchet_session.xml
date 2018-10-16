@@ -1,9 +1,10 @@
 <class name="ratchet session" context="private">
 
-    <require header="virgil/foundation/vscf_error_ctx.h" scope="public"/>
-    <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
+    <require class="error ctx" project="foundation" scope="public"/>
     <require class="ratchet prekey message" scope="private"/>
     <require class="ratchet common" scope="public"/>
+
+    <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
 
     <dependency name="rng" interface="ratchet rng"/>
     <dependency class="ratchet" name="ratchet"/>
@@ -15,7 +16,6 @@
     <property name="receiver onetime public key" class="buffer" access="readwrite"/>
 
     <method name="initiate">
-        <argument class="context"/>
         <argument name="sender identity private key" class="buffer"/>
         <argument name="receiver identity public key" class="buffer"/>
         <argument name="receiver long term public key" class="buffer"/>
@@ -25,7 +25,6 @@
     </method>
 
     <method name="respond">
-        <argument class="context"/>
         <argument name="sender identity public key" class="buffer"/>
         <argument name="sender ephemeral public key" class="buffer"/>
         <argument name="receiver identity private key" class="buffer"/>
@@ -36,14 +35,12 @@
     </method>
 
     <method name="encrypt len">
-        <argument class="context"/>
         <argument name="plain text len" type="size"/>
 
         <return type="size"/>
     </method>
 
     <method name="encrypt">
-        <argument class="context"/>
         <argument name="plain text" class="data"/>
         <argument name="cipher text" class="buffer" access="readwrite"/>
 
@@ -51,14 +48,12 @@
     </method>
 
     <method name="decrypt len">
-        <argument class="context"/>
         <argument name="message" class="ratchet message"/>
 
         <return type="size"/>
     </method>
 
     <method name="decrypt">
-        <argument class="context"/>
         <argument name="message" class="ratchet message"/>
         <argument name="plain text" class="buffer" access="readwrite"/>
 

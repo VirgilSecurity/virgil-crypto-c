@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -46,6 +47,8 @@
 #include "vscr_ratchet_message_key.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
+
+// clang-format on
 //  @end
 
 

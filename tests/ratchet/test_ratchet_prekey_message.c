@@ -32,7 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/common/private/vsc_buffer_defs.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include "unity.h"
 #include "test_utils.h"
 
