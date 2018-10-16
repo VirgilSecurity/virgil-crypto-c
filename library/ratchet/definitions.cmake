@@ -51,6 +51,8 @@ endif()
 
 target_compile_definitions(ratchet
         PUBLIC
+            $<BUILD_INTERFACE:VSCR_BUILD_INTERFACE>
+            "VSCR_LIBRARY=$<BOOL:${VSCR_LIBRARY}>"
             "VSCR_RATCHET_RNG=$<BOOL:${VSCR_RATCHET_RNG}>"
             "VSCR_VIRGIL_RATCHET_FAKE_RNG=$<BOOL:${VSCR_VIRGIL_RATCHET_FAKE_RNG}>"
             "VSCR_RATCHET_COMMON=$<BOOL:${VSCR_RATCHET_COMMON}>"

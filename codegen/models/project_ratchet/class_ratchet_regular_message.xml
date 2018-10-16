@@ -1,8 +1,8 @@
 <class name="ratchet regular message" context="public">
 
-    <require header="virgil/foundation/vscf_asn1wr.h" scope="private"/>
-    <require header="virgil/foundation/vscf_asn1rd.h" scope="private"/>
-    <require header="virgil/foundation/vscf_error_ctx.h" scope="public"/>
+    <require impl="asn1wr" project="foundation" scope="private"/>
+    <require impl="asn1rd" project="foundation" scope="private"/>
+    <require class="error ctx" project="foundation" scope="public"/>
 
     <constant name="public key length" definition="public" value="32"/>
 
@@ -22,24 +22,23 @@
         <argument name="cipher text" class="buffer"/>
     </constructor>
 
-    <method name="serialize len">
+    <method name="serialize len" is_static="1">
         <argument name="cipher text len" type="size"/>
 
         <return type="size"/>
     </method>
 
     <method name="serialize">
-        <argument class="context"/>
         <argument name="output" class="buffer"/>
 
         <return enum="error"/>
     </method>
 
-    <method name="deserialize">
+    <method name="deserialize" is_static="1">
         <argument name="input" class="data"/>
         <argument name="err ctx" class="error ctx" access="readwrite"/>
 
-        <return class="ratchet regular message" access="disown"/>
+        <return class="self" access="disown"/>
     </method>
 
 </class>

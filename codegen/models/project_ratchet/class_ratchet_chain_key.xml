@@ -7,9 +7,8 @@
         <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_shared_key_length)"/>
     </property>
 
-    <method name="clone">
-        <argument class="context" access="readonly"/>
-        <argument name="clone" class="context"/>
+    <method name="clone" is_const="1">
+        <argument name="clone" class="self" access="writeonly"/>
     </method>
 
 </class>

@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -44,6 +45,8 @@
 // --------------------------------------------------------------------------
 
 #include "vscr_error.h"
+
+// clang-format on
 //  @end
 
 

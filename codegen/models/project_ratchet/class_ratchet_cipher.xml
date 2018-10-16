@@ -1,29 +1,26 @@
 <class name="ratchet cipher" context="public">
 
-    <require header="virgil/foundation/vscf_sha256.h" scope="private"/>
-    <require header="virgil/foundation/vscf_hkdf.h" scope="private"/>
-    <require header="virgil/foundation/vscf_aes256_gcm.h" scope="private"/>
-    <require header="virgil/foundation/vscf_error_ctx.h" scope="public"/>
+    <require impl="sha256" project="foundation" scope="private"/>
+    <require impl="hkdf" project="foundation" scope="private"/>
+    <require impl="aes256 gcm" project="foundation" scope="private"/>
+    <require class="error ctx" project="foundation" scope="public"/>
 
     <dependency name="aes256 gcm" impl="aes256 gcm" project="foundation"/>
     <property name="kdf info" class="buffer" access="readwrite"/>
 
     <method name="encrypt len">
-        <argument class="context"/>
         <argument name="plain text len" type="size"/>
 
         <return type="size"/>
     </method>
 
     <method name="decrypt len">
-        <argument class="context"/>
         <argument name="cipher text len" type="size"/>
 
         <return type="size"/>
     </method>
 
     <method name="encrypt">
-        <argument class="context"/>
         <argument name="key" class="data"/>
         <argument name="plain text" class="data"/>
 
@@ -33,7 +30,6 @@
     </method>
 
     <method name="decrypt">
-        <argument class="context"/>
         <argument name="key" class="data"/>
         <argument name="cipher text" class="data"/>
 

@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -46,6 +47,8 @@
 #include "vscr_ratchet_common.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
+
+// clang-format on
 //  @end
 
 
@@ -55,148 +58,9 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_common_init() is called.
-//  Note, that context is already zeroed.
-//
-static void
-vscr_ratchet_common_init_ctx(vscr_ratchet_common_t *ratchet_common_ctx);
-
-//
-//  Release all inner resources.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-static void
-vscr_ratchet_common_cleanup_ctx(vscr_ratchet_common_t *ratchet_common_ctx);
-
-//
-//  Perform initialization of pre-allocated context.
-//
-VSCR_PUBLIC void
-vscr_ratchet_common_init(vscr_ratchet_common_t *ratchet_common_ctx) {
-
-    VSCR_ASSERT_PTR(ratchet_common_ctx);
-
-    vscr_zeroize(ratchet_common_ctx, sizeof(vscr_ratchet_common_t));
-
-    ratchet_common_ctx->refcnt = 1;
-
-    vscr_ratchet_common_init_ctx(ratchet_common_ctx);
-}
-
-//
-//  Release all inner resources including class dependencies.
-//
-VSCR_PUBLIC void
-vscr_ratchet_common_cleanup(vscr_ratchet_common_t *ratchet_common_ctx) {
-
-    if (ratchet_common_ctx == NULL) {
-        return;
-    }
-
-    if (ratchet_common_ctx->refcnt == 0) {
-        return;
-    }
-
-    if (--ratchet_common_ctx->refcnt == 0) {
-        vscr_ratchet_common_cleanup_ctx(ratchet_common_ctx);
-
-        vscr_zeroize(ratchet_common_ctx, sizeof(vscr_ratchet_common_t));
-    }
-}
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCR_PUBLIC vscr_ratchet_common_t *
-vscr_ratchet_common_new(void) {
-
-    vscr_ratchet_common_t *ratchet_common_ctx = (vscr_ratchet_common_t *) vscr_alloc(sizeof (vscr_ratchet_common_t));
-    VSCR_ASSERT_ALLOC(ratchet_common_ctx);
-
-    vscr_ratchet_common_init(ratchet_common_ctx);
-
-    ratchet_common_ctx->self_dealloc_cb = vscr_dealloc;
-
-    return ratchet_common_ctx;
-}
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
-//
-VSCR_PUBLIC void
-vscr_ratchet_common_delete(vscr_ratchet_common_t *ratchet_common_ctx) {
-
-    if (ratchet_common_ctx == NULL) {
-        return;
-    }
-
-    vscr_dealloc_fn self_dealloc_cb = ratchet_common_ctx->self_dealloc_cb;
-
-    vscr_ratchet_common_cleanup(ratchet_common_ctx);
-
-    if (ratchet_common_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(ratchet_common_ctx);
-    }
-}
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_common_new ()'.
-//
-VSCR_PUBLIC void
-vscr_ratchet_common_destroy(vscr_ratchet_common_t **ratchet_common_ctx_ref) {
-
-    VSCR_ASSERT_PTR(ratchet_common_ctx_ref);
-
-    vscr_ratchet_common_t *ratchet_common_ctx = *ratchet_common_ctx_ref;
-    *ratchet_common_ctx_ref = NULL;
-
-    vscr_ratchet_common_delete(ratchet_common_ctx);
-}
-
-//
-//  Copy given class context by increasing reference counter.
-//
-VSCR_PUBLIC vscr_ratchet_common_t *
-vscr_ratchet_common_copy(vscr_ratchet_common_t *ratchet_common_ctx) {
-
-    VSCR_ASSERT_PTR(ratchet_common_ctx);
-
-    ++ratchet_common_ctx->refcnt;
-
-    return ratchet_common_ctx;
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
-
-//
-//  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_common_init() is called.
-//  Note, that context is already zeroed.
-//
-static void
-vscr_ratchet_common_init_ctx(vscr_ratchet_common_t *ratchet_common_ctx) {
-
-    VSCR_ASSERT_PTR(ratchet_common_ctx);
-}
-
-//
-//  Release all inner resources.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-static void
-vscr_ratchet_common_cleanup_ctx(vscr_ratchet_common_t *ratchet_common_ctx) {
-
-    VSCR_ASSERT_PTR(ratchet_common_ctx);
-}

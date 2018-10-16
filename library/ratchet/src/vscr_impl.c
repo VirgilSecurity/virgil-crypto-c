@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -54,6 +55,8 @@
 #include "vscr_api_private.h"
 #include "vscr_impl_private.h"
 #include "vscr_assert.h"
+
+// clang-format on
 //  @end
 
 

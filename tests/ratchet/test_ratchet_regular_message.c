@@ -32,7 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/common/private/vsc_buffer_defs.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include "unity.h"
 #include "test_utils.h"
 
@@ -45,21 +45,25 @@
 void
 test__1(void) {
     vsc_buffer_t *public_key = vsc_buffer_new_with_capacity(test_ratchet_regular_message_public_key.len);
-    memcpy(vsc_buffer_ptr(public_key), test_ratchet_regular_message_public_key.bytes, test_ratchet_regular_message_public_key.len);
+    memcpy(vsc_buffer_ptr(public_key), test_ratchet_regular_message_public_key.bytes,
+            test_ratchet_regular_message_public_key.len);
     vsc_buffer_reserve(public_key, test_ratchet_regular_message_public_key.len);
 
     vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(test_ratchet_regular_message_cipher_text.len);
-    memcpy(vsc_buffer_ptr(cipher_text), test_ratchet_regular_message_cipher_text.bytes, test_ratchet_regular_message_cipher_text.len);
+    memcpy(vsc_buffer_ptr(cipher_text), test_ratchet_regular_message_cipher_text.bytes,
+            test_ratchet_regular_message_cipher_text.len);
     vsc_buffer_reserve(cipher_text, test_ratchet_regular_message_cipher_text.len);
 
-    vscr_ratchet_regular_message_t *msg1 = vscr_ratchet_regular_message_new_with_members(test_ratchet_regular_message_version, test_ratchet_regular_message_counter,
-                                                                 public_key, cipher_text);
+    vscr_ratchet_regular_message_t *msg1 = vscr_ratchet_regular_message_new_with_members(
+            test_ratchet_regular_message_version, test_ratchet_regular_message_counter, public_key, cipher_text);
 
     TEST_ASSERT_EQUAL_INT(test_ratchet_regular_message_version, msg1->version);
     TEST_ASSERT_EQUAL_INT(test_ratchet_regular_message_counter, msg1->counter);
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->public_key), test_ratchet_regular_message_public_key.bytes, test_ratchet_regular_message_public_key.len);
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->public_key), test_ratchet_regular_message_public_key.bytes,
+            test_ratchet_regular_message_public_key.len);
     TEST_ASSERT_EQUAL_INT(32, vsc_buffer_len(msg1->public_key));
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->cipher_text), test_ratchet_regular_message_cipher_text.bytes, test_ratchet_regular_message_cipher_text.len);
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->cipher_text), test_ratchet_regular_message_cipher_text.bytes,
+            test_ratchet_regular_message_cipher_text.len);
     TEST_ASSERT_EQUAL_INT(test_ratchet_regular_message_cipher_text.len, vsc_buffer_len(msg1->cipher_text));
 
     size_t len = vscr_ratchet_regular_message_serialize_len(msg1->cipher_text->len);
@@ -74,9 +78,11 @@ test__1(void) {
     TEST_ASSERT_EQUAL(err_ctx.error, vscr_SUCCESS);
 
     TEST_ASSERT_EQUAL_INT(vsc_buffer_len(msg1->public_key), vsc_buffer_len(msg2->public_key));
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->public_key), vsc_buffer_bytes(msg2->public_key), vsc_buffer_len(msg1->public_key));
+    TEST_ASSERT_EQUAL_MEMORY(
+            vsc_buffer_bytes(msg1->public_key), vsc_buffer_bytes(msg2->public_key), vsc_buffer_len(msg1->public_key));
     TEST_ASSERT_EQUAL_INT(vsc_buffer_len(msg1->cipher_text), vsc_buffer_len(msg2->cipher_text));
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->cipher_text), vsc_buffer_bytes(msg2->cipher_text), vsc_buffer_len(msg1->cipher_text));
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->cipher_text), vsc_buffer_bytes(msg2->cipher_text),
+            vsc_buffer_len(msg1->cipher_text));
 
     vscr_ratchet_regular_message_destroy(&msg1);
     vscr_ratchet_regular_message_destroy(&msg2);
@@ -89,22 +95,26 @@ test__1(void) {
 void
 test__2(void) {
     vsc_buffer_t *public_key = vsc_buffer_new_with_capacity(test_ratchet_regular_message_public_key.len);
-    memcpy(vsc_buffer_ptr(public_key), test_ratchet_regular_message_public_key.bytes, test_ratchet_regular_message_public_key.len);
+    memcpy(vsc_buffer_ptr(public_key), test_ratchet_regular_message_public_key.bytes,
+            test_ratchet_regular_message_public_key.len);
     vsc_buffer_reserve(public_key, test_ratchet_regular_message_public_key.len);
 
     vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(test_ratchet_regular_message_cipher_text_big.len);
-    memcpy(vsc_buffer_ptr(cipher_text), test_ratchet_regular_message_cipher_text_big.bytes, test_ratchet_regular_message_cipher_text_big.len);
+    memcpy(vsc_buffer_ptr(cipher_text), test_ratchet_regular_message_cipher_text_big.bytes,
+            test_ratchet_regular_message_cipher_text_big.len);
     vsc_buffer_reserve(cipher_text, test_ratchet_regular_message_cipher_text_big.len);
 
-    vscr_ratchet_regular_message_t *msg1 = vscr_ratchet_regular_message_new_with_members(test_ratchet_regular_message_version_big,
-                                                                 test_ratchet_regular_message_counter_big,
-                                                                 public_key, cipher_text);
+    vscr_ratchet_regular_message_t *msg1 =
+            vscr_ratchet_regular_message_new_with_members(test_ratchet_regular_message_version_big,
+                    test_ratchet_regular_message_counter_big, public_key, cipher_text);
 
     TEST_ASSERT_EQUAL_INT(test_ratchet_regular_message_version_big, msg1->version);
     TEST_ASSERT_EQUAL_INT(test_ratchet_regular_message_counter_big, msg1->counter);
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->public_key), test_ratchet_regular_message_public_key.bytes, test_ratchet_regular_message_public_key.len);
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->public_key), test_ratchet_regular_message_public_key.bytes,
+            test_ratchet_regular_message_public_key.len);
     TEST_ASSERT_EQUAL_INT(32, vsc_buffer_len(msg1->public_key));
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->cipher_text), test_ratchet_regular_message_cipher_text_big.bytes, test_ratchet_regular_message_cipher_text_big.len);
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->cipher_text), test_ratchet_regular_message_cipher_text_big.bytes,
+            test_ratchet_regular_message_cipher_text_big.len);
     TEST_ASSERT_EQUAL_INT(test_ratchet_regular_message_cipher_text_big.len, vsc_buffer_len(msg1->cipher_text));
 
     size_t len = vscr_ratchet_regular_message_serialize_len(msg1->cipher_text->len);
@@ -119,9 +129,11 @@ test__2(void) {
     TEST_ASSERT_EQUAL(err_ctx.error, vscr_SUCCESS);
 
     TEST_ASSERT_EQUAL_INT(vsc_buffer_len(msg1->public_key), vsc_buffer_len(msg2->public_key));
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->public_key), vsc_buffer_bytes(msg2->public_key), vsc_buffer_len(msg1->public_key));
+    TEST_ASSERT_EQUAL_MEMORY(
+            vsc_buffer_bytes(msg1->public_key), vsc_buffer_bytes(msg2->public_key), vsc_buffer_len(msg1->public_key));
     TEST_ASSERT_EQUAL_INT(vsc_buffer_len(msg1->cipher_text), vsc_buffer_len(msg2->cipher_text));
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->cipher_text), vsc_buffer_bytes(msg2->cipher_text), vsc_buffer_len(msg1->cipher_text));
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->cipher_text), vsc_buffer_bytes(msg2->cipher_text),
+            vsc_buffer_len(msg1->cipher_text));
 
     vscr_ratchet_regular_message_destroy(&msg1);
     vscr_ratchet_regular_message_destroy(&msg2);

@@ -44,18 +44,21 @@
 #include "vscr_virgil_ratchet_fake_rng_impl.h"
 #include "test_data_ratchet.h"
 
-static void initialize(vscr_ratchet_t *ratchet_alice, vscr_ratchet_t *ratchet_bob) {
+static void
+initialize(vscr_ratchet_t *ratchet_alice, vscr_ratchet_t *ratchet_bob) {
     vscr_ratchet_kdf_info_t *kdf_info = vscr_ratchet_kdf_info_new();
     kdf_info->root_info = vsc_buffer_new_with_capacity(test_ratchet_kdf_info_root.len);
     memcpy(vsc_buffer_ptr(kdf_info->root_info), test_ratchet_kdf_info_root.bytes, test_ratchet_kdf_info_root.len);
     vsc_buffer_reserve(kdf_info->root_info, test_ratchet_kdf_info_root.len);
     kdf_info->ratchet_info = vsc_buffer_new_with_capacity(test_ratchet_kdf_info_ratchet.len);
-    memcpy(vsc_buffer_ptr(kdf_info->ratchet_info), test_ratchet_kdf_info_ratchet.bytes, test_ratchet_kdf_info_ratchet.len);
+    memcpy(vsc_buffer_ptr(kdf_info->ratchet_info), test_ratchet_kdf_info_ratchet.bytes,
+            test_ratchet_kdf_info_ratchet.len);
     vsc_buffer_reserve(kdf_info->ratchet_info, test_ratchet_kdf_info_ratchet.len);
 
     vscr_ratchet_cipher_t *ratchet_cipher = vscr_ratchet_cipher_new();
-    ratchet_cipher->kdf_info= vsc_buffer_new_with_capacity(test_ratchet_kdf_info_cipher.len);
-    memcpy(vsc_buffer_ptr(ratchet_cipher->kdf_info), test_ratchet_kdf_info_cipher.bytes, test_ratchet_kdf_info_cipher.len);
+    ratchet_cipher->kdf_info = vsc_buffer_new_with_capacity(test_ratchet_kdf_info_cipher.len);
+    memcpy(vsc_buffer_ptr(ratchet_cipher->kdf_info), test_ratchet_kdf_info_cipher.bytes,
+            test_ratchet_kdf_info_cipher.len);
     vsc_buffer_reserve(ratchet_cipher->kdf_info, test_ratchet_kdf_info_cipher.len);
     vscr_ratchet_use_cipher(ratchet_alice, ratchet_cipher);
     vscr_ratchet_use_cipher(ratchet_bob, ratchet_cipher);
@@ -68,14 +71,17 @@ static void initialize(vscr_ratchet_t *ratchet_alice, vscr_ratchet_t *ratchet_bo
     vscr_ratchet_take_rng(ratchet_bob, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
 
     vsc_buffer_t *ratchet_private_key = vsc_buffer_new_with_capacity(test_ratchet_ratchet_private_key.len);
-    memcpy(vsc_buffer_ptr(ratchet_private_key), test_ratchet_ratchet_private_key.bytes, test_ratchet_ratchet_private_key.len);
+    memcpy(vsc_buffer_ptr(ratchet_private_key), test_ratchet_ratchet_private_key.bytes,
+            test_ratchet_ratchet_private_key.len);
     vsc_buffer_reserve(ratchet_private_key, test_ratchet_ratchet_private_key.len);
 
     vsc_buffer_t *ratchet_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
-    TEST_ASSERT_EQUAL_INT(0, curve25519_get_pubkey(vsc_buffer_ptr(ratchet_public_key), test_ratchet_ratchet_private_key.bytes));
+    TEST_ASSERT_EQUAL_INT(
+            0, curve25519_get_pubkey(vsc_buffer_ptr(ratchet_public_key), test_ratchet_ratchet_private_key.bytes));
     vsc_buffer_reserve(ratchet_public_key, test_ratchet_ratchet_private_key.len);
 
-    TEST_ASSERT_EQUAL_INT(vscr_SUCCESS, vscr_ratchet_initiate(ratchet_alice, test_ratchet_shared_secret, ratchet_private_key));
+    TEST_ASSERT_EQUAL_INT(
+            vscr_SUCCESS, vscr_ratchet_initiate(ratchet_alice, test_ratchet_shared_secret, ratchet_private_key));
     vscr_ratchet_respond(ratchet_bob, test_ratchet_shared_secret, ratchet_public_key);
 
     vsc_buffer_destroy(&ratchet_private_key);
@@ -114,7 +120,8 @@ test__1(void) {
     TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
     TEST_ASSERT_EQUAL_INT(test_ratchet_plain_text2.len, vsc_buffer_len(decrypted2));
-    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_plain_text2.bytes, vsc_buffer_bytes(decrypted2), test_ratchet_plain_text2.len);
+    TEST_ASSERT_EQUAL_MEMORY(
+            test_ratchet_plain_text2.bytes, vsc_buffer_bytes(decrypted2), test_ratchet_plain_text2.len);
 
     vscr_ratchet_destroy(&ratchet_alice);
     vscr_ratchet_destroy(&ratchet_bob);
@@ -148,7 +155,8 @@ test__2(void) {
     TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
     TEST_ASSERT_EQUAL_INT(test_ratchet_plain_text2.len, vsc_buffer_len(decrypted2));
-    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_plain_text2.bytes, vsc_buffer_bytes(decrypted2), test_ratchet_plain_text2.len);
+    TEST_ASSERT_EQUAL_MEMORY(
+            test_ratchet_plain_text2.bytes, vsc_buffer_bytes(decrypted2), test_ratchet_plain_text2.len);
 
     size_t plain_text_len = vscr_ratchet_decrypt_len(ratchet_bob, vsc_buffer_len(cipher_text1));
     vsc_buffer_t *decrypted = vsc_buffer_new_with_capacity(plain_text_len);
@@ -206,8 +214,7 @@ test__3(void) {
         if (dice) {
             sender = ratchet_alice;
             receiver = ratchet_bob;
-        }
-        else {
+        } else {
             sender = ratchet_bob;
             receiver = ratchet_alice;
         }
@@ -224,8 +231,7 @@ test__3(void) {
         TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
         TEST_ASSERT_EQUAL_INT(vsc_buffer_len(plain_text), vsc_buffer_len(decrypted));
-        TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(plain_text), vsc_buffer_bytes(decrypted),
-                                 vsc_buffer_len(plain_text));
+        TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(plain_text), vsc_buffer_bytes(decrypted), vsc_buffer_len(plain_text));
 
         vsc_buffer_destroy(&plain_text);
         vsc_buffer_destroy(&cipher_text);
