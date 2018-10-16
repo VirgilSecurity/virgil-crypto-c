@@ -52,9 +52,9 @@
 #include "vscr_ratchet_receiver_chain.h"
 #include "vscr_ratchet_skipped_message_key.h"
 
-#include <vscf_sha256.h>
-#include <vscf_hmac.h>
-#include <vscf_hkdf.h>
+#include <virgil/crypto/foundation/vscf_sha256.h>
+#include <virgil/crypto/foundation/vscf_hmac.h>
+#include <virgil/crypto/foundation/vscf_hkdf.h>
 #include <ed25519/ed25519.h>
 
 // clang-format on

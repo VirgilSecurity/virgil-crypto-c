@@ -48,8 +48,8 @@
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 
-#include <vscf_asn1wr.h>
-#include <vscf_asn1rd.h>
+#include <virgil/crypto/foundation/vscf_asn1wr.h>
+#include <virgil/crypto/foundation/vscf_asn1rd.h>
 
 // clang-format on
 //  @end

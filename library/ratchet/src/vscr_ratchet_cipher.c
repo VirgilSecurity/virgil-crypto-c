@@ -48,9 +48,8 @@
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 
-#include <vscf_sha256.h>
-#include <vscf_hkdf.h>
-#include <vscf_aes256_gcm.h>
+#include <virgil/crypto/foundation/vscf_sha256.h>
+#include <virgil/crypto/foundation/vscf_hkdf.h>
 
 // clang-format on
 //  @end

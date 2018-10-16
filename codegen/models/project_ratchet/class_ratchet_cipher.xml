@@ -2,8 +2,6 @@
 
     <require impl="sha256" project="foundation" scope="private"/>
     <require impl="hkdf" project="foundation" scope="private"/>
-    <require impl="aes256 gcm" project="foundation" scope="private"/>
-    <require class="error ctx" project="foundation" scope="public"/>
 
     <dependency name="aes256 gcm" impl="aes256 gcm" project="foundation"/>
     <property name="kdf info" class="buffer" access="readwrite"/>

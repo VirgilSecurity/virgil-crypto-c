@@ -1,6 +1,5 @@
 <class name="ratchet session" context="private">
 
-    <require class="error ctx" project="foundation" scope="public"/>
     <require class="ratchet prekey message" scope="private"/>
     <require class="ratchet common" scope="public"/>
 
