@@ -58,7 +58,7 @@
 #include "vscf_asn1rd_internal.h"
 
 #include <mbedtls/asn1.h>
-#include <vsc_buffer_defs.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 // clang-format on
 //  @end
