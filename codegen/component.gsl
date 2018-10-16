@@ -80,6 +80,33 @@ function component_dump (component)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Remove linage.
+# ---------------------------------------------------------------------------
+function component_remove_lineage (component)
+    check_arguments (my, "component", my)
+
+    for my.component.lineage
+        delete lineage
+    endfor
+
+    for my.component. as inner_component where is_item (inner_component)
+        component_remove_lineage (inner_component)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Copy given component without lineage.
+# ---------------------------------------------------------------------------
+function component_clean_copy (component, destination, alias)
+    check_arguments (my, "component, destination", my)
+
+    my.copied_component = item_copy_to (my.component, my.destination, my.alias)
+    component_remove_lineage (my.copied_component)
+
+    return my.copied_component
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return instance as shortened XML string with required attributes.
 # ---------------------------------------------------------------------------
 function component_instance_dump (instance)
@@ -88,11 +115,16 @@ function component_instance_dump (instance)
     my.instance_info = ""
     my.instance_info += " name=\"$(my.instance.name)\"" ? ""
     my.instance_info += " type=\"$(my.instance.type)\"" ? ""
+    my.instance_info += " size=\"$(my.instance.size)\"" ? ""
+    my.instance_info += " enum=\"$(my.instance.enum)\"" ? ""
     my.instance_info += " class=\"$(my.instance.class)\"" ? ""
     my.instance_info += " callback=\"$(my.instance.callback)\"" ? ""
+    my.instance_info += " interface=\"$(my.instance.interface)\"" ? ""
+    my.instance_info += " api=\"$(my.instance.api)\"" ? ""
+    my.instance_info += " impl=\"$(my.instance.impl)\"" ? ""
     my.instance_info += " bits=\"$(my.instance.bits)\"" ? ""
     my.instance_info += " access=\"$(my.instance.access)\"" ? ""
-    my.instance_info += " need_definition=\"$(my.instance.need_definition)\"" ? ""
+    my.instance_info += " require_definition=\"$(my.instance.require_definition)\"" ? ""
     my.instance_dump = "<$(name (my.instance))$(my.instance_info)/>"
 
     return my.instance_dump
@@ -341,10 +373,21 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return true if given component does not belong to any class.
 # ---------------------------------------------------------------------------
-function component_is_global (component)
+function component_in_global_scope (component)
     check_argument (my, "component", my)
 
-    return (my.component.of_class ? my.component->lineage.of_class ? "global") = "global"
+    return (my.component.of_class ? my.component->lineage.of_class ? "") = "global"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true if given component belongs to any class.
+# ---------------------------------------------------------------------------
+function component_in_class_scope (component)
+    check_argument (my, "component", my)
+
+    my.of_class = my.component.of_class ? my.component->lineage.of_class ?
+
+    return defined (my.of_class) & my.of_class <> "global" & my.of_class <> ""
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -371,10 +414,11 @@ function component_derive_uid (component)
     my.self_uid = make_id (name (my.component), my.component.name)
 
     #   Define uid scope: class or global
-    if component_is_global (my.component)
-        my.uid_scope = "global"
-    else
+    if component_in_class_scope (my.component)
         my.uid_scope = make_id ("class", my.component.of_class ? my.component->lineage.of_class)
+
+    elsif component_in_global_scope (my.component)
+        my.uid_scope = "global"
     endif
 
     #   Put it together
@@ -426,7 +470,7 @@ endfunction
 #   Return component's name prefix: class name + ancestors.
 #   Rules:
 #       - no prefix if class is 'global';
-#       - class name is ommited if component's name equals to the class name.
+#       - class name is omitted if component's name equals to the class name.
 # ---------------------------------------------------------------------------
 function component_derive_name_prefix (component)
     check_argument (my, "component", my)
@@ -440,7 +484,7 @@ function component_derive_name_prefix (component)
         my.ancestors = cat (my.ancestors, ancestor.name)
     endfor
 
-    if component_is_global (my.component)
+    if component_in_global_scope (my.component)
         return ""
 
     elsif string_equal (my.component.of_class, my.component.name)
@@ -454,47 +498,13 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return component's full name: class name + ancestors + self name.
 #   Rules:
-#       - class name is ommited if class is 'global';
-#       - class name is ommited if component's name equals to the class name.
+#       - class name is omitted if class is 'global';
+#       - class name is omitted if component's name equals to the class name.
 # ---------------------------------------------------------------------------
 function component_derive_full_name (component)
      check_argument (my, "component", my)
 
      return cat (component_derive_name_prefix (my.component), my.component.name)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   If attribute 'project' is defined within <instance/> then return project
-#   prefix, otherwise return empty string.
-# ---------------------------------------------------------------------------
-function component_derive_instance_project_uid (instance, parent)
-    check_arguments (my, "instance, parent", my)
-
-    return defined (my.instance.project) ?? make_id ("project", my.instance.project) ? ""
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Crate uid based on the given options.
-#   Examples:
-#       {struct, buffer, buffer} - returns "class_buffer_struct_buffer"
-#       {struct, inner/buffer, buffer} - returns "class_inner_struct_buffer"
-#       {enum, impl/tag,} - returns "class_impl_enum_tag"
-#       {struct, codes,} - returns "global_struct_codes"
-# ---------------------------------------------------------------------------
-function component_derive_instance_type_uid (type_id, type_value, of_class)
-    check_arguments (my, "type_id, type_value", my)
-
-    if regexp.match ("([^\/]+)\/(.+)", my.type_value, my.group1, my.group2)
-        my.of_class = my.group1
-        my.type_value = my.group2
-    endif
-
-    if defined (my.of_class)
-        return make_id ("class", my.of_class, my.type_id, my.type_value)
-
-    else
-        return make_id ("global", my.type_id, my.type_value)
-    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -505,7 +515,7 @@ function component_resolve_attr_lang (component, parent)
 
     my.component.lang ?= my.parent.lang ? "c"
 
-    my.valid_langs = "c, java, csharp"
+    my.valid_langs = "c, java, csharp, swift"
 
     if ! string_in (my.component.lang, my.valid_langs)
         my.component_dump = component_dump (my.component)
@@ -538,7 +548,7 @@ endfunction
 function component_resolve_attr_of_class (component, parent)
     check_arguments (my, "component, parent", my)
 
-    my.component.of_class ?= my.parent.of_class
+    my.component.of_class ?= my.parent.of_class ?
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -666,17 +676,9 @@ function component_resolve_instance_attr_class (instance, parent)
 
     elsif my.instance.class = "buffer"
         my.instance.project ?= "common"
-        my.instance.access ?= "readwrite"
+        my.instance.access ?= "writeonly"
         my.instance.is_reference = "1"
     endif
-
-    if my.instance.class = "any" | is_ref (my.instance.class) | defined (my.instance.library)
-        return
-    endif
-
-    my.project_uid = component_derive_instance_project_uid (my.instance, my.parent)
-    my.type_uid = component_derive_instance_type_uid ("struct", my.instance.class, my.instance.class)
-    my.instance.class = make_ref (make_id(my.project_uid, my.type_uid))
 endfunction
 
 
@@ -691,14 +693,6 @@ function component_resolve_instance_attr_enum (instance, parent)
     if is_ref (my.instance.enum) | defined (my.instance.library)
         return
     endif
-
-    if my.instance.enum = "error"
-        my.instance.enum = "error/error"
-    endif
-
-    my.project_uid = component_derive_instance_project_uid (my.instance, my.parent)
-    my.type_uid = component_derive_instance_type_uid ("enum", my.instance.enum, my.instance.enum)
-    my.instance.enum = make_ref (make_id(my.project_uid, my.type_uid))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -712,10 +706,6 @@ function component_resolve_instance_attr_callback (instance, parent)
     if is_ref (my.instance.callback) | defined (my.instance.library)
         return
     endif
-
-    my.project_uid = component_derive_instance_project_uid (my.instance, my.parent)
-    my.type_uid = component_derive_instance_type_uid ("callback", my.instance.callback, my.instance.callback)
-    my.instance.callback = make_ref (make_id(my.project_uid, my.type_uid))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -729,10 +719,6 @@ function component_resolve_instance_attr_interface (instance, parent)
     if is_ref (my.instance.interface) | defined (my.instance.library)
         return
     endif
-
-    my.project_uid = component_derive_instance_project_uid (my.instance, my.parent)
-    my.type_uid = component_derive_instance_type_uid ("struct", "impl", "impl")
-    my.instance.interface = make_ref (make_id(my.project_uid, my.type_uid))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -749,11 +735,6 @@ function component_resolve_instance_attr_api (instance, parent)
     if is_ref (my.instance.api) | defined (my.instance.library)
         return
     endif
-
-    my.project_uid = component_derive_instance_project_uid (my.instance, my.parent)
-    my.type = cat (my.instance.api, "api")
-    my.type_uid = component_derive_instance_type_uid ("struct", my.type, my.type)
-    my.instance.api = make_ref (make_id(my.project_uid, my.type_uid))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -767,10 +748,6 @@ function component_resolve_instance_attr_impl (instance, parent)
     if is_ref (my.instance.impl) | defined (my.instance.library)
         return
     endif
-
-    my.project_uid = component_derive_instance_project_uid (my.instance, my.parent)
-    my.type_uid = component_derive_instance_type_uid ("struct", "impl", my.instance.impl)
-    my.instance.impl = make_ref (make_id(my.project_uid, my.type_uid))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -784,27 +761,28 @@ function component_resolve_instance_attr_access (instance, parent)
     my.valid_access_argument = "readonly, writeonly, readwrite, disown"
     my.valid_access_variable = "readonly, readwrite"
     my.valid_access_return = "readonly, readwrite, disown"
+    my.instance_dump = component_instance_dump (my.instance)
 
     if item_in (my.instance, "argument") & \
             ! string_in (my.instance.access, my.valid_access_argument)
 
         echo_fatal ( \
             "Invalid value '$(my.instance.access)' of attribute '$(name (my.instance)).access'." + \
-            " Expected {$(my.valid_access_argument)}")
+            " Expected {$(my.valid_access_argument)}. Instance: $(my.instance_dump:)")
 
     elsif item_in (my.instance, "variable, property") & \
             ! string_in (my.instance.access, my.valid_access_variable)
 
         echo_fatal ( \
             "Invalid value '$(my.instance.access)' of attribute '$(name (my.instance)).access'." + \
-            " Expected {$(my.valid_access_variable)}")
+            " Expected {$(my.valid_access_variable)}. Instance: $(my.instance_dump:)")
 
     elsif item_in (my.instance, "return") & \
             ! string_in (my.instance.access, my.valid_access_return)
 
         echo_fatal ( \
             "Invalid value '$(my.instance.access)' of attribute '$(name (my.instance)).access'." + \
-            " Expected {$(my.valid_access_return)}")
+            " Expected {$(my.valid_access_return)}. Instance: $(my.instance_dump:)")
     endif
 
 endfunction
@@ -848,18 +826,18 @@ function component_resolve_instance_attr_is_reference (instance, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve attribute: instance.need_definition.
+#   Resolve attribute: instance.require_definition.
 # ---------------------------------------------------------------------------
-function component_resolve_instance_attr_need_definition (instance, parent)
+function component_resolve_instance_attr_require_definition (instance, parent)
     check_arguments (my, "instance, parent")
 
-    if defined (my.instance.need_definition)
+    if defined (my.instance.require_definition)
         my.instance_dump = component_instance_dump (my.instance)
 
-        my.valid_instance_need_definition = "public, private"
-        if ! string_in (my.instance.need_definition, my.valid_instance_need_definition)
-            echo_fatal ("Illegal attribute 'need_definition' for instance $(my.instance_dump)." + \
-                        " Only allowed for instance with need_definition={$(my.valid_instance_need_definition)}", my)
+        my.valid_instance_require_definition = "public, private"
+        if ! string_in (my.instance.require_definition, my.valid_instance_require_definition)
+            echo_fatal ("Illegal attribute 'require_definition' for instance $(my.instance_dump)." + \
+                        " Only allowed for instance with require_definition={$(my.valid_instance_require_definition)}", my)
         endif
     endif
 endfunction
@@ -966,22 +944,6 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-#   Resolve attribute: method.context.
-# ---------------------------------------------------------------------------
-function component_resolve_method_attr_context (method, parent)
-    check_arguments (my, "method, parent", my)
-
-    my.method.context ?= "none"
-
-    my.valid_context = "none, api, impl"
-
-    if ! string_in (my.method.context, my.valid_context)
-        echo_fatal ("Invalid method attribute context=\"$(my.method.context:)\"." + \
-                    " Expected {$(my.valid_context)}", my)
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Resolve attribute: code.type.
 # ---------------------------------------------------------------------------
 function component_resolve_code_attr_type (code, parent)
@@ -1005,6 +967,24 @@ function component_resolve_attr_feature (component, parent)
 
     #   This attribute is optional and can be set by upper models to define,
     #   which feature this component implements.
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: method.is_static.
+# ---------------------------------------------------------------------------
+function component_resolve_method_attr_is_static (method, parent)
+    check_arguments (my, "method, parent", my)
+
+    my.method.is_static ?= "0"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: method.is_const.
+# ---------------------------------------------------------------------------
+function component_resolve_method_attr_is_const (method, parent)
+    check_arguments (my, "method, parent", my)
+
+    my.method.is_const ?= "0"
 endfunction
 
 
@@ -1036,7 +1016,7 @@ function component_add_lineage (component, parent)
         endnew
     endif
 
-    my.component->lineage.of_class = my.parent.of_class
+    my.component->lineage.of_class = my.parent.of_class ?
 
     #   Add parent as ancestor
     new ancestor to my.component->lineage
@@ -1110,7 +1090,7 @@ function component_resolve_instance (instance, parent)
     component_resolve_instance_attr_access (my.instance, my.parent)
     component_resolve_instance_attr_size (my.instance, my.parent)
     component_resolve_instance_attr_is_reference (my.instance, my.parent)
-    component_resolve_instance_attr_need_definition (my.instance, my.parent)
+    component_resolve_instance_attr_require_definition (my.instance, my.parent)
 
     if count (my.instance.string)
         component_resolve_string (my.instance->string, my.instance)
@@ -1130,7 +1110,6 @@ endfunction
 function component_resolve_dependency (dependency, parent)
     check_arguments (my, "dependency, parent", my)
 
-    assert_attribute (my.parent, "project", my)
     assert_attribute (my.dependency, "name", my)
     assert_attribute_one_of (my.dependency, "interface, api, class, impl")
 
@@ -1222,7 +1201,7 @@ function component_resolve_constant (constant, parent)
 
     component_require_attr_name (my.constant, my)
 
-    if ! item_in (my.parent ?, "enum")
+    if ! item_in (my.parent ?, "enum, interface")
         component_require_attr_value (my.constant, my)
     endif
 
@@ -1363,7 +1342,8 @@ function component_resolve_method (method, parent)
     component_resolve_attr_visibility (my.method, my.parent)
     component_resolve_attr_declaration (my.method, my.parent)
     component_resolve_attr_definition (my.method, my.parent)
-    component_resolve_method_attr_context (my.method, my.parent)
+    component_resolve_method_attr_is_static (my.method, my.parent)
+    component_resolve_method_attr_is_const (my.method, my.parent)
 
     for my.method.argument
         component_resolve_argument (argument, my.method)
@@ -1462,7 +1442,7 @@ endfunction
 function component_resolve_require_base (require_base, parent)
     check_arguments (my, "require_base, parent", my)
 
-    assert_attribute_one_of (my.require_base, "module, header, feature, interface, class, impl", my)
+    assert_attribute_one_of (my.require_base, "module, header, feature, interface, class, impl, enum", my)
 
     component_resolve_landlord (my.require_base, my.parent)
     component_resolve_attr_scope (my.require_base, my.parent)
@@ -1535,6 +1515,10 @@ function foreach_component_resolve (source)
 
     for my.source.features
         component_resolve_features (features, my.source)
+    endfor
+
+    for my.source.dependency
+        component_resolve_dependency (dependency, my.source)
     endfor
 endfunction
 

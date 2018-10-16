@@ -34,7 +34,7 @@
 
 
 
-#include <virgil/common/vsc_data.h>
+#include <virgil/crypto/common/vsc_data.h>
 
 
 //

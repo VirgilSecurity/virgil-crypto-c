@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -53,10 +54,11 @@
 #define VSCF_MBEDTLS_MD_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_impl.h"
 
 #include <mbedtls/md.h>
+
+// clang-format on
 //  @end
 
 

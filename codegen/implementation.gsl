@@ -181,7 +181,6 @@ function implementation_resolve_method (method, parent)
 
     my.method.declaration ?= "private"
     my.method.definition ?= "private"
-    my.method.context ?= "impl"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -199,11 +198,14 @@ endfunction
 function implementation_resolve (implementation, parent, project)
     check_arguments (my, "implementation, parent, project", my)
 
-    component_require_attr_name (my.implementation, my)
-
     echo_trace ("Resolving implementation: $(my.implementation.name:)", my)
 
-    my.implementation.project ?= my.project.name
+    component_require_attr_name (my.implementation, my)
+
+    my.implementation.scope ?= "public"
+    my.implementation.visibility ?= "public"
+    my.implementation.c_prefix ?= my.project.prefix
+    my.implementation.uid = make_id ("implelemntation", my.implementation.name)
 
     for my.implementation.c_include
         implementation_resolve_c_include (c_include, my.implementation)
@@ -248,6 +250,8 @@ function implementation_resolve (implementation, parent, project)
     for my.implementation.require
         implementation_resolve_require (require, my.implementation)
     endfor
+
+    foreach_component_resolve (my.implementation)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -275,13 +279,13 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create 'feature' for given 'implementation'.
 # ---------------------------------------------------------------------------
-function implementation_create_feature (implementation, destination)
-    check_arguments (my, "implementation, destination", my)
+function implementation_create_feature (implementation, project, destination)
+    check_arguments (my, "implementation, project, destination", my)
 
     new feature to my.destination
         . = "Enable implementation '$(my.implementation.name)'."
         .name = my.implementation.name
-        .project = my.implementation.project
+        .project = my.project.name
 
         for my.implementation.require where defined (0.feature)
             copy require to feature
@@ -310,11 +314,11 @@ endfunction
 # ---------------------------------------------------------------------------
 #   For each 'implementation' within 'source' create 'feature'.
 # ---------------------------------------------------------------------------
-function foreach_implementation_create_feature (source, destination)
-    check_arguments (my, "source, destination", my)
+function foreach_implementation_create_feature (source, project, destination)
+    check_arguments (my, "source, project, destination", my)
 
     for my.source.implementation
-        implementation_create_feature (implementation, my.destination)
+        implementation_create_feature (implementation, my.project, my.destination)
     endfor
 endfunction
 

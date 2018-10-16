@@ -34,11 +34,12 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
 // --------------------------------------------------------------------------
-//  Manages library error codes.
+//  Defines library error codes.
 // --------------------------------------------------------------------------
 
 
@@ -50,6 +51,8 @@
 // --------------------------------------------------------------------------
 
 #include "vscf_error.h"
+
+// clang-format on
 //  @end
 
 

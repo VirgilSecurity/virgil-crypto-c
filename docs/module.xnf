@@ -55,6 +55,18 @@
             Short module name.
         </attr>
 
+        <attr name="has_cmakedefine" default="0">
+            Defines that module must be configured with CMake configure_file() command.
+
+            <restrict value="0">
+                Module does not contain CMake variables and #cmakedefine instructions.
+            </restrict>
+
+            <restrict value="1">
+                Module contains CMake variables and/or #cmakedefine instructions.
+            </restrict>
+        </attr>
+
         <inherit entity="scope"/>
         <inherit entity="component"/>
 

@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#include <virgil/common/vsc_data.h>
+#include <virgil/crypto/common/vsc_data.h>
 
 
 //

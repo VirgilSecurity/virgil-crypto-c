@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -52,6 +53,8 @@
 #include "vscf_mbedtls_md.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
+
+// clang-format on
 //  @end
 
 

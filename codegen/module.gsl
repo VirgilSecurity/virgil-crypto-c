@@ -145,6 +145,7 @@ function module_resolve (module, project)
     my.module.of_class ?= my.module.name
     my.module.c_prefix ?= my.project.prefix
     my.module.uid = make_id (name (my.module), my.module.name)
+    my.module.has_cmakedefine ?= "0"
 
     component_resolve_attr_scope (my.module)
 
@@ -171,25 +172,16 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create 'feature' for given 'module'.
 # ---------------------------------------------------------------------------
-function module_create_feature (module, destination)
-    check_arguments (my, "module, destination", my)
+function module_create_feature (module, project, destination)
+    check_arguments (my, "module, project, destination", my)
 
     new feature to my.destination
         . = "Enable module '$(my.module.name)'."
         .name = my.module.feature
+        .project = my.project.name
 
-        for my.module.require where defined (0.project) as impl_require
-            new require to feature
-                .project = impl_require.project
-                .feature = impl_require.feature
-            endnew
-        endfor
-
-        for my.module.require where defined (0.library) as impl_require
-            new require to feature
-                .library = impl_require.library
-                .feature = impl_require.feature
-            endnew
+        for my.module.require where defined (0.project) | defined (0.library)
+            copy require to feature
         endfor
     endnew
 endfunction
@@ -198,11 +190,11 @@ endfunction
 # ---------------------------------------------------------------------------
 #   For each 'module' within 'source' create 'feature'.
 # ---------------------------------------------------------------------------
-function foreach_module_create_feature (source, destination)
-    check_arguments (my, "source, destination", my)
+function foreach_module_create_feature (source, project, destination)
+    check_arguments (my, "source, project, destination", my)
 
     for my.source.module where defined (module.feature)
-        module_create_feature (module, my.destination)
+        module_create_feature (module, my.project, my.destination)
     endfor
 endfunction
 

@@ -42,11 +42,17 @@ project(virgil_crypto_c_top VERSION 0.1.0 LANGUAGES C)
 include("cmake/clangformat.cmake")
 include("cmake/helpers.cmake")
 include("cmake/TransitiveArgs.cmake")
+include("cmake/TransitiveToolchainArgs.cmake")
 
 
 # ---------------------------------------------------------------------------
 #   Build options
 # ---------------------------------------------------------------------------
+
+#
+# Global
+#
+option(BUILD_SHARED_LIBS "On/Off build shared libraries." OFF)
 
 #
 # Test & bench
@@ -66,7 +72,7 @@ option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" ON)
 #
 # Wrappers
 #
-option(VIRGIL_WRAP_ALL "Build all available wrappers on the given platform" ON)
+option(VIRGIL_WRAP_ALL "Build all available wrappers on the given platform" OFF)
 option(VIRGIL_WRAP_GO "Build 'Golang' wrapper" OFF)
 
 
@@ -167,7 +173,7 @@ endif()
 # ---------------------------------------------------------------------------
 #   Integration tests
 # ---------------------------------------------------------------------------
-if(ENABLE_TESTING)
+if(ENABLE_TESTING AND NOT CMAKE_CROSSCOMPILING)
     enable_testing()
     add_subdirectory(tests)
 endif()
@@ -176,7 +182,7 @@ endif()
 # ---------------------------------------------------------------------------
 #   Benchmarks
 # ---------------------------------------------------------------------------
-if(ENABLE_BENCHMARKS)
+if(ENABLE_BENCHMARKS AND NOT CMAKE_CROSSCOMPILING)
     add_subdirectory(benchmarks)
 endif()
 

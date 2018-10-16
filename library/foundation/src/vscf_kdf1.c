@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -55,6 +56,8 @@
 #include "vscf_hash_stream.h"
 #include "vscf_kdf1_impl.h"
 #include "vscf_kdf1_internal.h"
+
+// clang-format on
 //  @end
 
 

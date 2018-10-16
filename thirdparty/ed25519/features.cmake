@@ -45,12 +45,14 @@
 
 include_guard()
 
+option(ED25519_LIBRARY "Enable build of the 'ed25519' library" ON)
 option(ED25519_REF10 "Using REF10 implementation of ed25519." ON)
 option(ED25519_AMD64_RADIX_64_24K "Using radix 2^64 and a 24KB precomputed table optimized
             implementation of ed25519 curve on the x86_64 processor." OFF)
 option(ED25519_AMD64_RADIX_51_30K "Using radix 2^51 and a 30KB precomputed table optimized
             implementation of ed25519 curve on the x86_64 processor." OFF)
 mark_as_advanced(
+        ED25519_LIBRARY
         ED25519_REF10
         ED25519_AMD64_RADIX_64_24K
         ED25519_AMD64_RADIX_51_30K

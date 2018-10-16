@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -52,7 +53,7 @@
 #include "vscf_rsa_private_key.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_asn1.h"
+#include "vscf_asn1_tag.h"
 #include "vscf_mbedtls_bignum_asn1_writer.h"
 #include "vscf_mbedtls_bignum_asn1_reader.h"
 #include "vscf_mbedtls_md.h"
@@ -64,6 +65,8 @@
 #include "vscf_rsa_private_key_internal.h"
 
 #include <mbedtls/bignum.h>
+
+// clang-format on
 //  @end
 
 
@@ -117,8 +120,8 @@ vscf_rsa_private_key_cleanup_ctx(vscf_rsa_private_key_impl_t *rsa_private_key_im
 //  Setup parameters that is used during key generation.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_set_keygen_params(
-        vscf_rsa_private_key_impl_t *rsa_private_key_impl, size_t bitlen, size_t exponent) {
+vscf_rsa_private_key_set_keygen_params(vscf_rsa_private_key_impl_t *rsa_private_key_impl, size_t bitlen,
+        size_t exponent) {
 
     VSCF_ASSERT_PTR(rsa_private_key_impl);
     VSCF_ASSERT(bitlen >= 128 && bitlen <= 16384);

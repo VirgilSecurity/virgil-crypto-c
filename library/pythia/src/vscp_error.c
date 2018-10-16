@@ -34,11 +34,12 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
 // --------------------------------------------------------------------------
-//  Manages pythia error codes.
+//  Defines the library error codes.
 // --------------------------------------------------------------------------
 
 
@@ -50,6 +51,8 @@
 // --------------------------------------------------------------------------
 
 #include "vscp_error.h"
+
+// clang-format on
 //  @end
 
 

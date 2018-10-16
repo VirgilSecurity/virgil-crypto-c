@@ -36,13 +36,13 @@
 -->
 
 <xnf name="project" script="xnf_gen.gsl" version="1.0a1">
-    Define project as set of interfaces, implementators and modules.s
+    Define project as set of interfaces, implementors and modules.s
 
     <produce filename="project.md" type="gurudoc" />
 
 
     <entity name="project">
-        Define project as set of interfaces, implementators and modules.
+        Define project as set of interfaces, implementors and modules.
 
         <attr name="name" required="1">
             Project name.
@@ -58,7 +58,12 @@
 
         <attr name="namespace" required="1">
             Project namespace.
-            This attribute is used to for wrappers that support namesapces.
+            This attribute is used to resolve path to include directories.
+        </attr>
+
+        <attr name="package" required="1">
+            Project package name.
+            This attribute is used to for wrappers that support package and namespace.
         </attr>
 
         <attr name="path" required="1">
