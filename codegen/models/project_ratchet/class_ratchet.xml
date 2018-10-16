@@ -3,14 +3,13 @@
     <require impl="sha256" project="foundation" scope="private"/>
     <require impl="hmac" project="foundation" scope="private"/>
     <require impl="hkdf" project="foundation" scope="private"/>
-    <require class="error ctx" project="foundation" scope="public"/>
 
     <require class="ratchet common" scope="public"/>
     <require class="ratchet regular message" scope="public"/>
     <require class="ratchet message key" scope="public"/>
     <require class="ratchet chain key" scope="public"/>
 
-    <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
+    <require header="ed25519/ed25519.h" scope="private"/>
 
     <variable name="ratchet chain key seed" type="unsigned" size="1" declaration="private" definition="private">
         <array length="derived"/>

@@ -2,7 +2,6 @@
 
     <require impl="asn1wr" project="foundation" scope="private"/>
     <require impl="asn1rd" project="foundation" scope="private"/>
-    <require class="error ctx" project="foundation" scope="public"/>
 
     <constant name="public key length" definition="public" value="32"/>
 

@@ -48,10 +48,8 @@
 #define VSCR_RATCHET_PREKEY_MESSAGE_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_error.h"
 #include "vscr_error_ctx.h"
-
-#include <vscf_error_ctx.h>
+#include "vscr_error.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
