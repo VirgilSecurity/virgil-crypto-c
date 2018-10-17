@@ -247,7 +247,7 @@ vscr_ratchet_prekey_message_serialize_len(size_t message_len) {
     //       one_time_public_key OCTET_STRING,
     //       message OCTET_STRING }
 
-    size_t top_sequence_len = 1 + 3       /* SEQUENCE */
+    size_t top_sequence_len = 1 + 3 /* SEQUENCE */
                               + 1 + 1 + 2 /* INTEGER */
                               + 1 + 1 + vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH + 1 + 1 +
                               vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH + 1 + 1 +
