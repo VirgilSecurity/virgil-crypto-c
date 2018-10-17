@@ -38,9 +38,9 @@
     <library name="mbedtls"/>
     <library name="ed25519"/>
 
-    <project name="common" enabled="0"/>
-    <project name="foundation" enabled="0"/>
-    <project name="pythia" enabled="0"/>
+    <project name="common" enabled="1"/>
+    <project name="foundation" enabled="1"/>
+    <project name="pythia" enabled="1"/>
     <project name="ratchet" enabled="1"/>
 
 </main>
