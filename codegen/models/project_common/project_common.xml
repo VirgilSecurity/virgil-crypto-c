@@ -52,6 +52,4 @@
 
     <class name="data"/>
     <class name="buffer"/>
-
-    <wrapper lang="swift"/>
 </project>
