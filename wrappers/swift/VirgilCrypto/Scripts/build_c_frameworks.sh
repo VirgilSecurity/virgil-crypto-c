@@ -112,6 +112,10 @@ function make_fat_framework {
 
 command -v cmake >/dev/null 2>&1 || show_error "Required utility CMake is not found."
 
+PLATFORM_NAME="iphoneos"
+PROJECT_DIR=$(abspath ".")
+BUILD_DIR=$(abspath "${PROJECT_DIR}/../Build")
+
 ROOT_DIR=$(abspath "${PROJECT_DIR}/../../..")
 SRC_DIR="${ROOT_DIR}"
 INSTALL_DIR="${BUILD_DIR}/VSCFrameworks/install"
@@ -150,7 +154,8 @@ function build_ios {
 
     if [ -d "${IOS_PREBUILT_DIR}/VSCCommon.framework" ] && \
             [ -d "${IOS_PREBUILT_DIR}/VSCFoundation.framework" ] && \
-            [ -d "${IOS_PREBUILT_DIR}/VSCPythia.framework" ]; then
+            [ -d "${IOS_PREBUILT_DIR}/VSCPythia.framework" ] && \
+            [ -d "${IOS_PREBUILT_DIR}/VSCRatchet.framework" ]; then
 
         show_info "Requested binaries is found in the '${IOS_PREBUILT_DIR}' folder."
         return 0
@@ -171,6 +176,7 @@ function build_ios {
     make_fat_framework VSCCommon "${INSTALL_DIR}" "${INSTALL_DIR}"
     make_fat_framework VSCFoundation "${INSTALL_DIR}" "${INSTALL_DIR}"
     make_fat_framework VSCPythia "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSCRatchet "${INSTALL_DIR}" "${INSTALL_DIR}"
 
     rm -fr -- "${INSTALL_DIR}/lib"
     cp -fa "${INSTALL_DIR}/." "${IOS_PREBUILT_DIR}/"
