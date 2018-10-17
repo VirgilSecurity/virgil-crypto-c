@@ -278,7 +278,7 @@ vscp_pythia_cleanup_ctx(vscp_pythia_t *pythia_ctx) {
 //  Must be called once for entire application at startup.
 //
 VSCP_PUBLIC void
-vscp_init(void) {
+vscp_global_init(void) {
 
     pythia_init_args_t init_args;
     init_args.callback = vscp_pythia_random_handler;
@@ -292,7 +292,7 @@ vscp_init(void) {
 //  Must be called once for entire application before exit.
 //
 VSCP_PUBLIC void
-vscp_cleanup(void) {
+vscp_global_cleanup(void) {
 
     pythia_deinit();
 }
@@ -383,8 +383,8 @@ vscp_pythia_password_update_token_buf_len(void) {
 //  This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_blind(
-        vscp_pythia_t *pythia_ctx, vsc_data_t password, vsc_buffer_t *blinded_password, vsc_buffer_t *blinding_secret) {
+vscp_pythia_blind(vscp_pythia_t *pythia_ctx, vsc_data_t password, vsc_buffer_t *blinded_password,
+        vsc_buffer_t *blinding_secret) {
 
     VSCP_ASSERT_PTR(pythia_ctx);
     VSCP_ASSERT_PTR(password.bytes);

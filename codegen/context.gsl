@@ -122,6 +122,7 @@ function context_append_project (context, project)
     assert_attribute (my.project, "version_patch", my)
     assert_attribute (my.project, "version_string", my)
     assert_attribute (my.project, "prefix", my)
+    assert_attribute (my.project, "framework", my)
 
     new uid to my.context
         .uid = "c_global_macros_build_interface"
