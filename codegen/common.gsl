@@ -449,7 +449,7 @@ function assert_attribute (attribute_scope, attribute_name, caller)
     check_argument (my, "attribute_name")
 
     if ! defined (my.attribute_scope.$(my.attribute_name))
-        my.name = " name=\"$(my.attribute_scope.name)\"" ? ""
+        my.name = " name=\"$(my.attribute_scope.name:)\"" ? ""
         echo_fatal ("Attribute '$(my.attribute_name:)' is not defined \
                 within <$(name (my.attribute_scope)) $(my.name:)/>", my.caller)
     endif

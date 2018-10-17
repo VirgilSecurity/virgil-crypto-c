@@ -38,11 +38,11 @@
 #
 #   To add new supported language do next:
 #       1. Create file `<lang>.gsl` with methods:
-#           - <lang>_create_interface_module(wrapper, source, destination, meta)
-#           - <lang>_create_class_module(wrapper, source, destination, meta)
-#           - <lang>_module_resolve(wrapper, source)
-#           - <lang>_generate_project(wrapper, source)
-#           - <lang>_generate_sources(wrapper, source)
+#           - <lang>_create_interface_module(source, destination, wrapper, meta)
+#           - <lang>_create_class_module(source, destination, wrapper, meta)
+#           - <lang>_module_resolve(source, wrapper)
+#           - <lang>_generate_project(source, wrapper)
+#           - <lang>_generate_sources(source, wrapper)
 #
 #       2. Add `gsl from "<lang>.gsl"` to this file.
 #       3. Create file `wrapper/wrapper_<lang>.xml`
@@ -55,20 +55,20 @@
 gsl from "common.gsl"
 gsl from "swift.gsl"
 
-function wrapper_resolve (wrapper, project)
-    check_arguments (my, "wrapper, project", my)
+function wrapper_resolve (project, wrapper)
+    check_arguments (my, "project, wrapper", my)
 
     my.proxy_func = make_id(my.wrapper.lang, "resolve")
     if macro (my.proxy_func)
-        $(my.proxy_func:) (my.wrapper, my.project)
+        $(my.proxy_func:) (my.project, my.wrapper)
     else
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
 endfunction
 
 
-function wrapper_foreach_interface_create_module (wrapper, source, destination, meta)
-    check_arguments (my, "wrapper, source, destination, meta", my)
+function wrapper_foreach_interface_create_module (source, destination, wrapper, meta)
+    check_arguments (my, "source, destination, wrapper, meta", my)
 
     my.proxy_func = make_id(my.wrapper.lang, "create_interface_module")
     if ! macro (my.proxy_func)
@@ -76,13 +76,13 @@ function wrapper_foreach_interface_create_module (wrapper, source, destination, 
     endif
 
     for my.source.interface where interface.scope <> "internal"
-        $(my.proxy_func:) (my.wrapper, interface, my.destination, my.meta)
+        $(my.proxy_func:) (interface, my.destination, my.wrapper, my.meta)
     endfor
 endfunction
 
 
-function wrapper_foreach_implementation_create_module (wrapper, source, interfaces, destination, meta)
-    check_arguments (my, "wrapper, source, interfaces, destination, meta", my)
+function wrapper_foreach_implementation_create_module (source, interfaces, destination, wrapper, meta)
+    check_arguments (my, "source, interfaces, destination, wrapper, meta", my)
 
     my.proxy_func = make_id(my.wrapper.lang, "create_implementation_module")
     if ! macro (my.proxy_func)
@@ -90,13 +90,13 @@ function wrapper_foreach_implementation_create_module (wrapper, source, interfac
     endif
 
     for my.source.implementation where implementation.scope <> "internal"
-        $(my.proxy_func:) (my.wrapper, implementation, my.interfaces, my.destination, my.meta)
+        $(my.proxy_func:) (implementation, my.interfaces, my.destination, my.wrapper, my.meta)
     endfor
 endfunction
 
 
-function wrapper_foreach_class_create_module (wrapper, source, destination, meta)
-    check_arguments (my, "wrapper, source, destination, meta", my)
+function wrapper_foreach_class_create_module (source, destination, wrapper, meta)
+    check_arguments (my, "source, destination, wrapper, meta", my)
 
     my.proxy_func = make_id(my.wrapper.lang, "create_class_module")
     if ! macro (my.proxy_func)
@@ -104,13 +104,27 @@ function wrapper_foreach_class_create_module (wrapper, source, destination, meta
     endif
 
     for my.source.class where class.scope <> "internal"
-        $(my.proxy_func:) (my.wrapper, class, my.destination, my.meta)
+        $(my.proxy_func:) (class, my.destination, my.wrapper, my.meta)
     endfor
 endfunction
 
 
-function wrapper_foreach_module_resolve(wrapper, source)
-    check_arguments (my, "wrapper, source", my)
+function wrapper_foreach_enum_create_module (source, destination, wrapper, meta)
+    check_arguments (my, "source, destination, wrapper, meta", my)
+
+    my.proxy_func = make_id(my.wrapper.lang, "create_enum_module")
+    if ! macro (my.proxy_func)
+        echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
+    endif
+
+    for my.source.enum where 0.scope <> "internal"
+        $(my.proxy_func:) (enum, my.destination, my.wrapper, my.meta)
+    endfor
+endfunction
+
+
+function wrapper_foreach_module_resolve(source, wrapper)
+    check_arguments (my, "source, wrapper", my)
 
     my.proxy_func = make_id(my.wrapper.lang, "module_resolve")
     if ! macro (my.proxy_func)
@@ -118,29 +132,29 @@ function wrapper_foreach_module_resolve(wrapper, source)
     endif
 
     for my.source.$(make_id (my.wrapper.lang, "module")) as wrapper_module
-        $(my.proxy_func:) (my.wrapper, wrapper_module)
+        $(my.proxy_func:) (wrapper_module, my.wrapper)
     endfor
 endfunction
 
 
-function wrapper_generate_project(wrapper, source)
-    check_arguments (my, "wrapper, source", my)
+function wrapper_generate_project(source, wrapper)
+    check_arguments (my, "source, wrapper", my)
 
     my.proxy_func = make_id(my.wrapper.lang, "generate_project")
     if macro (my.proxy_func)
-        $(my.proxy_func:) (my.wrapper, my.source)
+        $(my.proxy_func:) (my.source, my.wrapper)
     else
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
 endfunction
 
 
-function wrapper_generate_sources(wrapper, source)
-    check_arguments (my, "wrapper, source", my)
+function wrapper_generate_sources(source, wrapper)
+    check_arguments (my, "source, wrapper", my)
 
     my.proxy_func = make_id(my.wrapper.lang, "generate_sources")
     if macro (my.proxy_func)
-        $(my.proxy_func:) (my.wrapper, my.source)
+        $(my.proxy_func:) (my.source, my.wrapper)
     else
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif

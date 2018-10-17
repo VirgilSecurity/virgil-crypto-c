@@ -252,11 +252,12 @@ function process_project (project, interfaces, features_list, projects_api, echo
         my.wrapper = load_lang_wrapper (wrapper_link)
         my.wrappers_destination = XML.new(make_id(my.wrapper.lang, "wrapper", project.name))
 
-        wrapper_resolve (my.wrapper, my.project)
-        wrapper_foreach_class_create_module (my.wrapper, my.root, my.wrappers_destination, my.meta)
-        wrapper_foreach_interface_create_module (my.wrapper, my.root, my.wrappers_destination, my.meta)
-        wrapper_foreach_implementation_create_module (my.wrapper, my.root, my.interfaces, my.wrappers_destination, my.meta)
-        wrapper_foreach_module_resolve(my.wrapper, my.wrappers_destination)
+        wrapper_resolve (my.project, my.wrapper)
+        wrapper_foreach_enum_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
+        wrapper_foreach_class_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
+        wrapper_foreach_interface_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
+        wrapper_foreach_implementation_create_module (my.root, my.interfaces, my.wrappers_destination, my.wrapper, my.meta)
+        wrapper_foreach_module_resolve(my.wrappers_destination, my.wrapper)
         projects_api_collect_info (my.projects_api, my.wrappers_destination)
         projects_api_save (my.projects_api, main.work_path)
 
@@ -269,8 +270,8 @@ function process_project (project, interfaces, features_list, projects_api, echo
             delete wrapper_module
         endfor
 
-        wrapper_generate_project(my.wrapper, my.wrappers_destination)
-        wrapper_generate_sources(my.wrapper, my.wrappers_destination)
+        wrapper_generate_project (my.wrappers_destination, my.wrapper)
+        wrapper_generate_sources (my.wrappers_destination, my.wrapper)
 
         delete my.wrapper
         delete my.wrappers_destination
