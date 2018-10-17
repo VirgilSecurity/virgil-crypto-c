@@ -162,14 +162,6 @@ function _Z23_insert_files_apple_configuration (source, project)
                 )
             ")
             newline ()
-        elsif c_module.scope = "private"
-            cmake_insert ("\
-                set_property(
-                    SOURCE \"$(my.file_path:)\"
-                    PROPERTY MACOSX_PACKAGE_LOCATION \"PrivateHeaders\"
-                )
-            ")
-            newline ()
         endif
     endfor
 endfunction
@@ -416,7 +408,7 @@ function cmake_generate_modulemap (source, project)
         framework module $(my.project.framework:) {
     ")
 
-    for my.source.c_module where string_in (c_module.scope, "public, private")
+    for my.source.c_module where string_in (c_module.scope, "public")
         cmake_insert ("\
             header \"$(c_module.c_include_file:)\"
         ", 1)
