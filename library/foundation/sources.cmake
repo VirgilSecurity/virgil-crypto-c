@@ -80,18 +80,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_api_private.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_impl.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_impl_private.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -100,18 +90,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_asn1_reader_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_asn1_writer.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_asn1_writer_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -120,18 +100,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_auth_decrypt_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_auth_encrypt.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_auth_encrypt_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -140,18 +110,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_cipher_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_cipher_auth.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_cipher_auth_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -160,18 +120,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_cipher_auth_info_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_cipher_info.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_cipher_info_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -180,18 +130,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_compute_shared_key_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_decrypt.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_decrypt_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -200,18 +140,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_encrypt_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error_context.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_error_context_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -220,18 +150,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_ex_kdf_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_export_private_key.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_export_private_key_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -240,18 +160,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_export_public_key_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_generate_key.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_generate_key_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -260,18 +170,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_hash_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_hash_info.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_hash_info_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -280,18 +180,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_hash_stream_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_import_private_key.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_import_private_key_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -300,18 +190,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_import_public_key_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_kdf.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_kdf_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -320,18 +200,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_reader.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_reader_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -340,18 +210,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_writer_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_mac.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_mac_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -360,18 +220,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_mac_info_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_mac_stream.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_mac_stream_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -380,18 +230,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_private_key_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_public_key.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_public_key_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -400,18 +240,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_random_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_sign.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_sign_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -420,18 +250,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_verify_api.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_aes256_gcm.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_aes256_gcm_impl.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -440,18 +260,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_asn1rd_impl.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_asn1wr.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_asn1wr_impl.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -460,18 +270,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_fake_random_impl.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_hkdf.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_hkdf_impl.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -480,18 +280,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_hmac_impl.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_kdf1.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_kdf1_impl.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -500,18 +290,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_kdf2_impl.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_rsa_private_key.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_rsa_private_key_impl.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -520,18 +300,8 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_rsa_public_key_impl.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_sha224.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_sha224_impl.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
@@ -540,28 +310,13 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_sha256_impl.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_sha384.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_sha384_impl.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_sha512.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_sha512_impl.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
