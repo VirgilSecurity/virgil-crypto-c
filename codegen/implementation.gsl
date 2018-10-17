@@ -86,7 +86,7 @@ endfunction
 function implementation_resolve_context_require (require, parent)
     check_arguments (my, "require, parent", my)
 
-    assert_attribute (my.require, "header", my)
+    my.require.scope ?= "private"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -94,6 +94,10 @@ endfunction
 # ---------------------------------------------------------------------------
 function implementation_resolve_context (context, parent)
     check_arguments (my, "context, parent", my)
+
+    for my.context.require
+        implementation_resolve_context_require (require, my.context)
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
