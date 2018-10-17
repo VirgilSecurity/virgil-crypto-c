@@ -81,7 +81,7 @@ set_property(
 
 set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/private/vsc_buffer_defs.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+    PROPERTY MACOSX_PACKAGE_LOCATION "PrivateHeaders"
 )
 
 set_property(
