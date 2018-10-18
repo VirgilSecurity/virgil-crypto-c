@@ -44,6 +44,7 @@
     <method name="blinded password buf len" is_static="1">
         Return length of the buffer needed to hold 'blinded password'.
 
+        <buf_len method="blind" argument="blinded password"/>
         <return type="size"/>
     </method>
 
@@ -51,6 +52,8 @@
     <method name="deblinded password buf len" is_static="1">
         Return length of the buffer needed to hold 'deblinded password'.
 
+        <buf_len method="deblind" argument="deblinded password"/>
+        <buf_len method="update deblinded with token" argument="updated deblinded password"/>
         <return type="size"/>
     </method>
 
@@ -58,42 +61,50 @@
     <method name="blinding secret buf len" is_static="1">
         Return length of the buffer needed to hold 'blinding secret'.
 
+        <buf_len method="blind" argument="blinding secret"/>
         <return type="size"/>
     </method>
 
     <method name="transformation private key buf len" is_static="1">
         Return length of the buffer needed to hold 'transformation private key'.
 
+        <buf_len method="compute transformation key pair" argument="transformation private key"/>
         <return type="size"/>
     </method>
 
     <method name="transformation public key buf len" is_static="1">
         Return length of the buffer needed to hold 'transformation public key'.
 
+        <buf_len method="compute transformation key pair" argument="transformation public key"/>
         <return type="size"/>
     </method>
 
     <method name="transformed password buf len" is_static="1">
         Return length of the buffer needed to hold 'transformed password'.
 
+        <buf_len method="transform" argument="transformed password"/>
         <return type="size"/>
     </method>
 
     <method name="transformed tweak buf len" is_static="1">
         Return length of the buffer needed to hold 'transformed tweak'.
 
+        <buf_len method="transform" argument="transformed tweak"/>
         <return type="size"/>
     </method>
 
     <method name="proof value buf len" is_static="1">
         Return length of the buffer needed to hold 'proof value'.
 
+        <buf_len method="prove" argument="proof value c"/>
+        <buf_len method="prove" argument="proof value u"/>
         <return type="size"/>
     </method>
 
     <method name="password update token buf len" is_static="1">
         Return length of the buffer needed to hold 'password update token'.
 
+        <buf_len method="get password update token" argument="password update token"/>
         <return type="size"/>
     </method>
 
@@ -150,13 +161,13 @@
     <method name="prove">
         Generates proof that server possesses secret values that were used to transform password.
 
-        <argument name="transformed_password" class="data"/>
-        <argument name="blinded_password" class="data"/>
-        <argument name="transformed_tweak" class="data"/>
-        <argument name="transformation_private_key" class="data"/>
-        <argument name="transformation_public_key" class="data"/>
-        <argument name="proof_value_c" class="buffer"/>
-        <argument name="proof_value_u" class="buffer"/>
+        <argument name="transformed password" class="data"/>
+        <argument name="blinded password" class="data"/>
+        <argument name="transformed tweak" class="data"/>
+        <argument name="transformation private key" class="data"/>
+        <argument name="transformation public key" class="data"/>
+        <argument name="proof value c" class="buffer"/>
+        <argument name="proof value u" class="buffer"/>
 
         <return enum="error"/>
     </method>

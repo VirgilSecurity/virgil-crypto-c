@@ -22,7 +22,7 @@ class VirgilCryptoPythiaTests: XCTestCase {
     func testBlind() {
         let pythia = Pythia()
         let result = try! pythia.blind(password: "password".data(using: .utf8)!)
-        XCTAssert(result.blindedPassword.count == Pythia.blindedPasswordBufLen())
+        XCTAssert(result.blindedPassword.count == 49)
     }
 
 }

@@ -49,7 +49,7 @@ import VSCPythia
     case verificationFail = -201
 
     /// Create enumeration value from the correspond C enumeration value.
-    internal init (fromC error: vscp_error_t) {
+    internal init(fromC error: vscp_error_t) {
         self.init(rawValue: Int(error.rawValue))!
     }
 
@@ -60,4 +60,3 @@ import VSCPythia
         }
     }
 }
-
