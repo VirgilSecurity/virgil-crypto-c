@@ -281,6 +281,7 @@ vscp_pythia_cleanup_ctx(vscp_pythia_t *pythia_ctx) {
 //
 VSCP_PUBLIC void
 vscp_global_init(void) {
+
     if (g_globally_inited) {
         return;
     }
@@ -299,6 +300,7 @@ vscp_global_init(void) {
 //
 VSCP_PUBLIC void
 vscp_global_cleanup(void) {
+
     if (!g_globally_inited) {
         return;
     }
