@@ -1,4 +1,4 @@
-<class name="error ctx" context="public"  lifecycle="none">
+<class name="error ctx" context="public"  lifecycle="none" scope="private">
     Error context.
     Can be used for sequential operations, i.e. parsers, to accumulate error.
     In this way operation is successful if all steps are successful, otherwise
