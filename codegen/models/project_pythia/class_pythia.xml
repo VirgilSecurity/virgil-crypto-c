@@ -217,7 +217,9 @@
     <method name="random handler" declaration="private" is_static="1">
         Callback for the pythia random.
 
-        <argument name="out" type="data" access="writeonly"/>
+        <argument name="out" type="byte" access="writeonly">
+            <array length="given"/>
+        </argument>
         <argument name="out len" type="integer"/>
         <argument name="ctx" type="nothing" access="readwrite" is_reference="1"/>
     </method>

@@ -7,7 +7,7 @@
     </property>
 
 
-    <property name="bytes" type="data" access="readwrite">
+    <property name="bytes" type="byte" access="readwrite" is_reference="1">
         Underlying byte array.
     </property>
 
@@ -51,7 +51,7 @@
         Precondition: buffer is initialized.
         Precondition: buffer does not hold any bytes.
 
-        <argument name="bytes" type="data" access="readwrite"/>
+        <argument name="bytes" type="byte" access="readwrite" is_reference="1"/>
         <argument name="bytes len" type="size"/>
     </method>
 
@@ -62,7 +62,7 @@
         Precondition: buffer is initialized.
         Precondition: buffer does not hold any bytes.
 
-        <argument name="bytes" type="data" access="readwrite"/>
+        <argument name="bytes" type="byte" access="readwrite" is_reference="1"/>
         <argument name="bytes len" type="size"/>
         <argument name="dealloc" callback=".(global_callback_dealloc)"/>
     </method>
@@ -91,15 +91,13 @@
     <method name="bytes" is_const="1">
         Returns underlying buffer bytes.
 
-        <return type="data" access="readonly">
-            <array access="disown"/>
-        </return>
+        <return type="byte" is_reference="1"/>
     </method>
 
     <method name="data" is_const="1">
         Returns underlying buffer bytes as object.
 
-        <return class=".(class_data_struct_data)" is_reference="0" access="readwrite"/>
+        <return class="data" is_reference="0" access="readwrite"/>
     </method>
 
 

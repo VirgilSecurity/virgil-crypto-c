@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Common interface to get random data.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,12 +44,18 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_random.h"
-#include "vscf_assert.h"
-#include "vscf_random_api.h"
+#ifndef VSCF_MBEDTLS_BRIDGE_RANDOM_H_INCLUDED
+#define VSCF_MBEDTLS_BRIDGE_RANDOM_H_INCLUDED
+
+#include "vscf_library.h"
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -64,67 +64,22 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Generate random bytes.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_random(vscf_impl_t *impl, size_t data_len, vsc_buffer_t *data) {
-
-    const vscf_random_api_t *random_api = vscf_random_api (impl);
-    VSCF_ASSERT_PTR (random_api);
-
-    VSCF_ASSERT_PTR (random_api->random_cb);
-    return random_api->random_cb (impl, data_len, data);
-}
-
-//
-//  Return random API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_random_api_t *
-vscf_random_api(vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_RANDOM);
-    return (const vscf_random_api_t *) api;
-}
-
-//
-//  Check if given object implements interface 'random'.
-//
-VSCF_PUBLIC bool
-vscf_random_is_implemented(vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    return vscf_impl_api (impl, vscf_api_tag_RANDOM) != NULL;
-}
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_random_api_tag(const vscf_random_api_t *random_api) {
-
-    VSCF_ASSERT_PTR (random_api);
-
-    return random_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_random_impl_tag(const vscf_random_api_t *random_api) {
-
-    VSCF_ASSERT_PTR (random_api);
-
-    return random_api->impl_tag;
-}
+VSCF_PRIVATE int
+vscf_mbedtls_bridge_random(void *ctx, byte *data, size_t len);
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_MBEDTLS_BRIDGE_RANDOM_H_INCLUDED
 //  @end

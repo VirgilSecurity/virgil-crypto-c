@@ -29,9 +29,7 @@
 
         <argument name="len" type="size"/>
 
-        <return type="data" access="readwrite">
-            <array access="disown"/>
-        </return>
+        <return type="byte" access="readwrite" is_reference="1"/>
     </method>
 
 
