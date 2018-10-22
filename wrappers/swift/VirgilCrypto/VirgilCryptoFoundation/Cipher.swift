@@ -37,8 +37,8 @@ import Foundation
 
 /// Provide interface for symmetric ciphers.
 @objc(VSCFCipher) public protocol Cipher : Encrypt, Decrypt, CipherInfo {
+
     @objc func setNonce(nonce: Data)
 
     @objc func setKey(key: Data)
 }
-

@@ -37,6 +37,6 @@ import Foundation
 
 /// Contains private part of the key.
 @objc(VSCFPrivateKey) public protocol PrivateKey : Key {
-    @objc func extractPublicKey() -> Unknown
-}
 
+    @objc func extractPublicKey() -> PublicKey
+}

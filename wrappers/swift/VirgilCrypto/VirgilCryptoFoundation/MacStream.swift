@@ -37,6 +37,7 @@ import Foundation
 
 /// Provides interface to the MAC (message authentication code) algorithms.
 @objc(VSCFMacStream) public protocol MacStream : MacInfo {
+
     @objc func start(key: Data)
 
     @objc func update(data: Data)
@@ -45,4 +46,3 @@ import Foundation
 
     @objc func reset()
 }
-

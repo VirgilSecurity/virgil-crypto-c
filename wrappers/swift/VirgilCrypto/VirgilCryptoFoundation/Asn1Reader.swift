@@ -39,6 +39,7 @@ import Foundation
 /// Note, that all "read" methods move reading position forward.
 /// Note, that all "get" do not change reading position.
 @objc(VSCFAsn1Reader) public protocol Asn1Reader {
+
     @objc func reset(data: Data)
 
     @objc func error() throws
@@ -85,4 +86,3 @@ import Foundation
 
     @objc func readSet() -> Int
 }
-

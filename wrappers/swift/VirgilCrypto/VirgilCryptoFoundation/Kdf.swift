@@ -37,6 +37,6 @@ import Foundation
 
 /// Provides interface to the key derivation function (KDF) algorithms.
 @objc(VSCFKdf) public protocol Kdf {
+
     @objc func derive(data: Data, keyLen: Int) -> Data
 }
-

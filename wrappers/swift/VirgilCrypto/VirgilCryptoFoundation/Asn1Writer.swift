@@ -39,13 +39,14 @@ import Foundation
 /// Note, elements are written starting from the buffer ending.
 /// Note, that all "write" methods move writing position backward.
 @objc(VSCFAsn1Writer) public protocol Asn1Writer {
+
     @objc func reset() -> Data
 
     @objc func seal()
 
     @objc func error() throws
 
-    @objc func reserve(len: Int) -> UInt8
+    @objc func reserve(len: Int) -> UnsafePointer<UInt8>
 
     @objc func writeTag(tag: Int) -> Int
 
@@ -85,4 +86,3 @@ import Foundation
 
     @objc func writeSet(len: Int) -> Int
 }
-

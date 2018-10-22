@@ -37,6 +37,6 @@ import Foundation
 
 /// Provides interface to the stateless hashing (messege digest) algorithms.
 @objc(VSCFHash) public protocol Hash : HashInfo {
+
     @objc func hash(data: Data) -> Data
 }
-

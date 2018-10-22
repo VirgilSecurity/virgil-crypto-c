@@ -39,4 +39,3 @@ import Foundation
 /// encryption and decryption.
 @objc(VSCFCipherAuth) public protocol CipherAuth : CipherAuthInfo, AuthEncrypt, AuthDecrypt {
 }
-

@@ -85,7 +85,7 @@ extern "C" {
 //
 //  Callback. Calculate hash over given data.
 //
-typedef void (*vscf_kdf_api_derive_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *key, size_t key_len);
+typedef void (*vscf_kdf_api_derive_fn)(vscf_impl_t *impl, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
 
 //
 //  Contains API requirements of the interface 'kdf'.

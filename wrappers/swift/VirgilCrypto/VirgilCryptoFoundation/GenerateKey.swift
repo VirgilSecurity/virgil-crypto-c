@@ -37,6 +37,6 @@ import Foundation
 
 /// Interface for private or secret key generation.
 @objc(VSCFGenerateKey) public protocol GenerateKey {
+
     @objc func generateKey() throws
 }
-

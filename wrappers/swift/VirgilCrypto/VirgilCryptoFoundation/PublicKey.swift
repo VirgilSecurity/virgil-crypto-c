@@ -38,4 +38,3 @@ import Foundation
 /// Contains public part of the key.
 @objc(VSCFPublicKey) public protocol PublicKey : Key {
 }
-

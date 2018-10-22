@@ -37,6 +37,6 @@ import Foundation
 
 /// Common interface to get random data.
 @objc(VSCFRandom) public protocol Random {
-    @objc func random(dataLen: Int) throws -> UInt8
-}
 
+    @objc func random(dataLen: Int) throws -> Data
+}

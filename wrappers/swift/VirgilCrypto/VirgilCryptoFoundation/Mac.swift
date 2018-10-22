@@ -37,6 +37,6 @@ import Foundation
 
 /// Provides interface to the stateless MAC (message authentication code) algorithms.
 @objc(VSCFMac) public protocol Mac : MacInfo {
+
     @objc func mac(key: Data, data: Data) -> Data
 }
-
