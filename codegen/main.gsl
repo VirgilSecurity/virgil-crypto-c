@@ -268,7 +268,7 @@ function process_project (project, interfaces, features_list, projects_api, echo
             projects_api_collect_info (my.projects_api, "swift", my.wrappers_destination)
             projects_api_save (my.projects_api, main.work_path)
 
-            my.type_resolution_map = projects_api_build_type_resolution_map (my.projects_api)
+            my.type_resolution_map = projects_api_build_type_resolution_map (my.projects_api, my.wrapper.lang)
             if my.echo_level = "debug"
                 item_save_to_file (my.type_resolution_map, "type_resolution_map.xml", my.project.work_path)
             endif

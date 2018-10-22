@@ -37,10 +37,10 @@ import Foundation
 
 /// Provide interface to calculate hash (message digest) over a stream.
 @objc(VSCFHashStream) public protocol HashStream : HashInfo {
+
     @objc func start()
 
     @objc func update(data: Data)
 
     @objc func finish() -> Data
 }
-

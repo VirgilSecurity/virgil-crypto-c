@@ -37,12 +37,22 @@ import Foundation
 
 /// Provide interface for authenticated data encryption.
 @objc(VSCFAuthEncrypt) public protocol AuthEncrypt {
+
     @objc func authEncrypt(data: Data, authData: Data) throws -> AuthEncryptAuthEncryptResult
 
     @objc func authEncryptedLen(dataLen: Int) -> Int
 }
 
 /// Encapsulate result of method AuthEncrypt.authEncrypt()
-@objc(VSCFAuthEncryptAuthEncryptResult) public class AuthEncryptAuthEncryptResult : NSObject {
-}
+@objc(VSCFAuthEncryptAuthEncryptResult) public class AuthEncryptAuthEncryptResult: NSObject {
 
+    @objc public let out: Data
+    @objc public let tag: Data
+
+    /// Initialize all properties.
+    internal init(out: Data, tag: Data) {
+        self.out = out
+        self.tag = tag
+        super.init()
+    }
+}

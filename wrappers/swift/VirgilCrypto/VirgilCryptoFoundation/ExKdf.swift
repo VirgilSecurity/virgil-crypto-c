@@ -37,6 +37,6 @@ import Foundation
 
 /// Provides interface to the key derivation function (HKDF) algorithms.
 @objc(VSCFExKdf) public protocol ExKdf {
+
     @objc func derive(data: Data, salt: Data, info: Data, keyLen: Int) -> Data
 }
-

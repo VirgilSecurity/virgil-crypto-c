@@ -37,8 +37,8 @@ import Foundation
 
 /// Provide interface for data encryption.
 @objc(VSCFEncrypt) public protocol Encrypt {
+
     @objc func encrypt(data: Data) throws -> Data
 
     @objc func encryptedLen(dataLen: Int) -> Int
 }
-

@@ -37,6 +37,6 @@ import Foundation
 
 /// Provide details about implemented MAC (message authentication code) algorithm.
 @objc(VSCFMacInfo) public protocol MacInfo {
+
     @objc func digestLen() -> Int
 }
-

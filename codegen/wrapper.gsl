@@ -75,7 +75,7 @@ function wrapper_foreach_interface_create_module (source, destination, wrapper, 
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
 
-    for my.source.interface where interface.scope <> "internal"
+    for my.source.interface where interface.scope = "public"
         $(my.proxy_func:) (interface, my.destination, my.wrapper, my.meta)
     endfor
 endfunction
@@ -89,7 +89,7 @@ function wrapper_foreach_implementation_create_module (source, interfaces, desti
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
 
-    for my.source.implementation where implementation.scope <> "internal"
+    for my.source.implementation where implementation.scope = "public"
         $(my.proxy_func:) (implementation, my.interfaces, my.destination, my.wrapper, my.meta)
     endfor
 endfunction
@@ -103,7 +103,7 @@ function wrapper_foreach_class_create_module (source, destination, wrapper, meta
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
 
-    for my.source.class where class.scope <> "internal"
+    for my.source.class where class.scope = "public"
         $(my.proxy_func:) (class, my.destination, my.wrapper, my.meta)
     endfor
 endfunction
@@ -117,7 +117,7 @@ function wrapper_foreach_enum_create_module (source, destination, wrapper, meta)
         echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
     endif
 
-    for my.source.enum where 0.scope <> "internal"
+    for my.source.enum where 0.scope = "public"
         $(my.proxy_func:) (enum, my.destination, my.wrapper, my.meta)
     endfor
 endfunction
