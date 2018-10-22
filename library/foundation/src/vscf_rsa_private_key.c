@@ -56,6 +56,7 @@
 #include "vscf_asn1_tag.h"
 #include "vscf_mbedtls_bignum_asn1_writer.h"
 #include "vscf_mbedtls_bignum_asn1_reader.h"
+#include "vscf_mbedtls_bridge_random.h"
 #include "vscf_mbedtls_md.h"
 #include "vscf_rsa_public_key_impl.h"
 #include "vscf_random.h"
@@ -68,9 +69,6 @@
 
 // clang-format on
 //  @end
-
-
-typedef int (*mbedtls_random_cb)(void *, unsigned char *, size_t);
 
 
 //  @generated
@@ -163,7 +161,7 @@ vscf_rsa_private_key_generate_key(vscf_rsa_private_key_impl_t *rsa_private_key_i
 
     VSCF_ASSERT_PTR(rsa_private_key_impl);
 
-    int ret = mbedtls_rsa_gen_key(&rsa_private_key_impl->rsa_ctx, (mbedtls_random_cb)vscf_random,
+    int ret = mbedtls_rsa_gen_key(&rsa_private_key_impl->rsa_ctx, vscf_mbedtls_bridge_random,
             rsa_private_key_impl->random, rsa_private_key_impl->gen_bitlen, rsa_private_key_impl->gen_exponent);
 
     return ret == 0 ? vscf_SUCCESS : vscf_error_KEY_GENERATION_FAILED;
@@ -241,7 +239,7 @@ vscf_rsa_private_key_decrypt(vscf_rsa_private_key_impl_t *rsa_private_key_impl, 
     mbedtls_rsa_set_padding(&rsa_private_key_impl->rsa_ctx, MBEDTLS_RSA_PKCS_V21, md_alg);
 
     size_t out_len = 0;
-    int ret = mbedtls_rsa_rsaes_oaep_decrypt(&rsa_private_key_impl->rsa_ctx, (mbedtls_random_cb)vscf_random,
+    int ret = mbedtls_rsa_rsaes_oaep_decrypt(&rsa_private_key_impl->rsa_ctx, vscf_mbedtls_bridge_random,
             rsa_private_key_impl->random, MBEDTLS_RSA_PRIVATE, NULL, 0, &out_len, data.bytes, vsc_buffer_ptr(out),
             vsc_buffer_left(out));
 
@@ -297,7 +295,7 @@ vscf_rsa_private_key_sign(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vsc
 
     mbedtls_rsa_set_padding(&rsa_private_key_impl->rsa_ctx, MBEDTLS_RSA_PKCS_V21, md_alg);
 
-    int ret = mbedtls_rsa_rsassa_pss_sign(rsa_ctx, (mbedtls_random_cb)vscf_random, rsa_private_key_impl->random,
+    int ret = mbedtls_rsa_rsassa_pss_sign(rsa_ctx, vscf_mbedtls_bridge_random, rsa_private_key_impl->random,
             MBEDTLS_RSA_PRIVATE, md_alg, vsc_buffer_len(data_hash_buf), vsc_buffer_bytes(data_hash_buf),
             vsc_buffer_ptr(signature));
 

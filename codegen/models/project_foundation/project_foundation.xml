@@ -98,5 +98,7 @@
     <implementor name="mbedtls pk"/>
     <implementor name="virgil"/>
 
+    <module name="mbedtls bridge random"/>
+
     <wrapper lang="swift"/>
 </project>

@@ -9,6 +9,7 @@
         <require enum="asn1 tag"/>
         <require class="mbedtls bignum asn1 writer"/>
         <require class="mbedtls bignum asn1 reader"/>
+        <require module="mbedtls bridge random"/>
         <require class="mbedtls md"/>
 
         <context>
@@ -38,6 +39,7 @@
         <require enum="asn1 tag"/>
         <require class="mbedtls bignum asn1 writer"/>
         <require class="mbedtls bignum asn1 reader"/>
+        <require module="mbedtls bridge random"/>
         <require class="mbedtls md"/>
         <require module="rsa public key impl"/>
 

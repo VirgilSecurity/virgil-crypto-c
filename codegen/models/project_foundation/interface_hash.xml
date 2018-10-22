@@ -1,7 +1,11 @@
 <interface name="hash">
     Provides interface to the stateless hashing (messege digest) algorithms.
 
-    <inherit interface="hash info" />
+    <inherit interface="hash info">
+        <constant name="digest len">
+            <buf_len method="hash" argument="digest"/>
+        </constant>
+    </inherit>
 
     <method name="hash" is_static="1">
         Calculate hash over given data.

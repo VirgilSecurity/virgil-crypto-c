@@ -5,7 +5,7 @@
         Calculate hash over given data.
 
         <argument name="data" class="data"/>
+        <argument name="key len" type="size" length_of="key"/>
         <argument name="key" class="buffer"/>
-        <argument name="key len" type="size"/>
     </method>
 </interface>

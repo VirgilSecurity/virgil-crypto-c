@@ -59,7 +59,7 @@ test__derive__sha256_vector_1__success(void) {
 
     vscf_kdf2_take_hash(kdf2_impl, vscf_sha256_impl(vscf_sha256_new()));
 
-    vscf_kdf2_derive(kdf2_impl, test_kdf2_VECTOR_1_DATA, key, test_kdf2_VECTOR_1_KEY.len);
+    vscf_kdf2_derive(kdf2_impl, test_kdf2_VECTOR_1_DATA, test_kdf2_VECTOR_1_KEY.len, key);
 
     vscf_kdf2_destroy(&kdf2_impl);
 
@@ -77,7 +77,7 @@ test__derive__sha256_vector_2__success(void) {
 
     vscf_kdf2_take_hash(kdf2_impl, vscf_sha256_impl(vscf_sha256_new()));
 
-    vscf_kdf2_derive(kdf2_impl, test_kdf2_VECTOR_2_DATA, key, test_kdf2_VECTOR_2_KEY.len);
+    vscf_kdf2_derive(kdf2_impl, test_kdf2_VECTOR_2_DATA, test_kdf2_VECTOR_2_KEY.len, key);
 
     vscf_kdf2_destroy(&kdf2_impl);
 
@@ -95,7 +95,7 @@ test__derive__sha256_vector_3__success(void) {
 
     vscf_kdf2_take_hash(kdf2_impl, vscf_sha256_impl(vscf_sha256_new()));
 
-    vscf_kdf2_derive(kdf2_impl, test_kdf2_VECTOR_3_DATA, key, test_kdf2_VECTOR_3_KEY.len);
+    vscf_kdf2_derive(kdf2_impl, test_kdf2_VECTOR_3_DATA, test_kdf2_VECTOR_3_KEY.len, key);
 
     vscf_kdf2_destroy(&kdf2_impl);
 

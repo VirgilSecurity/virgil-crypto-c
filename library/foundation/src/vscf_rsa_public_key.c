@@ -56,6 +56,7 @@
 #include "vscf_asn1_tag.h"
 #include "vscf_mbedtls_bignum_asn1_writer.h"
 #include "vscf_mbedtls_bignum_asn1_reader.h"
+#include "vscf_mbedtls_bridge_random.h"
 #include "vscf_mbedtls_md.h"
 #include "vscf_random.h"
 #include "vscf_asn1_reader.h"
@@ -65,9 +66,6 @@
 
 // clang-format on
 //  @end
-
-
-typedef int (*mbedtls_random_cb)(void *, unsigned char *, size_t);
 
 
 //  @generated
@@ -152,7 +150,7 @@ vscf_rsa_public_key_encrypt(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc
     mbedtls_md_type_t md_alg = vscf_mbedtls_md_map_impl_tag(vscf_hash_impl_tag(rsa_public_key_impl->hash));
     mbedtls_rsa_set_padding(&rsa_public_key_impl->rsa_ctx, MBEDTLS_RSA_PKCS_V21, md_alg);
 
-    int result = mbedtls_rsa_rsaes_oaep_encrypt(&rsa_public_key_impl->rsa_ctx, (mbedtls_random_cb)vscf_random,
+    int result = mbedtls_rsa_rsaes_oaep_encrypt(&rsa_public_key_impl->rsa_ctx, vscf_mbedtls_bridge_random,
             rsa_public_key_impl->random, MBEDTLS_RSA_PUBLIC, NULL, 0, data.len, data.bytes, vsc_buffer_ptr(out));
 
     switch (result) {
@@ -206,7 +204,7 @@ vscf_rsa_public_key_verify(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc_
     mbedtls_md_type_t md_alg = vscf_mbedtls_md_map_impl_tag(vscf_hash_impl_tag(rsa_public_key_impl->hash));
     mbedtls_rsa_set_padding(&rsa_public_key_impl->rsa_ctx, MBEDTLS_RSA_PKCS_V21, md_alg);
 
-    int result = mbedtls_rsa_rsassa_pss_verify(&rsa_public_key_impl->rsa_ctx, (mbedtls_random_cb)vscf_random,
+    int result = mbedtls_rsa_rsassa_pss_verify(&rsa_public_key_impl->rsa_ctx, vscf_mbedtls_bridge_random,
             rsa_public_key_impl->random, MBEDTLS_RSA_PUBLIC, md_alg, vsc_buffer_len(data_hash_buf),
             vsc_buffer_bytes(data_hash_buf), signature.bytes);
 

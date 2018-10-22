@@ -98,11 +98,11 @@
             <property name="cipher ctx" class="mbedtls_cipher_context_t" library="mbedtls"
                     access="readwrite" is_reference="0"/>
 
-            <property name="key" type="data" access="readwrite">
+            <property name="key" type="byte" access="readwrite">
                 <array length="fixed" length_constant=".(class_aes256_gcm_constant_key_len)"/>
             </property>
 
-            <property name="nonce" type="data" access="readwrite">
+            <property name="nonce" type="byte" access="readwrite">
                 <array length="fixed" length_constant=".(class_aes256_gcm_constant_nonce_len)"/>
             </property>
         </context>
@@ -139,8 +139,8 @@
         <require module="buffer defs" project="common"/>
 
         <context>
-            <property name="curr" type="data" access="readwrite"/>
-            <property name="end" type="data"/>
+            <property name="curr" type="byte" access="readwrite" is_reference="1"/>
+            <property name="end" type="byte" access="readonly" is_reference="1"/>
             <property name="error" enum="error"/>
         </context>
 
@@ -175,8 +175,8 @@
 
         <context>
             <property name="out" class="buffer" access="readwrite"/>
-            <property name="start" type="data" access="readwrite"/>
-            <property name="curr" type="data" access="readwrite"/>
+            <property name="start" type="byte" access="readwrite" is_reference="1"/>
+            <property name="curr" type="byte" access="readwrite" is_reference="1"/>
             <property name="error" enum="error"/>
         </context>
 
