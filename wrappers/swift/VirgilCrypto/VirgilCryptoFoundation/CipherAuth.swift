@@ -37,5 +37,5 @@ import Foundation
 
 /// Mix-in interface that provides specific functionality to authenticated
 /// encryption and decryption.
-@objc(VSCFCipherAuth) public protocol CipherAuth : CipherAuthInfo, AuthEncrypt, AuthDecrypt {
+@objc(VSCFCipherAuth) public protocol CipherAuth : AuthEncrypt, AuthDecrypt {
 }

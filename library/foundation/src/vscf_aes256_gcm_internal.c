@@ -232,6 +232,10 @@ static const vscf_auth_encrypt_api_t auth_encrypt_api = {
     //
     vscf_impl_tag_AES256_GCM,
     //
+    //  Link to the inherited interface API 'cipher auth info'.
+    //
+    &cipher_auth_info_api,
+    //
     //  Encrypt given data.
     //  If 'tag' is not give, then it will written to the 'enc'.
     //
@@ -256,6 +260,10 @@ static const vscf_auth_decrypt_api_t auth_decrypt_api = {
     //
     vscf_impl_tag_AES256_GCM,
     //
+    //  Link to the inherited interface API 'cipher auth info'.
+    //
+    &cipher_auth_info_api,
+    //
     //  Decrypt given data.
     //  If 'tag' is not give, then it will be taken from the 'enc'.
     //
@@ -279,10 +287,6 @@ static const vscf_cipher_auth_api_t cipher_auth_api = {
     //  Implementation unique identifier, MUST be second in the structure.
     //
     vscf_impl_tag_AES256_GCM,
-    //
-    //  Link to the inherited interface API 'cipher auth info'.
-    //
-    &cipher_auth_info_api,
     //
     //  Link to the inherited interface API 'auth encrypt'.
     //

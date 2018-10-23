@@ -60,12 +60,10 @@
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
-#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
-#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -172,17 +170,17 @@ typedef void (*vscf_asn1_reader_api_read_null_fn)(vscf_impl_t *impl);
 //
 //  Callback. Read ASN.1 type: OCTET STRING.
 //
-typedef void (*vscf_asn1_reader_api_read_octet_str_fn)(vscf_impl_t *impl, vsc_buffer_t *value);
+typedef vsc_data_t (*vscf_asn1_reader_api_read_octet_str_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Read ASN.1 type: UTF8String.
 //
-typedef void (*vscf_asn1_reader_api_read_utf8_str_fn)(vscf_impl_t *impl, vsc_buffer_t *value);
+typedef vsc_data_t (*vscf_asn1_reader_api_read_utf8_str_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Read ASN.1 type: OID.
 //
-typedef void (*vscf_asn1_reader_api_read_oid_fn)(vscf_impl_t *impl, vsc_buffer_t *value);
+typedef vsc_data_t (*vscf_asn1_reader_api_read_oid_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Read raw data of given length.

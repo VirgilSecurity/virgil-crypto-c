@@ -38,11 +38,11 @@ import Foundation
 /// Provides compile time knownledge about algorithm.
 @objc(VSCFCipherInfo) public protocol CipherInfo {
     /// Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
-    @objc var nonceLen: Int { get };
+    @objc static var nonceLen: Int { get }
     /// Cipher key length in bytes.
-    @objc var keyLen: Int { get };
+    @objc static var keyLen: Int { get }
     /// Cipher key length in bits.
-    @objc var keyBitlen: Int { get };
+    @objc static var keyBitlen: Int { get }
     /// Cipher block length in bytes.
-    @objc var blockLen: Int { get };
+    @objc static var blockLen: Int { get }
 }

@@ -52,18 +52,6 @@ gsl from "component.gsl"
 gsl from "c_dependency.gsl"
 gsl from "c_module_interface.gsl"
 
-# ---------------------------------------------------------------------------
-function _Z19_has_non_static_methods (impl)
-    check_argument (my, "impl", my)
-
-    for my.impl.interface
-        for interface.method where ! method.is_static
-            return 1
-        endfor
-    endfor
-
-    return 0
-endfunction
 
 # ---------------------------------------------------------------------------
 function _Z19_has_underlying_context (impl)
@@ -227,7 +215,7 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
 
     c_dependency_add_requirements (my.impl, my.destination)
 
-    if _Z19_has_non_static_methods (my.impl)
+    if my.impl.context <> "none"
         new require to my.destination
             .module = my.names.implementation_module_impl
             .scope = "private"
@@ -267,7 +255,7 @@ function _Z19_add_includes_for_module_internal (impl, destination, meta)
         .scope = "private"
     endnew
 
-    if _Z19_has_non_static_methods (my.impl)
+    if my.impl.context <> "none"
         new require to my.destination
             .module = my.names.implementation_module
             .scope = "public"
@@ -1014,7 +1002,7 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
         _Z19_add_self_tag (my.impl, my.enum_impl_tag, my.meta)
         _Z19_add_interface_constants (my.impl, module, my.meta)
 
-        if _Z19_has_non_static_methods (my.impl)
+        if my.impl.context <> "none"
             _Z19_add_type_impl (my.impl, "public", "external", module, my.meta)
             _Z19_add_method_impl_type_size (my.impl, "public", "external", module, my.meta)
             _Z19_add_method_impl_type_cast (my.impl, "public", "external", module, my.meta)
@@ -1113,8 +1101,7 @@ function c_module_implementation_create_module_internal (impl, source, destinati
         .scope = "internal"
         .feature = my.impl.name
 
-        if _Z19_has_non_static_methods (my.impl)
-
+        if my.impl.context <> "none"
             _Z19_add_includes_for_module_internal (my.impl, module, my.meta)
             _Z19_add_instances (my.impl, my.source, module, my.meta)
 
@@ -1158,7 +1145,7 @@ function c_module_implementation_create (source, destination, meta)
         c_module_implementation_create_module_public (implementation, my.enum_impl_tag, my.destination, my.meta)
         c_module_implementation_create_module_internal (implementation, my.source, my.destination, my.meta)
 
-        if _Z19_has_non_static_methods (implementation)
+        if implementation.context <> "none"
             c_module_implementation_create_module_impl (implementation, my.destination, my.meta)
         endif
 

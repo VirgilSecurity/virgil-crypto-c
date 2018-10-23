@@ -238,7 +238,7 @@ vscf_rsa_public_key_export_public_key(vscf_rsa_public_key_impl_t *rsa_public_key
     vscf_error_ctx_t error_ctx;
     vscf_error_ctx_reset(&error_ctx);
 
-    vscf_asn1_writer_reset(asn1wr, out);
+    vscf_asn1_writer_reset(asn1wr, vsc_buffer_ptr(out), vsc_buffer_left(out));
 
     vscf_asn1_writer_write_sequence(asn1wr, vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->E, &error_ctx) +
                                                     vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->N, &error_ctx));
@@ -249,7 +249,8 @@ vscf_rsa_public_key_export_public_key(vscf_rsa_public_key_impl_t *rsa_public_key
         return vscf_error_SMALL_BUFFER;
     }
 
-    vscf_asn1_writer_seal(asn1wr);
+    size_t writtenBytes = vscf_asn1_writer_finish(asn1wr);
+    vsc_buffer_reserve(out, writtenBytes);
 
     return vscf_SUCCESS;
 }

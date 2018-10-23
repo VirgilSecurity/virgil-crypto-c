@@ -104,6 +104,17 @@ vscf_auth_encrypt_api(vscf_impl_t *impl) {
 }
 
 //
+//  Return cipher auth info API.
+//
+VSCF_PUBLIC const vscf_cipher_auth_info_api_t *
+vscf_auth_encrypt_cipher_auth_info_api(const vscf_auth_encrypt_api_t *auth_encrypt_api) {
+
+    VSCF_ASSERT_PTR (auth_encrypt_api);
+
+    return auth_encrypt_api->cipher_auth_info_api;
+}
+
+//
 //  Check if given object implements interface 'auth encrypt'.
 //
 VSCF_PUBLIC bool

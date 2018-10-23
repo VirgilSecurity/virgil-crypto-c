@@ -357,7 +357,7 @@ vscf_rsa_private_key_export_private_key(vscf_rsa_private_key_impl_t *rsa_private
     vscf_error_ctx_t error_ctx;
     vscf_error_ctx_reset(&error_ctx);
 
-    vscf_asn1_writer_reset(asn1wr, out);
+    vscf_asn1_writer_reset(asn1wr, vsc_buffer_ptr(out), vsc_buffer_left(out));
 
     size_t top_sequence_len = 0;
 
@@ -396,7 +396,8 @@ vscf_rsa_private_key_export_private_key(vscf_rsa_private_key_impl_t *rsa_private
         return vscf_error_SMALL_BUFFER;
     }
 
-    vscf_asn1_writer_seal(asn1wr);
+    size_t writtenBytes = vscf_asn1_writer_finish(asn1wr);
+    vsc_buffer_reserve(out, writtenBytes);
 
     return vscf_SUCCESS;
 }

@@ -7,8 +7,9 @@
         Note, shared key can be used only for symmetric cryptography.
 
         <argument name="public key" interface="public key"/>
-
-        <argument name="shared key" class="buffer"/>
+        <argument name="shared key" class="buffer">
+            <length object="self" method="shared key len"/>
+        </argument>
 
         <return enum="error"/>
     </method>

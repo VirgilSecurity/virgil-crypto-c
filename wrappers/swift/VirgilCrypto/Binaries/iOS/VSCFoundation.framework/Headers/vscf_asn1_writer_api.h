@@ -91,7 +91,7 @@ typedef void (*vscf_asn1_writer_api_reset_fn)(vscf_impl_t *impl, vsc_buffer_t *o
 //
 //  Callback. Move written data to the buffer beginning and forbid further operations.
 //
-typedef void (*vscf_asn1_writer_api_seal_fn)(vscf_impl_t *impl);
+typedef void (*vscf_asn1_writer_api_finish_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Return last error.
@@ -237,7 +237,7 @@ struct vscf_asn1_writer_api_t {
     //
     //  Move written data to the buffer beginning and forbid further operations.
     //
-    vscf_asn1_writer_api_seal_fn seal_cb;
+    vscf_asn1_writer_api_finish_fn finish_cb;
     //
     //  Return last error.
     //
