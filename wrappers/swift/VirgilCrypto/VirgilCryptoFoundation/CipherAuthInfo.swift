@@ -37,5 +37,5 @@ import Foundation
 
 @objc(VSCFCipherAuthInfo) public protocol CipherAuthInfo {
     /// Defines authentication tag length in bytes.
-    @objc var authTagLen: Int { get };
+    @objc static var authTagLen: Int { get }
 }

@@ -5,8 +5,9 @@
         Sign data given private key.
 
         <argument name="data" class="data"/>
-
-        <argument name="signature" class="buffer"/>
+        <argument name="signature" class="buffer">
+            <length object="self" method="signature len"/>
+        </argument>
 
         <return enum="error"/>
     </method>

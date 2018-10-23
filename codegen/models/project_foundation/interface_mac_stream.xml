@@ -21,7 +21,9 @@
     <method name="finish">
         Accomplish MAC and return it's result (a message digest).
 
-        <argument name="mac" class="buffer"/>
+        <argument name="mac" class="buffer">
+            <length object="self" method="digest len"/>
+        </argument>
    </method>
 
 

@@ -40,7 +40,7 @@ import Foundation
 /// Note, that all "write" methods move writing position backward.
 @objc(VSCFAsn1Writer) public protocol Asn1Writer {
 
-    @objc func reset() -> Data
+    @objc func reset(out: UnsafePointer<UInt8>, outLen: Int)
 
     @objc func seal()
 

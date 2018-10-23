@@ -1,17 +1,21 @@
 <interface name="encrypt">
     Provide interface for data encryption.
 
-    <method name="encrypt" context="impl">
+    <method name="encrypt">
         Encrypt given data.
 
         <argument name="data" class="data"/>
-        <argument name="out" class="buffer"/>
+        <argument name="out" class="buffer">
+            <length method="encrypted len">
+                <proxy argument="data" cast="data_length"/>
+            </length>
+        </argument>
 
         <return enum="error"/>
     </method>
 
 
-    <method name="encrypted len" context="impl">
+    <method name="encrypted len">
         Calculate required buffer length to hold the encrypted data.
 
         <argument name="data len" type="size"/>

@@ -4,8 +4,10 @@
     <method name="random">
         Generate random bytes.
 
-        <argument name="data len" type="size" length_of="data"/>
-        <argument name="data" class="buffer"/>
+        <argument name="data len" type="size"/>
+        <argument name="data" class="buffer">
+            <length argument="data len"/>
+        </argument>
 
         <return enum="error"/>
     </method>

@@ -1,20 +1,31 @@
 <interface name="auth encrypt">
     Provide interface for authenticated data encryption.
 
-    <method name="auth encrypt" context="impl">
+    <inherit interface="cipher auth info"/>
+
+    <method name="auth encrypt">
         Encrypt given data.
         If 'tag' is not give, then it will written to the 'enc'.
 
         <argument name="data" class="data"/>
         <argument name="auth data" class="data"/>
-        <argument name="out" class="buffer"/>
-        <argument name="tag" class="buffer"/>
+
+        <argument name="out" class="buffer">
+            <length method="auth encrypted len">
+                <proxy argument="data" cast="data_length"/>
+            </length>
+        </argument>
+
+
+        <argument name="tag" class="buffer">
+            <length interface="cipher auth info" constant="auth tag len"/>
+        </argument>
 
         <return enum="error"/>
     </method>
 
 
-    <method name="auth encrypted len" context="impl">
+    <method name="auth encrypted len">
         Calculate required buffer length to hold the authenticated encrypted data.
 
         <argument name="data len" type="size"/>

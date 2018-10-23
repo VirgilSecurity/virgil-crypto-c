@@ -100,7 +100,7 @@ vscf_asn1_writer_reset(vscf_impl_t *impl, vsc_buffer_t *out);
 //  Move written data to the buffer beginning and forbid further operations.
 //
 VSCF_PUBLIC void
-vscf_asn1_writer_seal(vscf_impl_t *impl);
+vscf_asn1_writer_finish(vscf_impl_t *impl);
 
 //
 //  Return last error.

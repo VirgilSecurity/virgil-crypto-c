@@ -159,7 +159,7 @@
             Read raw data of specific tag the from the buffer.
 
             <argument name="tag" type="integer"/>
-            <argument name="buffer" class="buffer"/>
+            <return class="data"/>
         </method>
     </implementation>
 
@@ -171,11 +171,10 @@
         <require enum="asn1 tag"/>
         <require header="mbedtls/asn1.h"/>
         <require header="mbedtls/asn1write.h"/>
-        <require module="buffer defs" project="common"/>
 
         <context>
-            <property name="out" class="buffer" access="readwrite"/>
             <property name="start" type="byte" access="readwrite" is_reference="1"/>
+            <property name="end" type="byte" access="readonly" is_reference="1"/>
             <property name="curr" type="byte" access="readwrite" is_reference="1"/>
             <property name="error" enum="error"/>
         </context>

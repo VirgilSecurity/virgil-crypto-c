@@ -1,17 +1,21 @@
 <interface name="decrypt">
     Provide interface for data encryption.
 
-    <method name="decrypt" context="impl">
+    <method name="decrypt">
         Decrypt given data.
 
         <argument name="data" class="data"/>
-        <argument name="out" class="buffer"/>
+        <argument name="out" class="buffer">
+            <length method="decrypted len">
+                <proxy argument="data" cast="data_length"/>
+            </length>
+        </argument>
 
         <return enum="error"/>
     </method>
 
 
-    <method name="decrypted len" context="impl">
+    <method name="decrypted len">
         Calculate required buffer length to hold the decrypted data.
 
         <argument name="data len" type="size"/>

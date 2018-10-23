@@ -44,7 +44,6 @@
     <method name="blinded password buf len" is_static="1">
         Return length of the buffer needed to hold 'blinded password'.
 
-        <buf_len method="blind" argument="blinded password"/>
         <return type="size"/>
     </method>
 
@@ -52,8 +51,6 @@
     <method name="deblinded password buf len" is_static="1">
         Return length of the buffer needed to hold 'deblinded password'.
 
-        <buf_len method="deblind" argument="deblinded password"/>
-        <buf_len method="update deblinded with token" argument="updated deblinded password"/>
         <return type="size"/>
     </method>
 
@@ -61,50 +58,42 @@
     <method name="blinding secret buf len" is_static="1">
         Return length of the buffer needed to hold 'blinding secret'.
 
-        <buf_len method="blind" argument="blinding secret"/>
         <return type="size"/>
     </method>
 
     <method name="transformation private key buf len" is_static="1">
         Return length of the buffer needed to hold 'transformation private key'.
 
-        <buf_len method="compute transformation key pair" argument="transformation private key"/>
         <return type="size"/>
     </method>
 
     <method name="transformation public key buf len" is_static="1">
         Return length of the buffer needed to hold 'transformation public key'.
 
-        <buf_len method="compute transformation key pair" argument="transformation public key"/>
         <return type="size"/>
     </method>
 
     <method name="transformed password buf len" is_static="1">
         Return length of the buffer needed to hold 'transformed password'.
 
-        <buf_len method="transform" argument="transformed password"/>
         <return type="size"/>
     </method>
 
     <method name="transformed tweak buf len" is_static="1">
         Return length of the buffer needed to hold 'transformed tweak'.
 
-        <buf_len method="transform" argument="transformed tweak"/>
         <return type="size"/>
     </method>
 
     <method name="proof value buf len" is_static="1">
         Return length of the buffer needed to hold 'proof value'.
 
-        <buf_len method="prove" argument="proof value c"/>
-        <buf_len method="prove" argument="proof value u"/>
         <return type="size"/>
     </method>
 
     <method name="password update token buf len" is_static="1">
         Return length of the buffer needed to hold 'password update token'.
 
-        <buf_len method="get password update token" argument="password update token"/>
         <return type="size"/>
     </method>
 
@@ -114,8 +103,14 @@
         This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 
         <argument name="password" class="data"/>
-        <argument name="blinded password" class="buffer"/>
-        <argument name="blinding secret" class="buffer"/>
+        <argument name="blinded password" class="buffer">
+            <length method="blinded password buf len"/>
+        </argument>
+
+        <argument name="blinding secret" class="buffer">
+            <length method="blinding secret buf len"/>
+        </argument>
+
 
         <return enum="error"/>
     </method>
@@ -126,7 +121,10 @@
 
         <argument name="transformed password" class="data"/>
         <argument name="blinding secret" class="data"/>
-        <argument name="deblinded password" class="buffer"/>
+        <argument name="deblinded password" class="buffer">
+            <length method="deblinded password buf len"/>
+        </argument>
+
 
         <return enum="error"/>
     </method>
@@ -138,8 +136,14 @@
         <argument name="transformation key id" class="data"/>
         <argument name="pythia secret" class="data"/>
         <argument name="pythia scope secret" class="data"/>
-        <argument name="transformation private key" class="buffer"/>
-        <argument name="transformation public key" class="buffer"/>
+        <argument name="transformation private key" class="buffer">
+            <length method="transformation private key buf len"/>
+        </argument>
+
+        <argument name="transformation public key" class="buffer">
+            <length method="transformation public key buf len"/>
+        </argument>
+
 
         <return enum="error"/>
     </method>
@@ -151,8 +155,14 @@
         <argument name="blinded password" class="data"/>
         <argument name="tweak" class="data"/>
         <argument name="transformation private key" class="data"/>
-        <argument name="transformed password" class="buffer"/>
-        <argument name="transformed tweak" class="buffer"/>
+        <argument name="transformed password" class="buffer">
+            <length method="transformed password buf len"/>
+        </argument>
+
+        <argument name="transformed tweak" class="buffer">
+            <length method="transformed tweak buf len"/>
+        </argument>
+
 
         <return enum="error"/>
     </method>
@@ -166,8 +176,15 @@
         <argument name="transformed tweak" class="data"/>
         <argument name="transformation private key" class="data"/>
         <argument name="transformation public key" class="data"/>
-        <argument name="proof value c" class="buffer"/>
-        <argument name="proof value u" class="buffer"/>
+
+        <argument name="proof value c" class="buffer">
+            <length method="proof value buf len"/>
+        </argument>
+
+        <argument name="proof value u" class="buffer">
+            <length method="proof value buf len"/>
+        </argument>
+
 
         <return enum="error"/>
     </method>
@@ -196,7 +213,10 @@
 
         <argument name="previous transformation private key" class="data"/>
         <argument name="new transformation private key" class="data"/>
-        <argument name="password update token" class="buffer"/>
+        <argument name="password update token" class="buffer">
+            <length method="password update token buf len"/>
+        </argument>
+
 
         <return enum="error"/>
     </method>
@@ -208,7 +228,10 @@
 
         <argument name="deblinded password" class="data"/>
         <argument name="password update token" class="data"/>
-        <argument name="updated deblinded password" class="buffer"/>
+        <argument name="updated deblinded password" class="buffer">
+            <length method="deblinded password buf len"/>
+        </argument>
+
 
         <return enum="error"/>
     </method>

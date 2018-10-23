@@ -61,12 +61,10 @@
 #include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_data.h>
 #endif
 
@@ -94,13 +92,14 @@ typedef struct vscf_asn1_writer_api_t vscf_asn1_writer_api_t;
 //  Reset all internal states and prepare to new ASN.1 writing operations.
 //
 VSCF_PUBLIC void
-vscf_asn1_writer_reset(vscf_impl_t *impl, vsc_buffer_t *out);
+vscf_asn1_writer_reset(vscf_impl_t *impl, byte *out, size_t out_len);
 
 //
 //  Move written data to the buffer beginning and forbid further operations.
+//  Returns written size in bytes.
 //
-VSCF_PUBLIC void
-vscf_asn1_writer_seal(vscf_impl_t *impl);
+VSCF_PUBLIC size_t
+vscf_asn1_writer_finish(vscf_impl_t *impl);
 
 //
 //  Return last error.
