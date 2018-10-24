@@ -84,6 +84,13 @@ function is_true_both (x, y)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return true if any of values are defined and non zero.
+# ---------------------------------------------------------------------------
+function is_true_any (x, y)
+    return is_true (my.x) | is_true (my.y)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return true if given value is not defined or is zero.
 # ---------------------------------------------------------------------------
 function is_false (x)

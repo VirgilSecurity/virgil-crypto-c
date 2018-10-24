@@ -76,7 +76,8 @@ function implementation_copy_interface_methods (interface, implementation, sourc
     my.interface_definition = interface_find (my.interface.name, my.source)
 
     for my.interface_definition.method
-        copy method to my.interface
+        my.copied_method = item_copy_to (method, my.interface)
+        my.copied_method.implementation = my.implementation.name
     endfor
 endfunction
 

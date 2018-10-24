@@ -34,6 +34,7 @@
 
 
 import Foundation
+import VSCFoundation
 
 /// Provides interface to the MAC (message authentication code) algorithms.
 @objc(VSCFMacStream) public protocol MacStream : MacInfo {
@@ -45,4 +46,66 @@ import Foundation
     @objc func finish() -> Data
 
     @objc func reset()
+}
+
+/// Implement interface methods
+@objc(VSCFMacStreamProxy) internal class MacStreamProxy: NSObject, MacStream {
+
+    /// Handle underlying C context.
+    @objc public let c_ctx: OpaquePointer
+
+    /// Take C context that implements this interface
+    public init(c_ctx: OpaquePointer) {
+        self.c_ctx = c_ctx
+        super.init()
+    }
+
+    /// Release underlying C context.
+    deinit {
+        vscf_impl_delete(self.c_ctx)
+    }
+
+    /// Size of the digest (mac output) in bytes.
+    @objc public func digestLen() -> Int {
+        let proxyResult = vscf_mac_info_digest_len(self.c_ctx)
+        return proxyResult
+    }
+
+    /// Start a new MAC.
+    @objc public func start(key: Data) {
+        key.withUnsafeBytes({ (keyPointer: UnsafePointer<byte>) -> Void in
+            vscf_mac_stream_start(self.c_ctx, vsc_data(keyPointer, key.count))
+        })
+    }
+
+    /// Add given data to the MAC.
+    @objc public func update(data: Data) {
+        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
+            vscf_mac_stream_update(self.c_ctx, vsc_data(dataPointer, data.count))
+        })
+    }
+
+    /// Accomplish MAC and return it's result (a message digest).
+    @objc public func finish() -> Data {
+        let macCount = self.digestLen()
+        var mac = Data(count: macCount)
+        var macBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(macBuf)
+        }
+
+        mac.withUnsafeMutableBytes({ (macPointer: UnsafeMutablePointer<byte>) -> Void in
+            vsc_buffer_init(macBuf)
+            vsc_buffer_use(macBuf, macPointer, macCount)
+            vscf_mac_stream_finish(self.c_ctx, macBuf)
+        })
+
+        return mac
+    }
+
+    /// Prepare to authenticate a new message with the same key
+    /// as the previous MAC operation.
+    @objc public func reset() {
+        vscf_mac_stream_reset(self.c_ctx)
+    }
 }

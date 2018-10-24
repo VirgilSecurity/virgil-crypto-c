@@ -34,11 +34,42 @@
 
 
 import Foundation
+import VSCFoundation
 
 /// Common information about asymmetric key.
-@objc(VSCFKey) public protocol Key {
+@objc(VSCFKey) public protocol Key : CProtocol {
 
     @objc func keyLen() -> Int
 
     @objc func keyBitlen() -> Int
+}
+
+/// Implement interface methods
+@objc(VSCFKeyProxy) internal class KeyProxy: NSObject, Key {
+
+    /// Handle underlying C context.
+    @objc public let c_ctx: OpaquePointer
+
+    /// Take C context that implements this interface
+    public init(c_ctx: OpaquePointer) {
+        self.c_ctx = c_ctx
+        super.init()
+    }
+
+    /// Release underlying C context.
+    deinit {
+        vscf_impl_delete(self.c_ctx)
+    }
+
+    /// Length of the key in bytes.
+    @objc public func keyLen() -> Int {
+        let proxyResult = vscf_key_key_len(self.c_ctx)
+        return proxyResult
+    }
+
+    /// Length of the key in bits.
+    @objc public func keyBitlen() -> Int {
+        let proxyResult = vscf_key_key_bitlen(self.c_ctx)
+        return proxyResult
+    }
 }

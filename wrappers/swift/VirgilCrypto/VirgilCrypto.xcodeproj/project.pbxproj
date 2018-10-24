@@ -74,6 +74,17 @@
 		F4470656217EF6780041D62D /* Sha384.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4470653217EF6770041D62D /* Sha384.swift */; };
 		F4470657217EF6780041D62D /* Sha256.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4470654217EF6780041D62D /* Sha256.swift */; };
 		F4470658217EF6780041D62D /* Sha512.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4470655217EF6780041D62D /* Sha512.swift */; };
+		F45B0935217F1F6A0083A758 /* Asn1rd.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45B0934217F1F6A0083A758 /* Asn1rd.swift */; };
+		F45B0937217F25C00083A758 /* Asn1wr.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45B0936217F25C00083A758 /* Asn1wr.swift */; };
+		F45B093A217F28B20083A758 /* Kdf1.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45B0938217F28B10083A758 /* Kdf1.swift */; };
+		F45B093B217F28B20083A758 /* Kdf2.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45B0939217F28B10083A758 /* Kdf2.swift */; };
+		F45B093D217F28D50083A758 /* Aes256Gcm.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45B093C217F28D50083A758 /* Aes256Gcm.swift */; };
+		F45B093F217F324B0083A758 /* Hkdf.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45B093E217F324B0083A758 /* Hkdf.swift */; };
+		F45B0941217F32610083A758 /* Hmac.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45B0940217F32610083A758 /* Hmac.swift */; };
+		F45B0943217F32B60083A758 /* FakeRandom.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45B0942217F32B60083A758 /* FakeRandom.swift */; };
+		F45B0947217F337A0083A758 /* RsaPublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45B0946217F337A0083A758 /* RsaPublicKey.swift */; };
+		F45B0949217F33940083A758 /* RsaPrivateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45B0948217F33940083A758 /* RsaPrivateKey.swift */; };
+		F45B094B218053DD0083A758 /* CProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45B094A218053DD0083A758 /* CProtocol.swift */; };
 		F476E032216F43B600990B46 /* VirgilCryptoCommonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F476E031216F43B600990B46 /* VirgilCryptoCommonTests.swift */; };
 		F476E034216F43B600990B46 /* VirgilCryptoCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = F476E026216F43B500990B46 /* VirgilCryptoCommon.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F48E70A121773DCA00405E0B /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = F48E70A021773DCA00405E0B /* Error.swift */; };
@@ -206,11 +217,21 @@
 		F4470653217EF6770041D62D /* Sha384.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sha384.swift; sourceTree = "<group>"; };
 		F4470654217EF6780041D62D /* Sha256.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sha256.swift; sourceTree = "<group>"; };
 		F4470655217EF6780041D62D /* Sha512.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sha512.swift; sourceTree = "<group>"; };
+		F45B0934217F1F6A0083A758 /* Asn1rd.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Asn1rd.swift; sourceTree = "<group>"; };
+		F45B0936217F25C00083A758 /* Asn1wr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Asn1wr.swift; sourceTree = "<group>"; };
+		F45B0938217F28B10083A758 /* Kdf1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Kdf1.swift; sourceTree = "<group>"; };
+		F45B0939217F28B10083A758 /* Kdf2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Kdf2.swift; sourceTree = "<group>"; };
+		F45B093C217F28D50083A758 /* Aes256Gcm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Aes256Gcm.swift; sourceTree = "<group>"; };
+		F45B093E217F324B0083A758 /* Hkdf.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hkdf.swift; sourceTree = "<group>"; };
+		F45B0940217F32610083A758 /* Hmac.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hmac.swift; sourceTree = "<group>"; };
+		F45B0942217F32B60083A758 /* FakeRandom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakeRandom.swift; sourceTree = "<group>"; };
+		F45B0946217F337A0083A758 /* RsaPublicKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RsaPublicKey.swift; sourceTree = "<group>"; };
+		F45B0948217F33940083A758 /* RsaPrivateKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RsaPrivateKey.swift; sourceTree = "<group>"; };
+		F45B094A218053DD0083A758 /* CProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CProtocol.swift; sourceTree = "<group>"; };
 		F476E026216F43B500990B46 /* VirgilCryptoCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VirgilCryptoCommon.h; sourceTree = "<group>"; };
 		F476E027216F43B500990B46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F476E031216F43B600990B46 /* VirgilCryptoCommonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirgilCryptoCommonTests.swift; sourceTree = "<group>"; };
 		F476E033216F43B600990B46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F476E03D216F43E000990B46 /* VirgilCryptoCommon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VirgilCryptoCommon.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/VirgilCrypto-chghpgmjetocgycvmvosuqkklvhw/Build/Products/Debug-iphoneos/VirgilCryptoCommon.framework"; sourceTree = "<group>"; };
 		F48E70A021773DCA00405E0B /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		F4B84230216F44A200C3D7F4 /* VirgilCryptoCommon.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VirgilCryptoCommon.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4B84231216F44A200C3D7F4 /* VirgilCryptoCommonTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VirgilCryptoCommonTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -272,6 +293,17 @@
 		F429BF012173AB42001F0D8E /* VirgilCryptoFoundation */ = {
 			isa = PBXGroup;
 			children = (
+				F45B094A218053DD0083A758 /* CProtocol.swift */,
+				F45B0948217F33940083A758 /* RsaPrivateKey.swift */,
+				F45B0946217F337A0083A758 /* RsaPublicKey.swift */,
+				F45B0942217F32B60083A758 /* FakeRandom.swift */,
+				F45B0940217F32610083A758 /* Hmac.swift */,
+				F45B093E217F324B0083A758 /* Hkdf.swift */,
+				F45B093C217F28D50083A758 /* Aes256Gcm.swift */,
+				F45B0938217F28B10083A758 /* Kdf1.swift */,
+				F45B0939217F28B10083A758 /* Kdf2.swift */,
+				F45B0936217F25C00083A758 /* Asn1wr.swift */,
+				F45B0934217F1F6A0083A758 /* Asn1rd.swift */,
 				F4470654217EF6780041D62D /* Sha256.swift */,
 				F4470653217EF6770041D62D /* Sha384.swift */,
 				F4470655217EF6780041D62D /* Sha512.swift */,
@@ -417,7 +449,6 @@
 		F476E025216F43B500990B46 /* VirgilCryptoCommon */ = {
 			isa = PBXGroup;
 			children = (
-				F476E03D216F43E000990B46 /* VirgilCryptoCommon.framework */,
 				F476E026216F43B500990B46 /* VirgilCryptoCommon.h */,
 				F476E027216F43B500990B46 /* Info.plist */,
 			);
@@ -708,16 +739,21 @@
 				F431D868217DE57B00A9389F /* Cipher.swift in Sources */,
 				F431D861217DE57B00A9389F /* MacInfo.swift in Sources */,
 				F431D84D217DE57B00A9389F /* ExportPrivateKey.swift in Sources */,
+				F45B0935217F1F6A0083A758 /* Asn1rd.swift in Sources */,
 				F431D847217DE57B00A9389F /* Key.swift in Sources */,
 				F431D848217DE57B00A9389F /* Kdf.swift in Sources */,
 				F431D857217DE57B00A9389F /* Verify.swift in Sources */,
 				F431D866217DE57B00A9389F /* Hash.swift in Sources */,
+				F45B093A217F28B20083A758 /* Kdf1.swift in Sources */,
+				F45B093F217F324B0083A758 /* Hkdf.swift in Sources */,
 				F431D846217DE57B00A9389F /* CipherAuth.swift in Sources */,
 				F431D869217DE57B00A9389F /* ComputeSharedKey.swift in Sources */,
 				F431D85A217DE57B00A9389F /* HashStream.swift in Sources */,
 				F431D84B217DE57B00A9389F /* Encrypt.swift in Sources */,
+				F45B0943217F32B60083A758 /* FakeRandom.swift in Sources */,
 				F431D855217DE57B00A9389F /* PublicKey.swift in Sources */,
 				F431D865217DE57B00A9389F /* AuthEncrypt.swift in Sources */,
+				F45B0937217F25C00083A758 /* Asn1wr.swift in Sources */,
 				F431D858217DE57B00A9389F /* HashInfo.swift in Sources */,
 				F431D867217DE57B00A9389F /* Error.swift in Sources */,
 				F431D86A217DE57B00A9389F /* AuthDecrypt.swift in Sources */,
@@ -725,6 +761,7 @@
 				F431D852217DE57B00A9389F /* Mac.swift in Sources */,
 				F431D843217DE57B00A9389F /* Asn1Tag.swift in Sources */,
 				F431D85F217DE57B00A9389F /* Random.swift in Sources */,
+				F45B0947217F337A0083A758 /* RsaPublicKey.swift in Sources */,
 				F431D871217E2D0F00A9389F /* Sha224.swift in Sources */,
 				F431D86B217DE57B00A9389F /* CipherInfo.swift in Sources */,
 				F431D84C217DE57B00A9389F /* CipherAuthInfo.swift in Sources */,
@@ -736,7 +773,12 @@
 				F4470656217EF6780041D62D /* Sha384.swift in Sources */,
 				F431D86C217DE57B00A9389F /* ExportPublicKey.swift in Sources */,
 				F431D844217DE57B00A9389F /* Asn1Reader.swift in Sources */,
+				F45B094B218053DD0083A758 /* CProtocol.swift in Sources */,
 				F431D864217DE57B00A9389F /* Asn1Writer.swift in Sources */,
+				F45B093D217F28D50083A758 /* Aes256Gcm.swift in Sources */,
+				F45B093B217F28B20083A758 /* Kdf2.swift in Sources */,
+				F45B0941217F32610083A758 /* Hmac.swift in Sources */,
+				F45B0949217F33940083A758 /* RsaPrivateKey.swift in Sources */,
 				F4470657217EF6780041D62D /* Sha256.swift in Sources */,
 				F431D841217DE57B00A9389F /* Sign.swift in Sources */,
 				F431D84F217DE57B00A9389F /* PrivateKey.swift in Sources */,

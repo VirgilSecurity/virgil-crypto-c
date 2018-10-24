@@ -81,8 +81,8 @@ function wrapper_foreach_interface_create_module (source, destination, wrapper, 
 endfunction
 
 
-function wrapper_foreach_implementation_create_module (source, interfaces, destination, wrapper, meta)
-    check_arguments (my, "source, interfaces, destination, wrapper, meta", my)
+function wrapper_foreach_implementation_create_module (source, destination, wrapper, meta)
+    check_arguments (my, "source, destination, wrapper, meta", my)
 
     my.proxy_func = make_id(my.wrapper.lang, "create_implementation_module")
     if ! macro (my.proxy_func)
@@ -90,7 +90,7 @@ function wrapper_foreach_implementation_create_module (source, interfaces, desti
     endif
 
     for my.source.implementation where implementation.scope = "public"
-        $(my.proxy_func:) (implementation, my.interfaces, my.destination, my.wrapper, my.meta)
+        $(my.proxy_func:) (implementation, my.destination, my.wrapper, my.meta)
     endfor
 endfunction
 

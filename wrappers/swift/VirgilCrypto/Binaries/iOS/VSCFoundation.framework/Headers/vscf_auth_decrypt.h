@@ -55,6 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
+#include "vscf_cipher_auth_info.h"
 #include "vscf_error.h"
 #include "vscf_api.h"
 
@@ -106,6 +107,12 @@ vscf_auth_decrypt_auth_decrypted_len(vscf_impl_t *impl, size_t data_len);
 //
 VSCF_PUBLIC const vscf_auth_decrypt_api_t *
 vscf_auth_decrypt_api(vscf_impl_t *impl);
+
+//
+//  Return cipher auth info API.
+//
+VSCF_PUBLIC const vscf_cipher_auth_info_api_t *
+vscf_auth_decrypt_cipher_auth_info_api(const vscf_auth_decrypt_api_t *auth_decrypt_api);
 
 //
 //  Check if given object implements interface 'auth decrypt'.

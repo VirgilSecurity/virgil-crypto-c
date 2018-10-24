@@ -94,6 +94,40 @@ function class_derive_c_method_ref (class, method)
 
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C interface method that returns API.
+# ---------------------------------------------------------------------------
+function interface_derive_c_api_method_from_name (interface_name)
+    check_arguments (my, "interface_name", my)
+
+    return make_ref_c (make_id ("class", my.interface_name, "method", "api"))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C interface method that returns API.
+# ---------------------------------------------------------------------------
+function interface_derive_c_api_method (interface)
+    check_arguments (my, "interface", my)
+
+    assert_attribute (my.interface, "name", my)
+
+    return interface_derive_c_api_method_from_name (my.interface.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C interface method that returns
+#   requested constant.
+# ---------------------------------------------------------------------------
+function interface_derive_c_constant_method (interface, constant)
+    check_arguments (my, "interface, constant", my)
+
+    assert_attribute (my.interface, "name", my)
+    assert_attribute (my.constant, "name", my)
+
+    return make_ref_c (make_id ("class", my.interface.name, "method", my.constant.name))
+endfunction
+
+
 # ===========================================================================
 #   Name and type derivation.
 # ===========================================================================
@@ -202,7 +236,7 @@ function swift_derive_integer_type (size)
             echo_fatal ("Unsupported size 'my.size' for Swift integers", my)
         endif
     else
-        return "Int"
+        return "Int32"
     endif
 endfunction
 
@@ -227,7 +261,7 @@ function swift_derive_unsigned_type (size)
             echo_fatal ("Unsupported size 'my.size' for Swift unsigned integers", my)
         endif
     else
-        return "UInt"
+        return "UInt32"
     endif
 endfunction
 
@@ -284,6 +318,17 @@ function swift_derive_protocol_name (interface, wrapper)
     assert_attribute_one_of (my.interface, "name, interface", my)
 
     return "$(my.interface.name ? my.interface.interface:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the Swift protocol.
+# ---------------------------------------------------------------------------
+function swift_derive_proxy_protocol_name (interface, wrapper)
+    check_arguments (my, "interface", my)
+
+    assert_attribute_one_of (my.interface, "name, interface", my)
+
+    return "$(my.interface.name ? my.interface.interface:Pascal)Proxy"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -410,7 +455,7 @@ function swift_derive_instance_type (instance)
         endif
 
         if is_true (my.instance.is_reference)
-            if ! string_in (my.instance.access, "readonly")
+            if string_in (my.instance.access, "readonly")
                 my.primitive_type = "UnsafePointer<$(my.primitive_type:)>"
             else
                 my.primitive_type = "UnsafeMutablePointer<$(my.primitive_type:)>"
@@ -418,7 +463,7 @@ function swift_derive_instance_type (instance)
         endif
 
         if count (my.instance.array)
-            if ! string_in (my.instance.access, "readonly")
+            if string_in (my.instance.access, "readonly")
                 my.primitive_type = "UnsafePointer<$(my.primitive_type:)>"
             else
                 my.primitive_type = "UnsafeMutablePointer<$(my.primitive_type:)>"
@@ -493,7 +538,32 @@ endfunction
 function swift_derive_result_class_name (swift_parent, swift_method)
     check_arguments (my, "swift_parent, swift_method", my)
 
-    return "$(my.swift_parent.name:Pascal)$(my.swift_method.name:Pascal)Result"
+    return "$(my.swift_method.interface ? my.swift_parent.name:Pascal)$(my.swift_method.name:Pascal)Result"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return C type wrapped to the Swift type.
+# ---------------------------------------------------------------------------
+function swift_wrap_c_returned_value (swift_return)
+    check_arguments (my, "swift_return", my)
+
+    my.name = my.swift_return.name ? "proxyResult"
+    my.type = my.swift_return.type
+
+    scope my.swift_return
+
+    if is_true (0.is_data)
+        return "Data.init(bytes: $(my.name:).bytes, count: $(my.name:).len)"
+
+    elsif is_true (0.is_primitive_type) & is_true_any (0.is_array, 0.is_reference)
+        return "$(my.name:)!"
+
+    elsif is_true (0.is_interface)
+        return "$(my.type:)Proxy.init(c_ctx: $(my.name:)!)"
+    endif
+
+    endscope
+    return my.name
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -506,7 +576,7 @@ function swift_format_result_class_init_args (swift_method)
     my.init_args = ""
 
     for my.swift_method.swift_return
-        my.init_args += "$(swift_return.name:): $(swift_return.name:)"
+        my.init_args += "$(swift_return.name:): $(swift_wrap_c_returned_value (swift_return))"
         if ! last ()
             my.init_args += ", "
         endif
@@ -521,9 +591,18 @@ endfunction
 function swift_format_c_proxy_args (class, method)
     check_arguments (my, "class, method", my)
 
-    my.proxy_args = is_false (my.method.is_static) ?? "self.c_ctx" ? ""
+    if is_false (my.method.is_static)
+        my.proxy_args = "self.c_ctx"
+
+    elsif defined (my.method.implementation)
+        my.proxy_args = ""
+
+    elsif defined (my.method.interface)
+        my.proxy_args = "$(interface_derive_c_api_method_from_name(my.method.interface))(self.c_ctx)"
+    endif
 
     for my.method.argument
+        my.proxy_args ?= ""
         if my.proxy_args <> ""
             my.proxy_args += ", "
         endif
@@ -562,24 +641,39 @@ function class_derive_buffer_length_getter (class, method, argument)
     my.length = my.argument->length
     assert_attribute_one_of (my.length, "constant, argument, method", my)
 
-    if defined (my.length.object)
-        my.proxy_type = my.length.object
+    for my.length.proxy
+        if ! defined (proxy.[to])
+            echo_debug_item (my.argument, my)
+            assert_attributes (proxy, "to", my)
+        endif
 
-    elsif defined (my.length.class)
-        my.project_uid = swift_derive_component_project_uid (my.length)
-        my.type_uid = make_id ("class", "$(my.length.class:Pascal)")
-        my.proxy_type = make_ref_swift (make_id(my.project_uid, my.type_uid))
-    else
-        my.proxy_type = swift_derive_class_name (my.class)
-    endif
+        my.proxy_args ?= ""
+
+        if ! first ()
+            my.proxy_args += ", "
+        endif
+
+        if defined (proxy.argument)
+
+            my.proxy_args += swift_derive_argument_name_str (proxy.[to])
+            my.proxy_args += ": " + swift_derive_argument_name_str (proxy.argument)
+
+            if string_in (proxy.cast, "data_length")
+                my.proxy_args += ".count"
+            endif
+        else
+            echo_debug_item (my.argument, my)
+            echo_fatal ("Buffer length argument can be proxied. Undefined type.", my)
+        endif
+    endfor
 
     if defined (my.length.method)
         my.proxy_method = swift_derive_method_name_str (my.length.method)
-        return "$(my.proxy_type:).$(my.proxy_method:)($(my.proxy_args?:))"
+        return "self.$(my.proxy_method:)($(my.proxy_args?:))"
 
     elsif defined (my.length.constant)
         my.proxy_constant = swift_derive_constant_name_str (my.length.constant)
-        return "$(my.proxy_type:).$(my.proxy_constant:)"
+        return "self.$(my.proxy_constant:)"
 
     elsif defined (my.length.argument)
         my.proxy_argument = swift_derive_argument_name_str (my.length.argument)
@@ -630,6 +724,35 @@ function swift_map_instance_type (swift_instance, instance)
     check_arguments (my, "swift_instance, instance", my)
 
     my.swift_instance.type = swift_derive_instance_type (my.instance)
+
+    if defined (my.instance.type)
+        my.swift_instance.is_primitive_type = "1"
+
+    elsif defined (my.instance.class)
+        my.swift_instance.is_class = "1"
+
+        if my.instance.class = "any"
+            my.swift_instance.is_any = "1"
+
+        elsif my.instance.class = "data"
+            my.swift_instance.is_data = "1"
+
+        elsif my.instance.class = "buffer"
+            my.swift_instance.is_buffer = "1"
+        endif
+
+    elsif defined (my.instance.interface)
+        my.swift_instance.is_interface = "1"
+
+    elsif defined (my.instance.enum)
+        my.swift_instance.is_enum = "1"
+
+    elsif defined (my.instance.impl)
+        my.swift_instance.is_class = "1"
+    endif
+
+    my.swift_instance.is_array = count (my.instance.array) ?? "1" ?
+    my.swift_instance.is_reference = my.instance.is_reference ?
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -716,6 +839,33 @@ endfunction
 #   Component creation.
 # ===========================================================================
 
+
+# ---------------------------------------------------------------------------
+#   Create entity <swift_inherit/> from the entity <inherit/>.
+# ---------------------------------------------------------------------------
+function swift_create_inherit_nsobject (destination)
+    check_arguments (my, "destination", my)
+
+    new swift_inherit to my.destination
+        .type = "NSObject"
+
+        return swift_inherit
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <swift_inherit/> from the entity <inherit/>.
+# ---------------------------------------------------------------------------
+function swift_create_inherit (inherit, destination, wrapper, meta)
+    check_arguments (my, "inherit, destination, wrapper, meta", my)
+
+    new swift_inherit to my.destination
+        .type = swift_derive_protocol_name (my.inherit, my.wrapper)
+
+        return swift_inherit
+    endnew
+endfunction
+
 # ---------------------------------------------------------------------------
 #   Add new <swift_class/> that encapsulate multiple objects returned by
 #   method.
@@ -726,15 +876,25 @@ function swift_create_result_class (parent, swift_method, destination, wrapper, 
     assert_attributes (my.parent, "name, visibility", my)
     assert_attribute (my.swift_method, "name", my)
 
+    if item_in (my.parent, "swift_class") & defined (my.swift_method.interface)
+        for my.swift_method.swift_return
+            delete swift_return
+        endfor
+
+        new swift_return to my.swift_method
+            .type = swift_derive_result_class_name (my.parent, my.swift_method)
+        endnew
+
+        return
+    endif
+
     new swift_class to my.destination
         . = "/// Encapsulate result of method $(my.parent.name:).$(my.swift_method.name:)()"
         .name = swift_derive_result_class_name (my.parent, my.swift_method)
         .objc_name = swift_derive_class_objc_name (swift_class, my.wrapper)
         .visibility = my.parent.visibility
 
-        new swift_inherit to swift_class
-            .type = "NSObject"
-        endnew
+        swift_create_inherit_nsobject (swift_class)
 
         for my.swift_method.swift_return
             new swift_property to swift_class
@@ -779,19 +939,6 @@ function swift_create_result_class (parent, swift_method, destination, wrapper, 
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create entity <swift_inherit/> from the entity <inherit/>.
-# ---------------------------------------------------------------------------
-function swift_create_inherit (inherit, destination, wrapper, meta)
-    check_arguments (my, "inherit, destination, wrapper, meta", my)
-
-    new swift_inherit to my.destination
-        .type = swift_derive_protocol_name (my.inherit, my.wrapper)
-
-        return swift_inherit
-    endnew
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Create entity <swift_property/> from the entity <instance/>.
 # ---------------------------------------------------------------------------
 function swift_create_property_from_constant (constant, destination, wrapper, meta)
@@ -804,7 +951,6 @@ function swift_create_property_from_constant (constant, destination, wrapper, me
         .value = my.constant.value ?
         .visibility = "public"
         .access = "readonly"
-        .modifier = "static"
 
         return swift_property
     endnew
@@ -864,6 +1010,7 @@ function swift_create_return_from_argument (class, method, argument, destination
     new swift_return to my.destination
         .name = swift_derive_instance_name (my.argument)
         swift_map_instance (swift_return, my.argument)
+        swift_return.was_argument = "1"
 
         if string_equal (my.argument.class, "buffer")
             swift_return.length_getter = class_derive_buffer_length_getter (my.class, my.method, argument)
@@ -896,9 +1043,9 @@ function swift_create_method_declaration (class, method, destination, wrapper, m
         . = swift_format_description (my.method) ?
         .name = swift_derive_method_name (method, my.wrapper)
         .throws = count (my.method.return, string_equal (return.enum, "error")) ?? "1" ? "0"
+        .interface = my.method.interface ?
 
         swift_map_attr_visibility (swift_method, my.method)
-        swift_method.modifier = my.method.is_static ?? "static" ?
 
         for my.method.argument
             if argument.access <> "writeonly"
@@ -940,7 +1087,7 @@ function swift_create_class_method (class, method, destination, wrapper, meta)
         #
 
         #   Wrap output buffers.
-        for swift_method.swift_return where 0.type = "Data"
+        for swift_method.swift_return where 0.type = "Data" & is_true_both (0.is_buffer, 0.was_argument)
             if ! defined (swift_return.length_getter)
                 echo_debug_item (swift_method)
             endif
@@ -985,7 +1132,7 @@ function swift_create_class_method (class, method, destination, wrapper, meta)
             my.scope_count += 1
         endfor
 
-        for swift_method.swift_return where 0.type = "Data"
+        for swift_method.swift_return where 0.type = "Data" & is_true_both (0.is_buffer, 0.was_argument)
             my.opened_scope ?= ""
             my.opened_scope += format_left("\
                 $(my.result_statement?:)$(swift_return.name:).withUnsafeMutableBytes({ \
@@ -1027,11 +1174,7 @@ function swift_create_class_method (class, method, destination, wrapper, meta)
 
         #   Return result
         if count (swift_method.swift_return) = 1
-            if defined (swift_method->swift_return.name)
-                my.return_result = format_left ("return $(swift_method->swift_return.name:)")
-            else
-                my.return_result = format_left ("return proxyResult")
-            endif
+            my.return_result = format_left ("return $(swift_wrap_c_returned_value (swift_method->swift_return))")
 
         elsif count (swift_method.swift_return) > 1
             my.result_class = swift_derive_result_class_name (my.destination, swift_method)
@@ -1058,41 +1201,28 @@ function swift_create_class_method (class, method, destination, wrapper, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create entity <swift_method/> from the entity interface <method/>.
+#   Create Swift computed property that makes proxy to retrieve constant.
 # ---------------------------------------------------------------------------
-function swift_create_interface_implemented_method (method, destination, wrapper, meta)
-    check_arguments (my, "method, destination, wrapper, meta", my)
+function swift_create_proxy_property_from_constant (constant, interface, destination, wrapper, meta)
+    check_arguments (my, "constant, interface, destination, wrapper, meta", my)
 
-    new swift_method to my.destination
-        . = swift_format_description (my.method) ?
-        .name = swift_derive_method_name (method, my.wrapper)
-        .throws = count (my.method.return, string_equal (return.enum, "error")) ?? "1" ? "0"
+    my.swift_constant = swift_create_property_from_constant (my.constant, my.destination, my.wrapper, my.meta)
 
-        swift_map_attr_visibility (swift_method, my.method)
+    my.api_getter = interface_derive_c_api_method (my.interface)
+    my.constant_getter = interface_derive_c_constant_method (my.interface, my.constant)
 
-        for my.method.argument
-            if argument.access <> "writeonly"
-                swift_create_argument (argument, swift_method, my.wrapper, my.meta)
-            else
-                swift_create_return_from_argument (\
-                        my.implementation, my.method, argument, swift_method, my.wrapper, my.meta)
-            endif
-        endfor
-
-        for my.method.return where ! string_equal (return.enum, "error")
-            swift_create_return (return, swift_method, my.wrapper, my.meta)
-        endfor
-
-        return swift_method
+    new computed to my.swift_constant
+        . = "\
+            return $(my.constant_getter:)($(my.api_getter:)(self.c_ctx))
+        "
     endnew
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Add all required components
+#   Add all components related to the interface.
 # ---------------------------------------------------------------------------
 function swift_create_interface_implementation (implementation, swift_class, wrapper, meta)
     check_arguments (my, "implementation, swift_class, wrapper, meta", my)
-
 
     for my.implementation.interface
         swift_create_inherit (interface, my.swift_class, my.wrapper, my.meta)
@@ -1105,6 +1235,121 @@ function swift_create_interface_implementation (implementation, swift_class, wra
             swift_create_class_method (my.implementation, method, my.swift_class, my.wrapper, my.meta)
         endfor
     endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create <swift_property/> that handles underlying C context.
+# ---------------------------------------------------------------------------
+function swift_create_class_property_context (destination)
+    check_arguments (my, "destination", my)
+
+    new swift_property to my.destination
+        . = "/// Handle underlying C context."
+        .name = "c_ctx"
+        .type = "OpaquePointer"
+        .access = "readonly"
+        .visibility = "public"
+
+        return swift_property
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create <swift_constructor/> that takes underlying C context.
+# ---------------------------------------------------------------------------
+function swift_create_class_constructor_context (destination, wrapper, meta)
+    check_arguments (my, "destination, wrapper, meta", my)
+
+    new swift_constructor to my.destination
+        . = "/// Take C context that implements this interface"
+        .visibility = "public"
+
+        new swift_argument to swift_constructor
+            .name = "c_ctx"
+            .type = "OpaquePointer"
+        endnew
+
+        new swift_code
+            . = "
+                self.c_ctx = c_ctx
+                super.init()
+            "
+        endnew
+
+        return swift_constructor
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create <swift_destructor/> that takes delete C implementation context.
+# ---------------------------------------------------------------------------
+function swift_create_interface_proxy_class_destructor (destination, wrapper, meta)
+    check_arguments (my, "destination, wrapper, meta", my)
+
+    new swift_destructor to my.destination
+        . = "/// Release underlying C context."
+
+        new swift_code to swift_destructor
+            . = "\
+                .(c_class_impl_method_delete)(self.c_ctx)
+            "
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add implementation of the inherited constants and methods to the
+#   interface proxy class.
+# ---------------------------------------------------------------------------
+function swift_create_interface_proxy_class_inheritance (interface, swift_class, wrapper, meta)
+    check_arguments (my, "interface, swift_class, wrapper, meta", my)
+
+    if count (my.swift_class.implemented, implemented.interface = my.interface.name)
+        return
+    endif
+
+    for my.interface.inherit
+        my.parent_interface = interface_global_find (inherit.interface, inherit.project)
+        swift_create_interface_proxy_class_inheritance (my.parent_interface, my.swift_class, my.wrapper, my.meta)
+    endfor
+
+    for my.interface.constant
+        swift_create_proxy_property_from_constant (constant, my.interface, my.swift_class, my.wrapper, my.meta)
+    endfor
+
+    for my.interface.method
+        swift_create_class_method (my.interface, method, my.swift_class, my.wrapper, my.meta)
+    endfor
+
+    new implemented to my.swift_class
+        .interface = my.interface.name
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add all components related to the interface.
+# ---------------------------------------------------------------------------
+function swift_create_interface_proxy_class (interface, destination, wrapper, meta)
+    check_arguments (my, "interface, destination, wrapper, meta", my)
+
+   new swift_class to swift_module
+        . = "/// Implement interface methods "
+        .name = swift_derive_proxy_protocol_name (my.interface)
+        .objc_name = swift_derive_class_objc_name (swift_class, my.wrapper)
+        .visibility = "internal"
+
+        swift_create_inherit_nsobject (swift_class)
+        swift_create_inherit (my.interface, swift_class, my.wrapper, my.meta)
+        swift_create_class_property_context (swift_class)
+        swift_create_class_constructor_context (swift_class, my.wrapper, my.meta)
+        swift_create_interface_proxy_class_destructor (swift_class, my.wrapper, my.meta)
+
+        swift_create_interface_proxy_class_inheritance (my.interface, swift_class, my.wrapper, my.meta)
+
+        for swift_class.swift_method where count (0.swift_return) > 1
+            swift_create_result_class (swift_class, swift_method, swift_module, my.wrapper, my.meta)
+        endfor
+    endnew
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1200,21 +1445,6 @@ function swift_create_enum_constructor (swift_enum, enum, wrapper, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create <swift_property/> that handles underlying C context.
-# ---------------------------------------------------------------------------
-function swift_create_class_property_context (swift_class, class, wrapper, meta)
-    check_arguments (my, "swift_class, class, wrapper, meta", my)
-
-    new swift_property to my.swift_class
-        . = "/// Handle underlying C context."
-        .name = "c_ctx"
-        .type = "OpaquePointer"
-        .access = "readonly"
-        .visibility = "private"
-    endnew
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Create default <swift_constructor/> that initialize underlying C context.
 # ---------------------------------------------------------------------------
 function swift_create_class_default_constructor (swift_class, class, wrapper, meta)
@@ -1264,16 +1494,52 @@ endfunction
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
+#   Create module with base Swift protocol.
+# ---------------------------------------------------------------------------
+function swift_create_base_interface_module (name, destination, wrapper, meta)
+    check_arguments (my, "name, destination, wrapper, meta", my)
+
+    if count (my.destination.swift_protocol, name = my.name)
+        #   This function is called multiple times, and we need only one definition.
+        return
+    endif
+
+    new swift_module to my.destination
+        . = "/// This is base protocol for all protocols that are wrap C interfaces."
+        .name = my.name
+        .source_file_name = 0.name + ".swift"
+        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+
+        new swift_license to swift_module
+            . = swift_format_license (my.wrapper->license) ?
+        endnew
+
+        new swift_import to swift_module
+            .framework = "Foundation"
+        endnew
+
+        new swift_protocol to swift_module
+            .name = my.name
+            .objc_name = swift_derive_protocol_objc_name (swift_protocol, my.wrapper)
+            .visibility = "public"
+
+            swift_create_class_property_context (swift_protocol)
+        endnew
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
 #   Create module with Swift protocol from the abstract 'interface' notion.
 # ---------------------------------------------------------------------------
 function swift_create_interface_module (interface, destination, wrapper, meta)
     check_arguments (my, "interface, destination, wrapper, meta", my)
 
-    if my.interface.scope <> "internal"
-        echo_info ("Create <swift_module/> from interface: '$(my.interface.name:)'", my)
-    else
-        echo_info ("Skip creating <swift_module/> from internal interface: '$(my.interface.name:)'", my)
-    endif
+    echo_info ("Create <swift_module/> from interface: '$(my.interface.name:)'", my)
+
+    my.base_interface_name = "CProtocol"
+
+    swift_create_base_interface_module (my.base_interface_name, my.destination, my.wrapper, my.meta)
 
     new swift_module to my.destination
         .name = swift_derive_module_name (my.interface)
@@ -1288,6 +1554,10 @@ function swift_create_interface_module (interface, destination, wrapper, meta)
             .framework = "Foundation"
         endnew
 
+        new swift_import to swift_module
+            .framework = my.wrapper.framework
+        endnew
+
         new swift_protocol to swift_module
             . = swift_format_description (my.interface) ?
             .name = swift_derive_protocol_name (my.interface, my.wrapper)
@@ -1297,6 +1567,10 @@ function swift_create_interface_module (interface, destination, wrapper, meta)
 
             for my.interface.inherit
                 swift_create_inherit (inherit, swift_protocol, my.wrapper, my.meta)
+            else
+                new swift_inherit
+                    .type = my.base_interface_name
+                endnew
             endfor
 
             for my.interface.constant
@@ -1311,6 +1585,8 @@ function swift_create_interface_module (interface, destination, wrapper, meta)
                 swift_create_result_class (swift_protocol, swift_method, swift_module, my.wrapper, my.meta)
             endfor
         endnew
+
+        swift_create_interface_proxy_class (my.interface, swift_module, my.wrapper, my.meta)
     endnew
 
     echo_debug ("Done", my)
@@ -1319,8 +1595,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create module with Swift class from the abstract 'implementation' notion.
 # ---------------------------------------------------------------------------
-function swift_create_implementation_module (implementation, interfaces, destination, wrapper, meta)
-    check_arguments (my, "implementation, interfaces, destination, wrapper, meta", my)
+function swift_create_implementation_module (implementation, destination, wrapper, meta)
+    check_arguments (my, "implementation, destination, wrapper, meta", my)
 
     if my.implementation.scope <> "internal"
         echo_info ("Create <swift_module/> from implementation: '$(my.implementation.name:)'", my)
@@ -1352,9 +1628,7 @@ function swift_create_implementation_module (implementation, interfaces, destina
 
             swift_map_attr_visibility (swift_class, my.implementation)
 
-            new swift_inherit to swift_class
-                .type = "NSObject"
-            endnew
+            swift_create_inherit_nsobject (swift_class)
 
             for my.implementation.constant
                 swift_create_property_from_constant (constant, swift_class, my.wrapper, my.meta)
@@ -1365,7 +1639,7 @@ function swift_create_implementation_module (implementation, interfaces, destina
             endfor
 
             if my.implementation.context <> "none"
-                swift_create_class_property_context (swift_class, my.implementation, my.wrapper, my.meta)
+                swift_create_class_property_context (swift_class)
 
                 swift_create_class_default_constructor (swift_class, my.implementation, my.wrapper, my.meta)
                 swift_create_class_destructor (swift_class, my.implementation, my.wrapper, my.meta)
@@ -1428,12 +1702,10 @@ function swift_create_class_module (class, destination, wrapper, meta)
 
             swift_map_attr_visibility (swift_class, my.class)
 
-            new swift_inherit to swift_class
-                .type = "NSObject"
-            endnew
+            swift_create_inherit_nsobject (swift_class)
 
             if my.class.context <> "none"
-                swift_create_class_property_context (swift_class, my.class, my.wrapper, my.meta)
+                swift_create_class_property_context (swift_class)
 
                 swift_create_class_default_constructor (swift_class, my.class, my.wrapper, my.meta)
                 swift_create_class_destructor (swift_class, my.class, my.wrapper, my.meta)

@@ -56,6 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
+#include "vscf_cipher_auth_info.h"
 #include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -108,6 +109,10 @@ struct vscf_auth_encrypt_api_t {
     //  Implementation unique identifier, MUST be second in the structure.
     //
     vscf_impl_tag_t impl_tag;
+    //
+    //  Link to the inherited interface API 'cipher auth info'.
+    //
+    const vscf_cipher_auth_info_api_t *cipher_auth_info_api;
     //
     //  Encrypt given data.
     //  If 'tag' is not give, then it will written to the 'enc'.

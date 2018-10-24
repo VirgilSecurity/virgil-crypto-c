@@ -34,7 +34,38 @@
 
 
 import Foundation
+import VSCFoundation
 
 /// Contains public part of the key.
 @objc(VSCFPublicKey) public protocol PublicKey : Key {
+}
+
+/// Implement interface methods
+@objc(VSCFPublicKeyProxy) internal class PublicKeyProxy: NSObject, PublicKey {
+
+    /// Handle underlying C context.
+    @objc public let c_ctx: OpaquePointer
+
+    /// Take C context that implements this interface
+    public init(c_ctx: OpaquePointer) {
+        self.c_ctx = c_ctx
+        super.init()
+    }
+
+    /// Release underlying C context.
+    deinit {
+        vscf_impl_delete(self.c_ctx)
+    }
+
+    /// Length of the key in bytes.
+    @objc public func keyLen() -> Int {
+        let proxyResult = vscf_key_key_len(self.c_ctx)
+        return proxyResult
+    }
+
+    /// Length of the key in bits.
+    @objc public func keyBitlen() -> Int {
+        let proxyResult = vscf_key_key_bitlen(self.c_ctx)
+        return proxyResult
+    }
 }

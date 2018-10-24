@@ -34,11 +34,58 @@
 
 
 import Foundation
+import VSCFoundation
 
 /// Provide interface for data encryption.
-@objc(VSCFEncrypt) public protocol Encrypt {
+@objc(VSCFEncrypt) public protocol Encrypt : CProtocol {
 
     @objc func encrypt(data: Data) throws -> Data
 
     @objc func encryptedLen(dataLen: Int) -> Int
+}
+
+/// Implement interface methods
+@objc(VSCFEncryptProxy) internal class EncryptProxy: NSObject, Encrypt {
+
+    /// Handle underlying C context.
+    @objc public let c_ctx: OpaquePointer
+
+    /// Take C context that implements this interface
+    public init(c_ctx: OpaquePointer) {
+        self.c_ctx = c_ctx
+        super.init()
+    }
+
+    /// Release underlying C context.
+    deinit {
+        vscf_impl_delete(self.c_ctx)
+    }
+
+    /// Encrypt given data.
+    @objc public func encrypt(data: Data) throws -> Data {
+        let outCount = self.encryptedLen(dataLen: data.count)
+        var out = Data(count: outCount)
+        var outBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(outBuf)
+        }
+
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
+            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+                vsc_buffer_init(outBuf)
+                vsc_buffer_use(outBuf, outPointer, outCount)
+                return vscf_encrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
+            })
+        })
+
+        try! FoundationError.handleError(fromC: proxyResult)
+
+        return out
+    }
+
+    /// Calculate required buffer length to hold the encrypted data.
+    @objc public func encryptedLen(dataLen: Int) -> Int {
+        let proxyResult = vscf_encrypt_encrypted_len(self.c_ctx, dataLen)
+        return proxyResult
+    }
 }

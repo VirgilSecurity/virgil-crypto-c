@@ -112,8 +112,8 @@ function load_lang_wrapper (wrapper, destination)
 endfunction
 
 
-function process_project (project, interfaces, features_list, projects_api, echo_level)
-    check_arguments (my, "project, interfaces, features_list, projects_api, echo_level", my)
+function process_project (project, features_list, projects_api, echo_level)
+    check_arguments (my, "project, features_list, projects_api, echo_level", my)
 
     #   Create my.root eleement where all models will be created.
     my.root = XML.new ("my.root")
@@ -262,7 +262,7 @@ function process_project (project, interfaces, features_list, projects_api, echo
             wrapper_foreach_enum_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
             wrapper_foreach_class_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
             wrapper_foreach_interface_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
-            wrapper_foreach_implementation_create_module (my.root, my.interfaces, my.wrappers_destination, my.wrapper, my.meta)
+            wrapper_foreach_implementation_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
             wrapper_foreach_module_resolve(my.wrappers_destination, my.wrapper)
             projects_api_cleanup_lang (my.projects_api, "swift")
             projects_api_collect_info (my.projects_api, "swift", my.wrappers_destination)
@@ -313,22 +313,32 @@ function run_main ()
 
     #   Load and resolve interfaces.
     #   This is required to generate inherited methods in the wrappers.
-    my.interfaces = XML.new ("interfaces")
+    global.interfaces = XML.new ("interfaces")
     for main.project
         my.loaded_project = load_project_model (project, project)
         project_resolve (my.loaded_project)
         for my.loaded_project.interface
-            my.loaded_interface = load_project_model (my.loaded_project, interface, my.interfaces)
+            my.loaded_interface = load_project_model (my.loaded_project, interface, global.interfaces)
+            my.loaded_interface.project = my.loaded_project.name
             interface_resolve (my.loaded_interface, my.loaded_project)
         endfor
     endfor
+
+    for global.interfaces.interface
+        for interface.inherit
+            interface_resolve_inherit (inherit, global.interfaces, inherit)
+            inherit.project ?= interface.project
+        endfor
+    endfor
+
+    item_save_to_file (global.interfaces, "interfaces.xml")
 
     #   Process code generation.
     for main.project where is_false (project.skip_codegen)
         my.loaded_project = load_project_model (project, project)
         my.loaded_project.skip_codegen_c = is_true (project.skip_codegen_c)
         my.loaded_project.skip_codegen_wrappers = is_true (project.skip_codegen_wrappers)
-        process_project (my.loaded_project, my.interfaces, my.features_list, my.projects_api, main.echo_level)
+        process_project (my.loaded_project, my.features_list, my.projects_api, main.echo_level)
     endfor
 
     for main.library

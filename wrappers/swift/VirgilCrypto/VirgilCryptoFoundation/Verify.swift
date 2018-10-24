@@ -34,9 +34,39 @@
 
 
 import Foundation
+import VSCFoundation
 
 /// Provide interface for verifying data with public key.
-@objc(VSCFVerify) public protocol Verify {
+@objc(VSCFVerify) public protocol Verify : CProtocol {
 
     @objc func verify(data: Data, signature: Data) -> Bool
+}
+
+/// Implement interface methods
+@objc(VSCFVerifyProxy) internal class VerifyProxy: NSObject, Verify {
+
+    /// Handle underlying C context.
+    @objc public let c_ctx: OpaquePointer
+
+    /// Take C context that implements this interface
+    public init(c_ctx: OpaquePointer) {
+        self.c_ctx = c_ctx
+        super.init()
+    }
+
+    /// Release underlying C context.
+    deinit {
+        vscf_impl_delete(self.c_ctx)
+    }
+
+    /// Verify data with given public key and signature.
+    @objc public func verify(data: Data, signature: Data) -> Bool {
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Bool in
+            signature.withUnsafeBytes({ (signaturePointer: UnsafePointer<byte>) -> Bool in
+                return vscf_verify(self.c_ctx, vsc_data(dataPointer, data.count), vsc_data(signaturePointer, signature.count))
+            })
+        })
+
+        return proxyResult
+    }
 }

@@ -40,11 +40,13 @@ import VSCFoundation
 @objc(VSCFSha224) public class Sha224: NSObject, HashInfo, Hash, HashStream {
 
     /// Handle underlying C context.
-    @objc private let c_ctx: OpaquePointer
+    @objc public let c_ctx: OpaquePointer
+
     /// Length of the digest (hashing output) in bytes.
-    @objc public static let digestLen: Int = 28
+    @objc public let digestLen: Int = 28
+
     /// Block length of the digest function in bytes.
-    @objc public static let blockLen: Int = 64
+    @objc public let blockLen: Int = 64
 
     /// Initialize underlying C context.
     public override init() {
@@ -57,8 +59,9 @@ import VSCFoundation
         vscf_sha224_delete(self.c_ctx)
     }
 
-    @objc public static func hash(data: Data) -> Data {
-        let digestCount = Sha224.digestLen
+    /// Calculate hash over given data.
+    @objc public func hash(data: Data) -> Data {
+        let digestCount = self.digestLen
         var digest = Data(count: digestCount)
         var digestBuf = vsc_buffer_new()
         defer {
@@ -76,18 +79,21 @@ import VSCFoundation
         return digest
     }
 
+    /// Start a new hashing.
     @objc public func start() {
         vscf_sha224_start(self.c_ctx)
     }
 
+    /// Add given data to the hash.
     @objc public func update(data: Data) {
         data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
             vscf_sha224_update(self.c_ctx, vsc_data(dataPointer, data.count))
         })
     }
 
+    /// Accompilsh hashing and return it's result (a message digest).
     @objc public func finish() -> Data {
-        let digestCount = Sha224.digestLen
+        let digestCount = self.digestLen
         var digest = Data(count: digestCount)
         var digestBuf = vsc_buffer_new()
         defer {

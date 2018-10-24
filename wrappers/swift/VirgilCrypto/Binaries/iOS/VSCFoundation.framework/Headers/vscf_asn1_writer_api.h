@@ -59,12 +59,10 @@
 #include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_data.h>
 #endif
 
@@ -86,12 +84,13 @@ extern "C" {
 //
 //  Callback. Reset all internal states and prepare to new ASN.1 writing operations.
 //
-typedef void (*vscf_asn1_writer_api_reset_fn)(vscf_impl_t *impl, vsc_buffer_t *out);
+typedef void (*vscf_asn1_writer_api_reset_fn)(vscf_impl_t *impl, byte *out, size_t out_len);
 
 //
 //  Callback. Move written data to the buffer beginning and forbid further operations.
+//          Returns written size in bytes.
 //
-typedef void (*vscf_asn1_writer_api_finish_fn)(vscf_impl_t *impl);
+typedef size_t (*vscf_asn1_writer_api_finish_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Return last error.
@@ -236,6 +235,7 @@ struct vscf_asn1_writer_api_t {
     vscf_asn1_writer_api_reset_fn reset_cb;
     //
     //  Move written data to the buffer beginning and forbid further operations.
+    //  Returns written size in bytes.
     //
     vscf_asn1_writer_api_finish_fn finish_cb;
     //

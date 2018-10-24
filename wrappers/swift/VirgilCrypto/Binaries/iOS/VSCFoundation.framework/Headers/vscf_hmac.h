@@ -55,7 +55,6 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_mac.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -161,12 +160,6 @@ VSCF_PUBLIC void
 vscf_hmac_release_hash(vscf_hmac_impl_t *hmac_impl);
 
 //
-//  Returns instance of the implemented interface 'mac'.
-//
-VSCF_PUBLIC const vscf_mac_api_t *
-vscf_hmac_mac_api(void);
-
-//
 //  Size of the digest (mac output) in bytes.
 //
 VSCF_PUBLIC size_t
@@ -176,7 +169,7 @@ vscf_hmac_digest_len(vscf_hmac_impl_t *hmac_impl);
 //  Calculate MAC over given data.
 //
 VSCF_PUBLIC void
-vscf_hmac_mac(vscf_impl_t *hash, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac);
+vscf_hmac_mac(vscf_hmac_impl_t *hmac_impl, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac);
 
 //
 //  Start a new MAC.
