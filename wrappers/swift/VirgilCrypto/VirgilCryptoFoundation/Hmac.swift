@@ -53,6 +53,10 @@ import VSCFoundation
         vscf_hmac_delete(self.c_ctx)
     }
 
+    @objc public func setHash(hash: HashStream) {
+        vscf_hmac_use_hash(self.c_ctx, hash.c_ctx)
+    }
+
     /// Size of the digest (mac output) in bytes.
     @objc public func digestLen() -> Int {
         let proxyResult = vscf_hmac_digest_len(self.c_ctx)

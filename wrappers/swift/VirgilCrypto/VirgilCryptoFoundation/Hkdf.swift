@@ -55,6 +55,10 @@ import VSCFoundation
         vscf_hkdf_delete(self.c_ctx)
     }
 
+    @objc public func setHash(hash: HashStream) {
+        vscf_hkdf_use_hash(self.c_ctx, hash.c_ctx)
+    }
+
     /// Calculate hash over given data.
     @objc public func derive(data: Data, salt: Data, info: Data, keyLen: Int) -> Data {
         let keyCount = keyLen

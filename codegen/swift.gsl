@@ -52,6 +52,16 @@ gsl from "swift_codegen.gsl"
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
+#   If attribute 'project' is defined within <instance/> then return project
+#   prefix, otherwise return empty string.
+# ---------------------------------------------------------------------------
+function component_derive_project_uid (instance)
+    check_arguments (my, "instance", my)
+
+    return defined (my.instance.project) ?? make_id ("project", my.instance.project) ? ""
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return .(UID) that refers to the C type of the class.
 # ---------------------------------------------------------------------------
 function class_derive_c_type (class)
@@ -127,19 +137,46 @@ function interface_derive_c_constant_method (interface, constant)
     return make_ref_c (make_id ("class", my.interface.name, "method", my.constant.name))
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C interface method that returns API.
+# ---------------------------------------------------------------------------
+function class_derive_c_method_use_dependency (class, dependency)
+    check_arguments (my, "class, dependency", my)
+
+    return make_ref_c (make_id("class", my.class.name, "method", "use", my.dependency.name))
+endfunction
+
 
 # ===========================================================================
 #   Name and type derivation.
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
-#   If attribute 'project' is defined within <instance/> then return project
-#   prefix, otherwise return empty string.
+#   Return .(UID) of dependency type.
 # ---------------------------------------------------------------------------
-function swift_derive_component_project_uid (instance)
-    check_arguments (my, "instance", my)
+function swift_derive_dependency_type (dependency)
+    check_arguments (my, "dependency", my)
 
-    return defined (my.instance.project) ?? make_id ("project", my.instance.project) ? ""
+    my.project_uid = component_derive_project_uid (my.dependency)
+
+    if defined (my.dependency.interface)
+        my.type_uid = make_id ("protocol", "$(my.dependency.interface:Pascal)")
+
+    elsif defined (my.dependency.api)
+        my.type_uid = make_id ("protocol", "$(my.dependency.api:Pascal)")
+
+    elsif defined (my.dependency.class)
+        my.type_uid = make_id ("class", "$(my.dependency.class:Pascal)")
+
+    elsif defined (my.dependency.impl)
+        my.type_uid = make_id ("class", "$(my.dependency.impl:Pascal)")
+
+    else
+        echo_debug_item (my.dependency, my)
+        echo_fatal ("Unhanded dependency type.", my)
+    endif
+
+    return make_ref_swift (make_id(my.project_uid, my.type_uid))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -181,7 +218,7 @@ endfunction
 #   Return formatted constant name from raw name.
 # ---------------------------------------------------------------------------
 function swift_derive_constant_name_str (name)
-    assert_attribute (my, "name", my)
+    check_arguments (my, "name", my)
 
     return "$(my.name:Camel)"
 endfunction
@@ -190,9 +227,31 @@ endfunction
 #   Return formatted constant name.
 # ---------------------------------------------------------------------------
 function swift_derive_constant_name (constant, wrapper)
+    check_arguments (my, "constant", my)
+
     assert_attribute (my.constant, "name", my)
 
     return swift_derive_constant_name_str (my.constant.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted property name from raw name.
+# ---------------------------------------------------------------------------
+function swift_derive_property_name_str (name)
+    check_arguments (my, "name", my)
+
+    return "$(my.name:Camel)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted property name.
+# ---------------------------------------------------------------------------
+function swift_derive_property_name (property)
+    check_arguments (my, "property", my)
+
+    assert_attribute (my.property, "name", my)
+
+    return swift_derive_property_name_str (my.property.name)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -487,18 +546,18 @@ function swift_derive_instance_type (instance)
             return swift_lang_ref (my.instance.class)
 
         else
-            my.project_uid = swift_derive_component_project_uid (my.instance)
+            my.project_uid = component_derive_project_uid (my.instance)
             my.type_uid = make_id ("class", "$(my.instance.class:Pascal)")
             return make_ref_swift (make_id(my.project_uid, my.type_uid))
         endif
 
     elsif defined (my.instance.interface)
-        my.project_uid = swift_derive_component_project_uid (my.instance)
+        my.project_uid = component_derive_project_uid (my.instance)
         my.type_uid = make_id ("protocol", "$(my.instance.interface:Pascal)")
         return make_ref_swift (make_id(my.project_uid, my.type_uid))
 
     elsif defined (my.instance.enum)
-        my.project_uid = swift_derive_component_project_uid (my.instance)
+        my.project_uid = component_derive_project_uid (my.instance)
         my.type_uid = make_id ("enum", "$(my.instance.enum:Pascal)")
         return make_ref_swift (make_id(my.project_uid, my.type_uid))
 
@@ -1489,6 +1548,33 @@ function swift_create_class_destructor (swift_class, class, wrapper, meta)
     endnew
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Add <swift_method/> with setter only that proxy dependency to the
+#   C context.
+# ---------------------------------------------------------------------------
+function swift_create_method_from_dependency (dependency, impl, destination, wrapper, meta)
+    check_arguments (my, "dependency, impl, destination, wrapper, meta", my)
+
+    new swift_method to my.destination
+        . = swift_format_description (my.dependency) ?
+        .name = swift_derive_method_name_str (cat ("set", my.dependency.name))
+        .visibility = "public"
+
+        my.arg_name = swift_derive_argument_name (my.dependency)
+
+        new swift_argument to swift_method
+            .name = my.arg_name
+            .type = swift_derive_dependency_type (my.dependency)
+        endnew
+
+        new swift_code to swift_method
+            . = "\
+                $(class_derive_c_method_use_dependency (my.impl, my.dependency))(self.c_ctx, $(my.arg_name:).c_ctx)
+            "
+        endnew
+    endnew
+endfunction
+
 # ===========================================================================
 #   Create modules.
 # ===========================================================================
@@ -1632,6 +1718,10 @@ function swift_create_implementation_module (implementation, destination, wrappe
 
             for my.implementation.constant
                 swift_create_property_from_constant (constant, swift_class, my.wrapper, my.meta)
+            endfor
+
+            for my.implementation.dependency
+                swift_create_method_from_dependency (dependency, my.implementation, swift_class, my.wrapper, my.meta)
             endfor
 
             for my.implementation.method where method.declaration = "public" & count (method.buf_len) = 0
