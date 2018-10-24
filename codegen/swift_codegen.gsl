@@ -292,6 +292,7 @@ function swift_insert_class_property (swift_property)
 
     my.is_computed = count (my.swift_property.computed)
     my.is_const = my.swift_property.access = "readonly"
+    my.is_writeonly = my.swift_property.access = "writeonly"
 
     my.let_var = (my.is_const & !my.is_computed) ?? "let" ? "var"
 
