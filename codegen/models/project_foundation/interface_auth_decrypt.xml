@@ -11,7 +11,7 @@
         <argument name="auth data" class="data"/>
         <argument name="tag" class="data"/>
         <argument name="out" class="buffer">
-            <length object="self" method="auth decrypted len">
+            <length method="auth decrypted len">
                 <proxy argument="data" to="data len" cast="data_length"/>
             </length>
         </argument>

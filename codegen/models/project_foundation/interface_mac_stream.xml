@@ -22,7 +22,7 @@
         Accomplish MAC and return it's result (a message digest).
 
         <argument name="mac" class="buffer">
-            <length object="self" method="digest len"/>
+            <length method="digest len"/>
         </argument>
    </method>
 

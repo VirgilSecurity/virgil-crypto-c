@@ -40,7 +40,7 @@ import VSCPythia
 @objc(VSCPPythia) public class Pythia: NSObject {
 
     /// Handle underlying C context.
-    @objc private let c_ctx: OpaquePointer
+    @objc public let c_ctx: OpaquePointer
 
     /// Initialize underlying C context.
     public override init() {
@@ -53,59 +53,74 @@ import VSCPythia
         vscp_pythia_delete(self.c_ctx)
     }
 
+    /// Performs global initialization of the pythia library.
+    /// Must be called once for entire application at startup.
     @objc public static func globalInit() {
         vscp_global_init()
     }
 
+    /// Performs global cleanup of the pythia library.
+    /// Must be called once for entire application before exit.
     @objc public static func globalCleanup() {
         vscp_global_cleanup()
     }
 
+    /// Return length of the buffer needed to hold 'blinded password'.
     @objc public static func blindedPasswordBufLen() -> Int {
         let proxyResult = vscp_pythia_blinded_password_buf_len()
         return proxyResult
     }
 
+    /// Return length of the buffer needed to hold 'deblinded password'.
     @objc public static func deblindedPasswordBufLen() -> Int {
         let proxyResult = vscp_pythia_deblinded_password_buf_len()
         return proxyResult
     }
 
+    /// Return length of the buffer needed to hold 'blinding secret'.
     @objc public static func blindingSecretBufLen() -> Int {
         let proxyResult = vscp_pythia_blinding_secret_buf_len()
         return proxyResult
     }
 
+    /// Return length of the buffer needed to hold 'transformation private key'.
     @objc public static func transformationPrivateKeyBufLen() -> Int {
         let proxyResult = vscp_pythia_transformation_private_key_buf_len()
         return proxyResult
     }
 
+    /// Return length of the buffer needed to hold 'transformation public key'.
     @objc public static func transformationPublicKeyBufLen() -> Int {
         let proxyResult = vscp_pythia_transformation_public_key_buf_len()
         return proxyResult
     }
 
+    /// Return length of the buffer needed to hold 'transformed password'.
     @objc public static func transformedPasswordBufLen() -> Int {
         let proxyResult = vscp_pythia_transformed_password_buf_len()
         return proxyResult
     }
 
+    /// Return length of the buffer needed to hold 'transformed tweak'.
     @objc public static func transformedTweakBufLen() -> Int {
         let proxyResult = vscp_pythia_transformed_tweak_buf_len()
         return proxyResult
     }
 
+    /// Return length of the buffer needed to hold 'proof value'.
     @objc public static func proofValueBufLen() -> Int {
         let proxyResult = vscp_pythia_proof_value_buf_len()
         return proxyResult
     }
 
+    /// Return length of the buffer needed to hold 'password update token'.
     @objc public static func passwordUpdateTokenBufLen() -> Int {
         let proxyResult = vscp_pythia_password_update_token_buf_len()
         return proxyResult
     }
 
+    /// Blinds password. Turns password into a pseudo-random string.
+    /// This step is necessary to prevent 3rd-parties from knowledge of end user's password.
     @objc public func blind(password: Data) throws -> PythiaBlindResult {
         let blindedPasswordCount = Pythia.blindedPasswordBufLen()
         var blindedPassword = Data(count: blindedPasswordCount)
@@ -139,6 +154,7 @@ import VSCPythia
         return PythiaBlindResult(blindedPassword: blindedPassword, blindingSecret: blindingSecret)
     }
 
+    /// Deblinds 'transformed password' value with previously returned 'blinding secret' from blind().
     @objc public func deblind(transformedPassword: Data, blindingSecret: Data) throws -> Data {
         let deblindedPasswordCount = Pythia.deblindedPasswordBufLen()
         var deblindedPassword = Data(count: deblindedPasswordCount)
@@ -162,6 +178,7 @@ import VSCPythia
         return deblindedPassword
     }
 
+    /// Computes transformation private and public key.
     @objc public func computeTransformationKeyPair(transformationKeyId: Data, pythiaSecret: Data, pythiaScopeSecret: Data) throws -> PythiaComputeTransformationKeyPairResult {
         let transformationPrivateKeyCount = Pythia.transformationPrivateKeyBufLen()
         var transformationPrivateKey = Data(count: transformationPrivateKeyCount)
@@ -199,6 +216,7 @@ import VSCPythia
         return PythiaComputeTransformationKeyPairResult(transformationPrivateKey: transformationPrivateKey, transformationPublicKey: transformationPublicKey)
     }
 
+    /// Transforms blinded password using transformation private key.
     @objc public func transform(blindedPassword: Data, tweak: Data, transformationPrivateKey: Data) throws -> PythiaTransformResult {
         let transformedPasswordCount = Pythia.transformedPasswordBufLen()
         var transformedPassword = Data(count: transformedPasswordCount)
@@ -236,6 +254,7 @@ import VSCPythia
         return PythiaTransformResult(transformedPassword: transformedPassword, transformedTweak: transformedTweak)
     }
 
+    /// Generates proof that server possesses secret values that were used to transform password.
     @objc public func prove(transformedPassword: Data, blindedPassword: Data, transformedTweak: Data, transformationPrivateKey: Data, transformationPublicKey: Data) throws -> PythiaProveResult {
         let proofValueCCount = Pythia.proofValueBufLen()
         var proofValueC = Data(count: proofValueCCount)
@@ -277,6 +296,8 @@ import VSCPythia
         return PythiaProveResult(proofValueC: proofValueC, proofValueU: proofValueU)
     }
 
+    /// This operation allows client to verify that the output of transform() is correct,
+    /// assuming that client has previously stored transformation public key.
     @objc public func verify(transformedPassword: Data, blindedPassword: Data, tweak: Data, transformationPublicKey: Data, proofValueC: Data, proofValueU: Data) throws {
         let proxyResult = transformedPassword.withUnsafeBytes({ (transformedPasswordPointer: UnsafePointer<byte>) -> vscp_error_t in
             blindedPassword.withUnsafeBytes({ (blindedPasswordPointer: UnsafePointer<byte>) -> vscp_error_t in
@@ -295,6 +316,10 @@ import VSCPythia
         try! PythiaError.handleError(fromC: proxyResult)
     }
 
+    /// Rotates old transformation key to new transformation key and generates 'password update token',
+    /// that can update 'deblinded password'(s).
+    ///
+    /// This action should increment version of the 'pythia scope secret'.
     @objc public func getPasswordUpdateToken(previousTransformationPrivateKey: Data, newTransformationPrivateKey: Data) throws -> Data {
         let passwordUpdateTokenCount = Pythia.passwordUpdateTokenBufLen()
         var passwordUpdateToken = Data(count: passwordUpdateTokenCount)
@@ -318,6 +343,8 @@ import VSCPythia
         return passwordUpdateToken
     }
 
+    /// Updates previously stored 'deblinded password' with 'password update token'.
+    /// After this call, 'transform()' called with new arguments will return corresponding values.
     @objc public func updateDeblindedWithToken(deblindedPassword: Data, passwordUpdateToken: Data) throws -> Data {
         let updatedDeblindedPasswordCount = Pythia.deblindedPasswordBufLen()
         var updatedDeblindedPassword = Data(count: updatedDeblindedPasswordCount)
@@ -346,6 +373,7 @@ import VSCPythia
 @objc(VSCPPythiaBlindResult) public class PythiaBlindResult: NSObject {
 
     @objc public let blindedPassword: Data
+
     @objc public let blindingSecret: Data
 
     /// Initialize all properties.
@@ -360,6 +388,7 @@ import VSCPythia
 @objc(VSCPPythiaComputeTransformationKeyPairResult) public class PythiaComputeTransformationKeyPairResult: NSObject {
 
     @objc public let transformationPrivateKey: Data
+
     @objc public let transformationPublicKey: Data
 
     /// Initialize all properties.
@@ -374,6 +403,7 @@ import VSCPythia
 @objc(VSCPPythiaTransformResult) public class PythiaTransformResult: NSObject {
 
     @objc public let transformedPassword: Data
+
     @objc public let transformedTweak: Data
 
     /// Initialize all properties.
@@ -388,6 +418,7 @@ import VSCPythia
 @objc(VSCPPythiaProveResult) public class PythiaProveResult: NSObject {
 
     @objc public let proofValueC: Data
+
     @objc public let proofValueU: Data
 
     /// Initialize all properties.
