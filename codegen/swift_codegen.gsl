@@ -204,7 +204,8 @@ function swift_insert_protocol_property (swift_property)
 
     swift_insert_description (my.swift_property, 1)
     swift_insert_code("\
-        @objc var $(my.swift_property.name:): $(my.swift_property.type:) $(my.property_modifiers:);
+        @objc $(my.swift_property.modifier?:) var $(my.swift_property.name:): \
+                $(my.swift_property.type:) $(my.property_modifiers:)
     ", 1)
 endfunction
 
@@ -271,14 +272,13 @@ function swift_insert_protocol_method (swift_method)
 
     assert_attributes (my.swift_method, "name", my)
 
-    my.method_modifiers = ""
     my.method_args = swift_format_argument_list(my.swift_method) ?
     my.method_return = swift_format_return_list(my.swift_method) ?
     my.method_throws = my.swift_method.throws ?? "throws" ?
 
     swift_insert_code("\
-        @objc func $(my.method_modifiers:) $(my.swift_method.name:)($(my.method_args?:)) $(my.method_throws?:) \
-                $(my.method_return?:)
+        @objc $(my.swift_method.modifier?:) func $(my.swift_method.name:)($(my.method_args?:)) \
+                $(my.method_throws?:) $(my.method_return?:)
     ", 1)
 endfunction
 
@@ -290,13 +290,29 @@ function swift_insert_class_property (swift_property)
 
     assert_attributes (my.swift_property, "name, type, visibility", my)
 
-    my.let_var = (my.swift_property.access = "readonly") ?? "let" ? "var"
+    my.is_computed = count (my.swift_property.computed)
+    my.is_const = my.swift_property.access = "readonly"
+
+    my.let_var = (my.is_const & !my.is_computed) ?? "let" ? "var"
+
+    if my.is_computed
+        my.var_init =  " {"
+    elsif defined (my.swift_property.value)
+        my.var_init =  " = $(my.swift_property.value:)"
+    endif
 
     swift_insert_description (my.swift_property, 1)
     swift_insert_code("\
-        @objc $(my.swift_property.visibility:) $(my.let_var:) \
-                $(my.swift_property.name:): $(my.swift_property.type:)
+        @objc $(my.swift_property.visibility:) $(my.swift_property.modifier?:) $(my.let_var:) \
+                $(my.swift_property.name:): $(my.swift_property.type:)$(my.var_init?:)
     ", 1)
+
+    if my.is_computed
+        swift_insert_code("\
+            $(my.swift_property->computed.)
+        ", 2)
+        swift_insert_code("}", 1)
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -312,7 +328,7 @@ function swift_insert_class_method (swift_method)
     my.method_throws = is_true (my.swift_method.throws) ?? "throws" ?
     my.override = is_true (my.swift_method.override) ?? "override" ?
 
-
+    swift_insert_description (my.swift_method, 1)
     swift_insert_code("\
         @objc $(my.swift_method.visibility?:) $(my.swift_method.modifier?:) $(my.override?:) \
                 func $(my.swift_method.name:)($(my.method_args?:)) $(my.method_throws?:) $(my.method_return?:) {
@@ -356,7 +372,7 @@ endfunction
 function swift_insert_protocol (swift_protocol)
     check_arguments (my, "swift_protocol", my)
 
-    echo_trace ("Generate swift protocol: " + my.swift_protocol.name)
+    echo_trace ("Generate swift protocol: " + my.swift_protocol.name, my)
 
     assert_attributes (my.swift_protocol, "name, objc_name, visibility", my)
 
@@ -392,7 +408,7 @@ endfunction
 function swift_insert_class (swift_class)
     check_arguments (my, "swift_class", my)
 
-    echo_trace ("Generate Swift class: " + my.swift_class.name)
+    echo_trace ("Generate Swift class: " + my.swift_class.name, my)
 
     assert_attributes (my.swift_class, "name, objc_name, visibility", my)
 
@@ -405,7 +421,7 @@ function swift_insert_class (swift_class)
     ")
 
     for my.swift_class.swift_property
-        newline_if (first ())
+        newline ()
         swift_insert_class_property (swift_property)
     endfor
 
@@ -433,7 +449,7 @@ endfunction
 function swift_insert_enum (swift_enum)
     check_arguments (my, "swift_enum", my)
 
-    echo_trace ("Generate Swift enum: " + my.swift_enum.name)
+    echo_trace ("Generate Swift enum: " + my.swift_enum.name, my)
 
     assert_attributes (my.swift_enum, "name, objc_name, visibility", my)
 

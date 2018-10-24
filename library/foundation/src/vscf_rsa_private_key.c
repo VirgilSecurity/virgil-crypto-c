@@ -177,9 +177,7 @@ vscf_rsa_private_key_extract_public_key(vscf_rsa_private_key_impl_t *rsa_private
     VSCF_ASSERT(mbedtls_rsa_check_pubkey(&rsa_private_key_impl->rsa_ctx) == 0);
 
     vscf_rsa_public_key_impl_t *rsa_public_key_impl = vscf_rsa_public_key_new();
-    if (NULL == rsa_public_key_impl) {
-        return NULL;
-    }
+    VSCF_ASSERT_ALLOC(rsa_public_key_impl != NULL);
 
     mbedtls_rsa_context *rsa_public_ctx = &rsa_public_key_impl->rsa_ctx;
     mbedtls_rsa_context *rsa_private_ctx = &rsa_private_key_impl->rsa_ctx;
@@ -187,10 +185,8 @@ vscf_rsa_private_key_extract_public_key(vscf_rsa_private_key_impl_t *rsa_private
     int copy_n_ret = mbedtls_mpi_copy(&rsa_public_ctx->N, &rsa_private_ctx->N);
     int copy_e_ret = mbedtls_mpi_copy(&rsa_public_ctx->E, &rsa_private_ctx->E);
 
-    if ((0 != copy_n_ret) || (0 != copy_e_ret)) {
-        vscf_rsa_public_key_destroy(&rsa_public_key_impl);
-        return NULL;
-    }
+    VSCF_ASSERT_ALLOC(rsa_public_key_impl != NULL);
+    VSCF_ASSERT_ALLOC((0 == copy_n_ret) && (0 == copy_e_ret));
 
     rsa_public_ctx->len = rsa_private_ctx->len;
 

@@ -34,11 +34,40 @@
 
 
 import Foundation
+import VSCFoundation
 
 /// Provide details about implemented hash algorithm.
-@objc(VSCFHashInfo) public protocol HashInfo {
+@objc(VSCFHashInfo) public protocol HashInfo : CProtocol {
     /// Length of the digest (hashing output) in bytes.
-    @objc static var digestLen: Int { get }
+    @objc var digestLen: Int { get }
     /// Block length of the digest function in bytes.
-    @objc static var blockLen: Int { get }
+    @objc var blockLen: Int { get }
+}
+
+/// Implement interface methods
+@objc(VSCFHashInfoProxy) internal class HashInfoProxy: NSObject, HashInfo {
+
+    /// Handle underlying C context.
+    @objc public let c_ctx: OpaquePointer
+
+    /// Length of the digest (hashing output) in bytes.
+    @objc public var digestLen: Int {
+        return vscf_hash_info_digest_len(vscf_hash_info_api(self.c_ctx))
+    }
+
+    /// Block length of the digest function in bytes.
+    @objc public var blockLen: Int {
+        return vscf_hash_info_block_len(vscf_hash_info_api(self.c_ctx))
+    }
+
+    /// Take C context that implements this interface
+    public init(c_ctx: OpaquePointer) {
+        self.c_ctx = c_ctx
+        super.init()
+    }
+
+    /// Release underlying C context.
+    deinit {
+        vscf_impl_delete(self.c_ctx)
+    }
 }

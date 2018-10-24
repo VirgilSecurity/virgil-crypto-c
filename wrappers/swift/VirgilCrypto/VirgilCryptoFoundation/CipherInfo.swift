@@ -34,15 +34,54 @@
 
 
 import Foundation
+import VSCFoundation
 
 /// Provides compile time knownledge about algorithm.
-@objc(VSCFCipherInfo) public protocol CipherInfo {
+@objc(VSCFCipherInfo) public protocol CipherInfo : CProtocol {
     /// Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
-    @objc static var nonceLen: Int { get }
+    @objc var nonceLen: Int { get }
     /// Cipher key length in bytes.
-    @objc static var keyLen: Int { get }
+    @objc var keyLen: Int { get }
     /// Cipher key length in bits.
-    @objc static var keyBitlen: Int { get }
+    @objc var keyBitlen: Int { get }
     /// Cipher block length in bytes.
-    @objc static var blockLen: Int { get }
+    @objc var blockLen: Int { get }
+}
+
+/// Implement interface methods
+@objc(VSCFCipherInfoProxy) internal class CipherInfoProxy: NSObject, CipherInfo {
+
+    /// Handle underlying C context.
+    @objc public let c_ctx: OpaquePointer
+
+    /// Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
+    @objc public var nonceLen: Int {
+        return vscf_cipher_info_nonce_len(vscf_cipher_info_api(self.c_ctx))
+    }
+
+    /// Cipher key length in bytes.
+    @objc public var keyLen: Int {
+        return vscf_cipher_info_key_len(vscf_cipher_info_api(self.c_ctx))
+    }
+
+    /// Cipher key length in bits.
+    @objc public var keyBitlen: Int {
+        return vscf_cipher_info_key_bitlen(vscf_cipher_info_api(self.c_ctx))
+    }
+
+    /// Cipher block length in bytes.
+    @objc public var blockLen: Int {
+        return vscf_cipher_info_block_len(vscf_cipher_info_api(self.c_ctx))
+    }
+
+    /// Take C context that implements this interface
+    public init(c_ctx: OpaquePointer) {
+        self.c_ctx = c_ctx
+        super.init()
+    }
+
+    /// Release underlying C context.
+    deinit {
+        vscf_impl_delete(self.c_ctx)
+    }
 }

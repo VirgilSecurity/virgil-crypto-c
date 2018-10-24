@@ -1,0 +1,3989 @@
+<?xml version="1.0"?>
+<interfaces>
+    <interface
+        name = "cipher"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_cipher"
+        c_prefix = "vscf">
+        <inherit
+            interface = "encrypt"
+            project = "foundation"/>
+        <inherit
+            interface = "decrypt"
+            project = "foundation"/>
+        <inherit
+            interface = "cipher info"
+            project = "foundation"/>
+        <method
+            name = "set nonce"
+            c_prefix = "vscf"
+            uid = "interface_cipher_method_set_nonce"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "cipher">
+            <argument
+                name = "nonce"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_cipher_method_set_nonce_argument_nonce">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "cipher"/>
+                    <ancestor
+                        id = "method"
+                        name = "set nonce"/>
+                </lineage>
+            </argument>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "cipher"/>
+            </lineage>
+            Setup IV or nonce.
+        </method>
+        <method
+            name = "set key"
+            c_prefix = "vscf"
+            uid = "interface_cipher_method_set_key"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "cipher">
+            <argument
+                name = "key"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_cipher_method_set_key_argument_key">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "cipher"/>
+                    <ancestor
+                        id = "method"
+                        name = "set key"/>
+                </lineage>
+            </argument>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "cipher"/>
+            </lineage>
+            Set cipher encryption / decryption key.
+        </method>
+        Provide interface for symmetric ciphers.
+    </interface>
+    <interface
+        name = "auth encrypt"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_auth_encrypt"
+        c_prefix = "vscf">
+        <inherit
+            interface = "cipher auth info"
+            project = "foundation"/>
+        <method
+            name = "auth encrypt"
+            c_prefix = "vscf"
+            uid = "interface_auth_encrypt_method_auth_encrypt"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "auth encrypt">
+            <argument
+                name = "data"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_auth_encrypt_method_auth_encrypt_argument_data">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "auth encrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "auth encrypt"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "auth data"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_auth_encrypt_method_auth_encrypt_argument_auth_data">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "auth encrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "auth encrypt"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "out"
+                class = "buffer"
+                project = "common"
+                is_reference = "1"
+                access = "writeonly"
+                uid = "interface_auth_encrypt_method_auth_encrypt_argument_out">
+                <length
+                    object = "self"
+                    method = "auth encrypted len">
+                    <proxy
+                        argument = "data"
+                        to = "data len"
+                        cast = "data_length"/>
+                </length>
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "auth encrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "auth encrypt"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "tag"
+                class = "buffer"
+                project = "common"
+                is_reference = "1"
+                access = "writeonly"
+                uid = "interface_auth_encrypt_method_auth_encrypt_argument_tag">
+                <length
+                    interface = "cipher auth info"
+                    constant = "auth tag len"/>
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "auth encrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "auth encrypt"/>
+                </lineage>
+            </argument>
+            <return
+                enum = "error"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "auth encrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "auth encrypt"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "auth encrypt"/>
+            </lineage>
+            Encrypt given data.
+            If 'tag' is not give, then it will written to the 'enc'.
+        </method>
+        <method
+            name = "auth encrypted len"
+            c_prefix = "vscf"
+            uid = "interface_auth_encrypt_method_auth_encrypted_len"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "auth encrypt">
+            <argument
+                name = "data len"
+                type = "size"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_auth_encrypt_method_auth_encrypted_len_argument_data_len">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "auth encrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "auth encrypted len"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "auth encrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "auth encrypted len"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "auth encrypt"/>
+            </lineage>
+            Calculate required buffer length to hold the authenticated encrypted data.
+        </method>
+        Provide interface for authenticated data encryption.
+    </interface>
+    <interface
+        name = "auth decrypt"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_auth_decrypt"
+        c_prefix = "vscf">
+        <inherit
+            interface = "cipher auth info"
+            project = "foundation"/>
+        <method
+            name = "auth decrypt"
+            c_prefix = "vscf"
+            uid = "interface_auth_decrypt_method_auth_decrypt"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "auth decrypt">
+            <argument
+                name = "data"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_auth_decrypt_method_auth_decrypt_argument_data">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "auth decrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "auth decrypt"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "auth data"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_auth_decrypt_method_auth_decrypt_argument_auth_data">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "auth decrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "auth decrypt"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "tag"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_auth_decrypt_method_auth_decrypt_argument_tag">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "auth decrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "auth decrypt"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "out"
+                class = "buffer"
+                project = "common"
+                is_reference = "1"
+                access = "writeonly"
+                uid = "interface_auth_decrypt_method_auth_decrypt_argument_out">
+                <length
+                    object = "self"
+                    method = "auth decrypted len">
+                    <proxy
+                        argument = "data"
+                        to = "data len"
+                        cast = "data_length"/>
+                </length>
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "auth decrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "auth decrypt"/>
+                </lineage>
+            </argument>
+            <return
+                enum = "error"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "auth decrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "auth decrypt"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "auth decrypt"/>
+            </lineage>
+            Decrypt given data.
+            If 'tag' is not give, then it will be taken from the 'enc'.
+        </method>
+        <method
+            name = "auth decrypted len"
+            c_prefix = "vscf"
+            uid = "interface_auth_decrypt_method_auth_decrypted_len"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "auth decrypt">
+            <argument
+                name = "data len"
+                type = "size"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_auth_decrypt_method_auth_decrypted_len_argument_data_len">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "auth decrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "auth decrypted len"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "auth decrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "auth decrypted len"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "auth decrypt"/>
+            </lineage>
+            Calculate required buffer length to hold the authenticated decrypted data.
+        </method>
+        Provide interface for data encryption.
+    </interface>
+    <interface
+        name = "cipher auth"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_cipher_auth"
+        c_prefix = "vscf">
+        <inherit
+            interface = "auth encrypt"
+            project = "foundation">
+            <inherit
+                interface = "cipher auth info"/>
+        </inherit>
+        <inherit
+            interface = "auth decrypt"
+            project = "foundation">
+            <inherit
+                interface = "cipher auth info"/>
+        </inherit>
+        Mix-in interface that provides specific functionality to authenticated
+        encryption and decryption.
+    </interface>
+    <interface
+        name = "cipher auth info"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_cipher_auth_info"
+        c_prefix = "vscf">
+        <constant
+            name = "auth tag len"
+            type = "size"
+            c_prefix = "vscf"
+            uid = "interface_cipher_auth_info_constant_auth_tag_len"
+            definition = "public">
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "cipher auth info"/>
+            </lineage>
+            Defines authentication tag length in bytes.
+        </constant>
+    </interface>
+    <interface
+        name = "cipher info"
+        of_class = "cipher"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_cipher_info"
+        c_prefix = "vscf">
+        <constant
+            name = "nonce len"
+            type = "size"
+            value = "0"
+            of_class = "cipher"
+            c_prefix = "vscf"
+            uid = "class_cipher_interface_cipher_info_constant_nonce_len"
+            definition = "public">
+            <lineage
+                of_class = "cipher">
+                <ancestor
+                    id = "interface"
+                    name = "cipher info"/>
+            </lineage>
+            Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
+        </constant>
+        <constant
+            name = "key len"
+            type = "size"
+            of_class = "cipher"
+            c_prefix = "vscf"
+            uid = "class_cipher_interface_cipher_info_constant_key_len"
+            definition = "public">
+            <lineage
+                of_class = "cipher">
+                <ancestor
+                    id = "interface"
+                    name = "cipher info"/>
+            </lineage>
+            Cipher key length in bytes.
+        </constant>
+        <constant
+            name = "key bitlen"
+            type = "size"
+            of_class = "cipher"
+            c_prefix = "vscf"
+            uid = "class_cipher_interface_cipher_info_constant_key_bitlen"
+            definition = "public">
+            <lineage
+                of_class = "cipher">
+                <ancestor
+                    id = "interface"
+                    name = "cipher info"/>
+            </lineage>
+            Cipher key length in bits.
+        </constant>
+        <constant
+            name = "block len"
+            type = "size"
+            of_class = "cipher"
+            c_prefix = "vscf"
+            uid = "class_cipher_interface_cipher_info_constant_block_len"
+            definition = "public">
+            <lineage
+                of_class = "cipher">
+                <ancestor
+                    id = "interface"
+                    name = "cipher info"/>
+            </lineage>
+            Cipher block length in bytes.
+        </constant>
+        Provides compile time knownledge about algorithm.
+    </interface>
+    <interface
+        name = "decrypt"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_decrypt"
+        c_prefix = "vscf">
+        <method
+            name = "decrypt"
+            c_prefix = "vscf"
+            uid = "interface_decrypt_method_decrypt"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "decrypt">
+            <argument
+                name = "data"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_decrypt_method_decrypt_argument_data">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "decrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "decrypt"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "out"
+                class = "buffer"
+                project = "common"
+                is_reference = "1"
+                access = "writeonly"
+                uid = "interface_decrypt_method_decrypt_argument_out">
+                <length
+                    object = "self"
+                    method = "decrypted len">
+                    <proxy
+                        argument = "data"
+                        to = "data len"
+                        cast = "data_length"/>
+                </length>
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "decrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "decrypt"/>
+                </lineage>
+            </argument>
+            <return
+                enum = "error"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "decrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "decrypt"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "decrypt"/>
+            </lineage>
+            Decrypt given data.
+        </method>
+        <method
+            name = "decrypted len"
+            c_prefix = "vscf"
+            uid = "interface_decrypt_method_decrypted_len"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "decrypt">
+            <argument
+                name = "data len"
+                type = "size"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_decrypt_method_decrypted_len_argument_data_len">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "decrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "decrypted len"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "decrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "decrypted len"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "decrypt"/>
+            </lineage>
+            Calculate required buffer length to hold the decrypted data.
+        </method>
+        Provide interface for data encryption.
+    </interface>
+    <interface
+        name = "encrypt"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_encrypt"
+        c_prefix = "vscf">
+        <method
+            name = "encrypt"
+            c_prefix = "vscf"
+            uid = "interface_encrypt_method_encrypt"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "encrypt">
+            <argument
+                name = "data"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_encrypt_method_encrypt_argument_data">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "encrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "encrypt"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "out"
+                class = "buffer"
+                project = "common"
+                is_reference = "1"
+                access = "writeonly"
+                uid = "interface_encrypt_method_encrypt_argument_out">
+                <length
+                    object = "self"
+                    method = "encrypted len">
+                    <proxy
+                        argument = "data"
+                        to = "data len"
+                        cast = "data_length"/>
+                </length>
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "encrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "encrypt"/>
+                </lineage>
+            </argument>
+            <return
+                enum = "error"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "encrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "encrypt"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "encrypt"/>
+            </lineage>
+            Encrypt given data.
+        </method>
+        <method
+            name = "encrypted len"
+            c_prefix = "vscf"
+            uid = "interface_encrypt_method_encrypted_len"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "encrypt">
+            <argument
+                name = "data len"
+                type = "size"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_encrypt_method_encrypted_len_argument_data_len">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "encrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "encrypted len"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "encrypt"/>
+                    <ancestor
+                        id = "method"
+                        name = "encrypted len"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "encrypt"/>
+            </lineage>
+            Calculate required buffer length to hold the encrypted data.
+        </method>
+        Provide interface for data encryption.
+    </interface>
+    <interface
+        name = "ex kdf"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_ex_kdf"
+        c_prefix = "vscf">
+        <method
+            name = "derive"
+            c_prefix = "vscf"
+            uid = "interface_ex_kdf_method_derive"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "ex kdf">
+            <argument
+                name = "data"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_ex_kdf_method_derive_argument_data">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "ex kdf"/>
+                    <ancestor
+                        id = "method"
+                        name = "derive"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "salt"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_ex_kdf_method_derive_argument_salt">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "ex kdf"/>
+                    <ancestor
+                        id = "method"
+                        name = "derive"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "info"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_ex_kdf_method_derive_argument_info">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "ex kdf"/>
+                    <ancestor
+                        id = "method"
+                        name = "derive"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "key"
+                class = "buffer"
+                project = "common"
+                is_reference = "1"
+                access = "writeonly"
+                uid = "interface_ex_kdf_method_derive_argument_key">
+                <length
+                    argument = "key len"/>
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "ex kdf"/>
+                    <ancestor
+                        id = "method"
+                        name = "derive"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "key len"
+                type = "size"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_ex_kdf_method_derive_argument_key_len">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "ex kdf"/>
+                    <ancestor
+                        id = "method"
+                        name = "derive"/>
+                </lineage>
+            </argument>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "ex kdf"/>
+            </lineage>
+            Calculate hash over given data.
+        </method>
+        Provides interface to the key derivation function (HKDF) algorithms.
+    </interface>
+    <interface
+        name = "hash"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_hash"
+        c_prefix = "vscf">
+        <inherit
+            interface = "hash info"
+            project = "foundation"/>
+        <method
+            name = "hash"
+            is_static = "1"
+            c_prefix = "vscf"
+            uid = "interface_hash_method_hash"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_const = "0"
+            interface = "hash">
+            <argument
+                name = "data"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_hash_method_hash_argument_data">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "hash"/>
+                    <ancestor
+                        id = "method"
+                        name = "hash"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "digest"
+                class = "buffer"
+                project = "common"
+                is_reference = "1"
+                access = "writeonly"
+                uid = "interface_hash_method_hash_argument_digest">
+                <length
+                    constant = "digest len"/>
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "hash"/>
+                    <ancestor
+                        id = "method"
+                        name = "hash"/>
+                </lineage>
+            </argument>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "hash"/>
+            </lineage>
+            Calculate hash over given data.
+        </method>
+        Provides interface to the stateless hashing (messege digest) algorithms.
+    </interface>
+    <interface
+        name = "hash info"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_hash_info"
+        c_prefix = "vscf">
+        <constant
+            name = "digest len"
+            type = "size"
+            c_prefix = "vscf"
+            uid = "interface_hash_info_constant_digest_len"
+            definition = "public">
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "hash info"/>
+            </lineage>
+            Length of the digest (hashing output) in bytes.
+        </constant>
+        <constant
+            name = "block len"
+            type = "size"
+            c_prefix = "vscf"
+            uid = "interface_hash_info_constant_block_len"
+            definition = "public">
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "hash info"/>
+            </lineage>
+            Block length of the digest function in bytes.
+        </constant>
+        Provide details about implemented hash algorithm.
+    </interface>
+    <interface
+        name = "hash stream"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_hash_stream"
+        c_prefix = "vscf">
+        <inherit
+            interface = "hash info"
+            project = "foundation"/>
+        <method
+            name = "start"
+            c_prefix = "vscf"
+            uid = "interface_hash_stream_method_start"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "hash stream">
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "hash stream"/>
+            </lineage>
+            Start a new hashing.
+        </method>
+        <method
+            name = "update"
+            c_prefix = "vscf"
+            uid = "interface_hash_stream_method_update"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "hash stream">
+            <argument
+                name = "data"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_hash_stream_method_update_argument_data">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "hash stream"/>
+                    <ancestor
+                        id = "method"
+                        name = "update"/>
+                </lineage>
+            </argument>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "hash stream"/>
+            </lineage>
+            Add given data to the hash.
+        </method>
+        <method
+            name = "finish"
+            c_prefix = "vscf"
+            uid = "interface_hash_stream_method_finish"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "hash stream">
+            <argument
+                name = "digest"
+                class = "buffer"
+                project = "common"
+                is_reference = "1"
+                access = "writeonly"
+                uid = "interface_hash_stream_method_finish_argument_digest">
+                <length
+                    interface = "hash info"
+                    constant = "digest len"/>
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "hash stream"/>
+                    <ancestor
+                        id = "method"
+                        name = "finish"/>
+                </lineage>
+            </argument>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "hash stream"/>
+            </lineage>
+            Accompilsh hashing and return it's result (a message digest).
+        </method>
+        Provide interface to calculate hash (message digest) over a stream.
+    </interface>
+    <interface
+        name = "mac"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_mac"
+        c_prefix = "vscf">
+        <inherit
+            interface = "mac info"
+            project = "foundation"/>
+        <method
+            name = "mac"
+            c_prefix = "vscf"
+            uid = "interface_mac_method_mac"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "mac">
+            <argument
+                name = "key"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_mac_method_mac_argument_key">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "mac"/>
+                    <ancestor
+                        id = "method"
+                        name = "mac"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "data"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_mac_method_mac_argument_data">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "mac"/>
+                    <ancestor
+                        id = "method"
+                        name = "mac"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "mac"
+                class = "buffer"
+                project = "common"
+                is_reference = "1"
+                access = "writeonly"
+                uid = "interface_mac_method_mac_argument_mac">
+                <length
+                    object = "self"
+                    method = "digest len"/>
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "mac"/>
+                    <ancestor
+                        id = "method"
+                        name = "mac"/>
+                </lineage>
+            </argument>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "mac"/>
+            </lineage>
+            Calculate MAC over given data.
+        </method>
+        Provides interface to the stateless MAC (message authentication code) algorithms.
+    </interface>
+    <interface
+        name = "mac info"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_mac_info"
+        c_prefix = "vscf">
+        <method
+            name = "digest len"
+            c_prefix = "vscf"
+            uid = "interface_mac_info_method_digest_len"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "mac info">
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "mac info"/>
+                    <ancestor
+                        id = "method"
+                        name = "digest len"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "mac info"/>
+            </lineage>
+            Size of the digest (mac output) in bytes.
+        </method>
+        Provide details about implemented MAC (message authentication code) algorithm.
+    </interface>
+    <interface
+        name = "mac stream"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_mac_stream"
+        c_prefix = "vscf">
+        <inherit
+            interface = "mac info"
+            project = "foundation"/>
+        <method
+            name = "start"
+            c_prefix = "vscf"
+            uid = "interface_mac_stream_method_start"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "mac stream">
+            <argument
+                name = "key"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_mac_stream_method_start_argument_key">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "mac stream"/>
+                    <ancestor
+                        id = "method"
+                        name = "start"/>
+                </lineage>
+            </argument>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "mac stream"/>
+            </lineage>
+            Start a new MAC.
+        </method>
+        <method
+            name = "update"
+            c_prefix = "vscf"
+            uid = "interface_mac_stream_method_update"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "mac stream">
+            <argument
+                name = "data"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_mac_stream_method_update_argument_data">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "mac stream"/>
+                    <ancestor
+                        id = "method"
+                        name = "update"/>
+                </lineage>
+            </argument>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "mac stream"/>
+            </lineage>
+            Add given data to the MAC.
+        </method>
+        <method
+            name = "finish"
+            c_prefix = "vscf"
+            uid = "interface_mac_stream_method_finish"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "mac stream">
+            <argument
+                name = "mac"
+                class = "buffer"
+                project = "common"
+                is_reference = "1"
+                access = "writeonly"
+                uid = "interface_mac_stream_method_finish_argument_mac">
+                <length
+                    object = "self"
+                    method = "digest len"/>
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "mac stream"/>
+                    <ancestor
+                        id = "method"
+                        name = "finish"/>
+                </lineage>
+            </argument>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "mac stream"/>
+            </lineage>
+            Accomplish MAC and return it's result (a message digest).
+        </method>
+        <method
+            name = "reset"
+            c_prefix = "vscf"
+            uid = "interface_mac_stream_method_reset"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "mac stream">
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "mac stream"/>
+            </lineage>
+            Prepare to authenticate a new message with the same key
+            as the previous MAC operation.
+        </method>
+        Provides interface to the MAC (message authentication code) algorithms.
+    </interface>
+    <interface
+        name = "kdf"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_kdf"
+        c_prefix = "vscf">
+        <method
+            name = "derive"
+            c_prefix = "vscf"
+            uid = "interface_kdf_method_derive"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "kdf">
+            <argument
+                name = "data"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_kdf_method_derive_argument_data">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "kdf"/>
+                    <ancestor
+                        id = "method"
+                        name = "derive"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "key len"
+                type = "size"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_kdf_method_derive_argument_key_len">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "kdf"/>
+                    <ancestor
+                        id = "method"
+                        name = "derive"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "key"
+                class = "buffer"
+                project = "common"
+                is_reference = "1"
+                access = "writeonly"
+                uid = "interface_kdf_method_derive_argument_key">
+                <length
+                    argument = "key len"/>
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "kdf"/>
+                    <ancestor
+                        id = "method"
+                        name = "derive"/>
+                </lineage>
+            </argument>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "kdf"/>
+            </lineage>
+            Calculate hash over given data.
+        </method>
+        Provides interface to the key derivation function (KDF) algorithms.
+    </interface>
+    <interface
+        name = "random"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_random"
+        c_prefix = "vscf">
+        <method
+            name = "random"
+            c_prefix = "vscf"
+            uid = "interface_random_method_random"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "random">
+            <argument
+                name = "data len"
+                type = "size"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_random_method_random_argument_data_len">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "random"/>
+                    <ancestor
+                        id = "method"
+                        name = "random"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "data"
+                class = "buffer"
+                project = "common"
+                is_reference = "1"
+                access = "writeonly"
+                uid = "interface_random_method_random_argument_data">
+                <length
+                    argument = "data len"/>
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "random"/>
+                    <ancestor
+                        id = "method"
+                        name = "random"/>
+                </lineage>
+            </argument>
+            <return
+                enum = "error"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "random"/>
+                    <ancestor
+                        id = "method"
+                        name = "random"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "random"/>
+            </lineage>
+            Generate random bytes.
+        </method>
+        Common interface to get random data.
+    </interface>
+    <interface
+        name = "key"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_key"
+        c_prefix = "vscf">
+        <method
+            name = "key len"
+            c_prefix = "vscf"
+            uid = "interface_key_method_key_len"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "key">
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "key"/>
+                    <ancestor
+                        id = "method"
+                        name = "key len"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "key"/>
+            </lineage>
+            Length of the key in bytes.
+        </method>
+        <method
+            name = "key bitlen"
+            c_prefix = "vscf"
+            uid = "interface_key_method_key_bitlen"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "key">
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "key"/>
+                    <ancestor
+                        id = "method"
+                        name = "key bitlen"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "key"/>
+            </lineage>
+            Length of the key in bits.
+        </method>
+        Common information about asymmetric key.
+    </interface>
+    <interface
+        name = "public key"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_public_key"
+        c_prefix = "vscf">
+        <inherit
+            interface = "key"
+            project = "foundation"/>
+        Contains public part of the key.
+    </interface>
+    <interface
+        name = "private key"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_private_key"
+        c_prefix = "vscf">
+        <inherit
+            interface = "key"
+            project = "foundation"/>
+        <method
+            name = "extract public key"
+            c_prefix = "vscf"
+            uid = "interface_private_key_method_extract_public_key"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "private key">
+            <return
+                interface = "public key"
+                access = "disown"
+                is_reference = "1">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "private key"/>
+                    <ancestor
+                        id = "method"
+                        name = "extract public key"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "private key"/>
+            </lineage>
+            Extract public part of the key.
+        </method>
+        Contains private part of the key.
+    </interface>
+    <interface
+        name = "sign"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_sign"
+        c_prefix = "vscf">
+        <method
+            name = "sign"
+            c_prefix = "vscf"
+            uid = "interface_sign_method_sign"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "sign">
+            <argument
+                name = "data"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_sign_method_sign_argument_data">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "sign"/>
+                    <ancestor
+                        id = "method"
+                        name = "sign"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "signature"
+                class = "buffer"
+                project = "common"
+                is_reference = "1"
+                access = "writeonly"
+                uid = "interface_sign_method_sign_argument_signature">
+                <length
+                    object = "self"
+                    method = "signature len"/>
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "sign"/>
+                    <ancestor
+                        id = "method"
+                        name = "sign"/>
+                </lineage>
+            </argument>
+            <return
+                enum = "error"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "sign"/>
+                    <ancestor
+                        id = "method"
+                        name = "sign"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "sign"/>
+            </lineage>
+            Sign data given private key.
+        </method>
+        <method
+            name = "signature len"
+            c_prefix = "vscf"
+            uid = "interface_sign_method_signature_len"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "sign">
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "sign"/>
+                    <ancestor
+                        id = "method"
+                        name = "signature len"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "sign"/>
+            </lineage>
+            Return length in bytes required to hold signature.
+        </method>
+        Provide interface for signing data with private key.
+    </interface>
+    <interface
+        name = "verify"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_verify"
+        c_prefix = "vscf">
+        <method
+            name = "verify"
+            c_prefix = "vscf"
+            uid = "interface_verify_method_verify"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "verify">
+            <argument
+                name = "data"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_verify_method_verify_argument_data">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "verify"/>
+                    <ancestor
+                        id = "method"
+                        name = "verify"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "signature"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_verify_method_verify_argument_signature">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "verify"/>
+                    <ancestor
+                        id = "method"
+                        name = "verify"/>
+                </lineage>
+            </argument>
+            <return
+                type = "boolean"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "verify"/>
+                    <ancestor
+                        id = "method"
+                        name = "verify"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "verify"/>
+            </lineage>
+            Verify data with given public key and signature.
+        </method>
+        Provide interface for verifying data with public key.
+    </interface>
+    <interface
+        name = "generate key"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_generate_key"
+        c_prefix = "vscf">
+        <method
+            name = "generate key"
+            c_prefix = "vscf"
+            uid = "interface_generate_key_method_generate_key"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "generate key">
+            <return
+                enum = "error"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "generate key"/>
+                    <ancestor
+                        id = "method"
+                        name = "generate key"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "generate key"/>
+            </lineage>
+            Generate new private or secret key.
+            Note, this operation can be slow.
+        </method>
+        Interface for private or secret key generation.
+    </interface>
+    <interface
+        name = "compute shared key"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_compute_shared_key"
+        c_prefix = "vscf">
+        <method
+            name = "compute shared key"
+            c_prefix = "vscf"
+            uid = "interface_compute_shared_key_method_compute_shared_key"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "compute shared key">
+            <argument
+                name = "public key"
+                interface = "public key"
+                access = "readonly"
+                is_reference = "1"
+                uid = "interface_compute_shared_key_method_compute_shared_key_argument_public_key">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "compute shared key"/>
+                    <ancestor
+                        id = "method"
+                        name = "compute shared key"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "shared key"
+                class = "buffer"
+                project = "common"
+                is_reference = "1"
+                access = "writeonly"
+                uid = "interface_compute_shared_key_method_compute_shared_key_argument_shared_key">
+                <length
+                    object = "self"
+                    method = "shared key len"/>
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "compute shared key"/>
+                    <ancestor
+                        id = "method"
+                        name = "compute shared key"/>
+                </lineage>
+            </argument>
+            <return
+                enum = "error"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "compute shared key"/>
+                    <ancestor
+                        id = "method"
+                        name = "compute shared key"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "compute shared key"/>
+            </lineage>
+            Compute shared key for 2 asymmetric keys.
+            Note, shared key can be used only for symmetric cryptography.
+        </method>
+        <method
+            name = "shared key len"
+            c_prefix = "vscf"
+            uid = "interface_compute_shared_key_method_shared_key_len"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "compute shared key">
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "compute shared key"/>
+                    <ancestor
+                        id = "method"
+                        name = "shared key len"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "compute shared key"/>
+            </lineage>
+            Return number of bytes required to hold shared key.
+        </method>
+        Provide interface to compute shared key for 2 asymmetric keys.
+        Assume that this interface is implemented on the private key.
+    </interface>
+    <interface
+        name = "export public key"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_export_public_key"
+        c_prefix = "vscf">
+        <method
+            name = "export public key"
+            c_prefix = "vscf"
+            uid = "interface_export_public_key_method_export_public_key"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "export public key">
+            <argument
+                name = "out"
+                class = "buffer"
+                project = "common"
+                is_reference = "1"
+                access = "writeonly"
+                uid = "interface_export_public_key_method_export_public_key_argument_out">
+                <length
+                    object = "self"
+                    method = "exported public key len"/>
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "export public key"/>
+                    <ancestor
+                        id = "method"
+                        name = "export public key"/>
+                </lineage>
+            </argument>
+            <return
+                enum = "error"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "export public key"/>
+                    <ancestor
+                        id = "method"
+                        name = "export public key"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "export public key"/>
+            </lineage>
+            Export public key in the binary format.
+        </method>
+        <method
+            name = "exported public key len"
+            c_prefix = "vscf"
+            uid = "interface_export_public_key_method_exported_public_key_len"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "export public key">
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "export public key"/>
+                    <ancestor
+                        id = "method"
+                        name = "exported public key len"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "export public key"/>
+            </lineage>
+            Return length in bytes required to hold exported public key.
+        </method>
+        Provide interface for exporting public key to the binary format.
+        Binary format must be defined in the key specification.
+        For instance, RSA public key must be exported in format defined in
+        RFC 3447 Appendix A.1.1.
+    </interface>
+    <interface
+        name = "export private key"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_export_private_key"
+        c_prefix = "vscf">
+        <method
+            name = "export private key"
+            c_prefix = "vscf"
+            uid = "interface_export_private_key_method_export_private_key"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "export private key">
+            <argument
+                name = "out"
+                class = "buffer"
+                project = "common"
+                is_reference = "1"
+                access = "writeonly"
+                uid = "interface_export_private_key_method_export_private_key_argument_out">
+                <length
+                    object = "self"
+                    method = "exported private key len"/>
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "export private key"/>
+                    <ancestor
+                        id = "method"
+                        name = "export private key"/>
+                </lineage>
+            </argument>
+            <return
+                enum = "error"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "export private key"/>
+                    <ancestor
+                        id = "method"
+                        name = "export private key"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "export private key"/>
+            </lineage>
+            Export private key in the binary format.
+        </method>
+        <method
+            name = "exported private key len"
+            c_prefix = "vscf"
+            uid = "interface_export_private_key_method_exported_private_key_len"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "export private key">
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "export private key"/>
+                    <ancestor
+                        id = "method"
+                        name = "exported private key len"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "export private key"/>
+            </lineage>
+            Return length in bytes required to hold exported private key.
+        </method>
+        Provide interface for exporting private key to the binary format.
+        Binary format must be defined in the key specification.
+        For instance, RSA private key must be exported in format defined in
+        RFC 3447 Appendix A.1.2.
+    </interface>
+    <interface
+        name = "import public key"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_import_public_key"
+        c_prefix = "vscf">
+        <method
+            name = "import public key"
+            c_prefix = "vscf"
+            uid = "interface_import_public_key_method_import_public_key"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "import public key">
+            <argument
+                name = "data"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_import_public_key_method_import_public_key_argument_data">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "import public key"/>
+                    <ancestor
+                        id = "method"
+                        name = "import public key"/>
+                </lineage>
+            </argument>
+            <return
+                enum = "error"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "import public key"/>
+                    <ancestor
+                        id = "method"
+                        name = "import public key"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "import public key"/>
+            </lineage>
+            Import public key from the binary format.
+        </method>
+        Provide interface for importing public key from the binary format.
+        Binary format must be defined in the key specification.
+        For instance, RSA public key must be imported from the format defined in
+        RFC 3447 Appendix A.1.1.
+    </interface>
+    <interface
+        name = "import private key"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_import_private_key"
+        c_prefix = "vscf">
+        <method
+            name = "import private key"
+            c_prefix = "vscf"
+            uid = "interface_import_private_key_method_import_private_key"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "import private key">
+            <argument
+                name = "data"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_import_private_key_method_import_private_key_argument_data">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "import private key"/>
+                    <ancestor
+                        id = "method"
+                        name = "import private key"/>
+                </lineage>
+            </argument>
+            <return
+                enum = "error"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "import private key"/>
+                    <ancestor
+                        id = "method"
+                        name = "import private key"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "import private key"/>
+            </lineage>
+            Import private key from the binary format.
+        </method>
+        Provide interface for importing private key from the binary format.
+        Binary format must be defined in the key specification.
+        For instance, RSA private key must be imported from the format defined in
+        RFC 3447 Appendix A.1.2.
+    </interface>
+    <interface
+        name = "asn1 reader"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_asn1_reader"
+        c_prefix = "vscf">
+        <method
+            name = "reset"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_reset"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <argument
+                name = "data"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_reader_method_reset_argument_data">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "reset"/>
+                </lineage>
+            </argument>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Reset all internal states and prepare to new ASN.1 reading operations.
+        </method>
+        <method
+            name = "error"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_error"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <return
+                enum = "error"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "error"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Return last error.
+        </method>
+        <method
+            name = "get tag"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_get_tag"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <return
+                type = "integer"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "get tag"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Get tag of the current ASN.1 element.
+        </method>
+        <method
+            name = "get len"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_get_len"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "get len"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Get length of the current ASN.1 element.
+        </method>
+        <method
+            name = "read tag"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_read_tag"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <argument
+                name = "tag"
+                type = "integer"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_reader_method_read_tag_argument_tag">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read tag"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read tag"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Read ASN.1 type: TAG.
+            Return element length.
+        </method>
+        <method
+            name = "read int"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_read_int"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <return
+                type = "integer"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read int"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Read ASN.1 type: INTEGER.
+        </method>
+        <method
+            name = "read int8"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_read_int8"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <return
+                type = "integer"
+                size = "1"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read int8"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Read ASN.1 type: INTEGER.
+        </method>
+        <method
+            name = "read int16"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_read_int16"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <return
+                type = "integer"
+                size = "2"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read int16"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Read ASN.1 type: INTEGER.
+        </method>
+        <method
+            name = "read int32"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_read_int32"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <return
+                type = "integer"
+                size = "4"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read int32"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Read ASN.1 type: INTEGER.
+        </method>
+        <method
+            name = "read int64"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_read_int64"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <return
+                type = "integer"
+                size = "8"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read int64"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Read ASN.1 type: INTEGER.
+        </method>
+        <method
+            name = "read uint"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_read_uint"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <return
+                type = "unsigned"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read uint"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Read ASN.1 type: INTEGER.
+        </method>
+        <method
+            name = "read uint8"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_read_uint8"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <return
+                type = "unsigned"
+                size = "1"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read uint8"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Read ASN.1 type: INTEGER.
+        </method>
+        <method
+            name = "read uint16"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_read_uint16"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <return
+                type = "unsigned"
+                size = "2"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read uint16"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Read ASN.1 type: INTEGER.
+        </method>
+        <method
+            name = "read uint32"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_read_uint32"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <return
+                type = "unsigned"
+                size = "4"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read uint32"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Read ASN.1 type: INTEGER.
+        </method>
+        <method
+            name = "read uint64"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_read_uint64"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <return
+                type = "unsigned"
+                size = "8"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read uint64"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Read ASN.1 type: INTEGER.
+        </method>
+        <method
+            name = "read bool"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_read_bool"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <return
+                type = "boolean"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read bool"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Read ASN.1 type: BOOLEAN.
+        </method>
+        <method
+            name = "read null"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_read_null"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Read ASN.1 type: NULL.
+        </method>
+        <method
+            name = "read octet str"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_read_octet_str"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <return
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read octet str"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Read ASN.1 type: OCTET STRING.
+        </method>
+        <method
+            name = "read utf8 str"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_read_utf8_str"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <return
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read utf8 str"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Read ASN.1 type: UTF8String.
+        </method>
+        <method
+            name = "read oid"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_read_oid"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <return
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read oid"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Read ASN.1 type: OID.
+        </method>
+        <method
+            name = "read data"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_read_data"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <argument
+                name = "len"
+                type = "size"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_reader_method_read_data_argument_len">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read data"/>
+                </lineage>
+            </argument>
+            <return
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read data"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Read raw data of given length.
+        </method>
+        <method
+            name = "read sequence"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_read_sequence"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read sequence"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+            Return element length.
+        </method>
+        <method
+            name = "read set"
+            c_prefix = "vscf"
+            uid = "interface_asn1_reader_method_read_set"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 reader">
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 reader"/>
+                    <ancestor
+                        id = "method"
+                        name = "read set"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 reader"/>
+            </lineage>
+            Read ASN.1 type: CONSTRUCTED | SET.
+            Return element length.
+        </method>
+        Provides interface to the ASN.1 reader.
+        Note, that all &quot;read&quot; methods move reading position forward.
+        Note, that all &quot;get&quot; do not change reading position.
+    </interface>
+    <interface
+        name = "asn1 writer"
+        project = "foundation"
+        scope = "public"
+        visibility = "public"
+        uid = "interface_asn1_writer"
+        c_prefix = "vscf">
+        <method
+            name = "reset"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_reset"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "out"
+                type = "byte"
+                access = "readwrite"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_reset_argument_out">
+                <array
+                    length = "given"
+                    access = "readwrite"/>
+                <length
+                    argument = "out len"/>
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "reset"/>
+                </lineage>
+            </argument>
+            <argument
+                name = "out len"
+                type = "size"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_reset_argument_out_len">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "reset"/>
+                </lineage>
+            </argument>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Reset all internal states and prepare to new ASN.1 writing operations.
+        </method>
+        <method
+            name = "finish"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_finish"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "finish"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Move written data to the buffer beginning and forbid further operations.
+            Returns written size in bytes.
+        </method>
+        <method
+            name = "error"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_error"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <return
+                enum = "error"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "error"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Return last error.
+        </method>
+        <method
+            name = "reserve"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_reserve"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "len"
+                type = "size"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_reserve_argument_len">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "reserve"/>
+                </lineage>
+            </argument>
+            <return
+                type = "byte"
+                access = "readwrite"
+                is_reference = "1">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "reserve"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Move writing position backward for the given length.
+            Return current writing position.
+        </method>
+        <method
+            name = "write tag"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_write_tag"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "tag"
+                type = "integer"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_write_tag_argument_tag">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write tag"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write tag"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Write ASN.1 tag.
+            Return count of written bytes.
+        </method>
+        <method
+            name = "write len"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_write_len"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "len"
+                type = "size"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_write_len_argument_len">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write len"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write len"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Write length of the following data.
+            Return count of written bytes.
+        </method>
+        <method
+            name = "write int"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_write_int"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "value"
+                type = "integer"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_write_int_argument_value">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write int"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write int"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Write ASN.1 type: INTEGER.
+            Return count of written bytes.
+        </method>
+        <method
+            name = "write int8"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_write_int8"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "value"
+                type = "integer"
+                size = "1"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_write_int8_argument_value">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write int8"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write int8"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Write ASN.1 type: INTEGER.
+            Return count of written bytes.
+        </method>
+        <method
+            name = "write int16"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_write_int16"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "value"
+                type = "integer"
+                size = "2"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_write_int16_argument_value">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write int16"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write int16"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Write ASN.1 type: INTEGER.
+            Return count of written bytes.
+        </method>
+        <method
+            name = "write int32"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_write_int32"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "value"
+                type = "integer"
+                size = "4"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_write_int32_argument_value">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write int32"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write int32"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Write ASN.1 type: INTEGER.
+            Return count of written bytes.
+        </method>
+        <method
+            name = "write int64"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_write_int64"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "value"
+                type = "integer"
+                size = "8"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_write_int64_argument_value">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write int64"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write int64"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Write ASN.1 type: INTEGER.
+            Return count of written bytes.
+        </method>
+        <method
+            name = "write uint"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_write_uint"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "value"
+                type = "unsigned"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_write_uint_argument_value">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write uint"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write uint"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Write ASN.1 type: INTEGER.
+            Return count of written bytes.
+        </method>
+        <method
+            name = "write uint8"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_write_uint8"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "value"
+                type = "unsigned"
+                size = "1"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_write_uint8_argument_value">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write uint8"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write uint8"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Write ASN.1 type: INTEGER.
+            Return count of written bytes.
+        </method>
+        <method
+            name = "write uint16"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_write_uint16"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "value"
+                type = "unsigned"
+                size = "2"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_write_uint16_argument_value">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write uint16"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write uint16"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Write ASN.1 type: INTEGER.
+            Return count of written bytes.
+        </method>
+        <method
+            name = "write uint32"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_write_uint32"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "value"
+                type = "unsigned"
+                size = "4"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_write_uint32_argument_value">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write uint32"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write uint32"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Write ASN.1 type: INTEGER.
+            Return count of written bytes.
+        </method>
+        <method
+            name = "write uint64"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_write_uint64"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "value"
+                type = "unsigned"
+                size = "8"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_write_uint64_argument_value">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write uint64"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write uint64"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Write ASN.1 type: INTEGER.
+            Return count of written bytes.
+        </method>
+        <method
+            name = "write bool"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_write_bool"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "value"
+                type = "boolean"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_write_bool_argument_value">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write bool"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write bool"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Write ASN.1 type: BOOLEAN.
+            Return count of written bytes.
+        </method>
+        <method
+            name = "write null"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_write_null"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write null"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Write ASN.1 type: NULL.
+        </method>
+        <method
+            name = "write octet str"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_write_octet_str"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "value"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_write_octet_str_argument_value">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write octet str"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write octet str"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Write ASN.1 type: OCTET STRING.
+            Return count of written bytes.
+        </method>
+        <method
+            name = "write utf8 str"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_write_utf8_str"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "value"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_write_utf8_str_argument_value">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write utf8 str"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write utf8 str"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Write ASN.1 type: UTF8String.
+            Return count of written bytes.
+        </method>
+        <method
+            name = "write oid"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_write_oid"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "value"
+                class = "data"
+                project = "common"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_write_oid_argument_value">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write oid"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write oid"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Write ASN.1 type: OID.
+            Return count of written bytes.
+        </method>
+        <method
+            name = "write sequence"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_write_sequence"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "len"
+                type = "size"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_write_sequence_argument_len">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write sequence"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write sequence"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Mark previously written data of given length as ASN.1 type: SQUENCE.
+            Return count of written bytes.
+        </method>
+        <method
+            name = "write set"
+            c_prefix = "vscf"
+            uid = "interface_asn1_writer_method_write_set"
+            visibility = "public"
+            declaration = "public"
+            definition = "private"
+            is_static = "0"
+            is_const = "0"
+            interface = "asn1 writer">
+            <argument
+                name = "len"
+                type = "size"
+                access = "readonly"
+                is_reference = "0"
+                uid = "interface_asn1_writer_method_write_set_argument_len">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write set"/>
+                </lineage>
+            </argument>
+            <return
+                type = "size"
+                access = "readonly"
+                is_reference = "0">
+                <lineage>
+                    <ancestor
+                        id = "interface"
+                        name = "asn1 writer"/>
+                    <ancestor
+                        id = "method"
+                        name = "write set"/>
+                </lineage>
+            </return>
+            <lineage>
+                <ancestor
+                    id = "interface"
+                    name = "asn1 writer"/>
+            </lineage>
+            Mark previously written data of given length as ASN.1 type: SET.
+            Return count of written bytes.
+        </method>
+        Provides interface to the ASN.1 writer.
+        Note, elements are written starting from the buffer ending.
+        Note, that all &quot;write&quot; methods move writing position backward.
+    </interface>
+</interfaces>

@@ -34,12 +34,40 @@
 
 
 import Foundation
+import VSCFoundation
 
 /// Provide interface for importing public key from the binary format.
 /// Binary format must be defined in the key specification.
 /// For instance, RSA public key must be imported from the format defined in
 /// RFC 3447 Appendix A.1.1.
-@objc(VSCFImportPublicKey) public protocol ImportPublicKey {
+@objc(VSCFImportPublicKey) public protocol ImportPublicKey : CProtocol {
 
     @objc func importPublicKey(data: Data) throws
+}
+
+/// Implement interface methods
+@objc(VSCFImportPublicKeyProxy) internal class ImportPublicKeyProxy: NSObject, ImportPublicKey {
+
+    /// Handle underlying C context.
+    @objc public let c_ctx: OpaquePointer
+
+    /// Take C context that implements this interface
+    public init(c_ctx: OpaquePointer) {
+        self.c_ctx = c_ctx
+        super.init()
+    }
+
+    /// Release underlying C context.
+    deinit {
+        vscf_impl_delete(self.c_ctx)
+    }
+
+    /// Import public key from the binary format.
+    @objc public func importPublicKey(data: Data) throws {
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
+            return vscf_import_public_key(self.c_ctx, vsc_data(dataPointer, data.count))
+        })
+
+        try! FoundationError.handleError(fromC: proxyResult)
+    }
 }

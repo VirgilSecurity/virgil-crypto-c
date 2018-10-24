@@ -34,6 +34,7 @@
 
 
 import Foundation
+import VSCFoundation
 
 /// Provide interface for data encryption.
 @objc(VSCFAuthDecrypt) public protocol AuthDecrypt : CipherAuthInfo {
@@ -41,4 +42,60 @@ import Foundation
     @objc func authDecrypt(data: Data, authData: Data, tag: Data) throws -> Data
 
     @objc func authDecryptedLen(dataLen: Int) -> Int
+}
+
+/// Implement interface methods
+@objc(VSCFAuthDecryptProxy) internal class AuthDecryptProxy: NSObject, AuthDecrypt {
+
+    /// Handle underlying C context.
+    @objc public let c_ctx: OpaquePointer
+
+    /// Defines authentication tag length in bytes.
+    @objc public var authTagLen: Int {
+        return vscf_cipher_auth_info_auth_tag_len(vscf_cipher_auth_info_api(self.c_ctx))
+    }
+
+    /// Take C context that implements this interface
+    public init(c_ctx: OpaquePointer) {
+        self.c_ctx = c_ctx
+        super.init()
+    }
+
+    /// Release underlying C context.
+    deinit {
+        vscf_impl_delete(self.c_ctx)
+    }
+
+    /// Decrypt given data.
+    /// If 'tag' is not give, then it will be taken from the 'enc'.
+    @objc public func authDecrypt(data: Data, authData: Data, tag: Data) throws -> Data {
+        let outCount = self.authDecryptedLen(dataLen: data.count)
+        var out = Data(count: outCount)
+        var outBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(outBuf)
+        }
+
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
+            authData.withUnsafeBytes({ (authDataPointer: UnsafePointer<byte>) -> vscf_error_t in
+                tag.withUnsafeBytes({ (tagPointer: UnsafePointer<byte>) -> vscf_error_t in
+                    out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+                        vsc_buffer_init(outBuf)
+                        vsc_buffer_use(outBuf, outPointer, outCount)
+                        return vscf_auth_decrypt(self.c_ctx, vsc_data(dataPointer, data.count), vsc_data(authDataPointer, authData.count), vsc_data(tagPointer, tag.count), outBuf)
+                    })
+                })
+            })
+        })
+
+        try! FoundationError.handleError(fromC: proxyResult)
+
+        return out
+    }
+
+    /// Calculate required buffer length to hold the authenticated decrypted data.
+    @objc public func authDecryptedLen(dataLen: Int) -> Int {
+        let proxyResult = vscf_auth_decrypt_auth_decrypted_len(self.c_ctx, dataLen)
+        return proxyResult
+    }
 }

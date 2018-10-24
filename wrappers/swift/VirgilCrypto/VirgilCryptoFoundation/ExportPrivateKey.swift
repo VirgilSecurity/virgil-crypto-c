@@ -34,14 +34,59 @@
 
 
 import Foundation
+import VSCFoundation
 
 /// Provide interface for exporting private key to the binary format.
 /// Binary format must be defined in the key specification.
 /// For instance, RSA private key must be exported in format defined in
 /// RFC 3447 Appendix A.1.2.
-@objc(VSCFExportPrivateKey) public protocol ExportPrivateKey {
+@objc(VSCFExportPrivateKey) public protocol ExportPrivateKey : CProtocol {
 
     @objc func exportPrivateKey() throws -> Data
 
     @objc func exportedPrivateKeyLen() -> Int
+}
+
+/// Implement interface methods
+@objc(VSCFExportPrivateKeyProxy) internal class ExportPrivateKeyProxy: NSObject, ExportPrivateKey {
+
+    /// Handle underlying C context.
+    @objc public let c_ctx: OpaquePointer
+
+    /// Take C context that implements this interface
+    public init(c_ctx: OpaquePointer) {
+        self.c_ctx = c_ctx
+        super.init()
+    }
+
+    /// Release underlying C context.
+    deinit {
+        vscf_impl_delete(self.c_ctx)
+    }
+
+    /// Export private key in the binary format.
+    @objc public func exportPrivateKey() throws -> Data {
+        let outCount = self.exportedPrivateKeyLen()
+        var out = Data(count: outCount)
+        var outBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(outBuf)
+        }
+
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+            vsc_buffer_init(outBuf)
+            vsc_buffer_use(outBuf, outPointer, outCount)
+            return vscf_export_private_key(self.c_ctx, outBuf)
+        })
+
+        try! FoundationError.handleError(fromC: proxyResult)
+
+        return out
+    }
+
+    /// Return length in bytes required to hold exported private key.
+    @objc public func exportedPrivateKeyLen() -> Int {
+        let proxyResult = vscf_export_private_key_exported_private_key_len(self.c_ctx)
+        return proxyResult
+    }
 }
