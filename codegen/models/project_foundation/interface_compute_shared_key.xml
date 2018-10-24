@@ -8,7 +8,7 @@
 
         <argument name="public key" interface="public key"/>
         <argument name="shared key" class="buffer">
-            <length object="self" method="shared key len"/>
+            <length method="shared key len"/>
         </argument>
 
         <return enum="error"/>

@@ -393,12 +393,21 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return formatted name of the Swift class.
 # ---------------------------------------------------------------------------
+function swift_derive_class_name_str (name)
+    check_arguments (my, "name", my)
+
+    return "$(my.name:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the Swift class.
+# ---------------------------------------------------------------------------
 function swift_derive_class_name (class, wrapper)
     check_arguments (my, "class", my)
 
     assert_attribute_one_of (my.class, "name", my)
 
-    return "$(my.class.name:Pascal)"
+    return swift_derive_class_name_str (my.class.name)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -619,6 +628,12 @@ function swift_wrap_c_returned_value (swift_return)
 
     elsif is_true (0.is_interface)
         return "$(my.type:)Proxy.init(c_ctx: $(my.name:)!)"
+
+    elsif is_true (0.is_class) & is_false (0.is_buffer)
+        return "$(my.type:).init(c_ctx: $(my.name:)!)"
+
+    elsif is_true (0.is_enum)
+        return "$(my.type:).init(fromC: $(my.name:)!)"
     endif
 
     endscope
@@ -685,12 +700,11 @@ function swift_format_c_proxy_args (class, method)
         endif
     endfor
 
-    return my.proxy_args
+    return my.proxy_args ? ""
 endfunction
 
-
 # ---------------------------------------------------------------------------
-#   Retun invocation of the getter function that returns buffer length.
+#   Return invocation of the getter function that returns buffer length.
 # ---------------------------------------------------------------------------
 function class_derive_buffer_length_getter (class, method, argument)
     assert_attributes (my, "class, method, argument")
@@ -726,13 +740,23 @@ function class_derive_buffer_length_getter (class, method, argument)
         endif
     endfor
 
+    my.specified_proxy_object = get_one_of_attribute (my.length, "class, interface, impl") ?
+    if defined (my.specified_proxy_object)
+        if my.specified_proxy_object = "self"
+            my.specified_proxy_object = my.class.name
+        endif
+        my.proxy_object = swift_derive_class_name_str (my.specified_proxy_object)
+    else
+        my.proxy_object = "self"
+    endif
+
     if defined (my.length.method)
         my.proxy_method = swift_derive_method_name_str (my.length.method)
-        return "self.$(my.proxy_method:)($(my.proxy_args?:))"
+        return "$(my.proxy_object:).$(my.proxy_method:)($(my.proxy_args?:))"
 
     elsif defined (my.length.constant)
         my.proxy_constant = swift_derive_constant_name_str (my.length.constant)
-        return "self.$(my.proxy_constant:)"
+        return "$(my.proxy_object:).$(my.proxy_constant:)"
 
     elsif defined (my.length.argument)
         my.proxy_argument = swift_derive_argument_name_str (my.length.argument)
@@ -1104,6 +1128,10 @@ function swift_create_method_declaration (class, method, destination, wrapper, m
         .throws = count (my.method.return, string_equal (return.enum, "error")) ?? "1" ? "0"
         .interface = my.method.interface ?
 
+        if ! defined (my.method.interface)
+            .modifier = is_true (my.method.is_static) ?? "static" ?
+        endif
+
         swift_map_attr_visibility (swift_method, my.method)
 
         for my.method.argument
@@ -1467,7 +1495,7 @@ function swift_map_enum_error (swift_enum, enum, wrapper, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Add entities for regular enums (not error codes).
+#   Add entities for regular enum (not error codes).
 # ---------------------------------------------------------------------------
 function swift_map_enum_default (swift_enum, enum, wrapper, meta)
     check_arguments (my, "swift_enum, enum, wrapper, meta")

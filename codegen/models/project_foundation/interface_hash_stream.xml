@@ -20,7 +20,7 @@
         Accompilsh hashing and return it's result (a message digest).
 
         <argument name="digest" class="buffer">
-            <length interface="hash info" constant="digest len"/>
+            <length constant="digest len"/>
         </argument>
    </method>
 </interface>

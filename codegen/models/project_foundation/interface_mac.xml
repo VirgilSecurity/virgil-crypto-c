@@ -9,7 +9,7 @@
         <argument name="key" class="data"/>
         <argument name="data" class="data"/>
         <argument name="mac" class="buffer">
-            <length object="self" method="digest len"/>
+            <length method="digest len"/>
         </argument>
     </method>
 </interface>

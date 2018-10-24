@@ -8,7 +8,7 @@
         Export public key in the binary format.
 
         <argument name="out" class="buffer">
-            <length object="self" method="exported public key len"/>
+            <length method="exported public key len"/>
         </argument>
 
         <return enum="error"/>

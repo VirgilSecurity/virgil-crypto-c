@@ -6,7 +6,7 @@
 
         <argument name="data" class="data"/>
         <argument name="signature" class="buffer">
-            <length object="self" method="signature len"/>
+            <length method="signature len"/>
         </argument>
 
         <return enum="error"/>
