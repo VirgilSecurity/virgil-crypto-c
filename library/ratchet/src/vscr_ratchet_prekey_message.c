@@ -207,14 +207,16 @@ vscr_ratchet_prekey_message_cleanup_ctx(vscr_ratchet_prekey_message_t *ratchet_p
     VSCR_ASSERT_PTR(ratchet_prekey_message_ctx);
 
     vsc_buffer_destroy(&ratchet_prekey_message_ctx->message);
-    vsc_buffer_destroy(&ratchet_prekey_message_ctx->identity_key);
-    vsc_buffer_destroy(&ratchet_prekey_message_ctx->long_term_key);
-    vsc_buffer_destroy(&ratchet_prekey_message_ctx->one_time_key);
+    vsc_buffer_destroy(&ratchet_prekey_message_ctx->sender_identity_key);
+    vsc_buffer_destroy(&ratchet_prekey_message_ctx->sender_ephemeral_key);
+    vsc_buffer_destroy(&ratchet_prekey_message_ctx->receiver_long_term_key);
+    vsc_buffer_destroy(&ratchet_prekey_message_ctx->receiver_one_time_key);
 }
 
 VSCR_PUBLIC vscr_ratchet_prekey_message_t *
-vscr_ratchet_prekey_message_new_with_members(uint8_t protocol_version, vsc_buffer_t *identity_key,
-        vsc_buffer_t *long_term_key, vsc_buffer_t *one_time_key, vsc_buffer_t *message) {
+vscr_ratchet_prekey_message_new_with_members(uint8_t protocol_version, vsc_buffer_t *sender_identity_key,
+        vsc_buffer_t *sender_ephemeral_key, vsc_buffer_t *receiver_long_term_key, vsc_buffer_t *receiver_one_time_key,
+        vsc_buffer_t *message) {
 
     vscr_ratchet_prekey_message_t *ratchet_prekey_message_ctx =
             (vscr_ratchet_prekey_message_t *)vscr_alloc(sizeof(vscr_ratchet_prekey_message_t));
@@ -223,11 +225,12 @@ vscr_ratchet_prekey_message_new_with_members(uint8_t protocol_version, vsc_buffe
     vscr_ratchet_prekey_message_init(ratchet_prekey_message_ctx);
 
     ratchet_prekey_message_ctx->protocol_version = protocol_version;
-    ratchet_prekey_message_ctx->identity_key = vsc_buffer_copy(identity_key);
-    ratchet_prekey_message_ctx->long_term_key = vsc_buffer_copy(long_term_key);
+    ratchet_prekey_message_ctx->sender_identity_key = vsc_buffer_copy(sender_identity_key);
+    ratchet_prekey_message_ctx->sender_ephemeral_key = vsc_buffer_copy(sender_ephemeral_key);
+    ratchet_prekey_message_ctx->receiver_long_term_key = vsc_buffer_copy(receiver_long_term_key);
 
-    if (one_time_key)
-        ratchet_prekey_message_ctx->one_time_key = vsc_buffer_copy(one_time_key);
+    if (receiver_one_time_key)
+        ratchet_prekey_message_ctx->receiver_one_time_key = vsc_buffer_copy(receiver_one_time_key);
 
     ratchet_prekey_message_ctx->message = vsc_buffer_copy(message);
 
@@ -242,16 +245,19 @@ vscr_ratchet_prekey_message_serialize_len(size_t message_len) {
 
     //  RATCHETPrekeyMessage ::= SEQUENCE {
     //       version INTEGER,
-    //       identity_public_key OCTET_STRING,
-    //       long_term_public_key OCTET_STRING,
-    //       one_time_public_key OCTET_STRING,
+    //       sender_identity_key OCTET_STRING,
+    //       sender_ephemeral_key OCTET_STRING,
+    //       receiver_long_term_key OCTET_STRING,
+    //       receiver_one_time_public_key OCTET_STRING,
     //       message OCTET_STRING }
 
     size_t top_sequence_len = 1 + 3 /* SEQUENCE */
                               + 1 + 1 + 2 /* INTEGER */
-                              + 1 + 1 + vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH + 1 + 1 +
-                              vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH + 1 + 1 +
-                              vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH + 1 + 3 + message_len;
+                              + 1 + 1 + vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH
+                              + 1 + 1 + vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH
+                              + 1 + 1 + vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH
+                              + 1 + 1 + vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH
+                              + 1 + 3 + message_len;
 
     return top_sequence_len;
 }
@@ -261,9 +267,10 @@ vscr_ratchet_prekey_message_serialize(vscr_ratchet_prekey_message_t *ratchet_pre
 
     //  RATCHETPrekeyMessage ::= SEQUENCE {
     //       version INTEGER,
-    //       identity_public_key OCTET_STRING,
-    //       long_term_public_key OCTET_STRING,
-    //       one_time_public_key OCTET_STRING,
+    //       sender_identity_key OCTET_STRING,
+    //       sender_ephemeral_key OCTET_STRING,
+    //       receiver_long_term_key OCTET_STRING,
+    //       receiver_one_time_public_key OCTET_STRING,
     //       message OCTET_STRING }
 
     if (vsc_buffer_left(output) <
@@ -280,9 +287,9 @@ vscr_ratchet_prekey_message_serialize(vscr_ratchet_prekey_message_t *ratchet_pre
 
     top_sequence_len += vscf_asn1wr_write_octet_str(asn1wr, vsc_buffer_data(ratchet_prekey_message_ctx->message));
 
-    if (ratchet_prekey_message_ctx->one_time_key) {
+    if (ratchet_prekey_message_ctx->receiver_one_time_key) {
         top_sequence_len +=
-                vscf_asn1wr_write_octet_str(asn1wr, vsc_buffer_data(ratchet_prekey_message_ctx->one_time_key));
+                vscf_asn1wr_write_octet_str(asn1wr, vsc_buffer_data(ratchet_prekey_message_ctx->receiver_one_time_key));
     }
     // FIXME
     else {
@@ -297,9 +304,11 @@ vscr_ratchet_prekey_message_serialize(vscr_ratchet_prekey_message_t *ratchet_pre
         vsc_buffer_destroy(&buffer);
     }
 
-    top_sequence_len += vscf_asn1wr_write_octet_str(asn1wr, vsc_buffer_data(ratchet_prekey_message_ctx->long_term_key));
+    top_sequence_len += vscf_asn1wr_write_octet_str(asn1wr, vsc_buffer_data(ratchet_prekey_message_ctx->receiver_long_term_key));
 
-    top_sequence_len += vscf_asn1wr_write_octet_str(asn1wr, vsc_buffer_data(ratchet_prekey_message_ctx->identity_key));
+    top_sequence_len += vscf_asn1wr_write_octet_str(asn1wr, vsc_buffer_data(ratchet_prekey_message_ctx->sender_ephemeral_key));
+
+    top_sequence_len += vscf_asn1wr_write_octet_str(asn1wr, vsc_buffer_data(ratchet_prekey_message_ctx->sender_identity_key));
 
     top_sequence_len += vscf_asn1wr_write_uint8(asn1wr, ratchet_prekey_message_ctx->protocol_version);
 
@@ -322,6 +331,14 @@ vscr_ratchet_prekey_message_serialize(vscr_ratchet_prekey_message_t *ratchet_pre
 VSCR_PUBLIC vscr_ratchet_prekey_message_t *
 vscr_ratchet_prekey_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
 
+    //  RATCHETPrekeyMessage ::= SEQUENCE {
+    //       version INTEGER,
+    //       sender_identity_key OCTET_STRING,
+    //       sender_ephemeral_key OCTET_STRING,
+    //       receiver_long_term_key OCTET_STRING,
+    //       receiver_one_time_public_key OCTET_STRING,
+    //       message OCTET_STRING }
+
     VSCR_ASSERT(vsc_data_is_valid(input));
 
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
@@ -331,9 +348,9 @@ vscr_ratchet_prekey_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_
 
     uint8_t version = vscf_asn1rd_read_uint8(asn1rd);
 
-    size_t identity_public_key_len = vscf_asn1rd_get_len(asn1rd);
+    size_t sender_identity_key_len = vscf_asn1rd_get_len(asn1rd);
 
-    if (identity_public_key_len != vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH) {
+    if (sender_identity_key_len != vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH) {
         vscf_asn1rd_destroy(&asn1rd);
 
         VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_WRONG_MESSAGE_FORMAT);
@@ -341,14 +358,13 @@ vscr_ratchet_prekey_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_
         return NULL;
     }
 
-    vsc_buffer_t *identity_public_key = vsc_buffer_new_with_capacity(identity_public_key_len);
-    vscf_asn1rd_read_octet_str(asn1rd, identity_public_key);
+    vsc_buffer_t *sender_identity_key = vsc_buffer_new_with_capacity(vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH);
+    vscf_asn1rd_read_octet_str(asn1rd, sender_identity_key);
 
-    size_t long_term_public_key_len = vscf_asn1rd_get_len(asn1rd);
+    size_t sender_ephemeral_key_len = vscf_asn1rd_get_len(asn1rd);
 
-    if (long_term_public_key_len != vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH) {
-
-        vsc_buffer_destroy(&identity_public_key);
+    if (sender_ephemeral_key_len != vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH) {
+        vsc_buffer_destroy(&sender_identity_key);
         vscf_asn1rd_destroy(&asn1rd);
 
         VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_WRONG_MESSAGE_FORMAT);
@@ -356,15 +372,14 @@ vscr_ratchet_prekey_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_
         return NULL;
     }
 
-    vsc_buffer_t *long_term_public_key = vsc_buffer_new_with_capacity(long_term_public_key_len);
-    vscf_asn1rd_read_octet_str(asn1rd, long_term_public_key);
+    vsc_buffer_t *sender_ephemeral_key = vsc_buffer_new_with_capacity(vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH);
+    vscf_asn1rd_read_octet_str(asn1rd, sender_ephemeral_key);
 
-    size_t one_time_public_key_len = vscf_asn1rd_get_len(asn1rd);
+    size_t receiver_long_term_key_len = vscf_asn1rd_get_len(asn1rd);
 
-    if (one_time_public_key_len != vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH) {
-
-        vsc_buffer_destroy(&identity_public_key);
-        vsc_buffer_destroy(&long_term_public_key);
+    if (receiver_long_term_key_len != vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH) {
+        vsc_buffer_destroy(&sender_identity_key);
+        vsc_buffer_destroy(&sender_ephemeral_key);
         vscf_asn1rd_destroy(&asn1rd);
 
         VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_WRONG_MESSAGE_FORMAT);
@@ -372,23 +387,40 @@ vscr_ratchet_prekey_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_
         return NULL;
     }
 
-    vsc_buffer_t *one_time_public_key = vsc_buffer_new_with_capacity(one_time_public_key_len);
-    vscf_asn1rd_read_octet_str(asn1rd, one_time_public_key);
+    vsc_buffer_t *receiver_long_term_key = vsc_buffer_new_with_capacity(vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH);
+    vscf_asn1rd_read_octet_str(asn1rd, receiver_long_term_key);
+
+    size_t receiver_one_time_key_len = vscf_asn1rd_get_len(asn1rd);
+
+    if (receiver_one_time_key_len != vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH) {
+        vsc_buffer_destroy(&sender_identity_key);
+        vsc_buffer_destroy(&sender_ephemeral_key);
+        vsc_buffer_destroy(&receiver_long_term_key);
+        vscf_asn1rd_destroy(&asn1rd);
+
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_WRONG_MESSAGE_FORMAT);
+
+        return NULL;
+    }
+
+    vsc_buffer_t *receiver_one_time_key = vsc_buffer_new_with_capacity(vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH);
+    vscf_asn1rd_read_octet_str(asn1rd, receiver_one_time_key);
 
     byte zero[vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH];
     vscr_erase(zero, vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH);
 
-    if (memcmp(vsc_buffer_bytes(one_time_public_key), zero, vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH) == 0) {
-        vsc_buffer_destroy(&one_time_public_key);
+    if (memcmp(vsc_buffer_bytes(receiver_one_time_key), zero, vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH) == 0) {
+        vsc_buffer_destroy(&receiver_one_time_key);
     }
 
     size_t message_len = vscf_asn1rd_get_len(asn1rd);
 
     if (message_len > vscr_ratchet_prekey_message_MAX_MESSAGE_LENGTH) {
 
-        vsc_buffer_destroy(&identity_public_key);
-        vsc_buffer_destroy(&long_term_public_key);
-        vsc_buffer_destroy(&one_time_public_key);
+        vsc_buffer_destroy(&sender_identity_key);
+        vsc_buffer_destroy(&sender_ephemeral_key);
+        vsc_buffer_destroy(&receiver_long_term_key);
+        vsc_buffer_destroy(&receiver_one_time_key);
         vscf_asn1rd_destroy(&asn1rd);
 
         VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_WRONG_MESSAGE_FORMAT);
@@ -401,9 +433,11 @@ vscr_ratchet_prekey_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_
 
     if (vscf_asn1rd_error(asn1rd) != vscf_SUCCESS) {
 
-        vsc_buffer_destroy(&identity_public_key);
-        vsc_buffer_destroy(&long_term_public_key);
-        vsc_buffer_destroy(&one_time_public_key);
+        vsc_buffer_destroy(&sender_identity_key);
+        vsc_buffer_destroy(&sender_ephemeral_key);
+        vsc_buffer_destroy(&receiver_long_term_key);
+        vsc_buffer_destroy(&receiver_one_time_key);
+        vsc_buffer_destroy(&message);
         vscf_asn1rd_destroy(&asn1rd);
 
         VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_WRONG_MESSAGE_FORMAT);
@@ -412,11 +446,13 @@ vscr_ratchet_prekey_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_
     }
 
     vscr_ratchet_prekey_message_t *msg = vscr_ratchet_prekey_message_new_with_members(
-            version, identity_public_key, long_term_public_key, one_time_public_key, message);
+            version, sender_identity_key, sender_ephemeral_key,
+            receiver_long_term_key, receiver_one_time_key, message);
 
-    vsc_buffer_destroy(&identity_public_key);
-    vsc_buffer_destroy(&long_term_public_key);
-    vsc_buffer_destroy(&one_time_public_key);
+    vsc_buffer_destroy(&sender_identity_key);
+    vsc_buffer_destroy(&sender_ephemeral_key);
+    vsc_buffer_destroy(&receiver_long_term_key);
+    vsc_buffer_destroy(&receiver_one_time_key);
     vsc_buffer_destroy(&message);
     vscf_asn1rd_destroy(&asn1rd);
 

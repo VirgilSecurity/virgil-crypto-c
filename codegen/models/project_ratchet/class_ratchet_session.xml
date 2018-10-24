@@ -26,6 +26,7 @@
     <method name="respond">
         <argument name="sender identity public key" class="buffer"/>
         <argument name="sender ephemeral public key" class="buffer"/>
+        <argument name="ratchet public key" class="buffer"/>
         <argument name="receiver identity private key" class="buffer"/>
         <argument name="receiver long term private key" class="buffer"/>
         <argument name="receiver one time private key" class="buffer"/>

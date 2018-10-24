@@ -37,6 +37,7 @@
 #include <test_data_ratchet.h>
 #include <virgil/crypto/ratchet/private/vscr_ratchet_session_defs.h>
 #include <virgil/crypto/ratchet/vscr_ratchet_rng.h>
+#include <virgil/crypto/ratchet/private/vscr_ratchet_defs.h>
 #include "unity.h"
 #include "test_utils.h"
 
@@ -130,8 +131,10 @@ initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *sessio
                                   bob_identity_public_key, bob_longterm_public_key, bob_onetime_public_key));
 
     TEST_ASSERT_EQUAL_INT(vscr_SUCCESS, vscr_ratchet_session_respond(session_bob, alice_identity_public_key,
-                                                session_alice->sender_ephemeral_public_key, bob_identity_private_key,
-                                                bob_longterm_private_key, bob_onetime_private_key));
+                                                session_alice->sender_ephemeral_public_key,
+                                                // FIXME
+                                                session_alice->ratchet->sender_chain->public_key,
+                                                bob_identity_private_key, bob_longterm_private_key, bob_onetime_private_key));
 
     vsc_buffer_destroy(&alice_identity_private_key);
     vsc_buffer_destroy(&alice_identity_public_key);
