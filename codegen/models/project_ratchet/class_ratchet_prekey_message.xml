@@ -10,16 +10,18 @@
     </constant>
 
     <property name="protocol version" type="size" size="1"/>
-    <property name="identity key" class="buffer" access="readwrite"/>
-    <property name="long term key" class="buffer" access="readwrite"/>
-    <property name="one time key" class="buffer" access="readwrite"/>
+    <property name="sender identity key" class="buffer" access="readwrite"/>
+    <property name="sender ephemeral key" class="buffer" access="readwrite"/>
+    <property name="receiver long term key" class="buffer" access="readwrite"/>
+    <property name="receiver one time key" class="buffer" access="readwrite"/>
     <property name="message" class="buffer" access="readwrite"/>
 
     <constructor name="with members">
         <argument name="protocol version" type="size" size="1"/>
-        <argument name="identity key" class="buffer"/>
-        <argument name="long term key" class="buffer"/>
-        <argument name="one time key" class="buffer"/>
+        <argument name="sender identity key" class="buffer"/>
+        <argument name="sender ephemeral key" class="buffer"/>
+        <argument name="receiver long term key" class="buffer"/>
+        <argument name="receiver one time key" class="buffer"/>
         <argument name="message" class="buffer"/>
     </constructor>
 

@@ -396,6 +396,8 @@ vscr_ratchet_create_chain_key(const vscr_ratchet_t *ratchet_ctx, const vsc_buffe
         vscr_ratchet_chain_key_t *chain_key) {
 
     VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet_ctx->kdf_info);
+    VSCR_ASSERT_PTR(ratchet_ctx->kdf_info->ratchet_info);
     VSCR_ASSERT_PTR(private_key);
     VSCR_ASSERT_PTR(public_key);
     VSCR_ASSERT_PTR(chain_key);
@@ -547,6 +549,8 @@ VSCR_PUBLIC void
 vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key) {
 
     VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet_ctx->kdf_info);
+    VSCR_ASSERT_PTR(ratchet_ctx->kdf_info->root_info);
     VSCR_ASSERT_PTR(ratchet_public_key);
     VSCR_ASSERT(vsc_buffer_len(ratchet_public_key) == ED25519_KEY_LEN);
     VSCR_ASSERT(shared_secret.len == 3 * ED25519_DH_LEN || shared_secret.len == 4 * ED25519_DH_LEN);
@@ -581,6 +585,8 @@ VSCR_PUBLIC vscr_error_t
 vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_private_key) {
 
     VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet_ctx->kdf_info);
+    VSCR_ASSERT_PTR(ratchet_ctx->kdf_info->root_info);
     VSCR_ASSERT_PTR(ratchet_private_key);
     VSCR_ASSERT(vsc_buffer_len(ratchet_private_key) == ED25519_KEY_LEN);
     VSCR_ASSERT(shared_secret.len == 3 * ED25519_DH_LEN || shared_secret.len == 4 * ED25519_DH_LEN);

@@ -103,11 +103,13 @@ struct vscr_ratchet_prekey_message_t {
 
     uint8_t protocol_version;
 
-    vsc_buffer_t *identity_key;
+    vsc_buffer_t *sender_identity_key;
 
-    vsc_buffer_t *long_term_key;
+    vsc_buffer_t *sender_ephemeral_key;
 
-    vsc_buffer_t *one_time_key;
+    vsc_buffer_t *receiver_long_term_key;
+
+    vsc_buffer_t *receiver_one_time_key;
 
     vsc_buffer_t *message;
 };
@@ -131,8 +133,9 @@ VSCR_PUBLIC vscr_ratchet_prekey_message_t *
 vscr_ratchet_prekey_message_new(void);
 
 VSCR_PUBLIC vscr_ratchet_prekey_message_t *
-vscr_ratchet_prekey_message_new_with_members(uint8_t protocol_version, vsc_buffer_t *identity_key,
-        vsc_buffer_t *long_term_key, vsc_buffer_t *one_time_key, vsc_buffer_t *message);
+vscr_ratchet_prekey_message_new_with_members(uint8_t protocol_version, vsc_buffer_t *sender_identity_key,
+        vsc_buffer_t *sender_ephemeral_key, vsc_buffer_t *receiver_long_term_key, vsc_buffer_t *receiver_one_time_key,
+        vsc_buffer_t *message);
 
 //
 //  Release all inner resources and deallocate context if needed.
