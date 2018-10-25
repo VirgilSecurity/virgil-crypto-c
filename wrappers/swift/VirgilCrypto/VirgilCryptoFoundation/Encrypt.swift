@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// Provide interface for data encryption.
-@objc(VSCFEncrypt) public protocol Encrypt : CProtocol {
+@objc(VSCFEncrypt) public protocol Encrypt : CContext {
 
     @objc func encrypt(data: Data) throws -> Data
 

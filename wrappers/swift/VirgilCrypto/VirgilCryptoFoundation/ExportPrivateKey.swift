@@ -40,7 +40,7 @@ import VSCFoundation
 /// Binary format must be defined in the key specification.
 /// For instance, RSA private key must be exported in format defined in
 /// RFC 3447 Appendix A.1.2.
-@objc(VSCFExportPrivateKey) public protocol ExportPrivateKey : CProtocol {
+@objc(VSCFExportPrivateKey) public protocol ExportPrivateKey : CContext {
 
     @objc func exportPrivateKey() throws -> Data
 

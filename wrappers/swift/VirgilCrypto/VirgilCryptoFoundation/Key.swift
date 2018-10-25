@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// Common information about asymmetric key.
-@objc(VSCFKey) public protocol Key : CProtocol {
+@objc(VSCFKey) public protocol Key : CContext {
 
     @objc func keyLen() -> Int
 

@@ -40,7 +40,7 @@ import VSCFoundation
 /// Binary format must be defined in the key specification.
 /// For instance, RSA private key must be imported from the format defined in
 /// RFC 3447 Appendix A.1.2.
-@objc(VSCFImportPrivateKey) public protocol ImportPrivateKey : CProtocol {
+@objc(VSCFImportPrivateKey) public protocol ImportPrivateKey : CContext {
 
     @objc func importPrivateKey(data: Data) throws
 }

@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// Provides compile time knownledge about algorithm.
-@objc(VSCFCipherInfo) public protocol CipherInfo : CProtocol {
+@objc(VSCFCipherInfo) public protocol CipherInfo : CContext {
     /// Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
     @objc var nonceLen: Int { get }
     /// Cipher key length in bytes.

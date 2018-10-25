@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// Provide details about implemented hash algorithm.
-@objc(VSCFHashInfo) public protocol HashInfo : CProtocol {
+@objc(VSCFHashInfo) public protocol HashInfo : CContext {
     /// Length of the digest (hashing output) in bytes.
     @objc var digestLen: Int { get }
     /// Block length of the digest function in bytes.
