@@ -76,8 +76,44 @@ function implementation_copy_interface_methods (interface, implementation, sourc
     my.interface_definition = interface_find (my.interface.name, my.source)
 
     for my.interface_definition.method
-        copy method to my.interface
+        my.copied_method = item_copy_to (method, my.interface)
+        my.copied_method.implementation = my.implementation.name
     endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: implementation.context
+# ---------------------------------------------------------------------------
+function implementation_resolve_attr_context (implementation)
+    check_argument (my, "implementation", my)
+
+    if count (my.implementation.context)
+        my.implementation.context ?= "default"
+        return
+    endif
+
+    for my.implementation.interface
+        for interface.method where ! method.is_static
+            my.implementation.context ?= "default"
+            return
+        endfor
+    endfor
+
+    for my.implementation.method where ! method.is_static
+        my.implementation.context ?= "default"
+        return
+    endfor
+
+    my.implementation.context ?= "none"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: implementation.lifecycle
+# ---------------------------------------------------------------------------
+function implementation_resolve_attr_lifecycle (implementation)
+    check_argument (my, "implementation", my)
+
+    my.implementation.lifecycle ?= my.implementation.context ? "none"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -103,23 +139,28 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Resolve model: implementation.interface.constant.
 # ---------------------------------------------------------------------------
-function implementation_resolve_interface_constant (constant, parent)
-    check_arguments (my, "constant, parent", my)
+function implementation_resolve_interface_constant (constant_declaration, constant_definition, parent)
+    check_arguments (my, "constant_declaration, constant_definition, parent", my)
 
-    component_require_attr_name (my.constant)
-    component_require_attr_value (my.constant)
+    component_require_attr_name (my.constant_declaration)
+    component_require_attr_value (my.constant_declaration)
+
+    my.constant_declaration. ?= my.constant_definition. ?
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Resolve model: implementation.interface.
 # ---------------------------------------------------------------------------
-function implementation_resolve_interface (interface, parent)
-    check_arguments (my, "interface, parent", my)
+function implementation_resolve_interface (interface, parent, source)
+    check_arguments (my, "interface, parent, source", my)
 
     component_require_attr_name (my.interface, my)
 
-    for my.interface.constant
-        implementation_resolve_interface_constant (constant, my.interface)
+    my.interface_declaration = interface_find (my.interface.name, my.source)
+
+    for my.interface.constant as constant_definition
+        my.constant_declaration = my.interface_declaration->constant (name = constant_definition.name)
+        implementation_resolve_interface_constant (constant_definition, my.constant_declaration, my.interface)
     endfor
 endfunction
 
@@ -216,12 +257,15 @@ function implementation_resolve (implementation, parent, project)
     endfor
 
     for my.implementation.interface as implemented_interface
-        implementation_resolve_interface (implemented_interface, my.implementation)
         implementation_check_interface_hierarchy (implemented_interface, my.implementation, my.parent)
+        implementation_resolve_interface (implemented_interface, my.implementation, my.parent)
         implementation_copy_interface_methods (implemented_interface, my.implementation, my.parent)
     else
         echo_fatal ("Implementation '$(my.implementation.name)' does not implement any interface.", my)
     endfor
+
+    implementation_resolve_attr_context (my.implementation)
+    implementation_resolve_attr_lifecycle (my.implementation)
 
     for my.implementation.context
         implementation_resolve_context (context, my.implementation)

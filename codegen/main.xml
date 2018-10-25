@@ -38,9 +38,8 @@
     <library name="mbedtls"/>
     <library name="ed25519"/>
 
-    <project name="common" enabled="1"/>
-    <project name="foundation" enabled="1"/>
-    <project name="pythia" enabled="1"/>
-    <project name="ratchet" enabled="1"/>
-
+    <project name="common" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
+    <project name="foundation" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
+    <project name="pythia" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
+    <project name="ratchet" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
 </main>

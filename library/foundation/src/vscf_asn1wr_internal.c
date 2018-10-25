@@ -92,8 +92,9 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     (vscf_asn1_writer_api_reset_fn)vscf_asn1wr_reset,
     //
     //  Move written data to the buffer beginning and forbid further operations.
+    //  Returns written size in bytes.
     //
-    (vscf_asn1_writer_api_seal_fn)vscf_asn1wr_seal,
+    (vscf_asn1_writer_api_finish_fn)vscf_asn1wr_finish,
     //
     //  Return last error.
     //

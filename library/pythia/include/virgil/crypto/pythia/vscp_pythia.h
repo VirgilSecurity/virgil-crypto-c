@@ -135,14 +135,14 @@ vscp_pythia_copy(vscp_pythia_t *pythia_ctx);
 //  Must be called once for entire application at startup.
 //
 VSCP_PUBLIC void
-vscp_init(void);
+vscp_global_init(void);
 
 //
 //  Performs global cleanup of the pythia library.
 //  Must be called once for entire application before exit.
 //
 VSCP_PUBLIC void
-vscp_cleanup(void);
+vscp_global_cleanup(void);
 
 //
 //  Return length of the buffer needed to hold 'blinded password'.

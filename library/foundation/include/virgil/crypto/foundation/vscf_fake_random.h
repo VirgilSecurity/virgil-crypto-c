@@ -59,10 +59,12 @@
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -156,7 +158,7 @@ vscf_fake_random_setup_source_data(vscf_fake_random_impl_t *fake_random_impl, vs
 //  Generate random bytes.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_fake_random_random(vscf_fake_random_impl_t *fake_random_impl, byte *data, size_t data_len);
+vscf_fake_random_random(vscf_fake_random_impl_t *fake_random_impl, size_t data_len, vsc_buffer_t *data);
 
 
 // --------------------------------------------------------------------------

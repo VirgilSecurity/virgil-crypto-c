@@ -2,8 +2,10 @@
     Encapsulates fixed byte array.
 
 
-    <property name="bytes" type="data">
+    <property name="bytes" type="byte">
         Underlying byte array.
+
+        <array length="given"/>
     </property>
 
 
@@ -30,7 +32,10 @@
     <constructor name="data">
         Creates data from the preallocated bytes.
 
-        <argument name="bytes" type="data"/>
+        <argument name="bytes" type="byte">
+            <array length="given"/>
+        </argument>
+
         <argument name="len" type="size"/>
     </constructor>
 

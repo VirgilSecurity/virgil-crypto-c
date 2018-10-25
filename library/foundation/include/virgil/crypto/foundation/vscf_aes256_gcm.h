@@ -89,10 +89,25 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
+    //
+    //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
+    //
     vscf_aes256_gcm_NONCE_LEN = 12,
+    //
+    //  Cipher key length in bytes.
+    //
     vscf_aes256_gcm_KEY_LEN = 32,
+    //
+    //  Cipher key length in bits.
+    //
     vscf_aes256_gcm_KEY_BITLEN = 256,
+    //
+    //  Cipher block length in bytes.
+    //
     vscf_aes256_gcm_BLOCK_LEN = 16,
+    //
+    //  Defines authentication tag length in bytes.
+    //
     vscf_aes256_gcm_AUTH_TAG_LEN = 16
 };
 
