@@ -29,6 +29,13 @@
     </method>
 
 
+    <method name="is zero">
+        Returns true if underlying byte array contains only zeros.
+
+        <return type="boolean"/>
+    </method>
+
+
     <constructor name="data">
         Creates data from the preallocated bytes.
 
