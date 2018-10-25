@@ -70,26 +70,27 @@
 //  Reset all internal states and prepare to new ASN.1 writing operations.
 //
 VSCF_PUBLIC void
-vscf_asn1_writer_reset(vscf_impl_t *impl, vsc_buffer_t *out) {
+vscf_asn1_writer_reset(vscf_impl_t *impl, byte *out, size_t out_len) {
 
     const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->reset_cb);
-    asn1_writer_api->reset_cb (impl, out);
+    asn1_writer_api->reset_cb (impl, out, out_len);
 }
 
 //
 //  Move written data to the buffer beginning and forbid further operations.
+//  Returns written size in bytes.
 //
-VSCF_PUBLIC void
-vscf_asn1_writer_seal(vscf_impl_t *impl) {
+VSCF_PUBLIC size_t
+vscf_asn1_writer_finish(vscf_impl_t *impl) {
 
     const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
-    VSCF_ASSERT_PTR (asn1_writer_api->seal_cb);
-    asn1_writer_api->seal_cb (impl);
+    VSCF_ASSERT_PTR (asn1_writer_api->finish_cb);
+    return asn1_writer_api->finish_cb (impl);
 }
 
 //

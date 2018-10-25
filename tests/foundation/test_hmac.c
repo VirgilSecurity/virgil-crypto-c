@@ -53,51 +53,54 @@
 void
 test__hmac_mac__sha256_vector_1__success(void) {
 
-    vscf_impl_t *hash = vscf_sha256_impl(vscf_sha256_new());
+    vscf_hmac_impl_t *hmac = vscf_hmac_new();
+    vscf_hmac_take_hash(hmac, vscf_sha256_impl(vscf_sha256_new()));
 
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha256_DIGEST_LEN);
 
-    vscf_hmac_mac(hash, test_hmac_SHA256_VECTOR_1_KEY, test_hmac_SHA256_VECTOR_1_DATA, digest);
+    vscf_hmac_mac(hmac, test_hmac_SHA256_VECTOR_1_KEY, test_hmac_SHA256_VECTOR_1_DATA, digest);
 
     TEST_ASSERT_EQUAL(test_hmac_SHA256_VECTOR_1_DIGEST.len, vsc_buffer_len(digest));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(
             test_hmac_SHA256_VECTOR_1_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
 
-    vscf_impl_destroy(&hash);
+    vscf_hmac_destroy(&hmac);
     vsc_buffer_destroy(&digest);
 }
 
 void
 test__hmac_mac__sha256_vector_2__success(void) {
 
-    vscf_impl_t *hash = vscf_sha256_impl(vscf_sha256_new());
+    vscf_hmac_impl_t *hmac = vscf_hmac_new();
+    vscf_hmac_take_hash(hmac, vscf_sha256_impl(vscf_sha256_new()));
 
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha256_DIGEST_LEN);
 
-    vscf_hmac_mac(hash, test_hmac_SHA256_VECTOR_2_KEY, test_hmac_SHA256_VECTOR_2_DATA, digest);
+    vscf_hmac_mac(hmac, test_hmac_SHA256_VECTOR_2_KEY, test_hmac_SHA256_VECTOR_2_DATA, digest);
 
     TEST_ASSERT_EQUAL(test_hmac_SHA256_VECTOR_2_DIGEST.len, vsc_buffer_len(digest));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(
             test_hmac_SHA256_VECTOR_2_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
 
-    vscf_impl_destroy(&hash);
+    vscf_hmac_destroy(&hmac);
     vsc_buffer_destroy(&digest);
 }
 
 void
 test__hmac_mac__sha256_vector_3__success(void) {
 
-    vscf_impl_t *hash = vscf_sha256_impl(vscf_sha256_new());
+    vscf_hmac_impl_t *hmac = vscf_hmac_new();
+    vscf_hmac_take_hash(hmac, vscf_sha256_impl(vscf_sha256_new()));
 
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha256_DIGEST_LEN);
 
-    vscf_hmac_mac(hash, test_hmac_SHA256_VECTOR_3_KEY, test_hmac_SHA256_VECTOR_3_DATA, digest);
+    vscf_hmac_mac(hmac, test_hmac_SHA256_VECTOR_3_KEY, test_hmac_SHA256_VECTOR_3_DATA, digest);
 
     TEST_ASSERT_EQUAL(test_hmac_SHA256_VECTOR_3_DIGEST.len, vsc_buffer_len(digest));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(
             test_hmac_SHA256_VECTOR_3_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
 
-    vscf_impl_destroy(&hash);
+    vscf_hmac_destroy(&hmac);
     vsc_buffer_destroy(&digest);
 }
 

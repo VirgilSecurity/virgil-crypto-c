@@ -258,7 +258,7 @@ Defines attributes that related to the instance type. Defines return type.
         is_reference = "0 | 1"
       [ project = "..." ]
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | string | error" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -304,7 +304,6 @@ integer: Signed integral type.
 unsigned: Unsigned integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
-data: Shortcut for the byte array.
 string: Shortcut for the char array.
 error: Type for error codes.
 
@@ -463,7 +462,7 @@ name, type, and usage information.
       [ project = "..." ]
       [ uid = "..." ]
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | string | error" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -518,7 +517,6 @@ integer: Signed integral type.
 unsigned: Unsigned integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
-data: Shortcut for the byte array.
 string: Shortcut for the char array.
 error: Type for error codes.
 
@@ -606,7 +604,7 @@ attributes for the component. Defines global variable.
         name = "..."
         is_reference = "0 | 1"
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | string | error" ]
       [ project = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -662,7 +660,6 @@ integer: Signed integral type.
 unsigned: Unsigned integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
-data: Shortcut for the byte array.
 string: Shortcut for the char array.
 error: Type for error codes.
 
@@ -799,7 +796,7 @@ variable value.
         is_reference = "0 | 1"
         value = "..."
       [ library = "..." ]
-      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | string | error" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -847,7 +844,6 @@ integer: Signed integral type.
 unsigned: Unsigned integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
-data: Shortcut for the byte array.
 string: Shortcut for the char array.
 error: Type for error codes.
 
@@ -935,7 +931,7 @@ type to the type defined in this entity.
         is_reference = "0 | 1"
       [ project = "..." ]
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | string | error" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -981,7 +977,6 @@ integer: Signed integral type.
 unsigned: Unsigned integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
-data: Shortcut for the byte array.
 string: Shortcut for the char array.
 error: Type for error codes.
 

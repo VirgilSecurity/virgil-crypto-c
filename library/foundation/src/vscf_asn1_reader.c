@@ -291,40 +291,40 @@ vscf_asn1_reader_read_null(vscf_impl_t *impl) {
 //
 //  Read ASN.1 type: OCTET STRING.
 //
-VSCF_PUBLIC void
-vscf_asn1_reader_read_octet_str(vscf_impl_t *impl, vsc_buffer_t *value) {
+VSCF_PUBLIC vsc_data_t
+vscf_asn1_reader_read_octet_str(vscf_impl_t *impl) {
 
     const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_octet_str_cb);
-    asn1_reader_api->read_octet_str_cb (impl, value);
+    return asn1_reader_api->read_octet_str_cb (impl);
 }
 
 //
 //  Read ASN.1 type: UTF8String.
 //
-VSCF_PUBLIC void
-vscf_asn1_reader_read_utf8_str(vscf_impl_t *impl, vsc_buffer_t *value) {
+VSCF_PUBLIC vsc_data_t
+vscf_asn1_reader_read_utf8_str(vscf_impl_t *impl) {
 
     const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_utf8_str_cb);
-    asn1_reader_api->read_utf8_str_cb (impl, value);
+    return asn1_reader_api->read_utf8_str_cb (impl);
 }
 
 //
 //  Read ASN.1 type: OID.
 //
-VSCF_PUBLIC void
-vscf_asn1_reader_read_oid(vscf_impl_t *impl, vsc_buffer_t *value) {
+VSCF_PUBLIC vsc_data_t
+vscf_asn1_reader_read_oid(vscf_impl_t *impl) {
 
     const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_oid_cb);
-    asn1_reader_api->read_oid_cb (impl, value);
+    return asn1_reader_api->read_oid_cb (impl);
 }
 
 //

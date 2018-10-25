@@ -87,7 +87,13 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
+    //
+    //  Length of the digest (hashing output) in bytes.
+    //
     vscf_sha224_DIGEST_LEN = 28,
+    //
+    //  Block length of the digest function in bytes.
+    //
     vscf_sha224_BLOCK_LEN = 64
 };
 

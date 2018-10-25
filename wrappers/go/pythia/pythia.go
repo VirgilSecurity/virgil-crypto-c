@@ -52,7 +52,7 @@ type Pythia struct {
 
 // Initialize pythia C module
 func init() {
-    C.vscp_init()
+    C.vscp_global_init()
 }
 
 // New allocates underlying C context

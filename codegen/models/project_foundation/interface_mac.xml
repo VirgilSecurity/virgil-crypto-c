@@ -3,11 +3,13 @@
 
     <inherit interface="mac info"/>
 
-    <method name="mac" is_static="1">
+    <method name="mac">
         Calculate MAC over given data.
 
         <argument name="key" class="data"/>
         <argument name="data" class="data"/>
-        <argument name="mac" class="buffer"/>
+        <argument name="mac" class="buffer">
+            <length method="digest len"/>
+        </argument>
     </method>
 </interface>

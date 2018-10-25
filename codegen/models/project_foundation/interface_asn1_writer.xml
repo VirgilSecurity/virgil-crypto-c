@@ -7,12 +7,20 @@
     <method name="reset">
         Reset all internal states and prepare to new ASN.1 writing operations.
 
-        <argument name="out" class="buffer"/>
+        <argument name="out" type="byte" access="readwrite">
+            <array length="given" access="readwrite"/>
+            <length argument="out len"/>
+        </argument>
+
+        <argument name="out len" type="size"/>
     </method>
 
 
-    <method name="seal">
+    <method name="finish">
         Move written data to the buffer beginning and forbid further operations.
+        Returns written size in bytes.
+
+        <return type="size"/>
     </method>
 
 
@@ -29,9 +37,7 @@
 
         <argument name="len" type="size"/>
 
-        <return type="data" access="readwrite">
-            <array access="disown"/>
-        </return>
+        <return type="byte" access="readwrite" is_reference="1"/>
     </method>
 
 

@@ -68,12 +68,13 @@
 //  Calculate MAC over given data.
 //
 VSCF_PUBLIC void
-vscf_mac(const vscf_mac_api_t *mac_api, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac) {
+vscf_mac(vscf_impl_t *impl, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac) {
 
+    const vscf_mac_api_t *mac_api = vscf_mac_api (impl);
     VSCF_ASSERT_PTR (mac_api);
 
     VSCF_ASSERT_PTR (mac_api->mac_cb);
-    mac_api->mac_cb (key, data, mac);
+    mac_api->mac_cb (impl, key, data, mac);
 }
 
 //

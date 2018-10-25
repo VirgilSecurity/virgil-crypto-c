@@ -74,6 +74,7 @@
 static VSCP_LOCAL_THREAD_STORAGE mbedtls_entropy_context g_entropy_ctx;
 static VSCP_LOCAL_THREAD_STORAGE mbedtls_ctr_drbg_context g_rng_ctx;
 static VSCP_LOCAL_THREAD_STORAGE size_t g_instances = 0;
+static bool g_globally_inited = false;
 
 #undef VSCP_LOCAL_THREAD_STORAGE
 
@@ -242,6 +243,7 @@ static void
 vscp_pythia_init_ctx(vscp_pythia_t *pythia_ctx) {
 
     VSCP_ASSERT_PTR(pythia_ctx);
+    VSCP_ASSERT(g_globally_inited && "Call vscp_global_init() before use any class function.");
 
     if (g_instances++ > 0) {
         return;
@@ -278,8 +280,13 @@ vscp_pythia_cleanup_ctx(vscp_pythia_t *pythia_ctx) {
 //  Must be called once for entire application at startup.
 //
 VSCP_PUBLIC void
-vscp_init(void) {
+vscp_global_init(void) {
 
+    if (g_globally_inited) {
+        return;
+    }
+
+    g_globally_inited = true;
     pythia_init_args_t init_args;
     init_args.callback = vscp_pythia_random_handler;
     init_args.args = NULL;
@@ -292,8 +299,13 @@ vscp_init(void) {
 //  Must be called once for entire application before exit.
 //
 VSCP_PUBLIC void
-vscp_cleanup(void) {
+vscp_global_cleanup(void) {
 
+    if (!g_globally_inited) {
+        return;
+    }
+
+    g_globally_inited = false;
     pythia_deinit();
 }
 
