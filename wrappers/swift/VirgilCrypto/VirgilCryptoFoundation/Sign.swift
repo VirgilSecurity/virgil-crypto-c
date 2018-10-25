@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// Provide interface for signing data with private key.
-@objc(VSCFSign) public protocol Sign : CProtocol {
+@objc(VSCFSign) public protocol Sign : CContext {
 
     @objc func sign(data: Data) throws -> Data
 

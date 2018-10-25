@@ -35,7 +35,7 @@
 
 import Foundation
 
-@objc(VSCFCProtocol) public protocol CProtocol {
+@objc(VSCFCContext) public protocol CContext {
     /// Handle underlying C context.
     @objc var c_ctx: OpaquePointer { get }
 }

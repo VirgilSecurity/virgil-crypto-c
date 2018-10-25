@@ -39,7 +39,7 @@ import VSCFoundation
 /// Provides interface to the ASN.1 reader.
 /// Note, that all "read" methods move reading position forward.
 /// Note, that all "get" do not change reading position.
-@objc(VSCFAsn1Reader) public protocol Asn1Reader : CProtocol {
+@objc(VSCFAsn1Reader) public protocol Asn1Reader : CContext {
 
     @objc func reset(data: Data)
 

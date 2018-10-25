@@ -37,7 +37,7 @@ import Foundation
 import VSCPythia
 
 /// Provide Pythia implementation based on the Virgil Security.
-@objc(VSCPPythia) public class Pythia: NSObject {
+@objc(VSCPPythia) public class Pythia: NSObject, CContext {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer

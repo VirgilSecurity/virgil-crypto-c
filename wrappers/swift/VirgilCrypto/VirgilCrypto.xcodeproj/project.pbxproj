@@ -84,7 +84,8 @@
 		F45B0943217F32B60083A758 /* FakeRandom.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45B0942217F32B60083A758 /* FakeRandom.swift */; };
 		F45B0947217F337A0083A758 /* RsaPublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45B0946217F337A0083A758 /* RsaPublicKey.swift */; };
 		F45B0949217F33940083A758 /* RsaPrivateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45B0948217F33940083A758 /* RsaPrivateKey.swift */; };
-		F45B094B218053DD0083A758 /* CProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45B094A218053DD0083A758 /* CProtocol.swift */; };
+		F45B094D2181A01B0083A758 /* CContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45B094C2181A01A0083A758 /* CContext.swift */; };
+		F45B094F2181A02D0083A758 /* CContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45B094E2181A02D0083A758 /* CContext.swift */; };
 		F476E032216F43B600990B46 /* VirgilCryptoCommonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F476E031216F43B600990B46 /* VirgilCryptoCommonTests.swift */; };
 		F476E034216F43B600990B46 /* VirgilCryptoCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = F476E026216F43B500990B46 /* VirgilCryptoCommon.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F48E70A121773DCA00405E0B /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = F48E70A021773DCA00405E0B /* Error.swift */; };
@@ -227,7 +228,8 @@
 		F45B0942217F32B60083A758 /* FakeRandom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakeRandom.swift; sourceTree = "<group>"; };
 		F45B0946217F337A0083A758 /* RsaPublicKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RsaPublicKey.swift; sourceTree = "<group>"; };
 		F45B0948217F33940083A758 /* RsaPrivateKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RsaPrivateKey.swift; sourceTree = "<group>"; };
-		F45B094A218053DD0083A758 /* CProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CProtocol.swift; sourceTree = "<group>"; };
+		F45B094C2181A01A0083A758 /* CContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CContext.swift; sourceTree = "<group>"; };
+		F45B094E2181A02D0083A758 /* CContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CContext.swift; sourceTree = "<group>"; };
 		F476E026216F43B500990B46 /* VirgilCryptoCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VirgilCryptoCommon.h; sourceTree = "<group>"; };
 		F476E027216F43B500990B46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F476E031216F43B600990B46 /* VirgilCryptoCommonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirgilCryptoCommonTests.swift; sourceTree = "<group>"; };
@@ -293,7 +295,7 @@
 		F429BF012173AB42001F0D8E /* VirgilCryptoFoundation */ = {
 			isa = PBXGroup;
 			children = (
-				F45B094A218053DD0083A758 /* CProtocol.swift */,
+				F45B094C2181A01A0083A758 /* CContext.swift */,
 				F45B0948217F33940083A758 /* RsaPrivateKey.swift */,
 				F45B0946217F337A0083A758 /* RsaPublicKey.swift */,
 				F45B0942217F32B60083A758 /* FakeRandom.swift */,
@@ -378,6 +380,7 @@
 		F438C6592173AEBD00D0933B /* VirgilCryptoPythia */ = {
 			isa = PBXGroup;
 			children = (
+				F45B094E2181A02D0083A758 /* CContext.swift */,
 				F48E70A021773DCA00405E0B /* Error.swift */,
 				F4229D03217489DB0012F243 /* Pythia.swift */,
 				F438C65A2173AEBD00D0933B /* VirgilCryptoPythia.h */,
@@ -740,6 +743,7 @@
 				F431D861217DE57B00A9389F /* MacInfo.swift in Sources */,
 				F431D84D217DE57B00A9389F /* ExportPrivateKey.swift in Sources */,
 				F45B0935217F1F6A0083A758 /* Asn1rd.swift in Sources */,
+				F45B094D2181A01B0083A758 /* CContext.swift in Sources */,
 				F431D847217DE57B00A9389F /* Key.swift in Sources */,
 				F431D848217DE57B00A9389F /* Kdf.swift in Sources */,
 				F431D857217DE57B00A9389F /* Verify.swift in Sources */,
@@ -773,7 +777,6 @@
 				F4470656217EF6780041D62D /* Sha384.swift in Sources */,
 				F431D86C217DE57B00A9389F /* ExportPublicKey.swift in Sources */,
 				F431D844217DE57B00A9389F /* Asn1Reader.swift in Sources */,
-				F45B094B218053DD0083A758 /* CProtocol.swift in Sources */,
 				F431D864217DE57B00A9389F /* Asn1Writer.swift in Sources */,
 				F45B093D217F28D50083A758 /* Aes256Gcm.swift in Sources */,
 				F45B093B217F28B20083A758 /* Kdf2.swift in Sources */,
@@ -797,6 +800,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F45B094F2181A02D0083A758 /* CContext.swift in Sources */,
 				F48E70A121773DCA00405E0B /* Error.swift in Sources */,
 				F4229D04217489DB0012F243 /* Pythia.swift in Sources */,
 			);

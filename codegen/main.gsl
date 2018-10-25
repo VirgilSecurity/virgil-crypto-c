@@ -259,6 +259,7 @@ function process_project (project, features_list, projects_api, echo_level)
             my.wrappers_destination = XML.new(make_id(my.wrapper.lang, "wrapper", project.name))
 
             wrapper_resolve (my.project, my.wrapper)
+            wrapper_create_c_context_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
             wrapper_foreach_enum_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
             wrapper_foreach_class_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
             wrapper_foreach_interface_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)

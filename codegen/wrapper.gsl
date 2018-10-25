@@ -67,6 +67,23 @@ function wrapper_resolve (project, wrapper)
 endfunction
 
 
+function wrapper_create_c_context_module (source, destination, wrapper, meta)
+    check_arguments (my, "source, destination, wrapper, meta", my)
+
+    if !count (my.source.class, scope = "public" & !string_in (name, "data, buffer")) & \
+            !count (my.source.interface, scope = "public")
+        return
+    endif
+
+    my.proxy_func = make_id(my.wrapper.lang, "create_c_context_module")
+    if ! macro (my.proxy_func)
+        echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
+    endif
+
+    $(my.proxy_func:) (my.destination, my.wrapper, my.meta)
+endfunction
+
+
 function wrapper_foreach_interface_create_module (source, destination, wrapper, meta)
     check_arguments (my, "source, destination, wrapper, meta", my)
 

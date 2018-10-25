@@ -924,13 +924,26 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-#   Create entity <swift_inherit/> from the entity <inherit/>.
+#   Create entity <swift_inherit/> from NSObject.
 # ---------------------------------------------------------------------------
 function swift_create_inherit_nsobject (destination)
     check_arguments (my, "destination", my)
 
     new swift_inherit to my.destination
         .type = "NSObject"
+
+        return swift_inherit
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <swift_inherit/> from protocol that defines C context.
+# ---------------------------------------------------------------------------
+function swift_create_inherit_c_context (destination)
+    check_arguments (my, "destination", my)
+
+    new swift_inherit to my.destination
+        .type = "CContext"
 
         return swift_inherit
     endnew
@@ -1608,18 +1621,15 @@ endfunction
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
-#   Create module with base Swift protocol.
+#   Create module with base protocol that handles C context.
 # ---------------------------------------------------------------------------
-function swift_create_base_interface_module (name, destination, wrapper, meta)
-    check_arguments (my, "name, destination, wrapper, meta", my)
+function swift_create_c_context_module (destination, wrapper, meta)
+    check_arguments (my, "destination, wrapper, meta", my)
 
-    if count (my.destination.swift_protocol, name = my.name)
-        #   This function is called multiple times, and we need only one definition.
-        return
-    endif
+    my.name = "CContext"
 
     new swift_module to my.destination
-        . = "/// This is base protocol for all protocols that are wrap C interfaces."
+        . = "/// This is base protocol for all types that wrap C interfaces."
         .name = my.name
         .source_file_name = 0.name + ".swift"
         .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
@@ -1642,7 +1652,6 @@ function swift_create_base_interface_module (name, destination, wrapper, meta)
     endnew
 endfunction
 
-
 # ---------------------------------------------------------------------------
 #   Create module with Swift protocol from the abstract 'interface' notion.
 # ---------------------------------------------------------------------------
@@ -1650,10 +1659,6 @@ function swift_create_interface_module (interface, destination, wrapper, meta)
     check_arguments (my, "interface, destination, wrapper, meta", my)
 
     echo_info ("Create <swift_module/> from interface: '$(my.interface.name:)'", my)
-
-    my.base_interface_name = "CProtocol"
-
-    swift_create_base_interface_module (my.base_interface_name, my.destination, my.wrapper, my.meta)
 
     new swift_module to my.destination
         .name = swift_derive_module_name (my.interface)
@@ -1682,9 +1687,7 @@ function swift_create_interface_module (interface, destination, wrapper, meta)
             for my.interface.inherit
                 swift_create_inherit (inherit, swift_protocol, my.wrapper, my.meta)
             else
-                new swift_inherit
-                    .type = my.base_interface_name
-                endnew
+                swift_create_inherit_c_context (swift_protocol)
             endfor
 
             for my.interface.constant
@@ -1821,6 +1824,7 @@ function swift_create_class_module (class, destination, wrapper, meta)
             swift_map_attr_visibility (swift_class, my.class)
 
             swift_create_inherit_nsobject (swift_class)
+            swift_create_inherit_c_context (swift_class)
 
             if my.class.context <> "none"
                 swift_create_class_property_context (swift_class)

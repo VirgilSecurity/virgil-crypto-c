@@ -40,7 +40,7 @@ import VSCFoundation
 /// Binary format must be defined in the key specification.
 /// For instance, RSA public key must be imported from the format defined in
 /// RFC 3447 Appendix A.1.1.
-@objc(VSCFImportPublicKey) public protocol ImportPublicKey : CProtocol {
+@objc(VSCFImportPublicKey) public protocol ImportPublicKey : CContext {
 
     @objc func importPublicKey(data: Data) throws
 }

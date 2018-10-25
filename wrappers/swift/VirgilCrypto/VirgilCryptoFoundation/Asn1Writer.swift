@@ -39,7 +39,7 @@ import VSCFoundation
 /// Provides interface to the ASN.1 writer.
 /// Note, elements are written starting from the buffer ending.
 /// Note, that all "write" methods move writing position backward.
-@objc(VSCFAsn1Writer) public protocol Asn1Writer : CProtocol {
+@objc(VSCFAsn1Writer) public protocol Asn1Writer : CContext {
 
     @objc func reset(out: UnsafeMutablePointer<UInt8>, outLen: Int)
 
