@@ -101,7 +101,16 @@ function class_derive_c_method_ref (class, method)
         my.of_class = my.method.of_class ? my.class.of_class ? my.class.name
         return make_ref_c (make_id ("class", my.of_class, "method", my.method.name))
     endif
+endfunction
 
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C class retain method.
+# ---------------------------------------------------------------------------
+function class_derive_class_c_method_copy (class)
+    check_arguments (my, "class", my)
+
+    my.of_class = my.class.of_class ? my.class.name
+    return make_ref_c (make_id ("class", my.of_class, "method", "copy"))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -630,7 +639,11 @@ function swift_wrap_c_returned_value (swift_return)
         return "$(my.type:)Proxy.init(c_ctx: $(my.name:)!)"
 
     elsif is_true (0.is_class) & is_false (0.is_buffer)
-        return "$(my.type:).init(c_ctx: $(my.name:)!)"
+        if string_in (swift_return.access, "readonly, readwrite")
+            return "$(my.type:).init(use: $(my.name:)!)"
+        else
+            return "$(my.type:).init(take: $(my.name:)!)"
+        endif
 
     elsif is_true (0.is_enum)
         return "$(my.type:).init(fromC: $(my.name:)!)"
@@ -1551,7 +1564,7 @@ function swift_create_class_default_constructor (swift_class, class, wrapper, me
     check_arguments (my, "swift_class, class, wrapper, meta", my)
 
     new swift_constructor to my.swift_class
-        . = "/// Initialize underlying C context."
+        . = "/// Create underlying C context."
         .override = "1"
         .visibility = "public"
 
@@ -1562,13 +1575,55 @@ function swift_create_class_default_constructor (swift_class, class, wrapper, me
             "
         endnew
     endnew
+
+    new swift_constructor to my.swift_class
+        . = "
+            /// Acquire C context.
+            /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+        "
+        .visibility = "public"
+
+        new swift_argument to swift_constructor
+            .name = "c_ctx"
+            .ext_name = "take"
+            .type = "OpaquePointer"
+        endnew
+
+        new swift_code to swift_constructor
+            . = "\
+                self.c_ctx = c_ctx
+                super.init()
+            "
+        endnew
+    endnew
+
+    new swift_constructor to my.swift_class
+        . = "\
+            /// Acquire retained C context.
+            /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+        "
+        .visibility = "public"
+
+        new swift_argument to swift_constructor
+            .name = "c_ctx"
+            .ext_name = "use"
+            .type = "OpaquePointer"
+        endnew
+
+        new swift_code to swift_constructor
+            . = "\
+                self.c_ctx = $(class_derive_class_c_method_copy (my.class))(c_ctx)
+                super.init()
+            "
+        endnew
+    endnew
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Create <swift_constructor/> from abstract entity <constructor/>.
 # ---------------------------------------------------------------------------
-function swift_create_class_constructor (swift_class, constructor, wrapper, meta)
-    check_arguments (my, "swift_class, class, wrapper, meta", my)
+function swift_create_class_constructor (constructor, destination, wrapper, meta)
+    check_arguments (my, "constructor, destination, wrapper, meta", my)
 
 endfunction
 
@@ -1767,7 +1822,7 @@ function swift_create_implementation_module (implementation, destination, wrappe
 
                 if my.implementation.lifecycle <> "none"
                     for my.implementation.constructor
-                        swift_create_class_constructor (swift_class, constructor, my.wrapper, my.meta)
+                        swift_create_class_constructor (constructor, swift_class, my.wrapper, my.meta)
                     endfor
                 endif
             endif
@@ -1834,7 +1889,7 @@ function swift_create_class_module (class, destination, wrapper, meta)
 
                 if my.class.lifecycle <> "none"
                     for my.class.constructor
-                        swift_create_class_constructor (swift_class, constructor, my.wrapper, my.meta)
+                        swift_create_class_constructor (constructor, swift_class, my.wrapper, my.meta)
                     endfor
                 endif
             endif

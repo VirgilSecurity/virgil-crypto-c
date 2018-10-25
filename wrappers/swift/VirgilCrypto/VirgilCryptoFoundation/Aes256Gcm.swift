@@ -59,9 +59,23 @@ import VSCFoundation
     /// Defines authentication tag length in bytes.
     @objc public let authTagLen: Int = 16
 
-    /// Initialize underlying C context.
+    /// Create underlying C context.
     public override init() {
         self.c_ctx = vscf_aes256_gcm_new()
+        super.init()
+    }
+
+    /// Acquire C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    public init(take c_ctx: OpaquePointer) {
+        self.c_ctx = c_ctx
+        super.init()
+    }
+
+    /// Acquire retained C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    public init(use c_ctx: OpaquePointer) {
+        self.c_ctx = vscf_aes256_gcm_copy(c_ctx)
         super.init()
     }
 

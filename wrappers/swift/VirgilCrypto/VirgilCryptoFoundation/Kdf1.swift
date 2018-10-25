@@ -42,9 +42,23 @@ import VSCFoundation
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
-    /// Initialize underlying C context.
+    /// Create underlying C context.
     public override init() {
         self.c_ctx = vscf_kdf1_new()
+        super.init()
+    }
+
+    /// Acquire C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    public init(take c_ctx: OpaquePointer) {
+        self.c_ctx = c_ctx
+        super.init()
+    }
+
+    /// Acquire retained C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    public init(use c_ctx: OpaquePointer) {
+        self.c_ctx = vscf_kdf1_copy(c_ctx)
         super.init()
     }
 

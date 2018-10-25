@@ -76,7 +76,7 @@
 
     <method name="initiate">
         <argument name="shared secret" class="data"/>
-        <argument name="ratchet private key" class="buffer"/>
+        <argument name="ratchet private key" class="buffer" access="retain">
 
         <return enum="error"/>
     </method>
@@ -89,7 +89,11 @@
 
     <method name="encrypt">
         <argument name="plain text" class="data"/>
-        <argument name="cipher text" class="buffer"/>
+        <argument name="cipher text" class="buffer">
+            <length method="encrypt len">
+                <proxy argument="plain text" to="plain text len" cast="data_length"/>
+            </length>
+        </argument>
 
         <return enum="error"/>
     </method>
@@ -102,7 +106,11 @@
 
     <method name="decrypt">
         <argument name="cipher text" class="data"/>
-        <argument name="plain text" class="buffer"/>
+        <argument name="plain text" class="buffer">
+            <length method="decrypt len">
+                <proxy argument="plain text" to="cipher text len" cast="data_length"/>
+            </length>
+        </argument>
 
         <return enum="error"/>
     </method>
