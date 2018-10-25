@@ -107,6 +107,12 @@ VSC_PUBLIC vsc_buffer_t *
 vsc_buffer_new_with_capacity(size_t capacity);
 
 //
+//  Create buffer with copied bytes from given data.
+//
+VSC_PUBLIC vsc_buffer_t *
+vsc_buffer_new_with_data(vsc_data_t data);
+
+//
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
