@@ -441,13 +441,15 @@ vscr_ratchet_advance_chain_key(vscr_ratchet_chain_key_t *chain_key) {
 
     vsc_buffer_t *buffer = vsc_buffer_new();
     vsc_buffer_use(buffer, chain_key->key, sizeof(chain_key->key));
-    vscf_impl_t *sha256 = vscf_sha256_impl(vscf_sha256_new());
-    vscf_hmac_mac(sha256, vsc_data(chain_key->key, sizeof(chain_key->key)),
+
+    vscf_hmac_impl_t *hmac = vscf_hmac_new();
+    vscf_hmac_take_hash(hmac, vscf_sha256_impl(vscf_sha256_new()));
+    vscf_hmac_mac(hmac, vsc_data(chain_key->key, sizeof(chain_key->key)),
             vsc_data(ratchet_chain_key_seed, sizeof(ratchet_chain_key_seed)), buffer);
-    vscf_impl_destroy(&sha256);
 
     chain_key->index += 1;
 
+    vscf_hmac_destroy(&hmac);
     vsc_buffer_destroy(&buffer);
 }
 
@@ -460,13 +462,14 @@ vscr_ratchet_create_message_key(const vscr_ratchet_chain_key_t *chain_key) {
 
     vsc_buffer_t *buffer = vsc_buffer_new();
     vsc_buffer_use(buffer, message_key->key, sizeof(message_key->key));
-    vscf_impl_t *sha256 = vscf_sha256_impl(vscf_sha256_new());
-    vscf_hmac_mac(sha256, vsc_data(chain_key->key, sizeof(chain_key->key)),
+    vscf_hmac_impl_t *hmac = vscf_hmac_new();
+    vscf_hmac_take_hash(hmac, vscf_sha256_impl(vscf_sha256_new()));
+    vscf_hmac_mac(hmac, vsc_data(chain_key->key, sizeof(chain_key->key)),
             vsc_data(ratchet_message_key_seed, sizeof(ratchet_message_key_seed)), buffer);
-    vscf_impl_destroy(&sha256);
 
     message_key->index = chain_key->index;
 
+    vscf_hmac_destroy(&hmac);
     vsc_buffer_destroy(&buffer);
 
     return message_key;
@@ -510,8 +513,8 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *ratchet_ctx, const vscr_
 }
 
 static vscr_error_t
-vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *ratchet_ctx, const vscr_ratchet_regular_message_t *message,
-        vsc_buffer_t *buffer) {
+vscr_ratchet_decrypt_for_new_chain(
+        vscr_ratchet_t *ratchet_ctx, const vscr_ratchet_regular_message_t *message, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(ratchet_ctx);
     VSCR_ASSERT_PTR(message);
@@ -842,8 +845,8 @@ vscr_ratchet_find_skipped_message_key(vscr_ratchet_t *ratchet_ctx, const vscr_ra
 }
 
 static void
-vscr_ratchet_erase_skipped_message_key(vscr_ratchet_t *ratchet_ctx,
-        vscr_ratchet_skipped_message_key_t *skipped_message_key) {
+vscr_ratchet_erase_skipped_message_key(
+        vscr_ratchet_t *ratchet_ctx, vscr_ratchet_skipped_message_key_t *skipped_message_key) {
 
     VSCR_ASSERT_PTR(ratchet_ctx);
     VSCR_ASSERT_PTR(skipped_message_key);
@@ -902,8 +905,8 @@ vscr_ratchet_add_receiver_chain(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_receiv
 }
 
 static void
-vscr_ratchet_add_skipped_message_key(vscr_ratchet_t *ratchet_ctx,
-        vscr_ratchet_skipped_message_key_t *skipped_message_key) {
+vscr_ratchet_add_skipped_message_key(
+        vscr_ratchet_t *ratchet_ctx, vscr_ratchet_skipped_message_key_t *skipped_message_key) {
 
     VSCR_ASSERT_PTR(ratchet_ctx);
     VSCR_ASSERT_PTR(skipped_message_key);

@@ -472,8 +472,8 @@ vscr_ratchet_session_encrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, si
 }
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_encrypt(vscr_ratchet_session_t *ratchet_session_ctx, vsc_data_t plain_text,
-        vsc_buffer_t *cipher_text) {
+vscr_ratchet_session_encrypt(
+        vscr_ratchet_session_t *ratchet_session_ctx, vsc_data_t plain_text, vsc_buffer_t *cipher_text) {
 
     VSCR_ASSERT_PTR(ratchet_session_ctx);
 
@@ -514,8 +514,7 @@ vscr_ratchet_session_encrypt(vscr_ratchet_session_t *ratchet_session_ctx, vsc_da
             vscr_ratchet_prekey_message_t *prekey_message = vscr_ratchet_prekey_message_new_with_members(
                     vscr_ratchet_common_RATCHET_PROTOCOL_VERSION, ratchet_session_ctx->sender_identity_public_key,
                     ratchet_session_ctx->sender_ephemeral_public_key, ratchet_session_ctx->receiver_longterm_public_key,
-                    ratchet_session_ctx->receiver_onetime_public_key,
-                    cipher_buffer);
+                    ratchet_session_ctx->receiver_onetime_public_key, cipher_buffer);
 
             vsc_buffer_t *prekey_buffer = vsc_buffer_new_with_capacity(
                     vscr_ratchet_prekey_message_serialize_len(vsc_buffer_len(cipher_buffer)));
@@ -551,8 +550,8 @@ vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, co
 }
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session_ctx, const vscr_ratchet_message_t *message,
-        vsc_buffer_t *plain_text) {
+vscr_ratchet_session_decrypt(
+        vscr_ratchet_session_t *ratchet_session_ctx, const vscr_ratchet_message_t *message, vsc_buffer_t *plain_text) {
 
     if (vsc_buffer_left(plain_text) < vscr_ratchet_session_decrypt_len(ratchet_session_ctx, message)) {
 
