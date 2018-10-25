@@ -34,6 +34,11 @@
         <argument name="capacity" type="size"/>
     </constructor>
 
+    <constructor name="with data">
+        Create buffer with copied bytes from given data.
+
+        <argument name="data" class="data"/>
+    </constructor>
 
     <method name="alloc">
         Allocates inner buffer with a given capacity.
