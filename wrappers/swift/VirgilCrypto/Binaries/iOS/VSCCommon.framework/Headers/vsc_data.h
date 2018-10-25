@@ -104,6 +104,12 @@ VSC_PUBLIC bool
 vsc_data_is_valid(vsc_data_t data_ctx);
 
 //
+//  Returns true if underlying byte array contains only zeros.
+//
+VSC_PUBLIC bool
+vsc_data_is_zero(vsc_data_t data_ctx);
+
+//
 //  Return underlying data slice starting from beginning.
 //
 VSC_PUBLIC vsc_data_t

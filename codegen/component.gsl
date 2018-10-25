@@ -678,6 +678,14 @@ function component_resolve_instance_attr_class (instance, parent)
         elsif item_in (my.instance, "return")
             my.instance.access ?= "disown"
         endif
+
+    else
+        if item_in (my.instance, "property, variable, argument")
+            my.instance.access ?= "readwrite"
+
+        elsif item_in (my.instance, "return")
+            my.instance.access ?= "disown"
+        endif
     endif
 endfunction
 
@@ -758,9 +766,9 @@ function component_resolve_instance_attr_access (instance, parent)
 
     my.instance.access ?= "readonly"
 
-    my.valid_access_argument = "readonly, writeonly, readwrite, disown"
-    my.valid_access_variable = "readonly, readwrite"
-    my.valid_access_return = "readonly, readwrite, disown"
+    my.valid_access_argument = "readonly, writeonly, readwrite, disown, retain"
+    my.valid_access_variable = "readonly, readwrite, retain"
+    my.valid_access_return = "readonly, readwrite, disown, retain"
     my.instance_dump = component_instance_dump (my.instance)
 
     if item_in (my.instance, "argument") & \

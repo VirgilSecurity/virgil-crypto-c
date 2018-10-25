@@ -48,9 +48,23 @@ import VSCFoundation
     /// Block length of the digest function in bytes.
     @objc public let blockLen: Int = 64
 
-    /// Initialize underlying C context.
+    /// Create underlying C context.
     public override init() {
         self.c_ctx = vscf_sha224_new()
+        super.init()
+    }
+
+    /// Acquire C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    public init(take c_ctx: OpaquePointer) {
+        self.c_ctx = c_ctx
+        super.init()
+    }
+
+    /// Acquire retained C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    public init(use c_ctx: OpaquePointer) {
+        self.c_ctx = vscf_sha224_copy(c_ctx)
         super.init()
     }
 

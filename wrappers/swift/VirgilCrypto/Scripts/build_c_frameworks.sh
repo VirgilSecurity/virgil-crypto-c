@@ -112,10 +112,6 @@ function make_fat_framework {
 
 command -v cmake >/dev/null 2>&1 || show_error "Required utility CMake is not found."
 
-PLATFORM_NAME="iphoneos"
-PROJECT_DIR=$(abspath ".")
-BUILD_DIR=$(abspath "${PROJECT_DIR}/../Build")
-
 ROOT_DIR=$(abspath "${PROJECT_DIR}/../../..")
 SRC_DIR="${ROOT_DIR}"
 INSTALL_DIR="${BUILD_DIR}/VSCFrameworks/install"

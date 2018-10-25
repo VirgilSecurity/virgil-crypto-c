@@ -74,4 +74,6 @@
     <class name="ratchet message"/>
     <class name="ratchet"/>
     <class name="ratchet session"/>
+
+    <wrapper lang="swift"/>
 </project>
