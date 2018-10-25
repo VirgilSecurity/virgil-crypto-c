@@ -332,7 +332,9 @@ function run_main ()
         endfor
     endfor
 
-    item_save_to_file (global.interfaces, "interfaces.xml")
+    if main.echo_level = "debug"
+        item_save_to_file (global.interfaces, "interfaces.xml", main.work_path)
+    endif
 
     #   Process code generation.
     for main.project where is_false (project.skip_codegen)
