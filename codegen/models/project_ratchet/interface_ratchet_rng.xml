@@ -4,6 +4,8 @@
 
         Interface for ratchet rng
         <argument name="size" type="size"/>
-        <argument name="random" class="buffer"/>
+        <argument name="random" class="buffer">
+            <length argument="size"/>
+        </argument>
     </method>
 </interface>

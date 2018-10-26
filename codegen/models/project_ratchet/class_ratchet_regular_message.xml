@@ -17,8 +17,8 @@
     <constructor name="with members">
         <argument name="version" type="size" size="1"/>
         <argument name="counter" type="size" size="4"/>
-        <argument name="public key" class="buffer"/>
-        <argument name="cipher text" class="buffer"/>
+        <argument name="public key" class="buffer" access="retain"/>
+        <argument name="cipher text" class="buffer" access="retain"/>
     </constructor>
 
     <method name="serialize len" is_static="1">
@@ -27,8 +27,14 @@
         <return type="size"/>
     </method>
 
+    <method name="serialize len ext">
+        <return type="size"/>
+    </method>
+
     <method name="serialize">
-        <argument name="output" class="buffer"/>
+        <argument name="output" class="buffer">
+            <length method="serialize len ext"/>
+        </argument>
 
         <return enum="error"/>
     </method>

@@ -15,21 +15,21 @@
     <property name="receiver onetime public key" class="buffer" access="readwrite"/>
 
     <method name="initiate">
-        <argument name="sender identity private key" class="buffer"/>
-        <argument name="receiver identity public key" class="buffer"/>
-        <argument name="receiver long term public key" class="buffer"/>
-        <argument name="receiver one time public key" class="buffer"/>
+        <argument name="sender identity private key" class="buffer" access="readwrite"/>
+        <argument name="receiver identity public key" class="buffer" access="readwrite"/>
+        <argument name="receiver long term public key" class="buffer" access="retain"/>
+        <argument name="receiver one time public key" class="buffer" access="retain"/>
 
         <return enum="error"/>
     </method>
 
     <method name="respond">
-        <argument name="sender identity public key" class="buffer"/>
-        <argument name="sender ephemeral public key" class="buffer"/>
-        <argument name="ratchet public key" class="buffer"/>
-        <argument name="receiver identity private key" class="buffer"/>
-        <argument name="receiver long term private key" class="buffer"/>
-        <argument name="receiver one time private key" class="buffer"/>
+        <argument name="sender identity public key" class="buffer" access="retain"/>
+        <argument name="sender ephemeral public key" class="buffer" access="retain"/>
+        <argument name="ratchet public key" class="buffer" access="retain"/>
+        <argument name="receiver identity private key" class="buffer" access="retain"/>
+        <argument name="receiver long term private key" class="buffer" access="retain"/>
+        <argument name="receiver one time private key" class="buffer" access="retain"/>
 
         <return enum="error"/>
     </method>
