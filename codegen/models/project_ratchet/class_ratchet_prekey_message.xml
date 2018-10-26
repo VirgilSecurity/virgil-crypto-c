@@ -31,8 +31,14 @@
         <return type="size"/>
     </method>
 
+    <method name="serialize len ext">
+        <return type="size"/>
+    </method>
+
     <method name="serialize">
-        <argument name="output" class="buffer"/>
+        <argument name="output" class="buffer">
+            <length method="serialize len ext"/>
+        </argument>
 
         <return enum="error"/>
     </method>
