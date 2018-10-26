@@ -152,12 +152,18 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Resolve entity: method.
 # ---------------------------------------------------------------------------
-function class_resolve_method (method, parent)
-    check_arguments (my, "method, parent", my)
+function class_resolve_method (method, class)
+    check_arguments (my, "method, class", my)
 
-    for my.method.argument where string_equal (0.class ?, "context")
-        argument.name ?= "ctx"
-        argument.access ?= "readwrite"
+    for my.method.argument where string_equal (0.class ?, "self")
+        .name ?= "ctx"
+        .access ?= "readwrite"
+        .class = my.class.name
+    endfor
+
+    for my.method.return where string_equal (0.class ?, "self")
+        .access ?= "disown"
+        .class = my.class.name
     endfor
 endfunction
 
