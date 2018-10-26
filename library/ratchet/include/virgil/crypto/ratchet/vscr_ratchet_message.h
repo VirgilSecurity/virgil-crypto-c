@@ -49,6 +49,7 @@
 
 #include "vscr_library.h"
 #include "vscr_error_ctx.h"
+#include "vscr_ratchet_message.h"
 #include "vscr_error.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -110,6 +111,12 @@ struct vscr_ratchet_message_t {
 };
 
 //
+//  Return size of 'vscr_ratchet_message_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_message_ctx_size(void);
+
+//
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
@@ -152,6 +159,9 @@ vscr_ratchet_message_copy(vscr_ratchet_message_t *ratchet_message_ctx);
 
 VSCR_PUBLIC size_t
 vscr_ratchet_message_serialize_len(size_t message_len);
+
+VSCR_PUBLIC size_t
+vscr_ratchet_message_serialize_len_ext(vscr_ratchet_message_t *ratchet_message_ctx);
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message_ctx, vsc_buffer_t *output);

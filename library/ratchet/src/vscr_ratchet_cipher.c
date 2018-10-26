@@ -104,6 +104,15 @@ static void
 vscr_ratchet_cipher_cleanup_ctx(vscr_ratchet_cipher_t *ratchet_cipher_ctx);
 
 //
+//  Return size of 'vscr_ratchet_cipher_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_cipher_ctx_size(void) {
+
+    return sizeof(vscr_ratchet_cipher_t);
+}
+
+//
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void

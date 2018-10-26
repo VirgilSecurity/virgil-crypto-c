@@ -82,15 +82,9 @@ initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *sessio
     vscr_ratchet_take_rng(ratchet_alice, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
     vscr_ratchet_take_rng(ratchet_bob, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
 
-    vsc_buffer_t *alice_identity_private_key =
-            vsc_buffer_new_with_capacity(test_ratchet_session_alice_identity_private_key.len);
-    memcpy(vsc_buffer_ptr(alice_identity_private_key), test_ratchet_session_alice_identity_private_key.bytes,
-            test_ratchet_session_alice_identity_private_key.len);
-    vsc_buffer_reserve(alice_identity_private_key, ED25519_KEY_LEN);
-
     vsc_buffer_t *alice_identity_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
     TEST_ASSERT_EQUAL_INT(0, curve25519_get_pubkey(vsc_buffer_ptr(alice_identity_public_key),
-                                     vsc_buffer_bytes(alice_identity_private_key)));
+                                     test_ratchet_session_alice_identity_private_key.bytes));
     vsc_buffer_reserve(alice_identity_public_key, ED25519_KEY_LEN);
 
     vsc_buffer_t *bob_identity_private_key =
@@ -126,9 +120,9 @@ initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *sessio
             curve25519_get_pubkey(vsc_buffer_ptr(bob_onetime_public_key), vsc_buffer_bytes(bob_onetime_private_key)));
     vsc_buffer_reserve(bob_onetime_public_key, ED25519_KEY_LEN);
 
-    TEST_ASSERT_EQUAL_INT(
-            vscr_SUCCESS, vscr_ratchet_session_initiate(session_alice, alice_identity_private_key,
-                                  bob_identity_public_key, bob_longterm_public_key, bob_onetime_public_key));
+    TEST_ASSERT_EQUAL_INT(vscr_SUCCESS,
+            vscr_ratchet_session_initiate(session_alice, test_ratchet_session_alice_identity_private_key,
+                    vsc_buffer_data(bob_identity_public_key), bob_longterm_public_key, bob_onetime_public_key));
 
     TEST_ASSERT_EQUAL_INT(
             vscr_SUCCESS, vscr_ratchet_session_respond(session_bob, alice_identity_public_key,
@@ -137,7 +131,6 @@ initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *sessio
                                   session_alice->ratchet->sender_chain->public_key, bob_identity_private_key,
                                   bob_longterm_private_key, bob_onetime_private_key));
 
-    vsc_buffer_destroy(&alice_identity_private_key);
     vsc_buffer_destroy(&alice_identity_public_key);
     vsc_buffer_destroy(&bob_identity_private_key);
     vsc_buffer_destroy(&bob_identity_public_key);

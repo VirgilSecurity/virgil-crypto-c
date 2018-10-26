@@ -75,6 +75,15 @@ static void
 vscr_ratchet_chain_key_cleanup_ctx(vscr_ratchet_chain_key_t *ratchet_chain_key_ctx);
 
 //
+//  Return size of 'vscr_ratchet_chain_key_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_chain_key_ctx_size(void) {
+
+    return sizeof(vscr_ratchet_chain_key_t);
+}
+
+//
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
@@ -205,11 +214,11 @@ vscr_ratchet_chain_key_cleanup_ctx(vscr_ratchet_chain_key_t *ratchet_chain_key_c
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_chain_key_clone(const vscr_ratchet_chain_key_t *ratchet_chain_key_ctx, vscr_ratchet_chain_key_t *clone) {
+vscr_ratchet_chain_key_clone(const vscr_ratchet_chain_key_t *ratchet_chain_key_ctx, vscr_ratchet_chain_key_t *dst) {
 
     VSCR_ASSERT_PTR(ratchet_chain_key_ctx);
-    VSCR_ASSERT_PTR(clone);
+    VSCR_ASSERT_PTR(dst);
 
-    clone->index = ratchet_chain_key_ctx->index;
-    memcpy(clone->key, ratchet_chain_key_ctx->key, vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
+    dst->index = ratchet_chain_key_ctx->index;
+    memcpy(dst->key, ratchet_chain_key_ctx->key, vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
 }

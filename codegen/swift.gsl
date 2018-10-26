@@ -114,6 +114,26 @@ function class_derive_class_c_method_copy (class)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C class method that returns
+#   context size.
+# ---------------------------------------------------------------------------
+function class_derive_class_c_method_ctx_size (class)
+    check_arguments (my, "class", my)
+
+    my.of_class = my.class.of_class ? my.class.name
+
+    if item_in (my.class, "class")
+        return make_ref_c (make_id ("class", my.of_class, "method", "ctx size"))
+
+    elsif item_in (my.class, "implementation")
+        return make_ref_c (make_id ("class", my.of_class, "method", "impl size"))
+
+    else
+        return make_ref_c (make_id ("class", my.of_class, "method", "size"))
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return .(UID) that refers to the C interface method that returns API.
 # ---------------------------------------------------------------------------
 function interface_derive_c_api_method_from_name (interface_name)
@@ -159,6 +179,33 @@ endfunction
 # ===========================================================================
 #   Name and type derivation.
 # ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Return OpaquePointer(expr).
+# ---------------------------------------------------------------------------
+function swift_cast_to_opaque_pointer (expr)
+    check_arguments (my, "expr", my)
+    return "OpaquePointer($(my.expr:))"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return UnsafeMutablePointer<class>(expr).
+# ---------------------------------------------------------------------------
+function swift_cast_to_typed_pointer (class, expr)
+    check_arguments (my, "class, expr", my)
+    return "UnsafeMutablePointer<$(class_derive_c_type(my.class))>($(my.expr:))"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return Swift type for class context.
+# ---------------------------------------------------------------------------
+function swift_derive_class_context_type (class)
+    if defined (my.class) & string_equal (my.class.context, "public")
+        return "UnsafeMutablePointer<$(class_derive_c_type(my.class))>"
+    else
+        return "OpaquePointer"
+    endif
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Return .(UID) of dependency type.
@@ -490,16 +537,6 @@ function swift_derive_argument_name (argument, wrapper)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return formatted string with function call that returns buffer length.
-# ---------------------------------------------------------------------------
-function swift_length (class, buf_len_getter, swift_method)
-    check_arguments (my, "class, buf_len_getter, swift_method", my)
-
-    my.invocation_name =
-    return "$(my.invocation_name:)()"
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Derive Swift type from the <instance/> type attributes.
 # ---------------------------------------------------------------------------
 function swift_derive_instance_type (instance)
@@ -569,6 +606,11 @@ function swift_derive_instance_type (instance)
             return make_ref_swift (make_id(my.project_uid, my.type_uid))
         endif
 
+    elsif defined (my.instance.impl)
+        my.project_uid = component_derive_project_uid (my.instance)
+        my.type_uid = make_id ("class", "$(my.instance.impl:Pascal)")
+        return make_ref_swift (make_id(my.project_uid, my.type_uid))
+
     elsif defined (my.instance.interface)
         my.project_uid = component_derive_project_uid (my.instance)
         my.type_uid = make_id ("protocol", "$(my.instance.interface:Pascal)")
@@ -598,12 +640,16 @@ function swift_derive_proxy_return_type (method)
         return "Void"
     endif
 
-    if defined (my.method->return.type)
-        return swift_derive_instance_type (my.method->return)
-    endif
+    my.return = my.method->return
 
-    if defined (my.method->return.enum)
-        return make_ref_c (make_id ("class", my.method->return.enum, "enum", my.method->return.enum))
+    if defined (my.return.type)
+        return swift_derive_instance_type (my.return)
+
+    elsif defined (my.return.enum)
+        return make_ref_c (make_id ("class", my.return.enum, "enum", my.return.enum))
+
+    elsif defined (my.return.class) | defined (my.return.impl)
+        return "auto"
     endif
 
     return "Any"
@@ -776,7 +822,6 @@ function class_derive_buffer_length_getter (class, method, argument)
         return my.proxy_argument
     endif
 endfunction
-
 
 # ===========================================================================
 #   Attribute mapping.
@@ -1163,7 +1208,9 @@ function swift_create_method_declaration (class, method, destination, wrapper, m
         for my.method.argument
             if argument.access <> "writeonly"
                 swift_create_argument (argument, swift_method, my.wrapper, my.meta)
-            else
+            endif
+
+            if string_in (argument.class, "buffer") & string_in (argument.access, "readwrite, writeonly")
                 swift_create_return_from_argument (my.class, my.method, argument, swift_method, my.wrapper, my.meta)
             endif
         endfor
@@ -1226,6 +1273,26 @@ function swift_create_class_method (class, method, destination, wrapper, meta)
             ") + terminator
         endfor
 
+        my.method_new_with_data = ".(c_project_common_class_buffer_method_new_with_data)"
+        my.method_data = ".(c_project_common_class_data_method_data)"
+
+        for swift_method.swift_argument where 0.type = "Data" & is_true (0.is_buffer)
+            my.buffer_name = swift_argument.name
+
+            my.buffers_init ?= ""
+            my.buffers_init += format_left("\
+                var $(my.buffer_name:)Buf = $(my.method_new_with_data:)($(my.method_data:)($(my.buffer_name:)Pointer, $(my.buffer_name:).count))
+            ") + terminator
+
+            if swift_argument.access <> "disown"
+                my.buffers_init += format_left("\
+                    defer {
+                        .(c_project_common_class_buffer_method_delete)($(my.buffer_name:)Buf)
+                    }
+                ") + terminator
+            endif
+        endfor
+
         #   Create opened scopes for data and buffers..
         my.scope_count = 0
         my.proxy_return_type = swift_derive_proxy_return_type (my.method)
@@ -1234,11 +1301,13 @@ function swift_create_class_method (class, method, destination, wrapper, meta)
             my.result_statement = "let proxyResult = "
         endif
 
+        my.proxy_return_statement = (my.proxy_return_type = "auto") ?? "" ? "-> $(my.proxy_return_type:) "
+
         for swift_method.swift_argument where 0.type = "Data"
             my.opened_scope ?= ""
             my.opened_scope += format_left("\
                 $(my.result_statement?:)$(swift_argument.name:).withUnsafeBytes({ \
-                    ($(swift_argument.name:)Pointer: UnsafePointer<byte>) -> $(my.proxy_return_type:) in
+                    ($(swift_argument.name:)Pointer: UnsafePointer<byte>) $(my.proxy_return_statement:)in
 
             ", my.scope_count)
             my.result_statement = # undefined
@@ -1249,7 +1318,7 @@ function swift_create_class_method (class, method, destination, wrapper, meta)
             my.opened_scope ?= ""
             my.opened_scope += format_left("\
                 $(my.result_statement?:)$(swift_return.name:).withUnsafeMutableBytes({ \
-                    ($(swift_return.name:)Pointer: UnsafeMutablePointer<byte>) -> $(my.proxy_return_type:) in
+                    ($(swift_return.name:)Pointer: UnsafeMutablePointer<byte>) $(my.proxy_return_statement:)in
 
             ", my.scope_count)
 
@@ -1282,7 +1351,7 @@ function swift_create_class_method (class, method, destination, wrapper, meta)
         #   Handle errors
         if is_true (swift_method.throws)
             my.enum_error = swift_derive_enum_error_name (my.wrapper)
-            my.handle_errors = format_left("try! $(my.enum_error:).handleError(fromC: proxyResult)")
+            my.handle_errors = format_left("try $(my.enum_error:).handleError(fromC: proxyResult)")
         endif
 
         #   Return result
@@ -1353,13 +1422,13 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create <swift_property/> that handles underlying C context.
 # ---------------------------------------------------------------------------
-function swift_create_class_property_context (destination)
+function swift_create_class_property_context (destination, class)
     check_arguments (my, "destination", my)
 
     new swift_property to my.destination
         . = "/// Handle underlying C context."
         .name = "c_ctx"
-        .type = "OpaquePointer"
+        .type = swift_derive_class_context_type (my.class)
         .access = "readonly"
         .visibility = "public"
 
@@ -1563,6 +1632,14 @@ endfunction
 function swift_create_class_default_constructor (swift_class, class, wrapper, meta)
     check_arguments (my, "swift_class, class, wrapper, meta", my)
 
+    if string_in (my.class.context, "public") & string_in (my.class.lifecycle, "none")
+        my.ctx_size_invocation = "$(class_derive_class_c_method_ctx_size (my.class))()"
+        my.ctor_invocation = ".(c_global_method_alloc)($(my.ctx_size_invocation:))!" + \
+                ".bindMemory(to: $(class_derive_c_type(my.class)).self, capacity:1)"
+    else
+        my.ctor_invocation = "$(class_derive_c_defalut_constructor (my.class))()"
+    endif
+
     new swift_constructor to my.swift_class
         . = "/// Create underlying C context."
         .override = "1"
@@ -1570,7 +1647,7 @@ function swift_create_class_default_constructor (swift_class, class, wrapper, me
 
         new swift_code to swift_constructor
             . = "\
-                self.c_ctx = $(class_derive_c_defalut_constructor (my.class))()
+                self.c_ctx = $(my.ctor_invocation:)
                 super.init()
             "
         endnew
@@ -1586,7 +1663,7 @@ function swift_create_class_default_constructor (swift_class, class, wrapper, me
         new swift_argument to swift_constructor
             .name = "c_ctx"
             .ext_name = "take"
-            .type = "OpaquePointer"
+            .type = swift_derive_class_context_type (my.class)
         endnew
 
         new swift_code to swift_constructor
@@ -1597,26 +1674,28 @@ function swift_create_class_default_constructor (swift_class, class, wrapper, me
         endnew
     endnew
 
-    new swift_constructor to my.swift_class
-        . = "\
-            /// Acquire retained C context.
-            /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-        "
-        .visibility = "public"
-
-        new swift_argument to swift_constructor
-            .name = "c_ctx"
-            .ext_name = "use"
-            .type = "OpaquePointer"
-        endnew
-
-        new swift_code to swift_constructor
+    if string_in (my.class.lifecycle, "default")
+        new swift_constructor to my.swift_class
             . = "\
-                self.c_ctx = $(class_derive_class_c_method_copy (my.class))(c_ctx)
-                super.init()
+                /// Acquire retained C context.
+                /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
             "
+            .visibility = "public"
+
+            new swift_argument to swift_constructor
+                .name = "c_ctx"
+                .ext_name = "use"
+                .type = swift_derive_class_context_type (my.class)
+            endnew
+
+            new swift_code to swift_constructor
+                . = "\
+                    self.c_ctx = $(class_derive_class_c_method_copy (my.class))(c_ctx)
+                    super.init()
+                "
+            endnew
         endnew
-    endnew
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1633,12 +1712,21 @@ endfunction
 function swift_create_class_destructor (swift_class, class, wrapper, meta)
     check_arguments (my, "swift_class, class, wrapper, meta", my)
 
+    my.self_ctx = "self.c_ctx"
+
+    if string_in (my.class.context, "public") & string_in (my.class.lifecycle, "none")
+        my.dtor_invocation = ".(c_global_method_dealloc)($(my.self_ctx:))"
+    else
+        my.dtor_invocation = "$(class_derive_c_destructor (my.class))($(my.self_ctx:))"
+    endif
+
+
     new swift_destructor to my.swift_class
         . = "/// Release underlying C context."
 
         new swift_code to swift_destructor
             . = "\
-                $(class_derive_c_destructor (my.class))(self.c_ctx)
+                $(my.dtor_invocation:)
             "
         endnew
     endnew
@@ -1810,12 +1898,12 @@ function swift_create_implementation_module (implementation, destination, wrappe
                 swift_create_method_from_dependency (dependency, my.implementation, swift_class, my.wrapper, my.meta)
             endfor
 
-            for my.implementation.method where method.declaration = "public" & count (method.buf_len) = 0
+            for my.implementation.method where method.declaration = "public" & method.visibility = "public"
                 swift_create_class_method (my.implementation, method, swift_class, my.wrapper, my.meta)
             endfor
 
             if my.implementation.context <> "none"
-                swift_create_class_property_context (swift_class)
+                swift_create_class_property_context (swift_class, my.implementation)
 
                 swift_create_class_default_constructor (swift_class, my.implementation, my.wrapper, my.meta)
                 swift_create_class_destructor (swift_class, my.implementation, my.wrapper, my.meta)
@@ -1879,10 +1967,9 @@ function swift_create_class_module (class, destination, wrapper, meta)
             swift_map_attr_visibility (swift_class, my.class)
 
             swift_create_inherit_nsobject (swift_class)
-            swift_create_inherit_c_context (swift_class)
 
             if my.class.context <> "none"
-                swift_create_class_property_context (swift_class)
+                swift_create_class_property_context (swift_class, my.class)
 
                 swift_create_class_default_constructor (swift_class, my.class, my.wrapper, my.meta)
                 swift_create_class_destructor (swift_class, my.class, my.wrapper, my.meta)
@@ -1894,7 +1981,7 @@ function swift_create_class_module (class, destination, wrapper, meta)
                 endif
             endif
 
-            for my.class.method where method.declaration = "public" & count (method.buf_len) = 0
+            for my.class.method where method.declaration = "public" & method.visibility = "public"
                 swift_create_class_method (my.class, method, swift_class, my.wrapper, my.meta)
             endfor
 

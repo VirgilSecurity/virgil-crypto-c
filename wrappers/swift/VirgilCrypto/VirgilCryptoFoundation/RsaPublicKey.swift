@@ -111,7 +111,7 @@ import VSCFoundation
             })
         })
 
-        try! FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleError(fromC: proxyResult)
 
         return out
     }
@@ -148,7 +148,7 @@ import VSCFoundation
             return vscf_rsa_public_key_export_public_key(self.c_ctx, outBuf)
         })
 
-        try! FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleError(fromC: proxyResult)
 
         return out
     }
@@ -165,6 +165,6 @@ import VSCFoundation
             return vscf_rsa_public_key_import_public_key(self.c_ctx, vsc_data(dataPointer, data.count))
         })
 
-        try! FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleError(fromC: proxyResult)
     }
 }

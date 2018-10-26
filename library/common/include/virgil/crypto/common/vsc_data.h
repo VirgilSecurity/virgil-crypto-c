@@ -54,6 +54,7 @@
 #define VSC_DATA_H_INCLUDED
 
 #include "vsc_library.h"
+#include "vsc_data.h"
 
 // clang-format on
 //  @end
@@ -84,6 +85,12 @@ struct vsc_data_t {
     //
     size_t len;
 };
+
+//
+//  Return size of 'vsc_data_t'.
+//
+VSC_PUBLIC size_t
+vsc_data_ctx_size(void);
 
 //
 //  Creates data from the preallocated bytes.

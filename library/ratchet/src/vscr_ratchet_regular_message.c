@@ -78,6 +78,15 @@ static void
 vscr_ratchet_regular_message_cleanup_ctx(vscr_ratchet_regular_message_t *ratchet_regular_message_ctx);
 
 //
+//  Return size of 'vscr_ratchet_regular_message_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_regular_message_ctx_size(void) {
+
+    return sizeof(vscr_ratchet_regular_message_t);
+}
+
+//
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
@@ -240,12 +249,20 @@ vscr_ratchet_regular_message_serialize_len(size_t cipher_text_len) {
     //       public_key OCTET_STRING,
     //       cipher_text OCTET_STRING }
 
-    size_t top_sequence_len = 1 + 3       /* SEQUENCE */
-                              + 1 + 1 + 2 /* INTEGER */
-                              + 1 + 1 + 5 /* INTEGER */
-                              + 1 + 1 + vscr_ratchet_regular_message_PUBLIC_KEY_LENGTH + 1 + 3 + cipher_text_len;
+    size_t top_sequence_len = 1 + 3                                                    /* SEQUENCE */
+                              + 1 + 1 + 2                                              /* INTEGER */
+                              + 1 + 1 + 5                                              /* INTEGER */
+                              + 1 + 1 + vscr_ratchet_regular_message_PUBLIC_KEY_LENGTH /* public_key */
+                              + 1 + 3 + cipher_text_len;                               /* cipher_text */
 
     return top_sequence_len;
+}
+
+VSCR_PUBLIC size_t
+vscr_ratchet_regular_message_serialize_len_ext(vscr_ratchet_regular_message_t *ratchet_regular_message_ctx) {
+
+    VSCR_ASSERT_PTR(ratchet_regular_message_ctx);
+    return vscr_ratchet_regular_message_serialize_len(vsc_buffer_len(ratchet_regular_message_ctx->cipher_text));
 }
 
 VSCR_PUBLIC vscr_error_t
@@ -259,12 +276,7 @@ vscr_ratchet_regular_message_serialize(
     //       cipher_text OCTET_STRING }
 
     VSCR_ASSERT_PTR(ratchet_regular_message_ctx);
-
-    if (vsc_buffer_left(output) <
-            vscr_ratchet_regular_message_serialize_len(vsc_buffer_len(ratchet_regular_message_ctx->cipher_text))) {
-
-        return vscr_INVALID_ARGUMENTS;
-    }
+    VSCR_ASSERT(vsc_buffer_left(output) >= vscr_ratchet_regular_message_serialize_len_ext(ratchet_regular_message_ctx));
 
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
 
@@ -347,7 +359,8 @@ vscr_ratchet_regular_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err
 
     vsc_buffer_t *public_key_buf = vsc_buffer_new_with_data(public_key);
     vsc_buffer_t *cipher_text_buf = vsc_buffer_new_with_data(cipher_text);
-    vscr_ratchet_regular_message_t *msg = vscr_ratchet_regular_message_new_with_members(version, counter, public_key_buf, cipher_text_buf);
+    vscr_ratchet_regular_message_t *msg =
+            vscr_ratchet_regular_message_new_with_members(version, counter, public_key_buf, cipher_text_buf);
 
     vsc_buffer_destroy(&public_key_buf);
     vsc_buffer_destroy(&cipher_text_buf);

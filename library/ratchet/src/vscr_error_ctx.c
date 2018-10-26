@@ -67,6 +67,15 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Return size of 'vscr_error_ctx_t'.
+//
+VSCR_PUBLIC size_t
+vscr_error_ctx_ctx_size(void) {
+
+    return sizeof(vscr_error_ctx_t);
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -88,7 +97,7 @@ vscr_error_ctx_reset(vscr_error_ctx_t *error_ctx_ctx) {
 //
 //  Update context with given error.
 //
-VSCR_PUBLIC void
+VSCR_PRIVATE void
 vscr_error_ctx_update(vscr_error_ctx_t *error_ctx_ctx, vscr_error_t error) {
 
     VSCR_ASSERT_PTR(error_ctx_ctx);

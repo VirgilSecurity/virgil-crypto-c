@@ -49,6 +49,7 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
+#include "vscr_ratchet_chain_key.h"
 
 // clang-format on
 //  @end
@@ -83,6 +84,12 @@ struct vscr_ratchet_chain_key_t {
 
     byte key[vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH];
 };
+
+//
+//  Return size of 'vscr_ratchet_chain_key_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_chain_key_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
@@ -123,7 +130,7 @@ VSCR_PUBLIC vscr_ratchet_chain_key_t *
 vscr_ratchet_chain_key_copy(vscr_ratchet_chain_key_t *ratchet_chain_key_ctx);
 
 VSCR_PUBLIC void
-vscr_ratchet_chain_key_clone(const vscr_ratchet_chain_key_t *ratchet_chain_key_ctx, vscr_ratchet_chain_key_t *clone);
+vscr_ratchet_chain_key_clone(const vscr_ratchet_chain_key_t *ratchet_chain_key_ctx, vscr_ratchet_chain_key_t *dst);
 
 
 // --------------------------------------------------------------------------

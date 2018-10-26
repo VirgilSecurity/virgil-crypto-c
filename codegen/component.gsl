@@ -678,14 +678,6 @@ function component_resolve_instance_attr_class (instance, parent)
         elsif item_in (my.instance, "return")
             my.instance.access ?= "disown"
         endif
-
-    else
-        if item_in (my.instance, "property, variable")
-            my.instance.access ?= "readwrite"
-
-        elsif item_in (my.instance, "argument, return")
-            my.instance.access ?= "readonly"
-        endif
     endif
 endfunction
 

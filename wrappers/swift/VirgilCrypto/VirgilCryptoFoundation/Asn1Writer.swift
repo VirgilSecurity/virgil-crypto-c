@@ -120,7 +120,7 @@ import VSCFoundation
     /// Return last error.
     @objc public func error() throws {
         let proxyResult = vscf_asn1_writer_error(self.c_ctx)
-        try! FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleError(fromC: proxyResult)
     }
 
     /// Move writing position backward for the given length.

@@ -78,7 +78,7 @@ import VSCFoundation
             })
         })
 
-        try! FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleError(fromC: proxyResult)
 
         return signature
     }

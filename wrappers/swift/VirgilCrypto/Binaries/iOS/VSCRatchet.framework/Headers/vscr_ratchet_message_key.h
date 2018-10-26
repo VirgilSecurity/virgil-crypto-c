@@ -85,6 +85,12 @@ struct vscr_ratchet_message_key_t {
 };
 
 //
+//  Return size of 'vscr_ratchet_message_key_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_message_key_ctx_size(void);
+
+//
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void

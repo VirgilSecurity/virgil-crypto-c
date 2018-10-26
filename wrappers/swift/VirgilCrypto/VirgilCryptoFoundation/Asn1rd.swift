@@ -77,7 +77,7 @@ import VSCFoundation
     /// Return last error.
     @objc public func error() throws {
         let proxyResult = vscf_asn1rd_error(self.c_ctx)
-        try! FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleError(fromC: proxyResult)
     }
 
     /// Get tag of the current ASN.1 element.

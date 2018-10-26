@@ -75,6 +75,15 @@ static void
 vscr_ratchet_kdf_info_cleanup_ctx(vscr_ratchet_kdf_info_t *ratchet_kdf_info_ctx);
 
 //
+//  Return size of 'vscr_ratchet_kdf_info_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_kdf_info_ctx_size(void) {
+
+    return sizeof(vscr_ratchet_kdf_info_t);
+}
+
+//
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void

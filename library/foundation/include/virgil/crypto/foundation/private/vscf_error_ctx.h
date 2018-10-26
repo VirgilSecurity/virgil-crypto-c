@@ -95,6 +95,12 @@ struct vscf_error_ctx_t {
 };
 
 //
+//  Return size of 'vscf_error_ctx_t'.
+//
+VSCF_PUBLIC size_t
+vscf_error_ctx_ctx_size(void);
+
+//
 //  Reset context to the "no error" state.
 //
 VSCF_PUBLIC void
