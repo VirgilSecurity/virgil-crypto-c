@@ -74,7 +74,7 @@ import VSCFoundation
             return vscf_random(self.c_ctx, dataLen, dataBuf)
         })
 
-        try! FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleError(fromC: proxyResult)
 
         return data
     }

@@ -37,7 +37,7 @@ import Foundation
 import VSCPythia
 
 /// Provide Pythia implementation based on the Virgil Security.
-@objc(VSCPPythia) public class Pythia: NSObject, CContext {
+@objc(VSCPPythia) public class Pythia: NSObject {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -163,7 +163,7 @@ import VSCPythia
             })
         })
 
-        try! PythiaError.handleError(fromC: proxyResult)
+        try PythiaError.handleError(fromC: proxyResult)
 
         return PythiaBlindResult(blindedPassword: blindedPassword, blindingSecret: blindingSecret)
     }
@@ -187,7 +187,7 @@ import VSCPythia
             })
         })
 
-        try! PythiaError.handleError(fromC: proxyResult)
+        try PythiaError.handleError(fromC: proxyResult)
 
         return deblindedPassword
     }
@@ -225,7 +225,7 @@ import VSCPythia
             })
         })
 
-        try! PythiaError.handleError(fromC: proxyResult)
+        try PythiaError.handleError(fromC: proxyResult)
 
         return PythiaComputeTransformationKeyPairResult(transformationPrivateKey: transformationPrivateKey, transformationPublicKey: transformationPublicKey)
     }
@@ -263,7 +263,7 @@ import VSCPythia
             })
         })
 
-        try! PythiaError.handleError(fromC: proxyResult)
+        try PythiaError.handleError(fromC: proxyResult)
 
         return PythiaTransformResult(transformedPassword: transformedPassword, transformedTweak: transformedTweak)
     }
@@ -305,7 +305,7 @@ import VSCPythia
             })
         })
 
-        try! PythiaError.handleError(fromC: proxyResult)
+        try PythiaError.handleError(fromC: proxyResult)
 
         return PythiaProveResult(proofValueC: proofValueC, proofValueU: proofValueU)
     }
@@ -327,7 +327,7 @@ import VSCPythia
             })
         })
 
-        try! PythiaError.handleError(fromC: proxyResult)
+        try PythiaError.handleError(fromC: proxyResult)
     }
 
     /// Rotates old transformation key to new transformation key and generates 'password update token',
@@ -352,7 +352,7 @@ import VSCPythia
             })
         })
 
-        try! PythiaError.handleError(fromC: proxyResult)
+        try PythiaError.handleError(fromC: proxyResult)
 
         return passwordUpdateToken
     }
@@ -377,7 +377,7 @@ import VSCPythia
             })
         })
 
-        try! PythiaError.handleError(fromC: proxyResult)
+        try PythiaError.handleError(fromC: proxyResult)
 
         return updatedDeblindedPassword
     }

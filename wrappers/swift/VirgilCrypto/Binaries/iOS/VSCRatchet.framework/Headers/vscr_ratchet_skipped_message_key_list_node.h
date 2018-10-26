@@ -86,6 +86,12 @@ struct vscr_ratchet_skipped_message_key_list_node_t {
 };
 
 //
+//  Return size of 'vscr_ratchet_skipped_message_key_list_node_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_skipped_message_key_list_node_ctx_size(void);
+
+//
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void

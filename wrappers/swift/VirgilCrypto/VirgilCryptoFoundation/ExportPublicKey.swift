@@ -79,7 +79,7 @@ import VSCFoundation
             return vscf_export_public_key(self.c_ctx, outBuf)
         })
 
-        try! FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleError(fromC: proxyResult)
 
         return out
     }

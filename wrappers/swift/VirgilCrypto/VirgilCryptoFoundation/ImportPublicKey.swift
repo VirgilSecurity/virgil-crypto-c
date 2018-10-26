@@ -68,6 +68,6 @@ import VSCFoundation
             return vscf_import_public_key(self.c_ctx, vsc_data(dataPointer, data.count))
         })
 
-        try! FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleError(fromC: proxyResult)
     }
 }

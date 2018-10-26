@@ -103,7 +103,7 @@ import VSCFoundation
     /// Note, this operation can be slow.
     @objc public func generateKey() throws {
         let proxyResult = vscf_rsa_private_key_generate_key(self.c_ctx)
-        try! FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleError(fromC: proxyResult)
     }
 
     /// Extract public part of the key.
@@ -129,7 +129,7 @@ import VSCFoundation
             })
         })
 
-        try! FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleError(fromC: proxyResult)
 
         return out
     }
@@ -157,7 +157,7 @@ import VSCFoundation
             })
         })
 
-        try! FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleError(fromC: proxyResult)
 
         return signature
     }
@@ -183,7 +183,7 @@ import VSCFoundation
             return vscf_rsa_private_key_export_private_key(self.c_ctx, outBuf)
         })
 
-        try! FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleError(fromC: proxyResult)
 
         return out
     }
@@ -200,6 +200,6 @@ import VSCFoundation
             return vscf_rsa_private_key_import_private_key(self.c_ctx, vsc_data(dataPointer, data.count))
         })
 
-        try! FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleError(fromC: proxyResult)
     }
 }

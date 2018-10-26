@@ -89,6 +89,36 @@
 		F476E032216F43B600990B46 /* VirgilCryptoCommonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F476E031216F43B600990B46 /* VirgilCryptoCommonTests.swift */; };
 		F476E034216F43B600990B46 /* VirgilCryptoCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = F476E026216F43B500990B46 /* VirgilCryptoCommon.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F48E70A121773DCA00405E0B /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = F48E70A021773DCA00405E0B /* Error.swift */; };
+		F4AC502A218308B90054A3D3 /* VirgilCryptoRatchet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4AC5021218308B90054A3D3 /* VirgilCryptoRatchet.framework */; };
+		F4AC502F218308B90054A3D3 /* VirgilCryptoRatchetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC502E218308B90054A3D3 /* VirgilCryptoRatchetTests.swift */; };
+		F4AC5031218308B90054A3D3 /* VirgilCryptoRatchet.h in Headers */ = {isa = PBXBuildFile; fileRef = F4AC5023218308B90054A3D3 /* VirgilCryptoRatchet.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F4AC50392183096D0054A3D3 /* VirgilCryptoCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4B84230216F44A200C3D7F4 /* VirgilCryptoCommon.framework */; };
+		F4AC503A2183096D0054A3D3 /* VirgilCryptoFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F429BF002173AB42001F0D8E /* VirgilCryptoFoundation.framework */; };
+		F4AC503C218309790054A3D3 /* VSCRatchet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4AC503B218309790054A3D3 /* VSCRatchet.framework */; };
+		F4AC503E218309D50054A3D3 /* VSCFoundation.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4431835216F682700F3ECB1 /* VSCFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F4AC503F218309D50054A3D3 /* VSCPythia.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4431836216F682700F3ECB1 /* VSCPythia.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F4AC5040218309D50054A3D3 /* VSCCommon.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4431837216F682700F3ECB1 /* VSCCommon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F4AC5041218309D50054A3D3 /* VSCRatchet.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4AC503B218309790054A3D3 /* VSCRatchet.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F4AC504521830A880054A3D3 /* ErrorCtx.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC504221830A880054A3D3 /* ErrorCtx.swift */; };
+		F4AC504621830A880054A3D3 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC504321830A880054A3D3 /* Error.swift */; };
+		F4AC504721830A880054A3D3 /* CContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC504421830A880054A3D3 /* CContext.swift */; };
+		F4AC505D218319060054A3D3 /* RatchetSenderChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC504C218319060054A3D3 /* RatchetSenderChain.swift */; };
+		F4AC505E218319060054A3D3 /* RatchetKdfInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC504D218319060054A3D3 /* RatchetKdfInfo.swift */; };
+		F4AC505F218319060054A3D3 /* VirgilRatchetFakeRng.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC504E218319060054A3D3 /* VirgilRatchetFakeRng.swift */; };
+		F4AC5060218319060054A3D3 /* RatchetChainKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC504F218319060054A3D3 /* RatchetChainKey.swift */; };
+		F4AC5061218319060054A3D3 /* RatchetRng.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC5050218319060054A3D3 /* RatchetRng.swift */; };
+		F4AC5062218319060054A3D3 /* RatchetSkippedMessageKeyListNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC5051218319060054A3D3 /* RatchetSkippedMessageKeyListNode.swift */; };
+		F4AC5063218319060054A3D3 /* RatchetRegularMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC5052218319060054A3D3 /* RatchetRegularMessage.swift */; };
+		F4AC5064218319060054A3D3 /* RatchetSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC5053218319060054A3D3 /* RatchetSession.swift */; };
+		F4AC5065218319060054A3D3 /* RatchetMessageKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC5054218319060054A3D3 /* RatchetMessageKey.swift */; };
+		F4AC5066218319060054A3D3 /* RatchetSkippedMessageKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC5055218319060054A3D3 /* RatchetSkippedMessageKey.swift */; };
+		F4AC5067218319060054A3D3 /* RatchetReceiverChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC5056218319060054A3D3 /* RatchetReceiverChain.swift */; };
+		F4AC5068218319060054A3D3 /* RatchetCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC5057218319060054A3D3 /* RatchetCipher.swift */; };
+		F4AC5069218319060054A3D3 /* RatchetCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC5058218319060054A3D3 /* RatchetCommon.swift */; };
+		F4AC506A218319060054A3D3 /* RatchetPrekeyMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC5059218319060054A3D3 /* RatchetPrekeyMessage.swift */; };
+		F4AC506B218319060054A3D3 /* RatchetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC505A218319060054A3D3 /* RatchetMessage.swift */; };
+		F4AC506C218319060054A3D3 /* RatchetReceiverChainListNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC505B218319060054A3D3 /* RatchetReceiverChainListNode.swift */; };
+		F4AC506D218319060054A3D3 /* Ratchet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC505C218319060054A3D3 /* Ratchet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,6 +157,27 @@
 			remoteGlobalIDString = F476E019216F423100990B46;
 			remoteInfo = "Build C Frameworks";
 		};
+		F4AC502B218308B90054A3D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4376A3A216F406000C57E21 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F4AC5020218308B90054A3D3;
+			remoteInfo = VirgilCryptoRatchet;
+		};
+		F4AC504821830AF30054A3D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4376A3A216F406000C57E21 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F476E019216F423100990B46;
+			remoteInfo = "C Frameworks";
+		};
+		F4AC504A21830AF80054A3D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4376A3A216F406000C57E21 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F476E019216F423100990B46;
+			remoteInfo = "C Frameworks";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -159,6 +210,19 @@
 			files = (
 				F4229D022173B0490012F243 /* VSCCommon.framework in CopyFiles */,
 				F438C6722173AFA700D0933B /* VSCPythia.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4AC503D218309B80054A3D3 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F4AC503E218309D50054A3D3 /* VSCFoundation.framework in CopyFiles */,
+				F4AC503F218309D50054A3D3 /* VSCPythia.framework in CopyFiles */,
+				F4AC5040218309D50054A3D3 /* VSCCommon.framework in CopyFiles */,
+				F4AC5041218309D50054A3D3 /* VSCRatchet.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -235,6 +299,33 @@
 		F476E031216F43B600990B46 /* VirgilCryptoCommonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirgilCryptoCommonTests.swift; sourceTree = "<group>"; };
 		F476E033216F43B600990B46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F48E70A021773DCA00405E0B /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		F4AC5021218308B90054A3D3 /* VirgilCryptoRatchet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VirgilCryptoRatchet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4AC5023218308B90054A3D3 /* VirgilCryptoRatchet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VirgilCryptoRatchet.h; sourceTree = "<group>"; };
+		F4AC5024218308B90054A3D3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F4AC5029218308B90054A3D3 /* VirgilCyptoRatchetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VirgilCyptoRatchetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4AC502E218308B90054A3D3 /* VirgilCryptoRatchetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirgilCryptoRatchetTests.swift; sourceTree = "<group>"; };
+		F4AC5030218308B90054A3D3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F4AC503B218309790054A3D3 /* VSCRatchet.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = VSCRatchet.framework; sourceTree = "<group>"; };
+		F4AC504221830A880054A3D3 /* ErrorCtx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorCtx.swift; sourceTree = "<group>"; };
+		F4AC504321830A880054A3D3 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		F4AC504421830A880054A3D3 /* CContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CContext.swift; sourceTree = "<group>"; };
+		F4AC504C218319060054A3D3 /* RatchetSenderChain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatchetSenderChain.swift; sourceTree = "<group>"; };
+		F4AC504D218319060054A3D3 /* RatchetKdfInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatchetKdfInfo.swift; sourceTree = "<group>"; };
+		F4AC504E218319060054A3D3 /* VirgilRatchetFakeRng.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VirgilRatchetFakeRng.swift; sourceTree = "<group>"; };
+		F4AC504F218319060054A3D3 /* RatchetChainKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatchetChainKey.swift; sourceTree = "<group>"; };
+		F4AC5050218319060054A3D3 /* RatchetRng.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatchetRng.swift; sourceTree = "<group>"; };
+		F4AC5051218319060054A3D3 /* RatchetSkippedMessageKeyListNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatchetSkippedMessageKeyListNode.swift; sourceTree = "<group>"; };
+		F4AC5052218319060054A3D3 /* RatchetRegularMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatchetRegularMessage.swift; sourceTree = "<group>"; };
+		F4AC5053218319060054A3D3 /* RatchetSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatchetSession.swift; sourceTree = "<group>"; };
+		F4AC5054218319060054A3D3 /* RatchetMessageKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatchetMessageKey.swift; sourceTree = "<group>"; };
+		F4AC5055218319060054A3D3 /* RatchetSkippedMessageKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatchetSkippedMessageKey.swift; sourceTree = "<group>"; };
+		F4AC5056218319060054A3D3 /* RatchetReceiverChain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatchetReceiverChain.swift; sourceTree = "<group>"; };
+		F4AC5057218319060054A3D3 /* RatchetCipher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatchetCipher.swift; sourceTree = "<group>"; };
+		F4AC5058218319060054A3D3 /* RatchetCommon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatchetCommon.swift; sourceTree = "<group>"; };
+		F4AC5059218319060054A3D3 /* RatchetPrekeyMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatchetPrekeyMessage.swift; sourceTree = "<group>"; };
+		F4AC505A218319060054A3D3 /* RatchetMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatchetMessage.swift; sourceTree = "<group>"; };
+		F4AC505B218319060054A3D3 /* RatchetReceiverChainListNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatchetReceiverChainListNode.swift; sourceTree = "<group>"; };
+		F4AC505C218319060054A3D3 /* Ratchet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ratchet.swift; sourceTree = "<group>"; };
 		F4B84230216F44A200C3D7F4 /* VirgilCryptoCommon.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VirgilCryptoCommon.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4B84231216F44A200C3D7F4 /* VirgilCryptoCommonTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VirgilCryptoCommonTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -244,8 +335,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F438C6402173AC9100D0933B /* VSCFoundation.framework in Frameworks */,
 				F438C63F2173AC8400D0933B /* VirgilCryptoCommon.framework in Frameworks */,
+				F438C6402173AC9100D0933B /* VSCFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -261,8 +352,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F438C6702173AF8A00D0933B /* VSCPythia.framework in Frameworks */,
 				F438C66F2173AF7B00D0933B /* VirgilCryptoCommon.framework in Frameworks */,
+				F438C6702173AF8A00D0933B /* VSCPythia.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,6 +377,24 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4AC501E218308B90054A3D3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4AC50392183096D0054A3D3 /* VirgilCryptoCommon.framework in Frameworks */,
+				F4AC503A2183096D0054A3D3 /* VirgilCryptoFoundation.framework in Frameworks */,
+				F4AC503C218309790054A3D3 /* VSCRatchet.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4AC5026218308B90054A3D3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4AC502A218308B90054A3D3 /* VirgilCryptoRatchet.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -366,6 +475,8 @@
 				F429BF0C2173AB42001F0D8E /* VirgilCryptoFoundationTests */,
 				F438C6592173AEBD00D0933B /* VirgilCryptoPythia */,
 				F438C6642173AEBD00D0933B /* VirgilCryptoPythiaTests */,
+				F4AC5022218308B90054A3D3 /* VirgilCryptoRatchet */,
+				F4AC502D218308B90054A3D3 /* VirgilCryptoRatchetTests */,
 				F443182F216F4B0500F3ECB1 /* Scripts */,
 				F4431831216F682700F3ECB1 /* Binaries */,
 				F4B84230216F44A200C3D7F4 /* VirgilCryptoCommon.framework */,
@@ -374,6 +485,8 @@
 				F431D876217E3B3400A9389F /* VirgilCryptoFoundationTests.xctest */,
 				F438C6582173AEBD00D0933B /* VirgilCryptoPythia.framework */,
 				F438C6602173AEBD00D0933B /* VirgilCryptoPythiaTests.xctest */,
+				F4AC5021218308B90054A3D3 /* VirgilCryptoRatchet.framework */,
+				F4AC5029218308B90054A3D3 /* VirgilCyptoRatchetTests.xctest */,
 			);
 			sourceTree = "<group>";
 		};
@@ -435,9 +548,10 @@
 		F4431834216F682700F3ECB1 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				F4431837216F682700F3ECB1 /* VSCCommon.framework */,
 				F4431835216F682700F3ECB1 /* VSCFoundation.framework */,
 				F4431836216F682700F3ECB1 /* VSCPythia.framework */,
-				F4431837216F682700F3ECB1 /* VSCCommon.framework */,
+				F4AC503B218309790054A3D3 /* VSCRatchet.framework */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -467,6 +581,44 @@
 			path = VirgilCryptoCommonTests;
 			sourceTree = "<group>";
 		};
+		F4AC5022218308B90054A3D3 /* VirgilCryptoRatchet */ = {
+			isa = PBXGroup;
+			children = (
+				F4AC505C218319060054A3D3 /* Ratchet.swift */,
+				F4AC504F218319060054A3D3 /* RatchetChainKey.swift */,
+				F4AC5057218319060054A3D3 /* RatchetCipher.swift */,
+				F4AC5058218319060054A3D3 /* RatchetCommon.swift */,
+				F4AC504D218319060054A3D3 /* RatchetKdfInfo.swift */,
+				F4AC505A218319060054A3D3 /* RatchetMessage.swift */,
+				F4AC5054218319060054A3D3 /* RatchetMessageKey.swift */,
+				F4AC5059218319060054A3D3 /* RatchetPrekeyMessage.swift */,
+				F4AC5056218319060054A3D3 /* RatchetReceiverChain.swift */,
+				F4AC505B218319060054A3D3 /* RatchetReceiverChainListNode.swift */,
+				F4AC5052218319060054A3D3 /* RatchetRegularMessage.swift */,
+				F4AC5050218319060054A3D3 /* RatchetRng.swift */,
+				F4AC504C218319060054A3D3 /* RatchetSenderChain.swift */,
+				F4AC5053218319060054A3D3 /* RatchetSession.swift */,
+				F4AC5055218319060054A3D3 /* RatchetSkippedMessageKey.swift */,
+				F4AC5051218319060054A3D3 /* RatchetSkippedMessageKeyListNode.swift */,
+				F4AC504E218319060054A3D3 /* VirgilRatchetFakeRng.swift */,
+				F4AC504421830A880054A3D3 /* CContext.swift */,
+				F4AC504321830A880054A3D3 /* Error.swift */,
+				F4AC504221830A880054A3D3 /* ErrorCtx.swift */,
+				F4AC5023218308B90054A3D3 /* VirgilCryptoRatchet.h */,
+				F4AC5024218308B90054A3D3 /* Info.plist */,
+			);
+			path = VirgilCryptoRatchet;
+			sourceTree = "<group>";
+		};
+		F4AC502D218308B90054A3D3 /* VirgilCryptoRatchetTests */ = {
+			isa = PBXGroup;
+			children = (
+				F4AC502E218308B90054A3D3 /* VirgilCryptoRatchetTests.swift */,
+				F4AC5030218308B90054A3D3 /* Info.plist */,
+			);
+			path = VirgilCryptoRatchetTests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -491,6 +643,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				F476E034216F43B600990B46 /* VirgilCryptoCommon.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4AC501C218308B90054A3D3 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4AC5031218308B90054A3D3 /* VirgilCryptoRatchet.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -547,6 +707,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F4AC504921830AF30054A3D3 /* PBXTargetDependency */,
 			);
 			name = "VirgilCryptoPythia iOS";
 			productName = VirgilCryptoPythia;
@@ -610,6 +771,44 @@
 			productReference = F4B84231216F44A200C3D7F4 /* VirgilCryptoCommonTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		F4AC5020218308B90054A3D3 /* VirgilCryptoRatchet iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4AC5036218308B90054A3D3 /* Build configuration list for PBXNativeTarget "VirgilCryptoRatchet iOS" */;
+			buildPhases = (
+				F4AC501C218308B90054A3D3 /* Headers */,
+				F4AC501D218308B90054A3D3 /* Sources */,
+				F4AC501E218308B90054A3D3 /* Frameworks */,
+				F4AC501F218308B90054A3D3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F4AC504B21830AF80054A3D3 /* PBXTargetDependency */,
+			);
+			name = "VirgilCryptoRatchet iOS";
+			productName = VirgilCryptoRatchet;
+			productReference = F4AC5021218308B90054A3D3 /* VirgilCryptoRatchet.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		F4AC5028218308B90054A3D3 /* VirgilCryptoRatchetTests iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4AC5037218308B90054A3D3 /* Build configuration list for PBXNativeTarget "VirgilCryptoRatchetTests iOS" */;
+			buildPhases = (
+				F4AC5025218308B90054A3D3 /* Sources */,
+				F4AC5026218308B90054A3D3 /* Frameworks */,
+				F4AC5027218308B90054A3D3 /* Resources */,
+				F4AC503D218309B80054A3D3 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F4AC502C218308B90054A3D3 /* PBXTargetDependency */,
+			);
+			name = "VirgilCryptoRatchetTests iOS";
+			productName = VirgilCryptoRatchetTests;
+			productReference = F4AC5029218308B90054A3D3 /* VirgilCyptoRatchetTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -643,6 +842,13 @@
 					F476E02B216F43B600990B46 = {
 						CreatedOnToolsVersion = 10.0;
 					};
+					F4AC5020218308B90054A3D3 = {
+						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1000;
+					};
+					F4AC5028218308B90054A3D3 = {
+						CreatedOnToolsVersion = 10.0;
+					};
 				};
 			};
 			buildConfigurationList = F4376A3D216F406000C57E21 /* Build configuration list for PBXProject "VirgilCrypto" */;
@@ -664,6 +870,8 @@
 				F431D875217E3B3400A9389F /* VirgilCryptoFoundationTests iOS */,
 				F438C6572173AEBD00D0933B /* VirgilCryptoPythia iOS */,
 				F438C65F2173AEBD00D0933B /* VirgilCryptoPythiaTests iOS */,
+				F4AC5020218308B90054A3D3 /* VirgilCryptoRatchet iOS */,
+				F4AC5028218308B90054A3D3 /* VirgilCryptoRatchetTests iOS */,
 			);
 		};
 /* End PBXProject section */
@@ -705,6 +913,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		F476E02A216F43B600990B46 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4AC501F218308B90054A3D3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4AC5027218308B90054A3D3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -829,6 +1051,41 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F4AC501D218308B90054A3D3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4AC5060218319060054A3D3 /* RatchetChainKey.swift in Sources */,
+				F4AC5064218319060054A3D3 /* RatchetSession.swift in Sources */,
+				F4AC5069218319060054A3D3 /* RatchetCommon.swift in Sources */,
+				F4AC5067218319060054A3D3 /* RatchetReceiverChain.swift in Sources */,
+				F4AC505E218319060054A3D3 /* RatchetKdfInfo.swift in Sources */,
+				F4AC506B218319060054A3D3 /* RatchetMessage.swift in Sources */,
+				F4AC5066218319060054A3D3 /* RatchetSkippedMessageKey.swift in Sources */,
+				F4AC506C218319060054A3D3 /* RatchetReceiverChainListNode.swift in Sources */,
+				F4AC505F218319060054A3D3 /* VirgilRatchetFakeRng.swift in Sources */,
+				F4AC5068218319060054A3D3 /* RatchetCipher.swift in Sources */,
+				F4AC504721830A880054A3D3 /* CContext.swift in Sources */,
+				F4AC506A218319060054A3D3 /* RatchetPrekeyMessage.swift in Sources */,
+				F4AC504621830A880054A3D3 /* Error.swift in Sources */,
+				F4AC5061218319060054A3D3 /* RatchetRng.swift in Sources */,
+				F4AC5065218319060054A3D3 /* RatchetMessageKey.swift in Sources */,
+				F4AC506D218319060054A3D3 /* Ratchet.swift in Sources */,
+				F4AC505D218319060054A3D3 /* RatchetSenderChain.swift in Sources */,
+				F4AC504521830A880054A3D3 /* ErrorCtx.swift in Sources */,
+				F4AC5063218319060054A3D3 /* RatchetRegularMessage.swift in Sources */,
+				F4AC5062218319060054A3D3 /* RatchetSkippedMessageKeyListNode.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4AC5025218308B90054A3D3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4AC502F218308B90054A3D3 /* VirgilCryptoRatchetTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -856,6 +1113,21 @@
 			isa = PBXTargetDependency;
 			target = F476E019216F423100990B46 /* C Frameworks */;
 			targetProxy = F476E03B216F43CD00990B46 /* PBXContainerItemProxy */;
+		};
+		F4AC502C218308B90054A3D3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F4AC5020218308B90054A3D3 /* VirgilCryptoRatchet iOS */;
+			targetProxy = F4AC502B218308B90054A3D3 /* PBXContainerItemProxy */;
+		};
+		F4AC504921830AF30054A3D3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F476E019216F423100990B46 /* C Frameworks */;
+			targetProxy = F4AC504821830AF30054A3D3 /* PBXContainerItemProxy */;
+		};
+		F4AC504B21830AF80054A3D3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F476E019216F423100990B46 /* C Frameworks */;
+			targetProxy = F4AC504A21830AF80054A3D3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1291,6 +1563,105 @@
 			};
 			name = Release;
 		};
+		F4AC5032218308B90054A3D3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = AH4G577LKX;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Binaries/iOS",
+				);
+				INFOPLIST_FILE = VirgilCryptoRatchet/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilCryptoRatchet;
+				PRODUCT_NAME = VirgilCryptoRatchet;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F4AC5033218308B90054A3D3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = AH4G577LKX;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Binaries/iOS",
+				);
+				INFOPLIST_FILE = VirgilCryptoRatchet/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilCryptoRatchet;
+				PRODUCT_NAME = VirgilCryptoRatchet;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		F4AC5034218308B90054A3D3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AH4G577LKX;
+				INFOPLIST_FILE = VirgilCryptoRatchetTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilCryptoRatchetTests;
+				PRODUCT_NAME = VirgilCyptoRatchetTests;
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F4AC5035218308B90054A3D3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AH4G577LKX;
+				INFOPLIST_FILE = VirgilCryptoRatchetTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilCryptoRatchetTests;
+				PRODUCT_NAME = VirgilCyptoRatchetTests;
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1362,6 +1733,24 @@
 			buildConfigurations = (
 				F476E039216F43B600990B46 /* Debug */,
 				F476E03A216F43B600990B46 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4AC5036218308B90054A3D3 /* Build configuration list for PBXNativeTarget "VirgilCryptoRatchet iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4AC5032218308B90054A3D3 /* Debug */,
+				F4AC5033218308B90054A3D3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4AC5037218308B90054A3D3 /* Build configuration list for PBXNativeTarget "VirgilCryptoRatchetTests iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4AC5034218308B90054A3D3 /* Debug */,
+				F4AC5035218308B90054A3D3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

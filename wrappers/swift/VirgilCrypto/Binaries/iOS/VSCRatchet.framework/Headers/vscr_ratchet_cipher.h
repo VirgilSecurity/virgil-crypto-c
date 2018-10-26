@@ -105,6 +105,12 @@ struct vscr_ratchet_cipher_t {
 };
 
 //
+//  Return size of 'vscr_ratchet_cipher_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_cipher_ctx_size(void);
+
+//
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void

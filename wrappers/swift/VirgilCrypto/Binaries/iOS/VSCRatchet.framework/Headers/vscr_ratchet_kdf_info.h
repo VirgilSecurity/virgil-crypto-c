@@ -92,6 +92,12 @@ struct vscr_ratchet_kdf_info_t {
 };
 
 //
+//  Return size of 'vscr_ratchet_kdf_info_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_kdf_info_ctx_size(void);
+
+//
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void

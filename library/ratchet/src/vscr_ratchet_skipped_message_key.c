@@ -75,6 +75,15 @@ static void
 vscr_ratchet_skipped_message_key_cleanup_ctx(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key_ctx);
 
 //
+//  Return size of 'vscr_ratchet_skipped_message_key_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_skipped_message_key_ctx_size(void) {
+
+    return sizeof(vscr_ratchet_skipped_message_key_t);
+}
+
+//
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void

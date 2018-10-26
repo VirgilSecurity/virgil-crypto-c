@@ -98,7 +98,7 @@ import VSCFoundation
             })
         })
 
-        try! FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleError(fromC: proxyResult)
 
         return out
     }
@@ -126,7 +126,7 @@ import VSCFoundation
             })
         })
 
-        try! FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleError(fromC: proxyResult)
 
         return out
     }

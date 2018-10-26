@@ -55,13 +55,13 @@
 #include "vscr_error.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -167,8 +167,8 @@ VSCR_PUBLIC void
 vscr_ratchet_session_release_ratchet(vscr_ratchet_session_t *ratchet_session_ctx);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session_ctx, vsc_buffer_t *sender_identity_private_key,
-        vsc_buffer_t *receiver_identity_public_key, vsc_buffer_t *receiver_long_term_public_key,
+vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session_ctx, vsc_data_t sender_identity_private_key,
+        vsc_data_t receiver_identity_public_key, vsc_buffer_t *receiver_long_term_public_key,
         vsc_buffer_t *receiver_one_time_public_key);
 
 VSCR_PUBLIC vscr_error_t

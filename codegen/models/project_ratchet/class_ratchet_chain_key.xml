@@ -8,7 +8,7 @@
     </property>
 
     <method name="clone" is_const="1">
-        <argument name="clone" class="self" access="writeonly"/>
+        <argument name="dst" class="self" access="readwrite"/>
     </method>
 
 </class>

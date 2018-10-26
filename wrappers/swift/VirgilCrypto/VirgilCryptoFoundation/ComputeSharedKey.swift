@@ -78,7 +78,7 @@ import VSCFoundation
             return vscf_compute_shared_key(self.c_ctx, publicKey.c_ctx, sharedKeyBuf)
         })
 
-        try! FoundationError.handleError(fromC: proxyResult)
+        try FoundationError.handleError(fromC: proxyResult)
 
         return sharedKey
     }

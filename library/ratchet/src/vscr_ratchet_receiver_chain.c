@@ -75,6 +75,15 @@ static void
 vscr_ratchet_receiver_chain_cleanup_ctx(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain_ctx);
 
 //
+//  Return size of 'vscr_ratchet_receiver_chain_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_receiver_chain_ctx_size(void) {
+
+    return sizeof(vscr_ratchet_receiver_chain_t);
+}
+
+//
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void

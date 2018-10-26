@@ -15,8 +15,8 @@
     <property name="receiver onetime public key" class="buffer" access="readwrite"/>
 
     <method name="initiate">
-        <argument name="sender identity private key" class="buffer" access="readwrite"/>
-        <argument name="receiver identity public key" class="buffer" access="readwrite"/>
+        <argument name="sender identity private key" class="data"/>
+        <argument name="receiver identity public key" class="data"/>
         <argument name="receiver long term public key" class="buffer" access="retain"/>
         <argument name="receiver one time public key" class="buffer" access="retain"/>
 
@@ -42,7 +42,11 @@
 
     <method name="encrypt">
         <argument name="plain text" class="data"/>
-        <argument name="cipher text" class="buffer" access="readwrite"/>
+        <argument name="cipher text" class="buffer">
+            <length method="encrypt len">
+                <proxy argument="plain text" to="plain text len" cast="data_length"/>
+            </length>
+        </argument>
 
         <return enum="error"/>
     </method>
@@ -55,7 +59,11 @@
 
     <method name="decrypt">
         <argument name="message" class="ratchet message"/>
-        <argument name="plain text" class="buffer" access="readwrite"/>
+        <argument name="plain text" class="buffer">
+            <length method="decrypt len">
+                <proxy argument="message" to="message"/>
+            </length>
+        </argument>
 
         <return enum="error"/>
     </method>

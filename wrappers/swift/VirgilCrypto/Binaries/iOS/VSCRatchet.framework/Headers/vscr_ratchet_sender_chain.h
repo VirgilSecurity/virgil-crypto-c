@@ -95,6 +95,12 @@ struct vscr_ratchet_sender_chain_t {
 };
 
 //
+//  Return size of 'vscr_ratchet_sender_chain_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_sender_chain_ctx_size(void);
+
+//
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
