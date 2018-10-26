@@ -221,11 +221,22 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Resolve model: implementation.method.
 # ---------------------------------------------------------------------------
-function implementation_resolve_method (method, parent)
-    check_arguments (my, "method, parent", my)
+function implementation_resolve_method (method, impl)
+    check_arguments (my, "method, impl", my)
 
     my.method.declaration ?= "private"
     my.method.definition ?= "private"
+
+    for my.method.argument where string_equal (0.class ?, "self")
+        .name ?= "ctx"
+        .access ?= "readwrite"
+        .class = my.impl.name
+    endfor
+
+    for my.method.return where string_equal (0.class ?, "self")
+        .access ?= "disown"
+        .class = my.impl.name
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
