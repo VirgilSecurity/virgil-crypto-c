@@ -39,11 +39,24 @@
 //  Primitive types
 //
 extern const vsc_data_t test_asn1_encoded_INT_2;
+extern const vsc_data_t test_asn1_encoded_INT_NEG_2;
 extern const vsc_data_t test_asn1_encoded_BOOLEAN_TRUE;
 extern const vsc_data_t test_asn1_encoded_BOOLEAN_FALSE;
 extern const vsc_data_t test_asn1_encoded_NULL;
 
-
+extern const vsc_data_t test_asn1_encoded_INT8_2;
+extern const vsc_data_t test_asn1_encoded_INT8_128;
+extern const vsc_data_t test_asn1_encoded_INT8_NEG_1;
+extern const vsc_data_t test_asn1_encoded_INT8_OVF_260;
+extern const vsc_data_t test_asn1_encoded_INT8_OVF_NEG_260;
+extern const vsc_data_t test_asn1_encoded_INT16_32760;
+extern const vsc_data_t test_asn1_encoded_INT16_NEG_32760;
+extern const vsc_data_t test_asn1_encoded_INT16_OVF_327701;
+extern const vsc_data_t test_asn1_encoded_INT16_OVF_NEG_327701;
+extern const vsc_data_t test_asn1_encoded_INT32_2147483000;
+extern const vsc_data_t test_asn1_encoded_INT32_NEG_2147483000;
+extern const vsc_data_t test_asn1_encoded_INT32_OVF_21474836471;
+extern const vsc_data_t test_asn1_encoded_INT32_OVF_NEG_21474836471;
 //
 // Strings
 //
@@ -59,5 +72,3 @@ extern const vsc_data_t test_asn1_decoded_OID_SHA256;
 //
 extern const vsc_data_t test_asn1_encoded_SEQUENCE_WITH_LEN_32;
 extern const vsc_data_t test_asn1_encoded_SET_WITH_LEN_32;
-
-

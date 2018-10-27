@@ -138,6 +138,300 @@ test__asn1wr_write_int__argument_integer_2__returns_encoded_integer_2(void) {
 }
 
 void
+test__asn1wr_write_int__argument_integer_2__returns_encoded_integer_2(void) {
+
+    vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
+    VSCF_ASSERT_PTR(asn1wr);
+
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_INT_NEG_2.len);
+
+    vscf_asn1wr_reset(asn1wr, asn1);
+
+    size_t len = vscf_asn1wr_write_int(asn1wr, 2);
+    vscf_asn1wr_seal(asn1wr);
+
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT_NEG_2.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT_NEG_2.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_INT_NEG_2.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+
+    vsc_buffer_destroy(&asn1);
+    vscf_asn1wr_destroy(&asn1wr);
+}
+
+void
+test__asn1wr_write_int__argument_int8_2__returns_encoded_int8_2(void) {
+
+    vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
+    VSCF_ASSERT_PTR(asn1wr);
+
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_INT8_2.len);
+
+    vscf_asn1wr_reset(asn1wr, asn1);
+
+    size_t len = vscf_asn1wr_write_int(asn1wr, 2);
+    vscf_asn1wr_seal(asn1wr);
+
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT8_2.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT8_2.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_INT8_2.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+
+    vsc_buffer_destroy(&asn1);
+    vscf_asn1wr_destroy(&asn1wr);
+}
+
+void
+test__asn1wr_write_int__argument_int8_128__returns_encoded_int8_128(void) {
+
+    vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
+    VSCF_ASSERT_PTR(asn1wr);
+
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_INT8_128.len);
+
+    vscf_asn1wr_reset(asn1wr, asn1);
+
+    size_t len = vscf_asn1wr_write_int(asn1wr, 128);
+    vscf_asn1wr_seal(asn1wr);
+
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT8_128.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT8_128.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_INT8_128.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+
+    vsc_buffer_destroy(&asn1);
+    vscf_asn1wr_destroy(&asn1wr);
+}
+
+void
+test__asn1wr_write_int__argument_int8_neg_1__returns_encoded_int8_neg_1(void) {
+
+    vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
+    VSCF_ASSERT_PTR(asn1wr);
+
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_INT8_NEG_1.len);
+
+    vscf_asn1wr_reset(asn1wr, asn1);
+
+    size_t len = vscf_asn1wr_write_int(asn1wr, -1);
+    vscf_asn1wr_seal(asn1wr);
+
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT8_NEG_1.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT8_NEG_1.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_INT8_NEG_1.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+
+    vsc_buffer_destroy(&asn1);
+    vscf_asn1wr_destroy(&asn1wr);
+}
+
+void
+test__asn1wr_write_int__argument_int8_overflow_260__returns_encoded_int8_overflow_260(void) {
+
+    vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
+    VSCF_ASSERT_PTR(asn1wr);
+
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_INT8_OVF_260.len);
+
+    vscf_asn1wr_reset(asn1wr, asn1);
+
+    size_t len = vscf_asn1wr_write_int(asn1wr, 260);
+    vscf_asn1wr_seal(asn1wr);
+
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT8_OVF_260.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT8_OVF_260.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_INT8_OVF_260.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+
+    vsc_buffer_destroy(&asn1);
+    vscf_asn1wr_destroy(&asn1wr);
+}
+
+void
+test__asn1wr_write_int__argument_int8_overflow_260__returns_encoded_int8_overflow_260(void) {
+
+    vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
+    VSCF_ASSERT_PTR(asn1wr);
+
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_INT8_OVF_NEG_260.len);
+
+    vscf_asn1wr_reset(asn1wr, asn1);
+
+    size_t len = vscf_asn1wr_write_int(asn1wr, 260);
+    vscf_asn1wr_seal(asn1wr);
+
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT8_OVF_NEG_260.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT8_OVF_NEG_260.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_INT8_OVF_NEG_260.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+
+    vsc_buffer_destroy(&asn1);
+    vscf_asn1wr_destroy(&asn1wr);
+}
+
+void
+test__asn1wr_write_int__argument_int16_32760__returns_encoded_int16_32760(void) {
+
+    vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
+    VSCF_ASSERT_PTR(asn1wr);
+
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_INT16_32760.len);
+
+    vscf_asn1wr_reset(asn1wr, asn1);
+
+    size_t len = vscf_asn1wr_write_int(asn1wr, 32760);
+    vscf_asn1wr_seal(asn1wr);
+
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT16_32760.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT16_32760.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_INT16_32760.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+
+    vsc_buffer_destroy(&asn1);
+    vscf_asn1wr_destroy(&asn1wr);
+}
+
+void
+test__asn1wr_write_int__argument_int16_neg_2__returns_encoded_int16_neg_32760(void) {
+
+    vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
+    VSCF_ASSERT_PTR(asn1wr);
+
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_INT16_NEG_32760.len);
+
+    vscf_asn1wr_reset(asn1wr, asn1);
+
+    size_t len = vscf_asn1wr_write_int(asn1wr, (-32760));
+    vscf_asn1wr_seal(asn1wr);
+
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT16_NEG_32760.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT16_NEG_32760.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_INT16_NEG_32760.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+
+    vsc_buffer_destroy(&asn1);
+    vscf_asn1wr_destroy(&asn1wr);
+}
+
+void
+test__asn1wr_write_int__argument_int16_overflow_327701__returns_encoded_int16_overflow_327701(void) {
+
+    vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
+    VSCF_ASSERT_PTR(asn1wr);
+
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_INT16_OVF_327701.len);
+
+    vscf_asn1wr_reset(asn1wr, asn1);
+
+    size_t len = vscf_asn1wr_write_int(asn1wr, 327701);
+    vscf_asn1wr_seal(asn1wr);
+
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT16_OVF_327701.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT16_OVF_327701.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_INT16_OVF_327701.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+
+    vsc_buffer_destroy(&asn1);
+    vscf_asn1wr_destroy(&asn1wr);
+}
+
+void
+test__asn1wr_write_int__argument_int16_overflow_neg_327701__returns_encoded_int16_overflow_neg_327701(void) {
+
+    vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
+    VSCF_ASSERT_PTR(asn1wr);
+
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_INT16_OVF_NEG_327701.len);
+
+    vscf_asn1wr_reset(asn1wr, asn1);
+
+    size_t len = vscf_asn1wr_write_int(asn1wr, -327701);
+    vscf_asn1wr_seal(asn1wr);
+
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT16_OVF_NEG_327701.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT16_OVF_NEG_327701.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_INT16_OVF_NEG_327701.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+
+    vsc_buffer_destroy(&asn1);
+    vscf_asn1wr_destroy(&asn1wr);
+}
+
+void
+test__asn1wr_write_int__argument_int32_overflow_2147483000__returns_encoded_int32_overflow_2147483000(void) {
+
+    vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
+    VSCF_ASSERT_PTR(asn1wr);
+
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_INT32_2147483000.len);
+
+    vscf_asn1wr_reset(asn1wr, asn1);
+
+    size_t len = vscf_asn1wr_write_int(asn1wr, 2147483000);
+    vscf_asn1wr_seal(asn1wr);
+
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT32_2147483000.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT32_2147483000.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_INT32_2147483000.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+
+    vsc_buffer_destroy(&asn1);
+    vscf_asn1wr_destroy(&asn1wr);
+}
+
+void
+test__asn1wr_write_int__argument_int32_overflow_NEG_2147483000__returns_encoded_int32_overflow_NEG_2147483000(void) {
+
+    vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
+    VSCF_ASSERT_PTR(asn1wr);
+
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_INT32_NEG_2147483000.len);
+
+    vscf_asn1wr_reset(asn1wr, asn1);
+
+    size_t len = vscf_asn1wr_write_int(asn1wr, -2147483000);
+    vscf_asn1wr_seal(asn1wr);
+
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT32_NEG_2147483000.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT32_NEG_2147483000.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_INT32_NEG_2147483000.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+
+    vsc_buffer_destroy(&asn1);
+    vscf_asn1wr_destroy(&asn1wr);
+}
+
+void
+test__asn1wr_write_int__argument_int32_overflow_21474836471__returns_encoded_int32_overflow_21474836471(void) {
+
+    vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
+    VSCF_ASSERT_PTR(asn1wr);
+
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_INT32_OVF_21474836471.len);
+
+    vscf_asn1wr_reset(asn1wr, asn1);
+
+    size_t len = vscf_asn1wr_write_int(asn1wr, 21474836471);
+    vscf_asn1wr_seal(asn1wr);
+
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT32_OVF_21474836471.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT32_OVF_21474836471.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_INT32_OVF_21474836471.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+
+    vsc_buffer_destroy(&asn1);
+    vscf_asn1wr_destroy(&asn1wr);
+}
+
+void
+test__asn1wr_write_int__argument_int32_overflow_NEG_21474836471__returns_encoded_int32_overflow_NEG_21474836471(void) {
+
+    vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
+    VSCF_ASSERT_PTR(asn1wr);
+
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_INT32_OVF_NEG_21474836471.len);
+
+    vscf_asn1wr_reset(asn1wr, asn1);
+
+    size_t len = vscf_asn1wr_write_int(asn1wr, -21474836471);
+    vscf_asn1wr_seal(asn1wr);
+
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT32_OVF_NEG_21474836471.len, len);
+    TEST_ASSERT_EQUAL(test_asn1_encoded_INT32_OVF_NEG_21474836471.len, vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_INT32_OVF_NEG_21474836471.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+
+    vsc_buffer_destroy(&asn1);
+    vscf_asn1wr_destroy(&asn1wr);
+}
+
+void
 test__asn1wr_write_bool__argument_bool_false__returns_encoded_bool_false(void) {
 
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
