@@ -119,6 +119,11 @@
 		F4AC506B218319060054A3D3 /* RatchetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC505A218319060054A3D3 /* RatchetMessage.swift */; };
 		F4AC506C218319060054A3D3 /* RatchetReceiverChainListNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC505B218319060054A3D3 /* RatchetReceiverChainListNode.swift */; };
 		F4AC506D218319060054A3D3 /* Ratchet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC505C218319060054A3D3 /* Ratchet.swift */; };
+		F4AC507D21876AF50054A3D3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC507C21876AF50054A3D3 /* AppDelegate.swift */; };
+		F4AC507F21876AF50054A3D3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AC507E21876AF50054A3D3 /* ViewController.swift */; };
+		F4AC508221876AF50054A3D3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F4AC508021876AF50054A3D3 /* Main.storyboard */; };
+		F4AC508421876AF70054A3D3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4AC508321876AF70054A3D3 /* Assets.xcassets */; };
+		F4AC508721876AF70054A3D3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F4AC508521876AF70054A3D3 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -205,6 +210,34 @@
 			proxyType = 1;
 			remoteGlobalIDString = F476E019216F423100990B46;
 			remoteInfo = "C Frameworks";
+		};
+		F4AC508C21876B050054A3D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4376A3A216F406000C57E21 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F4AC507921876AF50054A3D3;
+			remoteInfo = UnitTetstHost;
+		};
+		F4AC508E21876D550054A3D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4376A3A216F406000C57E21 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F4AC507921876AF50054A3D3;
+			remoteInfo = UnitTestHost;
+		};
+		F4AC509021876D570054A3D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4376A3A216F406000C57E21 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F4AC507921876AF50054A3D3;
+			remoteInfo = UnitTestHost;
+		};
+		F4AC509221876D5A0054A3D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4376A3A216F406000C57E21 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F4AC507921876AF50054A3D3;
+			remoteInfo = UnitTestHost;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -354,6 +387,13 @@
 		F4AC505A218319060054A3D3 /* RatchetMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatchetMessage.swift; sourceTree = "<group>"; };
 		F4AC505B218319060054A3D3 /* RatchetReceiverChainListNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatchetReceiverChainListNode.swift; sourceTree = "<group>"; };
 		F4AC505C218319060054A3D3 /* Ratchet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ratchet.swift; sourceTree = "<group>"; };
+		F4AC507A21876AF50054A3D3 /* UnitTestHost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UnitTestHost.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4AC507C21876AF50054A3D3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		F4AC507E21876AF50054A3D3 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		F4AC508121876AF50054A3D3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		F4AC508321876AF70054A3D3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F4AC508621876AF70054A3D3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		F4AC508821876AF70054A3D3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F4B84230216F44A200C3D7F4 /* VirgilCryptoCommon.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VirgilCryptoCommon.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4B84231216F44A200C3D7F4 /* VirgilCryptoCommonTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VirgilCryptoCommonTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -423,6 +463,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				F4AC502A218308B90054A3D3 /* VirgilCryptoRatchet.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4AC507721876AF50054A3D3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -515,6 +562,8 @@
 				F438C6602173AEBD00D0933B /* VirgilCryptoPythiaTests.xctest */,
 				F4AC5021218308B90054A3D3 /* VirgilCryptoRatchet.framework */,
 				F4AC5029218308B90054A3D3 /* VirgilCyptoRatchetTests.xctest */,
+				F4AC507A21876AF50054A3D3 /* UnitTestHost.app */,
+				F4AC507B21876AF50054A3D3 /* UnitTetstHost */,
 			);
 			sourceTree = "<group>";
 		};
@@ -647,6 +696,19 @@
 			path = VirgilCryptoRatchetTests;
 			sourceTree = "<group>";
 		};
+		F4AC507B21876AF50054A3D3 /* UnitTetstHost */ = {
+			isa = PBXGroup;
+			children = (
+				F4AC507C21876AF50054A3D3 /* AppDelegate.swift */,
+				F4AC507E21876AF50054A3D3 /* ViewController.swift */,
+				F4AC508021876AF50054A3D3 /* Main.storyboard */,
+				F4AC508321876AF70054A3D3 /* Assets.xcassets */,
+				F4AC508521876AF70054A3D3 /* LaunchScreen.storyboard */,
+				F4AC508821876AF70054A3D3 /* Info.plist */,
+			);
+			path = UnitTetstHost;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -718,6 +780,7 @@
 			dependencies = (
 				F4AC5073218766460054A3D3 /* PBXTargetDependency */,
 				F431D87D217E3B3400A9389F /* PBXTargetDependency */,
+				F4AC509121876D570054A3D3 /* PBXTargetDependency */,
 			);
 			name = "VirgilCryptoFoundationTests iOS";
 			productName = "VirgilCryptoFoundationTests iOS";
@@ -757,6 +820,7 @@
 			dependencies = (
 				F4AC50712187663F0054A3D3 /* PBXTargetDependency */,
 				F438C6632173AEBD00D0933B /* PBXTargetDependency */,
+				F4AC509321876D5A0054A3D3 /* PBXTargetDependency */,
 			);
 			name = "VirgilCryptoPythiaTests iOS";
 			productName = VirgilCryptoPythiaTests;
@@ -796,6 +860,7 @@
 			dependencies = (
 				F4AC5075218766550054A3D3 /* PBXTargetDependency */,
 				F476E02F216F43B600990B46 /* PBXTargetDependency */,
+				F4AC508F21876D550054A3D3 /* PBXTargetDependency */,
 			);
 			name = "VirgilCryptoCommonTests iOS";
 			productName = VirgilCryptoCommonTests;
@@ -835,11 +900,29 @@
 			dependencies = (
 				F4AC506F218766330054A3D3 /* PBXTargetDependency */,
 				F4AC502C218308B90054A3D3 /* PBXTargetDependency */,
+				F4AC508D21876B050054A3D3 /* PBXTargetDependency */,
 			);
 			name = "VirgilCryptoRatchetTests iOS";
 			productName = VirgilCryptoRatchetTests;
 			productReference = F4AC5029218308B90054A3D3 /* VirgilCyptoRatchetTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		F4AC507921876AF50054A3D3 /* UnitTestHost */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4AC508921876AF70054A3D3 /* Build configuration list for PBXNativeTarget "UnitTestHost" */;
+			buildPhases = (
+				F4AC507621876AF50054A3D3 /* Sources */,
+				F4AC507721876AF50054A3D3 /* Frameworks */,
+				F4AC507821876AF50054A3D3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = UnitTestHost;
+			productName = UnitTetstHost;
+			productReference = F4AC507A21876AF50054A3D3 /* UnitTestHost.app */;
+			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
@@ -857,6 +940,7 @@
 					};
 					F431D875217E3B3400A9389F = {
 						CreatedOnToolsVersion = 10.0;
+						TestTargetID = F4AC507921876AF50054A3D3;
 					};
 					F438C6572173AEBD00D0933B = {
 						CreatedOnToolsVersion = 10.0;
@@ -864,6 +948,7 @@
 					};
 					F438C65F2173AEBD00D0933B = {
 						CreatedOnToolsVersion = 10.0;
+						TestTargetID = F4AC507921876AF50054A3D3;
 					};
 					F476E019216F423100990B46 = {
 						CreatedOnToolsVersion = 10.0;
@@ -873,12 +958,17 @@
 					};
 					F476E02B216F43B600990B46 = {
 						CreatedOnToolsVersion = 10.0;
+						TestTargetID = F4AC507921876AF50054A3D3;
 					};
 					F4AC5020218308B90054A3D3 = {
 						CreatedOnToolsVersion = 10.0;
 						LastSwiftMigration = 1000;
 					};
 					F4AC5028218308B90054A3D3 = {
+						CreatedOnToolsVersion = 10.0;
+						TestTargetID = F4AC507921876AF50054A3D3;
+					};
+					F4AC507921876AF50054A3D3 = {
 						CreatedOnToolsVersion = 10.0;
 					};
 				};
@@ -889,6 +979,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = F4376A39216F406000C57E21;
 			productRefGroup = F4376A39216F406000C57E21;
@@ -904,6 +995,7 @@
 				F438C65F2173AEBD00D0933B /* VirgilCryptoPythiaTests iOS */,
 				F4AC5020218308B90054A3D3 /* VirgilCryptoRatchet iOS */,
 				F4AC5028218308B90054A3D3 /* VirgilCryptoRatchetTests iOS */,
+				F4AC507921876AF50054A3D3 /* UnitTestHost */,
 			);
 		};
 /* End PBXProject section */
@@ -962,6 +1054,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4AC507821876AF50054A3D3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4AC508721876AF70054A3D3 /* LaunchScreen.storyboard in Resources */,
+				F4AC508421876AF70054A3D3 /* Assets.xcassets in Resources */,
+				F4AC508221876AF50054A3D3 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1118,6 +1220,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F4AC507621876AF50054A3D3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4AC507F21876AF50054A3D3 /* ViewController.swift in Sources */,
+				F4AC507D21876AF50054A3D3 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1181,7 +1292,46 @@
 			target = F476E019216F423100990B46 /* C Frameworks */;
 			targetProxy = F4AC5074218766550054A3D3 /* PBXContainerItemProxy */;
 		};
+		F4AC508D21876B050054A3D3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F4AC507921876AF50054A3D3 /* UnitTestHost */;
+			targetProxy = F4AC508C21876B050054A3D3 /* PBXContainerItemProxy */;
+		};
+		F4AC508F21876D550054A3D3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F4AC507921876AF50054A3D3 /* UnitTestHost */;
+			targetProxy = F4AC508E21876D550054A3D3 /* PBXContainerItemProxy */;
+		};
+		F4AC509121876D570054A3D3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F4AC507921876AF50054A3D3 /* UnitTestHost */;
+			targetProxy = F4AC509021876D570054A3D3 /* PBXContainerItemProxy */;
+		};
+		F4AC509321876D5A0054A3D3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F4AC507921876AF50054A3D3 /* UnitTestHost */;
+			targetProxy = F4AC509221876D5A0054A3D3 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		F4AC508021876AF50054A3D3 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4AC508121876AF50054A3D3 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		F4AC508521876AF70054A3D3 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F4AC508621876AF70054A3D3 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		F429BF122173AB42001F0D8E /* Debug */ = {
@@ -1260,6 +1410,7 @@
 				PRODUCT_NAME = VirgilCryptoFoundationTests;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/UnitTestHost.app/UnitTestHost";
 			};
 			name = Debug;
 		};
@@ -1278,6 +1429,7 @@
 				PRODUCT_NAME = VirgilCryptoFoundationTests;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/UnitTestHost.app/UnitTestHost";
 			};
 			name = Release;
 		};
@@ -1480,6 +1632,7 @@
 				PRODUCT_NAME = VirgilCryptoPythiaTests;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/UnitTestHost.app/UnitTestHost";
 			};
 			name = Debug;
 		};
@@ -1499,6 +1652,7 @@
 				PRODUCT_NAME = VirgilCryptoPythiaTests;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/UnitTestHost.app/UnitTestHost";
 			};
 			name = Release;
 		};
@@ -1594,6 +1748,7 @@
 				PRODUCT_NAME = VirgilCryptoCommonTests;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/UnitTestHost.app/UnitTestHost";
 			};
 			name = Debug;
 		};
@@ -1612,6 +1767,7 @@
 				PRODUCT_NAME = VirgilCryptoCommonTests;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/UnitTestHost.app/UnitTestHost";
 			};
 			name = Release;
 		};
@@ -1692,6 +1848,7 @@
 				PRODUCT_NAME = VirgilCyptoRatchetTests;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/UnitTestHost.app/UnitTestHost";
 			};
 			name = Debug;
 		};
@@ -1709,6 +1866,43 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.VirgilCryptoRatchetTests;
 				PRODUCT_NAME = VirgilCyptoRatchetTests;
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/UnitTestHost.app/UnitTestHost";
+			};
+			name = Release;
+		};
+		F4AC508A21876AF70054A3D3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AH4G577LKX;
+				INFOPLIST_FILE = UnitTetstHost/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.UnitTetstHost;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F4AC508B21876AF70054A3D3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AH4G577LKX;
+				INFOPLIST_FILE = UnitTetstHost/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.virgilsecurity.UnitTetstHost;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1803,6 +1997,15 @@
 			buildConfigurations = (
 				F4AC5034218308B90054A3D3 /* Debug */,
 				F4AC5035218308B90054A3D3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4AC508921876AF70054A3D3 /* Build configuration list for PBXNativeTarget "UnitTestHost" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4AC508A21876AF70054A3D3 /* Debug */,
+				F4AC508B21876AF70054A3D3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
