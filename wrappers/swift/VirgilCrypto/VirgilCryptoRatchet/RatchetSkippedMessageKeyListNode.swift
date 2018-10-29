@@ -35,6 +35,8 @@
 
 import Foundation
 import VSCRatchet
+import VirgilCryptoCommon
+import VirgilCryptoFoundation
 
 @objc(VSCRRatchetSkippedMessageKeyListNode) public class RatchetSkippedMessageKeyListNode: NSObject {
 

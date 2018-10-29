@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCFoundation
+import VirgilCryptoCommon
 
 /// Provide details about implemented MAC (message authentication code) algorithm.
 @objc(VSCFMacInfo) public protocol MacInfo : CContext {

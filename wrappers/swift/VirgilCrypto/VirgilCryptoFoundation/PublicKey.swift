@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCFoundation
+import VirgilCryptoCommon
 
 /// Contains public part of the key.
 @objc(VSCFPublicKey) public protocol PublicKey : Key {

@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCFoundation
+import VirgilCryptoCommon
 
 /// Provides interface to the MAC (message authentication code) algorithms.
 @objc(VSCFMacStream) public protocol MacStream : MacInfo {

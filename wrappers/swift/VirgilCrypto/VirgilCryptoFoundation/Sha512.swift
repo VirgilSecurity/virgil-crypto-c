@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCFoundation
+import VirgilCryptoCommon
 
 /// This is MbedTLS implementation of SHA512.
 @objc(VSCFSha512) public class Sha512: NSObject, HashInfo, Hash, HashStream {

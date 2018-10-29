@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCFoundation
+import VirgilCryptoCommon
 
 /// This is MbedTLS implementation of ASN.1 writer.
 @objc(VSCFAsn1wr) public class Asn1wr: NSObject, Asn1Writer {

@@ -35,6 +35,8 @@
 
 import Foundation
 import VSCRatchet
+import VirgilCryptoCommon
+import VirgilCryptoFoundation
 
 /// Error context.
 /// Can be used for sequential operations, i.e. parsers, to accumulate error.
