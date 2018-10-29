@@ -79,12 +79,12 @@ const vsc_data_t test_asn1_encoded_NULL = {
 };
 
 //Signed
-const byte test_asn1_encoded_INT8_2_BYTES[] = {
-  0x02, 0x01, 0x02
+const byte test_asn1_encoded_INT8_0_BYTES[] = {
+  0x02, 0x01, 0x00
 };
 
-const vsc_data_t test_asn1_encoded_INT8_2 = {
-    test_asn1_encoded_INT8_2_BYTES, sizeof(test_asn1_encoded_INT8_2_BYTES)
+const vsc_data_t test_asn1_encoded_INT8_0 = {
+    test_asn1_encoded_INT8_0_BYTES, sizeof(test_asn1_encoded_INT8_0_BYTES)
 };
 
 const byte test_asn1_encoded_INT8_127_BYTES[] = {
@@ -95,30 +95,12 @@ const vsc_data_t test_asn1_encoded_INT8_127 = {
     test_asn1_encoded_INT8_127_BYTES, sizeof(test_asn1_encoded_INT8_127_BYTES)
 };
 
-const byte test_asn1_encoded_INT8_NEG_1_BYTES[] = {
-  0x02, 0x01, 0xFF
+const byte test_asn1_encoded_INT8_NEG_128_BYTES[] = {
+  0x02, 0x01, 0x80
 };
 
-const vsc_data_t test_asn1_encoded_INT8_NEG_1 = {
-    test_asn1_encoded_INT8_NEG_1_BYTES, sizeof(test_asn1_encoded_INT8_NEG_1_BYTES)
-};
-
-const byte test_asn1_encoded_INT8_OVF_260_BYTES[] = {
-  0x02, 0x02, 0x01, 0x04
-};
-
-const vsc_data_t test_asn1_encoded_INT8_OVF_260 = {
-    test_asn1_encoded_INT8_OVF_260_BYTES, sizeof(test_asn1_encoded_INT8_OVF_260_BYTES)
-};
-
-//TODO: in generally the value of int8_t parameter after assigning the value 260 should be 4
-// i.e. 0x02, 0x01, 0x04
-const byte test_asn1_encoded_INT8_OVF_NEG_260_BYTES[] = {
-  0x02, 0x02, 0xFE, 0xFC
-};
-
-const vsc_data_t test_asn1_encoded_INT8_OVF_NEG_260 = {
-    test_asn1_encoded_INT8_OVF_NEG_260_BYTES, sizeof(test_asn1_encoded_INT8_OVF_NEG_260_BYTES)
+const vsc_data_t test_asn1_encoded_INT8_NEG_128 = {
+    test_asn1_encoded_INT8_NEG_128_BYTES, sizeof(test_asn1_encoded_INT8_NEG_128_BYTES)
 };
 
 const byte test_asn1_encoded_INT16_32760_BYTES[] = {
@@ -136,22 +118,6 @@ const byte test_asn1_encoded_INT16_NEG_32760_BYTES[] = {
 const vsc_data_t test_asn1_encoded_INT16_NEG_32760 = {
     test_asn1_encoded_INT16_NEG_32760_BYTES, sizeof(test_asn1_encoded_INT16_NEG_32760_BYTES)
 };
-//TODO: this is overflow of parameter, i.e. should be 21 and 0x02, 0x01, 0x15
-const byte test_asn1_encoded_INT16_OVF_327701_BYTES[] = {
-  0x02, 0x03, 0x05, 0x00, 0x15
-};
-
-const vsc_data_t test_asn1_encoded_INT16_OVF_327701 = {
-    test_asn1_encoded_INT16_OVF_327701_BYTES, sizeof(test_asn1_encoded_INT16_OVF_327701_BYTES)
-};
-//TODO: with overflow - 0x02, 0x01, 0xEB
-const byte test_asn1_encoded_INT16_OVF_NEG_327701_BYTES[] = {
-  0x02, 0x03, 0xFA, 0xFF, 0xEB
-};
-
-const vsc_data_t test_asn1_encoded_INT16_OVF_NEG_327701 = {
-    test_asn1_encoded_INT16_OVF_NEG_327701_BYTES, sizeof(test_asn1_encoded_INT16_OVF_NEG_327701_BYTES)
-};
 
 const byte test_asn1_encoded_INT32_2147483000_BYTES[] = {
   0x02, 0x04, 0x7F, 0xFF, 0xFD, 0x78
@@ -167,22 +133,6 @@ const byte test_asn1_encoded_INT32_NEG_2147483000_BYTES[] = {
 
 const vsc_data_t test_asn1_encoded_INT32_NEG_2147483000 = {
     test_asn1_encoded_INT32_NEG_2147483000_BYTES, sizeof(test_asn1_encoded_INT32_NEG_2147483000_BYTES)
-};
-
-const byte test_asn1_encoded_INT32_OVF_21474836471_BYTES[] = {
-  0x02, 0x05, 0x04, 0xFF, 0xFF, 0xFF, 0xF7
-};
-
-const vsc_data_t test_asn1_encoded_INT32_OVF_21474836471 = {
-    test_asn1_encoded_INT32_OVF_21474836471_BYTES, sizeof(test_asn1_encoded_INT32_OVF_21474836471_BYTES)
-};
-
-const byte test_asn1_encoded_INT32_OVF_NEG_21474836471_BYTES[] = {
-  0x02, 0x05, 0xFB, 0x00, 0x00, 0x00, 0x09
-};
-
-const vsc_data_t test_asn1_encoded_INT32_OVF_NEG_21474836471 = {
-    test_asn1_encoded_INT32_OVF_NEG_21474836471_BYTES, sizeof(test_asn1_encoded_INT32_OVF_NEG_21474836471_BYTES)
 };
 
 //Unsigned
@@ -218,28 +168,12 @@ const vsc_data_t test_asn1_encoded_UINT16_65535 = {
     test_asn1_encoded_UINT16_65535_BYTES, sizeof(test_asn1_encoded_UINT16_65535_BYTES)
 };
 
-const byte test_asn1_encoded_UINT16_0_BYTES[] = {
-  0x02, 0x01, 0x00
-};
-
-const vsc_data_t test_asn1_encoded_UINT16_0 = {
-    test_asn1_encoded_UINT16_0_BYTES, sizeof(test_asn1_encoded_UINT16_0_BYTES)
-};
-
-const byte test_asn1_encoded_UINT32_0_BYTES[] = {
-  0x02, 0x01, 0x00
-};
-
-const vsc_data_t test_asn1_encoded_UINT32_0 = {
-    test_asn1_encoded_UINT16_0_BYTES, sizeof(test_asn1_encoded_UINT16_0_BYTES)
-};
-
 const byte test_asn1_encoded_UINT32_4294967295_BYTES[] = {
   0x02, 0x05, 0x00, 0xFF, 0xFF, 0xFF, 0xFF
 };
 
 const vsc_data_t test_asn1_encoded_UINT32_4294967295 = {
-    test_asn1_encoded_UINT32_4294967295_BYTES, sizeof(test_asn1_encoded_UINT16_0_BYTES)
+    test_asn1_encoded_UINT32_4294967295_BYTES, sizeof(test_asn1_encoded_UINT32_4294967295_BYTES)
 };
 //
 // Strings
