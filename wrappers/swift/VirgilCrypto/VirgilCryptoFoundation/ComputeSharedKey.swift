@@ -78,6 +78,7 @@ import VirgilCryptoCommon
             vsc_buffer_use(sharedKeyBuf, sharedKeyPointer, sharedKeyCount)
             return vscf_compute_shared_key(self.c_ctx, publicKey.c_ctx, sharedKeyBuf)
         })
+        sharedKey.count = vsc_buffer_len(sharedKeyBuf)
 
         try FoundationError.handleError(fromC: proxyResult)
 
@@ -87,6 +88,7 @@ import VirgilCryptoCommon
     /// Return number of bytes required to hold shared key.
     @objc public func sharedKeyLen() -> Int {
         let proxyResult = vscf_compute_shared_key_shared_key_len(self.c_ctx)
+
         return proxyResult
     }
 }

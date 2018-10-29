@@ -128,6 +128,9 @@ vscr_ratchet_cipher_cleanup(vscr_ratchet_cipher_t *ratchet_cipher_ctx);
 VSCR_PUBLIC vscr_ratchet_cipher_t *
 vscr_ratchet_cipher_new(void);
 
+VSCR_PUBLIC vscr_ratchet_cipher_t *
+vscr_ratchet_cipher_new_with_members(vsc_data_t kdf_info);
+
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.

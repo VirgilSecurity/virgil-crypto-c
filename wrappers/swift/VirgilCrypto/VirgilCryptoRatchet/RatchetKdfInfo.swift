@@ -63,6 +63,16 @@ import VirgilCryptoFoundation
         super.init()
     }
 
+    public init(rootInfo: Data, ratchetInfo: Data) {
+        let proxyResult = rootInfo.withUnsafeBytes({ (rootInfoPointer: UnsafePointer<byte>) -> UnsafeMutablePointer<vscr_ratchet_kdf_info_t> in
+            ratchetInfo.withUnsafeBytes({ (ratchetInfoPointer: UnsafePointer<byte>) -> UnsafeMutablePointer<vscr_ratchet_kdf_info_t> in
+                return vscr_ratchet_kdf_info_new_with_members(vsc_data(rootInfoPointer, rootInfo.count), vsc_data(ratchetInfoPointer, ratchetInfo.count))
+            })
+        })
+
+        self.c_ctx = proxyResult
+    }
+
     /// Release underlying C context.
     deinit {
         vscr_ratchet_kdf_info_delete(self.c_ctx)

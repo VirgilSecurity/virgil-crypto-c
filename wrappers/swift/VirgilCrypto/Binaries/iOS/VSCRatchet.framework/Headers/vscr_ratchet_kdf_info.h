@@ -51,10 +51,12 @@
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
 #endif
 
 // clang-format on
@@ -114,6 +116,9 @@ vscr_ratchet_kdf_info_cleanup(vscr_ratchet_kdf_info_t *ratchet_kdf_info_ctx);
 //
 VSCR_PUBLIC vscr_ratchet_kdf_info_t *
 vscr_ratchet_kdf_info_new(void);
+
+VSCR_PUBLIC vscr_ratchet_kdf_info_t *
+vscr_ratchet_kdf_info_new_with_members(vsc_data_t root_info, vsc_data_t ratchet_info);
 
 //
 //  Release all inner resources and deallocate context if needed.

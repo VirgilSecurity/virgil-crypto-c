@@ -79,6 +79,7 @@ import VirgilCryptoCommon
             vsc_buffer_use(outBuf, outPointer, outCount)
             return vscf_export_private_key(self.c_ctx, outBuf)
         })
+        out.count = vsc_buffer_len(outBuf)
 
         try FoundationError.handleError(fromC: proxyResult)
 
@@ -88,6 +89,7 @@ import VirgilCryptoCommon
     /// Return length in bytes required to hold exported private key.
     @objc public func exportedPrivateKeyLen() -> Int {
         let proxyResult = vscf_export_private_key_exported_private_key_len(self.c_ctx)
+
         return proxyResult
     }
 }

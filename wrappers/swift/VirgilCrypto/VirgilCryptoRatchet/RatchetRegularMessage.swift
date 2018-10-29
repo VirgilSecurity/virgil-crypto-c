@@ -63,6 +63,25 @@ import VirgilCryptoFoundation
         super.init()
     }
 
+    public init(version: UInt8, counter: UInt32, publicKey: Data, cipherText: Data) {
+        let proxyResult = publicKey.withUnsafeBytes({ (publicKeyPointer: UnsafePointer<byte>) -> UnsafeMutablePointer<vscr_ratchet_regular_message_t> in
+            cipherText.withUnsafeBytes({ (cipherTextPointer: UnsafePointer<byte>) -> UnsafeMutablePointer<vscr_ratchet_regular_message_t> in
+                var publicKeyBuf = vsc_buffer_new_with_data(vsc_data(publicKeyPointer, publicKey.count))
+                defer {
+                    vsc_buffer_delete(publicKeyBuf)
+                }
+
+                var cipherTextBuf = vsc_buffer_new_with_data(vsc_data(cipherTextPointer, cipherText.count))
+                defer {
+                    vsc_buffer_delete(cipherTextBuf)
+                }
+                return vscr_ratchet_regular_message_new_with_members(version, counter, publicKeyBuf, cipherTextBuf)
+            })
+        })
+
+        self.c_ctx = proxyResult
+    }
+
     /// Release underlying C context.
     deinit {
         vscr_ratchet_regular_message_delete(self.c_ctx)
@@ -70,11 +89,13 @@ import VirgilCryptoFoundation
 
     @objc public static func serializeLen(cipherTextLen: Int) -> Int {
         let proxyResult = vscr_ratchet_regular_message_serialize_len(cipherTextLen)
+
         return proxyResult
     }
 
     @objc public func serializeLenExt() -> Int {
         let proxyResult = vscr_ratchet_regular_message_serialize_len_ext(self.c_ctx)
+
         return proxyResult
     }
 
@@ -91,6 +112,7 @@ import VirgilCryptoFoundation
             vsc_buffer_use(outputBuf, outputPointer, outputCount)
             return vscr_ratchet_regular_message_serialize(self.c_ctx, outputBuf)
         })
+        output.count = vsc_buffer_len(outputBuf)
 
         try RatchetError.handleError(fromC: proxyResult)
 

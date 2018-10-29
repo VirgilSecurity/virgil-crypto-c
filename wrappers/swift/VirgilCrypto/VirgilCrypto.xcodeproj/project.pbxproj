@@ -178,6 +178,34 @@
 			remoteGlobalIDString = F476E019216F423100990B46;
 			remoteInfo = "C Frameworks";
 		};
+		F4AC506E218766330054A3D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4376A3A216F406000C57E21 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F476E019216F423100990B46;
+			remoteInfo = "C Frameworks";
+		};
+		F4AC50702187663F0054A3D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4376A3A216F406000C57E21 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F476E019216F423100990B46;
+			remoteInfo = "C Frameworks";
+		};
+		F4AC5072218766460054A3D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4376A3A216F406000C57E21 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F476E019216F423100990B46;
+			remoteInfo = "C Frameworks";
+		};
+		F4AC5074218766550054A3D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4376A3A216F406000C57E21 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F476E019216F423100990B46;
+			remoteInfo = "C Frameworks";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -688,6 +716,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F4AC5073218766460054A3D3 /* PBXTargetDependency */,
 				F431D87D217E3B3400A9389F /* PBXTargetDependency */,
 			);
 			name = "VirgilCryptoFoundationTests iOS";
@@ -726,6 +755,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F4AC50712187663F0054A3D3 /* PBXTargetDependency */,
 				F438C6632173AEBD00D0933B /* PBXTargetDependency */,
 			);
 			name = "VirgilCryptoPythiaTests iOS";
@@ -764,6 +794,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F4AC5075218766550054A3D3 /* PBXTargetDependency */,
 				F476E02F216F43B600990B46 /* PBXTargetDependency */,
 			);
 			name = "VirgilCryptoCommonTests iOS";
@@ -802,6 +833,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				F4AC506F218766330054A3D3 /* PBXTargetDependency */,
 				F4AC502C218308B90054A3D3 /* PBXTargetDependency */,
 			);
 			name = "VirgilCryptoRatchetTests iOS";
@@ -1128,6 +1160,26 @@
 			isa = PBXTargetDependency;
 			target = F476E019216F423100990B46 /* C Frameworks */;
 			targetProxy = F4AC504A21830AF80054A3D3 /* PBXContainerItemProxy */;
+		};
+		F4AC506F218766330054A3D3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F476E019216F423100990B46 /* C Frameworks */;
+			targetProxy = F4AC506E218766330054A3D3 /* PBXContainerItemProxy */;
+		};
+		F4AC50712187663F0054A3D3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F476E019216F423100990B46 /* C Frameworks */;
+			targetProxy = F4AC50702187663F0054A3D3 /* PBXContainerItemProxy */;
+		};
+		F4AC5073218766460054A3D3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F476E019216F423100990B46 /* C Frameworks */;
+			targetProxy = F4AC5072218766460054A3D3 /* PBXContainerItemProxy */;
+		};
+		F4AC5075218766550054A3D3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F476E019216F423100990B46 /* C Frameworks */;
+			targetProxy = F4AC5074218766550054A3D3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

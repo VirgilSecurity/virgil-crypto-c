@@ -83,54 +83,63 @@ import VirgilCryptoCommon
     /// Return length of the buffer needed to hold 'blinded password'.
     @objc public static func blindedPasswordBufLen() -> Int {
         let proxyResult = vscp_pythia_blinded_password_buf_len()
+
         return proxyResult
     }
 
     /// Return length of the buffer needed to hold 'deblinded password'.
     @objc public static func deblindedPasswordBufLen() -> Int {
         let proxyResult = vscp_pythia_deblinded_password_buf_len()
+
         return proxyResult
     }
 
     /// Return length of the buffer needed to hold 'blinding secret'.
     @objc public static func blindingSecretBufLen() -> Int {
         let proxyResult = vscp_pythia_blinding_secret_buf_len()
+
         return proxyResult
     }
 
     /// Return length of the buffer needed to hold 'transformation private key'.
     @objc public static func transformationPrivateKeyBufLen() -> Int {
         let proxyResult = vscp_pythia_transformation_private_key_buf_len()
+
         return proxyResult
     }
 
     /// Return length of the buffer needed to hold 'transformation public key'.
     @objc public static func transformationPublicKeyBufLen() -> Int {
         let proxyResult = vscp_pythia_transformation_public_key_buf_len()
+
         return proxyResult
     }
 
     /// Return length of the buffer needed to hold 'transformed password'.
     @objc public static func transformedPasswordBufLen() -> Int {
         let proxyResult = vscp_pythia_transformed_password_buf_len()
+
         return proxyResult
     }
 
     /// Return length of the buffer needed to hold 'transformed tweak'.
     @objc public static func transformedTweakBufLen() -> Int {
         let proxyResult = vscp_pythia_transformed_tweak_buf_len()
+
         return proxyResult
     }
 
     /// Return length of the buffer needed to hold 'proof value'.
     @objc public static func proofValueBufLen() -> Int {
         let proxyResult = vscp_pythia_proof_value_buf_len()
+
         return proxyResult
     }
 
     /// Return length of the buffer needed to hold 'password update token'.
     @objc public static func passwordUpdateTokenBufLen() -> Int {
         let proxyResult = vscp_pythia_password_update_token_buf_len()
+
         return proxyResult
     }
 
@@ -163,6 +172,8 @@ import VirgilCryptoCommon
                 })
             })
         })
+        blindedPassword.count = vsc_buffer_len(blindedPasswordBuf)
+        blindingSecret.count = vsc_buffer_len(blindingSecretBuf)
 
         try PythiaError.handleError(fromC: proxyResult)
 
@@ -187,6 +198,7 @@ import VirgilCryptoCommon
                 })
             })
         })
+        deblindedPassword.count = vsc_buffer_len(deblindedPasswordBuf)
 
         try PythiaError.handleError(fromC: proxyResult)
 
@@ -225,6 +237,8 @@ import VirgilCryptoCommon
                 })
             })
         })
+        transformationPrivateKey.count = vsc_buffer_len(transformationPrivateKeyBuf)
+        transformationPublicKey.count = vsc_buffer_len(transformationPublicKeyBuf)
 
         try PythiaError.handleError(fromC: proxyResult)
 
@@ -263,6 +277,8 @@ import VirgilCryptoCommon
                 })
             })
         })
+        transformedPassword.count = vsc_buffer_len(transformedPasswordBuf)
+        transformedTweak.count = vsc_buffer_len(transformedTweakBuf)
 
         try PythiaError.handleError(fromC: proxyResult)
 
@@ -305,6 +321,8 @@ import VirgilCryptoCommon
                 })
             })
         })
+        proofValueC.count = vsc_buffer_len(proofValueCBuf)
+        proofValueU.count = vsc_buffer_len(proofValueUBuf)
 
         try PythiaError.handleError(fromC: proxyResult)
 
@@ -352,6 +370,7 @@ import VirgilCryptoCommon
                 })
             })
         })
+        passwordUpdateToken.count = vsc_buffer_len(passwordUpdateTokenBuf)
 
         try PythiaError.handleError(fromC: proxyResult)
 
@@ -377,6 +396,7 @@ import VirgilCryptoCommon
                 })
             })
         })
+        updatedDeblindedPassword.count = vsc_buffer_len(updatedDeblindedPasswordBuf)
 
         try PythiaError.handleError(fromC: proxyResult)
 

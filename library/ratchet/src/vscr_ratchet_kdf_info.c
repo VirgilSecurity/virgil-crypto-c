@@ -213,3 +213,14 @@ vscr_ratchet_kdf_info_cleanup_ctx(vscr_ratchet_kdf_info_t *ratchet_kdf_info_ctx)
     vsc_buffer_destroy(&ratchet_kdf_info_ctx->root_info);
     vsc_buffer_destroy(&ratchet_kdf_info_ctx->ratchet_info);
 }
+
+VSCR_PUBLIC vscr_ratchet_kdf_info_t *
+vscr_ratchet_kdf_info_new_with_members(vsc_data_t root_info, vsc_data_t ratchet_info) {
+
+    vscr_ratchet_kdf_info_t *ratchet_kdf_info_ctx = vscr_ratchet_kdf_info_new();
+
+    ratchet_kdf_info_ctx->root_info = vsc_buffer_new_with_data(root_info);
+    ratchet_kdf_info_ctx->ratchet_info = vsc_buffer_new_with_data(ratchet_info);
+
+    return ratchet_kdf_info_ctx;
+}

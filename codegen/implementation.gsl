@@ -219,6 +219,16 @@ function implementation_resolve_enum (enum, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve entity: constructor.
+# ---------------------------------------------------------------------------
+function implementation_resolve_constructor (constructor, impl)
+    check_arguments (my, "constructor, impl", my)
+
+    my.constructor.is_static = "1"
+    component_resolve_method (my.constructor, my.impl)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve model: implementation.method.
 # ---------------------------------------------------------------------------
 function implementation_resolve_method (method, impl)
@@ -300,6 +310,10 @@ function implementation_resolve (implementation, parent, project)
 
     for my.implementation.enum
         implementation_resolve_enum (enum, my.implementation)
+    endfor
+
+    for my.implementation.constructor
+        implementation_resolve_constructor (constructor, my.implementation)
     endfor
 
     for my.implementation.method

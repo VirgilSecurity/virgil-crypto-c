@@ -113,6 +113,8 @@ import VirgilCryptoCommon
                 })
             })
         })
+        out.count = vsc_buffer_len(outBuf)
+        tag.count = vsc_buffer_len(tagBuf)
 
         try FoundationError.handleError(fromC: proxyResult)
 
@@ -122,6 +124,7 @@ import VirgilCryptoCommon
     /// Calculate required buffer length to hold the authenticated encrypted data.
     @objc public func authEncryptedLen(dataLen: Int) -> Int {
         let proxyResult = vscf_auth_encrypt_auth_encrypted_len(self.c_ctx, dataLen)
+
         return proxyResult
     }
 }

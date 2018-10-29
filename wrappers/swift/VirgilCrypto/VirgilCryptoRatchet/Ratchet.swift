@@ -84,7 +84,6 @@ import VirgilCryptoFoundation
         sharedSecret.withUnsafeBytes({ (sharedSecretPointer: UnsafePointer<byte>) -> Void in
             ratchetPublicKey.withUnsafeBytes({ (ratchetPublicKeyPointer: UnsafePointer<byte>) -> Void in
                 var ratchetPublicKeyBuf = vsc_buffer_new_with_data(vsc_data(ratchetPublicKeyPointer, ratchetPublicKey.count))
-
                 defer {
                     vsc_buffer_delete(ratchetPublicKeyBuf)
                 }
@@ -97,7 +96,6 @@ import VirgilCryptoFoundation
         let proxyResult = sharedSecret.withUnsafeBytes({ (sharedSecretPointer: UnsafePointer<byte>) -> vscr_error_t in
             ratchetPrivateKey.withUnsafeBytes({ (ratchetPrivateKeyPointer: UnsafePointer<byte>) -> vscr_error_t in
                 var ratchetPrivateKeyBuf = vsc_buffer_new_with_data(vsc_data(ratchetPrivateKeyPointer, ratchetPrivateKey.count))
-
                 defer {
                     vsc_buffer_delete(ratchetPrivateKeyBuf)
                 }
@@ -110,6 +108,7 @@ import VirgilCryptoFoundation
 
     @objc public func encryptLen(plainTextLen: Int) -> Int {
         let proxyResult = vscr_ratchet_encrypt_len(self.c_ctx, plainTextLen)
+
         return proxyResult
     }
 
@@ -128,6 +127,7 @@ import VirgilCryptoFoundation
                 return vscr_ratchet_encrypt(self.c_ctx, vsc_data(plainTextPointer, plainText.count), cipherTextBuf)
             })
         })
+        cipherText.count = vsc_buffer_len(cipherTextBuf)
 
         try RatchetError.handleError(fromC: proxyResult)
 
@@ -136,6 +136,7 @@ import VirgilCryptoFoundation
 
     @objc public func decryptLen(cipherTextLen: Int) -> Int {
         let proxyResult = vscr_ratchet_decrypt_len(self.c_ctx, cipherTextLen)
+
         return proxyResult
     }
 
@@ -154,6 +155,7 @@ import VirgilCryptoFoundation
                 return vscr_ratchet_decrypt(self.c_ctx, vsc_data(cipherTextPointer, cipherText.count), plainTextBuf)
             })
         })
+        plainText.count = vsc_buffer_len(plainTextBuf)
 
         try RatchetError.handleError(fromC: proxyResult)
 

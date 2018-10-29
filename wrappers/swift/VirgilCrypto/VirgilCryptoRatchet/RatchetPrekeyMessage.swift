@@ -63,6 +63,46 @@ import VirgilCryptoFoundation
         super.init()
     }
 
+    public init(protocolVersion: UInt8, senderIdentityKey: Data, senderEphemeralKey: Data, receiverLongTermKey: Data, receiverOneTimeKey: Data, message: Data) {
+        let proxyResult = senderIdentityKey.withUnsafeBytes({ (senderIdentityKeyPointer: UnsafePointer<byte>) -> UnsafeMutablePointer<vscr_ratchet_prekey_message_t> in
+            senderEphemeralKey.withUnsafeBytes({ (senderEphemeralKeyPointer: UnsafePointer<byte>) -> UnsafeMutablePointer<vscr_ratchet_prekey_message_t> in
+                receiverLongTermKey.withUnsafeBytes({ (receiverLongTermKeyPointer: UnsafePointer<byte>) -> UnsafeMutablePointer<vscr_ratchet_prekey_message_t> in
+                    receiverOneTimeKey.withUnsafeBytes({ (receiverOneTimeKeyPointer: UnsafePointer<byte>) -> UnsafeMutablePointer<vscr_ratchet_prekey_message_t> in
+                        message.withUnsafeBytes({ (messagePointer: UnsafePointer<byte>) -> UnsafeMutablePointer<vscr_ratchet_prekey_message_t> in
+                            var senderIdentityKeyBuf = vsc_buffer_new_with_data(vsc_data(senderIdentityKeyPointer, senderIdentityKey.count))
+                            defer {
+                                vsc_buffer_delete(senderIdentityKeyBuf)
+                            }
+
+                            var senderEphemeralKeyBuf = vsc_buffer_new_with_data(vsc_data(senderEphemeralKeyPointer, senderEphemeralKey.count))
+                            defer {
+                                vsc_buffer_delete(senderEphemeralKeyBuf)
+                            }
+
+                            var receiverLongTermKeyBuf = vsc_buffer_new_with_data(vsc_data(receiverLongTermKeyPointer, receiverLongTermKey.count))
+                            defer {
+                                vsc_buffer_delete(receiverLongTermKeyBuf)
+                            }
+
+                            var receiverOneTimeKeyBuf = vsc_buffer_new_with_data(vsc_data(receiverOneTimeKeyPointer, receiverOneTimeKey.count))
+                            defer {
+                                vsc_buffer_delete(receiverOneTimeKeyBuf)
+                            }
+
+                            var messageBuf = vsc_buffer_new_with_data(vsc_data(messagePointer, message.count))
+                            defer {
+                                vsc_buffer_delete(messageBuf)
+                            }
+                            return vscr_ratchet_prekey_message_new_with_members(protocolVersion, senderIdentityKeyBuf, senderEphemeralKeyBuf, receiverLongTermKeyBuf, receiverOneTimeKeyBuf, messageBuf)
+                        })
+                    })
+                })
+            })
+        })
+
+        self.c_ctx = proxyResult
+    }
+
     /// Release underlying C context.
     deinit {
         vscr_ratchet_prekey_message_delete(self.c_ctx)
@@ -70,11 +110,13 @@ import VirgilCryptoFoundation
 
     @objc public static func serializeLen(messageLen: Int) -> Int {
         let proxyResult = vscr_ratchet_prekey_message_serialize_len(messageLen)
+
         return proxyResult
     }
 
     @objc public func serializeLenExt() -> Int {
         let proxyResult = vscr_ratchet_prekey_message_serialize_len_ext(self.c_ctx)
+
         return proxyResult
     }
 
@@ -91,6 +133,7 @@ import VirgilCryptoFoundation
             vsc_buffer_use(outputBuf, outputPointer, outputCount)
             return vscr_ratchet_prekey_message_serialize(self.c_ctx, outputBuf)
         })
+        output.count = vsc_buffer_len(outputBuf)
 
         try RatchetError.handleError(fromC: proxyResult)
 

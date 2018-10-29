@@ -82,13 +82,11 @@ import VirgilCryptoFoundation
                 receiverLongTermPublicKey.withUnsafeBytes({ (receiverLongTermPublicKeyPointer: UnsafePointer<byte>) -> vscr_error_t in
                     receiverOneTimePublicKey.withUnsafeBytes({ (receiverOneTimePublicKeyPointer: UnsafePointer<byte>) -> vscr_error_t in
                         var receiverLongTermPublicKeyBuf = vsc_buffer_new_with_data(vsc_data(receiverLongTermPublicKeyPointer, receiverLongTermPublicKey.count))
-
                         defer {
                             vsc_buffer_delete(receiverLongTermPublicKeyBuf)
                         }
 
                         var receiverOneTimePublicKeyBuf = vsc_buffer_new_with_data(vsc_data(receiverOneTimePublicKeyPointer, receiverOneTimePublicKey.count))
-
                         defer {
                             vsc_buffer_delete(receiverOneTimePublicKeyBuf)
                         }
@@ -109,37 +107,31 @@ import VirgilCryptoFoundation
                         receiverLongTermPrivateKey.withUnsafeBytes({ (receiverLongTermPrivateKeyPointer: UnsafePointer<byte>) -> vscr_error_t in
                             receiverOneTimePrivateKey.withUnsafeBytes({ (receiverOneTimePrivateKeyPointer: UnsafePointer<byte>) -> vscr_error_t in
                                 var senderIdentityPublicKeyBuf = vsc_buffer_new_with_data(vsc_data(senderIdentityPublicKeyPointer, senderIdentityPublicKey.count))
-
                                 defer {
                                     vsc_buffer_delete(senderIdentityPublicKeyBuf)
                                 }
 
                                 var senderEphemeralPublicKeyBuf = vsc_buffer_new_with_data(vsc_data(senderEphemeralPublicKeyPointer, senderEphemeralPublicKey.count))
-
                                 defer {
                                     vsc_buffer_delete(senderEphemeralPublicKeyBuf)
                                 }
 
                                 var ratchetPublicKeyBuf = vsc_buffer_new_with_data(vsc_data(ratchetPublicKeyPointer, ratchetPublicKey.count))
-
                                 defer {
                                     vsc_buffer_delete(ratchetPublicKeyBuf)
                                 }
 
                                 var receiverIdentityPrivateKeyBuf = vsc_buffer_new_with_data(vsc_data(receiverIdentityPrivateKeyPointer, receiverIdentityPrivateKey.count))
-
                                 defer {
                                     vsc_buffer_delete(receiverIdentityPrivateKeyBuf)
                                 }
 
                                 var receiverLongTermPrivateKeyBuf = vsc_buffer_new_with_data(vsc_data(receiverLongTermPrivateKeyPointer, receiverLongTermPrivateKey.count))
-
                                 defer {
                                     vsc_buffer_delete(receiverLongTermPrivateKeyBuf)
                                 }
 
                                 var receiverOneTimePrivateKeyBuf = vsc_buffer_new_with_data(vsc_data(receiverOneTimePrivateKeyPointer, receiverOneTimePrivateKey.count))
-
                                 defer {
                                     vsc_buffer_delete(receiverOneTimePrivateKeyBuf)
                                 }
@@ -156,6 +148,7 @@ import VirgilCryptoFoundation
 
     @objc public func encryptLen(plainTextLen: Int) -> Int {
         let proxyResult = vscr_ratchet_session_encrypt_len(self.c_ctx, plainTextLen)
+
         return proxyResult
     }
 
@@ -174,6 +167,7 @@ import VirgilCryptoFoundation
                 return vscr_ratchet_session_encrypt(self.c_ctx, vsc_data(plainTextPointer, plainText.count), cipherTextBuf)
             })
         })
+        cipherText.count = vsc_buffer_len(cipherTextBuf)
 
         try RatchetError.handleError(fromC: proxyResult)
 
@@ -182,6 +176,7 @@ import VirgilCryptoFoundation
 
     @objc public func decryptLen(message: RatchetMessage) -> Int {
         let proxyResult = vscr_ratchet_session_decrypt_len(self.c_ctx, message.c_ctx)
+
         return proxyResult
     }
 
@@ -198,6 +193,7 @@ import VirgilCryptoFoundation
             vsc_buffer_use(plainTextBuf, plainTextPointer, plainTextCount)
             return vscr_ratchet_session_decrypt(self.c_ctx, message.c_ctx, plainTextBuf)
         })
+        plainText.count = vsc_buffer_len(plainTextBuf)
 
         try RatchetError.handleError(fromC: proxyResult)
 

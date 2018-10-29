@@ -76,6 +76,7 @@ import VirgilCryptoCommon
                 vscf_kdf_derive(self.c_ctx, vsc_data(dataPointer, data.count), keyLen, keyBuf)
             })
         })
+        key.count = vsc_buffer_len(keyBuf)
 
         return key
     }

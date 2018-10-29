@@ -86,12 +86,14 @@ import VirgilCryptoCommon
     /// Length of the key in bytes.
     @objc public func keyLen() -> Int {
         let proxyResult = vscf_rsa_public_key_key_len(self.c_ctx)
+
         return proxyResult
     }
 
     /// Length of the key in bits.
     @objc public func keyBitlen() -> Int {
         let proxyResult = vscf_rsa_public_key_key_bitlen(self.c_ctx)
+
         return proxyResult
     }
 
@@ -111,6 +113,7 @@ import VirgilCryptoCommon
                 return vscf_rsa_public_key_encrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
+        out.count = vsc_buffer_len(outBuf)
 
         try FoundationError.handleError(fromC: proxyResult)
 
@@ -120,6 +123,7 @@ import VirgilCryptoCommon
     /// Calculate required buffer length to hold the encrypted data.
     @objc public func encryptedLen(dataLen: Int) -> Int {
         let proxyResult = vscf_rsa_public_key_encrypted_len(self.c_ctx, dataLen)
+
         return proxyResult
     }
 
@@ -148,6 +152,7 @@ import VirgilCryptoCommon
             vsc_buffer_use(outBuf, outPointer, outCount)
             return vscf_rsa_public_key_export_public_key(self.c_ctx, outBuf)
         })
+        out.count = vsc_buffer_len(outBuf)
 
         try FoundationError.handleError(fromC: proxyResult)
 
@@ -157,6 +162,7 @@ import VirgilCryptoCommon
     /// Return length in bytes required to hold exported public key.
     @objc public func exportedPublicKeyLen() -> Int {
         let proxyResult = vscf_rsa_public_key_exported_public_key_len(self.c_ctx)
+
         return proxyResult
     }
 

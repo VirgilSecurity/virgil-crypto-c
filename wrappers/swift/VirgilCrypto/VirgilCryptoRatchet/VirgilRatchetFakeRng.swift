@@ -82,6 +82,7 @@ import VirgilCryptoFoundation
             vsc_buffer_use(randomBuf, randomPointer, randomCount)
             vscr_virgil_ratchet_fake_rng_generate_random_data(self.c_ctx, size, randomBuf)
         })
+        random.count = vsc_buffer_len(randomBuf)
 
         return random
     }

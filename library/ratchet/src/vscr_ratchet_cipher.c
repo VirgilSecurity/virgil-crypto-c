@@ -286,6 +286,16 @@ vscr_ratchet_cipher_cleanup_ctx(vscr_ratchet_cipher_t *ratchet_cipher_ctx) {
     vsc_buffer_destroy(&ratchet_cipher_ctx->kdf_info);
 }
 
+VSCR_PUBLIC vscr_ratchet_cipher_t *
+vscr_ratchet_cipher_new_with_members(vsc_data_t kdf_info) {
+
+    vscr_ratchet_cipher_t *ratchet_cipher_ctx = vscr_ratchet_cipher_new();
+
+    ratchet_cipher_ctx->kdf_info = vsc_buffer_new_with_data(kdf_info);
+
+    return ratchet_cipher_ctx;
+}
+
 VSCR_PUBLIC size_t
 vscr_ratchet_cipher_encrypt_len(vscr_ratchet_cipher_t *ratchet_cipher_ctx, size_t plain_text_len) {
 
