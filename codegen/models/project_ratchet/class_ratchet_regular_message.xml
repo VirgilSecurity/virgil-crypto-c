@@ -9,14 +9,14 @@
         FIXME
     </constant>
 
-    <property name="version" type="size" size="1"/>
-    <property name="counter" type="size" size="4"/>
+    <property name="version" type="unsigned" size="1"/>
+    <property name="counter" type="unsigned" size="4"/>
     <property name="public key" class="buffer" access="readwrite"/>
     <property name="cipher text" class="buffer" access="readwrite"/>
 
     <constructor name="with members">
-        <argument name="version" type="size" size="1"/>
-        <argument name="counter" type="size" size="4"/>
+        <argument name="version" type="unsigned" size="1"/>
+        <argument name="counter" type="unsigned" size="4"/>
         <argument name="public key" class="buffer" access="retain"/>
         <argument name="cipher text" class="buffer" access="retain"/>
     </constructor>

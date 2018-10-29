@@ -80,6 +80,7 @@ import VirgilCryptoCommon
                 })
             })
         })
+        key.count = vsc_buffer_len(keyBuf)
 
         return key
     }

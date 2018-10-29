@@ -63,6 +63,14 @@ import VirgilCryptoFoundation
         super.init()
     }
 
+    public init(kdfInfo: Data) {
+        let proxyResult = kdfInfo.withUnsafeBytes({ (kdfInfoPointer: UnsafePointer<byte>) -> UnsafeMutablePointer<vscr_ratchet_cipher_t> in
+            return vscr_ratchet_cipher_new_with_members(vsc_data(kdfInfoPointer, kdfInfo.count))
+        })
+
+        self.c_ctx = proxyResult
+    }
+
     /// Release underlying C context.
     deinit {
         vscr_ratchet_cipher_delete(self.c_ctx)
@@ -74,11 +82,13 @@ import VirgilCryptoFoundation
 
     @objc public func encryptLen(plainTextLen: Int) -> Int {
         let proxyResult = vscr_ratchet_cipher_encrypt_len(self.c_ctx, plainTextLen)
+
         return proxyResult
     }
 
     @objc public func decryptLen(cipherTextLen: Int) -> Int {
         let proxyResult = vscr_ratchet_cipher_decrypt_len(self.c_ctx, cipherTextLen)
+
         return proxyResult
     }
 
@@ -99,6 +109,7 @@ import VirgilCryptoFoundation
                 })
             })
         })
+        buffer.count = vsc_buffer_len(bufferBuf)
 
         try RatchetError.handleError(fromC: proxyResult)
 
@@ -122,6 +133,7 @@ import VirgilCryptoFoundation
                 })
             })
         })
+        buffer.count = vsc_buffer_len(bufferBuf)
 
         try RatchetError.handleError(fromC: proxyResult)
 

@@ -75,6 +75,7 @@ import VirgilCryptoCommon
     /// Size of the digest (mac output) in bytes.
     @objc public func digestLen() -> Int {
         let proxyResult = vscf_hmac_digest_len(self.c_ctx)
+
         return proxyResult
     }
 
@@ -96,6 +97,7 @@ import VirgilCryptoCommon
                 })
             })
         })
+        mac.count = vsc_buffer_len(macBuf)
 
         return mac
     }
@@ -128,6 +130,7 @@ import VirgilCryptoCommon
             vsc_buffer_use(macBuf, macPointer, macCount)
             vscf_hmac_finish(self.c_ctx, macBuf)
         })
+        mac.count = vsc_buffer_len(macBuf)
 
         return mac
     }

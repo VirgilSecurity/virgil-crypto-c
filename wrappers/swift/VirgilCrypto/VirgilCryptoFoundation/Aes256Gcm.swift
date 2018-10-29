@@ -101,6 +101,7 @@ import VirgilCryptoCommon
                 return vscf_aes256_gcm_encrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
+        out.count = vsc_buffer_len(outBuf)
 
         try FoundationError.handleError(fromC: proxyResult)
 
@@ -110,6 +111,7 @@ import VirgilCryptoCommon
     /// Calculate required buffer length to hold the encrypted data.
     @objc public func encryptedLen(dataLen: Int) -> Int {
         let proxyResult = vscf_aes256_gcm_encrypted_len(self.c_ctx, dataLen)
+
         return proxyResult
     }
 
@@ -129,6 +131,7 @@ import VirgilCryptoCommon
                 return vscf_aes256_gcm_decrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
+        out.count = vsc_buffer_len(outBuf)
 
         try FoundationError.handleError(fromC: proxyResult)
 
@@ -138,6 +141,7 @@ import VirgilCryptoCommon
     /// Calculate required buffer length to hold the decrypted data.
     @objc public func decryptedLen(dataLen: Int) -> Int {
         let proxyResult = vscf_aes256_gcm_decrypted_len(self.c_ctx, dataLen)
+
         return proxyResult
     }
 
@@ -186,6 +190,8 @@ import VirgilCryptoCommon
                 })
             })
         })
+        out.count = vsc_buffer_len(outBuf)
+        tag.count = vsc_buffer_len(tagBuf)
 
         try FoundationError.handleError(fromC: proxyResult)
 
@@ -195,6 +201,7 @@ import VirgilCryptoCommon
     /// Calculate required buffer length to hold the authenticated encrypted data.
     @objc public func authEncryptedLen(dataLen: Int) -> Int {
         let proxyResult = vscf_aes256_gcm_auth_encrypted_len(self.c_ctx, dataLen)
+
         return proxyResult
     }
 
@@ -219,6 +226,7 @@ import VirgilCryptoCommon
                 })
             })
         })
+        out.count = vsc_buffer_len(outBuf)
 
         try FoundationError.handleError(fromC: proxyResult)
 
@@ -228,6 +236,7 @@ import VirgilCryptoCommon
     /// Calculate required buffer length to hold the authenticated decrypted data.
     @objc public func authDecryptedLen(dataLen: Int) -> Int {
         let proxyResult = vscf_aes256_gcm_auth_decrypted_len(self.c_ctx, dataLen)
+
         return proxyResult
     }
 }

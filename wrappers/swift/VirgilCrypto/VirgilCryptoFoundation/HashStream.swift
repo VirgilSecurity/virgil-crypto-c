@@ -100,6 +100,7 @@ import VirgilCryptoCommon
             vsc_buffer_use(digestBuf, digestPointer, digestCount)
             vscf_hash_stream_finish(self.c_ctx, digestBuf)
         })
+        digest.count = vsc_buffer_len(digestBuf)
 
         return digest
     }

@@ -73,6 +73,7 @@ import VirgilCryptoFoundation
     /// Reset context to the "no error" state.
     @objc public func error() throws {
         let proxyResult = vscr_error_ctx_error(self.c_ctx)
+
         try RatchetError.handleError(fromC: proxyResult)
     }
 }

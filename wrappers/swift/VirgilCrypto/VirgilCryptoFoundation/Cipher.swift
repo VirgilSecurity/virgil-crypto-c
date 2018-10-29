@@ -98,6 +98,7 @@ import VirgilCryptoCommon
                 return vscf_encrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
+        out.count = vsc_buffer_len(outBuf)
 
         try FoundationError.handleError(fromC: proxyResult)
 
@@ -107,6 +108,7 @@ import VirgilCryptoCommon
     /// Calculate required buffer length to hold the encrypted data.
     @objc public func encryptedLen(dataLen: Int) -> Int {
         let proxyResult = vscf_encrypt_encrypted_len(self.c_ctx, dataLen)
+
         return proxyResult
     }
 
@@ -126,6 +128,7 @@ import VirgilCryptoCommon
                 return vscf_decrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
             })
         })
+        out.count = vsc_buffer_len(outBuf)
 
         try FoundationError.handleError(fromC: proxyResult)
 
@@ -135,6 +138,7 @@ import VirgilCryptoCommon
     /// Calculate required buffer length to hold the decrypted data.
     @objc public func decryptedLen(dataLen: Int) -> Int {
         let proxyResult = vscf_decrypt_decrypted_len(self.c_ctx, dataLen)
+
         return proxyResult
     }
 

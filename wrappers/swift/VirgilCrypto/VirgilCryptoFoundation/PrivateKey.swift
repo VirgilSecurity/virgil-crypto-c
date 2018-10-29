@@ -63,18 +63,21 @@ import VirgilCryptoCommon
     /// Length of the key in bytes.
     @objc public func keyLen() -> Int {
         let proxyResult = vscf_key_key_len(self.c_ctx)
+
         return proxyResult
     }
 
     /// Length of the key in bits.
     @objc public func keyBitlen() -> Int {
         let proxyResult = vscf_key_key_bitlen(self.c_ctx)
+
         return proxyResult
     }
 
     /// Extract public part of the key.
     @objc public func extractPublicKey() -> PublicKey {
         let proxyResult = vscf_private_key_extract_public_key(self.c_ctx)
+
         return PublicKeyProxy.init(c_ctx: proxyResult!)
     }
 }

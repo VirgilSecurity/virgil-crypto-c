@@ -15,8 +15,8 @@
     <property name="message" class="buffer" access="readwrite"/>
 
     <constructor name="with members">
-        <argument name="version" type="size" size="1"/>
-        <argument name="type" type="size" size="1"/>
+        <argument name="version" type="unsigned" size="1"/>
+        <argument name="type" type="unsigned" size="1"/>
         <argument name="message" class="buffer"/>
     </constructor>
 

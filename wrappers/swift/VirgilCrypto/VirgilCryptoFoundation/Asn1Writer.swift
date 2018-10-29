@@ -115,12 +115,14 @@ import VirgilCryptoCommon
     /// Returns written size in bytes.
     @objc public func finish() -> Int {
         let proxyResult = vscf_asn1_writer_finish(self.c_ctx)
+
         return proxyResult
     }
 
     /// Return last error.
     @objc public func error() throws {
         let proxyResult = vscf_asn1_writer_error(self.c_ctx)
+
         try FoundationError.handleError(fromC: proxyResult)
     }
 
@@ -128,6 +130,7 @@ import VirgilCryptoCommon
     /// Return current writing position.
     @objc public func reserve(len: Int) -> UnsafeMutablePointer<UInt8> {
         let proxyResult = vscf_asn1_writer_reserve(self.c_ctx, len)
+
         return proxyResult!
     }
 
@@ -135,6 +138,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeTag(tag: Int32) -> Int {
         let proxyResult = vscf_asn1_writer_write_tag(self.c_ctx, tag)
+
         return proxyResult
     }
 
@@ -142,6 +146,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeLen(len: Int) -> Int {
         let proxyResult = vscf_asn1_writer_write_len(self.c_ctx, len)
+
         return proxyResult
     }
 
@@ -149,6 +154,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeInt(value: Int32) -> Int {
         let proxyResult = vscf_asn1_writer_write_int(self.c_ctx, value)
+
         return proxyResult
     }
 
@@ -156,6 +162,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeInt8(value: Int8) -> Int {
         let proxyResult = vscf_asn1_writer_write_int8(self.c_ctx, value)
+
         return proxyResult
     }
 
@@ -163,6 +170,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeInt16(value: Int16) -> Int {
         let proxyResult = vscf_asn1_writer_write_int16(self.c_ctx, value)
+
         return proxyResult
     }
 
@@ -170,6 +178,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeInt32(value: Int32) -> Int {
         let proxyResult = vscf_asn1_writer_write_int32(self.c_ctx, value)
+
         return proxyResult
     }
 
@@ -177,6 +186,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeInt64(value: Int64) -> Int {
         let proxyResult = vscf_asn1_writer_write_int64(self.c_ctx, value)
+
         return proxyResult
     }
 
@@ -184,6 +194,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeUint(value: UInt32) -> Int {
         let proxyResult = vscf_asn1_writer_write_uint(self.c_ctx, value)
+
         return proxyResult
     }
 
@@ -191,6 +202,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeUint8(value: UInt8) -> Int {
         let proxyResult = vscf_asn1_writer_write_uint8(self.c_ctx, value)
+
         return proxyResult
     }
 
@@ -198,6 +210,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeUint16(value: UInt16) -> Int {
         let proxyResult = vscf_asn1_writer_write_uint16(self.c_ctx, value)
+
         return proxyResult
     }
 
@@ -205,6 +218,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeUint32(value: UInt32) -> Int {
         let proxyResult = vscf_asn1_writer_write_uint32(self.c_ctx, value)
+
         return proxyResult
     }
 
@@ -212,6 +226,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeUint64(value: UInt64) -> Int {
         let proxyResult = vscf_asn1_writer_write_uint64(self.c_ctx, value)
+
         return proxyResult
     }
 
@@ -219,12 +234,14 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeBool(value: Bool) -> Int {
         let proxyResult = vscf_asn1_writer_write_bool(self.c_ctx, value)
+
         return proxyResult
     }
 
     /// Write ASN.1 type: NULL.
     @objc public func writeNull() -> Int {
         let proxyResult = vscf_asn1_writer_write_null(self.c_ctx)
+
         return proxyResult
     }
 
@@ -262,6 +279,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeSequence(len: Int) -> Int {
         let proxyResult = vscf_asn1_writer_write_sequence(self.c_ctx, len)
+
         return proxyResult
     }
 
@@ -269,6 +287,7 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeSet(len: Int) -> Int {
         let proxyResult = vscf_asn1_writer_write_set(self.c_ctx, len)
+
         return proxyResult
     }
 }

@@ -95,6 +95,7 @@ import VirgilCryptoCommon
             vsc_buffer_use(dataBuf, dataPointer, dataCount)
             return vscf_fake_random_random(self.c_ctx, dataLen, dataBuf)
         })
+        data.count = vsc_buffer_len(dataBuf)
 
         try FoundationError.handleError(fromC: proxyResult)
 

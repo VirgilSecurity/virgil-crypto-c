@@ -64,6 +64,7 @@ import VirgilCryptoCommon
     /// Note, this operation can be slow.
     @objc public func generateKey() throws {
         let proxyResult = vscf_generate_key(self.c_ctx)
+
         try FoundationError.handleError(fromC: proxyResult)
     }
 }

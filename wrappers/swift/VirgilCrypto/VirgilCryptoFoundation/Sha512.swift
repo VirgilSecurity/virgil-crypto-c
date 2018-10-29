@@ -90,6 +90,7 @@ import VirgilCryptoCommon
                 vscf_sha512_hash(vsc_data(dataPointer, data.count), digestBuf)
             })
         })
+        digest.count = vsc_buffer_len(digestBuf)
 
         return digest
     }
@@ -120,6 +121,7 @@ import VirgilCryptoCommon
             vsc_buffer_use(digestBuf, digestPointer, digestCount)
             vscf_sha512_finish(self.c_ctx, digestBuf)
         })
+        digest.count = vsc_buffer_len(digestBuf)
 
         return digest
     }

@@ -78,6 +78,7 @@ import VirgilCryptoCommon
                 return vscf_sign(self.c_ctx, vsc_data(dataPointer, data.count), signatureBuf)
             })
         })
+        signature.count = vsc_buffer_len(signatureBuf)
 
         try FoundationError.handleError(fromC: proxyResult)
 
@@ -87,6 +88,7 @@ import VirgilCryptoCommon
     /// Return length in bytes required to hold signature.
     @objc public func signatureLen() -> Int {
         let proxyResult = vscf_sign_signature_len(self.c_ctx)
+
         return proxyResult
     }
 }
