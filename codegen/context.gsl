@@ -148,6 +148,11 @@ function context_append_project (context, project)
         .uid = "project_version_string"
         .ref = my.project.version_string
     endnew
+
+    new uid to my.context
+        .uid = "namespace"
+        .ref = my.project.namespace
+    endnew
 endfunction
 
 # ---------------------------------------------------------------------------

@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCFoundation
+import VirgilCryptoCommon
 
 /// Provides interface to the key derivation function (HKDF) algorithms.
 @objc(VSCFExKdf) public protocol ExKdf : CContext {

@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCFoundation
+import VirgilCryptoCommon
 
 /// Provide interface for importing public key from the binary format.
 /// Binary format must be defined in the key specification.

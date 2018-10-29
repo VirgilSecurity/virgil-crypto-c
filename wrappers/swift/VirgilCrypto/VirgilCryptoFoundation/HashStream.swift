@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCFoundation
+import VirgilCryptoCommon
 
 /// Provide interface to calculate hash (message digest) over a stream.
 @objc(VSCFHashStream) public protocol HashStream : HashInfo {

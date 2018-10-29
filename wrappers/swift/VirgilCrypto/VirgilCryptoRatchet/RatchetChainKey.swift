@@ -35,6 +35,8 @@
 
 import Foundation
 import VSCRatchet
+import VirgilCryptoCommon
+import VirgilCryptoFoundation
 
 @objc(VSCRRatchetChainKey) public class RatchetChainKey: NSObject {
 

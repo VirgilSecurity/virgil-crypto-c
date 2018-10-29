@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCFoundation
+import VirgilCryptoCommon
 
 /// Provides compile time knownledge about algorithm.
 @objc(VSCFCipherInfo) public protocol CipherInfo : CContext {

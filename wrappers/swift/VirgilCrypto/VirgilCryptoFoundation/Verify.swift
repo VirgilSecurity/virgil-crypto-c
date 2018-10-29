@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCFoundation
+import VirgilCryptoCommon
 
 /// Provide interface for verifying data with public key.
 @objc(VSCFVerify) public protocol Verify : CContext {

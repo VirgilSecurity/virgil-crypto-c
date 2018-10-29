@@ -67,6 +67,18 @@ function wrapper_resolve (project, wrapper)
 endfunction
 
 
+function wrapper_create_project_module (project, destination, wrapper)
+    check_arguments (my, "project, destination, wrapper", my)
+
+    my.proxy_func = make_id(my.wrapper.lang, "create_project_module")
+    if macro (my.proxy_func)
+        $(my.proxy_func:) (my.project, my.destination, my.wrapper)
+    else
+        echo_fatal ("Proxy call to undefined function '$(my.proxy_func:)()'")
+    endif
+endfunction
+
+
 function wrapper_create_c_context_module (source, destination, wrapper, meta)
     check_arguments (my, "source, destination, wrapper, meta", my)
 

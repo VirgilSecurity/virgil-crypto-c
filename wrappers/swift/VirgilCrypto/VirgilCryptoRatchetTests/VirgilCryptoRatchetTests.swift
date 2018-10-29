@@ -12,6 +12,9 @@ import XCTest
 class VirgilCryptoRatchetTests: XCTestCase {
 
     func initializeRatchet (alice ratchetAlice: Ratchet, bob ratchetBob: Ratchet) {
+        let kdfInfo = RatchetKdfInfo()
+        
+        ratchetAlice.setKdfInfo(kdfInfo: kdfInfo)
     }
     
     func test_ErrorCtx_callDefaultInit_success() {

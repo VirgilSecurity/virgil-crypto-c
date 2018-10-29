@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCFoundation
+import VirgilCryptoCommon
 
 /// Provides interface to the stateless hashing (messege digest) algorithms.
 @objc(VSCFHash) public protocol Hash : HashInfo {

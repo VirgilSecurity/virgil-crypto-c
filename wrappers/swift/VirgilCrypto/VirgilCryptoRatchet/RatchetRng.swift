@@ -35,6 +35,8 @@
 
 import Foundation
 import VSCRatchet
+import VirgilCryptoCommon
+import VirgilCryptoFoundation
 
 /// Interface for ratchet rng
 @objc(VSCRRatchetRng) public protocol RatchetRng : CContext {

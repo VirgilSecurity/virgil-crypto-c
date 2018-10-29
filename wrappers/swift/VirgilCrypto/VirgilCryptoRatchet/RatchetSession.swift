@@ -35,6 +35,8 @@
 
 import Foundation
 import VSCRatchet
+import VirgilCryptoCommon
+import VirgilCryptoFoundation
 
 @objc(VSCRRatchetSession) public class RatchetSession: NSObject {
 
@@ -64,6 +66,14 @@ import VSCRatchet
     /// Release underlying C context.
     deinit {
         vscr_ratchet_session_delete(self.c_ctx)
+    }
+
+    @objc public func setRng(rng: RatchetRng) {
+        vscr_ratchet_session_use_rng(self.c_ctx, rng.c_ctx)
+    }
+
+    @objc public func setRatchet(ratchet: Ratchet) {
+        vscr_ratchet_session_use_ratchet(self.c_ctx, ratchet.c_ctx)
     }
 
     @objc public func initiate(senderIdentityPrivateKey: Data, receiverIdentityPublicKey: Data, receiverLongTermPublicKey: Data, receiverOneTimePublicKey: Data) throws {

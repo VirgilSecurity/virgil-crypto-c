@@ -35,6 +35,8 @@
 
 import Foundation
 import VSCRatchet
+import VirgilCryptoCommon
+import VirgilCryptoFoundation
 
 @objc(VSCRVirgilRatchetFakeRng) public class VirgilRatchetFakeRng: NSObject, RatchetRng {
 

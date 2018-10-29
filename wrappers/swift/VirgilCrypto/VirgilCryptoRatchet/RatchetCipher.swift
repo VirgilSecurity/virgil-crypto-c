@@ -35,6 +35,8 @@
 
 import Foundation
 import VSCRatchet
+import VirgilCryptoCommon
+import VirgilCryptoFoundation
 
 @objc(VSCRRatchetCipher) public class RatchetCipher: NSObject {
 
@@ -64,6 +66,10 @@ import VSCRatchet
     /// Release underlying C context.
     deinit {
         vscr_ratchet_cipher_delete(self.c_ctx)
+    }
+
+    @objc public func setAes256Gcm(aes256Gcm: Aes256Gcm) {
+        vscr_ratchet_cipher_use_aes256_gcm(self.c_ctx, aes256Gcm.c_ctx)
     }
 
     @objc public func encryptLen(plainTextLen: Int) -> Int {

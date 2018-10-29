@@ -958,6 +958,20 @@ function swift_resolve (project, wrapper)
     my.wrapper.source_dir = \
             cat_path ("../wrappers/$(my.wrapper.lang:c,lower)", "VirgilCrypto", my.wrapper.namespace_dir)
     copy my.project->license to my.wrapper
+
+    new swift_import to my.wrapper
+        .framework = "Foundation"
+    endnew
+
+    new swift_import to my.wrapper
+        .framework = my.wrapper.framework
+    endnew
+
+    for my.project.require where defined (0.project) & string_equal (0.feature, "library")
+        new swift_import to my.wrapper
+            .framework = make_ref_swift (make_id ("project", require.project, "framework name"))
+        endnew
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1763,6 +1777,23 @@ endfunction
 #   Create modules.
 # ===========================================================================
 
+
+# ---------------------------------------------------------------------------
+#   Create module that contains Swift specific project information.
+# ---------------------------------------------------------------------------
+function swift_create_project_module (project, destination, wrapper)
+    check_arguments (my, "wrapper, destination, wrapper", my)
+
+    new swift_project to my.destination
+        . = my.project. ?
+
+        new swift_uid to swift_project
+            .name = my.wrapper.namespace
+            .uid = "swift_framework_name"
+        endnew
+    endnew
+endfunction
+
 # ---------------------------------------------------------------------------
 #   Create module with base protocol that handles C context.
 # ---------------------------------------------------------------------------
@@ -1812,13 +1843,9 @@ function swift_create_interface_module (interface, destination, wrapper, meta)
             . = swift_format_license (my.wrapper->license) ?
         endnew
 
-        new swift_import to swift_module
-            .framework = "Foundation"
-        endnew
-
-        new swift_import to swift_module
-            .framework = my.wrapper.framework
-        endnew
+        for my.wrapper.swift_import
+            copy swift_import to swift_module
+        endfor
 
         new swift_protocol to swift_module
             . = swift_format_description (my.interface) ?
@@ -1873,13 +1900,9 @@ function swift_create_implementation_module (implementation, destination, wrappe
             . = swift_format_license (my.wrapper->license) ?
         endnew
 
-        new swift_import to swift_module
-            .framework = "Foundation"
-        endnew
-
-        new swift_import to swift_module
-            .framework = my.wrapper.framework
-        endnew
+        for my.wrapper.swift_import
+            copy swift_import to swift_module
+        endfor
 
         new swift_class to swift_module
             . = swift_format_description (my.implementation) ?
@@ -1950,19 +1973,14 @@ function swift_create_class_module (class, destination, wrapper, meta)
             . = swift_format_license (my.wrapper->license) ?
         endnew
 
-        new swift_import to swift_module
-            .framework = "Foundation"
-        endnew
-
-        new swift_import to swift_module
-            .framework = my.wrapper.framework
-        endnew
+        for my.wrapper.swift_import
+            copy swift_import to swift_module
+        endfor
 
         new swift_class to swift_module
             . = swift_format_description (my.class) ?
             .name = swift_derive_class_name (my.class, my.wrapper)
             .objc_name = swift_derive_class_objc_name (swift_class, my.wrapper)
-            .full_name = "$(my.wrapper.namespace:).$(0.name:)"
 
             swift_map_attr_visibility (swift_class, my.class)
 
@@ -1980,6 +1998,10 @@ function swift_create_class_module (class, destination, wrapper, meta)
                     endfor
                 endif
             endif
+
+            for my.class.dependency
+                swift_create_method_from_dependency (dependency, my.class, swift_class, my.wrapper, my.meta)
+            endfor
 
             for my.class.method where method.declaration = "public" & method.visibility = "public"
                 swift_create_class_method (my.class, method, swift_class, my.wrapper, my.meta)
@@ -2025,7 +2047,6 @@ function swift_create_enum_module (enum, destination, wrapper, meta)
             . = swift_format_description (my.enum) ?
             .name = swift_derive_enum_name (my.enum, my.wrapper)
             .objc_name = swift_derive_enum_objc_name (swift_enum, my.wrapper)
-            .full_name = "$(my.wrapper.namespace:).$(0.name:)"
 
             swift_map_attr_visibility (swift_enum, my.enum)
             swift_map_attr_scope (swift_enum, my.enum)

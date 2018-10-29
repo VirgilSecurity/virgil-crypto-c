@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCFoundation
+import VirgilCryptoCommon
 
 /// Virgil Security implementation of the KDF1 (ISO-18033-2) algorithm.
 @objc(VSCFKdf1) public class Kdf1: NSObject, Kdf {

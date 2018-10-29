@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCFoundation
+import VirgilCryptoCommon
 
 /// Provides interface to the stateless MAC (message authentication code) algorithms.
 @objc(VSCFMac) public protocol Mac : MacInfo {

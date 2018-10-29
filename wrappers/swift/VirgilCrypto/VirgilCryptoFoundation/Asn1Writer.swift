@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCFoundation
+import VirgilCryptoCommon
 
 /// Provides interface to the ASN.1 writer.
 /// Note, elements are written starting from the buffer ending.

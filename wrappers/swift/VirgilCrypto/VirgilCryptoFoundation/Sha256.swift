@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCFoundation
+import VirgilCryptoCommon
 
 /// This is MbedTLS implementation of SHA256.
 @objc(VSCFSha256) public class Sha256: NSObject, HashInfo, Hash, HashStream {

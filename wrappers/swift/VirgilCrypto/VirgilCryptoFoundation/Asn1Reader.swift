@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCFoundation
+import VirgilCryptoCommon
 
 /// Provides interface to the ASN.1 reader.
 /// Note, that all "read" methods move reading position forward.
