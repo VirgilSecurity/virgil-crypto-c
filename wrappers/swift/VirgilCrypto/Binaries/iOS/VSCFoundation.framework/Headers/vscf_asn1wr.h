@@ -59,12 +59,10 @@
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
-#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
-#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -145,13 +143,14 @@ vscf_asn1wr_copy(vscf_asn1wr_impl_t *asn1wr_impl);
 //  Reset all internal states and prepare to new ASN.1 writing operations.
 //
 VSCF_PUBLIC void
-vscf_asn1wr_reset(vscf_asn1wr_impl_t *asn1wr_impl, vsc_buffer_t *out);
+vscf_asn1wr_reset(vscf_asn1wr_impl_t *asn1wr_impl, byte *out, size_t out_len);
 
 //
 //  Move written data to the buffer beginning and forbid further operations.
+//  Returns written size in bytes.
 //
-VSCF_PUBLIC void
-vscf_asn1wr_seal(vscf_asn1wr_impl_t *asn1wr_impl);
+VSCF_PUBLIC size_t
+vscf_asn1wr_finish(vscf_asn1wr_impl_t *asn1wr_impl);
 
 //
 //  Return last error.

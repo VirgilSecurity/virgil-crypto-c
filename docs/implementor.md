@@ -278,7 +278,7 @@ property.
       [ full_uid = "..." ]
       [ library = "..." ]
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | string | error" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -334,7 +334,6 @@ integer: Signed integral type.
 unsigned: Unsigned integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
-data: Shortcut for the byte array.
 string: Shortcut for the char array.
 error: Type for error codes.
 

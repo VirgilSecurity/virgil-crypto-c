@@ -92,7 +92,7 @@ typedef struct vscf_mac_api_t vscf_mac_api_t;
 //  Calculate MAC over given data.
 //
 VSCF_PUBLIC void
-vscf_mac(const vscf_mac_api_t *mac_api, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac);
+vscf_mac(vscf_impl_t *impl, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac);
 
 //
 //  Return mac API, or NULL if it is not implemented.

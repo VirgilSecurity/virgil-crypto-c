@@ -55,7 +55,7 @@ function swift_format_argument_list (swift_method)
 
     for my.swift_method.swift_argument
         my.arg_list ?= ""
-        my.arg_list += "$(swift_argument.name:): $(swift_argument.type:)"
+        my.arg_list += "$(swift_argument.ext_name + " "?:)$(swift_argument.name:): $(swift_argument.type:)"
         if ! last()
             my.arg_list += ", "
         endif
@@ -95,6 +95,23 @@ function swift_format_return_list (swift_method)
     endif
 
     return my.return_list
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return inheritance list if defined <swift_inherit/>, otherwise - nothing.
+# ---------------------------------------------------------------------------
+function swift_format_inheritance_list (swift_type)
+    check_arguments (my, "swift_type", my)
+
+     for my.swift_type.swift_inherit
+        my.inheritance_list ?= ": "
+        my.inheritance_list += swift_inherit.type
+        if ! last ()
+            my.inheritance_list += ", "
+        endif
+    endfor
+
+    return my.inheritance_list
 endfunction
 
 
@@ -185,9 +202,66 @@ function swift_insert_protocol_property (swift_property)
 
     my.property_modifiers = (my.swift_property.access = "readonly") ?? "{ get }" ? "{ get set }"
 
+    swift_insert_description (my.swift_property, 1)
     swift_insert_code("\
-        @objc var $(my.swift_property.name:): $(my.swift_property.type:) $(my.property_modifiers:);
+        @objc $(my.swift_property.modifier?:) var $(my.swift_property.name:): \
+                $(my.swift_property.type:) $(my.property_modifiers:)
     ", 1)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: enum.case
+# ---------------------------------------------------------------------------
+function swift_insert_enum_constant (swift_constant)
+    check_arguments (my, "swift_constant", my)
+
+    my.value = defined (my.swift_constant.value) ?? " = $(my.swift_constant.value:)" ? ""
+    swift_insert_description (my.swift_constant, 1)
+    swift_insert_code ("\
+        case $(my.swift_constant.name:)$(my.value:)
+    ", 1)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: constructor / init
+# ---------------------------------------------------------------------------
+function swift_insert_constructor (swift_constructor)
+    check_arguments (my, "swift_constructor", my)
+
+    assert_attributes (my.swift_constructor, "visibility", my)
+    assert_item (my.swift_constructor, "swift_code", my)
+
+    my.method_args = swift_format_argument_list(my.swift_constructor) ?
+    my.override = is_true (my.swift_constructor.override) ?? "override" ?
+
+    swift_insert_description (my.swift_constructor, 1)
+    swift_insert_code("\
+         $(my.swift_constructor.visibility:) $(my.override?:) init($(my.method_args?:)) {
+    ", 1)
+
+    swift_insert_code("\
+        $(my.swift_constructor->swift_code.:)
+    ", 2)
+
+    swift_insert_code ("}", 1)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: destructor / deinit
+# ---------------------------------------------------------------------------
+function swift_insert_destructor (swift_destructor)
+    check_arguments (my, "swift_destructor", my)
+
+    swift_insert_description (my.swift_destructor, 1)
+    swift_insert_code("\
+         deinit {
+    ", 1)
+
+    swift_insert_code("\
+        $(my.swift_destructor->swift_code.:)
+    ", 2)
+
+    swift_insert_code ("}", 1)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -198,14 +272,13 @@ function swift_insert_protocol_method (swift_method)
 
     assert_attributes (my.swift_method, "name", my)
 
-    my.method_modifiers = ""
     my.method_args = swift_format_argument_list(my.swift_method) ?
     my.method_return = swift_format_return_list(my.swift_method) ?
     my.method_throws = my.swift_method.throws ?? "throws" ?
 
     swift_insert_code("\
-        @objc func $(my.method_modifiers:) $(my.swift_method.name:)($(my.method_args?:)) $(my.method_throws?:) \
-                $(my.method_return?:)
+        @objc $(my.swift_method.modifier?:) func $(my.swift_method.name:)($(my.method_args?:)) \
+                $(my.method_throws?:) $(my.method_return?:)
     ", 1)
 endfunction
 
@@ -217,11 +290,30 @@ function swift_insert_class_property (swift_property)
 
     assert_attributes (my.swift_property, "name, type, visibility", my)
 
-    my.property_modifiers = (my.swift_property.access = "readonly") ?? "{ get {} }" ? "{ get {} set {} }"
+    my.is_computed = count (my.swift_property.computed)
+    my.is_const = my.swift_property.access = "readonly"
+    my.is_writeonly = my.swift_property.access = "writeonly"
 
+    my.let_var = (my.is_const & !my.is_computed) ?? "let" ? "var"
+
+    if my.is_computed
+        my.var_init =  " {"
+    elsif defined (my.swift_property.value)
+        my.var_init =  " = $(my.swift_property.value:)"
+    endif
+
+    swift_insert_description (my.swift_property, 1)
     swift_insert_code("\
-        @objc var $(my.swift_property.name:): $(my.swift_property.type:) $(my.property_modifiers:);
+        @objc $(my.swift_property.visibility:) $(my.swift_property.modifier?:) $(my.let_var:) \
+                $(my.swift_property.name:): $(my.swift_property.type:)$(my.var_init?:)
     ", 1)
+
+    if my.is_computed
+        swift_insert_code("\
+            $(my.swift_property->computed.)
+        ", 2)
+        swift_insert_code("}", 1)
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -234,14 +326,45 @@ function swift_insert_class_method (swift_method)
 
     my.method_args = swift_format_argument_list(my.swift_method) ?
     my.method_return = swift_format_return_list(my.swift_method) ?
-    my.method_throws = my.swift_method.throws ?? "throws" ?
+    my.method_throws = is_true (my.swift_method.throws) ?? "throws" ?
+    my.override = is_true (my.swift_method.override) ?? "override" ?
 
+    swift_insert_description (my.swift_method, 1)
     swift_insert_code("\
-        @objc func $(my.swift_method.visibility?:) $(my.swift_method.modifier?:) \
-                $(my.swift_method.name:)($(my.method_args?:)) $(my.method_throws?:) $(my.method_return?:) {
-            //  TODO: Implement me.
-        }
+        @objc $(my.swift_method.visibility?:) $(my.swift_method.modifier?:) $(my.override?:) \
+                func $(my.swift_method.name:)($(my.method_args?:)) $(my.method_throws?:) $(my.method_return?:) {
     ", 1)
+
+    if count (my.swift_method.swift_code)
+        swift_insert_code (my.swift_method->swift_code., 2)
+    else
+        swift_insert_code ("// TODO: Implement me.", 2)
+    endif
+
+    swift_insert_code ("}", 1)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: class.method
+# ---------------------------------------------------------------------------
+function swift_insert_enum_method (swift_method)
+    check_arguments (my, "swift_method", my)
+
+    assert_attributes (my.swift_method, "name", my)
+
+    my.method_args = swift_format_argument_list(my.swift_method) ?
+    my.method_return = swift_format_return_list(my.swift_method) ?
+    my.method_throws = is_true (my.swift_method.throws) ?? "throws" ?
+
+    swift_insert_description (my.swift_method, 1)
+    swift_insert_code("\
+        $(my.swift_method.visibility?:) $(my.swift_method.modifier?:) func \
+                $(my.swift_method.name:)($(my.method_args?:)) $(my.method_throws?:) $(my.method_return?:) {
+    ", 1)
+
+    swift_insert_code (my.swift_method->swift_code., 2)
+
+    swift_insert_code ("}", 1)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -250,7 +373,7 @@ endfunction
 function swift_insert_protocol (swift_protocol)
     check_arguments (my, "swift_protocol", my)
 
-    echo_trace ("Generate swift protocol: " + my.swift_protocol.name)
+    echo_trace ("Generate swift protocol: " + my.swift_protocol.name, my)
 
     assert_attributes (my.swift_protocol, "name, objc_name, visibility", my)
 
@@ -273,6 +396,7 @@ function swift_insert_protocol (swift_protocol)
     endfor
 
     for my.swift_protocol.swift_method
+        newline ()
         swift_insert_protocol_method (swift_method)
     endfor
 
@@ -285,29 +409,35 @@ endfunction
 function swift_insert_class (swift_class)
     check_arguments (my, "swift_class", my)
 
-    echo_trace ("Generate Swift class: " + my.swift_class.name)
+    echo_trace ("Generate Swift class: " + my.swift_class.name, my)
 
     assert_attributes (my.swift_class, "name, objc_name, visibility", my)
 
-    for my.swift_class.swift_inherit
-        my.swift_inheritance_list ?= ": "
-        my.swift_inheritance_list += swift_inherit.type
-        if ! last()
-            my.swift_inheritance_list += ", "
-        endif
-    endfor
+    my.swift_inheritance_list = swift_format_inheritance_list (my.swift_class) ?
 
     swift_insert_description(my.swift_class)
     swift_insert_code ("\
-        @objc($(my.swift_class.objc_name:)) $(my.swift_class.visibility:) class $(my.swift_class.name:) \
-                $(my.swift_inheritance_list?:) {
+        @objc($(my.swift_class.objc_name:)) $(my.swift_class.visibility:) \
+                class $(my.swift_class.name:)$(my.swift_inheritance_list?:) {
     ")
 
     for my.swift_class.swift_property
+        newline ()
         swift_insert_class_property (swift_property)
     endfor
 
+    for my.swift_class.swift_constructor
+        newline ()
+        swift_insert_constructor (swift_constructor)
+    endfor
+
+    for my.swift_class.swift_destructor
+        newline ()
+        swift_insert_destructor (swift_destructor)
+    endfor
+
     for my.swift_class.swift_method
+        newline ()
         swift_insert_class_method (swift_method)
     endfor
 
@@ -315,18 +445,55 @@ function swift_insert_class (swift_class)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Insert statement: enum
+# ---------------------------------------------------------------------------
+function swift_insert_enum (swift_enum)
+    check_arguments (my, "swift_enum", my)
+
+    echo_trace ("Generate Swift enum: " + my.swift_enum.name, my)
+
+    assert_attributes (my.swift_enum, "name, objc_name, visibility", my)
+
+    my.swift_inheritance_list = swift_format_inheritance_list (my.swift_enum) ?
+
+    swift_insert_description(my.swift_enum)
+    swift_insert_code ("\
+        @objc($(my.swift_enum.objc_name:)) $(my.swift_enum.visibility:)\
+                enum $(my.swift_enum.name:)$(my.swift_inheritance_list?:) {
+    ")
+
+    for my.swift_enum.swift_constant
+        newline ()
+        swift_insert_enum_constant (swift_constant)
+    endfor
+
+    for my.swift_enum.swift_constructor
+        newline ()
+        swift_insert_constructor (swift_constructor)
+    endfor
+
+    for my.swift_enum.swift_method
+        newline ()
+        swift_insert_enum_method (swift_method)
+    endfor
+
+    swift_insert_code ("}")
+
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Generate project files.
 # ---------------------------------------------------------------------------
-function swift_generate_project (wrapper, source)
-    check_arguments (my, "wrapper, source", my)
+function swift_generate_project (source, wrapper)
+    check_arguments (my, "source, wrapper", my)
 
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Generate source files from <swift_module/> entities.
 # ---------------------------------------------------------------------------
-function swift_generate_sources (wrapper, source)
-    check_arguments (my, "wrapper, source", my)
+function swift_generate_sources (source, wrapper)
+    check_arguments (my, "source, wrapper", my)
 
     assert_attribute (my.wrapper, "source_dir", my)
 
@@ -340,36 +507,36 @@ function swift_generate_sources (wrapper, source)
         output swift_module.source_file_path
 
         swift_insert_prologue (swift_module)
-        newline(2)
+        newline ()
 
         for swift_module.swift_import
+            newline_if (first ())
             swift_insert_import (swift_import)
-            newline()
         endfor
 
         for swift_module.swift_enum
+            newline ()
             swift_insert_enum (swift_enum)
-            newline()
         endfor
 
         for swift_module.swift_protocol
+            newline ()
             swift_insert_protocol (swift_protocol)
-            newline()
         endfor
 
         for swift_module.swift_class
+            newline ()
             swift_insert_class (swift_class)
-            newline()
         endfor
 
         for swift_module.swift_struct
+            newline ()
             swift_insert_struct (swift_struct)
-            newline()
         endfor
 
         for swift_module.swift_extension
+            newline ()
             swift_insert_extension (swift_extension)
-            newline()
         endfor
     endfor
 endfunction
