@@ -217,6 +217,30 @@ const byte test_asn1_encoded_UINT16_65535_BYTES[] = {
 const vsc_data_t test_asn1_encoded_UINT16_65535 = {
     test_asn1_encoded_UINT16_65535_BYTES, sizeof(test_asn1_encoded_UINT16_65535_BYTES)
 };
+
+const byte test_asn1_encoded_UINT16_0_BYTES[] = {
+  0x02, 0x01, 0x00
+};
+
+const vsc_data_t test_asn1_encoded_UINT16_0 = {
+    test_asn1_encoded_UINT16_0_BYTES, sizeof(test_asn1_encoded_UINT16_0_BYTES)
+};
+
+const byte test_asn1_encoded_UINT32_0_BYTES[] = {
+  0x02, 0x01, 0x00
+};
+
+const vsc_data_t test_asn1_encoded_UINT32_0 = {
+    test_asn1_encoded_UINT16_0_BYTES, sizeof(test_asn1_encoded_UINT16_0_BYTES)
+};
+
+const byte test_asn1_encoded_UINT32_4294967295_BYTES[] = {
+  0x02, 0x05, 0x00, 0xFF, 0xFF, 0xFF, 0xFF
+};
+
+const vsc_data_t test_asn1_encoded_UINT32_4294967295 = {
+    test_asn1_encoded_UINT32_4294967295_BYTES, sizeof(test_asn1_encoded_UINT16_0_BYTES)
+};
 //
 // Strings
 //
