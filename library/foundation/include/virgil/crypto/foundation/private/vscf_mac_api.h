@@ -86,7 +86,7 @@ extern "C" {
 //
 //  Callback. Calculate MAC over given data.
 //
-typedef void (*vscf_mac_api_mac_fn)(vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac);
+typedef void (*vscf_mac_api_mac_fn)(vscf_impl_t *impl, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac);
 
 //
 //  Contains API requirements of the interface 'mac'.

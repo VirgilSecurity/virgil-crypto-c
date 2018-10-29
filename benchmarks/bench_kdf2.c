@@ -55,7 +55,7 @@ void benchmark_kdf2_native(void * data, size_t data_size)
 
     vscf_kdf2_take_hash(kdf2_impl, vscf_sha256_impl(vscf_sha256_new()));
 
-    vscf_kdf2_derive(kdf2_impl, *(vsc_data_t *)data, key, vsc_buffer_capacity(key));
+    vscf_kdf2_derive(kdf2_impl, *(vsc_data_t *)data, vsc_buffer_capacity(key), key);
 
     vsc_buffer_destroy(&key);
     vscf_kdf2_destroy(&kdf2_impl);
@@ -68,7 +68,7 @@ void benchmark_kdf2_interface(void * data, size_t data_size)
 
     vscf_kdf2_take_hash(kdf2_impl, vscf_sha256_impl(vscf_sha256_new()));
 
-    vscf_kdf_derive(vscf_kdf2_impl(kdf2_impl), *(vsc_data_t *)data, key, vsc_buffer_capacity(key));
+    vscf_kdf_derive(vscf_kdf2_impl(kdf2_impl), *(vsc_data_t *)data, vsc_buffer_capacity(key), key);
 
     vsc_buffer_destroy(&key);
     vscf_kdf2_destroy(&kdf2_impl);

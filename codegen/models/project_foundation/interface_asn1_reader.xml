@@ -127,21 +127,21 @@
     <method name="read octet str">
         Read ASN.1 type: OCTET STRING.
 
-        <argument name="value" class="buffer"/>
+        <return class="data"/>
     </method>
 
 
     <method name="read utf8 str">
         Read ASN.1 type: UTF8String.
 
-        <argument name="value" class="buffer"/>
+        <return class="data"/>
     </method>
 
 
     <method name="read oid">
         Read ASN.1 type: OID.
 
-        <argument name="value" class="buffer"/>
+        <return class="data"/>
     </method>
 
 

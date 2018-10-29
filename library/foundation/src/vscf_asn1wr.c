@@ -59,7 +59,6 @@
 
 #include <mbedtls/asn1.h>
 #include <mbedtls/asn1write.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 // clang-format on
 //  @end
@@ -183,42 +182,37 @@ vscf_asn1wr_write_raw_data(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t data, int
 //  Reset all internal states and prepare to new ASN.1 writing operations.
 //
 VSCF_PUBLIC void
-vscf_asn1wr_reset(vscf_asn1wr_impl_t *asn1wr_impl, vsc_buffer_t *out) {
+vscf_asn1wr_reset(vscf_asn1wr_impl_t *asn1wr_impl, byte *out, size_t out_len) {
 
     VSCF_ASSERT_PTR(asn1wr_impl);
     VSCF_ASSERT_PTR(out);
-    VSCF_ASSERT(out->bytes);
-    VSCF_ASSERT(out->capacity > 0);
-    VSCF_ASSERT(out->len < out->capacity);
+    VSCF_ASSERT(out_len > 0);
 
-    asn1wr_impl->out = out;
-    asn1wr_impl->start = out->bytes + out->len;
-    asn1wr_impl->curr = out->bytes + out->capacity;
+    asn1wr_impl->start = out;
+    asn1wr_impl->end = out + out_len;
+    asn1wr_impl->curr = out + out_len;
     asn1wr_impl->error = vscf_SUCCESS;
 }
 
 //
 //  Move written data to the buffer beginning and forbid further operations.
+//  Returns written size in bytes.
 //
-VSCF_PUBLIC void
-vscf_asn1wr_seal(vscf_asn1wr_impl_t *asn1wr_impl) {
+VSCF_PUBLIC size_t
+vscf_asn1wr_finish(vscf_asn1wr_impl_t *asn1wr_impl) {
 
     VSCF_ASSERT_PTR(asn1wr_impl);
-
     VSCF_ASSERT(asn1wr_impl->error == vscf_SUCCESS);
 
-    size_t size = (size_t)(asn1wr_impl->out->bytes + asn1wr_impl->out->capacity - asn1wr_impl->curr);
-
-    asn1wr_impl->out->len += size;
-
-    VSCF_ASSERT(asn1wr_impl->out->len <= asn1wr_impl->out->capacity);
+    size_t size = (size_t)(asn1wr_impl->end - asn1wr_impl->curr);
 
     if (asn1wr_impl->start < asn1wr_impl->curr) {
-
         memmove(asn1wr_impl->start, asn1wr_impl->curr, size);
     }
 
     vscf_asn1wr_init_ctx(asn1wr_impl);
+
+    return size;
 }
 
 //

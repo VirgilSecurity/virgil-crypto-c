@@ -150,7 +150,8 @@ function build_ios {
 
     if [ -d "${IOS_PREBUILT_DIR}/VSCCommon.framework" ] && \
             [ -d "${IOS_PREBUILT_DIR}/VSCFoundation.framework" ] && \
-            [ -d "${IOS_PREBUILT_DIR}/VSCPythia.framework" ]; then
+            [ -d "${IOS_PREBUILT_DIR}/VSCPythia.framework" ] && \
+            [ -d "${IOS_PREBUILT_DIR}/VSCRatchet.framework" ]; then
 
         show_info "Requested binaries is found in the '${IOS_PREBUILT_DIR}' folder."
         return 0
@@ -171,6 +172,7 @@ function build_ios {
     make_fat_framework VSCCommon "${INSTALL_DIR}" "${INSTALL_DIR}"
     make_fat_framework VSCFoundation "${INSTALL_DIR}" "${INSTALL_DIR}"
     make_fat_framework VSCPythia "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSCRatchet "${INSTALL_DIR}" "${INSTALL_DIR}"
 
     rm -fr -- "${INSTALL_DIR}/lib"
     cp -fa "${INSTALL_DIR}/." "${IOS_PREBUILT_DIR}/"

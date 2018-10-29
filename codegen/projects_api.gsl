@@ -66,6 +66,25 @@ function _F17_get_active_project (projects_api)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return active project.
+# ---------------------------------------------------------------------------
+function _F17_get_project_lang (project, lang_name)
+    check_arguments (my, "project, lang_name", my)
+
+    my.lang_id = make_id (my.lang_name)
+    my.lang = my.project->lang (id = my.lang_id) ?
+
+    if ! defined (my.lang)
+        new lang to my.project
+            .id = my.lang_id
+            return lang
+        endnew
+    endif
+
+    return my.lang
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Load existing <projects_api/> entity or create new one.
 # ---------------------------------------------------------------------------
 function projects_api_load (work_path)
@@ -81,7 +100,6 @@ function projects_api_load (work_path)
     return my.projects_api
 endfunction
 
-
 # ---------------------------------------------------------------------------
 #   Save <projects_api/> entity to the file at given path.
 # ---------------------------------------------------------------------------
@@ -91,51 +109,73 @@ function projects_api_save (projects_api, work_path)
     item_save_to_file(my.projects_api, "projects_api.xml", my.work_path)
 endfunction
 
-
 # ---------------------------------------------------------------------------
 #   Reset all information about given project and set this project as active.
 # ---------------------------------------------------------------------------
 function projects_api_reset_project (projects_api, project)
     check_arguments (my, "projects_api, project", my)
 
-    my.project_entry = my.projects_api->project (name = my.project.name) ?
+    #   Find / Create
+    my.project_info = my.projects_api->project (name = my.project.name) ?
 
-    if defined (my.project_entry)
-        delete my.project_entry
+    if ! defined (my.project_info)
+        new project to my.projects_api
+            my.project_info = project
+        endnew
     endif
 
-    new project to my.projects_api
+    #   Cleanup
+    for my.project_info.require
+        delete require
+    endfor
+
+    for my.project_info.uid
+        delete uid
+    endfor
+
+    #   Redefine
+    scope my.project_info
         .name = my.project.name
         .namespace = my.project.namespace
         .namespace_dir = my.project.namespace_dir
         .framework = my.project.framework
 
         for my.project.require where defined (require.project) & string_equal (require.feature, "library")
-            new require to project
+            new require to my.project_info
                 .project = -1.project
             endnew
         endfor
 
-        context_append_project (project, my.project)
-    endnew
+        context_append_project (my.project_info, my.project)
+    endscope
 
     my.projects_api.active_project = my.project.name
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Reset all information about given project and set this project as active.
+# ---------------------------------------------------------------------------
+function projects_api_cleanup_lang (projects_api, lang_name)
+    check_arguments (my, "projects_api, lang_name", my)
+
+    my.project = _F17_get_active_project (my.projects_api)
+    my.lang = _F17_get_project_lang (my.project, my.lang_name)
+    delete my.lang
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Return global resolution context, that contains all uid to name maps.
 # ---------------------------------------------------------------------------
-function projects_api_build_type_resolution_map (projects_api)
+function projects_api_build_type_resolution_map (projects_api, lang_name)
     check_arguments (my, "projects_api", my)
 
     my.resolution_map = XML.new ("type_resolution_map")
 
     for my.projects_api.project
 
-        #   Process uids.
         my.project_prefix = (project.name <> my.projects_api.active_project) ?? make_id ("project", project.name) ?
 
+        #   Process project UIDs.
         for project.uid
             if defined (my.project_prefix) & defined (uid.full_ref)
                 my.resolution_map.$(uid_insert_prefix (uid.uid, my.project_prefix)) = uid.full_ref
@@ -144,51 +184,63 @@ function projects_api_build_type_resolution_map (projects_api)
             endif
         endfor
 
-        #   Process headers.
-        my.is_external_project = (project.name = my.projects_api.active_project) ?? "0" ? "1"
-        my.public_prefix = my.is_external_project ?? project.namespace_dir ?
-        my.private_prefix = my.is_external_project ?? cat_path (project.namespace_dir, "private") ?
+        for project.lang where lang.id = "c" | (defined (my.lang_name) & make_id (my.lang_name) = lang.id)
+            #   Process lang UIDs.
+            for lang.uid
+                if defined (my.project_prefix) & defined (uid.full_ref)
+                    my.resolution_map.$(uid_insert_prefix (uid.uid, my.project_prefix)) = uid.full_ref
+                else
+                    my.resolution_map.$(uid_insert_prefix (uid.uid, my.project_prefix)) = uid.ref
+                endif
+            endfor
 
-        for project.header
-            if my.is_external_project & header.scope = "internal"
-                next
-            endif
+            #   Process headers.
+            my.is_external_project = (project.name = my.projects_api.active_project) ?? "0" ? "1"
+            my.public_prefix = my.is_external_project ?? project.namespace_dir ?
+            my.private_prefix = my.is_external_project ?? cat_path (project.namespace_dir, "private") ?
 
-            if header.scope = "public"
-                my.header_file = cat_path (my.public_prefix, header.file)
+            for lang.header
+                if my.is_external_project & header.scope = "internal"
+                    next
+                endif
 
-            elsif header.scope = "private"
-                my.header_file = cat_path (my.private_prefix, header.file)
-            else
-                my.header_file = header.file
-            endif
+                if header.scope = "public"
+                    my.header_file = cat_path (my.public_prefix, header.file)
 
-            my.key = make_id ("c", my.project_prefix, "header", header.name)
-            my.resolution_map.$(my.key:) = my.header_file
+                elsif header.scope = "private"
+                    my.header_file = cat_path (my.private_prefix, header.file)
+                else
+                    my.header_file = header.file
+                endif
+
+                my.key = make_id ("c", my.project_prefix, "header", header.name)
+                my.resolution_map.$(my.key:) = my.header_file
+            endfor
         endfor
     endfor
 
     return my.resolution_map
 endfunction
 
-
 # ---------------------------------------------------------------------------
 #   Traverse all known entries within source and collect meta information
 #   about types.
 # ---------------------------------------------------------------------------
-function projects_api_collect_info (projects_api, source)
-    check_arguments (my, "projects_api, source", my)
+function projects_api_collect_info (projects_api, lang, source)
+    check_arguments (my, "projects_api, lang, source", my)
 
     my.project = _F17_get_active_project (my.projects_api)
+    my.lang_destination = _F17_get_project_lang (my.project, my.lang)
+    my.c_lang_destination = _F17_get_project_lang (my.project, "c")
 
-    context_append_hierarchy (my.project, my.source)
+    context_append_hierarchy (my.lang_destination, my.source)
 
-    #   Process <c_module/> entries.
+    #   Append headers with type info.
     for my.source.c_module
-        my.header = my.project->header (file = c_module.c_include_file) ?
+        my.header = my.c_lang_destination->header (file = c_module.c_include_file) ?
 
         if ! defined (my.header)
-            new header to my.project
+            new header to my.c_lang_destination
                 .name = c_module.id
                 .file = c_module.c_include_file
                 .scope = c_module.scope
@@ -233,9 +285,15 @@ function projects_api_find_resolved_name (projects_api, uid)
 
     for my.active_project.uid where uid.uid = my.uid
         return uid.ref
-    else
-        echo_fatal ("Requested UID '$(my.uid)' is not found", my)
     endfor
+
+    for my.active_project.lang
+        for lang.uid where uid.uid = my.uid
+            return uid.ref
+        endfor
+    endfor
+
+    echo_fatal ("Requested UID '$(my.uid)' is not found", my)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -246,7 +304,8 @@ function projects_api_find_declaration_header (projects_api, type_name)
     check_arguments (my, "projects_api, type_name", my)
 
     for my.projects_api.project
-        for project.header
+        my.project_c = _F17_get_project_lang (project, "c")
+        for my.project_c.header
             for header.declaration
                 if declaration.type = my.type_name
                     my.header_info = XML.new ("header_info")
@@ -277,7 +336,8 @@ function projects_api_find_definition_header (projects_api, type_name)
     check_arguments (my, "projects_api, type_name", my)
 
     for my.projects_api.project
-        for project.header
+        my.lang_c = _F17_get_project_lang (project, "c")
+        for my.lang_c.header
             for header.definition
                 if definition.type = my.type_name
                     my.header_info = XML.new ("header_info")

@@ -54,6 +54,7 @@
 #define VSC_DATA_H_INCLUDED
 
 #include "vsc_library.h"
+#include "vsc_data.h"
 
 // clang-format on
 //  @end
@@ -86,6 +87,12 @@ struct vsc_data_t {
 };
 
 //
+//  Return size of 'vsc_data_t'.
+//
+VSC_PUBLIC size_t
+vsc_data_ctx_size(void);
+
+//
 //  Creates data from the preallocated bytes.
 //
 VSC_PUBLIC vsc_data_t
@@ -102,6 +109,12 @@ vsc_data_empty(void);
 //
 VSC_PUBLIC bool
 vsc_data_is_valid(vsc_data_t data_ctx);
+
+//
+//  Returns true if underlying byte array contains only zeros.
+//
+VSC_PUBLIC bool
+vsc_data_is_zero(vsc_data_t data_ctx);
 
 //
 //  Return underlying data slice starting from beginning.

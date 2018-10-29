@@ -68,13 +68,13 @@
 //  Generate random bytes.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_random(vscf_impl_t *impl, byte *data, size_t data_len) {
+vscf_random(vscf_impl_t *impl, size_t data_len, vsc_buffer_t *data) {
 
     const vscf_random_api_t *random_api = vscf_random_api (impl);
     VSCF_ASSERT_PTR (random_api);
 
     VSCF_ASSERT_PTR (random_api->random_cb);
-    return random_api->random_cb (impl, data, data_len);
+    return random_api->random_cb (impl, data_len, data);
 }
 
 //

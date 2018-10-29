@@ -697,6 +697,7 @@ function c_component_map_instance_attr_is_const (c_instance, instance)
             (count (my.instance.string)) | \
             (has_one_of_attribute (my.instance, "class, interface, api, impl") & \
                     (!item_in(my.instance, "argument, return") | is_true(my.instance.is_reference))) | \
+            (defined (my.instance.type) & is_true(my.instance.is_reference)) | \
             (defined (my.instance.type) & count (my.instance.array)) | \
             (defined (my.instance.enum) & count (my.instance.array)))
         my.c_instance.is_const_type = "1"

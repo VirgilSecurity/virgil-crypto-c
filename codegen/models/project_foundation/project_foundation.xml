@@ -74,7 +74,6 @@
     <interface name="kdf"/>
     <interface name="random"/>
 
-    <interface name="error context"/>
     <interface name="key"/>
     <interface name="public key"/>
     <interface name="private key"/>
@@ -86,8 +85,6 @@
     <interface name="export private key"/>
     <interface name="import public key"/>
     <interface name="import private key"/>
-    <interface name="key reader"/>
-    <interface name="key writer"/>
 
     <interface name="asn1 reader"/>
     <interface name="asn1 writer"/>
@@ -100,4 +97,8 @@
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>
     <implementor name="virgil"/>
+
+    <module name="mbedtls bridge random"/>
+
+    <wrapper lang="swift"/>
 </project>

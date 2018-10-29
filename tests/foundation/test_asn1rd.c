@@ -154,17 +154,11 @@ test__asn1rd_read_octet_str__encoded_octet_string__returns_decoded_octet_string(
 
     vscf_asn1rd_reset(asn1rd, test_asn1_encoded_OCTET_STRING);
 
-    size_t len = vscf_asn1rd_get_len(asn1rd);
-    vsc_buffer_t *decoded_string = vsc_buffer_new_with_capacity(len);
-    VSCF_ASSERT_PTR(decoded_string);
+    vsc_data_t decoded_string = vscf_asn1rd_read_octet_str(asn1rd);
 
-    vscf_asn1rd_read_octet_str(asn1rd, decoded_string);
+    TEST_ASSERT_EQUAL(test_asn1_decoded_OCTET_STRING.len, decoded_string.len);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_decoded_OCTET_STRING.bytes, decoded_string.bytes, decoded_string.len);
 
-    TEST_ASSERT_EQUAL(test_asn1_decoded_OCTET_STRING.len, vsc_buffer_len(decoded_string));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(
-            test_asn1_decoded_OCTET_STRING.bytes, vsc_buffer_bytes(decoded_string), vsc_buffer_len(decoded_string));
-
-    vsc_buffer_destroy(&decoded_string);
     vscf_asn1rd_destroy(&asn1rd);
 }
 
@@ -176,17 +170,11 @@ test__asn1rd_read_utf8_str__encoded_utf8_string__returns_string_test(void) {
 
     vscf_asn1rd_reset(asn1rd, test_asn1_encoded_UTF8_STRING);
 
-    size_t len = vscf_asn1rd_get_len(asn1rd);
-    vsc_buffer_t *decoded_string = vsc_buffer_new_with_capacity(len);
-    VSCF_ASSERT_PTR(decoded_string);
+    vsc_data_t decoded_string = vscf_asn1rd_read_utf8_str(asn1rd);
 
-    vscf_asn1rd_read_utf8_str(asn1rd, decoded_string);
+    TEST_ASSERT_EQUAL(test_asn1_decoded_UTF8_STRING.len, decoded_string.len);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_decoded_UTF8_STRING.bytes, decoded_string.bytes, decoded_string.len);
 
-    TEST_ASSERT_EQUAL(test_asn1_decoded_UTF8_STRING.len, vsc_buffer_len(decoded_string));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(
-            test_asn1_decoded_UTF8_STRING.bytes, vsc_buffer_bytes(decoded_string), vsc_buffer_len(decoded_string));
-
-    vsc_buffer_destroy(&decoded_string);
     vscf_asn1rd_destroy(&asn1rd);
 }
 
@@ -198,17 +186,11 @@ test__asn1rd_read_oid__encoded_oid_sha256_returns_decoded_oid_sha256(void) {
 
     vscf_asn1rd_reset(asn1rd, test_asn1_encoded_OID_SHA256);
 
-    size_t len = vscf_asn1rd_get_len(asn1rd);
-    vsc_buffer_t *decoded_oid = vsc_buffer_new_with_capacity(len);
-    VSCF_ASSERT_PTR(decoded_oid);
+    vsc_data_t decoded_oid = vscf_asn1rd_read_oid(asn1rd);
 
-    vscf_asn1rd_read_oid(asn1rd, decoded_oid);
+    TEST_ASSERT_EQUAL(test_asn1_decoded_OID_SHA256.len, decoded_oid.len);
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_decoded_OID_SHA256.bytes, decoded_oid.bytes, decoded_oid.len);
 
-    TEST_ASSERT_EQUAL(test_asn1_decoded_OID_SHA256.len, vsc_buffer_len(decoded_oid));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(
-            test_asn1_decoded_OID_SHA256.bytes, vsc_buffer_bytes(decoded_oid), vsc_buffer_len(decoded_oid));
-
-    vsc_buffer_destroy(&decoded_oid);
     vscf_asn1rd_destroy(&asn1rd);
 }
 
