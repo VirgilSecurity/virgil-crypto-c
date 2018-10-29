@@ -44,19 +44,18 @@ extern const vsc_data_t test_asn1_encoded_BOOLEAN_TRUE;
 extern const vsc_data_t test_asn1_encoded_BOOLEAN_FALSE;
 extern const vsc_data_t test_asn1_encoded_NULL;
 
-extern const vsc_data_t test_asn1_encoded_INT8_2;
-extern const vsc_data_t test_asn1_encoded_INT8_128;
-extern const vsc_data_t test_asn1_encoded_INT8_NEG_1;
-extern const vsc_data_t test_asn1_encoded_INT8_OVF_260;
-extern const vsc_data_t test_asn1_encoded_INT8_OVF_NEG_260;
+extern const vsc_data_t test_asn1_encoded_INT8_0;
+extern const vsc_data_t test_asn1_encoded_INT8_127;
+extern const vsc_data_t test_asn1_encoded_INT8_NEG_128;
 extern const vsc_data_t test_asn1_encoded_INT16_32760;
 extern const vsc_data_t test_asn1_encoded_INT16_NEG_32760;
-extern const vsc_data_t test_asn1_encoded_INT16_OVF_327701;
-extern const vsc_data_t test_asn1_encoded_INT16_OVF_NEG_327701;
 extern const vsc_data_t test_asn1_encoded_INT32_2147483000;
 extern const vsc_data_t test_asn1_encoded_INT32_NEG_2147483000;
-extern const vsc_data_t test_asn1_encoded_INT32_OVF_21474836471;
-extern const vsc_data_t test_asn1_encoded_INT32_OVF_NEG_21474836471;
+extern const vsc_data_t test_asn1_encoded_UINT8_255;
+extern const vsc_data_t test_asn1_encoded_UINT8_128;
+extern const vsc_data_t test_asn1_encoded_UINT8_0;
+extern const vsc_data_t test_asn1_encoded_UINT16_65535;
+extern const vsc_data_t test_asn1_encoded_UINT32_4294967295;
 //
 // Strings
 //
