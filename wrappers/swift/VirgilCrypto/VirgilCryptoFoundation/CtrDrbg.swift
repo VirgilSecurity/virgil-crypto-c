@@ -37,15 +37,22 @@ import Foundation
 import VSCFoundation
 import VirgilCryptoCommon
 
-/// Random number generator that is used for test purposes only.
-@objc(VSCFFakeRandom) public class FakeRandom: NSObject, Random {
+/// Implementation of the RNG using deterministic random bit generators
+/// based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).
+@objc(VSCFCtrDrbg) public class CtrDrbg: NSObject, Random {
+
+    /// The interval before reseed is performed by default.
+    @objc public let reseedInterval: Int = 10000
+
+    /// The amount of entropy used per seed by default.
+    @objc public let entropyLen: Int = 48
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
     /// Create underlying C context.
     public override init() {
-        self.c_ctx = vscf_fake_random_new()
+        self.c_ctx = vscf_ctr_drbg_new()
         super.init()
     }
 
@@ -59,26 +66,36 @@ import VirgilCryptoCommon
     /// Acquire retained C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscf_fake_random_copy(c_ctx)
+        self.c_ctx = vscf_ctr_drbg_copy(c_ctx)
         super.init()
     }
 
     /// Release underlying C context.
     deinit {
-        vscf_fake_random_delete(self.c_ctx)
+        vscf_ctr_drbg_delete(self.c_ctx)
     }
 
-    /// Configure random number generator to generate sequence filled with given byte.
-    @objc public func setupSourceByte(byteSource: UInt8) {
-        vscf_fake_random_setup_source_byte(self.c_ctx, byteSource)
+    @objc public func setEntropySource(entropySource: EntropySource) {
+        vscf_ctr_drbg_use_entropy_source(self.c_ctx, entropySource.c_ctx)
     }
 
-    /// Configure random number generator to generate random sequence from given data.
-    /// Note, that given data is used as circular source.
-    @objc public func setupSourceData(dataSource: Data) {
-        dataSource.withUnsafeBytes({ (dataSourcePointer: UnsafePointer<byte>) -> Void in
-            vscf_fake_random_setup_source_data(self.c_ctx, vsc_data(dataSourcePointer, dataSource.count))
-        })
+    /// Force entropy to be gathered at the beginning of every call to
+    /// the (.class_ctr_drbg_method_random)() method.
+    /// Note, use this if your entropy source has sufficient throughput.
+    @objc public func enablePrediction() {
+        vscf_ctr_drbg_enable_prediction(self.c_ctx)
+    }
+
+    /// Sets the reseed interval.
+    /// Default value is reseed interval.
+    @objc public func setReseedInterval(interval: Int) {
+        vscf_ctr_drbg_set_reseed_interval(self.c_ctx, interval)
+    }
+
+    /// Sets the amount of entropy grabbed on each seed or reseed.
+    /// The default value is entropy len.
+    @objc public func setReseedInterval(len: Int) {
+        vscf_ctr_drbg_set_reseed_interval(self.c_ctx, len)
     }
 
     /// Generate random bytes.
@@ -93,7 +110,7 @@ import VirgilCryptoCommon
         let proxyResult = data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
             vsc_buffer_init(dataBuf)
             vsc_buffer_use(dataBuf, dataPointer, dataCount)
-            return vscf_fake_random_random(self.c_ctx, dataLen, dataBuf)
+            return vscf_ctr_drbg_random(self.c_ctx, dataLen, dataBuf)
         })
         data.count = vsc_buffer_len(dataBuf)
 
@@ -104,6 +121,6 @@ import VirgilCryptoCommon
 
     /// Retreive new seed data from the entropy sources.
     @objc public func reseed() {
-        vscf_fake_random_reseed(self.c_ctx)
+        vscf_ctr_drbg_reseed(self.c_ctx)
     }
 }

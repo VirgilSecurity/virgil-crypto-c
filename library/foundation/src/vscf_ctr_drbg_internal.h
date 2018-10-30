@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Common interface to get random data.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,12 +44,27 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_random.h"
-#include "vscf_assert.h"
-#include "vscf_random_api.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_CTR_DRBG_INTERNAL_H_INCLUDED
+#define VSCF_CTR_DRBG_INTERNAL_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_ctr_drbg.h"
+#include "vscf_ctr_drbg.h"
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -65,79 +74,34 @@
 // --------------------------------------------------------------------------
 
 //
-//  Generate random bytes.
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_ctr_drbg_init() is called.
+//  Note, that context is already zeroed.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_random(vscf_impl_t *impl, size_t data_len, vsc_buffer_t *data) {
-
-    const vscf_random_api_t *random_api = vscf_random_api (impl);
-    VSCF_ASSERT_PTR (random_api);
-
-    VSCF_ASSERT_PTR (random_api->random_cb);
-    return random_api->random_cb (impl, data_len, data);
-}
+VSCF_PRIVATE void
+vscf_ctr_drbg_init_ctx(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
 
 //
-//  Retreive new seed data from the entropy sources.
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
 //
-VSCF_PUBLIC void
-vscf_random_reseed(vscf_impl_t *impl) {
-
-    const vscf_random_api_t *random_api = vscf_random_api (impl);
-    VSCF_ASSERT_PTR (random_api);
-
-    VSCF_ASSERT_PTR (random_api->reseed_cb);
-    random_api->reseed_cb (impl);
-}
-
-//
-//  Return random API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_random_api_t *
-vscf_random_api(vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_RANDOM);
-    return (const vscf_random_api_t *) api;
-}
-
-//
-//  Check if given object implements interface 'random'.
-//
-VSCF_PUBLIC bool
-vscf_random_is_implemented(vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    return vscf_impl_api (impl, vscf_api_tag_RANDOM) != NULL;
-}
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_random_api_tag(const vscf_random_api_t *random_api) {
-
-    VSCF_ASSERT_PTR (random_api);
-
-    return random_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_random_impl_tag(const vscf_random_api_t *random_api) {
-
-    VSCF_ASSERT_PTR (random_api);
-
-    return random_api->impl_tag;
-}
+VSCF_PRIVATE void
+vscf_ctr_drbg_cleanup_ctx(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_CTR_DRBG_INTERNAL_H_INCLUDED
 //  @end

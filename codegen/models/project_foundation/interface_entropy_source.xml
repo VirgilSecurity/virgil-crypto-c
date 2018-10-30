@@ -1,0 +1,20 @@
+<interface name="entropy source">
+    Defines generic interface for the entropy source.
+
+    <method name="is strong">
+        Defines that implemented source is strong.
+
+        <return type="boolean"/>
+    </method>
+
+    <method name="provide">
+        Provide gathered entropy of the requested length.
+
+        <argument name="len" type="size"/>
+        <argument name="out" class="buffer">
+            <length argument="len"/>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+</interface>

@@ -47,23 +47,21 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'fake random' implementation.
+//  This module contains 'ctr drbg' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_FAKE_RANDOM_H_INCLUDED
-#define VSCF_FAKE_RANDOM_H_INCLUDED
+#ifndef VSCF_CTR_DRBG_H_INCLUDED
+#define VSCF_CTR_DRBG_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_buffer.h>
 #endif
 
@@ -83,88 +81,130 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Public integral constants.
 //
-typedef struct vscf_fake_random_impl_t vscf_fake_random_impl_t;
+enum {
+    //
+    //  The interval before reseed is performed by default.
+    //
+    vscf_ctr_drbg_RESEED_INTERVAL = 10000,
+    //
+    //  The amount of entropy used per seed by default.
+    //
+    vscf_ctr_drbg_ENTROPY_LEN = 48
+};
 
 //
-//  Return size of 'vscf_fake_random_impl_t' type.
+//  Handles implementation details.
+//
+typedef struct vscf_ctr_drbg_impl_t vscf_ctr_drbg_impl_t;
+
+//
+//  Return size of 'vscf_ctr_drbg_impl_t' type.
 //
 VSCF_PUBLIC size_t
-vscf_fake_random_impl_size(void);
+vscf_ctr_drbg_impl_size(void);
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_fake_random_impl(vscf_fake_random_impl_t *fake_random_impl);
+vscf_ctr_drbg_impl(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_fake_random_init(vscf_fake_random_impl_t *fake_random_impl);
+vscf_ctr_drbg_init(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
 
 //
 //  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_fake_random_init()'.
+//  This is a reverse action of the function 'vscf_ctr_drbg_init()'.
 //
 VSCF_PUBLIC void
-vscf_fake_random_cleanup(vscf_fake_random_impl_t *fake_random_impl);
+vscf_ctr_drbg_cleanup(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_fake_random_impl_t *
-vscf_fake_random_new(void);
+VSCF_PUBLIC vscf_ctr_drbg_impl_t *
+vscf_ctr_drbg_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_fake_random_new()'.
+//  This is a reverse action of the function 'vscf_ctr_drbg_new()'.
 //
 VSCF_PUBLIC void
-vscf_fake_random_delete(vscf_fake_random_impl_t *fake_random_impl);
+vscf_ctr_drbg_delete(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_fake_random_new()'.
+//  This is a reverse action of the function 'vscf_ctr_drbg_new()'.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_fake_random_destroy(vscf_fake_random_impl_t **fake_random_impl_ref);
+vscf_ctr_drbg_destroy(vscf_ctr_drbg_impl_t **ctr_drbg_impl_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_fake_random_impl_t *
-vscf_fake_random_copy(vscf_fake_random_impl_t *fake_random_impl);
+VSCF_PUBLIC vscf_ctr_drbg_impl_t *
+vscf_ctr_drbg_copy(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
 
 //
-//  Configure random number generator to generate sequence filled with given byte.
+//  Setup dependency to the interface 'entropy source' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_fake_random_setup_source_byte(vscf_fake_random_impl_t *fake_random_impl, byte byte_source);
+vscf_ctr_drbg_use_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl, vscf_impl_t *entropy_source);
 
 //
-//  Configure random number generator to generate random sequence from given data.
-//  Note, that given data is used as circular source.
+//  Setup dependency to the interface 'entropy source' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_fake_random_setup_source_data(vscf_fake_random_impl_t *fake_random_impl, vsc_data_t data_source);
+vscf_ctr_drbg_take_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl, vscf_impl_t *entropy_source);
+
+//
+//  Release dependency to the interface 'entropy source'.
+//
+VSCF_PUBLIC void
+vscf_ctr_drbg_release_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
+
+//
+//  Force entropy to be gathered at the beginning of every call to
+//  the (.class_ctr_drbg_method_random)() method.
+//  Note, use this if your entropy source has sufficient throughput.
+//
+VSCF_PUBLIC void
+vscf_ctr_drbg_enable_prediction_resistance(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
+
+//
+//  Sets the reseed interval.
+//  Default value is reseed interval.
+//
+VSCF_PUBLIC void
+vscf_ctr_drbg_set_reseed_interval(vscf_ctr_drbg_impl_t *ctr_drbg_impl, size_t interval);
+
+//
+//  Sets the amount of entropy grabbed on each seed or reseed.
+//  The default value is entropy len.
+//
+VSCF_PUBLIC void
+vscf_ctr_drbg_set_entropy_len(vscf_ctr_drbg_impl_t *ctr_drbg_impl, size_t len);
 
 //
 //  Generate random bytes.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_fake_random_random(vscf_fake_random_impl_t *fake_random_impl, size_t data_len, vsc_buffer_t *data);
+vscf_ctr_drbg_random(vscf_ctr_drbg_impl_t *ctr_drbg_impl, size_t data_len, vsc_buffer_t *data);
 
 //
 //  Retreive new seed data from the entropy sources.
 //
 VSCF_PUBLIC void
-vscf_fake_random_reseed(vscf_fake_random_impl_t *fake_random_impl);
+vscf_ctr_drbg_reseed(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
 
 
 // --------------------------------------------------------------------------
@@ -180,5 +220,5 @@ vscf_fake_random_reseed(vscf_fake_random_impl_t *fake_random_impl);
 
 
 //  @footer
-#endif // VSCF_FAKE_RANDOM_H_INCLUDED
+#endif // VSCF_CTR_DRBG_H_INCLUDED
 //  @end

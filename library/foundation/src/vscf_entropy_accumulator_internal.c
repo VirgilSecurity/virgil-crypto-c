@@ -51,12 +51,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_fake_random_internal.h"
+#include "vscf_entropy_accumulator_internal.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_fake_random_impl.h"
-#include "vscf_random.h"
-#include "vscf_random_api.h"
+#include "vscf_entropy_accumulator_impl.h"
+#include "vscf_entropy_source.h"
+#include "vscf_entropy_source_api.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -71,175 +71,175 @@
 // --------------------------------------------------------------------------
 
 static const vscf_api_t *
-vscf_fake_random_find_api(vscf_api_tag_t api_tag);
+vscf_entropy_accumulator_find_api(vscf_api_tag_t api_tag);
 
 //
-//  Configuration of the interface API 'random api'.
+//  Configuration of the interface API 'entropy source api'.
 //
-static const vscf_random_api_t random_api = {
+static const vscf_entropy_source_api_t entropy_source_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'random' MUST be equal to the 'vscf_api_tag_RANDOM'.
+    //  For interface 'entropy_source' MUST be equal to the 'vscf_api_tag_ENTROPY_SOURCE'.
     //
-    vscf_api_tag_RANDOM,
+    vscf_api_tag_ENTROPY_SOURCE,
     //
     //  Implementation unique identifier, MUST be second in the structure.
     //
-    vscf_impl_tag_FAKE_RANDOM,
+    vscf_impl_tag_ENTROPY_ACCUMULATOR,
     //
-    //  Generate random bytes.
+    //  Defines that implemented source is strong.
     //
-    (vscf_random_api_random_fn)vscf_fake_random_random,
+    (vscf_entropy_source_api_is_strong_fn)vscf_entropy_accumulator_is_strong,
     //
-    //  Retreive new seed data from the entropy sources.
+    //  Provide gathered entropy of the requested length.
     //
-    (vscf_random_api_reseed_fn)vscf_fake_random_reseed
+    (vscf_entropy_source_api_provide_fn)vscf_entropy_accumulator_provide
 };
 
 //
-//  Compile-time known information about 'fake random' implementation.
+//  Compile-time known information about 'entropy accumulator' implementation.
 //
 static const vscf_impl_info_t info = {
     //
     //  Implementation unique identifier, MUST be first in the structure.
     //
-    vscf_impl_tag_FAKE_RANDOM,
+    vscf_impl_tag_ENTROPY_ACCUMULATOR,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
     //
-    vscf_fake_random_find_api,
+    vscf_entropy_accumulator_find_api,
     //
     //  Release acquired inner resources.
     //
-    (vscf_impl_cleanup_fn)vscf_fake_random_cleanup,
+    (vscf_impl_cleanup_fn)vscf_entropy_accumulator_cleanup,
     //
     //  Self destruction, according to destruction policy.
     //
-    (vscf_impl_delete_fn)vscf_fake_random_delete
+    (vscf_impl_delete_fn)vscf_entropy_accumulator_delete
 };
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_fake_random_init(vscf_fake_random_impl_t *fake_random_impl) {
+vscf_entropy_accumulator_init(vscf_entropy_accumulator_impl_t *entropy_accumulator_impl) {
 
-    VSCF_ASSERT_PTR(fake_random_impl);
+    VSCF_ASSERT_PTR(entropy_accumulator_impl);
 
-    vscf_zeroize(fake_random_impl, sizeof(vscf_fake_random_impl_t));
+    vscf_zeroize(entropy_accumulator_impl, sizeof(vscf_entropy_accumulator_impl_t));
 
-    fake_random_impl->info = &info;
-    fake_random_impl->refcnt = 1;
+    entropy_accumulator_impl->info = &info;
+    entropy_accumulator_impl->refcnt = 1;
 
-    vscf_fake_random_init_ctx(fake_random_impl);
+    vscf_entropy_accumulator_init_ctx(entropy_accumulator_impl);
 }
 
 //
 //  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_fake_random_init()'.
+//  This is a reverse action of the function 'vscf_entropy_accumulator_init()'.
 //
 VSCF_PUBLIC void
-vscf_fake_random_cleanup(vscf_fake_random_impl_t *fake_random_impl) {
+vscf_entropy_accumulator_cleanup(vscf_entropy_accumulator_impl_t *entropy_accumulator_impl) {
 
-    if (fake_random_impl == NULL || fake_random_impl->info == NULL) {
+    if (entropy_accumulator_impl == NULL || entropy_accumulator_impl->info == NULL) {
         return;
     }
 
-    if (fake_random_impl->refcnt == 0) {
+    if (entropy_accumulator_impl->refcnt == 0) {
         return;
     }
 
-    if (--fake_random_impl->refcnt > 0) {
+    if (--entropy_accumulator_impl->refcnt > 0) {
         return;
     }
 
-    vscf_fake_random_cleanup_ctx(fake_random_impl);
+    vscf_entropy_accumulator_cleanup_ctx(entropy_accumulator_impl);
 
-    vscf_zeroize(fake_random_impl, sizeof(vscf_fake_random_impl_t));
+    vscf_zeroize(entropy_accumulator_impl, sizeof(vscf_entropy_accumulator_impl_t));
 }
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_fake_random_impl_t *
-vscf_fake_random_new(void) {
+VSCF_PUBLIC vscf_entropy_accumulator_impl_t *
+vscf_entropy_accumulator_new(void) {
 
-    vscf_fake_random_impl_t *fake_random_impl = (vscf_fake_random_impl_t *) vscf_alloc(sizeof (vscf_fake_random_impl_t));
-    VSCF_ASSERT_ALLOC(fake_random_impl);
+    vscf_entropy_accumulator_impl_t *entropy_accumulator_impl = (vscf_entropy_accumulator_impl_t *) vscf_alloc(sizeof (vscf_entropy_accumulator_impl_t));
+    VSCF_ASSERT_ALLOC(entropy_accumulator_impl);
 
-    vscf_fake_random_init(fake_random_impl);
+    vscf_entropy_accumulator_init(entropy_accumulator_impl);
 
-    return fake_random_impl;
+    return entropy_accumulator_impl;
 }
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_fake_random_new()'.
+//  This is a reverse action of the function 'vscf_entropy_accumulator_new()'.
 //
 VSCF_PUBLIC void
-vscf_fake_random_delete(vscf_fake_random_impl_t *fake_random_impl) {
+vscf_entropy_accumulator_delete(vscf_entropy_accumulator_impl_t *entropy_accumulator_impl) {
 
-    vscf_fake_random_cleanup(fake_random_impl);
+    vscf_entropy_accumulator_cleanup(entropy_accumulator_impl);
 
-    if (fake_random_impl && (fake_random_impl->refcnt == 0)) {
-        vscf_dealloc(fake_random_impl);
+    if (entropy_accumulator_impl && (entropy_accumulator_impl->refcnt == 0)) {
+        vscf_dealloc(entropy_accumulator_impl);
     }
 }
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_fake_random_new()'.
+//  This is a reverse action of the function 'vscf_entropy_accumulator_new()'.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_fake_random_destroy(vscf_fake_random_impl_t **fake_random_impl_ref) {
+vscf_entropy_accumulator_destroy(vscf_entropy_accumulator_impl_t **entropy_accumulator_impl_ref) {
 
-    VSCF_ASSERT_PTR(fake_random_impl_ref);
+    VSCF_ASSERT_PTR(entropy_accumulator_impl_ref);
 
-    vscf_fake_random_impl_t *fake_random_impl = *fake_random_impl_ref;
-    *fake_random_impl_ref = NULL;
+    vscf_entropy_accumulator_impl_t *entropy_accumulator_impl = *entropy_accumulator_impl_ref;
+    *entropy_accumulator_impl_ref = NULL;
 
-    vscf_fake_random_delete(fake_random_impl);
+    vscf_entropy_accumulator_delete(entropy_accumulator_impl);
 }
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_fake_random_impl_t *
-vscf_fake_random_copy(vscf_fake_random_impl_t *fake_random_impl) {
+VSCF_PUBLIC vscf_entropy_accumulator_impl_t *
+vscf_entropy_accumulator_copy(vscf_entropy_accumulator_impl_t *entropy_accumulator_impl) {
 
     // Proxy to the parent implementation.
-    return (vscf_fake_random_impl_t *)vscf_impl_copy((vscf_impl_t *)fake_random_impl);
+    return (vscf_entropy_accumulator_impl_t *)vscf_impl_copy((vscf_impl_t *)entropy_accumulator_impl);
 }
 
 //
-//  Return size of 'vscf_fake_random_impl_t' type.
+//  Return size of 'vscf_entropy_accumulator_impl_t' type.
 //
 VSCF_PUBLIC size_t
-vscf_fake_random_impl_size(void) {
+vscf_entropy_accumulator_impl_size(void) {
 
-    return sizeof (vscf_fake_random_impl_t);
+    return sizeof (vscf_entropy_accumulator_impl_t);
 }
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_fake_random_impl(vscf_fake_random_impl_t *fake_random_impl) {
+vscf_entropy_accumulator_impl(vscf_entropy_accumulator_impl_t *entropy_accumulator_impl) {
 
-    VSCF_ASSERT_PTR(fake_random_impl);
-    return (vscf_impl_t *)(fake_random_impl);
+    VSCF_ASSERT_PTR(entropy_accumulator_impl);
+    return (vscf_impl_t *)(entropy_accumulator_impl);
 }
 
 static const vscf_api_t *
-vscf_fake_random_find_api(vscf_api_tag_t api_tag) {
+vscf_entropy_accumulator_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
-        case vscf_api_tag_RANDOM:
-            return (const vscf_api_t *) &random_api;
+        case vscf_api_tag_ENTROPY_SOURCE:
+            return (const vscf_api_t *) &entropy_source_api;
         default:
             return NULL;
     }
