@@ -160,6 +160,15 @@ function class_resolve_constructor (constructor, class)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve entity: property.
+# ---------------------------------------------------------------------------
+function class_resolve_property (property, class)
+    check_arguments (my, "property, class", my)
+
+    my.property.access ?= "readwrite"
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve entity: method.
 # ---------------------------------------------------------------------------
 function class_resolve_method (method, class)
@@ -201,6 +210,10 @@ function class_resolve (class, project)
 
     for my.class.method
         class_resolve_method (method, my.class)
+    endfor
+
+    for my.class.property
+        class_resolve_property (property, my.class)
     endfor
 
     foreach_component_resolve (my.class)
