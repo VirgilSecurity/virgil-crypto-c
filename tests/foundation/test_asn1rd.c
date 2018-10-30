@@ -116,7 +116,7 @@ test__asn1rd_read_int__encoded_integer_neg_2__returns_neg_2(void) {
 }
 
 void
-test__asn1rd_read_int__encoded_int8_0__returns_0(void) {
+test__asn1rd_read_int8__encoded_int8_0__returns_0(void) {
 
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
@@ -131,7 +131,7 @@ test__asn1rd_read_int__encoded_int8_0__returns_0(void) {
 }
 
 void
-test__asn1rd_read_int__encoded_int8_127__returns_127(void) {
+test__asn1rd_read_int8__encoded_int8_127__returns_127(void) {
 
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
@@ -146,7 +146,7 @@ test__asn1rd_read_int__encoded_int8_127__returns_127(void) {
 }
 
 void
-test__asn1rd_read_int__encoded_int8_neg_128__returns_neg_128(void) {
+test__asn1rd_read_int8__encoded_int8_neg_128__returns_neg_128(void) {
 
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
@@ -161,7 +161,7 @@ test__asn1rd_read_int__encoded_int8_neg_128__returns_neg_128(void) {
 }
 
 void
-test__asn1rd_read_int__encoded_int16_32760__returns_32760(void) {
+test__asn1rd_read_int16__encoded_int16_32760__returns_32760(void) {
 
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
@@ -176,7 +176,7 @@ test__asn1rd_read_int__encoded_int16_32760__returns_32760(void) {
 }
 
 void
-test__asn1rd_read_int__encoded_int16_neg_32760__returns_neg_32760(void) {
+test__asn1rd_read_int16__encoded_int16_neg_32760__returns_neg_32760(void) {
 
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
@@ -191,7 +191,7 @@ test__asn1rd_read_int__encoded_int16_neg_32760__returns_neg_32760(void) {
 }
 
 void
-test__asn1rd_read_int__encoded_int32_2147483000__returns_2147483000(void) {
+test__asn1rd_read_int32__encoded_int32_2147483000__returns_2147483000(void) {
 
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
@@ -206,7 +206,7 @@ test__asn1rd_read_int__encoded_int32_2147483000__returns_2147483000(void) {
 }
 
 void
-test__asn1rd_read_int__encoded_int32_neg_2147483000__returns_neg_2147483000(void) {
+test__asn1rd_read_int32__encoded_int32_neg_2147483000__returns_neg_2147483000(void) {
 
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
@@ -221,7 +221,7 @@ test__asn1rd_read_int__encoded_int32_neg_2147483000__returns_neg_2147483000(void
 }
 
 void
-test__asn1rd_read_int__encoded_uint8_255__returns_255(void) {
+test__asn1rd_read_uint8__encoded_uint8_255__returns_255(void) {
 
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
@@ -236,22 +236,7 @@ test__asn1rd_read_int__encoded_uint8_255__returns_255(void) {
 }
 
 void
-test__asn1rd_read_int__encoded_uint8_128__returns_128(void) {
-
-    vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
-    VSCF_ASSERT_PTR(asn1rd);
-
-    vscf_asn1rd_reset(asn1rd, test_asn1_encoded_UINT8_128);
-
-    int value = vscf_asn1rd_read_int(asn1rd);
-
-    TEST_ASSERT_EQUAL(128, value);
-
-    vscf_asn1rd_destroy(&asn1rd);
-}
-
-void
-test__asn1rd_read_int__encoded_uint8_0__returns_0(void) {
+test__asn1rd_read_uint8__encoded_uint8_0__returns_0(void) {
 
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
@@ -266,7 +251,7 @@ test__asn1rd_read_int__encoded_uint8_0__returns_0(void) {
 }
 
 void
-test__asn1rd_read_int__encoded_uint16_65535__returns_65535(void) {
+test__asn1rd_read_uint16__encoded_uint16_65535__returns_65535(void) {
 
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);
@@ -281,7 +266,7 @@ test__asn1rd_read_int__encoded_uint16_65535__returns_65535(void) {
 }
 
 void
-test__asn1rd_read_int__encoded_uint32_4294967295__returns_4294967295(void) {
+test__asn1rd_read_uint32__encoded_uint32_4294967295__returns_4294967295(void) {
 
     vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
     VSCF_ASSERT_PTR(asn1rd);

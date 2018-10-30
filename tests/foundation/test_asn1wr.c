@@ -159,7 +159,7 @@ test__asn1wr_write_int__argument_integer_neg_2__returns_encoded_integer_neg_2(vo
 }
 
 void
-test__asn1wr_write_int__argument_int8_0__returns_encoded_int8_0(void) {
+test__asn1wr_write_int8__argument_int8_0__returns_encoded_int8_0(void) {
 
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
@@ -180,7 +180,7 @@ test__asn1wr_write_int__argument_int8_0__returns_encoded_int8_0(void) {
 }
 
 void
-test__asn1wr_write_int__argument_int8_127__returns_encoded_int8_127(void) {
+test__asn1wr_write_int8__argument_int8_127__returns_encoded_int8_127(void) {
 
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
@@ -201,7 +201,7 @@ test__asn1wr_write_int__argument_int8_127__returns_encoded_int8_127(void) {
 }
 
 void
-test__asn1wr_write_int__argument_int8_neg_1__returns_encoded_int8_neg_128(void) {
+test__asn1wr_write_int8__argument_int8_neg_128__returns_encoded_int8_neg_128(void) {
 
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
@@ -222,7 +222,7 @@ test__asn1wr_write_int__argument_int8_neg_1__returns_encoded_int8_neg_128(void) 
 }
 
 void
-test__asn1wr_write_int__argument_int16_32760__returns_encoded_int16_32760(void) {
+test__asn1wr_write_int16__argument_int16_32760__returns_encoded_int16_32760(void) {
 
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
@@ -243,7 +243,7 @@ test__asn1wr_write_int__argument_int16_32760__returns_encoded_int16_32760(void) 
 }
 
 void
-test__asn1wr_write_int__argument_int16_neg_2__returns_encoded_int16_neg_32760(void) {
+test__asn1wr_write_int16__argument_int16_neg_32760__returns_encoded_int16_neg_32760(void) {
 
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
@@ -264,7 +264,7 @@ test__asn1wr_write_int__argument_int16_neg_2__returns_encoded_int16_neg_32760(vo
 }
 
 void
-test__asn1wr_write_int__argument_int32_2147483000__returns_encoded_int32_2147483000(void) {
+test__asn1wr_write_int32__argument_int32_2147483000__returns_encoded_int32_2147483000(void) {
 
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
@@ -285,7 +285,7 @@ test__asn1wr_write_int__argument_int32_2147483000__returns_encoded_int32_2147483
 }
 
 void
-test__asn1wr_write_int__argument_int32_NEG_2147483000__returns_encoded_int32_NEG_2147483000(void) {
+test__asn1wr_write_int32__argument_int32_NEG_2147483000__returns_encoded_int32_NEG_2147483000(void) {
 
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
@@ -306,7 +306,7 @@ test__asn1wr_write_int__argument_int32_NEG_2147483000__returns_encoded_int32_NEG
 }
 
 void
-test__asn1wr_write_int__argument_uint8_255__returns_encoded_uint8_255(void) {
+test__asn1wr_write_uint8__argument_uint8_255__returns_encoded_uint8_255(void) {
 
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
@@ -327,28 +327,7 @@ test__asn1wr_write_int__argument_uint8_255__returns_encoded_uint8_255(void) {
 }
 
 void
-test__asn1wr_write_int__argument_uint8_128__returns_encoded_uint8_128(void) {
-
-    vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
-    VSCF_ASSERT_PTR(asn1wr);
-
-    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_UINT8_128.len);
-
-    vscf_asn1wr_reset(asn1wr, asn1);
-
-    size_t len = vscf_asn1wr_write_int(asn1wr, 128);
-    vscf_asn1wr_seal(asn1wr);
-
-    TEST_ASSERT_EQUAL(test_asn1_encoded_UINT8_128.len, len);
-    TEST_ASSERT_EQUAL(test_asn1_encoded_UINT8_128.len, vsc_buffer_len(asn1));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_UINT8_128.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
-
-    vsc_buffer_destroy(&asn1);
-    vscf_asn1wr_destroy(&asn1wr);
-}
-
-void
-test__asn1wr_write_int__argument_uint8_0__returns_encoded_uint8_0(void) {
+test__asn1wr_write_uint8__argument_uint8_0__returns_encoded_uint8_0(void) {
 
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
@@ -369,7 +348,7 @@ test__asn1wr_write_int__argument_uint8_0__returns_encoded_uint8_0(void) {
 }
 
 void
-test__asn1wr_write_int__argument_uint16_65535__returns_encoded_uint16_65535(void) {
+test__asn1wr_write_uint16__argument_uint16_65535__returns_encoded_uint16_65535(void) {
 
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
@@ -390,7 +369,7 @@ test__asn1wr_write_int__argument_uint16_65535__returns_encoded_uint16_65535(void
 }
 
 void
-test__asn1wr_write_int__argument_uint32_4294967295__returns_encoded_uint32_4294967295(void) {
+test__asn1wr_write_uint32__argument_uint32_4294967295__returns_encoded_uint32_4294967295(void) {
 
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
     VSCF_ASSERT_PTR(asn1wr);
