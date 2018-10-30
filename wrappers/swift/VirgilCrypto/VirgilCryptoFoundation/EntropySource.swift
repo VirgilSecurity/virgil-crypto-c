@@ -37,16 +37,16 @@ import Foundation
 import VSCFoundation
 import VirgilCryptoCommon
 
-/// Common interface to get random data.
-@objc(VSCFRandom) public protocol Random : CContext {
+/// Defines generic interface for the entropy source.
+@objc(VSCFEntropySource) public protocol EntropySource : CContext {
 
-    @objc func random(dataLen: Int) throws -> Data
+    @objc func isStrong()
 
-    @objc func reseed()
+    @objc func provide(len: Int) throws -> Data
 }
 
 /// Implement interface methods
-@objc(VSCFRandomProxy) internal class RandomProxy: NSObject, Random {
+@objc(VSCFEntropySourceProxy) internal class EntropySourceProxy: NSObject, EntropySource {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -62,29 +62,29 @@ import VirgilCryptoCommon
         vscf_impl_delete(self.c_ctx)
     }
 
-    /// Generate random bytes.
-    @objc public func random(dataLen: Int) throws -> Data {
-        let dataCount = dataLen
-        var data = Data(count: dataCount)
-        var dataBuf = vsc_buffer_new()
+    /// Defines that implemented source is strong.
+    @objc public func isStrong() {
+        vscf_entropy_source_is_strong(self.c_ctx)
+    }
+
+    /// Provide gathered entropy of the requested length.
+    @objc public func provide(len: Int) throws -> Data {
+        let outCount = len
+        var out = Data(count: outCount)
+        var outBuf = vsc_buffer_new()
         defer {
-            vsc_buffer_delete(dataBuf)
+            vsc_buffer_delete(outBuf)
         }
 
-        let proxyResult = data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
-            vsc_buffer_init(dataBuf)
-            vsc_buffer_use(dataBuf, dataPointer, dataCount)
-            return vscf_random(self.c_ctx, dataLen, dataBuf)
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+            vsc_buffer_init(outBuf)
+            vsc_buffer_use(outBuf, outPointer, outCount)
+            return vscf_entropy_source_provide(self.c_ctx, len, outBuf)
         })
-        data.count = vsc_buffer_len(dataBuf)
+        out.count = vsc_buffer_len(outBuf)
 
         try FoundationError.handleError(fromC: proxyResult)
 
-        return data
-    }
-
-    /// Retreive new seed data from the entropy sources.
-    @objc public func reseed() {
-        vscf_random_reseed(self.c_ctx)
+        return out
     }
 }

@@ -5,28 +5,20 @@
     External library: https://github.com/ARMmbed/mbedtls
 
     <feature name="SHA256 C"/>
-
     <feature name="SHA512 C"/>
-
     <feature name="CIPHER C"/>
-
     <feature name="AES C"/>
-
     <feature name="GCM C"/>
-
     <feature name="MD C"/>
-
     <feature name="BIGNUM C"/>
-
     <feature name="PKCS1 V21"/>
-
     <feature name="OID C"/>
-
     <feature name="ASN1 PARSE C"/>
-
     <feature name="ASN1 WRITE C"/>
-
     <feature name="GENPRIME"/>
+    <feature name="TIMING C"/>
+    <feature name="HAVEGE C"/>
+    <feature name="PLATFORM ENTROPY"/>
 
     <feature name="RSA C">
         <require feature="BIGNUM C"/>
@@ -37,6 +29,11 @@
 
     <feature name="CTR_DRBG C">
         <require feature="ENTROPY C"/>
+        <require>
+            <alternative feature="TIMING C"/>
+            <alternative feature="HAVEGE C"/>
+            <alternative feature="PLATFORM ENTROPY"/>
+        </require>
     </feature>
 
     <feature name="ENTROPY C">

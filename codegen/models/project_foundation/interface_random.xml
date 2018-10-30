@@ -11,4 +11,8 @@
 
         <return enum="error"/>
     </method>
+
+    <method name="reseed">
+        Retreive new seed data from the entropy sources.
+    </method>
 </interface>

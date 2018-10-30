@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Common interface to get random data.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,12 +44,35 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_random.h"
-#include "vscf_assert.h"
-#include "vscf_random_api.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Interface 'entropy source' API.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_ENTROPY_SOURCE_API_H_INCLUDED
+#define VSCF_ENTROPY_SOURCE_API_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_api.h"
+#include "vscf_impl.h"
+#include "vscf_error.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -65,79 +82,51 @@
 // --------------------------------------------------------------------------
 
 //
-//  Generate random bytes.
+//  Callback. Defines that implemented source is strong.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_random(vscf_impl_t *impl, size_t data_len, vsc_buffer_t *data) {
-
-    const vscf_random_api_t *random_api = vscf_random_api (impl);
-    VSCF_ASSERT_PTR (random_api);
-
-    VSCF_ASSERT_PTR (random_api->random_cb);
-    return random_api->random_cb (impl, data_len, data);
-}
+typedef bool (*vscf_entropy_source_api_is_strong_fn)(vscf_impl_t *impl);
 
 //
-//  Retreive new seed data from the entropy sources.
+//  Callback. Provide gathered entropy of the requested length.
 //
-VSCF_PUBLIC void
-vscf_random_reseed(vscf_impl_t *impl) {
-
-    const vscf_random_api_t *random_api = vscf_random_api (impl);
-    VSCF_ASSERT_PTR (random_api);
-
-    VSCF_ASSERT_PTR (random_api->reseed_cb);
-    random_api->reseed_cb (impl);
-}
+typedef vscf_error_t (*vscf_entropy_source_api_provide_fn)(vscf_impl_t *impl, size_t len, vsc_buffer_t *out);
 
 //
-//  Return random API, or NULL if it is not implemented.
+//  Contains API requirements of the interface 'entropy source'.
 //
-VSCF_PUBLIC const vscf_random_api_t *
-vscf_random_api(vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_RANDOM);
-    return (const vscf_random_api_t *) api;
-}
-
-//
-//  Check if given object implements interface 'random'.
-//
-VSCF_PUBLIC bool
-vscf_random_is_implemented(vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    return vscf_impl_api (impl, vscf_api_tag_RANDOM) != NULL;
-}
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_random_api_tag(const vscf_random_api_t *random_api) {
-
-    VSCF_ASSERT_PTR (random_api);
-
-    return random_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_random_impl_tag(const vscf_random_api_t *random_api) {
-
-    VSCF_ASSERT_PTR (random_api);
-
-    return random_api->impl_tag;
-}
+struct vscf_entropy_source_api_t {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'entropy_source' MUST be equal to the 'vscf_api_tag_ENTROPY_SOURCE'.
+    //
+    vscf_api_tag_t api_tag;
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
+    //  Defines that implemented source is strong.
+    //
+    vscf_entropy_source_api_is_strong_fn is_strong_cb;
+    //
+    //  Provide gathered entropy of the requested length.
+    //
+    vscf_entropy_source_api_provide_fn provide_cb;
+};
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_ENTROPY_SOURCE_API_H_INCLUDED
 //  @end

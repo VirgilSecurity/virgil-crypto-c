@@ -39,7 +39,10 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Common interface to get random data.
+//  Types of the 'ctr drbg' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
 
@@ -50,9 +53,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_random.h"
-#include "vscf_assert.h"
-#include "vscf_random_api.h"
+#include "vscf_ctr_drbg_impl.h"
 
 // clang-format on
 //  @end
@@ -63,77 +64,6 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Generate random bytes.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_random(vscf_impl_t *impl, size_t data_len, vsc_buffer_t *data) {
-
-    const vscf_random_api_t *random_api = vscf_random_api (impl);
-    VSCF_ASSERT_PTR (random_api);
-
-    VSCF_ASSERT_PTR (random_api->random_cb);
-    return random_api->random_cb (impl, data_len, data);
-}
-
-//
-//  Retreive new seed data from the entropy sources.
-//
-VSCF_PUBLIC void
-vscf_random_reseed(vscf_impl_t *impl) {
-
-    const vscf_random_api_t *random_api = vscf_random_api (impl);
-    VSCF_ASSERT_PTR (random_api);
-
-    VSCF_ASSERT_PTR (random_api->reseed_cb);
-    random_api->reseed_cb (impl);
-}
-
-//
-//  Return random API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_random_api_t *
-vscf_random_api(vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_RANDOM);
-    return (const vscf_random_api_t *) api;
-}
-
-//
-//  Check if given object implements interface 'random'.
-//
-VSCF_PUBLIC bool
-vscf_random_is_implemented(vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    return vscf_impl_api (impl, vscf_api_tag_RANDOM) != NULL;
-}
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_random_api_tag(const vscf_random_api_t *random_api) {
-
-    VSCF_ASSERT_PTR (random_api);
-
-    return random_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_random_impl_tag(const vscf_random_api_t *random_api) {
-
-    VSCF_ASSERT_PTR (random_api);
-
-    return random_api->impl_tag;
-}
 
 
 // --------------------------------------------------------------------------

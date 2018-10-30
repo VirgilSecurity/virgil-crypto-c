@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'fake random' implementation.
+//  This module contains 'ctr drbg' implementation.
 // --------------------------------------------------------------------------
 
 
@@ -50,11 +50,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_fake_random.h"
+#include "vscf_ctr_drbg.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_fake_random_impl.h"
-#include "vscf_fake_random_internal.h"
+#include "vscf_entropy_source.h"
+#include "vscf_ctr_drbg_impl.h"
+#include "vscf_ctr_drbg_internal.h"
 
 // clang-format on
 //  @end
@@ -76,18 +77,15 @@
 
 //
 //  Provides initialization of the implementation specific context.
-//  Note, this method is called automatically when method vscf_fake_random_init() is called.
+//  Note, this method is called automatically when method vscf_ctr_drbg_init() is called.
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_fake_random_init_ctx(vscf_fake_random_impl_t *fake_random_impl) {
+vscf_ctr_drbg_init_ctx(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
 
-    VSCF_ASSERT_PTR(fake_random_impl);
+    VSCF_ASSERT_PTR(ctr_drbg_impl);
 
-    fake_random_impl->data_source.bytes = NULL;
-    fake_random_impl->data_source.len = 0;
-    fake_random_impl->byte_source = 0;
-    fake_random_impl->pos = 0;
+    mbedtls_ctr_drbg_init(&ctr_drbg_impl->ctx);
 }
 
 //
@@ -96,74 +94,88 @@ vscf_fake_random_init_ctx(vscf_fake_random_impl_t *fake_random_impl) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_fake_random_cleanup_ctx(vscf_fake_random_impl_t *fake_random_impl) {
+vscf_ctr_drbg_cleanup_ctx(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
 
-    VSCF_ASSERT_PTR(fake_random_impl);
+    VSCF_ASSERT_PTR(ctr_drbg_impl);
 
-    (void)vscf_fake_random_init_ctx(fake_random_impl);
+    mbedtls_ctr_drbg_free(&ctr_drbg_impl->ctx);
 }
 
 //
-//  Configure random number generator to generate sequence filled with given byte.
+//  Force entropy to be gathered at the beginning of every call to
+//  the (.class_ctr_drbg_method_random)() method.
+//  Note, use this if your entropy source has sufficient throughput.
 //
 VSCF_PUBLIC void
-vscf_fake_random_setup_source_byte(vscf_fake_random_impl_t *fake_random_impl, byte byte_source) {
+vscf_ctr_drbg_enable_prediction_resistance(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
 
-    VSCF_ASSERT_PTR(fake_random_impl);
+    VSCF_ASSERT_PTR(ctr_drbg_impl);
 
-    vscf_fake_random_init_ctx(fake_random_impl);
-
-    fake_random_impl->byte_source = byte_source;
+    mbedtls_ctr_drbg_set_prediction_resistance(&ctr_drbg_impl->ctx, 1);
 }
 
 //
-//  Configure random number generator to generate random sequence from given data.
-//  Note, that given data is used as circular source.
+//  Sets the reseed interval.
+//  Default value is reseed interval.
 //
 VSCF_PUBLIC void
-vscf_fake_random_setup_source_data(vscf_fake_random_impl_t *fake_random_impl, vsc_data_t data_source) {
+vscf_ctr_drbg_set_reseed_interval(vscf_ctr_drbg_impl_t *ctr_drbg_impl, size_t interval) {
 
-    VSCF_ASSERT_PTR(fake_random_impl);
+    VSCF_ASSERT_PTR(ctr_drbg_impl);
+    VSCF_ASSERT(interval < INT_MAX);
 
-    vscf_fake_random_init_ctx(fake_random_impl);
+    mbedtls_ctr_drbg_set_reseed_interval(&ctr_drbg_impl->ctx, (int)interval);
+}
 
-    fake_random_impl->data_source = data_source;
+//
+//  Sets the amount of entropy grabbed on each seed or reseed.
+//  The default value is entropy len.
+//
+VSCF_PUBLIC void
+vscf_ctr_drbg_set_entropy_len(vscf_ctr_drbg_impl_t *ctr_drbg_impl, size_t len) {
+
+    VSCF_ASSERT_PTR(ctr_drbg_impl);
+    VSCF_ASSERT(len < INT_MAX);
+
+    mbedtls_ctr_drbg_set_entropy_len(&ctr_drbg_impl->ctx, (int)len);
 }
 
 //
 //  Generate random bytes.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_fake_random_random(vscf_fake_random_impl_t *fake_random_impl, size_t data_len, vsc_buffer_t *data) {
+vscf_ctr_drbg_random(vscf_ctr_drbg_impl_t *ctr_drbg_impl, size_t data_len, vsc_buffer_t *data) {
 
-    VSCF_ASSERT_PTR(fake_random_impl);
+    VSCF_ASSERT_PTR(ctr_drbg_impl);
+    VSCF_ASSERT(data_len > 0);
     VSCF_ASSERT_PTR(data);
-    VSCF_ASSERT(vsc_buffer_is_valid(data));
-
     VSCF_ASSERT(vsc_buffer_left(data) >= data_len);
 
-    const byte *end = vsc_buffer_ptr(data) + data_len;
+    int result = mbedtls_ctr_drbg_random(&ctr_drbg_impl->ctx, vsc_buffer_ptr(data), vsc_buffer_left(data));
+    switch (result) {
+    case 0:
+        vsc_buffer_reserve(data, data_len);
+        return vscf_SUCCESS;
 
-    for (byte *write_ptr = vsc_buffer_ptr(data); write_ptr < end; ++write_ptr) {
-        if (fake_random_impl->data_source.bytes != NULL) {
-            *write_ptr = *(fake_random_impl->data_source.bytes + fake_random_impl->pos);
+    case MBEDTLS_ERR_CTR_DRBG_ENTROPY_SOURCE_FAILED:
+        return vscf_error_ENTROPY_SOURCE_FAILED;
 
-            if (++fake_random_impl->pos >= fake_random_impl->data_source.len) {
-                fake_random_impl->pos = 0;
-            }
-        } else {
-            *write_ptr = fake_random_impl->byte_source;
-        }
+    case MBEDTLS_ERR_CTR_DRBG_REQUEST_TOO_BIG:
+        return vscf_error_RNG_REQUESTED_DATA_TOO_BIG;
+
+    default:
+        // VSCF_ASSERT_UNHANDLED_ERROR(result);
+        return vscf_error_UNHANDLED_THIRDPARTY_ERROR;
     }
-
-    return vscf_SUCCESS;
 }
 
 //
 //  Retreive new seed data from the entropy sources.
 //
 VSCF_PUBLIC void
-vscf_fake_random_reseed(vscf_fake_random_impl_t *fake_random_impl) {
+vscf_ctr_drbg_reseed(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
 
-    VSCF_UNUSED(fake_random_impl);
+    VSCF_ASSERT_PTR(ctr_drbg_impl);
+
+    mbedtls_ctr_drbg_reseed(&ctr_drbg_impl->ctx, NULL, 0);
 }

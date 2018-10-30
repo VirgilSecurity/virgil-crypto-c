@@ -63,6 +63,7 @@ option(VSCF_MAC_INFO "Enable interface 'mac info'." ON)
 option(VSCF_MAC_STREAM "Enable interface 'mac stream'." ON)
 option(VSCF_KDF "Enable interface 'kdf'." ON)
 option(VSCF_RANDOM "Enable interface 'random'." ON)
+option(VSCF_ENTROPY_SOURCE "Enable interface 'entropy source'." ON)
 option(VSCF_KEY "Enable interface 'key'." ON)
 option(VSCF_PUBLIC_KEY "Enable interface 'public key'." ON)
 option(VSCF_PRIVATE_KEY "Enable interface 'private key'." ON)
@@ -85,6 +86,9 @@ option(VSCF_ASN1RD "Enable implementation 'asn1rd'." ON)
 option(VSCF_ASN1WR "Enable implementation 'asn1wr'." ON)
 option(VSCF_RSA_PUBLIC_KEY "Enable implementation 'rsa public key'." ON)
 option(VSCF_RSA_PRIVATE_KEY "Enable implementation 'rsa private key'." ON)
+option(VSCF_PLATFORM_ENTROPY "Enable implementation 'platform entropy'." ON)
+option(VSCF_ENTROPY_ACCUMULATOR "Enable implementation 'entropy accumulator'." ON)
+option(VSCF_CTR_DRBG "Enable implementation 'ctr drbg'." ON)
 option(VSCF_HMAC "Enable implementation 'hmac'." ON)
 option(VSCF_HKDF "Enable implementation 'hkdf'." ON)
 option(VSCF_KDF1 "Enable implementation 'kdf1'." ON)
@@ -113,6 +117,7 @@ mark_as_advanced(
         VSCF_MAC_STREAM
         VSCF_KDF
         VSCF_RANDOM
+        VSCF_ENTROPY_SOURCE
         VSCF_KEY
         VSCF_PUBLIC_KEY
         VSCF_PRIVATE_KEY
@@ -135,6 +140,9 @@ mark_as_advanced(
         VSCF_ASN1WR
         VSCF_RSA_PUBLIC_KEY
         VSCF_RSA_PRIVATE_KEY
+        VSCF_PLATFORM_ENTROPY
+        VSCF_ENTROPY_ACCUMULATOR
+        VSCF_CTR_DRBG
         VSCF_HMAC
         VSCF_HKDF
         VSCF_KDF1
@@ -502,6 +510,15 @@ if(VSCF_RSA_PRIVATE_KEY AND NOT VSCF_ASN1_WRITER)
     message("--")
     message("Feature VSCF_RSA_PRIVATE_KEY depends on the feature:")
     message("     VSCF_ASN1_WRITER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_CTR_DRBG AND NOT VSCF_ENTROPY_SOURCE)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_CTR_DRBG depends on the feature:")
+    message("     VSCF_ENTROPY_SOURCE - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

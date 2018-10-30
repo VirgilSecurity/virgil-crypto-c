@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Common interface to get random data.
+//  This module contains 'entropy accumulator' implementation.
 // --------------------------------------------------------------------------
 
 
@@ -50,9 +50,11 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_random.h"
+#include "vscf_entropy_accumulator.h"
 #include "vscf_assert.h"
-#include "vscf_random_api.h"
+#include "vscf_memory.h"
+#include "vscf_entropy_accumulator_impl.h"
+#include "vscf_entropy_accumulator_internal.h"
 
 // clang-format on
 //  @end
@@ -64,80 +66,76 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Generate random bytes.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_random(vscf_impl_t *impl, size_t data_len, vsc_buffer_t *data) {
-
-    const vscf_random_api_t *random_api = vscf_random_api (impl);
-    VSCF_ASSERT_PTR (random_api);
-
-    VSCF_ASSERT_PTR (random_api->random_cb);
-    return random_api->random_cb (impl, data_len, data);
-}
-
-//
-//  Retreive new seed data from the entropy sources.
-//
-VSCF_PUBLIC void
-vscf_random_reseed(vscf_impl_t *impl) {
-
-    const vscf_random_api_t *random_api = vscf_random_api (impl);
-    VSCF_ASSERT_PTR (random_api);
-
-    VSCF_ASSERT_PTR (random_api->reseed_cb);
-    random_api->reseed_cb (impl);
-}
-
-//
-//  Return random API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_random_api_t *
-vscf_random_api(vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_RANDOM);
-    return (const vscf_random_api_t *) api;
-}
-
-//
-//  Check if given object implements interface 'random'.
-//
-VSCF_PUBLIC bool
-vscf_random_is_implemented(vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    return vscf_impl_api (impl, vscf_api_tag_RANDOM) != NULL;
-}
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_random_api_tag(const vscf_random_api_t *random_api) {
-
-    VSCF_ASSERT_PTR (random_api);
-
-    return random_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_random_impl_tag(const vscf_random_api_t *random_api) {
-
-    VSCF_ASSERT_PTR (random_api);
-
-    return random_api->impl_tag;
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
+
+//
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_entropy_accumulator_init() is called.
+//  Note, that context is already zeroed.
+//
+VSCF_PRIVATE void
+vscf_entropy_accumulator_init_ctx(vscf_entropy_accumulator_impl_t *entropy_accumulator_impl) {
+
+    VSCF_ASSERT_PTR(entropy_accumulator_impl);
+
+    mbedtls_entropy_init(&entropy_accumulator_impl->ctx);
+}
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_entropy_accumulator_cleanup_ctx(vscf_entropy_accumulator_impl_t *entropy_accumulator_impl) {
+
+    VSCF_ASSERT_PTR(entropy_accumulator_impl);
+
+    mbedtls_entropy_free(&entropy_accumulator_impl->ctx);
+}
+
+//
+//  Defines that implemented source is strong.
+//
+VSCF_PUBLIC bool
+vscf_entropy_accumulator_is_strong(vscf_entropy_accumulator_impl_t *entropy_accumulator_impl) {
+
+    VSCF_ASSERT_PTR(entropy_accumulator_impl);
+
+    return true;
+}
+
+//
+//  Provide gathered entropy of the requested length.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_entropy_accumulator_provide(
+        vscf_entropy_accumulator_impl_t *entropy_accumulator_impl, size_t len, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(entropy_accumulator_impl);
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(len > 0);
+    VSCF_ASSERT(len <= MBEDTLS_ENTROPY_BLOCK_SIZE);
+    VSCF_ASSERT(vsc_buffer_left(out) >= 0);
+
+    int result = mbedtls_entropy_func(&entropy_accumulator_impl->ctx, vsc_buffer_ptr(out), len);
+
+    switch (result) {
+    case 0:
+        vsc_buffer_reserve(out, len);
+        return vscf_SUCCESS;
+
+    case MBEDTLS_ERR_ENTROPY_SOURCE_FAILED:
+        return vscf_error_ENTROPY_SOURCE_FAILED;
+
+    default:
+        return vscf_error_UNHANDLED_THIRDPARTY_ERROR;
+    }
+}
