@@ -71,6 +71,15 @@ static const byte empty_data[] = {
     0x00
 };
 
+//
+//  Return size of 'vsc_data_t'.
+//
+VSC_PUBLIC size_t
+vsc_data_ctx_size(void) {
+
+    return sizeof(vsc_data_t);
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -106,6 +115,23 @@ VSC_PUBLIC bool
 vsc_data_is_valid(vsc_data_t data_ctx) {
 
     return data_ctx.bytes != NULL;
+}
+
+//
+//  Returns true if underlying byte array contains only zeros.
+//
+VSC_PUBLIC bool
+vsc_data_is_zero(vsc_data_t data_ctx) {
+
+    VSC_ASSERT(vsc_data_is_valid(data_ctx));
+
+    for (size_t pos = 0; pos < data_ctx.len; ++pos) {
+        if (data_ctx.bytes[pos] != 0) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 //

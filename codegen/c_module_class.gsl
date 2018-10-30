@@ -617,7 +617,7 @@ function c_module_class_create_module_public (class, destination, meta)
         endif
 
 
-        if my.class.context <> "none" & my.class.context <> "public"
+        if my.class.context <> "none"
             _X13_add_method_context_size (my.class, module, my.meta)
         endif
 

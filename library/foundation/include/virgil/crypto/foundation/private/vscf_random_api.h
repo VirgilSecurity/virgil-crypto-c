@@ -58,6 +58,14 @@
 #include "vscf_impl.h"
 #include "vscf_error.h"
 
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
+
 // clang-format on
 //  @end
 
@@ -76,7 +84,7 @@ extern "C" {
 //
 //  Callback. Generate random bytes.
 //
-typedef vscf_error_t (*vscf_random_api_random_fn)(vscf_impl_t *impl, byte *data, size_t data_len);
+typedef vscf_error_t (*vscf_random_api_random_fn)(vscf_impl_t *impl, size_t data_len, vsc_buffer_t *data);
 
 //
 //  Contains API requirements of the interface 'random'.

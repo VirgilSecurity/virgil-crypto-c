@@ -108,10 +108,6 @@
             Unsigned 8-bit integral type.
         </restrict>
 
-        <restrict value="data">
-            Shortcut for the byte array.
-        </restrict>
-
         <restrict value="string">
             Shortcut for the char array.
         </restrict>

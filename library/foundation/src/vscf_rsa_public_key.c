@@ -56,6 +56,7 @@
 #include "vscf_asn1_tag.h"
 #include "vscf_mbedtls_bignum_asn1_writer.h"
 #include "vscf_mbedtls_bignum_asn1_reader.h"
+#include "vscf_mbedtls_bridge_random.h"
 #include "vscf_mbedtls_md.h"
 #include "vscf_random.h"
 #include "vscf_asn1_reader.h"
@@ -65,9 +66,6 @@
 
 // clang-format on
 //  @end
-
-
-typedef int (*mbedtls_random_cb)(void *, unsigned char *, size_t);
 
 
 //  @generated
@@ -152,7 +150,7 @@ vscf_rsa_public_key_encrypt(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc
     mbedtls_md_type_t md_alg = vscf_mbedtls_md_map_impl_tag(vscf_hash_impl_tag(rsa_public_key_impl->hash));
     mbedtls_rsa_set_padding(&rsa_public_key_impl->rsa_ctx, MBEDTLS_RSA_PKCS_V21, md_alg);
 
-    int result = mbedtls_rsa_rsaes_oaep_encrypt(&rsa_public_key_impl->rsa_ctx, (mbedtls_random_cb)vscf_random,
+    int result = mbedtls_rsa_rsaes_oaep_encrypt(&rsa_public_key_impl->rsa_ctx, vscf_mbedtls_bridge_random,
             rsa_public_key_impl->random, MBEDTLS_RSA_PUBLIC, NULL, 0, data.len, data.bytes, vsc_buffer_ptr(out));
 
     switch (result) {
@@ -206,7 +204,7 @@ vscf_rsa_public_key_verify(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc_
     mbedtls_md_type_t md_alg = vscf_mbedtls_md_map_impl_tag(vscf_hash_impl_tag(rsa_public_key_impl->hash));
     mbedtls_rsa_set_padding(&rsa_public_key_impl->rsa_ctx, MBEDTLS_RSA_PKCS_V21, md_alg);
 
-    int result = mbedtls_rsa_rsassa_pss_verify(&rsa_public_key_impl->rsa_ctx, (mbedtls_random_cb)vscf_random,
+    int result = mbedtls_rsa_rsassa_pss_verify(&rsa_public_key_impl->rsa_ctx, vscf_mbedtls_bridge_random,
             rsa_public_key_impl->random, MBEDTLS_RSA_PUBLIC, md_alg, vsc_buffer_len(data_hash_buf),
             vsc_buffer_bytes(data_hash_buf), signature.bytes);
 
@@ -240,7 +238,7 @@ vscf_rsa_public_key_export_public_key(vscf_rsa_public_key_impl_t *rsa_public_key
     vscf_error_ctx_t error_ctx;
     vscf_error_ctx_reset(&error_ctx);
 
-    vscf_asn1_writer_reset(asn1wr, out);
+    vscf_asn1_writer_reset(asn1wr, vsc_buffer_ptr(out), vsc_buffer_left(out));
 
     vscf_asn1_writer_write_sequence(asn1wr, vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->E, &error_ctx) +
                                                     vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->N, &error_ctx));
@@ -251,7 +249,8 @@ vscf_rsa_public_key_export_public_key(vscf_rsa_public_key_impl_t *rsa_public_key
         return vscf_error_SMALL_BUFFER;
     }
 
-    vscf_asn1_writer_seal(asn1wr);
+    size_t writtenBytes = vscf_asn1_writer_finish(asn1wr);
+    vsc_buffer_reserve(out, writtenBytes);
 
     return vscf_SUCCESS;
 }

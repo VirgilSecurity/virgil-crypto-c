@@ -1,0 +1,8 @@
+<class name="ratchet skipped message key list node" context="public">
+
+    <require class="ratchet skipped message key list node" scope="public"/>
+
+    <property name="value" class="ratchet skipped message key" access="readwrite"/>
+    <property name="next" class="ratchet skipped message key list node" access="readwrite"/>
+
+</class>

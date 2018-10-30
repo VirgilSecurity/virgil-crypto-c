@@ -633,7 +633,7 @@ function component_resolve_instance_attr_type (instance, parent)
 
     component_require_attr_type (my.instance, my)
 
-    my.valid_types = "nothing, boolean, integer, unsigned, size, byte, data, string, error"
+    my.valid_types = "nothing, boolean, integer, unsigned, size, byte, string, error"
     if ! string_in (my.instance.type, my.valid_types)
         my.instance_dump = component_instance_dump (my.instance)
 
@@ -642,15 +642,6 @@ function component_resolve_instance_attr_type (instance, parent)
     endif
 
     #   Resolve type shortcuts
-    if my.instance.type = "data"
-        my.instance.type = "byte"
-        my.instance.access ?= "readonly"
-
-        my.array = component_get_instance_array (my.instance)
-        my.array.length ?= "given"
-        my.array.access ?= "readwrite"
-    endif
-
     if my.instance.type = "string"
         my.instance.type = "char"
         my.instance.access ?= "readonly"
@@ -767,9 +758,9 @@ function component_resolve_instance_attr_access (instance, parent)
 
     my.instance.access ?= "readonly"
 
-    my.valid_access_argument = "readonly, writeonly, readwrite, disown"
-    my.valid_access_variable = "readonly, readwrite"
-    my.valid_access_return = "readonly, readwrite, disown"
+    my.valid_access_argument = "readonly, writeonly, readwrite, disown, retain"
+    my.valid_access_variable = "readonly, readwrite, retain"
+    my.valid_access_return = "readonly, readwrite, disown, retain"
     my.instance_dump = component_instance_dump (my.instance)
 
     if item_in (my.instance, "argument") & \

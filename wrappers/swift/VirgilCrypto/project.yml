@@ -1,0 +1,112 @@
+name: VirgilCrypto
+
+options:
+  usesTabs: false
+  indentWidth: 4
+  tabWidth: 4
+  transitivelyLinkDependencies: true
+  deploymentTarget:
+    iOS: "10.0"
+    watchOS: "2.0"
+    tvOS: "10.0"
+    macOS: "10.0"
+
+targets:
+  VirgilCryptoCommon:
+    prebuildScripts:
+      - path: Scripts/build_c_frameworks.sh
+        name: CFrameworks
+    type: framework
+    platform: [iOS, watchOS, tvOS, macOS]
+    scheme:
+      testTargets:
+        - VirgilCryptoCommon-Tests_$platform
+    sources:
+      - VirgilCryptoCommon
+    dependencies:
+      - framework: Binaries/$platform/VSCCommon.framework
+
+  VirgilCryptoCommon-Tests:
+    type: bundle.unit-test
+    platform: [iOS, watchOS, tvOS, macOS]
+    scheme: {}
+    sources:
+      - VirgilCryptoCommonTests
+    dependencies:
+      - target: VirgilCryptoCommon_$platform
+
+
+  VirgilCryptoFoundation:
+    prebuildScripts:
+      - path: Scripts/build_c_frameworks.sh
+        name: CFrameworks
+    type: framework
+    platform: [iOS, watchOS, tvOS, macOS]
+    scheme:
+      testTargets:
+        - VirgilCryptoFoundation-Tests_$platform
+    sources:
+      - VirgilCryptoFoundation
+    dependencies:
+      - target: VirgilCryptoCommon_$platform
+      - framework: Binaries/$platform/VSCFoundation.framework
+
+  VirgilCryptoFoundation-Tests:
+    type: bundle.unit-test
+    platform: [iOS, watchOS, tvOS, macOS]
+    scheme: {}
+    sources:
+      - VirgilCryptoFoundationTests
+    dependencies:
+      - target: VirgilCryptoFoundation_$platform
+
+
+  VirgilCryptoPythia:
+    prebuildScripts:
+      - path: Scripts/build_c_frameworks.sh
+        name: CFrameworks
+    type: framework
+    platform: [iOS, watchOS, tvOS, macOS]
+    scheme:
+      testTargets:
+        - VirgilCryptoPythia-Tests_$platform
+    sources:
+      - VirgilCryptoPythia
+    dependencies:
+      - target: VirgilCryptoCommon_$platform
+      - framework: Binaries/$platform/VSCPythia.framework
+
+  VirgilCryptoPythia-Tests:
+    type: bundle.unit-test
+    platform: [iOS, watchOS, tvOS, macOS]
+    scheme: {}
+    sources:
+      - VirgilCryptoPythiaTests
+    dependencies:
+      - target: VirgilCryptoPythia_$platform
+
+
+  VirgilCryptoRatchet:
+    prebuildScripts:
+      - path: Scripts/build_c_frameworks.sh
+        name: CFrameworks
+    type: framework
+    platform: [iOS, watchOS, tvOS, macOS]
+    scheme:
+      testTargets:
+        - VirgilCryptoRatchet-Tests_$platform
+    sources:
+      - VirgilCryptoRatchet
+    dependencies:
+      - target: VirgilCryptoCommon_$platform
+      - target: VirgilCryptoFoundation_$platform
+      - framework: Binaries/$platform/VSCRatchet.framework
+
+  VirgilCryptoRatchet-Tests:
+    type: bundle.unit-test
+    platform: [iOS, watchOS, tvOS, macOS]
+    scheme: {}
+    sources:
+      - VirgilCryptoRatchetTests
+    dependencies:
+      - target: VirgilCryptoRatchet_$platform

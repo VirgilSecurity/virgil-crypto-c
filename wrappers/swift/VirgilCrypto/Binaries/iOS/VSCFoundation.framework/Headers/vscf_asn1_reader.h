@@ -62,12 +62,10 @@
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
-#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
-#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -196,20 +194,20 @@ vscf_asn1_reader_read_null(vscf_impl_t *impl);
 //
 //  Read ASN.1 type: OCTET STRING.
 //
-VSCF_PUBLIC void
-vscf_asn1_reader_read_octet_str(vscf_impl_t *impl, vsc_buffer_t *value);
+VSCF_PUBLIC vsc_data_t
+vscf_asn1_reader_read_octet_str(vscf_impl_t *impl);
 
 //
 //  Read ASN.1 type: UTF8String.
 //
-VSCF_PUBLIC void
-vscf_asn1_reader_read_utf8_str(vscf_impl_t *impl, vsc_buffer_t *value);
+VSCF_PUBLIC vsc_data_t
+vscf_asn1_reader_read_utf8_str(vscf_impl_t *impl);
 
 //
 //  Read ASN.1 type: OID.
 //
-VSCF_PUBLIC void
-vscf_asn1_reader_read_oid(vscf_impl_t *impl, vsc_buffer_t *value);
+VSCF_PUBLIC vsc_data_t
+vscf_asn1_reader_read_oid(vscf_impl_t *impl);
 
 //
 //  Read raw data of given length.

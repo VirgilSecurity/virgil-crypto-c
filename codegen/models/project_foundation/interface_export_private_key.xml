@@ -7,7 +7,9 @@
     <method name="export private key">
         Export private key in the binary format.
 
-        <argument name="out" class="buffer"/>
+        <argument name="out" class="buffer">
+            <length method="exported private key len"/>
+        </argument>
 
         <return enum="error"/>
     </method>

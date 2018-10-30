@@ -2,7 +2,6 @@
     Mix-in interface that provides specific functionality to authenticated
     encryption and decryption.
 
-    <inherit interface="cipher auth info"/>
     <inherit interface="auth encrypt"/>
     <inherit interface="auth decrypt"/>
 </interface>

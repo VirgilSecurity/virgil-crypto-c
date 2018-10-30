@@ -11,24 +11,25 @@ import XCTest
 
 class VirgilCryptoFoundationTests: XCTestCase {
 
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    func test_Sha224_hash_emptyString_success() {
+        let hash = Sha224().hash(data: "".data(using: .utf8)!)
+        XCTAssert("0UoCjCo6K8lHYQK7KII0xBWisB+CjqYqxbPkLw==" == hash.base64EncodedString())
     }
 
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    func test_Sha256_hash_emptyString_success() {
+        let hash = Sha256().hash(data: "".data(using: .utf8)!)
+        XCTAssert("47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=" == hash.base64EncodedString())
     }
 
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    func test_Sha512_hash_helloString_success() {
+        let hash = Sha512().hash(data: "hello".data(using: .utf8)!)
+        XCTAssert("m3HSJL1i83hdltRq0+o9czGb+8KJDKra4t/3JRlnPKcjI8PZm6XBHXx6zG4UuMXaDEZjR1wuXDre9G9zvN7AQw==" == hash.base64EncodedString())
     }
-
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+    
+    func test_Hkdf_derive_emptyString_success() {
+        let hkdf = Hkdf()
+        hkdf.setHash(hash: Sha256())
+        let key = hkdf.derive(data: "".data(using: .utf8)!, salt: "".data(using: .utf8)!, info: "".data(using: .utf8)!, keyLen: 10)
+        XCTAssert(key.count == 10)
     }
-
 }

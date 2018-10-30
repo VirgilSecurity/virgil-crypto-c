@@ -150,7 +150,8 @@ function build_ios {
 
     if [ -d "${IOS_PREBUILT_DIR}/VSCCommon.framework" ] && \
             [ -d "${IOS_PREBUILT_DIR}/VSCFoundation.framework" ] && \
-            [ -d "${IOS_PREBUILT_DIR}/VSCPythia.framework" ]; then
+            [ -d "${IOS_PREBUILT_DIR}/VSCPythia.framework" ] && \
+            [ -d "${IOS_PREBUILT_DIR}/VSCRatchet.framework" ]; then
 
         show_info "Requested binaries is found in the '${IOS_PREBUILT_DIR}' folder."
         return 0
@@ -171,9 +172,103 @@ function build_ios {
     make_fat_framework VSCCommon "${INSTALL_DIR}" "${INSTALL_DIR}"
     make_fat_framework VSCFoundation "${INSTALL_DIR}" "${INSTALL_DIR}"
     make_fat_framework VSCPythia "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSCRatchet "${INSTALL_DIR}" "${INSTALL_DIR}"
 
     rm -fr -- "${INSTALL_DIR}/lib"
     cp -fa "${INSTALL_DIR}/." "${IOS_PREBUILT_DIR}/"
+}
+
+function build_tvos {
+    show_info "Build C Frameworks for tvOS..."
+
+    if [ -d "${TVOS_PREBUILT_DIR}/VSCCommon.framework" ] && \
+            [ -d "${TVOS_PREBUILT_DIR}/VSCFoundation.framework" ] && \
+            [ -d "${TVOS_PREBUILT_DIR}/VSCPythia.framework" ] && \
+            [ -d "${TVOS_PREBUILT_DIR}/VSCRatchet.framework" ]; then
+
+        show_info "Requested binaries is found in the '${TVOS_PREBUILT_DIR}' folder."
+        return 0
+    fi
+
+    rm -fr -- *
+    cmake ${CMAKE_ARGS} -DAPPLE_PLATFORM=TVOS \
+                        -DVSCP_MULTI_THREAD=ON \
+                        -DCMAKE_INSTALL_LIBDIR=lib/dev "${SRC_DIR}"
+    make -j8 install
+
+    rm -fr -- *
+    cmake ${CMAKE_ARGS} -DAPPLE_PLATFORM=TVOS_SIM \
+                        -DVSCP_MULTI_THREAD=ON \
+                        -DCMAKE_INSTALL_LIBDIR=lib/sim "${SRC_DIR}"
+    make -j8 install
+
+    make_fat_framework VSCCommon "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSCFoundation "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSCPythia "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSCRatchet "${INSTALL_DIR}" "${INSTALL_DIR}"
+
+    rm -fr -- "${INSTALL_DIR}/lib"
+    cp -fa "${INSTALL_DIR}/." "${TVOS_PREBUILT_DIR}/"
+}
+
+function build_watchos {
+    show_info "Build C Frameworks for watchOS..."
+
+    if [ -d "${WATCHOS_PREBUILT_DIR}/VSCCommon.framework" ] && \
+            [ -d "${WATCHOS_PREBUILT_DIR}/VSCFoundation.framework" ] && \
+            [ -d "${WATCHOS_PREBUILT_DIR}/VSCPythia.framework" ] && \
+            [ -d "${WATCHOS_PREBUILT_DIR}/VSCRatchet.framework" ]; then
+
+        show_info "Requested binaries is found in the '${WATCHOS_PREBUILT_DIR}' folder."
+        return 0
+    fi
+
+    rm -fr -- *
+    cmake ${CMAKE_ARGS} -DAPPLE_PLATFORM=WATCHOS \
+                        -DVSCP_MULTI_THREAD=ON \
+                        -DCMAKE_INSTALL_LIBDIR=lib/dev "${SRC_DIR}"
+    make -j8 install
+
+    rm -fr -- *
+    cmake ${CMAKE_ARGS} -DAPPLE_PLATFORM=WATCHOS_SIM \
+                        -DVSCP_MULTI_THREAD=OFF \
+                        -DCMAKE_INSTALL_LIBDIR=lib/sim "${SRC_DIR}"
+    make -j8 install
+
+    make_fat_framework VSCCommon "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSCFoundation "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSCPythia "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSCRatchet "${INSTALL_DIR}" "${INSTALL_DIR}"
+
+    rm -fr -- "${INSTALL_DIR}/lib"
+    cp -fa "${INSTALL_DIR}/." "${WATCHOS_PREBUILT_DIR}/"
+}
+
+function build_macosx {
+    show_info "Build C Frameworks for macOS..."
+
+    if [ -d "${MACOS_PREBUILT_DIR}/VSCCommon.framework" ] && \
+            [ -d "${MACOS_PREBUILT_DIR}/VSCFoundation.framework" ] && \
+            [ -d "${MACOS_PREBUILT_DIR}/VSCPythia.framework" ] && \
+            [ -d "${MACOS_PREBUILT_DIR}/VSCRatchet.framework" ]; then
+
+        show_info "Requested binaries is found in the '${MACOS_PREBUILT_DIR}' folder."
+        return 0
+    fi
+
+    rm -fr -- *
+    cmake ${CMAKE_ARGS} -DAPPLE_PLATFORM=MACOS \
+                        -DVSCP_MULTI_THREAD=ON \
+                        -DCMAKE_INSTALL_LIBDIR=lib/dev "${SRC_DIR}"
+    make -j8 install
+
+    make_fat_framework VSCCommon "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSCFoundation "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSCPythia "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSCRatchet "${INSTALL_DIR}" "${INSTALL_DIR}"
+
+    rm -fr -- "${INSTALL_DIR}/lib"
+    cp -fa "${INSTALL_DIR}/." "${MACOS_PREBUILT_DIR}/"
 }
 
 case "${PLATFORM_NAME}" in
@@ -183,7 +278,22 @@ case "${PLATFORM_NAME}" in
     "iphonesimulator")
     build_ios
     ;;
+    "appletv")
+    build_tvos
+    ;;
+    "appletvsimulator")
+    build_tvos
+    ;;
+    "watch")
+    build_watchos
+    ;;
+    "watchsimulator")
+    build_watchos
+    ;;
+    "macosx")
+    build_macosx
+    ;;
     *)
-    echo_fatal "Unsupported platform: ${PLATFORM_NAME}"
+    show_error "Unsupported platform: ${PLATFORM_NAME}"
     ;;
 esac
