@@ -56,6 +56,10 @@ extern const vsc_data_t test_asn1_encoded_UINT8_128;
 extern const vsc_data_t test_asn1_encoded_UINT8_0;
 extern const vsc_data_t test_asn1_encoded_UINT16_65535;
 extern const vsc_data_t test_asn1_encoded_UINT32_4294967295;
+extern const vsc_data_t test_asn1_encoded_UINT_4294967295;
+extern const vsc_data_t test_asn1_encoded_INT64_9223372036854775807;
+extern const vsc_data_t test_asn1_encoded_INT64_NEG_9223372036854775808;
+extern const vsc_data_t test_asn1_encoded_UINT64_18446744073709551615;
 //
 // Strings
 //
