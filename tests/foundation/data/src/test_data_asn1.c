@@ -175,6 +175,38 @@ const byte test_asn1_encoded_UINT32_4294967295_BYTES[] = {
 const vsc_data_t test_asn1_encoded_UINT32_4294967295 = {
     test_asn1_encoded_UINT32_4294967295_BYTES, sizeof(test_asn1_encoded_UINT32_4294967295_BYTES)
 };
+
+const byte test_asn1_encoded_UINT_4294967295_BYTES[] = {
+  0x02, 0x05, 0x00, 0xFF, 0xFF, 0xFF, 0xFF
+};
+
+const vsc_data_t test_asn1_encoded_UINT_4294967295 = {
+    test_asn1_encoded_UINT_4294967295_BYTES, sizeof(test_asn1_encoded_UINT_4294967295_BYTES)
+};
+
+const byte test_asn1_encoded_INT64_9223372036854775807_BYTES[] = {
+  0x02, 0x08, 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+}
+
+const vsc_data_t test_asn1_encoded_INT64_9223372036854775807 = {
+    test_asn1_encoded_INT64_9223372036854775807_BYTES, sizeof(test_asn1_encoded_INT64_9223372036854775807_BYTES)
+};
+
+const byte test_asn1_encoded_INT64_NEG_9223372036854775808_BYTES[] = {
+  0x02, 0x08, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+}
+
+const vsc_data_t test_asn1_encoded_INT64_NEG_9223372036854775808 = {
+    test_asn1_encoded_INT64_NEG_9223372036854775808_BYTES, sizeof(test_asn1_encoded_INT64_NEG_9223372036854775808_BYTES)
+};
+
+const byte test_asn1_encoded_UINT64_18446744073709551615_BYTES[] = {
+  0x02, 0x08, 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+}
+
+const vsc_data_t test_asn1_encoded_UINT64_18446744073709551615 = {
+    test_asn1_encoded_UINT64_18446744073709551615_BYTES, sizeof(test_asn1_encoded_UINT64_18446744073709551615_BYTES)
+};
 //
 // Strings
 //
