@@ -10,8 +10,8 @@
         FIXME
     </constant>
 
-    <property name="version" type="size" size="1"/>
-    <property name="type" type="size" size="1"/>
+    <property name="version" type="unsigned" size="1"/>
+    <property name="type" type="unsigned" size="1"/>
     <property name="message" class="buffer" access="readwrite"/>
 
     <constructor name="with members">

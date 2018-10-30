@@ -650,6 +650,12 @@ function component_resolve_instance_attr_type (instance, parent)
         my.string.length ?= "null_terminated"
         my.string.access ?= "readwrite"
     endif
+
+    #   Check "size" attribute
+    if defined (my.instance.size) & ! string_in (my.instance.type, "integer, unsigned")
+        my.instance_dump = component_instance_dump (my.instance)
+        echo_fatal ("Attribute 'size' is not allowed for instance: $(my.instance_dump:)")
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------

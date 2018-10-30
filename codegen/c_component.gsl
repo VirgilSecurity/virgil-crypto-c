@@ -250,31 +250,6 @@ function c_component_derive_unsigned_type (size)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Derive C size type correspond to it's size.
-#   Size: {1, 2, 4, 8}.
-# ---------------------------------------------------------------------------
-function c_component_derive_size_type (size)
-    if defined (my.size)
-        if my.size = "1"
-            return "uint8_t"
-
-        elsif my.size = "2"
-            return "uint16_t"
-
-        elsif my.size = "4"
-            return "uint32_t"
-
-        elsif my.size = "8"
-            return "uint64_t"
-        else
-            echo_fatal ("Unsupported size 'my.size' for C size type", my)
-        endif
-    else
-        return "size_t"
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Return .(c_<uid>) if given value in a format .(<uid>), else return as-is.
 # ---------------------------------------------------------------------------
 function c_component_wrap_uid (value)
@@ -520,7 +495,7 @@ function c_component_map_instance_attr_type (c_instance, instance)
             my.c_instance.type = "byte"
 
         elsif my.instance.type = "size"
-            my.c_instance.type = c_component_derive_size_type (my.instance.size ?)
+            my.c_instance.type = "size_t"
 
         elsif my.instance.type = "char"
             my.c_instance.type = "char"
