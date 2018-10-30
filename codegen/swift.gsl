@@ -399,32 +399,6 @@ function swift_derive_unsigned_type (size)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Derive Swift size type correspond to it's size.
-#   Note, Swift size type represented as Int type.
-#   Size: {1, 2, 4, 8}.
-# ---------------------------------------------------------------------------
-function swift_derive_size_type (size)
-    if defined (my.size)
-        if my.size = "1"
-            return "Int8"
-
-        elsif my.size = "2"
-            return "Int16"
-
-        elsif my.size = "4"
-            return "Int32"
-
-        elsif my.size = "8"
-            return "Int64"
-        else
-            echo_fatal ("Unsupported size 'my.size' for Swift size type", my)
-        endif
-    else
-        return "Int"
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Return formatted method name from raw name.
 # ---------------------------------------------------------------------------
 function swift_derive_method_name_str (name)
@@ -577,7 +551,7 @@ function swift_derive_instance_type (instance)
             my.primitive_type = "UInt8"
 
         elsif my.instance.type = "size"
-            my.primitive_type = swift_derive_size_type (my.instance.size ?)
+            my.primitive_type = "Int"
 
         elsif my.instance.type = "char"
             my.primitive_type = "Character"
