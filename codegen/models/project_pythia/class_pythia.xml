@@ -29,13 +29,13 @@
     </macros>
 
 
-    <method name="init" of_class="global" is_static="1">
+    <method name="global init" of_class="global" is_static="1">
         Performs global initialization of the pythia library.
         Must be called once for entire application at startup.
     </method>
 
 
-    <method name="cleanup" of_class="global" is_static="1">
+    <method name="global cleanup" of_class="global" is_static="1">
         Performs global cleanup of the pythia library.
         Must be called once for entire application before exit.
     </method>
@@ -103,8 +103,14 @@
         This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 
         <argument name="password" class="data"/>
-        <argument name="blinded password" class="buffer"/>
-        <argument name="blinding secret" class="buffer"/>
+        <argument name="blinded password" class="buffer">
+            <length class="self" method="blinded password buf len"/>
+        </argument>
+
+        <argument name="blinding secret" class="buffer">
+            <length class="self" method="blinding secret buf len"/>
+        </argument>
+
 
         <return enum="error"/>
     </method>
@@ -115,7 +121,10 @@
 
         <argument name="transformed password" class="data"/>
         <argument name="blinding secret" class="data"/>
-        <argument name="deblinded password" class="buffer"/>
+        <argument name="deblinded password" class="buffer">
+            <length class="self" method="deblinded password buf len"/>
+        </argument>
+
 
         <return enum="error"/>
     </method>
@@ -127,8 +136,14 @@
         <argument name="transformation key id" class="data"/>
         <argument name="pythia secret" class="data"/>
         <argument name="pythia scope secret" class="data"/>
-        <argument name="transformation private key" class="buffer"/>
-        <argument name="transformation public key" class="buffer"/>
+        <argument name="transformation private key" class="buffer">
+            <length class="self" method="transformation private key buf len"/>
+        </argument>
+
+        <argument name="transformation public key" class="buffer">
+            <length class="self" method="transformation public key buf len"/>
+        </argument>
+
 
         <return enum="error"/>
     </method>
@@ -140,8 +155,14 @@
         <argument name="blinded password" class="data"/>
         <argument name="tweak" class="data"/>
         <argument name="transformation private key" class="data"/>
-        <argument name="transformed password" class="buffer"/>
-        <argument name="transformed tweak" class="buffer"/>
+        <argument name="transformed password" class="buffer">
+            <length class="self" method="transformed password buf len"/>
+        </argument>
+
+        <argument name="transformed tweak" class="buffer">
+            <length class="self" method="transformed tweak buf len"/>
+        </argument>
+
 
         <return enum="error"/>
     </method>
@@ -150,13 +171,20 @@
     <method name="prove">
         Generates proof that server possesses secret values that were used to transform password.
 
-        <argument name="transformed_password" class="data"/>
-        <argument name="blinded_password" class="data"/>
-        <argument name="transformed_tweak" class="data"/>
-        <argument name="transformation_private_key" class="data"/>
-        <argument name="transformation_public_key" class="data"/>
-        <argument name="proof_value_c" class="buffer"/>
-        <argument name="proof_value_u" class="buffer"/>
+        <argument name="transformed password" class="data"/>
+        <argument name="blinded password" class="data"/>
+        <argument name="transformed tweak" class="data"/>
+        <argument name="transformation private key" class="data"/>
+        <argument name="transformation public key" class="data"/>
+
+        <argument name="proof value c" class="buffer">
+            <length class="self" method="proof value buf len"/>
+        </argument>
+
+        <argument name="proof value u" class="buffer">
+            <length class="self" method="proof value buf len"/>
+        </argument>
+
 
         <return enum="error"/>
     </method>
@@ -185,7 +213,10 @@
 
         <argument name="previous transformation private key" class="data"/>
         <argument name="new transformation private key" class="data"/>
-        <argument name="password update token" class="buffer"/>
+        <argument name="password update token" class="buffer">
+            <length class="self" method="password update token buf len"/>
+        </argument>
+
 
         <return enum="error"/>
     </method>
@@ -197,7 +228,10 @@
 
         <argument name="deblinded password" class="data"/>
         <argument name="password update token" class="data"/>
-        <argument name="updated deblinded password" class="buffer"/>
+        <argument name="updated deblinded password" class="buffer">
+            <length class="self" method="deblinded password buf len"/>
+        </argument>
+
 
         <return enum="error"/>
     </method>
@@ -206,7 +240,9 @@
     <method name="random handler" declaration="private" is_static="1">
         Callback for the pythia random.
 
-        <argument name="out" type="data" access="writeonly"/>
+        <argument name="out" type="byte" access="writeonly">
+            <array length="given"/>
+        </argument>
         <argument name="out len" type="integer"/>
         <argument name="ctx" type="nothing" access="readwrite" is_reference="1"/>
     </method>

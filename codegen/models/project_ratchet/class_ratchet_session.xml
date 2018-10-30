@@ -1,0 +1,71 @@
+<class name="ratchet session" context="private">
+
+    <require class="ratchet prekey message" scope="private"/>
+    <require class="ratchet common" scope="public"/>
+
+    <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
+
+    <dependency name="rng" interface="ratchet rng"/>
+    <dependency class="ratchet" name="ratchet"/>
+
+    <property name="received first response" type="boolean"/>
+    <property name="sender identity public key" class="buffer" access="readwrite"/>
+    <property name="sender ephemeral public key" class="buffer" access="readwrite"/>
+    <property name="receiver longterm public key" class="buffer" access="readwrite"/>
+    <property name="receiver onetime public key" class="buffer" access="readwrite"/>
+
+    <method name="initiate">
+        <argument name="sender identity private key" class="data"/>
+        <argument name="receiver identity public key" class="data"/>
+        <argument name="receiver long term public key" class="buffer" access="retain"/>
+        <argument name="receiver one time public key" class="buffer" access="retain"/>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="respond">
+        <argument name="sender identity public key" class="buffer" access="retain"/>
+        <argument name="sender ephemeral public key" class="buffer" access="retain"/>
+        <argument name="ratchet public key" class="buffer" access="retain"/>
+        <argument name="receiver identity private key" class="buffer" access="retain"/>
+        <argument name="receiver long term private key" class="buffer" access="retain"/>
+        <argument name="receiver one time private key" class="buffer" access="retain"/>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="encrypt len">
+        <argument name="plain text len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+    <method name="encrypt">
+        <argument name="plain text" class="data"/>
+        <argument name="cipher text" class="buffer">
+            <length method="encrypt len">
+                <proxy argument="plain text" to="plain text len" cast="data_length"/>
+            </length>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="decrypt len">
+        <argument name="message" class="ratchet message"/>
+
+        <return type="size"/>
+    </method>
+
+    <method name="decrypt">
+        <argument name="message" class="ratchet message"/>
+        <argument name="plain text" class="buffer">
+            <length method="decrypt len">
+                <proxy argument="message" to="message"/>
+            </length>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+
+</class>

@@ -1,0 +1,7 @@
+<class name="ratchet sender chain" context="public">
+
+    <property name="private key" class="buffer" access="readwrite"/>
+    <property name="public key" class="buffer" access="readwrite"/>
+    <property name="chain key" class="ratchet chain key" access="readwrite" is_reference="0"/>
+
+</class>

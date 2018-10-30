@@ -278,15 +278,6 @@ vscf_hmac_copy(vscf_hmac_impl_t *hmac_impl) {
 }
 
 //
-//  Returns instance of the implemented interface 'mac'.
-//
-VSCF_PUBLIC const vscf_mac_api_t *
-vscf_hmac_mac_api(void) {
-
-    return &mac_api;
-}
-
-//
 //  Return size of 'vscf_hmac_impl_t' type.
 //
 VSCF_PUBLIC size_t

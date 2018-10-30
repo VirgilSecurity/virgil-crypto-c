@@ -249,6 +249,21 @@ vsc_buffer_new_with_capacity(size_t capacity) {
 }
 
 //
+//  Create buffer with copied bytes from given data.
+//
+VSC_PUBLIC vsc_buffer_t *
+vsc_buffer_new_with_data(vsc_data_t data) {
+
+    VSC_ASSERT_PTR(vsc_data_is_valid(data));
+
+    vsc_buffer_t *buffer_ctx = vsc_buffer_new_with_capacity(data.len);
+    memcpy(buffer_ctx->bytes, data.bytes, data.len);
+    buffer_ctx->len = data.len;
+
+    return buffer_ctx;
+}
+
+//
 //  Allocates inner buffer with a given capacity.
 //  Precondition: buffer is initialized.
 //  Precondition: buffer does not hold any bytes.

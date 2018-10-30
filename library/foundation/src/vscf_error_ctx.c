@@ -67,6 +67,15 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Return size of 'vscf_error_ctx_t'.
+//
+VSCF_PUBLIC size_t
+vscf_error_ctx_ctx_size(void) {
+
+    return sizeof(vscf_error_ctx_t);
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

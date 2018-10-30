@@ -63,7 +63,6 @@ option(VSCF_MAC_INFO "Enable interface 'mac info'." ON)
 option(VSCF_MAC_STREAM "Enable interface 'mac stream'." ON)
 option(VSCF_KDF "Enable interface 'kdf'." ON)
 option(VSCF_RANDOM "Enable interface 'random'." ON)
-option(VSCF_ERROR_CONTEXT "Enable interface 'error context'." ON)
 option(VSCF_KEY "Enable interface 'key'." ON)
 option(VSCF_PUBLIC_KEY "Enable interface 'public key'." ON)
 option(VSCF_PRIVATE_KEY "Enable interface 'private key'." ON)
@@ -75,8 +74,6 @@ option(VSCF_EXPORT_PUBLIC_KEY "Enable interface 'export public key'." ON)
 option(VSCF_EXPORT_PRIVATE_KEY "Enable interface 'export private key'." ON)
 option(VSCF_IMPORT_PUBLIC_KEY "Enable interface 'import public key'." ON)
 option(VSCF_IMPORT_PRIVATE_KEY "Enable interface 'import private key'." ON)
-option(VSCF_KEY_READER "Enable interface 'key reader'." ON)
-option(VSCF_KEY_WRITER "Enable interface 'key writer'." ON)
 option(VSCF_ASN1_READER "Enable interface 'asn1 reader'." ON)
 option(VSCF_ASN1_WRITER "Enable interface 'asn1 writer'." ON)
 option(VSCF_SHA224 "Enable implementation 'sha224'." ON)
@@ -116,7 +113,6 @@ mark_as_advanced(
         VSCF_MAC_STREAM
         VSCF_KDF
         VSCF_RANDOM
-        VSCF_ERROR_CONTEXT
         VSCF_KEY
         VSCF_PUBLIC_KEY
         VSCF_PRIVATE_KEY
@@ -128,8 +124,6 @@ mark_as_advanced(
         VSCF_EXPORT_PRIVATE_KEY
         VSCF_IMPORT_PUBLIC_KEY
         VSCF_IMPORT_PRIVATE_KEY
-        VSCF_KEY_READER
-        VSCF_KEY_WRITER
         VSCF_ASN1_READER
         VSCF_ASN1_WRITER
         VSCF_SHA224
@@ -179,10 +173,19 @@ if(VSCF_CIPHER AND NOT VSCF_CIPHER_INFO)
     message(FATAL_ERROR)
 endif()
 
-if(VSCF_CIPHER_AUTH AND NOT VSCF_CIPHER_AUTH_INFO)
+if(VSCF_AUTH_ENCRYPT AND NOT VSCF_CIPHER_AUTH_INFO)
     message("-- error --")
     message("--")
-    message("Feature VSCF_CIPHER_AUTH depends on the feature:")
+    message("Feature VSCF_AUTH_ENCRYPT depends on the feature:")
+    message("     VSCF_CIPHER_AUTH_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_AUTH_DECRYPT AND NOT VSCF_CIPHER_AUTH_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_AUTH_DECRYPT depends on the feature:")
     message("     VSCF_CIPHER_AUTH_INFO - which is disabled.")
     message("--")
     message(FATAL_ERROR)
@@ -256,15 +259,6 @@ if(VSCF_PRIVATE_KEY AND NOT VSCF_KEY)
     message("--")
     message("Feature VSCF_PRIVATE_KEY depends on the feature:")
     message("     VSCF_KEY - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_KEY_READER AND NOT VSCF_ERROR_CONTEXT)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_KEY_READER depends on the feature:")
-    message("     VSCF_ERROR_CONTEXT - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

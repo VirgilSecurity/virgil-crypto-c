@@ -115,25 +115,18 @@ vscf_hmac_digest_len(vscf_hmac_impl_t *hmac_impl) {
 //  Calculate MAC over given data.
 //
 VSCF_PUBLIC void
-vscf_hmac_mac(vscf_impl_t *hash, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac) {
+vscf_hmac_mac(vscf_hmac_impl_t *hmac_impl, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac) {
 
-    VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
+    VSCF_ASSERT_PTR(hmac_impl);
     VSCF_ASSERT(vsc_data_is_valid(key));
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(mac);
     VSCF_ASSERT(vsc_buffer_is_valid(mac));
-    VSCF_ASSERT(vsc_buffer_left(mac) >= vscf_hash_info_digest_len(vscf_hash_info_api(hash)));
+    VSCF_ASSERT(vsc_buffer_left(mac) >= vscf_hmac_digest_len(hmac_impl));
 
-    vscf_hmac_impl_t hmac_impl;
-    vscf_hmac_init(&hmac_impl);
-
-    vscf_hmac_use_hash(&hmac_impl, hash);
-    vscf_hmac_start(&hmac_impl, key);
-    vscf_hmac_update(&hmac_impl, data);
-    vscf_hmac_finish(&hmac_impl, mac);
-
-    vscf_hmac_cleanup(&hmac_impl);
+    vscf_hmac_start(hmac_impl, key);
+    vscf_hmac_update(hmac_impl, data);
+    vscf_hmac_finish(hmac_impl, mac);
 }
 
 //

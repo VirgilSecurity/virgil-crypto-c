@@ -1,0 +1,9 @@
+<class name="ratchet kdf info" context="public">
+    <property name="root info" class="buffer" access="readwrite"/>
+    <property name="ratchet info" class="buffer" access="readwrite"/>
+
+    <constructor name="with members">
+        <argument name="root info" class="data"/>
+        <argument name="ratchet info" class="data"/>
+    </constructor>
+</class>

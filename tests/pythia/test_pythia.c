@@ -86,12 +86,12 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    vscp_init();
+    vscp_global_init();
 
     RUN_TEST(test__new__always__returns_not_null);
     RUN_TEST(test__blind__valid_args___returns_success);
 
-    vscp_cleanup();
+    vscp_global_cleanup();
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

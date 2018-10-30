@@ -84,6 +84,13 @@ function is_true_both (x, y)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return true if any of values are defined and non zero.
+# ---------------------------------------------------------------------------
+function is_true_any (x, y)
+    return is_true (my.x) | is_true (my.y)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return true if given value is not defined or is zero.
 # ---------------------------------------------------------------------------
 function is_false (x)
@@ -195,6 +202,24 @@ function has_one_of_attribute (item, attribute_list)
     endwhile
 
     return 0
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return value of the first defined attribute, or nothing if all attributes
+#   are not defined.
+# ---------------------------------------------------------------------------
+function get_one_of_attribute (item, attribute_list)
+    check_arguments (my, "item, attribute_list", my)
+
+    while regexp.match ("([\\w]+)", my.attribute_list, my.attribute_name)
+        my.attribute_list = string.search_replace (my.attribute_list, my.attribute_name, "")
+
+        if defined (my.item.$(my.attribute_name:))
+            return my.item.$(my.attribute_name:)
+        endif
+    endwhile
+
+    return
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -449,7 +474,8 @@ function assert_attribute (attribute_scope, attribute_name, caller)
     check_argument (my, "attribute_name")
 
     if ! defined (my.attribute_scope.$(my.attribute_name))
-        my.name = " name=\"$(my.attribute_scope.name)\"" ? ""
+        my.name = " name=\"$(my.attribute_scope.name:)\"" ? ""
+        echo_debug_item (my.attribute_scope)
         echo_fatal ("Attribute '$(my.attribute_name:)' is not defined \
                 within <$(name (my.attribute_scope)) $(my.name:)/>", my.caller)
     endif
@@ -493,6 +519,7 @@ function assert_item (item_scope, item_name, caller)
 
     my.item_count = count (my.item_scope.$(my.item_name))
     if my.item_count = 0
+        echo_debug_item (my.item_scope, my.caller)
         echo_fatal ("Item '$(name (my.item_scope))->$(my.item_name:)' is not defined.", my.caller)
     endif
 endfunction
@@ -920,6 +947,28 @@ function item_copy_to (item, destination, alias)
     for my.temp_parent_data. as data
         my.item_ref = data
         move my.item_ref to my.destination
+        return my.item_ref
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Replacement for GSL built-in '.copy <from-scope> after <item>'.
+#   Return reference to the copied element.
+# ---------------------------------------------------------------------------
+function item_copy_after (item, after_item, alias)
+    check_arguments (my, "item, after_item", my)
+
+    my.temp_parent_data = XML.new ()
+
+    if string_defined (my.alias)
+        copy my.item to my.temp_parent_data as $(my.alias:)
+    else
+        copy my.item to my.temp_parent_data
+    endif
+
+    for my.temp_parent_data. as data
+        my.item_ref = data
+        move my.item_ref after my.after_item
         return my.item_ref
     endfor
 endfunction
