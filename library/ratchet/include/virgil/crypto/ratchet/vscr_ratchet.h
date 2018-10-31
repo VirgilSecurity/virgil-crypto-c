@@ -54,7 +54,6 @@
 #include "vscr_ratchet_chain_key.h"
 #include "vscr_impl.h"
 #include "vscr_ratchet_cipher.h"
-#include "vscr_ratchet_kdf_info.h"
 #include "vscr_error.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -168,25 +167,6 @@ vscr_ratchet_take_cipher(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_cipher_t *cip
 //
 VSCR_PUBLIC void
 vscr_ratchet_release_cipher(vscr_ratchet_t *ratchet_ctx);
-
-//
-//  Setup dependency to the class 'ratchet kdf info' with shared ownership.
-//
-VSCR_PUBLIC void
-vscr_ratchet_use_kdf_info(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_kdf_info_t *kdf_info);
-
-//
-//  Setup dependency to the class 'ratchet kdf info' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCR_PUBLIC void
-vscr_ratchet_take_kdf_info(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_kdf_info_t *kdf_info);
-
-//
-//  Release dependency to the class 'ratchet kdf info'.
-//
-VSCR_PUBLIC void
-vscr_ratchet_release_kdf_info(vscr_ratchet_t *ratchet_ctx);
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key,

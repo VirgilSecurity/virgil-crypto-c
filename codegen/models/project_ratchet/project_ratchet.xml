@@ -63,7 +63,6 @@
     <class name="ratchet cipher"/>
     <class name="ratchet chain key"/>
     <class name="ratchet message key"/>
-    <class name="ratchet kdf info"/>
     <class name="ratchet receiver chain"/>
     <class name="ratchet receiver chain list node"/>
     <class name="ratchet skipped message key"/>
