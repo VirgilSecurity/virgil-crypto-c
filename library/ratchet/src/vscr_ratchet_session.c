@@ -388,7 +388,7 @@ VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session_ctx, vsc_buffer_t *sender_identity_public_key,
         vsc_buffer_t *sender_ephemeral_public_key, vsc_buffer_t *ratchet_public_key,
         vsc_buffer_t *receiver_identity_private_key, vsc_buffer_t *receiver_long_term_private_key,
-        vsc_buffer_t *receiver_one_time_private_key) {
+        vsc_buffer_t *receiver_one_time_private_key, const vscr_ratchet_regular_message_t *message) {
 
     VSCR_ASSERT_PTR(ratchet_session_ctx);
 
@@ -409,6 +409,7 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session_ctx, vsc_bu
         shared_secret_count = 4;
     }
 
+    // TODO: Early quit
     unsigned int curve25519_status = 0;
 
     vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_count * ED25519_DH_LEN);
@@ -447,11 +448,17 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session_ctx, vsc_bu
                     vsc_buffer_bytes(receiver_long_term_private_key));
     vsc_buffer_reserve(ratchet_session_ctx->receiver_longterm_public_key, ED25519_KEY_LEN);
 
-    vscr_ratchet_respond(ratchet_session_ctx->ratchet, vsc_buffer_data(shared_secret), ratchet_public_key);
+    vscr_error_t status = vscr_ratchet_respond(ratchet_session_ctx->ratchet, vsc_buffer_data(shared_secret), ratchet_public_key, message);
 
     vsc_buffer_destroy(&shared_secret);
 
-    return curve25519_status == 0 ? vscr_SUCCESS : vscr_CURVE25519_ERROR;
+    if (status != vscr_SUCCESS)
+        return status;
+
+    if (curve25519_status != 0)
+        return vscr_CURVE25519_ERROR;
+
+    return vscr_SUCCESS;
 }
 
 VSCR_PUBLIC size_t

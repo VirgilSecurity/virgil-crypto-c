@@ -72,6 +72,9 @@
     <method name="respond">
         <argument name="shared secret" class="data"/>
         <argument name="ratchet public key" class="buffer" access="retain"/>
+        <argument name="message" class="ratchet regular message"/>
+
+        <return enum="error"/>
     </method>
 
     <method name="initiate">
