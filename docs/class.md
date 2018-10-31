@@ -14,7 +14,7 @@ attribute names are case-sensitive and we use only lower-case names.
           <alternative [scope] [project] [library] [module] [header] [feature] [interface] [class]
                [impl] [enum]/>
        </require>
-       <dependency name [library] [project] [interface] [api] [class] [impl] [type_name]/>
+       <dependency name [library] [project] [interface] [api] [class] [impl] [type_name] [has_observers]/>
        <constant name [c_prefix] [of_class] [uid] [full_uid] [feature] [definition] [value]/>
        <property is_reference name [full_uid] [library] [access] [type] [class] [enum] [callback]
             [interface] [api] [impl] [size] [uid] [require_definition] [project]
@@ -324,6 +324,7 @@ Defines dependency to interface or class.
       [ class = "..." ]
       [ impl = "..." ]
       [ type_name = "..." ]
+      [ has_observers = "0 | 1"  ("0") ]
         />
 
 The dependency item can have these attributes:
@@ -359,6 +360,15 @@ impl:
 type_name:
     This is auto-resolve attribute! It is equal to the one of the attributes:
     {interface, api, class}. The type_name attribute is optional.
+
+has_observers:
+    Allows to add observer methods for the dependency. The has_observers
+    attribute is optional. Its default value is "0". It can take one of the
+    following values:
+
+Value: Meaning:
+0: Property is not observed.
+1: Property is observed so methods "did_setup" and "did_release" must be generated.
 
 
 The 'constant' item
