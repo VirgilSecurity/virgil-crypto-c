@@ -188,8 +188,9 @@ vscr_ratchet_take_kdf_info(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_kdf_info_t 
 VSCR_PUBLIC void
 vscr_ratchet_release_kdf_info(vscr_ratchet_t *ratchet_ctx);
 
-VSCR_PUBLIC void
-vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key);
+VSCR_PUBLIC vscr_error_t
+vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key,
+        const vscr_ratchet_regular_message_t *message);
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_private_key);

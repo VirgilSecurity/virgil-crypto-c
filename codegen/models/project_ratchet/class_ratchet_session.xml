@@ -30,6 +30,7 @@
         <argument name="receiver identity private key" class="buffer" access="retain"/>
         <argument name="receiver long term private key" class="buffer" access="retain"/>
         <argument name="receiver one time private key" class="buffer" access="retain"/>
+        <argument name="message" class="ratchet regular message"/>
 
         <return enum="error"/>
     </method>

@@ -548,8 +548,9 @@ vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *ratchet_ctx, const vscr_ratch
     return result;
 }
 
-VSCR_PUBLIC void
-vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key) {
+VSCR_PUBLIC vscr_error_t
+vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key,
+        const vscr_ratchet_regular_message_t *message) {
 
     VSCR_ASSERT_PTR(ratchet_ctx);
     VSCR_ASSERT_PTR(ratchet_ctx->kdf_info);
@@ -580,8 +581,14 @@ vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_
 
     vscr_ratchet_add_receiver_chain(ratchet_ctx, receiver_chain);
 
+    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vscr_ratchet_decrypt_len(ratchet_ctx, vsc_buffer_len(message->cipher_text)));
+    vscr_error_t status = vscr_ratchet_decrypt_for_existing_chain(ratchet_ctx, &receiver_chain->chain_key, message, buffer);
+    vsc_buffer_destroy(&buffer);
+
     vscr_ratchet_receiver_chain_destroy(&receiver_chain);
     vsc_buffer_destroy(&derived_secret);
+
+    return status;
 }
 
 VSCR_PUBLIC vscr_error_t
