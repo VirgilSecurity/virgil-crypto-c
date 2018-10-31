@@ -1,12 +1,13 @@
 <class name="pythia" context="private">
     Provide Pythia implementation based on the Virgil Security.
 
-    <c_include file="pythia/pythia_init.h" scope="private" is_system="1"/>
-    <c_include file="pythia/pythia_wrapper.h" scope="private" is_system="1"/>
-    <c_include file="pythia/pythia_buf_sizes.h" scope="private" is_system="1"/>
+    <require header="pythia/pythia_init.h" scope="private"/>
+    <require header="pythia/pythia_wrapper.h" scope="private"/>
+    <require header="pythia/pythia_buf_sizes.h" scope="private"/>
 
-    <c_include file="mbedtls/ctr_drbg.h" scope="private" is_system="1"/>
-    <c_include file="mbedtls/entropy.h" scope="private" is_system="1"/>
+    <require header="mbedtls/ctr_drbg.h" scope="private"/>
+    <require header="mbedtls/entropy.h" scope="private"/>
+    <require header="mbedtls/entropy_poll.h" scope="private"/>
 
 
     <macros name="buffer from data" definition="private" is_method="1">
