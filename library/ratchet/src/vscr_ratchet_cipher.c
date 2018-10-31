@@ -55,11 +55,14 @@
 //  @end
 
 
+static const uint8_t ratchet_kdf_cipher_info[] = {
+        "VIRGIL_RATCHET_KDF_CIPHER_INFO"
+};
+
 static void
 vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_data_t key) {
 
     VSCR_ASSERT_PTR(ratchet_cipher_ctx);
-    VSCR_ASSERT_PTR(ratchet_cipher_ctx->kdf_info);
     VSCR_ASSERT_PTR(ratchet_cipher_ctx->aes256_gcm);
 
     vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
@@ -67,7 +70,7 @@ vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_
 
     vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(vscf_aes256_gcm_KEY_LEN + vscf_aes256_gcm_NONCE_LEN);
     vsc_buffer_make_secure(derived_secret);
-    vscf_hkdf_derive(hkdf, key, vsc_data_empty(), vsc_buffer_data(ratchet_cipher_ctx->kdf_info), derived_secret,
+    vscf_hkdf_derive(hkdf, key, vsc_data_empty(), vsc_data(ratchet_kdf_cipher_info, sizeof(ratchet_kdf_cipher_info)), derived_secret,
             vsc_buffer_capacity(derived_secret));
 
     vscf_hkdf_destroy(&hkdf);
@@ -282,18 +285,6 @@ static void
 vscr_ratchet_cipher_cleanup_ctx(vscr_ratchet_cipher_t *ratchet_cipher_ctx) {
 
     VSCR_ASSERT_PTR(ratchet_cipher_ctx);
-
-    vsc_buffer_destroy(&ratchet_cipher_ctx->kdf_info);
-}
-
-VSCR_PUBLIC vscr_ratchet_cipher_t *
-vscr_ratchet_cipher_new_with_members(vsc_data_t kdf_info) {
-
-    vscr_ratchet_cipher_t *ratchet_cipher_ctx = vscr_ratchet_cipher_new();
-
-    ratchet_cipher_ctx->kdf_info = vsc_buffer_new_with_data(kdf_info);
-
-    return ratchet_cipher_ctx;
 }
 
 VSCR_PUBLIC size_t

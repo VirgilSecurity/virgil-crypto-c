@@ -61,6 +61,15 @@
 //  @end
 
 
+static const uint8_t ratchet_kdf_root_info[] = {
+        "VIRGIL_RATCHET_KDF_ROOT_INFO"
+};
+
+static const uint8_t ratchet_kdf_ratchet_info[] = {
+        "VIRGIL_RATCHET_KDF_RATCHET_INFO"
+};
+
+
 //  @generated
 // --------------------------------------------------------------------------
 // clang-format off
@@ -170,7 +179,6 @@ vscr_ratchet_cleanup(vscr_ratchet_t *ratchet_ctx) {
 
         vscr_ratchet_release_rng(ratchet_ctx);
         vscr_ratchet_release_cipher(ratchet_ctx);
-        vscr_ratchet_release_kdf_info(ratchet_ctx);
 
         vscr_zeroize(ratchet_ctx, sizeof(vscr_ratchet_t));
     }
@@ -320,44 +328,6 @@ vscr_ratchet_release_cipher(vscr_ratchet_t *ratchet_ctx) {
     vscr_ratchet_cipher_destroy(&ratchet_ctx->cipher);
 }
 
-//
-//  Setup dependency to the class 'ratchet kdf info' with shared ownership.
-//
-VSCR_PUBLIC void
-vscr_ratchet_use_kdf_info(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_kdf_info_t *kdf_info) {
-
-    VSCR_ASSERT_PTR(ratchet_ctx);
-    VSCR_ASSERT_PTR(kdf_info);
-    VSCR_ASSERT_PTR(ratchet_ctx->kdf_info == NULL);
-
-    ratchet_ctx->kdf_info = vscr_ratchet_kdf_info_copy(kdf_info);
-}
-
-//
-//  Setup dependency to the class 'ratchet kdf info' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCR_PUBLIC void
-vscr_ratchet_take_kdf_info(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_kdf_info_t *kdf_info) {
-
-    VSCR_ASSERT_PTR(ratchet_ctx);
-    VSCR_ASSERT_PTR(kdf_info);
-    VSCR_ASSERT_PTR(ratchet_ctx->kdf_info == NULL);
-
-    ratchet_ctx->kdf_info = kdf_info;
-}
-
-//
-//  Release dependency to the class 'ratchet kdf info'.
-//
-VSCR_PUBLIC void
-vscr_ratchet_release_kdf_info(vscr_ratchet_t *ratchet_ctx) {
-
-    VSCR_ASSERT_PTR(ratchet_ctx);
-
-    vscr_ratchet_kdf_info_destroy(&ratchet_ctx->kdf_info);
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -396,8 +366,6 @@ vscr_ratchet_create_chain_key(const vscr_ratchet_t *ratchet_ctx, const vsc_buffe
         vscr_ratchet_chain_key_t *chain_key) {
 
     VSCR_ASSERT_PTR(ratchet_ctx);
-    VSCR_ASSERT_PTR(ratchet_ctx->kdf_info);
-    VSCR_ASSERT_PTR(ratchet_ctx->kdf_info->ratchet_info);
     VSCR_ASSERT_PTR(private_key);
     VSCR_ASSERT_PTR(public_key);
     VSCR_ASSERT_PTR(chain_key);
@@ -419,7 +387,8 @@ vscr_ratchet_create_chain_key(const vscr_ratchet_t *ratchet_ctx, const vsc_buffe
     vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(2 * vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
     vsc_buffer_make_secure(derived_secret);
     vscf_hkdf_derive(hkdf, vsc_buffer_data(secret), vsc_data(ratchet_ctx->root_key, sizeof(ratchet_ctx->root_key)),
-            vsc_buffer_data(ratchet_ctx->kdf_info->ratchet_info), derived_secret, vsc_buffer_capacity(derived_secret));
+            vsc_data(ratchet_kdf_ratchet_info, sizeof(ratchet_kdf_ratchet_info)),
+            derived_secret, vsc_buffer_capacity(derived_secret));
 
     memcpy(new_root_key, vsc_buffer_bytes(derived_secret), vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
 
@@ -553,8 +522,6 @@ vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_
         const vscr_ratchet_regular_message_t *message) {
 
     VSCR_ASSERT_PTR(ratchet_ctx);
-    VSCR_ASSERT_PTR(ratchet_ctx->kdf_info);
-    VSCR_ASSERT_PTR(ratchet_ctx->kdf_info->root_info);
     VSCR_ASSERT_PTR(ratchet_public_key);
     VSCR_ASSERT(vsc_buffer_len(ratchet_public_key) == ED25519_KEY_LEN);
     VSCR_ASSERT(shared_secret.len == 3 * ED25519_DH_LEN || shared_secret.len == 4 * ED25519_DH_LEN);
@@ -566,7 +533,7 @@ vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_
 
     vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(2 * vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
     vsc_buffer_make_secure(derived_secret);
-    vscf_hkdf_derive(hkdf, shared_secret, vsc_data_empty(), vsc_buffer_data(ratchet_ctx->kdf_info->root_info),
+    vscf_hkdf_derive(hkdf, shared_secret, vsc_data_empty(), vsc_data(ratchet_kdf_root_info, sizeof(ratchet_kdf_root_info)),
             derived_secret, vsc_buffer_capacity(derived_secret));
     vscf_hkdf_destroy(&hkdf);
 
@@ -595,8 +562,6 @@ VSCR_PUBLIC vscr_error_t
 vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_private_key) {
 
     VSCR_ASSERT_PTR(ratchet_ctx);
-    VSCR_ASSERT_PTR(ratchet_ctx->kdf_info);
-    VSCR_ASSERT_PTR(ratchet_ctx->kdf_info->root_info);
     VSCR_ASSERT_PTR(ratchet_private_key);
     VSCR_ASSERT(vsc_buffer_len(ratchet_private_key) == ED25519_KEY_LEN);
     VSCR_ASSERT(shared_secret.len == 3 * ED25519_DH_LEN || shared_secret.len == 4 * ED25519_DH_LEN);
@@ -608,7 +573,7 @@ vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc
 
     vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(2 * vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
     vsc_buffer_make_secure(derived_secret);
-    vscf_hkdf_derive(hkdf, shared_secret, vsc_data_empty(), vsc_buffer_data(ratchet_ctx->kdf_info->root_info),
+    vscf_hkdf_derive(hkdf, shared_secret, vsc_data_empty(), vsc_data(ratchet_kdf_root_info, sizeof(ratchet_kdf_root_info)),
             derived_secret, vsc_buffer_capacity(derived_secret));
     vscf_hkdf_destroy(&hkdf);
 

@@ -23,7 +23,6 @@
 
     <dependency name="rng" interface="ratchet rng" access="readwrite"/>
     <dependency name="cipher" class="ratchet cipher" access="readwrite"/>
-    <dependency name="kdf info" class="ratchet kdf info" access="readwrite"/>
     <property name="sender chain" class="ratchet sender chain" access="readwrite"/>
     <property name="receiver chains" class="ratchet receiver chain list node" access="readwrite"/>
     <property name="skipped message keys" class="ratchet skipped message key list node" access="readwrite"/>
