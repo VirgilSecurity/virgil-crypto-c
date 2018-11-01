@@ -187,6 +187,15 @@ function class_resolve_method (method, class)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve entity: require.
+# ---------------------------------------------------------------------------
+function class_resolve_require (require, class)
+    check_arguments (my, "require, class", my)
+
+    my.require.scope ?= "private"
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve component: class.
 # ---------------------------------------------------------------------------
 function class_resolve (class, project)
@@ -214,6 +223,10 @@ function class_resolve (class, project)
 
     for my.class.property
         class_resolve_property (property, my.class)
+    endfor
+
+    for my.class.require
+        class_resolve_require (require, my.class)
     endfor
 
     foreach_component_resolve (my.class)

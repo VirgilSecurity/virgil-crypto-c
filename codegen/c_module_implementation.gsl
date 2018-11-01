@@ -1062,11 +1062,8 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
         endnew
 
         for my.impl.context
-            for context.require where defined (require.header)
-                new c_include to module
-                    .file = require.header
-                    .is_system = "1"
-                endnew
+            for context.require
+                copy require to module
             endfor
         endfor
 
