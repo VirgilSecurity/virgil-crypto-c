@@ -43,6 +43,12 @@ endif()
 add_library(test_utils test_utils.h test_utils.c)
 target_link_libraries(test_utils unity vsc::common)
 
+set_target_properties(test_utils PROPERTIES C_STANDARD "99")
+
 target_include_directories(test_utils
         PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
         )
+
+if(COMMAND add_clangformat)
+    add_clangformat(test_utils)
+endif()
