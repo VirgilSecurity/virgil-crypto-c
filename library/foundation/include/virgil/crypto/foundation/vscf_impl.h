@@ -87,7 +87,6 @@ enum vscf_impl_tag_t {
     vscf_impl_tag_HMAC,
     vscf_impl_tag_KDF1,
     vscf_impl_tag_KDF2,
-    vscf_impl_tag_PLATFORM_ENTROPY,
     vscf_impl_tag_RSA_PRIVATE_KEY,
     vscf_impl_tag_RSA_PUBLIC_KEY,
     vscf_impl_tag_SHA224,

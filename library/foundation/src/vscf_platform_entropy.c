@@ -88,20 +88,19 @@ vscf_platform_entropy_is_strong(vscf_platform_entropy_impl_t *platform_entropy_i
 }
 
 //
-//  Provide gathered entropy of the requested length.
+//  Gather entropy of the requested length.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_platform_entropy_provide(vscf_platform_entropy_impl_t *platform_entropy_impl, size_t len, vsc_buffer_t *out) {
+vscf_platform_entropy_gather(vscf_platform_entropy_impl_t *platform_entropy_impl, size_t len, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(platform_entropy_impl);
-    VSCF_ASSERT(len > 0);
+    VSCF_ASSERT_PTR(len > 0);
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_left(out) >= len);
 
     size_t olen = 0;
-
-    int result = mbedtls_platform_entropy_poll(NULL, vsc_buffer_ptr(out), len, &olen);
+    int result = mbedtls_platform_entropy_poll(NULL, vsc_buffer_ptr(out), vsc_buffer_left(out), &olen);
 
     switch (result) {
     case 0:

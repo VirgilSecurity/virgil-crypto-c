@@ -87,9 +87,9 @@ extern "C" {
 typedef bool (*vscf_entropy_source_api_is_strong_fn)(vscf_impl_t *impl);
 
 //
-//  Callback. Provide gathered entropy of the requested length.
+//  Callback. Gather entropy of the requested length.
 //
-typedef vscf_error_t (*vscf_entropy_source_api_provide_fn)(vscf_impl_t *impl, size_t len, vsc_buffer_t *out);
+typedef vscf_error_t (*vscf_entropy_source_api_gather_fn)(vscf_impl_t *impl, size_t len, vsc_buffer_t *out);
 
 //
 //  Contains API requirements of the interface 'entropy source'.
@@ -109,9 +109,9 @@ struct vscf_entropy_source_api_t {
     //
     vscf_entropy_source_api_is_strong_fn is_strong_cb;
     //
-    //  Provide gathered entropy of the requested length.
+    //  Gather entropy of the requested length.
     //
-    vscf_entropy_source_api_provide_fn provide_cb;
+    vscf_entropy_source_api_gather_fn gather_cb;
 };
 
 

@@ -163,7 +163,7 @@ vscf_fake_random_random(vscf_fake_random_impl_t *fake_random_impl, size_t data_l
 //
 //  Retreive new seed data from the entropy sources.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_error_t
 vscf_fake_random_reseed(vscf_fake_random_impl_t *fake_random_impl);
 
 

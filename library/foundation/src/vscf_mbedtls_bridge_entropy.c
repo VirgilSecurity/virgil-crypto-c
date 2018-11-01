@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Defines generic interface for the entropy source.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,9 +44,13 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_entropy_source.h"
+#include "vscf_mbedtls_bridge_entropy.h"
 #include "vscf_assert.h"
-#include "vscf_entropy_source_api.h"
+#include "vscf_impl.h"
+#include "vscf_entropy_source.h"
+
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
+#include <mbedtls/entropy.h>
 
 // clang-format on
 //  @end
@@ -64,80 +62,36 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Defines that implemented source is strong.
-//
-VSCF_PUBLIC bool
-vscf_entropy_source_is_strong(vscf_impl_t *impl) {
-
-    const vscf_entropy_source_api_t *entropy_source_api = vscf_entropy_source_api (impl);
-    VSCF_ASSERT_PTR (entropy_source_api);
-
-    VSCF_ASSERT_PTR (entropy_source_api->is_strong_cb);
-    return entropy_source_api->is_strong_cb (impl);
-}
-
-//
-//  Gather entropy of the requested length.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_entropy_source_gather(vscf_impl_t *impl, size_t len, vsc_buffer_t *out) {
-
-    const vscf_entropy_source_api_t *entropy_source_api = vscf_entropy_source_api (impl);
-    VSCF_ASSERT_PTR (entropy_source_api);
-
-    VSCF_ASSERT_PTR (entropy_source_api->gather_cb);
-    return entropy_source_api->gather_cb (impl, len, out);
-}
-
-//
-//  Return entropy source API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_entropy_source_api_t *
-vscf_entropy_source_api(vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_ENTROPY_SOURCE);
-    return (const vscf_entropy_source_api_t *) api;
-}
-
-//
-//  Check if given object implements interface 'entropy source'.
-//
-VSCF_PUBLIC bool
-vscf_entropy_source_is_implemented(vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    return vscf_impl_api (impl, vscf_api_tag_ENTROPY_SOURCE) != NULL;
-}
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_entropy_source_api_tag(const vscf_entropy_source_api_t *entropy_source_api) {
-
-    VSCF_ASSERT_PTR (entropy_source_api);
-
-    return entropy_source_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_entropy_source_impl_tag(const vscf_entropy_source_api_t *entropy_source_api) {
-
-    VSCF_ASSERT_PTR (entropy_source_api);
-
-    return entropy_source_api->impl_tag;
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
+
+VSCF_PRIVATE int
+vscf_mbedtls_bridge_entropy(void *ctx, byte *data, size_t len) {
+
+    VSCF_ASSERT_PTR(ctx);
+    VSCF_ASSERT_PTR(data);
+    VSCF_ASSERT(len > 0);
+
+    vscf_impl_t *entropy_ctx = (vscf_impl_t *)ctx;
+
+    vsc_buffer_t buffer;
+    vsc_buffer_init(&buffer);
+    vsc_buffer_use(&buffer, (byte *)data, len);
+
+    vscf_error_t result = vscf_entropy_source_gather(entropy_ctx, len, &buffer);
+
+    vsc_buffer_cleanup(&buffer);
+
+    switch (result) {
+    case vscf_SUCCESS:
+        return 0;
+
+    default:
+        return MBEDTLS_ERR_ENTROPY_SOURCE_FAILED;
+    }
+}

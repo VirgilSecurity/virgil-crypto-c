@@ -101,6 +101,8 @@
     <implementor name="virgil"/>
 
     <module name="mbedtls bridge random"/>
+    <module name="mbedtls bridge entropy"/>
+    <module name="mbedtls bridge entropy poll"/>
 
     <wrapper lang="swift"/>
 </project>

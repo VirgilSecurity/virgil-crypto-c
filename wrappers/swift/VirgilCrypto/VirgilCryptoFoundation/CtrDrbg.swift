@@ -76,14 +76,21 @@ import VirgilCryptoCommon
     }
 
     @objc public func setEntropySource(entropySource: EntropySource) {
-        vscf_ctr_drbg_use_entropy_source(self.c_ctx, entropySource.c_ctx)
+        vscf_ctr_drbg_release_entropy_source(self.c_ctx)
+        let proxyResult = vscf_ctr_drbg_use_entropy_source(self.c_ctx, entropySource.c_ctx)
+        try FoundationError.handleError(fromC: proxyResult)
+    }
+
+    /// Setup entropy sources available for the current system.
+    @objc public func setupDefaults() {
+        vscf_ctr_drbg_setup_defaults(self.c_ctx)
     }
 
     /// Force entropy to be gathered at the beginning of every call to
     /// the (.class_ctr_drbg_method_random)() method.
     /// Note, use this if your entropy source has sufficient throughput.
-    @objc public func enablePrediction() {
-        vscf_ctr_drbg_enable_prediction(self.c_ctx)
+    @objc public func enablePredictionResistance() {
+        vscf_ctr_drbg_enable_prediction_resistance(self.c_ctx)
     }
 
     /// Sets the reseed interval.
@@ -94,8 +101,8 @@ import VirgilCryptoCommon
 
     /// Sets the amount of entropy grabbed on each seed or reseed.
     /// The default value is entropy len.
-    @objc public func setReseedInterval(len: Int) {
-        vscf_ctr_drbg_set_reseed_interval(self.c_ctx, len)
+    @objc public func setEntropyLen(len: Int) {
+        vscf_ctr_drbg_set_entropy_len(self.c_ctx, len)
     }
 
     /// Generate random bytes.
@@ -120,7 +127,9 @@ import VirgilCryptoCommon
     }
 
     /// Retreive new seed data from the entropy sources.
-    @objc public func reseed() {
-        vscf_ctr_drbg_reseed(self.c_ctx)
+    @objc public func reseed() throws {
+        let proxyResult = vscf_ctr_drbg_reseed(self.c_ctx)
+
+        try FoundationError.handleError(fromC: proxyResult)
     }
 }

@@ -59,6 +59,7 @@
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_ctr_drbg.h"
+#include "vscf_mbedtls_bridge_entropy.h"
 #include "vscf_impl.h"
 
 #include <mbedtls/ctr_drbg.h>

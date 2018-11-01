@@ -290,11 +290,6 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_platform_entropy.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_rsa_private_key.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -340,6 +335,8 @@ target_sources(foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_library.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_memory.h"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bridge_random.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bridge_entropy.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bridge_entropy_poll.h"
             "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/foundation/vscf_platform.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_api.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_api_private.h"
@@ -437,9 +434,6 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_KDF2}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_kdf2.h>"
             "$<$<BOOL:${VSCF_KDF2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2_internal.h>"
             "$<$<BOOL:${VSCF_KDF2}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_kdf2_impl.h>"
-            "$<$<BOOL:${VSCF_PLATFORM_ENTROPY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_platform_entropy.h>"
-            "$<$<BOOL:${VSCF_PLATFORM_ENTROPY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_platform_entropy_internal.h>"
-            "$<$<BOOL:${VSCF_PLATFORM_ENTROPY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_platform_entropy_impl.h>"
             "$<$<BOOL:${VSCF_RSA_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_rsa_private_key.h>"
             "$<$<BOOL:${VSCF_RSA_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_rsa_private_key_internal.h>"
             "$<$<BOOL:${VSCF_RSA_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_rsa_private_key_impl.h>"
@@ -469,6 +463,8 @@ target_sources(foundation
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_library.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_memory.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bridge_random.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bridge_entropy.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bridge_entropy_poll.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_api.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_api_private.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_impl.c"
@@ -565,9 +561,6 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_KDF2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2.c>"
             "$<$<BOOL:${VSCF_KDF2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2_internal.c>"
             "$<$<BOOL:${VSCF_KDF2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf2_impl.c>"
-            "$<$<BOOL:${VSCF_PLATFORM_ENTROPY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_platform_entropy.c>"
-            "$<$<BOOL:${VSCF_PLATFORM_ENTROPY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_platform_entropy_internal.c>"
-            "$<$<BOOL:${VSCF_PLATFORM_ENTROPY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_platform_entropy_impl.c>"
             "$<$<BOOL:${VSCF_RSA_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_rsa_private_key.c>"
             "$<$<BOOL:${VSCF_RSA_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_rsa_private_key_internal.c>"
             "$<$<BOOL:${VSCF_RSA_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_rsa_private_key_impl.c>"

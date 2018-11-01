@@ -7,8 +7,8 @@
         <return type="boolean"/>
     </method>
 
-    <method name="provide">
-        Provide gathered entropy of the requested length.
+    <method name="gather">
+        Gather entropy of the requested length.
 
         <argument name="len" type="size"/>
         <argument name="out" class="buffer">

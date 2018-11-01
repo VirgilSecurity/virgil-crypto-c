@@ -40,6 +40,8 @@ import VirgilCryptoCommon
 /// Implementation based on a simple entropy accumulator.
 @objc(VSCFEntropyAccumulator) public class EntropyAccumulator: NSObject, EntropySource {
 
+    @objc public let sourcesMax: Int = 15
+
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
@@ -68,13 +70,27 @@ import VirgilCryptoCommon
         vscf_entropy_accumulator_delete(self.c_ctx)
     }
 
-    /// Defines that implemented source is strong.
-    @objc public func isStrong() {
-        vscf_entropy_accumulator_is_strong(self.c_ctx)
+    /// Setup entropy sources available for the current system.
+    @objc public func setupDefaults() {
+        vscf_entropy_accumulator_setup_defaults(self.c_ctx)
     }
 
-    /// Provide gathered entropy of the requested length.
-    @objc public func provide(len: Int) throws -> Data {
+    /// Add given entropy source to the accumulator.
+    /// Threshold defines minimum number of bytes that must be gathered
+    /// from the source during accumulation.
+    @objc public func addSource(source: EntropySource, threshold: Int) {
+        vscf_entropy_accumulator_add_source(self.c_ctx, source.c_ctx, threshold)
+    }
+
+    /// Defines that implemented source is strong.
+    @objc public func isStrong() -> Bool {
+        let proxyResult = vscf_entropy_accumulator_is_strong(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Gather entropy of the requested length.
+    @objc public func gather(len: Int) throws -> Data {
         let outCount = len
         var out = Data(count: outCount)
         var outBuf = vsc_buffer_new()
@@ -85,7 +101,7 @@ import VirgilCryptoCommon
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer, outCount)
-            return vscf_entropy_accumulator_provide(self.c_ctx, len, outBuf)
+            return vscf_entropy_accumulator_gather(self.c_ctx, len, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)
 
