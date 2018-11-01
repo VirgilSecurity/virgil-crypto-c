@@ -49,7 +49,8 @@
 //  HEX utils
 // --------------------------------------------------------------------------
 
-size_t unhexify(const char *hex_str, uint8_t *data) {
+size_t
+unhexify(const char *hex_str, uint8_t *data) {
     uint8_t c, c2;
     size_t len = strlen(hex_str) / 2;
     assert(strlen(hex_str) % 2 == 0); /* must be even number of uint8_ts */
@@ -83,7 +84,8 @@ size_t unhexify(const char *hex_str, uint8_t *data) {
     return len;
 }
 
-void hexify(const uint8_t *data, size_t data_len, char *hex_str) {
+void
+hexify(const uint8_t *data, size_t data_len, char *hex_str) {
     uint8_t l, h;
 
     while (data_len != 0) {
@@ -107,16 +109,18 @@ void hexify(const uint8_t *data, size_t data_len, char *hex_str) {
     }
 }
 
-void print_bytes(const byte *bytes, size_t bytes_len) {
-    for(size_t i = 0; i < bytes_len; ++i) {
+void
+print_bytes(const byte *bytes, size_t bytes_len) {
+    for (size_t i = 0; i < bytes_len; ++i) {
         fprintf(stdout, "%02X", bytes[i]);
     }
     fprintf(stdout, "\r\n");
 }
 
-void print_bytes_formatted(const byte *bytes, size_t bytes_len) {
-    for(size_t i = 0; i < bytes_len; ++i) {
-        fprintf(stdout, "%02X%s", bytes[i], ( i + 1 ) % 16 == 0 ? "\r\n" : " " );
+void
+print_bytes_formatted(const byte *bytes, size_t bytes_len) {
+    for (size_t i = 0; i < bytes_len; ++i) {
+        fprintf(stdout, "%02X%s", bytes[i], (i + 1) % 16 == 0 ? "\r\n" : " ");
     }
     fprintf(stdout, "\r\n");
 }
@@ -127,14 +131,16 @@ void print_bytes_formatted(const byte *bytes, size_t bytes_len) {
 
 mock_assert_result_t g_mock_assert_result = {false, NULL, NULL, 0};
 
-void mock_assert_handler (const char* message, const char* file, int line) {
+void
+mock_assert_handler(const char *message, const char *file, int line) {
     g_mock_assert_result.handled = true;
     g_mock_assert_result.message = message;
     g_mock_assert_result.file = file;
     g_mock_assert_result.line = line;
 }
 
-void mock_assert_reset(void) {
+void
+mock_assert_reset(void) {
     memset(&g_mock_assert_result, 0x00, sizeof(mock_assert_result_t));
 }
 
@@ -143,7 +149,8 @@ void mock_assert_reset(void) {
 //  Usefull stubs
 // --------------------------------------------------------------------------
 
-void test__nothing__feature_disabled__must_be_ignored(void) {
+void
+test__nothing__feature_disabled__must_be_ignored(void) {
     TEST_IGNORE();
 }
 
@@ -155,13 +162,15 @@ void test__nothing__feature_disabled__must_be_ignored(void) {
 //
 //  Print data
 //
-void print_data(vsc_data_t data) {
+void
+print_data(vsc_data_t data) {
     print_bytes(data.bytes, data.len);
 }
 
 //
 //  Print buffer
 //
-void print_buffer(vsc_buffer_t *buffer) {
+void
+print_buffer(vsc_buffer_t *buffer) {
     print_data(vsc_buffer_data(buffer));
 }
