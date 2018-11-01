@@ -71,6 +71,7 @@
 
 
         <interface name="random"/>
+        <interface name="entropy source"/>
 
 
         <context>
@@ -94,7 +95,6 @@
             <argument name="data source" class="data"/>
         </method>
     </implementation>
-
 
 <!--
     <implementation name="dynamic_list">
