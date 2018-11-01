@@ -169,3 +169,28 @@ vscf_fake_random_reseed(vscf_fake_random_impl_t *fake_random_impl) {
 
     return vscf_SUCCESS;
 }
+
+//
+//  Defines that implemented source is strong.
+//
+VSCF_PUBLIC bool
+vscf_fake_random_is_strong(vscf_fake_random_impl_t *fake_random_impl) {
+
+    VSCF_UNUSED(fake_random_impl);
+
+    return true;
+}
+
+//
+//  Gather entropy of the requested length.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_fake_random_gather(vscf_fake_random_impl_t *fake_random_impl, size_t len, vsc_buffer_t *out) {
+    VSCF_ASSERT_PTR(fake_random_impl);
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+
+    VSCF_ASSERT(vsc_buffer_left(out) >= len);
+
+    return vscf_fake_random_random(fake_random_impl, len, out);
+}

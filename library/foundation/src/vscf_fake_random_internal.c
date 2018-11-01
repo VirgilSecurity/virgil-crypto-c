@@ -57,6 +57,8 @@
 #include "vscf_fake_random_impl.h"
 #include "vscf_random.h"
 #include "vscf_random_api.h"
+#include "vscf_entropy_source.h"
+#include "vscf_entropy_source_api.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -94,6 +96,29 @@ static const vscf_random_api_t random_api = {
     //  Retreive new seed data from the entropy sources.
     //
     (vscf_random_api_reseed_fn)vscf_fake_random_reseed
+};
+
+//
+//  Configuration of the interface API 'entropy source api'.
+//
+static const vscf_entropy_source_api_t entropy_source_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'entropy_source' MUST be equal to the 'vscf_api_tag_ENTROPY_SOURCE'.
+    //
+    vscf_api_tag_ENTROPY_SOURCE,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_FAKE_RANDOM,
+    //
+    //  Defines that implemented source is strong.
+    //
+    (vscf_entropy_source_api_is_strong_fn)vscf_fake_random_is_strong,
+    //
+    //  Gather entropy of the requested length.
+    //
+    (vscf_entropy_source_api_gather_fn)vscf_fake_random_gather
 };
 
 //
@@ -238,6 +263,8 @@ static const vscf_api_t *
 vscf_fake_random_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
+        case vscf_api_tag_ENTROPY_SOURCE:
+            return (const vscf_api_t *) &entropy_source_api;
         case vscf_api_tag_RANDOM:
             return (const vscf_api_t *) &random_api;
         default:
