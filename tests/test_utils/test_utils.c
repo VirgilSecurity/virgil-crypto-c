@@ -42,6 +42,7 @@
 
 #include <assert.h>
 #include <string.h>
+#include <stdio.h>
 
 
 // --------------------------------------------------------------------------
@@ -106,6 +107,19 @@ void hexify(const uint8_t *data, size_t data_len, char *hex_str) {
     }
 }
 
+void print_bytes(const byte *bytes, size_t bytes_len) {
+    for(size_t i = 0; i < bytes_len; ++i) {
+        fprintf(stdout, "%02X", bytes[i]);
+    }
+    fprintf(stdout, "\r\n");
+}
+
+void print_bytes_formatted(const byte *bytes, size_t bytes_len) {
+    for(size_t i = 0; i < bytes_len; ++i) {
+        fprintf(stdout, "%02X%s", bytes[i], ( i + 1 ) % 16 == 0 ? "\r\n" : " " );
+    }
+    fprintf(stdout, "\r\n");
+}
 
 // --------------------------------------------------------------------------
 //  Assertion utils
@@ -131,4 +145,23 @@ void mock_assert_reset(void) {
 
 void test__nothing__feature_disabled__must_be_ignored(void) {
     TEST_IGNORE();
+}
+
+
+// --------------------------------------------------------------------------
+//  Data & buffer utils
+// --------------------------------------------------------------------------
+
+//
+//  Print data
+//
+void print_data(vsc_data_t data) {
+    print_bytes(data.bytes, data.len);
+}
+
+//
+//  Print buffer
+//
+void print_buffer(vsc_buffer_t *buffer) {
+    print_data(vsc_buffer_data(buffer));
 }

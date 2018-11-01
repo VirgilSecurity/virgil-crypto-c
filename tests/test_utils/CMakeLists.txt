@@ -41,7 +41,7 @@ if(NOT TARGET unity)
 endif()
 
 add_library(test_utils test_utils.h test_utils.c)
-target_link_libraries(test_utils unity)
+target_link_libraries(test_utils unity vsc::common)
 
 target_include_directories(test_utils
         PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
