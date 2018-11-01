@@ -156,14 +156,14 @@ vscf_ctr_drbg_copy(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
 //
 //  Setup dependency to the interface 'entropy source' with shared ownership.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_error_t
 vscf_ctr_drbg_use_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl, vscf_impl_t *entropy_source);
 
 //
 //  Setup dependency to the interface 'entropy source' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_error_t
 vscf_ctr_drbg_take_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl, vscf_impl_t *entropy_source);
 
 //
@@ -171,6 +171,12 @@ vscf_ctr_drbg_take_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl, vscf_impl
 //
 VSCF_PUBLIC void
 vscf_ctr_drbg_release_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
+
+//
+//  Setup entropy sources available for the current system.
+//
+VSCF_PUBLIC void
+vscf_ctr_drbg_setup_defaults(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
 
 //
 //  Force entropy to be gathered at the beginning of every call to
@@ -203,7 +209,7 @@ vscf_ctr_drbg_random(vscf_ctr_drbg_impl_t *ctr_drbg_impl, size_t data_len, vsc_b
 //
 //  Retreive new seed data from the entropy sources.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_error_t
 vscf_ctr_drbg_reseed(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
 
 

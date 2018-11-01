@@ -59,8 +59,10 @@
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_entropy_accumulator.h"
+#include "vscf_impl.h"
 
 #include <mbedtls/entropy.h>
+#include <mbedtls/entropy_poll.h>
 
 // clang-format on
 //  @end
@@ -93,6 +95,14 @@ struct vscf_entropy_accumulator_impl_t {
     //  Implementation specific context.
     //
     mbedtls_entropy_context ctx;
+    //
+    //  Implementation specific context.
+    //
+    vscf_impl_t *sources[vscf_entropy_accumulator_SOURCES_MAX];
+    //
+    //  Implementation specific context.
+    //
+    size_t source_count;
 };
 
 

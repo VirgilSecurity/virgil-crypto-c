@@ -92,9 +92,9 @@ static const vscf_entropy_source_api_t entropy_source_api = {
     //
     (vscf_entropy_source_api_is_strong_fn)vscf_platform_entropy_is_strong,
     //
-    //  Provide gathered entropy of the requested length.
+    //  Gather entropy of the requested length.
     //
-    (vscf_entropy_source_api_provide_fn)vscf_platform_entropy_provide
+    (vscf_entropy_source_api_gather_fn)vscf_platform_entropy_gather
 };
 
 //

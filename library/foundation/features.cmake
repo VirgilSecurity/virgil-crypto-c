@@ -86,7 +86,6 @@ option(VSCF_ASN1RD "Enable implementation 'asn1rd'." ON)
 option(VSCF_ASN1WR "Enable implementation 'asn1wr'." ON)
 option(VSCF_RSA_PUBLIC_KEY "Enable implementation 'rsa public key'." ON)
 option(VSCF_RSA_PRIVATE_KEY "Enable implementation 'rsa private key'." ON)
-option(VSCF_PLATFORM_ENTROPY "Enable implementation 'platform entropy'." ON)
 option(VSCF_ENTROPY_ACCUMULATOR "Enable implementation 'entropy accumulator'." ON)
 option(VSCF_CTR_DRBG "Enable implementation 'ctr drbg'." ON)
 option(VSCF_HMAC "Enable implementation 'hmac'." ON)
@@ -140,7 +139,6 @@ mark_as_advanced(
         VSCF_ASN1WR
         VSCF_RSA_PUBLIC_KEY
         VSCF_RSA_PRIVATE_KEY
-        VSCF_PLATFORM_ENTROPY
         VSCF_ENTROPY_ACCUMULATOR
         VSCF_CTR_DRBG
         VSCF_HMAC
@@ -510,6 +508,15 @@ if(VSCF_RSA_PRIVATE_KEY AND NOT VSCF_ASN1_WRITER)
     message("--")
     message("Feature VSCF_RSA_PRIVATE_KEY depends on the feature:")
     message("     VSCF_ASN1_WRITER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ENTROPY_ACCUMULATOR AND NOT VSCF_ENTROPY_SOURCE)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ENTROPY_ACCUMULATOR depends on the feature:")
+    message("     VSCF_ENTROPY_SOURCE - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

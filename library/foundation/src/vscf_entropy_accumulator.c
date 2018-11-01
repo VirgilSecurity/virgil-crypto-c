@@ -53,6 +53,8 @@
 #include "vscf_entropy_accumulator.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_entropy_source.h"
+#include "vscf_mbedtls_bridge_entropy_poll.h"
 #include "vscf_entropy_accumulator_impl.h"
 #include "vscf_entropy_accumulator_internal.h"
 
@@ -101,6 +103,54 @@ vscf_entropy_accumulator_cleanup_ctx(vscf_entropy_accumulator_impl_t *entropy_ac
 }
 
 //
+//  Setup entropy sources available for the current system.
+//
+VSCF_PUBLIC void
+vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_impl_t *entropy_accumulator_impl) {
+
+    VSCF_ASSERT_PTR(entropy_accumulator_impl);
+
+#if defined(MBEDTLS_PLATFORM_ENTROPY)
+    mbedtls_entropy_add_source(&entropy_accumulator_impl->ctx, mbedtls_platform_entropy_poll, NULL,
+            MBEDTLS_ENTROPY_MIN_PLATFORM, MBEDTLS_ENTROPY_SOURCE_STRONG);
+#endif
+
+#if defined(MBEDTLS_TIMING_C)
+    mbedtls_entropy_add_source(&entropy_accumulator_impl->ctx, mbedtls_hardclock_poll, NULL,
+            MBEDTLS_ENTROPY_MIN_HARDCLOCK, MBEDTLS_ENTROPY_SOURCE_WEAK);
+#endif
+
+#if defined(MBEDTLS_HAVEGE_C)
+    mbedtls_entropy_add_source(&entropy_accumulator_impl->ctx, mbedtls_havege_poll,
+            &entropy_accumulator_impl->ctx.havege_data, MBEDTLS_ENTROPY_MIN_HAVEGE, MBEDTLS_ENTROPY_SOURCE_STRONG);
+#endif
+}
+
+//
+//  Add given entropy source to the accumulator.
+//  Threshold defines minimum number of bytes that must be gathered
+//  from the source during accumulation.
+//
+VSCF_PUBLIC void
+vscf_entropy_accumulator_add_source(
+        vscf_entropy_accumulator_impl_t *entropy_accumulator_impl, vscf_impl_t *source, size_t threshold) {
+
+    VSCF_ASSERT_PTR(entropy_accumulator_impl);
+    VSCF_ASSERT_PTR(source);
+    VSCF_ASSERT(vscf_entropy_source_is_implemented(source));
+    VSCF_ASSERT(threshold > 0);
+    VSCF_ASSERT(entropy_accumulator_impl->source_count < vscf_entropy_accumulator_SOURCES_MAX);
+
+    ++entropy_accumulator_impl->source_count;
+    entropy_accumulator_impl->sources[entropy_accumulator_impl->source_count] = vscf_impl_copy(source);
+
+    int result = mbedtls_entropy_add_source(&entropy_accumulator_impl->ctx, vscf_mbedtls_bridge_entropy_poll, source,
+            threshold, vscf_entropy_source_is_strong(source));
+
+    VSCF_ASSERT(result == 0 && "No more sources can be added.");
+}
+
+//
 //  Defines that implemented source is strong.
 //
 VSCF_PUBLIC bool
@@ -112,10 +162,10 @@ vscf_entropy_accumulator_is_strong(vscf_entropy_accumulator_impl_t *entropy_accu
 }
 
 //
-//  Provide gathered entropy of the requested length.
+//  Gather entropy of the requested length.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_entropy_accumulator_provide(
+vscf_entropy_accumulator_gather(
         vscf_entropy_accumulator_impl_t *entropy_accumulator_impl, size_t len, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(entropy_accumulator_impl);

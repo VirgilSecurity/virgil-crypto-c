@@ -89,7 +89,7 @@ typedef vscf_error_t (*vscf_random_api_random_fn)(vscf_impl_t *impl, size_t data
 //
 //  Callback. Retreive new seed data from the entropy sources.
 //
-typedef void (*vscf_random_api_reseed_fn)(vscf_impl_t *impl);
+typedef vscf_error_t (*vscf_random_api_reseed_fn)(vscf_impl_t *impl);
 
 //
 //  Contains API requirements of the interface 'random'.

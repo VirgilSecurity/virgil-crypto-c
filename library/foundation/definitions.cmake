@@ -93,7 +93,6 @@ target_compile_definitions(foundation
             "VSCF_ASN1WR=$<BOOL:${VSCF_ASN1WR}>"
             "VSCF_RSA_PUBLIC_KEY=$<BOOL:${VSCF_RSA_PUBLIC_KEY}>"
             "VSCF_RSA_PRIVATE_KEY=$<BOOL:${VSCF_RSA_PRIVATE_KEY}>"
-            "VSCF_PLATFORM_ENTROPY=$<BOOL:${VSCF_PLATFORM_ENTROPY}>"
             "VSCF_ENTROPY_ACCUMULATOR=$<BOOL:${VSCF_ENTROPY_ACCUMULATOR}>"
             "VSCF_CTR_DRBG=$<BOOL:${VSCF_CTR_DRBG}>"
             "VSCF_HMAC=$<BOOL:${VSCF_HMAC}>"

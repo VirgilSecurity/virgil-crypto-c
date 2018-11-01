@@ -103,7 +103,9 @@ import VirgilCryptoCommon
     }
 
     /// Retreive new seed data from the entropy sources.
-    @objc public func reseed() {
-        vscf_fake_random_reseed(self.c_ctx)
+    @objc public func reseed() throws {
+        let proxyResult = vscf_fake_random_reseed(self.c_ctx)
+
+        try FoundationError.handleError(fromC: proxyResult)
     }
 }

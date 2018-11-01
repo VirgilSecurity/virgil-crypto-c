@@ -59,6 +59,7 @@
 #include "vscf_random_api.h"
 #include "vscf_entropy_source.h"
 #include "vscf_impl.h"
+#include "vscf_error.h"
 #include "vscf_api.h"
 
 // clang-format on
@@ -70,6 +71,18 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  This method is called when interface 'entropy source' was setup.
+//
+VSCF_PRIVATE vscf_error_t
+vscf_ctr_drbg_did_setup_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
+
+//
+//  This method is called when interface 'entropy source' was released.
+//
+VSCF_PRIVATE void
+vscf_ctr_drbg_did_release_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
 
 static const vscf_api_t *
 vscf_ctr_drbg_find_api(vscf_api_tag_t api_tag);
@@ -240,7 +253,7 @@ vscf_ctr_drbg_impl(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
 //
 //  Setup dependency to the interface 'entropy source' with shared ownership.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_error_t
 vscf_ctr_drbg_use_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl, vscf_impl_t *entropy_source) {
 
     VSCF_ASSERT_PTR(ctr_drbg_impl);
@@ -250,13 +263,15 @@ vscf_ctr_drbg_use_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl, vscf_impl_
     VSCF_ASSERT(vscf_entropy_source_is_implemented(entropy_source));
 
     ctr_drbg_impl->entropy_source = vscf_impl_copy(entropy_source);
+
+    return vscf_ctr_drbg_did_setup_entropy_source(ctr_drbg_impl);
 }
 
 //
 //  Setup dependency to the interface 'entropy source' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_error_t
 vscf_ctr_drbg_take_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl, vscf_impl_t *entropy_source) {
 
     VSCF_ASSERT_PTR(ctr_drbg_impl);
@@ -266,6 +281,8 @@ vscf_ctr_drbg_take_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl, vscf_impl
     VSCF_ASSERT(vscf_entropy_source_is_implemented(entropy_source));
 
     ctr_drbg_impl->entropy_source = entropy_source;
+
+    return vscf_ctr_drbg_did_setup_entropy_source(ctr_drbg_impl);
 }
 
 //
@@ -277,6 +294,8 @@ vscf_ctr_drbg_release_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
     VSCF_ASSERT_PTR(ctr_drbg_impl);
 
     vscf_impl_destroy(&ctr_drbg_impl->entropy_source);
+
+    vscf_ctr_drbg_did_release_entropy_source(ctr_drbg_impl);
 }
 
 static const vscf_api_t *

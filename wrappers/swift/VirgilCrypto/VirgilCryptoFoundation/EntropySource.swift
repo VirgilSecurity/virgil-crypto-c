@@ -40,9 +40,9 @@ import VirgilCryptoCommon
 /// Defines generic interface for the entropy source.
 @objc(VSCFEntropySource) public protocol EntropySource : CContext {
 
-    @objc func isStrong()
+    @objc func isStrong() -> Bool
 
-    @objc func provide(len: Int) throws -> Data
+    @objc func gather(len: Int) throws -> Data
 }
 
 /// Implement interface methods
@@ -63,12 +63,14 @@ import VirgilCryptoCommon
     }
 
     /// Defines that implemented source is strong.
-    @objc public func isStrong() {
-        vscf_entropy_source_is_strong(self.c_ctx)
+    @objc public func isStrong() -> Bool {
+        let proxyResult = vscf_entropy_source_is_strong(self.c_ctx)
+
+        return proxyResult
     }
 
-    /// Provide gathered entropy of the requested length.
-    @objc public func provide(len: Int) throws -> Data {
+    /// Gather entropy of the requested length.
+    @objc public func gather(len: Int) throws -> Data {
         let outCount = len
         var out = Data(count: outCount)
         var outBuf = vsc_buffer_new()
@@ -79,7 +81,7 @@ import VirgilCryptoCommon
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
             vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer, outCount)
-            return vscf_entropy_source_provide(self.c_ctx, len, outBuf)
+            return vscf_entropy_source_gather(self.c_ctx, len, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)
 

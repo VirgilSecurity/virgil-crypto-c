@@ -46,7 +46,6 @@ framework module VSCFoundation {
     header "vscf_hmac.h"
     header "vscf_kdf1.h"
     header "vscf_kdf2.h"
-    header "vscf_platform_entropy.h"
     header "vscf_rsa_private_key.h"
     header "vscf_rsa_public_key.h"
     header "vscf_sha224.h"

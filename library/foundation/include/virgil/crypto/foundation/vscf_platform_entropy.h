@@ -146,10 +146,10 @@ VSCF_PUBLIC bool
 vscf_platform_entropy_is_strong(vscf_platform_entropy_impl_t *platform_entropy_impl);
 
 //
-//  Provide gathered entropy of the requested length.
+//  Gather entropy of the requested length.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_platform_entropy_provide(vscf_platform_entropy_impl_t *platform_entropy_impl, size_t len, vsc_buffer_t *out);
+vscf_platform_entropy_gather(vscf_platform_entropy_impl_t *platform_entropy_impl, size_t len, vsc_buffer_t *out);
 
 
 // --------------------------------------------------------------------------

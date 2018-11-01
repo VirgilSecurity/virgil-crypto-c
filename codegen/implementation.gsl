@@ -122,7 +122,7 @@ endfunction
 function implementation_resolve_context_require (require, parent)
     check_arguments (my, "require, parent", my)
 
-    my.require.scope ?= "private"
+    my.require.scope ?= "public"
 endfunction
 
 # ---------------------------------------------------------------------------
