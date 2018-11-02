@@ -688,7 +688,7 @@ test__asn1wr_error__write_to_small_buffer__returns_error_small_buffer(void) {
 
     vscf_asn1wr_reset(asn1wr, vsc_buffer_ptr(asn1), vsc_buffer_left(asn1));
 
-    size_t len = vscf_asn1wr_write_int(asn1wr, 2);
+    vscf_asn1wr_write_int(asn1wr, 2);
 
     TEST_ASSERT_EQUAL(vscf_error_SMALL_BUFFER, vscf_asn1wr_error(asn1wr));
 
