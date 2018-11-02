@@ -33,56 +33,9 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#include "unity.h"
-#include "test_utils.h"
+#include "vsc_data.h"
 
-
-#define TEST_DEPENDENCIES_AVAILABLE VSCF_ENTROPY_ACCUMULATOR
-#if TEST_DEPENDENCIES_AVAILABLE
-
-#include "vscf_entropy_accumulator.h"
-#include "vscf_fake_random.h"
-
-#include "test_data_entropy_accumulator.h"
-
-
-void
-test__entropy_accumulator__zero_entropy_and_len_64__returns__entropy_set_1(void) {
-    vscf_fake_random_impl_t *entropy = vscf_fake_random_new();
-    vscf_fake_random_setup_source_byte(entropy, 0x00);
-
-    vscf_entropy_accumulator_impl_t *entropy_accumulator = vscf_entropy_accumulator_new();
-    vscf_entropy_accumulator_add_source(entropy_accumulator, vscf_fake_random_impl(entropy), 32);
-
-    size_t len = 64;
-    vsc_buffer_t *data = vsc_buffer_new_with_capacity(len);
-
-    vscf_error_t result = vscf_entropy_accumulator_gather(entropy_accumulator, len, data);
-
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, result);
-    TEST_ASSERT_EQUAL(len, vsc_buffer_len(data));
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_entropy_accumulator_ENTROPY_SET_1, data);
-
-    vsc_buffer_destroy(&data);
-    vscf_fake_random_destroy(&entropy);
-    vscf_entropy_accumulator_destroy(&entropy_accumulator);
-}
-
-#endif // TEST_DEPENDENCIES_AVAILABLE
-
-
-// --------------------------------------------------------------------------
-//  Entrypoint.
-// --------------------------------------------------------------------------
-int
-main(void) {
-    UNITY_BEGIN();
-
-#if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__entropy_accumulator__zero_entropy_and_len_64__returns__entropy_set_1);
-#else
-    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
-#endif
-
-    return UNITY_END();
-}
+//
+//  Random set 1
+//
+extern const vsc_data_t test_entropy_accumulator_ENTROPY_SET_1;
