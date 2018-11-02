@@ -33,56 +33,22 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#include "unity.h"
-#include "test_utils.h"
-
-
-#define TEST_DEPENDENCIES_AVAILABLE VSCF_ENTROPY_ACCUMULATOR
-#if TEST_DEPENDENCIES_AVAILABLE
-
-#include "vscf_entropy_accumulator.h"
-#include "vscf_fake_random.h"
-
 #include "test_data_entropy_accumulator.h"
 
+//
+//  Random set 1
+//
+const byte test_entropy_accumulator_ENTROPY_SET_1_BYTES[] = {
+    0x2A, 0xB1, 0x32, 0x70, 0xC4, 0x6F, 0x49, 0xCB,
+    0x84, 0x86, 0xDE, 0x92, 0xC9, 0x99, 0x9B, 0x6B,
+    0x6C, 0xFF, 0x08, 0xB2, 0x09, 0x3A, 0x77, 0xC6,
+    0xC9, 0x84, 0xE2, 0xF2, 0x4F, 0xA0, 0x5D, 0x7D,
+    0x8D, 0x70, 0xC0, 0x4A, 0xAC, 0x3B, 0xE1, 0x05,
+    0xB3, 0x8B, 0x94, 0x7B, 0x7C, 0x9A, 0x15, 0xB2,
+    0x0E, 0xDA, 0x3A, 0x22, 0x89, 0x9B, 0xE0, 0x5F,
+    0x95, 0x09, 0x53, 0x2E, 0x3F, 0x2F, 0xA4, 0x92,
+};
 
-void
-test__entropy_accumulator__zero_entropy_and_len_64__returns__entropy_set_1(void) {
-    vscf_fake_random_impl_t *entropy = vscf_fake_random_new();
-    vscf_fake_random_setup_source_byte(entropy, 0x00);
-
-    vscf_entropy_accumulator_impl_t *entropy_accumulator = vscf_entropy_accumulator_new();
-    vscf_entropy_accumulator_add_source(entropy_accumulator, vscf_fake_random_impl(entropy), 32);
-
-    size_t len = 64;
-    vsc_buffer_t *data = vsc_buffer_new_with_capacity(len);
-
-    vscf_error_t result = vscf_entropy_accumulator_gather(entropy_accumulator, len, data);
-
-    TEST_ASSERT_EQUAL(vscf_SUCCESS, result);
-    TEST_ASSERT_EQUAL(len, vsc_buffer_len(data));
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_entropy_accumulator_ENTROPY_SET_1, data);
-
-    vsc_buffer_destroy(&data);
-    vscf_fake_random_destroy(&entropy);
-    vscf_entropy_accumulator_destroy(&entropy_accumulator);
-}
-
-#endif // TEST_DEPENDENCIES_AVAILABLE
-
-
-// --------------------------------------------------------------------------
-//  Entrypoint.
-// --------------------------------------------------------------------------
-int
-main(void) {
-    UNITY_BEGIN();
-
-#if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__entropy_accumulator__zero_entropy_and_len_64__returns__entropy_set_1);
-#else
-    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
-#endif
-
-    return UNITY_END();
-}
+const vsc_data_t test_entropy_accumulator_ENTROPY_SET_1 = {
+    test_entropy_accumulator_ENTROPY_SET_1_BYTES, sizeof(test_entropy_accumulator_ENTROPY_SET_1_BYTES)
+};
