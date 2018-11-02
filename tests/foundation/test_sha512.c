@@ -64,7 +64,7 @@ test__impl__null_arg__call_assert(void) {
 
     vscf_assert_change_handler(mock_assert_handler);
 
-    vscf_impl_t *impl = vscf_sha512_impl(NULL);
+    vscf_sha512_impl(NULL);
 
     TEST_ASSERT_TRUE(g_mock_assert_result.handled);
 
