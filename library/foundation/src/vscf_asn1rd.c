@@ -311,7 +311,7 @@ vscf_asn1rd_read_int8(vscf_asn1rd_impl_t *asn1rd_impl) {
         return 0;
     }
 
-    if (value > (int64_t)INT8_MAX) {
+    if (value < (int64_t)INT8_MIN || value > (int64_t)INT8_MAX) {
         asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
@@ -338,7 +338,7 @@ vscf_asn1rd_read_int16(vscf_asn1rd_impl_t *asn1rd_impl) {
         return 0;
     }
 
-    return (int16_t)value;
+    return (int16_t)(0xFFFFFFFF & value);
 }
 
 //
@@ -355,7 +355,7 @@ vscf_asn1rd_read_int32(vscf_asn1rd_impl_t *asn1rd_impl) {
         return 0;
     }
 
-    if (value > (int64_t)INT32_MAX) {
+    if (value < (int64_t)INT32_MIN || value > (int64_t)INT32_MAX) {
         asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
@@ -379,17 +379,23 @@ vscf_asn1rd_read_int64(vscf_asn1rd_impl_t *asn1rd_impl) {
         return 0;
     }
 
-    if (len == 0 || len > sizeof(int64_t) || (*asn1rd_impl->curr & 0x80) != 0) {
+    if (len == 0) {
         asn1rd_impl->error = vscf_error_BAD_ASN1;
         return 0;
     }
 
-    int64_t value = 0;
-
-    while (len-- > 0) {
-        value = (value << 8) | (int64_t)(*asn1rd_impl->curr);
-        ++asn1rd_impl->curr;
+    if (len > sizeof(int64_t)) {
+        asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        return 0;
     }
+
+    bool is_neg = (*asn1rd_impl->curr & 0x80) != 0;
+    int64_t value = is_neg ? (~*asn1rd_impl->curr + 1) : *asn1rd_impl->curr;
+
+    while (--len > 0) {
+        ++asn1rd_impl->curr;
+        value = (value << 8) | (int64_t)(*asn1rd_impl->curr);
+    };
 
     return value;
 }
@@ -499,9 +505,23 @@ vscf_asn1rd_read_uint64(vscf_asn1rd_impl_t *asn1rd_impl) {
         return 0;
     }
 
-    if (len == 0 || len > sizeof(int64_t) || (*asn1rd_impl->curr & 0x80) != 0) {
+    if (len == 0) {
         asn1rd_impl->error = vscf_error_BAD_ASN1;
         return 0;
+    }
+
+    if (len > sizeof(uint64_t) + 1) {
+        asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        return 0;
+    }
+
+    if (len == sizeof(uint64_t) + 1) {
+        if (*asn1rd_impl->curr == 0x00) {
+            ++asn1rd_impl->curr;
+        } else {
+            asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+            return 0;
+        }
     }
 
     uint64_t value = 0;
