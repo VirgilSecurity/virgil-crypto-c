@@ -45,6 +45,7 @@
 // --------------------------------------------------------------------------
 
 #include "vscf_mbedtls_bridge_random.h"
+#include "vscf_assert.h"
 #include "vscf_impl.h"
 #include "vscf_random.h"
 
@@ -78,6 +79,7 @@ vscf_mbedtls_bridge_random(void *ctx, byte *data, size_t len) {
     vsc_buffer_use(&buffer, (byte *)data, len);
 
     vscf_error_t result = vscf_random(random_ctx, len, &buffer);
+    VSCF_ASSERT(len == vsc_buffer_len(&buffer));
 
     vsc_buffer_cleanup(&buffer);
 

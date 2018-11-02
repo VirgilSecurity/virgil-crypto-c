@@ -156,6 +156,8 @@ vscf_fake_random_random(vscf_fake_random_impl_t *fake_random_impl, size_t data_l
         }
     }
 
+    vsc_buffer_reserve(data, data_len);
+
     return vscf_SUCCESS;
 }
 
@@ -186,6 +188,7 @@ vscf_fake_random_is_strong(vscf_fake_random_impl_t *fake_random_impl) {
 //
 VSCF_PUBLIC vscf_error_t
 vscf_fake_random_gather(vscf_fake_random_impl_t *fake_random_impl, size_t len, vsc_buffer_t *out) {
+
     VSCF_ASSERT_PTR(fake_random_impl);
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
