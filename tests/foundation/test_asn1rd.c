@@ -123,9 +123,9 @@ test__asn1rd_read_int8__encoded_int8_0__returns_0(void) {
 
     vscf_asn1rd_reset(asn1rd, test_asn1_encoded_INT8_0);
 
-    int value = vscf_asn1rd_read_int8(asn1rd);
+    int8_t value = vscf_asn1rd_read_int8(asn1rd);
 
-    TEST_ASSERT_EQUAL(0, value);
+    TEST_ASSERT_EQUAL_INT8(0, value);
 
     vscf_asn1rd_destroy(&asn1rd);
 }
@@ -138,9 +138,9 @@ test__asn1rd_read_int8__encoded_int8_127__returns_127(void) {
 
     vscf_asn1rd_reset(asn1rd, test_asn1_encoded_INT8_127);
 
-    int value = vscf_asn1rd_read_int8(asn1rd);
+    int8_t value = vscf_asn1rd_read_int8(asn1rd);
 
-    TEST_ASSERT_EQUAL(127, value);
+    TEST_ASSERT_EQUAL_INT8(127, value);
 
     vscf_asn1rd_destroy(&asn1rd);
 }
@@ -153,9 +153,9 @@ test__asn1rd_read_int8__encoded_int8_neg_128__returns_neg_128(void) {
 
     vscf_asn1rd_reset(asn1rd, test_asn1_encoded_INT8_NEG_128);
 
-    int value = vscf_asn1rd_read_int8(asn1rd);
+    int8_t value = vscf_asn1rd_read_int8(asn1rd);
 
-    TEST_ASSERT_EQUAL(-128, value);
+    TEST_ASSERT_EQUAL_INT8(-128, value);
 
     vscf_asn1rd_destroy(&asn1rd);
 }
@@ -168,9 +168,9 @@ test__asn1rd_read_int16__encoded_int16_32760__returns_32760(void) {
 
     vscf_asn1rd_reset(asn1rd, test_asn1_encoded_INT16_32760);
 
-    int value = vscf_asn1rd_read_int16(asn1rd);
+    int16_t value = vscf_asn1rd_read_int16(asn1rd);
 
-    TEST_ASSERT_EQUAL(32760, value);
+    TEST_ASSERT_EQUAL_INT16(32760, value);
 
     vscf_asn1rd_destroy(&asn1rd);
 }
@@ -183,9 +183,9 @@ test__asn1rd_read_int16__encoded_int16_neg_32760__returns_neg_32760(void) {
 
     vscf_asn1rd_reset(asn1rd, test_asn1_encoded_INT16_NEG_32760);
 
-    int value = vscf_asn1rd_read_int16(asn1rd);
+    int16_t value = vscf_asn1rd_read_int16(asn1rd);
 
-    TEST_ASSERT_EQUAL(-32760, value);
+    TEST_ASSERT_EQUAL_INT16(-32760, value);
 
     vscf_asn1rd_destroy(&asn1rd);
 }
@@ -198,9 +198,9 @@ test__asn1rd_read_int32__encoded_int32_2147483000__returns_2147483000(void) {
 
     vscf_asn1rd_reset(asn1rd, test_asn1_encoded_INT32_2147483000);
 
-    int value = vscf_asn1rd_read_int32(asn1rd);
+    int32_t value = vscf_asn1rd_read_int32(asn1rd);
 
-    TEST_ASSERT_EQUAL(2147483000, value);
+    TEST_ASSERT_EQUAL_INT32(2147483000, value);
 
     vscf_asn1rd_destroy(&asn1rd);
 }
@@ -213,9 +213,9 @@ test__asn1rd_read_int32__encoded_int32_neg_2147483000__returns_neg_2147483000(vo
 
     vscf_asn1rd_reset(asn1rd, test_asn1_encoded_INT32_NEG_2147483000);
 
-    int value = vscf_asn1rd_read_int32(asn1rd);
+    int32_t value = vscf_asn1rd_read_int32(asn1rd);
 
-    TEST_ASSERT_EQUAL(-2147483000, value);
+    TEST_ASSERT_EQUAL_INT32(-2147483000, value);
 
     vscf_asn1rd_destroy(&asn1rd);
 }
@@ -228,9 +228,9 @@ test__asn1rd_read_uint8__encoded_uint8_255__returns_255(void) {
 
     vscf_asn1rd_reset(asn1rd, test_asn1_encoded_UINT8_255);
 
-    int value = vscf_asn1rd_read_uint8(asn1rd);
+    uint8_t value = vscf_asn1rd_read_uint8(asn1rd);
 
-    TEST_ASSERT_EQUAL(255, value);
+    TEST_ASSERT_EQUAL_UINT8(255, value);
 
     vscf_asn1rd_destroy(&asn1rd);
 }
@@ -243,9 +243,9 @@ test__asn1rd_read_uint8__encoded_uint8_0__returns_0(void) {
 
     vscf_asn1rd_reset(asn1rd, test_asn1_encoded_UINT8_0);
 
-    int value = vscf_asn1rd_read_uint8(asn1rd);
+    uint8_t value = vscf_asn1rd_read_uint8(asn1rd);
 
-    TEST_ASSERT_EQUAL(0, value);
+    TEST_ASSERT_EQUAL_UINT8(0, value);
 
     vscf_asn1rd_destroy(&asn1rd);
 }
@@ -258,9 +258,9 @@ test__asn1rd_read_uint16__encoded_uint16_65535__returns_65535(void) {
 
     vscf_asn1rd_reset(asn1rd, test_asn1_encoded_UINT16_65535);
 
-    int value = vscf_asn1rd_read_uint16(asn1rd);
+    uint16_t value = vscf_asn1rd_read_uint16(asn1rd);
 
-    TEST_ASSERT_EQUAL(65535, value);
+    TEST_ASSERT_EQUAL_UINT16(65535, value);
 
     vscf_asn1rd_destroy(&asn1rd);
 }
@@ -273,9 +273,9 @@ test__asn1rd_read_uint32__encoded_uint32_4294967295__returns_4294967295(void) {
 
     vscf_asn1rd_reset(asn1rd, test_asn1_encoded_UINT32_4294967295);
 
-    int value = vscf_asn1rd_read_uint32(asn1rd);
+    uint32_t value = vscf_asn1rd_read_uint32(asn1rd);
 
-    TEST_ASSERT_EQUAL(4294967295, value);
+    TEST_ASSERT_EQUAL_UINT32(4294967295, value);
 
     vscf_asn1rd_destroy(&asn1rd);
 }
@@ -288,9 +288,9 @@ test__asn1rd_read_uint__encoded_uint_4294967295__returns_4294967295(void) {
 
     vscf_asn1rd_reset(asn1rd, test_asn1_encoded_UINT_4294967295);
 
-    int value = vscf_asn1rd_read_uint(asn1rd);
+    unsigned int value = vscf_asn1rd_read_uint(asn1rd);
 
-    TEST_ASSERT_EQUAL(4294967295, value);
+    TEST_ASSERT_EQUAL_UINT(4294967295, value);
 
     vscf_asn1rd_destroy(&asn1rd);
 }
@@ -303,9 +303,9 @@ test__asn1rd_read_int64__encoded_int64_9223372036854775807__returns_922337203685
 
     vscf_asn1rd_reset(asn1rd, test_asn1_encoded_INT64_9223372036854775807);
 
-    int value = vscf_asn1rd_read_int64(asn1rd);
+    int64_t value = vscf_asn1rd_read_int64(asn1rd);
 
-    TEST_ASSERT_EQUAL(9223372036854775807, value);
+    TEST_ASSERT_EQUAL_INT64(9223372036854775807, value);
 
     vscf_asn1rd_destroy(&asn1rd);
 }
@@ -318,9 +318,9 @@ test__asn1rd_read_int64__encoded_int64_neg_9223372036854775808__returns_neg_9223
 
     vscf_asn1rd_reset(asn1rd, test_asn1_encoded_INT64_NEG_9223372036854775808);
 
-    int value = vscf_asn1rd_read_int64(asn1rd);
+    int64_t value = vscf_asn1rd_read_int64(asn1rd);
 
-    TEST_ASSERT_EQUAL(-9223372036854775808, value);
+    TEST_ASSERT_EQUAL_INT64(-9223372036854775808, value);
 
     vscf_asn1rd_destroy(&asn1rd);
 }
@@ -333,9 +333,9 @@ test__asn1rd_read_uint64__encoded_uint64_18446744073709551615__returns_184467440
 
     vscf_asn1rd_reset(asn1rd, test_asn1_encoded_UINT64_18446744073709551615);
 
-    int value = vscf_asn1rd_read_uint64(asn1rd);
+    uint64_t value = vscf_asn1rd_read_uint64(asn1rd);
 
-    TEST_ASSERT_EQUAL(18446744073709551615, value);
+    TEST_ASSERT_EQUAL_UINT64(18446744073709551615, value);
 
     vscf_asn1rd_destroy(&asn1rd);
 }
