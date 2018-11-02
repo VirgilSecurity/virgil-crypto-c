@@ -389,8 +389,7 @@ vscf_asn1rd_read_int64(vscf_asn1rd_impl_t *asn1rd_impl) {
         return 0;
     }
 
-    bool is_neg = (*asn1rd_impl->curr & 0x80) != 0;
-    int64_t value = is_neg ? (~*asn1rd_impl->curr + 1) : *asn1rd_impl->curr;
+    int64_t value = (int8_t)*asn1rd_impl->curr;
 
     while (--len > 0) {
         ++asn1rd_impl->curr;
@@ -518,6 +517,7 @@ vscf_asn1rd_read_uint64(vscf_asn1rd_impl_t *asn1rd_impl) {
     if (len == sizeof(uint64_t) + 1) {
         if (*asn1rd_impl->curr == 0x00) {
             ++asn1rd_impl->curr;
+            --len;
         } else {
             asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
             return 0;
