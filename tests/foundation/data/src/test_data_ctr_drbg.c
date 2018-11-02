@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#include "test_data_sha256.h"
+#include "test_data_ctr_drbg.h"
 
 //
 //  Random set 1
