@@ -383,6 +383,20 @@ function _X17_add_dependencies (entity, source, class_uid_prefix, property_uid_p
         _X17_add_link (entity, "dependency method release $(dependency.name)", \
                 make_id (my.class_uid_prefix, "method", "release", dependency.name))
 
+        if dependency.has_observers
+            _X17_add_name (entity, "dependency method did setup $(dependency.name)", \
+                    cat ("did setup", dependency.name))
+
+            _X17_add_name (entity, "dependency method did release $(dependency.name)", \
+                    cat ("did release", dependency.name))
+
+            _X17_add_link (entity, "dependency method did release $(dependency.name)", \
+                    make_id (my.class_uid_prefix, "method", "did release", dependency.name))
+
+            _X17_add_link (entity, "dependency method did setup $(dependency.name)", \
+                    make_id (my.class_uid_prefix, "method", "did setup", dependency.name))
+        endif
+
 
         if defined(dependency.interface)
             _X17_add_link (entity, "dependency method copy $(dependency.name)", \

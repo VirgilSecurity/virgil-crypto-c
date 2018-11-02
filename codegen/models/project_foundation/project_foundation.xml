@@ -73,6 +73,7 @@
     <interface name="mac stream"/>
     <interface name="kdf"/>
     <interface name="random"/>
+    <interface name="entropy source"/>
 
     <interface name="key"/>
     <interface name="public key"/>
@@ -96,9 +97,12 @@
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>
+    <implementor name="mbedtls rng"/>
     <implementor name="virgil"/>
 
     <module name="mbedtls bridge random"/>
+    <module name="mbedtls bridge entropy"/>
+    <module name="mbedtls bridge entropy poll"/>
 
     <wrapper lang="swift"/>
 </project>

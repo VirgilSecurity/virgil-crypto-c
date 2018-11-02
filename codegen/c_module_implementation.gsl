@@ -1012,7 +1012,8 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
             endif
 
             _Z19_add_lifecycle_methods (my.impl, "public", "external", module, my.meta)
-            c_dependency_add_methods (my.impl, "public", "external", module, my.meta)
+            c_dependency_add_lifecycle_methods (my.impl, "public", "external", module, my.meta)
+            c_dependency_add_observer_methods (my.impl, "external", "private", module, my.meta)
         endif
 
         _Z19_add_interface_api_methods (my.impl, "public", "external", module, my.meta)
@@ -1061,11 +1062,8 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
         endnew
 
         for my.impl.context
-            for context.require where defined (require.header)
-                new c_include to module
-                    .file = require.header
-                    .is_system = "1"
-                endnew
+            for context.require
+                copy require to module
             endfor
         endfor
 
@@ -1114,7 +1112,8 @@ function c_module_implementation_create_module_internal (impl, source, destinati
             _Z19_add_method_impl_type_size (my.impl, "external", "private", module, my.meta)
             _Z19_add_method_impl_type_cast (my.impl, "external", "private", module, my.meta)
 
-            c_dependency_add_methods (my.impl, "external", "private", module, my.meta)
+            c_dependency_add_lifecycle_methods (my.impl, "external", "private", module, my.meta)
+            c_dependency_add_observer_methods (my.impl, "private", "external", module, my.meta)
 
         else
             _Z19_add_includes_for_module_internal (my.impl, module, my.meta)

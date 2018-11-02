@@ -46,6 +46,7 @@
 
 
 gsl from "common.gsl"
+gsl from "c_component.gsl"
 
 # ---------------------------------------------------------------------------
 #   Add argument that holds 'context'.
@@ -142,6 +143,7 @@ function c_dependency_add_method_use (dependency, declaration, definition, desti
 
             my.method_dependency_copy = my.refs.c_dependency_method_copy_$(make_id (my.dependency.name)) ?
             my.method_dependency_check = my.refs.c_dependency_method_check_$(make_id (my.dependency.name)) ?
+            my.method_dependency_did_setup = my.refs.c_dependency_method_did_setup_$(make_id (dependency.name)) ?
 
             my.impl_check_precondition = "\
                 .(c_class_assert_macros_ptr)($(my.refs.c_argument_context));
@@ -165,10 +167,21 @@ function c_dependency_add_method_use (dependency, declaration, definition, desti
                 "
             endif
 
+            if my.dependency.has_observers
+                new return to method
+                    .enum = "error"
+                endnew
+
+                my.impl_did_setup_dependency = "\
+                    return $(my.method_dependency_did_setup:)($(my.refs.c_argument_context:));
+                "
+            endif
+
             my.method_body = ""
             my.method_body += format_left (my.impl_check_precondition) + terminator
             my.method_body += format_left (my.impl_check_dependency) + terminator ? ""
             my.method_body += format_left (my.impl_setup_dependency) + terminator
+            my.method_body += format_left (my.impl_did_setup_dependency) + terminator ? ""
 
             . = my.method_body
         endnew
@@ -204,6 +217,7 @@ function c_dependency_add_method_take (dependency, declaration, definition, dest
             my.full_dependency = "$(my.refs.c_argument_context)->$(my.dependency_property)"
 
             my.method_dependency_check = my.refs.c_dependency_method_check_$(make_id (my.dependency.name)) ?
+            my.method_dependency_did_setup = my.refs.c_dependency_method_did_setup_$(make_id (dependency.name)) ?
 
             my.impl_check_precondition = "\
                 .(c_class_assert_macros_ptr)($(my.refs.c_argument_context));
@@ -221,10 +235,21 @@ function c_dependency_add_method_take (dependency, declaration, definition, dest
                 $(my.full_dependency) = $(my.dependency_arg);
             "
 
+            if my.dependency.has_observers
+                new return to method
+                    .enum = "error"
+                endnew
+
+                my.impl_did_setup_dependency = "\
+                    return $(my.method_dependency_did_setup:)($(my.refs.c_argument_context:));
+                "
+            endif
+
             my.method_body = ""
             my.method_body += format_left (my.impl_check_precondition) + terminator
             my.method_body += format_left (my.impl_check_dependency) + terminator ? ""
             my.method_body += format_left (my.impl_setup_dependency) + terminator
+            my.method_body += format_left (my.impl_did_setup_dependency) + terminator ? ""
 
             . = my.method_body
         endnew
@@ -256,6 +281,7 @@ function c_dependency_add_method_release (dependency, declaration, definition, d
             my.full_dependency = "$(my.refs.c_argument_context)->$(my.dependency_property)"
 
             my.method_dependency_destroy = my.refs.c_dependency_method_destroy_$(make_id (my.dependency.name)) ?
+            my.method_dependency_did_release = my.refs.c_dependency_method_did_release_$(make_id (my.dependency.name)) ?
 
             my.impl_check_precondition = "\
                 .(c_class_assert_macros_ptr)($(my.refs.c_argument_context));
@@ -271,20 +297,78 @@ function c_dependency_add_method_release (dependency, declaration, definition, d
                 "
             endif
 
+            if my.dependency.has_observers
+                my.impl_did_release_dependency = "\
+                    $(my.method_dependency_did_release:)($(my.refs.c_argument_context:));
+                "
+            endif
+
             my.method_body = ""
             my.method_body += format_left (my.impl_check_precondition) + terminator
             my.method_body += format_left (my.impl_destroy) + terminator
+            my.method_body += format_left (my.impl_did_release_dependency) + terminator ? ""
 
             . = my.method_body
         endnew
     endnew
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Add functions that is called when dependency was 'setup'.
+# ---------------------------------------------------------------------------
+function c_dependency_add_method_did_setup (dependency, declaration, definition, destination, meta)
+    check_arguments (my, "dependency, declaration, definition, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        . = "\
+        This method is called when $(my.dependency.type_kind:) '$(my.dependency.type_name)' was setup.
+        "
+
+        .name = my.names.dependency_method_did_setup_$(make_id (dependency.name))
+        .definition = my.definition
+        .declaration = my.declaration
+        .visibility = "private"
+
+        new return to method
+            .enum = "error"
+        endnew
+
+        c_dependency_add_argument_context (method, my.meta)
+        c_component_create_stub (method)
+    endnew
+endfunction
 
 # ---------------------------------------------------------------------------
-#   Add dependency management functions.
+#   Add functions that is called when dependency was 'released'.
 # ---------------------------------------------------------------------------
-function c_dependency_add_methods (source, declaration, definition, destination, meta)
+function c_dependency_add_method_did_release (dependency, declaration, definition, destination, meta)
+    check_arguments (my, "dependency, declaration, definition, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        . = "\
+        This method is called when $(my.dependency.type_kind:) '$(my.dependency.type_name)' was released.
+        "
+
+        .name = my.names.dependency_method_did_release_$(make_id (dependency.name))
+        .definition = my.definition
+        .declaration = my.declaration
+        .visibility = "private"
+
+        c_dependency_add_argument_context (method, my.meta)
+        c_component_create_stub (method)
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add dependency lifecycle management functions.
+# ---------------------------------------------------------------------------
+function c_dependency_add_lifecycle_methods (source, declaration, definition, destination, meta)
     check_arguments (my, "source, declaration, definition, destination, meta", my)
 
     for my.source.dependency
@@ -295,6 +379,18 @@ function c_dependency_add_methods (source, declaration, definition, destination,
         endif
 
         c_dependency_add_method_release (dependency, my.declaration, my.definition, my.destination, my.meta)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add dependency observers functions.
+# ---------------------------------------------------------------------------
+function c_dependency_add_observer_methods (source, declaration, definition, destination, meta)
+    check_arguments (my, "source, declaration, definition, destination, meta", my)
+
+    for my.source.dependency where dependency.has_observers
+        c_dependency_add_method_did_setup (dependency, my.declaration, my.definition, my.destination, my.meta)
+        c_dependency_add_method_did_release (dependency, my.declaration, my.definition, my.destination, my.meta)
     endfor
 endfunction
 

@@ -1,7 +1,7 @@
 <class name="mbedtls md" scope="internal">
     Bridge between MbedTLS MD module and virgil foundation.
 
-    <require header="mbedtls/md.h"/>
+    <require header="mbedtls/md.h" scope="public"/>
 
     <method name="map impl tag" is_static="1">
         Map implementation tag to correspond 'mbedtls_md_type_t'.
