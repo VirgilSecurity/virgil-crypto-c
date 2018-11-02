@@ -389,12 +389,11 @@ vscf_asn1rd_read_int64(vscf_asn1rd_impl_t *asn1rd_impl) {
         return 0;
     }
 
-    int64_t value = (int8_t)*asn1rd_impl->curr;
-
-    while (--len > 0) {
+    int64_t value = (*asn1rd_impl->curr & 0x80) ? -1 : 0;
+    while (len-- > 0) {
+        value = (value << 8) | *asn1rd_impl->curr;
         ++asn1rd_impl->curr;
-        value = (value << 8) | (int64_t)(*asn1rd_impl->curr);
-    };
+    }
 
     return value;
 }
