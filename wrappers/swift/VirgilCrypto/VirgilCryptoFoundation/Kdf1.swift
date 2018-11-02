@@ -69,6 +69,7 @@ import VirgilCryptoCommon
     }
 
     @objc public func setHash(hash: HashStream) {
+        vscf_kdf1_release_hash(self.c_ctx)
         vscf_kdf1_use_hash(self.c_ctx, hash.c_ctx)
     }
 

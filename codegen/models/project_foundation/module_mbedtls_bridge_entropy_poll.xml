@@ -1,0 +1,17 @@
+<module name="mbedtls bridge entropy poll" scope="internal">
+    <require module="library"/>
+    <require module="assert" scope="private"/>
+    <require class="impl" scope="private"/>
+    <require interface="entropy source" scope="private"/>
+    <require module="buffer defs" project="common" scope="private"/>
+    <require header="mbedtls/entropy.h" library="mbedtls" scope="private"/>
+
+    <method name="mbedtls bridge entropy poll" visibility="private">
+        <argument name="ctx" class="any" access="readwrite"/>
+        <argument name="data" type="byte" access="readwrite" is_reference="1"/>
+        <argument name="len" type="size"/>
+        <argument name="olen" type="size" access="readwrite" is_reference="1"/>
+
+        <return type="integer"/>
+    </method>
+</module>

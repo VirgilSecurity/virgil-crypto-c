@@ -122,7 +122,16 @@ endfunction
 function implementation_resolve_context_require (require, parent)
     check_arguments (my, "require, parent", my)
 
-    my.require.scope ?= "private"
+    my.require.scope ?= "public"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve model: context.property.
+# ---------------------------------------------------------------------------
+function implementation_resolve_context_porperty (property, parent)
+    check_arguments (my, "property, parent", my)
+
+    my.property.access ?= "readwrite"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -133,6 +142,10 @@ function implementation_resolve_context (context, parent)
 
     for my.context.require
         implementation_resolve_context_require (require, my.context)
+    endfor
+
+    for my.context.property
+        implementation_resolve_context_porperty (property, my.context)
     endfor
 endfunction
 
@@ -290,6 +303,10 @@ function implementation_resolve (implementation, parent, project)
 
     for my.implementation.context
         implementation_resolve_context (context, my.implementation)
+    endfor
+
+    for my.implementation.property
+        implementation_resolve_context_porperty (property, my.implementation)
     endfor
 
     for my.implementation.dependency

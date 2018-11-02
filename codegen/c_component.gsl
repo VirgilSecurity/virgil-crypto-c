@@ -746,7 +746,8 @@ function c_component_create_modifiers (component, destination)
     check_arguments (my, "component, destination", my)
 
     new c_modifier to my.destination
-        if item_in (my.component, "method") & my.component.declaration = "private"
+        if item_in (my.component, "method") & \
+                my.component.declaration = "private" & my.component.definition = "private"
             .value = "static"
 
         elsif my.component.visibility = "public"

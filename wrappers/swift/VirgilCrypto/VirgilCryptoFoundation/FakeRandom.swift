@@ -38,7 +38,7 @@ import VSCFoundation
 import VirgilCryptoCommon
 
 /// Random number generator that is used for test purposes only.
-@objc(VSCFFakeRandom) public class FakeRandom: NSObject, Random {
+@objc(VSCFFakeRandom) public class FakeRandom: NSObject, Random, EntropySource {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -100,5 +100,40 @@ import VirgilCryptoCommon
         try FoundationError.handleError(fromC: proxyResult)
 
         return data
+    }
+
+    /// Retreive new seed data from the entropy sources.
+    @objc public func reseed() throws {
+        let proxyResult = vscf_fake_random_reseed(self.c_ctx)
+
+        try FoundationError.handleError(fromC: proxyResult)
+    }
+
+    /// Defines that implemented source is strong.
+    @objc public func isStrong() -> Bool {
+        let proxyResult = vscf_fake_random_is_strong(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Gather entropy of the requested length.
+    @objc public func gather(len: Int) throws -> Data {
+        let outCount = len
+        var out = Data(count: outCount)
+        var outBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(outBuf)
+        }
+
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+            vsc_buffer_init(outBuf)
+            vsc_buffer_use(outBuf, outPointer, outCount)
+            return vscf_fake_random_gather(self.c_ctx, len, outBuf)
+        })
+        out.count = vsc_buffer_len(outBuf)
+
+        try FoundationError.handleError(fromC: proxyResult)
+
+        return out
     }
 }

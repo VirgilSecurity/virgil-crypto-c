@@ -614,6 +614,18 @@
         It is equal to the one of the attributes: {interface, api, class}.
     </attr>
 
+    <attr name="has_observers" default="0">
+        Allows to add observer methods for the dependency.
+
+        <restrict value="0">
+            Property is not observed.
+        </restrict>
+
+        <restrict value="1">
+            Property is observed so methods "did_setup" and "did_release" must be generated.
+        </restrict>
+    </attr>
+
     <inherit entity="landlord"/>
 </entity>
 

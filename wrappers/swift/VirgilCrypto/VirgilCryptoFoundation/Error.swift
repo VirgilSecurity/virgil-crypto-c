@@ -80,6 +80,12 @@ import VSCFoundation
     /// Generation of the private or secret key failed.
     case keyGenerationFailed = -209
 
+    /// One of the entropy sources failed.
+    case entropySourceFailed = -210
+
+    /// Requested data to be generated is too big.
+    case rngRequestedDataTooBig = -211
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC error: vscf_error_t) {
         self.init(rawValue: Int(error.rawValue))!

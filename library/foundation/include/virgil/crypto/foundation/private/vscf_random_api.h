@@ -87,6 +87,11 @@ extern "C" {
 typedef vscf_error_t (*vscf_random_api_random_fn)(vscf_impl_t *impl, size_t data_len, vsc_buffer_t *data);
 
 //
+//  Callback. Retreive new seed data from the entropy sources.
+//
+typedef vscf_error_t (*vscf_random_api_reseed_fn)(vscf_impl_t *impl);
+
+//
 //  Contains API requirements of the interface 'random'.
 //
 struct vscf_random_api_t {
@@ -103,6 +108,10 @@ struct vscf_random_api_t {
     //  Generate random bytes.
     //
     vscf_random_api_random_fn random_cb;
+    //
+    //  Retreive new seed data from the entropy sources.
+    //
+    vscf_random_api_reseed_fn reseed_cb;
 };
 
 

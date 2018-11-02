@@ -41,6 +41,8 @@ import VirgilCryptoCommon
 @objc(VSCFRandom) public protocol Random : CContext {
 
     @objc func random(dataLen: Int) throws -> Data
+
+    @objc func reseed() throws
 }
 
 /// Implement interface methods
@@ -79,5 +81,12 @@ import VirgilCryptoCommon
         try FoundationError.handleError(fromC: proxyResult)
 
         return data
+    }
+
+    /// Retreive new seed data from the entropy sources.
+    @objc public func reseed() throws {
+        let proxyResult = vscf_random_reseed(self.c_ctx)
+
+        try FoundationError.handleError(fromC: proxyResult)
     }
 }
