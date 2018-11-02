@@ -35,6 +35,7 @@
 
 #include "test_data_sha224.h"
 
+
 //
 //  Primitive types
 //
@@ -78,7 +79,10 @@ const vsc_data_t test_asn1_encoded_NULL = {
     test_asn1_encoded_NULL_BYTES, sizeof(test_asn1_encoded_NULL_BYTES)
 };
 
-//Signed
+
+//
+//  Signed integers
+//
 const byte test_asn1_encoded_INT8_0_BYTES[] = {
   0x02, 0x01, 0x00
 };
@@ -135,7 +139,10 @@ const vsc_data_t test_asn1_encoded_INT32_NEG_2147483000 = {
     test_asn1_encoded_INT32_NEG_2147483000_BYTES, sizeof(test_asn1_encoded_INT32_NEG_2147483000_BYTES)
 };
 
-//Unsigned
+
+//
+//  Unsigned integers
+//
 const byte test_asn1_encoded_UINT8_255_BYTES[] = {
   0x02, 0x02, 0x00, 0xFF
 };
@@ -161,7 +168,7 @@ const vsc_data_t test_asn1_encoded_UINT8_0 = {
 };
 
 const byte test_asn1_encoded_UINT16_65535_BYTES[] = {
-  0x02, 0x03, 0x00, 0xFF, 0xFF
+    0x02, 0x03, 0x00, 0xFF, 0xFF
 };
 
 const vsc_data_t test_asn1_encoded_UINT16_65535 = {
@@ -169,7 +176,7 @@ const vsc_data_t test_asn1_encoded_UINT16_65535 = {
 };
 
 const byte test_asn1_encoded_UINT32_4294967295_BYTES[] = {
-  0x02, 0x05, 0x00, 0xFF, 0xFF, 0xFF, 0xFF
+    0x02, 0x05, 0x00, 0xFF, 0xFF, 0xFF, 0xFF
 };
 
 const vsc_data_t test_asn1_encoded_UINT32_4294967295 = {
@@ -177,7 +184,7 @@ const vsc_data_t test_asn1_encoded_UINT32_4294967295 = {
 };
 
 const byte test_asn1_encoded_UINT_4294967295_BYTES[] = {
-  0x02, 0x05, 0x00, 0xFF, 0xFF, 0xFF, 0xFF
+    0x02, 0x05, 0x00, 0xFF, 0xFF, 0xFF, 0xFF
 };
 
 const vsc_data_t test_asn1_encoded_UINT_4294967295 = {
@@ -185,7 +192,7 @@ const vsc_data_t test_asn1_encoded_UINT_4294967295 = {
 };
 
 const byte test_asn1_encoded_INT64_9223372036854775807_BYTES[] = {
-  0x02, 0x08, 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+    0x02, 0x08, 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
 };
 
 const vsc_data_t test_asn1_encoded_INT64_9223372036854775807 = {
@@ -193,7 +200,7 @@ const vsc_data_t test_asn1_encoded_INT64_9223372036854775807 = {
 };
 
 const byte test_asn1_encoded_INT64_NEG_9223372036854775808_BYTES[] = {
-  0x02, 0x08, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    0x02, 0x08, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
 const vsc_data_t test_asn1_encoded_INT64_NEG_9223372036854775808 = {
@@ -201,12 +208,14 @@ const vsc_data_t test_asn1_encoded_INT64_NEG_9223372036854775808 = {
 };
 
 const byte test_asn1_encoded_UINT64_18446744073709551615_BYTES[] = {
-  0x02, 0x08, 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+    0x02, 0x09, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
 };
 
 const vsc_data_t test_asn1_encoded_UINT64_18446744073709551615 = {
     test_asn1_encoded_UINT64_18446744073709551615_BYTES, sizeof(test_asn1_encoded_UINT64_18446744073709551615_BYTES)
 };
+
+
 //
 // Strings
 //

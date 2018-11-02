@@ -505,6 +505,21 @@ main(void) {
     RUN_TEST(test__asn1rd_get_len__encoded_integer_2__returns_1);
 
     RUN_TEST(test__asn1rd_read_int__encoded_integer_2__returns_2);
+    RUN_TEST(test__asn1rd_read_int8__encoded_int8_0__returns_0);
+    RUN_TEST(test__asn1rd_read_int8__encoded_int8_127__returns_127);
+    RUN_TEST(test__asn1rd_read_int8__encoded_int8_neg_128__returns_neg_128);
+    RUN_TEST(test__asn1rd_read_int16__encoded_int16_32760__returns_32760);
+    RUN_TEST(test__asn1rd_read_int16__encoded_int16_neg_32760__returns_neg_32760);
+    RUN_TEST(test__asn1rd_read_int32__encoded_int32_2147483000__returns_2147483000);
+    RUN_TEST(test__asn1rd_read_int32__encoded_int32_neg_2147483000__returns_neg_2147483000);
+    RUN_TEST(test__asn1rd_read_uint8__encoded_uint8_255__returns_255);
+    RUN_TEST(test__asn1rd_read_uint8__encoded_uint8_0__returns_0);
+    RUN_TEST(test__asn1rd_read_uint16__encoded_uint16_65535__returns_65535);
+    RUN_TEST(test__asn1rd_read_uint32__encoded_uint32_4294967295__returns_4294967295);
+    RUN_TEST(test__asn1rd_read_uint__encoded_uint_4294967295__returns_4294967295);
+    RUN_TEST(test__asn1rd_read_int64__encoded_int64_9223372036854775807__returns_9223372036854775807);
+    RUN_TEST(test__asn1rd_read_int64__encoded_int64_neg_9223372036854775808__returns_neg_9223372036854775808);
+    RUN_TEST(test__asn1rd_read_uint64__encoded_uint64_18446744073709551615__returns_18446744073709551615);
     RUN_TEST(test__asn1rd_read_bool__encoded_boolean_true__returns_true);
     RUN_TEST(test__asn1rd_read_bool__encoded_boolean_false__returns_false);
     RUN_TEST(test__asn1rd_read_tag__encoded_boolean_false__returns_1);
