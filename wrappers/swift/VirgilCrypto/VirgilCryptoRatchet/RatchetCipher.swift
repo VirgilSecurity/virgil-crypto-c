@@ -77,6 +77,7 @@ import VirgilCryptoFoundation
     }
 
     @objc public func setAes256Gcm(aes256Gcm: Aes256Gcm) {
+        vscr_ratchet_cipher_release_aes256_gcm(self.c_ctx)
         vscr_ratchet_cipher_use_aes256_gcm(self.c_ctx, aes256Gcm.c_ctx)
     }
 

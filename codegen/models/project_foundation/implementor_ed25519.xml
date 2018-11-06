@@ -1,0 +1,24 @@
+<implementor name="ed25519 pk" is_default="1">
+    Provide implementation based on the library ed25519
+    <implementation name="ed25519 public key">
+      This is implementation of ED25519
+      <require library="ed25519" feature="ED25519 C"/>
+
+      <context>
+        <require header="ed25519/ed25519.h"/>
+        <property name="public_key" type="byte" access="readwrite">
+          <array length="fixed" length_constant="ED25519_KEY_LEN"/>
+        </property>
+        <property name="secret_key" type="byte" access="readwrite">
+          <array length="fixed" length_constant="ED25519_KEY_LEN"/>
+        </property>
+      </context>
+
+      <interface name="key"/>
+      <interface name="public key"/>
+      <interface name="verify"/>
+      <interface name="export public key"/>
+      <interface name="import public key"/>
+
+    </implementation>
+</implementor>
