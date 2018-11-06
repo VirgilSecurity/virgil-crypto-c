@@ -69,14 +69,17 @@ import VirgilCryptoFoundation
     }
 
     @objc public func setRng(rng: RatchetRng) {
+        vscr_ratchet_release_rng(self.c_ctx)
         vscr_ratchet_use_rng(self.c_ctx, rng.c_ctx)
     }
 
     @objc public func setCipher(cipher: RatchetCipher) {
+        vscr_ratchet_release_cipher(self.c_ctx)
         vscr_ratchet_use_cipher(self.c_ctx, cipher.c_ctx)
     }
 
     @objc public func setKdfInfo(kdfInfo: RatchetKdfInfo) {
+        vscr_ratchet_release_kdf_info(self.c_ctx)
         vscr_ratchet_use_kdf_info(self.c_ctx, kdfInfo.c_ctx)
     }
 

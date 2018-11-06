@@ -47,15 +47,16 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains common functionality for all 'implementation' object.
-//  It is also enumerate all available implementations within crypto libary.
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_IMPL_H_INCLUDED
-#define VSCF_IMPL_H_INCLUDED
+#ifndef VSCF_ED25519_PUBLIC_KEY_INTERNAL_H_INCLUDED
+#define VSCF_ED25519_PUBLIC_KEY_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_api.h"
+#include "vscf_ed25519_public_key.h"
+#include "vscf_ed25519_public_key.h"
 
 // clang-format on
 //  @end
@@ -73,74 +74,20 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible implementations within crypto library.
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_ed25519_public_key_init() is called.
+//  Note, that context is already zeroed.
 //
-enum vscf_impl_tag_t {
-    vscf_impl_tag_BEGIN = 0,
-    vscf_impl_tag_AES256_GCM,
-    vscf_impl_tag_ASN1RD,
-    vscf_impl_tag_ASN1WR,
-    vscf_impl_tag_CTR_DRBG,
-    vscf_impl_tag_ED25519_PUBLIC_KEY,
-    vscf_impl_tag_ENTROPY_ACCUMULATOR,
-    vscf_impl_tag_FAKE_RANDOM,
-    vscf_impl_tag_HKDF,
-    vscf_impl_tag_HMAC,
-    vscf_impl_tag_KDF1,
-    vscf_impl_tag_KDF2,
-    vscf_impl_tag_RSA_PRIVATE_KEY,
-    vscf_impl_tag_RSA_PUBLIC_KEY,
-    vscf_impl_tag_SHA224,
-    vscf_impl_tag_SHA256,
-    vscf_impl_tag_SHA384,
-    vscf_impl_tag_SHA512,
-    vscf_impl_tag_END
-};
-typedef enum vscf_impl_tag_t vscf_impl_tag_t;
+VSCF_PRIVATE void
+vscf_ed25519_public_key_init_ctx(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl);
 
 //
-//  Generic type for any 'implementation'.
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
 //
-typedef struct vscf_impl_t vscf_impl_t;
-
-//
-//  Return 'API' object that is fulfiled with a meta information
-//  specific to the given implementation object.
-//  Or NULL if object does not implement requested 'API'.
-//
-VSCF_PUBLIC const vscf_api_t *
-vscf_impl_api(vscf_impl_t *impl, vscf_api_tag_t api_tag);
-
-//
-//  Return unique 'Implementation TAG'.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_impl_tag(vscf_impl_t *impl);
-
-//
-//  Cleanup implementation object and it's dependencies.
-//
-VSCF_PUBLIC void
-vscf_impl_cleanup(vscf_impl_t *impl);
-
-//
-//  Delete implementation object and it's dependencies.
-//
-VSCF_PUBLIC void
-vscf_impl_delete(vscf_impl_t *impl);
-
-//
-//  Destroy implementation object and it's dependencies.
-//
-VSCF_PUBLIC void
-vscf_impl_destroy(vscf_impl_t **impl_ref);
-
-//
-//  Copy implementation object by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_impl_copy(vscf_impl_t *impl);
+VSCF_PRIVATE void
+vscf_ed25519_public_key_cleanup_ctx(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl);
 
 
 // --------------------------------------------------------------------------
@@ -156,5 +103,5 @@ vscf_impl_copy(vscf_impl_t *impl);
 
 
 //  @footer
-#endif // VSCF_IMPL_H_INCLUDED
+#endif // VSCF_ED25519_PUBLIC_KEY_INTERNAL_H_INCLUDED
 //  @end

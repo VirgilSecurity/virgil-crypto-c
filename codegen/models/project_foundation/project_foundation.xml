@@ -99,6 +99,7 @@
     <implementor name="mbedtls pk"/>
     <implementor name="mbedtls rng"/>
     <implementor name="virgil"/>
+    <!-- <implementor name="ed25519"/> -->
 
     <module name="mbedtls bridge random"/>
     <module name="mbedtls bridge entropy"/>
