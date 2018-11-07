@@ -549,6 +549,7 @@ vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_
     vscr_ratchet_add_receiver_chain(ratchet_ctx, receiver_chain);
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vscr_ratchet_decrypt_len(ratchet_ctx, vsc_buffer_len(message->cipher_text)));
+    vsc_buffer_make_secure(buffer);
     vscr_error_t status = vscr_ratchet_decrypt_for_existing_chain(ratchet_ctx, &receiver_chain->chain_key, message, buffer);
     vsc_buffer_destroy(&buffer);
 
@@ -618,11 +619,7 @@ VSCR_PUBLIC vscr_error_t
 vscr_ratchet_encrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text, vsc_buffer_t *cipher_text) {
 
     VSCR_ASSERT_PTR(ratchet_ctx);
-
-    if (vsc_buffer_left(cipher_text) < vscr_ratchet_encrypt_len(ratchet_ctx, plain_text.len)) {
-
-        return vscr_INVALID_ARGUMENTS;
-    }
+    VSCR_ASSERT(vsc_buffer_left(cipher_text) >= vscr_ratchet_encrypt_len(ratchet_ctx, plain_text.len));
 
     vscr_error_t result = vscr_SUCCESS;
 
@@ -696,6 +693,7 @@ vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t cipher_text, vsc_bu
 
     VSCR_ASSERT_PTR(ratchet_ctx);
     VSCR_ASSERT_PTR(plain_text);
+    VSCR_ASSERT(vsc_buffer_left(plain_text) >= vscr_ratchet_decrypt_len(ratchet_ctx, cipher_text.len));
 
     vscr_error_ctx_t error_ctx;
     vscr_error_ctx_reset(&error_ctx);
@@ -708,11 +706,6 @@ vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t cipher_text, vsc_bu
 
     if (msg->version != vscr_ratchet_common_RATCHET_REGULAR_MESSAGE_VERSION) {
         return vscr_MESSAGE_VERSION_DOESN_T_MATCH;
-    }
-
-    if (vsc_buffer_left(plain_text) < vscr_ratchet_decrypt_len(ratchet_ctx, cipher_text.len)) {
-
-        return vscr_INVALID_ARGUMENTS;
     }
 
     vscr_error_t result;
