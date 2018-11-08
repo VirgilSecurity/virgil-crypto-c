@@ -12,8 +12,6 @@
         <property name="signature" type="byte" access="readwrite">
           <array length="fixed" length_constant="ED25519_KEY_LEN"/>
         </property>
-        <property name="message" class="buffer" type="byte" access="readwrite"/>
-        <property name="message_len" type="size" access="readwrite"/>
       </context>
 
       <interface name="key"/>
@@ -22,19 +20,7 @@
       <interface name="verify"/>
       <interface name="export public key"/>
       <interface name="import public key"/>
-
-      <method name="curve25519 key exchange" context="impl">
-        Compute shared secret based on the Curve25519 montgomery curve
-        <argument name="shared key" type="byte" access="readwrite">
-          <array length="fixed" length_constant="ED25519_DH_LEN"/>
-        </argument>
-        <argument name="public key" type="byte" access="readwrite">
-          <array length="fixed" length_constant="ED25519_KEY_LEN"/>
-        </argument>
-        <argument name="secret key" type="byte" access="readwrite">
-          <array length="fixed" length_constant="ED25519_KEY_LEN"/>
-        </argument>
-      </method>
+      <interface name="compute shared key"/>
 
     </implementation>
 
@@ -50,8 +36,6 @@
         <property name="signature" type="byte" access="readwrite">
           <array length="fixed" length_constant="ED25519_SIG_LEN"/>
         </property>
-        <property name="message" class="buffer" type="byte" access="readwrite"/>
-        <property name="message_len" type="size" access="readwrite"/>
       </context>
 
       <interface name="key"/>
