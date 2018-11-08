@@ -56,7 +56,6 @@
 
 #include "vscf_library.h"
 #include "vscf_sha384.h"
-#include "vscf_sha384.h"
 
 // clang-format on
 //  @end

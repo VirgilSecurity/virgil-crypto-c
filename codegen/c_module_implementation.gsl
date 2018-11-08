@@ -250,11 +250,6 @@ function _Z19_add_includes_for_module_internal (impl, destination, meta)
         .scope = "private"
     endnew
 
-    new require to my.destination
-        .module = my.names.implementation_module
-        .scope = "private"
-    endnew
-
     if my.impl.context <> "none"
         new require to my.destination
             .module = my.names.implementation_module
@@ -263,6 +258,11 @@ function _Z19_add_includes_for_module_internal (impl, destination, meta)
 
         new require to my.destination
             .module = my.names.implementation_module_impl
+            .scope = "private"
+        endnew
+    else
+        new require to my.destination
+            .module = my.names.implementation_module
             .scope = "private"
         endnew
     endif

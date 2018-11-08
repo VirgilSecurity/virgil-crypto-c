@@ -56,7 +56,6 @@
 
 #include "vscf_library.h"
 #include "vscf_hmac.h"
-#include "vscf_hmac.h"
 
 // clang-format on
 //  @end

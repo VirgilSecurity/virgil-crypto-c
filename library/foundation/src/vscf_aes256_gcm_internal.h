@@ -56,7 +56,6 @@
 
 #include "vscf_library.h"
 #include "vscf_aes256_gcm.h"
-#include "vscf_aes256_gcm.h"
 
 // clang-format on
 //  @end
