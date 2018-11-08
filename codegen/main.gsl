@@ -181,9 +181,10 @@ function process_project (project, features_list, projects_api, echo_level)
     endif
 
     if !my.project.skip_codegen_c
-        #   Create Interface / Implementation high-level C modules.
+        #   Create platfrom introspection module.
         c_module_platform_create (my.project, my.root, my.meta)
 
+        #   Create Interface / Implementation high-level C modules.
         if count (my.root.interface)
             c_module_api_create (my.meta, my.root)
             c_module_api_private_create (my.meta, my.root)
