@@ -51,6 +51,8 @@
 #include "vscr_ratchet_session_defs.h"
 #include "vscr_ratchet_prekey_message.h"
 
+#include <virgil/crypto/foundation/vscf_asn1wr.h>
+#include <virgil/crypto/foundation/vscf_asn1rd.h>
 #include <ed25519/ed25519.h>
 
 // clang-format on
@@ -304,6 +306,24 @@ vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *ratchet_session_ctx) {
     vsc_buffer_destroy(&ratchet_session_ctx->sender_ephemeral_public_key);
     vsc_buffer_destroy(&ratchet_session_ctx->receiver_longterm_public_key);
     vsc_buffer_destroy(&ratchet_session_ctx->receiver_onetime_public_key);
+}
+
+VSCR_PUBLIC vscr_ratchet_session_t *
+vscr_ratchet_session_new_with_members(bool received_first_response, vsc_buffer_t *sender_identity_public_key,
+        vsc_buffer_t *sender_ephemeral_public_key, vsc_buffer_t *receiver_longterm_public_key,
+        vsc_buffer_t *receiver_onetime_public_key, vscr_ratchet_t **ratchet_ref) {
+
+    vscr_ratchet_session_t *ratchet_session_ctx = vscr_ratchet_session_new();
+
+    ratchet_session_ctx->received_first_response = received_first_response;
+    ratchet_session_ctx->sender_identity_public_key = sender_identity_public_key;
+    ratchet_session_ctx->sender_ephemeral_public_key = sender_ephemeral_public_key;
+    ratchet_session_ctx->receiver_longterm_public_key = receiver_longterm_public_key;
+    ratchet_session_ctx->receiver_onetime_public_key = receiver_onetime_public_key;
+    ratchet_session_ctx->ratchet = *ratchet_ref;
+    *ratchet_ref = NULL;
+
+    return ratchet_session_ctx;
 }
 
 VSCR_PUBLIC vscr_error_t
@@ -582,4 +602,200 @@ vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session_ctx, const 
         ratchet_session_ctx->received_first_response = true;
 
     return result;
+}
+
+VSCR_PUBLIC size_t
+vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *ratchet_session_ctx) {
+
+    VSCR_ASSERT_PTR(ratchet_session_ctx);
+
+    //  RATCHETSession ::= SEQUENCE {
+    //       received first response BOOL,
+    //       sender identity public key OCTET_STRING,
+    //       sender ephemeral public key OCTET_STRING,
+    //       receiver longterm public key OCTET_STRING,
+    //       receiver onetime public key OCTET_STRING,
+    //       ratchet OCTET_STRING }
+
+    size_t top_sequence_len = 1 + 3 /* SEQUENCE */
+                              + 1 + 1 + 2 /* INTEGER */
+                              + 1 + 1 + 32 /* KEY */
+                              + 1 + 1 + 32 /* KEY */
+                              + 1 + 1 + 32 /* KEY */
+                              + 1 + 1 + 32 /* KEY */
+                              + 1 + 3 + vscr_ratchet_serialize_len(ratchet_session_ctx->ratchet); /* message */
+
+
+    return top_sequence_len;
+}
+
+VSCR_PUBLIC vscr_error_t
+vscr_ratchet_session_serialize(vscr_ratchet_session_t *ratchet_session_ctx, vsc_buffer_t *output) {
+
+    //  RATCHETSession ::= SEQUENCE {
+    //       received first response BOOL,
+    //       sender identity public key OCTET_STRING,
+    //       sender ephemeral public key OCTET_STRING,
+    //       receiver longterm public key OCTET_STRING,
+    //       receiver onetime public key OCTET_STRING,
+    //       ratchet OCTET_STRING }
+
+    VSCR_ASSERT_PTR(ratchet_session_ctx);
+
+    VSCR_ASSERT(vsc_buffer_left(output) >= vscr_ratchet_session_serialize_len(ratchet_session_ctx));
+
+    vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
+
+    vscf_asn1wr_reset(asn1wr, vsc_buffer_ptr(output), vsc_buffer_left(output));
+
+    size_t top_sequence_len = 0;
+
+    vsc_buffer_t *ratchet_buff = vsc_buffer_new_with_capacity(vscr_ratchet_serialize_len(ratchet_session_ctx->ratchet));
+    vsc_buffer_make_secure(ratchet_buff);
+
+    vscr_error_t status = vscr_ratchet_serialize(ratchet_session_ctx->ratchet, ratchet_buff);
+
+    vsc_buffer_destroy(&ratchet_buff);
+
+    if (status != vscr_SUCCESS) {
+        vscf_asn1wr_destroy(&asn1wr);
+
+        return status;
+    }
+
+    top_sequence_len += vscf_asn1wr_write_octet_str(asn1wr, vsc_buffer_data(ratchet_buff));
+
+    top_sequence_len += vscf_asn1wr_write_octet_str(asn1wr, vsc_buffer_data(ratchet_session_ctx->receiver_onetime_public_key));
+
+    top_sequence_len += vscf_asn1wr_write_octet_str(asn1wr, vsc_buffer_data(ratchet_session_ctx->receiver_longterm_public_key));
+
+    top_sequence_len += vscf_asn1wr_write_octet_str(asn1wr, vsc_buffer_data(ratchet_session_ctx->sender_ephemeral_public_key));
+
+    top_sequence_len += vscf_asn1wr_write_octet_str(asn1wr, vsc_buffer_data(ratchet_session_ctx->sender_identity_public_key));
+
+    top_sequence_len += vscf_asn1wr_write_bool(asn1wr, ratchet_session_ctx->received_first_response);
+
+    vscf_asn1wr_write_sequence(asn1wr, top_sequence_len);
+
+    if (vscf_asn1wr_error(asn1wr) != vscf_SUCCESS) {
+        vscf_asn1wr_destroy(&asn1wr);
+
+        // FIXME
+        return vscr_ASN1_WRITE_ERROR;
+    }
+
+    vsc_buffer_reserve(output, vscf_asn1wr_finish(asn1wr));
+
+    vscf_asn1wr_destroy(&asn1wr);
+
+    return vscr_SUCCESS;
+}
+
+VSCR_PUBLIC vscr_ratchet_session_t *
+vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
+
+    //  RATCHETSession ::= SEQUENCE {
+    //       received first response BOOL,
+    //       sender identity public key OCTET_STRING,
+    //       sender ephemeral public key OCTET_STRING,
+    //       receiver longterm public key OCTET_STRING,
+    //       receiver onetime public key OCTET_STRING,
+    //       ratchet OCTET_STRING }
+
+    VSCR_ASSERT(vsc_data_is_valid(input));
+
+    vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
+
+    vscf_asn1rd_reset(asn1rd, input);
+    vscf_asn1rd_read_sequence(asn1rd);
+
+    bool received_first_response = vscf_asn1rd_read_bool(asn1rd);
+
+    size_t key_len = vscf_asn1rd_get_len(asn1rd);
+    if (key_len != ED25519_KEY_LEN) {
+
+        vscf_asn1rd_destroy(&asn1rd);
+
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_WRONG_MESSAGE_FORMAT);
+
+        return NULL;
+    }
+    vsc_data_t sender_identity_public_key = vscf_asn1rd_read_octet_str(asn1rd);
+
+    key_len = vscf_asn1rd_get_len(asn1rd);
+    if (key_len != ED25519_KEY_LEN) {
+
+        vscf_asn1rd_destroy(&asn1rd);
+
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_WRONG_MESSAGE_FORMAT);
+
+        return NULL;
+    }
+    vsc_data_t sender_ephemeral_public_key = vscf_asn1rd_read_octet_str(asn1rd);
+
+    key_len = vscf_asn1rd_get_len(asn1rd);
+    if (key_len != ED25519_KEY_LEN) {
+
+        vscf_asn1rd_destroy(&asn1rd);
+
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_WRONG_MESSAGE_FORMAT);
+
+        return NULL;
+    }
+    vsc_data_t receiver_longterm_public_key = vscf_asn1rd_read_octet_str(asn1rd);
+
+    key_len = vscf_asn1rd_get_len(asn1rd);
+    if (key_len != ED25519_KEY_LEN) {
+
+        vscf_asn1rd_destroy(&asn1rd);
+
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_WRONG_MESSAGE_FORMAT);
+
+        return NULL;
+    }
+    vsc_data_t receiver_onetime_public_key = vscf_asn1rd_read_octet_str(asn1rd);
+
+    size_t ratchet_len = vscf_asn1rd_get_len(asn1rd);
+    if (ratchet_len > vscr_ratchet_session_MAX_RATCHET_LENGTH) {
+
+        vscf_asn1rd_destroy(&asn1rd);
+
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_WRONG_MESSAGE_FORMAT);
+
+        return NULL;
+    }
+    vsc_data_t ratchet_buff = vscf_asn1rd_read_octet_str(asn1rd);
+
+    vscr_ratchet_t *ratchet = vscr_ratchet_deserialize(ratchet_buff, err_ctx);
+
+    if (err_ctx->error != vscr_SUCCESS) {
+        vscf_asn1rd_destroy(&asn1rd);
+        vscr_ratchet_destroy(&ratchet);
+
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_WRONG_MESSAGE_FORMAT);
+
+        return NULL;
+    }
+
+    if (vscf_asn1rd_error(asn1rd) != vscf_SUCCESS) {
+        vscf_asn1rd_destroy(&asn1rd);
+        vscr_ratchet_destroy(&ratchet);
+
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_ASN1_READ_ERROR);
+
+        return NULL;
+    }
+
+
+    vsc_buffer_new_with_data(sender_identity_public_key);
+
+
+    vscr_ratchet_session_t *ratchet_session = vscr_ratchet_session_new_with_members(received_first_response,
+            vsc_buffer_new_with_data(sender_identity_public_key), vsc_buffer_new_with_data(sender_ephemeral_public_key),
+            vsc_buffer_new_with_data(receiver_longterm_public_key), vsc_buffer_new_with_data(receiver_onetime_public_key),
+            &ratchet); // FIXME
+
+    vscf_asn1rd_destroy(&asn1rd);
+
+    return ratchet_session;
 }

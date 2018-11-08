@@ -1,5 +1,8 @@
 <class name="ratchet" context="private">
 
+    <require impl="asn1wr" project="foundation" scope="private"/>
+    <require impl="asn1rd" project="foundation" scope="private"/>
+
     <require impl="sha256" project="foundation" scope="private"/>
     <require impl="hmac" project="foundation" scope="private"/>
     <require impl="hkdf" project="foundation" scope="private"/>
@@ -139,6 +142,25 @@
 
     <method name="add skipped message key" declaration="private">
         <argument name="skipped message key" class="ratchet skipped message key" access="readwrite"/>
+    </method>
+
+    <method name="serialize len">
+        <return type="size"/>
+    </method>
+
+    <method name="serialize">
+        <argument name="output" class="buffer">
+            <length method="serialize len"/>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="deserialize" is_static="1">
+        <argument name="input" class="data"/>
+        <argument name="err ctx" class="error ctx" access="readwrite"/>
+
+        <return class="self" access="disown"/>
     </method>
 
 </class>

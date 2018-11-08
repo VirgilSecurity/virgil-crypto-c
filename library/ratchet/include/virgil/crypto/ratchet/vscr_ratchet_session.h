@@ -49,20 +49,22 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
+#include "vscr_ratchet.h"
 #include "vscr_ratchet_regular_message.h"
 #include "vscr_ratchet_message.h"
+#include "vscr_error_ctx.h"
+#include "vscr_ratchet_session.h"
 #include "vscr_impl.h"
-#include "vscr_ratchet.h"
 #include "vscr_error.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
 #endif
 
 // clang-format on
@@ -79,6 +81,16 @@ extern "C" {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Public integral constants.
+//
+enum {
+    //
+    //  FIXME
+    //
+    vscr_ratchet_session_MAX_RATCHET_LENGTH = 1024 * 1024
+};
 
 //
 //  Handle 'ratchet session' context.
@@ -108,6 +120,11 @@ vscr_ratchet_session_cleanup(vscr_ratchet_session_t *ratchet_session_ctx);
 //
 VSCR_PUBLIC vscr_ratchet_session_t *
 vscr_ratchet_session_new(void);
+
+VSCR_PUBLIC vscr_ratchet_session_t *
+vscr_ratchet_session_new_with_members(bool received_first_response, vsc_buffer_t *sender_identity_public_key,
+        vsc_buffer_t *sender_ephemeral_public_key, vsc_buffer_t *receiver_longterm_public_key,
+        vsc_buffer_t *receiver_onetime_public_key, vscr_ratchet_t **ratchet_ref);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -191,6 +208,15 @@ vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, co
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session_ctx, const vscr_ratchet_message_t *message,
         vsc_buffer_t *plain_text);
+
+VSCR_PUBLIC size_t
+vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *ratchet_session_ctx);
+
+VSCR_PUBLIC vscr_error_t
+vscr_ratchet_session_serialize(vscr_ratchet_session_t *ratchet_session_ctx, vsc_buffer_t *output);
+
+VSCR_PUBLIC vscr_ratchet_session_t *
+vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx);
 
 
 // --------------------------------------------------------------------------
