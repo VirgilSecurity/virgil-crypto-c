@@ -86,11 +86,11 @@ vscf_aes256_gcm_init_ctx(vscf_aes256_gcm_impl_t *aes256_gcm_impl) {
 
     mbedtls_cipher_init(&aes256_gcm_impl->cipher_ctx);
 
-    int result = mbedtls_cipher_setup(
+    int status = mbedtls_cipher_setup(
             &aes256_gcm_impl->cipher_ctx, mbedtls_cipher_info_from_type(MBEDTLS_CIPHER_AES_256_GCM));
 
-    VSCF_ASSERT_ALLOC(result != MBEDTLS_ERR_CIPHER_ALLOC_FAILED);
-    VSCF_ASSERT(result == 0 && "unhandled mbedtls error");
+    VSCF_ASSERT_ALLOC(status != MBEDTLS_ERR_CIPHER_ALLOC_FAILED);
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
 
     vscf_zeroize(aes256_gcm_impl->key, vscf_aes256_gcm_KEY_LEN);
     vscf_zeroize(aes256_gcm_impl->nonce, vscf_aes256_gcm_NONCE_LEN);
