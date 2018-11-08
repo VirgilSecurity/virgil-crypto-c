@@ -43,7 +43,7 @@
 #include "test_data_ratchet_regular_message.h"
 
 void
-test__contructor__create_object__object_has_correct_values(void) {
+test__constructor__create_object__object_has_correct_values(void) {
     vsc_buffer_t *public_key = vsc_buffer_new_with_data(test_ratchet_regular_message_public_key);
     vsc_buffer_t *cipher_text = vsc_buffer_new_with_data(test_ratchet_regular_message_cipher_text);
 
@@ -100,7 +100,7 @@ test__serialization__serialize_deserialize__objects_are_equal(void) {
 }
 
 void
-test__contructor__create_big_object__object_has_correct_values(void) {
+test__constructor__create_big_object__object_has_correct_values(void) {
     vsc_buffer_t *public_key = vsc_buffer_new_with_data(test_ratchet_regular_message_public_key);
     vsc_buffer_t *cipher_text = vsc_buffer_new_with_data(test_ratchet_regular_message_cipher_text_big);
 
@@ -169,9 +169,9 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__contructor__create_object__object_has_correct_values);
+    RUN_TEST(test__constructor__create_object__object_has_correct_values);
     RUN_TEST(test__serialization__serialize_deserialize__objects_are_equal);
-    RUN_TEST(test__contructor__create_big_object__object_has_correct_values);
+    RUN_TEST(test__constructor__create_big_object__object_has_correct_values);
     RUN_TEST(test__serialization__serialize_deserialize_big_object__objects_are_equal);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
