@@ -54,7 +54,6 @@
 #include "vscf_kdf2_internal.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_kdf2.h"
 #include "vscf_kdf2_impl.h"
 #include "vscf_kdf.h"
 #include "vscf_kdf_api.h"
