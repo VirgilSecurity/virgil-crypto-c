@@ -52,6 +52,8 @@
 #include "vscr_ratchet_receiver_chain.h"
 #include "vscr_ratchet_skipped_message_key.h"
 
+#include <virgil/crypto/foundation/vscf_asn1wr.h>
+#include <virgil/crypto/foundation/vscf_asn1rd.h>
 #include <virgil/crypto/foundation/vscf_sha256.h>
 #include <virgil/crypto/foundation/vscf_hmac.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>
@@ -898,4 +900,45 @@ vscr_ratchet_add_skipped_message_key(vscr_ratchet_t *ratchet_ctx,
     if (msgs_count == vscr_ratchet_common_MAX_SKIPPED_MESSAGES) {
         vscr_ratchet_skipped_message_key_list_node_destroy(&skipped_message_key_list_node->next);
     }
+}
+
+VSCR_PUBLIC size_t
+vscr_ratchet_serialize_len(vscr_ratchet_t *ratchet_ctx) {
+
+    VSCR_ASSERT_PTR(ratchet_ctx);
+
+    //  RATCHETRatchet ::= SEQUENCE {
+    //       sender chain OCTET_STRING,
+    //       receiver chains OCTET_STRING,
+    //       skipped message keys OCTET_STRING,
+    //       root key OCTET_STRING }
+
+    size_t top_sequence_len = 1 + 3 /* SEQUENCE */
+                              + 1 + 1 + 2 /* INTEGER */
+                              + 1 + 1 + 32 /* KEY */
+                              + 1 + 1 + 32 /* KEY */
+                              + 1 + 1 + 32 /* KEY */
+                              + 1 + 1 + 32; /* KEY */
+
+    return top_sequence_len;
+}
+
+VSCR_PUBLIC vscr_error_t
+vscr_ratchet_serialize(vscr_ratchet_t *ratchet_ctx, vsc_buffer_t *output) {
+
+    //  TODO: This is STUB. Implement me.
+    VSCR_UNUSED(ratchet_ctx);
+    VSCR_UNUSED(output);
+
+    return vscr_SUCCESS;
+}
+
+VSCR_PUBLIC vscr_ratchet_t *
+vscr_ratchet_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
+
+    //  TODO: This is STUB. Implement me.
+    VSCR_UNUSED(input);
+    VSCR_UNUSED(err_ctx);
+
+    return NULL;
 }
