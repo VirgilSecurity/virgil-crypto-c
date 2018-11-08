@@ -55,6 +55,8 @@
 
 #include "vscf_assert.h"
 
+#include <mbedtls/config.h>
+#include <mbedtls/error.h>
 #include <stdio.h>
 
 // clang-format on
@@ -74,7 +76,7 @@ static const char *
 vscf_assert_path_basename(const char *path);
 
 //
-//  Active handler for assertion failback.
+//  Active handler for assertion fail.
 //
 static vscf_assert_handler_fn active_handler = vscf_assert_abort;
 
@@ -129,6 +131,26 @@ vscf_assert_path_basename(const char *path) {
     }
 
     return result;
+}
+
+//
+//  Tell assertion handler that error of library 'mbedtls' is not handled.
+//
+VSCF_PUBLIC void
+vscf_assert_trigger_unhandled_error_of_library_mbedtls(int error, const char *file, int line) {
+
+    #if defined(MBEDTLS_ERROR_C)
+        char error_message[256] = {0x00};
+        mbedtls_strerror(error, error_message, sizeof(error_message));
+    #else
+        char error_message[32] = {0x00};
+        if (error < 0) {
+            error = -error;
+        }
+        snprintf(error_message, sizeof(error_message), "Unhandled mbedTLS error -0x%04x", error);
+    #endif
+
+    vscf_assert_trigger(error_message, file, line);
 }
 
 

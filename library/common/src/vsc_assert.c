@@ -74,7 +74,7 @@ static const char *
 vsc_assert_path_basename(const char *path);
 
 //
-//  Active handler for assertion failback.
+//  Active handler for assertion fail.
 //
 static vsc_assert_handler_fn active_handler = vsc_assert_abort;
 
