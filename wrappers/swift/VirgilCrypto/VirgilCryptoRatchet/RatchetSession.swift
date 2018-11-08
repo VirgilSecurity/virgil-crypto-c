@@ -69,10 +69,12 @@ import VirgilCryptoFoundation
     }
 
     @objc public func setRng(rng: RatchetRng) {
+        vscr_ratchet_session_release_rng(self.c_ctx)
         vscr_ratchet_session_use_rng(self.c_ctx, rng.c_ctx)
     }
 
     @objc public func setRatchet(ratchet: Ratchet) {
+        vscr_ratchet_session_release_ratchet(self.c_ctx)
         vscr_ratchet_session_use_ratchet(self.c_ctx, ratchet.c_ctx)
     }
 
