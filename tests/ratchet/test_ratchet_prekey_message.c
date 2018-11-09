@@ -32,7 +32,6 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include "unity.h"
 #include "test_utils.h"
 
@@ -94,7 +93,7 @@ test__serialization__serialize_deserialize__objects_are_equal(void) {
             sender_identity_key, sender_ephemeral_key,
             receiver_longterm_key, receiver_onetime_key, message);
 
-    size_t len = vscr_ratchet_prekey_message_serialize_len(msg1->message->len);
+    size_t len = vscr_ratchet_prekey_message_serialize_len(vsc_buffer_len(msg1->message));
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(len);
 
     TEST_ASSERT_EQUAL(vscr_ratchet_prekey_message_serialize(msg1, buffer), vscr_SUCCESS);
@@ -183,7 +182,7 @@ test__serialization__serialize_deserialize_big_object__objects_are_equal(void) {
             sender_identity_key, sender_ephemeral_key,
             receiver_longterm_key, receiver_onetime_key, message);
 
-    size_t len = vscr_ratchet_prekey_message_serialize_len(msg1->message->len);
+    size_t len = vscr_ratchet_prekey_message_serialize_len(vsc_buffer_len(msg1->message));
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(len);
 
     TEST_ASSERT_EQUAL(vscr_ratchet_prekey_message_serialize(msg1, buffer), vscr_SUCCESS);
