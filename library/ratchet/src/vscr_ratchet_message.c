@@ -310,7 +310,6 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
 
     uint8_t version = vscf_asn1rd_read_uint8(asn1rd);
 
-
     uint8_t type = vscf_asn1rd_read_uint8(asn1rd);
     if (type != vscr_ratchet_message_TYPE_PREKEY && type != vscr_ratchet_message_TYPE_REGULAR) {
         vscf_asn1rd_destroy(&asn1rd);
@@ -319,7 +318,6 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
 
         return NULL;
     }
-
 
     size_t message_len = vscf_asn1rd_get_len(asn1rd);
     if (message_len > vscr_ratchet_message_MAX_MESSAGE_LENGTH) {
@@ -331,7 +329,6 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
         return NULL;
     }
     vsc_data_t message = vscf_asn1rd_read_octet_str(asn1rd);
-
 
     if (vscf_asn1rd_error(asn1rd) != vscf_SUCCESS) {
         vscf_asn1rd_destroy(&asn1rd);
