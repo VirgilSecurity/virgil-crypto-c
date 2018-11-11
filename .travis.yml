@@ -19,8 +19,7 @@ before_script:
 
 script:
   - cmake -H. -Bbuild -DCMAKE_INSTALL_PREFIX=install
-  - cmake --build build -- -j8
-  - cd build && ctest --verbose && cd -
+  - cmake --build build -- -j8 && cd build && ctest --verbose && cd -
 
 after_success:
   - cmake --build build --target cloc
