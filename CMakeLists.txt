@@ -43,6 +43,7 @@ include("cmake/clangformat.cmake")
 include("cmake/helpers.cmake")
 include("cmake/TransitiveArgs.cmake")
 include("cmake/TransitiveToolchainArgs.cmake")
+include("cmake/protobuf.cmake")
 
 
 # ---------------------------------------------------------------------------
@@ -139,6 +140,11 @@ endif()
 if(VIRGIL_LIB_ED25519)
     add_subdirectory("thirdparty/ed25519")
 endif()
+
+#
+# Protobuf
+#
+add_subdirectory("thirdparty/nanopb")
 
 
 # ---------------------------------------------------------------------------
