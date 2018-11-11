@@ -8,7 +8,10 @@ compiler:
   - clang
 
 install:
-  - wget https://cmake.org/files/v3.11/cmake-3.11.1-Linux-x86_64.sh
+  - travis_retry sudo dpkg --add-architecture i386
+  - travis_retry sudo apt-get -qq update
+  - travis_retry sudo apt-get install -y -qq libc6:i386 libncurses5:i386 libstdc++6:i386
+  - travis_retry wget https://cmake.org/files/v3.11/cmake-3.11.1-Linux-x86_64.sh
   - sudo bash cmake-3.11.1-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local
   - export PATH="/usr/local/bin:$PATH"
   - travis_retry sudo apt-get install -y -qq cloc
