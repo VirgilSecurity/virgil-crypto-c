@@ -43,6 +43,7 @@ include("cmake/clangformat.cmake")
 include("cmake/helpers.cmake")
 include("cmake/TransitiveArgs.cmake")
 include("cmake/TransitiveToolchainArgs.cmake")
+include("cmake/protobuf.cmake")
 
 
 # ---------------------------------------------------------------------------
@@ -123,22 +124,27 @@ set(VIRGIL_INSTALL_WRAP_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Path where 
 # MbedTLS
 #
 if(VIRGIL_LIB_FOUNDATION OR VIRGIL_LIB_PYTHIA)
-    add_subdirectory ("thirdparty/mbedtls")
+    add_subdirectory("thirdparty/mbedtls")
 endif()
 
 #
 # Pythia
 #
 if(VIRGIL_LIB_PYTHIA)
-    add_subdirectory ("thirdparty/pythia")
+    add_subdirectory("thirdparty/pythia")
 endif()
 
 #
 # Ed25519
 #
 if(VIRGIL_LIB_ED25519)
-    add_subdirectory ("thirdparty/ed25519")
+    add_subdirectory("thirdparty/ed25519")
 endif()
+
+#
+# Protobuf
+#
+add_subdirectory("thirdparty/nanopb")
 
 
 # ---------------------------------------------------------------------------
@@ -146,15 +152,15 @@ endif()
 # ---------------------------------------------------------------------------
 
 if(VIRGIL_LIB_COMMON)
-    add_subdirectory ("library/common")
+    add_subdirectory("library/common")
 endif()
 
 if(VIRGIL_LIB_FOUNDATION)
-    add_subdirectory ("library/foundation")
+    add_subdirectory("library/foundation")
 endif()
 
 if(VIRGIL_LIB_PYTHIA)
-    add_subdirectory ("library/pythia")
+    add_subdirectory("library/pythia")
 endif()
 
 if(VIRGIL_LIB_RATCHET)
@@ -166,7 +172,7 @@ endif()
 #   Library wrappers
 # ---------------------------------------------------------------------------
 if(VIRGIL_WRAP_ALL OR VIRGIL_WRAP_GO)
-    add_subdirectory ("wrappers/go")
+    add_subdirectory("wrappers/go")
 endif()
 
 
@@ -190,7 +196,7 @@ endif()
 # ---------------------------------------------------------------------------
 #   Code line stats
 # ---------------------------------------------------------------------------
-find_program (CLOC_EXECUTABLE cloc)
+find_program(CLOC_EXECUTABLE cloc)
 
 if(CLOC_EXECUTABLE)
     add_custom_target(cloc-common
