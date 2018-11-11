@@ -82,6 +82,11 @@ if(CMAKE_CROSSCOMPILING AND APPLE)
 endif()
 
 #
+# Library with protobuf models
+#
+add_subdirectory(protobuf)
+
+#
 # Define sources
 #
 add_library(ratchet "")
@@ -104,7 +109,7 @@ target_include_directories(ratchet
 #
 # Link to dependencies
 #
-target_link_libraries(ratchet PUBLIC vsc::common vsc::foundation ed25519)
+target_link_libraries(ratchet PUBLIC vsc::ratchet_pb vsc::common vsc::foundation ed25519)
 
 #
 # Define specific compilation and linkage flags.
