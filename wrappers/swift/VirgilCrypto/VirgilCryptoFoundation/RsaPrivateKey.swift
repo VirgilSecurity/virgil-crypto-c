@@ -68,18 +68,22 @@ import VirgilCryptoCommon
     }
 
     @objc public func setHash(hash: Hash) {
+        vscf_rsa_private_key_release_hash(self.c_ctx)
         vscf_rsa_private_key_use_hash(self.c_ctx, hash.c_ctx)
     }
 
     @objc public func setRandom(random: Random) {
+        vscf_rsa_private_key_release_random(self.c_ctx)
         vscf_rsa_private_key_use_random(self.c_ctx, random.c_ctx)
     }
 
     @objc public func setAsn1rd(asn1rd: Asn1Reader) {
+        vscf_rsa_private_key_release_asn1rd(self.c_ctx)
         vscf_rsa_private_key_use_asn1rd(self.c_ctx, asn1rd.c_ctx)
     }
 
     @objc public func setAsn1wr(asn1wr: Asn1Writer) {
+        vscf_rsa_private_key_release_asn1wr(self.c_ctx)
         vscf_rsa_private_key_use_asn1wr(self.c_ctx, asn1wr.c_ctx)
     }
 

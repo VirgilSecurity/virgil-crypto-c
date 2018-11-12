@@ -60,6 +60,7 @@
 #include <pythia/pythia_buf_sizes.h>
 #include <mbedtls/ctr_drbg.h>
 #include <mbedtls/entropy.h>
+#include <mbedtls/entropy_poll.h>
 
 // clang-format on
 //  @end
@@ -252,9 +253,25 @@ vscp_pythia_init_ctx(vscp_pythia_t *pythia_ctx) {
     mbedtls_entropy_init(&g_entropy_ctx);
     mbedtls_ctr_drbg_init(&g_rng_ctx);
 
+#if !defined(MBEDTLS_NO_PLATFORM_ENTROPY)
+    mbedtls_entropy_add_source(&g_entropy_ctx, mbedtls_platform_entropy_poll, NULL, MBEDTLS_ENTROPY_MIN_PLATFORM,
+            MBEDTLS_ENTROPY_SOURCE_STRONG);
+#endif
+
+#if defined(MBEDTLS_TIMING_C)
+    mbedtls_entropy_add_source(
+            &g_entropy_ctx, mbedtls_hardclock_poll, NULL, MBEDTLS_ENTROPY_MIN_HARDCLOCK, MBEDTLS_ENTROPY_SOURCE_WEAK);
+#endif
+
+#if defined(MBEDTLS_HAVEGE_C)
+    mbedtls_entropy_add_source(&g_entropy_ctx, mbedtls_havege_poll, &g_entropy_ctx.havege_data,
+            MBEDTLS_ENTROPY_MIN_HAVEGE, MBEDTLS_ENTROPY_SOURCE_STRONG);
+#endif
+
     const unsigned char pers[] = "vscp_pythia";
     size_t pers_len = sizeof(pers);
-    VSCP_ASSERT_OPT(0 == mbedtls_ctr_drbg_seed(&g_rng_ctx, mbedtls_entropy_func, &g_entropy_ctx, pers, pers_len));
+    int status = mbedtls_ctr_drbg_seed(&g_rng_ctx, mbedtls_entropy_func, &g_entropy_ctx, pers, pers_len);
+    VSCP_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
 }
 
 //
@@ -678,5 +695,6 @@ static void
 vscp_pythia_random_handler(byte *out, int out_len, void *ctx) {
 
     VSCP_UNUSED(ctx);
-    VSCP_ASSERT_OPT(0 == mbedtls_ctr_drbg_random(&g_rng_ctx, out, out_len));
+    int status = mbedtls_ctr_drbg_random(&g_rng_ctx, out, out_len);
+    VSCP_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
 }

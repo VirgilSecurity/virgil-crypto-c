@@ -80,6 +80,8 @@ enum vscf_impl_tag_t {
     vscf_impl_tag_AES256_GCM,
     vscf_impl_tag_ASN1RD,
     vscf_impl_tag_ASN1WR,
+    vscf_impl_tag_CTR_DRBG,
+    vscf_impl_tag_ENTROPY_ACCUMULATOR,
     vscf_impl_tag_FAKE_RANDOM,
     vscf_impl_tag_HKDF,
     vscf_impl_tag_HMAC,

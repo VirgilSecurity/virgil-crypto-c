@@ -566,7 +566,8 @@ function _X13_add_lifecycle_methods (class, destination, meta)
     _X13_add_method_destroy (my.class, my.destination, my.meta)
     _X13_add_method_copy (my.class, my.destination, my.meta)
 
-    c_dependency_add_methods (my.class, "public", "private", my.destination, my.meta)
+    c_dependency_add_lifecycle_methods (my.class, "public", "private", my.destination, my.meta)
+    c_dependency_add_observer_methods (my.class, "private", "private", my.destination, my.meta)
 endfunction
 
 # ---------------------------------------------------------------------------

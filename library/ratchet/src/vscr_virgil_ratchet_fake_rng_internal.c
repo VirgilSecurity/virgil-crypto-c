@@ -54,7 +54,6 @@
 #include "vscr_virgil_ratchet_fake_rng_internal.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-#include "vscr_virgil_ratchet_fake_rng.h"
 #include "vscr_virgil_ratchet_fake_rng_impl.h"
 #include "vscr_ratchet_rng.h"
 #include "vscr_ratchet_rng_api.h"

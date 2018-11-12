@@ -2,7 +2,7 @@
     Encapsulates fixed byte array.
 
 
-    <property name="bytes" type="byte">
+    <property name="bytes" type="byte" access="readonly">
         Underlying byte array.
 
         <array length="given"/>

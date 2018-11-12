@@ -56,7 +56,6 @@
 
 #include "vscf_library.h"
 #include "vscf_asn1wr.h"
-#include "vscf_asn1wr.h"
 
 // clang-format on
 //  @end
