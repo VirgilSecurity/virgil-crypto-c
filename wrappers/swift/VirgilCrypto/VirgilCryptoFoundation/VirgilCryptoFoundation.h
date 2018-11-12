@@ -6,14 +6,16 @@
 //  Copyright © 2018 Virgil Security, Inc. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "TargetConditionals.h"
+
+#if TARGET_OS_IPHONE
+#   import <UIKit/UIKit.h>
+#else
+#   import <Cocoa/Cocoa.h>
+#endif
 
 //! Project version number for VirgilCryptoFoundation.
 FOUNDATION_EXPORT double VirgilCryptoFoundationVersionNumber;
 
 //! Project version string for VirgilCryptoFoundation.
 FOUNDATION_EXPORT const unsigned char VirgilCryptoFoundationVersionString[];
-
-// In this header, you should import all the public headers of your framework using statements like #import <VirgilCryptoFoundation/PublicHeader.h>
-
-
