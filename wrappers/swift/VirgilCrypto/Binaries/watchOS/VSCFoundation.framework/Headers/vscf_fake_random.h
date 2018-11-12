@@ -160,6 +160,24 @@ vscf_fake_random_setup_source_data(vscf_fake_random_impl_t *fake_random_impl, vs
 VSCF_PUBLIC vscf_error_t
 vscf_fake_random_random(vscf_fake_random_impl_t *fake_random_impl, size_t data_len, vsc_buffer_t *data);
 
+//
+//  Retreive new seed data from the entropy sources.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_fake_random_reseed(vscf_fake_random_impl_t *fake_random_impl);
+
+//
+//  Defines that implemented source is strong.
+//
+VSCF_PUBLIC bool
+vscf_fake_random_is_strong(vscf_fake_random_impl_t *fake_random_impl);
+
+//
+//  Gather entropy of the requested length.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_fake_random_gather(vscf_fake_random_impl_t *fake_random_impl, size_t len, vsc_buffer_t *out);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

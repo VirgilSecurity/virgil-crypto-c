@@ -87,6 +87,7 @@ enum vscf_api_tag_t {
     vscf_api_tag_COMPUTE_SHARED_KEY,
     vscf_api_tag_DECRYPT,
     vscf_api_tag_ENCRYPT,
+    vscf_api_tag_ENTROPY_SOURCE,
     vscf_api_tag_EX_KDF,
     vscf_api_tag_EXPORT_PRIVATE_KEY,
     vscf_api_tag_EXPORT_PUBLIC_KEY,
