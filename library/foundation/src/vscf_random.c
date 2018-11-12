@@ -78,6 +78,19 @@ vscf_random(vscf_impl_t *impl, size_t data_len, vsc_buffer_t *data) {
 }
 
 //
+//  Retreive new seed data from the entropy sources.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_random_reseed(vscf_impl_t *impl) {
+
+    const vscf_random_api_t *random_api = vscf_random_api (impl);
+    VSCF_ASSERT_PTR (random_api);
+
+    VSCF_ASSERT_PTR (random_api->reseed_cb);
+    return random_api->reseed_cb (impl);
+}
+
+//
 //  Return random API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_random_api_t *

@@ -134,6 +134,26 @@ extern "C" {
     } while (false)
 
 //
+//  This macros can be used as library 'mbedtls' error handlind post-condition.
+//
+#define VSCP_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(error)                                                      \
+    do {                                                                                                        \
+        VSCP_ASSERT((error) != 0);                                                                              \
+        vscp_assert_trigger_unhandled_error_of_library_mbedtls((int)(error), VSCP_FILE_PATH_OR_NAME, __LINE__); \
+    } while (0)
+
+//
+//  This macros can be used to ensure that library 'mbedtls' operation
+//  returns success status code.
+//
+#define VSCP_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status)              \
+    do {                                                         \
+        if ((status) != 0) {                                     \
+            VSCP_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(status); \
+        }                                                        \
+    } while (0)
+
+//
 //  Assertion handler callback type.
 //
 typedef void (*vscp_assert_handler_fn)(const char *message, const char *file, int line);
@@ -156,6 +176,12 @@ vscp_assert_abort(const char *message, const char *file, int line);
 //
 VSCP_PUBLIC void
 vscp_assert_trigger(const char *message, const char *file, int line);
+
+//
+//  Tell assertion handler that error of library 'mbedtls' is not handled.
+//
+VSCP_PUBLIC void
+vscp_assert_trigger_unhandled_error_of_library_mbedtls(int error, const char *file, int line);
 
 
 // --------------------------------------------------------------------------

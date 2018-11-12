@@ -129,7 +129,15 @@ enum vscf_error_t {
     //
     //  Generation of the private or secret key failed.
     //
-    vscf_error_KEY_GENERATION_FAILED = -209
+    vscf_error_KEY_GENERATION_FAILED = -209,
+    //
+    //  One of the entropy sources failed.
+    //
+    vscf_error_ENTROPY_SOURCE_FAILED = -210,
+    //
+    //  Requested data to be generated is too big.
+    //
+    vscf_error_RNG_REQUESTED_DATA_TOO_BIG = -211
 };
 typedef enum vscf_error_t vscf_error_t;
 

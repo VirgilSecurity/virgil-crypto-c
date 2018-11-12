@@ -140,6 +140,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_entropy_source.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ex_kdf.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -250,6 +255,16 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ctr_drbg.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_entropy_accumulator.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_fake_random.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -320,6 +335,8 @@ target_sources(foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_library.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_memory.h"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bridge_random.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bridge_entropy.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bridge_entropy_poll.h"
             "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/foundation/vscf_platform.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_api.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_api_private.h"
@@ -347,6 +364,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_DECRYPT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_decrypt_api.h>"
             "$<$<BOOL:${VSCF_ENCRYPT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_encrypt.h>"
             "$<$<BOOL:${VSCF_ENCRYPT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_encrypt_api.h>"
+            "$<$<BOOL:${VSCF_ENTROPY_SOURCE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_entropy_source.h>"
+            "$<$<BOOL:${VSCF_ENTROPY_SOURCE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_entropy_source_api.h>"
             "$<$<BOOL:${VSCF_EX_KDF}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ex_kdf.h>"
             "$<$<BOOL:${VSCF_EX_KDF}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_ex_kdf_api.h>"
             "$<$<BOOL:${VSCF_EXPORT_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_export_private_key.h>"
@@ -394,6 +413,12 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_ASN1WR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_asn1wr.h>"
             "$<$<BOOL:${VSCF_ASN1WR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1wr_internal.h>"
             "$<$<BOOL:${VSCF_ASN1WR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_asn1wr_impl.h>"
+            "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ctr_drbg.h>"
+            "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg_internal.h>"
+            "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_ctr_drbg_impl.h>"
+            "$<$<BOOL:${VSCF_ENTROPY_ACCUMULATOR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_entropy_accumulator.h>"
+            "$<$<BOOL:${VSCF_ENTROPY_ACCUMULATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_entropy_accumulator_internal.h>"
+            "$<$<BOOL:${VSCF_ENTROPY_ACCUMULATOR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_entropy_accumulator_impl.h>"
             "$<$<BOOL:${VSCF_FAKE_RANDOM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_fake_random.h>"
             "$<$<BOOL:${VSCF_FAKE_RANDOM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_fake_random_internal.h>"
             "$<$<BOOL:${VSCF_FAKE_RANDOM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_fake_random_impl.h>"
@@ -438,6 +463,8 @@ target_sources(foundation
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_library.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_memory.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bridge_random.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bridge_entropy.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bridge_entropy_poll.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_api.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_api_private.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_impl.c"
@@ -464,6 +491,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_DECRYPT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_decrypt_api.c>"
             "$<$<BOOL:${VSCF_ENCRYPT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_encrypt.c>"
             "$<$<BOOL:${VSCF_ENCRYPT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_encrypt_api.c>"
+            "$<$<BOOL:${VSCF_ENTROPY_SOURCE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_entropy_source.c>"
+            "$<$<BOOL:${VSCF_ENTROPY_SOURCE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_entropy_source_api.c>"
             "$<$<BOOL:${VSCF_EX_KDF}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ex_kdf.c>"
             "$<$<BOOL:${VSCF_EX_KDF}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ex_kdf_api.c>"
             "$<$<BOOL:${VSCF_EXPORT_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_export_private_key.c>"
@@ -511,6 +540,12 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_ASN1WR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1wr.c>"
             "$<$<BOOL:${VSCF_ASN1WR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1wr_internal.c>"
             "$<$<BOOL:${VSCF_ASN1WR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1wr_impl.c>"
+            "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg.c>"
+            "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg_internal.c>"
+            "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg_impl.c>"
+            "$<$<BOOL:${VSCF_ENTROPY_ACCUMULATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_entropy_accumulator.c>"
+            "$<$<BOOL:${VSCF_ENTROPY_ACCUMULATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_entropy_accumulator_internal.c>"
+            "$<$<BOOL:${VSCF_ENTROPY_ACCUMULATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_entropy_accumulator_impl.c>"
             "$<$<BOOL:${VSCF_FAKE_RANDOM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_fake_random.c>"
             "$<$<BOOL:${VSCF_FAKE_RANDOM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_fake_random_internal.c>"
             "$<$<BOOL:${VSCF_FAKE_RANDOM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_fake_random_impl.c>"

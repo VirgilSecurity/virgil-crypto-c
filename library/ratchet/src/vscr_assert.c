@@ -55,6 +55,7 @@
 
 #include "vscr_assert.h"
 
+#include <virgil/crypto/foundation/vscf_error.h>
 #include <stdio.h>
 
 // clang-format on
@@ -74,7 +75,7 @@ static const char *
 vscr_assert_path_basename(const char *path);
 
 //
-//  Active handler for assertion failback.
+//  Active handler for assertion fail.
 //
 static vscr_assert_handler_fn active_handler = vscr_assert_abort;
 
@@ -129,6 +130,18 @@ vscr_assert_path_basename(const char *path) {
     }
 
     return result;
+}
+
+//
+//  Tell assertion handler that error of project 'foundation' is not handled.
+//
+VSCR_PUBLIC void
+vscr_assert_trigger_unhandled_error_of_project_foundation(int error, const char *file, int line) {
+
+    char error_message[48] = {0x00};
+    snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
+
+    vscr_assert_trigger(error_message, file, line);
 }
 
 

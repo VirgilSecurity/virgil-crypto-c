@@ -185,6 +185,15 @@ function class_derive_c_method_use_dependency (class, dependency)
     return make_ref_c (make_id("class", my.class.name, "method", "use", my.dependency.name))
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C interface method that returns API.
+# ---------------------------------------------------------------------------
+function class_derive_c_method_release_dependency (class, dependency)
+    check_arguments (my, "class, dependency", my)
+
+    return make_ref_c (make_id("class", my.class.name, "method", "release", my.dependency.name))
+endfunction
+
 
 # ===========================================================================
 #   Name and type derivation.
@@ -1792,6 +1801,7 @@ function swift_create_method_from_dependency (dependency, impl, destination, wra
         . = swift_format_description (my.dependency) ?
         .name = swift_derive_method_name_str (cat ("set", my.dependency.name))
         .visibility = "public"
+        .throws = my.dependency.has_observers
 
         my.arg_name = swift_derive_argument_name (my.dependency)
 
@@ -1801,9 +1811,18 @@ function swift_create_method_from_dependency (dependency, impl, destination, wra
         endnew
 
         new swift_code to swift_method
-            . = "\
-                $(class_derive_c_method_use_dependency (my.impl, my.dependency))(self.c_ctx, $(my.arg_name:).c_ctx)
-            "
+            if my.dependency.has_observers
+                my.result_var = "let proxyResult = "
+                my.enum_error = swift_derive_enum_error_name (my.wrapper)
+                my.impl_handle_error = "try $(my.enum_error:).handleError(fromC: proxyResult)"
+            endif
+
+            . = format_left("\
+                $(class_derive_c_method_release_dependency (my.impl, my.dependency))(self.c_ctx)
+                $(my.result_var?:)$(class_derive_c_method_use_dependency (my.impl, my.dependency))(self.c_ctx,\
+                        $(my.arg_name:).c_ctx)
+                $(my.impl_handle_error?:)
+            ")
         endnew
     endnew
 endfunction

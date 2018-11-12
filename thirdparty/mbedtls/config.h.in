@@ -40,6 +40,11 @@
 
 
 //
+//  Common
+//
+#cmakedefine MBEDTLS_ERROR_C
+
+//
 //  Required by library vsc::foundation
 //
 #cmakedefine MBEDTLS_SHA256_C
@@ -55,6 +60,13 @@
 #cmakedefine MBEDTLS_ASN1_PARSE_C
 #cmakedefine MBEDTLS_ASN1_WRITE_C
 #cmakedefine MBEDTLS_GENPRIME
+#cmakedefine MBEDTLS_PLATFORM_ENTROPY
+#cmakedefine MBEDTLS_TIMING_C
+#cmakedefine MBEDTLS_HAVEGE_C
+
+#if !defined(MBEDTLS_PLATFORM_ENTROPY)
+#   define MBEDTLS_NO_PLATFORM_ENTROPY
+#endif
 
 //
 //  Required by library vsc::pythia
@@ -69,6 +81,11 @@
 #cmakedefine MBEDTLS_SHA512_ALT
 #cmakedefine MBEDTLS_AES_ALT
 #cmakedefine MBEDTLS_GCM_ALT
+
+//
+//  Non configurable options
+//
+#define MBEDTLS_NO_DEFAULT_ENTROPY_SOURCES
 
 #include "check_config.h"
 

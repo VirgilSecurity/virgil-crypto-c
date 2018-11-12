@@ -56,7 +56,6 @@
 
 #include "vscf_library.h"
 #include "vscf_fake_random.h"
-#include "vscf_fake_random.h"
 
 // clang-format on
 //  @end

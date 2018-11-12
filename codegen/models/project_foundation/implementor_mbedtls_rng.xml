@@ -1,0 +1,88 @@
+<implementor name="mbedtls" is_default="1">
+    Provide implementation based on the library ARM mbedTLS.
+
+
+    <implementation name="entropy accumulator">
+        Implementation based on a simple entropy accumulator.
+
+        <interface name="entropy source"/>
+
+        <require interface="entropy source"/>
+        <require module="mbedtls bridge entropy poll"/>
+
+        <constant name="sources max" value="15" definition="public"/>
+
+        <context>
+            <require header="mbedtls/entropy.h" library="mbedtls"/>
+            <require header="mbedtls/entropy_poll.h" library="mbedtls"/>
+            <property name="ctx" class="mbedtls_entropy_context" library="mbedtls" is_reference="0"/>
+            <property name="sources" interface="entropy source" access="readwrite">
+                <array length="fixed" length_constant=".(class_entropy_accumulator_constant_sources_max)"/>
+            </property>
+            <property name="source count" type="size"/>
+        </context>
+
+        <method name="setup defaults" declaration="public">
+            Setup entropy sources available for the current system.
+        </method>
+
+        <method name="add source" declaration="public">
+            Add given entropy source to the accumulator.
+            Threshold defines minimum number of bytes that must be gathered
+            from the source during accumulation.
+
+            <argument name="source" interface="entropy source" access="retain"/>
+            <argument name="threshold" type="size"/>
+        </method>
+    </implementation>
+
+
+    <implementation name="ctr drbg">
+        Implementation of the RNG using deterministic random bit generators
+        based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).
+
+        <interface name="random"/>
+
+        <require impl="entropy accumulator"/>
+
+        <dependency name="entropy source" interface="entropy source" has_observers="1"/>
+
+        <constant name="reseed interval" value="10000" definition="public">
+            The interval before reseed is performed by default.
+        </constant>
+
+        <constant name="entropy len" value="48" definition="public">
+            The amount of entropy used per seed by default.
+        </constant>
+
+        <context>
+            <require module="mbedtls bridge entropy"/>
+            <require header="mbedtls/ctr_drbg.h" library="mbedtls"/>
+            <property name="ctx" class="mbedtls_ctr_drbg_context" library="mbedtls" is_reference="0"/>
+        </context>
+
+        <method name="setup defaults" declaration="public">
+            Setup entropy sources available for the current system.
+        </method>
+
+        <method name="enable prediction resistance" declaration="public">
+            Force entropy to be gathered at the beginning of every call to
+            the .(class_ctr_drbg_method_random)() method.
+            Note, use this if your entropy source has sufficient throughput.
+        </method>
+
+        <method name="set reseed interval" declaration="public">
+            Sets the reseed interval.
+            Default value is .(class_ctr_drbg_constant_reseed_interval).
+
+            <argument name="interval" type="size"/>
+        </method>
+
+        <method name="set entropy len" declaration="public">
+            Sets the amount of entropy grabbed on each seed or reseed.
+            The default value is .(class_ctr_drbg_constant_entropy_len).
+
+            <argument name="len" type="size"/>
+        </method>
+    </implementation>
+</implementor>

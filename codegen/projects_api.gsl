@@ -133,7 +133,15 @@ function projects_api_reset_project (projects_api, project)
         delete uid
     endfor
 
+    for my.project_info.error_message_getter
+        delete error_message_getter
+    endfor
+
     #   Redefine
+    for my.project.error_message_getter
+        copy error_message_getter to my.project_info
+    endfor
+
     scope my.project_info
         .name = my.project.name
         .namespace = my.project.namespace
@@ -358,6 +366,59 @@ function projects_api_find_definition_header (projects_api, type_name)
     endfor
 
     return
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Update information with given library.
+# ---------------------------------------------------------------------------
+function projects_api_update_library (projects_api, library)
+    check_arguments (my, "projects_api, library", my)
+
+    #   Find / Create new
+    my.library_info = my.projects_api->library (name = my.library.name) ?
+
+    if defined (my.library_info)
+        delete my.library_info
+    endif
+
+    new library to my.projects_api
+        my.library_info = library
+    endnew
+
+    #   Update
+    my.library_info.name = my.library.name
+
+    for my.library.error_message_getter
+        copy error_message_getter to my.library_info
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return information about requested project.
+# ---------------------------------------------------------------------------
+function projects_api_find_project (projects_api, name)
+    check_arguments (my, "projects_api, name", my)
+
+    my.project = my.projects_api->project (project.name = my.name) ?
+    if defined (my.project)
+        return my.project
+    endif
+
+    echo_fatal ("Project \"$(my.name:)\" is not found", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return information about requested library.
+# ---------------------------------------------------------------------------
+function projects_api_find_library (projects_api, name)
+    check_arguments (my, "projects_api, name", my)
+
+    my.library = my.projects_api->library (library.name = my.name) ?
+    if defined (my.library)
+        return my.library
+    endif
+
+    echo_fatal ("Library \"$(my.name:)\" is not found", my)
 endfunction
 
 .endtemplate

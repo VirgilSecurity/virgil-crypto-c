@@ -61,6 +61,7 @@ gsl from "c_module.gsl"
 gsl from "c_module_codegen.gsl"
 
 gsl from "c_module_platform.gsl"
+gsl from "c_module_assert.gsl"
 gsl from "c_module_api.gsl"
 gsl from "c_module_api_private.gsl"
 gsl from "c_module_impl.gsl"
@@ -181,9 +182,15 @@ function process_project (project, features_list, projects_api, echo_level)
     endif
 
     if !my.project.skip_codegen_c
-        #   Create Interface / Implementation high-level C modules.
+        #   Create platfrom introspection module.
         c_module_platform_create (my.project, my.root, my.meta)
 
+        #   Extend assert module, with project specific asserts.
+        for my.root.module where module.name = "assert"
+            c_module_assert_extend (module, my.project, my.projects_api)
+        endfor
+
+        #   Create Interface / Implementation high-level C modules.
         if count (my.root.interface)
             c_module_api_create (my.meta, my.root)
             c_module_api_private_create (my.meta, my.root)
@@ -292,9 +299,10 @@ function process_project (project, features_list, projects_api, echo_level)
 endfunction
 
 
-function process_library (library, features_list, echo_level)
-    check_arguments (my, "library, features_list, echo_level", my)
+function process_library (library, features_list, projects_api, echo_level)
+    check_arguments (my, "library, features_list, projects_api, echo_level", my)
 
+    projects_api_update_library (my.projects_api, my.library)
     library_resolve (my.library)
     features_list_update_from_library (my.features_list, my.library)
 endfunction
@@ -337,17 +345,18 @@ function run_main ()
         item_save_to_file (global.interfaces, "interfaces.xml", main.work_path)
     endif
 
+
     #   Process code generation.
+    for main.library
+        my.loaded_library = load_external_library (library)
+        process_library (my.loaded_library, my.features_list, my.projects_api, main.echo_level)
+    endfor
+
     for main.project where is_false (project.skip_codegen)
         my.loaded_project = load_project_model (project, project)
         my.loaded_project.skip_codegen_c = is_true (project.skip_codegen_c)
         my.loaded_project.skip_codegen_wrappers = is_true (project.skip_codegen_wrappers)
         process_project (my.loaded_project, my.features_list, my.projects_api, main.echo_level)
-    endfor
-
-    for main.library
-        my.loaded_library = load_external_library (library)
-        process_library (my.loaded_library, my.features_list, main.echo_level)
     endfor
 
     #   Create context and populate it with features.

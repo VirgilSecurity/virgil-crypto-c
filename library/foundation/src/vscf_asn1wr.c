@@ -140,8 +140,9 @@ vscf_asn1wr_mbedtls_has_error(vscf_asn1wr_impl_t *asn1wr_impl, int code) {
         break;
 
     default:
-        VSCF_ASSERT(0 && "unhandled mbedtls error");
+        VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(code);
         asn1wr_impl->error = vscf_error_UNHANDLED_THIRDPARTY_ERROR;
+        break;
     }
 
     return true;
