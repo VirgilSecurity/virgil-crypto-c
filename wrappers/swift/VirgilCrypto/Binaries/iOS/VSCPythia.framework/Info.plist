@@ -21,6 +21,6 @@
     <key>CSResourcesFileMapped</key>
     <true/>
     <key>MinimumOSVersion</key>
-    <string>9.0</string>
+    <string>10.0</string>
 </dict>
 </plist>
