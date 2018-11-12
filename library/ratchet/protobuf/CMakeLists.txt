@@ -91,7 +91,7 @@ include (CMakePackageConfigHelpers)
 #
 # Install headers.
 #
-if(VIRGIL_INSTALL_HDRS)
+if(VIRGIL_INSTALL_DEPS_HDRS)
     install(
             DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/"
             DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/virgil/crypto/ratchet"
@@ -103,7 +103,7 @@ endif()
 #
 # Install libraries.
 #
-if(VIRGIL_INSTALL_LIBS)
+if(VIRGIL_INSTALL_DEPS_LIBS)
     install(
             TARGETS ratchet_pb
             EXPORT vsc_ratchet_pbTargets
@@ -116,7 +116,7 @@ endif()
 #
 # Install CMake configuration files.
 #
-if(VIRGIL_INSTALL_CMAKE)
+if(VIRGIL_INSTALL_DEPS_CMAKE)
     #
     # Create 'main' config file
     #
