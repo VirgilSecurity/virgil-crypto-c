@@ -75,7 +75,7 @@ import VirgilCryptoCommon
         vscf_ctr_drbg_delete(self.c_ctx)
     }
 
-    @objc public func setEntropySource(entropySource: EntropySource) {
+    @objc public func setEntropySource(entropySource: EntropySource) throws {
         vscf_ctr_drbg_release_entropy_source(self.c_ctx)
         let proxyResult = vscf_ctr_drbg_use_entropy_source(self.c_ctx, entropySource.c_ctx)
         try FoundationError.handleError(fromC: proxyResult)
