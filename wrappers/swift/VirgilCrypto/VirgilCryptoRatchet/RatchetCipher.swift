@@ -63,14 +63,6 @@ import VirgilCryptoFoundation
         super.init()
     }
 
-    public init(kdfInfo: Data) {
-        let proxyResult = kdfInfo.withUnsafeBytes({ (kdfInfoPointer: UnsafePointer<byte>) -> UnsafeMutablePointer<vscr_ratchet_cipher_t> in
-            return vscr_ratchet_cipher_new_with_members(vsc_data(kdfInfoPointer, kdfInfo.count))
-        })
-
-        self.c_ctx = proxyResult
-    }
-
     /// Release underlying C context.
     deinit {
         vscr_ratchet_cipher_delete(self.c_ctx)
