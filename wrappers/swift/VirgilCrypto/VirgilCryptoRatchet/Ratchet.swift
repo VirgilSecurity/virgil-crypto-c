@@ -78,21 +78,18 @@ import VirgilCryptoFoundation
         vscr_ratchet_use_cipher(self.c_ctx, cipher.c_ctx)
     }
 
-    @objc public func setKdfInfo(kdfInfo: RatchetKdfInfo) {
-        vscr_ratchet_release_kdf_info(self.c_ctx)
-        vscr_ratchet_use_kdf_info(self.c_ctx, kdfInfo.c_ctx)
-    }
-
-    @objc public func respond(sharedSecret: Data, ratchetPublicKey: Data) {
-        sharedSecret.withUnsafeBytes({ (sharedSecretPointer: UnsafePointer<byte>) -> Void in
-            ratchetPublicKey.withUnsafeBytes({ (ratchetPublicKeyPointer: UnsafePointer<byte>) -> Void in
+    @objc public func respond(sharedSecret: Data, ratchetPublicKey: Data, message: RatchetRegularMessage) throws {
+        let proxyResult = sharedSecret.withUnsafeBytes({ (sharedSecretPointer: UnsafePointer<byte>) -> vscr_error_t in
+            ratchetPublicKey.withUnsafeBytes({ (ratchetPublicKeyPointer: UnsafePointer<byte>) -> vscr_error_t in
                 var ratchetPublicKeyBuf = vsc_buffer_new_with_data(vsc_data(ratchetPublicKeyPointer, ratchetPublicKey.count))
                 defer {
                     vsc_buffer_delete(ratchetPublicKeyBuf)
                 }
-                vscr_ratchet_respond(self.c_ctx, vsc_data(sharedSecretPointer, sharedSecret.count), ratchetPublicKeyBuf)
+                return vscr_ratchet_respond(self.c_ctx, vsc_data(sharedSecretPointer, sharedSecret.count), ratchetPublicKeyBuf, message.c_ctx)
             })
         })
+
+        try RatchetError.handleError(fromC: proxyResult)
     }
 
     @objc public func initiate(sharedSecret: Data, ratchetPrivateKey: Data) throws {
@@ -163,5 +160,39 @@ import VirgilCryptoFoundation
         try RatchetError.handleError(fromC: proxyResult)
 
         return plainText
+    }
+
+    @objc public func serializeLen() -> Int {
+        let proxyResult = vscr_ratchet_serialize_len(self.c_ctx)
+
+        return proxyResult
+    }
+
+    @objc public func serialize() throws -> Data {
+        let outputCount = self.serializeLen()
+        var output = Data(count: outputCount)
+        var outputBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(outputBuf)
+        }
+
+        let proxyResult = output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutablePointer<byte>) -> vscr_error_t in
+            vsc_buffer_init(outputBuf)
+            vsc_buffer_use(outputBuf, outputPointer, outputCount)
+            return vscr_ratchet_serialize(self.c_ctx, outputBuf)
+        })
+        output.count = vsc_buffer_len(outputBuf)
+
+        try RatchetError.handleError(fromC: proxyResult)
+
+        return output
+    }
+
+    @objc public static func deserialize(input: Data, errCtx: ErrorCtx) -> Ratchet {
+        let proxyResult = input.withUnsafeBytes({ (inputPointer: UnsafePointer<byte>) in
+            return vscr_ratchet_deserialize(vsc_data(inputPointer, input.count), errCtx.c_ctx)
+        })
+
+        return Ratchet.init(take: proxyResult!)
     }
 }
