@@ -81,6 +81,8 @@ enum vscf_impl_tag_t {
     vscf_impl_tag_ASN1RD,
     vscf_impl_tag_ASN1WR,
     vscf_impl_tag_CTR_DRBG,
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
+    vscf_impl_tag_ED25519_PUBLIC_KEY,
     vscf_impl_tag_ENTROPY_ACCUMULATOR,
     vscf_impl_tag_FAKE_RANDOM,
     vscf_impl_tag_HKDF,
