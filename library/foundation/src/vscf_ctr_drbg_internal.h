@@ -56,7 +56,6 @@
 
 #include "vscf_library.h"
 #include "vscf_ctr_drbg.h"
-#include "vscf_ctr_drbg.h"
 
 // clang-format on
 //  @end

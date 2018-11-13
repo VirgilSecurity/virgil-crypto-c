@@ -24,7 +24,7 @@
             declaration="private"
             definition="private">
 
-        Active handler for assertion failback.
+        Active handler for assertion fail.
 
         <value value=".(class_assert_method_abort)" />
     </variable>

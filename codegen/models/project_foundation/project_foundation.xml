@@ -105,5 +105,12 @@
     <module name="mbedtls bridge entropy"/>
     <module name="mbedtls bridge entropy poll"/>
 
+    <error_message_getter success="0">
+        <require enum="error"/>
+
+        char error_message[48] = {0x00};
+        snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
+    </error_message_getter>
+
     <wrapper lang="swift"/>
 </project>

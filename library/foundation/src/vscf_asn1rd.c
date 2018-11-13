@@ -146,7 +146,7 @@ vscf_asn1rd_mbedtls_has_error(vscf_asn1rd_impl_t *asn1rd_impl, int code) {
         break;
 
     default:
-        VSCF_ASSERT(0 && "unhandled mbedtls error");
+        VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(code);
         asn1rd_impl->error = vscf_error_UNHANDLED_THIRDPARTY_ERROR;
         break;
     }

@@ -1,0 +1,156 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Extend assert module, with project specific asserts.
+# ---------------------------------------------------------------------------
+#   This is a code generator helper built using the iMatix GSL code
+#   generation language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+gsl from "component.gsl"
+gsl from "projects_api.gsl"
+
+
+# ---------------------------------------------------------------------------
+#   Extend assert module, with project specific asserts.
+# ---------------------------------------------------------------------------
+function c_module_assert_extend (module, project, projects_api)
+    check_arguments (my, "module, project, projects_api", my)
+
+    for my.project.require where string_equal (require.feature, "library")
+        my.dependency_id = component_landlord_id (require)
+        my.dependency_name = component_landlord_name (require)
+
+        if defined (require.project)
+            my.dependency = projects_api_find_project (my.projects_api, require.project)
+
+        elsif defined (require.library)
+            my.dependency = projects_api_find_library (my.projects_api, require.library)
+
+        else
+            echo_debug_item (require)
+            echo_fatal ("Unsupported require for feature=\"library\"", my)
+        endif
+
+        if count (my.dependency.error_message_getter)
+            my.message_getter = my.dependency->error_message_getter
+        else
+            next
+        endif
+
+        for my.message_getter.require
+            my.dependency_require = item_copy_to (require, my.module)
+            my.dependency_require.scope = "private"
+            my.dependency_require.$(my.dependency_id) = my.dependency_name
+        endfor
+
+        my.method_name = cat ("trigger unhandled error of", my.dependency_id, my.dependency_name)
+        my.method_ref = ".(c_class_assert_method_$(make_id (my.method_name)))"
+        new method to my.module
+            . = "Tell assertion handler that error of $(my.dependency_id) '$(my.dependency_name:)' is not handled."
+            .name = my.method_name
+
+            new argument to method
+                .name = "error"
+                .type = "integer"
+            endnew
+
+            new argument to method
+                .name = "file"
+                .type = "string"
+            endnew
+
+            new argument to method
+                .name = "line"
+                .type = "integer"
+            endnew
+
+            new code to method
+                my.method_part1 = format_left (my.message_getter.)
+                my.method_part2 = format_left("\
+                    .(c_class_assert_method_trigger)(error_message, file, line);
+                ")
+
+                my.method_code ?= ""
+                my.method_code += my.method_part1 + terminator
+                my.method_code += my.method_part2 + terminator
+
+                . = my.method_code
+            endnew
+        endnew
+
+        my.unhandled_macros_name = cat (my.dependency_id, my.dependency_name, "unhandled error")
+        my.unhandled_macros_ref = ".(c_class_assert_macros_$(make_id (my.unhandled_macros_name)))"
+        new macros to my.module
+            . = "This macros can be used as $(my.dependency_id) '$(my.dependency_name:)' error handlind post-condition."
+            .name = my.unhandled_macros_name
+
+            new code to macros
+                . = "\
+                    #define $(my.unhandled_macros_ref)(error)
+                        do {
+                            .(c_class_assert_macros_assert)((error) != $(my.message_getter.success));
+                            $(my.method_ref)((int)(error), .(c_global_macros_file_path_or_name), __LINE__);
+                        } while (0)
+                "
+            endnew
+        endnew
+
+        my.success_macros_name = cat (my.dependency_id, my.dependency_name, "success")
+        my.success_macros_ref = ".(c_class_assert_macros_$(make_id (my.success_macros_name)))"
+        new macros to my.module
+            . = "\
+                This macros can be used to ensure that $(my.dependency_id) '$(my.dependency_name:)' operation
+                returns success status code.
+            "
+            .name = my.success_macros_name
+
+            new code to macros
+                . = "\
+                    #define $(my.success_macros_ref)(status)
+                        do {
+                            if ((status) != $(my.message_getter.success)) {
+                                $(my.unhandled_macros_ref)(status);
+                            }
+                        } while (0)
+                "
+            endnew
+        endnew
+    endfor
+endfunction
+
+.endtemplate

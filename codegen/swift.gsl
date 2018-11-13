@@ -1801,6 +1801,7 @@ function swift_create_method_from_dependency (dependency, impl, destination, wra
         . = swift_format_description (my.dependency) ?
         .name = swift_derive_method_name_str (cat ("set", my.dependency.name))
         .visibility = "public"
+        .throws = my.dependency.has_observers
 
         my.arg_name = swift_derive_argument_name (my.dependency)
 

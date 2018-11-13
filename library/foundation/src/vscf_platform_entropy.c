@@ -100,9 +100,9 @@ vscf_platform_entropy_gather(vscf_platform_entropy_impl_t *platform_entropy_impl
     VSCF_ASSERT(vsc_buffer_left(out) >= len);
 
     size_t olen = 0;
-    int result = mbedtls_platform_entropy_poll(NULL, vsc_buffer_ptr(out), vsc_buffer_left(out), &olen);
+    int status = mbedtls_platform_entropy_poll(NULL, vsc_buffer_ptr(out), vsc_buffer_left(out), &olen);
 
-    switch (result) {
+    switch (status) {
     case 0:
         vsc_buffer_reserve(out, olen);
         return vscf_SUCCESS;
@@ -111,6 +111,7 @@ vscf_platform_entropy_gather(vscf_platform_entropy_impl_t *platform_entropy_impl
         return vscf_error_ENTROPY_SOURCE_FAILED;
 
     default:
+        VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(status);
         return vscf_error_UNHANDLED_THIRDPARTY_ERROR;
     }
 }

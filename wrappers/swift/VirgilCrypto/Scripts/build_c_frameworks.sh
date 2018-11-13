@@ -114,8 +114,8 @@ command -v cmake >/dev/null 2>&1 || show_error "Required utility CMake is not fo
 
 ROOT_DIR=$(abspath "${PROJECT_DIR}/../../..")
 SRC_DIR="${ROOT_DIR}"
-INSTALL_DIR="${BUILD_DIR}/VSCFrameworks/install"
-BUILD_DIR="${BUILD_DIR}/VSCFrameworks/build"
+INSTALL_DIR="${BUILD_DIR}/VSCFrameworks/${PLATFORM_NAME}/install"
+BUILD_DIR="${BUILD_DIR}/VSCFrameworks/${PLATFORM_NAME}/build"
 PREBUILT_DIR="${PROJECT_DIR}/Binaries"
 IOS_PREBUILT_DIR="${PREBUILT_DIR}/iOS"
 MACOS_PREBUILT_DIR="${PREBUILT_DIR}/macOS"
@@ -132,9 +132,6 @@ mkdir -p "${WATCHOS_PREBUILT_DIR}"
 
 show_info "Go to the build directory and cleanup."
 
-cd "${INSTALL_DIR}" && rm -fr -- *
-cd "${BUILD_DIR}" && rm -fr -- *
-
 CMAKE_ARGS=""
 CMAKE_ARGS+=" -DCMAKE_INSTALL_PREFIX='${INSTALL_DIR}'"
 CMAKE_ARGS+=" -DBUILD_SHARED_LIBS=YES"
@@ -144,6 +141,16 @@ CMAKE_ARGS+=" -DVIRGIL_INSTALL_DEPS_HDRS=NO"
 CMAKE_ARGS+=" -DVIRGIL_INSTALL_DEPS_LIBS=NO"
 CMAKE_ARGS+=" -DVIRGIL_INSTALL_DEPS_CMAKE=NO"
 CMAKE_ARGS+=" -DCMAKE_TOOLCHAIN_FILE='${ROOT_DIR}/cmake/apple.cmake'"
+
+function cleanup_build_dirs {
+    if [ -d "${INSTALL_DIR}" ]; then
+        rm -fr "${INSTALL_DIR}" && mkdir -p "${INSTALL_DIR}"
+    fi
+
+    if [ -d "${BUILD_DIR}" ]; then
+        rm -fr "${BUILD_DIR}" && mkdir -p "${BUILD_DIR}"
+    fi
+}
 
 function build_ios {
     show_info "Build C Frameworks for iOS..."
@@ -157,14 +164,19 @@ function build_ios {
         return 0
     fi
 
+    cleanup_build_dirs
+    cd "${BUILD_DIR}"
+
     rm -fr -- *
     cmake ${CMAKE_ARGS} -DAPPLE_PLATFORM=IOS \
+                        -DIOS_DEPLOYMENT_TARGET=${IPHONEOS_DEPLOYMENT_TARGET} \
                         -DVSCP_MULTI_THREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=lib/dev "${SRC_DIR}"
     make -j8 install
 
     rm -fr -- *
     cmake ${CMAKE_ARGS} -DAPPLE_PLATFORM=IOS_SIM \
+                        -DIOS_DEPLOYMENT_TARGET=${IPHONEOS_DEPLOYMENT_TARGET} \
                         -DVSCP_MULTI_THREAD=OFF \
                         -DCMAKE_INSTALL_LIBDIR=lib/sim "${SRC_DIR}"
     make -j8 install
@@ -190,8 +202,12 @@ function build_tvos {
         return 0
     fi
 
+    cleanup_build_dirs
+    cd "${BUILD_DIR}"
+
     rm -fr -- *
     cmake ${CMAKE_ARGS} -DAPPLE_PLATFORM=TVOS \
+                        -DTVOS_DEPLOYMENT_TARGET=${TVOS_DEPLOYMENT_TARGET} \
                         -DVSCP_MULTI_THREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=lib/dev "${SRC_DIR}"
     make -j8 install
@@ -223,8 +239,12 @@ function build_watchos {
         return 0
     fi
 
+    cleanup_build_dirs
+    cd "${BUILD_DIR}"
+
     rm -fr -- *
     cmake ${CMAKE_ARGS} -DAPPLE_PLATFORM=WATCHOS \
+                        -DWATCHOS_DEPLOYMENT_TARGET=${WATCHOS_DEPLOYMENT_TARGET} \
                         -DVSCP_MULTI_THREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=lib/dev "${SRC_DIR}"
     make -j8 install
@@ -256,8 +276,12 @@ function build_macosx {
         return 0
     fi
 
+    cleanup_build_dirs
+    cd "${BUILD_DIR}"
+
     rm -fr -- *
     cmake ${CMAKE_ARGS} -DAPPLE_PLATFORM=MACOS \
+                        -DMACOS_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET} \
                         -DVSCP_MULTI_THREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=lib/dev "${SRC_DIR}"
     make -j8 install
@@ -278,13 +302,13 @@ case "${PLATFORM_NAME}" in
     "iphonesimulator")
     build_ios
     ;;
-    "appletv")
+    "appletvos")
     build_tvos
     ;;
     "appletvsimulator")
     build_tvos
     ;;
-    "watch")
+    "watchos")
     build_watchos
     ;;
     "watchsimulator")
