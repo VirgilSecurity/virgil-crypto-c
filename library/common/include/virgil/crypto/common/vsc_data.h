@@ -79,7 +79,7 @@ struct vsc_data_t {
     //
     //  Underlying byte array.
     //
-    byte *bytes;
+    const byte *bytes;
     //
     //  Byte array length.
     //

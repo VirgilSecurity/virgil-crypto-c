@@ -37,8 +37,8 @@ import Foundation
 import VSCFoundation
 import VirgilCryptoCommon
 
-/// This is implementation of ED25519
-@objc(VSCFEd25519PublicKey) public class Ed25519PublicKey: NSObject, Key, PublicKey, Verify, ExportPublicKey, ImportPublicKey {
+/// This is implementation of ED25519 public key
+@objc(VSCFEd25519PublicKey) public class Ed25519PublicKey: NSObject, Key, PublicKey, Encrypt, Verify, ExportPublicKey, ImportPublicKey, ComputeSharedKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -78,6 +78,36 @@ import VirgilCryptoCommon
     /// Length of the key in bits.
     @objc public func keyBitlen() -> Int {
         let proxyResult = vscf_ed25519_public_key_key_bitlen(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Encrypt given data.
+    @objc public func encrypt(data: Data) throws -> Data {
+        let outCount = self.encryptedLen(dataLen: data.count)
+        var out = Data(count: outCount)
+        var outBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(outBuf)
+        }
+
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
+            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+                vsc_buffer_init(outBuf)
+                vsc_buffer_use(outBuf, outPointer, outCount)
+                return vscf_ed25519_public_key_encrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
+            })
+        })
+        out.count = vsc_buffer_len(outBuf)
+
+        try FoundationError.handleError(fromC: proxyResult)
+
+        return out
+    }
+
+    /// Calculate required buffer length to hold the encrypted data.
+    @objc public func encryptedLen(dataLen: Int) -> Int {
+        let proxyResult = vscf_ed25519_public_key_encrypted_len(self.c_ctx, dataLen)
 
         return proxyResult
     }
@@ -128,5 +158,34 @@ import VirgilCryptoCommon
         })
 
         try FoundationError.handleError(fromC: proxyResult)
+    }
+
+    /// Compute shared key for 2 asymmetric keys.
+    /// Note, shared key can be used only for symmetric cryptography.
+    @objc public func computeSharedKey(publicKey: PublicKey) throws -> Data {
+        let sharedKeyCount = self.sharedKeyLen()
+        var sharedKey = Data(count: sharedKeyCount)
+        var sharedKeyBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(sharedKeyBuf)
+        }
+
+        let proxyResult = sharedKey.withUnsafeMutableBytes({ (sharedKeyPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+            vsc_buffer_init(sharedKeyBuf)
+            vsc_buffer_use(sharedKeyBuf, sharedKeyPointer, sharedKeyCount)
+            return vscf_ed25519_public_key_compute_shared_key(self.c_ctx, publicKey.c_ctx, sharedKeyBuf)
+        })
+        sharedKey.count = vsc_buffer_len(sharedKeyBuf)
+
+        try FoundationError.handleError(fromC: proxyResult)
+
+        return sharedKey
+    }
+
+    /// Return number of bytes required to hold shared key.
+    @objc public func sharedKeyLen() -> Int {
+        let proxyResult = vscf_ed25519_public_key_shared_key_len(self.c_ctx)
+
+        return proxyResult
     }
 }

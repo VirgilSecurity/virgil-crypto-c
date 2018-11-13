@@ -2,7 +2,7 @@
     Provide implementation based on the library ed25519
     <implementation name="ed25519 public key">
       This is implementation of ED25519 public key
-      <require library="ed25519" feature="ED25519 C"/>
+      <require library="ed25519" feature="library"/>
 
       <context>
         <require header="ed25519/ed25519.h"/>
@@ -26,7 +26,7 @@
 
     <implementation name="ed25519 private key">
       This is implementation of ED25519 private key
-      <require library="ed25519" feature="ED25519 C"/>
+      <require library="ed25519" feature="library"/>
 
       <context>
         <require header="ed25519/ed25519.h"/>

@@ -56,7 +56,6 @@
 
 #include "vscf_library.h"
 #include "vscf_ed25519_private_key.h"
-#include "vscf_ed25519_private_key.h"
 
 // clang-format on
 //  @end

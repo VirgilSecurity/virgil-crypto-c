@@ -161,6 +161,19 @@ VSCF_PUBLIC size_t
 vscf_ed25519_public_key_key_bitlen(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl);
 
 //
+//  Encrypt given data.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_ed25519_public_key_encrypt(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_data_t data,
+        vsc_buffer_t *out);
+
+//
+//  Calculate required buffer length to hold the encrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_ed25519_public_key_encrypted_len(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, size_t data_len);
+
+//
 //  Verify data with given public key and signature.
 //
 VSCF_PUBLIC bool
@@ -184,6 +197,20 @@ vscf_ed25519_public_key_exported_public_key_len(vscf_ed25519_public_key_impl_t *
 //
 VSCF_PUBLIC vscf_error_t
 vscf_ed25519_public_key_import_public_key(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_data_t data);
+
+//
+//  Compute shared key for 2 asymmetric keys.
+//  Note, shared key can be used only for symmetric cryptography.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_ed25519_public_key_compute_shared_key(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl,
+        const vscf_impl_t *public_key, vsc_buffer_t *shared_key);
+
+//
+//  Return number of bytes required to hold shared key.
+//
+VSCF_PUBLIC size_t
+vscf_ed25519_public_key_shared_key_len(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl);
 
 
 // --------------------------------------------------------------------------

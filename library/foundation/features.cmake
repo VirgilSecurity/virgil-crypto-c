@@ -93,6 +93,8 @@ option(VSCF_HKDF "Enable implementation 'hkdf'." ON)
 option(VSCF_KDF1 "Enable implementation 'kdf1'." ON)
 option(VSCF_KDF2 "Enable implementation 'kdf2'." ON)
 option(VSCF_FAKE_RANDOM "Enable implementation 'fake random'." ON)
+option(VSCF_ED25519_PUBLIC_KEY "Enable implementation 'ed25519 public key'." ON)
+option(VSCF_ED25519_PRIVATE_KEY "Enable implementation 'ed25519 private key'." ON)
 option(VSCF_ERROR_CTX "Enable class 'error ctx'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER "Enable class 'mbedtls bignum asn1 writer'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_READER "Enable class 'mbedtls bignum asn1 reader'." ON)
@@ -146,6 +148,8 @@ mark_as_advanced(
         VSCF_KDF1
         VSCF_KDF2
         VSCF_FAKE_RANDOM
+        VSCF_ED25519_PUBLIC_KEY
+        VSCF_ED25519_PRIVATE_KEY
         VSCF_ERROR_CTX
         VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
         VSCF_MBEDTLS_BIGNUM_ASN1_READER
@@ -562,6 +566,24 @@ if(VSCF_KDF2 AND NOT VSCF_HASH_STREAM)
     message("--")
     message("Feature VSCF_KDF2 depends on the feature:")
     message("     VSCF_HASH_STREAM - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ED25519_PUBLIC_KEY AND NOT ED25519_LIBRARY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ED25519_PUBLIC_KEY depends on the feature:")
+    message("     ED25519_LIBRARY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ED25519_PRIVATE_KEY AND NOT ED25519_LIBRARY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ED25519_PRIVATE_KEY depends on the feature:")
+    message("     ED25519_LIBRARY - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

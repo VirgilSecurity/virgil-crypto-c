@@ -137,8 +137,8 @@ vscf_ed25519_private_key_extract_public_key(vscf_ed25519_private_key_impl_t *ed2
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_decrypt(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vsc_data_t data,
-        vsc_buffer_t *out) {
+vscf_ed25519_private_key_decrypt(
+        vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vsc_data_t data, vsc_buffer_t *out) {
 
     //  TODO: This is STUB. Implement me.
 }
@@ -156,8 +156,8 @@ vscf_ed25519_private_key_decrypted_len(vscf_ed25519_private_key_impl_t *ed25519_
 //  Sign data given private key.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_sign(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vsc_data_t data,
-        vsc_buffer_t *signature) {
+vscf_ed25519_private_key_sign(
+        vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vsc_data_t data, vsc_buffer_t *signature) {
 
     //  TODO: This is STUB. Implement me.
 }
@@ -175,8 +175,8 @@ vscf_ed25519_private_key_signature_len(vscf_ed25519_private_key_impl_t *ed25519_
 //  Export private key in the binary format.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_export_private_key(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl,
-        vsc_buffer_t *out) {
+vscf_ed25519_private_key_export_private_key(
+        vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vsc_buffer_t *out) {
 
     //  TODO: This is STUB. Implement me.
 }
@@ -194,8 +194,8 @@ vscf_ed25519_private_key_exported_private_key_len(vscf_ed25519_private_key_impl_
 //  Import private key from the binary format.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_import_private_key(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl,
-        vsc_data_t data) {
+vscf_ed25519_private_key_import_private_key(
+        vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vsc_data_t data) {
 
     //  TODO: This is STUB. Implement me.
 }

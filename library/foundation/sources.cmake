@@ -260,6 +260,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ed25519_private_key.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ed25519_public_key.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -421,6 +426,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ctr_drbg.h>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg_internal.h>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_ctr_drbg_impl.h>"
+            "$<$<BOOL:${VSCF_ED25519_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ed25519_private_key.h>"
+            "$<$<BOOL:${VSCF_ED25519_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ed25519_private_key_internal.h>"
+            "$<$<BOOL:${VSCF_ED25519_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_ed25519_private_key_impl.h>"
             "$<$<BOOL:${VSCF_ED25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ed25519_public_key.h>"
             "$<$<BOOL:${VSCF_ED25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ed25519_public_key_internal.h>"
             "$<$<BOOL:${VSCF_ED25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_ed25519_public_key_impl.h>"
@@ -551,6 +559,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg.c>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg_internal.c>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg_impl.c>"
+            "$<$<BOOL:${VSCF_ED25519_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ed25519_private_key.c>"
+            "$<$<BOOL:${VSCF_ED25519_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ed25519_private_key_internal.c>"
+            "$<$<BOOL:${VSCF_ED25519_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ed25519_private_key_impl.c>"
             "$<$<BOOL:${VSCF_ED25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ed25519_public_key.c>"
             "$<$<BOOL:${VSCF_ED25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ed25519_public_key_internal.c>"
             "$<$<BOOL:${VSCF_ED25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ed25519_public_key_impl.c>"
