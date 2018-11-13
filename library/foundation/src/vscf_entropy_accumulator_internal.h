@@ -56,7 +56,6 @@
 
 #include "vscf_library.h"
 #include "vscf_entropy_accumulator.h"
-#include "vscf_entropy_accumulator.h"
 
 // clang-format on
 //  @end

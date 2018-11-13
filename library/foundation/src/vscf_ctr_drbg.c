@@ -109,10 +109,10 @@ vscf_ctr_drbg_did_setup_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
 
     mbedtls_ctr_drbg_init(&ctr_drbg_impl->ctx);
 
-    int result = mbedtls_ctr_drbg_seed(
+    int status = mbedtls_ctr_drbg_seed(
             &ctr_drbg_impl->ctx, vscf_mbedtls_bridge_entropy, ctr_drbg_impl->entropy_source, NULL, 0);
 
-    switch (result) {
+    switch (status) {
     case 0:
         return vscf_SUCCESS;
 
@@ -120,6 +120,7 @@ vscf_ctr_drbg_did_setup_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
         return vscf_error_ENTROPY_SOURCE_FAILED;
 
     default:
+        VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(status);
         return vscf_error_UNHANDLED_THIRDPARTY_ERROR;
     }
 }
@@ -151,7 +152,7 @@ vscf_ctr_drbg_setup_defaults(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
 
 //
 //  Force entropy to be gathered at the beginning of every call to
-//  the (.class_ctr_drbg_method_random)() method.
+//  the random() method.
 //  Note, use this if your entropy source has sufficient throughput.
 //
 VSCF_PUBLIC void
@@ -199,8 +200,8 @@ vscf_ctr_drbg_random(vscf_ctr_drbg_impl_t *ctr_drbg_impl, size_t data_len, vsc_b
     VSCF_ASSERT_PTR(data);
     VSCF_ASSERT(vsc_buffer_left(data) >= data_len);
 
-    int result = mbedtls_ctr_drbg_random(&ctr_drbg_impl->ctx, vsc_buffer_ptr(data), vsc_buffer_left(data));
-    switch (result) {
+    int status = mbedtls_ctr_drbg_random(&ctr_drbg_impl->ctx, vsc_buffer_ptr(data), vsc_buffer_left(data));
+    switch (status) {
     case 0:
         vsc_buffer_reserve(data, data_len);
         return vscf_SUCCESS;
@@ -212,6 +213,7 @@ vscf_ctr_drbg_random(vscf_ctr_drbg_impl_t *ctr_drbg_impl, size_t data_len, vsc_b
         return vscf_error_RNG_REQUESTED_DATA_TOO_BIG;
 
     default:
+        VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(status);
         return vscf_error_UNHANDLED_THIRDPARTY_ERROR;
     }
 }
@@ -224,9 +226,9 @@ vscf_ctr_drbg_reseed(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
 
     VSCF_ASSERT_PTR(ctr_drbg_impl);
 
-    int result = mbedtls_ctr_drbg_reseed(&ctr_drbg_impl->ctx, NULL, 0);
+    int status = mbedtls_ctr_drbg_reseed(&ctr_drbg_impl->ctx, NULL, 0);
 
-    switch (result) {
+    switch (status) {
     case 0:
         return vscf_SUCCESS;
 
@@ -234,6 +236,7 @@ vscf_ctr_drbg_reseed(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
         return vscf_error_ENTROPY_SOURCE_FAILED;
 
     default:
+        VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(status);
         return vscf_error_UNHANDLED_THIRDPARTY_ERROR;
     }
 }

@@ -1,0 +1,6 @@
+<library
+        name="nanopb"
+        path="../thirdparty/nanopb/">
+
+    External library: https://github.com/nanopb/nanopb
+</library>

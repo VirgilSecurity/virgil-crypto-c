@@ -268,9 +268,10 @@ vscp_pythia_init_ctx(vscp_pythia_t *pythia_ctx) {
                 MBEDTLS_ENTROPY_MIN_HAVEGE, MBEDTLS_ENTROPY_SOURCE_STRONG);
     #endif
 
-        const unsigned char pers[] = "vscp_pythia";
-        size_t pers_len = sizeof(pers);
-        VSCP_ASSERT_OPT(0 == mbedtls_ctr_drbg_seed(&g_rng_ctx, mbedtls_entropy_func, &g_entropy_ctx, pers, pers_len));
+    const unsigned char pers[] = "vscp_pythia";
+    size_t pers_len = sizeof(pers);
+    int status = mbedtls_ctr_drbg_seed(&g_rng_ctx, mbedtls_entropy_func, &g_entropy_ctx, pers, pers_len);
+    VSCP_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
 }
 
 //
@@ -694,5 +695,6 @@ static void
 vscp_pythia_random_handler(byte *out, int out_len, void *ctx) {
 
     VSCP_UNUSED(ctx);
-    VSCP_ASSERT_OPT(0 == mbedtls_ctr_drbg_random(&g_rng_ctx, out, out_len));
+    int status = mbedtls_ctr_drbg_random(&g_rng_ctx, out, out_len);
+    VSCP_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
 }

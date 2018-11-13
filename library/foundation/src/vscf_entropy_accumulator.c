@@ -147,10 +147,10 @@ vscf_entropy_accumulator_add_source(vscf_entropy_accumulator_impl_t *entropy_acc
 
     entropy_accumulator_impl->sources[entropy_accumulator_impl->source_count++] = vscf_impl_copy(source);
 
-    int result = mbedtls_entropy_add_source(&entropy_accumulator_impl->ctx, vscf_mbedtls_bridge_entropy_poll, source,
+    int status = mbedtls_entropy_add_source(&entropy_accumulator_impl->ctx, vscf_mbedtls_bridge_entropy_poll, source,
             threshold, vscf_entropy_source_is_strong(source));
 
-    VSCF_ASSERT(result == 0 && "No more sources can be added.");
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
 }
 
 //
@@ -178,9 +178,9 @@ vscf_entropy_accumulator_gather(vscf_entropy_accumulator_impl_t *entropy_accumul
     VSCF_ASSERT(len <= MBEDTLS_ENTROPY_BLOCK_SIZE);
     VSCF_ASSERT(vsc_buffer_left(out) >= 0);
 
-    int result = mbedtls_entropy_func(&entropy_accumulator_impl->ctx, vsc_buffer_ptr(out), len);
+    int status = mbedtls_entropy_func(&entropy_accumulator_impl->ctx, vsc_buffer_ptr(out), len);
 
-    switch (result) {
+    switch (status) {
     case 0:
         vsc_buffer_reserve(out, len);
         return vscf_SUCCESS;
@@ -189,6 +189,7 @@ vscf_entropy_accumulator_gather(vscf_entropy_accumulator_impl_t *entropy_accumul
         return vscf_error_ENTROPY_SOURCE_FAILED;
 
     default:
+        VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(status);
         return vscf_error_UNHANDLED_THIRDPARTY_ERROR;
     }
 }

@@ -40,6 +40,11 @@
 
 
 //
+//  Common
+//
+#cmakedefine MBEDTLS_ERROR_C
+
+//
 //  Required by library vsc::foundation
 //
 #cmakedefine MBEDTLS_SHA256_C

@@ -75,7 +75,7 @@ import VirgilCryptoCommon
         vscf_ctr_drbg_delete(self.c_ctx)
     }
 
-    @objc public func setEntropySource(entropySource: EntropySource) {
+    @objc public func setEntropySource(entropySource: EntropySource) throws {
         vscf_ctr_drbg_release_entropy_source(self.c_ctx)
         let proxyResult = vscf_ctr_drbg_use_entropy_source(self.c_ctx, entropySource.c_ctx)
         try FoundationError.handleError(fromC: proxyResult)
@@ -87,7 +87,7 @@ import VirgilCryptoCommon
     }
 
     /// Force entropy to be gathered at the beginning of every call to
-    /// the (.class_ctr_drbg_method_random)() method.
+    /// the random() method.
     /// Note, use this if your entropy source has sufficient throughput.
     @objc public func enablePredictionResistance() {
         vscf_ctr_drbg_enable_prediction_resistance(self.c_ctx)
