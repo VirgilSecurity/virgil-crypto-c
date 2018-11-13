@@ -79,3 +79,8 @@ fastlane/test_output
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/
+
+# xcodegen
+#
+# Xcode project file should not be commited, when using xcode utility
+*.xcodeproj/
