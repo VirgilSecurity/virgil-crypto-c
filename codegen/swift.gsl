@@ -649,7 +649,7 @@ function swift_derive_proxy_return_type (method)
     elsif defined (my.return.enum)
         return make_ref_c (make_id ("class", my.return.enum, "enum", my.return.enum))
 
-    elsif defined (my.return.class) | defined (my.return.impl)
+    elsif has_one_of_attribute (my.return, "interface, class, impl")
         return "auto"
     endif
 
