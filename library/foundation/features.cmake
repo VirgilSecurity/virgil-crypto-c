@@ -75,6 +75,8 @@ option(VSCF_EXPORT_PUBLIC_KEY "Enable interface 'export public key'." ON)
 option(VSCF_EXPORT_PRIVATE_KEY "Enable interface 'export private key'." ON)
 option(VSCF_IMPORT_PUBLIC_KEY "Enable interface 'import public key'." ON)
 option(VSCF_IMPORT_PRIVATE_KEY "Enable interface 'import private key'." ON)
+option(VSCF_KEY_SERIALIZER "Enable interface 'key serializer'." ON)
+option(VSCF_KEY_DESERIALIZER "Enable interface 'key deserializer'." ON)
 option(VSCF_ASN1_READER "Enable interface 'asn1 reader'." ON)
 option(VSCF_ASN1_WRITER "Enable interface 'asn1 writer'." ON)
 option(VSCF_SHA224 "Enable implementation 'sha224'." ON)
@@ -128,6 +130,8 @@ mark_as_advanced(
         VSCF_EXPORT_PRIVATE_KEY
         VSCF_IMPORT_PUBLIC_KEY
         VSCF_IMPORT_PRIVATE_KEY
+        VSCF_KEY_SERIALIZER
+        VSCF_KEY_DESERIALIZER
         VSCF_ASN1_READER
         VSCF_ASN1_WRITER
         VSCF_SHA224

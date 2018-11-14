@@ -28,6 +28,8 @@ framework module VSCFoundation {
     header "vscf_import_public_key.h"
     header "vscf_kdf.h"
     header "vscf_key.h"
+    header "vscf_key_deserializer.h"
+    header "vscf_key_serializer.h"
     header "vscf_mac.h"
     header "vscf_mac_info.h"
     header "vscf_mac_stream.h"

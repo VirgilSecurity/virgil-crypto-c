@@ -99,6 +99,8 @@ enum vscf_api_tag_t {
     vscf_api_tag_IMPORT_PUBLIC_KEY,
     vscf_api_tag_KDF,
     vscf_api_tag_KEY,
+    vscf_api_tag_KEY_DESERIALIZER,
+    vscf_api_tag_KEY_SERIALIZER,
     vscf_api_tag_MAC,
     vscf_api_tag_MAC_INFO,
     vscf_api_tag_MAC_STREAM,

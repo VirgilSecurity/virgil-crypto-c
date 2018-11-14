@@ -1,0 +1,21 @@
+<interface name="key deserializer">
+    Public and private key deserialization from an interchangeable format.
+
+    <method name="deserialize public key">
+        Deserialize given public key as an interchangeable format to the object.
+
+        <argument name="public key data" class="data"/>
+        <argument name="error" class="error ctx" access="readonly"/>
+
+        <return interface="public key" access="disown"/>
+    </method>
+
+    <method name="deserialize private key">
+        Deserialize given private key as an interchangeable format to the object.
+
+        <argument name="private key data" class="data"/>
+        <argument name="error" class="error ctx" access="readonly"/>
+
+        <return interface="private key" access="disown"/>
+    </method>
+</interface>
