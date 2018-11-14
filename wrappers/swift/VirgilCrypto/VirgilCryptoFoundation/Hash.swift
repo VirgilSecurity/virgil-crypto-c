@@ -40,6 +40,7 @@ import VirgilCryptoCommon
 /// Provides interface to the stateless hashing (messege digest) algorithms.
 @objc(VSCFHash) public protocol Hash : HashInfo {
 
+    /// Calculate hash over given data.
     @objc func hash(data: Data) -> Data
 }
 

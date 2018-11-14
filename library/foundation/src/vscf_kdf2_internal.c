@@ -88,7 +88,7 @@ static const vscf_kdf_api_t kdf_api = {
     //
     vscf_impl_tag_KDF2,
     //
-    //  Calculate hash over given data.
+    //  Derive key of the requested length from the given data.
     //
     (vscf_kdf_api_derive_fn)vscf_kdf2_derive
 };

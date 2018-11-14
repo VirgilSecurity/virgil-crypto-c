@@ -40,10 +40,13 @@ import VirgilCryptoCommon
 /// Provide interface to calculate hash (message digest) over a stream.
 @objc(VSCFHashStream) public protocol HashStream : HashInfo {
 
+    /// Start a new hashing.
     @objc func start()
 
+    /// Add given data to the hash.
     @objc func update(data: Data)
 
+    /// Accompilsh hashing and return it's result (a message digest).
     @objc func finish() -> Data
 }
 

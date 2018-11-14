@@ -43,6 +43,7 @@ import VirgilCryptoCommon
 /// RFC 3447 Appendix A.1.2.
 @objc(VSCFImportPrivateKey) public protocol ImportPrivateKey : CContext {
 
+    /// Import private key from the binary format.
     @objc func importPrivateKey(data: Data) throws
 }
 

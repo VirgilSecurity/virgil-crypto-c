@@ -40,12 +40,16 @@ import VirgilCryptoCommon
 /// Public nad private key serialization to an interchangeable format.
 @objc(VSCFKeySerializer) public protocol KeySerializer : CContext {
 
+    /// Calculate buffer size enough to hold serialized public key.
     @objc func serializedPublicKeyLen(publicKey: PublicKey) -> Int
 
+    /// Serialize given public key to an interchangeable format.
     @objc func serializePublicKey(publicKey: PublicKey) -> Data
 
+    /// Calculate buffer size enough to hold serialized private key.
     @objc func serializedPrivateKeyLen(privateKey: PrivateKey) -> Int
 
+    /// Serialize given private key to an interchangeable format.
     @objc func serializePrivateKey(privateKey: PrivateKey) -> Data
 }
 

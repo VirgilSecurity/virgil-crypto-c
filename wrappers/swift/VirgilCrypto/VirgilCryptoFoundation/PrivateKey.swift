@@ -40,6 +40,7 @@ import VirgilCryptoCommon
 /// Contains private part of the key.
 @objc(VSCFPrivateKey) public protocol PrivateKey : Key {
 
+    /// Extract public part of the key.
     @objc func extractPublicKey() -> PublicKey
 }
 

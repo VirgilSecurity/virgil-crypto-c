@@ -88,7 +88,7 @@ static const vscf_ex_kdf_api_t ex_kdf_api = {
     //
     vscf_impl_tag_HKDF,
     //
-    //  Calculate hash over given data.
+    //  Derive key of the requested length from the given data, salt and info.
     //
     (vscf_ex_kdf_api_derive_fn)vscf_hkdf_derive
 };

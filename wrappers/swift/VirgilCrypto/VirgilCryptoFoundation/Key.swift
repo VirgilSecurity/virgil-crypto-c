@@ -40,8 +40,10 @@ import VirgilCryptoCommon
 /// Common information about asymmetric key.
 @objc(VSCFKey) public protocol Key : CContext {
 
+    /// Length of the key in bytes.
     @objc func keyLen() -> Int
 
+    /// Length of the key in bits.
     @objc func keyBitlen() -> Int
 }
 
