@@ -43,8 +43,10 @@ import VirgilCryptoCommon
 /// RFC 3447 Appendix A.1.1.
 @objc(VSCFExportPublicKey) public protocol ExportPublicKey : CContext {
 
+    /// Export public key in the binary format.
     @objc func exportPublicKey() throws -> Data
 
+    /// Return length in bytes required to hold exported public key.
     @objc func exportedPublicKeyLen() -> Int
 }
 

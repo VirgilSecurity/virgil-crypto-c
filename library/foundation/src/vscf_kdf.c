@@ -65,7 +65,7 @@
 // --------------------------------------------------------------------------
 
 //
-//  Calculate hash over given data.
+//  Derive key of the requested length from the given data.
 //
 VSCF_PUBLIC void
 vscf_kdf_derive(vscf_impl_t *impl, vsc_data_t data, size_t key_len, vsc_buffer_t *key) {

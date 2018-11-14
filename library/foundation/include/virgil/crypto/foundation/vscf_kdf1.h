@@ -160,7 +160,7 @@ VSCF_PUBLIC void
 vscf_kdf1_release_hash(vscf_kdf1_impl_t *kdf1_impl);
 
 //
-//  Calculate hash over given data.
+//  Derive key of the requested length from the given data.
 //
 VSCF_PUBLIC void
 vscf_kdf1_derive(vscf_kdf1_impl_t *kdf1_impl, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
