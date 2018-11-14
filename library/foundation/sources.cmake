@@ -200,6 +200,16 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_deserializer.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_serializer.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_mac.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -393,6 +403,10 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_KDF}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_kdf_api.h>"
             "$<$<BOOL:${VSCF_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key.h>"
             "$<$<BOOL:${VSCF_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_api.h>"
+            "$<$<BOOL:${VSCF_KEY_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_deserializer.h>"
+            "$<$<BOOL:${VSCF_KEY_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_deserializer_api.h>"
+            "$<$<BOOL:${VSCF_KEY_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_serializer.h>"
+            "$<$<BOOL:${VSCF_KEY_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_serializer_api.h>"
             "$<$<BOOL:${VSCF_MAC}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_mac.h>"
             "$<$<BOOL:${VSCF_MAC}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_mac_api.h>"
             "$<$<BOOL:${VSCF_MAC_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_mac_info.h>"
@@ -520,6 +534,10 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_KDF}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf_api.c>"
             "$<$<BOOL:${VSCF_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key.c>"
             "$<$<BOOL:${VSCF_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_api.c>"
+            "$<$<BOOL:${VSCF_KEY_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_deserializer.c>"
+            "$<$<BOOL:${VSCF_KEY_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_deserializer_api.c>"
+            "$<$<BOOL:${VSCF_KEY_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_serializer.c>"
+            "$<$<BOOL:${VSCF_KEY_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_serializer_api.c>"
             "$<$<BOOL:${VSCF_MAC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mac.c>"
             "$<$<BOOL:${VSCF_MAC}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mac_api.c>"
             "$<$<BOOL:${VSCF_MAC_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mac_info.c>"

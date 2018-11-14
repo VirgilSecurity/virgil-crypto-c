@@ -1,0 +1,46 @@
+<interface name="key serializer">
+    Public nad private key serialization to an interchangeable format.
+
+    <method name="serialized public key len">
+        Calculate buffer size enough to hold serialized public key.
+
+        <argument name="public key" interface="public key"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="serialize public key">
+        Serialize given public key to an interchangeable format.
+
+        <argument name="public key" interface="public key" access="readonly"/>
+
+        <argument name="out" class="buffer">
+            <length method="serialized public key len">
+                <proxy argument="public key" to="public key"/>
+            </length>
+        </argument>
+    </method>
+
+
+    <method name="serialized private key len">
+        Calculate buffer size enough to hold serialized private key.
+
+        <argument name="private key" interface="private key"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="serialize private key">
+        Serialize given private key to an interchangeable format.
+
+        <argument name="private key" interface="private key" access="readonly"/>
+
+        <argument name="out" class="buffer">
+            <length method="serialized private key len">
+                <proxy argument="private key" to="private key"/>
+            </length>
+        </argument>
+    </method>
+</interface>

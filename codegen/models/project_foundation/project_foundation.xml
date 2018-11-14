@@ -86,6 +86,8 @@
     <interface name="export private key"/>
     <interface name="import public key"/>
     <interface name="import private key"/>
+    <interface name="key serializer"/>
+    <interface name="key deserializer"/>
 
     <interface name="asn1 reader"/>
     <interface name="asn1 writer"/>
