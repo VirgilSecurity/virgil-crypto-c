@@ -1,0 +1,6 @@
+<enum name="error" definition="public">
+    <constant name="success" of_class="global" value="0">
+        No errors was occurred.
+    </constant>
+
+</enum>
