@@ -1,4 +1,14 @@
-<main script="main.gsl" work_path="generated/main" echo_level="debug">
+<project
+    name="phe"
+    brief="Implementation of the phe (password-hardened encryption) protocol."
+    namespace="virgil crypto phe"
+    framework="VSCPhe"
+    prefix="vsce"
+    path="../library/phe"
+    work_path = "generated/phe/">
+
+    <version major = "0" minor = "1" patch = "0" />
+
     <license>
         Copyright (C) 2015-2018 Virgil Security Inc.
 
@@ -35,13 +45,14 @@
         Lead Maintainer: Virgil Security Inc. &lt;support@virgilsecurity.com&gt;
     </license>
 
-    <library name="mbedtls"/>
-    <library name="ed25519"/>
-    <library name="nanopb"/>
+    <require project="common" feature="library"/>
+    <require project="foundation" feature="library"/>
 
-    <project name="common" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
-    <project name="foundation" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
-    <project name="pythia" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
-    <project name="ratchet" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
-    <project name="phe" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
-</main>
+    <module name="assert" from="shared"/>
+    <module name="library" from="shared"/>
+    <module name="memory" from="shared"/>
+
+    <enum name="error"/>
+
+    <class name="error"/>
+</project>
