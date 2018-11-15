@@ -65,9 +65,12 @@ target_include_directories(ratchet_pb
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
 
+add_definitions(-DPB_FIELD_32BIT)
+
 target_protobuf_sources(ratchet_pb
         "${CMAKE_CURRENT_SOURCE_DIR}/Boss.proto"
         "${CMAKE_CURRENT_SOURCE_DIR}/Person.proto"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Message.proto"
         )
 
 target_link_libraries(ratchet_pb nanopb::protobuf-nanopb)
