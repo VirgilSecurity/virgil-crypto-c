@@ -47,15 +47,11 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains common functionality for all 'implementation' object.
-//  It is also enumerate all available implementations within crypto libary.
+//  Defines enumeration of possible asymmetric key algorithms.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_IMPL_H_INCLUDED
-#define VSCF_IMPL_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_api.h"
+#ifndef VSCF_KEY_ALG_H_INCLUDED
+#define VSCF_KEY_ALG_H_INCLUDED
 
 // clang-format on
 //  @end
@@ -73,77 +69,13 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible implementations within crypto library.
+//  Defines enumeration of possible asymmetric key algorithms.
 //
-enum vscf_impl_tag_t {
-    vscf_impl_tag_BEGIN = 0,
-    vscf_impl_tag_AES256_GCM,
-    vscf_impl_tag_ASN1RD,
-    vscf_impl_tag_ASN1WR,
-    vscf_impl_tag_CTR_DRBG,
-    vscf_impl_tag_ENTROPY_ACCUMULATOR,
-    vscf_impl_tag_FAKE_RANDOM,
-    vscf_impl_tag_HKDF,
-    vscf_impl_tag_HMAC,
-    vscf_impl_tag_KDF1,
-    vscf_impl_tag_KDF2,
-    vscf_impl_tag_PKCS8_DER_DESERIALIZER,
-    vscf_impl_tag_PKCS8_DER_SERIALIZER,
-    vscf_impl_tag_PKCS8_DESERIALIZER,
-    vscf_impl_tag_PKCS8_SERIALIZER,
-    vscf_impl_tag_RSA_PRIVATE_KEY,
-    vscf_impl_tag_RSA_PUBLIC_KEY,
-    vscf_impl_tag_SHA224,
-    vscf_impl_tag_SHA256,
-    vscf_impl_tag_SHA384,
-    vscf_impl_tag_SHA512,
-    vscf_impl_tag_END
+enum vscf_key_alg_t {
+    vscf_key_alg_NONE = 0,
+    vscf_key_alg_RSA
 };
-typedef enum vscf_impl_tag_t vscf_impl_tag_t;
-
-//
-//  Generic type for any 'implementation'.
-//
-typedef struct vscf_impl_t vscf_impl_t;
-
-//
-//  Return 'API' object that is fulfiled with a meta information
-//  specific to the given implementation object.
-//  Or NULL if object does not implement requested 'API'.
-//
-VSCF_PUBLIC const vscf_api_t *
-vscf_impl_api(const vscf_impl_t *impl, vscf_api_tag_t api_tag);
-
-//
-//  Return unique 'Implementation TAG'.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_impl_tag(vscf_impl_t *impl);
-
-//
-//  Cleanup implementation object and it's dependencies.
-//
-VSCF_PUBLIC void
-vscf_impl_cleanup(vscf_impl_t *impl);
-
-//
-//  Delete implementation object and it's dependencies.
-//
-VSCF_PUBLIC void
-vscf_impl_delete(vscf_impl_t *impl);
-
-//
-//  Destroy implementation object and it's dependencies.
-//
-VSCF_PUBLIC void
-vscf_impl_destroy(vscf_impl_t **impl_ref);
-
-//
-//  Copy implementation object by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_impl_copy(vscf_impl_t *impl);
+typedef enum vscf_key_alg_t vscf_key_alg_t;
 
 
 // --------------------------------------------------------------------------
@@ -159,5 +91,5 @@ vscf_impl_copy(vscf_impl_t *impl);
 
 
 //  @footer
-#endif // VSCF_IMPL_H_INCLUDED
+#endif // VSCF_KEY_ALG_H_INCLUDED
 //  @end

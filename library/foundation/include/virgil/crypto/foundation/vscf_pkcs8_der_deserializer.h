@@ -47,25 +47,22 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface 'private key' API.
+//  This module contains 'pkcs8 der deserializer' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_PRIVATE_KEY_API_H_INCLUDED
-#define VSCF_PRIVATE_KEY_API_H_INCLUDED
+#ifndef VSCF_PKCS8_DER_DESERIALIZER_H_INCLUDED
+#define VSCF_PKCS8_DER_DESERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_api.h"
+#include "vscf_error_ctx.h"
+#include "vscf_raw_key.h"
 #include "vscf_impl.h"
-#include "vscf_key.h"
-#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_data.h>
 #endif
 
@@ -85,83 +82,77 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Extract public part of the key.
+//  Handles implementation details.
 //
-typedef vscf_impl_t * (*vscf_private_key_api_extract_public_key_fn)(vscf_impl_t *impl);
+typedef struct vscf_pkcs8_der_deserializer_impl_t vscf_pkcs8_der_deserializer_impl_t;
 
 //
-//  Callback. Export private key in the binary format.
+//  Return size of 'vscf_pkcs8_der_deserializer_impl_t' type.
 //
-//          Binary format must be defined in the key specification.
-//          For instance, RSA private key must be exported in format defined in
-//          RFC 3447 Appendix A.1.2.
-//
-typedef vscf_error_t (*vscf_private_key_api_export_private_key_fn)(vscf_impl_t *impl, vsc_buffer_t *out);
+VSCF_PUBLIC size_t
+vscf_pkcs8_der_deserializer_impl_size(void);
 
 //
-//  Callback. Return length in bytes required to hold exported private key.
+//  Cast to the 'vscf_impl_t' type.
 //
-typedef size_t (*vscf_private_key_api_exported_private_key_len_fn)(vscf_impl_t *impl);
+VSCF_PUBLIC vscf_impl_t *
+vscf_pkcs8_der_deserializer_impl(vscf_pkcs8_der_deserializer_impl_t *pkcs8_der_deserializer_impl);
 
 //
-//  Callback. Import private key from the binary format.
+//  Perform initialization of preallocated implementation context.
 //
-//          Binary format must be defined in the key specification.
-//          For instance, RSA private key must be imported from the format defined in
-//          RFC 3447 Appendix A.1.2.
-//
-typedef vscf_error_t (*vscf_private_key_api_import_private_key_fn)(vscf_impl_t *impl, vsc_data_t data);
+VSCF_PUBLIC void
+vscf_pkcs8_der_deserializer_init(vscf_pkcs8_der_deserializer_impl_t *pkcs8_der_deserializer_impl);
 
 //
-//  Contains API requirements of the interface 'private key'.
+//  Cleanup implementation context and release dependencies.
+//  This is a reverse action of the function 'vscf_pkcs8_der_deserializer_init()'.
 //
-struct vscf_private_key_api_t {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'private_key' MUST be equal to the 'vscf_api_tag_PRIVATE_KEY'.
-    //
-    vscf_api_tag_t api_tag;
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_t impl_tag;
-    //
-    //  Link to the inherited interface API 'key'.
-    //
-    const vscf_key_api_t *key_api;
-    //
-    //  Extract public part of the key.
-    //
-    vscf_private_key_api_extract_public_key_fn extract_public_key_cb;
-    //
-    //  Export private key in the binary format.
-    //
-    //  Binary format must be defined in the key specification.
-    //  For instance, RSA private key must be exported in format defined in
-    //  RFC 3447 Appendix A.1.2.
-    //
-    vscf_private_key_api_export_private_key_fn export_private_key_cb;
-    //
-    //  Return length in bytes required to hold exported private key.
-    //
-    vscf_private_key_api_exported_private_key_len_fn exported_private_key_len_cb;
-    //
-    //  Import private key from the binary format.
-    //
-    //  Binary format must be defined in the key specification.
-    //  For instance, RSA private key must be imported from the format defined in
-    //  RFC 3447 Appendix A.1.2.
-    //
-    vscf_private_key_api_import_private_key_fn import_private_key_cb;
-    //
-    //  Define whether a private key can be exported or not.
-    //
-    bool can_export_private_key;
-    //
-    //  Define whether a private key can be imported or not.
-    //
-    bool can_import_private_key;
-};
+VSCF_PUBLIC void
+vscf_pkcs8_der_deserializer_cleanup(vscf_pkcs8_der_deserializer_impl_t *pkcs8_der_deserializer_impl);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
+//
+VSCF_PUBLIC vscf_pkcs8_der_deserializer_impl_t *
+vscf_pkcs8_der_deserializer_new(void);
+
+//
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_pkcs8_der_deserializer_new()'.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_der_deserializer_delete(vscf_pkcs8_der_deserializer_impl_t *pkcs8_der_deserializer_impl);
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_pkcs8_der_deserializer_new()'.
+//  Given reference is nullified.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_der_deserializer_destroy(vscf_pkcs8_der_deserializer_impl_t **pkcs8_der_deserializer_impl_ref);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_pkcs8_der_deserializer_impl_t *
+vscf_pkcs8_der_deserializer_copy(vscf_pkcs8_der_deserializer_impl_t *pkcs8_der_deserializer_impl);
+
+//
+//  Deserialize given public key as an interchangeable format to the object.
+//
+VSCF_PUBLIC vscf_raw_key_t *
+vscf_pkcs8_der_deserializer_deserialize_public_key(vscf_pkcs8_der_deserializer_impl_t *pkcs8_der_deserializer_impl,
+        vsc_data_t public_key_data, vscf_error_ctx_t *error);
+
+//
+//  Deserialize given private key as an interchangeable format to the object.
+//
+VSCF_PUBLIC vscf_raw_key_t *
+vscf_pkcs8_der_deserializer_deserialize_private_key(vscf_pkcs8_der_deserializer_impl_t *pkcs8_der_deserializer_impl,
+        vsc_data_t private_key_data, vscf_error_ctx_t *error);
 
 
 // --------------------------------------------------------------------------
@@ -177,5 +168,5 @@ struct vscf_private_key_api_t {
 
 
 //  @footer
-#endif // VSCF_PRIVATE_KEY_API_H_INCLUDED
+#endif // VSCF_PKCS8_DER_DESERIALIZER_H_INCLUDED
 //  @end

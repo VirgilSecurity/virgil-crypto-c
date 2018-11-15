@@ -41,10 +41,10 @@ import VirgilCryptoCommon
 @objc(VSCFKeyDeserializer) public protocol KeyDeserializer : CContext {
 
     /// Deserialize given public key as an interchangeable format to the object.
-    @objc func deserializePublicKey(publicKeyData: Data, error: ErrorCtx) -> PublicKey
+    @objc func deserializePublicKey(publicKeyData: Data, error: ErrorCtx) -> RawKey
 
     /// Deserialize given private key as an interchangeable format to the object.
-    @objc func deserializePrivateKey(privateKeyData: Data, error: ErrorCtx) -> PrivateKey
+    @objc func deserializePrivateKey(privateKeyData: Data, error: ErrorCtx) -> RawKey
 }
 
 /// Implement interface methods
@@ -65,20 +65,20 @@ import VirgilCryptoCommon
     }
 
     /// Deserialize given public key as an interchangeable format to the object.
-    @objc public func deserializePublicKey(publicKeyData: Data, error: ErrorCtx) -> PublicKey {
+    @objc public func deserializePublicKey(publicKeyData: Data, error: ErrorCtx) -> RawKey {
         let proxyResult = publicKeyData.withUnsafeBytes({ (publicKeyDataPointer: UnsafePointer<byte>) in
             return vscf_key_deserializer_deserialize_public_key(self.c_ctx, vsc_data(publicKeyDataPointer, publicKeyData.count), error.c_ctx)
         })
 
-        return PublicKeyProxy.init(c_ctx: proxyResult!)
+        return RawKey.init(take: proxyResult!)
     }
 
     /// Deserialize given private key as an interchangeable format to the object.
-    @objc public func deserializePrivateKey(privateKeyData: Data, error: ErrorCtx) -> PrivateKey {
+    @objc public func deserializePrivateKey(privateKeyData: Data, error: ErrorCtx) -> RawKey {
         let proxyResult = privateKeyData.withUnsafeBytes({ (privateKeyDataPointer: UnsafePointer<byte>) in
             return vscf_key_deserializer_deserialize_private_key(self.c_ctx, vsc_data(privateKeyDataPointer, privateKeyData.count), error.c_ctx)
         })
 
-        return PrivateKeyProxy.init(c_ctx: proxyResult!)
+        return RawKey.init(take: proxyResult!)
     }
 }

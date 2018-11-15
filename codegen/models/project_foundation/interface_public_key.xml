@@ -2,4 +2,51 @@
     Contains public part of the key.
 
     <inherit interface="key"/>
+
+
+    <!-- Export -->
+    <constant name="can export public key" type="boolean">
+        Define whether a public key can be exported or not.
+    </constant>
+
+
+    <method name="export public key">
+        Export public key in the binary format.
+
+        Binary format must be defined in the key specification.
+        For instance, RSA public key must be exported in format defined in
+        RFC 3447 Appendix A.1.1.
+
+        <argument name="out" class="buffer">
+            <length method="exported public key len"/>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+
+
+    <method name="exported public key len">
+        Return length in bytes required to hold exported public key.
+
+        <return type="size"/>
+    </method>
+
+
+    <!-- Import -->
+    <constant name="can import public key" type="boolean">
+        Defines whether a public key can be imported or not.
+    </constant>
+
+
+    <method name="import public key">
+        Import public key from the binary format.
+
+        Binary format must be defined in the key specification.
+        For instance, RSA public key must be imported from the format defined in
+        RFC 3447 Appendix A.1.1.
+
+        <argument name="data" class="data"/>
+
+        <return enum="error"/>
+    </method>
 </interface>

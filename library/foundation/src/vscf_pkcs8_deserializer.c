@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Common information about asymmetric key.
+//  This module contains 'pkcs8 deserializer' implementation.
 // --------------------------------------------------------------------------
 
 
@@ -50,9 +50,13 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_key.h"
+#include "vscf_pkcs8_deserializer.h"
 #include "vscf_assert.h"
-#include "vscf_key_api.h"
+#include "vscf_memory.h"
+#include "vscf_public_key.h"
+#include "vscf_private_key.h"
+#include "vscf_pkcs8_deserializer_impl.h"
+#include "vscf_pkcs8_deserializer_internal.h"
 
 // clang-format on
 //  @end
@@ -64,93 +68,66 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Return implemented asymmetric key algorithm type.
-//
-VSCF_PUBLIC vscf_key_alg_t
-vscf_key_alg(vscf_impl_t *impl) {
-
-    const vscf_key_api_t *key_api = vscf_key_api (impl);
-    VSCF_ASSERT_PTR (key_api);
-
-    VSCF_ASSERT_PTR (key_api->alg_cb);
-    return key_api->alg_cb (impl);
-}
-
-//
-//  Length of the key in bytes.
-//
-VSCF_PUBLIC size_t
-vscf_key_key_len(vscf_impl_t *impl) {
-
-    const vscf_key_api_t *key_api = vscf_key_api (impl);
-    VSCF_ASSERT_PTR (key_api);
-
-    VSCF_ASSERT_PTR (key_api->key_len_cb);
-    return key_api->key_len_cb (impl);
-}
-
-//
-//  Length of the key in bits.
-//
-VSCF_PUBLIC size_t
-vscf_key_key_bitlen(vscf_impl_t *impl) {
-
-    const vscf_key_api_t *key_api = vscf_key_api (impl);
-    VSCF_ASSERT_PTR (key_api);
-
-    VSCF_ASSERT_PTR (key_api->key_bitlen_cb);
-    return key_api->key_bitlen_cb (impl);
-}
-
-//
-//  Return key API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_key_api_t *
-vscf_key_api(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_KEY);
-    return (const vscf_key_api_t *) api;
-}
-
-//
-//  Check if given object implements interface 'key'.
-//
-VSCF_PUBLIC bool
-vscf_key_is_implemented(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    return vscf_impl_api (impl, vscf_api_tag_KEY) != NULL;
-}
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_key_api_tag(const vscf_key_api_t *key_api) {
-
-    VSCF_ASSERT_PTR (key_api);
-
-    return key_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_key_impl_tag(const vscf_key_api_t *key_api) {
-
-    VSCF_ASSERT_PTR (key_api);
-
-    return key_api->impl_tag;
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
+
+//
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_pkcs8_deserializer_init() is called.
+//  Note, that context is already zeroed.
+//
+VSCF_PRIVATE void
+vscf_pkcs8_deserializer_init_ctx(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl) {
+
+    VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
+
+    pkcs8_deserializer_impl->der_deserializer = vscf_pkcs8_der_deserializer_new();
+}
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_pkcs8_deserializer_cleanup_ctx(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl) {
+
+    VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
+
+    vscf_pkcs8_der_deserializer_destroy(&pkcs8_deserializer_impl->der_deserializer);
+}
+
+//
+//  Deserialize given public key as an interchangeable format to the object.
+//
+VSCF_PUBLIC vscf_raw_key_t *
+vscf_pkcs8_deserializer_deserialize_public_key(
+        vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl, vsc_data_t public_key_data, vscf_error_ctx_t *error) {
+
+    VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
+    VSCF_ASSERT(vsc_data_is_valid(public_key_data));
+
+    VSCF_UNUSED(error);
+    //  TODO: This is STUB. Implement me.
+    return NULL;
+}
+
+//
+//  Deserialize given private key as an interchangeable format to the object.
+//
+VSCF_PUBLIC vscf_raw_key_t *
+vscf_pkcs8_deserializer_deserialize_private_key(
+        vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl, vsc_data_t private_key_data, vscf_error_ctx_t *error) {
+
+    VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
+    VSCF_ASSERT(vsc_data_is_valid(private_key_data));
+
+    VSCF_UNUSED(error);
+    //  TODO: This is STUB. Implement me.
+    return NULL;
+}

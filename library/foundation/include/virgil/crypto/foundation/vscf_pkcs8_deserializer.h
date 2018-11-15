@@ -47,16 +47,16 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface 'import private key' API.
+//  This module contains 'pkcs8 deserializer' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_IMPORT_PRIVATE_KEY_API_H_INCLUDED
-#define VSCF_IMPORT_PRIVATE_KEY_API_H_INCLUDED
+#ifndef VSCF_PKCS8_DESERIALIZER_H_INCLUDED
+#define VSCF_PKCS8_DESERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_api.h"
+#include "vscf_error_ctx.h"
+#include "vscf_raw_key.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -82,28 +82,77 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Import private key from the binary format.
+//  Handles implementation details.
 //
-typedef vscf_error_t (*vscf_import_private_key_api_import_private_key_fn)(vscf_impl_t *impl, vsc_data_t data);
+typedef struct vscf_pkcs8_deserializer_impl_t vscf_pkcs8_deserializer_impl_t;
 
 //
-//  Contains API requirements of the interface 'import private key'.
+//  Return size of 'vscf_pkcs8_deserializer_impl_t' type.
 //
-struct vscf_import_private_key_api_t {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'import_private_key' MUST be equal to the 'vscf_api_tag_IMPORT_PRIVATE_KEY'.
-    //
-    vscf_api_tag_t api_tag;
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_t impl_tag;
-    //
-    //  Import private key from the binary format.
-    //
-    vscf_import_private_key_api_import_private_key_fn import_private_key_cb;
-};
+VSCF_PUBLIC size_t
+vscf_pkcs8_deserializer_impl_size(void);
+
+//
+//  Cast to the 'vscf_impl_t' type.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_pkcs8_deserializer_impl(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl);
+
+//
+//  Perform initialization of preallocated implementation context.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_deserializer_init(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl);
+
+//
+//  Cleanup implementation context and release dependencies.
+//  This is a reverse action of the function 'vscf_pkcs8_deserializer_init()'.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_deserializer_cleanup(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
+//
+VSCF_PUBLIC vscf_pkcs8_deserializer_impl_t *
+vscf_pkcs8_deserializer_new(void);
+
+//
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_pkcs8_deserializer_new()'.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_deserializer_delete(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl);
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_pkcs8_deserializer_new()'.
+//  Given reference is nullified.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_deserializer_destroy(vscf_pkcs8_deserializer_impl_t **pkcs8_deserializer_impl_ref);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_pkcs8_deserializer_impl_t *
+vscf_pkcs8_deserializer_copy(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl);
+
+//
+//  Deserialize given public key as an interchangeable format to the object.
+//
+VSCF_PUBLIC vscf_raw_key_t *
+vscf_pkcs8_deserializer_deserialize_public_key(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl,
+        vsc_data_t public_key_data, vscf_error_ctx_t *error);
+
+//
+//  Deserialize given private key as an interchangeable format to the object.
+//
+VSCF_PUBLIC vscf_raw_key_t *
+vscf_pkcs8_deserializer_deserialize_private_key(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl,
+        vsc_data_t private_key_data, vscf_error_ctx_t *error);
 
 
 // --------------------------------------------------------------------------
@@ -119,5 +168,5 @@ struct vscf_import_private_key_api_t {
 
 
 //  @footer
-#endif // VSCF_IMPORT_PRIVATE_KEY_API_H_INCLUDED
+#endif // VSCF_PKCS8_DESERIALIZER_H_INCLUDED
 //  @end

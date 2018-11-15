@@ -37,15 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Provide interface for importing private key from the binary format.
-//  Binary format must be defined in the key specification.
-//  For instance, RSA private key must be imported from the format defined in
-//  RFC 3447 Appendix A.1.2.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -53,12 +44,33 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_import_private_key.h"
-#include "vscf_assert.h"
-#include "vscf_import_private_key_api.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'raw key' types definition.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_RAW_KEY_DEFS_H_INCLUDED
+#define VSCF_RAW_KEY_DEFS_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_key_alg.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -68,66 +80,36 @@
 // --------------------------------------------------------------------------
 
 //
-//  Import private key from the binary format.
+//  Handle 'raw key' context.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_import_private_key(vscf_impl_t *impl, vsc_data_t data) {
+struct vscf_raw_key_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscf_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
 
-    const vscf_import_private_key_api_t *import_private_key_api = vscf_import_private_key_api (impl);
-    VSCF_ASSERT_PTR (import_private_key_api);
+    vscf_key_alg_t alg;
 
-    VSCF_ASSERT_PTR (import_private_key_api->import_private_key_cb);
-    return import_private_key_api->import_private_key_cb (impl, data);
-}
-
-//
-//  Return import private key API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_import_private_key_api_t *
-vscf_import_private_key_api(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_IMPORT_PRIVATE_KEY);
-    return (const vscf_import_private_key_api_t *) api;
-}
-
-//
-//  Check if given object implements interface 'import private key'.
-//
-VSCF_PUBLIC bool
-vscf_import_private_key_is_implemented(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    return vscf_impl_api (impl, vscf_api_tag_IMPORT_PRIVATE_KEY) != NULL;
-}
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_import_private_key_api_tag(const vscf_import_private_key_api_t *import_private_key_api) {
-
-    VSCF_ASSERT_PTR (import_private_key_api);
-
-    return import_private_key_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_import_private_key_impl_tag(const vscf_import_private_key_api_t *import_private_key_api) {
-
-    VSCF_ASSERT_PTR (import_private_key_api);
-
-    return import_private_key_api->impl_tag;
-}
+    vsc_buffer_t *bytes;
+};
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_RAW_KEY_DEFS_H_INCLUDED
 //  @end

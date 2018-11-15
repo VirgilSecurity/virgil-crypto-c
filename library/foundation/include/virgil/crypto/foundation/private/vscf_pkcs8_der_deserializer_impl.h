@@ -37,15 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Provide interface for importing public key from the binary format.
-//  Binary format must be defined in the key specification.
-//  For instance, RSA public key must be imported from the format defined in
-//  RFC 3447 Appendix A.1.1.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -53,12 +44,29 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_import_public_key.h"
-#include "vscf_assert.h"
-#include "vscf_import_public_key_api.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'pkcs8 der deserializer' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_PKCS8_DER_DESERIALIZER_IMPL_H_INCLUDED
+#define VSCF_PKCS8_DER_DESERIALIZER_IMPL_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_impl_private.h"
+#include "vscf_pkcs8_der_deserializer.h"
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -68,66 +76,32 @@
 // --------------------------------------------------------------------------
 
 //
-//  Import public key from the binary format.
+//  Handles implementation details.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_import_public_key(vscf_impl_t *impl, vsc_data_t data) {
-
-    const vscf_import_public_key_api_t *import_public_key_api = vscf_import_public_key_api (impl);
-    VSCF_ASSERT_PTR (import_public_key_api);
-
-    VSCF_ASSERT_PTR (import_public_key_api->import_public_key_cb);
-    return import_public_key_api->import_public_key_cb (impl, data);
-}
-
-//
-//  Return import public key API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_import_public_key_api_t *
-vscf_import_public_key_api(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_IMPORT_PUBLIC_KEY);
-    return (const vscf_import_public_key_api_t *) api;
-}
-
-//
-//  Check if given object implements interface 'import public key'.
-//
-VSCF_PUBLIC bool
-vscf_import_public_key_is_implemented(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    return vscf_impl_api (impl, vscf_api_tag_IMPORT_PUBLIC_KEY) != NULL;
-}
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_import_public_key_api_tag(const vscf_import_public_key_api_t *import_public_key_api) {
-
-    VSCF_ASSERT_PTR (import_public_key_api);
-
-    return import_public_key_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_import_public_key_impl_tag(const vscf_import_public_key_api_t *import_public_key_api) {
-
-    VSCF_ASSERT_PTR (import_public_key_api);
-
-    return import_public_key_api->impl_tag;
-}
+struct vscf_pkcs8_der_deserializer_impl_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+};
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_PKCS8_DER_DESERIALIZER_IMPL_H_INCLUDED
 //  @end

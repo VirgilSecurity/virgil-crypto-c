@@ -131,6 +131,16 @@ vscf_rsa_private_key_set_keygen_params(
 }
 
 //
+//  Return implemented asymmetric key algorithm type.
+//
+VSCF_PUBLIC vscf_key_alg_t
+vscf_rsa_private_key_alg(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
+
+    VSCF_ASSERT_PTR(rsa_private_key_impl);
+    return vscf_key_alg_RSA;
+}
+
+//
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
@@ -165,48 +175,6 @@ vscf_rsa_private_key_generate_key(vscf_rsa_private_key_impl_t *rsa_private_key_i
             rsa_private_key_impl->random, rsa_private_key_impl->gen_bitlen, rsa_private_key_impl->gen_exponent);
 
     return ret == 0 ? vscf_SUCCESS : vscf_error_KEY_GENERATION_FAILED;
-}
-
-//
-//  Extract public part of the key.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_rsa_private_key_extract_public_key(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
-
-    VSCF_ASSERT_PTR(rsa_private_key_impl);
-    VSCF_ASSERT(mbedtls_rsa_check_pubkey(&rsa_private_key_impl->rsa_ctx) == 0);
-
-    vscf_rsa_public_key_impl_t *rsa_public_key_impl = vscf_rsa_public_key_new();
-    VSCF_ASSERT_ALLOC(rsa_public_key_impl != NULL);
-
-    mbedtls_rsa_context *rsa_public_ctx = &rsa_public_key_impl->rsa_ctx;
-    mbedtls_rsa_context *rsa_private_ctx = &rsa_private_key_impl->rsa_ctx;
-
-    int copy_n_ret = mbedtls_mpi_copy(&rsa_public_ctx->N, &rsa_private_ctx->N);
-    int copy_e_ret = mbedtls_mpi_copy(&rsa_public_ctx->E, &rsa_private_ctx->E);
-
-    VSCF_ASSERT_ALLOC(rsa_public_key_impl != NULL);
-    VSCF_ASSERT_ALLOC((0 == copy_n_ret) && (0 == copy_e_ret));
-
-    rsa_public_ctx->len = rsa_private_ctx->len;
-
-    if (rsa_private_key_impl->hash) {
-        vscf_rsa_public_key_use_hash(rsa_public_key_impl, rsa_private_key_impl->hash);
-    }
-
-    if (rsa_private_key_impl->random) {
-        vscf_rsa_public_key_use_random(rsa_public_key_impl, rsa_private_key_impl->random);
-    }
-
-    if (rsa_private_key_impl->asn1rd) {
-        vscf_rsa_public_key_use_asn1rd(rsa_public_key_impl, rsa_private_key_impl->asn1rd);
-    }
-
-    if (rsa_private_key_impl->asn1wr) {
-        vscf_rsa_public_key_use_asn1wr(rsa_public_key_impl, rsa_private_key_impl->asn1wr);
-    }
-
-    return vscf_rsa_public_key_impl(rsa_public_key_impl);
 }
 
 //
@@ -324,7 +292,53 @@ vscf_rsa_private_key_signature_len(vscf_rsa_private_key_impl_t *rsa_private_key_
 }
 
 //
+//  Extract public part of the key.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_rsa_private_key_extract_public_key(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
+
+    VSCF_ASSERT_PTR(rsa_private_key_impl);
+    VSCF_ASSERT(mbedtls_rsa_check_pubkey(&rsa_private_key_impl->rsa_ctx) == 0);
+
+    vscf_rsa_public_key_impl_t *rsa_public_key_impl = vscf_rsa_public_key_new();
+    VSCF_ASSERT_ALLOC(rsa_public_key_impl != NULL);
+
+    mbedtls_rsa_context *rsa_public_ctx = &rsa_public_key_impl->rsa_ctx;
+    mbedtls_rsa_context *rsa_private_ctx = &rsa_private_key_impl->rsa_ctx;
+
+    int copy_n_ret = mbedtls_mpi_copy(&rsa_public_ctx->N, &rsa_private_ctx->N);
+    int copy_e_ret = mbedtls_mpi_copy(&rsa_public_ctx->E, &rsa_private_ctx->E);
+
+    VSCF_ASSERT_ALLOC(rsa_public_key_impl != NULL);
+    VSCF_ASSERT_ALLOC((0 == copy_n_ret) && (0 == copy_e_ret));
+
+    rsa_public_ctx->len = rsa_private_ctx->len;
+
+    if (rsa_private_key_impl->hash) {
+        vscf_rsa_public_key_use_hash(rsa_public_key_impl, rsa_private_key_impl->hash);
+    }
+
+    if (rsa_private_key_impl->random) {
+        vscf_rsa_public_key_use_random(rsa_public_key_impl, rsa_private_key_impl->random);
+    }
+
+    if (rsa_private_key_impl->asn1rd) {
+        vscf_rsa_public_key_use_asn1rd(rsa_public_key_impl, rsa_private_key_impl->asn1rd);
+    }
+
+    if (rsa_private_key_impl->asn1wr) {
+        vscf_rsa_public_key_use_asn1wr(rsa_public_key_impl, rsa_private_key_impl->asn1wr);
+    }
+
+    return vscf_rsa_public_key_impl(rsa_public_key_impl);
+}
+
+//
 //  Export private key in the binary format.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA private key must be exported in format defined in
+//  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_error_t
 vscf_rsa_private_key_export_private_key(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vsc_buffer_t *out) {
@@ -419,6 +433,10 @@ vscf_rsa_private_key_exported_private_key_len(vscf_rsa_private_key_impl_t *rsa_p
 
 //
 //  Import private key from the binary format.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA private key must be imported from the format defined in
+//  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_error_t
 vscf_rsa_private_key_import_private_key(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vsc_data_t data) {

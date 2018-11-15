@@ -37,54 +37,52 @@ import Foundation
 import VSCFoundation
 import VirgilCryptoCommon
 
-/// Common information about asymmetric key.
-@objc(VSCFKey) public protocol Key : CContext {
-
-    /// Return implemented asymmetric key algorithm type.
-    @objc func alg() -> KeyAlg
-
-    /// Length of the key in bytes.
-    @objc func keyLen() -> Int
-
-    /// Length of the key in bits.
-    @objc func keyBitlen() -> Int
-}
-
-/// Implement interface methods
-@objc(VSCFKeyProxy) internal class KeyProxy: NSObject, Key {
+/// Implements PKCS#8 key deserialzation from PEM or DER format.
+@objc(VSCFPkcs8Deserializer) public class Pkcs8Deserializer: NSObject, KeyDeserializer {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
+    /// Create underlying C context.
+    public override init() {
+        self.c_ctx = vscf_pkcs8_deserializer_new()
+        super.init()
+    }
+
+    /// Acquire C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    public init(take c_ctx: OpaquePointer) {
         self.c_ctx = c_ctx
+        super.init()
+    }
+
+    /// Acquire retained C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    public init(use c_ctx: OpaquePointer) {
+        self.c_ctx = vscf_pkcs8_deserializer_copy(c_ctx)
         super.init()
     }
 
     /// Release underlying C context.
     deinit {
-        vscf_impl_delete(self.c_ctx)
+        vscf_pkcs8_deserializer_delete(self.c_ctx)
     }
 
-    /// Return implemented asymmetric key algorithm type.
-    @objc public func alg() -> KeyAlg {
-        let proxyResult = vscf_key_alg(self.c_ctx)
+    /// Deserialize given public key as an interchangeable format to the object.
+    @objc public func deserializePublicKey(publicKeyData: Data, error: ErrorCtx) -> RawKey {
+        let proxyResult = publicKeyData.withUnsafeBytes({ (publicKeyDataPointer: UnsafePointer<byte>) in
+            return vscf_pkcs8_deserializer_deserialize_public_key(self.c_ctx, vsc_data(publicKeyDataPointer, publicKeyData.count), error.c_ctx)
+        })
 
-        return KeyAlg.init(fromC: proxyResult!)
+        return RawKey.init(take: proxyResult!)
     }
 
-    /// Length of the key in bytes.
-    @objc public func keyLen() -> Int {
-        let proxyResult = vscf_key_key_len(self.c_ctx)
+    /// Deserialize given private key as an interchangeable format to the object.
+    @objc public func deserializePrivateKey(privateKeyData: Data, error: ErrorCtx) -> RawKey {
+        let proxyResult = privateKeyData.withUnsafeBytes({ (privateKeyDataPointer: UnsafePointer<byte>) in
+            return vscf_pkcs8_deserializer_deserialize_private_key(self.c_ctx, vsc_data(privateKeyDataPointer, privateKeyData.count), error.c_ctx)
+        })
 
-        return proxyResult
-    }
-
-    /// Length of the key in bits.
-    @objc public func keyBitlen() -> Int {
-        let proxyResult = vscf_key_key_bitlen(self.c_ctx)
-
-        return proxyResult
+        return RawKey.init(take: proxyResult!)
     }
 }

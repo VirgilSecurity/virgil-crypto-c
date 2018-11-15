@@ -47,19 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Provide interface for exporting private key to the binary format.
-//  Binary format must be defined in the key specification.
-//  For instance, RSA private key must be exported in format defined in
-//  RFC 3447 Appendix A.1.2.
+//  This module contains 'pkcs8 serializer' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_EXPORT_PRIVATE_KEY_H_INCLUDED
-#define VSCF_EXPORT_PRIVATE_KEY_H_INCLUDED
+#ifndef VSCF_PKCS8_SERIALIZER_H_INCLUDED
+#define VSCF_PKCS8_SERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_error.h"
-#include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -85,45 +81,99 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'export private key'.
+//  Handles implementation details.
 //
-typedef struct vscf_export_private_key_api_t vscf_export_private_key_api_t;
+typedef struct vscf_pkcs8_serializer_impl_t vscf_pkcs8_serializer_impl_t;
 
 //
-//  Export private key in the binary format.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_export_private_key(vscf_impl_t *impl, vsc_buffer_t *out);
-
-//
-//  Return length in bytes required to hold exported private key.
+//  Return size of 'vscf_pkcs8_serializer_impl_t' type.
 //
 VSCF_PUBLIC size_t
-vscf_export_private_key_exported_private_key_len(vscf_impl_t *impl);
+vscf_pkcs8_serializer_impl_size(void);
 
 //
-//  Return export private key API, or NULL if it is not implemented.
+//  Cast to the 'vscf_impl_t' type.
 //
-VSCF_PUBLIC const vscf_export_private_key_api_t *
-vscf_export_private_key_api(const vscf_impl_t *impl);
+VSCF_PUBLIC vscf_impl_t *
+vscf_pkcs8_serializer_impl(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl);
 
 //
-//  Check if given object implements interface 'export private key'.
+//  Perform initialization of preallocated implementation context.
 //
-VSCF_PUBLIC bool
-vscf_export_private_key_is_implemented(const vscf_impl_t *impl);
+VSCF_PUBLIC void
+vscf_pkcs8_serializer_init(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl);
 
 //
-//  Returns interface unique identifier.
+//  Cleanup implementation context and release dependencies.
+//  This is a reverse action of the function 'vscf_pkcs8_serializer_init()'.
 //
-VSCF_PUBLIC vscf_api_tag_t
-vscf_export_private_key_api_tag(const vscf_export_private_key_api_t *export_private_key_api);
+VSCF_PUBLIC void
+vscf_pkcs8_serializer_cleanup(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl);
 
 //
-//  Returns implementation unique identifier.
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_export_private_key_impl_tag(const vscf_export_private_key_api_t *export_private_key_api);
+VSCF_PUBLIC vscf_pkcs8_serializer_impl_t *
+vscf_pkcs8_serializer_new(void);
+
+//
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_pkcs8_serializer_new()'.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_serializer_delete(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl);
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_pkcs8_serializer_new()'.
+//  Given reference is nullified.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_serializer_destroy(vscf_pkcs8_serializer_impl_t **pkcs8_serializer_impl_ref);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_pkcs8_serializer_impl_t *
+vscf_pkcs8_serializer_copy(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl);
+
+//
+//  Calculate buffer size enough to hold serialized public key.
+//
+//  Precondition: public key must be exportable.
+//
+VSCF_PUBLIC size_t
+vscf_pkcs8_serializer_serialized_public_key_len(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl,
+        const vscf_impl_t *public_key);
+
+//
+//  Serialize given public key to an interchangeable format.
+//
+//  Precondition: public key must be exportable.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_pkcs8_serializer_serialize_public_key(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl,
+        const vscf_impl_t *public_key, vsc_buffer_t *out);
+
+//
+//  Calculate buffer size enough to hold serialized private key.
+//
+//  Precondition: private key must be exportable.
+//
+VSCF_PUBLIC size_t
+vscf_pkcs8_serializer_serialized_private_key_len(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl,
+        const vscf_impl_t *private_key);
+
+//
+//  Serialize given private key to an interchangeable format.
+//
+//  Precondition: private key must be exportable.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_pkcs8_serializer_serialize_private_key(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl,
+        const vscf_impl_t *private_key, vsc_buffer_t *out);
 
 
 // --------------------------------------------------------------------------
@@ -139,5 +189,5 @@ vscf_export_private_key_impl_tag(const vscf_export_private_key_api_t *export_pri
 
 
 //  @footer
-#endif // VSCF_EXPORT_PRIVATE_KEY_H_INCLUDED
+#endif // VSCF_PKCS8_SERIALIZER_H_INCLUDED
 //  @end

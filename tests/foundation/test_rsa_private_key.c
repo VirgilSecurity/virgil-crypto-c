@@ -43,7 +43,7 @@
 
 #include "vscf_assert.h"
 
-#include "vscf_export_public_key.h"
+#include "vscf_public_key.h"
 #include "vscf_rsa_private_key.h"
 #include "vscf_rsa_public_key.h"
 #include "vscf_asn1rd.h"
@@ -143,9 +143,9 @@ test__rsa_private_key_extract_public_key__from_imported_2048_PRIVATE_KEY_PKCS1__
     TEST_ASSERT_NOT_NULL(public_key_impl);
 
     vsc_buffer_t *exported_key_buf =
-            vsc_buffer_new_with_capacity(vscf_export_public_key_exported_public_key_len(public_key_impl));
+            vsc_buffer_new_with_capacity(vscf_public_key_exported_public_key_len(public_key_impl));
 
-    vscf_error_t export_err = vscf_export_public_key(public_key_impl, exported_key_buf);
+    vscf_error_t export_err = vscf_public_key_export_public_key(public_key_impl, exported_key_buf);
     VSCF_ASSERT(export_err == vscf_SUCCESS);
 
     //  Check

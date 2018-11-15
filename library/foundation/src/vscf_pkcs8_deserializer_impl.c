@@ -37,6 +37,15 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'pkcs8 deserializer' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,38 +53,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Provide interface for exporting public key to the binary format.
-//  Binary format must be defined in the key specification.
-//  For instance, RSA public key must be exported in format defined in
-//  RFC 3447 Appendix A.1.1.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_EXPORT_PUBLIC_KEY_H_INCLUDED
-#define VSCF_EXPORT_PUBLIC_KEY_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_error.h"
-#include "vscf_api.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#endif
+#include "vscf_pkcs8_deserializer_impl.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -84,60 +65,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Contains API requirements of the interface 'export public key'.
-//
-typedef struct vscf_export_public_key_api_t vscf_export_public_key_api_t;
-
-//
-//  Export public key in the binary format.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_export_public_key(vscf_impl_t *impl, vsc_buffer_t *out);
-
-//
-//  Return length in bytes required to hold exported public key.
-//
-VSCF_PUBLIC size_t
-vscf_export_public_key_exported_public_key_len(vscf_impl_t *impl);
-
-//
-//  Return export public key API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_export_public_key_api_t *
-vscf_export_public_key_api(const vscf_impl_t *impl);
-
-//
-//  Check if given object implements interface 'export public key'.
-//
-VSCF_PUBLIC bool
-vscf_export_public_key_is_implemented(const vscf_impl_t *impl);
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_export_public_key_api_tag(const vscf_export_public_key_api_t *export_public_key_api);
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_export_public_key_impl_tag(const vscf_export_public_key_api_t *export_public_key_api);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_EXPORT_PUBLIC_KEY_H_INCLUDED
 //  @end

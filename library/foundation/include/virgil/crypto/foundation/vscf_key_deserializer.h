@@ -56,6 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_error_ctx.h"
+#include "vscf_raw_key.h"
 #include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -89,28 +90,26 @@ typedef struct vscf_key_deserializer_api_t vscf_key_deserializer_api_t;
 //
 //  Deserialize given public key as an interchangeable format to the object.
 //
-VSCF_PUBLIC vscf_impl_t *
-vscf_key_deserializer_deserialize_public_key(vscf_impl_t *impl, vsc_data_t public_key_data,
-        const vscf_error_ctx_t *error);
+VSCF_PUBLIC vscf_raw_key_t *
+vscf_key_deserializer_deserialize_public_key(vscf_impl_t *impl, vsc_data_t public_key_data, vscf_error_ctx_t *error);
 
 //
 //  Deserialize given private key as an interchangeable format to the object.
 //
-VSCF_PUBLIC vscf_impl_t *
-vscf_key_deserializer_deserialize_private_key(vscf_impl_t *impl, vsc_data_t private_key_data,
-        const vscf_error_ctx_t *error);
+VSCF_PUBLIC vscf_raw_key_t *
+vscf_key_deserializer_deserialize_private_key(vscf_impl_t *impl, vsc_data_t private_key_data, vscf_error_ctx_t *error);
 
 //
 //  Return key deserializer API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_key_deserializer_api_t *
-vscf_key_deserializer_api(vscf_impl_t *impl);
+vscf_key_deserializer_api(const vscf_impl_t *impl);
 
 //
 //  Check if given object implements interface 'key deserializer'.
 //
 VSCF_PUBLIC bool
-vscf_key_deserializer_is_implemented(vscf_impl_t *impl);
+vscf_key_deserializer_is_implemented(const vscf_impl_t *impl);
 
 //
 //  Returns interface unique identifier.

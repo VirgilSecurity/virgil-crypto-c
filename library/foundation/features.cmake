@@ -71,10 +71,6 @@ option(VSCF_SIGN "Enable interface 'sign'." ON)
 option(VSCF_VERIFY "Enable interface 'verify'." ON)
 option(VSCF_GENERATE_KEY "Enable interface 'generate key'." ON)
 option(VSCF_COMPUTE_SHARED_KEY "Enable interface 'compute shared key'." ON)
-option(VSCF_EXPORT_PUBLIC_KEY "Enable interface 'export public key'." ON)
-option(VSCF_EXPORT_PRIVATE_KEY "Enable interface 'export private key'." ON)
-option(VSCF_IMPORT_PUBLIC_KEY "Enable interface 'import public key'." ON)
-option(VSCF_IMPORT_PRIVATE_KEY "Enable interface 'import private key'." ON)
 option(VSCF_KEY_SERIALIZER "Enable interface 'key serializer'." ON)
 option(VSCF_KEY_DESERIALIZER "Enable interface 'key deserializer'." ON)
 option(VSCF_ASN1_READER "Enable interface 'asn1 reader'." ON)
@@ -95,10 +91,15 @@ option(VSCF_HKDF "Enable implementation 'hkdf'." ON)
 option(VSCF_KDF1 "Enable implementation 'kdf1'." ON)
 option(VSCF_KDF2 "Enable implementation 'kdf2'." ON)
 option(VSCF_FAKE_RANDOM "Enable implementation 'fake random'." ON)
+option(VSCF_PKCS8_SERIALIZER "Enable implementation 'pkcs8 serializer'." ON)
+option(VSCF_PKCS8_DESERIALIZER "Enable implementation 'pkcs8 deserializer'." ON)
+option(VSCF_PKCS8_DER_SERIALIZER "Enable implementation 'pkcs8 der serializer'." ON)
+option(VSCF_PKCS8_DER_DESERIALIZER "Enable implementation 'pkcs8 der deserializer'." ON)
 option(VSCF_ERROR_CTX "Enable class 'error ctx'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER "Enable class 'mbedtls bignum asn1 writer'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_READER "Enable class 'mbedtls bignum asn1 reader'." ON)
 option(VSCF_MBEDTLS_MD "Enable class 'mbedtls md'." ON)
+option(VSCF_RAW_KEY "Enable class 'raw key'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_CIPHER
@@ -126,10 +127,6 @@ mark_as_advanced(
         VSCF_VERIFY
         VSCF_GENERATE_KEY
         VSCF_COMPUTE_SHARED_KEY
-        VSCF_EXPORT_PUBLIC_KEY
-        VSCF_EXPORT_PRIVATE_KEY
-        VSCF_IMPORT_PUBLIC_KEY
-        VSCF_IMPORT_PRIVATE_KEY
         VSCF_KEY_SERIALIZER
         VSCF_KEY_DESERIALIZER
         VSCF_ASN1_READER
@@ -150,10 +147,15 @@ mark_as_advanced(
         VSCF_KDF1
         VSCF_KDF2
         VSCF_FAKE_RANDOM
+        VSCF_PKCS8_SERIALIZER
+        VSCF_PKCS8_DESERIALIZER
+        VSCF_PKCS8_DER_SERIALIZER
+        VSCF_PKCS8_DER_DESERIALIZER
         VSCF_ERROR_CTX
         VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
         VSCF_MBEDTLS_BIGNUM_ASN1_READER
         VSCF_MBEDTLS_MD
+        VSCF_RAW_KEY
         )
 
 if(VSCF_CIPHER AND NOT VSCF_ENCRYPT)
@@ -566,6 +568,78 @@ if(VSCF_KDF2 AND NOT VSCF_HASH_STREAM)
     message("--")
     message("Feature VSCF_KDF2 depends on the feature:")
     message("     VSCF_HASH_STREAM - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PKCS8_SERIALIZER AND NOT VSCF_PUBLIC_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PKCS8_SERIALIZER depends on the feature:")
+    message("     VSCF_PUBLIC_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PKCS8_SERIALIZER AND NOT VSCF_PRIVATE_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PKCS8_SERIALIZER depends on the feature:")
+    message("     VSCF_PRIVATE_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PKCS8_DESERIALIZER AND NOT VSCF_PUBLIC_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PKCS8_DESERIALIZER depends on the feature:")
+    message("     VSCF_PUBLIC_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PKCS8_DESERIALIZER AND NOT VSCF_PRIVATE_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PKCS8_DESERIALIZER depends on the feature:")
+    message("     VSCF_PRIVATE_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PKCS8_DER_SERIALIZER AND NOT VSCF_PUBLIC_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PKCS8_DER_SERIALIZER depends on the feature:")
+    message("     VSCF_PUBLIC_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PKCS8_DER_SERIALIZER AND NOT VSCF_PRIVATE_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PKCS8_DER_SERIALIZER depends on the feature:")
+    message("     VSCF_PRIVATE_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PKCS8_DER_DESERIALIZER AND NOT VSCF_PUBLIC_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PKCS8_DER_DESERIALIZER depends on the feature:")
+    message("     VSCF_PUBLIC_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PKCS8_DER_DESERIALIZER AND NOT VSCF_PRIVATE_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PKCS8_DER_DESERIALIZER depends on the feature:")
+    message("     VSCF_PRIVATE_KEY - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

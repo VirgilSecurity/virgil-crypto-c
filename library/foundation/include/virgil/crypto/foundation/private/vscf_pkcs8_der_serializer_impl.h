@@ -47,27 +47,18 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Provide interface for importing public key from the binary format.
-//  Binary format must be defined in the key specification.
-//  For instance, RSA public key must be imported from the format defined in
-//  RFC 3447 Appendix A.1.1.
+//  Types of the 'pkcs8 der serializer' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_IMPORT_PUBLIC_KEY_H_INCLUDED
-#define VSCF_IMPORT_PUBLIC_KEY_H_INCLUDED
+#ifndef VSCF_PKCS8_DER_SERIALIZER_IMPL_H_INCLUDED
+#define VSCF_PKCS8_DER_SERIALIZER_IMPL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_error.h"
-#include "vscf_api.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#endif
+#include "vscf_impl_private.h"
+#include "vscf_pkcs8_der_serializer.h"
 
 // clang-format on
 //  @end
@@ -85,39 +76,18 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'import public key'.
+//  Handles implementation details.
 //
-typedef struct vscf_import_public_key_api_t vscf_import_public_key_api_t;
-
-//
-//  Import public key from the binary format.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_import_public_key(vscf_impl_t *impl, vsc_data_t data);
-
-//
-//  Return import public key API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_import_public_key_api_t *
-vscf_import_public_key_api(const vscf_impl_t *impl);
-
-//
-//  Check if given object implements interface 'import public key'.
-//
-VSCF_PUBLIC bool
-vscf_import_public_key_is_implemented(const vscf_impl_t *impl);
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_import_public_key_api_tag(const vscf_import_public_key_api_t *import_public_key_api);
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_import_public_key_impl_tag(const vscf_import_public_key_api_t *import_public_key_api);
+struct vscf_pkcs8_der_serializer_impl_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+};
 
 
 // --------------------------------------------------------------------------
@@ -133,5 +103,5 @@ vscf_import_public_key_impl_tag(const vscf_import_public_key_api_t *import_publi
 
 
 //  @footer
-#endif // VSCF_IMPORT_PUBLIC_KEY_H_INCLUDED
+#endif // VSCF_PKCS8_DER_SERIALIZER_IMPL_H_INCLUDED
 //  @end
