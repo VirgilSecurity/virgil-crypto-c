@@ -286,7 +286,7 @@ function _L23_add_stateless_getters (interface, destination, meta)
             interface_create_api_argument (my.interface, method, my.meta)
 
             new return to method
-                .type = "size"
+                .type = constant.type
             endnew
 
             my.api_name = ".(_argument_$(my.names.c_interface_struct_api:))"
