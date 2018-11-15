@@ -47,24 +47,19 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface 'import public key' API.
+//  Types of the 'pkcs8 serializer' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_IMPORT_PUBLIC_KEY_API_H_INCLUDED
-#define VSCF_IMPORT_PUBLIC_KEY_API_H_INCLUDED
+#ifndef VSCF_PKCS8_SERIALIZER_IMPL_H_INCLUDED
+#define VSCF_PKCS8_SERIALIZER_IMPL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_api.h"
-#include "vscf_impl.h"
-#include "vscf_error.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#endif
+#include "vscf_impl_private.h"
+#include "vscf_pkcs8_serializer.h"
+#include "vscf_pkcs8_der_serializer.h"
 
 // clang-format on
 //  @end
@@ -82,27 +77,21 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Import public key from the binary format.
+//  Handles implementation details.
 //
-typedef vscf_error_t (*vscf_import_public_key_api_import_public_key_fn)(vscf_impl_t *impl, vsc_data_t data);
-
-//
-//  Contains API requirements of the interface 'import public key'.
-//
-struct vscf_import_public_key_api_t {
+struct vscf_pkcs8_serializer_impl_t {
     //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'import_public_key' MUST be equal to the 'vscf_api_tag_IMPORT_PUBLIC_KEY'.
+    //  Compile-time known information about this implementation.
     //
-    vscf_api_tag_t api_tag;
+    const vscf_impl_info_t *info;
     //
-    //  Implementation unique identifier, MUST be second in the structure.
+    //  Reference counter.
     //
-    vscf_impl_tag_t impl_tag;
+    size_t refcnt;
     //
-    //  Import public key from the binary format.
+    //  Implementation specific context.
     //
-    vscf_import_public_key_api_import_public_key_fn import_public_key_cb;
+    vscf_pkcs8_der_serializer_impl_t *der_serializer;
 };
 
 
@@ -119,5 +108,5 @@ struct vscf_import_public_key_api_t {
 
 
 //  @footer
-#endif // VSCF_IMPORT_PUBLIC_KEY_API_H_INCLUDED
+#endif // VSCF_PKCS8_SERIALIZER_IMPL_H_INCLUDED
 //  @end

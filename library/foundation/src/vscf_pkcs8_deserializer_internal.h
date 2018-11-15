@@ -47,24 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface 'export private key' API.
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_EXPORT_PRIVATE_KEY_API_H_INCLUDED
-#define VSCF_EXPORT_PRIVATE_KEY_API_H_INCLUDED
+#ifndef VSCF_PKCS8_DESERIALIZER_INTERNAL_H_INCLUDED
+#define VSCF_PKCS8_DESERIALIZER_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_api.h"
-#include "vscf_impl.h"
-#include "vscf_error.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#endif
+#include "vscf_pkcs8_deserializer.h"
 
 // clang-format on
 //  @end
@@ -82,37 +73,20 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Export private key in the binary format.
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_pkcs8_deserializer_init() is called.
+//  Note, that context is already zeroed.
 //
-typedef vscf_error_t (*vscf_export_private_key_api_export_private_key_fn)(vscf_impl_t *impl, vsc_buffer_t *out);
+VSCF_PRIVATE void
+vscf_pkcs8_deserializer_init_ctx(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl);
 
 //
-//  Callback. Return length in bytes required to hold exported private key.
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
 //
-typedef size_t (*vscf_export_private_key_api_exported_private_key_len_fn)(vscf_impl_t *impl);
-
-//
-//  Contains API requirements of the interface 'export private key'.
-//
-struct vscf_export_private_key_api_t {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'export_private_key' MUST be equal to the 'vscf_api_tag_EXPORT_PRIVATE_KEY'.
-    //
-    vscf_api_tag_t api_tag;
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_t impl_tag;
-    //
-    //  Export private key in the binary format.
-    //
-    vscf_export_private_key_api_export_private_key_fn export_private_key_cb;
-    //
-    //  Return length in bytes required to hold exported private key.
-    //
-    vscf_export_private_key_api_exported_private_key_len_fn exported_private_key_len_cb;
-};
+VSCF_PRIVATE void
+vscf_pkcs8_deserializer_cleanup_ctx(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl);
 
 
 // --------------------------------------------------------------------------
@@ -128,5 +102,5 @@ struct vscf_export_private_key_api_t {
 
 
 //  @footer
-#endif // VSCF_EXPORT_PRIVATE_KEY_API_H_INCLUDED
+#endif // VSCF_PKCS8_DESERIALIZER_INTERNAL_H_INCLUDED
 //  @end

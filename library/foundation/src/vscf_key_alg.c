@@ -39,10 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Provide interface for exporting private key to the binary format.
-//  Binary format must be defined in the key specification.
-//  For instance, RSA private key must be exported in format defined in
-//  RFC 3447 Appendix A.1.2.
+//  Defines enumeration of possible asymmetric key algorithms.
 // --------------------------------------------------------------------------
 
 
@@ -53,9 +50,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_export_private_key.h"
-#include "vscf_assert.h"
-#include "vscf_export_private_key_api.h"
+#include "vscf_key_alg.h"
 
 // clang-format on
 //  @end
@@ -66,77 +61,6 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Export private key in the binary format.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_export_private_key(vscf_impl_t *impl, vsc_buffer_t *out) {
-
-    const vscf_export_private_key_api_t *export_private_key_api = vscf_export_private_key_api (impl);
-    VSCF_ASSERT_PTR (export_private_key_api);
-
-    VSCF_ASSERT_PTR (export_private_key_api->export_private_key_cb);
-    return export_private_key_api->export_private_key_cb (impl, out);
-}
-
-//
-//  Return length in bytes required to hold exported private key.
-//
-VSCF_PUBLIC size_t
-vscf_export_private_key_exported_private_key_len(vscf_impl_t *impl) {
-
-    const vscf_export_private_key_api_t *export_private_key_api = vscf_export_private_key_api (impl);
-    VSCF_ASSERT_PTR (export_private_key_api);
-
-    VSCF_ASSERT_PTR (export_private_key_api->exported_private_key_len_cb);
-    return export_private_key_api->exported_private_key_len_cb (impl);
-}
-
-//
-//  Return export private key API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_export_private_key_api_t *
-vscf_export_private_key_api(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_EXPORT_PRIVATE_KEY);
-    return (const vscf_export_private_key_api_t *) api;
-}
-
-//
-//  Check if given object implements interface 'export private key'.
-//
-VSCF_PUBLIC bool
-vscf_export_private_key_is_implemented(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    return vscf_impl_api (impl, vscf_api_tag_EXPORT_PRIVATE_KEY) != NULL;
-}
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_export_private_key_api_tag(const vscf_export_private_key_api_t *export_private_key_api) {
-
-    VSCF_ASSERT_PTR (export_private_key_api);
-
-    return export_private_key_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_export_private_key_impl_tag(const vscf_export_private_key_api_t *export_private_key_api) {
-
-    VSCF_ASSERT_PTR (export_private_key_api);
-
-    return export_private_key_api->impl_tag;
-}
 
 
 // --------------------------------------------------------------------------

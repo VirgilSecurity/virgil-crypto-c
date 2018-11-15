@@ -56,6 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
+#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -83,17 +84,23 @@ extern "C" {
 //
 //  Callback. Calculate buffer size enough to hold serialized public key.
 //
+//          Precondition: public key must be exportable.
+//
 typedef size_t (*vscf_key_serializer_api_serialized_public_key_len_fn)(vscf_impl_t *impl,
         const vscf_impl_t *public_key);
 
 //
 //  Callback. Serialize given public key to an interchangeable format.
 //
-typedef void (*vscf_key_serializer_api_serialize_public_key_fn)(vscf_impl_t *impl, const vscf_impl_t *public_key,
-        vsc_buffer_t *out);
+//          Precondition: public key must be exportable.
+//
+typedef vscf_error_t (*vscf_key_serializer_api_serialize_public_key_fn)(vscf_impl_t *impl,
+        const vscf_impl_t *public_key, vsc_buffer_t *out);
 
 //
 //  Callback. Calculate buffer size enough to hold serialized private key.
+//
+//          Precondition: private key must be exportable.
 //
 typedef size_t (*vscf_key_serializer_api_serialized_private_key_len_fn)(vscf_impl_t *impl,
         const vscf_impl_t *private_key);
@@ -101,8 +108,10 @@ typedef size_t (*vscf_key_serializer_api_serialized_private_key_len_fn)(vscf_imp
 //
 //  Callback. Serialize given private key to an interchangeable format.
 //
-typedef void (*vscf_key_serializer_api_serialize_private_key_fn)(vscf_impl_t *impl, const vscf_impl_t *private_key,
-        vsc_buffer_t *out);
+//          Precondition: private key must be exportable.
+//
+typedef vscf_error_t (*vscf_key_serializer_api_serialize_private_key_fn)(vscf_impl_t *impl,
+        const vscf_impl_t *private_key, vsc_buffer_t *out);
 
 //
 //  Contains API requirements of the interface 'key serializer'.
@@ -120,17 +129,25 @@ struct vscf_key_serializer_api_t {
     //
     //  Calculate buffer size enough to hold serialized public key.
     //
+    //  Precondition: public key must be exportable.
+    //
     vscf_key_serializer_api_serialized_public_key_len_fn serialized_public_key_len_cb;
     //
     //  Serialize given public key to an interchangeable format.
+    //
+    //  Precondition: public key must be exportable.
     //
     vscf_key_serializer_api_serialize_public_key_fn serialize_public_key_cb;
     //
     //  Calculate buffer size enough to hold serialized private key.
     //
+    //  Precondition: private key must be exportable.
+    //
     vscf_key_serializer_api_serialized_private_key_len_fn serialized_private_key_len_cb;
     //
     //  Serialize given private key to an interchangeable format.
+    //
+    //  Precondition: private key must be exportable.
     //
     vscf_key_serializer_api_serialize_private_key_fn serialize_private_key_cb;
 };

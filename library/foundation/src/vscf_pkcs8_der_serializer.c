@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface 'export public key' API.
+//  This module contains 'pkcs8 der serializer' implementation.
 // --------------------------------------------------------------------------
 
 
@@ -50,7 +50,13 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_export_public_key_api.h"
+#include "vscf_pkcs8_der_serializer.h"
+#include "vscf_assert.h"
+#include "vscf_memory.h"
+#include "vscf_public_key.h"
+#include "vscf_private_key.h"
+#include "vscf_pkcs8_der_serializer_impl.h"
+#include "vscf_pkcs8_der_serializer_internal.h"
 
 // clang-format on
 //  @end
@@ -68,3 +74,76 @@
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
+
+//
+//  Calculate buffer size enough to hold serialized public key.
+//
+//  Precondition: public key must be exportable.
+//
+VSCF_PUBLIC size_t
+vscf_pkcs8_der_serializer_serialized_public_key_len(
+        vscf_pkcs8_der_serializer_impl_t *pkcs8_der_serializer_impl, const vscf_impl_t *public_key) {
+
+    VSCF_ASSERT_PTR(pkcs8_der_serializer_impl);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    //  TODO: This is STUB. Implement me.
+    return 0;
+}
+
+//
+//  Serialize given public key to an interchangeable format.
+//
+//  Precondition: public key must be exportable.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_pkcs8_der_serializer_serialize_public_key(
+        vscf_pkcs8_der_serializer_impl_t *pkcs8_der_serializer_impl, const vscf_impl_t *public_key, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(pkcs8_der_serializer_impl);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_left(out) >=
+                vscf_pkcs8_der_serializer_serialized_public_key_len(pkcs8_der_serializer_impl, public_key));
+    //  TODO: This is STUB. Implement me.
+    return vscf_SUCCESS;
+}
+
+//
+//  Calculate buffer size enough to hold serialized private key.
+//
+//  Precondition: private key must be exportable.
+//
+VSCF_PUBLIC size_t
+vscf_pkcs8_der_serializer_serialized_private_key_len(
+        vscf_pkcs8_der_serializer_impl_t *pkcs8_der_serializer_impl, const vscf_impl_t *private_key) {
+
+    VSCF_ASSERT_PTR(pkcs8_der_serializer_impl);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    //  TODO: This is STUB. Implement me.
+    return 0;
+}
+
+//
+//  Serialize given private key to an interchangeable format.
+//
+//  Precondition: private key must be exportable.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_pkcs8_der_serializer_serialize_private_key(vscf_pkcs8_der_serializer_impl_t *pkcs8_der_serializer_impl,
+        const vscf_impl_t *private_key, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(pkcs8_der_serializer_impl);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_left(out) >=
+                vscf_pkcs8_der_serializer_serialized_public_key_len(pkcs8_der_serializer_impl, private_key));
+    //  TODO: This is STUB. Implement me.
+    return vscf_SUCCESS;
+}

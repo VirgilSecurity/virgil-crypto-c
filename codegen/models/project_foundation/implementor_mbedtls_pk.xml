@@ -23,11 +23,12 @@
         <dependency name="asn1wr" interface="asn1 writer"/>
 
         <interface name="key"/>
-        <interface name="public key"/>
         <interface name="encrypt"/>
         <interface name="verify"/>
-        <interface name="export public key"/>
-        <interface name="import public key"/>
+        <interface name="public key">
+            <constant name="can import public key" value="1"/>
+            <constant name="can export public key" value="1"/>
+        </interface>
     </implementation>
 
 
@@ -66,10 +67,11 @@
 
         <interface name="key"/>
         <interface name="generate key"/>
-        <interface name="private key"/>
         <interface name="decrypt"/>
         <interface name="sign"/>
-        <interface name="export private key"/>
-        <interface name="import private key"/>
+        <interface name="private key">
+            <constant name="can import private key" value="1"/>
+            <constant name="can export private key" value="1"/>
+        </interface>
     </implementation>
 </implementor>

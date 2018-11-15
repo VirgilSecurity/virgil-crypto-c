@@ -47,27 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Provide interface for importing private key from the binary format.
-//  Binary format must be defined in the key specification.
-//  For instance, RSA private key must be imported from the format defined in
-//  RFC 3447 Appendix A.1.2.
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_IMPORT_PRIVATE_KEY_H_INCLUDED
-#define VSCF_IMPORT_PRIVATE_KEY_H_INCLUDED
+#ifndef VSCF_PKCS8_SERIALIZER_INTERNAL_H_INCLUDED
+#define VSCF_PKCS8_SERIALIZER_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_error.h"
-#include "vscf_api.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#endif
+#include "vscf_pkcs8_serializer.h"
 
 // clang-format on
 //  @end
@@ -85,39 +73,20 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'import private key'.
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_pkcs8_serializer_init() is called.
+//  Note, that context is already zeroed.
 //
-typedef struct vscf_import_private_key_api_t vscf_import_private_key_api_t;
+VSCF_PRIVATE void
+vscf_pkcs8_serializer_init_ctx(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl);
 
 //
-//  Import private key from the binary format.
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
 //
-VSCF_PUBLIC vscf_error_t
-vscf_import_private_key(vscf_impl_t *impl, vsc_data_t data);
-
-//
-//  Return import private key API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_import_private_key_api_t *
-vscf_import_private_key_api(const vscf_impl_t *impl);
-
-//
-//  Check if given object implements interface 'import private key'.
-//
-VSCF_PUBLIC bool
-vscf_import_private_key_is_implemented(const vscf_impl_t *impl);
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_import_private_key_api_tag(const vscf_import_private_key_api_t *import_private_key_api);
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_import_private_key_impl_tag(const vscf_import_private_key_api_t *import_private_key_api);
+VSCF_PRIVATE void
+vscf_pkcs8_serializer_cleanup_ctx(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl);
 
 
 // --------------------------------------------------------------------------
@@ -133,5 +102,5 @@ vscf_import_private_key_impl_tag(const vscf_import_private_key_api_t *import_pri
 
 
 //  @footer
-#endif // VSCF_IMPORT_PRIVATE_KEY_H_INCLUDED
+#endif // VSCF_PKCS8_SERIALIZER_INTERNAL_H_INCLUDED
 //  @end

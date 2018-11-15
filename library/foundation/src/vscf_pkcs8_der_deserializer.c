@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains 'pkcs8 der deserializer' implementation.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,35 +50,16 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'export public key' API.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_EXPORT_PUBLIC_KEY_API_H_INCLUDED
-#define VSCF_EXPORT_PUBLIC_KEY_API_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_api.h"
-#include "vscf_impl.h"
-#include "vscf_error.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#endif
+#include "vscf_pkcs8_der_deserializer.h"
+#include "vscf_assert.h"
+#include "vscf_memory.h"
+#include "vscf_public_key.h"
+#include "vscf_private_key.h"
+#include "vscf_pkcs8_der_deserializer_impl.h"
+#include "vscf_pkcs8_der_deserializer_internal.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -80,39 +67,6 @@ extern "C" {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Callback. Export public key in the binary format.
-//
-typedef vscf_error_t (*vscf_export_public_key_api_export_public_key_fn)(vscf_impl_t *impl, vsc_buffer_t *out);
-
-//
-//  Callback. Return length in bytes required to hold exported public key.
-//
-typedef size_t (*vscf_export_public_key_api_exported_public_key_len_fn)(vscf_impl_t *impl);
-
-//
-//  Contains API requirements of the interface 'export public key'.
-//
-struct vscf_export_public_key_api_t {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'export_public_key' MUST be equal to the 'vscf_api_tag_EXPORT_PUBLIC_KEY'.
-    //
-    vscf_api_tag_t api_tag;
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_t impl_tag;
-    //
-    //  Export public key in the binary format.
-    //
-    vscf_export_public_key_api_export_public_key_fn export_public_key_cb;
-    //
-    //  Return length in bytes required to hold exported public key.
-    //
-    vscf_export_public_key_api_exported_public_key_len_fn exported_public_key_len_cb;
-};
 
 
 // --------------------------------------------------------------------------
@@ -122,11 +76,32 @@ struct vscf_export_public_key_api_t {
 //  @end
 
 
-#ifdef __cplusplus
+//
+//  Deserialize given public key as an interchangeable format to the object.
+//
+VSCF_PUBLIC vscf_raw_key_t *
+vscf_pkcs8_der_deserializer_deserialize_public_key(vscf_pkcs8_der_deserializer_impl_t *pkcs8_der_deserializer_impl,
+        vsc_data_t public_key_data, vscf_error_ctx_t *error) {
+
+    VSCF_ASSERT_PTR(pkcs8_der_deserializer_impl);
+    VSCF_ASSERT(vsc_data_is_valid(public_key_data));
+
+    VSCF_UNUSED(error);
+    //  TODO: This is STUB. Implement me.
+    return NULL;
 }
-#endif
 
+//
+//  Deserialize given private key as an interchangeable format to the object.
+//
+VSCF_PUBLIC vscf_raw_key_t *
+vscf_pkcs8_der_deserializer_deserialize_private_key(vscf_pkcs8_der_deserializer_impl_t *pkcs8_der_deserializer_impl,
+        vsc_data_t private_key_data, vscf_error_ctx_t *error) {
 
-//  @footer
-#endif // VSCF_EXPORT_PUBLIC_KEY_API_H_INCLUDED
-//  @end
+    VSCF_ASSERT_PTR(pkcs8_der_deserializer_impl);
+    VSCF_ASSERT(vsc_data_is_valid(private_key_data));
+
+    VSCF_UNUSED(error);
+    //  TODO: This is STUB. Implement me.
+    return NULL;
+}

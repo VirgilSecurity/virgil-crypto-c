@@ -47,7 +47,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Public nad private key serialization to an interchangeable format.
+//  Public and private key serialization to an interchangeable format.
 // --------------------------------------------------------------------------
 
 #ifndef VSCF_KEY_SERIALIZER_H_INCLUDED
@@ -55,6 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
+#include "vscf_error.h"
 #include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -88,17 +89,23 @@ typedef struct vscf_key_serializer_api_t vscf_key_serializer_api_t;
 //
 //  Calculate buffer size enough to hold serialized public key.
 //
+//  Precondition: public key must be exportable.
+//
 VSCF_PUBLIC size_t
 vscf_key_serializer_serialized_public_key_len(vscf_impl_t *impl, const vscf_impl_t *public_key);
 
 //
 //  Serialize given public key to an interchangeable format.
 //
-VSCF_PUBLIC void
+//  Precondition: public key must be exportable.
+//
+VSCF_PUBLIC vscf_error_t
 vscf_key_serializer_serialize_public_key(vscf_impl_t *impl, const vscf_impl_t *public_key, vsc_buffer_t *out);
 
 //
 //  Calculate buffer size enough to hold serialized private key.
+//
+//  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC size_t
 vscf_key_serializer_serialized_private_key_len(vscf_impl_t *impl, const vscf_impl_t *private_key);
@@ -106,20 +113,22 @@ vscf_key_serializer_serialized_private_key_len(vscf_impl_t *impl, const vscf_imp
 //
 //  Serialize given private key to an interchangeable format.
 //
-VSCF_PUBLIC void
+//  Precondition: private key must be exportable.
+//
+VSCF_PUBLIC vscf_error_t
 vscf_key_serializer_serialize_private_key(vscf_impl_t *impl, const vscf_impl_t *private_key, vsc_buffer_t *out);
 
 //
 //  Return key serializer API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_key_serializer_api_t *
-vscf_key_serializer_api(vscf_impl_t *impl);
+vscf_key_serializer_api(const vscf_impl_t *impl);
 
 //
 //  Check if given object implements interface 'key serializer'.
 //
 VSCF_PUBLIC bool
-vscf_key_serializer_is_implemented(vscf_impl_t *impl);
+vscf_key_serializer_is_implemented(const vscf_impl_t *impl);
 
 //
 //  Returns interface unique identifier.

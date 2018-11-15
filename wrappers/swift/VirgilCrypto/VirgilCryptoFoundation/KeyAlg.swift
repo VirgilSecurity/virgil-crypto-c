@@ -35,56 +35,16 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
-/// Common information about asymmetric key.
-@objc(VSCFKey) public protocol Key : CContext {
+/// Defines enumeration of possible asymmetric key algorithms.
+@objc(VSCFKeyAlg) public enum KeyAlg: Int {
 
-    /// Return implemented asymmetric key algorithm type.
-    @objc func alg() -> KeyAlg
+    case none = 0
 
-    /// Length of the key in bytes.
-    @objc func keyLen() -> Int
+    case rsa
 
-    /// Length of the key in bits.
-    @objc func keyBitlen() -> Int
-}
-
-/// Implement interface methods
-@objc(VSCFKeyProxy) internal class KeyProxy: NSObject, Key {
-
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
-
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Return implemented asymmetric key algorithm type.
-    @objc public func alg() -> KeyAlg {
-        let proxyResult = vscf_key_alg(self.c_ctx)
-
-        return KeyAlg.init(fromC: proxyResult!)
-    }
-
-    /// Length of the key in bytes.
-    @objc public func keyLen() -> Int {
-        let proxyResult = vscf_key_key_len(self.c_ctx)
-
-        return proxyResult
-    }
-
-    /// Length of the key in bits.
-    @objc public func keyBitlen() -> Int {
-        let proxyResult = vscf_key_key_bitlen(self.c_ctx)
-
-        return proxyResult
+    /// Create enumeration value from the correspond C enumeration value.
+    internal init(fromC keyAlg: vscf_key_alg_t) {
+        self.init(rawValue: Int(keyAlg.rawValue))!
     }
 }

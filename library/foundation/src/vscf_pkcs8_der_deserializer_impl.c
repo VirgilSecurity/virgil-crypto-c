@@ -39,7 +39,10 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface 'import public key' API.
+//  Types of the 'pkcs8 der deserializer' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
 
@@ -50,7 +53,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_import_public_key_api.h"
+#include "vscf_pkcs8_der_deserializer_impl.h"
 
 // clang-format on
 //  @end

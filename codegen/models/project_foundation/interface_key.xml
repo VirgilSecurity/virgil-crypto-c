@@ -1,6 +1,13 @@
 <interface name="key">
     Common information about asymmetric key.
 
+    <method name="alg">
+        Return implemented asymmetric key algorithm type.
+
+        <return enum="key alg"/>
+    </method>
+
+
     <method name="key len">
         Length of the key in bytes.
 
