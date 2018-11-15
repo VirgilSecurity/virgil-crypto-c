@@ -1,0 +1,25 @@
+syntax = "proto2";
+import "nanopb.proto";
+
+message RegularMessage {
+	required uint32 version = 1;
+	required uint32 counter = 2;
+	required bytes public_key = 3 [(nanopb).max_size = 32, (nanopb).fixed_length = true];
+	required bytes cipher_text = 4 [(nanopb).max_size = 32768, (nanopb).fixed_length = true];
+}
+
+message PrekeyMessage {
+	required uint32 version = 1;
+	required bytes sender_identity_key = 2 [(nanopb).max_size = 32, (nanopb).fixed_length = true];
+	required bytes sender_ephemeral_key = 3 [(nanopb).max_size = 32, (nanopb).fixed_length = true];
+	required bytes receiver_long_term_key = 4 [(nanopb).max_size = 32, (nanopb).fixed_length = true];
+	required bytes receiver_one_time_key = 5 [(nanopb).max_size = 32, (nanopb).fixed_length = true];
+	required RegularMessage regular_message = 6;
+}
+
+message Message {
+	oneof message {
+		RegularMessage regular_message = 1;
+		PrekeyMessage prekey_message = 2;
+	}
+}
