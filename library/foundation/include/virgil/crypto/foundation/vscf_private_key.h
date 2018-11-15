@@ -88,7 +88,7 @@ vscf_private_key_extract_public_key(vscf_impl_t *impl);
 //  Return private key API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_private_key_api_t *
-vscf_private_key_api(vscf_impl_t *impl);
+vscf_private_key_api(const vscf_impl_t *impl);
 
 //
 //  Return key API.
@@ -100,7 +100,7 @@ vscf_private_key_key_api(const vscf_private_key_api_t *private_key_api);
 //  Check if given object implements interface 'private key'.
 //
 VSCF_PUBLIC bool
-vscf_private_key_is_implemented(vscf_impl_t *impl);
+vscf_private_key_is_implemented(const vscf_impl_t *impl);
 
 //
 //  Returns interface unique identifier.
