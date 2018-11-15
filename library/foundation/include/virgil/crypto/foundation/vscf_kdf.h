@@ -97,13 +97,13 @@ vscf_kdf_derive(vscf_impl_t *impl, vsc_data_t data, size_t key_len, vsc_buffer_t
 //  Return kdf API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_kdf_api_t *
-vscf_kdf_api(vscf_impl_t *impl);
+vscf_kdf_api(const vscf_impl_t *impl);
 
 //
 //  Check if given object implements interface 'kdf'.
 //
 VSCF_PUBLIC bool
-vscf_kdf_is_implemented(vscf_impl_t *impl);
+vscf_kdf_is_implemented(const vscf_impl_t *impl);
 
 //
 //  Returns interface unique identifier.

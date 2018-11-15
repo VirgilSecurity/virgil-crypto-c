@@ -250,13 +250,13 @@ vscf_asn1_writer_write_set(vscf_impl_t *impl, size_t len);
 //  Return asn1 writer API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_asn1_writer_api_t *
-vscf_asn1_writer_api(vscf_impl_t *impl);
+vscf_asn1_writer_api(const vscf_impl_t *impl);
 
 //
 //  Check if given object implements interface 'asn1 writer'.
 //
 VSCF_PUBLIC bool
-vscf_asn1_writer_is_implemented(vscf_impl_t *impl);
+vscf_asn1_writer_is_implemented(const vscf_impl_t *impl);
 
 //
 //  Returns interface unique identifier.

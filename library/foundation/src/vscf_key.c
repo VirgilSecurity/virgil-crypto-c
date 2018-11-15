@@ -94,7 +94,7 @@ vscf_key_key_bitlen(vscf_impl_t *impl) {
 //  Return key API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_key_api_t *
-vscf_key_api(vscf_impl_t *impl) {
+vscf_key_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -106,7 +106,7 @@ vscf_key_api(vscf_impl_t *impl) {
 //  Check if given object implements interface 'key'.
 //
 VSCF_PUBLIC bool
-vscf_key_is_implemented(vscf_impl_t *impl) {
+vscf_key_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 

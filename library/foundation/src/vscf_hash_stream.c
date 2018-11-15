@@ -107,7 +107,7 @@ vscf_hash_stream_finish(vscf_impl_t *impl, vsc_buffer_t *digest) {
 //  Return hash stream API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_hash_stream_api_t *
-vscf_hash_stream_api(vscf_impl_t *impl) {
+vscf_hash_stream_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -130,7 +130,7 @@ vscf_hash_stream_hash_info_api(const vscf_hash_stream_api_t *hash_stream_api) {
 //  Check if given object implements interface 'hash stream'.
 //
 VSCF_PUBLIC bool
-vscf_hash_stream_is_implemented(vscf_impl_t *impl) {
+vscf_hash_stream_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
