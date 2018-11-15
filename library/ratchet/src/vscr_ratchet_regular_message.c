@@ -288,7 +288,7 @@ vscr_ratchet_regular_message_serialize(vscr_ratchet_regular_message_t *ratchet_r
     RegularMessage regular_message = RegularMessage_init_zero;
     bool status;
 
-    pb_ostream_t stream = pb_ostream_from_buffer(vsc_buffer_ptr(output), vsc_buffer_left(output));
+    pb_ostream_t stream = pb_ostream_from_buffer(output->bytes, output->len);
 
     memcpy(regular_message.cipher_text, ratchet_regular_message_ctx->cipher_text->bytes,
            ratchet_regular_message_ctx->cipher_text->len);

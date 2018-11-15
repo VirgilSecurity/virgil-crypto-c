@@ -1,20 +1,20 @@
-syntax = "proto2";
+syntax = "proto3";
 import "nanopb.proto";
 
 message RegularMessage {
-	required uint32 version = 1;
-	required uint32 counter = 2;
-	required bytes public_key = 3 [(nanopb).max_size = 32, (nanopb).fixed_length = true];
-	required bytes cipher_text = 4 [(nanopb).max_size = 32768, (nanopb).fixed_length = true];
+	uint32 version = 1;
+	uint32 counter = 2;
+	bytes public_key = 3 [(nanopb).max_size = 32, (nanopb).fixed_length = true];
+	bytes cipher_text = 4 [(nanopb).max_size = 32768, (nanopb).fixed_length = true];
 }
 
 message PrekeyMessage {
-	required uint32 version = 1;
-	required bytes sender_identity_key = 2 [(nanopb).max_size = 32, (nanopb).fixed_length = true];
-	required bytes sender_ephemeral_key = 3 [(nanopb).max_size = 32, (nanopb).fixed_length = true];
-	required bytes receiver_long_term_key = 4 [(nanopb).max_size = 32, (nanopb).fixed_length = true];
-	required bytes receiver_one_time_key = 5 [(nanopb).max_size = 32, (nanopb).fixed_length = true];
-	required RegularMessage regular_message = 6;
+	uint32 version = 1;
+	bytes sender_identity_key = 2 [(nanopb).max_size = 32, (nanopb).fixed_length = true];
+	bytes sender_ephemeral_key = 3 [(nanopb).max_size = 32, (nanopb).fixed_length = true];
+	bytes receiver_long_term_key = 4 [(nanopb).max_size = 32, (nanopb).fixed_length = true];
+	bytes receiver_one_time_key = 5 [(nanopb).max_size = 32, (nanopb).fixed_length = true];
+	RegularMessage regular_message = 6;
 }
 
 message Message {
