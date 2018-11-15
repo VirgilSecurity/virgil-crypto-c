@@ -233,13 +233,13 @@ vscf_asn1_reader_read_set(vscf_impl_t *impl);
 //  Return asn1 reader API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_asn1_reader_api_t *
-vscf_asn1_reader_api(vscf_impl_t *impl);
+vscf_asn1_reader_api(const vscf_impl_t *impl);
 
 //
 //  Check if given object implements interface 'asn1 reader'.
 //
 VSCF_PUBLIC bool
-vscf_asn1_reader_is_implemented(vscf_impl_t *impl);
+vscf_asn1_reader_is_implemented(const vscf_impl_t *impl);
 
 //
 //  Returns interface unique identifier.
