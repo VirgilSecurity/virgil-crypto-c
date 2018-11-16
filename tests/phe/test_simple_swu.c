@@ -58,12 +58,22 @@ void test__1() {
     vsc_buffer_t *t_buf = vsc_buffer_new_with_capacity(len);
 
     for (int i = 0; i < iterations; i++) {
-        vscf_ctr_drbg_random(rng, len, t_buf);
-
         mbedtls_mpi t;
-        mbedtls_mpi_init(&t);
-        mbedtls_mpi_read_binary(&t, vsc_buffer_bytes(t_buf), vsc_buffer_len(t_buf));
-        vsc_buffer_erase(t_buf);
+
+        while (true) {
+            vscf_ctr_drbg_random(rng, len, t_buf);
+
+            mbedtls_mpi_init(&t);
+            mbedtls_mpi_read_binary(&t, vsc_buffer_bytes(t_buf), vsc_buffer_len(t_buf));
+            vsc_buffer_erase(t_buf);
+
+            if (mbedtls_mpi_cmp_mpi(&t, &group.P) < 0) {
+                break;
+            }
+            else {
+                mbedtls_mpi_free(&t);
+            }
+        }
 
         mbedtls_ecp_point p;
         mbedtls_ecp_point_init(&p);
