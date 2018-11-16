@@ -26,8 +26,8 @@
         <interface name="encrypt"/>
         <interface name="verify"/>
         <interface name="public key">
-            <constant name="can import public key" value="1"/>
-            <constant name="can export public key" value="1"/>
+            <constant name="can import public key" value="true"/>
+            <constant name="can export public key" value="true"/>
         </interface>
     </implementation>
 
@@ -70,8 +70,8 @@
         <interface name="decrypt"/>
         <interface name="sign"/>
         <interface name="private key">
-            <constant name="can import private key" value="1"/>
-            <constant name="can export private key" value="1"/>
+            <constant name="can import private key" value="true"/>
+            <constant name="can export private key" value="true"/>
         </interface>
     </implementation>
 </implementor>
