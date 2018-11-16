@@ -306,10 +306,16 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return mapped constant type.
 # ---------------------------------------------------------------------------
-function swift_derive_constant_type (instance, wrapper)
-    check_arguments (my, "instance, wrapper", my)
+function swift_derive_constant_type (constant, wrapper)
+    check_arguments (my, "constant, wrapper", my)
 
-    return "Int"
+    assert_attribute (my.constant, "type", my)
+
+    if my.constant.type = "boolean"
+        return "Bool"
+    else
+        return "Int"
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
