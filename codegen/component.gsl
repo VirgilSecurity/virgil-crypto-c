@@ -1208,6 +1208,14 @@ function component_resolve_constant (constant, parent)
 
     component_require_attr_name (my.constant, my)
 
+    my.constant.type ?= "size"
+
+    my.valid_types = "size, integer, boolean"
+    if ! string_in (my.constant.type, my.valid_types)
+        echo_fatal ("Invalid constant attribute type=\"$(my.constant.type:)\"." + \
+                    " Expected {$(my.valid_types)}", my)
+    endif
+
     if ! item_in (my.parent ?, "enum, interface")
         component_require_attr_value (my.constant, my)
     endif
