@@ -240,9 +240,9 @@ vsce_simple_swu_bignum_to_point(const mbedtls_mpi *t, mbedtls_ecp_point *p) {
     mbedtls_mpi_init(&three);
     mbedtls_mpi_lset(&three, 3);
 
+    //   alpha = -t^2
     mbedtls_mpi_exp_mod(&alpha, t, &two, &group.P, NULL /* FIXME */);
     mbedtls_mpi_sub_mpi(&alpha, &group.P, &alpha);
-
 
     //    x2 = -(b / a) * (1 + 1/(alpha^2+alpha))
     mbedtls_mpi x2;
@@ -271,7 +271,6 @@ vsce_simple_swu_bignum_to_point(const mbedtls_mpi *t, mbedtls_ecp_point *p) {
     //    h2 = x2^3 + a*x2 + b
     mbedtls_mpi h2;
     mbedtls_mpi_init(&h2);
-    mbedtls_mpi_copy(&h2, &x2);
     mbedtls_mpi_exp_mod(&h2, &x2, &three, &group.P, NULL /* FIXME */);
 
     mbedtls_mpi h2_temp;
@@ -284,7 +283,6 @@ vsce_simple_swu_bignum_to_point(const mbedtls_mpi *t, mbedtls_ecp_point *p) {
     //    h3 = x3^3 + a*x3 + b
     mbedtls_mpi h3;
     mbedtls_mpi_init(&h3);
-    mbedtls_mpi_copy(&h3, &x3);
     mbedtls_mpi_exp_mod(&h3, &x3, &three, &group.P, NULL /* FIXME */);
 
     mbedtls_mpi h3_temp;
@@ -330,14 +328,10 @@ vsce_simple_swu_bignum_to_point(const mbedtls_mpi *t, mbedtls_ecp_point *p) {
 
         mbedtls_mpi p14;
         mbedtls_mpi_init(&p14);
-        mbedtls_mpi_lset(&p14, 4);
-        mbedtls_mpi_inv_mod(&p14, &p14, &group.P);
-        mbedtls_mpi p1;
-        mbedtls_mpi_init(&p1);
-        mbedtls_mpi_copy(&p1, &group.P);
-        mbedtls_mpi_add_int(&p1, &p1, 1);
+        mbedtls_mpi_copy(&p14, &group.P);
+        mbedtls_mpi_add_int(&p14, &p14, 1);
+        mbedtls_mpi_div_int(&p14, NULL, &p14, 4);
         mbedtls_mpi_exp_mod(&p->Y, &h3, &p14, &group.P, NULL /* FIXME */);
-        mbedtls_mpi_free(&p1);
         mbedtls_mpi_free(&p14);
     }
 
