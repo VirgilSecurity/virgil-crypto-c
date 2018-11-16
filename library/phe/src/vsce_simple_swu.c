@@ -321,14 +321,14 @@ vsce_simple_swu_bignum_to_point(const mbedtls_mpi *t, mbedtls_ecp_point *p) {
 
     if (mbedtls_mpi_cmp_int(&tmp22h2, 1) == 0) {
         //    return (x2, tmp * h2)
-        p->X = x2;
+        mbedtls_mpi_copy(&p->X, &x2);
+
         mbedtls_mpi_mul_mpi(&p->Y, &tmp, &h2);
         mbedtls_mpi_mod_mpi(&p->Y, &p->Y, &group.P);
     }
     else {
         //    return (x3, h3 ^ ((p+1)//4))
-        // FIXME
-        p->X = x3;
+        mbedtls_mpi_copy(&p->X, &x3);
 
         mbedtls_mpi p14;
         mbedtls_mpi_init(&p14);
@@ -339,9 +339,28 @@ vsce_simple_swu_bignum_to_point(const mbedtls_mpi *t, mbedtls_ecp_point *p) {
         mbedtls_mpi_copy(&p1, &group.P);
         mbedtls_mpi_add_int(&p1, &p1, 1);
         mbedtls_mpi_exp_mod(&p->Y, &h3, &p14, &group.P, NULL /* FIXME */);
+        mbedtls_mpi_free(&p1);
+        mbedtls_mpi_free(&p14);
     }
 
     mbedtls_mpi_lset(&p->Z, 1);
+
+    mbedtls_mpi_free(&alpha);
+    mbedtls_mpi_free(&two);
+    mbedtls_mpi_free(&three);
+    mbedtls_mpi_free(&x2);
+    mbedtls_mpi_free(&x2_temp);
+    mbedtls_mpi_free(&x3);
+    mbedtls_mpi_free(&h2);
+    mbedtls_mpi_free(&h2_temp);
+    mbedtls_mpi_free(&h3);
+    mbedtls_mpi_free(&h3_temp);
+    mbedtls_mpi_free(&p34);
+    mbedtls_mpi_free(&p3);
+    mbedtls_mpi_free(&tmp);
+    mbedtls_mpi_free(&tmp22h2);
+
+    mbedtls_ecp_group_free(&group);
 
     return vsce_SUCCESS;
 }

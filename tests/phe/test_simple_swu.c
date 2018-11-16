@@ -39,7 +39,7 @@
 #include <mbedtls/bignum.h>
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
-#include <virgil/crypto/phe/private/vsce_simple_swu.h>
+#include <vsce_simple_swu.h>
 
 #define TEST_DEPENDENCIES_AVAILABLE VSCE_SIMPLE_SWU
 #if TEST_DEPENDENCIES_AVAILABLE
@@ -59,13 +59,20 @@ void test__1() {
     vscf_ctr_drbg_random(rng, len, t_buf);
 
     mbedtls_mpi t;
+    mbedtls_mpi_init(&t);
     mbedtls_mpi_read_binary(&t, vsc_buffer_bytes(t_buf), vsc_buffer_len(t_buf));
     vsc_buffer_destroy(&t_buf);
 
     mbedtls_ecp_point p;
+    mbedtls_ecp_point_init(&p);
     vsce_simple_swu_bignum_to_point(&t, &p);
 
-    TEST_ASSERT(mbedtls_ecp_check_pubkey(&group, &p));
+    TEST_ASSERT(mbedtls_ecp_check_pubkey(&group, &p) == 0);
+
+    mbedtls_ecp_group_free(&group);
+    mbedtls_ecp_point_free(&p);
+    mbedtls_mpi_free(&t);
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 void test__2() {
