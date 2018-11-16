@@ -91,11 +91,11 @@ enum {
     //
     //  Defines whether a public key can be imported or not.
     //
-    vscf_rsa_public_key_CAN_IMPORT_PUBLIC_KEY = 1,
+    vscf_rsa_public_key_CAN_IMPORT_PUBLIC_KEY = true,
     //
     //  Define whether a public key can be exported or not.
     //
-    vscf_rsa_public_key_CAN_EXPORT_PUBLIC_KEY = 1
+    vscf_rsa_public_key_CAN_EXPORT_PUBLIC_KEY = true
 };
 
 //

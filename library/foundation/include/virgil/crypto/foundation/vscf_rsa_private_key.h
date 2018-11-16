@@ -91,11 +91,11 @@ enum {
     //
     //  Define whether a private key can be imported or not.
     //
-    vscf_rsa_private_key_CAN_IMPORT_PRIVATE_KEY = 1,
+    vscf_rsa_private_key_CAN_IMPORT_PRIVATE_KEY = true,
     //
     //  Define whether a private key can be exported or not.
     //
-    vscf_rsa_private_key_CAN_EXPORT_PRIVATE_KEY = 1
+    vscf_rsa_private_key_CAN_EXPORT_PRIVATE_KEY = true
 };
 
 //
