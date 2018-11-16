@@ -651,6 +651,10 @@ function swift_wrap_c_returned_value (swift_return)
     if is_true (0.is_data)
         return "Data.init(bytes: $(my.name:).bytes, count: $(my.name:).len)"
 
+    elsif is_true (0.is_buffer) & is_false (0.was_argument)
+        return "Data.init(bytes: .(c_project_common_class_buffer_method_bytes)($(my.name:)), " + \
+                         "count: .(c_project_common_class_buffer_method_len)($(my.name:)))"
+
     elsif is_true (0.is_primitive_type) & is_true_any (0.is_array, 0.is_reference)
         return "$(my.name:)!"
 
@@ -665,7 +669,7 @@ function swift_wrap_c_returned_value (swift_return)
         endif
 
     elsif is_true (0.is_enum)
-        return "$(my.type:).init(fromC: $(my.name:)!)"
+        return "$(my.type:).init(fromC: $(my.name:))"
     endif
 
     endscope
@@ -713,6 +717,7 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type)
         ")
     endfor
 
+    #   Wrap output buffers.
     my.method_new_with_data = ".(c_project_common_class_buffer_method_new_with_data)"
     my.method_data = ".(c_project_common_class_data_method_data)"
 
@@ -721,7 +726,8 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type)
 
         my.buffers_init ?= ""
         my.buffers_init += format_left("\
-            var $(my.buffer_name:)Buf = $(my.method_new_with_data:)($(my.method_data:)($(my.buffer_name:)Pointer, $(my.buffer_name:).count))
+            var $(my.buffer_name:)Buf = \
+                $(my.method_new_with_data:)($(my.method_data:)($(my.buffer_name:)Pointer, $(my.buffer_name:).count))
         ")
 
         if swift_argument.access <> "disown"
@@ -1366,7 +1372,19 @@ function swift_create_class_method (class, method, destination, wrapper, meta)
 
     #   Return result
     if count (my.swift_method.swift_return) = 1
-        my.return_result = format_left ("return $(swift_wrap_c_returned_value (my.swift_method->swift_return))")
+        my.swift_return = my.swift_method->swift_return
+
+        my.return_result = ""
+
+        if is_true (my.swift_return.is_buffer) & string_in (my.swift_return.access, "disown, retain")
+            my.return_result += format_left ("\
+                defer {
+                    .(c_project_common_class_buffer_method_delete)(proxyResult)
+                }
+            ") + terminator
+        endif
+
+        my.return_result += format_left ("return $(swift_wrap_c_returned_value (my.swift_method->swift_return))")
 
     elsif count (my.swift_method.swift_return) > 1
         my.result_class = swift_derive_result_class_name (my.destination, my.swift_method)
@@ -1720,7 +1738,7 @@ function swift_create_class_constructor (class, constructor, destination, wrappe
         #   Wrap proxy call
         my.proxy_args = swift_format_c_proxy_args (my.class, my.constructor)
         my.proxy_call = "$(class_derive_c_constructor (my.class, my.constructor))($(my.proxy_args:))"
-        my.proxy_return_type = swift_derive_typed_pointer (my.class)
+        my.proxy_return_type = swift_derive_class_context_type (my.class)
         my.proxy_invocation = swift_wrap_c_proxy_call (swift_constructor, my.proxy_call, my.proxy_return_type)
 
         my.context_assignment = format_left ("self.c_ctx = proxyResult")
