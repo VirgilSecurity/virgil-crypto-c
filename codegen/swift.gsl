@@ -71,6 +71,19 @@ function class_derive_c_type (class)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the instance C type.
+# ---------------------------------------------------------------------------
+function class_derive_c_instance_type (instance)
+    check_arguments (my, "instance", my)
+
+    my.temp_c_instance = XML.new("c_instance")
+
+    c_component_map_instance_attr_type (my.temp_c_instance, my.instance)
+
+    return my.temp_c_instance.type
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return .(UID) that refers to the C class constructor.
 # ---------------------------------------------------------------------------
 function class_derive_c_defalut_constructor (class)
@@ -199,29 +212,6 @@ endfunction
 #   Name and type derivation.
 # ===========================================================================
 
-# ---------------------------------------------------------------------------
-#   Return OpaquePointer(expr).
-# ---------------------------------------------------------------------------
-function swift_cast_to_opaque_pointer (expr)
-    check_arguments (my, "expr", my)
-    return "OpaquePointer($(my.expr:))"
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return UnsafeMutablePointer<class>.
-# ---------------------------------------------------------------------------
-function swift_derive_typed_pointer (class)
-    check_arguments (my, "class", my)
-    return "UnsafeMutablePointer<$(class_derive_c_type(my.class))>"
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return UnsafeMutablePointer<class>(expr).
-# ---------------------------------------------------------------------------
-function swift_cast_to_typed_pointer (class, expr)
-    check_arguments (my, "class, expr", my)
-    return "UnsafeMutablePointer<$(class_derive_c_type(my.class))>($(my.expr:))"
-endfunction
 
 # ---------------------------------------------------------------------------
 #   Return Swift type for class context.
@@ -846,7 +836,8 @@ function swift_format_c_proxy_args (class, method)
             my.proxy_arg = "$(my.arg_name:).c_ctx"
 
         elsif defined (argument.enum)
-            my.proxy_arg = "$(my.arg_name:).rawValue"
+            my.enum_type = class_derive_c_instance_type (argument)
+            my.proxy_arg = "$(my.enum_type:)(rawValue: UInt32($(my.arg_name:).rawValue))"
 
         else
             my.proxy_arg = "$(my.arg_name:)"
