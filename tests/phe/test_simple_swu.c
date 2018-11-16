@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2018 Virgil Security Inc.
 //
 //  All rights reserved.
@@ -33,66 +31,63 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+
+#include "unity.h"
+#include "test_utils.h"
+#include <mbedtls/ecp.h>
+#include <mbedtls/bignum.h>
+#include <virgil/crypto/foundation/vscf_random.h>
+#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
+#include <virgil/crypto/phe/private/vsce_simple_swu.h>
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCE_SIMPLE_SWU
+#if TEST_DEPENDENCIES_AVAILABLE
+
+void test__1() {
+    mbedtls_ecp_group group;
+    mbedtls_ecp_group_init(&group);
+    mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
+
+
+    size_t len = 32;
+    vsc_buffer_t *t_buf = vsc_buffer_new_with_capacity(len);
+
+
+    vscf_ctr_drbg_impl_t *rng = vscf_ctr_drbg_new();
+    vscf_ctr_drbg_setup_defaults(rng);
+    vscf_ctr_drbg_random(rng, len, t_buf);
+
+    mbedtls_mpi t;
+    mbedtls_mpi_read_binary(&t, vsc_buffer_bytes(t_buf), vsc_buffer_len(t_buf));
+    vsc_buffer_destroy(&t_buf);
+
+    mbedtls_ecp_point p;
+    vsce_simple_swu_bignum_to_point(&t, &p);
+
+    TEST_ASSERT(mbedtls_ecp_check_pubkey(&group, &p));
+}
+
+void test__2() {
+}
+
+#endif // TEST_DEPENDENCIES_AVAILABLE
+
+
 // --------------------------------------------------------------------------
+// Entrypoint.
+// --------------------------------------------------------------------------
+int
+main(void) {
+    UNITY_BEGIN();
 
-#ifndef MBEDTLS_CONFIG_H
-#define MBEDTLS_CONFIG_H
-
-
-//
-//  Common
-//
-#cmakedefine MBEDTLS_ERROR_C
-
-//
-//  Required by library vsc::foundation
-//
-#cmakedefine MBEDTLS_SHA256_C
-#cmakedefine MBEDTLS_SHA512_C
-#cmakedefine MBEDTLS_CIPHER_C
-#cmakedefine MBEDTLS_AES_C
-#cmakedefine MBEDTLS_GCM_C
-#cmakedefine MBEDTLS_MD_C
-#cmakedefine MBEDTLS_BIGNUM_C
-#cmakedefine MBEDTLS_PKCS1_V21
-#cmakedefine MBEDTLS_OID_C
-#cmakedefine MBEDTLS_RSA_C
-#cmakedefine MBEDTLS_ASN1_PARSE_C
-#cmakedefine MBEDTLS_ASN1_WRITE_C
-#cmakedefine MBEDTLS_GENPRIME
-#cmakedefine MBEDTLS_PLATFORM_ENTROPY
-#cmakedefine MBEDTLS_TIMING_C
-#cmakedefine MBEDTLS_HAVEGE_C
-
-#if !defined(MBEDTLS_PLATFORM_ENTROPY)
-#   define MBEDTLS_NO_PLATFORM_ENTROPY
+#if TEST_DEPENDENCIES_AVAILABLE
+    RUN_TEST(test__1);
+    RUN_TEST(test__2);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
 
-//
-//  Required by library vsc::pythia
-//
-#cmakedefine MBEDTLS_CTR_DRBG_C
-#cmakedefine MBEDTLS_ENTROPY_C
+    return UNITY_END();
+}
 
-//
-//  Required by library vsc::phe
-//
-#cmakedefine MBEDTLS_ECP_C
-#cmakedefine MBEDTLS_ECP_DP_SECP256R1_ENABLED
-
-//
-//  Alternative implementations
-//
-#cmakedefine MBEDTLS_SHA256_ALT
-#cmakedefine MBEDTLS_SHA512_ALT
-#cmakedefine MBEDTLS_AES_ALT
-#cmakedefine MBEDTLS_GCM_ALT
-
-//
-//  Non configurable options
-//
-#define MBEDTLS_NO_DEFAULT_ENTROPY_SOURCES
-
-#include "check_config.h"
-
-#endif /* MBEDTLS_CONFIG_H */

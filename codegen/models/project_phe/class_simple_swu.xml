@@ -1,0 +1,13 @@
+<class name="simple swu" context="private" scope="internal">
+
+    <require header="mbedtls/bignum.h" scope="public"/>
+    <require header="mbedtls/ecp.h" scope="public"/>
+
+    <method name="bignum to point" is_static="1" declaration="public">
+        <argument name="t" class="mbedtls_mpi" library="mbedtls" access="readonly"/>
+        <argument name="p" class="mbedtls_ecp_point" library="mbedtls" access="writeonly"/>
+
+        <return enum="error"/>
+    </method>
+
+</class>
