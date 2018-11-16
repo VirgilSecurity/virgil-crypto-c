@@ -248,8 +248,6 @@ vsce_simple_swu_bignum_to_point(const mbedtls_mpi *t, mbedtls_ecp_point *p) {
     mbedtls_mpi x2;
     mbedtls_mpi_init(&x2);
 
-    // TODO: Clear memory
-
     mbedtls_mpi_inv_mod(&x2, &group.A, &group.P);
     mbedtls_mpi_mul_mpi(&x2, &x2, &group.B);
     mbedtls_mpi_sub_mpi(&x2, &group.P, &x2);

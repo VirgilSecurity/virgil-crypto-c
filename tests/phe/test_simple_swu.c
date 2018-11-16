@@ -35,11 +35,13 @@
 
 #include "unity.h"
 #include "test_utils.h"
+#include "test_data_simple_swu.h"
 #include <mbedtls/ecp.h>
 #include <mbedtls/bignum.h>
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <vsce_simple_swu.h>
+#include "test_data_simple_swu.h"
 
 #define TEST_DEPENDENCIES_AVAILABLE VSCE_SIMPLE_SWU
 #if TEST_DEPENDENCIES_AVAILABLE
@@ -91,6 +93,35 @@ void test__1() {
 }
 
 void test__2() {
+    mbedtls_ecp_group group;
+    mbedtls_ecp_group_init(&group);
+    mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
+
+    mbedtls_mpi t;
+    mbedtls_mpi_init(&t);
+    mbedtls_mpi_read_binary(&t, test_simple_swu_hash1.bytes, test_simple_swu_hash1.len);
+
+    mbedtls_ecp_point p;
+    mbedtls_ecp_point_init(&p);
+    vsce_simple_swu_bignum_to_point(&t, &p);
+
+    mbedtls_mpi x1_exp, y1_exp;
+    mbedtls_mpi_init(&x1_exp);
+    mbedtls_mpi_init(&y1_exp);
+
+    mbedtls_mpi_read_binary(&x1_exp, test_simple_swu_x1.bytes, test_simple_swu_x1.len);
+    mbedtls_mpi_read_binary(&y1_exp, test_simple_swu_y1.bytes, test_simple_swu_y1.len);
+
+    TEST_ASSERT(mbedtls_ecp_check_pubkey(&group, &p) == 0);
+    TEST_ASSERT(mbedtls_mpi_cmp_mpi(&p.X, &x1_exp) == 0);
+    TEST_ASSERT(mbedtls_mpi_cmp_mpi(&p.Y, &y1_exp) == 0);
+    TEST_ASSERT(mbedtls_mpi_cmp_int(&p.Z, 1) == 0);
+
+    mbedtls_ecp_point_free(&p);
+    mbedtls_mpi_free(&x1_exp);
+    mbedtls_mpi_free(&y1_exp);
+    mbedtls_mpi_free(&t);
+    mbedtls_ecp_group_free(&group);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
