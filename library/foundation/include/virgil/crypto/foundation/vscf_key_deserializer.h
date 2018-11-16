@@ -117,12 +117,6 @@ vscf_key_deserializer_is_implemented(const vscf_impl_t *impl);
 VSCF_PUBLIC vscf_api_tag_t
 vscf_key_deserializer_api_tag(const vscf_key_deserializer_api_t *key_deserializer_api);
 
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_key_deserializer_impl_tag(const vscf_key_deserializer_api_t *key_deserializer_api);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -124,17 +124,6 @@ vscf_decrypt_api_tag(const vscf_decrypt_api_t *decrypt_api) {
     return decrypt_api->api_tag;
 }
 
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_decrypt_impl_tag(const vscf_decrypt_api_t *decrypt_api) {
-
-    VSCF_ASSERT_PTR (decrypt_api);
-
-    return decrypt_api->impl_tag;
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

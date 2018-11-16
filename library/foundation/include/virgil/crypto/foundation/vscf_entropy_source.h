@@ -116,12 +116,6 @@ vscf_entropy_source_is_implemented(const vscf_impl_t *impl);
 VSCF_PUBLIC vscf_api_tag_t
 vscf_entropy_source_api_tag(const vscf_entropy_source_api_t *entropy_source_api);
 
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_entropy_source_impl_tag(const vscf_entropy_source_api_t *entropy_source_api);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

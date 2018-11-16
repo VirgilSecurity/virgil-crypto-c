@@ -191,17 +191,6 @@ vscf_private_key_api_tag(const vscf_private_key_api_t *private_key_api) {
     return private_key_api->api_tag;
 }
 
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_private_key_impl_tag(const vscf_private_key_api_t *private_key_api) {
-
-    VSCF_ASSERT_PTR (private_key_api);
-
-    return private_key_api->impl_tag;
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

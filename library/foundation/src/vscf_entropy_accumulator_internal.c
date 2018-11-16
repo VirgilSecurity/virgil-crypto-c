@@ -83,10 +83,6 @@ static const vscf_entropy_source_api_t entropy_source_api = {
     //
     vscf_api_tag_ENTROPY_SOURCE,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_ENTROPY_ACCUMULATOR,
-    //
     //  Defines that implemented source is strong.
     //
     (vscf_entropy_source_api_is_strong_fn)vscf_entropy_accumulator_is_strong,
@@ -100,10 +96,6 @@ static const vscf_entropy_source_api_t entropy_source_api = {
 //  Compile-time known information about 'entropy accumulator' implementation.
 //
 static const vscf_impl_info_t info = {
-    //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_ENTROPY_ACCUMULATOR,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.

@@ -95,10 +95,6 @@ static const vscf_key_api_t key_api = {
     //
     vscf_api_tag_KEY,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_RSA_PRIVATE_KEY,
-    //
     //  Return implemented asymmetric key algorithm type.
     //
     (vscf_key_api_alg_fn)vscf_rsa_private_key_alg,
@@ -122,10 +118,6 @@ static const vscf_generate_key_api_t generate_key_api = {
     //
     vscf_api_tag_GENERATE_KEY,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_RSA_PRIVATE_KEY,
-    //
     //  Generate new private or secret key.
     //  Note, this operation can be slow.
     //
@@ -141,10 +133,6 @@ static const vscf_decrypt_api_t decrypt_api = {
     //  For interface 'decrypt' MUST be equal to the 'vscf_api_tag_DECRYPT'.
     //
     vscf_api_tag_DECRYPT,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_RSA_PRIVATE_KEY,
     //
     //  Decrypt given data.
     //
@@ -165,10 +153,6 @@ static const vscf_sign_api_t sign_api = {
     //
     vscf_api_tag_SIGN,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_RSA_PRIVATE_KEY,
-    //
     //  Sign data given private key.
     //
     (vscf_sign_api_sign_fn)vscf_rsa_private_key_sign,
@@ -187,10 +171,6 @@ static const vscf_private_key_api_t private_key_api = {
     //  For interface 'private_key' MUST be equal to the 'vscf_api_tag_PRIVATE_KEY'.
     //
     vscf_api_tag_PRIVATE_KEY,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_RSA_PRIVATE_KEY,
     //
     //  Link to the inherited interface API 'key'.
     //
@@ -233,10 +213,6 @@ static const vscf_private_key_api_t private_key_api = {
 //  Compile-time known information about 'rsa private key' implementation.
 //
 static const vscf_impl_info_t info = {
-    //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_RSA_PRIVATE_KEY,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.

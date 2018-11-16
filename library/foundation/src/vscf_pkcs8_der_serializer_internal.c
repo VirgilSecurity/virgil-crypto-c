@@ -83,10 +83,6 @@ static const vscf_key_serializer_api_t key_serializer_api = {
     //
     vscf_api_tag_KEY_SERIALIZER,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_PKCS8_DER_SERIALIZER,
-    //
     //  Calculate buffer size enough to hold serialized public key.
     //
     //  Precondition: public key must be exportable.
@@ -116,10 +112,6 @@ static const vscf_key_serializer_api_t key_serializer_api = {
 //  Compile-time known information about 'pkcs8 der serializer' implementation.
 //
 static const vscf_impl_info_t info = {
-    //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_PKCS8_DER_SERIALIZER,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.

@@ -263,30 +263,6 @@ function swift_derive_dependency_type (dependency)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Crate uid based on the given options.
-#   Examples:
-#       {struct, buffer, buffer} - returns "class_buffer_struct_buffer"
-#       {struct, inner/buffer, buffer} - returns "class_inner_struct_buffer"
-#       {enum, impl/tag,} - returns "class_impl_enum_tag"
-#       {struct, codes,} - returns "global_struct_codes"
-# ---------------------------------------------------------------------------
-function c_component_derive_instance_type_uid (type_id, type_value, of_class)
-    check_arguments (my, "type_id, type_value", my)
-
-    if regexp.match ("([^\/]+)\/(.+)", my.type_value, my.group1, my.group2)
-        my.of_class = my.group1
-        my.type_value = my.group2
-    endif
-
-    if defined (my.of_class)
-        return make_id ("class", my.of_class, my.type_id, my.type_value)
-
-    else
-        return make_id ("global", my.type_id, my.type_value)
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Return formatted module name.
 # ---------------------------------------------------------------------------
 function swift_derive_module_name (type)

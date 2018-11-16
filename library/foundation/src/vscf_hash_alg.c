@@ -44,37 +44,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'encrypt' API.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_ENCRYPT_API_H_INCLUDED
-#define VSCF_ENCRYPT_API_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_api.h"
-#include "vscf_impl.h"
-#include "vscf_error.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#   include <VSCCommon/vsc_buffer.h>
-#endif
+#include "vscf_hash_alg.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -83,48 +56,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Callback. Encrypt given data.
-//
-typedef vscf_error_t (*vscf_encrypt_api_encrypt_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out);
-
-//
-//  Callback. Calculate required buffer length to hold the encrypted data.
-//
-typedef size_t (*vscf_encrypt_api_encrypted_len_fn)(vscf_impl_t *impl, size_t data_len);
-
-//
-//  Contains API requirements of the interface 'encrypt'.
-//
-struct vscf_encrypt_api_t {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'encrypt' MUST be equal to the 'vscf_api_tag_ENCRYPT'.
-    //
-    vscf_api_tag_t api_tag;
-    //
-    //  Encrypt given data.
-    //
-    vscf_encrypt_api_encrypt_fn encrypt_cb;
-    //
-    //  Calculate required buffer length to hold the encrypted data.
-    //
-    vscf_encrypt_api_encrypted_len_fn encrypted_len_cb;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_ENCRYPT_API_H_INCLUDED
 //  @end

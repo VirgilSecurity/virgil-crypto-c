@@ -35,50 +35,21 @@
 
 import Foundation
 import VSCFoundation
-import VirgilCryptoCommon
 
-/// Provide details about implemented hash algorithm.
-@objc(VSCFHashInfo) public protocol HashInfo : CContext {
-    /// Length of the digest (hashing output) in bytes.
-    @objc var digestLen: Int { get }
-    /// Block length of the digest function in bytes.
-    @objc var blockLen: Int { get }
+@objc(VSCFHashAlg) public enum HashAlg: Int {
 
-    /// Return implemented hash algorithm type.
-    @objc func alg() -> HashAlg
-}
+    case none
 
-/// Implement interface methods
-@objc(VSCFHashInfoProxy) internal class HashInfoProxy: NSObject, HashInfo {
+    case sha224
 
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
+    case sha256
 
-    /// Length of the digest (hashing output) in bytes.
-    @objc public var digestLen: Int {
-        return vscf_hash_info_digest_len(vscf_hash_info_api(self.c_ctx))
-    }
+    case sha384
 
-    /// Block length of the digest function in bytes.
-    @objc public var blockLen: Int {
-        return vscf_hash_info_block_len(vscf_hash_info_api(self.c_ctx))
-    }
+    case sha512
 
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscf_impl_delete(self.c_ctx)
-    }
-
-    /// Return implemented hash algorithm type.
-    @objc public func alg() -> HashAlg {
-        let proxyResult = vscf_hash_info_alg(vscf_hash_info_api(self.c_ctx))
-
-        return HashAlg.init(fromC: proxyResult!)
+    /// Create enumeration value from the correspond C enumeration value.
+    internal init(fromC hashAlg: vscf_hash_alg_t) {
+        self.init(rawValue: Int(hashAlg.rawValue))!
     }
 }
