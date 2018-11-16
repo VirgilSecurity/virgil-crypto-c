@@ -71,7 +71,7 @@ import VirgilCryptoCommon
     @objc public func alg() -> KeyAlg {
         let proxyResult = vscf_key_alg(self.c_ctx)
 
-        return KeyAlg.init(fromC: proxyResult!)
+        return KeyAlg.init(fromC: proxyResult)
     }
 
     /// Length of the key in bytes.

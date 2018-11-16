@@ -43,10 +43,10 @@ import VirgilCryptoCommon
     @objc public let c_ctx: OpaquePointer
 
     /// Define whether a private key can be imported or not.
-    @objc public let canImportPrivateKey: Int = 1
+    @objc public let canImportPrivateKey: Bool = true
 
     /// Define whether a private key can be exported or not.
-    @objc public let canExportPrivateKey: Int = 1
+    @objc public let canExportPrivateKey: Bool = true
 
     /// Create underlying C context.
     public override init() {
@@ -102,7 +102,7 @@ import VirgilCryptoCommon
     @objc public func alg() -> KeyAlg {
         let proxyResult = vscf_rsa_private_key_alg(self.c_ctx)
 
-        return KeyAlg.init(fromC: proxyResult!)
+        return KeyAlg.init(fromC: proxyResult)
     }
 
     /// Length of the key in bytes.
