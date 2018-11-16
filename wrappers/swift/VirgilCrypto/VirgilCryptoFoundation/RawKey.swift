@@ -65,12 +65,12 @@ import VirgilCryptoCommon
 
     /// Creates fully defined raw key.
     public init(alg: KeyAlg, bytes: Data) {
-        let proxyResult = bytes.withUnsafeBytes({ (bytesPointer: UnsafePointer<byte>) -> UnsafeMutablePointer<vscf_raw_key_t> in
+        let proxyResult = bytes.withUnsafeBytes({ (bytesPointer: UnsafePointer<byte>) -> OpaquePointer in
             var bytesBuf = vsc_buffer_new_with_data(vsc_data(bytesPointer, bytes.count))
             defer {
                 vsc_buffer_delete(bytesBuf)
             }
-            return vscf_raw_key_new_with_members(alg.rawValue, bytesBuf)
+            return vscf_raw_key_new_with_members(vscf_key_alg_t(rawValue: UInt32(alg.rawValue)), bytesBuf)
         })
 
         self.c_ctx = proxyResult
@@ -85,13 +85,17 @@ import VirgilCryptoCommon
     @objc public func alg() -> KeyAlg {
         let proxyResult = vscf_raw_key_alg(self.c_ctx)
 
-        return KeyAlg.init(fromC: proxyResult!)
+        return KeyAlg.init(fromC: proxyResult)
     }
 
     /// Return raw key bytes.
     @objc public func bytes() -> Data {
         let proxyResult = vscf_raw_key_bytes(self.c_ctx)
 
-        return proxyResult
+        defer {
+            vsc_buffer_delete(proxyResult)
+        }
+
+        return Data.init(bytes: vsc_buffer_bytes(proxyResult), count: vsc_buffer_len(proxyResult))
     }
 }

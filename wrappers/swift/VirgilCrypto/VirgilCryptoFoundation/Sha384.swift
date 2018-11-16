@@ -78,7 +78,7 @@ import VirgilCryptoCommon
     @objc public func alg() -> HashAlg {
         let proxyResult = vscf_sha384_alg()
 
-        return HashAlg.init(fromC: proxyResult!)
+        return HashAlg.init(fromC: proxyResult)
     }
 
     /// Calculate hash over given data.

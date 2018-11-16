@@ -40,9 +40,9 @@ import VirgilCryptoCommon
 /// Contains public part of the key.
 @objc(VSCFPublicKey) public protocol PublicKey : Key {
     /// Define whether a public key can be exported or not.
-    @objc var canExportPublicKey: Int { get }
+    @objc var canExportPublicKey: Bool { get }
     /// Defines whether a public key can be imported or not.
-    @objc var canImportPublicKey: Int { get }
+    @objc var canImportPublicKey: Bool { get }
 
     /// Export public key in the binary format.
     ///
@@ -69,12 +69,12 @@ import VirgilCryptoCommon
     @objc public let c_ctx: OpaquePointer
 
     /// Define whether a public key can be exported or not.
-    @objc public var canExportPublicKey: Int {
+    @objc public var canExportPublicKey: Bool {
         return vscf_public_key_can_export_public_key(vscf_public_key_api(self.c_ctx))
     }
 
     /// Defines whether a public key can be imported or not.
-    @objc public var canImportPublicKey: Int {
+    @objc public var canImportPublicKey: Bool {
         return vscf_public_key_can_import_public_key(vscf_public_key_api(self.c_ctx))
     }
 
@@ -93,7 +93,7 @@ import VirgilCryptoCommon
     @objc public func alg() -> KeyAlg {
         let proxyResult = vscf_key_alg(self.c_ctx)
 
-        return KeyAlg.init(fromC: proxyResult!)
+        return KeyAlg.init(fromC: proxyResult)
     }
 
     /// Length of the key in bytes.
