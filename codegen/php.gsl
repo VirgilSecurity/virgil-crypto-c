@@ -1,0 +1,129 @@
+.template 0
+#   Copyright (C) 2015-2018 Virgil Security Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Contains API for PHP wrapper generation.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+gsl from "interface.gsl"
+gsl from "component.gsl"
+gsl from "c_component.gsl"
+gsl from "php_codegen.gsl"
+
+# ---------------------------------------------------------------------------
+#   Create module with PHP protocol from the abstract 'interface' notion.
+# ---------------------------------------------------------------------------
+function php_create_interface_module (interface, destination, wrapper, meta)
+    echo "create_interface_module"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create module with PHP class from the abstract 'class' notion.
+# ---------------------------------------------------------------------------
+function php_create_class_module (class, destination, wrapper, meta)
+    echo "create_class_module"
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Add auto-resolving attributes:
+#       - uid.
+# ---------------------------------------------------------------------------
+function php_module_resolve (php_module, wrapper)
+    echo "php_module_resolve"
+endfunction
+
+# ===========================================================================
+#   Module resolution.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Setup and check default and automatically resolved attributes.
+# ---------------------------------------------------------------------------
+function php_resolve (project, wrapper)
+    echo "php_resolve"
+endfunction
+
+# ===========================================================================
+#   Create modules.
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Create module that contains Swift specific project information.
+# ---------------------------------------------------------------------------
+function php_create_project_module (project, destination, wrapper)
+    echo "qwerty_create_project"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate project files.
+# ---------------------------------------------------------------------------
+function php_generate_project (source, wrapper)
+    echo "qwerty_generate_project"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate source files from <php_module/> entities.
+# ---------------------------------------------------------------------------
+function php_generate_sources (source, wrapper)
+    echo "qwerty_generate_sources"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create module with base protocol that handles C context.
+# ---------------------------------------------------------------------------
+function php_create_c_context_module (destination, wrapper, meta)
+    echo "qwerty_php_create_c_context_module"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create module with PHP enum from the abstract 'enum' notion.
+# ---------------------------------------------------------------------------
+function php_create_enum_module (enum, destination, wrapper, meta)
+ echo "qwerty_php_create_enum_module"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create module with PHP class from the abstract 'implementation' notion.
+# ---------------------------------------------------------------------------
+function php_create_implementation_module (implementation, destination, wrapper, meta)
+    echo "qwerty_php_create_implementation_module"
+endfunction
+
+.endtemplate

@@ -70,4 +70,5 @@
     </error_message_getter>
 
     <wrapper lang="swift"/>
+    <wrapper lang="php"/>
 </project>
