@@ -419,17 +419,6 @@ vscf_asn1_writer_api_tag(const vscf_asn1_writer_api_t *asn1_writer_api) {
     return asn1_writer_api->api_tag;
 }
 
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_asn1_writer_impl_tag(const vscf_asn1_writer_api_t *asn1_writer_api) {
-
-    VSCF_ASSERT_PTR (asn1_writer_api);
-
-    return asn1_writer_api->impl_tag;
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -71,6 +71,13 @@ import VirgilCryptoCommon
         vscf_impl_delete(self.c_ctx)
     }
 
+    /// Return implemented hash algorithm type.
+    @objc public func alg() -> HashAlg {
+        let proxyResult = vscf_hash_info_alg(vscf_hash_info_api(self.c_ctx))
+
+        return HashAlg.init(fromC: proxyResult!)
+    }
+
     /// Calculate hash over given data.
     @objc public func hash(data: Data) -> Data {
         let digestCount = self.digestLen

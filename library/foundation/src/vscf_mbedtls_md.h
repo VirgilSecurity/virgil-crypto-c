@@ -54,7 +54,7 @@
 #define VSCF_MBEDTLS_MD_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl.h"
+#include "vscf_hash_alg.h"
 
 #include <mbedtls/md.h>
 
@@ -74,10 +74,10 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Map implementation tag to correspond 'mbedtls_md_type_t'.
+//  Map hash alg to correspond 'mbedtls_md_type_t'.
 //
 VSCF_PUBLIC mbedtls_md_type_t
-vscf_mbedtls_md_map_impl_tag(vscf_impl_tag_t impl_tag);
+vscf_mbedtls_md_from_hash_alg(vscf_hash_alg_t hash_alg);
 
 
 // --------------------------------------------------------------------------

@@ -56,6 +56,7 @@
     <enum name="error"/>
     <enum name="asn1"/>
     <enum name="key alg"/>
+    <enum name="hash alg"/>
 
     <interface name="cipher"/>
     <interface name="auth encrypt"/>

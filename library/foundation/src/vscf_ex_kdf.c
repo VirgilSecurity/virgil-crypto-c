@@ -112,17 +112,6 @@ vscf_ex_kdf_api_tag(const vscf_ex_kdf_api_t *ex_kdf_api) {
     return ex_kdf_api->api_tag;
 }
 
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_ex_kdf_impl_tag(const vscf_ex_kdf_api_t *ex_kdf_api) {
-
-    VSCF_ASSERT_PTR (ex_kdf_api);
-
-    return ex_kdf_api->impl_tag;
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

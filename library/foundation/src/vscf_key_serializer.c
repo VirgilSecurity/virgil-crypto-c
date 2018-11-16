@@ -158,17 +158,6 @@ vscf_key_serializer_api_tag(const vscf_key_serializer_api_t *key_serializer_api)
     return key_serializer_api->api_tag;
 }
 
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_key_serializer_impl_tag(const vscf_key_serializer_api_t *key_serializer_api) {
-
-    VSCF_ASSERT_PTR (key_serializer_api);
-
-    return key_serializer_api->impl_tag;
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

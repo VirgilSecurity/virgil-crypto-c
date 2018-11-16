@@ -70,7 +70,7 @@ endfunction
 #   Examples:
 #       {struct, buffer, buffer} - returns "class_buffer_struct_buffer"
 #       {struct, inner/buffer, buffer} - returns "class_inner_struct_buffer"
-#       {enum, impl/tag,} - returns "class_impl_enum_tag"
+#       {enum, api/tag,} - returns "class_api_enum_tag"
 #       {struct, codes,} - returns "global_struct_codes"
 # ---------------------------------------------------------------------------
 function c_component_derive_instance_type_uid (type_id, type_value, of_class)

@@ -123,15 +123,6 @@ function _L23_add_interface_api_type (interface, declaration, definition, destin
             .tag = "api_tag"
         endnew
 
-        new property to struct
-            . = "\
-            Implementation unique identifier, MUST be second in the structure.
-            "
-            .name = my.names.property_impl_tag
-            .enum = my.refs.class_impl_enum_tag
-            .tag = "impl_tag"
-        endnew
-
         for my.interface.inherit
             assert_attribute (inherit, "interface", my)
 
@@ -441,39 +432,6 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-#   Add method that returns implementation unique identifier.
-# ---------------------------------------------------------------------------
-function _L23_add_method_get_impl_tag (interface, destination, meta)
-    check_arguments (my, "interface. destination, meta")
-
-    my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
-
-    new method to my.destination
-        . = "Returns implementation unique identifier."
-        .name = my.names.property_impl_tag
-
-
-        interface_create_api_argument (my.interface, method, my.meta)
-
-        new return to method
-            .enum = my.refs.class_impl_enum_tag
-        endnew
-
-        my.api_name = ".(_argument_$(my.names.c_interface_struct_api:))"
-
-        new code to method
-            . = "\
-            .(c_class_assert_macros_ptr) ($(my.api_name:));
-
-            return $(my.api_name:)->$(my.refs.c_interface_property_impl_tag);
-            "
-        endnew
-    endnew
-endfunction
-
-
-# ---------------------------------------------------------------------------
 #   Create module with 'Interface Public API'.
 # ---------------------------------------------------------------------------
 function c_module_interface_create_module_public (interface, destination, meta)
@@ -528,7 +486,6 @@ function c_module_interface_create_module_public (interface, destination, meta)
         _L23_add_method_get_inherited_api (my.interface, module, my.meta)
         _L23_add_method_check_api (my.interface, module, my.meta)
         _L23_add_method_get_api_tag (my.interface, module, my.meta)
-        _L23_add_method_get_impl_tag (my.interface, module, my.meta)
     endnew
 endfunction
 

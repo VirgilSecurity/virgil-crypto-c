@@ -93,10 +93,6 @@ static const vscf_key_api_t key_api = {
     //
     vscf_api_tag_KEY,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_RSA_PUBLIC_KEY,
-    //
     //  Return implemented asymmetric key algorithm type.
     //
     (vscf_key_api_alg_fn)vscf_rsa_public_key_alg,
@@ -120,10 +116,6 @@ static const vscf_encrypt_api_t encrypt_api = {
     //
     vscf_api_tag_ENCRYPT,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_RSA_PUBLIC_KEY,
-    //
     //  Encrypt given data.
     //
     (vscf_encrypt_api_encrypt_fn)vscf_rsa_public_key_encrypt,
@@ -143,10 +135,6 @@ static const vscf_verify_api_t verify_api = {
     //
     vscf_api_tag_VERIFY,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_RSA_PUBLIC_KEY,
-    //
     //  Verify data with given public key and signature.
     //
     (vscf_verify_api_verify_fn)vscf_rsa_public_key_verify
@@ -161,10 +149,6 @@ static const vscf_public_key_api_t public_key_api = {
     //  For interface 'public_key' MUST be equal to the 'vscf_api_tag_PUBLIC_KEY'.
     //
     vscf_api_tag_PUBLIC_KEY,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_RSA_PUBLIC_KEY,
     //
     //  Link to the inherited interface API 'key'.
     //
@@ -203,10 +187,6 @@ static const vscf_public_key_api_t public_key_api = {
 //  Compile-time known information about 'rsa public key' implementation.
 //
 static const vscf_impl_info_t info = {
-    //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_RSA_PUBLIC_KEY,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.

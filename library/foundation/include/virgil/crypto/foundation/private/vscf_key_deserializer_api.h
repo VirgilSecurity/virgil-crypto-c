@@ -104,10 +104,6 @@ struct vscf_key_deserializer_api_t {
     //
     vscf_api_tag_t api_tag;
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_t impl_tag;
-    //
     //  Deserialize given public key as an interchangeable format to the object.
     //
     vscf_key_deserializer_api_deserialize_public_key_fn deserialize_public_key_cb;
