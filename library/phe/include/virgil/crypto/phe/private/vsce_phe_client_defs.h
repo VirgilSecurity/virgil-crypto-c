@@ -37,15 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Error context.
-//  Can be used for sequential operations, i.e. parsers, to accumulate error.
-//  In this way operation is successful if all steps are successful, otherwise
-//  last occurred error code can be obtained.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -53,12 +44,40 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsce_error_ctx.h"
-#include "vsce_memory.h"
-#include "vsce_assert.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'phe client' types definition.
+// --------------------------------------------------------------------------
+
+#ifndef VSCE_PHE_CLIENT_DEFS_H_INCLUDED
+#define VSCE_PHE_CLIENT_DEFS_H_INCLUDED
+
+#include "vsce_library.h"
+
+#if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#endif
+
+#if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
+
+#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
+#endif
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -68,13 +87,26 @@
 // --------------------------------------------------------------------------
 
 //
-//  Return size of 'vsce_error_ctx_t'.
+//  Handle 'phe client' context.
 //
-VSCE_PUBLIC size_t
-vsce_error_ctx_ctx_size(void) {
+struct vsce_phe_client_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vsce_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *random;
 
-    return sizeof(vsce_error_ctx_t);
-}
+    const vsc_buffer_t *secret_key;
+
+    const vsc_buffer_t *limiter_key;
+};
 
 
 // --------------------------------------------------------------------------
@@ -84,35 +116,11 @@ vsce_error_ctx_ctx_size(void) {
 //  @end
 
 
-//
-//  Reset context to the "no error" state.
-//
-VSCE_PUBLIC void
-vsce_error_ctx_reset(vsce_error_ctx_t *error_ctx_ctx) {
-
-    VSCE_ASSERT_PTR(error_ctx_ctx);
-    error_ctx_ctx->error = vsce_SUCCESS;
+#ifdef __cplusplus
 }
+#endif
 
-//
-//  Update context with given error.
-//
-VSCE_PRIVATE void
-vsce_error_ctx_update(vsce_error_ctx_t *error_ctx_ctx, vsce_error_t error) {
 
-    VSCE_ASSERT_PTR(error_ctx_ctx);
-
-    if (error != vsce_SUCCESS) {
-        error_ctx_ctx->error = error;
-    }
-}
-
-//
-//  Reset context to the "no error" state.
-//
-VSCE_PUBLIC vsce_error_t
-vsce_error_ctx_error(const vsce_error_ctx_t *error_ctx_ctx) {
-
-    VSCE_ASSERT_PTR(error_ctx_ctx);
-    return error_ctx_ctx->error;
-}
+//  @footer
+#endif // VSCE_PHE_CLIENT_DEFS_H_INCLUDED
+//  @end

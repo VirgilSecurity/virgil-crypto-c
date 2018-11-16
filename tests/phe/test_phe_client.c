@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2018 Virgil Security Inc.
 //
 //  All rights reserved.
@@ -33,66 +31,32 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+#include "unity.h"
+#include "test_utils.h"
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_CLIENT
+#if TEST_DEPENDENCIES_AVAILABLE
+
+void test__1() {
+
+}
+
+#endif // TEST_DEPENDENCIES_AVAILABLE
+
+
 // --------------------------------------------------------------------------
+// Entrypoint.
+// --------------------------------------------------------------------------
+int
+main(void) {
+    UNITY_BEGIN();
 
-#ifndef MBEDTLS_CONFIG_H
-#define MBEDTLS_CONFIG_H
-
-
-//
-//  Common
-//
-#cmakedefine MBEDTLS_ERROR_C
-
-//
-//  Required by library vsc::foundation
-//
-#cmakedefine MBEDTLS_SHA256_C
-#cmakedefine MBEDTLS_SHA512_C
-#cmakedefine MBEDTLS_CIPHER_C
-#cmakedefine MBEDTLS_AES_C
-#cmakedefine MBEDTLS_GCM_C
-#cmakedefine MBEDTLS_MD_C
-#cmakedefine MBEDTLS_BIGNUM_C
-#cmakedefine MBEDTLS_PKCS1_V21
-#cmakedefine MBEDTLS_OID_C
-#cmakedefine MBEDTLS_RSA_C
-#cmakedefine MBEDTLS_ASN1_PARSE_C
-#cmakedefine MBEDTLS_ASN1_WRITE_C
-#cmakedefine MBEDTLS_GENPRIME
-#cmakedefine MBEDTLS_PLATFORM_ENTROPY
-#cmakedefine MBEDTLS_TIMING_C
-#cmakedefine MBEDTLS_HAVEGE_C
-
-#if !defined(MBEDTLS_PLATFORM_ENTROPY)
-#   define MBEDTLS_NO_PLATFORM_ENTROPY
+#if TEST_DEPENDENCIES_AVAILABLE
+    RUN_TEST(test__1);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
 
-//
-//  Required by library vsc::pythia
-//
-#cmakedefine MBEDTLS_CTR_DRBG_C
-#cmakedefine MBEDTLS_ENTROPY_C
-
-//
-//  Required by library vsc::phe
-//
-#cmakedefine MBEDTLS_ECP_C
-#cmakedefine MBEDTLS_ECP_DP_SECP256R1_ENABLED
-
-//
-//  Alternative implementations
-//
-#cmakedefine MBEDTLS_SHA256_ALT
-#cmakedefine MBEDTLS_SHA512_ALT
-#cmakedefine MBEDTLS_AES_ALT
-#cmakedefine MBEDTLS_GCM_ALT
-
-//
-//  Non configurable options
-//
-#define MBEDTLS_NO_DEFAULT_ENTROPY_SOURCES
-
-#include "check_config.h"
-
-#endif /* MBEDTLS_CONFIG_H */
+    return UNITY_END();
+}

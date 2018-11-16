@@ -1,0 +1,23 @@
+<class name="phe client" context="private">
+
+    <require class="phe common" scope="public"/>
+    <require class="simple swu" scope="public"/>
+
+    <dependency name="random" interface="random" project="foundation"/>
+
+    <property name="secret key" class="buffer" access="readonly"/>
+    <property name="limiter key" class="buffer" access="readonly"/>
+
+    <method name="encrypt">
+        <argument name="nc" class="buffer" access="readonly"/>
+        <argument name="ns" class="buffer" access="readonly"/>
+        <argument name="password" class="buffer" access="readonly"/>
+        <argument name="message" class="buffer" access="readonly"/>
+        <argument name="c0" class="buffer" access="readonly"/>
+        <argument name="c1" class="buffer" access="readonly"/>
+        <argument name="proof" class="buffer" access="readonly"/>
+
+        <return enum="error"/>
+    </method>
+
+</class>

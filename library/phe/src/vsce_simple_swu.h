@@ -37,15 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Error context.
-//  Can be used for sequential operations, i.e. parsers, to accumulate error.
-//  In this way operation is successful if all steps are successful, otherwise
-//  last occurred error code can be obtained.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -53,12 +44,22 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsce_error_ctx.h"
-#include "vsce_memory.h"
-#include "vsce_assert.h"
+#ifndef VSCE_SIMPLE_SWU_H_INCLUDED
+#define VSCE_SIMPLE_SWU_H_INCLUDED
+
+#include "vsce_library.h"
+#include "vsce_error.h"
+
+#include <mbedtls/bignum.h>
+#include <mbedtls/ecp.h>
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -68,13 +69,56 @@
 // --------------------------------------------------------------------------
 
 //
-//  Return size of 'vsce_error_ctx_t'.
+//  Handle 'simple swu' context.
+//
+typedef struct vsce_simple_swu_t vsce_simple_swu_t;
+
+//
+//  Return size of 'vsce_simple_swu_t'.
 //
 VSCE_PUBLIC size_t
-vsce_error_ctx_ctx_size(void) {
+vsce_simple_swu_ctx_size(void);
 
-    return sizeof(vsce_error_ctx_t);
-}
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCE_PUBLIC void
+vsce_simple_swu_init(vsce_simple_swu_t *simple_swu_ctx);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCE_PUBLIC void
+vsce_simple_swu_cleanup(vsce_simple_swu_t *simple_swu_ctx);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCE_PUBLIC vsce_simple_swu_t *
+vsce_simple_swu_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if context was allocated by the caller.
+//
+VSCE_PUBLIC void
+vsce_simple_swu_delete(vsce_simple_swu_t *simple_swu_ctx);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vsce_simple_swu_new ()'.
+//
+VSCE_PUBLIC void
+vsce_simple_swu_destroy(vsce_simple_swu_t **simple_swu_ctx_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCE_PUBLIC vsce_simple_swu_t *
+vsce_simple_swu_copy(vsce_simple_swu_t *simple_swu_ctx);
+
+VSCE_PUBLIC vsce_error_t
+vsce_simple_swu_bignum_to_point(const mbedtls_mpi *t, mbedtls_ecp_point *p);
 
 
 // --------------------------------------------------------------------------
@@ -84,35 +128,11 @@ vsce_error_ctx_ctx_size(void) {
 //  @end
 
 
-//
-//  Reset context to the "no error" state.
-//
-VSCE_PUBLIC void
-vsce_error_ctx_reset(vsce_error_ctx_t *error_ctx_ctx) {
-
-    VSCE_ASSERT_PTR(error_ctx_ctx);
-    error_ctx_ctx->error = vsce_SUCCESS;
+#ifdef __cplusplus
 }
+#endif
 
-//
-//  Update context with given error.
-//
-VSCE_PRIVATE void
-vsce_error_ctx_update(vsce_error_ctx_t *error_ctx_ctx, vsce_error_t error) {
 
-    VSCE_ASSERT_PTR(error_ctx_ctx);
-
-    if (error != vsce_SUCCESS) {
-        error_ctx_ctx->error = error;
-    }
-}
-
-//
-//  Reset context to the "no error" state.
-//
-VSCE_PUBLIC vsce_error_t
-vsce_error_ctx_error(const vsce_error_ctx_t *error_ctx_ctx) {
-
-    VSCE_ASSERT_PTR(error_ctx_ctx);
-    return error_ctx_ctx->error;
-}
+//  @footer
+#endif // VSCE_SIMPLE_SWU_H_INCLUDED
+//  @end

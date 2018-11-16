@@ -1,0 +1,4 @@
+<class name="phe common" context="none">
+    <constant name="phe server identifier length" value="32"/>
+    <constant name="phe client identifier length" value="32"/>
+</class>
