@@ -34,56 +34,50 @@
 
 #include "test_data_simple_swu.h"
 
-const byte test_simple_swu_hash1_BYTES[] = {
-        0xa1, 0x88, 0x8a, 0xf8, 0x14, 0xf6, 0x66, 0x68,
-        0x23, 0x90, 0x14, 0x7d, 0xe3, 0x85, 0xcd, 0xd5,
-        0x4d, 0xf2, 0x0b, 0x62, 0xd1, 0x08, 0x6a, 0xcf,
-        0x73, 0xbe, 0xfb, 0x51, 0x3d, 0x21, 0xe6, 0x77,
+const byte test_simple_swu_hash1_DEC[] = {
+        "f3adca11915f1edf34a228e3aed79fbb34737f028741595410b3817e69bb6f56"
 };
 
-const byte test_simple_swu_x1_BYTES[] = {
-        0xf1, 0x14, 0x2a, 0x93, 0xfa, 0xd2, 0x28, 0x32,
-        0x91, 0x07, 0x44, 0x7d, 0x88, 0x7c, 0xe8, 0x16,
-        0x76, 0xe1, 0x50, 0xd8, 0xac, 0xa8, 0xb8, 0x45,
-        0x20, 0x74, 0x20, 0x20, 0x8d, 0xdc, 0x00, 0x0f,
+const byte test_simple_swu_x1_DEC[] = {
+        "98961140665513202099949527671188598357073154743453831835087605751841592205265"
 };
 
-const byte test_simple_swu_y1_BYTES[] = {
-        0x69, 0xd7, 0xc2, 0xe3, 0xf7, 0x44, 0x8f, 0x5f,
-        0x8f, 0x69, 0x28, 0xf3, 0xdc, 0x26, 0x64, 0x14,
-        0xc4, 0x90, 0x37, 0xea, 0xf1, 0x6d, 0x79, 0x4d,
-        0x45, 0xab, 0x0d, 0x99, 0x19, 0x1d, 0x23, 0x74,
+const byte test_simple_swu_y1_DEC[] = {
+        "96901867652408139372430876548444592023045378705303176822621915144992255442028"
 };
 
-const byte test_simple_swu_hash2_BYTES[] = {
+const byte test_simple_swu_hash2_DEC[] = {
+        "0435562be4b4dc0605ef077ee015be12f3c189dcfdd830e535b076000e3d1ed3"
 };
 
-const byte test_simple_swu_x2_BYTES[] = {
+const byte test_simple_swu_x2_DEC[] = {
+        "82631351409592308865866007164583686358318012812204374400003568408405894942018"
 };
 
-const byte test_simple_swu_y2_BYTES[] = {
+const byte test_simple_swu_y2_DEC[] = {
+        "61517254438303197335701350506590825854257845121325404623337818255145552341515"
 };
 
 const vsc_data_t test_simple_swu_hash1 = {
-        test_simple_swu_hash1_BYTES, sizeof(test_simple_swu_hash1_BYTES)
+        test_simple_swu_hash1_DEC, sizeof(test_simple_swu_hash1_DEC)
 };
 
 const vsc_data_t test_simple_swu_x1 = {
-        test_simple_swu_x1_BYTES, sizeof(test_simple_swu_x1_BYTES)
+        test_simple_swu_x1_DEC, sizeof(test_simple_swu_x1_DEC)
 };
 
 const vsc_data_t test_simple_swu_y1 = {
-        test_simple_swu_y1_BYTES, sizeof(test_simple_swu_y1_BYTES)
+        test_simple_swu_y1_DEC, sizeof(test_simple_swu_y1_DEC)
 };
 
 const vsc_data_t test_simple_swu_hash2 = {
-        test_simple_swu_hash2_BYTES, sizeof(test_simple_swu_hash2_BYTES)
+        test_simple_swu_hash2_DEC, sizeof(test_simple_swu_hash2_DEC)
 };
 
 const vsc_data_t test_simple_swu_x2 = {
-        test_simple_swu_x2_BYTES, sizeof(test_simple_swu_x2_BYTES)
+        test_simple_swu_x2_DEC, sizeof(test_simple_swu_x2_DEC)
 };
 
 const vsc_data_t test_simple_swu_y2 = {
-        test_simple_swu_y2_BYTES, sizeof(test_simple_swu_y2_BYTES)
+        test_simple_swu_y2_DEC, sizeof(test_simple_swu_y2_DEC)
 };
