@@ -228,6 +228,7 @@ vsce_simple_swu_bignum_to_point(const mbedtls_mpi *t, mbedtls_ecp_point *p) {
 
     // TODO: Check errors
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
+    mbedtls_mpi_sub_int(&group.A, &group.P, 3);
 
     mbedtls_mpi alpha;
     mbedtls_mpi_init(&alpha);
@@ -295,13 +296,9 @@ vsce_simple_swu_bignum_to_point(const mbedtls_mpi *t, mbedtls_ecp_point *p) {
     //    tmp = h2 ^ ((p - 3) // 4)
     mbedtls_mpi p34;
     mbedtls_mpi_init(&p34);
-    mbedtls_mpi_lset(&p34, 4);
-    mbedtls_mpi_inv_mod(&p34, &p34, &group.P);
-    mbedtls_mpi p3;
-    mbedtls_mpi_init(&p3);
-    mbedtls_mpi_copy(&p3, &group.P);
-    mbedtls_mpi_sub_int(&p3, &p3, 3);
-    mbedtls_mpi_mul_mpi(&p34, &p34, &p3);
+    mbedtls_mpi_copy(&p34, &group.P);
+    mbedtls_mpi_sub_int(&p34, &p34, 3);
+    mbedtls_mpi_div_int(&p34, NULL, &p34, 4);
 
     mbedtls_mpi tmp;
     mbedtls_mpi_init(&tmp);
@@ -348,7 +345,6 @@ vsce_simple_swu_bignum_to_point(const mbedtls_mpi *t, mbedtls_ecp_point *p) {
     mbedtls_mpi_free(&h3);
     mbedtls_mpi_free(&h3_temp);
     mbedtls_mpi_free(&p34);
-    mbedtls_mpi_free(&p3);
     mbedtls_mpi_free(&tmp);
     mbedtls_mpi_free(&tmp22h2);
 
