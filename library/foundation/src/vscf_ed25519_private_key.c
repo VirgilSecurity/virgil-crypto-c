@@ -73,6 +73,15 @@
 // --------------------------------------------------------------------------
 //  @end
 
+static uint32_t get_tick()
+{
+    struct timespec ts;
+    uint32_t tick = 0U;
+    clock_gettime( CLOCK_REALTIME, &ts );
+    tick  = ts.tv_nsec / 1000000;
+    tick += ts.tv_sec * 1000;
+    return tick;
+}
 
 //
 //  Provides initialization of the implementation specific context.
@@ -82,7 +91,8 @@
 VSCF_PRIVATE void
 vscf_ed25519_private_key_init_ctx(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl) {
 
-    //  TODO: This is STUB. Implement me.
+	VSCF_ASSERT_PTR(ed25519_private_key_impl);
+	memset(ed25519_private_key_impl, 0, sizeof(vscf_ed25519_private_key_impl_t));
 }
 
 //
@@ -93,7 +103,8 @@ vscf_ed25519_private_key_init_ctx(vscf_ed25519_private_key_impl_t *ed25519_priva
 VSCF_PRIVATE void
 vscf_ed25519_private_key_cleanup_ctx(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl) {
 
-    //  TODO: This is STUB. Implement me.
+	VSCF_ASSERT_PTR(ed25519_private_key_impl);
+	memset(ed25519_private_key_impl, 0, sizeof(vscf_ed25519_private_key_impl_t));
 }
 
 //
@@ -102,7 +113,8 @@ vscf_ed25519_private_key_cleanup_ctx(vscf_ed25519_private_key_impl_t *ed25519_pr
 VSCF_PUBLIC size_t
 vscf_ed25519_private_key_key_len(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl) {
 
-    //  TODO: This is STUB. Implement me.
+  VSCF_ASSERT_PTR(ed25519_private_key_impl);
+  return (sizeof(ed25519_private_key_impl->secret_key));
 }
 
 //
@@ -111,7 +123,8 @@ vscf_ed25519_private_key_key_len(vscf_ed25519_private_key_impl_t *ed25519_privat
 VSCF_PUBLIC size_t
 vscf_ed25519_private_key_key_bitlen(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl) {
 
-    //  TODO: This is STUB. Implement me.
+  VSCF_ASSERT_PTR(ed25519_private_key_impl);
+	return (8*sizeof(ed25519_private_key_impl->secret_key));
 }
 
 //
@@ -121,7 +134,15 @@ vscf_ed25519_private_key_key_bitlen(vscf_ed25519_private_key_impl_t *ed25519_pri
 VSCF_PUBLIC vscf_error_t
 vscf_ed25519_private_key_generate_key(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl) {
 
-    //  TODO: This is STUB. Implement me.
+  VSCF_ASSERT_PTR(ed25519_private_key_impl);
+	srand(get_tick());
+	for(int i = 0; i < ED25519_KEY_LEN; i++) {
+		ed25519_private_key_impl->secret_key[i] = rand();
+	}
+	ed25519_private_key_impl->secret_key[0] &= 248;
+	ed25519_private_key_impl->secret_key[ED25519_KEY_LEN-1] &= 127;
+	ed25519_private_key_impl->secret_key[ED25519_KEY_LEN-1] |= 64;
+	return vscf_SUCCESS;
 }
 
 //
@@ -130,7 +151,12 @@ vscf_ed25519_private_key_generate_key(vscf_ed25519_private_key_impl_t *ed25519_p
 VSCF_PUBLIC vscf_impl_t *
 vscf_ed25519_private_key_extract_public_key(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl) {
 
-    //  TODO: This is STUB. Implement me.
+  VSCF_ASSERT_PTR(ed25519_private_key_impl);
+  vscf_ed25519_public_key_impl_t * ed25519_public_key_impl = vscf_ed25519_public_key_new();
+  VSCF_ASSERT_ALLOC(ed25519_public_key_impl != NULL);
+  (void)ed25519_get_pubkey(ed25519_public_key_impl->public_key, ed25519_private_key_impl->secret_key);
+  memcpy(ed25519_public_key_impl->signature, ed25519_private_key_impl->signature, sizeof(ed25519_private_key_impl->signature));
+  return vscf_ed25519_public_key_impl_t(ed25519_public_key_impl);
 }
 
 //
@@ -141,6 +167,7 @@ vscf_ed25519_private_key_decrypt(
         vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vsc_data_t data, vsc_buffer_t *out) {
 
     //  TODO: This is STUB. Implement me.
+		// will add in the feature
 }
 
 //
@@ -159,7 +186,10 @@ VSCF_PUBLIC vscf_error_t
 vscf_ed25519_private_key_sign(
         vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vsc_data_t data, vsc_buffer_t *signature) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(ed25519_private_key_impl);
+    VSCF_ASSERT_PTR(signature);
+    (void)ed25519_sign(ed25519_private_key_impl->signature, signature.bytes, data.bytes, data.len);
+    return vscf_SUCCESS;
 }
 
 //
@@ -168,7 +198,7 @@ vscf_ed25519_private_key_sign(
 VSCF_PUBLIC size_t
 vscf_ed25519_private_key_signature_len(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl) {
 
-    //  TODO: This is STUB. Implement me.
+    return (sizeof(ed25519_private_key_impl->signature));
 }
 
 //
