@@ -68,7 +68,7 @@
 //  Return public key API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_public_key_api_t *
-vscf_public_key_api(vscf_impl_t *impl) {
+vscf_public_key_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -91,7 +91,7 @@ vscf_public_key_key_api(const vscf_public_key_api_t *public_key_api) {
 //  Check if given object implements interface 'public key'.
 //
 VSCF_PUBLIC bool
-vscf_public_key_is_implemented(vscf_impl_t *impl) {
+vscf_public_key_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 

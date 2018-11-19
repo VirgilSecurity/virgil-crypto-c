@@ -81,7 +81,7 @@ vscr_ratchet_rng_generate_random_data(vscr_impl_t *impl, size_t size, vsc_buffer
 //  Return ratchet rng API, or NULL if it is not implemented.
 //
 VSCR_PUBLIC const vscr_ratchet_rng_api_t *
-vscr_ratchet_rng_api(vscr_impl_t *impl) {
+vscr_ratchet_rng_api(const vscr_impl_t *impl) {
 
     VSCR_ASSERT_PTR (impl);
 
@@ -93,7 +93,7 @@ vscr_ratchet_rng_api(vscr_impl_t *impl) {
 //  Check if given object implements interface 'ratchet rng'.
 //
 VSCR_PUBLIC bool
-vscr_ratchet_rng_is_implemented(vscr_impl_t *impl) {
+vscr_ratchet_rng_is_implemented(const vscr_impl_t *impl) {
 
     VSCR_ASSERT_PTR (impl);
 

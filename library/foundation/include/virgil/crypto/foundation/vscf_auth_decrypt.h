@@ -106,7 +106,7 @@ vscf_auth_decrypt_auth_decrypted_len(vscf_impl_t *impl, size_t data_len);
 //  Return auth decrypt API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_auth_decrypt_api_t *
-vscf_auth_decrypt_api(vscf_impl_t *impl);
+vscf_auth_decrypt_api(const vscf_impl_t *impl);
 
 //
 //  Return cipher auth info API.
@@ -118,7 +118,7 @@ vscf_auth_decrypt_cipher_auth_info_api(const vscf_auth_decrypt_api_t *auth_decry
 //  Check if given object implements interface 'auth decrypt'.
 //
 VSCF_PUBLIC bool
-vscf_auth_decrypt_is_implemented(vscf_impl_t *impl);
+vscf_auth_decrypt_is_implemented(const vscf_impl_t *impl);
 
 //
 //  Returns interface unique identifier.

@@ -5,7 +5,7 @@ message RegularMessage {
 	uint32 version = 1;
 	uint32 counter = 2;
 	bytes public_key = 3 [(nanopb).max_size = 32, (nanopb).fixed_length = true];
-	bytes cipher_text = 4 [(nanopb).max_size = 32768, (nanopb).fixed_length = true];
+	bytes cipher_text = 4 [(nanopb).max_size = 64, (nanopb).fixed_length = true];
 }
 
 message PrekeyMessage {

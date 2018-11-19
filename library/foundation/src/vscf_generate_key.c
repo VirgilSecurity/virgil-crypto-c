@@ -82,7 +82,7 @@ vscf_generate_key(vscf_impl_t *impl) {
 //  Return generate key API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_generate_key_api_t *
-vscf_generate_key_api(vscf_impl_t *impl) {
+vscf_generate_key_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -94,7 +94,7 @@ vscf_generate_key_api(vscf_impl_t *impl) {
 //  Check if given object implements interface 'generate key'.
 //
 VSCF_PUBLIC bool
-vscf_generate_key_is_implemented(vscf_impl_t *impl) {
+vscf_generate_key_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
