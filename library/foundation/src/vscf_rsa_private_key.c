@@ -302,6 +302,7 @@ vscf_rsa_private_key_extract_public_key(vscf_rsa_private_key_impl_t *rsa_private
     VSCF_ASSERT_PTR(rsa_private_key_impl);
     VSCF_ASSERT(mbedtls_rsa_check_pubkey(&rsa_private_key_impl->rsa_ctx) == 0);
 
+#if VSCF_RSA_PUBLIC_KEY
     vscf_rsa_public_key_impl_t *rsa_public_key_impl = vscf_rsa_public_key_new();
     VSCF_ASSERT_ALLOC(rsa_public_key_impl != NULL);
 
@@ -333,6 +334,10 @@ vscf_rsa_private_key_extract_public_key(vscf_rsa_private_key_impl_t *rsa_private
     }
 
     return vscf_rsa_public_key_impl(rsa_public_key_impl);
+#else
+    VSCF_ASSERT(VSCF_RSA_PUBLIC_KEY && "VSCF_RSA_PUBLIC_KEY feature is diabled");
+    return NULL;
+#endif
 }
 
 //
