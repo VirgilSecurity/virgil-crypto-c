@@ -121,7 +121,7 @@ vscf_mac_stream_reset(vscf_impl_t *impl) {
 //  Return mac stream API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_mac_stream_api_t *
-vscf_mac_stream_api(vscf_impl_t *impl) {
+vscf_mac_stream_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -144,7 +144,7 @@ vscf_mac_stream_mac_info_api(const vscf_mac_stream_api_t *mac_stream_api) {
 //  Check if given object implements interface 'mac stream'.
 //
 VSCF_PUBLIC bool
-vscf_mac_stream_is_implemented(vscf_impl_t *impl) {
+vscf_mac_stream_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 

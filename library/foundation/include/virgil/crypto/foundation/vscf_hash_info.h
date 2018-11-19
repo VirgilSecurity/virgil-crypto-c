@@ -93,13 +93,13 @@ vscf_hash_info_block_len(const vscf_hash_info_api_t *hash_info_api);
 //  Return hash info API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_hash_info_api_t *
-vscf_hash_info_api(vscf_impl_t *impl);
+vscf_hash_info_api(const vscf_impl_t *impl);
 
 //
 //  Check if given object implements interface 'hash info'.
 //
 VSCF_PUBLIC bool
-vscf_hash_info_is_implemented(vscf_impl_t *impl);
+vscf_hash_info_is_implemented(const vscf_impl_t *impl);
 
 //
 //  Returns interface unique identifier.
