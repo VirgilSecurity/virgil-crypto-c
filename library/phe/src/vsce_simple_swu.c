@@ -49,6 +49,8 @@
 #include "vsce_assert.h"
 #include "vsce_simple_swu_defs.h"
 
+#include <virgil/crypto/foundation/vscf_sha512.h>
+
 // clang-format on
 //  @end
 
@@ -219,7 +221,37 @@ vsce_simple_swu_cleanup_ctx(vsce_simple_swu_t *simple_swu_ctx) {
 }
 
 VSCE_PUBLIC vsce_error_t
-vsce_simple_swu_bignum_to_point(const mbedtls_mpi *t, mbedtls_ecp_point *p) {
+vsce_simple_swu_data_to_point(vsce_simple_swu_t *simple_swu_ctx, vsc_data_t data, mbedtls_ecp_point *p) {
+
+    VSCE_ASSERT_PTR(simple_swu_ctx);
+
+    vscf_sha512_impl_t *sha512 = vscf_sha512_new();
+
+    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
+
+    vscf_sha512_hash(data, buffer);
+
+    mbedtls_mpi t;
+    mbedtls_mpi_init(&t);
+
+    vsc_data_t buff_data = vsc_data_slice_beg(vsc_buffer_data(buffer), 0, vsce_simple_swu_HASH_LEN);
+    mbedtls_mpi_read_binary(&t, buff_data.bytes, buff_data.len);
+
+    vsce_error_t error = vsce_simple_swu_bignum_to_point(simple_swu_ctx, &t, p);
+
+    mbedtls_mpi_free(&t);
+    vscf_sha512_destroy(&sha512);
+    vsc_buffer_destroy(&buffer);
+
+    return error;
+}
+
+VSCE_PUBLIC vsce_error_t
+vsce_simple_swu_bignum_to_point(vsce_simple_swu_t *simple_swu_ctx, const mbedtls_mpi *t, mbedtls_ecp_point *p) {
+
+    VSCE_ASSERT_PTR(simple_swu_ctx);
+    VSCE_ASSERT_PTR(t);
+    VSCE_ASSERT_PTR(p);
 
     // TODO: Optimize
 
