@@ -188,6 +188,7 @@ vscf_ed25519_private_key_sign(
 
     VSCF_ASSERT_PTR(ed25519_private_key_impl);
     VSCF_ASSERT_PTR(signature);
+    VSCF_ASSERT_PTR(data.bytes);
     (void)ed25519_sign(ed25519_private_key_impl->signature, signature.bytes, data.bytes, data.len);
     return vscf_SUCCESS;
 }
@@ -208,7 +209,9 @@ VSCF_PUBLIC vscf_error_t
 vscf_ed25519_private_key_export_private_key(
         vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vsc_buffer_t *out) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(ed25519_private_key_impl);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    
 }
 
 //
@@ -227,5 +230,7 @@ VSCF_PUBLIC vscf_error_t
 vscf_ed25519_private_key_import_private_key(
         vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vsc_data_t data) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(ed25519_private_key_impl);
+    VSCF_ASSERT_PTR(data.bytes);
+
 }
