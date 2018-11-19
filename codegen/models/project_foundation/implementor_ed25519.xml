@@ -6,10 +6,10 @@
 
       <context>
         <require header="ed25519/ed25519.h"/>
-        <property name="public_key" type="byte" access="readwrite">
+        <property name="public_key" type="byte" library="ed25519" access="readwrite">
           <array length="fixed" length_constant="ED25519_KEY_LEN"/>
         </property>
-        <property name="signature" type="byte" access="readwrite">
+        <property name="signature" type="byte" library="ed25519" access="readwrite">
           <array length="fixed" length_constant="ED25519_KEY_LEN"/>
         </property>
       </context>
@@ -30,10 +30,10 @@
 
       <context>
         <require header="ed25519/ed25519.h"/>
-        <property name="secret_key" type="byte" access="readwrite">
+        <property name="secret_key" type="byte" library="ed25519" access="readwrite">
           <array length="fixed" length_constant="ED25519_KEY_LEN"/>
         </property>
-        <property name="signature" type="byte" access="readwrite">
+        <property name="signature" type="byte" library="ed25519" access="readwrite">
           <array length="fixed" length_constant="ED25519_SIG_LEN"/>
         </property>
       </context>
