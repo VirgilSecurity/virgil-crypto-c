@@ -43,5 +43,9 @@ extern const vsc_data_t test_simple_swu_y1;
 extern const vsc_data_t test_simple_swu_hash2;
 extern const vsc_data_t test_simple_swu_x2;
 extern const vsc_data_t test_simple_swu_y2;
+extern const vsc_data_t test_simple_swu_data3;
+extern const vsc_data_t test_simple_swu_x3;
+extern const vsc_data_t test_simple_swu_y3;
+
 
 #endif //VIRGIL_CRYPTO_C_TOP_TEST_DATA_SIMPLE_SWU_H
