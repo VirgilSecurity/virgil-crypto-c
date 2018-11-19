@@ -50,80 +50,338 @@ gsl from "php_codegen.gsl"
 #   Create module with PHP protocol from the abstract 'interface' notion.
 # ---------------------------------------------------------------------------
 function php_create_interface_module (interface, destination, wrapper, meta)
-    echo "create_interface_module"
+    echo "php_create_interface_module"
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Create module with PHP class from the abstract 'class' notion.
 # ---------------------------------------------------------------------------
 function php_create_class_module (class, destination, wrapper, meta)
-    echo "create_class_module"
+    echo "php_create_class_module"
 endfunction
-
 
 # ---------------------------------------------------------------------------
 #   Add auto-resolving attributes:
 #       - uid.
 # ---------------------------------------------------------------------------
 function php_module_resolve (php_module, wrapper)
-    echo "php_module_resolve"
+    check_arguments (my, "php_module, wrapper", my)
+
+    echo_trace ("Resolving <$(name (my.php_module)) name=\"$(my.php_module.name:)\"/>", my)
+
+    assert_attribute (my.php_module, "name", my)
+
+    #   Resolve UIDs
+    php_module_resolve_uids (my.php_module)
 endfunction
 
-# ===========================================================================
-#   Module resolution.
-# ===========================================================================
+# ---------------------------------------------------------------------------
+#   Resolve UIDs for given component and all inner components.
+# ---------------------------------------------------------------------------
+function php_module_resolve_uids (php_component, parent_uid)
+    check_arguments (my, "php_component", my)
+
+    if defined (my.parent_uid) & string.prefixed (my.parent_uid, "php_module")
+        my.parent_uid = # Undefined
+    endif
+
+    my.component_name = name (my.php_component)
+    if  defined (my.parent_uid) & string.prefixed (my.component_name, "php_")
+        regexp.match ("php_(.+)", my.component_name, my.component_name)
+    endif
+
+    my.php_component.uid = make_id (my.parent_uid, my.component_name, my.php_component.name)
+
+    for my.php_component. as inner_component where is_item (inner_component) & defined (inner_component.name)
+        php_module_resolve_uids (inner_component, my.php_component.uid)
+    endfor
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Setup and check default and automatically resolved attributes.
 # ---------------------------------------------------------------------------
 function php_resolve (project, wrapper)
-    echo "php_resolve"
+    check_arguments (my, "project, wrapper", my)
+
+    echo_info ("Resolve <wrapper lang=\"$(my.wrapper.lang:)\"/> for project: '$(my.project.name:)'", my)
+
+    assert_attribute (my.wrapper, "lang", my)
+    assert_attributes (my.project, "name, prefix, framework", my)
+    assert_item (my.project, "license", my)
+
+    my.wrapper.project = my.project.name
+    my.wrapper.prefix = my.project.prefix
+    my.wrapper.framework = my.project.framework
+    my.wrapper.namespace = "$(my.project.namespace:Pascal)"
+    my.wrapper.namespace_dir = my.wrapper.namespace
+    my.wrapper.source_dir = \
+            cat_path ("../wrappers/$(my.wrapper.lang:c,lower)", "VirgilCrypto777", my.wrapper.namespace_dir)
+    copy my.project->license to my.wrapper
+
+    new php_import to my.wrapper
+        .framework = "Foundation"
+    endnew
+
+    new php_import to my.wrapper
+        .framework = my.wrapper.framework
+    endnew
+
+    for my.project.require where defined (0.project) & string_equal (0.feature, "library")
+        new php_import to my.wrapper
+            .framework = make_ref_php (make_id ("project", require.project, "framework name"))
+        endnew
+    endfor
 endfunction
 
-# ===========================================================================
-#   Create modules.
-# ===========================================================================
-
 # ---------------------------------------------------------------------------
-#   Create module that contains Swift specific project information.
+#   Create module that contains PHP specific project information.
 # ---------------------------------------------------------------------------
 function php_create_project_module (project, destination, wrapper)
-    echo "qwerty_create_project"
+    check_arguments (my, "wrapper, destination, wrapper", my)
+
+    new php_project to my.destination
+        . = my.project. ?
+
+        new php_uid to php_project
+            .name = my.wrapper.namespace
+            .uid = "php_framework_name"
+        endnew
+    endnew
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Generate project files.
 # ---------------------------------------------------------------------------
 function php_generate_project (source, wrapper)
-    echo "qwerty_generate_project"
+    check_arguments (my, "source, wrapper", my)
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Generate source files from <php_module/> entities.
 # ---------------------------------------------------------------------------
 function php_generate_sources (source, wrapper)
-    echo "qwerty_generate_sources"
+    check_arguments (my, "source, wrapper", my)
+
+    assert_attribute (my.wrapper, "source_dir", my)
+
+    if -1 = directory.create (my.wrapper.source_dir)
+        echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
+    endif
+
+    for my.source.php_module
+        echo_trace ("Generate PHP files from <$(name (php_module)) name = \"$(c_module.name:)\"/>", my)
+
+        output php_module.source_file_path
+
+        php_insert_prologue (php_module)
+        newline ()
+
+        for php_module.php_import
+            newline_if (first ())
+            php_insert_import (php_import)
+        endfor
+
+        for php_module.php_enum
+            newline ()
+            php_insert_enum (php_enum)
+        endfor
+
+        for php_module.php_protocol
+            newline ()
+            php_insert_protocol (php_protocol)
+        endfor
+
+        for php_module.php_class
+            newline ()
+            php_insert_class (php_class)
+        endfor
+
+        for php_module.php_struct
+            newline ()
+            php_insert_struct (php_struct)
+        endfor
+
+        for php_module.php_extension
+            newline ()
+            php_insert_extension (php_extension)
+        endfor
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert: license + caution + description
+# ---------------------------------------------------------------------------
+function php_insert_prologue (php_module)
+    check_arguments (my, "php_module", my)
+
+    assert_item (my.php_module, "php_license", my)
+
+    php_insert_description (my.php_module->php_license)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert description of the given object.
+# ---------------------------------------------------------------------------
+function php_insert_description (obj, tab_count)
+    my.desciption = my.obj. ?
+    my.tab_count ?= 0
+    if string_empty (my.desciption)
+        return
+    endif
+    php_insert_code (my.desciption, my.tab_count)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert given multiline code.
+# ---------------------------------------------------------------------------
+function php_insert_code (code, tab_count)
+    check_argument (my, "code", my)
+
+    my.code = "$(my.code:left,no)"
+    my.code = string_trim (my.code)
+    my.code = code_collapse_spaces (my.code)
+
+    my.code = string_indent (my.code, my.tab_count)
+    my.code = string_multi_rtrim (my.code)
+
+    out (my.code)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: import
+# ---------------------------------------------------------------------------
+function php_insert_import (php_import)
+    check_arguments (my, "php_import", my)
+
+    assert_attribute (my.php_import, "framework", my)
+
+    php_insert_code ("import $(my.php_import.framework:)")
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Create module with base protocol that handles C context.
 # ---------------------------------------------------------------------------
 function php_create_c_context_module (destination, wrapper, meta)
-    echo "qwerty_php_create_c_context_module"
+    check_arguments (my, "destination, wrapper, meta", my)
+
+    my.name = "CContext"
+
+    new php_module to my.destination
+        . = "/// This is base protocol for all types that wrap C interfaces."
+        .name = my.name
+        .source_file_name = 0.name + ".php"
+        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+
+        new php_license to php_module
+            . = php_format_license (my.wrapper->license) ?
+        endnew
+
+        new php_import to php_module
+            .framework = "Foundation"
+        endnew
+
+        new php_protocol to php_module
+            .name = my.name
+            .objc_name = php_derive_protocol_objc_name (php_protocol, my.wrapper)
+            .visibility = "public"
+
+            php_create_class_property_context (php_protocol)
+        endnew
+    endnew
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Create module with PHP enum from the abstract 'enum' notion.
 # ---------------------------------------------------------------------------
 function php_create_enum_module (enum, destination, wrapper, meta)
- echo "qwerty_php_create_enum_module"
+ echo "php_create_enum_module"
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Create module with PHP class from the abstract 'implementation' notion.
 # ---------------------------------------------------------------------------
 function php_create_implementation_module (implementation, destination, wrapper, meta)
-    echo "qwerty_php_create_implementation_module"
+    echo "php_create_implementation_module"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted multiline commented string.
+# ---------------------------------------------------------------------------
+function php_format_description (obj)
+    if ! defined (my.obj.)
+        return
+    endif
+
+    my.str = my.obj.
+    my.str = string_indent (my.str)
+    my.str = "/// $(my.str:left, block, no)$(terminator)"
+    my.str = string_multi_rtrim (my.str)
+
+    return my.str
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return multiline formatted string with license.
+# ---------------------------------------------------------------------------
+function php_format_license(license)
+    return php_format_description (my.license) ?
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the PHP class.
+# ---------------------------------------------------------------------------
+function php_derive_class_name (class, wrapper)
+    check_arguments (my, "class", my)
+
+    assert_attribute_one_of (my.class, "name", my)
+
+    return php_derive_class_name_str (my.class.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the PHP class.
+# ---------------------------------------------------------------------------
+function php_derive_class_name_str (name)
+    check_arguments (my, "name", my)
+
+    return "$(my.name:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the Objective-C protocol.
+# ---------------------------------------------------------------------------
+function php_derive_protocol_objc_name (php_protocol, wrapper)
+    check_arguments (my, "php_protocol, wrapper", my)
+
+    return "$(my.wrapper.prefix:UPPER)$(my.php_protocol.name:)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create <php_property/> that handles underlying C context.
+# ---------------------------------------------------------------------------
+function php_create_class_property_context (destination, class)
+    check_arguments (my, "destination", my)
+
+    new php_property to my.destination
+        . = "/// Handle underlying C context."
+        .name = "c_ctx"
+        .type = php_derive_class_context_type (my.class)
+        .access = "readonly"
+        .visibility = "public"
+
+        return php_property
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return PHP type for class context.
+# ---------------------------------------------------------------------------
+function php_derive_class_context_type (class)
+    if defined (my.class) & string_equal (my.class.context, "public")
+        return "UnsafeMutablePointer<$(class_derive_c_type(my.class))>"
+    else
+        return "OpaquePointer"
+    endif
 endfunction
 
 .endtemplate
