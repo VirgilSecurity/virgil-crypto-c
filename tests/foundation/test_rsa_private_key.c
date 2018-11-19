@@ -128,6 +128,8 @@ test__rsa_private_key_decrypt__with_imported_2048_PRIVATE_KEY_PKCS1_and_2048_ENC
 void
 test__rsa_private_key_extract_public_key__from_imported_2048_PRIVATE_KEY_PKCS1__when_exported_equals_2048_PUBLIC_KEY_PKCS1(
         void) {
+
+#if VSCF_RSA_PUBLIC_KEY
     //  Setup dependencies
     vscf_rsa_private_key_impl_t *private_key_impl = vscf_rsa_private_key_new();
 
@@ -156,6 +158,9 @@ test__rsa_private_key_extract_public_key__from_imported_2048_PRIVATE_KEY_PKCS1__
     vscf_rsa_private_key_destroy(&private_key_impl);
     vscf_impl_destroy(&public_key_impl);
     vsc_buffer_destroy(&exported_key_buf);
+#else
+    TEST_IGNORE_MESSAGE("VSCF_RSA_PUBLIC_KEY is disabled");
+#endif
 }
 
 void
