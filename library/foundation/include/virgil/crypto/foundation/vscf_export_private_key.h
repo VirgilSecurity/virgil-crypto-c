@@ -105,13 +105,13 @@ vscf_export_private_key_exported_private_key_len(vscf_impl_t *impl);
 //  Return export private key API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_export_private_key_api_t *
-vscf_export_private_key_api(vscf_impl_t *impl);
+vscf_export_private_key_api(const vscf_impl_t *impl);
 
 //
 //  Check if given object implements interface 'export private key'.
 //
 VSCF_PUBLIC bool
-vscf_export_private_key_is_implemented(vscf_impl_t *impl);
+vscf_export_private_key_is_implemented(const vscf_impl_t *impl);
 
 //
 //  Returns interface unique identifier.

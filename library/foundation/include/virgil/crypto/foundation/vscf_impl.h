@@ -110,7 +110,7 @@ typedef struct vscf_impl_t vscf_impl_t;
 //  Or NULL if object does not implement requested 'API'.
 //
 VSCF_PUBLIC const vscf_api_t *
-vscf_impl_api(vscf_impl_t *impl, vscf_api_tag_t api_tag);
+vscf_impl_api(const vscf_impl_t *impl, vscf_api_tag_t api_tag);
 
 //
 //  Return unique 'Implementation TAG'.

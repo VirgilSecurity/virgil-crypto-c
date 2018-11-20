@@ -95,13 +95,13 @@ vscf_verify(vscf_impl_t *impl, vsc_data_t data, vsc_data_t signature);
 //  Return verify API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_verify_api_t *
-vscf_verify_api(vscf_impl_t *impl);
+vscf_verify_api(const vscf_impl_t *impl);
 
 //
 //  Check if given object implements interface 'verify'.
 //
 VSCF_PUBLIC bool
-vscf_verify_is_implemented(vscf_impl_t *impl);
+vscf_verify_is_implemented(const vscf_impl_t *impl);
 
 //
 //  Returns interface unique identifier.
