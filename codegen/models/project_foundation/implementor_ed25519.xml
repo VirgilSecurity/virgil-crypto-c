@@ -20,7 +20,6 @@
       <interface name="verify"/>
       <interface name="export public key"/>
       <interface name="import public key"/>
-      <interface name="compute shared key"/>
 
     </implementation>
 
@@ -45,6 +44,7 @@
       <interface name="sign"/>
       <interface name="export private key"/>
       <interface name="import private key"/>
+      <interface name="compute shared key"/>
 
     </implementation>
 </implementor>
