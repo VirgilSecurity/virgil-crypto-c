@@ -82,8 +82,8 @@
 VSCF_PRIVATE void
 vscf_ed25519_public_key_init_ctx(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key_impl);
-	memset(ed25519_private_key_impl->public_key, 0, sizeof(ed25519_private_key_impl->public_key));
+    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    memset(ed25519_public_key_impl->public_key, 0, sizeof(ed25519_public_key_impl->public_key));
 }
 
 //
@@ -94,8 +94,8 @@ vscf_ed25519_public_key_init_ctx(vscf_ed25519_public_key_impl_t *ed25519_public_
 VSCF_PRIVATE void
 vscf_ed25519_public_key_cleanup_ctx(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key_impl);
-	memset(ed25519_private_key_impl->public_key, 0, sizeof(ed25519_private_key_impl->public_key));
+    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    memset(ed25519_public_key_impl->public_key, 0, sizeof(ed25519_public_key_impl->public_key));
 }
 
 //
@@ -104,8 +104,8 @@ vscf_ed25519_public_key_cleanup_ctx(vscf_ed25519_public_key_impl_t *ed25519_publ
 VSCF_PUBLIC size_t
 vscf_ed25519_public_key_key_len(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key_impl);
-    return sizeof(ed25519_private_key_impl->public_key);
+    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    return sizeof(ed25519_public_key_impl->public_key);
 }
 
 //
@@ -114,16 +114,16 @@ vscf_ed25519_public_key_key_len(vscf_ed25519_public_key_impl_t *ed25519_public_k
 VSCF_PUBLIC size_t
 vscf_ed25519_public_key_key_bitlen(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key_impl);
-    return (8*sizeof(ed25519_private_key_impl->public_key));
+    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    return (8*sizeof(ed25519_public_key_impl->public_key));
 }
 
 //
 //  Encrypt given data.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_public_key_encrypt(
-        vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_data_t data, vsc_buffer_t *out) {
+vscf_ed25519_public_key_encrypt(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_data_t data,
+        vsc_buffer_t *out) {
 
     //  TODO: This is STUB. Implement me.
 }
@@ -141,10 +141,10 @@ vscf_ed25519_public_key_encrypted_len(vscf_ed25519_public_key_impl_t *ed25519_pu
 //  Verify data with given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_ed25519_public_key_verify(
-        vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_data_t data, vsc_data_t signature) {
+vscf_ed25519_public_key_verify(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_data_t data,
+        vsc_data_t signature) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key_impl);
+    VSCF_ASSERT_PTR(ed25519_public_key_impl);
     VSCF_ASSERT_PTR(signature);
     VSCF_ASSERT_PTR(data.bytes);
     int ret = ed25519_verify(signature.bytes, ed25519_public_key_impl->public_key, data.bytes, data.len);
@@ -157,12 +157,13 @@ vscf_ed25519_public_key_verify(
 VSCF_PUBLIC vscf_error_t
 vscf_ed25519_public_key_export_public_key(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_buffer_t *out) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key_impl);
+    VSCF_ASSERT_PTR(ed25519_public_key_impl);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     byte* ptr = vsc_buffer_ptr(out);
     size_t available = vsc_buffer_left(out);
-    VSCF_ASSERT(available >= sizeof(ed25519_private_key_impl->public_key));
-    memcpy(ptr, ed25519_private_key_impl->public_key, sizeof(ed25519_private_key_impl->public_key));
+    VSCF_ASSERT(available >= sizeof(ed25519_public_key_impl->public_key));
+    conv_cpymem(ptr, ed25519_public_key_impl->public_key, sizeof(ed25519_public_key_impl->public_key), 0);
+    return vscf_SUCCESS;
 }
 
 //
@@ -171,8 +172,8 @@ vscf_ed25519_public_key_export_public_key(vscf_ed25519_public_key_impl_t *ed2551
 VSCF_PUBLIC size_t
 vscf_ed25519_public_key_exported_public_key_len(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key_impl);
-    return sizeof(ed25519_private_key_impl->public_key);
+    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    return sizeof(ed25519_public_key_impl->public_key);
 }
 
 //
@@ -181,27 +182,9 @@ vscf_ed25519_public_key_exported_public_key_len(vscf_ed25519_public_key_impl_t *
 VSCF_PUBLIC vscf_error_t
 vscf_ed25519_public_key_import_public_key(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_data_t data) {
 
-    //  TODO: This is STUB. Implement me.
-    //convert from Little endian to bigendian
-}
-
-//
-//  Compute shared key for 2 asymmetric keys.
-//  Note, shared key can be used only for symmetric cryptography.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_ed25519_public_key_compute_shared_key(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl,
-        const vscf_impl_t *public_key, vsc_buffer_t *shared_key) {
-
-    //  TODO: This is STUB. Implement me.
-    //  should be in prived
-}
-
-//
-//  Return number of bytes required to hold shared key.
-//
-VSCF_PUBLIC size_t
-vscf_ed25519_public_key_shared_key_len(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
-
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    VSCF_ASSERT_PTR(data.bytes);
+    VSCF_ASSERT(data.len <= sizeof(ed25519_public_key_impl->public_key));
+    conv_cpymem(ed25519_public_key_impl->public_key, data.bytes, data.len, 1);
+    return vscf_SUCCESS;
 }

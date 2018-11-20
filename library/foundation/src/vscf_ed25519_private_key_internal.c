@@ -69,6 +69,8 @@
 #include "vscf_export_private_key_api.h"
 #include "vscf_import_private_key.h"
 #include "vscf_import_private_key_api.h"
+#include "vscf_compute_shared_key.h"
+#include "vscf_compute_shared_key_api.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -240,6 +242,30 @@ static const vscf_import_private_key_api_t import_private_key_api = {
 };
 
 //
+//  Configuration of the interface API 'compute shared key api'.
+//
+static const vscf_compute_shared_key_api_t compute_shared_key_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'compute_shared_key' MUST be equal to the 'vscf_api_tag_COMPUTE_SHARED_KEY'.
+    //
+    vscf_api_tag_COMPUTE_SHARED_KEY,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ED25519_PRIVATE_KEY,
+    //
+    //  Compute shared key for 2 asymmetric keys.
+    //  Note, shared key can be used only for symmetric cryptography.
+    //
+    (vscf_compute_shared_key_api_compute_shared_key_fn)vscf_ed25519_private_key_compute_shared_key,
+    //
+    //  Return number of bytes required to hold shared key.
+    //
+    (vscf_compute_shared_key_api_shared_key_len_fn)vscf_ed25519_private_key_shared_key_len
+};
+
+//
 //  Compile-time known information about 'ed25519 private key' implementation.
 //
 static const vscf_impl_info_t info = {
@@ -381,6 +407,8 @@ static const vscf_api_t *
 vscf_ed25519_private_key_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
+        case vscf_api_tag_COMPUTE_SHARED_KEY:
+            return (const vscf_api_t *) &compute_shared_key_api;
         case vscf_api_tag_DECRYPT:
             return (const vscf_api_t *) &decrypt_api;
         case vscf_api_tag_EXPORT_PRIVATE_KEY:

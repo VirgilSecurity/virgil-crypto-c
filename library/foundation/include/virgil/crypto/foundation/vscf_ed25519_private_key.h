@@ -211,6 +211,20 @@ vscf_ed25519_private_key_exported_private_key_len(vscf_ed25519_private_key_impl_
 VSCF_PUBLIC vscf_error_t
 vscf_ed25519_private_key_import_private_key(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vsc_data_t data);
 
+//
+//  Compute shared key for 2 asymmetric keys.
+//  Note, shared key can be used only for symmetric cryptography.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_ed25519_private_key_compute_shared_key(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl,
+        const vscf_impl_t *public_key, vsc_buffer_t *shared_key);
+
+//
+//  Return number of bytes required to hold shared key.
+//
+VSCF_PUBLIC size_t
+vscf_ed25519_private_key_shared_key_len(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
