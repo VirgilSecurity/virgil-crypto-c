@@ -83,6 +83,18 @@ static uint32_t get_tick()
     return tick;
 }
 
+static void * conv_cpymem(void *dest, const void *src, size_t len, int be)
+{
+    byte *d = dest;
+    const byte *s = src;
+    while (len--) {
+        if (be) *d = htonl(*s);
+        else *d = ntohl(*s);
+        d++; s++;
+    }
+    return dest;
+}
+
 //
 //  Provides initialization of the implementation specific context.
 //  Note, this method is called automatically when method vscf_ed25519_private_key_init() is called.
@@ -155,7 +167,7 @@ vscf_ed25519_private_key_extract_public_key(vscf_ed25519_private_key_impl_t *ed2
   vscf_ed25519_public_key_impl_t * ed25519_public_key_impl = vscf_ed25519_public_key_new();
   VSCF_ASSERT_ALLOC(ed25519_public_key_impl != NULL);
   (void)ed25519_get_pubkey(ed25519_public_key_impl->public_key, ed25519_private_key_impl->secret_key);
-  memcpy(ed25519_public_key_impl->signature, ed25519_private_key_impl->signature, sizeof(ed25519_private_key_impl->signature));
+  conv_cpymem(ed25519_public_key_impl->signature, ed25519_private_key_impl->signature, sizeof(ed25519_private_key_impl->signature), 0);
   return vscf_ed25519_public_key_impl_t(ed25519_public_key_impl);
 }
 
@@ -214,7 +226,7 @@ vscf_ed25519_private_key_export_private_key(
     byte* ptr = vsc_buffer_ptr(out);
     size_t available = vsc_buffer_left(out);
     VSCF_ASSERT(available >= sizeof(ed25519_private_key_impl->secret_key));
-    memcpy(ptr, ed25519_private_key_impl->secret_key, sizeof(ed25519_private_key_impl->secret_key));
+    conv_cpymem(ptr, ed25519_private_key_impl->secret_key, sizeof(ed25519_private_key_impl->secret_key), 0);
 }
 
 //
@@ -236,5 +248,5 @@ vscf_ed25519_private_key_import_private_key(
 
     VSCF_ASSERT_PTR(ed25519_private_key_impl);
     VSCF_ASSERT_PTR(data.bytes);
-    
+
 }
