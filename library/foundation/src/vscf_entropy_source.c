@@ -94,7 +94,7 @@ vscf_entropy_source_gather(vscf_impl_t *impl, size_t len, vsc_buffer_t *out) {
 //  Return entropy source API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_entropy_source_api_t *
-vscf_entropy_source_api(vscf_impl_t *impl) {
+vscf_entropy_source_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -106,7 +106,7 @@ vscf_entropy_source_api(vscf_impl_t *impl) {
 //  Check if given object implements interface 'entropy source'.
 //
 VSCF_PUBLIC bool
-vscf_entropy_source_is_implemented(vscf_impl_t *impl) {
+vscf_entropy_source_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 

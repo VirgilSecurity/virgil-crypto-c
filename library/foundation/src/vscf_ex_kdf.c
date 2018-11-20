@@ -82,7 +82,7 @@ vscf_ex_kdf_derive(vscf_impl_t *impl, vsc_data_t data, vsc_data_t salt, vsc_data
 //  Return ex kdf API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_ex_kdf_api_t *
-vscf_ex_kdf_api(vscf_impl_t *impl) {
+vscf_ex_kdf_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -94,7 +94,7 @@ vscf_ex_kdf_api(vscf_impl_t *impl) {
 //  Check if given object implements interface 'ex kdf'.
 //
 VSCF_PUBLIC bool
-vscf_ex_kdf_is_implemented(vscf_impl_t *impl) {
+vscf_ex_kdf_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 

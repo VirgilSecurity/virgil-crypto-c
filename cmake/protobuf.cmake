@@ -81,7 +81,8 @@ function(target_protobuf_sources target)
                 OUTPUT
                     ${proto_file_name}.pb.h ${proto_file_name}.pb.c
                 COMMAND
-                    "${PROTOC_EXE}" --nanopb_out=. --proto_path="${proto_file_path}" "${proto_file}"
+                    "${PROTOC_EXE}" --nanopb_out=-f"${proto_file_path}/${proto_file_name}.options":.
+                                    --proto_path="${proto_file_path}" "${proto_file}"
                 DEPENDS
                     "${proto_file}"
                 COMMENT "Processing protobuf model: ${proto_file}"
