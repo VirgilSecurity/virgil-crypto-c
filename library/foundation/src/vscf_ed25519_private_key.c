@@ -92,7 +92,7 @@ VSCF_PRIVATE void
 vscf_ed25519_private_key_init_ctx(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl) {
 
 	VSCF_ASSERT_PTR(ed25519_private_key_impl);
-	memset(ed25519_private_key_impl, 0, sizeof(vscf_ed25519_private_key_impl_t));
+	memset(ed25519_private_key_impl->secret_key, 0, sizeof(ed25519_private_key_impl->secret_key));
 }
 
 //
@@ -211,7 +211,10 @@ vscf_ed25519_private_key_export_private_key(
 
     VSCF_ASSERT_PTR(ed25519_private_key_impl);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    
+    byte* ptr = vsc_buffer_ptr(out);
+    size_t available = vsc_buffer_left(out);
+    VSCF_ASSERT(available >= sizeof(ed25519_private_key_impl->secret_key));
+    memcpy(ptr, ed25519_private_key_impl->secret_key, sizeof(ed25519_private_key_impl->secret_key));
 }
 
 //
@@ -220,7 +223,8 @@ vscf_ed25519_private_key_export_private_key(
 VSCF_PUBLIC size_t
 vscf_ed25519_private_key_exported_private_key_len(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(ed25519_private_key_impl);
+    return sizeof(ed25519_private_key_impl->secret_key);
 }
 
 //
@@ -232,5 +236,5 @@ vscf_ed25519_private_key_import_private_key(
 
     VSCF_ASSERT_PTR(ed25519_private_key_impl);
     VSCF_ASSERT_PTR(data.bytes);
-
+    
 }
