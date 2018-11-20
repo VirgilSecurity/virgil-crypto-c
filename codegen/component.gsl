@@ -1534,9 +1534,9 @@ endfunction
 # ###########################################################################
 
 # ---------------------------------------------------------------------------
-#   Add 'impl' argument to the destination with 'readwrite' access.
+#   Add 'impl' argument to the destination with given ot 'readwrite' access.
 # ---------------------------------------------------------------------------
-function component_create_argument_impl (destination, meta)
+function component_create_argument_impl (destination, meta, access)
     check_arguments (my, "destination, meta", my)
 
     my.names = meta_names (my.meta)
@@ -1545,7 +1545,7 @@ function component_create_argument_impl (destination, meta)
     scope my.argument
         .name = my.names.argument_impl
         .class = my.names.type_impl
-        .access = "readwrite"
+        .access = my.access ? "readwrite"
     endscope
     return my.argument
 endfunction

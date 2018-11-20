@@ -317,7 +317,7 @@ function _L23_add_method_get_api (interface, destination, meta)
 
         .name = my.names.method_api
 
-        component_create_argument_impl (method, my.meta)
+        component_create_argument_impl (method, my.meta, "readonly")
 
         new return
             .class = my.refs.interface_struct_api
@@ -388,7 +388,7 @@ function _L23_add_method_check_api (interface, destination, meta)
 
         .name = my.names.method_is_implemented
 
-       component_create_argument_impl (method, my.meta)
+       component_create_argument_impl (method, my.meta, "readonly")
 
         new return
             .type = "boolean"
