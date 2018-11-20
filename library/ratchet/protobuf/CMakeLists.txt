@@ -65,6 +65,12 @@ target_include_directories(ratchet_pb
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
 
+set_target_properties(ratchet_pb PROPERTIES
+        C_STANDARD "99"
+        DEBUG_POSTFIX "_d"
+        OUTPUT_NAME vsc_ratchet_pb
+        )
+
 target_protobuf_sources(ratchet_pb
         "${CMAKE_CURRENT_SOURCE_DIR}/Boss.proto"
         "${CMAKE_CURRENT_SOURCE_DIR}/Person.proto"
@@ -72,11 +78,17 @@ target_protobuf_sources(ratchet_pb
 
 target_link_libraries(ratchet_pb nanopb::protobuf-nanopb)
 
-set_target_properties(ratchet_pb PROPERTIES
-        C_STANDARD "99"
-        DEBUG_POSTFIX "_d"
-        OUTPUT_NAME vsc_ratchet_pb
-        )
+#
+# Proxy COMPILE_DEFINITIONS of the library protobuf-nanopb.
+#
+get_target_property(NANOPB_COMPILE_DEFINITIONS protobuf-nanopb INTERFACE_COMPILE_DEFINITIONS)
+if(NANOPB_COMPILE_DEFINITIONS)
+    set_target_properties(ratchet_pb PROPERTIES
+            COMPILE_DEFINITIONS "${NANOPB_COMPILE_DEFINITIONS}"
+            INTERFACE_COMPILE_DEFINITIONS "${NANOPB_COMPILE_DEFINITIONS}"
+            )
+endif()
+
 
 #
 # Add library alias
