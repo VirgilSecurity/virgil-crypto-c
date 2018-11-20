@@ -82,7 +82,8 @@
 VSCF_PRIVATE void
 vscf_ed25519_public_key_init_ctx(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(ed25519_private_key_impl);
+	memset(ed25519_private_key_impl->public_key, 0, sizeof(ed25519_private_key_impl->public_key));
 }
 
 //
@@ -93,7 +94,8 @@ vscf_ed25519_public_key_init_ctx(vscf_ed25519_public_key_impl_t *ed25519_public_
 VSCF_PRIVATE void
 vscf_ed25519_public_key_cleanup_ctx(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(ed25519_private_key_impl);
+	memset(ed25519_private_key_impl->public_key, 0, sizeof(ed25519_private_key_impl->public_key));
 }
 
 //
@@ -102,7 +104,8 @@ vscf_ed25519_public_key_cleanup_ctx(vscf_ed25519_public_key_impl_t *ed25519_publ
 VSCF_PUBLIC size_t
 vscf_ed25519_public_key_key_len(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(ed25519_private_key_impl);
+    return sizeof(ed25519_private_key_impl->public_key);
 }
 
 //
@@ -111,7 +114,8 @@ vscf_ed25519_public_key_key_len(vscf_ed25519_public_key_impl_t *ed25519_public_k
 VSCF_PUBLIC size_t
 vscf_ed25519_public_key_key_bitlen(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(ed25519_private_key_impl);
+    return (8*sizeof(ed25519_private_key_impl->public_key));
 }
 
 //
@@ -140,7 +144,11 @@ VSCF_PUBLIC bool
 vscf_ed25519_public_key_verify(
         vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_data_t data, vsc_data_t signature) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(ed25519_private_key_impl);
+    VSCF_ASSERT_PTR(signature);
+    VSCF_ASSERT_PTR(data.bytes);
+    int ret = ed25519_verify(signature.bytes, ed25519_public_key_impl->public_key, data.bytes, data.len);
+    return (ret == 0);
 }
 
 //
@@ -149,7 +157,12 @@ vscf_ed25519_public_key_verify(
 VSCF_PUBLIC vscf_error_t
 vscf_ed25519_public_key_export_public_key(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_buffer_t *out) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(ed25519_private_key_impl);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    byte* ptr = vsc_buffer_ptr(out);
+    size_t available = vsc_buffer_left(out);
+    VSCF_ASSERT(available >= sizeof(ed25519_private_key_impl->public_key));
+    memcpy(ptr, ed25519_private_key_impl->public_key, sizeof(ed25519_private_key_impl->public_key));
 }
 
 //
@@ -158,7 +171,8 @@ vscf_ed25519_public_key_export_public_key(vscf_ed25519_public_key_impl_t *ed2551
 VSCF_PUBLIC size_t
 vscf_ed25519_public_key_exported_public_key_len(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(ed25519_private_key_impl);
+    return sizeof(ed25519_private_key_impl->public_key);
 }
 
 //
