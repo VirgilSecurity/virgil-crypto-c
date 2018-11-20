@@ -72,7 +72,7 @@
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_public_key_export_public_key(vscf_impl_t *impl, vsc_buffer_t *out) {
+vscf_public_key_export_public_key(const vscf_impl_t *impl, vsc_buffer_t *out) {
 
     const vscf_public_key_api_t *public_key_api = vscf_public_key_api (impl);
     VSCF_ASSERT_PTR (public_key_api);
@@ -85,7 +85,7 @@ vscf_public_key_export_public_key(vscf_impl_t *impl, vsc_buffer_t *out) {
 //  Return length in bytes required to hold exported public key.
 //
 VSCF_PUBLIC size_t
-vscf_public_key_exported_public_key_len(vscf_impl_t *impl) {
+vscf_public_key_exported_public_key_len(const vscf_impl_t *impl) {
 
     const vscf_public_key_api_t *public_key_api = vscf_public_key_api (impl);
     VSCF_ASSERT_PTR (public_key_api);

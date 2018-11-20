@@ -57,6 +57,7 @@
 #include "vscf_error_ctx.h"
 #include "vscf_raw_key.h"
 #include "vscf_impl.h"
+#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -139,6 +140,33 @@ vscf_pkcs8_deserializer_destroy(vscf_pkcs8_deserializer_impl_t **pkcs8_deseriali
 //
 VSCF_PUBLIC vscf_pkcs8_deserializer_impl_t *
 vscf_pkcs8_deserializer_copy(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl);
+
+//
+//  Setup dependency to the interface 'asn1 reader' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_deserializer_use_asn1_reader(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl,
+        vscf_impl_t *asn1_reader);
+
+//
+//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_deserializer_take_asn1_reader(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl,
+        vscf_impl_t *asn1_reader);
+
+//
+//  Release dependency to the interface 'asn1 reader'.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_deserializer_release_asn1_reader(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl);
+
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_pkcs8_deserializer_setup_defaults(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl);
 
 //
 //  Deserialize given public key as an interchangeable format to the object.

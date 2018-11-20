@@ -46,6 +46,7 @@
 include_guard()
 
 option(VSCF_LIBRARY "Enable build of the 'foundation' library" ON)
+option(VSCF_DEFAULTS "Enable interface 'defaults'." ON)
 option(VSCF_CIPHER "Enable interface 'cipher'." ON)
 option(VSCF_AUTH_ENCRYPT "Enable interface 'auth encrypt'." ON)
 option(VSCF_AUTH_DECRYPT "Enable interface 'auth decrypt'." ON)
@@ -102,6 +103,7 @@ option(VSCF_MBEDTLS_MD "Enable class 'mbedtls md'." ON)
 option(VSCF_RAW_KEY "Enable class 'raw key'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
+        VSCF_DEFAULTS
         VSCF_CIPHER
         VSCF_AUTH_ENCRYPT
         VSCF_AUTH_DECRYPT
@@ -590,6 +592,15 @@ if(VSCF_PKCS8_SERIALIZER AND NOT VSCF_PRIVATE_KEY)
     message(FATAL_ERROR)
 endif()
 
+if(VSCF_PKCS8_SERIALIZER AND NOT VSCF_ASN1_WRITER)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PKCS8_SERIALIZER depends on the feature:")
+    message("     VSCF_ASN1_WRITER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCF_PKCS8_DESERIALIZER AND NOT VSCF_PUBLIC_KEY)
     message("-- error --")
     message("--")
@@ -604,6 +615,15 @@ if(VSCF_PKCS8_DESERIALIZER AND NOT VSCF_PRIVATE_KEY)
     message("--")
     message("Feature VSCF_PKCS8_DESERIALIZER depends on the feature:")
     message("     VSCF_PRIVATE_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PKCS8_DESERIALIZER AND NOT VSCF_ASN1_READER)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PKCS8_DESERIALIZER depends on the feature:")
+    message("     VSCF_ASN1_READER - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -640,6 +660,15 @@ if(VSCF_PKCS8_DER_DESERIALIZER AND NOT VSCF_PRIVATE_KEY)
     message("--")
     message("Feature VSCF_PKCS8_DER_DESERIALIZER depends on the feature:")
     message("     VSCF_PRIVATE_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PKCS8_DER_DESERIALIZER AND NOT VSCF_ASN1_READER)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PKCS8_DER_DESERIALIZER depends on the feature:")
+    message("     VSCF_ASN1_READER - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

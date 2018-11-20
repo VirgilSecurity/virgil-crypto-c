@@ -307,8 +307,9 @@ function _L23_add_method_get_api (interface, destination, meta)
         . = "Return $(my.interface.name:) API, or NULL if it is not implemented."
 
         .name = my.names.method_api
+        .is_const = "1"
 
-        component_create_argument_impl (method, my.meta, "readonly")
+        component_create_argument_impl (method, my.meta)
 
         new return
             .class = my.refs.interface_struct_api
@@ -378,8 +379,9 @@ function _L23_add_method_check_api (interface, destination, meta)
         . = "Check if given object implements interface '$(my.interface.name:)'."
 
         .name = my.names.method_is_implemented
+        .is_const = "1"
 
-       component_create_argument_impl (method, my.meta, "readonly")
+        component_create_argument_impl (method, my.meta)
 
         new return
             .type = "boolean"

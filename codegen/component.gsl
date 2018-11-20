@@ -1542,18 +1542,20 @@ endfunction
 # ###########################################################################
 
 # ---------------------------------------------------------------------------
-#   Add 'impl' argument to the destination with given ot 'readwrite' access.
+#   Add 'impl' argument to the method.
+#
+#   If method 'is_const', then 'impl' access will be 'readonly'.
 # ---------------------------------------------------------------------------
-function component_create_argument_impl (destination, meta, access)
-    check_arguments (my, "destination, meta", my)
+function component_create_argument_impl (method, meta)
+    check_arguments (my, "method, meta", my)
 
     my.names = meta_names (my.meta)
 
-    my.argument = item_prepend_new ("argument", my.destination)
+    my.argument = item_prepend_new ("argument", my.method)
     scope my.argument
         .name = my.names.argument_impl
         .class = my.names.type_impl
-        .access = my.access ? "readwrite"
+        .access = is_true(my.method.is_const) ?? "readonly" ? "readwrite"
     endscope
     return my.argument
 endfunction

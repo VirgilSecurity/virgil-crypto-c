@@ -88,8 +88,14 @@ vscf_pkcs8_der_serializer_serialized_public_key_len(
     VSCF_ASSERT_PTR(pkcs8_der_serializer_impl);
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
-    //  TODO: This is STUB. Implement me.
-    return 0;
+
+    size_t wrappedKeyLen = vscf_public_key_exported_public_key_len(public_key);
+    size_t len = 1 + 4 +                //  SubjectPublicKeyInfo ::= SEQUENCE {
+                 1 + 1 + 32 +           //          algorithm AlgorithmIdentifier,
+                 1 + 4 + wrappedKeyLen; //          subjectPublicKey BIT STRING
+                                        //  }
+
+    return len;
 }
 
 //
@@ -108,7 +114,12 @@ vscf_pkcs8_der_serializer_serialize_public_key(
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_left(out) >=
                 vscf_pkcs8_der_serializer_serialized_public_key_len(pkcs8_der_serializer_impl, public_key));
-    //  TODO: This is STUB. Implement me.
+
+    //  SubjectPublicKeyInfo ::= SEQUENCE {
+    //          algorithm AlgorithmIdentifier,
+    //          subjectPublicKey BIT STRING
+    //  }
+
     return vscf_SUCCESS;
 }
 

@@ -5,7 +5,7 @@
 
 
     <!-- Public key -->
-    <method name="extract public key">
+    <method name="extract public key" is_const="1">
         Extract public part of the key.
 
         <return interface="public key" access="disown"/>
@@ -18,7 +18,7 @@
     </constant>
 
 
-    <method name="export private key">
+    <method name="export private key" is_const="1">
         Export private key in the binary format.
 
         Binary format must be defined in the key specification.
@@ -33,7 +33,7 @@
     </method>
 
 
-    <method name="exported private key len">
+    <method name="exported private key len" is_const="1">
         Return length in bytes required to hold exported private key.
 
         <return type="size"/>

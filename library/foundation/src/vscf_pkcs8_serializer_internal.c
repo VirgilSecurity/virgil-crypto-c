@@ -55,8 +55,11 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_pkcs8_serializer_impl.h"
+#include "vscf_defaults.h"
+#include "vscf_defaults_api.h"
 #include "vscf_key_serializer.h"
 #include "vscf_key_serializer_api.h"
+#include "vscf_asn1_writer.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -72,6 +75,21 @@
 
 static const vscf_api_t *
 vscf_pkcs8_serializer_find_api(vscf_api_tag_t api_tag);
+
+//
+//  Configuration of the interface API 'defaults api'.
+//
+static const vscf_defaults_api_t defaults_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'defaults' MUST be equal to the 'vscf_api_tag_DEFAULTS'.
+    //
+    vscf_api_tag_DEFAULTS,
+    //
+    //  Setup predefined values to the uninitialized class dependencies.
+    //
+    (vscf_defaults_api_setup_defaults_fn)vscf_pkcs8_serializer_setup_defaults
+};
 
 //
 //  Configuration of the interface API 'key serializer api'.
@@ -162,6 +180,8 @@ vscf_pkcs8_serializer_cleanup(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_imp
         return;
     }
 
+    vscf_pkcs8_serializer_release_asn1_writer(pkcs8_serializer_impl);
+
     vscf_pkcs8_serializer_cleanup_ctx(pkcs8_serializer_impl);
 
     vscf_zeroize(pkcs8_serializer_impl, sizeof(vscf_pkcs8_serializer_impl_t));
@@ -242,10 +262,54 @@ vscf_pkcs8_serializer_impl(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl) 
     return (vscf_impl_t *)(pkcs8_serializer_impl);
 }
 
+//
+//  Setup dependency to the interface 'asn1 writer' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_serializer_use_asn1_writer(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl, vscf_impl_t *asn1_writer) {
+
+    VSCF_ASSERT_PTR(pkcs8_serializer_impl);
+    VSCF_ASSERT_PTR(asn1_writer);
+    VSCF_ASSERT_PTR(pkcs8_serializer_impl->asn1_writer == NULL);
+
+    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
+
+    pkcs8_serializer_impl->asn1_writer = vscf_impl_copy(asn1_writer);
+}
+
+//
+//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_serializer_take_asn1_writer(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl, vscf_impl_t *asn1_writer) {
+
+    VSCF_ASSERT_PTR(pkcs8_serializer_impl);
+    VSCF_ASSERT_PTR(asn1_writer);
+    VSCF_ASSERT_PTR(pkcs8_serializer_impl->asn1_writer == NULL);
+
+    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
+
+    pkcs8_serializer_impl->asn1_writer = asn1_writer;
+}
+
+//
+//  Release dependency to the interface 'asn1 writer'.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_serializer_release_asn1_writer(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl) {
+
+    VSCF_ASSERT_PTR(pkcs8_serializer_impl);
+
+    vscf_impl_destroy(&pkcs8_serializer_impl->asn1_writer);
+}
+
 static const vscf_api_t *
 vscf_pkcs8_serializer_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
+        case vscf_api_tag_DEFAULTS:
+            return (const vscf_api_t *) &defaults_api;
         case vscf_api_tag_KEY_SERIALIZER:
             return (const vscf_api_t *) &key_serializer_api;
         default:

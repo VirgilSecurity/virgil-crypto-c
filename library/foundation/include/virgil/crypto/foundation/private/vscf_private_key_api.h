@@ -87,7 +87,7 @@ extern "C" {
 //
 //  Callback. Extract public part of the key.
 //
-typedef vscf_impl_t * (*vscf_private_key_api_extract_public_key_fn)(vscf_impl_t *impl);
+typedef vscf_impl_t * (*vscf_private_key_api_extract_public_key_fn)(const vscf_impl_t *impl);
 
 //
 //  Callback. Export private key in the binary format.
@@ -96,12 +96,12 @@ typedef vscf_impl_t * (*vscf_private_key_api_extract_public_key_fn)(vscf_impl_t 
 //          For instance, RSA private key must be exported in format defined in
 //          RFC 3447 Appendix A.1.2.
 //
-typedef vscf_error_t (*vscf_private_key_api_export_private_key_fn)(vscf_impl_t *impl, vsc_buffer_t *out);
+typedef vscf_error_t (*vscf_private_key_api_export_private_key_fn)(const vscf_impl_t *impl, vsc_buffer_t *out);
 
 //
 //  Callback. Return length in bytes required to hold exported private key.
 //
-typedef size_t (*vscf_private_key_api_exported_private_key_len_fn)(vscf_impl_t *impl);
+typedef size_t (*vscf_private_key_api_exported_private_key_len_fn)(const vscf_impl_t *impl);
 
 //
 //  Callback. Import private key from the binary format.

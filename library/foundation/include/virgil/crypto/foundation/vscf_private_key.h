@@ -93,7 +93,7 @@ typedef struct vscf_private_key_api_t vscf_private_key_api_t;
 //  Extract public part of the key.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_private_key_extract_public_key(vscf_impl_t *impl);
+vscf_private_key_extract_public_key(const vscf_impl_t *impl);
 
 //
 //  Export private key in the binary format.
@@ -103,13 +103,13 @@ vscf_private_key_extract_public_key(vscf_impl_t *impl);
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_private_key_export_private_key(vscf_impl_t *impl, vsc_buffer_t *out);
+vscf_private_key_export_private_key(const vscf_impl_t *impl, vsc_buffer_t *out);
 
 //
 //  Return length in bytes required to hold exported private key.
 //
 VSCF_PUBLIC size_t
-vscf_private_key_exported_private_key_len(vscf_impl_t *impl);
+vscf_private_key_exported_private_key_len(const vscf_impl_t *impl);
 
 //
 //  Import private key from the binary format.

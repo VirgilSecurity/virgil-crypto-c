@@ -147,12 +147,6 @@ VSCF_PUBLIC vscf_entropy_accumulator_impl_t *
 vscf_entropy_accumulator_copy(vscf_entropy_accumulator_impl_t *entropy_accumulator_impl);
 
 //
-//  Setup entropy sources available for the current system.
-//
-VSCF_PUBLIC void
-vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_impl_t *entropy_accumulator_impl);
-
-//
 //  Add given entropy source to the accumulator.
 //  Threshold defines minimum number of bytes that must be gathered
 //  from the source during accumulation.
@@ -160,6 +154,12 @@ vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_impl_t *entropy
 VSCF_PUBLIC void
 vscf_entropy_accumulator_add_source(vscf_entropy_accumulator_impl_t *entropy_accumulator_impl, vscf_impl_t *source,
         size_t threshold);
+
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_impl_t *entropy_accumulator_impl);
 
 //
 //  Defines that implemented source is strong.

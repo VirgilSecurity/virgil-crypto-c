@@ -5,28 +5,34 @@
     <implementation name="pkcs8 serializer">
         Implements PKCS#8 key serialzation to PEM format.
 
+        <interface name="defaults"/>
+        <interface name="key serializer"/>
+
         <require interface="public key"/>
         <require interface="private key"/>
+
+        <dependency name="asn1 writer" interface="asn1 writer"/>
 
         <context>
             <property name="der serializer" impl="pkcs8 der serializer"/>
         </context>
-
-        <interface name="key serializer"/>
     </implementation>
 
 
     <implementation name="pkcs8 deserializer">
         Implements PKCS#8 key deserialzation from PEM or DER format.
 
+        <interface name="defaults"/>
+        <interface name="key deserializer"/>
+
         <require interface="public key"/>
         <require interface="private key"/>
+
+        <dependency name="asn1 reader" interface="asn1 reader"/>
 
         <context>
             <property name="der deserializer" impl="pkcs8 der deserializer"/>
         </context>
-
-        <interface name="key deserializer"/>
     </implementation>
 
 
@@ -43,9 +49,12 @@
     <implementation name="pkcs8 der deserializer">
         Implements PKCS#8 key serialzation from DER format.
 
+        <interface name="defaults"/>
+        <interface name="key deserializer"/>
+
         <require interface="public key"/>
         <require interface="private key"/>
 
-        <interface name="key deserializer"/>
+        <dependency name="asn1 reader" interface="asn1 reader"/>
     </implementation>
 </implementor>

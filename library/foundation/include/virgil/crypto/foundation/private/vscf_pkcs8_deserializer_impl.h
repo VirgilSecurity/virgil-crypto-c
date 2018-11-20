@@ -59,6 +59,7 @@
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_pkcs8_deserializer.h"
+#include "vscf_impl.h"
 #include "vscf_pkcs8_der_deserializer.h"
 
 // clang-format on
@@ -88,6 +89,10 @@ struct vscf_pkcs8_deserializer_impl_t {
     //  Reference counter.
     //
     size_t refcnt;
+    //
+    //  Dependency to the interface 'asn1 reader'.
+    //
+    vscf_impl_t *asn1_reader;
     //
     //  Implementation specific context.
     //
