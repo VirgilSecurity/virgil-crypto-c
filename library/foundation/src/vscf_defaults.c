@@ -37,6 +37,13 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Provide interface to setup predefined values to the uninitialized
+//  class dependencies.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,38 +51,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Contains public part of the key.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_PUBLIC_KEY_H_INCLUDED
-#define VSCF_PUBLIC_KEY_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_key.h"
-#include "vscf_error.h"
-#include "vscf_api.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#   include <VSCCommon/vsc_data.h>
-#endif
+#include "vscf_defaults.h"
+#include "vscf_assert.h"
+#include "vscf_defaults_api.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -85,85 +66,55 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'public key'.
-//
-typedef struct vscf_public_key_api_t vscf_public_key_api_t;
-
-//
-//  Export public key in the binary format.
-//
-//  Binary format must be defined in the key specification.
-//  For instance, RSA public key must be exported in format defined in
-//  RFC 3447 Appendix A.1.1.
+//  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_public_key_export_public_key(const vscf_impl_t *impl, vsc_buffer_t *out);
+vscf_defaults_setup_defaults(vscf_impl_t *impl) {
+
+    const vscf_defaults_api_t *defaults_api = vscf_defaults_api (impl);
+    VSCF_ASSERT_PTR (defaults_api);
+
+    VSCF_ASSERT_PTR (defaults_api->setup_defaults_cb);
+    return defaults_api->setup_defaults_cb (impl);
+}
 
 //
-//  Return length in bytes required to hold exported public key.
+//  Return defaults API, or NULL if it is not implemented.
 //
-VSCF_PUBLIC size_t
-vscf_public_key_exported_public_key_len(const vscf_impl_t *impl);
+VSCF_PUBLIC const vscf_defaults_api_t *
+vscf_defaults_api(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_DEFAULTS);
+    return (const vscf_defaults_api_t *) api;
+}
 
 //
-//  Import public key from the binary format.
-//
-//  Binary format must be defined in the key specification.
-//  For instance, RSA public key must be imported from the format defined in
-//  RFC 3447 Appendix A.1.1.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_public_key_import_public_key(vscf_impl_t *impl, vsc_data_t data);
-
-//
-//  Returns constant 'can export public key'.
+//  Check if given object implements interface 'defaults'.
 //
 VSCF_PUBLIC bool
-vscf_public_key_can_export_public_key(const vscf_public_key_api_t *public_key_api);
+vscf_defaults_is_implemented(const vscf_impl_t *impl) {
 
-//
-//  Returns constant 'can import public key'.
-//
-VSCF_PUBLIC bool
-vscf_public_key_can_import_public_key(const vscf_public_key_api_t *public_key_api);
+    VSCF_ASSERT_PTR (impl);
 
-//
-//  Return public key API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_public_key_api_t *
-vscf_public_key_api(const vscf_impl_t *impl);
-
-//
-//  Return key API.
-//
-VSCF_PUBLIC const vscf_key_api_t *
-vscf_public_key_key_api(const vscf_public_key_api_t *public_key_api);
-
-//
-//  Check if given object implements interface 'public key'.
-//
-VSCF_PUBLIC bool
-vscf_public_key_is_implemented(const vscf_impl_t *impl);
+    return vscf_impl_api (impl, vscf_api_tag_DEFAULTS) != NULL;
+}
 
 //
 //  Returns interface unique identifier.
 //
 VSCF_PUBLIC vscf_api_tag_t
-vscf_public_key_api_tag(const vscf_public_key_api_t *public_key_api);
+vscf_defaults_api_tag(const vscf_defaults_api_t *defaults_api) {
+
+    VSCF_ASSERT_PTR (defaults_api);
+
+    return defaults_api->api_tag;
+}
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_PUBLIC_KEY_H_INCLUDED
 //  @end

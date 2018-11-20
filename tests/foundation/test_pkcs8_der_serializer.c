@@ -35,8 +35,6 @@
 
 #define UNITY_BEGIN() UnityBegin(__FILENAME__)
 
-#define UNITY_BEGIN() UnityBegin(__FILENAME__)
-
 #include "unity.h"
 #include "test_utils.h"
 
@@ -85,7 +83,8 @@ test__serialize_public_key__rsa2048__equals_to_rsa_2048_public_key_pkcs8_der(voi
     vscf_rsa_public_key_take_asn1rd(rsa_public_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
     vscf_rsa_public_key_import_public_key(rsa_public_key, test_rsa_2048_PUBLIC_KEY_PKCS1);
 
-    vsc_buffer_t *out = vsc_buffer_new_with_capacity(test_rsa_2048_PUBLIC_KEY_PKCS8_DER.len);
+    size_t len = vscf_pkcs8_der_serializer_serialized_public_key_len(pkcs8, vscf_rsa_public_key_impl(rsa_public_key));
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
 
     vscf_pkcs8_der_serializer_serialize_public_key(pkcs8, vscf_rsa_public_key_impl(rsa_public_key), out);
 

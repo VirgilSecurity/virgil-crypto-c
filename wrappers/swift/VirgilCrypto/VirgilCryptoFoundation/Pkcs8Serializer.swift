@@ -38,7 +38,7 @@ import VSCFoundation
 import VirgilCryptoCommon
 
 /// Implements PKCS#8 key serialzation to PEM format.
-@objc(VSCFPkcs8Serializer) public class Pkcs8Serializer: NSObject, KeySerializer {
+@objc(VSCFPkcs8Serializer) public class Pkcs8Serializer: NSObject, Defaults, KeySerializer {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -66,6 +66,18 @@ import VirgilCryptoCommon
     /// Release underlying C context.
     deinit {
         vscf_pkcs8_serializer_delete(self.c_ctx)
+    }
+
+    @objc public func setAsn1Writer(asn1Writer: Asn1Writer) {
+        vscf_pkcs8_serializer_release_asn1_writer(self.c_ctx)
+        vscf_pkcs8_serializer_use_asn1_writer(self.c_ctx, asn1Writer.c_ctx)
+    }
+
+    /// Setup predefined values to the uninitialized class dependencies.
+    @objc public func setupDefaults() throws {
+        let proxyResult = vscf_pkcs8_serializer_setup_defaults(self.c_ctx)
+
+        try FoundationError.handleError(fromC: proxyResult)
     }
 
     /// Calculate buffer size enough to hold serialized public key.

@@ -58,6 +58,7 @@
     <enum name="key alg"/>
     <enum name="hash alg"/>
 
+    <interface name="defaults" from="shared"/>
     <interface name="cipher"/>
     <interface name="auth encrypt"/>
     <interface name="auth decrypt"/>

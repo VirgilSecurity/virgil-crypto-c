@@ -91,12 +91,12 @@ extern "C" {
 //          For instance, RSA public key must be exported in format defined in
 //          RFC 3447 Appendix A.1.1.
 //
-typedef vscf_error_t (*vscf_public_key_api_export_public_key_fn)(vscf_impl_t *impl, vsc_buffer_t *out);
+typedef vscf_error_t (*vscf_public_key_api_export_public_key_fn)(const vscf_impl_t *impl, vsc_buffer_t *out);
 
 //
 //  Callback. Return length in bytes required to hold exported public key.
 //
-typedef size_t (*vscf_public_key_api_exported_public_key_len_fn)(vscf_impl_t *impl);
+typedef size_t (*vscf_public_key_api_exported_public_key_len_fn)(const vscf_impl_t *impl);
 
 //
 //  Callback. Import public key from the binary format.

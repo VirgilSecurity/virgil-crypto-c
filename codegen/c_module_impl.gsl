@@ -79,12 +79,13 @@ function _L24_add_method_get_api (meta, destination)
         "
 
         .name = my.names.method_api
+        .is_const = "1"
 
         new return
             .class = ".(class_api_struct_api)"
         endnew
 
-        component_create_argument_impl (method, my.meta, "readonly")
+        component_create_argument_impl (method, my.meta)
 
         new argument
             .name = my.names.argument_api_tag

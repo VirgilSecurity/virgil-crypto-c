@@ -10,7 +10,7 @@
     </constant>
 
 
-    <method name="export public key">
+    <method name="export public key" is_const="1">
         Export public key in the binary format.
 
         Binary format must be defined in the key specification.
@@ -25,7 +25,7 @@
     </method>
 
 
-    <method name="exported public key len">
+    <method name="exported public key len" is_const="1">
         Return length in bytes required to hold exported public key.
 
         <return type="size"/>

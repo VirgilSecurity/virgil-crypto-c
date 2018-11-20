@@ -55,6 +55,7 @@
 #include "vscf_memory.h"
 #include "vscf_public_key.h"
 #include "vscf_private_key.h"
+#include "vscf_asn1_reader.h"
 #include "vscf_pkcs8_deserializer_impl.h"
 #include "vscf_pkcs8_deserializer_internal.h"
 
@@ -100,6 +101,17 @@ vscf_pkcs8_deserializer_cleanup_ctx(vscf_pkcs8_deserializer_impl_t *pkcs8_deseri
     VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
 
     vscf_pkcs8_der_deserializer_destroy(&pkcs8_deserializer_impl->der_deserializer);
+}
+
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_pkcs8_deserializer_setup_defaults(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl) {
+
+    VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
+
+    return vscf_SUCCESS;
 }
 
 //

@@ -55,8 +55,11 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_pkcs8_deserializer_impl.h"
+#include "vscf_defaults.h"
+#include "vscf_defaults_api.h"
 #include "vscf_key_deserializer.h"
 #include "vscf_key_deserializer_api.h"
+#include "vscf_asn1_reader.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -72,6 +75,21 @@
 
 static const vscf_api_t *
 vscf_pkcs8_deserializer_find_api(vscf_api_tag_t api_tag);
+
+//
+//  Configuration of the interface API 'defaults api'.
+//
+static const vscf_defaults_api_t defaults_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'defaults' MUST be equal to the 'vscf_api_tag_DEFAULTS'.
+    //
+    vscf_api_tag_DEFAULTS,
+    //
+    //  Setup predefined values to the uninitialized class dependencies.
+    //
+    (vscf_defaults_api_setup_defaults_fn)vscf_pkcs8_deserializer_setup_defaults
+};
 
 //
 //  Configuration of the interface API 'key deserializer api'.
@@ -145,6 +163,8 @@ vscf_pkcs8_deserializer_cleanup(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializ
     if (--pkcs8_deserializer_impl->refcnt > 0) {
         return;
     }
+
+    vscf_pkcs8_deserializer_release_asn1_reader(pkcs8_deserializer_impl);
 
     vscf_pkcs8_deserializer_cleanup_ctx(pkcs8_deserializer_impl);
 
@@ -226,10 +246,56 @@ vscf_pkcs8_deserializer_impl(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_
     return (vscf_impl_t *)(pkcs8_deserializer_impl);
 }
 
+//
+//  Setup dependency to the interface 'asn1 reader' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_deserializer_use_asn1_reader(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl,
+        vscf_impl_t *asn1_reader) {
+
+    VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
+    VSCF_ASSERT_PTR(asn1_reader);
+    VSCF_ASSERT_PTR(pkcs8_deserializer_impl->asn1_reader == NULL);
+
+    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
+
+    pkcs8_deserializer_impl->asn1_reader = vscf_impl_copy(asn1_reader);
+}
+
+//
+//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_deserializer_take_asn1_reader(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl,
+        vscf_impl_t *asn1_reader) {
+
+    VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
+    VSCF_ASSERT_PTR(asn1_reader);
+    VSCF_ASSERT_PTR(pkcs8_deserializer_impl->asn1_reader == NULL);
+
+    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
+
+    pkcs8_deserializer_impl->asn1_reader = asn1_reader;
+}
+
+//
+//  Release dependency to the interface 'asn1 reader'.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_deserializer_release_asn1_reader(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl) {
+
+    VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
+
+    vscf_impl_destroy(&pkcs8_deserializer_impl->asn1_reader);
+}
+
 static const vscf_api_t *
 vscf_pkcs8_deserializer_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
+        case vscf_api_tag_DEFAULTS:
+            return (const vscf_api_t *) &defaults_api;
         case vscf_api_tag_KEY_DESERIALIZER:
             return (const vscf_api_t *) &key_deserializer_api;
         default:

@@ -47,27 +47,16 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Contains public part of the key.
+//  Interface 'defaults' API.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_PUBLIC_KEY_H_INCLUDED
-#define VSCF_PUBLIC_KEY_H_INCLUDED
+#ifndef VSCF_DEFAULTS_API_H_INCLUDED
+#define VSCF_DEFAULTS_API_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_key.h"
-#include "vscf_error.h"
 #include "vscf_api.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#   include <VSCCommon/vsc_data.h>
-#endif
+#include "vscf_impl.h"
+#include "vscf_error.h"
 
 // clang-format on
 //  @end
@@ -85,71 +74,24 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'public key'.
+//  Callback. Setup predefined values to the uninitialized class dependencies.
 //
-typedef struct vscf_public_key_api_t vscf_public_key_api_t;
+typedef vscf_error_t (*vscf_defaults_api_setup_defaults_fn)(vscf_impl_t *impl);
 
 //
-//  Export public key in the binary format.
+//  Contains API requirements of the interface 'defaults'.
 //
-//  Binary format must be defined in the key specification.
-//  For instance, RSA public key must be exported in format defined in
-//  RFC 3447 Appendix A.1.1.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_public_key_export_public_key(const vscf_impl_t *impl, vsc_buffer_t *out);
-
-//
-//  Return length in bytes required to hold exported public key.
-//
-VSCF_PUBLIC size_t
-vscf_public_key_exported_public_key_len(const vscf_impl_t *impl);
-
-//
-//  Import public key from the binary format.
-//
-//  Binary format must be defined in the key specification.
-//  For instance, RSA public key must be imported from the format defined in
-//  RFC 3447 Appendix A.1.1.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_public_key_import_public_key(vscf_impl_t *impl, vsc_data_t data);
-
-//
-//  Returns constant 'can export public key'.
-//
-VSCF_PUBLIC bool
-vscf_public_key_can_export_public_key(const vscf_public_key_api_t *public_key_api);
-
-//
-//  Returns constant 'can import public key'.
-//
-VSCF_PUBLIC bool
-vscf_public_key_can_import_public_key(const vscf_public_key_api_t *public_key_api);
-
-//
-//  Return public key API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_public_key_api_t *
-vscf_public_key_api(const vscf_impl_t *impl);
-
-//
-//  Return key API.
-//
-VSCF_PUBLIC const vscf_key_api_t *
-vscf_public_key_key_api(const vscf_public_key_api_t *public_key_api);
-
-//
-//  Check if given object implements interface 'public key'.
-//
-VSCF_PUBLIC bool
-vscf_public_key_is_implemented(const vscf_impl_t *impl);
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_public_key_api_tag(const vscf_public_key_api_t *public_key_api);
+struct vscf_defaults_api_t {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'defaults' MUST be equal to the 'vscf_api_tag_DEFAULTS'.
+    //
+    vscf_api_tag_t api_tag;
+    //
+    //  Setup predefined values to the uninitialized class dependencies.
+    //
+    vscf_defaults_api_setup_defaults_fn setup_defaults_cb;
+};
 
 
 // --------------------------------------------------------------------------
@@ -165,5 +107,5 @@ vscf_public_key_api_tag(const vscf_public_key_api_t *public_key_api);
 
 
 //  @footer
-#endif // VSCF_PUBLIC_KEY_H_INCLUDED
+#endif // VSCF_DEFAULTS_API_H_INCLUDED
 //  @end
