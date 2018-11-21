@@ -108,4 +108,5 @@ target_compile_definitions(foundation
             "VSCF_MBEDTLS_BIGNUM_ASN1_READER=$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_READER}>"
             "VSCF_MBEDTLS_MD=$<BOOL:${VSCF_MBEDTLS_MD}>"
             "VSCF_RAW_KEY=$<BOOL:${VSCF_RAW_KEY}>"
+            "VSCF_OID=$<BOOL:${VSCF_OID}>"
         )
