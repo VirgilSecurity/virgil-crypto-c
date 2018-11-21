@@ -285,6 +285,10 @@
         </restrict>
     </attr>
 
+    <attr name="length_constant">
+        For fixed size string it defines number of characters as integral constant.
+    </attr>
+
     <inherit entity="access"/>
 </entity>
 
