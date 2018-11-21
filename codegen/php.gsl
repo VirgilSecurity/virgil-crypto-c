@@ -50,7 +50,274 @@ gsl from "php_codegen.gsl"
 #   Create module with PHP protocol from the abstract 'interface' notion.
 # ---------------------------------------------------------------------------
 function php_create_interface_module (interface, destination, wrapper, meta)
-    echo "php_create_interface_module"
+    check_arguments (my, "interface, destination, wrapper, meta", my)
+
+    echo_info ("Create <php_module/> from interface: '$(my.interface.name:)'", my)
+
+    new php_module to my.destination
+        .name = php_derive_module_name (my.interface)
+        .source_file_name = 0.name + ".php"
+        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+
+        new php_license to php_module
+            . = php_format_license (my.wrapper->license) ?
+        endnew
+
+        for my.wrapper.php_import
+            copy php_import to php_module
+        endfor
+
+        new php_protocol to php_module
+            . = php_format_description (my.interface) ?
+            .name = php_derive_protocol_name (my.interface, my.wrapper)
+            .objc_name = php_derive_protocol_objc_name (php_protocol, my.wrapper)
+
+            php_map_attr_visibility (php_protocol, my.interface)
+
+            for my.interface.inherit
+                php_create_inherit (inherit, php_protocol, my.wrapper, my.meta)
+            else
+                php_create_inherit_c_context (php_protocol)
+            endfor
+
+            for my.interface.constant
+                php_create_property_from_constant (constant, php_protocol, my.wrapper, my.meta)
+            endfor
+
+            for my.interface.method
+                php_create_interface_method (my.interface, method, php_protocol, my.wrapper, my.meta)
+            endfor
+
+            for php_protocol.php_method where count (0.swift_return) > 1
+                php_create_result_class (php_protocol, php_method, php_module, my.wrapper, my.meta)
+            endfor
+        endnew
+
+        php_create_interface_proxy_class (my.interface, php_module, my.wrapper, my.meta)
+    endnew
+
+    echo_debug ("Done", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add all components related to the interface.
+# ---------------------------------------------------------------------------
+function php_create_interface_proxy_class (interface, destination, wrapper, meta)
+    check_arguments (my, "interface, destination, wrapper, meta", my)
+
+   new php_class to php_module
+        . = "/// Implement interface methods "
+        .name = php_derive_proxy_protocol_name (my.interface)
+        .objc_name = php_derive_class_objc_name (php_class, my.wrapper)
+        .visibility = "internal"
+
+        php_create_inherit_nsobject (php_class)
+        php_create_inherit (my.interface, php_class, my.wrapper, my.meta)
+        php_create_class_property_context (php_class)
+        php_create_class_constructor_context (php_class, my.wrapper, my.meta)
+        php_create_interface_proxy_class_destructor (php_class, my.wrapper, my.meta)
+
+        php_create_interface_proxy_class_inheritance (my.interface, php_class, my.wrapper, my.meta)
+
+        for php_class.php_method where count (0.php_return) > 1
+            php_create_result_class (php_class, php_method, php_module, my.wrapper, my.meta)
+        endfor
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add implementation of the inherited constants and methods to the
+#   interface proxy class.
+# ---------------------------------------------------------------------------
+function php_create_interface_proxy_class_inheritance (interface, php_class, wrapper, meta)
+    check_arguments (my, "interface, php_class, wrapper, meta", my)
+
+    if count (my.php_class.implemented, implemented.interface = my.interface.name)
+        return
+    endif
+
+    for my.interface.inherit
+        my.parent_interface = interface_global_find (inherit.interface, inherit.project)
+        php_create_interface_proxy_class_inheritance (my.parent_interface, my.swift_class, my.wrapper, my.meta)
+    endfor
+
+    for my.interface.constant
+        php_create_proxy_property_from_constant (constant, my.interface, my.php_class, my.wrapper, my.meta)
+    endfor
+
+    for my.interface.method
+        php_create_class_method (my.interface, method, my.php_class, my.wrapper, my.meta)
+    endfor
+
+    new implemented to my.php_class
+        .interface = my.interface.name
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create PHP computed property that makes proxy to retrieve constant.
+# ---------------------------------------------------------------------------
+function php_create_proxy_property_from_constant (constant, interface, destination, wrapper, meta)
+    check_arguments (my, "constant, interface, destination, wrapper, meta", my)
+
+    my.php_constant = php_create_property_from_constant (my.constant, my.destination, my.wrapper, my.meta)
+
+    my.api_getter = interface_derive_c_api_method (my.interface)
+    my.constant_getter = interface_derive_c_constant_method (my.interface, my.constant)
+
+    new computed to my.php_constant
+        . = "\
+            return $(my.constant_getter:)($(my.api_getter:)(self.c_ctx))
+        "
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Create <php_destructor/> that takes delete C implementation context.
+# ---------------------------------------------------------------------------
+function php_create_interface_proxy_class_destructor (destination, wrapper, meta)
+    check_arguments (my, "destination, wrapper, meta", my)
+
+    new php_destructor to my.destination
+        . = "/// Release underlying C context."
+
+        new php_code to php_destructor
+            . = "\
+                .(c_class_impl_method_delete)(self.c_ctx)
+            "
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create <php_constructor/> that takes underlying C context.
+# ---------------------------------------------------------------------------
+function php_create_class_constructor_context (destination, wrapper, meta)
+    check_arguments (my, "destination, wrapper, meta", my)
+
+    new php_constructor to my.destination
+        . = "/// Take C context that implements this interface"
+        .visibility = "public"
+
+        new php_argument to php_constructor
+            .name = "c_ctx"
+            .type = "OpaquePointer"
+        endnew
+
+        new php_code
+            . = "
+                self.c_ctx = c_ctx
+                super.init()
+            "
+        endnew
+
+        return php_constructor
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the PHP protocol.
+# ---------------------------------------------------------------------------
+function php_derive_proxy_protocol_name (interface, wrapper)
+    check_arguments (my, "interface", my)
+
+    assert_attribute_one_of (my.interface, "name, interface", my)
+
+    return "$(my.interface.name ? my.interface.interface:Pascal)Proxy"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <php_method/> of from the interface entity <method/>.
+# ---------------------------------------------------------------------------
+function php_create_interface_method (interface, method, destination, wrapper, meta)
+    check_arguments (my, "interface, method, destination, wrapper, meta", my)
+
+    return php_create_method_declaration (my.interface, my.method, my.destination, my.wrapper, my.meta)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <php_property/> from the entity <instance/>.
+# ---------------------------------------------------------------------------
+function php_create_property_from_constant (constant, destination, wrapper, meta)
+    check_arguments (my, "constant, destination, wrapper, meta", my)
+
+    new php_property to my.destination
+        . = php_format_description (my.constant) ?
+        .name = php_derive_constant_name (my.constant, my.wrapper)
+        .type = php_derive_constant_type (my.constant, my.wrapper)
+        .value = my.constant.value ?
+        .visibility = "public"
+        .access = "readonly"
+
+        return php_property
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return mapped constant type.
+# ---------------------------------------------------------------------------
+function php_derive_constant_type (instance, wrapper)
+    check_arguments (my, "instance, wrapper", my)
+
+    return "Int"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted constant name.
+# ---------------------------------------------------------------------------
+function php_derive_constant_name (constant, wrapper)
+    check_arguments (my, "constant", my)
+
+    assert_attribute (my.constant, "name", my)
+
+    return php_derive_constant_name_str (my.constant.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted constant name from raw name.
+# ---------------------------------------------------------------------------
+function php_derive_constant_name_str (name)
+    check_arguments (my, "name", my)
+
+    return "$(my.name:Camel)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <php_inherit/> from protocol that defines C context.
+# ---------------------------------------------------------------------------
+function php_create_inherit_c_context (destination)
+    check_arguments (my, "destination", my)
+
+    new php_inherit to my.destination
+        .type = "CContext"
+
+        return php_inherit
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <php_inherit/> from the entity <inherit/>.
+# ---------------------------------------------------------------------------
+function php_create_inherit (inherit, destination, wrapper, meta)
+    check_arguments (my, "inherit, destination, wrapper, meta", my)
+
+    new php_inherit to my.destination
+        .type = php_derive_protocol_name (my.inherit, my.wrapper)
+
+        return php_inherit
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the PHP protocol.
+# ---------------------------------------------------------------------------
+function php_derive_protocol_name (interface, wrapper)
+    check_arguments (my, "interface, wrapper", my)
+
+    assert_attribute_one_of (my.interface, "name, interface", my)
+
+    return "$(my.interface.name ? my.interface.interface:Pascal)"
 endfunction
 
 # ---------------------------------------------------------------------------
