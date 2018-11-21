@@ -1351,6 +1351,14 @@ function swift_lang_ref (maybe_ref)
     return lang_ref (my.maybe_ref, "swift")
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Shortcut for lang_ref (my.maybe_ref, "php")
+# ---------------------------------------------------------------------------
+function php_lang_ref (maybe_ref)
+    check_argument (my, "maybe_ref", my)
+
+    return lang_ref (my.maybe_ref, "php")
+endfunction
 
 # ###########################################################################
 #   Debug helpers
