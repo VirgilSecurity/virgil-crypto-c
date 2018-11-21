@@ -1132,31 +1132,32 @@ function php_resolve (project, wrapper)
     echo_info ("Resolve <wrapper lang=\"$(my.wrapper.lang:)\"/> for project: '$(my.project.name:)'", my)
 
     assert_attribute (my.wrapper, "lang", my)
-    assert_attributes (my.project, "name, prefix, framework", my)
+    #assert_attributes (my.project, "name, prefix, framework", my)
+    assert_attributes (my.project, "name, prefix", my)
     assert_item (my.project, "license", my)
 
     my.wrapper.project = my.project.name
     my.wrapper.prefix = my.project.prefix
-    my.wrapper.framework = my.project.framework
+    #my.wrapper.framework = my.project.framework
     my.wrapper.namespace = "$(my.project.namespace:Pascal)"
     my.wrapper.namespace_dir = my.wrapper.namespace
     my.wrapper.source_dir = \
             cat_path ("../wrappers/$(my.wrapper.lang:c,lower)", "VirgilCrypto777", my.wrapper.namespace_dir)
     copy my.project->license to my.wrapper
 
-    new php_import to my.wrapper
-        .framework = "Foundation"
-    endnew
+    #new php_import to my.wrapper
+    #    .framework = "Foundation"
+    #endnew
 
-    new php_import to my.wrapper
-        .framework = my.wrapper.framework
-    endnew
+    #new php_import to my.wrapper
+    #    .framework = my.wrapper.framework
+    #endnew
 
-    for my.project.require where defined (0.project) & string_equal (0.feature, "library")
-        new php_import to my.wrapper
-            .framework = make_ref_php (make_id ("project", require.project, "framework name"))
-        endnew
-    endfor
+    #for my.project.require where defined (0.project) & string_equal (0.feature, "library")
+    #    new php_import to my.wrapper
+    #        .framework = make_ref_php (make_id ("project", require.project, "framework name"))
+    #    endnew
+    #endfor
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1471,9 +1472,9 @@ endfunction
 function php_insert_import (php_import)
     check_arguments (my, "php_import", my)
 
-    assert_attribute (my.php_import, "framework", my)
+    #assert_attribute (my.php_import, "framework", my)
 
-    php_insert_code ("import $(my.php_import.framework:)")
+    #php_insert_code ("import $(my.php_import.framework:)")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1658,9 +1659,9 @@ function php_create_c_context_module (destination, wrapper, meta)
             . = php_format_license (my.wrapper->license) ?
         endnew
 
-        new php_import to php_module
-            .framework = "Foundation"
-        endnew
+        #new php_import to php_module
+        #    .framework = "Foundation"
+        #endnew
 
         new php_protocol to php_module
             .name = my.name
