@@ -44,32 +44,22 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'phe client' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSCE_PHE_CLIENT_DEFS_H_INCLUDED
-#define VSCE_PHE_CLIENT_DEFS_H_INCLUDED
+#ifndef VSCE_PHE_HASH_H_INCLUDED
+#define VSCE_PHE_HASH_H_INCLUDED
 
 #include "vsce_library.h"
-#include "vsce_phe_hash.h"
+#include "vsce_phe_common.h"
+#include "vsce_simple_swu.h"
+#include "vsce_error.h"
+
+#include <mbedtls/ecp.h>
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_impl.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#endif
-
-#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_impl.h>
+#   include <VSCCommon/vsc_data.h>
 #endif
 
 // clang-format on
@@ -88,28 +78,87 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'phe client' context.
+//  Handle 'phe hash' context.
 //
-struct vsce_phe_client_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vsce_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the class 'phe hash'.
-    //
-    vsce_phe_hash_t *phe_hash;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
+typedef struct vsce_phe_hash_t vsce_phe_hash_t;
 
-    vsc_buffer_t *secret_key;
-};
+//
+//  Return size of 'vsce_phe_hash_t'.
+//
+VSCE_PUBLIC size_t
+vsce_phe_hash_ctx_size(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCE_PUBLIC void
+vsce_phe_hash_init(vsce_phe_hash_t *phe_hash_ctx);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCE_PUBLIC void
+vsce_phe_hash_cleanup(vsce_phe_hash_t *phe_hash_ctx);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCE_PUBLIC vsce_phe_hash_t *
+vsce_phe_hash_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if context was allocated by the caller.
+//
+VSCE_PUBLIC void
+vsce_phe_hash_delete(vsce_phe_hash_t *phe_hash_ctx);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vsce_phe_hash_new ()'.
+//
+VSCE_PUBLIC void
+vsce_phe_hash_destroy(vsce_phe_hash_t **phe_hash_ctx_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCE_PUBLIC vsce_phe_hash_t *
+vsce_phe_hash_copy(vsce_phe_hash_t *phe_hash_ctx);
+
+//
+//  Setup dependency to the class 'simple swu' with shared ownership.
+//
+VSCE_PUBLIC void
+vsce_phe_hash_use_simple_swu(vsce_phe_hash_t *phe_hash_ctx, vsce_simple_swu_t *simple_swu);
+
+//
+//  Setup dependency to the class 'simple swu' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCE_PUBLIC void
+vsce_phe_hash_take_simple_swu(vsce_phe_hash_t *phe_hash_ctx, vsce_simple_swu_t *simple_swu);
+
+//
+//  Release dependency to the class 'simple swu'.
+//
+VSCE_PUBLIC void
+vsce_phe_hash_release_simple_swu(vsce_phe_hash_t *phe_hash_ctx);
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_hash_data_to_point(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t data, mbedtls_ecp_point *p);
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_hash_hc0(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t nc, vsc_data_t password, mbedtls_ecp_point *hc0);
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_hash_hc1(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t nc, vsc_data_t password, mbedtls_ecp_point *hc1);
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_hash_hs0(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t ns, mbedtls_ecp_point *hs0);
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_hash_hs1(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t ns, mbedtls_ecp_point *hs1);
 
 
 // --------------------------------------------------------------------------
@@ -125,5 +174,5 @@ struct vsce_phe_client_t {
 
 
 //  @footer
-#endif // VSCE_PHE_CLIENT_DEFS_H_INCLUDED
+#endif // VSCE_PHE_HASH_H_INCLUDED
 //  @end

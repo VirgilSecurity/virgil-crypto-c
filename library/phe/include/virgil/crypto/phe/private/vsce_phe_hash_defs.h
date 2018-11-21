@@ -1,3 +1,5 @@
+//  @license
+// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2018 Virgil Security Inc.
 //
 //  All rights reserved.
@@ -31,67 +33,75 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-
-#include <virgil/crypto/phe/vsce_phe_client.h>
-#include <PHEModels.pb.h>
-#include <virgil/crypto/phe/private/vsce_phe_client_defs.h>
-#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
-#include "unity.h"
-#include "test_utils.h"
-#include "pb_encode.h"
-
-#define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_CLIENT
-#if TEST_DEPENDENCIES_AVAILABLE
-
-void test__enroll_account__1() {
-    vsce_phe_client_t *client = vsce_phe_client_new();
-    client->secret_key = vsc_buffer_new_with_capacity(32);
-
-    vscf_ctr_drbg_impl_t *rng = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(rng);
-    vscf_ctr_drbg_random(rng, 32, client->secret_key);
-
-    vscf_ctr_drbg_destroy(&rng);
-
-    EnrollmentResponse response;
-    vsc_buffer_t *enrollment_response = vsc_buffer_new_with_capacity(100);
-    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(enrollment_response), vsc_buffer_capacity(enrollment_response));
-
-    pb_encode(&ostream, EnrollmentResponse_fields, &response);
-
-    char pwd[] = "PASSWORD";
-
-    vsc_buffer_t *enrollment_record = vsc_buffer_new_with_capacity(100);
-    vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(32);
-
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_enroll_account(client, vsc_buffer_data(enrollment_response),
-            vsc_data((byte *)pwd, sizeof(pwd)), enrollment_record, account_key));
-
-    TEST_ASSERT_EQUAL(32, vsc_buffer_len(account_key));
-
-    vsc_buffer_destroy(&enrollment_record);
-    vsc_buffer_destroy(&enrollment_response);
-    vsc_buffer_destroy(&account_key);
-
-    vsce_phe_client_destroy(&client);
-
-}
-
-#endif // TEST_DEPENDENCIES_AVAILABLE
-
-
 // --------------------------------------------------------------------------
-// Entrypoint.
-// --------------------------------------------------------------------------
-int
-main(void) {
-    UNITY_BEGIN();
+// clang-format off
 
-#if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__enroll_account__1);
-#else
-    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
+
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'phe hash' types definition.
+// --------------------------------------------------------------------------
+
+#ifndef VSCE_PHE_HASH_DEFS_H_INCLUDED
+#define VSCE_PHE_HASH_DEFS_H_INCLUDED
+
+#include "vsce_library.h"
+#include "vsce_simple_swu.h"
+
+// clang-format on
+//  @end
+
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-    return UNITY_END();
+
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
+
+//
+//  Handle 'phe hash' context.
+//
+struct vsce_phe_hash_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vsce_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Dependency to the class 'simple swu'.
+    //
+    vsce_simple_swu_t *simple_swu;
+};
+
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
 }
+#endif
+
+
+//  @footer
+#endif // VSCE_PHE_HASH_DEFS_H_INCLUDED
+//  @end

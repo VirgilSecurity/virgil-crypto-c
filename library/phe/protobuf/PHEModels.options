@@ -1,0 +1,8 @@
+EnrollmentResponse.ns max_size:32 fixed_length:true
+EnrollmentResponse.c0 max_size:65 fixed_length:true
+EnrollmentResponse.c1 max_size:65 fixed_length:true
+
+EnrollmentRecord.ns max_size:32 fixed_length:true
+EnrollmentRecord.nc max_size:32 fixed_length:true
+EnrollmentRecord.t0 max_size:65 fixed_length:true
+EnrollmentRecord.t1 max_size:65 fixed_length:true

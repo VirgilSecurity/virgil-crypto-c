@@ -1,4 +1,9 @@
 <class name="phe common" context="none">
+    <constant name="phe point length" value="65"/>
+    <constant name="phe max password length" value="128"/>
     <constant name="phe server identifier length" value="32"/>
     <constant name="phe client identifier length" value="32"/>
+    <constant name="phe secret message length" value="32"/>
+    <constant name="phe account key length" value="32"/>
+    <constant name="phe domain length" value="4"/>
 </class>

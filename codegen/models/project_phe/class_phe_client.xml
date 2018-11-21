@@ -1,21 +1,24 @@
 <class name="phe client" context="private">
 
     <require class="phe common" scope="public"/>
-    <require class="simple swu" scope="public"/>
+    <require impl="sha512" project="foundation" scope="private"/>
+    <require impl="hkdf" project="foundation" scope="private"/>
+    <require impl="ctr drbg" project="foundation" scope="private"/>
 
+    <require header="PHEModels.pb.h" scope="private"/>
+    <require header="pb_decode.h" scope="private"/>
+    <require header="pb_encode.h" scope="private"/>
+
+    <dependency name="phe hash" class="phe hash"/>
     <dependency name="random" interface="random" project="foundation"/>
 
-    <property name="secret key" class="buffer" access="readonly"/>
-    <property name="limiter key" class="buffer" access="readonly"/>
+    <property name="secret key" class="buffer" access="readwrite"/>
 
-    <method name="encrypt">
-        <argument name="nc" class="buffer" access="readonly"/>
-        <argument name="ns" class="buffer" access="readonly"/>
-        <argument name="password" class="buffer" access="readonly"/>
-        <argument name="message" class="buffer" access="readonly"/>
-        <argument name="c0" class="buffer" access="readonly"/>
-        <argument name="c1" class="buffer" access="readonly"/>
-        <argument name="proof" class="buffer" access="readonly"/>
+    <method name="enroll account">
+        <argument name="enrollment response" class="data"/>
+        <argument name="password" class="data"/>
+        <argument name="enrollment record" class="buffer" access="readwrite"/>
+        <argument name="account key" class="buffer" access="readwrite"/>
 
         <return enum="error"/>
     </method>

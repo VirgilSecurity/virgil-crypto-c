@@ -68,8 +68,13 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
+    vsce_phe_common_PHE_POINT_LENGTH = 65,
+    vsce_phe_common_PHE_MAX_PASSWORD_LENGTH = 128,
     vsce_phe_common_PHE_SERVER_IDENTIFIER_LENGTH = 32,
-    vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH = 32
+    vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH = 32,
+    vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH = 32,
+    vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH = 32,
+    vsce_phe_common_PHE_DOMAIN_LENGTH = 4
 };
 
 
