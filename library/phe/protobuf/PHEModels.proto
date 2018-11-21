@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+message EnrollmentResponse {
+  bytes ns = 1;
+  bytes c0 = 2;
+  bytes c1 = 3;
+
+//  proof
+}
+
+message EnrollmentRecord {
+  bytes ns = 1;
+  bytes nc = 2;
+  bytes t0 = 3;
+  bytes t1 = 4;
+}

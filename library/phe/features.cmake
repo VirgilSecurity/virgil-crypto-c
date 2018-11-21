@@ -49,6 +49,7 @@ option(VSCE_LIBRARY "Enable build of the 'phe' library" ON)
 option(VSCE_ERROR_CTX "Enable class 'error ctx'." ON)
 option(VSCE_PHE_COMMON "Enable class 'phe common'." ON)
 option(VSCE_SIMPLE_SWU "Enable class 'simple swu'." ON)
+option(VSCE_PHE_HASH "Enable class 'phe hash'." ON)
 option(VSCE_PHE_SERVER "Enable class 'phe server'." ON)
 option(VSCE_PHE_CLIENT "Enable class 'phe client'." ON)
 mark_as_advanced(
@@ -56,9 +57,19 @@ mark_as_advanced(
         VSCE_ERROR_CTX
         VSCE_PHE_COMMON
         VSCE_SIMPLE_SWU
+        VSCE_PHE_HASH
         VSCE_PHE_SERVER
         VSCE_PHE_CLIENT
         )
+
+if(VSCE_PHE_HASH AND NOT VSCE_PHE_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_PHE_HASH depends on the feature:")
+    message("     VSCE_PHE_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
 
 if(VSCE_PHE_SERVER AND NOT VSCE_PHE_COMMON)
     message("-- error --")
@@ -69,29 +80,11 @@ if(VSCE_PHE_SERVER AND NOT VSCE_PHE_COMMON)
     message(FATAL_ERROR)
 endif()
 
-if(VSCE_PHE_SERVER AND NOT VSCE_SIMPLE_SWU)
-    message("-- error --")
-    message("--")
-    message("Feature VSCE_PHE_SERVER depends on the feature:")
-    message("     VSCE_SIMPLE_SWU - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
 if(VSCE_PHE_CLIENT AND NOT VSCE_PHE_COMMON)
     message("-- error --")
     message("--")
     message("Feature VSCE_PHE_CLIENT depends on the feature:")
     message("     VSCE_PHE_COMMON - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCE_PHE_CLIENT AND NOT VSCE_SIMPLE_SWU)
-    message("-- error --")
-    message("--")
-    message("Feature VSCE_PHE_CLIENT depends on the feature:")
-    message("     VSCE_SIMPLE_SWU - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

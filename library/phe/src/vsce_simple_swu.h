@@ -53,14 +53,6 @@
 #include <mbedtls/bignum.h>
 #include <mbedtls/ecp.h>
 
-#if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#endif
-
 // clang-format on
 //  @end
 
@@ -131,9 +123,6 @@ vsce_simple_swu_destroy(vsce_simple_swu_t **simple_swu_ctx_ref);
 //
 VSCE_PUBLIC vsce_simple_swu_t *
 vsce_simple_swu_copy(vsce_simple_swu_t *simple_swu_ctx);
-
-VSCE_PUBLIC vsce_error_t
-vsce_simple_swu_data_to_point(vsce_simple_swu_t *simple_swu_ctx, vsc_data_t data, mbedtls_ecp_point *p);
 
 VSCE_PUBLIC vsce_error_t
 vsce_simple_swu_bignum_to_point(vsce_simple_swu_t *simple_swu_ctx, const mbedtls_mpi *t, mbedtls_ecp_point *p);

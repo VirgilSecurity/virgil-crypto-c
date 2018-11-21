@@ -1,7 +1,11 @@
 <class name="phe server" context="private">
 
+    <require header="PHEModels.pb.h" scope="private"/>
+
     <require class="phe common" scope="public"/>
-    <require class="simple swu" scope="public"/>
+
+    <dependency name="phe hash" class="phe hash"/>
+    <dependency name="random" interface="random" project="foundation"/>
 
     <property name="secret key" class="buffer" access="readonly"/>
 

@@ -32,52 +32,13 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include "test_data_simple_swu.h"
+#ifndef VIRGIL_CRYPTO_C_TOP_TEST_DATA_PHE_HASH_H
+#define VIRGIL_CRYPTO_C_TOP_TEST_DATA_PHE_HASH_H
 
-const byte test_simple_swu_hash1_DEC[] = {
-        "f3adca11915f1edf34a228e3aed79fbb34737f028741595410b3817e69bb6f56"
-};
+#include "vsc_data.h"
 
-const byte test_simple_swu_x1_DEC[] = {
-        "98961140665513202099949527671188598357073154743453831835087605751841592205265"
-};
+extern const vsc_data_t test_phe_hash_data;
+extern const vsc_data_t test_phe_hash_x;
+extern const vsc_data_t test_phe_hash_y;
 
-const byte test_simple_swu_y1_DEC[] = {
-        "96901867652408139372430876548444592023045378705303176822621915144992255442028"
-};
-
-const byte test_simple_swu_hash2_DEC[] = {
-        "0435562be4b4dc0605ef077ee015be12f3c189dcfdd830e535b076000e3d1ed3"
-};
-
-const byte test_simple_swu_x2_DEC[] = {
-        "82631351409592308865866007164583686358318012812204374400003568408405894942018"
-};
-
-const byte test_simple_swu_y2_DEC[] = {
-        "61517254438303197335701350506590825854257845121325404623337818255145552341515"
-};
-
-const vsc_data_t test_simple_swu_hash1 = {
-        test_simple_swu_hash1_DEC, sizeof(test_simple_swu_hash1_DEC)
-};
-
-const vsc_data_t test_simple_swu_x1 = {
-        test_simple_swu_x1_DEC, sizeof(test_simple_swu_x1_DEC)
-};
-
-const vsc_data_t test_simple_swu_y1 = {
-        test_simple_swu_y1_DEC, sizeof(test_simple_swu_y1_DEC)
-};
-
-const vsc_data_t test_simple_swu_hash2 = {
-        test_simple_swu_hash2_DEC, sizeof(test_simple_swu_hash2_DEC)
-};
-
-const vsc_data_t test_simple_swu_x2 = {
-        test_simple_swu_x2_DEC, sizeof(test_simple_swu_x2_DEC)
-};
-
-const vsc_data_t test_simple_swu_y2 = {
-        test_simple_swu_y2_DEC, sizeof(test_simple_swu_y2_DEC)
-};
+#endif //VIRGIL_CRYPTO_C_TOP_TEST_DATA_PHE_HASH_H

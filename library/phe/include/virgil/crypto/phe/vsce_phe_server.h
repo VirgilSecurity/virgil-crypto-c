@@ -49,15 +49,23 @@
 
 #include "vsce_library.h"
 #include "vsce_phe_common.h"
-#include "vsce_simple_swu.h"
+#include "vsce_phe_hash.h"
 #include "vsce_error.h"
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
+#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#endif
+
 #if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_buffer.h>
+#endif
+
+#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
 #endif
 
 // clang-format on
@@ -123,6 +131,44 @@ vsce_phe_server_destroy(vsce_phe_server_t **phe_server_ctx_ref);
 //
 VSCE_PUBLIC vsce_phe_server_t *
 vsce_phe_server_copy(vsce_phe_server_t *phe_server_ctx);
+
+//
+//  Setup dependency to the class 'phe hash' with shared ownership.
+//
+VSCE_PUBLIC void
+vsce_phe_server_use_phe_hash(vsce_phe_server_t *phe_server_ctx, vsce_phe_hash_t *phe_hash);
+
+//
+//  Setup dependency to the class 'phe hash' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCE_PUBLIC void
+vsce_phe_server_take_phe_hash(vsce_phe_server_t *phe_server_ctx, vsce_phe_hash_t *phe_hash);
+
+//
+//  Release dependency to the class 'phe hash'.
+//
+VSCE_PUBLIC void
+vsce_phe_server_release_phe_hash(vsce_phe_server_t *phe_server_ctx);
+
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCE_PUBLIC void
+vsce_phe_server_use_random(vsce_phe_server_t *phe_server_ctx, vscf_impl_t *random);
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCE_PUBLIC void
+vsce_phe_server_take_random(vsce_phe_server_t *phe_server_ctx, vscf_impl_t *random);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCE_PUBLIC void
+vsce_phe_server_release_random(vsce_phe_server_t *phe_server_ctx);
 
 VSCE_PUBLIC vsce_error_t
 vsce_phe_server_encrypt(vsce_phe_server_t *phe_server_ctx, const vsc_buffer_t *nc, const vsc_buffer_t *ns,

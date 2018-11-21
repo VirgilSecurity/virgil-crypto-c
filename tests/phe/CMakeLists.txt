@@ -50,5 +50,6 @@ macro(_add_test test)
 endmacro()
 
 _add_test (test_simple_swu)
+_add_test (test_phe_hash)
 _add_test (test_phe_client)
 _add_test (test_phe_server)

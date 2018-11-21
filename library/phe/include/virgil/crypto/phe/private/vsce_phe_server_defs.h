@@ -54,13 +54,22 @@
 #define VSCE_PHE_SERVER_DEFS_H_INCLUDED
 
 #include "vsce_library.h"
+#include "vsce_phe_hash.h"
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
+#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#endif
+
 #if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_buffer.h>
+#endif
+
+#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
 #endif
 
 // clang-format on
@@ -90,6 +99,14 @@ struct vsce_phe_server_t {
     //  Reference counter.
     //
     size_t refcnt;
+    //
+    //  Dependency to the class 'phe hash'.
+    //
+    vsce_phe_hash_t *phe_hash;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *random;
 
     const vsc_buffer_t *secret_key;
 };

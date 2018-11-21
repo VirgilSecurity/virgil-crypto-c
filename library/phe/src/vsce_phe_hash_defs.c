@@ -1,3 +1,5 @@
+//  @license
+// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2018 Virgil Security Inc.
 //
 //  All rights reserved.
@@ -31,67 +33,38 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+// --------------------------------------------------------------------------
+// clang-format off
 
-#include <virgil/crypto/phe/vsce_phe_client.h>
-#include <PHEModels.pb.h>
-#include <virgil/crypto/phe/private/vsce_phe_client_defs.h>
-#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
-#include "unity.h"
-#include "test_utils.h"
-#include "pb_encode.h"
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_CLIENT
-#if TEST_DEPENDENCIES_AVAILABLE
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'phe hash' types definition.
+// --------------------------------------------------------------------------
 
-void test__enroll_account__1() {
-    vsce_phe_client_t *client = vsce_phe_client_new();
-    client->secret_key = vsc_buffer_new_with_capacity(32);
 
-    vscf_ctr_drbg_impl_t *rng = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(rng);
-    vscf_ctr_drbg_random(rng, 32, client->secret_key);
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
 
-    vscf_ctr_drbg_destroy(&rng);
+#include "vsce_phe_hash_defs.h"
 
-    EnrollmentResponse response;
-    vsc_buffer_t *enrollment_response = vsc_buffer_new_with_capacity(100);
-    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(enrollment_response), vsc_buffer_capacity(enrollment_response));
+// clang-format on
+//  @end
 
-    pb_encode(&ostream, EnrollmentResponse_fields, &response);
 
-    char pwd[] = "PASSWORD";
-
-    vsc_buffer_t *enrollment_record = vsc_buffer_new_with_capacity(100);
-    vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(32);
-
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_enroll_account(client, vsc_buffer_data(enrollment_response),
-            vsc_data((byte *)pwd, sizeof(pwd)), enrollment_record, account_key));
-
-    TEST_ASSERT_EQUAL(32, vsc_buffer_len(account_key));
-
-    vsc_buffer_destroy(&enrollment_record);
-    vsc_buffer_destroy(&enrollment_response);
-    vsc_buffer_destroy(&account_key);
-
-    vsce_phe_client_destroy(&client);
-
-}
-
-#endif // TEST_DEPENDENCIES_AVAILABLE
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
 
 
 // --------------------------------------------------------------------------
-// Entrypoint.
+//  Generated section end.
+// clang-format on
 // --------------------------------------------------------------------------
-int
-main(void) {
-    UNITY_BEGIN();
-
-#if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__enroll_account__1);
-#else
-    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
-#endif
-
-    return UNITY_END();
-}
+//  @end

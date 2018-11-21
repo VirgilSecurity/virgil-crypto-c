@@ -49,11 +49,12 @@
 
 #include "vsce_library.h"
 #include "vsce_phe_common.h"
-#include "vsce_simple_swu.h"
+#include "vsce_phe_hash.h"
 #include "vsce_error.h"
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -61,6 +62,7 @@
 #endif
 
 #if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_buffer.h>
 #endif
 
@@ -133,6 +135,25 @@ VSCE_PUBLIC vsce_phe_client_t *
 vsce_phe_client_copy(vsce_phe_client_t *phe_client_ctx);
 
 //
+//  Setup dependency to the class 'phe hash' with shared ownership.
+//
+VSCE_PUBLIC void
+vsce_phe_client_use_phe_hash(vsce_phe_client_t *phe_client_ctx, vsce_phe_hash_t *phe_hash);
+
+//
+//  Setup dependency to the class 'phe hash' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCE_PUBLIC void
+vsce_phe_client_take_phe_hash(vsce_phe_client_t *phe_client_ctx, vsce_phe_hash_t *phe_hash);
+
+//
+//  Release dependency to the class 'phe hash'.
+//
+VSCE_PUBLIC void
+vsce_phe_client_release_phe_hash(vsce_phe_client_t *phe_client_ctx);
+
+//
 //  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCE_PUBLIC void
@@ -152,9 +173,8 @@ VSCE_PUBLIC void
 vsce_phe_client_release_random(vsce_phe_client_t *phe_client_ctx);
 
 VSCE_PUBLIC vsce_error_t
-vsce_phe_client_encrypt(vsce_phe_client_t *phe_client_ctx, const vsc_buffer_t *nc, const vsc_buffer_t *ns,
-        const vsc_buffer_t *password, const vsc_buffer_t *message, const vsc_buffer_t *c0, const vsc_buffer_t *c1,
-        const vsc_buffer_t *proof);
+vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enrollment_response, vsc_data_t password,
+        vsc_buffer_t *enrollment_record, vsc_buffer_t *account_key);
 
 
 // --------------------------------------------------------------------------

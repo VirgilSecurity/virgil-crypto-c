@@ -66,8 +66,7 @@ target_include_directories(phe_pb
         )
 
 target_protobuf_sources(phe_pb
-        "${CMAKE_CURRENT_SOURCE_DIR}/Boss.proto"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Person.proto"
+        "${CMAKE_CURRENT_SOURCE_DIR}/PHEModels.proto"
         )
 
 target_link_libraries(phe_pb nanopb::protobuf-nanopb)

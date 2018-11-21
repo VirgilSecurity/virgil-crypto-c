@@ -49,6 +49,9 @@
 #include "vsce_assert.h"
 #include "vsce_phe_server_defs.h"
 
+#include <virgil/crypto/foundation/vscf_random.h>
+#include <PHEModels.pb.h>
+
 // clang-format on
 //  @end
 
@@ -116,6 +119,9 @@ vsce_phe_server_cleanup(vsce_phe_server_t *phe_server_ctx) {
     if (--phe_server_ctx->refcnt == 0) {
         vsce_phe_server_cleanup_ctx(phe_server_ctx);
 
+        vsce_phe_server_release_phe_hash(phe_server_ctx);
+        vsce_phe_server_release_random(phe_server_ctx);
+
         vsce_zeroize(phe_server_ctx, sizeof(vsce_phe_server_t));
     }
 }
@@ -182,6 +188,86 @@ vsce_phe_server_copy(vsce_phe_server_t *phe_server_ctx) {
     ++phe_server_ctx->refcnt;
 
     return phe_server_ctx;
+}
+
+//
+//  Setup dependency to the class 'phe hash' with shared ownership.
+//
+VSCE_PUBLIC void
+vsce_phe_server_use_phe_hash(vsce_phe_server_t *phe_server_ctx, vsce_phe_hash_t *phe_hash) {
+
+    VSCE_ASSERT_PTR(phe_server_ctx);
+    VSCE_ASSERT_PTR(phe_hash);
+    VSCE_ASSERT_PTR(phe_server_ctx->phe_hash == NULL);
+
+    phe_server_ctx->phe_hash = vsce_phe_hash_copy(phe_hash);
+}
+
+//
+//  Setup dependency to the class 'phe hash' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCE_PUBLIC void
+vsce_phe_server_take_phe_hash(vsce_phe_server_t *phe_server_ctx, vsce_phe_hash_t *phe_hash) {
+
+    VSCE_ASSERT_PTR(phe_server_ctx);
+    VSCE_ASSERT_PTR(phe_hash);
+    VSCE_ASSERT_PTR(phe_server_ctx->phe_hash == NULL);
+
+    phe_server_ctx->phe_hash = phe_hash;
+}
+
+//
+//  Release dependency to the class 'phe hash'.
+//
+VSCE_PUBLIC void
+vsce_phe_server_release_phe_hash(vsce_phe_server_t *phe_server_ctx) {
+
+    VSCE_ASSERT_PTR(phe_server_ctx);
+
+    vsce_phe_hash_destroy(&phe_server_ctx->phe_hash);
+}
+
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCE_PUBLIC void
+vsce_phe_server_use_random(vsce_phe_server_t *phe_server_ctx, vscf_impl_t *random) {
+
+    VSCE_ASSERT_PTR(phe_server_ctx);
+    VSCE_ASSERT_PTR(random);
+    VSCE_ASSERT_PTR(phe_server_ctx->random == NULL);
+
+    VSCE_ASSERT(vscf_random_is_implemented(random));
+
+    phe_server_ctx->random = vscf_impl_copy(random);
+}
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCE_PUBLIC void
+vsce_phe_server_take_random(vsce_phe_server_t *phe_server_ctx, vscf_impl_t *random) {
+
+    VSCE_ASSERT_PTR(phe_server_ctx);
+    VSCE_ASSERT_PTR(random);
+    VSCE_ASSERT_PTR(phe_server_ctx->random == NULL);
+
+    VSCE_ASSERT(vscf_random_is_implemented(random));
+
+    phe_server_ctx->random = random;
+}
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCE_PUBLIC void
+vsce_phe_server_release_random(vsce_phe_server_t *phe_server_ctx) {
+
+    VSCE_ASSERT_PTR(phe_server_ctx);
+
+    vscf_impl_destroy(&phe_server_ctx->random);
 }
 
 

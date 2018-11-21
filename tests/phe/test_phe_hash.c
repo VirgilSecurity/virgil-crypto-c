@@ -32,50 +32,55 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/crypto/phe/vsce_phe_client.h>
-#include <PHEModels.pb.h>
-#include <virgil/crypto/phe/private/vsce_phe_client_defs.h>
-#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
+
 #include "unity.h"
 #include "test_utils.h"
-#include "pb_encode.h"
+#include <mbedtls/ecp.h>
+#include <mbedtls/bignum.h>
+#include <virgil/crypto/foundation/vscf_random.h>
+#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
+#include <vsce_simple_swu.h>
+#include <vsce_phe_hash.h>
+#include "test_data_phe_hash.h"
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_CLIENT
+#define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_HASH
 #if TEST_DEPENDENCIES_AVAILABLE
 
-void test__enroll_account__1() {
-    vsce_phe_client_t *client = vsce_phe_client_new();
-    client->secret_key = vsc_buffer_new_with_capacity(32);
+void test__data2point__const_hash__should_match() {
+    mbedtls_ecp_group group;
+    mbedtls_ecp_group_init(&group);
+    mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
 
-    vscf_ctr_drbg_impl_t *rng = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(rng);
-    vscf_ctr_drbg_random(rng, 32, client->secret_key);
+    mbedtls_ecp_point p;
+    mbedtls_ecp_point_init(&p);
 
-    vscf_ctr_drbg_destroy(&rng);
+    vsce_phe_hash_t *phe_hash = vsce_phe_hash_new();
+    vsce_phe_hash_data_to_point(phe_hash, test_phe_hash_data, &p);
 
-    EnrollmentResponse response;
-    vsc_buffer_t *enrollment_response = vsc_buffer_new_with_capacity(100);
-    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(enrollment_response), vsc_buffer_capacity(enrollment_response));
+    mbedtls_mpi x1_exp, y1_exp;
+    mbedtls_mpi_init(&x1_exp);
+    mbedtls_mpi_init(&y1_exp);
 
-    pb_encode(&ostream, EnrollmentResponse_fields, &response);
+    mbedtls_mpi_read_string(&x1_exp, 10, (const char *)test_phe_hash_x.bytes);
+    mbedtls_mpi_read_string(&y1_exp, 10, (const char *)test_phe_hash_y.bytes);
 
-    char pwd[] = "PASSWORD";
+    TEST_ASSERT(mbedtls_ecp_check_pubkey(&group, &p) == 0);
+    TEST_ASSERT(mbedtls_mpi_cmp_mpi(&p.X, &x1_exp) == 0);
+    TEST_ASSERT(mbedtls_mpi_cmp_mpi(&p.Y, &y1_exp) == 0);
+    TEST_ASSERT(mbedtls_mpi_cmp_int(&p.Z, 1) == 0);
 
-    vsc_buffer_t *enrollment_record = vsc_buffer_new_with_capacity(100);
-    vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(32);
-
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_enroll_account(client, vsc_buffer_data(enrollment_response),
-            vsc_data((byte *)pwd, sizeof(pwd)), enrollment_record, account_key));
-
-    TEST_ASSERT_EQUAL(32, vsc_buffer_len(account_key));
-
-    vsc_buffer_destroy(&enrollment_record);
-    vsc_buffer_destroy(&enrollment_response);
-    vsc_buffer_destroy(&account_key);
-
-    vsce_phe_client_destroy(&client);
-
+    vsce_phe_hash_destroy(&phe_hash);
+    mbedtls_ecp_point_free(&p);
+    mbedtls_mpi_free(&x1_exp);
+    mbedtls_mpi_free(&y1_exp);
+    mbedtls_ecp_group_free(&group);
 }
+
+// TODO: Implement
+void test__hc0__const_hash__should_match() { }
+void test__hc1__const_hash__should_match() { }
+void test__hs0__const_hash__should_match() { }
+void test__hs1__const_hash__should_match() { }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
@@ -88,7 +93,11 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__enroll_account__1);
+    RUN_TEST(test__data2point__const_hash__should_match);
+    RUN_TEST(test__hc0__const_hash__should_match);
+    RUN_TEST(test__hc1__const_hash__should_match);
+    RUN_TEST(test__hs0__const_hash__should_match);
+    RUN_TEST(test__hs1__const_hash__should_match);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
