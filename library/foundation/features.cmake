@@ -101,6 +101,7 @@ option(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER "Enable class 'mbedtls bignum asn1 writer
 option(VSCF_MBEDTLS_BIGNUM_ASN1_READER "Enable class 'mbedtls bignum asn1 reader'." ON)
 option(VSCF_MBEDTLS_MD "Enable class 'mbedtls md'." ON)
 option(VSCF_RAW_KEY "Enable class 'raw key'." ON)
+option(VSCF_OID "Enable class 'oid'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_DEFAULTS
@@ -158,6 +159,7 @@ mark_as_advanced(
         VSCF_MBEDTLS_BIGNUM_ASN1_READER
         VSCF_MBEDTLS_MD
         VSCF_RAW_KEY
+        VSCF_OID
         )
 
 if(VSCF_CIPHER AND NOT VSCF_ENCRYPT)
