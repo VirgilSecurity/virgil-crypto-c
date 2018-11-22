@@ -10,6 +10,9 @@
 
         <require interface="public key"/>
         <require interface="private key"/>
+        <require class="oid"/>
+        <require class="asn1wr"/>
+        <require enum="asn1 tag"/>
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
 
@@ -27,6 +30,9 @@
 
         <require interface="public key"/>
         <require interface="private key"/>
+        <require class="oid"/>
+        <require class="asn1rd"/>
+        <require enum="asn1 tag"/>
 
         <dependency name="asn1 reader" interface="asn1 reader"/>
 
@@ -39,10 +45,16 @@
     <implementation name="pkcs8 der serializer">
         Implements PKCS#8 key serialzation to DER format.
 
+        <interface name="defaults"/>
+        <interface name="key serializer"/>
+
         <require interface="public key"/>
         <require interface="private key"/>
+        <require class="oid"/>
+        <require class="asn1wr"/>
+        <require enum="asn1 tag"/>
 
-        <interface name="key serializer"/>
+        <dependency name="asn1 writer" interface="asn1 writer"/>
     </implementation>
 
 
@@ -54,6 +66,9 @@
 
         <require interface="public key"/>
         <require interface="private key"/>
+        <require class="oid"/>
+        <require class="asn1rd"/>
+        <require enum="asn1 tag"/>
 
         <dependency name="asn1 reader" interface="asn1 reader"/>
     </implementation>

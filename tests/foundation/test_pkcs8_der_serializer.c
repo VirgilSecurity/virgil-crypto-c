@@ -43,8 +43,8 @@
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "test_data_rsa.h"
-#include "test_data_rsa.h"
 #include "vscf_asn1rd.h"
+#include "vscf_asn1wr.h"
 #include "vscf_pkcs8_der_serializer.h"
 #include "vscf_rsa_private_key.h"
 #include "vscf_rsa_public_key.h"
@@ -58,6 +58,7 @@ void
 test__serialized_public_key_len__rsa2048__greater_then_293(void) {
 #if VSCF_RSA_PUBLIC_KEY
     vscf_pkcs8_der_serializer_impl_t *pkcs8 = vscf_pkcs8_der_serializer_new();
+    vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
 
     vscf_rsa_public_key_impl_t *rsa_public_key = vscf_rsa_public_key_new();
     vscf_rsa_public_key_take_asn1rd(rsa_public_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
@@ -78,9 +79,11 @@ void
 test__serialize_public_key__rsa2048__equals_to_rsa_2048_public_key_pkcs8_der(void) {
 #if VSCF_RSA_PUBLIC_KEY
     vscf_pkcs8_der_serializer_impl_t *pkcs8 = vscf_pkcs8_der_serializer_new();
+    vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
 
     vscf_rsa_public_key_impl_t *rsa_public_key = vscf_rsa_public_key_new();
     vscf_rsa_public_key_take_asn1rd(rsa_public_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
+    vscf_rsa_public_key_take_asn1wr(rsa_public_key, vscf_asn1wr_impl(vscf_asn1wr_new()));
     vscf_rsa_public_key_import_public_key(rsa_public_key, test_rsa_2048_PUBLIC_KEY_PKCS1);
 
     size_t len = vscf_pkcs8_der_serializer_serialized_public_key_len(pkcs8, vscf_rsa_public_key_impl(rsa_public_key));
@@ -102,6 +105,7 @@ void
 test__serialized_private_key_len__rsa2048__greater_then_1216(void) {
 #if VSCF_RSA_PRIVATE_KEY
     vscf_pkcs8_der_serializer_impl_t *pkcs8 = vscf_pkcs8_der_serializer_new();
+    vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
 
     vscf_rsa_private_key_impl_t *rsa_private_key = vscf_rsa_private_key_new();
     vscf_rsa_private_key_take_asn1rd(rsa_private_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
@@ -123,12 +127,16 @@ void
 test__serialize_private_key__rsa2048__equals_to_rsa_2048_private_key_pkcs8_der(void) {
 #if VSCF_RSA_PRIVATE_KEY
     vscf_pkcs8_der_serializer_impl_t *pkcs8 = vscf_pkcs8_der_serializer_new();
+    vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
 
     vscf_rsa_private_key_impl_t *rsa_private_key = vscf_rsa_private_key_new();
     vscf_rsa_private_key_take_asn1rd(rsa_private_key, vscf_asn1rd_impl(vscf_asn1rd_new()));
+    vscf_rsa_private_key_take_asn1wr(rsa_private_key, vscf_asn1wr_impl(vscf_asn1wr_new()));
     vscf_rsa_private_key_import_private_key(rsa_private_key, test_rsa_2048_PRIVATE_KEY_PKCS1);
 
-    vsc_buffer_t *out = vsc_buffer_new_with_capacity(test_rsa_2048_PRIVATE_KEY_PKCS8_DER.len);
+    size_t len =
+            vscf_pkcs8_der_serializer_serialized_private_key_len(pkcs8, vscf_rsa_private_key_impl(rsa_private_key));
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
 
     vscf_pkcs8_der_serializer_serialize_private_key(pkcs8, vscf_rsa_private_key_impl(rsa_private_key), out);
 

@@ -140,6 +140,33 @@ VSCF_PUBLIC vscf_pkcs8_der_serializer_impl_t *
 vscf_pkcs8_der_serializer_copy(vscf_pkcs8_der_serializer_impl_t *pkcs8_der_serializer_impl);
 
 //
+//  Setup dependency to the interface 'asn1 writer' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_der_serializer_use_asn1_writer(vscf_pkcs8_der_serializer_impl_t *pkcs8_der_serializer_impl,
+        vscf_impl_t *asn1_writer);
+
+//
+//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_der_serializer_take_asn1_writer(vscf_pkcs8_der_serializer_impl_t *pkcs8_der_serializer_impl,
+        vscf_impl_t *asn1_writer);
+
+//
+//  Release dependency to the interface 'asn1 writer'.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_der_serializer_release_asn1_writer(vscf_pkcs8_der_serializer_impl_t *pkcs8_der_serializer_impl);
+
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_pkcs8_der_serializer_setup_defaults(vscf_pkcs8_der_serializer_impl_t *pkcs8_der_serializer_impl);
+
+//
 //  Calculate buffer size enough to hold serialized public key.
 //
 //  Precondition: public key must be exportable.
