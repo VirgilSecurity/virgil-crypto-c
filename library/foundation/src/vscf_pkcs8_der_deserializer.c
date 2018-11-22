@@ -88,6 +88,10 @@ vscf_pkcs8_der_deserializer_setup_defaults(vscf_pkcs8_der_deserializer_impl_t *p
 
     VSCF_ASSERT_PTR(pkcs8_der_deserializer_impl);
 
+    if (NULL == pkcs8_der_deserializer_impl->asn1_reader) {
+        vscf_pkcs8_der_deserializer_take_asn1_reader(pkcs8_der_deserializer_impl, vscf_asn1rd_impl(vscf_asn1rd_new()));
+    }
+
     return vscf_SUCCESS;
 }
 
@@ -100,10 +104,48 @@ vscf_pkcs8_der_deserializer_deserialize_public_key(vscf_pkcs8_der_deserializer_i
 
     VSCF_ASSERT_PTR(pkcs8_der_deserializer_impl);
     VSCF_ASSERT(vsc_data_is_valid(public_key_data));
+    VSCF_ASSERT_PTR(pkcs8_der_deserializer_impl->asn1_reader);
 
-    VSCF_UNUSED(error);
-    //  TODO: This is STUB. Implement me.
-    return NULL;
+    //  SubjectPublicKeyInfo ::= SEQUENCE {
+    //          algorithm AlgorithmIdentifier,
+    //          subjectPublicKey BIT STRING
+    //  }
+
+    if (error) {
+        vscf_error_ctx_reset(error);
+    }
+
+    vscf_impl_t *asn1_reader = pkcs8_der_deserializer_impl->asn1_reader;
+    vscf_asn1_reader_reset(asn1_reader, public_key_data);
+
+    //
+    //  Read SubjectPublicKeyInfo
+    //
+    vscf_asn1_reader_read_sequence(asn1_reader);
+
+    //
+    //  Read algorithm
+    //
+    vscf_asn1_reader_read_sequence(asn1_reader);
+    vsc_data_t key_oid = vscf_asn1_reader_read_oid(asn1_reader);
+    vscf_asn1_reader_read_null(asn1_reader);
+
+    //
+    //  Read subjectPublicKey
+    //
+    vsc_data_t public_key_bits = vscf_asn1_reader_read_bitstring_as_octet_str(asn1_reader);
+
+    //
+    //  Finalize
+    //
+    if (vscf_asn1_reader_error(asn1_reader) != vscf_SUCCESS) {
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_PKCS8_PUBLIC_KEY);
+        return NULL;
+    }
+
+    vscf_key_alg_t key_alg = vscf_oid_to_key_alg(key_oid);
+
+    return vscf_raw_key_new_with_data(key_alg, public_key_bits);
 }
 
 //
@@ -115,8 +157,53 @@ vscf_pkcs8_der_deserializer_deserialize_private_key(vscf_pkcs8_der_deserializer_
 
     VSCF_ASSERT_PTR(pkcs8_der_deserializer_impl);
     VSCF_ASSERT(vsc_data_is_valid(private_key_data));
+    VSCF_ASSERT_PTR(pkcs8_der_deserializer_impl->asn1_reader);
 
-    VSCF_UNUSED(error);
-    //  TODO: This is STUB. Implement me.
-    return NULL;
+    //  PrivateKeyInfo ::= SEQUENCE {
+    //          version Version,
+    //          privateKeyAlgorithm PrivateKeyAlgorithmIdentifier,
+    //          privateKey PrivateKey,
+    //          attributes [0] IMPLICIT Attributes OPTIONAL
+    //  }
+
+    if (error) {
+        vscf_error_ctx_reset(error);
+    }
+
+    vscf_impl_t *asn1_reader = pkcs8_der_deserializer_impl->asn1_reader;
+    vscf_asn1_reader_reset(asn1_reader, private_key_data);
+
+    //
+    //  Read PrivateKeyInfo
+    //
+    vscf_asn1_reader_read_sequence(asn1_reader);
+
+    //
+    //  Read version
+    //
+    int version = vscf_asn1_reader_read_int(asn1_reader);
+
+    //
+    //  Read privateKeyAlgorithm
+    //
+    vscf_asn1_reader_read_sequence(asn1_reader);
+    vsc_data_t key_oid = vscf_asn1_reader_read_oid(asn1_reader);
+    vscf_asn1_reader_read_null(asn1_reader);
+
+    //
+    //  Read privateKey
+    //
+    vsc_data_t private_key_bits = vscf_asn1_reader_read_octet_str(asn1_reader);
+
+    //
+    //  Finalize
+    //
+    if ((vscf_asn1_reader_error(asn1_reader) != vscf_SUCCESS) || (version != 0)) {
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_PKCS8_PRIVATE_KEY);
+        return NULL;
+    }
+
+    vscf_key_alg_t key_alg = vscf_oid_to_key_alg(key_oid);
+
+    return vscf_raw_key_new_with_data(key_alg, private_key_bits);
 }
