@@ -1977,7 +1977,7 @@ function swift_create_implementation_module (implementation, destination, wrappe
                 swift_create_class_destructor (swift_class, my.implementation, my.wrapper, my.meta)
 
                 if my.implementation.lifecycle <> "none"
-                    for my.implementation.constructor
+                    for my.implementation.constructor where 0.declaration = "public" & 0.visibility = "public"
                         swift_create_class_constructor (\
                             my.implementation, constructor, swift_class, my.wrapper, my.meta)
                     endfor
@@ -2039,7 +2039,7 @@ function swift_create_class_module (class, destination, wrapper, meta)
                 swift_create_class_destructor (swift_class, my.class, my.wrapper, my.meta)
 
                 if my.class.lifecycle <> "none"
-                    for my.class.constructor
+                    for my.class.constructor where 0.declaration = "public" & 0.visibility = "public"
                         swift_create_class_constructor (my.class, constructor, swift_class, my.wrapper, my.meta)
                     endfor
                 endif

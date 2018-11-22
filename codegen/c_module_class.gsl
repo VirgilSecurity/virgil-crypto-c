@@ -372,6 +372,9 @@ function _X13_add_constructor (class, constructor, destination, meta)
     new method to my.destination
         . = my.constructor. ?
         .name = cat (! my.class.is_value_type ?? my.names.method_new ? "", my.constructor.name)
+        .declaration ?= my.constructor.declaration ?
+        .definition ?= my.constructor.definition ?
+        .visibility ?= my.constructor.visibility ?
 
         for my.constructor.argument
             component_clean_copy (argument, method)
