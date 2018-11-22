@@ -88,11 +88,9 @@ vscf_pkcs8_der_serializer_setup_defaults(vscf_pkcs8_der_serializer_impl_t *pkcs8
 
     VSCF_ASSERT_PTR(pkcs8_der_serializer_impl);
 
-    if (pkcs8_der_serializer_impl->asn1_writer) {
-        return vscf_SUCCESS;
+    if (NULL == pkcs8_der_serializer_impl->asn1_writer) {
+        vscf_pkcs8_der_serializer_take_asn1_writer(pkcs8_der_serializer_impl, vscf_asn1wr_impl(vscf_asn1wr_new()));
     }
-
-    vscf_pkcs8_der_serializer_take_asn1_writer(pkcs8_der_serializer_impl, vscf_asn1wr_impl(vscf_asn1wr_new()));
 
     return vscf_SUCCESS;
 }
@@ -203,10 +201,10 @@ vscf_pkcs8_der_serializer_serialized_private_key_len(
 
     size_t wrappedKeyLen = vscf_private_key_exported_private_key_len(private_key);
     size_t len = 1 + 4 +                 //  PrivateKeyInfo ::= SEQUENCE {
-                 1 + 1 + 1 +             //          version                   Version,
-                 1 + 1 + 32 +            //          privateKeyAlgorithm       PrivateKeyAlgorithmIdentifier,
-                 1 + 5 + wrappedKeyLen + //          privateKey                PrivateKey,
-                 0;                      //          attributes           [0]  IMPLICIT Attributes OPTIONAL
+                 1 + 1 + 1 +             //          version Version,
+                 1 + 1 + 32 +            //          privateKeyAlgorithm PrivateKeyAlgorithmIdentifier,
+                 1 + 5 + wrappedKeyLen + //          privateKey PrivateKey,
+                 0;                      //          attributes [0] IMPLICIT Attributes OPTIONAL
                                          //  }
 
     return len;
@@ -232,10 +230,10 @@ vscf_pkcs8_der_serializer_serialize_private_key(vscf_pkcs8_der_serializer_impl_t
     VSCF_ASSERT_PTR(pkcs8_der_serializer_impl->asn1_writer);
 
     //  PrivateKeyInfo ::= SEQUENCE {
-    //          version                   Version,
-    //          privateKeyAlgorithm       PrivateKeyAlgorithmIdentifier,
-    //          privateKey                PrivateKey,
-    //          attributes           [0]  IMPLICIT Attributes OPTIONAL
+    //          version Version,
+    //          privateKeyAlgorithm PrivateKeyAlgorithmIdentifier,
+    //          privateKey PrivateKey,
+    //          attributes [0] IMPLICIT Attributes OPTIONAL
     //  }
 
     vscf_impl_t *asn1_writer = pkcs8_der_serializer_impl->asn1_writer;
