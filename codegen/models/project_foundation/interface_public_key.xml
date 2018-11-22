@@ -5,7 +5,7 @@
 
 
     <!-- Export -->
-    <constant name="can export public key" type="boolean">
+    <constant name="can export public key" type="boolean" is_const="1">
         Define whether a public key can be exported or not.
     </constant>
 

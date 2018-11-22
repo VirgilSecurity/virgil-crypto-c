@@ -82,19 +82,19 @@ typedef struct vscf_key_api_t vscf_key_api_t;
 //  Return implemented asymmetric key algorithm type.
 //
 VSCF_PUBLIC vscf_key_alg_t
-vscf_key_alg(vscf_impl_t *impl);
+vscf_key_alg(const vscf_impl_t *impl);
 
 //
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
-vscf_key_key_len(vscf_impl_t *impl);
+vscf_key_key_len(const vscf_impl_t *impl);
 
 //
 //  Length of the key in bits.
 //
 VSCF_PUBLIC size_t
-vscf_key_key_bitlen(vscf_impl_t *impl);
+vscf_key_key_bitlen(const vscf_impl_t *impl);
 
 //
 //  Return key API, or NULL if it is not implemented.

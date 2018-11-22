@@ -68,7 +68,7 @@
 //  Return implemented asymmetric key algorithm type.
 //
 VSCF_PUBLIC vscf_key_alg_t
-vscf_key_alg(vscf_impl_t *impl) {
+vscf_key_alg(const vscf_impl_t *impl) {
 
     const vscf_key_api_t *key_api = vscf_key_api (impl);
     VSCF_ASSERT_PTR (key_api);
@@ -81,7 +81,7 @@ vscf_key_alg(vscf_impl_t *impl) {
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
-vscf_key_key_len(vscf_impl_t *impl) {
+vscf_key_key_len(const vscf_impl_t *impl) {
 
     const vscf_key_api_t *key_api = vscf_key_api (impl);
     VSCF_ASSERT_PTR (key_api);
@@ -94,7 +94,7 @@ vscf_key_key_len(vscf_impl_t *impl) {
 //  Length of the key in bits.
 //
 VSCF_PUBLIC size_t
-vscf_key_key_bitlen(vscf_impl_t *impl) {
+vscf_key_key_bitlen(const vscf_impl_t *impl) {
 
     const vscf_key_api_t *key_api = vscf_key_api (impl);
     VSCF_ASSERT_PTR (key_api);
