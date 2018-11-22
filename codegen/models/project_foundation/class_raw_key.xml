@@ -5,11 +5,20 @@
     <property name="bytes" class="buffer"/>
 
 
-    <constructor name="with members">
-        Creates fully defined raw key.
+    <constructor name="with data">
+        Creates raw key defined with algorithm and data.
+        Note, data is copied.
 
         <argument name="alg" enum="key alg"/>
-        <argument name="bytes" class="buffer" access="retain"/>
+        <argument name="raw key data" class="data"/>
+    </constructor>
+
+
+    <constructor name="with buffer" visibility="private">
+        Creates raw key defined with algorithm and buffer.
+
+        <argument name="alg" enum="key alg"/>
+        <argument name="buffer" class="buffer" access="retain"/>
     </constructor>
 
 

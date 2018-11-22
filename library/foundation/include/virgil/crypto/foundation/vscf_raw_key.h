@@ -57,10 +57,12 @@
 #include "vscf_key_alg.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_buffer.h>
 #endif
 
@@ -109,10 +111,17 @@ VSCF_PUBLIC vscf_raw_key_t *
 vscf_raw_key_new(void);
 
 //
-//  Creates fully defined raw key.
+//  Creates raw key defined with algorithm and data.
+//  Note, data is copied.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_raw_key_new_with_members(vscf_key_alg_t alg, vsc_buffer_t *bytes);
+vscf_raw_key_new_with_data(vscf_key_alg_t alg, vsc_data_t raw_key_data);
+
+//
+//  Creates raw key defined with algorithm and buffer.
+//
+VSCF_PRIVATE vscf_raw_key_t *
+vscf_raw_key_new_with_buffer(vscf_key_alg_t alg, vsc_buffer_t *buffer);
 
 //
 //  Release all inner resources and deallocate context if needed.

@@ -221,19 +221,39 @@ vscf_raw_key_cleanup_ctx(vscf_raw_key_t *raw_key_ctx) {
 }
 
 //
-//  Creates fully defined raw key.
+//  Creates raw key defined with algorithm and data.
+//  Note, data is copied.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_raw_key_new_with_members(vscf_key_alg_t alg, vsc_buffer_t *bytes) {
+vscf_raw_key_new_with_data(vscf_key_alg_t alg, vsc_data_t raw_key_data) {
 
     VSCF_ASSERT(alg != vscf_key_alg_NONE);
-    VSCF_ASSERT_PTR(bytes);
-    VSCF_ASSERT(vsc_buffer_is_valid(bytes));
+    VSCF_ASSERT(vsc_data_is_valid(raw_key_data));
 
     vscf_raw_key_t *raw_key_ctx = vscf_raw_key_new();
 
     raw_key_ctx->alg = alg;
-    raw_key_ctx->bytes = vsc_buffer_copy(bytes);
+    raw_key_ctx->bytes = vsc_buffer_new_with_data(raw_key_data);
+
+    vsc_buffer_make_secure(raw_key_ctx->bytes);
+
+    return raw_key_ctx;
+}
+
+//
+//  Creates raw key defined with algorithm and buffer.
+//
+VSCF_PRIVATE vscf_raw_key_t *
+vscf_raw_key_new_with_buffer(vscf_key_alg_t alg, vsc_buffer_t *buffer) {
+
+    VSCF_ASSERT(alg != vscf_key_alg_NONE);
+    VSCF_ASSERT_PTR(buffer);
+    VSCF_ASSERT(vsc_buffer_is_valid(buffer));
+
+    vscf_raw_key_t *raw_key_ctx = vscf_raw_key_new();
+
+    raw_key_ctx->alg = alg;
+    raw_key_ctx->bytes = vsc_buffer_copy(buffer);
 
     vsc_buffer_make_secure(raw_key_ctx->bytes);
 
