@@ -54,7 +54,7 @@
     <module name="memory" from="shared"/>
 
     <enum name="error"/>
-    <enum name="asn1"/>
+    <enum name="asn1 tag"/>
     <enum name="key alg"/>
     <enum name="hash alg"/>
 
