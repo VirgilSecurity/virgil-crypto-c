@@ -76,17 +76,17 @@ extern "C" {
 //
 //  Callback. Return implemented asymmetric key algorithm type.
 //
-typedef vscf_key_alg_t (*vscf_key_api_alg_fn)(vscf_impl_t *impl);
+typedef vscf_key_alg_t (*vscf_key_api_alg_fn)(const vscf_impl_t *impl);
 
 //
 //  Callback. Length of the key in bytes.
 //
-typedef size_t (*vscf_key_api_key_len_fn)(vscf_impl_t *impl);
+typedef size_t (*vscf_key_api_key_len_fn)(const vscf_impl_t *impl);
 
 //
 //  Callback. Length of the key in bits.
 //
-typedef size_t (*vscf_key_api_key_bitlen_fn)(vscf_impl_t *impl);
+typedef size_t (*vscf_key_api_key_bitlen_fn)(const vscf_impl_t *impl);
 
 //
 //  Contains API requirements of the interface 'key'.
