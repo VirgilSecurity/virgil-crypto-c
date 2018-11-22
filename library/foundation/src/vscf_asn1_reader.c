@@ -302,6 +302,19 @@ vscf_asn1_reader_read_octet_str(vscf_impl_t *impl) {
 }
 
 //
+//  Read ASN.1 type: BIT STRING.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_asn1_reader_read_bitstring_as_octet_str(vscf_impl_t *impl) {
+
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    VSCF_ASSERT_PTR (asn1_reader_api);
+
+    VSCF_ASSERT_PTR (asn1_reader_api->read_bitstring_as_octet_str_cb);
+    return asn1_reader_api->read_bitstring_as_octet_str_cb (impl);
+}
+
+//
 //  Read ASN.1 type: UTF8String.
 //
 VSCF_PUBLIC vsc_data_t

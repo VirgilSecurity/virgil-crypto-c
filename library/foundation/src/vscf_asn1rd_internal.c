@@ -156,6 +156,10 @@ static const vscf_asn1_reader_api_t asn1_reader_api = {
     //
     (vscf_asn1_reader_api_read_octet_str_fn)vscf_asn1rd_read_octet_str,
     //
+    //  Read ASN.1 type: BIT STRING.
+    //
+    (vscf_asn1_reader_api_read_bitstring_as_octet_str_fn)vscf_asn1rd_read_bitstring_as_octet_str,
+    //
     //  Read ASN.1 type: UTF8String.
     //
     (vscf_asn1_reader_api_read_utf8_str_fn)vscf_asn1rd_read_utf8_str,

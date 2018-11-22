@@ -97,6 +97,9 @@ import VirgilCryptoCommon
     /// Read ASN.1 type: OCTET STRING.
     @objc func readOctetStr() -> Data
 
+    /// Read ASN.1 type: BIT STRING.
+    @objc func readBitstringAsOctetStr() -> Data
+
     /// Read ASN.1 type: UTF8String.
     @objc func readUtf8Str() -> Data
 
@@ -253,6 +256,13 @@ import VirgilCryptoCommon
     /// Read ASN.1 type: OCTET STRING.
     @objc public func readOctetStr() -> Data {
         let proxyResult = vscf_asn1_reader_read_octet_str(self.c_ctx)
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
+
+    /// Read ASN.1 type: BIT STRING.
+    @objc public func readBitstringAsOctetStr() -> Data {
+        let proxyResult = vscf_asn1_reader_read_bitstring_as_octet_str(self.c_ctx)
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }

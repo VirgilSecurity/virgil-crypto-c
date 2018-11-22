@@ -175,6 +175,18 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     //
     (vscf_asn1_writer_api_write_octet_str_fn)vscf_asn1wr_write_octet_str,
     //
+    //  Write ASN.1 type: BIT STRING with all zero unused bits.
+    //
+    //  Return count of written bytes.
+    //
+    (vscf_asn1_writer_api_write_octet_str_as_bitstring_fn)vscf_asn1wr_write_octet_str_as_bitstring,
+    //
+    //  Write raw data directly to the ASN.1 structure.
+    //  Return count of written bytes.
+    //  Note, use this method carefully.
+    //
+    (vscf_asn1_writer_api_write_data_fn)vscf_asn1wr_write_data,
+    //
     //  Write ASN.1 type: UTF8String.
     //  Return count of written bytes.
     //
