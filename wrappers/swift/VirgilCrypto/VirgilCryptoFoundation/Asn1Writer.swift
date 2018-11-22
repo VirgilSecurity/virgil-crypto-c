@@ -115,6 +115,16 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc func writeOctetStr(value: Data) -> Int
 
+    /// Write ASN.1 type: BIT STRING with all zero unused bits.
+    ///
+    /// Return count of written bytes.
+    @objc func writeOctetStrAsBitstring(value: Data) -> Int
+
+    /// Write raw data directly to the ASN.1 structure.
+    /// Return count of written bytes.
+    /// Note, use this method carefully.
+    @objc func writeData(data: Data) -> Int
+
     /// Write ASN.1 type: UTF8String.
     /// Return count of written bytes.
     @objc func writeUtf8Str(value: Data) -> Int
@@ -293,6 +303,28 @@ import VirgilCryptoCommon
     @objc public func writeOctetStr(value: Data) -> Int {
         let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
             return vscf_asn1_writer_write_octet_str(self.c_ctx, vsc_data(valuePointer, value.count))
+        })
+
+        return proxyResult
+    }
+
+    /// Write ASN.1 type: BIT STRING with all zero unused bits.
+    ///
+    /// Return count of written bytes.
+    @objc public func writeOctetStrAsBitstring(value: Data) -> Int {
+        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
+            return vscf_asn1_writer_write_octet_str_as_bitstring(self.c_ctx, vsc_data(valuePointer, value.count))
+        })
+
+        return proxyResult
+    }
+
+    /// Write raw data directly to the ASN.1 structure.
+    /// Return count of written bytes.
+    /// Note, use this method carefully.
+    @objc public func writeData(data: Data) -> Int {
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Int in
+            return vscf_asn1_writer_write_data(self.c_ctx, vsc_data(dataPointer, data.count))
         })
 
         return proxyResult
