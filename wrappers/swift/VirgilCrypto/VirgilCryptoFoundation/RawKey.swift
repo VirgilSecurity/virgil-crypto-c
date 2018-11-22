@@ -63,14 +63,11 @@ import VirgilCryptoCommon
         super.init()
     }
 
-    /// Creates fully defined raw key.
-    public init(alg: KeyAlg, bytes: Data) {
-        let proxyResult = bytes.withUnsafeBytes({ (bytesPointer: UnsafePointer<byte>) -> OpaquePointer in
-            var bytesBuf = vsc_buffer_new_with_data(vsc_data(bytesPointer, bytes.count))
-            defer {
-                vsc_buffer_delete(bytesBuf)
-            }
-            return vscf_raw_key_new_with_members(vscf_key_alg_t(rawValue: UInt32(alg.rawValue)), bytesBuf)
+    /// Creates raw key defined with algorithm and data.
+    /// Note, data is copied.
+    public init(alg: KeyAlg, rawKeyData: Data) {
+        let proxyResult = rawKeyData.withUnsafeBytes({ (rawKeyDataPointer: UnsafePointer<byte>) -> OpaquePointer in
+            return vscf_raw_key_new_with_data(vscf_key_alg_t(rawValue: UInt32(alg.rawValue)), vsc_data(rawKeyDataPointer, rawKeyData.count))
         })
 
         self.c_ctx = proxyResult
