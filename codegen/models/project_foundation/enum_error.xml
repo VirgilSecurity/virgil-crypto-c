@@ -47,23 +47,31 @@
         ASN.1 representation of PKCS#1 private key is corrupted.
     </constant>
 
-    <constant name="bad encrypted data" value="-207">
+    <constant name="bad pkcs8 public key" value="-207">
+        ASN.1 representation of PKCS#8 public key is corrupted.
+    </constant>
+
+    <constant name="bad pkcs8 private key" value="-208">
+        ASN.1 representation of PKCS#8 private key is corrupted.
+    </constant>
+
+    <constant name="bad encrypted data" value="-209">
         Encrypted data is corrupted.
     </constant>
 
-    <constant name="random failed" value="-208">
+    <constant name="random failed" value="-210">
         Underlying random operation returns error.
     </constant>
 
-    <constant name="key generation failed" value="-209">
+    <constant name="key generation failed" value="-211">
         Generation of the private or secret key failed.
     </constant>
 
-    <constant name="entropy source failed" value="-210">
+    <constant name="entropy source failed" value="-212">
         One of the entropy sources failed.
     </constant>
 
-    <constant name="rng requested data too big" value="-211">
+    <constant name="rng requested data too big" value="-213">
         Requested data to be generated is too big.
     </constant>
 </enum>
