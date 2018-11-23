@@ -166,6 +166,12 @@ function class_resolve_method (method, class)
 
     if string_equal (my.class.context, "none")
         my.method.is_static = "1"
+
+        for my.method.argument
+            for argument.length
+                length.class ?= "self"
+            endfor
+        endfor
     endif
 
     for my.method.argument where string_equal (0.class ?, "self")
