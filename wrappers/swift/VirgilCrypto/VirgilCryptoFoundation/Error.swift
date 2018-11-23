@@ -92,6 +92,9 @@ import VSCFoundation
     /// Requested data to be generated is too big.
     case rngRequestedDataTooBig = -213
 
+    /// Base64 encoded string contains invalid characters.
+    case badBase64 = -214
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC error: vscf_error_t) {
         self.init(rawValue: Int(error.rawValue))!

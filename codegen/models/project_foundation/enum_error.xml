@@ -74,4 +74,8 @@
     <constant name="rng requested data too big" value="-213">
         Requested data to be generated is too big.
     </constant>
+
+    <constant name="bad base64" value="-214">
+        Base64 encoded string contains invalid characters.
+    </constant>
 </enum>

@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2018 Virgil Security Inc.
 //
 //  All rights reserved.
@@ -33,62 +31,58 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-// --------------------------------------------------------------------------
 
-#ifndef MBEDTLS_CONFIG_H
-#define MBEDTLS_CONFIG_H
+
+#include "vsc_data.h"
+
+//
+//  Test vectors from RFC 4648
+//
+
+//
+//  BASE64("") = ""
+//
+extern const vsc_data_t test_base64_DECODED_EMPTY;
+extern const vsc_data_t test_base64_ENCODED_EMPTY;
+
+
+//
+//  BASE64("f") = "Zg=="
+//
+extern const vsc_data_t test_base64_DECODED_LOWERCASE_F;
+extern const vsc_data_t test_base64_ENCODED_LOWERCASE_F;
+
+
+//
+//  BASE64("fo") = "Zm8="
+//
+extern const vsc_data_t test_base64_DECODED_LOWERCASE_FO;
+extern const vsc_data_t test_base64_ENCODED_LOWERCASE_FO;
+
+
+//
+//  BASE64("foo") = "Zm9v"
+//
+extern const vsc_data_t test_base64_DECODED_LOWERCASE_FOO;
+extern const vsc_data_t test_base64_ENCODED_LOWERCASE_FOO;
+
+
+//
+//  BASE64("foob") = "Zm9vYg=="
+//
+extern const vsc_data_t test_base64_DECODED_LOWERCASE_FOOB;
+extern const vsc_data_t test_base64_ENCODED_LOWERCASE_FOOB;
+
+
+//
+//  BASE64("fooba") = "Zm9vYmE="
+//
+extern const vsc_data_t test_base64_DECODED_LOWERCASE_FOOBA;
+extern const vsc_data_t test_base64_ENCODED_LOWERCASE_FOOBA;
 
 
 //
-//  Common
+//  BASE64("foobar") = "Zm9vYmFy"
 //
-#cmakedefine MBEDTLS_ERROR_C
-
-//
-//  Required by library vsc::foundation
-//
-#cmakedefine MBEDTLS_SHA256_C
-#cmakedefine MBEDTLS_SHA512_C
-#cmakedefine MBEDTLS_CIPHER_C
-#cmakedefine MBEDTLS_AES_C
-#cmakedefine MBEDTLS_GCM_C
-#cmakedefine MBEDTLS_MD_C
-#cmakedefine MBEDTLS_BIGNUM_C
-#cmakedefine MBEDTLS_PKCS1_V21
-#cmakedefine MBEDTLS_OID_C
-#cmakedefine MBEDTLS_RSA_C
-#cmakedefine MBEDTLS_ASN1_PARSE_C
-#cmakedefine MBEDTLS_ASN1_WRITE_C
-#cmakedefine MBEDTLS_GENPRIME
-#cmakedefine MBEDTLS_PLATFORM_ENTROPY
-#cmakedefine MBEDTLS_TIMING_C
-#cmakedefine MBEDTLS_HAVEGE_C
-#cmakedefine MBEDTLS_BASE64_C
-#cmakedefine MBEDTLS_PEM_WRITE_C
-
-#if !defined(MBEDTLS_PLATFORM_ENTROPY)
-#   define MBEDTLS_NO_PLATFORM_ENTROPY
-#endif
-
-//
-//  Required by library vsc::pythia
-//
-#cmakedefine MBEDTLS_CTR_DRBG_C
-#cmakedefine MBEDTLS_ENTROPY_C
-
-//
-//  Alternative implementations
-//
-#cmakedefine MBEDTLS_SHA256_ALT
-#cmakedefine MBEDTLS_SHA512_ALT
-#cmakedefine MBEDTLS_AES_ALT
-#cmakedefine MBEDTLS_GCM_ALT
-
-//
-//  Non configurable options
-//
-#define MBEDTLS_NO_DEFAULT_ENTROPY_SOURCES
-
-#include "check_config.h"
-
-#endif /* MBEDTLS_CONFIG_H */
+extern const vsc_data_t test_base64_DECODED_LOWERCASE_FOOBAR;
+extern const vsc_data_t test_base64_ENCODED_LOWERCASE_FOOBAR;
