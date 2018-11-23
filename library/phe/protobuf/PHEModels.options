@@ -1,8 +1,18 @@
 EnrollmentResponse.ns max_size:32 fixed_length:true
-EnrollmentResponse.c0 max_size:65 fixed_length:true
-EnrollmentResponse.c1 max_size:65 fixed_length:true
+EnrollmentResponse.c_0 max_size:65 fixed_length:true
+EnrollmentResponse.c_1 max_size:65 fixed_length:true
 
 EnrollmentRecord.ns max_size:32 fixed_length:true
 EnrollmentRecord.nc max_size:32 fixed_length:true
-EnrollmentRecord.t0 max_size:65 fixed_length:true
-EnrollmentRecord.t1 max_size:65 fixed_length:true
+EnrollmentRecord.t_0 max_size:65 fixed_length:true
+EnrollmentRecord.t_1 max_size:65 fixed_length:true
+
+ProofOfSuccess.term_1 max_size:65 fixed_length:true
+ProofOfSuccess.term_2 max_size:65 fixed_length:true
+ProofOfSuccess.term_3 max_size:65 fixed_length:true
+ProofOfSuccess.blind_x max_size:32
+
+VerifyPasswordRequest.ns max_size:32 fixed_length:true
+VerifyPasswordRequest.c_0 max_size:65 fixed_length:true
+
+VerifyPasswordResponse.c_1 max_size:65 fixed_length:true
