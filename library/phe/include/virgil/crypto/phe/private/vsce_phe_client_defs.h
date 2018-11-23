@@ -108,6 +108,8 @@ struct vsce_phe_client_t {
     //
     vscf_impl_t *random;
 
+    mbedtls_ecp_group group;
+
     vsc_buffer_t *secret_key;
 };
 

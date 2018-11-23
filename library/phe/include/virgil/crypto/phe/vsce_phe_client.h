@@ -176,6 +176,14 @@ VSCE_PUBLIC vsce_error_t
 vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enrollment_response, vsc_data_t password,
         vsc_buffer_t *enrollment_record, vsc_buffer_t *account_key);
 
+VSCE_PUBLIC vsce_error_t
+vsce_phe_client_create_verify_password_request(vsce_phe_client_t *phe_client_ctx, vsc_data_t password,
+        vsc_data_t enrollment_record, vsc_buffer_t *verify_password_request);
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vsc_data_t password,
+        vsc_data_t enrollment_record, vsc_data_t verify_password_response, vsc_buffer_t *account_key);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

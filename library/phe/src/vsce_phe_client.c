@@ -83,6 +83,15 @@ vsce_phe_client_init_ctx(vsce_phe_client_t *phe_client_ctx);
 static void
 vsce_phe_client_cleanup_ctx(vsce_phe_client_t *phe_client_ctx);
 
+static vsce_error_t
+vsce_phe_client_check_success_proof(vsce_phe_client_t *phe_client_ctx, const ProofOfSuccess *success_proof,
+        vsc_data_t nonce, const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, vsc_data_t c0_b, vsc_data_t c1_b);
+
+static vsce_error_t
+vsce_phe_client_check_fail_proof(vsce_phe_client_t *phe_client_ctx, const ProofOfFail *fail_proof,
+        const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, const mbedtls_ecp_point *hs0,
+        const mbedtls_ecp_point *hc0, const mbedtls_ecp_point *hc1);
+
 //
 //  Return size of 'vsce_phe_client_t'.
 //
@@ -299,6 +308,9 @@ vsce_phe_client_init_ctx(vsce_phe_client_t *phe_client_ctx) {
     vscf_ctr_drbg_setup_defaults(rng);
 
     vsce_phe_client_take_random(phe_client_ctx, vscf_ctr_drbg_impl(rng));
+
+    mbedtls_ecp_group_init(&phe_client_ctx->group);
+    mbedtls_ecp_group_load(&phe_client_ctx->group, MBEDTLS_ECP_DP_SECP256R1);
 }
 
 //
@@ -311,7 +323,7 @@ vsce_phe_client_cleanup_ctx(vsce_phe_client_t *phe_client_ctx) {
 
     VSCE_ASSERT_PTR(phe_client_ctx);
 
-    //  TODO: Release all inner resources.
+    mbedtls_ecp_group_free(&phe_client_ctx->group);
 }
 
 VSCE_PUBLIC vsce_error_t
@@ -322,16 +334,29 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
 
     VSCE_ASSERT(password.len > 0 && password.len <= vsce_phe_common_PHE_MAX_PASSWORD_LENGTH);
 
-    mbedtls_ecp_group group;
-    mbedtls_ecp_group_init(&group);
-    mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
-
     EnrollmentResponse response;
 
     pb_istream_t stream = pb_istream_from_buffer(enrollment_response.bytes, enrollment_response.len);
 
     // TODO: Check error
     pb_decode(&stream, EnrollmentResponse_fields, &response);
+
+    mbedtls_ecp_point c0, c1;
+    mbedtls_ecp_point_init(&c0);
+    mbedtls_ecp_point_init(&c1);
+
+    mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &c0, response.c_0, sizeof(response.c_0));
+    mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &c1, response.c_1, sizeof(response.c_1));
+
+    vsce_error_t status = vsce_phe_client_check_success_proof(phe_client_ctx, &response.proof,
+            vsc_data(response.ns, sizeof(response.ns)),
+            &c0, &c1, vsc_data(response.c_0, sizeof(response.c_0)), vsc_data(response.c_1, sizeof(response.c_1)));
+
+    if (status != vsce_SUCCESS) {
+        // TODO: Free memory
+
+        return status;
+    }
 
     vsc_buffer_t *nc = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH);
     vscf_random(phe_client_ctx->random, vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH, nc);
@@ -342,8 +367,6 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
 
     vsce_phe_hash_hc0(phe_client_ctx->phe_hash, vsc_buffer_data(nc), password, &hc0);
     vsce_phe_hash_hc1(phe_client_ctx->phe_hash, vsc_buffer_data(nc), password, &hc1);
-    //    vsce_phe_hash_hs0(phe_client_ctx->phe_hash, vsc_data(response.ns, vsce_phe_common_PHE_SERVER_IDENTIFIER_LENGTH), &hs0);
-    //    vsce_phe_hash_hs1(phe_client_ctx->phe_hash, vsc_data(response.ns, vsce_phe_common_PHE_SERVER_IDENTIFIER_LENGTH), &hs1);
 
     vsc_buffer_t *rnd_m = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH);
     vsc_buffer_make_secure(rnd_m);
@@ -358,8 +381,10 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
     vsc_buffer_t *M_buf = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_POINT_LENGTH);
     vsc_buffer_make_secure(M_buf);
     size_t olen = 0;
-    mbedtls_ecp_point_write_binary(&group, &M, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+    mbedtls_ecp_point_write_binary(&phe_client_ctx->group, &M, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
             vsc_buffer_ptr(M_buf), vsce_phe_common_PHE_POINT_LENGTH);
+    vsc_buffer_reserve(M_buf, vsce_phe_common_PHE_POINT_LENGTH);
+    VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
     // TODO: Check me
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
@@ -378,8 +403,6 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
     vsc_buffer_destroy(&M_buf);
     vscf_hkdf_destroy(&hkdf);
 
-    // TODO: Check proof
-
     mbedtls_ecp_point t0, t1;
     mbedtls_ecp_point_init(&t0);
     mbedtls_ecp_point_init(&t1);
@@ -388,33 +411,27 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
     mbedtls_mpi_init(&one);
     mbedtls_mpi_lset(&one, 1);
 
-    mbedtls_ecp_point c0, c1;
-    mbedtls_ecp_point_init(&c0);
-    mbedtls_ecp_point_init(&c1);
+    mbedtls_mpi y;
+    mbedtls_mpi_init(&y);
+    mbedtls_mpi_read_binary(&y, vsc_buffer_bytes(phe_client_ctx->secret_key), vsc_buffer_len(phe_client_ctx->secret_key));
 
-    mbedtls_ecp_point_read_binary(&group, &c0, response.c0, sizeof(response.c0));
-    mbedtls_ecp_point_read_binary(&group, &c1, response.c1, sizeof(response.c1));
-
-    mbedtls_mpi skc;
-    mbedtls_mpi_init(&skc);
-    mbedtls_mpi_read_binary(&skc, vsc_buffer_bytes(phe_client_ctx->secret_key), vsc_buffer_len(phe_client_ctx->secret_key));
-
-    mbedtls_ecp_muladd(&group, &t0, &one, &c0, &skc, &hc0);
-    mbedtls_ecp_muladd(&group, &t1, &one, &c1, &skc, &hc1);
-    mbedtls_ecp_muladd(&group, &t1, &one, &t1, &skc, &M);
+    mbedtls_ecp_muladd(&phe_client_ctx->group, &t0, &one, &c0, &y, &hc0);
+    mbedtls_ecp_muladd(&phe_client_ctx->group, &t1, &one, &c1, &y, &hc1);
+    mbedtls_ecp_muladd(&phe_client_ctx->group, &t1, &one, &t1, &y, &M);
 
     EnrollmentRecord record;
     memcpy(record.ns, response.ns, sizeof(response.ns));
     memcpy(record.nc, vsc_buffer_bytes(nc), vsc_buffer_len(nc));
     olen = 0;
-    mbedtls_ecp_point_write_binary(&group, &t0, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, record.t0, sizeof(record.t0));
+    mbedtls_ecp_point_write_binary(&phe_client_ctx->group, &t0, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, record.t_0, sizeof(record.t_0));
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
     olen = 0;
-    mbedtls_ecp_point_write_binary(&group, &t1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, record.t1, sizeof(record.t1));
+    mbedtls_ecp_point_write_binary(&phe_client_ctx->group, &t1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, record.t_1, sizeof(record.t_1));
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(enrollment_record), vsc_buffer_capacity(enrollment_record));
     pb_encode(&ostream, EnrollmentRecord_fields, &record);
+    vsc_buffer_reserve(enrollment_record, ostream.bytes_written);
 
     mbedtls_ecp_point_free(&t0);
     mbedtls_ecp_point_free(&t1);
@@ -424,14 +441,243 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
     mbedtls_ecp_point_free(&M);
 
     mbedtls_mpi_free(&one);
-    mbedtls_mpi_free(&skc);
+    mbedtls_mpi_free(&y);
 
     mbedtls_ecp_point_free(&c0);
     mbedtls_ecp_point_free(&c1);
 
     vsc_buffer_destroy(&nc);
 
-    mbedtls_ecp_group_free(&group);
+    return vsce_SUCCESS;
+}
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_client_create_verify_password_request(vsce_phe_client_t *phe_client_ctx, vsc_data_t password,
+        vsc_data_t enrollment_record, vsc_buffer_t *verify_password_request) {
+
+    VSCE_ASSERT_PTR(phe_client_ctx);
+
+    //  TODO: This is STUB. Implement me.
+
+    EnrollmentRecord record;
+
+    pb_istream_t istream = pb_istream_from_buffer(enrollment_record.bytes, enrollment_record.len);
+
+    pb_decode(&istream, EnrollmentResponse_fields, &record);
+
+    mbedtls_ecp_point hc0;
+    mbedtls_ecp_point_init(&hc0);
+
+    vsce_phe_hash_hc0(phe_client_ctx->phe_hash, vsc_data(record.nc, sizeof(record.nc)), password, &hc0);
+
+    mbedtls_mpi y;
+    mbedtls_mpi_init(&y);
+    mbedtls_mpi_read_binary(&y, vsc_buffer_bytes(phe_client_ctx->secret_key), vsc_buffer_len(phe_client_ctx->secret_key));
+
+    mbedtls_mpi minus_y;
+    mbedtls_mpi_init(&minus_y);
+
+    mbedtls_mpi zero;
+    mbedtls_mpi_init(&zero);
+    mbedtls_mpi_lset(&zero, 0);
+
+    mbedtls_mpi one;
+    mbedtls_mpi_init(&one);
+    mbedtls_mpi_lset(&one, 1);
+
+    mbedtls_mpi_sub_mpi(&minus_y, &zero, &y);
+
+    mbedtls_ecp_point t0;
+    mbedtls_ecp_point_init(&t0);
+    mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &t0, record.t_0, sizeof(record.t_0));
+
+    mbedtls_ecp_point c0;
+    mbedtls_ecp_point_init(&c0);
+
+    mbedtls_ecp_muladd(&phe_client_ctx->group, &c0, &one, &t0, &minus_y, &hc0);
+
+    VerifyPasswordRequest request;
+    size_t olen = 0;
+    mbedtls_ecp_point_write_binary(&phe_client_ctx->group, &c0, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, request.c_0, sizeof(request.c_0));
+    memcpy(request.ns, record.ns, sizeof(record.ns));
+
+    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(verify_password_request), vsc_buffer_capacity(verify_password_request));
+    pb_encode(&ostream, VerifyPasswordRequest_fields, &request);
+    vsc_buffer_reserve(verify_password_request, ostream.bytes_written);
+
+    mbedtls_mpi_free(&one);
+    mbedtls_mpi_free(&zero);
+    mbedtls_mpi_free(&minus_y);
+    mbedtls_mpi_free(&y);
+
+    mbedtls_ecp_point_free(&c0);
+    mbedtls_ecp_point_free(&hc0);
+    mbedtls_ecp_point_free(&t0);
+
+    return vsce_SUCCESS;
+}
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vsc_data_t password,
+        vsc_data_t enrollment_record, vsc_data_t verify_password_response, vsc_buffer_t *account_key) {
+
+    EnrollmentRecord record;
+
+    pb_istream_t istream1 = pb_istream_from_buffer(enrollment_record.bytes, enrollment_record.len);
+    pb_decode(&istream1, EnrollmentRecord_fields, &record);
+
+    VerifyPasswordResponse response;
+
+    pb_istream_t istream2 = pb_istream_from_buffer(verify_password_response.bytes, verify_password_response.len);
+    pb_decode(&istream2, VerifyPasswordRequest_fields, &response);
+
+    mbedtls_ecp_point t0, t1, c1;
+    mbedtls_ecp_point_init(&t0);
+    mbedtls_ecp_point_init(&t1);
+    mbedtls_ecp_point_init(&c1);
+
+    mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &t0, record.t_0, sizeof(record.t_0));
+    mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &t1, record.t_1, sizeof(record.t_1));
+    mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &c1, response.c_1, sizeof(response.c_1));
+
+    mbedtls_ecp_point hc0, hc1;
+    mbedtls_ecp_point_init(&hc0);
+    mbedtls_ecp_point_init(&hc1);
+
+    vsce_phe_hash_hc0(phe_client_ctx->phe_hash, vsc_data(record.nc, sizeof(record.nc)), password, &hc0);
+    vsce_phe_hash_hc1(phe_client_ctx->phe_hash, vsc_data(record.nc, sizeof(record.nc)), password, &hc1);
+
+    mbedtls_mpi y;
+    mbedtls_mpi_init(&y);
+    mbedtls_mpi_read_binary(&y, vsc_buffer_bytes(phe_client_ctx->secret_key), vsc_buffer_len(phe_client_ctx->secret_key));
+
+    mbedtls_mpi zero;
+    mbedtls_mpi_init(&zero);
+    mbedtls_mpi_lset(&zero, 0);
+
+    mbedtls_mpi minus_y;
+    mbedtls_mpi_init(&minus_y);
+
+    mbedtls_mpi_sub_mpi(&minus_y, &zero, &y);
+
+    mbedtls_mpi one;
+    mbedtls_mpi_init(&one);
+    mbedtls_mpi_lset(&one, 1);
+
+    mbedtls_ecp_point c0;
+    mbedtls_ecp_point_init(&c0);
+
+    mbedtls_ecp_muladd(&phe_client_ctx->group, &c0, &one, &t0, &minus_y, &hc0);
+
+    if (response.res) {
+        vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_POINT_LENGTH);
+
+        size_t olen = 0;
+        mbedtls_ecp_point_write_binary(&phe_client_ctx->group, &c0, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+                vsc_buffer_ptr(buffer), vsc_buffer_capacity(buffer));
+        VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
+        vsc_buffer_reserve(buffer, vsce_phe_common_PHE_POINT_LENGTH);
+
+        vsce_error_t status = vsce_phe_client_check_success_proof(phe_client_ctx, &response.proof_success,
+                vsc_data(record.ns, sizeof(record.ns)), &c0, &c1,
+                vsc_buffer_data(buffer), vsc_data(response.c_1, sizeof(response.c_1)));
+        vsc_buffer_destroy(&buffer);
+
+        if (status != vsce_SUCCESS)
+            return status;
+
+        mbedtls_ecp_point M;
+        mbedtls_ecp_point_init(&M);
+
+        mbedtls_mpi minus_one;
+        mbedtls_mpi_init(&minus_one);
+        mbedtls_mpi_lset(&minus_one, -1);
+
+        mbedtls_ecp_muladd(&phe_client_ctx->group, &M, &minus_one, &c1, &minus_y, &hc1);
+        mbedtls_ecp_muladd(&phe_client_ctx->group, &M, &one, &t1, &one, &M);
+
+        vsc_buffer_t *M_buf = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_POINT_LENGTH);
+        vsc_buffer_make_secure(M_buf);
+
+        vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
+
+        vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
+
+        // FIXME
+        char hkdf_info[] = "PHE ACCOUNT SECRET";
+
+        VSCE_ASSERT(vsc_buffer_len(account_key) == 0);
+        VSCE_ASSERT(vsc_buffer_capacity(account_key) == vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
+        vsc_buffer_make_secure(account_key);
+
+        vscf_hkdf_derive(hkdf, vsc_buffer_data(M_buf), vsc_data_empty(),
+                         vsc_data((byte *)hkdf_info, sizeof(hkdf_info)), account_key, vsc_buffer_capacity(account_key));
+        vsc_buffer_destroy(&M_buf);
+        vscf_hkdf_destroy(&hkdf);
+
+        mbedtls_ecp_point_free(&M);
+        mbedtls_mpi_free(&minus_one);
+    }
+    else {
+        mbedtls_ecp_point hs0;
+        mbedtls_ecp_point_init(&hs0);
+
+        vsce_phe_hash_hs0(phe_client_ctx->phe_hash, vsc_data(record.ns, sizeof(record.ns)), &hs0);
+
+        vsce_phe_client_check_fail_proof(phe_client_ctx, &response.proof_fail, &c0, &c1, &hs0, &hc0, &hc1);
+
+        mbedtls_ecp_point_free(&hs0);
+    }
+
+    mbedtls_ecp_point_free(&t0);
+    mbedtls_ecp_point_free(&t1);
+    mbedtls_ecp_point_free(&c1);
+
+    mbedtls_ecp_point_free(&hc0);
+    mbedtls_ecp_point_free(&hc1);
+
+    mbedtls_mpi_free(&y);
+    mbedtls_mpi_free(&minus_y);
+    mbedtls_ecp_point_free(&c0);
+
+    mbedtls_mpi_free(&zero);
+    mbedtls_mpi_free(&one);
+
+    return vsce_SUCCESS;
+}
+
+static vsce_error_t
+vsce_phe_client_check_success_proof(vsce_phe_client_t *phe_client_ctx, const ProofOfSuccess *success_proof,
+        vsc_data_t nonce, const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, vsc_data_t c0_b, vsc_data_t c1_b) {
+
+    VSCE_ASSERT_PTR(phe_client_ctx);
+    VSCE_ASSERT_PTR(success_proof);
+
+    VSCE_UNUSED(nonce);
+    VSCE_ASSERT_PTR(c0);
+    VSCE_ASSERT_PTR(c1);
+    VSCE_UNUSED(c0_b);
+    VSCE_UNUSED(c1_b);
+
+    //  TODO: This is STUB. Implement me.
+
+    return vsce_SUCCESS;
+}
+
+static vsce_error_t
+vsce_phe_client_check_fail_proof(vsce_phe_client_t *phe_client_ctx, const ProofOfFail *fail_proof,
+        const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, const mbedtls_ecp_point *hs0,
+        const mbedtls_ecp_point *hc0, const mbedtls_ecp_point *hc1) {
+
+    VSCE_ASSERT_PTR(phe_client_ctx);
+    VSCE_ASSERT_PTR(fail_proof);
+    VSCE_ASSERT_PTR(c0);
+    VSCE_ASSERT_PTR(c1);
+    VSCE_ASSERT_PTR(hs0);
+    VSCE_ASSERT_PTR(hc0);
+    VSCE_ASSERT_PTR(hc1);
+
+    //  TODO: This is STUB. Implement me.
 
     return vsce_SUCCESS;
 }
