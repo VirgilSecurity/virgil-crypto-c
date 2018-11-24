@@ -68,6 +68,11 @@ import VirgilCryptoCommon
         vscf_ed25519_private_key_delete(self.c_ctx)
     }
 
+    @objc public func setRandom(random: Random) {
+        vscf_ed25519_private_key_release_random(self.c_ctx)
+        vscf_ed25519_private_key_use_random(self.c_ctx, random.c_ctx)
+    }
+
     /// Length of the key in bytes.
     @objc public func keyLen() -> Int {
         let proxyResult = vscf_ed25519_private_key_key_len(self.c_ctx)

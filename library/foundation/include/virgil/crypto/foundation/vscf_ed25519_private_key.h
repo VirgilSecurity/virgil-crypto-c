@@ -142,6 +142,25 @@ VSCF_PUBLIC vscf_ed25519_private_key_impl_t *
 vscf_ed25519_private_key_copy(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl);
 
 //
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_ed25519_private_key_use_random(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vscf_impl_t *random);
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ed25519_private_key_take_random(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vscf_impl_t *random);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_ed25519_private_key_release_random(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl);
+
+//
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t

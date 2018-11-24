@@ -47,21 +47,21 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'ed25519 private key' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
+//  Converter between big endian and little endian datas
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ED25519_PRIVATE_KEY_IMPL_H_INCLUDED
-#define VSCF_ED25519_PRIVATE_KEY_IMPL_H_INCLUDED
+#ifndef VSCF_ENDIANNESS_H_INCLUDED
+#define VSCF_ENDIANNESS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_ed25519_private_key.h"
-#include "vscf_impl.h"
 
-#include <ed25519/ed25519.h>
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
@@ -78,31 +78,8 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handles implementation details.
-//
-struct vscf_ed25519_private_key_impl_t {
-    //
-    //  Compile-time known information about this implementation.
-    //
-    const vscf_impl_info_t *info;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-    //
-    //  Implementation specific context.
-    //
-    byte secret_key[ED25519_KEY_LEN];
-    //
-    //  Implementation specific context.
-    //
-    byte signature[ED25519_SIG_LEN];
-};
+VSCF_PUBLIC vsc_data_t
+vscf_endianness_mem_copy_with_conversion(vsc_data_t dst, vsc_data_t src, bool be_to_le);
 
 
 // --------------------------------------------------------------------------
@@ -118,5 +95,5 @@ struct vscf_ed25519_private_key_impl_t {
 
 
 //  @footer
-#endif // VSCF_ED25519_PRIVATE_KEY_IMPL_H_INCLUDED
+#endif // VSCF_ENDIANNESS_H_INCLUDED
 //  @end

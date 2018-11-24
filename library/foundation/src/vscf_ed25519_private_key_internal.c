@@ -71,6 +71,7 @@
 #include "vscf_import_private_key_api.h"
 #include "vscf_compute_shared_key.h"
 #include "vscf_compute_shared_key_api.h"
+#include "vscf_random.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -323,6 +324,8 @@ vscf_ed25519_private_key_cleanup(vscf_ed25519_private_key_impl_t *ed25519_privat
         return;
     }
 
+    vscf_ed25519_private_key_release_random(ed25519_private_key_impl);
+
     vscf_ed25519_private_key_cleanup_ctx(ed25519_private_key_impl);
 
     vscf_zeroize(ed25519_private_key_impl, sizeof(vscf_ed25519_private_key_impl_t));
@@ -401,6 +404,48 @@ vscf_ed25519_private_key_impl(vscf_ed25519_private_key_impl_t *ed25519_private_k
 
     VSCF_ASSERT_PTR(ed25519_private_key_impl);
     return (vscf_impl_t *)(ed25519_private_key_impl);
+}
+
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_ed25519_private_key_use_random(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(ed25519_private_key_impl);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT_PTR(ed25519_private_key_impl->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    ed25519_private_key_impl->random = vscf_impl_copy(random);
+}
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ed25519_private_key_take_random(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(ed25519_private_key_impl);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT_PTR(ed25519_private_key_impl->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    ed25519_private_key_impl->random = random;
+}
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_ed25519_private_key_release_random(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl) {
+
+    VSCF_ASSERT_PTR(ed25519_private_key_impl);
+
+    vscf_impl_destroy(&ed25519_private_key_impl->random);
 }
 
 static const vscf_api_t *

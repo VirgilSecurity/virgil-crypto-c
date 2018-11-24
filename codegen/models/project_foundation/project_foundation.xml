@@ -94,6 +94,7 @@
     <class name="mbedtls bignum asn1 writer"/>
     <class name="mbedtls bignum asn1 reader"/>
     <class name="mbedtls md"/>
+    <class name="endianness"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>
