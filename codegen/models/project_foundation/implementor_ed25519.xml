@@ -3,6 +3,8 @@
     <implementation name="ed25519 public key">
       This is implementation of ED25519 public key
       <require library="ed25519" feature="library"/>
+      <require module="mbedtls bridge random"/>
+      <require class="endianness"/>
 
       <context>
         <require header="ed25519/ed25519.h"/>
@@ -26,6 +28,10 @@
     <implementation name="ed25519 private key">
       This is implementation of ED25519 private key
       <require library="ed25519" feature="library"/>
+      <require module="mbedtls bridge random"/>
+
+      <require module="ed25519 public key impl"/>
+      <require class="endianness"/>
 
       <context>
         <require header="ed25519/ed25519.h"/>
@@ -36,6 +42,8 @@
           <array length="fixed" length_constant="ED25519_SIG_LEN"/>
         </property>
       </context>
+
+      <dependency name="random" interface="random"/>
 
       <interface name="key"/>
       <interface name="generate key"/>

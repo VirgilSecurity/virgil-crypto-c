@@ -309,8 +309,8 @@ vscr_ratchet_cipher_decrypt_len(vscr_ratchet_cipher_t *ratchet_cipher_ctx, size_
 }
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_data_t key, vsc_data_t plain_text,
-        vsc_buffer_t *buffer) {
+vscr_ratchet_cipher_encrypt(
+        vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_data_t key, vsc_data_t plain_text, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(ratchet_cipher_ctx);
 
@@ -328,8 +328,8 @@ vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_data_
 }
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_data_t key, vsc_data_t cipher_text,
-        vsc_buffer_t *buffer) {
+vscr_ratchet_cipher_decrypt(
+        vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_data_t key, vsc_data_t cipher_text, vsc_buffer_t *buffer) {
 
     VSCR_UNUSED(ratchet_cipher_ctx);
 

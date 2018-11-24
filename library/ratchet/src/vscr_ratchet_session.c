@@ -470,8 +470,8 @@ vscr_ratchet_session_encrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, si
 }
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_encrypt(vscr_ratchet_session_t *ratchet_session_ctx, vsc_data_t plain_text,
-        vsc_buffer_t *cipher_text) {
+vscr_ratchet_session_encrypt(
+        vscr_ratchet_session_t *ratchet_session_ctx, vsc_data_t plain_text, vsc_buffer_t *cipher_text) {
 
     VSCR_ASSERT_PTR(ratchet_session_ctx);
 
@@ -548,8 +548,8 @@ vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, co
 }
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session_ctx, const vscr_ratchet_message_t *message,
-        vsc_buffer_t *plain_text) {
+vscr_ratchet_session_decrypt(
+        vscr_ratchet_session_t *ratchet_session_ctx, const vscr_ratchet_message_t *message, vsc_buffer_t *plain_text) {
 
     if (vsc_buffer_left(plain_text) < vscr_ratchet_session_decrypt_len(ratchet_session_ctx, message)) {
 

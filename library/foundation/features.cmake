@@ -99,6 +99,7 @@ option(VSCF_ERROR_CTX "Enable class 'error ctx'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER "Enable class 'mbedtls bignum asn1 writer'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_READER "Enable class 'mbedtls bignum asn1 reader'." ON)
 option(VSCF_MBEDTLS_MD "Enable class 'mbedtls md'." ON)
+option(VSCF_ENDIANNESS "Enable class 'endianness'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_CIPHER
@@ -154,6 +155,7 @@ mark_as_advanced(
         VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
         VSCF_MBEDTLS_BIGNUM_ASN1_READER
         VSCF_MBEDTLS_MD
+        VSCF_ENDIANNESS
         )
 
 if(VSCF_CIPHER AND NOT VSCF_ENCRYPT)
@@ -579,11 +581,38 @@ if(VSCF_ED25519_PUBLIC_KEY AND NOT ED25519_LIBRARY)
     message(FATAL_ERROR)
 endif()
 
+if(VSCF_ED25519_PUBLIC_KEY AND NOT VSCF_ENDIANNESS)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ED25519_PUBLIC_KEY depends on the feature:")
+    message("     VSCF_ENDIANNESS - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCF_ED25519_PRIVATE_KEY AND NOT ED25519_LIBRARY)
     message("-- error --")
     message("--")
     message("Feature VSCF_ED25519_PRIVATE_KEY depends on the feature:")
     message("     ED25519_LIBRARY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ED25519_PRIVATE_KEY AND NOT VSCF_ENDIANNESS)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ED25519_PRIVATE_KEY depends on the feature:")
+    message("     VSCF_ENDIANNESS - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ED25519_PRIVATE_KEY AND NOT VSCF_RANDOM)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ED25519_PRIVATE_KEY depends on the feature:")
+    message("     VSCF_RANDOM - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
