@@ -47,6 +47,17 @@
     </constructor>
 
 
+    <constructor name="from str">
+        Creates data from the preallocated string.
+
+        <argument name="str" type="string">
+            <string length="given"/>
+        </argument>
+
+        <argument name="len" type="size"/>
+    </constructor>
+
+
     <constructor name="empty">
         Creates empty data.
     </constructor>

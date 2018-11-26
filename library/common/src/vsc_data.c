@@ -100,6 +100,17 @@ vsc_data(const byte *bytes, size_t len) {
 }
 
 //
+//  Creates data from the preallocated string.
+//
+VSC_PUBLIC vsc_data_t
+vsc_data_from_str(const char *str, size_t len) {
+
+    VSC_ASSERT_PTR(str);
+
+    return (vsc_data_t){(const byte *)str, len};
+}
+
+//
 //  Creates empty data.
 //
 VSC_PUBLIC vsc_data_t
