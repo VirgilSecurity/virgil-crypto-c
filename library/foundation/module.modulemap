@@ -58,6 +58,7 @@ framework module VSCFoundation {
     header "vscf_base64.h"
     header "vscf_error_ctx.h"
     header "vscf_oid.h"
+    header "vscf_pem.h"
     header "vscf_raw_key.h"
     header "vscf_error.h"
     header "vscf_asn1_tag.h"

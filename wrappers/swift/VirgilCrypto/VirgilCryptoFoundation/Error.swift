@@ -95,6 +95,9 @@ import VSCFoundation
     /// Base64 encoded string contains invalid characters.
     case badBase64 = -214
 
+    /// PEM data is corrupted.
+    case badPem = -215
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC error: vscf_error_t) {
         self.init(rawValue: Int(error.rawValue))!

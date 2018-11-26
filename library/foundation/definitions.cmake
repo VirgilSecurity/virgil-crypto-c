@@ -110,4 +110,5 @@ target_compile_definitions(foundation
             "VSCF_RAW_KEY=$<BOOL:${VSCF_RAW_KEY}>"
             "VSCF_OID=$<BOOL:${VSCF_OID}>"
             "VSCF_BASE64=$<BOOL:${VSCF_BASE64}>"
+            "VSCF_PEM=$<BOOL:${VSCF_PEM}>"
         )
