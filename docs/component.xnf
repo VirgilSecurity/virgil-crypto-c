@@ -327,6 +327,25 @@
 </entity>
 
 
+<entity name="require_scope" abstract="1">
+    <attr name="scope" default="public">
+        Defines scope for required component.
+
+        <restrict value="public">
+            Required component is visible for outside world.
+        </restrict>
+
+        <restrict value="private">
+            Required component can be accessed within specific source file only.
+        </restrict>
+
+        <restrict value="context">
+            Component is required by context, so it is visible if context is visible.
+        </restrict>
+    </attr>
+</entity>
+
+
 <entity name="require_base" abstract="1">
     Base attributes for require.
 
@@ -359,7 +378,7 @@
     </attr>
 
     <inherit entity="landlord"/>
-    <inherit entity="scope"/>
+    <inherit entity="require_scope"/>
 </entity>
 
 

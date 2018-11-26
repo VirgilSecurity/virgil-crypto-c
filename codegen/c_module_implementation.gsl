@@ -394,6 +394,20 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
             endfor
         endfor
     endnew
+
+    if my.definition <> "external"
+        for my.impl.context
+            for context.require
+                my.copied_require = item_copy_to(require, module)
+                my.copied_require.scope = my.definition
+            endfor
+        endfor
+
+        for my.impl.require where 0.scope="context"
+            my.copied_require = item_copy_to(require, module)
+            my.copied_require.scope = my.definition
+        endfor
+    endif
 endfunction
 
 
@@ -1060,12 +1074,6 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
         new require to module
             .module = my.names.implementation_module
         endnew
-
-        for my.impl.context
-            for context.require
-                copy require to module
-            endfor
-        endfor
 
         _Z19_add_type_impl (my.impl, "external", "public", module, my.meta)
     endnew
