@@ -32,14 +32,46 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#include <virgil/crypto/phe/vsce_phe_server.h>
+#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
+#include <virgil/crypto/phe/private/vsce_phe_server_defs.h>
 #include "unity.h"
 #include "test_utils.h"
 
 #define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_SERVER
 #if TEST_DEPENDENCIES_AVAILABLE
 
-void test__1() {
+void test__enroll_account__1() {
+    vsce_phe_server_t *server = vsce_phe_server_new();
+    server->secret_key = vsc_buffer_new_with_capacity(32);
 
+    vscf_ctr_drbg_impl_t *rng = vscf_ctr_drbg_new();
+    vscf_ctr_drbg_setup_defaults(rng);
+    vscf_ctr_drbg_random(rng, 32, server->secret_key);
+
+    vscf_ctr_drbg_destroy(&rng);
+
+    EnrollmentResponse response;
+    vsc_buffer_t *enrollment_response = vsc_buffer_new_with_capacity(100);
+    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(enrollment_response), vsc_buffer_capacity(enrollment_response));
+
+    pb_encode(&ostream, EnrollmentResponse_fields, &response);
+
+    char pwd[] = "PASSWORD";
+
+    vsc_buffer_t *enrollment_record = vsc_buffer_new_with_capacity(100);
+    vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(32);
+
+    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_enroll_account(client, vsc_buffer_data(enrollment_response),
+                                                                   vsc_data((byte *)pwd, sizeof(pwd)), enrollment_record, account_key));
+
+    TEST_ASSERT_EQUAL(32, vsc_buffer_len(account_key));
+
+    vsc_buffer_destroy(&enrollment_record);
+    vsc_buffer_destroy(&enrollment_response);
+    vsc_buffer_destroy(&account_key);
+
+    vsce_phe_server_destroy(&server);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE

@@ -49,10 +49,10 @@
 
 #include "vsce_library.h"
 #include "vsce_phe_common.h"
-#include "vsce_phe_hash.h"
 #include "vsce_error.h"
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
@@ -62,6 +62,7 @@
 
 #if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
 #endif
 
 #if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -133,25 +134,6 @@ VSCE_PUBLIC vsce_phe_server_t *
 vsce_phe_server_copy(vsce_phe_server_t *phe_server_ctx);
 
 //
-//  Setup dependency to the class 'phe hash' with shared ownership.
-//
-VSCE_PUBLIC void
-vsce_phe_server_use_phe_hash(vsce_phe_server_t *phe_server_ctx, vsce_phe_hash_t *phe_hash);
-
-//
-//  Setup dependency to the class 'phe hash' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCE_PUBLIC void
-vsce_phe_server_take_phe_hash(vsce_phe_server_t *phe_server_ctx, vsce_phe_hash_t *phe_hash);
-
-//
-//  Release dependency to the class 'phe hash'.
-//
-VSCE_PUBLIC void
-vsce_phe_server_release_phe_hash(vsce_phe_server_t *phe_server_ctx);
-
-//
 //  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCE_PUBLIC void
@@ -171,8 +153,20 @@ VSCE_PUBLIC void
 vsce_phe_server_release_random(vsce_phe_server_t *phe_server_ctx);
 
 VSCE_PUBLIC vsce_error_t
-vsce_phe_server_encrypt(vsce_phe_server_t *phe_server_ctx, const vsc_buffer_t *nc, const vsc_buffer_t *ns,
-        vsc_buffer_t *c0, vsc_buffer_t *c1, vsc_buffer_t *proof);
+vsce_phe_server_generate_server_key_pair(vsce_phe_server_t *phe_server_ctx, vsc_buffer_t *server_private_key,
+        vsc_buffer_t *server_public_key);
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
+        vsc_buffer_t *enrollment_response);
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
+        vsc_data_t server_public_key, vsc_data_t verify_password_request, vsc_buffer_t *verify_password_response);
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_server_rotate_server_private_key(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
+        vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key, vsc_buffer_t *rotation_token);
 
 
 // --------------------------------------------------------------------------

@@ -56,16 +56,8 @@
 #include "vsce_library.h"
 #include "vsce_phe_hash.h"
 
-#if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
-#endif
-
-#if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 #if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -110,7 +102,7 @@ struct vsce_phe_client_t {
 
     mbedtls_ecp_group group;
 
-    vsc_buffer_t *secret_key;
+    byte private_key[vsce_phe_common_PHE_PRIVATE_KEY_LENGTH];
 };
 
 

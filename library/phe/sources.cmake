@@ -95,6 +95,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_utils.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_error.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -113,6 +118,8 @@ target_sources(phe
             "$<$<BOOL:${VSCE_PHE_HASH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/private/vsce_phe_hash_defs.h>"
             "$<$<BOOL:${VSCE_PHE_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_server.h>"
             "$<$<BOOL:${VSCE_PHE_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/private/vsce_phe_server_defs.h>"
+            "$<$<BOOL:${VSCE_PHE_UTILS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_utils.h>"
+            "$<$<BOOL:${VSCE_PHE_UTILS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/private/vsce_phe_utils_defs.h>"
             "$<$<BOOL:${VSCE_SIMPLE_SWU}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_simple_swu.h>"
             "$<$<BOOL:${VSCE_SIMPLE_SWU}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/private/vsce_simple_swu_defs.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_error.h"
@@ -128,6 +135,8 @@ target_sources(phe
             "$<$<BOOL:${VSCE_PHE_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_hash_defs.c>"
             "$<$<BOOL:${VSCE_PHE_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_server.c>"
             "$<$<BOOL:${VSCE_PHE_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_server_defs.c>"
+            "$<$<BOOL:${VSCE_PHE_UTILS}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_utils.c>"
+            "$<$<BOOL:${VSCE_PHE_UTILS}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_utils_defs.c>"
             "$<$<BOOL:${VSCE_SIMPLE_SWU}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_simple_swu.c>"
             "$<$<BOOL:${VSCE_SIMPLE_SWU}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_simple_swu_defs.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vsce_error.c"

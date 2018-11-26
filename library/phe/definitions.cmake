@@ -57,6 +57,7 @@ target_compile_definitions(phe
             "VSCE_PHE_COMMON=$<BOOL:${VSCE_PHE_COMMON}>"
             "VSCE_SIMPLE_SWU=$<BOOL:${VSCE_SIMPLE_SWU}>"
             "VSCE_PHE_HASH=$<BOOL:${VSCE_PHE_HASH}>"
+            "VSCE_PHE_UTILS=$<BOOL:${VSCE_PHE_UTILS}>"
             "VSCE_PHE_SERVER=$<BOOL:${VSCE_PHE_SERVER}>"
             "VSCE_PHE_CLIENT=$<BOOL:${VSCE_PHE_CLIENT}>"
         )
