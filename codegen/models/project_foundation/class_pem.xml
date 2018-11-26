@@ -1,0 +1,86 @@
+<class name="pem" context="none">
+    Simple PEM wrapper.
+
+
+    <require class="base64"/>
+
+
+    <variable name="k line len max" type="size" declaration="private">
+        <value value="64"/>
+    </variable>
+
+
+    <variable name="k header begin" type="string" declaration="private">
+        <value value="-----BEGIN " type="string"/>
+        <string access="readonly"/>
+    </variable>
+
+
+    <variable name="k footer begin" type="string" declaration="private">
+        <value value="-----END " type="string"/>
+        <string access="readonly"/>
+    </variable>
+
+
+    <variable name="k title tail" type="string" declaration="private">
+        <value value="-----" type="string"/>
+        <string access="readonly"/>
+    </variable>
+
+
+    <method name="wrapped len">
+        Return length in bytes required to hold wrapped PEM format.
+
+        <argument name="title" type="string"/>
+        <argument name="data" class="data"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="wrap">
+        Takes binary data and wraps it to the simple PEM format - no
+        additional information just header-base64-footer.
+        Note, written buffer is NOT null-terminated.
+
+        <argument name="title" type="string"/>
+        <argument name="data" class="data"/>
+        <argument name="pem" class="buffer">
+            <length method="wrapped len">
+                <proxy argument="title" to="title"/>
+                <proxy argument="data" to="data"/>
+            </length>
+        </argument>
+    </method>
+
+
+    <method name="unwrapped len">
+        Return length in bytes required to hold unwrapped ninary.
+
+        <argument name="pem" class="data"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="unwrap">
+        Takes PEM data and extract binary data from it.
+
+        <argument name="pem" class="data"/>
+        <argument name="data" class="buffer">
+            <length method="unwrapped len">
+                <proxy argument="pem" to="pem"/>
+            </length>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+
+
+    <method name="title">
+        Returns PEM title if PEM data is valid, otherwise - epmty data.
+
+        <argument name="pem" class="data"/>
+        <return class="data"/>
+    </method>
+</class>

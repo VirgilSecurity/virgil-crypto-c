@@ -103,6 +103,7 @@ option(VSCF_MBEDTLS_MD "Enable class 'mbedtls md'." ON)
 option(VSCF_RAW_KEY "Enable class 'raw key'." ON)
 option(VSCF_OID "Enable class 'oid'." ON)
 option(VSCF_BASE64 "Enable class 'base64'." ON)
+option(VSCF_PEM "Enable class 'pem'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_DEFAULTS
@@ -162,6 +163,7 @@ mark_as_advanced(
         VSCF_RAW_KEY
         VSCF_OID
         VSCF_BASE64
+        VSCF_PEM
         )
 
 if(VSCF_CIPHER AND NOT VSCF_ENCRYPT)
@@ -808,6 +810,15 @@ if(VSCF_MBEDTLS_BIGNUM_ASN1_READER AND NOT VSCF_ASN1_READER)
     message("--")
     message("Feature VSCF_MBEDTLS_BIGNUM_ASN1_READER depends on the feature:")
     message("     VSCF_ASN1_READER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PEM AND NOT VSCF_BASE64)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PEM depends on the feature:")
+    message("     VSCF_BASE64 - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

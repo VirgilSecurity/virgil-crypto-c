@@ -47,11 +47,24 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Defines library error codes.
+//  Simple PEM wrapper.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ERROR_H_INCLUDED
-#define VSCF_ERROR_H_INCLUDED
+#ifndef VSCF_PEM_H_INCLUDED
+#define VSCF_PEM_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_error.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -69,93 +82,36 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Defines library error codes.
+//  Return length in bytes required to hold wrapped PEM format.
 //
-enum vscf_error_t {
-    //
-    //  No errors was occurred.
-    //
-    vscf_SUCCESS = 0,
-    //
-    //  This error should not be returned if assertions is enabled.
-    //
-    vscf_error_BAD_ARGUMENTS = -1,
-    //
-    //  Can be used to define that not all context prerequisites are satisfied.
-    //  Note, this error should not be returned if assertions is enabled.
-    //
-    vscf_error_UNINITIALIZED = -2,
-    //
-    //  Define that error code from one of third-party module was not handled.
-    //  Note, this error should not be returned if assertions is enabled.
-    //
-    vscf_error_UNHANDLED_THIRDPARTY_ERROR = -3,
-    //
-    //  Buffer capacity is not enaugh to hold result.
-    //
-    vscf_error_SMALL_BUFFER = -101,
-    //
-    //  Authentication failed during decryption.
-    //
-    vscf_error_AUTH_FAILED = -201,
-    //
-    //  Attempt to read data out of buffer bounds.
-    //
-    vscf_error_OUT_OF_DATA = -202,
-    //
-    //  ASN.1 encoded data is corrupted.
-    //
-    vscf_error_BAD_ASN1 = -203,
-    //
-    //  Attempt to read ASN.1 type that is bigger then requested C type.
-    //
-    vscf_error_ASN1_LOSSY_TYPE_NARROWING = -204,
-    //
-    //  ASN.1 representation of PKCS#1 public key is corrupted.
-    //
-    vscf_error_BAD_PKCS1_PUBLIC_KEY = -205,
-    //
-    //  ASN.1 representation of PKCS#1 private key is corrupted.
-    //
-    vscf_error_BAD_PKCS1_PRIVATE_KEY = -206,
-    //
-    //  ASN.1 representation of PKCS#8 public key is corrupted.
-    //
-    vscf_error_BAD_PKCS8_PUBLIC_KEY = -207,
-    //
-    //  ASN.1 representation of PKCS#8 private key is corrupted.
-    //
-    vscf_error_BAD_PKCS8_PRIVATE_KEY = -208,
-    //
-    //  Encrypted data is corrupted.
-    //
-    vscf_error_BAD_ENCRYPTED_DATA = -209,
-    //
-    //  Underlying random operation returns error.
-    //
-    vscf_error_RANDOM_FAILED = -210,
-    //
-    //  Generation of the private or secret key failed.
-    //
-    vscf_error_KEY_GENERATION_FAILED = -211,
-    //
-    //  One of the entropy sources failed.
-    //
-    vscf_error_ENTROPY_SOURCE_FAILED = -212,
-    //
-    //  Requested data to be generated is too big.
-    //
-    vscf_error_RNG_REQUESTED_DATA_TOO_BIG = -213,
-    //
-    //  Base64 encoded string contains invalid characters.
-    //
-    vscf_error_BAD_BASE64 = -214,
-    //
-    //  PEM data is corrupted.
-    //
-    vscf_error_BAD_PEM = -215
-};
-typedef enum vscf_error_t vscf_error_t;
+VSCF_PUBLIC size_t
+vscf_pem_wrapped_len(const char *title, vsc_data_t data);
+
+//
+//  Takes binary data and wraps it to the simple PEM format - no
+//  additional information just header-base64-footer.
+//  Note, written buffer is NOT null-terminated.
+//
+VSCF_PUBLIC void
+vscf_pem_wrap(const char *title, vsc_data_t data, vsc_buffer_t *pem);
+
+//
+//  Return length in bytes required to hold unwrapped ninary.
+//
+VSCF_PUBLIC size_t
+vscf_pem_unwrapped_len(vsc_data_t pem);
+
+//
+//  Takes PEM data and extract binary data from it.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data);
+
+//
+//  Returns PEM title if PEM data is valid, otherwise - epmty data.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_pem_title(vsc_data_t pem);
 
 
 // --------------------------------------------------------------------------
@@ -171,5 +127,5 @@ typedef enum vscf_error_t vscf_error_t;
 
 
 //  @footer
-#endif // VSCF_ERROR_H_INCLUDED
+#endif // VSCF_PEM_H_INCLUDED
 //  @end

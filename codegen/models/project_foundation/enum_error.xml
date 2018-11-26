@@ -78,4 +78,8 @@
     <constant name="bad base64" value="-214">
         Base64 encoded string contains invalid characters.
     </constant>
+
+    <constant name="bad pem" value="-215">
+        PEM data is corrupted.
+    </constant>
 </enum>
