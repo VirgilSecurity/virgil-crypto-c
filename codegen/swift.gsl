@@ -535,8 +535,11 @@ function swift_derive_instance_type (instance)
             my.primitive_type = "Int"
 
         elsif my.instance.type = "char"
-            my.primitive_type = "Character"
-
+            if count(my.instance.string)
+                my.primitive_type = "String"
+            else
+                my.primitive_type = "Character"
+            endif
         else
             echo_fatal ("Unsupported instance type '$(my.instance.type)' for Swift language.", my)
         endif
@@ -717,7 +720,7 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type)
         ")
     endfor
 
-    #   Wrap output buffers.
+    #   Wrap input buffers.
     my.method_new_with_data = ".(c_project_common_class_buffer_method_new_with_data)"
     my.method_data = ".(c_project_common_class_data_method_data)"
 
@@ -739,7 +742,7 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type)
         endif
     endfor
 
-    #   Create opened scopes for data and buffers..
+    #   Create opened scopes for data and buffers and string.
     my.scope_count = 0
 
     if my.proxy_return_type <> "Void"
@@ -996,6 +999,7 @@ function swift_map_instance_type (swift_instance, instance)
     endif
 
     my.swift_instance.is_array = count (my.instance.array) ?? "1" ?
+    my.swift_instance.is_string = count (my.instance.string) ?? "1" ?
     my.swift_instance.is_reference = my.instance.is_reference ?
 endfunction
 
