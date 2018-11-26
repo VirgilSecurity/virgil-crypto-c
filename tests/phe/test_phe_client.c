@@ -74,7 +74,6 @@ void test__enroll_account__1() {
     vsc_buffer_destroy(&account_key);
 
     vsce_phe_client_destroy(&client);
-
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE

@@ -53,8 +53,8 @@
 #include "vsce_error.h"
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -62,8 +62,8 @@
 #endif
 
 #if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
 #endif
 
 #if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -113,6 +113,9 @@ vsce_phe_client_cleanup(vsce_phe_client_t *phe_client_ctx);
 //
 VSCE_PUBLIC vsce_phe_client_t *
 vsce_phe_client_new(void);
+
+VSCE_PUBLIC vsce_phe_client_t *
+vsce_phe_client_new_with_private_key(vsc_data_t client_private_key);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -183,6 +186,16 @@ vsce_phe_client_create_verify_password_request(vsce_phe_client_t *phe_client_ctx
 VSCE_PUBLIC vsce_error_t
 vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vsc_data_t password,
         vsc_data_t enrollment_record, vsc_data_t verify_password_response, vsc_buffer_t *account_key);
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_client_rotate_server_private_key(vsce_phe_client_t *phe_client_ctx, vsc_data_t rotation_token);
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_client_update_enrollment_record(vsc_data_t enrollment_record, vsc_data_t rotation_token,
+        vsc_buffer_t *new_enrollment_record);
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_client_rotate_client_private_key(vsce_phe_client_t *phe_client_ctx, vsc_data_t rotation_token);
 
 
 // --------------------------------------------------------------------------

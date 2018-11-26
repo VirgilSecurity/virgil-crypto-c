@@ -48,6 +48,7 @@
 #include "vsce_memory.h"
 #include "vsce_assert.h"
 #include "vsce_phe_client_defs.h"
+#include "vsce_phe_utils.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
@@ -326,6 +327,17 @@ vsce_phe_client_cleanup_ctx(vsce_phe_client_t *phe_client_ctx) {
     mbedtls_ecp_group_free(&phe_client_ctx->group);
 }
 
+VSCE_PUBLIC vsce_phe_client_t *
+vsce_phe_client_new_with_private_key(vsc_data_t client_private_key) {
+
+    vsce_phe_client_t *phe_client_ctx = vsce_phe_client_new();
+
+    VSCE_ASSERT(client_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    memcpy(phe_client_ctx->private_key, client_private_key.bytes, sizeof(phe_client_ctx->private_key));
+
+    return phe_client_ctx;
+}
+
 VSCE_PUBLIC vsce_error_t
 vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enrollment_response, vsc_data_t password,
         vsc_buffer_t *enrollment_record, vsc_buffer_t *account_key) {
@@ -413,7 +425,7 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
 
     mbedtls_mpi y;
     mbedtls_mpi_init(&y);
-    mbedtls_mpi_read_binary(&y, vsc_buffer_bytes(phe_client_ctx->secret_key), vsc_buffer_len(phe_client_ctx->secret_key));
+    mbedtls_mpi_read_binary(&y, phe_client_ctx->private_key, sizeof(phe_client_ctx->private_key));
 
     mbedtls_ecp_muladd(&phe_client_ctx->group, &t0, &one, &c0, &y, &hc0);
     mbedtls_ecp_muladd(&phe_client_ctx->group, &t1, &one, &c1, &y, &hc1);
@@ -463,7 +475,7 @@ vsce_phe_client_create_verify_password_request(vsce_phe_client_t *phe_client_ctx
 
     pb_istream_t istream = pb_istream_from_buffer(enrollment_record.bytes, enrollment_record.len);
 
-    pb_decode(&istream, EnrollmentResponse_fields, &record);
+    pb_decode(&istream, EnrollmentRecord_fields, &record);
 
     mbedtls_ecp_point hc0;
     mbedtls_ecp_point_init(&hc0);
@@ -472,7 +484,7 @@ vsce_phe_client_create_verify_password_request(vsce_phe_client_t *phe_client_ctx
 
     mbedtls_mpi y;
     mbedtls_mpi_init(&y);
-    mbedtls_mpi_read_binary(&y, vsc_buffer_bytes(phe_client_ctx->secret_key), vsc_buffer_len(phe_client_ctx->secret_key));
+    mbedtls_mpi_read_binary(&y, phe_client_ctx->private_key, sizeof(phe_client_ctx->private_key));
 
     mbedtls_mpi minus_y;
     mbedtls_mpi_init(&minus_y);
@@ -529,7 +541,7 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vs
     VerifyPasswordResponse response;
 
     pb_istream_t istream2 = pb_istream_from_buffer(verify_password_response.bytes, verify_password_response.len);
-    pb_decode(&istream2, VerifyPasswordRequest_fields, &response);
+    pb_decode(&istream2, VerifyPasswordResponse_fields, &response);
 
     mbedtls_ecp_point t0, t1, c1;
     mbedtls_ecp_point_init(&t0);
@@ -549,7 +561,7 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vs
 
     mbedtls_mpi y;
     mbedtls_mpi_init(&y);
-    mbedtls_mpi_read_binary(&y, vsc_buffer_bytes(phe_client_ctx->secret_key), vsc_buffer_len(phe_client_ctx->secret_key));
+    mbedtls_mpi_read_binary(&y, phe_client_ctx->private_key, sizeof(phe_client_ctx->private_key));
 
     mbedtls_mpi zero;
     mbedtls_mpi_init(&zero);
@@ -677,6 +689,41 @@ vsce_phe_client_check_fail_proof(vsce_phe_client_t *phe_client_ctx, const ProofO
     VSCE_ASSERT_PTR(hc0);
     VSCE_ASSERT_PTR(hc1);
 
+    //  TODO: This is STUB. Implement me.
+
+    return vsce_SUCCESS;
+}
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_client_rotate_server_private_key(vsce_phe_client_t *phe_client_ctx, vsc_data_t rotation_token) {
+
+    VSCE_ASSERT_PTR(phe_client_ctx);
+
+    VSCE_UNUSED(rotation_token);
+    //  TODO: This is STUB. Implement me.
+
+    return vsce_SUCCESS;
+}
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_client_update_enrollment_record(vsc_data_t enrollment_record, vsc_data_t rotation_token,
+        vsc_buffer_t *new_enrollment_record) {
+
+    VSCE_ASSERT_PTR(new_enrollment_record);
+
+    VSCE_UNUSED(enrollment_record);
+    VSCE_UNUSED(rotation_token);
+
+    //  TODO: This is STUB. Implement me.
+
+    return vsce_SUCCESS;
+}
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_client_rotate_client_private_key(vsce_phe_client_t *phe_client_ctx, vsc_data_t rotation_token) {
+
+    VSCE_ASSERT_PTR(phe_client_ctx);
+    VSCE_UNUSED(rotation_token);
     //  TODO: This is STUB. Implement me.
 
     return vsce_SUCCESS;

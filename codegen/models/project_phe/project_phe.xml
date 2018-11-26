@@ -58,6 +58,7 @@
     <class name="phe common"/>
     <class name="simple swu"/>
     <class name="phe hash"/>
+    <class name="phe utils"/>
     <class name="phe server"/>
     <class name="phe client"/>
 </project>

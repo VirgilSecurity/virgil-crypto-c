@@ -44,10 +44,26 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCE_PHE_COMMON_H_INCLUDED
-#define VSCE_PHE_COMMON_H_INCLUDED
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'phe utils' types definition.
+// --------------------------------------------------------------------------
+
+#ifndef VSCE_PHE_UTILS_DEFS_H_INCLUDED
+#define VSCE_PHE_UTILS_DEFS_H_INCLUDED
 
 #include "vsce_library.h"
+
+#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#include <mbedtls/ecp.h>
+
+#endif
+
+#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
+#endif
 
 // clang-format on
 //  @end
@@ -65,18 +81,23 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Public integral constants.
+//  Handle 'phe utils' context.
 //
-enum {
-    vsce_phe_common_PHE_POINT_LENGTH = 65,
-    vsce_phe_common_PHE_MAX_PASSWORD_LENGTH = 128,
-    vsce_phe_common_PHE_SERVER_IDENTIFIER_LENGTH = 32,
-    vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH = 32,
-    vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH = 32,
-    vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH = 32,
-    vsce_phe_common_PHE_DOMAIN_LENGTH = 4,
-    vsce_phe_common_PHE_PRIVATE_KEY_LENGTH = 32,
-    vsce_phe_common_PHE_PUBLIC_KEY_LENGTH = 65
+struct vsce_phe_utils_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vsce_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *random;
+
+    mbedtls_ecp_group group;
 };
 
 
@@ -93,5 +114,5 @@ enum {
 
 
 //  @footer
-#endif // VSCE_PHE_COMMON_H_INCLUDED
+#endif // VSCE_PHE_UTILS_DEFS_H_INCLUDED
 //  @end

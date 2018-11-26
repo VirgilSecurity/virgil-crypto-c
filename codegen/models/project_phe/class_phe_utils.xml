@@ -1,0 +1,16 @@
+<class name="phe utils" context="private">
+
+    <require class="phe common" scope="public"/>
+    <require impl="ctr drbg" project="foundation" scope="private"/>
+    <require header="mbedtls/ecp.h" scope="public"/>
+    <require header="mbedtls/bignum.h" scope="public"/>
+
+    <dependency name="random" interface="random" project="foundation"/>
+
+    <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
+
+    <method name="random Z">
+        <argument name="z" class="mbedtls_mpi" library="mbedtls" access="readwrite"/>
+    </method>
+
+</class>

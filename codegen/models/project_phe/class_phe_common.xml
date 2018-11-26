@@ -6,4 +6,6 @@
     <constant name="phe secret message length" value="32"/>
     <constant name="phe account key length" value="32"/>
     <constant name="phe domain length" value="4"/>
+    <constant name="phe private key length" value="32"/>
+    <constant name="phe public key length" value="65"/>
 </class>
