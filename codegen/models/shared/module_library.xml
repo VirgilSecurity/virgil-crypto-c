@@ -11,6 +11,7 @@
     <c_include file="string.h" is_system="1" />
     <c_include file="stdlib.h" is_system="1" />
     <c_include file="stdbool.h" is_system="1" />
+    <c_include file="math.h" is_system="1" />
 
     <require module="platform"/>
 
