@@ -99,6 +99,12 @@ VSC_PUBLIC vsc_data_t
 vsc_data(const byte *bytes, size_t len);
 
 //
+//  Creates data from the preallocated string.
+//
+VSC_PUBLIC vsc_data_t
+vsc_data_from_str(const char *str, size_t len);
+
+//
 //  Creates empty data.
 //
 VSC_PUBLIC vsc_data_t
