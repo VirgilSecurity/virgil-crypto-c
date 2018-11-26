@@ -496,6 +496,8 @@ vsc_buffer_write_str(vsc_buffer_t *buffer_ctx, const char *str) {
     size_t write_len = str_len > vsc_buffer_left(buffer_ctx) ? vsc_buffer_left(buffer_ctx) : str_len;
 
     memcpy(vsc_buffer_ptr(buffer_ctx), (const byte *)str, write_len);
+
+    buffer_ctx->len += write_len;
 }
 
 //
@@ -512,6 +514,8 @@ vsc_buffer_write_data(vsc_buffer_t *buffer_ctx, vsc_data_t data) {
     size_t write_len = data.len > vsc_buffer_left(buffer_ctx) ? vsc_buffer_left(buffer_ctx) : data.len;
 
     memcpy(vsc_buffer_ptr(buffer_ctx), data.bytes, write_len);
+
+    buffer_ctx->len += write_len;
 }
 
 //
