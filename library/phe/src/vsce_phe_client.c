@@ -392,7 +392,8 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
 
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
 
-    char hkdf_info[] = "PHE ACCOUNT SECRET";
+    // FIXME: Duplicate
+    char hkdf_info[] = "Secret";
 
     vsc_buffer_make_secure(account_key);
     vscf_hkdf_derive(hkdf, vsc_buffer_data(M_buf), vsc_data_empty(),
@@ -641,8 +642,8 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vs
 
         vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
 
-        // FIXME
-        char hkdf_info[] = "PHE ACCOUNT SECRET";
+        // FIXME: Why so easy word?
+        char hkdf_info[] = "Secret";
 
         vsc_buffer_make_secure(account_key);
 

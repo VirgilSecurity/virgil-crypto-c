@@ -2,8 +2,11 @@
 
     <require class="phe common" scope="public"/>
     <require impl="sha512" project="foundation" scope="private"/>
+    <require impl="hkdf" project="foundation" scope="private"/>
     <require header="mbedtls/ecp.h" scope="public"/>
+    <require header="mbedtls/bignum.h" scope="context"/>
 
+    <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
     <dependency name="simple swu" class="simple swu"/>
 
     <method name="data to point" declaration="public">
@@ -39,6 +42,33 @@
     <method name="hs1" declaration="public">
         <argument name="ns" class="data"/>
         <argument name="hs1" class="mbedtls_ecp_point" library="mbedtls" access="writeonly"/>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="hash Z success" declaration="public">
+        <argument name="server public key" class="data"/>
+        <argument name="c0" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="c1" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="term1" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="term2" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="term3" class="mbedtls_ecp_point" library="mbedtls"/>
+
+        <argument name="Z" class="mbedtls_mpi" library="mbedtls" access="writeonly"/>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="hash Z failure" declaration="public">
+        <argument name="server public key" class="data"/>
+        <argument name="c0" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="c1" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="term1" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="term2" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="term3" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="term4" class="mbedtls_ecp_point" library="mbedtls"/>
+
+        <argument name="Z" class="mbedtls_mpi" library="mbedtls" access="writeonly"/>
 
         <return enum="error"/>
     </method>

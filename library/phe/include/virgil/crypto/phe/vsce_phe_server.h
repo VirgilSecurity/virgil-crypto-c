@@ -160,8 +160,8 @@ VSCE_PUBLIC size_t
 vsce_phe_server_enrollment_response_len(vsce_phe_server_t *phe_server_ctx);
 
 VSCE_PUBLIC vsce_error_t
-vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key, vsc_data_t server_public_key,
-        vsc_buffer_t *enrollment_response);
+vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
+        vsc_data_t server_public_key, vsc_buffer_t *enrollment_response);
 
 VSCE_PUBLIC size_t
 vsce_phe_server_verify_password_response_len(vsce_phe_server_t *phe_server_ctx);
