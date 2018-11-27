@@ -55,7 +55,7 @@
 
 
     <method name="unwrapped len">
-        Return length in bytes required to hold unwrapped ninary.
+        Return length in bytes required to hold unwrapped binary.
 
         <argument name="pem len" type="size"/>
 
@@ -78,7 +78,7 @@
 
 
     <method name="title">
-        Returns PEM title if PEM data is valid, otherwise - epmty data.
+        Returns PEM title if PEM data is valid, otherwise - empty data.
 
         <argument name="pem" class="data"/>
         <return class="data"/>
