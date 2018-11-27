@@ -5,7 +5,7 @@
         Contains constant string "PUBLIC KEY".
 
         <value value="PUBLIC KEY" type="string"/>
-        <string access="readonly"/>
+        <string access="readonly" length="derived"/>
     </variable>
 
 
@@ -20,7 +20,7 @@
         Contains constant string "PRIVATE KEY".
 
         <value value="PRIVATE KEY" type="string"/>
-        <string access="readonly"/>
+        <string access="readonly" length="derived"/>
     </variable>
 
 
@@ -35,7 +35,7 @@
         Contains constant string "ENCRYPTED PRIVATE KEY".
 
         <value value="ENCRYPTED PRIVATE KEY" type="string"/>
-        <string access="readonly"/>
+        <string access="readonly" length="derived"/>
     </variable>
 
 

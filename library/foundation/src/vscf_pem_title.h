@@ -73,7 +73,7 @@ extern "C" {
 //
 //  Contains constant string "PUBLIC KEY".
 //
-VSCF_PUBLIC extern const char *const vscf_pem_title_public_key;
+VSCF_PUBLIC extern const char vscf_pem_title_public_key[];
 
 //
 //  Contains length in bytes of string "PUBLIC KEY".
@@ -83,7 +83,7 @@ VSCF_PUBLIC extern const size_t vscf_pem_title_public_key_len;
 //
 //  Contains constant string "PRIVATE KEY".
 //
-VSCF_PUBLIC extern const char *const vscf_pem_title_private_key;
+VSCF_PUBLIC extern const char vscf_pem_title_private_key[];
 
 //
 //  Contains length in bytes of string "PRIVATE KEY".
@@ -93,7 +93,7 @@ VSCF_PUBLIC extern const size_t vscf_pem_title_private_key_len;
 //
 //  Contains constant string "ENCRYPTED PRIVATE KEY".
 //
-VSCF_PUBLIC extern const char *const vscf_pem_title_encrypted_private_key;
+VSCF_PUBLIC extern const char vscf_pem_title_encrypted_private_key[];
 
 //
 //  Contains length in bytes of string "ENCRYPTED PRIVATE KEY".
