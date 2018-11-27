@@ -50,9 +50,6 @@
 #include "vsce_library.h"
 #include "vsce_phe_common.h"
 
-#include <mbedtls/ecp.h>
-#include <mbedtls/bignum.h>
-
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
 #endif

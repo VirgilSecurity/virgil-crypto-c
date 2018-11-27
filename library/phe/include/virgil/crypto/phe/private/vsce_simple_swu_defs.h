@@ -53,8 +53,10 @@
 #ifndef VSCE_SIMPLE_SWU_DEFS_H_INCLUDED
 #define VSCE_SIMPLE_SWU_DEFS_H_INCLUDED
 
-#include <mbedtls/ecp.h>
 #include "vsce_library.h"
+
+#include <mbedtls/ecp.h>
+#include <mbedtls/bignum.h>
 
 // clang-format on
 //  @end

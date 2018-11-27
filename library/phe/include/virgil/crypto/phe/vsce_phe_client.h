@@ -49,7 +49,6 @@
 
 #include "vsce_library.h"
 #include "vsce_phe_common.h"
-#include "vsce_phe_hash.h"
 #include "vsce_error.h"
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -136,25 +135,6 @@ vsce_phe_client_destroy(vsce_phe_client_t **phe_client_ctx_ref);
 //
 VSCE_PUBLIC vsce_phe_client_t *
 vsce_phe_client_copy(vsce_phe_client_t *phe_client_ctx);
-
-//
-//  Setup dependency to the class 'phe hash' with shared ownership.
-//
-VSCE_PUBLIC void
-vsce_phe_client_use_phe_hash(vsce_phe_client_t *phe_client_ctx, vsce_phe_hash_t *phe_hash);
-
-//
-//  Setup dependency to the class 'phe hash' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCE_PUBLIC void
-vsce_phe_client_take_phe_hash(vsce_phe_client_t *phe_client_ctx, vsce_phe_hash_t *phe_hash);
-
-//
-//  Release dependency to the class 'phe hash'.
-//
-VSCE_PUBLIC void
-vsce_phe_client_release_phe_hash(vsce_phe_client_t *phe_client_ctx);
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.

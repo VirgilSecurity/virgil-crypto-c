@@ -3,8 +3,8 @@
     <require enum="error" scope="private"/>
     <require class="phe common" scope="public"/>
     <require impl="ctr drbg" project="foundation" scope="private"/>
-    <require header="mbedtls/ecp.h" scope="public"/>
-    <require header="mbedtls/bignum.h" scope="public"/>
+    <require header="mbedtls/ecp.h" scope="context"/>
+    <require header="mbedtls/bignum.h" scope="context"/>
 
     <dependency name="random" interface="random" project="foundation"/>
 

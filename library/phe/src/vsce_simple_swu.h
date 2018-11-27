@@ -50,9 +50,6 @@
 #include "vsce_library.h"
 #include "vsce_error.h"
 
-#include <mbedtls/bignum.h>
-#include <mbedtls/ecp.h>
-
 // clang-format on
 //  @end
 
