@@ -346,10 +346,14 @@ vsce_phe_server_enrollment_response_len(vsce_phe_server_t *phe_server_ctx) {
 }
 
 VSCE_PUBLIC vsce_error_t
-vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
+vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key, vsc_data_t server_public_key,
         vsc_buffer_t *enrollment_response) {
 
     VSCE_ASSERT_PTR(phe_server_ctx);
+    VSCE_ASSERT(vsc_buffer_len(enrollment_response) == 0);
+    VSCE_ASSERT(vsc_buffer_left(enrollment_response) >= 0); // TODO: Check size
+    VSCE_ASSERT(server_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT(server_public_key.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
     vsc_buffer_t *ns = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_SERVER_IDENTIFIER_LENGTH);
     vscf_random(phe_server_ctx->random, vsce_phe_common_PHE_SERVER_IDENTIFIER_LENGTH, ns);
@@ -360,7 +364,9 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t ser
 
     vsce_error_t status = vsce_SUCCESS;
     status = vsce_phe_hash_hs0(phe_server_ctx->phe_hash, vsc_buffer_data(ns), &hs0);
+    VSCE_ASSERT(status == vsce_SUCCESS);
     status = vsce_phe_hash_hs1(phe_server_ctx->phe_hash, vsc_buffer_data(ns), &hs1);
+    VSCE_ASSERT(status == vsce_SUCCESS);
 
     mbedtls_mpi x;
     mbedtls_mpi_init(&x);
@@ -393,7 +399,8 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t ser
     VSCE_ASSERT(mbedtls_status == 0);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
-    // TODO: response.proof =
+    status = vsce_phe_server_prove_success(phe_server_ctx, server_private_key, server_public_key, &hs0, &hs1, &c0, &c1, &response.proof);
+    VSCE_ASSERT(status == vsce_SUCCESS);
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(enrollment_response), vsc_buffer_capacity(enrollment_response));
 
@@ -416,14 +423,19 @@ VSCE_PUBLIC size_t
 vsce_phe_server_verify_password_response_len(vsce_phe_server_t *phe_server_ctx) {
 
     VSCE_UNUSED(phe_server_ctx);
-    size_t size = 0;
+    size_t size1 = 0, size2 = 0;
     // TODO: Optimize
     VerifyPasswordResponse response = VerifyPasswordResponse_init_zero;
+    response.which_proof = VerifyPasswordResponse_success_tag;
     bool pb_status = true;
-    pb_status = pb_get_encoded_size(&size, VerifyPasswordResponse_fields, &response);
+    pb_status = pb_get_encoded_size(&size1, VerifyPasswordResponse_fields, &response);
     VSCE_ASSERT(pb_status);
 
-    return size;
+    response.which_proof = VerifyPasswordResponse_fail_tag;
+    pb_status = pb_get_encoded_size(&size2, VerifyPasswordResponse_fields, &response);
+    VSCE_ASSERT(pb_status);
+
+    return size1 > size2 ? size1 : size2;
 }
 
 VSCE_PUBLIC vsce_error_t
@@ -431,8 +443,10 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t se
         vsc_data_t server_public_key, vsc_data_t verify_password_request, vsc_buffer_t *verify_password_response) {
 
     VSCE_ASSERT_PTR(phe_server_ctx);
-    VSCE_ASSERT_PTR(verify_password_response);
+    VSCE_ASSERT(vsc_buffer_len(verify_password_response) == 0);
+    VSCE_ASSERT(vsc_buffer_left(verify_password_response) >= 0); // TODO: Check size
     VSCE_ASSERT(server_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT(server_public_key.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
     VerifyPasswordRequest request = VerifyPasswordRequest_init_zero;
 
@@ -454,7 +468,9 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t se
 
     vsce_error_t status = vsce_SUCCESS;
     status = vsce_phe_hash_hs0(phe_server_ctx->phe_hash, vsc_data(request.ns, sizeof(request.ns)), &hs0);
-    status = vsce_phe_hash_hs1(phe_server_ctx->phe_hash, vsc_data(request.ns, sizeof(request.ns)), &hs0);
+    VSCE_ASSERT(status == vsce_SUCCESS);
+    status = vsce_phe_hash_hs1(phe_server_ctx->phe_hash, vsc_data(request.ns, sizeof(request.ns)), &hs1);
+    VSCE_ASSERT(status == vsce_SUCCESS);
 
     mbedtls_ecp_point hs0x;
     mbedtls_ecp_point_init(&hs0x);
@@ -542,7 +558,7 @@ vsce_phe_server_prove_success(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
         const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, ProofOfSuccess *success_proof) {
 
     VSCE_ASSERT_PTR(phe_server_ctx);
-
+    VSCE_ASSERT(server_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT_PTR(hs0);
     VSCE_ASSERT_PTR(hs1);
     VSCE_ASSERT_PTR(c0);
@@ -596,6 +612,9 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
         ProofOfFail *failure_proof) {
 
     VSCE_ASSERT_PTR(phe_server_ctx);
+
+    VSCE_ASSERT(server_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT(server_public_key.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
     VSCE_ASSERT_PTR(hs0);
     VSCE_ASSERT_PTR(c0);

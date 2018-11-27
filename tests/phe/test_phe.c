@@ -33,26 +33,33 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <virgil/crypto/phe/vsce_phe_client.h>
-#include <PHEModels.pb.h>
-#include <virgil/crypto/phe/private/vsce_phe_client_defs.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <virgil/crypto/phe/vsce_phe_server.h>
+#include <virgil/crypto/phe/vsce_phe_utils.h>
 #include "unity.h"
 #include "test_utils.h"
-#include "pb_encode.h"
 
 #define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_CLIENT && VSCE_PHE_SERVER
 #if TEST_DEPENDENCIES_AVAILABLE
 
-void test__1() {
+void test__full_flow__random_correct_pwd__should_succeed() {
     byte client_private_key[vsce_phe_common_PHE_PRIVATE_KEY_LENGTH];
+
+    vsce_phe_utils_t *utils = vsce_phe_utils_new();
 
     vscf_ctr_drbg_impl_t *rng = vscf_ctr_drbg_new();
     vscf_ctr_drbg_setup_defaults(rng);
-    vsc_buffer_t *client_private_key_buf = vsc_buffer_new();
-    vsc_buffer_use(client_private_key_buf, client_private_key, sizeof(client_private_key));
-    vscf_ctr_drbg_random(rng, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, client_private_key_buf);
-    vsc_buffer_destroy(&client_private_key_buf);
+    vsce_phe_utils_use_random(utils, vscf_ctr_drbg_impl(rng));
+
+    mbedtls_mpi x;
+    mbedtls_mpi_init(&x);
+
+    vsce_phe_utils_random_z(utils, &x);
+    TEST_ASSERT_EQUAL(0, mbedtls_mpi_write_binary(&x, client_private_key, sizeof(client_private_key)));
+
+    mbedtls_mpi_free(&x);
+
+    vsce_phe_utils_destroy(&utils);
 
     byte pwd[10];
     vsc_data_t pwd_data = vsc_data(pwd, sizeof(pwd));
@@ -71,22 +78,21 @@ void test__1() {
 
     TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_server_generate_server_key_pair(server, server_private_key, server_public_key));
 
-    // FIXME
-    vsc_buffer_t *enrollment_response = vsc_buffer_new_with_capacity(500);
+    vsc_buffer_t *enrollment_response = vsc_buffer_new_with_capacity(vsce_phe_server_enrollment_response_len(server));
     TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_server_get_enrollment(server,
-            vsc_buffer_data(server_private_key), enrollment_response));
+            vsc_buffer_data(server_private_key), vsc_buffer_data(server_public_key), enrollment_response));
 
-    vsc_buffer_t *enrollment_record = vsc_buffer_new_with_capacity(500);
+    vsc_buffer_t *enrollment_record = vsc_buffer_new_with_capacity(vsce_phe_client_enrollment_record_len(client));
     vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH);
     TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_enroll_account(client, vsc_buffer_data(enrollment_response),
             pwd_data, enrollment_record, account_key));
     TEST_ASSERT_EQUAL(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH, vsc_buffer_len(account_key));
 
-    vsc_buffer_t *verify_password_request = vsc_buffer_new_with_capacity(500);
+    vsc_buffer_t *verify_password_request = vsc_buffer_new_with_capacity(vsce_phe_client_verify_password_request_len(client));
     TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_create_verify_password_request(client, pwd_data,
             vsc_buffer_data(enrollment_record), verify_password_request));
 
-    vsc_buffer_t *verify_password_response = vsc_buffer_new_with_capacity(500);
+    vsc_buffer_t *verify_password_response = vsc_buffer_new_with_capacity(vsce_phe_server_verify_password_response_len(server));
     TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_server_verify_password(server, vsc_buffer_data(server_private_key), vsc_buffer_data(server_public_key),
             vsc_buffer_data(verify_password_request), verify_password_response));
 
@@ -110,15 +116,24 @@ void test__1() {
     vsc_buffer_destroy(&verify_password_response);
 }
 
-void test__2() {
+void test__full_flow__random_incorrect_pwd__should_fail() {
     byte client_private_key[vsce_phe_common_PHE_PRIVATE_KEY_LENGTH];
+
+    vsce_phe_utils_t *utils = vsce_phe_utils_new();
 
     vscf_ctr_drbg_impl_t *rng = vscf_ctr_drbg_new();
     vscf_ctr_drbg_setup_defaults(rng);
-    vsc_buffer_t *client_private_key_buf = vsc_buffer_new();
-    vsc_buffer_use(client_private_key_buf, client_private_key, sizeof(client_private_key));
-    vscf_ctr_drbg_random(rng, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, client_private_key_buf);
-    vsc_buffer_destroy(&client_private_key_buf);
+    vsce_phe_utils_use_random(utils, vscf_ctr_drbg_impl(rng));
+
+    mbedtls_mpi x;
+    mbedtls_mpi_init(&x);
+
+    vsce_phe_utils_random_z(utils, &x);
+    TEST_ASSERT_EQUAL(0, mbedtls_mpi_write_binary(&x, client_private_key, sizeof(client_private_key)));
+
+    mbedtls_mpi_free(&x);
+
+    vsce_phe_utils_destroy(&utils);
 
     byte pwd1[10], pwd2[10];
     vsc_data_t pwd1_data = vsc_data(pwd1, sizeof(pwd1));
@@ -142,21 +157,20 @@ void test__2() {
 
     TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_server_generate_server_key_pair(server, server_private_key, server_public_key));
 
-    // FIXME
-    vsc_buffer_t *enrollment_response = vsc_buffer_new_with_capacity(500);
+    vsc_buffer_t *enrollment_response = vsc_buffer_new_with_capacity(vsce_phe_server_enrollment_response_len(server));
     TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_server_get_enrollment(server,
-                                                                   vsc_buffer_data(server_private_key), enrollment_response));
+                                                                   vsc_buffer_data(server_private_key), vsc_buffer_data(server_public_key), enrollment_response));
 
-    vsc_buffer_t *enrollment_record = vsc_buffer_new_with_capacity(500);
+    vsc_buffer_t *enrollment_record = vsc_buffer_new_with_capacity(vsce_phe_client_enrollment_record_len(client));
     vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH);
     TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_enroll_account(client, vsc_buffer_data(enrollment_response),
                                                                    pwd1_data, enrollment_record, account_key));
 
-    vsc_buffer_t *verify_password_request = vsc_buffer_new_with_capacity(500);
+    vsc_buffer_t *verify_password_request = vsc_buffer_new_with_capacity(vsce_phe_client_verify_password_request_len(client));
     TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_create_verify_password_request(client, pwd2_data,
                                                                                    vsc_buffer_data(enrollment_record), verify_password_request));
 
-    vsc_buffer_t *verify_password_response = vsc_buffer_new_with_capacity(500);
+    vsc_buffer_t *verify_password_response = vsc_buffer_new_with_capacity(vsce_phe_server_verify_password_response_len(server));
     TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_server_verify_password(server, vsc_buffer_data(server_private_key), vsc_buffer_data(server_public_key),
                                                                     vsc_buffer_data(verify_password_request), verify_password_response));
 
@@ -191,8 +205,8 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__1);
-    RUN_TEST(test__2);
+    RUN_TEST(test__full_flow__random_correct_pwd__should_succeed);
+    RUN_TEST(test__full_flow__random_incorrect_pwd__should_fail);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
