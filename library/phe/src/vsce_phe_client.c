@@ -134,7 +134,6 @@ vsce_phe_client_cleanup(vsce_phe_client_t *phe_client_ctx) {
     if (--phe_client_ctx->refcnt == 0) {
         vsce_phe_client_cleanup_ctx(phe_client_ctx);
 
-        vsce_phe_client_release_phe_hash(phe_client_ctx);
         vsce_phe_client_release_random(phe_client_ctx);
 
         vsce_zeroize(phe_client_ctx, sizeof(vsce_phe_client_t));
@@ -206,44 +205,6 @@ vsce_phe_client_copy(vsce_phe_client_t *phe_client_ctx) {
 }
 
 //
-//  Setup dependency to the class 'phe hash' with shared ownership.
-//
-VSCE_PUBLIC void
-vsce_phe_client_use_phe_hash(vsce_phe_client_t *phe_client_ctx, vsce_phe_hash_t *phe_hash) {
-
-    VSCE_ASSERT_PTR(phe_client_ctx);
-    VSCE_ASSERT_PTR(phe_hash);
-    VSCE_ASSERT_PTR(phe_client_ctx->phe_hash == NULL);
-
-    phe_client_ctx->phe_hash = vsce_phe_hash_copy(phe_hash);
-}
-
-//
-//  Setup dependency to the class 'phe hash' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCE_PUBLIC void
-vsce_phe_client_take_phe_hash(vsce_phe_client_t *phe_client_ctx, vsce_phe_hash_t *phe_hash) {
-
-    VSCE_ASSERT_PTR(phe_client_ctx);
-    VSCE_ASSERT_PTR(phe_hash);
-    VSCE_ASSERT_PTR(phe_client_ctx->phe_hash == NULL);
-
-    phe_client_ctx->phe_hash = phe_hash;
-}
-
-//
-//  Release dependency to the class 'phe hash'.
-//
-VSCE_PUBLIC void
-vsce_phe_client_release_phe_hash(vsce_phe_client_t *phe_client_ctx) {
-
-    VSCE_ASSERT_PTR(phe_client_ctx);
-
-    vsce_phe_hash_destroy(&phe_client_ctx->phe_hash);
-}
-
-//
 //  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCE_PUBLIC void
@@ -303,12 +264,15 @@ vsce_phe_client_init_ctx(vsce_phe_client_t *phe_client_ctx) {
 
     VSCE_ASSERT_PTR(phe_client_ctx);
 
-    vsce_phe_client_take_phe_hash(phe_client_ctx, vsce_phe_hash_new());
+    phe_server_ctx->phe_hash = vsce_phe_hash_new();
 
     vscf_ctr_drbg_impl_t *rng = vscf_ctr_drbg_new();
     vscf_ctr_drbg_setup_defaults(rng);
 
     vsce_phe_client_take_random(phe_client_ctx, vscf_ctr_drbg_impl(rng));
+
+    phe_client_ctx->utils = vsce_phe_utils_new();
+    vsce_phe_utils_use_random(phe_client_ctx->utils, phe_client_ctx->random);
 
     mbedtls_ecp_group_init(&phe_client_ctx->group);
     int status = mbedtls_ecp_group_load(&phe_client_ctx->group, MBEDTLS_ECP_DP_SECP256R1);
@@ -326,6 +290,8 @@ vsce_phe_client_cleanup_ctx(vsce_phe_client_t *phe_client_ctx) {
     VSCE_ASSERT_PTR(phe_client_ctx);
 
     mbedtls_ecp_group_free(&phe_client_ctx->group);
+    vsce_phe_utils_destroy(&phe_client_ctx->utils);
+    vsce_phe_hash_destroy(&phe_client_ctx->phe_hash);
 }
 
 VSCE_PUBLIC vsce_phe_client_t *

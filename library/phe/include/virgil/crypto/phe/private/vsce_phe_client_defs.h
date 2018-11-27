@@ -54,6 +54,7 @@
 #define VSCE_PHE_CLIENT_DEFS_H_INCLUDED
 
 #include "vsce_library.h"
+#include "vsce_phe_utils.h"
 #include "vsce_phe_hash.h"
 
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -92,13 +93,13 @@ struct vsce_phe_client_t {
     //
     size_t refcnt;
     //
-    //  Dependency to the class 'phe hash'.
-    //
-    vsce_phe_hash_t *phe_hash;
-    //
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *random;
+
+    vsce_phe_utils_t *utils;
+
+    vsce_phe_hash_t *phe_hash;
 
     mbedtls_ecp_group group;
 
