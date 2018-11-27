@@ -78,12 +78,14 @@
 //  Calculate length in bytes required to hold an encoded base64 string.
 //
 VSCF_PUBLIC size_t
-vscf_base64_encoded_len(vsc_data_t data) {
+vscf_base64_encoded_len(size_t data_len) {
 
-    VSCF_ASSERT(vsc_data_is_valid(data));
+    size_t len = 4 * (size_t)ceil((double)data_len / 3);
 
-    size_t len = 0;
-    mbedtls_base64_encode(NULL, 0, &len, data.bytes, data.len);
+    if (len > 0) {
+        len += 1;
+    }
+
     return len;
 }
 
@@ -97,7 +99,7 @@ vscf_base64_encode(vsc_data_t data, vsc_buffer_t *str) {
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(str);
     VSCF_ASSERT(vsc_buffer_is_valid(str));
-    VSCF_ASSERT(vsc_buffer_left(str) >= vscf_base64_encoded_len(data));
+    VSCF_ASSERT(vsc_buffer_left(str) >= vscf_base64_encoded_len(data.len));
 
     size_t len = 0;
     int status = mbedtls_base64_encode(vsc_buffer_ptr(str), vsc_buffer_left(str), &len, data.bytes, data.len);
@@ -110,12 +112,9 @@ vscf_base64_encode(vsc_data_t data, vsc_buffer_t *str) {
 //  Calculate length in bytes required to hold a decoded base64 string.
 //
 VSCF_PUBLIC size_t
-vscf_base64_decoded_len(vsc_data_t str) {
+vscf_base64_decoded_len(size_t str_len) {
 
-    VSCF_ASSERT(vsc_data_is_valid(str));
-
-    size_t len = 0;
-    mbedtls_base64_decode(NULL, 0, &len, str.bytes, str.len);
+    size_t len = 3 * (size_t)ceil((double)str_len / 4);
     return len;
 }
 
@@ -128,7 +127,7 @@ vscf_base64_decode(vsc_data_t str, vsc_buffer_t *data) {
     VSCF_ASSERT(vsc_data_is_valid(str));
     VSCF_ASSERT_PTR(data);
     VSCF_ASSERT(vsc_buffer_is_valid(data));
-    VSCF_ASSERT(vsc_buffer_left(data) >= vscf_base64_decoded_len(str));
+    VSCF_ASSERT(vsc_buffer_left(data) >= vscf_base64_decoded_len(str.len));
 
     size_t len = 0;
     int status = mbedtls_base64_decode(vsc_buffer_ptr(data), vsc_buffer_left(data), &len, str.bytes, str.len);

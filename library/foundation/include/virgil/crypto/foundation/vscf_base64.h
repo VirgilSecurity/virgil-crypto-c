@@ -85,7 +85,7 @@ extern "C" {
 //  Calculate length in bytes required to hold an encoded base64 string.
 //
 VSCF_PUBLIC size_t
-vscf_base64_encoded_len(vsc_data_t data);
+vscf_base64_encoded_len(size_t data_len);
 
 //
 //  Encode given data to the base64 format.
@@ -98,7 +98,7 @@ vscf_base64_encode(vsc_data_t data, vsc_buffer_t *str);
 //  Calculate length in bytes required to hold a decoded base64 string.
 //
 VSCF_PUBLIC size_t
-vscf_base64_decoded_len(vsc_data_t str);
+vscf_base64_decoded_len(size_t str_len);
 
 //
 //  Decode given data from the base64 format.

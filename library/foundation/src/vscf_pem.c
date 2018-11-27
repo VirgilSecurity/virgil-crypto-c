@@ -85,15 +85,14 @@ static const char *const k_title_tail = "-----";
 //  Return length in bytes required to hold wrapped PEM format.
 //
 VSCF_PUBLIC size_t
-vscf_pem_wrapped_len(const char *title, vsc_data_t data) {
+vscf_pem_wrapped_len(const char *title, size_t data_len) {
 
     VSCF_ASSERT_PTR(title);
-    VSCF_ASSERT(vsc_data_is_valid(data));
 
     size_t newline_len = 1;
     size_t header_len = strlen(k_header_begin) + strlen(title) + strlen(k_title_tail) + newline_len;
     size_t footer_len = strlen(k_footer_begin) + strlen(title) + strlen(k_title_tail) + newline_len;
-    size_t base64_len = vscf_base64_encoded_len(data);
+    size_t base64_len = vscf_base64_encoded_len(data_len);
     size_t base64_newlines_len = newline_len * (size_t)ceil(base64_len / k_line_len_max);
 
     return header_len + footer_len + base64_len + base64_newlines_len;
@@ -111,7 +110,7 @@ vscf_pem_wrap(const char *title, vsc_data_t data, vsc_buffer_t *pem) {
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(pem);
     VSCF_ASSERT(vsc_buffer_is_valid(pem));
-    VSCF_ASSERT(vsc_buffer_left(pem) >= vscf_pem_wrapped_len(title, data));
+    VSCF_ASSERT(vsc_buffer_left(pem) >= vscf_pem_wrapped_len(title, data.len));
 
     //
     //  Write header.
@@ -125,7 +124,7 @@ vscf_pem_wrap(const char *title, vsc_data_t data, vsc_buffer_t *pem) {
     //  Write base64 formatted body.
     //
     //  TODO: Optimize memcpy.
-    vsc_buffer_t *base64_buf = vsc_buffer_new_with_capacity(vscf_base64_encoded_len(data));
+    vsc_buffer_t *base64_buf = vsc_buffer_new_with_capacity(vscf_base64_encoded_len(data.len));
     vscf_base64_encode(data, base64_buf);
     vsc_data_t base64 = vsc_buffer_data(base64_buf);
 
@@ -153,12 +152,10 @@ vscf_pem_wrap(const char *title, vsc_data_t data, vsc_buffer_t *pem) {
 //  Return length in bytes required to hold unwrapped ninary.
 //
 VSCF_PUBLIC size_t
-vscf_pem_unwrapped_len(vsc_data_t pem) {
-
-    VSCF_ASSERT(vsc_data_is_valid(pem));
+vscf_pem_unwrapped_len(size_t pem_len) {
 
     //  TODO: Make more precise calculations.
-    return pem.len;
+    return pem_len;
 }
 
 //
@@ -170,7 +167,7 @@ vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) {
     VSCF_ASSERT(vsc_data_is_valid(pem));
     VSCF_ASSERT_PTR(data);
     VSCF_ASSERT(vsc_buffer_is_valid(data));
-    VSCF_ASSERT(vsc_buffer_left(data) >= vscf_pem_unwrapped_len(pem));
+    VSCF_ASSERT(vsc_buffer_left(data) >= vscf_pem_unwrapped_len(pem.len));
 
     //
     //  Grab PEM header.
@@ -203,7 +200,7 @@ vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) {
     //  Grab PEN footer.
     //
     const char *footer_begin = strstr((const char *)pem.bytes, k_footer_begin);
-    if (NULL == footer_begin) {
+    if (NULL == footer_begin || footer_begin < body_begin) {
         return vscf_error_BAD_PEM;
     }
 

@@ -7,7 +7,7 @@
     <method name="encoded len">
         Calculate length in bytes required to hold an encoded base64 string.
 
-        <argument name="data" class="data"/>
+        <argument name="data len" type="size"/>
         <return type="size"/>
     </method>
 
@@ -20,7 +20,7 @@
 
         <argument name="str" class="buffer">
             <length method="encoded len">
-                <proxy argument="data" to="data"/>
+                <proxy argument="data" to="data len" cast="data_length"/>
             </length>
         </argument>
     </method>
@@ -29,7 +29,7 @@
     <method name="decoded len">
         Calculate length in bytes required to hold a decoded base64 string.
 
-        <argument name="str" class="data"/>
+        <argument name="str len" type="size"/>
         <return type="size"/>
     </method>
 
@@ -41,7 +41,7 @@
 
         <argument name="data" class="buffer">
             <length method="decoded len">
-                <proxy argument="str" to="str"/>
+                <proxy argument="str" to="str len" cast="data_length"/>
             </length>
         </argument>
 
