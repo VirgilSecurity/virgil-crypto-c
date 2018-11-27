@@ -90,7 +90,7 @@ function class_resolve_attr_context (class, project)
         my.class_dump = class_dump (my.class)
 
         echo_fatal ("Class attribute context is explicitly 'none'," + \
-                    " when context's 'property' defained as well." + \
+                    " when context's 'property' defined as well." + \
                     "Expected {$(my.valid_contexts)}", my)
     endif
 endfunction
