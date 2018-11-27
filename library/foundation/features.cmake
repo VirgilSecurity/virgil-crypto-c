@@ -104,6 +104,7 @@ option(VSCF_RAW_KEY "Enable class 'raw key'." ON)
 option(VSCF_OID "Enable class 'oid'." ON)
 option(VSCF_BASE64 "Enable class 'base64'." ON)
 option(VSCF_PEM "Enable class 'pem'." ON)
+option(VSCF_PEM_TITLE "Enable class 'pem title'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_DEFAULTS
@@ -164,6 +165,7 @@ mark_as_advanced(
         VSCF_OID
         VSCF_BASE64
         VSCF_PEM
+        VSCF_PEM_TITLE
         )
 
 if(VSCF_CIPHER AND NOT VSCF_ENCRYPT)
@@ -688,6 +690,24 @@ if(VSCF_PKCS8_SERIALIZER AND NOT VSCF_ASN1WR)
     message(FATAL_ERROR)
 endif()
 
+if(VSCF_PKCS8_SERIALIZER AND NOT VSCF_PEM)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PKCS8_SERIALIZER depends on the feature:")
+    message("     VSCF_PEM - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PKCS8_SERIALIZER AND NOT VSCF_PEM_TITLE)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PKCS8_SERIALIZER depends on the feature:")
+    message("     VSCF_PEM_TITLE - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCF_PKCS8_SERIALIZER AND NOT VSCF_PUBLIC_KEY)
     message("-- error --")
     message("--")
@@ -738,6 +758,24 @@ if(VSCF_PKCS8_DESERIALIZER AND NOT VSCF_ASN1RD)
     message("--")
     message("Feature VSCF_PKCS8_DESERIALIZER depends on the feature:")
     message("     VSCF_ASN1RD - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PKCS8_DESERIALIZER AND NOT VSCF_PEM)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PKCS8_DESERIALIZER depends on the feature:")
+    message("     VSCF_PEM - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PKCS8_DESERIALIZER AND NOT VSCF_PEM_TITLE)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PKCS8_DESERIALIZER depends on the feature:")
+    message("     VSCF_PEM_TITLE - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

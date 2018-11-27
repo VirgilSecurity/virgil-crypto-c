@@ -99,6 +99,7 @@
     <class name="oid"/>
     <class name="base64"/>
     <class name="pem"/>
+    <class name="pem title"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>
