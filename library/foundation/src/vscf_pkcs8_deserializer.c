@@ -91,6 +91,16 @@ vscf_pkcs8_deserializer_setup_defaults(vscf_pkcs8_deserializer_impl_t *pkcs8_des
 
     VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
 
+    if (NULL == pkcs8_deserializer_impl->asn1_reader) {
+        pkcs8_deserializer_impl->asn1_reader = vscf_asn1rd_impl(vscf_asn1rd_new());
+    }
+
+    if (NULL == pkcs8_deserializer_impl->der_deserializer) {
+        vscf_pkcs8_der_deserializer_impl_t *der_deserializer = vscf_pkcs8_der_deserializer_new();
+        vscf_pkcs8_der_deserializer_use_asn1_reader(der_deserializer, pkcs8_deserializer_impl->asn1_reader);
+        pkcs8_deserializer_impl->der_deserializer = vscf_pkcs8_der_deserializer_impl(der_deserializer);
+    }
+
     return vscf_SUCCESS;
 }
 
@@ -102,11 +112,40 @@ vscf_pkcs8_deserializer_deserialize_public_key(
         vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl, vsc_data_t public_key_data, vscf_error_ctx_t *error) {
 
     VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
+    VSCF_ASSERT_PTR(pkcs8_deserializer_impl->der_deserializer);
     VSCF_ASSERT(vsc_data_is_valid(public_key_data));
 
-    VSCF_UNUSED(error);
-    //  TODO: This is STUB. Implement me.
-    return NULL;
+    vsc_data_t title = vscf_pem_title(public_key_data);
+    bool is_der = vsc_data_is_empty(title);
+
+    if (is_der) {
+        vscf_raw_key_t *raw_key = vscf_key_deserializer_deserialize_public_key(
+                pkcs8_deserializer_impl->der_deserializer, public_key_data, error);
+
+        return raw_key;
+    }
+
+    if (!vsc_data_equal(title, vsc_data_from_str(vscf_pem_title_public_key, vscf_pem_title_public_key_len))) {
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_PKCS8_PUBLIC_KEY);
+        return NULL;
+    }
+
+    //  TODO: Reduce allocation.
+    size_t der_len = vscf_pem_unwrapped_len(public_key_data.len);
+    vsc_buffer_t *der = vsc_buffer_new_with_capacity(der_len);
+    vscf_error_t status = vscf_pem_unwrap(public_key_data, der);
+
+    if (status != vscf_SUCCESS) {
+        vsc_buffer_destroy(&der);
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_PKCS8_PUBLIC_KEY);
+        return NULL;
+    }
+
+    vscf_raw_key_t *raw_key = vscf_key_deserializer_deserialize_public_key(
+            pkcs8_deserializer_impl->der_deserializer, vsc_buffer_data(der), error);
+
+    vsc_buffer_destroy(&der);
+    return raw_key;
 }
 
 //
@@ -117,9 +156,38 @@ vscf_pkcs8_deserializer_deserialize_private_key(
         vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl, vsc_data_t private_key_data, vscf_error_ctx_t *error) {
 
     VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
+    VSCF_ASSERT_PTR(pkcs8_deserializer_impl->der_deserializer);
     VSCF_ASSERT(vsc_data_is_valid(private_key_data));
 
-    VSCF_UNUSED(error);
-    //  TODO: This is STUB. Implement me.
-    return NULL;
+    vsc_data_t title = vscf_pem_title(private_key_data);
+    bool is_der = vsc_data_is_empty(title);
+
+    if (is_der) {
+        vscf_raw_key_t *raw_key = vscf_key_deserializer_deserialize_private_key(
+                pkcs8_deserializer_impl->der_deserializer, private_key_data, error);
+
+        return raw_key;
+    }
+
+    if (!vsc_data_equal(title, vsc_data_from_str(vscf_pem_title_private_key, vscf_pem_title_private_key_len))) {
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_PKCS8_PRIVATE_KEY);
+        return NULL;
+    }
+
+    //  TODO: Reduce allocation.
+    size_t der_len = vscf_pem_unwrapped_len(private_key_data.len);
+    vsc_buffer_t *der = vsc_buffer_new_with_capacity(der_len);
+    vscf_error_t status = vscf_pem_unwrap(private_key_data, der);
+
+    if (status != vscf_SUCCESS) {
+        vsc_buffer_destroy(&der);
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_BAD_PKCS8_PRIVATE_KEY);
+        return NULL;
+    }
+
+    vscf_raw_key_t *raw_key = vscf_key_deserializer_deserialize_private_key(
+            pkcs8_deserializer_impl->der_deserializer, vsc_buffer_data(der), error);
+
+    vsc_buffer_destroy(&der);
+    return raw_key;
 }
