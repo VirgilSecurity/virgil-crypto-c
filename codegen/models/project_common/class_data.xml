@@ -36,6 +36,22 @@
     </method>
 
 
+    <method name="is empty">
+        Returns true if underlying byte array is empty.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="equal">
+        Return true if given datas are equal.
+
+        <argument name="rhs" class="data"/>
+
+        <return type="boolean"/>
+    </method>
+
+
     <constructor name="data">
         Creates data from the preallocated bytes.
 
