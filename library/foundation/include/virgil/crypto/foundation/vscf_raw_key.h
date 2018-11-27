@@ -150,10 +150,10 @@ VSCF_PUBLIC vscf_key_alg_t
 vscf_raw_key_alg(vscf_raw_key_t *raw_key_ctx);
 
 //
-//  Return raw key bytes.
+//  Return raw key data.
 //
-VSCF_PUBLIC vsc_buffer_t *
-vscf_raw_key_bytes(vscf_raw_key_t *raw_key_ctx);
+VSCF_PUBLIC vsc_data_t
+vscf_raw_key_data(vscf_raw_key_t *raw_key_ctx);
 
 
 // --------------------------------------------------------------------------

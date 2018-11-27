@@ -85,14 +85,10 @@ import VirgilCryptoCommon
         return KeyAlg.init(fromC: proxyResult)
     }
 
-    /// Return raw key bytes.
-    @objc public func bytes() -> Data {
-        let proxyResult = vscf_raw_key_bytes(self.c_ctx)
+    /// Return raw key data.
+    @objc public func data() -> Data {
+        let proxyResult = vscf_raw_key_data(self.c_ctx)
 
-        defer {
-            vsc_buffer_delete(proxyResult)
-        }
-
-        return Data.init(bytes: vsc_buffer_bytes(proxyResult), count: vsc_buffer_len(proxyResult))
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 }

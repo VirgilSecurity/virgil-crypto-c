@@ -29,9 +29,9 @@
     </method>
 
 
-    <method name="bytes">
-        Return raw key bytes.
+    <method name="data">
+        Return raw key data.
 
-        <return class="buffer" access="retain"/>
+        <return class="data"/>
     </method>
 </class>
