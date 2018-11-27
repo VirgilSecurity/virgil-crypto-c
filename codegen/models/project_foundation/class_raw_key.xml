@@ -1,0 +1,37 @@
+<class name="raw key">
+    Provide implementation agnostic representation of the asymmetric key.
+
+    <property name="alg" enum="key alg"/>
+    <property name="bytes" class="buffer"/>
+
+
+    <constructor name="with data">
+        Creates raw key defined with algorithm and data.
+        Note, data is copied.
+
+        <argument name="alg" enum="key alg"/>
+        <argument name="raw key data" class="data"/>
+    </constructor>
+
+
+    <constructor name="with buffer" visibility="private">
+        Creates raw key defined with algorithm and buffer.
+
+        <argument name="alg" enum="key alg"/>
+        <argument name="buffer" class="buffer" access="retain"/>
+    </constructor>
+
+
+    <method name="alg">
+        Returns asymmetric algorithm type that raw key belongs to.
+
+        <return enum="key alg"/>
+    </method>
+
+
+    <method name="data">
+        Return raw key data.
+
+        <return class="data"/>
+    </method>
+</class>

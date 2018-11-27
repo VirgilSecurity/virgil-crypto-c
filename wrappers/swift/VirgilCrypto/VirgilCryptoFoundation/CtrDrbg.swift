@@ -39,7 +39,7 @@ import VirgilCryptoCommon
 
 /// Implementation of the RNG using deterministic random bit generators
 /// based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).
-@objc(VSCFCtrDrbg) public class CtrDrbg: NSObject, Random {
+@objc(VSCFCtrDrbg) public class CtrDrbg: NSObject, Defaults, Random {
 
     /// The interval before reseed is performed by default.
     @objc public let reseedInterval: Int = 10000
@@ -81,11 +81,6 @@ import VirgilCryptoCommon
         try FoundationError.handleError(fromC: proxyResult)
     }
 
-    /// Setup entropy sources available for the current system.
-    @objc public func setupDefaults() {
-        vscf_ctr_drbg_setup_defaults(self.c_ctx)
-    }
-
     /// Force entropy to be gathered at the beginning of every call to
     /// the random() method.
     /// Note, use this if your entropy source has sufficient throughput.
@@ -103,6 +98,13 @@ import VirgilCryptoCommon
     /// The default value is entropy len.
     @objc public func setEntropyLen(len: Int) {
         vscf_ctr_drbg_set_entropy_len(self.c_ctx, len)
+    }
+
+    /// Setup predefined values to the uninitialized class dependencies.
+    @objc public func setupDefaults() throws {
+        let proxyResult = vscf_ctr_drbg_setup_defaults(self.c_ctx)
+
+        try FoundationError.handleError(fromC: proxyResult)
     }
 
     /// Generate random bytes.

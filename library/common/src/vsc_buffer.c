@@ -481,6 +481,44 @@ vsc_buffer_decrease_used_bytes(vsc_buffer_t *buffer_ctx, size_t len) {
 }
 
 //
+//  Copy null-terminated string to the buffer.
+//
+VSC_PUBLIC void
+vsc_buffer_write_str(vsc_buffer_t *buffer_ctx, const char *str) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
+    VSC_ASSERT_PTR(str);
+
+    size_t str_len = strlen(str);
+    VSC_ASSERT(str_len <= vsc_buffer_left(buffer_ctx));
+
+    size_t write_len = str_len > vsc_buffer_left(buffer_ctx) ? vsc_buffer_left(buffer_ctx) : str_len;
+
+    memcpy(vsc_buffer_ptr(buffer_ctx), (const byte *)str, write_len);
+
+    buffer_ctx->len += write_len;
+}
+
+//
+//  Copy data to the buffer.
+//
+VSC_PUBLIC void
+vsc_buffer_write_data(vsc_buffer_t *buffer_ctx, vsc_data_t data) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
+    VSC_ASSERT(vsc_data_is_valid(data));
+    VSC_ASSERT(data.len <= vsc_buffer_left(buffer_ctx));
+
+    size_t write_len = data.len > vsc_buffer_left(buffer_ctx) ? vsc_buffer_left(buffer_ctx) : data.len;
+
+    memcpy(vsc_buffer_ptr(buffer_ctx), data.bytes, write_len);
+
+    buffer_ctx->len += write_len;
+}
+
+//
 //  Reset to the initial state.
 //  After reset inner buffer can be re-used.
 //

@@ -87,9 +87,9 @@ static const vscf_hash_info_api_t hash_info_api = {
     //
     vscf_api_tag_HASH_INFO,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
+    //  Return implemented hash algorithm type.
     //
-    vscf_impl_tag_SHA384,
+    (vscf_hash_info_api_alg_fn)vscf_sha384_alg,
     //
     //  Length of the digest (hashing output) in bytes.
     //
@@ -110,10 +110,6 @@ static const vscf_hash_api_t hash_api = {
     //
     vscf_api_tag_HASH,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_SHA384,
-    //
     //  Link to the inherited interface API 'hash info'.
     //
     &hash_info_api,
@@ -132,10 +128,6 @@ static const vscf_hash_stream_api_t hash_stream_api = {
     //  For interface 'hash_stream' MUST be equal to the 'vscf_api_tag_HASH_STREAM'.
     //
     vscf_api_tag_HASH_STREAM,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_SHA384,
     //
     //  Link to the inherited interface API 'hash info'.
     //
@@ -158,10 +150,6 @@ static const vscf_hash_stream_api_t hash_stream_api = {
 //  Compile-time known information about 'sha384' implementation.
 //
 static const vscf_impl_info_t info = {
-    //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_SHA384,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.

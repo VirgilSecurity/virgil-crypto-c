@@ -276,6 +276,7 @@ function swift_insert_protocol_method (swift_method)
     my.method_return = swift_format_return_list(my.swift_method) ?
     my.method_throws = my.swift_method.throws ?? "throws" ?
 
+    swift_insert_description (my.swift_method, 1)
     swift_insert_code("\
         @objc $(my.swift_method.modifier?:) func $(my.swift_method.name:)($(my.method_args?:)) \
                 $(my.method_throws?:) $(my.method_return?:)
