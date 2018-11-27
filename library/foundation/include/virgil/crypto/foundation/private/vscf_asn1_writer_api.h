@@ -193,6 +193,20 @@ typedef size_t (*vscf_asn1_writer_api_write_null_fn)(vscf_impl_t *impl);
 typedef size_t (*vscf_asn1_writer_api_write_octet_str_fn)(vscf_impl_t *impl, vsc_data_t value);
 
 //
+//  Callback. Write ASN.1 type: BIT STRING with all zero unused bits.
+//
+//          Return count of written bytes.
+//
+typedef size_t (*vscf_asn1_writer_api_write_octet_str_as_bitstring_fn)(vscf_impl_t *impl, vsc_data_t value);
+
+//
+//  Callback. Write raw data directly to the ASN.1 structure.
+//          Return count of written bytes.
+//          Note, use this method carefully.
+//
+typedef size_t (*vscf_asn1_writer_api_write_data_fn)(vscf_impl_t *impl, vsc_data_t data);
+
+//
 //  Callback. Write ASN.1 type: UTF8String.
 //          Return count of written bytes.
 //
@@ -225,10 +239,6 @@ struct vscf_asn1_writer_api_t {
     //  For interface 'asn1_writer' MUST be equal to the 'vscf_api_tag_ASN1_WRITER'.
     //
     vscf_api_tag_t api_tag;
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_t impl_tag;
     //
     //  Reset all internal states and prepare to new ASN.1 writing operations.
     //
@@ -321,6 +331,18 @@ struct vscf_asn1_writer_api_t {
     //  Return count of written bytes.
     //
     vscf_asn1_writer_api_write_octet_str_fn write_octet_str_cb;
+    //
+    //  Write ASN.1 type: BIT STRING with all zero unused bits.
+    //
+    //  Return count of written bytes.
+    //
+    vscf_asn1_writer_api_write_octet_str_as_bitstring_fn write_octet_str_as_bitstring_cb;
+    //
+    //  Write raw data directly to the ASN.1 structure.
+    //  Return count of written bytes.
+    //  Note, use this method carefully.
+    //
+    vscf_asn1_writer_api_write_data_fn write_data_cb;
     //
     //  Write ASN.1 type: UTF8String.
     //  Return count of written bytes.

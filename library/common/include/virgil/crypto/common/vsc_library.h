@@ -104,7 +104,7 @@ extern "C" {
 //
 //  Custom implementation of the number ceil algorithm.
 //
-#define VSC_CEIL(x,y) (1 + (((x) - 1) / (y)))
+#define VSC_CEIL(x,y) (0 == (x) ? 0 : 1 + (((x) - 1) / (y)))
 
 //
 //  Mark argument or function return value as "unused".

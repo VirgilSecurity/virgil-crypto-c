@@ -40,8 +40,10 @@ import VirgilCryptoCommon
 /// Provide interface for signing data with private key.
 @objc(VSCFSign) public protocol Sign : CContext {
 
+    /// Sign data given private key.
     @objc func sign(data: Data) throws -> Data
 
+    /// Return length in bytes required to hold signature.
     @objc func signatureLen() -> Int
 }
 

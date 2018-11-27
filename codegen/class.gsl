@@ -150,16 +150,6 @@ function class_resolve_attr_uid (class, project)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve entity: constructor.
-# ---------------------------------------------------------------------------
-function class_resolve_constructor (constructor, class)
-    check_arguments (my, "constructor, class", my)
-
-    my.constructor.is_static = "1"
-    component_resolve_method (my.constructor, my.class)
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Resolve entity: property.
 # ---------------------------------------------------------------------------
 function class_resolve_property (property, class)
@@ -174,6 +164,16 @@ endfunction
 function class_resolve_method (method, class)
     check_arguments (my, "method, class", my)
 
+    if string_equal (my.class.context, "none")
+        my.method.is_static = "1"
+
+        for my.method.argument
+            for argument.length
+                length.class ?= "self"
+            endfor
+        endfor
+    endif
+
     for my.method.argument where string_equal (0.class ?, "self")
         .name ?= "ctx"
         .access ?= "readwrite"
@@ -184,6 +184,16 @@ function class_resolve_method (method, class)
         .access ?= "disown"
         .class = my.class.name
     endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve entity: constructor.
+# ---------------------------------------------------------------------------
+function class_resolve_constructor (constructor, class)
+    check_arguments (my, "constructor, class", my)
+
+    my.constructor.is_static = "1"
+    component_resolve_method (my.constructor, my.class)
 endfunction
 
 # ---------------------------------------------------------------------------

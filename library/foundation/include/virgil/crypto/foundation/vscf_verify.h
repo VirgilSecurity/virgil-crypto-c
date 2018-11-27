@@ -109,12 +109,6 @@ vscf_verify_is_implemented(const vscf_impl_t *impl);
 VSCF_PUBLIC vscf_api_tag_t
 vscf_verify_api_tag(const vscf_verify_api_t *verify_api);
 
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_verify_impl_tag(const vscf_verify_api_t *verify_api);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

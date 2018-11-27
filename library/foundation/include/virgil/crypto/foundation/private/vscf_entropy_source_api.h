@@ -101,10 +101,6 @@ struct vscf_entropy_source_api_t {
     //
     vscf_api_tag_t api_tag;
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_t impl_tag;
-    //
     //  Defines that implemented source is strong.
     //
     vscf_entropy_source_api_is_strong_fn is_strong_cb;
