@@ -543,6 +543,23 @@ function component_resolve_attr_scope (component, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve attribute: require.scope.
+# ---------------------------------------------------------------------------
+function component_resolve_attr_require_scope (require_base, parent)
+    check_argument (my, "require_base", my)
+
+    my.require_base.scope ?= "public" #   must not be inherited
+
+    my.valid_scopes = "public, private, context"
+    if ! string_in (my.require_base.scope, my.valid_scopes)
+        my.component_dump = component_dump (my.require_base)
+
+        echo_fatal ("Invalid required component scope '$(my.component_dump:)'. " + \
+                    "Expected {$(my.valid_scopes)}", my)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve attribute: class.
 # ---------------------------------------------------------------------------
 function component_resolve_attr_of_class (component, parent)
@@ -1452,7 +1469,7 @@ function component_resolve_require_base (require_base, parent)
     assert_attribute_one_of (my.require_base, "module, header, feature, interface, class, impl, enum", my)
 
     component_resolve_landlord (my.require_base, my.parent)
-    component_resolve_attr_scope (my.require_base, my.parent)
+    component_resolve_attr_require_scope (my.require_base, my.parent)
 endfunction
 
 # ---------------------------------------------------------------------------

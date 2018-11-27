@@ -83,6 +83,13 @@ function _X13_add_context_struct (class, declaration, definition, destination, m
             component_clean_copy (property, struct)
         endfor
     endnew
+
+    if my.definition <> "external"
+        for my.class.require where 0.scope="context"
+            my.copied_require = item_copy_to(require, my.destination)
+            my.copied_require.scope = my.definition
+        endfor
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
