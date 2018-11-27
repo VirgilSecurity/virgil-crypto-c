@@ -53,6 +53,7 @@
 #ifndef VSCE_SIMPLE_SWU_DEFS_H_INCLUDED
 #define VSCE_SIMPLE_SWU_DEFS_H_INCLUDED
 
+#include <mbedtls/ecp.h>
 #include "vsce_library.h"
 
 // clang-format on
@@ -82,6 +83,18 @@ struct vsce_simple_swu_t {
     //  Reference counter.
     //
     size_t refcnt;
+
+    mbedtls_ecp_group group;
+
+    mbedtls_mpi two;
+
+    mbedtls_mpi three;
+
+    mbedtls_mpi p34;
+
+    mbedtls_mpi p14;
+
+    mbedtls_mpi mba;
 };
 
 

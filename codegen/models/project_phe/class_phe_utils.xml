@@ -1,5 +1,6 @@
 <class name="phe utils" context="private">
 
+    <require enum="error" scope="private"/>
     <require class="phe common" scope="public"/>
     <require impl="ctr drbg" project="foundation" scope="private"/>
     <require header="mbedtls/ecp.h" scope="public"/>
@@ -10,7 +11,7 @@
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
 
     <method name="random Z">
-        <argument name="z" class="mbedtls_mpi" library="mbedtls" access="readwrite"/>
+        <argument name="z" class="mbedtls_mpi" library="mbedtls" access="writeonly"/>
     </method>
 
 </class>

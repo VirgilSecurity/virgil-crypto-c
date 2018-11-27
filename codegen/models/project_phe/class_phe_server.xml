@@ -14,24 +14,40 @@
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
 
     <method name="generate server key pair">
-        <argument name="server private key" class="buffer" access="readwrite"/>
-        <argument name="server public key" class="buffer" access="readwrite"/>
+        <argument name="server private key" class="buffer" access="writeonly">
+            <length constant=".(class_phe_common_constant_phe_private_key_length)"/>
+        </argument>
+        <argument name="server public key" class="buffer" access="writeonly">
+            <length constant=".(class_phe_common_constant_phe_public_key_length)"/>
+        </argument>
 
         <return enum="error"/>
     </method>
 
+    <method name="enrollment response len">
+        <return type="size"/>
+    </method>
+
     <method name="get enrollment">
         <argument name="server private key" class="data"/>
-        <argument name="enrollment response" class="buffer" access="readwrite"/>
+        <argument name="enrollment response" class="buffer" access="writeonly">
+            <length method="enrollment record len"/>
+        </argument>
 
         <return enum="error"/>
+    </method>
+
+    <method name="verify password response len">
+        <return type="size"/>
     </method>
 
     <method name="verify password">
         <argument name="server private key" class="data"/>
         <argument name="server public key" class="data"/>
         <argument name="verify password request" class="data"/>
-        <argument name="verify password response" class="buffer" access="readwrite"/>
+        <argument name="verify password response" class="buffer" access="writeonly">
+            <length method="verify password response len"/>
+        </argument>
 
         <return enum="error"/>
     </method>
@@ -43,7 +59,7 @@
         <argument name="hs1" class="mbedtls_ecp_point" library="mbedtls"/>
         <argument name="c0" class="mbedtls_ecp_point" library="mbedtls"/>
         <argument name="c1" class="mbedtls_ecp_point" library="mbedtls"/>
-        <argument name="success proof" class="ProofOfSuccess" library="nanopb" access="readwrite"/>
+        <argument name="success proof" class="ProofOfSuccess" library="nanopb" access="writeonly"/>
 
         <return enum="error"/>
     </method>
@@ -53,17 +69,23 @@
         <argument name="server public key" class="data"/>
         <argument name="c0" class="mbedtls_ecp_point" library="mbedtls"/>
         <argument name="hs0" class="mbedtls_ecp_point" library="mbedtls"/>
-        <argument name="c1" class="mbedtls_ecp_point" library="mbedtls" access="readwrite"/>
-        <argument name="failure proof" class="ProofOfFail" library="nanopb" access="readwrite"/>
+        <argument name="c1" class="mbedtls_ecp_point" library="mbedtls" access="writeonly"/>
+        <argument name="failure proof" class="ProofOfFail" library="nanopb" access="writeonly"/>
 
         <return enum="error"/>
     </method>
 
     <method name="rotate server private key">
         <argument name="server private key" class="data"/>
-        <argument name="new server private key" class="buffer" access="readwrite"/>
-        <argument name="new server public key" class="buffer" access="readwrite"/>
-        <argument name="rotation token" class="buffer" access="readwrite"/>
+        <argument name="new server private key" class="buffer" access="writeonly">
+            <length constant=".(class_phe_common_constant_phe_private_key_length)"/>
+        </argument>
+        <argument name="new server public key" class="buffer" access="writeonly">
+            <length constant=".(class_phe_common_constant_phe_private_key_length)"/>
+        </argument>
+        <argument name="rotation token" class="buffer" access="writeonly">
+            <length constant=".(class_phe_common_constant_phe_rotation_token_length)"/>
+        </argument>
 
         <return enum="error"/>
     </method>

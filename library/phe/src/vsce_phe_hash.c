@@ -273,14 +273,18 @@ vsce_phe_hash_data_to_point(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t data, mbed
     mbedtls_mpi_init(&t);
 
     vsc_data_t buff_data = vsc_data_slice_beg(vsc_buffer_data(buffer), 0, vsce_simple_swu_HASH_LEN);
-    mbedtls_mpi_read_binary(&t, buff_data.bytes, buff_data.len);
+    int mbedtls_status = 0;
+    mbedtls_status = mbedtls_mpi_read_binary(&t, buff_data.bytes, buff_data.len);
+    VSCE_ASSERT(mbedtls_status == 0);
 
-    vsce_error_t error = vsce_simple_swu_bignum_to_point(phe_hash_ctx->simple_swu, &t, p);
+    vsce_error_t status = vsce_SUCCESS;
+    status = vsce_simple_swu_bignum_to_point(phe_hash_ctx->simple_swu, &t, p);
+    VSCE_ASSERT(status == vsce_SUCCESS);
 
     mbedtls_mpi_free(&t);
     vsc_buffer_destroy(&buffer);
 
-    return error;
+    return vsce_SUCCESS;
 }
 
 VSCE_PUBLIC vsce_error_t
@@ -290,12 +294,13 @@ vsce_phe_hash_hc0(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t nc, vsc_data_t passw
     VSCE_ASSERT_PTR(hc0);
 
     VSCE_ASSERT(nc.len == vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH);
-    VSCE_ASSERT(password.len > 0 && password.len <= vsce_phe_common_PHE_MAX_PASSWORD_LENGTH);
+    VSCE_ASSERT(password.len > 0);
+    VSCE_ASSERT(password.len <= vsce_phe_common_PHE_MAX_PASSWORD_LENGTH);
 
     char hc0_domain[] = "dhco";
 
     vsc_buffer_t *buff = vsc_buffer_new_with_capacity(sizeof(hc0_domain)
-            +vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH + password.len);
+            + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH + password.len);
     vsc_buffer_make_secure(buff);
 
     memcpy(vsc_buffer_ptr(buff), hc0_domain, sizeof(hc0_domain));
@@ -307,8 +312,9 @@ vsce_phe_hash_hc0(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t nc, vsc_data_t passw
     memcpy(vsc_buffer_ptr(buff), password.bytes, password.len);
     vsc_buffer_reserve(buff, password.len);
 
-    // TODO: Check error
-    vsce_phe_hash_data_to_point(phe_hash_ctx, vsc_buffer_data(buff), hc0);
+    vsce_error_t status = vsce_SUCCESS;
+    status = vsce_phe_hash_data_to_point(phe_hash_ctx, vsc_buffer_data(buff), hc0);
+    VSCE_ASSERT(status == vsce_SUCCESS);
 
     vsc_buffer_destroy(&buff);
 
@@ -322,12 +328,13 @@ vsce_phe_hash_hc1(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t nc, vsc_data_t passw
     VSCE_ASSERT_PTR(hc1);
 
     VSCE_ASSERT(nc.len == vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH);
-    VSCE_ASSERT(password.len > 0 && password.len <= vsce_phe_common_PHE_MAX_PASSWORD_LENGTH);
+    VSCE_ASSERT(password.len > 0);
+    VSCE_ASSERT(password.len <= vsce_phe_common_PHE_MAX_PASSWORD_LENGTH);
 
     char hc1_domain[] = "dhc1";
 
     vsc_buffer_t *buff = vsc_buffer_new_with_capacity(sizeof(hc1_domain)
-                                                      +vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH + password.len);
+            + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH + password.len);
     vsc_buffer_make_secure(buff);
 
     memcpy(vsc_buffer_ptr(buff), hc1_domain, sizeof(hc1_domain));
@@ -339,8 +346,9 @@ vsce_phe_hash_hc1(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t nc, vsc_data_t passw
     memcpy(vsc_buffer_ptr(buff), password.bytes, password.len);
     vsc_buffer_reserve(buff, password.len);
 
-    // TODO: Check error
-    vsce_phe_hash_data_to_point(phe_hash_ctx, vsc_buffer_data(buff), hc1);
+    vsce_error_t status = vsce_SUCCESS;
+    status = vsce_phe_hash_data_to_point(phe_hash_ctx, vsc_buffer_data(buff), hc1);
+    VSCE_ASSERT(status == vsce_SUCCESS);
 
     vsc_buffer_destroy(&buff);
 
@@ -358,8 +366,7 @@ vsce_phe_hash_hs0(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t ns, mbedtls_ecp_poin
     char hs0_domain[] = "dhs0";
 
     vsc_buffer_t *buff = vsc_buffer_new_with_capacity(sizeof(hs0_domain)
-                                                      +vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH);
-    vsc_buffer_make_secure(buff);
+            + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH);
 
     memcpy(vsc_buffer_ptr(buff), hs0_domain, sizeof(hs0_domain));
     vsc_buffer_reserve(buff, sizeof(hs0_domain));
@@ -367,8 +374,9 @@ vsce_phe_hash_hs0(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t ns, mbedtls_ecp_poin
     memcpy(vsc_buffer_ptr(buff), ns.bytes, ns.len);
     vsc_buffer_reserve(buff, ns.len);
 
-    // TODO: Check error
-    vsce_phe_hash_data_to_point(phe_hash_ctx, vsc_buffer_data(buff), hs0);
+    vsce_error_t status = vsce_SUCCESS;
+    status = vsce_phe_hash_data_to_point(phe_hash_ctx, vsc_buffer_data(buff), hs0);
+    VSCE_ASSERT(status == vsce_SUCCESS);
 
     vsc_buffer_destroy(&buff);
 
@@ -386,8 +394,7 @@ vsce_phe_hash_hs1(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t ns, mbedtls_ecp_poin
     char hs1_domain[] = "dhs1";
 
     vsc_buffer_t *buff = vsc_buffer_new_with_capacity(sizeof(hs1_domain)
-                                                      +vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH);
-    vsc_buffer_make_secure(buff);
+            + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH);
 
     memcpy(vsc_buffer_ptr(buff), hs1_domain, sizeof(hs1_domain));
     vsc_buffer_reserve(buff, sizeof(hs1_domain));
@@ -395,8 +402,9 @@ vsce_phe_hash_hs1(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t ns, mbedtls_ecp_poin
     memcpy(vsc_buffer_ptr(buff), ns.bytes, ns.len);
     vsc_buffer_reserve(buff, ns.len);
 
-    // TODO: Check error
-    vsce_phe_hash_data_to_point(phe_hash_ctx, vsc_buffer_data(buff), hs1);
+    vsce_error_t status = vsce_SUCCESS;
+    status = vsce_phe_hash_data_to_point(phe_hash_ctx, vsc_buffer_data(buff), hs1);
+    VSCE_ASSERT(status == vsce_SUCCESS);
 
     vsc_buffer_destroy(&buff);
 

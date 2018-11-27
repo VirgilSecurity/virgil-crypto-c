@@ -8,4 +8,5 @@
     <constant name="phe domain length" value="4"/>
     <constant name="phe private key length" value="32"/>
     <constant name="phe public key length" value="65"/>
+    <constant name="phe rotation token length" value="32"/>
 </class>
