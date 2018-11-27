@@ -264,7 +264,7 @@ vsce_phe_client_init_ctx(vsce_phe_client_t *phe_client_ctx) {
 
     VSCE_ASSERT_PTR(phe_client_ctx);
 
-    phe_server_ctx->phe_hash = vsce_phe_hash_new();
+    phe_client_ctx->phe_hash = vsce_phe_hash_new();
 
     vscf_ctr_drbg_impl_t *rng = vscf_ctr_drbg_new();
     vscf_ctr_drbg_setup_defaults(rng);
@@ -335,7 +335,6 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
 
     pb_istream_t stream = pb_istream_from_buffer(enrollment_response.bytes, enrollment_response.len);
 
-    // TODO: Check error
     bool pb_status = pb_decode(&stream, EnrollmentResponse_fields, &response);
     VSCE_ASSERT(pb_status);
 

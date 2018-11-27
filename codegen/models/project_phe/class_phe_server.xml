@@ -30,6 +30,7 @@
 
     <method name="get enrollment">
         <argument name="server private key" class="data"/>
+        <argument name="server public key" class="data"/>
         <argument name="enrollment response" class="buffer" access="writeonly">
             <length method="enrollment record len"/>
         </argument>
