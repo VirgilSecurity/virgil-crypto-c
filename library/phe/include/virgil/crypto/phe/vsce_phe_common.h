@@ -77,7 +77,8 @@ enum {
     vsce_phe_common_PHE_DOMAIN_LENGTH = 4,
     vsce_phe_common_PHE_PRIVATE_KEY_LENGTH = 32,
     vsce_phe_common_PHE_PUBLIC_KEY_LENGTH = 65,
-    vsce_phe_common_PHE_ROTATION_TOKEN_LENGTH = 32
+    vsce_phe_common_PHE_ROTATION_TOKEN_LENGTH = 32,
+    vsce_phe_common_PHE_HASH_LEN = 32
 };
 
 

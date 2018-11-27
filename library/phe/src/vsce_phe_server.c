@@ -346,8 +346,8 @@ vsce_phe_server_enrollment_response_len(vsce_phe_server_t *phe_server_ctx) {
 }
 
 VSCE_PUBLIC vsce_error_t
-vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key, vsc_data_t server_public_key,
-        vsc_buffer_t *enrollment_response) {
+vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
+        vsc_data_t server_public_key, vsc_buffer_t *enrollment_response) {
 
     VSCE_ASSERT_PTR(phe_server_ctx);
     VSCE_ASSERT(vsc_buffer_len(enrollment_response) == 0);
@@ -559,11 +559,19 @@ vsce_phe_server_prove_success(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
 
     VSCE_ASSERT_PTR(phe_server_ctx);
     VSCE_ASSERT(server_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT(server_public_key.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     VSCE_ASSERT_PTR(hs0);
     VSCE_ASSERT_PTR(hs1);
     VSCE_ASSERT_PTR(c0);
     VSCE_ASSERT_PTR(c1);
     VSCE_ASSERT_PTR(success_proof);
+
+    mbedtls_mpi x;
+    mbedtls_mpi_init(&x);
+
+    int mbedtls_status = 0;
+    mbedtls_status = mbedtls_mpi_read_binary(&x, server_private_key.bytes, server_private_key.len);
+    VSCE_ASSERT(mbedtls_status == 0);
 
     mbedtls_mpi blind_x;
     mbedtls_mpi_init(&blind_x);
@@ -575,7 +583,6 @@ vsce_phe_server_prove_success(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     mbedtls_ecp_point_init(&term2);
     mbedtls_ecp_point_init(&term3);
 
-    int mbedtls_status = 0;
     mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &term1, &blind_x, hs0, /* FIXME */ NULL, NULL);
     VSCE_ASSERT(mbedtls_status == 0);
     mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &term2, &blind_x, hs1, /* FIXME */ NULL, NULL);
@@ -583,19 +590,44 @@ vsce_phe_server_prove_success(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &term1, &blind_x, &phe_server_ctx->group.G, /* FIXME */ NULL, NULL);
     VSCE_ASSERT(mbedtls_status == 0);
 
-    //
-    //    challenge := hashZ(proofOk, kp.PublicKey, curveG.Marshal(), c0.Marshal(), c1.Marshal(), term1.Marshal(), term2.Marshal(), term3.Marshal())
-    //    res := gf.Add(blindX, gf.MulBytes(kp.PrivateKey, challenge))
-    //
-    //    return &ProofOfSuccess{
-    //        Term1: term1.Marshal(),
-    //            Term2: term2.Marshal(),
-    //                Term3: term3.Marshal(),
-    //                BlindX: res.Bytes(),
-    //    }
+    mbedtls_mpi challenge;
+    mbedtls_mpi_init(&challenge);
 
-    VSCE_UNUSED(server_private_key);
-    VSCE_UNUSED(server_public_key);
+    vsce_error_t status = vsce_SUCCESS;
+    status = vsce_phe_hash_hash_z_success(phe_server_ctx->phe_hash, server_public_key, c0, c1, &term1, &term2, &term3, &challenge);
+    VSCE_ASSERT(status == vsce_SUCCESS);
+
+    mbedtls_status = mbedtls_mpi_mul_mpi(&challenge, &challenge, &x);
+    VSCE_ASSERT(mbedtls_status == 0);
+    mbedtls_status = mbedtls_mpi_add_mpi(&blind_x, &blind_x, &challenge);
+    VSCE_ASSERT(mbedtls_status == 0);
+    mbedtls_status = mbedtls_mpi_mod_mpi(&blind_x, &blind_x, &phe_server_ctx->group.P);
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    size_t olen = 0;
+    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+                                                    success_proof->term_1, sizeof(success_proof->term_1));
+    VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT(olen == sizeof(success_proof->term_1));
+
+    olen = 0;
+    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+                                                    success_proof->term_2, sizeof(success_proof->term_2));
+    VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT(olen == sizeof(success_proof->term_2));
+
+    olen = 0;
+    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+                                                    success_proof->term_3, sizeof(success_proof->term_3));
+    VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT(olen == sizeof(success_proof->term_3));
+
+    mbedtls_status = mbedtls_mpi_write_binary(&blind_x, success_proof->blind_x, sizeof(success_proof->blind_x));
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    mbedtls_mpi_free(&x);
+
+    mbedtls_mpi_free(&challenge);
 
     mbedtls_ecp_point_free(&term1);
     mbedtls_ecp_point_free(&term2);
@@ -677,21 +709,28 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &term4, &blind_B, &phe_server_ctx->group.G, /* FIXME */ NULL, NULL);
     VSCE_ASSERT(mbedtls_status == 0);
 
-    // TODO:
-    //
-    //    a := r
-    //    b := minusRX
-    //
-    //    challenge := hashZ(proofError, kp.PublicKey, curveG.Marshal(), c0.Marshal(), c1.Marshal(), term1.Marshal(), term2.Marshal(), term3.Marshal(), term4.Marshal())
-    //
-    //    return c1, &ProofOfFail{
-    //        Term1: term1.Marshal(),
-    //            Term2: term2.Marshal(),
-    //                Term3: term3.Marshal(),
-    //                Term4: term4.Marshal(),
-    //                BlindA: gf.AddBytes(blindA, gf.Mul(challenge, a)).Bytes(),
-    //                BlindB: gf.AddBytes(blindB, gf.Mul(challenge, b)).Bytes(),
-    //    }, nil
+    mbedtls_mpi challenge_A, challenge_B;
+    mbedtls_mpi_init(&challenge_A);
+    mbedtls_mpi_init(&challenge_B);
+
+    vsce_error_t status = vsce_SUCCESS;
+    status = vsce_phe_hash_hash_z_failure(phe_server_ctx->phe_hash, server_public_key, c0, c1, &term1, &term2, &term3, &term4, &challenge_A);
+    VSCE_ASSERT(status == vsce_SUCCESS);
+    mbedtls_mpi_copy(&challenge_B, &challenge_A);
+
+    mbedtls_status = mbedtls_mpi_mul_mpi(&challenge_A, &challenge_A, &r);
+    VSCE_ASSERT(mbedtls_status == 0);
+    mbedtls_status = mbedtls_mpi_add_mpi(&blind_A, &blind_A, &challenge_A);
+    VSCE_ASSERT(mbedtls_status == 0);
+    mbedtls_status = mbedtls_mpi_mod_mpi(&blind_A, &blind_A, &phe_server_ctx->group.P);
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    mbedtls_status = mbedtls_mpi_mul_mpi(&challenge_B, &challenge_B, &minus_RX);
+    VSCE_ASSERT(mbedtls_status == 0);
+    mbedtls_status = mbedtls_mpi_add_mpi(&blind_B, &blind_B, &challenge_B);
+    VSCE_ASSERT(mbedtls_status == 0);
+    mbedtls_status = mbedtls_mpi_mod_mpi(&blind_B, &blind_B, &phe_server_ctx->group.P);
+    VSCE_ASSERT(mbedtls_status == 0);
 
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
@@ -722,8 +761,8 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     mbedtls_status = mbedtls_mpi_write_binary(&blind_B, failure_proof->blind_b, sizeof(failure_proof->blind_b));
     VSCE_ASSERT(mbedtls_status == 0);
 
-    VSCE_UNUSED(server_private_key);
-    VSCE_UNUSED(server_public_key);
+    mbedtls_mpi_free(&challenge_A);
+    mbedtls_mpi_free(&challenge_B);
 
     mbedtls_mpi_free(&blind_A);
     mbedtls_mpi_free(&blind_B);

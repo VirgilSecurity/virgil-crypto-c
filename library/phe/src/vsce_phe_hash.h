@@ -56,10 +56,12 @@
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -159,6 +161,16 @@ vsce_phe_hash_hs0(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t ns, mbedtls_ecp_poin
 
 VSCE_PUBLIC vsce_error_t
 vsce_phe_hash_hs1(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t ns, mbedtls_ecp_point *hs1);
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_hash_hash_z_success(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t server_public_key, const mbedtls_ecp_point *c0,
+        const mbedtls_ecp_point *c1, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2,
+        const mbedtls_ecp_point *term3, mbedtls_mpi *z);
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_hash_hash_z_failure(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t server_public_key, const mbedtls_ecp_point *c0,
+        const mbedtls_ecp_point *c1, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2,
+        const mbedtls_ecp_point *term3, const mbedtls_ecp_point *term4, mbedtls_mpi *z);
 
 
 // --------------------------------------------------------------------------

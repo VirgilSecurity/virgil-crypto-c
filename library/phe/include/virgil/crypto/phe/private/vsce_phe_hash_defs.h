@@ -87,6 +87,8 @@ struct vsce_phe_hash_t {
     //  Dependency to the class 'simple swu'.
     //
     vsce_simple_swu_t *simple_swu;
+
+    mbedtls_ecp_group group;
 };
 
 

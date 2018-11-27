@@ -67,13 +67,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Public integral constants.
-//
-enum {
-    vsce_simple_swu_HASH_LEN = 32
-};
-
-//
 //  Handle 'simple swu' context.
 //
 typedef struct vsce_simple_swu_t vsce_simple_swu_t;
