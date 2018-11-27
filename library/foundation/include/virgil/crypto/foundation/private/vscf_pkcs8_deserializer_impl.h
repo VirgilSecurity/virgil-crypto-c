@@ -60,7 +60,6 @@
 #include "vscf_impl_private.h"
 #include "vscf_pkcs8_deserializer.h"
 #include "vscf_impl.h"
-#include "vscf_pkcs8_der_deserializer.h"
 
 // clang-format on
 //  @end
@@ -94,9 +93,9 @@ struct vscf_pkcs8_deserializer_impl_t {
     //
     vscf_impl_t *asn1_reader;
     //
-    //  Implementation specific context.
+    //  Dependency to the interface 'key deserializer'.
     //
-    vscf_pkcs8_der_deserializer_impl_t *der_deserializer;
+    vscf_impl_t *der_deserializer;
 };
 
 

@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 import VirgilCryptoCommon
 
-/// Implements PKCS#8 key deserialzation from PEM or DER format.
+/// Implements PKCS#8 key deserialization from PEM format.
 @objc(VSCFPkcs8Deserializer) public class Pkcs8Deserializer: NSObject, Defaults, KeyDeserializer {
 
     /// Handle underlying C context.
@@ -71,6 +71,11 @@ import VirgilCryptoCommon
     @objc public func setAsn1Reader(asn1Reader: Asn1Reader) {
         vscf_pkcs8_deserializer_release_asn1_reader(self.c_ctx)
         vscf_pkcs8_deserializer_use_asn1_reader(self.c_ctx, asn1Reader.c_ctx)
+    }
+
+    @objc public func setDerDeserializer(derDeserializer: KeyDeserializer) {
+        vscf_pkcs8_deserializer_release_der_deserializer(self.c_ctx)
+        vscf_pkcs8_deserializer_use_der_deserializer(self.c_ctx, derDeserializer.c_ctx)
     }
 
     /// Setup predefined values to the uninitialized class dependencies.

@@ -60,6 +60,7 @@
 #include "vscf_key_serializer.h"
 #include "vscf_key_serializer_api.h"
 #include "vscf_asn1_writer.h"
+#include "vscf_key_serializer.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -157,8 +158,6 @@ vscf_pkcs8_serializer_init(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl) 
 
     pkcs8_serializer_impl->info = &info;
     pkcs8_serializer_impl->refcnt = 1;
-
-    vscf_pkcs8_serializer_init_ctx(pkcs8_serializer_impl);
 }
 
 //
@@ -181,8 +180,7 @@ vscf_pkcs8_serializer_cleanup(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_imp
     }
 
     vscf_pkcs8_serializer_release_asn1_writer(pkcs8_serializer_impl);
-
-    vscf_pkcs8_serializer_cleanup_ctx(pkcs8_serializer_impl);
+    vscf_pkcs8_serializer_release_der_serializer(pkcs8_serializer_impl);
 
     vscf_zeroize(pkcs8_serializer_impl, sizeof(vscf_pkcs8_serializer_impl_t));
 }
@@ -302,6 +300,50 @@ vscf_pkcs8_serializer_release_asn1_writer(vscf_pkcs8_serializer_impl_t *pkcs8_se
     VSCF_ASSERT_PTR(pkcs8_serializer_impl);
 
     vscf_impl_destroy(&pkcs8_serializer_impl->asn1_writer);
+}
+
+//
+//  Setup dependency to the interface 'key serializer' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_serializer_use_der_serializer(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl,
+        vscf_impl_t *der_serializer) {
+
+    VSCF_ASSERT_PTR(pkcs8_serializer_impl);
+    VSCF_ASSERT_PTR(der_serializer);
+    VSCF_ASSERT_PTR(pkcs8_serializer_impl->der_serializer == NULL);
+
+    VSCF_ASSERT(vscf_key_serializer_is_implemented(der_serializer));
+
+    pkcs8_serializer_impl->der_serializer = vscf_impl_copy(der_serializer);
+}
+
+//
+//  Setup dependency to the interface 'key serializer' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_serializer_take_der_serializer(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl,
+        vscf_impl_t *der_serializer) {
+
+    VSCF_ASSERT_PTR(pkcs8_serializer_impl);
+    VSCF_ASSERT_PTR(der_serializer);
+    VSCF_ASSERT_PTR(pkcs8_serializer_impl->der_serializer == NULL);
+
+    VSCF_ASSERT(vscf_key_serializer_is_implemented(der_serializer));
+
+    pkcs8_serializer_impl->der_serializer = der_serializer;
+}
+
+//
+//  Release dependency to the interface 'key serializer'.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_serializer_release_der_serializer(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl) {
+
+    VSCF_ASSERT_PTR(pkcs8_serializer_impl);
+
+    vscf_impl_destroy(&pkcs8_serializer_impl->der_serializer);
 }
 
 static const vscf_api_t *

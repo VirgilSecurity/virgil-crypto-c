@@ -60,7 +60,6 @@
 #include "vscf_impl_private.h"
 #include "vscf_pkcs8_serializer.h"
 #include "vscf_impl.h"
-#include "vscf_pkcs8_der_serializer.h"
 
 // clang-format on
 //  @end
@@ -94,9 +93,9 @@ struct vscf_pkcs8_serializer_impl_t {
     //
     vscf_impl_t *asn1_writer;
     //
-    //  Implementation specific context.
+    //  Dependency to the interface 'key serializer'.
     //
-    vscf_pkcs8_der_serializer_impl_t *der_serializer;
+    vscf_impl_t *der_serializer;
 };
 
 

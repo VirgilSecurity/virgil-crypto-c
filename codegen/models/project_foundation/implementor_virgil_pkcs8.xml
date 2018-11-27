@@ -1,49 +1,9 @@
 <implementor name="virgil pkcs8" is_default="1">
-    Virgil Security implementation of the PKCS#8 key serialzation format.
-
-
-    <implementation name="pkcs8 serializer">
-        Implements PKCS#8 key serialzation to PEM format.
-
-        <interface name="defaults"/>
-        <interface name="key serializer"/>
-
-        <require interface="public key"/>
-        <require interface="private key"/>
-        <require class="oid"/>
-        <require class="asn1wr"/>
-        <require enum="asn1 tag"/>
-
-        <dependency name="asn1 writer" interface="asn1 writer"/>
-
-        <context>
-            <property name="der serializer" impl="pkcs8 der serializer"/>
-        </context>
-    </implementation>
-
-
-    <implementation name="pkcs8 deserializer">
-        Implements PKCS#8 key deserialzation from PEM or DER format.
-
-        <interface name="defaults"/>
-        <interface name="key deserializer"/>
-
-        <require interface="public key"/>
-        <require interface="private key"/>
-        <require class="oid"/>
-        <require class="asn1rd"/>
-        <require enum="asn1 tag"/>
-
-        <dependency name="asn1 reader" interface="asn1 reader"/>
-
-        <context>
-            <property name="der deserializer" impl="pkcs8 der deserializer"/>
-        </context>
-    </implementation>
+    Virgil Security implementation of the PKCS#8 key serialization format.
 
 
     <implementation name="pkcs8 der serializer">
-        Implements PKCS#8 key serialzation to DER format.
+        Implements PKCS#8 key serialization to DER format.
 
         <interface name="defaults"/>
         <interface name="key serializer"/>
@@ -59,7 +19,7 @@
 
 
     <implementation name="pkcs8 der deserializer">
-        Implements PKCS#8 key serialzation from DER format.
+        Implements PKCS#8 key deserialization from DER format.
 
         <interface name="defaults"/>
         <interface name="key deserializer"/>
@@ -71,5 +31,44 @@
         <require enum="asn1 tag"/>
 
         <dependency name="asn1 reader" interface="asn1 reader"/>
+    </implementation>
+
+
+    <implementation name="pkcs8 serializer">
+        Implements PKCS#8 key serialization to PEM format.
+
+        <interface name="defaults"/>
+        <interface name="key serializer"/>
+
+        <require interface="public key"/>
+        <require interface="private key"/>
+        <require class="base64"/>
+        <require class="asn1wr"/>
+        <require class="pem"/>
+        <require class="pem title"/>
+        <require impl="pkcs8 der serializer"/>
+        <require header="mbedtls/pem.h"/>
+
+        <dependency name="asn1 writer" interface="asn1 writer"/>
+        <dependency name="der serializer" interface="key serializer"/>
+    </implementation>
+
+
+    <implementation name="pkcs8 deserializer">
+        Implements PKCS#8 key deserialization from PEM format.
+
+        <interface name="defaults"/>
+        <interface name="key deserializer"/>
+
+        <require interface="public key"/>
+        <require interface="private key"/>
+        <require class="base64"/>
+        <require class="asn1rd"/>
+        <require class="pem"/>
+        <require class="pem title"/>
+        <require impl="pkcs8 der deserializer"/>
+
+        <dependency name="asn1 reader" interface="asn1 reader"/>
+        <dependency name="der deserializer" interface="key deserializer"/>
     </implementation>
 </implementor>

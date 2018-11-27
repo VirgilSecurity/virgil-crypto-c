@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 import VirgilCryptoCommon
 
-/// Implements PKCS#8 key serialzation from DER format.
+/// Implements PKCS#8 key deserialization from DER format.
 @objc(VSCFPkcs8DerDeserializer) public class Pkcs8DerDeserializer: NSObject, Defaults, KeyDeserializer {
 
     /// Handle underlying C context.
