@@ -70,7 +70,7 @@ import VirgilCryptoCommon
         return pem
     }
 
-    /// Return length in bytes required to hold unwrapped ninary.
+    /// Return length in bytes required to hold unwrapped binary.
     @objc public static func unwrappedLen(pemLen: Int) -> Int {
         let proxyResult = vscf_pem_unwrapped_len(pemLen)
 
@@ -100,7 +100,7 @@ import VirgilCryptoCommon
         return data
     }
 
-    /// Returns PEM title if PEM data is valid, otherwise - epmty data.
+    /// Returns PEM title if PEM data is valid, otherwise - empty data.
     @objc public static func title(pem: Data) -> Data {
         let proxyResult = pem.withUnsafeBytes({ (pemPointer: UnsafePointer<byte>) in
             return vscf_pem_title(vsc_data(pemPointer, pem.count))

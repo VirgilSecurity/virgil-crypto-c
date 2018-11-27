@@ -96,7 +96,7 @@ VSCF_PUBLIC void
 vscf_pem_wrap(const char *title, vsc_data_t data, vsc_buffer_t *pem);
 
 //
-//  Return length in bytes required to hold unwrapped ninary.
+//  Return length in bytes required to hold unwrapped binary.
 //
 VSCF_PUBLIC size_t
 vscf_pem_unwrapped_len(size_t pem_len);
@@ -108,7 +108,7 @@ VSCF_PUBLIC vscf_error_t
 vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data);
 
 //
-//  Returns PEM title if PEM data is valid, otherwise - epmty data.
+//  Returns PEM title if PEM data is valid, otherwise - empty data.
 //
 VSCF_PUBLIC vsc_data_t
 vscf_pem_title(vsc_data_t pem);
