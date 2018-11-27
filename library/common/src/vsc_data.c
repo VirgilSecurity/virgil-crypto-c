@@ -146,6 +146,32 @@ vsc_data_is_zero(vsc_data_t data_ctx) {
 }
 
 //
+//  Returns true if underlying byte array is empty.
+//
+VSC_PUBLIC bool
+vsc_data_is_empty(vsc_data_t data_ctx) {
+
+    return 0 == data_ctx.len;
+}
+
+//
+//  Return true if given datas are equal.
+//
+VSC_PUBLIC bool
+vsc_data_equal(vsc_data_t data_ctx, vsc_data_t rhs) {
+
+    VSC_ASSERT(vsc_data_is_valid(data_ctx));
+    VSC_ASSERT(vsc_data_is_valid(rhs));
+
+    if (data_ctx.len != rhs.len) {
+        return false;
+    }
+
+    bool is_equal = memcmp(data_ctx.bytes, rhs.bytes, rhs.len) == 0;
+    return is_equal;
+}
+
+//
 //  Return underlying data slice starting from beginning.
 //
 VSC_PUBLIC vsc_data_t
