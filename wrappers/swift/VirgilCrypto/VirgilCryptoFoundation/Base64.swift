@@ -41,10 +41,8 @@ import VirgilCryptoCommon
 @objc(VSCFBase64) public class Base64: NSObject {
 
     /// Calculate length in bytes required to hold an encoded base64 string.
-    @objc public static func encodedLen(data: Data) -> Int {
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Int in
-            return vscf_base64_encoded_len(vsc_data(dataPointer, data.count))
-        })
+    @objc public static func encodedLen(dataLen: Int) -> Int {
+        let proxyResult = vscf_base64_encoded_len(dataLen)
 
         return proxyResult
     }
@@ -52,7 +50,7 @@ import VirgilCryptoCommon
     /// Encode given data to the base64 format.
     /// Note, written buffer is NOT null-terminated.
     @objc public static func encode(data: Data) -> Data {
-        let strCount = Base64.encodedLen(data: data)
+        let strCount = Base64.encodedLen(dataLen: data.count)
         var str = Data(count: strCount)
         var strBuf = vsc_buffer_new()
         defer {
@@ -72,17 +70,15 @@ import VirgilCryptoCommon
     }
 
     /// Calculate length in bytes required to hold a decoded base64 string.
-    @objc public static func decodedLen(str: Data) -> Int {
-        let proxyResult = str.withUnsafeBytes({ (strPointer: UnsafePointer<byte>) -> Int in
-            return vscf_base64_decoded_len(vsc_data(strPointer, str.count))
-        })
+    @objc public static func decodedLen(strLen: Int) -> Int {
+        let proxyResult = vscf_base64_decoded_len(strLen)
 
         return proxyResult
     }
 
     /// Decode given data from the base64 format.
     @objc public static func decode(str: Data) throws -> Data {
-        let dataCount = Base64.decodedLen(str: str)
+        let dataCount = Base64.decodedLen(strLen: str.count)
         var data = Data(count: dataCount)
         var dataBuf = vsc_buffer_new()
         defer {

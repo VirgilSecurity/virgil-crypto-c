@@ -85,7 +85,7 @@ extern "C" {
 //  Return length in bytes required to hold wrapped PEM format.
 //
 VSCF_PUBLIC size_t
-vscf_pem_wrapped_len(const char *title, vsc_data_t data);
+vscf_pem_wrapped_len(const char *title, size_t data_len);
 
 //
 //  Takes binary data and wraps it to the simple PEM format - no
@@ -99,7 +99,7 @@ vscf_pem_wrap(const char *title, vsc_data_t data, vsc_buffer_t *pem);
 //  Return length in bytes required to hold unwrapped ninary.
 //
 VSCF_PUBLIC size_t
-vscf_pem_unwrapped_len(vsc_data_t pem);
+vscf_pem_unwrapped_len(size_t pem_len);
 
 //
 //  Takes PEM data and extract binary data from it.

@@ -52,7 +52,7 @@ const vsc_data_t test_pem_NO_HEADER = {
     (const byte*)test_pem_NO_HEADER_STR, strlen(test_pem_NO_HEADER_STR)
 };
 
-const char test_pem_HEADER_WITHOUT_TARILING_DASHES_STR[] =
+const char test_pem_HEADER_WITHOUT_TRAILING_DASHES_STR[] =
         "-----BEGIN PUBLIC KEY\n"
         "MIIBITANBgkqhkiG9w0BAQEFAAOCAQ4AMIIBCQKCAQBTfMfo+0sJdXOfP/YT0BqY\n"
         "1QOeuFnA/YsB33KmNnPvrRIcM3RvKhwb5DmZz8VF+riXVpExrn63YBPoesMnB6nJ\n"
@@ -62,8 +62,8 @@ const char test_pem_HEADER_WITHOUT_TARILING_DASHES_STR[] =
         "TuH3k+jQM9lFmxRqr/mXHcHHJ0COlyKpHSeuO7MVHpeux/NgViKg44uLtOpG5hDr\n"
         "AgMBAAE=\n"
         "-----END PUBLIC KEY-----";
-const vsc_data_t test_pem_HEADER_WITHOUT_TARILING_DASHES = {
-    (const byte*)test_pem_HEADER_WITHOUT_TARILING_DASHES_STR, strlen(test_pem_HEADER_WITHOUT_TARILING_DASHES_STR)
+const vsc_data_t test_pem_HEADER_WITHOUT_TRAILING_DASHES = {
+    (const byte*)test_pem_HEADER_WITHOUT_TRAILING_DASHES_STR, strlen(test_pem_HEADER_WITHOUT_TRAILING_DASHES_STR)
 };
 
 const char test_pem_NO_FOOTER_STR[] =
@@ -79,7 +79,7 @@ const vsc_data_t test_pem_NO_FOOTER = {
     (const byte*)test_pem_NO_FOOTER_STR, strlen(test_pem_NO_FOOTER_STR)
 };
 
-const char test_pem_FOOTER_WITHOUT_TARILING_DASHES_STR[] =
+const char test_pem_FOOTER_WITHOUT_TRAILING_DASHES_STR[] =
         "-----BEGIN PUBLIC KEY-----\n"
        "MIIBITANBgkqhkiG9w0BAQEFAAOCAQ4AMIIBCQKCAQBTfMfo+0sJdXOfP/YT0BqY\n"
        "1QOeuFnA/YsB33KmNnPvrRIcM3RvKhwb5DmZz8VF+riXVpExrn63YBPoesMnB6nJ\n"
@@ -89,8 +89,8 @@ const char test_pem_FOOTER_WITHOUT_TARILING_DASHES_STR[] =
        "TuH3k+jQM9lFmxRqr/mXHcHHJ0COlyKpHSeuO7MVHpeux/NgViKg44uLtOpG5hDr\n"
        "AgMBAAE=\n"
        "-----END PUBLIC KEY";
-const vsc_data_t test_pem_FOOTER_WITHOUT_TARILING_DASHES = {
-    (const byte*)test_pem_FOOTER_WITHOUT_TARILING_DASHES_STR, strlen(test_pem_FOOTER_WITHOUT_TARILING_DASHES_STR)
+const vsc_data_t test_pem_FOOTER_WITHOUT_TRAILING_DASHES = {
+    (const byte*)test_pem_FOOTER_WITHOUT_TRAILING_DASHES_STR, strlen(test_pem_FOOTER_WITHOUT_TRAILING_DASHES_STR)
 };
 
 const char test_pem_wrapped_ONELINE_STR[] =

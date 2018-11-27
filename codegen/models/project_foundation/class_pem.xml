@@ -32,7 +32,7 @@
         Return length in bytes required to hold wrapped PEM format.
 
         <argument name="title" type="string"/>
-        <argument name="data" class="data"/>
+        <argument name="data len" type="size"/>
 
         <return type="size"/>
     </method>
@@ -48,7 +48,7 @@
         <argument name="pem" class="buffer">
             <length method="wrapped len">
                 <proxy argument="title" to="title"/>
-                <proxy argument="data" to="data"/>
+                <proxy argument="data" to="data len" cast="data_length"/>
             </length>
         </argument>
     </method>
@@ -57,7 +57,7 @@
     <method name="unwrapped len">
         Return length in bytes required to hold unwrapped ninary.
 
-        <argument name="pem" class="data"/>
+        <argument name="pem len" type="size"/>
 
         <return type="size"/>
     </method>
@@ -69,7 +69,7 @@
         <argument name="pem" class="data"/>
         <argument name="data" class="buffer">
             <length method="unwrapped len">
-                <proxy argument="pem" to="pem"/>
+                <proxy argument="pem" to="pem len" cast="data_length"/>
             </length>
         </argument>
 

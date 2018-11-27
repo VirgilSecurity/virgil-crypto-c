@@ -41,10 +41,8 @@ import VirgilCryptoCommon
 @objc(VSCFPem) public class Pem: NSObject {
 
     /// Return length in bytes required to hold wrapped PEM format.
-    @objc public static func wrappedLen(title: String, data: Data) -> Int {
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Int in
-            return vscf_pem_wrapped_len(title, vsc_data(dataPointer, data.count))
-        })
+    @objc public static func wrappedLen(title: String, dataLen: Int) -> Int {
+        let proxyResult = vscf_pem_wrapped_len(title, dataLen)
 
         return proxyResult
     }
@@ -53,7 +51,7 @@ import VirgilCryptoCommon
     /// additional information just header-base64-footer.
     /// Note, written buffer is NOT null-terminated.
     @objc public static func wrap(title: String, data: Data) -> Data {
-        let pemCount = Pem.wrappedLen(title: title, data: data)
+        let pemCount = Pem.wrappedLen(title: title, dataLen: data.count)
         var pem = Data(count: pemCount)
         var pemBuf = vsc_buffer_new()
         defer {
@@ -73,17 +71,15 @@ import VirgilCryptoCommon
     }
 
     /// Return length in bytes required to hold unwrapped ninary.
-    @objc public static func unwrappedLen(pem: Data) -> Int {
-        let proxyResult = pem.withUnsafeBytes({ (pemPointer: UnsafePointer<byte>) -> Int in
-            return vscf_pem_unwrapped_len(vsc_data(pemPointer, pem.count))
-        })
+    @objc public static func unwrappedLen(pemLen: Int) -> Int {
+        let proxyResult = vscf_pem_unwrapped_len(pemLen)
 
         return proxyResult
     }
 
     /// Takes PEM data and extract binary data from it.
     @objc public static func unwrap(pem: Data) throws -> Data {
-        let dataCount = Pem.unwrappedLen(pem: pem)
+        let dataCount = Pem.unwrappedLen(pemLen: pem.count)
         var data = Data(count: dataCount)
         var dataBuf = vsc_buffer_new()
         defer {

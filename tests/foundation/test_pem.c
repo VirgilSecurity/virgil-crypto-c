@@ -50,7 +50,7 @@
 void
 test__unwrap__broken_pem_no_header__returns_error_bad_pem(void) {
 
-    vsc_buffer_t *data = vsc_buffer_new_with_capacity(vscf_pem_unwrapped_len(test_pem_NO_HEADER));
+    vsc_buffer_t *data = vsc_buffer_new_with_capacity(vscf_pem_unwrapped_len(test_pem_NO_HEADER.len));
 
     vscf_error_t status = vscf_pem_unwrap(test_pem_NO_HEADER, data);
     TEST_ASSERT_EQUAL(vscf_error_BAD_PEM, status);
@@ -61,9 +61,10 @@ test__unwrap__broken_pem_no_header__returns_error_bad_pem(void) {
 void
 test__unwrap__broken_pem_header_without_tariling_dashes__returns_error_bad_pem(void) {
 
-    vsc_buffer_t *data = vsc_buffer_new_with_capacity(vscf_pem_unwrapped_len(test_pem_HEADER_WITHOUT_TARILING_DASHES));
+    vsc_buffer_t *data =
+            vsc_buffer_new_with_capacity(vscf_pem_unwrapped_len(test_pem_HEADER_WITHOUT_TRAILING_DASHES.len));
 
-    vscf_error_t status = vscf_pem_unwrap(test_pem_HEADER_WITHOUT_TARILING_DASHES, data);
+    vscf_error_t status = vscf_pem_unwrap(test_pem_HEADER_WITHOUT_TRAILING_DASHES, data);
     TEST_ASSERT_EQUAL(vscf_error_BAD_PEM, status);
 
     vsc_buffer_destroy(&data);
@@ -73,7 +74,7 @@ test__unwrap__broken_pem_header_without_tariling_dashes__returns_error_bad_pem(v
 void
 test__unwrap__broken_pem_no_footer__returns_error_bad_pem(void) {
 
-    vsc_buffer_t *data = vsc_buffer_new_with_capacity(vscf_pem_unwrapped_len(test_pem_NO_FOOTER));
+    vsc_buffer_t *data = vsc_buffer_new_with_capacity(vscf_pem_unwrapped_len(test_pem_NO_FOOTER.len));
 
     vscf_error_t status = vscf_pem_unwrap(test_pem_NO_FOOTER, data);
     TEST_ASSERT_EQUAL(vscf_error_BAD_PEM, status);
@@ -85,9 +86,10 @@ test__unwrap__broken_pem_no_footer__returns_error_bad_pem(void) {
 void
 test__unwrap__broken_pem_footer_without_tariling_dashes__returns_error_bad_pem(void) {
 
-    vsc_buffer_t *data = vsc_buffer_new_with_capacity(vscf_pem_unwrapped_len(test_pem_FOOTER_WITHOUT_TARILING_DASHES));
+    vsc_buffer_t *data =
+            vsc_buffer_new_with_capacity(vscf_pem_unwrapped_len(test_pem_FOOTER_WITHOUT_TRAILING_DASHES.len));
 
-    vscf_error_t status = vscf_pem_unwrap(test_pem_FOOTER_WITHOUT_TARILING_DASHES, data);
+    vscf_error_t status = vscf_pem_unwrap(test_pem_FOOTER_WITHOUT_TRAILING_DASHES, data);
     TEST_ASSERT_EQUAL(vscf_error_BAD_PEM, status);
 
     vsc_buffer_destroy(&data);
@@ -97,7 +99,7 @@ test__unwrap__broken_pem_footer_without_tariling_dashes__returns_error_bad_pem(v
 void
 test__unwrap__valid_pem_oneline_body__returns_unwrapped_data(void) {
 
-    vsc_buffer_t *data = vsc_buffer_new_with_capacity(vscf_pem_unwrapped_len(test_pem_wrapped_ONELINE));
+    vsc_buffer_t *data = vsc_buffer_new_with_capacity(vscf_pem_unwrapped_len(test_pem_wrapped_ONELINE.len));
 
     vscf_error_t status = vscf_pem_unwrap(test_pem_wrapped_ONELINE, data);
     TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
@@ -110,7 +112,7 @@ test__unwrap__valid_pem_oneline_body__returns_unwrapped_data(void) {
 void
 test__unwrap__valid_pem_multiline_body__returns_unwrapped_data(void) {
 
-    vsc_buffer_t *data = vsc_buffer_new_with_capacity(vscf_pem_unwrapped_len(test_pem_wrapped_MULTILINE));
+    vsc_buffer_t *data = vsc_buffer_new_with_capacity(vscf_pem_unwrapped_len(test_pem_wrapped_MULTILINE.len));
 
     vscf_error_t status = vscf_pem_unwrap(test_pem_wrapped_MULTILINE, data);
     TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
@@ -122,7 +124,8 @@ test__unwrap__valid_pem_multiline_body__returns_unwrapped_data(void) {
 void
 test__wrap__data_that_fits_oneline__returns_oneline_body_pem(void) {
 
-    vsc_buffer_t *pem = vsc_buffer_new_with_capacity(vscf_pem_wrapped_len(test_pem_TITLE, test_pem_unwrapped_ONELINE));
+    vsc_buffer_t *pem =
+            vsc_buffer_new_with_capacity(vscf_pem_wrapped_len(test_pem_TITLE, test_pem_unwrapped_ONELINE.len));
 
     vscf_pem_wrap(test_pem_TITLE, test_pem_unwrapped_ONELINE, pem);
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_pem_wrapped_ONELINE, pem);
@@ -134,7 +137,7 @@ void
 test__wrap__data_that_fits_multiline__returns_multiline_body_pem(void) {
 
     vsc_buffer_t *pem =
-            vsc_buffer_new_with_capacity(vscf_pem_wrapped_len(test_pem_TITLE, test_pem_unwrapped_MULTILINE));
+            vsc_buffer_new_with_capacity(vscf_pem_wrapped_len(test_pem_TITLE, test_pem_unwrapped_MULTILINE.len));
 
     vscf_pem_wrap(test_pem_TITLE, test_pem_unwrapped_MULTILINE, pem);
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_pem_wrapped_MULTILINE, pem);

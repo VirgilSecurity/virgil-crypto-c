@@ -49,7 +49,7 @@
 void
 test__encoded_len__empty__returns_0(void) {
 
-    size_t len = vscf_base64_encoded_len(test_base64_DECODED_EMPTY);
+    size_t len = vscf_base64_encoded_len(test_base64_DECODED_EMPTY.len);
     TEST_ASSERT_EQUAL(0, len);
 }
 
@@ -57,7 +57,7 @@ test__encoded_len__empty__returns_0(void) {
 void
 test__encode__empty__returns_empty(void) {
 
-    vsc_buffer_t *encoded = vsc_buffer_new_with_capacity(vscf_base64_encoded_len(test_base64_DECODED_EMPTY));
+    vsc_buffer_t *encoded = vsc_buffer_new_with_capacity(vscf_base64_encoded_len(test_base64_DECODED_EMPTY.len));
 
     vscf_base64_encode(test_base64_DECODED_EMPTY, encoded);
     TEST_ASSERT_EQUAL(0, vsc_buffer_len(encoded));
@@ -67,7 +67,7 @@ test__encode__empty__returns_empty(void) {
 
 void
 test__decode__encoded_empty__returns_empty(void) {
-    vsc_buffer_t *decoded = vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_EMPTY));
+    vsc_buffer_t *decoded = vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_EMPTY.len));
 
     vscf_error_t status = vscf_base64_decode(test_base64_ENCODED_EMPTY, decoded);
     TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
@@ -79,14 +79,14 @@ test__decode__encoded_empty__returns_empty(void) {
 void
 test__encoded_len__f__returns_5(void) {
 
-    size_t len = vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_F);
+    size_t len = vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_F.len);
     TEST_ASSERT_EQUAL(5, len);
 }
 
 void
 test__encode__f__returns_encoded_f(void) {
 
-    vsc_buffer_t *encoded = vsc_buffer_new_with_capacity(vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_F));
+    vsc_buffer_t *encoded = vsc_buffer_new_with_capacity(vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_F.len));
 
     vscf_base64_encode(test_base64_DECODED_LOWERCASE_F, encoded);
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_base64_ENCODED_LOWERCASE_F, encoded);
@@ -96,7 +96,7 @@ test__encode__f__returns_encoded_f(void) {
 
 void
 test__decode__encoded_f__returns_f(void) {
-    vsc_buffer_t *decoded = vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_LOWERCASE_F));
+    vsc_buffer_t *decoded = vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_LOWERCASE_F.len));
 
     vscf_error_t status = vscf_base64_decode(test_base64_ENCODED_LOWERCASE_F, decoded);
     TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
@@ -108,14 +108,14 @@ test__decode__encoded_f__returns_f(void) {
 void
 test__encoded_len__fo__returns_5(void) {
 
-    size_t len = vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FO);
+    size_t len = vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FO.len);
     TEST_ASSERT_EQUAL(5, len);
 }
 
 void
 test__encode__fo__returns_encoded_fo(void) {
 
-    vsc_buffer_t *encoded = vsc_buffer_new_with_capacity(vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FO));
+    vsc_buffer_t *encoded = vsc_buffer_new_with_capacity(vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FO.len));
 
     vscf_base64_encode(test_base64_DECODED_LOWERCASE_FO, encoded);
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_base64_ENCODED_LOWERCASE_FO, encoded);
@@ -125,7 +125,7 @@ test__encode__fo__returns_encoded_fo(void) {
 
 void
 test__decode__encoded_fo__returns_fo(void) {
-    vsc_buffer_t *decoded = vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_LOWERCASE_FO));
+    vsc_buffer_t *decoded = vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_LOWERCASE_FO.len));
 
     vscf_error_t status = vscf_base64_decode(test_base64_ENCODED_LOWERCASE_FO, decoded);
     TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
@@ -137,14 +137,15 @@ test__decode__encoded_fo__returns_fo(void) {
 void
 test__encoded_len__foo__returns_5(void) {
 
-    size_t len = vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FOO);
+    size_t len = vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FOO.len);
     TEST_ASSERT_EQUAL(5, len);
 }
 
 void
 test__encode__foo__returns_encoded_foo(void) {
 
-    vsc_buffer_t *encoded = vsc_buffer_new_with_capacity(vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FOO));
+    vsc_buffer_t *encoded =
+            vsc_buffer_new_with_capacity(vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FOO.len));
 
     vscf_base64_encode(test_base64_DECODED_LOWERCASE_FOO, encoded);
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_base64_ENCODED_LOWERCASE_FOO, encoded);
@@ -154,7 +155,8 @@ test__encode__foo__returns_encoded_foo(void) {
 
 void
 test__decode__encoded_foo__returns_foo(void) {
-    vsc_buffer_t *decoded = vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_LOWERCASE_FOO));
+    vsc_buffer_t *decoded =
+            vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_LOWERCASE_FOO.len));
 
     vscf_error_t status = vscf_base64_decode(test_base64_ENCODED_LOWERCASE_FOO, decoded);
     TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
@@ -166,14 +168,15 @@ test__decode__encoded_foo__returns_foo(void) {
 void
 test__encoded_len__foob__returns_9(void) {
 
-    size_t len = vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FOOB);
+    size_t len = vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FOOB.len);
     TEST_ASSERT_EQUAL(9, len);
 }
 
 void
 test__encode__foob__returns_encoded_foob(void) {
 
-    vsc_buffer_t *encoded = vsc_buffer_new_with_capacity(vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FOOB));
+    vsc_buffer_t *encoded =
+            vsc_buffer_new_with_capacity(vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FOOB.len));
 
     vscf_base64_encode(test_base64_DECODED_LOWERCASE_FOOB, encoded);
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_base64_ENCODED_LOWERCASE_FOOB, encoded);
@@ -183,7 +186,8 @@ test__encode__foob__returns_encoded_foob(void) {
 
 void
 test__decode__encoded_foob__returns_foob(void) {
-    vsc_buffer_t *decoded = vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_LOWERCASE_FOOB));
+    vsc_buffer_t *decoded =
+            vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_LOWERCASE_FOOB.len));
 
     vscf_error_t status = vscf_base64_decode(test_base64_ENCODED_LOWERCASE_FOOB, decoded);
     TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
@@ -195,14 +199,15 @@ test__decode__encoded_foob__returns_foob(void) {
 void
 test__encoded_len__fooba__returns_9(void) {
 
-    size_t len = vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FOOBA);
+    size_t len = vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FOOBA.len);
     TEST_ASSERT_EQUAL(9, len);
 }
 
 void
 test__encode__fooba__returns_encoded_fooba(void) {
 
-    vsc_buffer_t *encoded = vsc_buffer_new_with_capacity(vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FOOBA));
+    vsc_buffer_t *encoded =
+            vsc_buffer_new_with_capacity(vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FOOBA.len));
 
     vscf_base64_encode(test_base64_DECODED_LOWERCASE_FOOBA, encoded);
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_base64_ENCODED_LOWERCASE_FOOBA, encoded);
@@ -212,7 +217,8 @@ test__encode__fooba__returns_encoded_fooba(void) {
 
 void
 test__decode__encoded_fooba__returns_fooba(void) {
-    vsc_buffer_t *decoded = vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_LOWERCASE_FOOBA));
+    vsc_buffer_t *decoded =
+            vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_LOWERCASE_FOOBA.len));
 
     vscf_error_t status = vscf_base64_decode(test_base64_ENCODED_LOWERCASE_FOOBA, decoded);
     TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
@@ -224,14 +230,15 @@ test__decode__encoded_fooba__returns_fooba(void) {
 void
 test__encoded_len__foobar__returns_9(void) {
 
-    size_t len = vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FOOBAR);
+    size_t len = vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FOOBAR.len);
     TEST_ASSERT_EQUAL(9, len);
 }
 
 void
 test__encode__foobar__returns_encoded_foobar(void) {
 
-    vsc_buffer_t *encoded = vsc_buffer_new_with_capacity(vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FOOBAR));
+    vsc_buffer_t *encoded =
+            vsc_buffer_new_with_capacity(vscf_base64_encoded_len(test_base64_DECODED_LOWERCASE_FOOBAR.len));
 
     vscf_base64_encode(test_base64_DECODED_LOWERCASE_FOOBAR, encoded);
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_base64_ENCODED_LOWERCASE_FOOBAR, encoded);
@@ -241,7 +248,8 @@ test__encode__foobar__returns_encoded_foobar(void) {
 
 void
 test__decode__encoded_foobar__returns_foobar(void) {
-    vsc_buffer_t *decoded = vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_LOWERCASE_FOOBAR));
+    vsc_buffer_t *decoded =
+            vsc_buffer_new_with_capacity(vscf_base64_decoded_len(test_base64_ENCODED_LOWERCASE_FOOBAR.len));
 
     vscf_error_t status = vscf_base64_decode(test_base64_ENCODED_LOWERCASE_FOOBAR, decoded);
     TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
