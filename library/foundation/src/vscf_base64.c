@@ -80,7 +80,7 @@
 VSCF_PUBLIC size_t
 vscf_base64_encoded_len(size_t data_len) {
 
-    size_t len = 4 * (size_t)ceil((double)data_len / 3);
+    size_t len = 4 * VSCF_CEIL(data_len, 3);
 
     if (len > 0) {
         len += 1;
@@ -114,7 +114,12 @@ vscf_base64_encode(vsc_data_t data, vsc_buffer_t *str) {
 VSCF_PUBLIC size_t
 vscf_base64_decoded_len(size_t str_len) {
 
-    size_t len = 3 * (size_t)ceil((double)str_len / 4);
+    size_t len = 3 * VSCF_CEIL(str_len, 4);
+
+    if (len > 0) {
+        len += 1;
+    }
+
     return len;
 }
 

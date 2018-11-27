@@ -11,7 +11,6 @@
     <c_include file="string.h" is_system="1" />
     <c_include file="stdlib.h" is_system="1" />
     <c_include file="stdbool.h" is_system="1" />
-    <c_include file="math.h" is_system="1" />
 
     <require module="platform"/>
 
@@ -92,7 +91,7 @@
         Custom implementation of the number ceil algorithm.
 
         <code>
-            #define .(c_global_macros_ceil) (x,y) (1 + (((x) - 1) / (y)))
+            #define .(c_global_macros_ceil) (x,y) (0 == (x) ? 0 : 1 + (((x) - 1) / (y)))
         </code>
     </macros>
 

@@ -93,9 +93,9 @@ vscf_pem_wrapped_len(const char *title, size_t data_len) {
     size_t header_len = strlen(k_header_begin) + strlen(title) + strlen(k_title_tail) + newline_len;
     size_t footer_len = strlen(k_footer_begin) + strlen(title) + strlen(k_title_tail) + newline_len;
     size_t base64_len = vscf_base64_encoded_len(data_len);
-    size_t base64_newlines_len = newline_len * (size_t)ceil(base64_len / k_line_len_max);
+    size_t base64_newlines_len = newline_len * VSCF_CEIL(base64_len, k_line_len_max);
 
-    return header_len + footer_len + base64_len + base64_newlines_len;
+    return header_len + footer_len + base64_len + base64_newlines_len + 1 /* terminating zero*/;
 }
 
 //
@@ -146,10 +146,12 @@ vscf_pem_wrap(const char *title, vsc_data_t data, vsc_buffer_t *pem) {
     vsc_buffer_write_str(pem, k_footer_begin);
     vsc_buffer_write_str(pem, title);
     vsc_buffer_write_str(pem, k_title_tail);
+
+    *vsc_buffer_ptr(pem) = 0x00;
 }
 
 //
-//  Return length in bytes required to hold unwrapped ninary.
+//  Return length in bytes required to hold unwrapped binary.
 //
 VSCF_PUBLIC size_t
 vscf_pem_unwrapped_len(size_t pem_len) {
@@ -218,6 +220,7 @@ vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) {
     //  Decode body
     //
     vscf_error_t status = vscf_base64_decode(vsc_data_from_str(body_begin, footer_begin - body_begin), data);
+    *vsc_buffer_ptr(data) = 0x00;
 
     if (status != vscf_SUCCESS) {
         return vscf_error_BAD_PEM;
@@ -227,7 +230,7 @@ vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) {
 }
 
 //
-//  Returns PEM title if PEM data is valid, otherwise - epmty data.
+//  Returns PEM title if PEM data is valid, otherwise - empty data.
 //
 VSCF_PUBLIC vsc_data_t
 vscf_pem_title(vsc_data_t pem) {
