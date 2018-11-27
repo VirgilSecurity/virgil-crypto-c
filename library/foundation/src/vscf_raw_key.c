@@ -218,6 +218,7 @@ static void
 vscf_raw_key_cleanup_ctx(vscf_raw_key_t *raw_key_ctx) {
 
     VSCF_ASSERT_PTR(raw_key_ctx);
+    vsc_buffer_destroy(&raw_key_ctx->bytes);
 }
 
 //
@@ -272,15 +273,15 @@ vscf_raw_key_alg(vscf_raw_key_t *raw_key_ctx) {
 }
 
 //
-//  Return raw key bytes.
+//  Return raw key data.
 //
-VSCF_PUBLIC vsc_buffer_t *
-vscf_raw_key_bytes(vscf_raw_key_t *raw_key_ctx) {
+VSCF_PUBLIC vsc_data_t
+vscf_raw_key_data(vscf_raw_key_t *raw_key_ctx) {
 
     VSCF_ASSERT_PTR(raw_key_ctx);
     VSCF_ASSERT(raw_key_ctx->alg != vscf_key_alg_NONE);
     VSCF_ASSERT(raw_key_ctx->bytes != NULL);
     VSCF_ASSERT(vsc_buffer_is_valid(raw_key_ctx->bytes));
 
-    return vsc_buffer_copy(raw_key_ctx->bytes);
+    return vsc_buffer_data(raw_key_ctx->bytes);
 }

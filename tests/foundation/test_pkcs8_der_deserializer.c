@@ -64,6 +64,7 @@ test__deserialize_public_key__rsa2048__no_errors(void) {
     TEST_ASSERT_EQUAL(vscf_SUCCESS, error_ctx.error);
     TEST_ASSERT_NOT_NULL(raw_public_key);
 
+    vscf_raw_key_destroy(&raw_public_key);
     vscf_pkcs8_der_deserializer_destroy(&pkcs8);
 #else
     TEST_IGNORE_MESSAGE("VSCF_RSA_PUBLIC_KEY is disabled");
@@ -83,8 +84,9 @@ test__deserialize_public_key__rsa2048__equals_to_rsa_2048_public_key_pkcs1_der(v
 
     TEST_ASSERT_EQUAL(vscf_raw_key_alg(raw_public_key), vscf_key_alg_RSA);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_rsa_2048_PUBLIC_KEY_PKCS1, vscf_raw_key_bytes(raw_public_key));
+    TEST_ASSERT_EQUAL_DATA(test_rsa_2048_PUBLIC_KEY_PKCS1, vscf_raw_key_data(raw_public_key));
 
+    vscf_raw_key_destroy(&raw_public_key);
     vscf_pkcs8_der_deserializer_destroy(&pkcs8);
 #else
     TEST_IGNORE_MESSAGE("VSCF_RSA_PUBLIC_KEY is disabled");
@@ -105,6 +107,7 @@ test__deserialize_private_key__rsa2048__no_errors(void) {
     TEST_ASSERT_EQUAL(vscf_SUCCESS, error_ctx.error);
     TEST_ASSERT_NOT_NULL(raw_private_key);
 
+    vscf_raw_key_destroy(&raw_private_key);
     vscf_pkcs8_der_deserializer_destroy(&pkcs8);
 #else
     TEST_IGNORE_MESSAGE("VSCF_RSA_PRIVATE_KEY is disabled");
@@ -124,8 +127,9 @@ test__deserialize_private_key__rsa2048__equals_to_rsa_2048_private_key_pkcs1_der
 
     TEST_ASSERT_EQUAL(vscf_raw_key_alg(raw_private_key), vscf_key_alg_RSA);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_rsa_2048_PRIVATE_KEY_PKCS1, vscf_raw_key_bytes(raw_private_key));
+    TEST_ASSERT_EQUAL_DATA(test_rsa_2048_PRIVATE_KEY_PKCS1, vscf_raw_key_data(raw_private_key));
 
+    vscf_raw_key_destroy(&raw_private_key);
     vscf_pkcs8_der_deserializer_destroy(&pkcs8);
 #else
     TEST_IGNORE_MESSAGE("VSCF_RSA_PRIVATE_KEY is disabled");
