@@ -72,22 +72,6 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Provides initialization of the implementation specific context.
-//  Note, this method is called automatically when method vscf_pkcs8_deserializer_init() is called.
-//  Note, that context is already zeroed.
-//
-VSCF_PRIVATE void
-vscf_pkcs8_deserializer_init_ctx(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl);
-
-//
-//  Release resources of the implementation specific context.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-VSCF_PRIVATE void
-vscf_pkcs8_deserializer_cleanup_ctx(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

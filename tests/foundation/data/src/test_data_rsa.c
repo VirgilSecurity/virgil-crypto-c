@@ -1594,3 +1594,51 @@ const vsc_data_t test_rsa_2048_PRIVATE_KEY_PKCS8_DER = {
     test_rsa_2048_PRIVATE_KEY_PKCS8_DER_BYTES, sizeof(test_rsa_2048_PRIVATE_KEY_PKCS8_DER_BYTES)
 };
 
+const char test_rsa_2048_PUBLIC_KEY_PKCS8_PEM_STR[] =
+        "-----BEGIN PUBLIC KEY-----\n"
+        "MIIBITANBgkqhkiG9w0BAQEFAAOCAQ4AMIIBCQKCAQBTfMfo+0sJdXOfP/YT0BqY\n"
+        "1QOeuFnA/YsB33KmNnPvrRIcM3RvKhwb5DmZz8VF+riXVpExrn63YBPoesMnB6nJ\n"
+        "EPE6p5jPoF54cRtxa7XI86cLrdN+k3Ws91LB0Jap77rthIRyHp67CGX9DFVHCUYX\n"
+        "1xP4b5KjL0PW/TtS1YVcc4RQSq1/35XO/++Aau1rdevWULcz7u7qU0ee849ZxfaC\n"
+        "kHJKYu3QE9u27qVm/Vy0TnrNwCfkj322IN5+yrGHwxSYe63ky+HRndQ7DIbv+QDr\n"
+        "TuH3k+jQM9lFmxRqr/mXHcHHJ0COlyKpHSeuO7MVHpeux/NgViKg44uLtOpG5hDr\n"
+        "AgMBAAE=\n"
+        "-----END PUBLIC KEY-----";
+
+const vsc_data_t test_rsa_2048_PUBLIC_KEY_PKCS8_PEM = {
+    (const byte*)test_rsa_2048_PUBLIC_KEY_PKCS8_PEM_STR, sizeof(test_rsa_2048_PUBLIC_KEY_PKCS8_PEM_STR) - 1
+};
+
+const char test_rsa_2048_PRIVATE_KEY_PKCS8_PEM_STR[] =
+        "-----BEGIN PRIVATE KEY-----\n"
+        "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAFN8x+j7Swl1c58/\n"
+        "9hPQGpjVA564WcD9iwHfcqY2c++tEhwzdG8qHBvkOZnPxUX6uJdWkTGufrdgE+h6\n"
+        "wycHqckQ8TqnmM+gXnhxG3Frtcjzpwut036Tdaz3UsHQlqnvuu2EhHIenrsIZf0M\n"
+        "VUcJRhfXE/hvkqMvQ9b9O1LVhVxzhFBKrX/flc7/74Bq7Wt169ZQtzPu7upTR57z\n"
+        "j1nF9oKQckpi7dAT27bupWb9XLROes3AJ+SPfbYg3n7KsYfDFJh7reTL4dGd1DsM\n"
+        "hu/5AOtO4feT6NAz2UWbFGqv+ZcdwccnQI6XIqkdJ647sxUel67H82BWIqDji4u0\n"
+        "6kbmEOsCAwEAAQKCAQBIoKB3+UPJsrcmrkmv6rV4hrZjeRP7Y5Vtx6jBF1W8Bt9e\n"
+        "URTVL9jMGrpRKAIBYp76aIBeq+HoPFiVQVZLucrl8ysnT20MEgKc3Ch3fq/hZLTI\n"
+        "4CrATh9snKsNmBu5Mad3wHRHooOLST8P5464AUVMr/nbgZQbCZ8Gg7z7zmv5hDR/\n"
+        "wPO2k6SjVWh/1GSqconTTFuGaJXdQaq7VNCzQHR1Z0ac6qNvOSDfHDk8m4/Kgk4r\n"
+        "50GglNeSJZ1ctxqYHu1xJxgeYbkUfyVzmC16MccFsInDiB3ShasOjcd1JJzjr8zB\n"
+        "nOH7pGdrhN15BXqisOhype7Jg1fjGwtY3Mv2AdIhAoGBAKN5uP2zHXlTJWE7FHIs\n"
+        "kcLfW0sdeWj6GAPcV0ST8HJ6/qgqGoN2NTK0pEhJcdeJihebr/khmWx03ZILWgEZ\n"
+        "V0UcPF7gF4oOW1ZzxW1WDsVPyx4Y1qi9CxIV8CDLHe8S2wMl+TN/QDmnn8quM14G\n"
+        "lCNnWgAPH3M3/IYfCiRjVaDdAoGBAIK9b1jxIebI3KPWLCB5rn2t2NnxjGeKNuHZ\n"
+        "frpY1zktXGQbI+9PFy72RQJ/bfjq0OvaFUtyO5ghLdG/fEuQqoqtBv6r7qo/jLvg\n"
+        "LrjQ5bgZNWvObA9VniWf9P8RxFvqRt+r95g9BZq2rijCvGTl0zNelrKkRjcc8xkX\n"
+        "o3DwKjhnAoGAcCF5E4P9ro+qryPQJXSO0sVUIJTqB2iselF0BpUXM99Lt9uRbiTx\n"
+        "3oLrwK2oCbjM4N6oeNFkJHGQ3bEtnl1ccAorGsTJQKgSXJ1yiUmjPhI6d71/2CQ7\n"
+        "aL9lg4jvUmJzmZg9c+ZQDnv87hBJKbCHgjVNFYdKAkUf0HuQAF+mh30CgYBKn5PR\n"
+        "oXjnQJjnjxSKyMl3BOa0p3Grm7FtwfXaqWDXSvPkU7V0H6Gs9XY4UcHUhTsQk975\n"
+        "vE8Vq0J66SAqBX3CP7axYDOOy00p43DnnpywMvtR+HWnXwgwk5eEi4CXsiYX/xEI\n"
+        "vTPYthK8Q0LDGIcvV/sOJkPJq2V6Wgq5KOwAWwKBgQCUaUX4G9gT/Sn5naDucdmU\n"
+        "zDAl/HgayaMdc0lRpddlyaP3bTWlGLaATlx6HMlcLfTe/GkAhQosi63sHBqkUWqK\n"
+        "R7u+c5vnk/tjXs3mkorvaIQgqDO1T8pJJlRzrspRi2SnejwCCnZn6nbczx+FxWfr\n"
+        "vZRICLsXUifYKCE5k+gDAQ==\n"
+        "-----END PRIVATE KEY-----";
+
+const vsc_data_t test_rsa_2048_PRIVATE_KEY_PKCS8_PEM = {
+    (const byte*)test_rsa_2048_PRIVATE_KEY_PKCS8_PEM_STR, sizeof(test_rsa_2048_PRIVATE_KEY_PKCS8_PEM_STR) - 1
+};

@@ -55,10 +55,13 @@
 #include "vscf_memory.h"
 #include "vscf_public_key.h"
 #include "vscf_private_key.h"
-#include "vscf_oid.h"
+#include "vscf_base64.h"
 #include "vscf_asn1rd.h"
-#include "vscf_asn1_tag.h"
+#include "vscf_pem.h"
+#include "vscf_pem_title.h"
+#include "vscf_pkcs8_der_deserializer.h"
 #include "vscf_asn1_reader.h"
+#include "vscf_key_deserializer.h"
 #include "vscf_pkcs8_deserializer_impl.h"
 #include "vscf_pkcs8_deserializer_internal.h"
 
@@ -79,32 +82,6 @@
 // --------------------------------------------------------------------------
 //  @end
 
-
-//
-//  Provides initialization of the implementation specific context.
-//  Note, this method is called automatically when method vscf_pkcs8_deserializer_init() is called.
-//  Note, that context is already zeroed.
-//
-VSCF_PRIVATE void
-vscf_pkcs8_deserializer_init_ctx(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl) {
-
-    VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
-
-    pkcs8_deserializer_impl->der_deserializer = vscf_pkcs8_der_deserializer_new();
-}
-
-//
-//  Release resources of the implementation specific context.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-VSCF_PRIVATE void
-vscf_pkcs8_deserializer_cleanup_ctx(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl) {
-
-    VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
-
-    vscf_pkcs8_der_deserializer_destroy(&pkcs8_deserializer_impl->der_deserializer);
-}
 
 //
 //  Setup predefined values to the uninitialized class dependencies.

@@ -163,6 +163,27 @@ VSCF_PUBLIC void
 vscf_pkcs8_deserializer_release_asn1_reader(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl);
 
 //
+//  Setup dependency to the interface 'key deserializer' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_deserializer_use_der_deserializer(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl,
+        vscf_impl_t *der_deserializer);
+
+//
+//  Setup dependency to the interface 'key deserializer' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_deserializer_take_der_deserializer(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl,
+        vscf_impl_t *der_deserializer);
+
+//
+//  Release dependency to the interface 'key deserializer'.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_deserializer_release_der_deserializer(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl);
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t

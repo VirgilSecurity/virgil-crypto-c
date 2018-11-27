@@ -159,6 +159,27 @@ VSCF_PUBLIC void
 vscf_pkcs8_serializer_release_asn1_writer(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl);
 
 //
+//  Setup dependency to the interface 'key serializer' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_serializer_use_der_serializer(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl,
+        vscf_impl_t *der_serializer);
+
+//
+//  Setup dependency to the interface 'key serializer' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_serializer_take_der_serializer(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl,
+        vscf_impl_t *der_serializer);
+
+//
+//  Release dependency to the interface 'key serializer'.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_serializer_release_der_serializer(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl);
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t

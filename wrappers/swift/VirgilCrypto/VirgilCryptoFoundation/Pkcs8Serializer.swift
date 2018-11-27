@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 import VirgilCryptoCommon
 
-/// Implements PKCS#8 key serialzation to PEM format.
+/// Implements PKCS#8 key serialization to PEM format.
 @objc(VSCFPkcs8Serializer) public class Pkcs8Serializer: NSObject, Defaults, KeySerializer {
 
     /// Handle underlying C context.
@@ -71,6 +71,11 @@ import VirgilCryptoCommon
     @objc public func setAsn1Writer(asn1Writer: Asn1Writer) {
         vscf_pkcs8_serializer_release_asn1_writer(self.c_ctx)
         vscf_pkcs8_serializer_use_asn1_writer(self.c_ctx, asn1Writer.c_ctx)
+    }
+
+    @objc public func setDerSerializer(derSerializer: KeySerializer) {
+        vscf_pkcs8_serializer_release_der_serializer(self.c_ctx)
+        vscf_pkcs8_serializer_use_der_serializer(self.c_ctx, derSerializer.c_ctx)
     }
 
     /// Setup predefined values to the uninitialized class dependencies.

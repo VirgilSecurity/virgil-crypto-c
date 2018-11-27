@@ -60,6 +60,7 @@
 #include "vscf_key_deserializer.h"
 #include "vscf_key_deserializer_api.h"
 #include "vscf_asn1_reader.h"
+#include "vscf_key_deserializer.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -141,8 +142,6 @@ vscf_pkcs8_deserializer_init(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_
 
     pkcs8_deserializer_impl->info = &info;
     pkcs8_deserializer_impl->refcnt = 1;
-
-    vscf_pkcs8_deserializer_init_ctx(pkcs8_deserializer_impl);
 }
 
 //
@@ -165,8 +164,7 @@ vscf_pkcs8_deserializer_cleanup(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializ
     }
 
     vscf_pkcs8_deserializer_release_asn1_reader(pkcs8_deserializer_impl);
-
-    vscf_pkcs8_deserializer_cleanup_ctx(pkcs8_deserializer_impl);
+    vscf_pkcs8_deserializer_release_der_deserializer(pkcs8_deserializer_impl);
 
     vscf_zeroize(pkcs8_deserializer_impl, sizeof(vscf_pkcs8_deserializer_impl_t));
 }
@@ -288,6 +286,50 @@ vscf_pkcs8_deserializer_release_asn1_reader(vscf_pkcs8_deserializer_impl_t *pkcs
     VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
 
     vscf_impl_destroy(&pkcs8_deserializer_impl->asn1_reader);
+}
+
+//
+//  Setup dependency to the interface 'key deserializer' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_deserializer_use_der_deserializer(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl,
+        vscf_impl_t *der_deserializer) {
+
+    VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
+    VSCF_ASSERT_PTR(der_deserializer);
+    VSCF_ASSERT_PTR(pkcs8_deserializer_impl->der_deserializer == NULL);
+
+    VSCF_ASSERT(vscf_key_deserializer_is_implemented(der_deserializer));
+
+    pkcs8_deserializer_impl->der_deserializer = vscf_impl_copy(der_deserializer);
+}
+
+//
+//  Setup dependency to the interface 'key deserializer' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_deserializer_take_der_deserializer(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl,
+        vscf_impl_t *der_deserializer) {
+
+    VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
+    VSCF_ASSERT_PTR(der_deserializer);
+    VSCF_ASSERT_PTR(pkcs8_deserializer_impl->der_deserializer == NULL);
+
+    VSCF_ASSERT(vscf_key_deserializer_is_implemented(der_deserializer));
+
+    pkcs8_deserializer_impl->der_deserializer = der_deserializer;
+}
+
+//
+//  Release dependency to the interface 'key deserializer'.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_deserializer_release_der_deserializer(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl) {
+
+    VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
+
+    vscf_impl_destroy(&pkcs8_deserializer_impl->der_deserializer);
 }
 
 static const vscf_api_t *
