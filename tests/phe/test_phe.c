@@ -54,11 +54,11 @@ void test__1() {
     vscf_ctr_drbg_random(rng, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, client_private_key_buf);
     vsc_buffer_destroy(&client_private_key_buf);
 
-    byte pwd1[10];
-    vsc_data_t pwd1_data = vsc_data(pwd1, sizeof(pwd1));
+    byte pwd[10];
+    vsc_data_t pwd_data = vsc_data(pwd, sizeof(pwd));
     vsc_buffer_t *pwd1_buf = vsc_buffer_new();
-    vsc_buffer_use(pwd1_buf, pwd1, sizeof(pwd1));
-    vscf_ctr_drbg_random(rng, sizeof(pwd1), pwd1_buf);
+    vsc_buffer_use(pwd1_buf, pwd, sizeof(pwd));
+    vscf_ctr_drbg_random(rng, sizeof(pwd), pwd1_buf);
     vsc_buffer_destroy(&pwd1_buf);
 
     vscf_ctr_drbg_destroy(&rng);
@@ -79,11 +79,11 @@ void test__1() {
     vsc_buffer_t *enrollment_record = vsc_buffer_new_with_capacity(500);
     vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH);
     TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_enroll_account(client, vsc_buffer_data(enrollment_response),
-            pwd1_data, enrollment_record, account_key));
+            pwd_data, enrollment_record, account_key));
     TEST_ASSERT_EQUAL(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH, vsc_buffer_len(account_key));
 
     vsc_buffer_t *verify_password_request = vsc_buffer_new_with_capacity(500);
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_create_verify_password_request(client, pwd1_data,
+    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_create_verify_password_request(client, pwd_data,
             vsc_buffer_data(enrollment_record), verify_password_request));
 
     vsc_buffer_t *verify_password_response = vsc_buffer_new_with_capacity(500);
@@ -91,7 +91,7 @@ void test__1() {
             vsc_buffer_data(verify_password_request), verify_password_response));
 
     vsc_buffer_t *account_key2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH);
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_check_response_and_decrypt(client, pwd1_data,
+    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_check_response_and_decrypt(client, pwd_data,
             vsc_buffer_data(enrollment_record), vsc_buffer_data(verify_password_response), account_key2));
 
     TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(account_key), vsc_buffer_bytes(account_key), vsc_buffer_len(account_key));

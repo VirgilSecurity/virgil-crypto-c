@@ -29,8 +29,10 @@ message VerifyPasswordRequest {
 message VerifyPasswordResponse {
   bool res = 1;
   bytes c_1 = 2;
-  ProofOfSuccess proof_success = 3;
-  ProofOfFail proof_fail = 4;
+  oneof proof {
+    ProofOfSuccess success = 3;
+    ProofOfFail fail = 4;
+  }
 }
 
 message ProofOfFail {

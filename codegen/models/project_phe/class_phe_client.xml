@@ -22,19 +22,33 @@
         <argument name="client private key" class="data"/>
     </constructor>
 
+    <method name="enrollment record len">
+        <return type="size"/>
+    </method>
+
     <method name="enroll account">
         <argument name="enrollment response" class="data"/>
         <argument name="password" class="data"/>
-        <argument name="enrollment record" class="buffer" access="readwrite"/>
-        <argument name="account key" class="buffer" access="readwrite"/>
+        <argument name="enrollment record" class="buffer" access="writeonly">
+            <length method="enrollment record len"/>
+        </argument>
+        <argument name="account key" class="buffer" access="writeonly">
+            <length constant=".(class_phe_common_constant_phe_secret_message_length)"/>
+        </argument>
 
         <return enum="error"/>
+    </method>
+
+    <method name="verify password request len">
+        <return type="size"/>
     </method>
 
     <method name="create verify password request">
         <argument name="password" class="data"/>
         <argument name="enrollment record" class="data"/>
-        <argument name="verify password request" class="buffer" access="readwrite"/>
+        <argument name="verify password request" class="buffer" access="writeonly">
+            <length method="verify password request len"/>
+        </argument>
 
         <return enum="error"/>
     </method>
@@ -43,7 +57,9 @@
         <argument name="password" class="data"/>
         <argument name="enrollment record" class="data"/>
         <argument name="verify password response" class="data"/>
-        <argument name="account key" class="buffer" access="readwrite"/>
+        <argument name="account key" class="buffer" access="writeonly">
+            <length constant=".(class_phe_common_constant_phe_secret_message_length)"/>
+        </argument>
 
         <return enum="error"/>
     </method>
@@ -79,7 +95,9 @@
     <method name="update enrollment record" is_static="1">
         <argument name="enrollment record" class="data"/>
         <argument name="rotation token" class="data"/>
-        <argument name="new enrollment record" class="buffer" access="readwrite"/>
+        <argument name="new enrollment record" class="buffer" access="writeonly">
+            <length method="enrollment record len"/>
+        </argument>
 
         <return enum="error"/>
     </method>

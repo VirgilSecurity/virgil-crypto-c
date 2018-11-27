@@ -175,9 +175,15 @@ vsce_phe_client_take_random(vsce_phe_client_t *phe_client_ctx, vscf_impl_t *rand
 VSCE_PUBLIC void
 vsce_phe_client_release_random(vsce_phe_client_t *phe_client_ctx);
 
+VSCE_PUBLIC size_t
+vsce_phe_client_enrollment_record_len(vsce_phe_client_t *phe_client_ctx);
+
 VSCE_PUBLIC vsce_error_t
 vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enrollment_response, vsc_data_t password,
         vsc_buffer_t *enrollment_record, vsc_buffer_t *account_key);
+
+VSCE_PUBLIC size_t
+vsce_phe_client_verify_password_request_len(vsce_phe_client_t *phe_client_ctx);
 
 VSCE_PUBLIC vsce_error_t
 vsce_phe_client_create_verify_password_request(vsce_phe_client_t *phe_client_ctx, vsc_data_t password,
