@@ -37,7 +37,7 @@
 
 const char test_pem_TITLE[] = "PUBLIC KEY";
 
-const size_t test_pem_TITLE_LEN = strlen(test_pem_TITLE);
+const size_t test_pem_TITLE_LEN = sizeof(test_pem_TITLE) - 1;
 
 const char test_pem_NO_HEADER_STR[] =
         "MIIBITANBgkqhkiG9w0BAQEFAAOCAQ4AMIIBCQKCAQBTfMfo+0sJdXOfP/YT0BqY\n"
@@ -49,7 +49,7 @@ const char test_pem_NO_HEADER_STR[] =
         "AgMBAAE=\n"
         "-----END PUBLIC KEY-----";
 const vsc_data_t test_pem_NO_HEADER = {
-    (const byte*)test_pem_NO_HEADER_STR, strlen(test_pem_NO_HEADER_STR)
+    (const byte*)test_pem_NO_HEADER_STR, sizeof(test_pem_NO_HEADER_STR) - 1
 };
 
 const char test_pem_HEADER_WITHOUT_TRAILING_DASHES_STR[] =
@@ -63,7 +63,7 @@ const char test_pem_HEADER_WITHOUT_TRAILING_DASHES_STR[] =
         "AgMBAAE=\n"
         "-----END PUBLIC KEY-----";
 const vsc_data_t test_pem_HEADER_WITHOUT_TRAILING_DASHES = {
-    (const byte*)test_pem_HEADER_WITHOUT_TRAILING_DASHES_STR, strlen(test_pem_HEADER_WITHOUT_TRAILING_DASHES_STR)
+    (const byte*)test_pem_HEADER_WITHOUT_TRAILING_DASHES_STR, sizeof(test_pem_HEADER_WITHOUT_TRAILING_DASHES_STR) - 1
 };
 
 const char test_pem_NO_FOOTER_STR[] =
@@ -76,7 +76,7 @@ const char test_pem_NO_FOOTER_STR[] =
         "TuH3k+jQM9lFmxRqr/mXHcHHJ0COlyKpHSeuO7MVHpeux/NgViKg44uLtOpG5hDr\n"
         "AgMBAAE=";
 const vsc_data_t test_pem_NO_FOOTER = {
-    (const byte*)test_pem_NO_FOOTER_STR, strlen(test_pem_NO_FOOTER_STR)
+    (const byte*)test_pem_NO_FOOTER_STR, sizeof(test_pem_NO_FOOTER_STR) - 1
 };
 
 const char test_pem_FOOTER_WITHOUT_TRAILING_DASHES_STR[] =
@@ -90,7 +90,7 @@ const char test_pem_FOOTER_WITHOUT_TRAILING_DASHES_STR[] =
        "AgMBAAE=\n"
        "-----END PUBLIC KEY";
 const vsc_data_t test_pem_FOOTER_WITHOUT_TRAILING_DASHES = {
-    (const byte*)test_pem_FOOTER_WITHOUT_TRAILING_DASHES_STR, strlen(test_pem_FOOTER_WITHOUT_TRAILING_DASHES_STR)
+    (const byte*)test_pem_FOOTER_WITHOUT_TRAILING_DASHES_STR, sizeof(test_pem_FOOTER_WITHOUT_TRAILING_DASHES_STR) - 1
 };
 
 const char test_pem_wrapped_ONELINE_STR[] =
@@ -98,7 +98,7 @@ const char test_pem_wrapped_ONELINE_STR[] =
         "MCowBQYDK2VwAyEAGb9ECWmEzf6FQbrBZ9w7lshQhqowtrbLDFw4rXAxZuE=\n"
         "-----END PUBLIC KEY-----";
 const vsc_data_t test_pem_wrapped_ONELINE = {
-    (const byte*)test_pem_wrapped_ONELINE_STR, strlen(test_pem_wrapped_ONELINE_STR)
+    (const byte*)test_pem_wrapped_ONELINE_STR, sizeof(test_pem_wrapped_ONELINE_STR) - 1
 };
 
 const byte test_pem_unwrapped_ONELINE_BYTES[] = {
@@ -125,7 +125,7 @@ const char test_pem_wrapped_MULTILINE_STR[] =
       "AgMBAAE=\n"
       "-----END PUBLIC KEY-----";
 const vsc_data_t test_pem_wrapped_MULTILINE = {
-    (const byte*)test_pem_wrapped_MULTILINE_STR, strlen(test_pem_wrapped_MULTILINE_STR)
+    (const byte*)test_pem_wrapped_MULTILINE_STR, sizeof(test_pem_wrapped_MULTILINE_STR) - 1
 };
 
 const byte test_pem_unwrapped_MULTILINE_BYTES[] = {
