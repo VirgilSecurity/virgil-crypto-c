@@ -72,26 +72,15 @@
 //  @end
 
 
-VSCF_PUBLIC vsc_data_t
-vscf_endianness_mem_copy_with_conversion(vsc_data_t dst, vsc_data_t src, bool be_to_le) {
+//
+//  Copy memory buffer with convertion from little endian to big endian and back
+//
+VSCF_PUBLIC void
+vscf_endianness_reverse_memcpy(vsc_data_t src, vsc_buffer_t *dst) {
 
-    VSCF_ASSERT(vsc_data_is_valid(src));
-    VSCF_ASSERT(vsc_data_is_valid(dst));
-    const short *source = (short *)src.bytes;
-    short *dest = (short *)dst.bytes;
-    size_t available = dst.len;
-    size_t len = src.len;
-    VSCF_ASSERT(available >= len);
-    while (len) {
-        if (be_to_le) {
-            *dest = htons(*source);
-        } else {
-            *dest = ntohs(*source);
-        }
-        source++;
-        dest++;
-        len += 2;
+    byte *dest = vsc_buffer_ptr(dst);
+    VSCF_ASSERT(src.len <= vsc_buffer_left(dst));
+    for (size_t i = 0; i < src.len; i++) {
+        dest[src.len - 1 - i] = src.bytes[i];
     }
-    dst.len = src.len;
-    return dst;
 }
