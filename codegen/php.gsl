@@ -88,7 +88,7 @@ function php_create_interface_module (interface, destination, wrapper, meta)
                 php_create_interface_method (my.interface, method, php_protocol, my.wrapper, my.meta)
             endfor
 
-            for php_protocol.php_method where count (0.swift_return) > 1
+            for php_protocol.php_method where count (0.php_return) > 1
                 php_create_result_class (php_protocol, php_method, php_module, my.wrapper, my.meta)
             endfor
         endnew
@@ -138,7 +138,7 @@ function php_create_interface_proxy_class_inheritance (interface, php_class, wra
 
     for my.interface.inherit
         my.parent_interface = interface_global_find (inherit.interface, inherit.project)
-        php_create_interface_proxy_class_inheritance (my.parent_interface, my.swift_class, my.wrapper, my.meta)
+        php_create_interface_proxy_class_inheritance (my.parent_interface, my.php_class, my.wrapper, my.meta)
     endfor
 
     for my.interface.constant
@@ -482,13 +482,13 @@ function php_create_class_method (class, method, destination, wrapper, meta)
 
     #   Return result
     if count (my.php_method.php_return) = 1
-        my.return_result = format_left ("return $(php_wrap_c_returned_value (my.php_method->php_return))")
+        my.return_result = format_left ("return $(php_wrap_c_returned_value (my.php_method->php_return));")
 
     elsif count (my.php_method.php_return) > 1
         my.result_class = php_derive_result_class_name (my.destination, my.php_method)
         my.result_class_init_args = php_format_result_class_init_args (my.php_method)
 
-        my.return_result = format_left ("return $(my.result_class:)($(my.result_class_init_args:))")
+        my.return_result = format_left ("return $(my.result_class:)($(my.result_class_init_args:));")
     endif
 
     new php_code to my.php_method
@@ -537,7 +537,7 @@ endfunction
 function php_wrap_c_returned_value (php_return)
     check_arguments (my, "php_return", my)
 
-    my.name = my.php_return.name ? "proxyResult"
+    my.name = my.php_return.name ? "$proxyResult"
     my.type = my.php_return.type
 
     scope my.php_return
@@ -824,10 +824,19 @@ function php_wrap_c_proxy_call (php_method, proxy_call, proxy_return_type)
         my.buffer_name = php_return.name ? "result"
 
         my.buffers_instantiation ?= ""
+        #s!wmy.buffers_instantiation += format_left ("\
+        #s!    let $(my.buffer_name:)Count = $(php_return.length_getter:)
+        #s!    var $(my.buffer_name:) = Data(count: $(my.buffer_name:)Count)
+        #s!    var $(my.buffer_name:)Buf = .(c_project_common_class_buffer_method_new)()
+        #s!    defer {
+        #s!        .(c_project_common_class_buffer_method_delete)($(my.buffer_name:)Buf)
+        #s!    }
+        #s!") + terminator
+
         my.buffers_instantiation += format_left ("\
-            let $(my.buffer_name:)Count = $(php_return.length_getter:)
-            var $(my.buffer_name:) = Data(count: $(my.buffer_name:)Count)
-            var $(my.buffer_name:)Buf = .(c_project_common_class_buffer_method_new)()
+            const $(my.buffer_name:)Count = $(php_return.length_getter:)
+            $$(my.buffer_name:) = Data(count: $(my.buffer_name:)Count)
+            $$(my.buffer_name:)Buf = .(c_project_common_class_buffer_method_new)()
             defer {
                 .(c_project_common_class_buffer_method_delete)($(my.buffer_name:)Buf)
             }
@@ -870,7 +879,8 @@ function php_wrap_c_proxy_call (php_method, proxy_call, proxy_return_type)
     my.scope_count = 0
 
     if my.proxy_return_type <> "Void"
-        my.result_statement = "let proxyResult = "
+        #s!my.result_statement = "let proxyResult = "
+        my.result_statement = "$proxyResult = "
     endif
     my.proxy_return_statement = (my.proxy_return_type = "auto") ?? "" ? "-> $(my.proxy_return_type:) "
 
@@ -904,7 +914,8 @@ function php_wrap_c_proxy_call (php_method, proxy_call, proxy_return_type)
     if my.scope_count > 0
         my.proxy_invocation = (my.proxy_return_type <> "Void") ?? "return " ? ""
     else
-        my.proxy_invocation = (my.proxy_return_type <> "Void") ?? "let proxyResult = " ? ""
+        #s!my.proxy_invocation = (my.proxy_return_type <> "Void") ?? "let proxyResult = " ? ""
+        my.proxy_invocation = (my.proxy_return_type <> "Void") ?? "$proxyResult = " ? ""
     endif
     my.proxy_invocation += my.proxy_call
     my.proxy_invocation = format_left (my.proxy_invocation, my.scope_count)
@@ -999,7 +1010,7 @@ function php_create_argument (argument, destination, wrapper, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Map <instance/> attributes to the <swift_instance/> attributes.
+#   Map <instance/> attributes to the <php_instance/> attributes.
 # ---------------------------------------------------------------------------
 function php_map_instance (php_instance, instance)
     check_arguments (my, "php_instance, instance", my)
@@ -1404,12 +1415,13 @@ function php_resolve (project, wrapper)
     assert_item (my.project, "license", my)
 
     my.wrapper.project = my.project.name
+
     my.wrapper.prefix = my.project.prefix
     #my.wrapper.framework = my.project.framework
     my.wrapper.namespace = "$(my.project.namespace:Pascal)"
     my.wrapper.namespace_dir = my.wrapper.namespace
     my.wrapper.source_dir = \
-            cat_path ("../wrappers/$(my.wrapper.lang:c,lower)", "VirgilCrypto777", my.wrapper.namespace_dir)
+            cat_path ("../wrappers/$(my.wrapper.lang:c,lower)", "VirgilCrypto", my.wrapper.namespace_dir)
     copy my.project->license to my.wrapper
 
     #new php_import to my.wrapper
@@ -1467,8 +1479,12 @@ function php_generate_sources (source, wrapper)
 
         output php_module.source_file_path
 
+        php_insert_open_tag()
+
         php_insert_prologue (php_module)
         newline ()
+
+        php_insert_namespace(php_module)
 
         for php_module.php_import
             newline_if (first ())
@@ -1551,10 +1567,12 @@ function php_insert_class (php_class)
     my.php_inheritance_list = php_format_inheritance_list (my.php_class) ?
 
     php_insert_description(my.php_class)
-    php_insert_code ("\
-        @objc($(my.php_class.objc_name:)) $(my.php_class.visibility:) \
-                class $(my.php_class.name:)$(my.php_inheritance_list?:) {
-    ")
+    #php_insert_code ("\
+    #    @objc($(my.php_class.objc_name:)) $(my.php_class.visibility:) \
+    #            class $(my.php_class.name:)$(my.php_inheritance_list?:) {
+    #")
+
+    php_insert_code ("class $(my.php_class.Name) {")
 
     for my.php_class.php_property
         newline ()
@@ -1593,9 +1611,14 @@ function php_insert_class_method (php_method)
     my.override = is_true (my.php_method.override) ?? "override" ?
 
     php_insert_description (my.php_method, 1)
+    #php_insert_code("\
+    #    @objc $(my.php_method.visibility?:) $(my.php_method.modifier?:) $(my.override?:) \
+    #            func $(my.php_method.name:)($(my.method_args?:)) $(my.method_throws?:) $(my.method_return?:) {
+    #", 1)
+
     php_insert_code("\
-        @objc $(my.php_method.visibility?:) $(my.php_method.modifier?:) $(my.override?:) \
-                func $(my.php_method.name:)($(my.method_args?:)) $(my.method_throws?:) $(my.method_return?:) {
+        $(my.php_method.visibility?:) $(my.php_method.modifier?:) $(my.override?:) \
+                function $(my.php_method.name:Camel)($(my.method_args?:)) {
     ", 1)
 
     if count (my.php_method.php_code)
@@ -1614,12 +1637,20 @@ function php_insert_destructor (php_destructor)
     check_arguments (my, "php_destructor", my)
 
     php_insert_description (my.php_destructor, 1)
-    php_insert_code("\
-         deinit {
-    ", 1)
+    #s!php_insert_code("\
+    #s!     deinit {
+    #s!", 1)
 
     php_insert_code("\
-        $(my.php_destructor->php_code.:)
+         public function __destruct() {
+    ", 1)
+
+    #s!php_insert_code("\
+    #s!    $(my.php_destructor->php_code.:)
+    #s!", 2)
+
+    php_insert_code("\
+        return $(my.php_destructor->php_code.:)
     ", 2)
 
     php_insert_code ("}", 1)
@@ -1637,7 +1668,8 @@ function php_insert_class_property (php_property)
     my.is_const = my.php_property.access = "readonly"
     my.is_writeonly = my.php_property.access = "writeonly"
 
-    my.let_var = (my.is_const & !my.is_computed) ?? "let" ? "var"
+    #my.let_var = (my.is_const & !my.is_computed) ?? "let" ? "var"
+    my.let_var = (my.is_const & !my.is_computed) ?? "const" ? "$"
 
     if my.is_computed
         my.var_init =  " {"
@@ -1714,7 +1746,9 @@ function php_insert_description (obj, tab_count)
     if string_empty (my.desciption)
         return
     endif
+    php_insert_code ("/**")
     php_insert_code (my.desciption, my.tab_count)
+    php_insert_code ("*/")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1731,6 +1765,22 @@ function php_insert_code (code, tab_count)
     my.code = string_multi_rtrim (my.code)
 
     out (my.code)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: open_php_tag
+# ---------------------------------------------------------------------------
+function php_insert_open_tag ()
+    php_insert_code ("<?php")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: open_php_tag
+# ---------------------------------------------------------------------------
+function php_insert_namespace (php_module)
+    check_arguments (my, "php_module", my)
+
+    php_insert_code ("namespace Virgil/$(my.php_module.name:);")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1847,11 +1897,15 @@ function php_insert_constructor (php_constructor)
     assert_item (my.php_constructor, "php_code", my)
 
     my.method_args = php_format_argument_list(my.php_constructor) ?
-    my.override = is_true (my.php_constructor.override) ?? "override" ?
+    #my.override = is_true (my.php_constructor.override) ?? "override" ?
 
     php_insert_description (my.php_constructor, 1)
+    #s!php_insert_code("\
+    #s!     $(my.php_constructor.visibility:) $(my.override?:) init($(my.method_args?:)) {
+    #s!", 1)
+
     php_insert_code("\
-         $(my.php_constructor.visibility:) $(my.override?:) init($(my.method_args?:)) {
+         public function __construct($(my.method_args?:)) {
     ", 1)
 
     php_insert_code("\
@@ -1886,8 +1940,11 @@ function php_insert_enum_constant (php_constant)
 
     my.value = defined (my.php_constant.value) ?? " = $(my.php_constant.value:)" ? ""
     php_insert_description (my.php_constant, 1)
+    #php_insert_code ("\
+    #    case $(my.php_constant.name:)$(my.value:)
+    #", 1)
     php_insert_code ("\
-        case $(my.php_constant.name:)$(my.value:)
+        const $(my.php_constant.NAME:)$(my.value:);
     ", 1)
 endfunction
 
@@ -1944,14 +2001,270 @@ endfunction
 #   Create module with PHP enum from the abstract 'enum' notion.
 # ---------------------------------------------------------------------------
 function php_create_enum_module (enum, destination, wrapper, meta)
- echo "php_create_enum_module"
+    check_arguments (my, "enum, destination, wrapper, meta", my)
+
+    echo_info ("Create <php_module/> from enum: '$(my.enum.name:)'", my)
+
+    assert_attribute (my.enum, "name", my)
+
+    new php_module to my.destination
+        .name = php_derive_module_name (my.enum)
+        .source_file_name = 0.name + ".php"
+        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+
+        new php_license to php_module
+            . = php_format_license (my.wrapper->license) ?
+        endnew
+
+        #new php_import to php_module
+        #    .framework = "Foundation"
+        #endnew
+
+        #new php_import to php_module
+        #   .framework = my.wrapper.framework
+        #endnew
+
+        new php_enum to php_module
+            . = php_format_description (my.enum) ?
+            .name = php_derive_enum_name (my.enum, my.wrapper)
+            .objc_name = php_derive_enum_objc_name (php_enum, my.wrapper)
+
+            php_map_attr_visibility (php_enum, my.enum)
+            php_map_attr_scope (php_enum, my.enum)
+
+            new php_inherit to php_enum
+                .type = "Int"
+            endnew
+
+            if my.enum.name = "error"
+                php_map_enum_error (php_enum, my.enum, my.wrapper, my.meta)
+            else
+                php_map_enum_default (php_enum, my.enum, my.wrapper, my.meta)
+            endif
+
+            php_create_enum_constructor (php_enum, my.enum, my.wrapper, my.meta)
+        endnew
+    endnew
+
+    echo_debug ("Done", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add constructor init(fromC: c_enum_type)
+# ---------------------------------------------------------------------------
+function php_create_enum_constructor (php_enum, enum, wrapper, meta)
+    check_arguments (my, "php_enum, enum, wrapper, meta")
+
+    new php_constructor to my.php_enum
+        . = "/// Create enumeration value from the correspond C enumeration value."
+        .visibility = "internal"
+
+        my.arg_enum_name = php_derive_argument_name (my.enum, my.wrapper)
+
+        new php_argument to php_constructor
+            .name = my.arg_enum_name
+            .ext_name = "fromC"
+            .type = make_ref_c (make_id ("class", my.enum.name, "enum", my.enum.name))
+        endnew
+
+        new php_code to php_constructor
+            . = "\
+                self.init(rawValue: Int($(my.arg_enum_name:).rawValue))!
+            "
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add entities for regular enum (not error codes).
+# ---------------------------------------------------------------------------
+function php_map_enum_default (php_enum, enum, wrapper, meta)
+    check_arguments (my, "php_enum, enum, wrapper, meta")
+
+    for my.enum.constant
+        php_create_enum_constant (constant, my.php_enum, my.wrapper, my.meta)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add entities specific for "error" enum.
+# ---------------------------------------------------------------------------
+function php_map_enum_error (php_enum, enum, wrapper, meta)
+    check_arguments (my, "php_enum, enum, wrapper, meta")
+
+    new php_inherit to my.php_enum
+        .type = "Error"
+    endnew
+
+    for my.enum.constant where 0.name <> "success"
+        php_create_enum_constant (constant, my.php_enum, my.wrapper, my.meta)
+    endfor
+
+    new php_method to my.php_enum
+        . = "/// Check given C error (result), and if it's not \"success\" then throw correspond exception."
+        .name = "handleError"
+        .visibility = "internal"
+        .modifier = "static"
+        .throws = "1"
+
+        new php_argument to php_method
+            .name = "code"
+            .ext_name = "fromC"
+            .type = make_ref_c (make_id ("class", my.enum.name, "enum", my.enum.name))
+        endnew
+
+        my.success_constant = \
+                make_ref_c (make_id ("global", "enum", my.enum.name, "constant success"))
+
+        new php_code to php_method
+            . = "\
+                if code != $(my.success_constant:) {
+                    throw $(my.php_enum.name:)(fromC: code)
+                }
+            "
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create enumeration <php_constant/> from the entity <constant/>
+# ---------------------------------------------------------------------------
+function php_create_enum_constant (constant, php_enum, wrapper, meta)
+    check_arguments (my, "constant, php_enum, wrapper, meta", my)
+
+    assert_attribute (my.constant, "name", my)
+
+    new php_constant to my.php_enum
+        . = php_format_description (my.constant) ?
+        .name = php_derive_constant_name (my.constant, my.wrapper)
+        .value = my.constant.value ?
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Map attribute 'scope' of <component/> to <php_component/>.
+# ---------------------------------------------------------------------------
+function php_map_attr_scope (php_component, component)
+    check_arguments (my, "php_component, component", my)
+
+    #   TODO: make mapping more accurate.
+    my.php_component.scope = my.component.scope ? "public"
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the Objective-C enum.
+# ---------------------------------------------------------------------------
+function php_derive_enum_objc_name (php_enum, wrapper)
+    check_arguments (my, "php_enum, wrapper", my)
+
+    return "$(my.wrapper.prefix:UPPER)$(my.php_enum.name:)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the PHP enum.
+# ---------------------------------------------------------------------------
+function php_derive_enum_name (enum, wrapper)
+    check_arguments (my, "enum, wrapper", my)
+
+    assert_attribute_one_of (my.enum, "name", my)
+
+    if my.enum.name = "error"
+        return php_derive_enum_error_name (my.wrapper)
+    else
+        return "$(my.enum.name:Pascal)"
+    endif
+
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Create module with PHP class from the abstract 'implementation' notion.
 # ---------------------------------------------------------------------------
 function php_create_implementation_module (implementation, destination, wrapper, meta)
-    echo "php_create_implementation_module"
+    check_arguments (my, "implementation, destination, wrapper, meta", my)
+
+    if my.implementation.scope <> "internal"
+        echo_info ("Create <php_module/> from implementation: '$(my.implementation.name:)'", my)
+    else
+        echo_info ("Skip creating <php_module/> from internal implementation: '$(my.implementation.name:)'", my)
+    endif
+
+    new php_module to my.destination
+        .name = php_derive_module_name (my.implementation)
+        .source_file_name = 0.name + ".php"
+        .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
+
+        new php_license to php_module
+            . = php_format_license (my.wrapper->license) ?
+        endnew
+
+        for my.wrapper.php_import
+            copy php_import to php_module
+        endfor
+
+        new php_class to php_module
+            . = php_format_description (my.implementation) ?
+            .name = php_derive_class_name (my.implementation, my.wrapper)
+            .objc_name = php_derive_class_objc_name (php_class, my.wrapper)
+
+            php_map_attr_visibility (php_class, my.implementation)
+
+            php_create_inherit_nsobject (php_class)
+
+            for my.implementation.constant
+                php_create_property_from_constant (constant, php_class, my.wrapper, my.meta)
+            endfor
+
+            for my.implementation.dependency
+                php_create_method_from_dependency (dependency, my.implementation, php_class, my.wrapper, my.meta)
+            endfor
+
+            for my.implementation.method where method.declaration = "public" & method.visibility = "public"
+                php_create_class_method (my.implementation, method, php_class, my.wrapper, my.meta)
+            endfor
+
+            if my.implementation.context <> "none"
+                php_create_class_property_context (php_class, my.implementation)
+
+                php_create_class_default_constructor (php_class, my.implementation, my.wrapper, my.meta)
+                php_create_class_destructor (php_class, my.implementation, my.wrapper, my.meta)
+
+                if my.implementation.lifecycle <> "none"
+                    for my.implementation.constructor
+                        php_create_class_constructor (\
+                            my.implementation, constructor, php_class, my.wrapper, my.meta)
+                    endfor
+                endif
+            endif
+
+            php_create_interface_implementation (my.implementation, php_class, my.wrapper, my.meta)
+
+            for php_class.php_method where count (0.php_return) > 1
+                php_create_result_class (php_class, php_method, php_module, my.wrapper, my.meta)
+            endfor
+        endnew
+    endnew
+
+    echo_debug ("Done", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add all components related to the interface.
+# ---------------------------------------------------------------------------
+function php_create_interface_implementation (implementation, php_class, wrapper, meta)
+    check_arguments (my, "implementation, php_class, wrapper, meta", my)
+
+    for my.implementation.interface
+        php_create_inherit (interface, my.php_class, my.wrapper, my.meta)
+
+        for interface.constant
+            php_create_property_from_constant (constant, my.php_class, my.wrapper, my.meta)
+        endfor
+
+        for interface.method
+            php_create_class_method (my.implementation, method, my.php_class, my.wrapper, my.meta)
+        endfor
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1964,7 +2277,7 @@ function php_format_description (obj)
 
     my.str = my.obj.
     my.str = string_indent (my.str)
-    my.str = "/// $(my.str:left, block, no)$(terminator)"
+    my.str = "* $(my.str:left, block, no)$(terminator)"
     my.str = string_multi_rtrim (my.str)
 
     return my.str

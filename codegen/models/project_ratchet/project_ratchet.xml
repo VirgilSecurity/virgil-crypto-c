@@ -76,5 +76,4 @@
     <class name="ratchet session"/>
 
     <wrapper lang="swift"/>
-    <wrapper lang="php"/>
 </project>
