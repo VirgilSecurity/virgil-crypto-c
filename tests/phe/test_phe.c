@@ -33,50 +33,71 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include <virgil/crypto/phe/vsce_phe_client.h>
-#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
+#include <virgil/crypto/foundation/private/vscf_ctr_drbg_impl.h>
 #include <virgil/crypto/phe/vsce_phe_server.h>
-#include <virgil/crypto/phe/vsce_phe_utils.h>
 #include "unity.h"
 #include "test_utils.h"
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 #define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_CLIENT && VSCE_PHE_SERVER
 #if TEST_DEPENDENCIES_AVAILABLE
 
-void test__full_flow__random_correct_pwd__should_succeed() {
+static void generate_pwd(vsc_buffer_t **pwd_ref) {
+    vscf_ctr_drbg_impl_t rng;
+    vscf_ctr_drbg_init(&rng);
+    vscf_ctr_drbg_setup_defaults(&rng);
+
+    *pwd_ref = vsc_buffer_new_with_capacity(10);
+
+    vscf_error_t status = vscf_ctr_drbg_random(&rng, 10, *pwd_ref);
+    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
+
+    vscf_ctr_drbg_cleanup(&rng);
+}
+
+static void init(vsce_phe_server_t **server_ref, vsce_phe_client_t **client_ref,
+                 vsc_buffer_t **server_private_key_ref, vsc_buffer_t **server_public_key_ref) {
     byte client_private_key[vsce_phe_common_PHE_PRIVATE_KEY_LENGTH];
 
-    vsce_phe_utils_t *utils = vsce_phe_utils_new();
+    vscf_ctr_drbg_impl_t rng;
+    vscf_ctr_drbg_init(&rng);
+    vscf_ctr_drbg_setup_defaults(&rng);
 
-    vscf_ctr_drbg_impl_t *rng = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(rng);
-    vsce_phe_utils_use_random(utils, vscf_ctr_drbg_impl(rng));
+    vsc_buffer_t buffer;
+    vsc_buffer_init(&buffer);
 
-    mbedtls_mpi x;
-    mbedtls_mpi_init(&x);
+    vsc_buffer_use(&buffer, client_private_key, sizeof(client_private_key));
 
-    vsce_phe_utils_random_z(utils, &x);
-    TEST_ASSERT_EQUAL(0, mbedtls_mpi_write_binary(&x, client_private_key, sizeof(client_private_key)));
+    // Not secure way to generate private key, though it is OK for tests
+    vscf_error_t status = vscf_ctr_drbg_random(&rng, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, &buffer);
+    TEST_ASSERT_EQUAL(vscf_SUCCESS, status);
 
-    mbedtls_mpi_free(&x);
+    vsc_buffer_delete(&buffer);
 
-    vsce_phe_utils_destroy(&utils);
+    *server_ref = vsce_phe_server_new();
 
-    byte pwd[10];
-    vsc_data_t pwd_data = vsc_data(pwd, sizeof(pwd));
-    vsc_buffer_t *pwd1_buf = vsc_buffer_new();
-    vsc_buffer_use(pwd1_buf, pwd, sizeof(pwd));
-    vscf_ctr_drbg_random(rng, sizeof(pwd), pwd1_buf);
-    vsc_buffer_destroy(&pwd1_buf);
+    *server_private_key_ref= vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    *server_public_key_ref = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
-    vscf_ctr_drbg_destroy(&rng);
+    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_server_generate_server_key_pair(*server_ref, *server_private_key_ref, *server_public_key_ref));
 
-    vsce_phe_client_t *client = vsce_phe_client_new_with_private_key(vsc_data(client_private_key, sizeof(client_private_key)));
-    vsce_phe_server_t *server = vsce_phe_server_new();
+    *client_ref = vsce_phe_client_new_with_keys(vsc_data(client_private_key, sizeof(client_private_key)), vsc_buffer_data(*server_public_key_ref));
 
-    vsc_buffer_t *server_private_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
-    vsc_buffer_t *server_public_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    vscf_ctr_drbg_cleanup(&rng);
+}
 
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_server_generate_server_key_pair(server, server_private_key, server_public_key));
+void test__full_flow__random_correct_pwd__should_succeed() {
+    vsce_phe_server_t *server;
+    vsce_phe_client_t *client;
+    vsc_buffer_t *server_private_key, *server_public_key;
+
+    init(&server, &client, &server_private_key, &server_public_key);
+
+    vsc_buffer_t *pwd;
+
+    generate_pwd(&pwd);
+
+    vsc_data_t pwd_data = vsc_data(vsc_buffer_bytes(pwd), vsc_buffer_len(pwd));
 
     vsc_buffer_t *enrollment_response = vsc_buffer_new_with_capacity(vsce_phe_server_enrollment_response_len(server));
     TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_server_get_enrollment(server,
@@ -108,6 +129,7 @@ void test__full_flow__random_correct_pwd__should_succeed() {
 
     vsc_buffer_destroy(&server_private_key);
     vsc_buffer_destroy(&server_public_key);
+    vsc_buffer_destroy(&pwd);
 
     vsc_buffer_destroy(&enrollment_response);
     vsc_buffer_destroy(&enrollment_record);
@@ -117,45 +139,22 @@ void test__full_flow__random_correct_pwd__should_succeed() {
 }
 
 void test__full_flow__random_incorrect_pwd__should_fail() {
-    byte client_private_key[vsce_phe_common_PHE_PRIVATE_KEY_LENGTH];
+    vsce_phe_server_t *server;
+    vsce_phe_client_t *client;
+    vsc_buffer_t *server_private_key, *server_public_key;
 
-    vsce_phe_utils_t *utils = vsce_phe_utils_new();
+    init(&server, &client, &server_private_key, &server_public_key);
 
-    vscf_ctr_drbg_impl_t *rng = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(rng);
-    vsce_phe_utils_use_random(utils, vscf_ctr_drbg_impl(rng));
+    vsc_buffer_t *pwd1, *pwd2;
 
-    mbedtls_mpi x;
-    mbedtls_mpi_init(&x);
+    generate_pwd(&pwd1);
+    generate_pwd(&pwd2);
 
-    vsce_phe_utils_random_z(utils, &x);
-    TEST_ASSERT_EQUAL(0, mbedtls_mpi_write_binary(&x, client_private_key, sizeof(client_private_key)));
+    TEST_ASSERT(vsc_buffer_len(pwd1) != vsc_buffer_len(pwd2)
+        || memcmp(vsc_buffer_bytes(pwd1), vsc_buffer_bytes(pwd2), vsc_buffer_len(pwd1)) != 0);
 
-    mbedtls_mpi_free(&x);
-
-    vsce_phe_utils_destroy(&utils);
-
-    byte pwd1[10], pwd2[10];
-    vsc_data_t pwd1_data = vsc_data(pwd1, sizeof(pwd1));
-    vsc_data_t pwd2_data = vsc_data(pwd2, sizeof(pwd2));
-    vsc_buffer_t *pwd1_buf = vsc_buffer_new();
-    vsc_buffer_t *pwd2_buf = vsc_buffer_new();
-    vsc_buffer_use(pwd1_buf, pwd1, sizeof(pwd1));
-    vsc_buffer_use(pwd2_buf, pwd2, sizeof(pwd2));
-    vscf_ctr_drbg_random(rng, sizeof(pwd1), pwd1_buf);
-    vscf_ctr_drbg_random(rng, sizeof(pwd2), pwd2_buf);
-    vsc_buffer_destroy(&pwd1_buf);
-    vsc_buffer_destroy(&pwd2_buf);
-
-    vscf_ctr_drbg_destroy(&rng);
-
-    vsce_phe_client_t *client = vsce_phe_client_new_with_private_key(vsc_data(client_private_key, sizeof(client_private_key)));
-    vsce_phe_server_t *server = vsce_phe_server_new();
-
-    vsc_buffer_t *server_private_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
-    vsc_buffer_t *server_public_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
-
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_server_generate_server_key_pair(server, server_private_key, server_public_key));
+    vsc_data_t pwd1_data = vsc_data(vsc_buffer_bytes(pwd1), vsc_buffer_len(pwd1));
+    vsc_data_t pwd2_data = vsc_data(vsc_buffer_bytes(pwd2), vsc_buffer_len(pwd2));
 
     vsc_buffer_t *enrollment_response = vsc_buffer_new_with_capacity(vsce_phe_server_enrollment_response_len(server));
     TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_server_get_enrollment(server,
@@ -185,6 +184,9 @@ void test__full_flow__random_incorrect_pwd__should_fail() {
 
     vsc_buffer_destroy(&server_private_key);
     vsc_buffer_destroy(&server_public_key);
+
+    vsc_buffer_destroy(&pwd1);
+    vsc_buffer_destroy(&pwd2);
 
     vsc_buffer_destroy(&enrollment_response);
     vsc_buffer_destroy(&enrollment_record);

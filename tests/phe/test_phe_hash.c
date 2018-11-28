@@ -81,6 +81,8 @@ void test__hc0__const_hash__should_match() { }
 void test__hc1__const_hash__should_match() { }
 void test__hs0__const_hash__should_match() { }
 void test__hs1__const_hash__should_match() { }
+void test__hash_z_success__const_hash__should_match() { }
+void test__hash_z_failure__const_hash__should_match() { }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
@@ -98,6 +100,8 @@ main(void) {
     RUN_TEST(test__hc1__const_hash__should_match);
     RUN_TEST(test__hs0__const_hash__should_match);
     RUN_TEST(test__hs1__const_hash__should_match);
+    RUN_TEST(test__hash_z_success__const_hash__should_match);
+    RUN_TEST(test__hash_z_failure__const_hash__should_match);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

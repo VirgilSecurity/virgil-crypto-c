@@ -503,7 +503,7 @@ vsce_phe_hash_hash_z_success(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t server_pu
         VSCE_ASSERT(mbedtls_status == 0);
 
         vscf_hkdf_derive(hkdf, vsc_buffer_data(key), vsc_data(z_success_domain, sizeof(z_success_domain)),
-                         vsc_data((byte *) hkdf_info, sizeof(hkdf_info)), z_buff, vsc_buffer_capacity(z_buff));
+                         vsc_data(hkdf_info, sizeof(hkdf_info)), z_buff, vsc_buffer_capacity(z_buff));
 
         mbedtls_status = mbedtls_mpi_read_binary(z, vsc_buffer_bytes(z_buff), vsc_buffer_len(z_buff));
         VSCE_ASSERT(mbedtls_status == 0);

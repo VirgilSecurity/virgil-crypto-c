@@ -44,23 +44,20 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'phe' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSCE_PHE_DEFS_H_INCLUDED
-#define VSCE_PHE_DEFS_H_INCLUDED
+#ifndef VSCE_PHE_UTILS_H_INCLUDED
+#define VSCE_PHE_UTILS_H_INCLUDED
 
 #include "vsce_library.h"
+#include "vsce_phe_common.h"
 
-#if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
+#include <mbedtls/bignum.h>
+
+#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
 #endif
 
-#if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
+#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
 #endif
 
 // clang-format on
@@ -79,20 +76,75 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'phe' context.
+//  Handle 'phe utils' context.
 //
-struct vsce_phe_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vsce_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
+typedef struct vsce_phe_utils_t vsce_phe_utils_t;
 
-    const vsc_buffer_t *secret_key;
-};
+//
+//  Return size of 'vsce_phe_utils_t'.
+//
+VSCE_PUBLIC size_t
+vsce_phe_utils_ctx_size(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCE_PUBLIC void
+vsce_phe_utils_init(vsce_phe_utils_t *phe_utils_ctx);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCE_PUBLIC void
+vsce_phe_utils_cleanup(vsce_phe_utils_t *phe_utils_ctx);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCE_PUBLIC vsce_phe_utils_t *
+vsce_phe_utils_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if context was allocated by the caller.
+//
+VSCE_PUBLIC void
+vsce_phe_utils_delete(vsce_phe_utils_t *phe_utils_ctx);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vsce_phe_utils_new ()'.
+//
+VSCE_PUBLIC void
+vsce_phe_utils_destroy(vsce_phe_utils_t **phe_utils_ctx_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCE_PUBLIC vsce_phe_utils_t *
+vsce_phe_utils_copy(vsce_phe_utils_t *phe_utils_ctx);
+
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCE_PUBLIC void
+vsce_phe_utils_use_random(vsce_phe_utils_t *phe_utils_ctx, vscf_impl_t *random);
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCE_PUBLIC void
+vsce_phe_utils_take_random(vsce_phe_utils_t *phe_utils_ctx, vscf_impl_t *random);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCE_PUBLIC void
+vsce_phe_utils_release_random(vsce_phe_utils_t *phe_utils_ctx);
+
+VSCE_PUBLIC void
+vsce_phe_utils_random_z(vsce_phe_utils_t *phe_utils_ctx, mbedtls_mpi *z);
 
 
 // --------------------------------------------------------------------------
@@ -108,5 +160,5 @@ struct vsce_phe_t {
 
 
 //  @footer
-#endif // VSCE_PHE_DEFS_H_INCLUDED
+#endif // VSCE_PHE_UTILS_H_INCLUDED
 //  @end
