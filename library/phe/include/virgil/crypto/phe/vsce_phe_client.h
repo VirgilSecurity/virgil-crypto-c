@@ -114,7 +114,7 @@ VSCE_PUBLIC vsce_phe_client_t *
 vsce_phe_client_new(void);
 
 VSCE_PUBLIC vsce_phe_client_t *
-vsce_phe_client_new_with_private_key(vsc_data_t client_private_key);
+vsce_phe_client_new_with_keys(vsc_data_t client_private_key, vsc_data_t server_public_key);
 
 //
 //  Release all inner resources and deallocate context if needed.

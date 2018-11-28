@@ -4,6 +4,8 @@
     <require impl="sha512" project="foundation" scope="private"/>
     <require header="mbedtls/ecp.h" scope="context"/>
     <require header="mbedtls/bignum.h" scope="context"/>
+    <require header="mbedtls/ecp.h" scope="public"/>
+    <require header="mbedtls/bignum.h" scope="public"/>
 
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
     <property name="two" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>

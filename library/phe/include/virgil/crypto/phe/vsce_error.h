@@ -66,7 +66,11 @@ enum vsce_error_t {
     //
     //  No errors was occurred.
     //
-    vsce_SUCCESS = 0
+    vsce_SUCCESS = 0,
+    //
+    //  Proof check failed.
+    //
+    vsce_INVALID_PROOF = 1
 };
 typedef enum vsce_error_t vsce_error_t;
 

@@ -56,6 +56,8 @@
 #include "vsce_library.h"
 #include "vsce_simple_swu.h"
 
+#include <mbedtls/bignum.h>
+
 // clang-format on
 //  @end
 

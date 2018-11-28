@@ -64,6 +64,15 @@ mark_as_advanced(
         VSCE_PHE_CLIENT
         )
 
+if(VSCE_SIMPLE_SWU AND NOT VSCE_PHE_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_SIMPLE_SWU depends on the feature:")
+    message("     VSCE_PHE_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCE_PHE_HASH AND NOT VSCE_PHE_COMMON)
     message("-- error --")
     message("--")

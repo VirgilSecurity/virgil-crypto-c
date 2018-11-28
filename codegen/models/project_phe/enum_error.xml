@@ -3,4 +3,8 @@
         No errors was occurred.
     </constant>
 
+    <constant name="invalid proof" of_class="global" value="1">
+        Proof check failed.
+    </constant>
+
 </enum>

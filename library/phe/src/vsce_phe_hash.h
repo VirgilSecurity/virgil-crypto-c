@@ -56,12 +56,10 @@
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
-#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
-#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on

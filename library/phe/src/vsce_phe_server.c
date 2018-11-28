@@ -587,7 +587,7 @@ vsce_phe_server_prove_success(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     VSCE_ASSERT(mbedtls_status == 0);
     mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &term2, &blind_x, hs1, /* FIXME */ NULL, NULL);
     VSCE_ASSERT(mbedtls_status == 0);
-    mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &term1, &blind_x, &phe_server_ctx->group.G, /* FIXME */ NULL, NULL);
+    mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &term3, &blind_x, &phe_server_ctx->group.G, /* FIXME */ NULL, NULL);
     VSCE_ASSERT(mbedtls_status == 0);
 
     mbedtls_mpi challenge;
@@ -599,9 +599,11 @@ vsce_phe_server_prove_success(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
 
     mbedtls_status = mbedtls_mpi_mul_mpi(&challenge, &challenge, &x);
     VSCE_ASSERT(mbedtls_status == 0);
+
     mbedtls_status = mbedtls_mpi_add_mpi(&blind_x, &blind_x, &challenge);
     VSCE_ASSERT(mbedtls_status == 0);
-    mbedtls_status = mbedtls_mpi_mod_mpi(&blind_x, &blind_x, &phe_server_ctx->group.P);
+
+    mbedtls_status = mbedtls_mpi_mod_mpi(&blind_x, &blind_x, &phe_server_ctx->group.N);
     VSCE_ASSERT(mbedtls_status == 0);
 
     size_t olen = 0;
@@ -611,13 +613,13 @@ vsce_phe_server_prove_success(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     VSCE_ASSERT(olen == sizeof(success_proof->term_1));
 
     olen = 0;
-    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term2, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
                                                     success_proof->term_2, sizeof(success_proof->term_2));
     VSCE_ASSERT(mbedtls_status == 0);
     VSCE_ASSERT(olen == sizeof(success_proof->term_2));
 
     olen = 0;
-    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term3, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
                                                     success_proof->term_3, sizeof(success_proof->term_3));
     VSCE_ASSERT(mbedtls_status == 0);
     VSCE_ASSERT(olen == sizeof(success_proof->term_3));
@@ -677,7 +679,7 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
 
     mbedtls_status = mbedtls_mpi_mul_mpi(&minus_RX, &x, &minus_r);
     VSCE_ASSERT(mbedtls_status == 0);
-    mbedtls_status = mbedtls_mpi_mod_mpi(&minus_RX, &minus_RX, &phe_server_ctx->group.P);
+    mbedtls_status = mbedtls_mpi_mod_mpi(&minus_RX, &minus_RX, &phe_server_ctx->group.N);
     VSCE_ASSERT(mbedtls_status == 0);
     mbedtls_status = mbedtls_ecp_muladd(&phe_server_ctx->group, c1, &r, c0, &minus_RX, hs0);
     VSCE_ASSERT(mbedtls_status == 0);
@@ -722,14 +724,14 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     VSCE_ASSERT(mbedtls_status == 0);
     mbedtls_status = mbedtls_mpi_add_mpi(&blind_A, &blind_A, &challenge_A);
     VSCE_ASSERT(mbedtls_status == 0);
-    mbedtls_status = mbedtls_mpi_mod_mpi(&blind_A, &blind_A, &phe_server_ctx->group.P);
+    mbedtls_status = mbedtls_mpi_mod_mpi(&blind_A, &blind_A, &phe_server_ctx->group.N);
     VSCE_ASSERT(mbedtls_status == 0);
 
     mbedtls_status = mbedtls_mpi_mul_mpi(&challenge_B, &challenge_B, &minus_RX);
     VSCE_ASSERT(mbedtls_status == 0);
     mbedtls_status = mbedtls_mpi_add_mpi(&blind_B, &blind_B, &challenge_B);
     VSCE_ASSERT(mbedtls_status == 0);
-    mbedtls_status = mbedtls_mpi_mod_mpi(&blind_B, &blind_B, &phe_server_ctx->group.P);
+    mbedtls_status = mbedtls_mpi_mod_mpi(&blind_B, &blind_B, &phe_server_ctx->group.N);
     VSCE_ASSERT(mbedtls_status == 0);
 
     size_t olen = 0;
@@ -739,19 +741,19 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     VSCE_ASSERT(olen == sizeof(failure_proof->term_1));
 
     olen = 0;
-    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term2, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
                                    failure_proof->term_2, sizeof(failure_proof->term_2));
     VSCE_ASSERT(mbedtls_status == 0);
     VSCE_ASSERT(olen == sizeof(failure_proof->term_2));
 
     olen = 0;
-    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term3, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
                                    failure_proof->term_3, sizeof(failure_proof->term_3));
     VSCE_ASSERT(mbedtls_status == 0);
     VSCE_ASSERT(olen == sizeof(failure_proof->term_3));
 
     olen = 0;
-    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term4, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
                                    failure_proof->term_4, sizeof(failure_proof->term_4));
     VSCE_ASSERT(mbedtls_status == 0);
     VSCE_ASSERT(olen == sizeof(failure_proof->term_4));
