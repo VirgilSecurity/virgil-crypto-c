@@ -280,7 +280,7 @@ vsce_phe_utils_random_z(vsce_phe_utils_t *phe_utils_ctx, mbedtls_mpi *z) {
 
     do {
         vsc_buffer_reset(buffer);
-        VSCE_ASSERT(vscf_random(phe_utils_ctx->random, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, buffer) == vsce_SUCCESS);
+        VSCE_ASSERT(vscf_random(phe_utils_ctx->random, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, buffer) == vscf_SUCCESS);
         VSCE_ASSERT(mbedtls_mpi_read_binary(z, buff, sizeof(buff)) == 0);
     } while (mbedtls_mpi_cmp_mpi(&phe_utils_ctx->group.N, z) <= 0);
 
