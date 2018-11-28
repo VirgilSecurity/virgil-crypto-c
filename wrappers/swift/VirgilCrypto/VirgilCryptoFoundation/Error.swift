@@ -86,6 +86,9 @@ import VSCFoundation
     /// Requested data to be generated is too big.
     case rngRequestedDataTooBig = -211
 
+    /// Exchange key return zero.
+    case sharedKeyExchangeFailed = -301
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC error: vscf_error_t) {
         self.init(rawValue: Int(error.rawValue))!

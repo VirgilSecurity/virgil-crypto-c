@@ -66,4 +66,8 @@
     <constant name="rng requested data too big" value="-211">
         Requested data to be generated is too big.
     </constant>
+
+    <constant name="shared key exchange failed" value="-301">
+        Exchange key return zero.
+    </constant>
 </enum>

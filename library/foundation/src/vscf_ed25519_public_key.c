@@ -95,7 +95,7 @@ vscf_ed25519_public_key_init_ctx(vscf_ed25519_public_key_impl_t *ed25519_public_
 VSCF_PRIVATE void
 vscf_ed25519_public_key_cleanup_ctx(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
 
-    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    VSC_UNUSED(ed25519_public_key_impl);
     vscf_erase(ed25519_public_key_impl, sizeof(vscf_ed25519_public_key_impl_t));
 }
 
@@ -105,7 +105,7 @@ vscf_ed25519_public_key_cleanup_ctx(vscf_ed25519_public_key_impl_t *ed25519_publ
 VSCF_PUBLIC size_t
 vscf_ed25519_public_key_key_len(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
 
-    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    VSC_UNUSED(ed25519_public_key_impl);
     return (ED25519_KEY_LEN);
 }
 
@@ -115,7 +115,7 @@ vscf_ed25519_public_key_key_len(vscf_ed25519_public_key_impl_t *ed25519_public_k
 VSCF_PUBLIC size_t
 vscf_ed25519_public_key_key_bitlen(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
 
-    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    VSC_UNUSED(ed25519_public_key_impl);
     return (8 * ED25519_KEY_LEN);
 }
 
@@ -165,14 +165,11 @@ vscf_ed25519_public_key_export_public_key(vscf_ed25519_public_key_impl_t *ed2551
 
     VSCF_ASSERT_PTR(ed25519_public_key_impl);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    vsc_data_t dst;
-    dst.bytes = vsc_buffer_ptr(out);
-    dst.len = vsc_buffer_left(out);
-    VSCF_ASSERT(dst.len >= ED25519_KEY_LEN);
+    VSCF_ASSERT(vsc_buffer_left(out) >= ED25519_KEY_LEN);
     vsc_data_t src;
     src.bytes = ed25519_public_key_impl->public_key;
     src.len = ED25519_KEY_LEN;
-    vscf_endianness_mem_copy_with_conversion(dst, src, false);
+    vscf_endianness_reverse_memcpy(src, out);
     return vscf_SUCCESS;
 }
 
@@ -182,7 +179,7 @@ vscf_ed25519_public_key_export_public_key(vscf_ed25519_public_key_impl_t *ed2551
 VSCF_PUBLIC size_t
 vscf_ed25519_public_key_exported_public_key_len(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
 
-    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    VSC_UNUSED(ed25519_public_key_impl);
     return (ED25519_KEY_LEN);
 }
 
@@ -194,9 +191,8 @@ vscf_ed25519_public_key_import_public_key(vscf_ed25519_public_key_impl_t *ed2551
 
     VSCF_ASSERT_PTR(ed25519_public_key_impl);
     VSCF_ASSERT_PTR(data.bytes);
-    vsc_data_t dst;
-    dst.bytes = ed25519_public_key_impl->public_key;
-    dst.len = ED25519_KEY_LEN;
-    vscf_endianness_mem_copy_with_conversion(dst, data, true);
+    vsc_buffer_t *dst = vsc_buffer_new();
+    vsc_buffer_use(dst, ed25519_public_key_impl->public_key, ED25519_KEY_LEN);
+    vscf_endianness_reverse_memcpy(data, dst);
     return vscf_SUCCESS;
 }

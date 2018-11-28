@@ -137,7 +137,11 @@ enum vscf_error_t {
     //
     //  Requested data to be generated is too big.
     //
-    vscf_error_RNG_REQUESTED_DATA_TOO_BIG = -211
+    vscf_error_RNG_REQUESTED_DATA_TOO_BIG = -211,
+    //
+    //  Exchange key return zero.
+    //
+    vscf_error_SHARED_KEY_EXCHANGE_FAILED = -301
 };
 typedef enum vscf_error_t vscf_error_t;
 

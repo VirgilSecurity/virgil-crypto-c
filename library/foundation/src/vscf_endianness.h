@@ -57,10 +57,12 @@
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -78,8 +80,11 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-VSCF_PUBLIC vsc_data_t
-vscf_endianness_mem_copy_with_conversion(vsc_data_t dst, vsc_data_t src, bool be_to_le);
+//
+//  Copy memory buffer with convertion from little endian to big endian and back
+//
+VSCF_PUBLIC void
+vscf_endianness_reverse_memcpy(vsc_data_t src, vsc_buffer_t *dst);
 
 
 // --------------------------------------------------------------------------

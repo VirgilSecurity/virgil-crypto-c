@@ -1,10 +1,10 @@
 <class name="endianness" scope="internal">
   Converter between big endian and little endian datas
 
-  <method name="mem copy with conversion" is_static="1">
-    <argument name="dst" class="data" access="readwrite"/>
+  <method name="reverse memcpy" is_static="1">
+    Copy memory buffer with convertion from little endian to big endian and back
+
     <argument name="src" class="data" access="readonly"/>
-    <argument name="be to le" type="boolean"/>
-    <return class="data"/>
+    <argument name="dst" class="buffer" access="readwrite"/>
   </method>
 </class>
