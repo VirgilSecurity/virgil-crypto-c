@@ -78,6 +78,9 @@
 VSCF_PUBLIC void
 vscf_endianness_reverse_memcpy(vsc_data_t src, vsc_buffer_t *dst) {
 
+    VSCF_ASSERT(vsc_data_is_valid(src));
+    VSCF_ASSERT_PTR(dst);
+    VSCF_ASSERT(vsc_buffer_is_valid(dst));
     byte *dest = vsc_buffer_ptr(dst);
     VSCF_ASSERT(src.len <= vsc_buffer_left(dst));
     for (size_t i = 0; i < src.len; i++) {

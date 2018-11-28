@@ -5,6 +5,6 @@
     Copy memory buffer with convertion from little endian to big endian and back
 
     <argument name="src" class="data" access="readonly"/>
-    <argument name="dst" class="buffer" access="readwrite"/>
+    <argument name="dst" class="buffer"/>
   </method>
 </class>
