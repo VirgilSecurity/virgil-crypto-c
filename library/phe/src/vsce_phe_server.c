@@ -299,6 +299,7 @@ vsce_phe_server_generate_server_key_pair(vsce_phe_server_t *phe_server_ctx, vsc_
     VSCE_ASSERT_PTR(phe_server_ctx);
     VSCE_ASSERT(vsc_buffer_len(server_private_key) == 0);
     VSCE_ASSERT(vsc_buffer_left(server_private_key) == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    vsc_buffer_make_secure(server_private_key);
     VSCE_ASSERT(vsc_buffer_len(server_public_key) == 0);
     VSCE_ASSERT(vsc_buffer_left(server_public_key) == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
@@ -309,8 +310,8 @@ vsce_phe_server_generate_server_key_pair(vsce_phe_server_t *phe_server_ctx, vsc_
 
     int mbedtls_status = 0;
     mbedtls_status = mbedtls_mpi_write_binary(&priv, vsc_buffer_ptr(server_private_key), vsc_buffer_capacity(server_private_key));
-    VSCE_ASSERT(mbedtls_status == 0);
     vsc_buffer_reserve(server_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT(mbedtls_status == 0);
 
     mbedtls_ecp_point pub;
     mbedtls_ecp_point_init(&pub);
@@ -321,9 +322,9 @@ vsce_phe_server_generate_server_key_pair(vsce_phe_server_t *phe_server_ctx, vsc_
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &pub, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
             vsc_buffer_ptr(server_public_key), vsc_buffer_capacity(server_public_key));
+    vsc_buffer_reserve(server_public_key, olen);
     VSCE_ASSERT(mbedtls_status == 0);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
-    vsc_buffer_reserve(server_public_key, olen);
 
     mbedtls_ecp_point_free(&pub);
     mbedtls_mpi_free(&priv);
@@ -783,19 +784,93 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     return vsce_SUCCESS;
 }
 
+VSCE_PUBLIC size_t
+vsce_phe_server_update_token_len(vsce_phe_server_t *phe_server_ctx) {
+
+    VSCE_UNUSED(phe_server_ctx);
+    size_t size = 0;
+    // TODO: Optimize
+    UpdateToken token = UpdateToken_init_zero;
+    bool pb_status = true;
+    pb_status = pb_get_encoded_size(&size, UpdateToken_fields, &token);
+    VSCE_ASSERT(pb_status);
+
+    return size;
+}
+
 VSCE_PUBLIC vsce_error_t
-vsce_phe_server_rotate_server_private_key(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
-        vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key, vsc_buffer_t *rotation_token) {
+vsce_phe_server_rotate_keys(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
+        vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key, vsc_buffer_t *update_token) {
 
     VSCE_ASSERT_PTR(phe_server_ctx);
+    VSCE_ASSERT(server_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT(vsc_buffer_len(update_token) == 0);
+    VSCE_ASSERT(vsc_buffer_capacity(update_token) >= vsce_phe_server_update_token_len(phe_server_ctx));
+    VSCE_ASSERT(vsc_buffer_len(new_server_private_key) == 0);
+    VSCE_ASSERT(vsc_buffer_capacity(new_server_private_key) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    vsc_buffer_make_secure(new_server_private_key);
+    VSCE_ASSERT(vsc_buffer_len(new_server_public_key) == 0);
+    VSCE_ASSERT(vsc_buffer_capacity(new_server_public_key) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
-    VSCE_ASSERT_PTR(new_server_private_key);
-    VSCE_ASSERT_PTR(new_server_public_key);
-    VSCE_ASSERT_PTR(rotation_token);
+    mbedtls_mpi x;
+    mbedtls_mpi_init(&x);
+    int mbedtls_status = 0;
+    mbedtls_status = mbedtls_mpi_read_binary(&x, server_private_key.bytes, server_private_key.len);
+    VSCE_ASSERT(mbedtls_status == 0);
 
-    VSCE_UNUSED(server_private_key);
+    mbedtls_mpi a, b;
+    mbedtls_mpi_init(&a);
+    mbedtls_mpi_init(&b);
 
-    //  TODO: This is STUB. Implement me.
+    vsce_phe_utils_random_z(phe_server_ctx->utils, &a);
+    vsce_phe_utils_random_z(phe_server_ctx->utils, &b);
+
+    UpdateToken token = UpdateToken_init_zero;
+
+    mbedtls_status = mbedtls_mpi_write_binary(&a, token.a, sizeof(token.a));
+    VSCE_ASSERT(mbedtls_status == 0);
+    mbedtls_status = mbedtls_mpi_write_binary(&b, token.b, sizeof(token.b));
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(update_token), vsc_buffer_capacity(update_token));
+    bool pb_status = pb_encode(&ostream, UpdateToken_fields, &token);
+    vsc_buffer_reserve(update_token, ostream.bytes_written);
+    VSCE_ASSERT(pb_status);
+
+    mbedtls_mpi new_x;
+    mbedtls_mpi_init(&new_x);
+
+    mbedtls_status = mbedtls_mpi_mul_mpi(&new_x, &x, &a);
+    VSCE_ASSERT(mbedtls_status == 0);
+    mbedtls_status = mbedtls_mpi_add_mpi(&new_x, &new_x, &b);
+    VSCE_ASSERT(mbedtls_status == 0);
+    mbedtls_status = mbedtls_mpi_mod_mpi(&new_x, &new_x, &phe_server_ctx->group.N);
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    mbedtls_status = mbedtls_mpi_write_binary(&new_x, vsc_buffer_ptr(new_server_private_key), vsc_buffer_capacity(new_server_private_key));
+    vsc_buffer_reserve(new_server_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    mbedtls_ecp_point new_X;
+    mbedtls_ecp_point_init(&new_X);
+
+    mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &new_X, &new_x, &phe_server_ctx->group.G, NULL, NULL);
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    size_t olen = 0;
+    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &new_X, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+            vsc_buffer_ptr(new_server_public_key), vsc_buffer_capacity(new_server_public_key));
+    vsc_buffer_reserve(new_server_public_key, vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT(olen == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+
+    mbedtls_ecp_point_free(&new_X);
+
+    mbedtls_mpi_free(&x);
+    mbedtls_mpi_free(&new_x);
+
+    mbedtls_mpi_free(&a);
+    mbedtls_mpi_free(&b);
 
     return vsce_SUCCESS;
 }

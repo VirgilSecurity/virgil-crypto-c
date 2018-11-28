@@ -87,24 +87,25 @@
         <return enum="error"/>
     </method>
 
-    <method name="rotate server private key">
-        <argument name="rotation token" class="data"/>
+    <method name="rotate keys">
+        <argument name="update token" class="data"/>
 
-        <return enum="error"/>
-    </method>
-
-    <method name="update enrollment record" is_static="1">
-        <argument name="enrollment record" class="data"/>
-        <argument name="rotation token" class="data"/>
-        <argument name="new enrollment record" class="buffer" access="writeonly">
-            <length method="enrollment record len"/>
+        <argument name="new client private key" class="buffer" access="writeonly">
+            <length constant=".(class_phe_common_constant_phe_private_key_length)"/>
+        </argument>
+        <argument name="new server public key" class="buffer" access="writeonly">
+            <length constant=".(class_phe_common_constant_phe_public_key_length)"/>
         </argument>
 
         <return enum="error"/>
     </method>
 
-    <method name="rotate client private key">
-        <argument name="rotation token" class="data"/>
+    <method name="update enrollment record">
+        <argument name="enrollment record" class="data"/>
+        <argument name="update token" class="data"/>
+        <argument name="new enrollment record" class="buffer" access="writeonly">
+            <length method="enrollment record len"/>
+        </argument>
 
         <return enum="error"/>
     </method>

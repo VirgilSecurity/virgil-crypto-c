@@ -10,7 +10,6 @@ EnrollmentRecord.t_1 max_size:65 fixed_length:true
 ProofOfSuccess.term_1 max_size:65 fixed_length:true
 ProofOfSuccess.term_2 max_size:65 fixed_length:true
 ProofOfSuccess.term_3 max_size:65 fixed_length:true
-// Check me
 ProofOfSuccess.blind_x max_size:32 fixed_length:true
 
 ProofOfFail.term_1 max_size:65 fixed_length:true
@@ -18,7 +17,6 @@ ProofOfFail.term_2 max_size:65 fixed_length:true
 ProofOfFail.term_3 max_size:65 fixed_length:true
 ProofOfFail.term_4 max_size:65 fixed_length:true
 
-// Check me
 ProofOfFail.blind_a max_size:32 fixed_length:true
 ProofOfFail.blind_b max_size:32 fixed_length:true
 
@@ -26,3 +24,6 @@ VerifyPasswordRequest.ns max_size:32 fixed_length:true
 VerifyPasswordRequest.c_0 max_size:65 fixed_length:true
 
 VerifyPasswordResponse.c_1 max_size:65 fixed_length:true
+
+UpdateToken.a max_size:32 fixed_length:true
+UpdateToken.b max_size:32 fixed_length:true

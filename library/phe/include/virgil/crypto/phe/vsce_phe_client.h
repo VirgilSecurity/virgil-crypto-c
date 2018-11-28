@@ -174,14 +174,12 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vs
         vsc_data_t enrollment_record, vsc_data_t verify_password_response, vsc_buffer_t *account_key);
 
 VSCE_PUBLIC vsce_error_t
-vsce_phe_client_rotate_server_private_key(vsce_phe_client_t *phe_client_ctx, vsc_data_t rotation_token);
+vsce_phe_client_rotate_keys(vsce_phe_client_t *phe_client_ctx, vsc_data_t update_token,
+        vsc_buffer_t *new_client_private_key, vsc_buffer_t *new_server_public_key);
 
 VSCE_PUBLIC vsce_error_t
-vsce_phe_client_update_enrollment_record(vsc_data_t enrollment_record, vsc_data_t rotation_token,
-        vsc_buffer_t *new_enrollment_record);
-
-VSCE_PUBLIC vsce_error_t
-vsce_phe_client_rotate_client_private_key(vsce_phe_client_t *phe_client_ctx, vsc_data_t rotation_token);
+vsce_phe_client_update_enrollment_record(vsce_phe_client_t *phe_client_ctx, vsc_data_t enrollment_record,
+        vsc_data_t update_token, vsc_buffer_t *new_enrollment_record);
 
 
 // --------------------------------------------------------------------------

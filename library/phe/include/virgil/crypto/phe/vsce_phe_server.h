@@ -170,9 +170,12 @@ VSCE_PUBLIC vsce_error_t
 vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
         vsc_data_t server_public_key, vsc_data_t verify_password_request, vsc_buffer_t *verify_password_response);
 
+VSCE_PUBLIC size_t
+vsce_phe_server_update_token_len(vsce_phe_server_t *phe_server_ctx);
+
 VSCE_PUBLIC vsce_error_t
-vsce_phe_server_rotate_server_private_key(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
-        vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key, vsc_buffer_t *rotation_token);
+vsce_phe_server_rotate_keys(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
+        vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key, vsc_buffer_t *update_token);
 
 
 // --------------------------------------------------------------------------
