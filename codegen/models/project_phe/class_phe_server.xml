@@ -76,7 +76,11 @@
         <return enum="error"/>
     </method>
 
-    <method name="rotate server private key">
+    <method name="update token len">
+        <return type="size"/>
+    </method>
+
+    <method name="rotate keys">
         <argument name="server private key" class="data"/>
         <argument name="new server private key" class="buffer" access="writeonly">
             <length constant=".(class_phe_common_constant_phe_private_key_length)"/>
@@ -84,8 +88,8 @@
         <argument name="new server public key" class="buffer" access="writeonly">
             <length constant=".(class_phe_common_constant_phe_private_key_length)"/>
         </argument>
-        <argument name="rotation token" class="buffer" access="writeonly">
-            <length constant=".(class_phe_common_constant_phe_rotation_token_length)"/>
+        <argument name="update token" class="buffer" access="writeonly">
+            <length method="update token len"/>
         </argument>
 
         <return enum="error"/>

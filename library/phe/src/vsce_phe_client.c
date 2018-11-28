@@ -330,6 +330,7 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
     VSCE_ASSERT(vsc_buffer_capacity(enrollment_record) >= 0); // TODO: Check length
     VSCE_ASSERT(vsc_buffer_len(account_key) == 0);
     VSCE_ASSERT(vsc_buffer_capacity(account_key) == vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
+    vsc_buffer_make_secure(account_key);
     VSCE_ASSERT(password.len > 0);
     VSCE_ASSERT(password.len <= vsce_phe_common_PHE_MAX_PASSWORD_LENGTH);
 
@@ -385,8 +386,8 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_client_ctx->group, &M, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
             vsc_buffer_ptr(M_buf), vsce_phe_common_PHE_POINT_LENGTH);
-    VSCE_ASSERT(mbedtls_status == 0);
     vsc_buffer_reserve(M_buf, vsce_phe_common_PHE_POINT_LENGTH);
+    VSCE_ASSERT(mbedtls_status == 0);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
     vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
@@ -396,7 +397,6 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
     // FIXME: Duplicate
     char hkdf_info[] = "Secret";
 
-    vsc_buffer_make_secure(account_key);
     vscf_hkdf_derive(hkdf, vsc_buffer_data(M_buf), vsc_data_empty(),
             vsc_data((byte *)hkdf_info, sizeof(hkdf_info)), account_key, vsc_buffer_capacity(account_key));
     vsc_buffer_destroy(&M_buf);
@@ -550,6 +550,7 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vs
     VSCE_ASSERT_PTR(phe_client_ctx);
     VSCE_ASSERT(vsc_buffer_len(account_key) == 0);
     VSCE_ASSERT(vsc_buffer_capacity(account_key) == vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
+    vsc_buffer_make_secure(account_key);
     VSCE_ASSERT(password.len > 0);
     VSCE_ASSERT(password.len <= vsce_phe_common_PHE_MAX_PASSWORD_LENGTH);
 
@@ -634,8 +635,6 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vs
 
         // FIXME: Why so easy word?
         char hkdf_info[] = "Secret";
-
-        vsc_buffer_make_secure(account_key);
 
         vscf_hkdf_derive(hkdf, vsc_buffer_data(M_buf), vsc_data_empty(),
                          vsc_data((byte *)hkdf_info, sizeof(hkdf_info)), account_key, vsc_buffer_capacity(account_key));
@@ -924,36 +923,171 @@ vsce_phe_client_check_fail_proof(vsce_phe_client_t *phe_client_ctx, const ProofO
 }
 
 VSCE_PUBLIC vsce_error_t
-vsce_phe_client_rotate_server_private_key(vsce_phe_client_t *phe_client_ctx, vsc_data_t rotation_token) {
+vsce_phe_client_rotate_keys(vsce_phe_client_t *phe_client_ctx, vsc_data_t update_token,
+        vsc_buffer_t *new_client_private_key, vsc_buffer_t *new_server_public_key) {
 
     VSCE_ASSERT_PTR(phe_client_ctx);
+    VSCE_ASSERT(vsc_buffer_len(new_client_private_key) == 0);
+    VSCE_ASSERT(vsc_buffer_capacity(new_client_private_key) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    vsc_buffer_make_secure(new_client_private_key);
+    VSCE_ASSERT(vsc_buffer_len(new_server_public_key) == 0);
+    VSCE_ASSERT(vsc_buffer_capacity(new_server_public_key) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
-    VSCE_UNUSED(rotation_token);
-    //  TODO: This is STUB. Implement me.
+    UpdateToken token = UpdateToken_init_zero;
+
+    pb_istream_t stream = pb_istream_from_buffer(update_token.bytes, update_token.len);
+
+    bool pb_status = pb_decode(&stream, UpdateToken_fields, &token);
+    VSCE_ASSERT(pb_status);
+
+    mbedtls_mpi a, b;
+    mbedtls_mpi_init(&a);
+    mbedtls_mpi_init(&b);
+
+    int mbedtls_status = 0;
+    mbedtls_status = mbedtls_mpi_read_binary(&a, token.a, sizeof(token.a));
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    mbedtls_status = mbedtls_mpi_read_binary(&b, token.b, sizeof(token.b));
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    mbedtls_mpi y, new_y;
+    mbedtls_mpi_init(&y);
+    mbedtls_mpi_init(&new_y);
+    mbedtls_status = mbedtls_mpi_read_binary(&y, phe_client_ctx->client_private_key, sizeof(phe_client_ctx->client_private_key));
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    mbedtls_status = mbedtls_mpi_mul_mpi(&new_y, &y, &a);
+    VSCE_ASSERT(mbedtls_status == 0);
+    mbedtls_status = mbedtls_mpi_mod_mpi(&new_y, &new_y, &phe_client_ctx->group.N);
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    mbedtls_status = mbedtls_mpi_write_binary(&new_y, vsc_buffer_ptr(new_client_private_key), vsc_buffer_capacity(new_client_private_key));
+    vsc_buffer_reserve(new_client_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    mbedtls_ecp_point X, new_X;
+    mbedtls_ecp_point_init(&X);
+    mbedtls_ecp_point_init(&new_X);
+
+    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &X, phe_client_ctx->server_public_key,
+            sizeof(phe_client_ctx->server_public_key));
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    mbedtls_status = mbedtls_ecp_muladd(&phe_client_ctx->group, &new_X, &a, &X, &b, &phe_client_ctx->group.G);
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    size_t olen = 0;
+    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_client_ctx->group, &new_X, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+            vsc_buffer_ptr(new_server_public_key), vsc_buffer_capacity(new_server_public_key));
+    vsc_buffer_reserve(new_server_public_key, olen);
+    VSCE_ASSERT(olen == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    mbedtls_mpi_free(&a);
+    mbedtls_mpi_free(&b);
+
+    mbedtls_mpi_free(&y);
+    mbedtls_mpi_free(&new_y);
+
+    mbedtls_ecp_point_free(&X);
+    mbedtls_ecp_point_free(&new_X);
 
     return vsce_SUCCESS;
 }
 
 VSCE_PUBLIC vsce_error_t
-vsce_phe_client_update_enrollment_record(vsc_data_t enrollment_record, vsc_data_t rotation_token,
-        vsc_buffer_t *new_enrollment_record) {
-
-    VSCE_ASSERT_PTR(new_enrollment_record);
-
-    VSCE_UNUSED(enrollment_record);
-    VSCE_UNUSED(rotation_token);
-
-    //  TODO: This is STUB. Implement me.
-
-    return vsce_SUCCESS;
-}
-
-VSCE_PUBLIC vsce_error_t
-vsce_phe_client_rotate_client_private_key(vsce_phe_client_t *phe_client_ctx, vsc_data_t rotation_token) {
+vsce_phe_client_update_enrollment_record(vsce_phe_client_t *phe_client_ctx, vsc_data_t enrollment_record,
+        vsc_data_t update_token, vsc_buffer_t *new_enrollment_record) {
 
     VSCE_ASSERT_PTR(phe_client_ctx);
-    VSCE_UNUSED(rotation_token);
-    //  TODO: This is STUB. Implement me.
+    VSCE_ASSERT(vsc_buffer_len(new_enrollment_record) == 0);
+    VSCE_ASSERT(vsc_buffer_capacity(new_enrollment_record) >= 0); // TODO: Check length
+
+    EnrollmentRecord record = EnrollmentRecord_init_zero;
+
+    pb_istream_t stream1 = pb_istream_from_buffer(enrollment_record.bytes, enrollment_record.len);
+
+    bool pb_status = pb_decode(&stream1, EnrollmentRecord_fields, &record);
+    VSCE_ASSERT(pb_status);
+
+    mbedtls_ecp_point t0, t1;
+    mbedtls_ecp_point_init(&t0);
+    mbedtls_ecp_point_init(&t1);
+
+    int mbedtls_status = 0;
+    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &t0, record.t_0, sizeof(record.t_0));
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &t1, record.t_1, sizeof(record.t_1));
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    UpdateToken token = UpdateToken_init_zero;
+
+    pb_istream_t stream2 = pb_istream_from_buffer(update_token.bytes, update_token.len);
+
+    pb_status = pb_decode(&stream2, UpdateToken_fields, &token);
+    VSCE_ASSERT(pb_status);
+
+    mbedtls_mpi a, b;
+    mbedtls_mpi_init(&a);
+    mbedtls_mpi_init(&b);
+
+    mbedtls_status = mbedtls_mpi_read_binary(&a, token.a, sizeof(token.a));
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    mbedtls_status = mbedtls_mpi_read_binary(&b, token.b, sizeof(token.b));
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    mbedtls_ecp_point hs0, hs1;
+    mbedtls_ecp_point_init(&hs0);
+    mbedtls_ecp_point_init(&hs1);
+
+    vsce_phe_hash_hs0(phe_client_ctx->phe_hash, vsc_data(record.ns, sizeof(record.ns)), &hs0);
+    vsce_phe_hash_hs1(phe_client_ctx->phe_hash, vsc_data(record.ns, sizeof(record.ns)), &hs1);
+
+    mbedtls_ecp_point new_t0, new_t1;
+    mbedtls_ecp_point_init(&new_t0);
+    mbedtls_ecp_point_init(&new_t1);
+
+    mbedtls_status = mbedtls_ecp_muladd(&phe_client_ctx->group, &new_t0, &a, &t0, &b, &hs0);
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    mbedtls_status = mbedtls_ecp_muladd(&phe_client_ctx->group, &new_t1, &a, &t1, &b, &hs1);
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    EnrollmentRecord new_record = EnrollmentRecord_init_zero;
+
+    memcpy(new_record.ns, record.ns, sizeof(new_record.ns));
+    memcpy(new_record.nc, record.nc, sizeof(new_record.nc));
+
+    size_t olen = 0;
+    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_client_ctx->group, &new_t0, MBEDTLS_ECP_PF_UNCOMPRESSED,
+            &olen, new_record.t_0, sizeof(new_record.t_0));
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    olen = 0;
+    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_client_ctx->group, &new_t1, MBEDTLS_ECP_PF_UNCOMPRESSED,
+                                                    &olen, new_record.t_1, sizeof(new_record.t_1));
+    VSCE_ASSERT(mbedtls_status == 0);
+
+    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(new_enrollment_record), vsc_buffer_capacity(new_enrollment_record));
+
+    pb_status = pb_encode(&ostream, EnrollmentRecord_fields, &new_record);
+    vsc_buffer_reserve(new_enrollment_record, ostream.bytes_written);
+    VSCE_ASSERT(pb_status);
+
+    mbedtls_ecp_point_free(&hs0);
+    mbedtls_ecp_point_free(&hs1);
+
+    mbedtls_ecp_point_free(&new_t0);
+    mbedtls_ecp_point_free(&new_t1);
+
+    mbedtls_ecp_point_free(&t0);
+    mbedtls_ecp_point_free(&t1);
+
+    mbedtls_mpi_free(&a);
+    mbedtls_mpi_free(&b);
 
     return vsce_SUCCESS;
 }
