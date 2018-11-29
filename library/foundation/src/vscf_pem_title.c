@@ -67,32 +67,32 @@
 //
 //  Contains constant string "PUBLIC KEY".
 //
-const char vscf_pem_title_public_key[] = "PUBLIC KEY";
+VSCF_PUBLIC const char vscf_pem_title_public_key[] = "PUBLIC KEY";
 
 //
 //  Contains length in bytes of string "PUBLIC KEY".
 //
-const size_t vscf_pem_title_public_key_len = sizeof(vscf_pem_title_public_key) - 1;
+VSCF_PUBLIC const size_t vscf_pem_title_public_key_len = sizeof(vscf_pem_title_public_key) - 1;
 
 //
 //  Contains constant string "PRIVATE KEY".
 //
-const char vscf_pem_title_private_key[] = "PRIVATE KEY";
+VSCF_PUBLIC const char vscf_pem_title_private_key[] = "PRIVATE KEY";
 
 //
 //  Contains length in bytes of string "PRIVATE KEY".
 //
-const size_t vscf_pem_title_private_key_len = sizeof(vscf_pem_title_private_key) - 1;
+VSCF_PUBLIC const size_t vscf_pem_title_private_key_len = sizeof(vscf_pem_title_private_key) - 1;
 
 //
 //  Contains constant string "ENCRYPTED PRIVATE KEY".
 //
-const char vscf_pem_title_encrypted_private_key[] = "ENCRYPTED PRIVATE KEY";
+VSCF_PUBLIC const char vscf_pem_title_encrypted_private_key[] = "ENCRYPTED PRIVATE KEY";
 
 //
 //  Contains length in bytes of string "ENCRYPTED PRIVATE KEY".
 //
-const size_t vscf_pem_title_encrypted_private_key_len = sizeof(vscf_pem_title_encrypted_private_key) - 1;
+VSCF_PUBLIC const size_t vscf_pem_title_encrypted_private_key_len = sizeof(vscf_pem_title_encrypted_private_key) - 1;
 
 
 // --------------------------------------------------------------------------
