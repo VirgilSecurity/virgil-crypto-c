@@ -326,6 +326,7 @@ void test__hash_z_s_failure__const_hash__should_match() {
     mbedtls_ecp_point_free(&term1);
     mbedtls_ecp_point_free(&term2);
     mbedtls_ecp_point_free(&term3);
+    mbedtls_ecp_point_free(&term4);
 
     mbedtls_mpi_free(&z);
     mbedtls_mpi_free(&z_exp);

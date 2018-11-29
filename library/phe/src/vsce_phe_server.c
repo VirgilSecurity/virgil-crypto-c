@@ -417,6 +417,8 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t ser
 
     mbedtls_mpi_free(&x);
 
+    vsc_buffer_destroy(&ns);
+
     return vsce_SUCCESS;
 }
 
