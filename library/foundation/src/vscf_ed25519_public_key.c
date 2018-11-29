@@ -138,7 +138,7 @@ vscf_ed25519_public_key_encrypted_len(vscf_ed25519_public_key_impl_t *ed25519_pu
 
     VSCF_ASSERT_PTR(ed25519_public_key_impl);
     VSCF_ASSERT(data_len != 0);
-    return vscf_SUCCESS;
+    return 0;
 }
 
 //
