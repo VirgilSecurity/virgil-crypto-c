@@ -134,6 +134,7 @@ void test__full_flow__random_correct_pwd__should_succeed() {
     vsc_buffer_destroy(&enrollment_response);
     vsc_buffer_destroy(&enrollment_record);
     vsc_buffer_destroy(&account_key);
+    vsc_buffer_destroy(&account_key2);
     vsc_buffer_destroy(&verify_password_request);
     vsc_buffer_destroy(&verify_password_response);
 }
@@ -191,6 +192,7 @@ void test__full_flow__random_incorrect_pwd__should_fail() {
     vsc_buffer_destroy(&enrollment_response);
     vsc_buffer_destroy(&enrollment_record);
     vsc_buffer_destroy(&account_key);
+    vsc_buffer_destroy(&account_key2);
     vsc_buffer_destroy(&verify_password_request);
     vsc_buffer_destroy(&verify_password_response);
 }
@@ -227,6 +229,7 @@ void test__rotation__random_rotation__server_public_keys_match() {
     vsc_buffer_destroy(&new_server_public_key);
     vsc_buffer_destroy(&new_server_public_key2);
     vsc_buffer_destroy(&new_client_private_key);
+    vsc_buffer_destroy(&token);
 }
 
 void test__rotation__random_rotation__enrollment_record_updated_successfully() {
@@ -306,6 +309,8 @@ void test__rotation__random_rotation__enrollment_record_updated_successfully() {
     vsc_buffer_destroy(&account_key2);
     vsc_buffer_destroy(&verify_password_request);
     vsc_buffer_destroy(&verify_password_response);
+    vsc_buffer_destroy(&token);
+    vsc_buffer_destroy(&new_enrollment_record);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE

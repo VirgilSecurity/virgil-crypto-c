@@ -209,6 +209,7 @@ vsce_simple_swu_init_ctx(vsce_simple_swu_t *simple_swu_ctx) {
     int mbedtls_status = 0;
     mbedtls_status = mbedtls_ecp_group_load(&simple_swu_ctx->group, MBEDTLS_ECP_DP_SECP256R1);
     VSCE_ASSERT(mbedtls_status == 0);
+    mbedtls_mpi_init(&simple_swu_ctx->group.A);
     mbedtls_status = mbedtls_mpi_sub_int(&simple_swu_ctx->group.A, &simple_swu_ctx->group.P, 3);
     VSCE_ASSERT(mbedtls_status == 0);
 
@@ -236,6 +237,7 @@ vsce_simple_swu_init_ctx(vsce_simple_swu_t *simple_swu_ctx) {
     mbedtls_status = mbedtls_mpi_div_int(&simple_swu_ctx->p14, NULL, &simple_swu_ctx->p14, 4);
     VSCE_ASSERT(mbedtls_status == 0);
 
+    mbedtls_mpi_init(&simple_swu_ctx->mba);
     mbedtls_status = mbedtls_mpi_inv_mod(&simple_swu_ctx->mba, &simple_swu_ctx->group.A, &simple_swu_ctx->group.P);
     VSCE_ASSERT(mbedtls_status == 0);
     mbedtls_status = mbedtls_mpi_mul_mpi(&simple_swu_ctx->mba, &simple_swu_ctx->mba, &simple_swu_ctx->group.B);
@@ -254,6 +256,7 @@ vsce_simple_swu_cleanup_ctx(vsce_simple_swu_t *simple_swu_ctx) {
 
     VSCE_ASSERT_PTR(simple_swu_ctx);
 
+    mbedtls_mpi_free(&simple_swu_ctx->group.A);
     mbedtls_ecp_group_free(&simple_swu_ctx->group);
     mbedtls_mpi_free(&simple_swu_ctx->two);
     mbedtls_mpi_free(&simple_swu_ctx->three);

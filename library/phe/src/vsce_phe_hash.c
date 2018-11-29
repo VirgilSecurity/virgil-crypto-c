@@ -511,6 +511,7 @@ vsce_phe_hash_hash_z_success(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t server_pu
 
     vscf_hkdf_destroy(&hkdf);
 
+    vsc_buffer_destroy(&key);
     vsc_buffer_destroy(&z_buff);
 
     return vsce_SUCCESS;
@@ -618,6 +619,7 @@ vsce_phe_hash_hash_z_failure(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t server_pu
 
     vscf_hkdf_destroy(&hkdf);
 
+    vsc_buffer_destroy(&key);
     vsc_buffer_destroy(&z_buff);
 
     return vsce_SUCCESS;
