@@ -65,6 +65,7 @@ option(MBEDTLS_GENPRIME "" ON)
 option(MBEDTLS_TIMING_C "" ON)
 option(MBEDTLS_HAVEGE_C "" ON)
 option(MBEDTLS_PLATFORM_ENTROPY "" ON)
+option(MBEDTLS_BASE64_C "" ON)
 option(MBEDTLS_RSA_C "" ON)
 option(MBEDTLS_CTR_DRBG_C "" ON)
 option(MBEDTLS_ENTROPY_C "" ON)
@@ -93,6 +94,7 @@ mark_as_advanced(
         MBEDTLS_TIMING_C
         MBEDTLS_HAVEGE_C
         MBEDTLS_PLATFORM_ENTROPY
+        MBEDTLS_BASE64_C
         MBEDTLS_RSA_C
         MBEDTLS_CTR_DRBG_C
         MBEDTLS_ENTROPY_C

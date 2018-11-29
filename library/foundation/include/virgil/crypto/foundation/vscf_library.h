@@ -104,27 +104,26 @@ extern "C" {
 //
 //  Custom implementation of the number ceil algorithm.
 //
-#define VSCF_CEIL(x,y) (1 + (((x) - 1) / (y)))
+#define VSCF_CEIL(x,y) (0 == (x) ? 0 : 1 + (((x) - 1) / (y)))
 
 //
 //  Mark argument or function return value as "unused".
 //
 #define VSCF_UNUSED(x) (void)(x)
 
-//  TDOD: Review with approach: https://gcc.gnu.org/wiki/Visibility
-#if defined (__WINDOWS__)
-#   if defined VSCF_STATIC
-#       define VSCF_PUBLIC
-#   elif defined VSCF_INTERNAL_BUILD
-#       if defined DLL_PUBLIC
-#           define VSCF_PUBLIC __declspec(dllexport)
+#if defined _WIN32 || defined __CYGWIN__
+#   ifdef BUILDING_DLL
+#       ifdef __GNUC__
+#           define VSCF_PUBLIC __attribute__ ((dllexport))
 #       else
-#           define VSCF_PUBLIC
+#           define VSCF_PUBLIC __declspec(dllexport)
 #       endif
-#   elif defined VSCF_PUBLICS
-#       define VSCF_PUBLIC __declspec(dllexport)
 #   else
-#       define VSCF_PUBLIC __declspec(dllimport)
+#       ifdef __GNUC__
+#           define VSCF_PUBLIC __attribute__ ((dllimport))
+#       else
+#           define VSCF_PUBLIC __declspec(dllimport)
+#       endif
 #   endif
 #   define VSCF_PRIVATE
 #else

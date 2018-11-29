@@ -50,3 +50,12 @@ extern const vsc_data_t test_rsa_DATA_1;
 extern const vsc_data_t test_rsa_2048_ENCRYPTED_DATA_1;
 extern const vsc_data_t test_rsa_2048_DATA_1_SIGNATURE;
 
+
+//
+//  PKCS#8 format
+//
+extern const vsc_data_t test_rsa_2048_PUBLIC_KEY_PKCS8_DER;
+extern const vsc_data_t test_rsa_2048_PRIVATE_KEY_PKCS8_DER;
+extern const vsc_data_t test_rsa_2048_PUBLIC_KEY_PKCS8_PEM;
+extern const vsc_data_t test_rsa_2048_PRIVATE_KEY_PKCS8_PEM;
+

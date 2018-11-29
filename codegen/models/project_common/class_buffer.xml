@@ -162,6 +162,20 @@
     </method>
 
 
+    <method name="write str">
+        Copy null-terminated string to the buffer.
+
+        <argument name="str" type="string"/>
+    </method>
+
+
+    <method name="write data">
+        Copy data to the buffer.
+
+        <argument name="data" class="data"/>
+    </method>
+
+
     <method name="reset">
         Reset to the initial state.
         After reset inner buffer can be re-used.

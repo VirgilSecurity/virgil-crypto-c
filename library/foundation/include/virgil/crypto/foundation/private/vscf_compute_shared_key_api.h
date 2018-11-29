@@ -103,10 +103,6 @@ struct vscf_compute_shared_key_api_t {
     //
     vscf_api_tag_t api_tag;
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_t impl_tag;
-    //
     //  Compute shared key for 2 asymmetric keys.
     //  Note, shared key can be used only for symmetric cryptography.
     //

@@ -23,6 +23,7 @@
     <feature name="TIMING C"/>
     <feature name="HAVEGE C"/>
     <feature name="PLATFORM ENTROPY"/>
+    <feature name="BASE64 C"/>
 
     <feature name="RSA C">
         <require feature="BIGNUM C"/>

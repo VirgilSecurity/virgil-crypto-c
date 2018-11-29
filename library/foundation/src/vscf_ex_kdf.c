@@ -65,7 +65,7 @@
 // --------------------------------------------------------------------------
 
 //
-//  Calculate hash over given data.
+//  Derive key of the requested length from the given data, salt and info.
 //
 VSCF_PUBLIC void
 vscf_ex_kdf_derive(vscf_impl_t *impl, vsc_data_t data, vsc_data_t salt, vsc_data_t info, vsc_buffer_t *key,
@@ -110,17 +110,6 @@ vscf_ex_kdf_api_tag(const vscf_ex_kdf_api_t *ex_kdf_api) {
     VSCF_ASSERT_PTR (ex_kdf_api);
 
     return ex_kdf_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_ex_kdf_impl_tag(const vscf_ex_kdf_api_t *ex_kdf_api) {
-
-    VSCF_ASSERT_PTR (ex_kdf_api);
-
-    return ex_kdf_api->impl_tag;
 }
 
 

@@ -119,12 +119,6 @@ vscf_cipher_info_is_implemented(const vscf_impl_t *impl);
 VSCF_PUBLIC vscf_api_tag_t
 vscf_cipher_info_api_tag(const vscf_cipher_info_api_t *cipher_info_api);
 
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_cipher_info_impl_tag(const vscf_cipher_info_api_t *cipher_info_api);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

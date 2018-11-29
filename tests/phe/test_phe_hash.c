@@ -46,7 +46,8 @@
 #define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_HASH
 #if TEST_DEPENDENCIES_AVAILABLE
 
-void test__data2point__const_hash__should_match() {
+void
+test__data2point__const_hash__should_match() {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
@@ -76,7 +77,8 @@ void test__data2point__const_hash__should_match() {
     mbedtls_ecp_group_free(&group);
 }
 
-void test__hs0__const_hash__should_match() {
+void
+test__hs0__const_hash__should_match() {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
@@ -110,7 +112,8 @@ void test__hs0__const_hash__should_match() {
     mbedtls_ecp_group_free(&group);
 }
 
-void test__hs1__const_hash__should_match() {
+void
+test__hs1__const_hash__should_match() {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
@@ -144,7 +147,8 @@ void test__hs1__const_hash__should_match() {
     mbedtls_ecp_group_free(&group);
 }
 
-void test__hc0__const_hash__should_match() {
+void
+test__hc0__const_hash__should_match() {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
@@ -178,7 +182,8 @@ void test__hc0__const_hash__should_match() {
     mbedtls_ecp_group_free(&group);
 }
 
-void test__hc1__const_hash__should_match() {
+void
+test__hc1__const_hash__should_match() {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
@@ -212,7 +217,8 @@ void test__hc1__const_hash__should_match() {
     mbedtls_ecp_group_free(&group);
 }
 
-void test__hash_z_s_success__const_hash__should_match() {
+void
+test__hash_z_s_success__const_hash__should_match() {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
@@ -249,7 +255,8 @@ void test__hash_z_s_success__const_hash__should_match() {
     mbedtls_mpi z;
     mbedtls_mpi_init(&z);
 
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_hash_hash_z_success(phe_hash, test_phe_hash_z_s_pub, &c0, &c1, &term1, &term2, &term3, &z));
+    TEST_ASSERT_EQUAL(vsce_SUCCESS,
+            vsce_phe_hash_hash_z_success(phe_hash, test_phe_hash_z_s_pub, &c0, &c1, &term1, &term2, &term3, &z));
 
     mbedtls_mpi z_exp;
     mbedtls_mpi_init(&z_exp);
@@ -269,7 +276,8 @@ void test__hash_z_s_success__const_hash__should_match() {
     mbedtls_mpi_free(&z_exp);
 }
 
-void test__hash_z_s_failure__const_hash__should_match() {
+void
+test__hash_z_s_failure__const_hash__should_match() {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
@@ -311,7 +319,8 @@ void test__hash_z_s_failure__const_hash__should_match() {
     mbedtls_mpi z;
     mbedtls_mpi_init(&z);
 
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_hash_hash_z_failure(phe_hash, test_phe_hash_z_f_pub, &c0, &c1, &term1, &term2, &term3, &term4, &z));
+    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_hash_hash_z_failure(phe_hash, test_phe_hash_z_f_pub, &c0, &c1, &term1,
+                                            &term2, &term3, &term4, &z));
 
     mbedtls_mpi z_exp;
     mbedtls_mpi_init(&z_exp);
