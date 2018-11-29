@@ -38,7 +38,54 @@
 #include "vsc_data.h"
 
 extern const vsc_data_t test_phe_hash_data;
-extern const vsc_data_t test_phe_hash_x;
-extern const vsc_data_t test_phe_hash_y;
+extern const char test_phe_hash_x_DEC[];
+extern const char test_phe_hash_y_DEC[];
+
+extern const vsc_data_t test_phe_hash_ns1;
+extern const char test_phe_hash_hs0_x_DEC[];
+extern const char test_phe_hash_hs0_y_DEC[];
+
+extern const vsc_data_t test_phe_hash_ns2;
+extern const char test_phe_hash_hs1_x_DEC[];
+extern const char test_phe_hash_hs1_y_DEC[];
+
+extern const vsc_data_t test_phe_hash_nc1;
+extern const vsc_data_t test_phe_hash_hc0_pwd;
+extern const char test_phe_hash_hc0_x_DEC[];
+extern const char test_phe_hash_hc0_y_DEC[];
+
+extern const vsc_data_t test_phe_hash_nc2;
+extern const vsc_data_t test_phe_hash_hc1_pwd;
+extern const char test_phe_hash_hc1_x_DEC[];
+extern const char test_phe_hash_hc1_y_DEC[];
+
+
+extern const vsc_data_t test_phe_hash_z_s_pub;
+extern const char test_phe_hash_z_s_c0_x_DEC[];
+extern const char test_phe_hash_z_s_c0_y_DEC[];
+extern const char test_phe_hash_z_s_c1_x_DEC[];
+extern const char test_phe_hash_z_s_c1_y_DEC[];
+extern const char test_phe_hash_z_s_term1_x_DEC[];
+extern const char test_phe_hash_z_s_term1_y_DEC[];
+extern const char test_phe_hash_z_s_term2_x_DEC[];
+extern const char test_phe_hash_z_s_term2_y_DEC[];
+extern const char test_phe_hash_z_s_term3_x_DEC[];
+extern const char test_phe_hash_z_s_term3_y_DEC[];
+extern const char test_phe_hash_z_s_challenge_DEC[];
+
+extern const vsc_data_t test_phe_hash_z_f_pub;
+extern const char test_phe_hash_z_f_c0_x_DEC[];
+extern const char test_phe_hash_z_f_c0_y_DEC[];
+extern const char test_phe_hash_z_f_c1_x_DEC[];
+extern const char test_phe_hash_z_f_c1_y_DEC[];
+extern const char test_phe_hash_z_f_term1_x_DEC[];
+extern const char test_phe_hash_z_f_term1_y_DEC[];
+extern const char test_phe_hash_z_f_term2_x_DEC[];
+extern const char test_phe_hash_z_f_term2_y_DEC[];
+extern const char test_phe_hash_z_f_term3_x_DEC[];
+extern const char test_phe_hash_z_f_term3_y_DEC[];
+extern const char test_phe_hash_z_f_term4_x_DEC[];
+extern const char test_phe_hash_z_f_term4_y_DEC[];
+extern const char test_phe_hash_z_f_challenge_DEC[];
 
 #endif //VIRGIL_CRYPTO_C_TOP_TEST_DATA_PHE_HASH_H
