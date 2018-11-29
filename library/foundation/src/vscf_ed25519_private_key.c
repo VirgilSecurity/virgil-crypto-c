@@ -97,7 +97,7 @@ VSCF_PRIVATE void
 vscf_ed25519_private_key_cleanup_ctx(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl) {
 
     VSCF_ASSERT_PTR(ed25519_private_key_impl);
-    vscf_erase(ed25519_private_key_impl->secret_key, sizeof(ed25519_private_key_impl->secret_key));
+    vscf_erase(ed25519_private_key_impl->secret_key, ED25519_KEY_LEN);
 }
 
 //
@@ -128,10 +128,14 @@ VSCF_PUBLIC vscf_error_t
 vscf_ed25519_private_key_generate_key(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl) {
 
     VSCF_ASSERT_PTR(ed25519_private_key_impl);
+    VSCF_ASSERT_PTR(ed25519_private_key_impl->random);
     vsc_buffer_t *generated = vsc_buffer_new();
     VSCF_ASSERT_PTR(generated);
     vsc_buffer_use(generated, ed25519_private_key_impl->secret_key, ED25519_KEY_LEN);
-    return vscf_random(ed25519_private_key_impl->random, ED25519_KEY_LEN, generated);
+    if (vscf_SUCCESS != vscf_random(ed25519_private_key_impl->random, ED25519_KEY_LEN, generated)) {
+        return vscf_error_KEY_GENERATION_FAILED;
+    }
+    return vscf_SUCCESS;
 }
 
 //
@@ -197,7 +201,7 @@ VSCF_PUBLIC size_t
 vscf_ed25519_private_key_signature_len(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl) {
 
     VSCF_ASSERT_PTR(ed25519_private_key_impl);
-    return (ED25519_SIG_LEN);
+    return ED25519_SIG_LEN;
 }
 
 //
