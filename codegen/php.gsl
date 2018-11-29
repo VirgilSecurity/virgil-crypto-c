@@ -476,7 +476,7 @@ function php_create_class_method (class, method, destination, wrapper, meta)
     if is_true (my.php_method.throws)
         my.enum_error = php_derive_enum_error_name (my.wrapper)
         #s!my.handle_errors = format_left("try $(my.enum_error:).handleError(fromC: proxyResult)")
-        my.handle_errors = format_left("try $(my.enum_error:)::handleError($proxyResult)")
+        my.handle_errors = format_left("try $(my.enum_error:)::handleError($proxyResult);")
     endif
 
     #   Return result
@@ -2174,7 +2174,7 @@ function php_map_enum_error (php_enum, enum, wrapper, meta)
         .throws = "1"
 
         new php_argument to php_method
-            .name = "$code"
+            .name = "code"
             .type = make_ref_c (make_id ("class", my.enum.name, "enum", my.enum.name))
         endnew
 
