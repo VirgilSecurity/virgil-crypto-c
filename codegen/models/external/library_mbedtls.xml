@@ -5,6 +5,7 @@
     External library: https://github.com/ARMmbed/mbedtls
 
     <feature name="ERROR C"/>
+    <feature name="PLATFORM C"/>
     <feature name="SHA256 C"/>
     <feature name="SHA512 C"/>
     <feature name="CIPHER C"/>

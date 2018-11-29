@@ -176,7 +176,7 @@ vscf_entropy_accumulator_gather(
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(len > 0);
     VSCF_ASSERT(len <= MBEDTLS_ENTROPY_BLOCK_SIZE);
-    VSCF_ASSERT(vsc_buffer_left(out) >= 0);
+    VSCF_ASSERT(vsc_buffer_left(out) >= len);
 
     int status = mbedtls_entropy_func(&entropy_accumulator_impl->ctx, vsc_buffer_ptr(out), len);
 

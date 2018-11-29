@@ -196,7 +196,7 @@ vscf_rsa_public_key_verify(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc_
     //  Hash
     size_t data_hash_len = vscf_hash_info_digest_len(vscf_hash_hash_info_api(rsa_public_key_impl->hash));
     vsc_buffer_t *data_hash_buf = vsc_buffer_new_with_capacity(data_hash_len);
-    VSCF_ASSERT_PTR(data_hash_buf);
+    VSCF_ASSERT(data_hash_len <= UINT_MAX);
 
     vscf_hash(rsa_public_key_impl->hash, data, data_hash_buf);
 
@@ -205,7 +205,7 @@ vscf_rsa_public_key_verify(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc_
     mbedtls_rsa_set_padding(&rsa_public_key_impl->rsa_ctx, MBEDTLS_RSA_PKCS_V21, md_alg);
 
     int result = mbedtls_rsa_rsassa_pss_verify(&rsa_public_key_impl->rsa_ctx, vscf_mbedtls_bridge_random,
-            rsa_public_key_impl->random, MBEDTLS_RSA_PUBLIC, md_alg, vsc_buffer_len(data_hash_buf),
+            rsa_public_key_impl->random, MBEDTLS_RSA_PUBLIC, md_alg, (unsigned int)vsc_buffer_len(data_hash_buf),
             vsc_buffer_bytes(data_hash_buf), signature.bytes);
 
     //  Cleanup
