@@ -184,9 +184,9 @@ VSCF_PUBLIC void
 vscf_ctr_drbg_set_entropy_len(vscf_ctr_drbg_impl_t *ctr_drbg_impl, size_t len) {
 
     VSCF_ASSERT_PTR(ctr_drbg_impl);
-    VSCF_ASSERT(len < INT_MAX);
+    VSCF_ASSERT(len <= MBEDTLS_CTR_DRBG_MAX_SEED_INPUT);
 
-    mbedtls_ctr_drbg_set_entropy_len(&ctr_drbg_impl->ctx, (int)len);
+    mbedtls_ctr_drbg_set_entropy_len(&ctr_drbg_impl->ctx, len);
 }
 
 //
