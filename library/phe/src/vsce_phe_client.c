@@ -583,8 +583,11 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vs
     mbedtls_ecp_point_init(&hc0);
     mbedtls_ecp_point_init(&hc1);
 
-    vsce_phe_hash_hc0(phe_client_ctx->phe_hash, vsc_data(record.nc, sizeof(record.nc)), password, &hc0);
-    vsce_phe_hash_hc1(phe_client_ctx->phe_hash, vsc_data(record.nc, sizeof(record.nc)), password, &hc1);
+    vsce_error_t status;
+    status = vsce_phe_hash_hc0(phe_client_ctx->phe_hash, vsc_data(record.nc, sizeof(record.nc)), password, &hc0);
+    VSCE_ASSERT(status == vsce_SUCCESS);
+    status = vsce_phe_hash_hc1(phe_client_ctx->phe_hash, vsc_data(record.nc, sizeof(record.nc)), password, &hc1);
+    VSCE_ASSERT(status == vsce_SUCCESS);
 
     mbedtls_mpi y;
     mbedtls_mpi_init(&y);
@@ -648,10 +651,10 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vs
         mbedtls_ecp_point hs0;
         mbedtls_ecp_point_init(&hs0);
 
-        vsce_phe_hash_hs0(phe_client_ctx->phe_hash, vsc_data(record.ns, sizeof(record.ns)), &hs0);
+        status = vsce_phe_hash_hs0(phe_client_ctx->phe_hash, vsc_data(record.ns, sizeof(record.ns)), &hs0);
+        VSCE_ASSERT(status == vsce_SUCCESS);
 
         VSCE_ASSERT(response.which_proof == VerifyPasswordResponse_fail_tag);
-        vsce_error_t status = vsce_SUCCESS;
         status = vsce_phe_client_check_fail_proof(phe_client_ctx, &response.proof.fail, &c0, &c1, &hs0);
         VSCE_ASSERT(status == vsce_SUCCESS);
 
@@ -1043,8 +1046,11 @@ vsce_phe_client_update_enrollment_record(vsce_phe_client_t *phe_client_ctx, vsc_
     mbedtls_ecp_point_init(&hs0);
     mbedtls_ecp_point_init(&hs1);
 
-    vsce_phe_hash_hs0(phe_client_ctx->phe_hash, vsc_data(record.ns, sizeof(record.ns)), &hs0);
-    vsce_phe_hash_hs1(phe_client_ctx->phe_hash, vsc_data(record.ns, sizeof(record.ns)), &hs1);
+    vsce_error_t status = vsce_SUCCESS;
+    status = vsce_phe_hash_hs0(phe_client_ctx->phe_hash, vsc_data(record.ns, sizeof(record.ns)), &hs0);
+    VSCE_ASSERT(status == vsce_SUCCESS);
+    status = vsce_phe_hash_hs1(phe_client_ctx->phe_hash, vsc_data(record.ns, sizeof(record.ns)), &hs1);
+    VSCE_ASSERT(status == vsce_SUCCESS);
 
     mbedtls_ecp_point new_t0, new_t1;
     mbedtls_ecp_point_init(&new_t0);
