@@ -111,17 +111,6 @@ vscf_mac_info_api_tag(const vscf_mac_info_api_t *mac_info_api) {
     return mac_info_api->api_tag;
 }
 
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_mac_info_impl_tag(const vscf_mac_info_api_t *mac_info_api) {
-
-    VSCF_ASSERT_PTR (mac_info_api);
-
-    return mac_info_api->impl_tag;
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

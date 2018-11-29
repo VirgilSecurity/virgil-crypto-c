@@ -84,11 +84,7 @@ static const vscf_kdf_api_t kdf_api = {
     //
     vscf_api_tag_KDF,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_KDF2,
-    //
-    //  Calculate hash over given data.
+    //  Derive key of the requested length from the given data.
     //
     (vscf_kdf_api_derive_fn)vscf_kdf2_derive
 };
@@ -97,10 +93,6 @@ static const vscf_kdf_api_t kdf_api = {
 //  Compile-time known information about 'kdf2' implementation.
 //
 static const vscf_impl_info_t info = {
-    //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_KDF2,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
