@@ -106,10 +106,10 @@ function php_create_interface_proxy_class (interface, destination, wrapper, meta
     check_arguments (my, "interface, destination, wrapper, meta", my)
 
    new php_class to php_module
-        . = "/// Implement interface methods "
+        . = "* Implement interface methods "
         .name = php_derive_proxy_protocol_name (my.interface)
         .objc_name = php_derive_class_objc_name (php_class, my.wrapper)
-        .visibility = "internal"
+        .visibility = "public"
 
         php_create_inherit_nsobject (php_class)
         php_create_inherit (my.interface, php_class, my.wrapper, my.meta)
@@ -180,12 +180,10 @@ function php_create_interface_proxy_class_destructor (destination, wrapper, meta
     check_arguments (my, "destination, wrapper, meta", my)
 
     new php_destructor to my.destination
-        . = "/// Release underlying C context."
+        . = "* 1111Release underlying C context."
 
         new php_code to php_destructor
-            . = "\
-                .(c_class_impl_method_delete)(self.c_ctx)
-            "
+            . = ".(c_class_impl_method_delete)(self.c_ctx)"
         endnew
     endnew
 endfunction
@@ -197,7 +195,7 @@ function php_create_class_constructor_context (destination, wrapper, meta)
     check_arguments (my, "destination, wrapper, meta", my)
 
     new php_constructor to my.destination
-        . = "/// Take C context that implements this interface"
+        . = "* Take C context that implements this interface"
         .visibility = "public"
 
         new php_argument to php_constructor
@@ -410,7 +408,7 @@ function php_create_result_class (parent, php_method, destination, wrapper, meta
     endif
 
     new php_class to my.destination
-        . = "/// Encapsulate result of method $(my.parent.name:).$(my.php_method.name:)()"
+        . = "* Encapsulate result of method $(my.parent.name:).$(my.php_method.name:)()"
         .name = php_derive_result_class_name (my.parent, my.php_method)
         .objc_name = php_derive_class_objc_name (php_class, my.wrapper)
         .visibility = my.parent.visibility
@@ -433,8 +431,8 @@ function php_create_result_class (parent, php_method, destination, wrapper, meta
         endnew
 
         new php_constructor to php_class
-            . = "/// Initialize all properties."
-            .visibility = "internal"
+            . = "* Initialize all properties."
+            .visibility = "public"
 
             for php_class.php_property
                 copy php_property as php_argument to php_constructor
@@ -445,11 +443,11 @@ function php_create_result_class (parent, php_method, destination, wrapper, meta
 
                 for php_class.php_property
                     my.method_body += format_left ("\
-                        self.$(php_property.name:) = $(php_property.name:)
+                        $this->$(php_property.name:) = $$(php_property.name:);
                     ")
                 endfor
 
-                my.method_body += format_left ("super.init()")
+                #my.method_body += format_left ("super.init()")
 
                 . = my.method_body
             endnew
@@ -470,14 +468,15 @@ function php_create_class_method (class, method, destination, wrapper, meta)
 
     #   Wrap proxy call
     my.proxy_args = php_format_c_proxy_args (my.class, my.method)
-    my.proxy_call = "$(class_derive_c_method (my.class, my.method))($(my.proxy_args:))"
+    my.proxy_call = "$(class_derive_c_method (my.class, my.method))($(my.proxy_args:));"
     my.proxy_return_type = php_derive_proxy_return_type (my.method)
     my.proxy_invocation = php_wrap_c_proxy_call (my.php_method, my.proxy_call, my.proxy_return_type)
 
     #   Handle errors
     if is_true (my.php_method.throws)
         my.enum_error = php_derive_enum_error_name (my.wrapper)
-        my.handle_errors = format_left("try $(my.enum_error:).handleError(fromC: proxyResult)")
+        #s!my.handle_errors = format_left("try $(my.enum_error:).handleError(fromC: proxyResult)")
+        my.handle_errors = format_left("try $(my.enum_error:)::handleError($proxyResult)")
     endif
 
     #   Return result
@@ -488,7 +487,7 @@ function php_create_class_method (class, method, destination, wrapper, meta)
         my.result_class = php_derive_result_class_name (my.destination, my.php_method)
         my.result_class_init_args = php_format_result_class_init_args (my.php_method)
 
-        my.return_result = format_left ("return $(my.result_class:)($(my.result_class_init_args:));")
+        my.return_result = format_left ("return new $(my.result_class:)($(my.result_class_init_args:));")
     endif
 
     new php_code to my.php_method
@@ -513,7 +512,8 @@ function php_format_result_class_init_args (php_method)
     my.init_args = ""
 
     for my.php_method.php_return
-        my.init_args += "$(php_return.name:): $(php_wrap_c_returned_value (php_return))"
+        #s!my.init_args += "$(php_return.name:): $(php_wrap_c_returned_value (php_return))"
+        my.init_args += "$$(php_return.name:)"
         if ! last ()
             my.init_args += ", "
         endif
@@ -654,11 +654,72 @@ function php_create_return_from_argument (class, method, argument, destination, 
         php_return.was_argument = "1"
 
         if string_equal (my.argument.class, "buffer")
-            php_return.length_getter = class_derive_buffer_length_getter (my.class, my.method, argument)
+            php_return.length_getter = php_class_derive_buffer_length_getter (my.class, my.method, argument)
         endif
 
         return php_return
     endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return invocation of the getter function that returns buffer length.
+# ---------------------------------------------------------------------------
+function php_class_derive_buffer_length_getter (class, method, argument)
+    assert_attributes (my, "class, method, argument")
+
+    assert_item (my.argument, "length", my)
+
+    my.length = my.argument->length
+    assert_attribute_one_of (my.length, "constant, argument, method", my)
+
+    for my.length.proxy
+        if ! defined (proxy.[to])
+            echo_debug_item (my.argument, my)
+            assert_attributes (proxy, "to", my)
+        endif
+
+        my.proxy_args ?= ""
+
+        if ! first ()
+            my.proxy_args += ", "
+        endif
+
+        if defined (proxy.argument)
+
+            my.proxy_args += php_derive_argument_name_str (proxy.[to])
+            my.proxy_args += ": " + php_derive_argument_name_str (proxy.argument)
+
+            if string_in (proxy.cast, "data_length")
+                my.proxy_args += ".count"
+            endif
+        else
+            echo_debug_item (my.argument, my)
+            echo_fatal ("Buffer length argument can be proxied. Undefined type.", my)
+        endif
+    endfor
+
+    my.specified_proxy_object = get_one_of_attribute (my.length, "class, interface, impl") ?
+    if defined (my.specified_proxy_object)
+        if my.specified_proxy_object = "self"
+            my.specified_proxy_object = my.class.name
+        endif
+        my.proxy_object = php_derive_class_name_str (my.specified_proxy_object)
+    else
+        my.proxy_object = "self"
+    endif
+
+    if defined (my.length.method)
+        my.proxy_method = php_derive_method_name_str (my.length.method)
+        return "self::$(my.proxy_method:)($(my.proxy_args?:))"
+
+    elsif defined (my.length.constant)
+        my.proxy_constant = php_derive_constant_name_str (my.length.constant)
+        return "$(my.proxy_object:).$(my.proxy_constant:)"
+
+    elsif defined (my.length.argument)
+        my.proxy_argument = php_derive_argument_name_str (my.length.argument)
+        return my.proxy_argument
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -834,9 +895,9 @@ function php_wrap_c_proxy_call (php_method, proxy_call, proxy_return_type)
         #s!") + terminator
 
         my.buffers_instantiation += format_left ("\
-            const $(my.buffer_name:)Count = $(php_return.length_getter:)
-            $$(my.buffer_name:) = Data(count: $(my.buffer_name:)Count)
-            $$(my.buffer_name:)Buf = .(c_project_common_class_buffer_method_new)()
+            $$(my.buffer_name:)Count = $(php_return.length_getter:);
+            $$(my.buffer_name:) = count($$(my.buffer_name:)Count);
+            $$(my.buffer_name:)Buf = .(c_project_common_class_buffer_method_new)();
             defer {
                 .(c_project_common_class_buffer_method_delete)($(my.buffer_name:)Buf)
             }
@@ -1239,12 +1300,10 @@ function php_create_class_destructor (php_class, class, wrapper, meta)
 
 
     new php_destructor to my.php_class
-        . = "/// Release underlying C context."
+        . = "*222 Release underlying C context."
 
         new php_code to php_destructor
-            . = "\
-                $(my.dtor_invocation:)
-            "
+            . = "$(my.dtor_invocation:)"
         endnew
     endnew
 endfunction
@@ -1264,28 +1323,30 @@ function php_create_class_default_constructor (php_class, class, wrapper, meta)
     endif
 
     new php_constructor to my.php_class
-        . = "/// Create underlying C context."
+        . = "* Create underlying C context."
         .override = "1"
         .visibility = "public"
 
+        #new php_code to php_constructor
+        #    . = "\
+        #        self.c_ctx = $(my.ctor_invocation:)
+        #        super.init()
+        #    "
+        #endnew
         new php_code to php_constructor
-            . = "\
-                self.c_ctx = $(my.ctor_invocation:)
-                super.init()
-            "
+            . = "$this->c_ctx = $(my.ctor_invocation:);"
         endnew
     endnew
 
     new php_constructor to my.php_class
         . = "
-            /// Acquire C context.
-            /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+        * Acquire C context.
+        * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
         "
         .visibility = "public"
 
         new php_argument to php_constructor
             .name = "c_ctx"
-            .ext_name = "take"
             .type = php_derive_class_context_type (my.class)
         endnew
 
@@ -1300,14 +1361,13 @@ function php_create_class_default_constructor (php_class, class, wrapper, meta)
     if string_in (my.class.lifecycle, "default")
         new php_constructor to my.php_class
             . = "\
-                /// Acquire retained C context.
-                /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+            * Acquire retained C context.
+            * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
             "
             .visibility = "public"
 
             new php_argument to php_constructor
                 .name = "c_ctx"
-                .ext_name = "use"
                 .type = php_derive_class_context_type (my.class)
             endnew
 
@@ -1484,7 +1544,7 @@ function php_generate_sources (source, wrapper)
         php_insert_prologue (php_module)
         newline ()
 
-        php_insert_namespace(php_module)
+        php_insert_namespace(my.wrapper)
 
         for php_module.php_import
             newline_if (first ())
@@ -1572,7 +1632,7 @@ function php_insert_class (php_class)
     #            class $(my.php_class.name:)$(my.php_inheritance_list?:) {
     #")
 
-    php_insert_code ("class $(my.php_class.Name) {")
+    php_insert_code ("class $(my.php_class.name:Pascal) {")
 
     for my.php_class.php_property
         newline ()
@@ -1649,9 +1709,7 @@ function php_insert_destructor (php_destructor)
     #s!    $(my.php_destructor->php_code.:)
     #s!", 2)
 
-    php_insert_code("\
-        return $(my.php_destructor->php_code.:)
-    ", 2)
+    php_insert_code("return $(my.php_destructor->php_code.:);", 2)
 
     php_insert_code ("}", 1)
 endfunction
@@ -1678,10 +1736,12 @@ function php_insert_class_property (php_property)
     endif
 
     php_insert_description (my.php_property, 1)
-    php_insert_code("\
-        @objc $(my.php_property.visibility:) $(my.php_property.modifier?:) $(my.let_var:) \
-                $(my.php_property.name:): $(my.php_property.type:)$(my.var_init?:)
-    ", 1)
+    #s!php_insert_code("\
+    #s!    @objc $(my.php_property.visibility:) $(my.php_property.modifier?:) $(my.let_var:) \
+    #s!            $(my.php_property.name:): $(my.php_property.type:)$(my.var_init?:)
+    #s!", 1)
+
+    php_insert_code("$(my.php_property.visibility:) $$(my.php_property.name:);", 1)
 
     if my.is_computed
         php_insert_code("\
@@ -1746,9 +1806,9 @@ function php_insert_description (obj, tab_count)
     if string_empty (my.desciption)
         return
     endif
-    php_insert_code ("/**")
+    php_insert_code ("/**", my.tab_count)
     php_insert_code (my.desciption, my.tab_count)
-    php_insert_code ("*/")
+    php_insert_code ("*/", my.tab_count)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1777,10 +1837,10 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Insert statement: open_php_tag
 # ---------------------------------------------------------------------------
-function php_insert_namespace (php_module)
-    check_arguments (my, "php_module", my)
+function php_insert_namespace (wrapper)
+    check_arguments (my, "wrapper", my)
 
-    php_insert_code ("namespace Virgil/$(my.php_module.name:);")
+    php_insert_code ("namespace Virgil\\$(my.wrapper.namespace:);")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1807,10 +1867,12 @@ function php_insert_enum (php_enum)
     my.php_inheritance_list = php_format_inheritance_list (my.php_enum) ?
 
     php_insert_description(my.php_enum)
-    php_insert_code ("\
-        @objc($(my.php_enum.objc_name:)) $(my.php_enum.visibility:)\
-                enum $(my.php_enum.name:)$(my.php_inheritance_list?:) {
-    ")
+    #s!php_insert_code ("\
+    #s!    @objc($(my.php_enum.objc_name:)) $(my.php_enum.visibility:)\
+    #s!            enum $(my.php_enum.name:)$(my.php_inheritance_list?:) {
+    #s!")
+
+    php_insert_code ("class $(my.php_enum.name:) $(terminator){")    
 
     for my.php_enum.php_constant
         newline ()
@@ -1841,12 +1903,17 @@ function php_insert_enum_method (php_method)
 
     my.method_args = php_format_argument_list(my.php_method) ?
     my.method_return = php_format_return_list(my.php_method) ?
-    my.method_throws = is_true (my.php_method.throws) ?? "throws" ?
+    #s!my.method_throws = is_true (my.php_method.throws) ?? "throws" ?
 
     php_insert_description (my.php_method, 1)
+    #s!php_insert_code("\
+    #s!    $(my.php_method.visibility?:) $(my.php_method.modifier?:) func \
+    #s!            $(my.php_method.name:)($(my.method_args?:)) $(my.method_throws?:) $(my.method_return?:) {
+    #s!", 1)
+
     php_insert_code("\
-        $(my.php_method.visibility?:) $(my.php_method.modifier?:) func \
-                $(my.php_method.name:)($(my.method_args?:)) $(my.method_throws?:) $(my.method_return?:) {
+        $(my.php_method.visibility?:) $(my.php_method.modifier?:) function \
+                $(my.php_method.name:)($(my.method_args?:)) {
     ", 1)
 
     php_insert_code (my.php_method->php_code., 2)
@@ -1923,7 +1990,7 @@ function php_format_argument_list (php_method)
 
     for my.php_method.php_argument
         my.arg_list ?= ""
-        my.arg_list += "$(php_argument.ext_name + " "?:)$(php_argument.name:): $(php_argument.type:)"
+        my.arg_list += "$$(php_argument.name:)"
         if ! last()
             my.arg_list += ", "
         endif
@@ -1944,7 +2011,7 @@ function php_insert_enum_constant (php_constant)
     #    case $(my.php_constant.name:)$(my.value:)
     #", 1)
     php_insert_code ("\
-        const $(my.php_constant.NAME:)$(my.value:);
+        const $(my.php_constant.name:UPPER)$(my.value:);
     ", 1)
 endfunction
 
@@ -1974,7 +2041,7 @@ function php_create_c_context_module (destination, wrapper, meta)
     my.name = "CContext"
 
     new php_module to my.destination
-        . = "/// This is base protocol for all types that wrap C interfaces."
+        . = "* This is base protocol for all types that wrap C interfaces."
         .name = my.name
         .source_file_name = 0.name + ".php"
         .source_file_path = cat_path (my.wrapper.source_dir, 0.source_file_name)
@@ -2056,14 +2123,13 @@ function php_create_enum_constructor (php_enum, enum, wrapper, meta)
     check_arguments (my, "php_enum, enum, wrapper, meta")
 
     new php_constructor to my.php_enum
-        . = "/// Create enumeration value from the correspond C enumeration value."
-        .visibility = "internal"
+        . = "* Create enumeration value from the correspond C enumeration value."
+        .visibility = "public"
 
         my.arg_enum_name = php_derive_argument_name (my.enum, my.wrapper)
 
         new php_argument to php_constructor
             .name = my.arg_enum_name
-            .ext_name = "fromC"
             .type = make_ref_c (make_id ("class", my.enum.name, "enum", my.enum.name))
         endnew
 
@@ -2101,15 +2167,14 @@ function php_map_enum_error (php_enum, enum, wrapper, meta)
     endfor
 
     new php_method to my.php_enum
-        . = "/// Check given C error (result), and if it's not \"success\" then throw correspond exception."
+        . = "* Check given C error (result), and if it's not \"success\" then throw correspond exception."
         .name = "handleError"
-        .visibility = "internal"
+        .visibility = "public"
         .modifier = "static"
         .throws = "1"
 
         new php_argument to php_method
-            .name = "code"
-            .ext_name = "fromC"
+            .name = "$code"
             .type = make_ref_c (make_id ("class", my.enum.name, "enum", my.enum.name))
         endnew
 
@@ -2118,8 +2183,8 @@ function php_map_enum_error (php_enum, enum, wrapper, meta)
 
         new php_code to php_method
             . = "\
-                if code != $(my.success_constant:) {
-                    throw $(my.php_enum.name:)(fromC: code)
+                if $code !== $(my.success_constant:) {
+                    throw $(my.php_enum.name:)($code)
                 }
             "
         endnew
@@ -2326,7 +2391,7 @@ function php_create_class_property_context (destination, class)
     check_arguments (my, "destination", my)
 
     new php_property to my.destination
-        . = "/// Handle underlying C context."
+        . = "* Handle underlying C context."
         .name = "c_ctx"
         .type = php_derive_class_context_type (my.class)
         .access = "readonly"
