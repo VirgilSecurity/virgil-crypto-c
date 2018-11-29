@@ -43,6 +43,7 @@
 //  Common
 //
 #cmakedefine MBEDTLS_ERROR_C
+#cmakedefine MBEDTLS_PLATFORM_C
 
 //
 //  Required by library vsc::foundation
