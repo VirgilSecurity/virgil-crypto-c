@@ -395,10 +395,10 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
 
     // FIXME: Duplicate
-    char hkdf_info[] = "Secret";
+    const byte hkdf_info[] = "Secret";
 
     vscf_hkdf_derive(hkdf, vsc_buffer_data(M_buf), vsc_data_empty(),
-            vsc_data((byte *)hkdf_info, sizeof(hkdf_info)), account_key, vsc_buffer_capacity(account_key));
+            vsc_data(hkdf_info, sizeof(hkdf_info) - 1), account_key, vsc_buffer_capacity(account_key));
     vsc_buffer_destroy(&M_buf);
     vscf_hkdf_destroy(&hkdf);
 
@@ -637,10 +637,10 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vs
         vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
 
         // FIXME: Why so easy word?
-        char hkdf_info[] = "Secret";
+        const byte hkdf_info[] = "Secret";
 
         vscf_hkdf_derive(hkdf, vsc_buffer_data(M_buf), vsc_data_empty(),
-                         vsc_data((byte *)hkdf_info, sizeof(hkdf_info)), account_key, vsc_buffer_capacity(account_key));
+                         vsc_data(hkdf_info, sizeof(hkdf_info) - 1), account_key, vsc_buffer_capacity(account_key));
         vsc_buffer_destroy(&M_buf);
         vscf_hkdf_destroy(&hkdf);
 
