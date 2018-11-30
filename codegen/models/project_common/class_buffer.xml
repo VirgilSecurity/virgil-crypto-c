@@ -28,6 +28,22 @@
     </property>
 
 
+    <method name="is empty">
+        Returns true if buffer has no data written.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="equal">
+        Return true if buffers are equal.
+
+        <argument name="rhs" class="buffer"/>
+
+        <return type="boolean"/>
+    </method>
+
+
     <constructor name="with capacity">
         Allocate context and underlying byte array.
 
