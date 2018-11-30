@@ -111,27 +111,28 @@ extern "C" {
 //
 #define VSCR_UNUSED(x) (void)(x)
 
-#if defined _WIN32 || defined __CYGWIN__
-#   ifdef BUILDING_DLL
+#if defined(_WIN32) || defined(__CYGWIN__)
+#   ifdef VSCR_BUILD_SHARED_LIBS
 #       ifdef __GNUC__
 #           define VSCR_PUBLIC __attribute__ ((dllexport))
 #       else
 #           define VSCR_PUBLIC __declspec(dllexport)
 #       endif
-#   else
+#   elsif !defined(c_global_macros_internal_build)
 #       ifdef __GNUC__
 #           define VSCR_PUBLIC __attribute__ ((dllimport))
 #       else
 #           define VSCR_PUBLIC __declspec(dllimport)
 #       endif
+#   else
+#       define VSCR_PUBLIC
 #   endif
 #   define VSCR_PRIVATE
 #else
-#   if (defined __GNUC__ && __GNUC__ >= 4) || defined __INTEL_COMPILER
+#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER)
 #       define VSCR_PUBLIC __attribute__ ((visibility ("default")))
 #       define VSCR_PRIVATE __attribute__ ((visibility ("hidden")))
 #   else
-#       define VSCR_PUBLIC
 #       define VSCR_PRIVATE
 #   endif
 #endif
