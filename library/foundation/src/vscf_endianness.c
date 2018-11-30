@@ -86,4 +86,5 @@ vscf_endianness_reverse_memcpy(vsc_data_t src, vsc_buffer_t *dst) {
     for (size_t i = 0; i < src.len; i++) {
         dest[src.len - 1 - i] = src.bytes[i];
     }
+    vsc_buffer_increase_used_bytes(dst, src.len);
 }
