@@ -28,17 +28,17 @@
     </property>
 
 
-    <method name="is empty">
+    <method name="is empty" is_const="1">
         Returns true if buffer has no data written.
 
         <return type="boolean"/>
     </method>
 
 
-    <method name="equal">
+    <method name="equal" is_const="1">
         Return true if buffers are equal.
 
-        <argument name="rhs" class="buffer"/>
+        <argument name="rhs" class="self" access="readonly"/>
 
         <return type="boolean"/>
     </method>
