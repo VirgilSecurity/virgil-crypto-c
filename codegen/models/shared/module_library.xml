@@ -53,30 +53,33 @@
     </macros>
 
     <macroses>
-        <macros name="public" />
-        <macros name="private" />
+        <macros name="public"/>
+        <macros name="private"/>
+        <macros name="build shared libs"/>
+        <macros name="internal build"/>
         <code lang="c">
-            #if defined _WIN32 || defined __CYGWIN__
-            #   ifdef BUILDING_DLL
+            #if defined(_WIN32) || defined(__CYGWIN__)
+            #   ifdef .(c_global_macros_build_shared_libs)
             #       ifdef __GNUC__
             #           define .(c_global_macros_public) __attribute__ ((dllexport))
             #       else
             #           define .(c_global_macros_public) __declspec(dllexport)
             #       endif
-            #   else
+            #   elsif !defined(c_global_macros_internal_build)
             #       ifdef __GNUC__
             #           define .(c_global_macros_public) __attribute__ ((dllimport))
             #       else
             #           define .(c_global_macros_public) __declspec(dllimport)
             #       endif
+            #   else
+            #       define .(c_global_macros_public)
             #   endif
             #   define .(c_global_macros_private)
             #else
-            #   if (defined __GNUC__ &amp;&amp; __GNUC__ >= 4) || defined __INTEL_COMPILER
+            #   if (defined(__GNUC__) &amp;&amp; __GNUC__ >= 4) || defined(__INTEL_COMPILER)
             #       define .(c_global_macros_public)  __attribute__ ((visibility ("default")))
             #       define .(c_global_macros_private) __attribute__ ((visibility ("hidden")))
             #   else
-            #       define .(c_global_macros_public)
             #       define .(c_global_macros_private)
             #   endif
             #endif
