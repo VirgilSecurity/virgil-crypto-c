@@ -55,10 +55,12 @@
 #include <mbedtls/ecp.h>
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_data.h>
 #endif
 
@@ -144,6 +146,9 @@ vsce_phe_hash_take_simple_swu(vsce_phe_hash_t *phe_hash_ctx, vsce_simple_swu_t *
 //
 VSCE_PUBLIC void
 vsce_phe_hash_release_simple_swu(vsce_phe_hash_t *phe_hash_ctx);
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_hash_derive_account_key(vsce_phe_hash_t *phe_hash_ctx, const mbedtls_ecp_point *m, vsc_buffer_t *account_key);
 
 VSCE_PUBLIC vsce_error_t
 vsce_phe_hash_data_to_point(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t data, mbedtls_ecp_point *p);

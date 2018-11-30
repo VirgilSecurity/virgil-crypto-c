@@ -51,8 +51,6 @@
 #include "vsce_phe_utils.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
-#include <virgil/crypto/foundation/vscf_sha512.h>
-#include <virgil/crypto/foundation/vscf_hkdf.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <PHEModels.pb.h>
 #include <pb_decode.h>
@@ -381,27 +379,8 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
     VSCE_ASSERT(status == vsce_SUCCESS);
     vsc_buffer_destroy(&rnd_m);
 
-    vsc_buffer_t *M_buf = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_POINT_LENGTH);
-    vsc_buffer_make_secure(M_buf);
-    size_t olen = 0;
-    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_client_ctx->group, &M, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            vsc_buffer_ptr(M_buf), vsce_phe_common_PHE_POINT_LENGTH);
-    vsc_buffer_reserve(M_buf, vsce_phe_common_PHE_POINT_LENGTH);
-    VSCE_ASSERT(mbedtls_status == 0);
-    VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
-
-    vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
-
-    vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
-
-    // FIXME: Duplicate
-    const byte hkdf_info[] = "Secret";
-
-    vscf_hkdf_derive(hkdf, vsc_buffer_data(M_buf), vsc_data_empty(),
-            vsc_data(hkdf_info, sizeof(hkdf_info) - 1), account_key, vsc_buffer_capacity(account_key));
-
-    vsc_buffer_destroy(&M_buf);
-    vscf_hkdf_destroy(&hkdf);
+    status = vsce_phe_hash_derive_account_key(phe_client_ctx->phe_hash, &M, account_key);
+    VSCE_ASSERT(status == vsce_SUCCESS);
 
     mbedtls_ecp_point t0, t1;
     mbedtls_ecp_point_init(&t0);
@@ -427,7 +406,7 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
     EnrollmentRecord record = EnrollmentRecord_init_zero;
     memcpy(record.ns, response.ns, sizeof(response.ns));
     memcpy(record.nc, vsc_buffer_bytes(nc), vsc_buffer_len(nc));
-    olen = 0;
+    size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(
             &phe_client_ctx->group, &t0, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, record.t_0, sizeof(record.t_0));
     VSCE_ASSERT(mbedtls_status == 0);
@@ -620,7 +599,6 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vs
     VSCE_ASSERT(mbedtls_status == 0);
 
     if (response.res) {
-        vsce_error_t status = vsce_SUCCESS;
         VSCE_ASSERT(response.which_proof == VerifyPasswordResponse_success_tag);
         status = vsce_phe_client_check_success_proof(
                 phe_client_ctx, &response.proof.success, vsc_data(record.ns, sizeof(record.ns)), &c0, &c1);
@@ -639,23 +617,20 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vs
         mbedtls_status = mbedtls_ecp_muladd(&phe_client_ctx->group, &M, &one, &t1, &one, &M);
         VSCE_ASSERT(mbedtls_status == 0);
 
-        vsc_buffer_t *M_buf = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_POINT_LENGTH);
-        vsc_buffer_make_secure(M_buf);
+        mbedtls_mpi y_inv;
+        mbedtls_mpi_init(&y_inv);
+        mbedtls_status = mbedtls_mpi_inv_mod(&y_inv, &y, &phe_client_ctx->group.N);
+        VSCE_ASSERT(mbedtls_status == 0);
 
-        vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
+        mbedtls_status = mbedtls_ecp_mul(&phe_client_ctx->group, &M, &y_inv, &M, NULL, NULL);
+        VSCE_ASSERT(mbedtls_status == 0);
 
-        vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
-
-        // FIXME: Why so easy word?
-        const byte hkdf_info[] = "Secret";
-
-        vscf_hkdf_derive(hkdf, vsc_buffer_data(M_buf), vsc_data_empty(),
-                         vsc_data(hkdf_info, sizeof(hkdf_info) - 1), account_key, vsc_buffer_capacity(account_key));
-        vsc_buffer_destroy(&M_buf);
-        vscf_hkdf_destroy(&hkdf);
+        status = vsce_phe_hash_derive_account_key(phe_client_ctx->phe_hash, &M, account_key);
+        VSCE_ASSERT(status == vsce_SUCCESS);
 
         mbedtls_ecp_point_free(&M);
         mbedtls_mpi_free(&minus_one);
+        mbedtls_mpi_free(&y_inv);
     } else {
         mbedtls_ecp_point hs0;
         mbedtls_ecp_point_init(&hs0);

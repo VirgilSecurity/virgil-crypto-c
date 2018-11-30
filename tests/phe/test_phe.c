@@ -130,7 +130,7 @@ test__full_flow__random_correct_pwd__should_succeed() {
             vsce_phe_client_check_response_and_decrypt(client, pwd_data, vsc_buffer_data(enrollment_record),
                     vsc_buffer_data(verify_password_response), account_key2));
 
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(account_key), vsc_buffer_bytes(account_key), vsc_buffer_len(account_key));
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(account_key), vsc_buffer_bytes(account_key2), vsc_buffer_len(account_key));
     TEST_ASSERT_EQUAL(vsc_buffer_len(account_key), vsc_buffer_len(account_key2));
 
     vsce_phe_client_destroy(&client);
@@ -310,7 +310,7 @@ test__rotation__random_rotation__enrollment_record_updated_successfully() {
             vsce_phe_client_check_response_and_decrypt(new_client, pwd_data, vsc_buffer_data(new_enrollment_record),
                     vsc_buffer_data(verify_password_response), account_key2));
 
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(account_key), vsc_buffer_bytes(account_key), vsc_buffer_len(account_key));
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(account_key), vsc_buffer_bytes(account_key2), vsc_buffer_len(account_key));
     TEST_ASSERT_EQUAL(vsc_buffer_len(account_key), vsc_buffer_len(account_key2));
 
     vsce_phe_client_destroy(&client);

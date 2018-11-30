@@ -2,8 +2,6 @@
 
     <require class="phe common" scope="public"/>
     <require class="phe utils" scope="private"/>
-    <require impl="sha512" project="foundation" scope="private"/>
-    <require impl="hkdf" project="foundation" scope="private"/>
     <require impl="ctr drbg" project="foundation" scope="private"/>
 
     <require header="PHEModels.pb.h" scope="private"/>
