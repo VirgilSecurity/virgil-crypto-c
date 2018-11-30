@@ -691,9 +691,9 @@ function c_insert_variable_definition (c_variable)
 
     c_insert_description (my.c_variable)
 
-    my.maybe_static = (my.c_variable.declaration = "private") ?? "static " ? ""
+    my.modifier = (my.c_variable.declaration = "private") ?? "static" ? c_derive_component_modifiers (my.c_variable)
 
-    my.code = "$(my.maybe_static:)$(c_derive_instance_declaration (my.c_variable))"
+    my.code = "$(my.modifier:) $(c_derive_instance_declaration (my.c_variable))"
 
     for my.c_variable.c_value
 

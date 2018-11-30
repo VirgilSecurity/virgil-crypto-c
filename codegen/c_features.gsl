@@ -148,7 +148,8 @@ function c_features_create (source, destination)
             .landlord = my.landlord
             .path = features.path
             .cmake_target = features.cmake_target ?
-            .build_interface = "$(features.prefix:c,UPPER)_BUILD_INTERFACE"
+            .internal_build = "$(features.prefix:c,UPPER)_INTERNAL_BUILD"
+            .build_shared_libs = "$(features.prefix:c,UPPER)_BUILD_SHARED_LIBS"
 
             for features.feature
                 c_feature_create (feature, c_features)

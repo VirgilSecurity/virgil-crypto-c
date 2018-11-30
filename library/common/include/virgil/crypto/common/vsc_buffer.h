@@ -239,6 +239,18 @@ VSC_PUBLIC void
 vsc_buffer_decrease_used_bytes(vsc_buffer_t *buffer_ctx, size_t len);
 
 //
+//  Copy null-terminated string to the buffer.
+//
+VSC_PUBLIC void
+vsc_buffer_write_str(vsc_buffer_t *buffer_ctx, const char *str);
+
+//
+//  Copy data to the buffer.
+//
+VSC_PUBLIC void
+vsc_buffer_write_data(vsc_buffer_t *buffer_ctx, vsc_data_t data);
+
+//
 //  Reset to the initial state.
 //  After reset inner buffer can be re-used.
 //

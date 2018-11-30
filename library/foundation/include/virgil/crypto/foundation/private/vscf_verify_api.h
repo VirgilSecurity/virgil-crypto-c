@@ -95,10 +95,6 @@ struct vscf_verify_api_t {
     //
     vscf_api_tag_t api_tag;
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_t impl_tag;
-    //
     //  Verify data with given public key and signature.
     //
     vscf_verify_api_verify_fn verify_cb;

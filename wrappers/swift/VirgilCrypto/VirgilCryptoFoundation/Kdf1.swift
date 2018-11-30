@@ -73,7 +73,7 @@ import VirgilCryptoCommon
         vscf_kdf1_use_hash(self.c_ctx, hash.c_ctx)
     }
 
-    /// Calculate hash over given data.
+    /// Derive key of the requested length from the given data.
     @objc public func derive(data: Data, keyLen: Int) -> Data {
         let keyCount = keyLen
         var key = Data(count: keyCount)
