@@ -264,6 +264,37 @@ vsc_buffer_new_with_data(vsc_data_t data) {
 }
 
 //
+//  Returns true if buffer has no data written.
+//
+VSC_PUBLIC bool
+vsc_buffer_is_empty(vsc_buffer_t *buffer_ctx) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
+
+    return 0 == buffer_ctx->len;
+}
+
+//
+//  Return true if buffers are equal.
+//
+VSC_PUBLIC bool
+vsc_buffer_equal(vsc_buffer_t *buffer_ctx, vsc_buffer_t *rhs) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT_PTR(rhs);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
+    VSC_ASSERT(vsc_buffer_is_valid(rhs));
+
+    if (buffer_ctx->len != rhs->len) {
+        return false;
+    }
+
+    bool is_equal = memcmp(buffer_ctx->bytes, rhs->bytes, rhs->len) == 0;
+    return is_equal;
+}
+
+//
 //  Allocates inner buffer with a given capacity.
 //  Precondition: buffer is initialized.
 //  Precondition: buffer does not hold any bytes.
