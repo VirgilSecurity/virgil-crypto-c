@@ -32,20 +32,26 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <ed25519/ed25519.h>
-#include <test_data_ratchet_session.h>
-#include <test_data_ratchet.h>
-#include <virgil/crypto/ratchet/private/vscr_ratchet_session_defs.h>
-#include <virgil/crypto/ratchet/vscr_ratchet_rng.h>
-#include <virgil/crypto/ratchet/private/vscr_ratchet_defs.h>
+
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
 #include "unity.h"
 #include "test_utils.h"
 
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
+#include "vscr_ratchet_defs.h"
+#include "vscr_ratchet_rng.h"
 #include "vscr_ratchet_session.h"
+#include "vscr_ratchet_session_defs.h"
 #include "vscr_virgil_ratchet_fake_rng_impl.h"
+
+#include "test_data_ratchet_session.h"
+#include "test_data_ratchet.h"
+
+#include <ed25519/ed25519.h>
+
 
 static void
 initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *session_bob) {

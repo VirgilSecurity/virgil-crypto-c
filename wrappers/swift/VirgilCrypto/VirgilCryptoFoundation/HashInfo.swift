@@ -43,6 +43,9 @@ import VirgilCryptoCommon
     @objc var digestLen: Int { get }
     /// Block length of the digest function in bytes.
     @objc var blockLen: Int { get }
+
+    /// Return implemented hash algorithm type.
+    @objc func alg() -> HashAlg
 }
 
 /// Implement interface methods
@@ -70,5 +73,12 @@ import VirgilCryptoCommon
     /// Release underlying C context.
     deinit {
         vscf_impl_delete(self.c_ctx)
+    }
+
+    /// Return implemented hash algorithm type.
+    @objc public func alg() -> HashAlg {
+        let proxyResult = vscf_hash_info_alg(vscf_hash_info_api(self.c_ctx))
+
+        return HashAlg.init(fromC: proxyResult)
     }
 }

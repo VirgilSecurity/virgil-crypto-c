@@ -42,50 +42,103 @@ import VirgilCryptoCommon
 /// Note, that all "write" methods move writing position backward.
 @objc(VSCFAsn1Writer) public protocol Asn1Writer : CContext {
 
+    /// Reset all internal states and prepare to new ASN.1 writing operations.
     @objc func reset(out: UnsafeMutablePointer<UInt8>, outLen: Int)
 
+    /// Move written data to the buffer beginning and forbid further operations.
+    /// Returns written size in bytes.
     @objc func finish() -> Int
 
+    /// Return last error.
     @objc func error() throws
 
+    /// Move writing position backward for the given length.
+    /// Return current writing position.
     @objc func reserve(len: Int) -> UnsafeMutablePointer<UInt8>
 
+    /// Write ASN.1 tag.
+    /// Return count of written bytes.
     @objc func writeTag(tag: Int32) -> Int
 
+    /// Write length of the following data.
+    /// Return count of written bytes.
     @objc func writeLen(len: Int) -> Int
 
+    /// Write ASN.1 type: INTEGER.
+    /// Return count of written bytes.
     @objc func writeInt(value: Int32) -> Int
 
+    /// Write ASN.1 type: INTEGER.
+    /// Return count of written bytes.
     @objc func writeInt8(value: Int8) -> Int
 
+    /// Write ASN.1 type: INTEGER.
+    /// Return count of written bytes.
     @objc func writeInt16(value: Int16) -> Int
 
+    /// Write ASN.1 type: INTEGER.
+    /// Return count of written bytes.
     @objc func writeInt32(value: Int32) -> Int
 
+    /// Write ASN.1 type: INTEGER.
+    /// Return count of written bytes.
     @objc func writeInt64(value: Int64) -> Int
 
+    /// Write ASN.1 type: INTEGER.
+    /// Return count of written bytes.
     @objc func writeUint(value: UInt32) -> Int
 
+    /// Write ASN.1 type: INTEGER.
+    /// Return count of written bytes.
     @objc func writeUint8(value: UInt8) -> Int
 
+    /// Write ASN.1 type: INTEGER.
+    /// Return count of written bytes.
     @objc func writeUint16(value: UInt16) -> Int
 
+    /// Write ASN.1 type: INTEGER.
+    /// Return count of written bytes.
     @objc func writeUint32(value: UInt32) -> Int
 
+    /// Write ASN.1 type: INTEGER.
+    /// Return count of written bytes.
     @objc func writeUint64(value: UInt64) -> Int
 
+    /// Write ASN.1 type: BOOLEAN.
+    /// Return count of written bytes.
     @objc func writeBool(value: Bool) -> Int
 
+    /// Write ASN.1 type: NULL.
     @objc func writeNull() -> Int
 
+    /// Write ASN.1 type: OCTET STRING.
+    /// Return count of written bytes.
     @objc func writeOctetStr(value: Data) -> Int
 
+    /// Write ASN.1 type: BIT STRING with all zero unused bits.
+    ///
+    /// Return count of written bytes.
+    @objc func writeOctetStrAsBitstring(value: Data) -> Int
+
+    /// Write raw data directly to the ASN.1 structure.
+    /// Return count of written bytes.
+    /// Note, use this method carefully.
+    @objc func writeData(data: Data) -> Int
+
+    /// Write ASN.1 type: UTF8String.
+    /// Return count of written bytes.
     @objc func writeUtf8Str(value: Data) -> Int
 
+    /// Write ASN.1 type: OID.
+    /// Return count of written bytes.
     @objc func writeOid(value: Data) -> Int
 
+    /// Mark previously written data of given length as ASN.1 type: SQUENCE.
+    /// Return count of written bytes.
     @objc func writeSequence(len: Int) -> Int
 
+    /// Mark previously written data of given length as ASN.1 type: SET.
+    /// Return count of written bytes.
     @objc func writeSet(len: Int) -> Int
 }
 
@@ -250,6 +303,28 @@ import VirgilCryptoCommon
     @objc public func writeOctetStr(value: Data) -> Int {
         let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
             return vscf_asn1_writer_write_octet_str(self.c_ctx, vsc_data(valuePointer, value.count))
+        })
+
+        return proxyResult
+    }
+
+    /// Write ASN.1 type: BIT STRING with all zero unused bits.
+    ///
+    /// Return count of written bytes.
+    @objc public func writeOctetStrAsBitstring(value: Data) -> Int {
+        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafePointer<byte>) -> Int in
+            return vscf_asn1_writer_write_octet_str_as_bitstring(self.c_ctx, vsc_data(valuePointer, value.count))
+        })
+
+        return proxyResult
+    }
+
+    /// Write raw data directly to the ASN.1 structure.
+    /// Return count of written bytes.
+    /// Note, use this method carefully.
+    @objc public func writeData(data: Data) -> Int {
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Int in
+            return vscf_asn1_writer_write_data(self.c_ctx, vsc_data(dataPointer, data.count))
         })
 
         return proxyResult

@@ -26,7 +26,7 @@ attribute names are case-sensitive and we use only lower-case names.
                [impl] [size] [project] [require_definition] [access]>
              <cast is_reference [project] [access] [type] [class] [enum] [callback] [interface]
                   [api] [impl] [size] [library] [require_definition]>
-                <string [access] [length]/>
+                <string [access] [length] [length_constant]/>
                 <array [access] [length] [length_constant]/>
              </cast>
              <string .../>
@@ -889,6 +889,7 @@ Defines restrictions to the special class 'string'.
     <string
       [ access = "readonly | writeonly | readwrite | disown" ]
       [ length = "null_terminated | given | fixed | derived"  ("null_terminated") ]
+      [ length_constant = "..." ]
         />
 
 The string item can have these attributes:
@@ -912,6 +913,10 @@ null_terminated: String length is defined by distance from the first character u
 given: String length is given from the client.
 fixed: String length is known at compile time, so it can be substituted automatically.
 derived: String length can be statically derived during string initialization.
+
+length_constant:
+    For fixed size string it defines number of characters as integral
+    constant. The length_constant attribute is optional.
 
 
 The 'array' item

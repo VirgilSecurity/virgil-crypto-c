@@ -40,8 +40,13 @@ import VirgilCryptoCommon
 /// Common information about asymmetric key.
 @objc(VSCFKey) public protocol Key : CContext {
 
+    /// Return implemented asymmetric key algorithm type.
+    @objc func alg() -> KeyAlg
+
+    /// Length of the key in bytes.
     @objc func keyLen() -> Int
 
+    /// Length of the key in bits.
     @objc func keyBitlen() -> Int
 }
 
@@ -60,6 +65,13 @@ import VirgilCryptoCommon
     /// Release underlying C context.
     deinit {
         vscf_impl_delete(self.c_ctx)
+    }
+
+    /// Return implemented asymmetric key algorithm type.
+    @objc public func alg() -> KeyAlg {
+        let proxyResult = vscf_key_alg(self.c_ctx)
+
+        return KeyAlg.init(fromC: proxyResult)
     }
 
     /// Length of the key in bytes.

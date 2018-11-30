@@ -46,7 +46,8 @@
 #define TEST_DEPENDENCIES_AVAILABLE VSCE_SIMPLE_SWU
 #if TEST_DEPENDENCIES_AVAILABLE
 
-void test__simple_swu__random_hashes__should_be_on_curve() {
+void
+test__simple_swu__random_hashes__should_be_on_curve() {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
@@ -73,8 +74,7 @@ void test__simple_swu__random_hashes__should_be_on_curve() {
 
             if (mbedtls_mpi_cmp_mpi(&t, &group.P) < 0) {
                 break;
-            }
-            else {
+            } else {
                 mbedtls_mpi_free(&t);
             }
         }
@@ -96,7 +96,8 @@ void test__simple_swu__random_hashes__should_be_on_curve() {
     vscf_ctr_drbg_destroy(&rng);
 }
 
-void test__simple_swu__const_hash1__should_match() {
+void
+test__simple_swu__const_hash1__should_match() {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
@@ -131,7 +132,8 @@ void test__simple_swu__const_hash1__should_match() {
     mbedtls_ecp_group_free(&group);
 }
 
-void test__simple_swu__const_hash2__should_match() {
+void
+test__simple_swu__const_hash2__should_match() {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
@@ -186,4 +188,3 @@ main(void) {
 
     return UNITY_END();
 }
-
