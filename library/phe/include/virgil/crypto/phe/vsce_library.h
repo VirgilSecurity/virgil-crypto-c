@@ -111,27 +111,28 @@ extern "C" {
 //
 #define VSCE_UNUSED(x) (void)(x)
 
-#if defined _WIN32 || defined __CYGWIN__
-#   ifdef BUILDING_DLL
+#if defined(_WIN32) || defined(__CYGWIN__)
+#   ifdef VSCE_BUILD_SHARED_LIBS
 #       ifdef __GNUC__
 #           define VSCE_PUBLIC __attribute__ ((dllexport))
 #       else
 #           define VSCE_PUBLIC __declspec(dllexport)
 #       endif
-#   else
+#   elsif !defined(c_global_macros_internal_build)
 #       ifdef __GNUC__
 #           define VSCE_PUBLIC __attribute__ ((dllimport))
 #       else
 #           define VSCE_PUBLIC __declspec(dllimport)
 #       endif
+#   else
+#       define VSCE_PUBLIC
 #   endif
 #   define VSCE_PRIVATE
 #else
-#   if (defined __GNUC__ && __GNUC__ >= 4) || defined __INTEL_COMPILER
+#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER)
 #       define VSCE_PUBLIC __attribute__ ((visibility ("default")))
 #       define VSCE_PRIVATE __attribute__ ((visibility ("hidden")))
 #   else
-#       define VSCE_PUBLIC
 #       define VSCE_PRIVATE
 #   endif
 #endif

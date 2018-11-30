@@ -111,27 +111,28 @@ extern "C" {
 //
 #define VSCF_UNUSED(x) (void)(x)
 
-#if defined _WIN32 || defined __CYGWIN__
-#   ifdef BUILDING_DLL
+#if defined(_WIN32) || defined(__CYGWIN__)
+#   ifdef VSCF_BUILD_SHARED_LIBS
 #       ifdef __GNUC__
 #           define VSCF_PUBLIC __attribute__ ((dllexport))
 #       else
 #           define VSCF_PUBLIC __declspec(dllexport)
 #       endif
-#   else
+#   elsif !defined(c_global_macros_internal_build)
 #       ifdef __GNUC__
 #           define VSCF_PUBLIC __attribute__ ((dllimport))
 #       else
 #           define VSCF_PUBLIC __declspec(dllimport)
 #       endif
+#   else
+#       define VSCF_PUBLIC
 #   endif
 #   define VSCF_PRIVATE
 #else
-#   if (defined __GNUC__ && __GNUC__ >= 4) || defined __INTEL_COMPILER
+#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER)
 #       define VSCF_PUBLIC __attribute__ ((visibility ("default")))
 #       define VSCF_PRIVATE __attribute__ ((visibility ("hidden")))
 #   else
-#       define VSCF_PUBLIC
 #       define VSCF_PRIVATE
 #   endif
 #endif
