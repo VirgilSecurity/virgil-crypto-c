@@ -268,6 +268,39 @@ vsce_phe_hash_cleanup_ctx(vsce_phe_hash_t *phe_hash_ctx) {
 }
 
 VSCE_PUBLIC vsce_error_t
+vsce_phe_hash_derive_account_key(vsce_phe_hash_t *phe_hash_ctx, const mbedtls_ecp_point *m, vsc_buffer_t *account_key) {
+
+    VSCE_ASSERT(phe_hash_ctx);
+    VSCE_ASSERT(m);
+    VSCE_ASSERT(vsc_buffer_len(account_key) == 0);
+    VSCE_ASSERT(vsc_buffer_capacity(account_key) == vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
+
+    vsc_buffer_t *M_buf = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_POINT_LENGTH);
+    vsc_buffer_make_secure(M_buf);
+    size_t olen = 0;
+    int mbedtls_status = mbedtls_ecp_point_write_binary(&phe_hash_ctx->group, m, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+                                                    vsc_buffer_ptr(M_buf), vsce_phe_common_PHE_POINT_LENGTH);
+    vsc_buffer_reserve(M_buf, vsce_phe_common_PHE_POINT_LENGTH);
+    VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
+
+    vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
+
+    vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
+
+    // FIXME: Why so easy word
+    const byte hkdf_info[] = "Secret";
+
+    vscf_hkdf_derive(hkdf, vsc_buffer_data(M_buf), vsc_data_empty(),
+                     vsc_data(hkdf_info, sizeof(hkdf_info) - 1), account_key, vsc_buffer_capacity(account_key));
+
+    vsc_buffer_destroy(&M_buf);
+    vscf_hkdf_destroy(&hkdf);
+
+    return vsce_SUCCESS;
+}
+
+VSCE_PUBLIC vsce_error_t
 vsce_phe_hash_data_to_point(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t data, mbedtls_ecp_point *p) {
 
     VSCE_ASSERT_PTR(phe_hash_ctx);
