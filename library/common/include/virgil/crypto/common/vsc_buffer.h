@@ -137,13 +137,13 @@ vsc_buffer_copy(vsc_buffer_t *buffer_ctx);
 //  Returns true if buffer has no data written.
 //
 VSC_PUBLIC bool
-vsc_buffer_is_empty(vsc_buffer_t *buffer_ctx);
+vsc_buffer_is_empty(const vsc_buffer_t *buffer_ctx);
 
 //
 //  Return true if buffers are equal.
 //
 VSC_PUBLIC bool
-vsc_buffer_equal(vsc_buffer_t *buffer_ctx, vsc_buffer_t *rhs);
+vsc_buffer_equal(const vsc_buffer_t *buffer_ctx, const vsc_buffer_t *rhs);
 
 //
 //  Allocates inner buffer with a given capacity.
