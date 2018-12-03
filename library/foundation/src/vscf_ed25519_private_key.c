@@ -193,7 +193,7 @@ vscf_ed25519_private_key_sign(
     VSCF_ASSERT_PTR(ed25519_private_key_impl);
     VSCF_ASSERT(vsc_buffer_is_valid(signature));
     VSCF_ASSERT_PTR(data.bytes);
-    int ret = ed25519_sign(ed25519_private_key_impl->signature, vsc_buffer_ptr(signature), data.bytes, data.len);
+    int ret = ed25519_sign(vsc_buffer_ptr(signature), ed25519_private_key_impl->private_key, data.bytes, data.len);
     VSCF_ASSERT(ret == 0);
     return vscf_SUCCESS;
 }
