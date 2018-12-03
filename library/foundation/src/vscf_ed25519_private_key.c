@@ -149,7 +149,11 @@ vscf_ed25519_private_key_extract_public_key(vscf_ed25519_private_key_impl_t *ed2
     VSCF_ASSERT_ALLOC(ed25519_public_key_impl != NULL);
     int ret = ed25519_get_pubkey(ed25519_public_key_impl->public_key, ed25519_private_key_impl->secret_key);
     VSCF_ASSERT(ret == 0);
-    return vscf_ed25519_public_key_impl(ed25519_public_key_impl);
+    vscf_ed25519_public_key_impl_t *ed25519_public_key_le_impl = vscf_ed25519_public_key_new();
+    vsc_buffer_t *dst = vsc_buffer_new();
+    vsc_buffer_use(dst, ed25519_public_key_le_impl->public_key, ED25519_KEY_LEN);
+    vscf_endianness_reverse_memcpy(vsc_data(ed25519_public_key_le_impl->public_key, ED25519_KEY_LEN), dst);
+    return vscf_ed25519_public_key_impl(ed25519_public_key_le_impl);
 }
 
 //
