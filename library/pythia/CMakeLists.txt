@@ -164,8 +164,9 @@ include (CMakePackageConfigHelpers)
 #
 if(VIRGIL_INSTALL_HDRS)
     install(
-            DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/"
+            DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/" "${CMAKE_CURRENT_BINARY_DIR}/include/"
             DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+            PATTERN "*.h.in" EXCLUDE
             )
 endif()
 
