@@ -29,7 +29,7 @@ def build_LangC_Unix(slave) {
     return { node(slave) {
         clearContentUnix()
         unstash 'src'
-        sh 'cmake -DCMAKE_INSTALL_PREFIX=install -Bbuid -H.'
+        sh 'cmake -DCMAKE_INSTALL_PREFIX=install -Bbuild -H.'
         sh 'cmake --build build'
         sh 'cmake --build build --target install'
         archiveArtifacts('install/**')
