@@ -83,7 +83,8 @@ test__ed25519_private_key_sign__with_imported_PRIVATE_KEY_and_MESSAGE__equals_ME
     vscf_ed25519_private_key_impl_t *private_key_impl = vscf_ed25519_private_key_new();
 
     //  Import private key
-    vscf_error_t result = vscf_ed25519_private_key_import_private_key(private_key_impl, test_ed25519_PRIVATE_KEY_REVERSE);
+    vscf_error_t result =
+            vscf_ed25519_private_key_import_private_key(private_key_impl, test_ed25519_PRIVATE_KEY_REVERSE);
     VSCF_ASSERT(result == vscf_SUCCESS);
 
     //  Sign
@@ -107,7 +108,8 @@ test__ed25519_private_key_export_private_key_with_imported_ed25519_PRIVATE_KEY__
     vscf_ed25519_private_key_impl_t *private_key_impl = vscf_ed25519_private_key_new();
 
     //  Import private key
-    vscf_error_t result = vscf_ed25519_private_key_import_private_key(private_key_impl, test_ed25519_PRIVATE_KEY_REVERSE);
+    vscf_error_t result =
+            vscf_ed25519_private_key_import_private_key(private_key_impl, test_ed25519_PRIVATE_KEY_REVERSE);
     VSCF_ASSERT(result == vscf_SUCCESS);
 
     vsc_buffer_t *exported_key_buf =
@@ -118,8 +120,8 @@ test__ed25519_private_key_export_private_key_with_imported_ed25519_PRIVATE_KEY__
 
     // Check
     TEST_ASSERT_EQUAL(test_ed25519_PRIVATE_KEY.len, vsc_buffer_len(exported_key_buf));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_ed25519_PRIVATE_KEY.bytes, vsc_buffer_bytes(exported_key_buf),
-            vsc_buffer_len(exported_key_buf));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(
+            test_ed25519_PRIVATE_KEY.bytes, vsc_buffer_bytes(exported_key_buf), vsc_buffer_len(exported_key_buf));
     vscf_ed25519_private_key_destroy(&private_key_impl);
     vsc_buffer_destroy(&exported_key_buf);
 }
