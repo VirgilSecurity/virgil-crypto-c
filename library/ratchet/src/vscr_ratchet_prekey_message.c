@@ -261,13 +261,13 @@ vscr_ratchet_prekey_message_serialize_len(size_t message_len) {
     //       receiver_one_time_public_key OCTET_STRING,
     //       message OCTET_STRING }
 
-    size_t top_sequence_len = 1 + 3 /* SEQUENCE */
-                              + 1 + 1 + 2 /* version */
+    size_t top_sequence_len = 1 + 3                                                   /* SEQUENCE */
+                              + 1 + 1 + 2                                             /* version */
                               + 1 + 1 + vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH /* sender_identity_key */
                               + 1 + 1 + vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH /* sender_ephemeral_key */
                               + 1 + 1 + vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH /* receiver_long_term_key */
                               + 1 + 1 + vscr_ratchet_prekey_message_PUBLIC_KEY_LENGTH /* receiver_one_time_public_key */
-                              + 1 + 3 + message_len; /* message */
+                              + 1 + 3 + message_len;                                  /* message */
 
     return top_sequence_len;
 }
