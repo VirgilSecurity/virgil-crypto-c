@@ -30,6 +30,7 @@ def build_LangC_Unix(slave) {
     return { node(slave) {
         clearContentUnix()
         unstash 'src'
+        sh 'mkdir build'
         sh 'cmake -Bbuid -H. -DCMAKE_INSTALL_PREFIX=install'
         sh 'cmake --build build'
         sh 'cmake --build build --target install'
