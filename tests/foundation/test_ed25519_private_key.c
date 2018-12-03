@@ -57,23 +57,21 @@ test__ed25519_private_key_extract_public_key__from_imported_PRIVATE_KEY__when_ex
     vscf_ed25519_public_key_impl_t *public_key_impl = vscf_ed25519_private_key_extract_public_key(private_key_impl);
     TEST_ASSERT_NOT_NULL(public_key_impl);
 
-    /*vsc_buffer_t *exported_key_buf =
+    vsc_buffer_t *exported_key_buf =
             vsc_buffer_new_with_capacity(vscf_export_public_key_exported_public_key_len(public_key_impl));
 
     vscf_error_t export_err = vscf_export_public_key(public_key_impl, exported_key_buf);
-    VSCF_ASSERT(export_err == vscf_SUCCESS);*/
+    VSCF_ASSERT(export_err == vscf_SUCCESS);
 
     //  Check
-    TEST_ASSERT_EQUAL(test_ed25519_PUBLIC_KEY.len, sizeof(public_key_impl->public_key[ED25519_KEY_LEN]));
+
+    TEST_ASSERT_EQUAL(test_ed25519_PUBLIC_KEY.len, vsc_buffer_len(exported_key_buf));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(
-            test_ed25519_PUBLIC_KEY.bytes, public_key_impl->public_key[ED25519_KEY_LEN], ED25519_KEY_LEN);
-    //TEST_ASSERT_EQUAL(test_ed25519_PUBLIC_KEY.len, vsc_buffer_len(exported_key_buf));
-    //TEST_ASSERT_EQUAL_HEX8_ARRAY(
-    //        test_ed25519_PUBLIC_KEY.bytes, vsc_buffer_bytes(exported_key_buf), vsc_buffer_len(exported_key_buf));
+            test_ed25519_PUBLIC_KEY.bytes, vsc_buffer_bytes(exported_key_buf), vsc_buffer_len(exported_key_buf));
 
     vscf_ed25519_private_key_destroy(&private_key_impl);
     vscf_impl_destroy(&public_key_impl);
-    //vsc_buffer_destroy(&exported_key_buf);
+    vsc_buffer_destroy(&exported_key_buf);
 }
 
 void
