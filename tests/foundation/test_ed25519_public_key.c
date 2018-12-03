@@ -42,7 +42,7 @@ test__ed25519_public_key_export_public_key__from_imported_PUBLIC_KEY__expected_e
 void
 test__ed25519_public_key_verify__with_imported_PUBLIC_KEY_and_DATA_SIGNATURE(void) {
     vscf_ed25519_public_key_impl_t *public_key_impl = vscf_ed25519_public_key_new();
-    vscf_error_t result = vscf_ed25519_public_key_import_public_key(public_key_impl, test_ed25519_PUBLIC_KEY);
+    vscf_error_t result = vscf_ed25519_public_key_import_public_key(public_key_impl, test_ed25519_PUBLIC_KEY_REVERSE);
     VSCF_ASSERT(result == vscf_SUCCESS);
     bool verify_result = vscf_ed25519_public_key_verify(public_key_impl, test_ed25519_MESSAGE, test_ed25519_SIGNATURE);
     //  Check
