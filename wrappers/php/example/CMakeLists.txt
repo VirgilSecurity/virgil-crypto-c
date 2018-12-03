@@ -41,6 +41,7 @@ add_library(vsc_example_php SHARED example.cpp)
 target_link_libraries(vsc_example_php PUBLIC php-cpp)
 set_target_properties(vsc_example_php PROPERTIES CXX_STANDARD 11)
 set_target_properties(vsc_example_php PROPERTIES
+        PREFIX ""
         SUFFIX .so
         VERSION ${virgil_crypto_example_php_VERSION}
         SOVERSION ${virgil_crypto_example_php_VERSION_MAJOR}
