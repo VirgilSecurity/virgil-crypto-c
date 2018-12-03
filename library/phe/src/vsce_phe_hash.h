@@ -50,7 +50,6 @@
 #include "vsce_library.h"
 #include "vsce_phe_common.h"
 #include "vsce_simple_swu.h"
-#include "vsce_error.h"
 
 #include <mbedtls/ecp.h>
 
@@ -147,30 +146,30 @@ vsce_phe_hash_take_simple_swu(vsce_phe_hash_t *phe_hash_ctx, vsce_simple_swu_t *
 VSCE_PUBLIC void
 vsce_phe_hash_release_simple_swu(vsce_phe_hash_t *phe_hash_ctx);
 
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC void
 vsce_phe_hash_derive_account_key(vsce_phe_hash_t *phe_hash_ctx, const mbedtls_ecp_point *m, vsc_buffer_t *account_key);
 
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC void
 vsce_phe_hash_data_to_point(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t data, mbedtls_ecp_point *p);
 
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC void
 vsce_phe_hash_hc0(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t nc, vsc_data_t password, mbedtls_ecp_point *hc0);
 
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC void
 vsce_phe_hash_hc1(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t nc, vsc_data_t password, mbedtls_ecp_point *hc1);
 
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC void
 vsce_phe_hash_hs0(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t ns, mbedtls_ecp_point *hs0);
 
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC void
 vsce_phe_hash_hs1(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t ns, mbedtls_ecp_point *hs1);
 
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC void
 vsce_phe_hash_hash_z_success(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t server_public_key, const mbedtls_ecp_point *c0,
         const mbedtls_ecp_point *c1, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2,
         const mbedtls_ecp_point *term3, mbedtls_mpi *z);
 
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC void
 vsce_phe_hash_hash_z_failure(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t server_public_key, const mbedtls_ecp_point *c0,
         const mbedtls_ecp_point *c1, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2,
         const mbedtls_ecp_point *term3, const mbedtls_ecp_point *term4, mbedtls_mpi *z);

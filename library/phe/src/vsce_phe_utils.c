@@ -48,7 +48,6 @@
 #include "vsce_memory.h"
 #include "vsce_assert.h"
 #include "vsce_phe_utils_defs.h"
-#include "vsce_error.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
@@ -268,11 +267,13 @@ vsce_phe_utils_cleanup_ctx(vsce_phe_utils_t *phe_utils_ctx) {
     mbedtls_ecp_group_free(&phe_utils_ctx->group);
 }
 
-VSCE_PUBLIC void
+VSCE_PUBLIC vsce_error_t
 vsce_phe_utils_random_z(vsce_phe_utils_t *phe_utils_ctx, mbedtls_mpi *z) {
 
     VSCE_ASSERT_PTR(phe_utils_ctx);
     VSCE_ASSERT_PTR(z);
+
+    vsce_error_t status = vsce_SUCCESS;
 
     byte buff[vsce_phe_common_PHE_PRIVATE_KEY_LENGTH];
     vsc_buffer_t *buffer = vsc_buffer_new();
@@ -280,10 +281,17 @@ vsce_phe_utils_random_z(vsce_phe_utils_t *phe_utils_ctx, mbedtls_mpi *z) {
 
     do {
         vsc_buffer_reset(buffer);
-        VSCE_ASSERT(vscf_random(phe_utils_ctx->random, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, buffer) == vscf_SUCCESS);
+        vscf_error_t f_status = vscf_random(phe_utils_ctx->random, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, buffer);
+
+        if (f_status != vscf_SUCCESS)
+            goto err;
+
         VSCE_ASSERT(mbedtls_mpi_read_binary(z, buff, sizeof(buff)) == 0);
     } while (mbedtls_mpi_cmp_mpi(&phe_utils_ctx->group.N, z) <= 0);
 
+err:
     vsce_zeroize(buff, sizeof(buff));
     vsc_buffer_destroy(&buffer);
+
+    return status;
 }

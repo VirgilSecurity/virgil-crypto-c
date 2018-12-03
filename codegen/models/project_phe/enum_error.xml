@@ -3,8 +3,20 @@
         No errors was occurred.
     </constant>
 
-    <constant name="invalid proof" of_class="global" value="1">
-        Proof check failed.
+    <constant name="invalid success proof" of_class="global" value="1">
+        Success proof check failed.
+    </constant>
+
+    <constant name="invalid fail proof" of_class="global" value="2">
+        Failure proof check failed.
+    </constant>
+
+    <constant name="RNG error" of_class="global" value="3">
+        RNG returned error
+    </constant>
+
+    <constant name="Protobuf decode error" of_class="global" value="4">
+        Protobuf decode failed
     </constant>
 
 </enum>

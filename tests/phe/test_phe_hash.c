@@ -95,7 +95,7 @@ test__hs0__const_hash__should_match() {
     mbedtls_mpi_read_string(&x, 10, test_phe_hash_hs0_x_DEC);
     mbedtls_mpi_read_string(&y, 10, test_phe_hash_hs0_y_DEC);
 
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_hash_hs0(phe_hash, test_phe_hash_ns1, &hs0));
+    vsce_phe_hash_hs0(phe_hash, test_phe_hash_ns1, &hs0);
 
     TEST_ASSERT(mbedtls_ecp_check_pubkey(&group, &hs0) == 0);
     TEST_ASSERT(mbedtls_mpi_cmp_mpi(&hs0.X, &x) == 0);
@@ -130,7 +130,7 @@ test__hs1__const_hash__should_match() {
     mbedtls_mpi_read_string(&x, 10, test_phe_hash_hs1_x_DEC);
     mbedtls_mpi_read_string(&y, 10, test_phe_hash_hs1_y_DEC);
 
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_hash_hs1(phe_hash, test_phe_hash_ns2, &hs1));
+    vsce_phe_hash_hs1(phe_hash, test_phe_hash_ns2, &hs1);
 
     TEST_ASSERT(mbedtls_ecp_check_pubkey(&group, &hs1) == 0);
     TEST_ASSERT(mbedtls_mpi_cmp_mpi(&hs1.X, &x) == 0);
@@ -165,7 +165,7 @@ test__hc0__const_hash__should_match() {
     mbedtls_mpi_read_string(&x, 10, test_phe_hash_hc0_x_DEC);
     mbedtls_mpi_read_string(&y, 10, test_phe_hash_hc0_y_DEC);
 
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_hash_hc0(phe_hash, test_phe_hash_nc1, test_phe_hash_hc0_pwd, &hc0));
+    vsce_phe_hash_hc0(phe_hash, test_phe_hash_nc1, test_phe_hash_hc0_pwd, &hc0);
 
     TEST_ASSERT(mbedtls_ecp_check_pubkey(&group, &hc0) == 0);
     TEST_ASSERT(mbedtls_mpi_cmp_mpi(&hc0.X, &x) == 0);
@@ -200,7 +200,7 @@ test__hc1__const_hash__should_match() {
     mbedtls_mpi_read_string(&x, 10, test_phe_hash_hc1_x_DEC);
     mbedtls_mpi_read_string(&y, 10, test_phe_hash_hc1_y_DEC);
 
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_hash_hc1(phe_hash, test_phe_hash_nc2, test_phe_hash_hc1_pwd, &hc1));
+    vsce_phe_hash_hc1(phe_hash, test_phe_hash_nc2, test_phe_hash_hc1_pwd, &hc1);
 
     TEST_ASSERT(mbedtls_ecp_check_pubkey(&group, &hc1) == 0);
     TEST_ASSERT(mbedtls_mpi_cmp_mpi(&hc1.X, &x) == 0);
@@ -255,8 +255,7 @@ test__hash_z_s_success__const_hash__should_match() {
     mbedtls_mpi z;
     mbedtls_mpi_init(&z);
 
-    TEST_ASSERT_EQUAL(vsce_SUCCESS,
-            vsce_phe_hash_hash_z_success(phe_hash, test_phe_hash_z_s_pub, &c0, &c1, &term1, &term2, &term3, &z));
+    vsce_phe_hash_hash_z_success(phe_hash, test_phe_hash_z_s_pub, &c0, &c1, &term1, &term2, &term3, &z);
 
     mbedtls_mpi z_exp;
     mbedtls_mpi_init(&z_exp);
@@ -319,8 +318,7 @@ test__hash_z_s_failure__const_hash__should_match() {
     mbedtls_mpi z;
     mbedtls_mpi_init(&z);
 
-    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_hash_hash_z_failure(phe_hash, test_phe_hash_z_f_pub, &c0, &c1, &term1,
-                                            &term2, &term3, &term4, &z));
+    vsce_phe_hash_hash_z_failure(phe_hash, test_phe_hash_z_f_pub, &c0, &c1, &term1, &term2, &term3, &term4, &z);
 
     mbedtls_mpi z_exp;
     mbedtls_mpi_init(&z_exp);

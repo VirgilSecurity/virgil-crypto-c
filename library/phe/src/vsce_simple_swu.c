@@ -265,7 +265,7 @@ vsce_simple_swu_cleanup_ctx(vsce_simple_swu_t *simple_swu_ctx) {
     mbedtls_mpi_free(&simple_swu_ctx->mba);
 }
 
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC void
 vsce_simple_swu_bignum_to_point(vsce_simple_swu_t *simple_swu_ctx, const mbedtls_mpi *t, mbedtls_ecp_point *p) {
 
     VSCE_ASSERT_PTR(simple_swu_ctx);
@@ -391,6 +391,4 @@ vsce_simple_swu_bignum_to_point(vsce_simple_swu_t *simple_swu_ctx, const mbedtls
     mbedtls_mpi_free(&h3_temp);
     mbedtls_mpi_free(&tmp);
     mbedtls_mpi_free(&tmp22h2);
-
-    return vsce_SUCCESS;
 }
