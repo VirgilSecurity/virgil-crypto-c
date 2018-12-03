@@ -49,7 +49,6 @@
 
 #include "vsce_library.h"
 #include "vsce_phe_common.h"
-#include "vsce_error.h"
 
 #include <mbedtls/ecp.h>
 #include <mbedtls/bignum.h>
@@ -118,7 +117,7 @@ vsce_simple_swu_destroy(vsce_simple_swu_t **simple_swu_ctx_ref);
 VSCE_PUBLIC vsce_simple_swu_t *
 vsce_simple_swu_copy(vsce_simple_swu_t *simple_swu_ctx);
 
-VSCE_PUBLIC vsce_error_t
+VSCE_PUBLIC void
 vsce_simple_swu_bignum_to_point(vsce_simple_swu_t *simple_swu_ctx, const mbedtls_mpi *t, mbedtls_ecp_point *p);
 
 

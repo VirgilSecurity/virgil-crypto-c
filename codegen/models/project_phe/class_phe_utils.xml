@@ -12,6 +12,8 @@
 
     <method name="random Z">
         <argument name="z" class="mbedtls_mpi" library="mbedtls" access="writeonly"/>
+
+        <return enum="error"/>
     </method>
 
 </class>

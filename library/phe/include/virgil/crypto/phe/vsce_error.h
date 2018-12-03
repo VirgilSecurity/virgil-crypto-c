@@ -68,9 +68,21 @@ enum vsce_error_t {
     //
     vsce_SUCCESS = 0,
     //
-    //  Proof check failed.
+    //  Success proof check failed.
     //
-    vsce_INVALID_PROOF = 1
+    vsce_INVALID_SUCCESS_PROOF = 1,
+    //
+    //  Failure proof check failed.
+    //
+    vsce_INVALID_FAIL_PROOF = 2,
+    //
+    //  RNG returned error
+    //
+    vsce_RNG_ERROR = 3,
+    //
+    //  Protobuf decode failed
+    //
+    vsce_PROTOBUF_DECODE_ERROR = 4
 };
 typedef enum vsce_error_t vsce_error_t;
 

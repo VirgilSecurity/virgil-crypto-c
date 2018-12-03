@@ -17,8 +17,6 @@
     <method name="bignum to point">
         <argument name="t" class="mbedtls_mpi" library="mbedtls" access="readonly"/>
         <argument name="p" class="mbedtls_ecp_point" library="mbedtls" access="writeonly"/>
-
-        <return enum="error"/>
     </method>
 
 </class>

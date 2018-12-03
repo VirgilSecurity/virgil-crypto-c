@@ -48,6 +48,7 @@
 #define VSCE_PHE_UTILS_H_INCLUDED
 
 #include "vsce_library.h"
+#include "vsce_error.h"
 #include "vsce_phe_common.h"
 
 #include <mbedtls/bignum.h>
@@ -143,7 +144,7 @@ vsce_phe_utils_take_random(vsce_phe_utils_t *phe_utils_ctx, vscf_impl_t *random)
 VSCE_PUBLIC void
 vsce_phe_utils_release_random(vsce_phe_utils_t *phe_utils_ctx);
 
-VSCE_PUBLIC void
+VSCE_PUBLIC vsce_error_t
 vsce_phe_utils_random_z(vsce_phe_utils_t *phe_utils_ctx, mbedtls_mpi *z);
 
 
