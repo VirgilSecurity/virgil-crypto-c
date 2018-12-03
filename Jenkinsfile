@@ -27,7 +27,7 @@ def archiveArtifacts(pattern) {
 }
 
 def build_LangC_Unix(slave) {
-    return node(slave) {
+    return { node(slave) {
         clearContentUnix()
         unstash 'src'
         sh 'cmake -Bbuid -H. -DCMAKE_INSTALL_PREFIX=install'
