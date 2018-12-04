@@ -12,8 +12,8 @@ install:
   - sudo bash cmake-3.11.1-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local
   - export PATH="/usr/local/bin:$PATH"
   - travis_retry sudo apt-get install -y -qq cloc
-  - travis_retry pip install --upgrade pip
-  - travis_retry pip install "protobuf"
+  - travis_retry sudo pip install --upgrade pip
+  - travis_retry sudo pip install "protobuf"
 
 before_script:
   - ${CC} --version
