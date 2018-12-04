@@ -21,7 +21,7 @@ install:
     && tar xzf protobuf-python-3.6.1.tar.gz
     && cp protoc-3.6.1-linux-x86_64/bin/protoc protobuf-3.6.1/src/
     && pushd protobuf-3.6.1/python
-    && sudo python setup.py build && python setup.py install
+    && python setup.py build && sudo python setup.py install
     && popd
     && popd
 
