@@ -277,7 +277,7 @@ endif()
 #
 if(VIRGIL_INSTALL_DEPS_CMAKE)
     install(
-            DIRECTORY "${NANOPB_INSTALL_LOCATION}/${CMAKE_INSTALL_LIBDIR}/cmake"
+            DIRECTORY "${NANOPB_INSTALL_LOCATION}/lib/cmake"
             DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             )
 endif()
