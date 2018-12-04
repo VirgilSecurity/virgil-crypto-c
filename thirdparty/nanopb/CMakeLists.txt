@@ -115,7 +115,7 @@ ExternalProject_Add(protobuf-nanopb-bin-ext
         BUILD_IN_SOURCE
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ""
-        INSTALL_COMMAND cmake -E copy_directory
+        INSTALL_COMMAND "${CMAKE_COMMAND}" -E copy_directory
             "${CMAKE_CURRENT_BINARY_DIR}/protobuf-nanopb-bin-ext/src/protobuf-nanopb-bin-ext/generator-bin"
             "${NANOPB_INSTALL_LOCATION}/bin"
         )

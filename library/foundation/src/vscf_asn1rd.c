@@ -599,6 +599,29 @@ vscf_asn1rd_read_octet_str(vscf_asn1rd_impl_t *asn1rd_impl) {
 }
 
 //
+//  Read ASN.1 type: BIT STRING.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_asn1rd_read_bitstring_as_octet_str(vscf_asn1rd_impl_t *asn1rd_impl) {
+
+    VSCF_ASSERT_PTR(asn1rd_impl);
+
+    VSCF_ASSERT(asn1rd_impl->error != vscf_error_UNINITIALIZED);
+
+    if (asn1rd_impl->error != vscf_SUCCESS) {
+        return vsc_data_empty();
+    }
+
+    vsc_data_t value = vscf_asn1rd_read_tag_data(asn1rd_impl, MBEDTLS_ASN1_BIT_STRING);
+
+    if ((value.len > 0) && (*value.bytes == 0x00)) {
+        return vsc_data_slice_beg(value, 1, value.len - 1);
+    }
+
+    return value;
+}
+
+//
 //  Read ASN.1 type: UTF8String.
 //
 VSCF_PUBLIC vsc_data_t

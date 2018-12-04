@@ -108,10 +108,6 @@ struct vscf_hash_stream_api_t {
     //
     vscf_api_tag_t api_tag;
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_t impl_tag;
-    //
     //  Link to the inherited interface API 'hash info'.
     //
     const vscf_hash_info_api_t *hash_info_api;

@@ -190,8 +190,8 @@
             <return type="boolean"/>
         </method>
 
-        <method name="write raw data">
-            Write raw data of specific tag the to the buffer.
+        <method name="write tag data">
+            Write raw data and with given tag the to ASN.1 structure.
 
             <argument name="data" class="data"/>
             <argument name="tag" type="integer"/>

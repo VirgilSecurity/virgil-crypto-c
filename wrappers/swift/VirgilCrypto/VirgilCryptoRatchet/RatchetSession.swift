@@ -64,10 +64,10 @@ import VirgilCryptoFoundation
     }
 
     public init(receivedFirstResponse: Bool, senderIdentityPublicKey: Data, senderEphemeralPublicKey: Data, receiverLongtermPublicKey: Data, receiverOnetimePublicKey: Data, ratchet: Ratchet) {
-        let proxyResult = senderIdentityPublicKey.withUnsafeBytes({ (senderIdentityPublicKeyPointer: UnsafePointer<byte>) -> UnsafeMutablePointer<vscr_ratchet_session_t> in
-            senderEphemeralPublicKey.withUnsafeBytes({ (senderEphemeralPublicKeyPointer: UnsafePointer<byte>) -> UnsafeMutablePointer<vscr_ratchet_session_t> in
-                receiverLongtermPublicKey.withUnsafeBytes({ (receiverLongtermPublicKeyPointer: UnsafePointer<byte>) -> UnsafeMutablePointer<vscr_ratchet_session_t> in
-                    receiverOnetimePublicKey.withUnsafeBytes({ (receiverOnetimePublicKeyPointer: UnsafePointer<byte>) -> UnsafeMutablePointer<vscr_ratchet_session_t> in
+        let proxyResult = senderIdentityPublicKey.withUnsafeBytes({ (senderIdentityPublicKeyPointer: UnsafePointer<byte>) -> OpaquePointer in
+            senderEphemeralPublicKey.withUnsafeBytes({ (senderEphemeralPublicKeyPointer: UnsafePointer<byte>) -> OpaquePointer in
+                receiverLongtermPublicKey.withUnsafeBytes({ (receiverLongtermPublicKeyPointer: UnsafePointer<byte>) -> OpaquePointer in
+                    receiverOnetimePublicKey.withUnsafeBytes({ (receiverOnetimePublicKeyPointer: UnsafePointer<byte>) -> OpaquePointer in
                         var senderIdentityPublicKeyBuf = vsc_buffer_new_with_data(vsc_data(senderIdentityPublicKeyPointer, senderIdentityPublicKey.count))
                         defer {
                             vsc_buffer_delete(senderIdentityPublicKeyBuf)
