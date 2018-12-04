@@ -12,8 +12,14 @@ install:
   - sudo bash cmake-3.11.1-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local
   - export PATH="/usr/local/bin:$PATH"
   - travis_retry sudo apt-get install -y -qq cloc
-  - travis_retry sudo pip install --upgrade pip
-  - travis_retry sudo pip install "protobuf"
+  - mkdir -p $HOME/protobuf && pushd $HOME/protobuf
+    && curl -LO 'https://github.com/google/protobuf/releases/download/v3.6.1/protoc-3.6.1-linux-x86_64.zip'
+    && unzip protoc-3.6.1-linux-x86_64.zip
+    && popd
+  - curl -L 'https://github.com/google/protobuf/releases/download/v3.6.1/protobuf-python-3.6.1.tar.gz' | tar xzf -
+    && pushd protobuf-3.6.1/python
+    && python setup.py build && python setup.py install
+    && popd
 
 before_script:
   - ${CC} --version
