@@ -108,8 +108,7 @@ test__ed25519_private_key_export_private_key_with_imported_ed25519_PRIVATE_KEY__
     vscf_ed25519_private_key_impl_t *private_key_impl = vscf_ed25519_private_key_new();
 
     //  Import private key
-    vscf_error_t result =
-            vscf_ed25519_private_key_import_private_key(private_key_impl, test_ed25519_PRIVATE_KEY_REVERSE);
+    vscf_error_t result = vscf_ed25519_private_key_import_private_key(private_key_impl, test_ed25519_PRIVATE_KEY);
     VSCF_ASSERT(result == vscf_SUCCESS);
 
     vsc_buffer_t *exported_key_buf =
