@@ -118,7 +118,7 @@ endif()
 #
 if(VIRGIL_INSTALL_DEPS_LIBS)
     install(
-            DIRECTORY "${PYTHIA_INSTALL_LOCATION}/lib/"
+            DIRECTORY "${PYTHIA_INSTALL_LOCATION}/${CMAKE_INSTALL_LIBDIR}/"
             DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             PATTERN "cmake" EXCLUDE
             )
@@ -129,7 +129,7 @@ endif()
 #
 if(VIRGIL_INSTALL_DEPS_CMAKE)
     install(
-            DIRECTORY "${PYTHIA_INSTALL_LOCATION}/lib/cmake"
+            DIRECTORY "${PYTHIA_INSTALL_LOCATION}/${CMAKE_INSTALL_LIBDIR}/cmake"
             DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             )
 endif()
