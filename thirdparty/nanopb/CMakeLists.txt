@@ -165,8 +165,8 @@ ExternalProject_Add(protobuf-nanopb-ext
             "-Dnanopb_MSVC_STATIC_RUNTIME=ON"
             "-DCMAKE_C_FLAGS=\"${NANOPB_COMPILE_DEFINITIONS_STR}\""
         BUILD_BYPRODUCTS
-            "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopb${CMAKE_STATIC_LIBRARY_SUFFIX}"
-            "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopbd${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            "${NANOPB_INSTALL_LOCATION}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopb${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            "${NANOPB_INSTALL_LOCATION}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopbd${CMAKE_STATIC_LIBRARY_SUFFIX}"
         )
 
 ExternalProject_Add_Step(protobuf-nanopb-ext install-protobuf-generator
@@ -230,9 +230,9 @@ add_dependencies(protobuf-nanopb protobuf-nanopb-ext)
 set_target_properties(protobuf-nanopb
         PROPERTIES
         IMPORTED_LOCATION
-            "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopb${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            "${NANOPB_INSTALL_LOCATION}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopb${CMAKE_STATIC_LIBRARY_SUFFIX}"
         IMPORTED_LOCATION_DEBUG
-            "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopbd${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            "${NANOPB_INSTALL_LOCATION}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopbd${CMAKE_STATIC_LIBRARY_SUFFIX}"
         INTERFACE_INCLUDE_DIRECTORIES
             "${NANOPB_INSTALL_LOCATION}/include"
         INTERFACE_COMPILE_DEFINITIONS
@@ -266,7 +266,7 @@ endif()
 #
 if(VIRGIL_INSTALL_DEPS_LIBS)
     install(
-            DIRECTORY "${NANOPB_INSTALL_LOCATION}/lib/"
+            DIRECTORY "${NANOPB_INSTALL_LOCATION}/${CMAKE_INSTALL_LIBDIR}/"
             DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             PATTERN "cmake" EXCLUDE
             )
@@ -277,7 +277,7 @@ endif()
 #
 if(VIRGIL_INSTALL_DEPS_CMAKE)
     install(
-            DIRECTORY "${NANOPB_INSTALL_LOCATION}/lib/cmake"
+            DIRECTORY "${NANOPB_INSTALL_LOCATION}/${CMAKE_INSTALL_LIBDIR}/cmake"
             DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             )
 endif()
