@@ -58,6 +58,14 @@
 
 #include <mbedtls/bignum.h>
 
+#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_sha512.h>
+#endif
+
+#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_sha512.h>
+#endif
+
 // clang-format on
 //  @end
 
@@ -85,6 +93,10 @@ struct vsce_phe_hash_t {
     //  Reference counter.
     //
     size_t refcnt;
+    //
+    //  Dependency to the implementation 'sha512'.
+    //
+    vscf_sha512_impl_t *sha512;
     //
     //  Dependency to the class 'simple swu'.
     //
