@@ -13,10 +13,12 @@ install:
   - export PATH="/usr/local/bin:$PATH"
   - travis_retry sudo apt-get install -y -qq cloc
   - mkdir -p $HOME/protobuf && pushd $HOME/protobuf
-    && curl -LO 'https://github.com/google/protobuf/releases/download/v3.6.1/protoc-3.6.1-linux-x86_64.zip'
+    && wget 'https://github.com/google/protobuf/releases/download/v3.6.1/protoc-3.6.1-linux-x86_64.zip' -O protoc-3.6.1-linux-x86_64.zip
     && unzip protoc-3.6.1-linux-x86_64.zip
     && popd
-  - curl -L 'https://github.com/google/protobuf/releases/download/v3.6.1/protobuf-python-3.6.1.tar.gz' | tar xzf -
+  - wget 'https://github.com/google/protobuf/releases/download/v3.6.1/protobuf-python-3.6.1.tar.gz' -O protobuf-python-3.6.1.tar.gz
+    && tar xzf protobuf-3.6.1.tar.gz
+    && cp bin/protoc protobuf-3.6.1/src/
     && pushd protobuf-3.6.1/python
     && python setup.py build && python setup.py install
     && popd
