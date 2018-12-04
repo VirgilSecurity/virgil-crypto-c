@@ -1,5 +1,5 @@
 RegularMessage.public_key max_size:32 fixed_length:true
-RegularMessage.cipher_text max_size:64 fixed_length:true
+RegularMessage.cipher_text max_size:32768
 
 PrekeyMessage.sender_identity_key max_size:32 fixed_length:true
 PrekeyMessage.sender_ephemeral_key max_size:64 fixed_length:true

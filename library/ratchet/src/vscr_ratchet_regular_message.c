@@ -266,7 +266,16 @@ VSCR_PUBLIC size_t
 vscr_ratchet_regular_message_serialize_len_ext(vscr_ratchet_regular_message_t *ratchet_regular_message_ctx) {
 
     VSCR_ASSERT_PTR(ratchet_regular_message_ctx);
-    return vscr_ratchet_regular_message_serialize_len(vsc_buffer_len(ratchet_regular_message_ctx->cipher_text));
+    size_t size = 0;
+    // TODO: Optimize
+    RegularMessage regular_message = RegularMessage_init_zero;
+    bool pb_status = true;
+    pb_status = pb_get_encoded_size(&size, RegularMessage_fields, &regular_message);
+    VSCR_ASSERT(pb_status);
+
+    size += ratchet_regular_message_ctx->cipher_text->len;
+
+    return size;
 }
 
 VSCR_PUBLIC vscr_error_t
@@ -282,15 +291,15 @@ vscr_ratchet_regular_message_serialize(vscr_ratchet_regular_message_t *ratchet_r
     VSCR_ASSERT_PTR(ratchet_regular_message_ctx);
     VSCR_ASSERT(vsc_buffer_left(output) >= vscr_ratchet_regular_message_serialize_len_ext(ratchet_regular_message_ctx));
 
-    vsc_buffer_reserve(output, vscr_ratchet_regular_message_serialize_len_ext(ratchet_regular_message_ctx));
-
     RegularMessage regular_message = RegularMessage_init_zero;
     bool status;
 
-    pb_ostream_t stream = pb_ostream_from_buffer(output->bytes, output->len);
+    pb_ostream_t ostream = pb_ostream_from_buffer(output->bytes, output->capacity);
 
-    memcpy(regular_message.cipher_text, ratchet_regular_message_ctx->cipher_text->bytes,
+    memcpy(regular_message.cipher_text.bytes, ratchet_regular_message_ctx->cipher_text->bytes,
            ratchet_regular_message_ctx->cipher_text->len);
+
+    regular_message.cipher_text.size += ratchet_regular_message_ctx->cipher_text->len;
 
     memcpy(regular_message.public_key, ratchet_regular_message_ctx->public_key->bytes,
            ratchet_regular_message_ctx->public_key->len);
@@ -299,12 +308,14 @@ vscr_ratchet_regular_message_serialize(vscr_ratchet_regular_message_t *ratchet_r
 
     regular_message.version = ratchet_regular_message_ctx->version;
 
-    status = pb_encode(&stream, RegularMessage_fields, &regular_message);
+    status = pb_encode(&ostream, RegularMessage_fields, &regular_message);
 
     if (!status) {
         // FIXME
         return vscr_ASN1_WRITE_ERROR;
     }
+
+    vsc_buffer_reserve(output, ostream.bytes_written);
 
     return vscr_SUCCESS;
 }
@@ -323,9 +334,9 @@ vscr_ratchet_regular_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err
     RegularMessage regular_message = RegularMessage_init_zero;
     bool status;
 
-    pb_istream_t stream = pb_istream_from_buffer(input.bytes, input.len);
+    pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 
-    status = pb_decode(&stream, RegularMessage_fields, &regular_message);
+    status = pb_decode(&istream, RegularMessage_fields, &regular_message);
 
     if (!status) {
         // FIXME
@@ -340,8 +351,7 @@ vscr_ratchet_regular_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err
 
     vsc_data_t public_key = vsc_data(regular_message.public_key, vscr_ratchet_regular_message_PUBLIC_KEY_LENGTH);
 
-    // FIXME
-    vsc_data_t cipher_text = vsc_data(regular_message.cipher_text, 32768 /* vscr_ratchet_regular_message_MAX_MESSAGE_LENGTH */);
+    vsc_data_t cipher_text = vsc_data(regular_message.cipher_text.bytes, regular_message.cipher_text.size);
 
     vsc_buffer_t *public_key_buf = vsc_buffer_new_with_data(public_key);
     vsc_buffer_t *cipher_text_buf = vsc_buffer_new_with_data(cipher_text);
