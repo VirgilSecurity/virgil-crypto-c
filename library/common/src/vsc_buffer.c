@@ -264,6 +264,37 @@ vsc_buffer_new_with_data(vsc_data_t data) {
 }
 
 //
+//  Returns true if buffer has no data written.
+//
+VSC_PUBLIC bool
+vsc_buffer_is_empty(const vsc_buffer_t *buffer_ctx) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
+
+    return 0 == buffer_ctx->len;
+}
+
+//
+//  Return true if buffers are equal.
+//
+VSC_PUBLIC bool
+vsc_buffer_equal(const vsc_buffer_t *buffer_ctx, const vsc_buffer_t *rhs) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT_PTR(rhs);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
+    VSC_ASSERT(vsc_buffer_is_valid(rhs));
+
+    if (buffer_ctx->len != rhs->len) {
+        return false;
+    }
+
+    bool is_equal = memcmp(buffer_ctx->bytes, rhs->bytes, rhs->len) == 0;
+    return is_equal;
+}
+
+//
 //  Allocates inner buffer with a given capacity.
 //  Precondition: buffer is initialized.
 //  Precondition: buffer does not hold any bytes.
@@ -478,6 +509,44 @@ vsc_buffer_decrease_used_bytes(vsc_buffer_t *buffer_ctx, size_t len) {
     VSC_ASSERT(len <= buffer_ctx->len);
 
     buffer_ctx->len -= len;
+}
+
+//
+//  Copy null-terminated string to the buffer.
+//
+VSC_PUBLIC void
+vsc_buffer_write_str(vsc_buffer_t *buffer_ctx, const char *str) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
+    VSC_ASSERT_PTR(str);
+
+    size_t str_len = strlen(str);
+    VSC_ASSERT(str_len <= vsc_buffer_left(buffer_ctx));
+
+    size_t write_len = str_len > vsc_buffer_left(buffer_ctx) ? vsc_buffer_left(buffer_ctx) : str_len;
+
+    memcpy(vsc_buffer_ptr(buffer_ctx), (const byte *)str, write_len);
+
+    buffer_ctx->len += write_len;
+}
+
+//
+//  Copy data to the buffer.
+//
+VSC_PUBLIC void
+vsc_buffer_write_data(vsc_buffer_t *buffer_ctx, vsc_data_t data) {
+
+    VSC_ASSERT_PTR(buffer_ctx);
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
+    VSC_ASSERT(vsc_data_is_valid(data));
+    VSC_ASSERT(data.len <= vsc_buffer_left(buffer_ctx));
+
+    size_t write_len = data.len > vsc_buffer_left(buffer_ctx) ? vsc_buffer_left(buffer_ctx) : data.len;
+
+    memcpy(vsc_buffer_ptr(buffer_ctx), data.bytes, write_len);
+
+    buffer_ctx->len += write_len;
 }
 
 //

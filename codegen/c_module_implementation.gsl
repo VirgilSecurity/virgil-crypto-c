@@ -86,9 +86,6 @@ function _Z19_add_instance_interface_api (impl, interface_api, destination, meta
                 if property.tag = "api_tag"
                     .value = property.value #   Actually this attribute already there
 
-                elsif property.tag = "impl_tag"
-                    .value = my.refs.implementation_constant_tag
-
                 elsif property.tag = "api"
                     .value = my.refs.implementation_variable_$(make_id (property.name))
 
@@ -148,10 +145,7 @@ function _Z19_add_instance_impl_info (impl, source, destination, meta)
         for my.impl_info.property
             my.value = component_clean_copy (property, variable, "value")
             scope my.value
-                if property.tag = "impl_tag"
-                    .value = my.refs.implementation_constant_tag
-
-                elsif property.tag = "find_api"
+                if property.tag = "find_api"
                     .value = my.refs.implementation_method_find_api
 
                 elsif property.tag = "self_cleanup"
@@ -342,21 +336,6 @@ function c_dependency_add_argument (dependency, destination, after_argument, met
     return my.argument
 endfunction
 
-# ---------------------------------------------------------------------------
-function _Z19_add_self_tag (implementation, enum, meta)
-    check_arguments (my, "implementation, enum, meta", my)
-
-    my.names = meta_names (my.meta)
-
-    my.insertion_position = my.enum->constant (name = my.names.enum_constant_end) ?
-    if ! defined (my.insertion_position)
-        echo_fatal ("Enum '$(my.enum.name:)' does not contain value '$(my.names.enum_constant_end:)'.", my)
-    endif
-
-    new constant before my.insertion_position
-        .name = my.implementation.name
-    endnew
-endfunction
 
 # ---------------------------------------------------------------------------
 #   Add type that handles implementation details.
@@ -394,6 +373,20 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
             endfor
         endfor
     endnew
+
+    if my.definition <> "external"
+        for my.impl.context
+            for context.require
+                my.copied_require = item_copy_to(require, module)
+                my.copied_require.scope = my.definition
+            endfor
+        endfor
+
+        for my.impl.require where 0.scope="context"
+            my.copied_require = item_copy_to(require, module)
+            my.copied_require.scope = my.definition
+        endfor
+    endif
 endfunction
 
 
@@ -982,8 +975,8 @@ endfunction
 #       - function that cast implementation type to the common
 #         implementation type - declaration only
 # ---------------------------------------------------------------------------
-function c_module_implementation_create_module_public (impl, enum_impl_tag, destination, meta)
-    check_arguments (my, "impl, enum_impl_tag, destination, meta", my)
+function c_module_implementation_create_module_public (impl, destination, meta)
+    check_arguments (my, "impl, destination, meta", my)
 
     my.names = meta_names (my.meta)
 
@@ -999,7 +992,6 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
         .feature = my.impl.name
 
         _Z19_add_includes_for_module_public (my.impl, module, my.meta)
-        _Z19_add_self_tag (my.impl, my.enum_impl_tag, my.meta)
         _Z19_add_interface_constants (my.impl, module, my.meta)
 
         if my.impl.context <> "none"
@@ -1060,12 +1052,6 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
         new require to module
             .module = my.names.implementation_module
         endnew
-
-        for my.impl.context
-            for context.require
-                copy require to module
-            endfor
-        endfor
 
         _Z19_add_type_impl (my.impl, "external", "public", module, my.meta)
     endnew
@@ -1136,12 +1122,11 @@ function c_module_implementation_create (source, destination, meta)
     my.refs = meta_refs (my.meta)
 
     my.module_impl = my.source->module (name = my.names.module_impl)
-    my.enum_impl_tag = my.module_impl->enum (name = my.names.enum_tag)
 
     for my.source.implementation by name
         meta_reset_active_entity (my.meta, implementation.name)
 
-        c_module_implementation_create_module_public (implementation, my.enum_impl_tag, my.destination, my.meta)
+        c_module_implementation_create_module_public (implementation, my.destination, my.meta)
         c_module_implementation_create_module_internal (implementation, my.source, my.destination, my.meta)
 
         if implementation.context <> "none"

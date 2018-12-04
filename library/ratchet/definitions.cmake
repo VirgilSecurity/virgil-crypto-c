@@ -51,7 +51,6 @@ endif()
 
 target_compile_definitions(ratchet
         PUBLIC
-            $<BUILD_INTERFACE:VSCR_BUILD_INTERFACE>
             "VSCR_LIBRARY=$<BOOL:${VSCR_LIBRARY}>"
             "VSCR_RATCHET_RNG=$<BOOL:${VSCR_RATCHET_RNG}>"
             "VSCR_VIRGIL_RATCHET_FAKE_RNG=$<BOOL:${VSCR_VIRGIL_RATCHET_FAKE_RNG}>"
@@ -70,4 +69,7 @@ target_compile_definitions(ratchet
             "VSCR_RATCHET_MESSAGE=$<BOOL:${VSCR_RATCHET_MESSAGE}>"
             "VSCR_RATCHET=$<BOOL:${VSCR_RATCHET}>"
             "VSCR_RATCHET_SESSION=$<BOOL:${VSCR_RATCHET_SESSION}>"
+        PRIVATE
+            $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCR_BUILD_SHARED_LIBS>
+            $<BUILD_INTERFACE:VSCR_INTERNAL_BUILD>
         )

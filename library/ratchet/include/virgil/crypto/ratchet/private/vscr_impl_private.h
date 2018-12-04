@@ -94,10 +94,6 @@ typedef const vscr_api_t * (*vscr_impl_find_api_fn)(vscr_api_tag_t api_tag);
 typedef struct vscr_impl_info_t vscr_impl_info_t;
 struct vscr_impl_info_t {
     //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscr_impl_tag_t impl_tag;
-    //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
     //

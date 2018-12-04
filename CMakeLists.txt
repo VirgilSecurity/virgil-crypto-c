@@ -36,6 +36,13 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(virgil_crypto_c_top VERSION 0.1.0 LANGUAGES C)
 
+
+# ---------------------------------------------------------------------------
+#   Forced build options
+# ---------------------------------------------------------------------------
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+
 # ---------------------------------------------------------------------------
 #   Helper modules
 # ---------------------------------------------------------------------------
@@ -201,28 +208,36 @@ find_program(CLOC_EXECUTABLE cloc)
 if(CLOC_EXECUTABLE)
     add_custom_target(cloc-common
             COMMAND ${CLOC_EXECUTABLE}
-                "${CMAKE_CURRENT_LIST_DIR}/library/common/include/virgil"
-                "${CMAKE_CURRENT_LIST_DIR}/library/common/include/virgil/private"
+                "${CMAKE_CURRENT_LIST_DIR}/library/common/include/virgil/crypto/common"
+                "${CMAKE_CURRENT_LIST_DIR}/library/common/include/virgil/crypto/common/private"
                 "${CMAKE_CURRENT_LIST_DIR}/library/common/src"
             COMMENT "Calculate lines of the 'common' library..."
             )
 
     add_custom_target(cloc-foundation
             COMMAND ${CLOC_EXECUTABLE}
-                "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil"
-                "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil/private"
+                "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil/crypto/foundation"
+                "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil/crypto/foundation/private"
                 "${CMAKE_CURRENT_LIST_DIR}/library/foundation/src"
             COMMENT "Calculate lines of the 'foundation' library..."
             )
 
     add_custom_target(cloc-pythia
             COMMAND ${CLOC_EXECUTABLE}
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil"
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/private"
+                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia"
+                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia/private"
+                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/src"
+            COMMENT "Calculate lines of the 'pythia' library..."
+            )
+
+    add_custom_target(cloc-ratchet
+            COMMAND ${CLOC_EXECUTABLE}
+                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia"
+                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia/private"
                 "${CMAKE_CURRENT_LIST_DIR}/library/pythia/src"
             COMMENT "Calculate lines of the 'pythia' library..."
             )
 
     add_custom_target(cloc)
-    add_dependencies(cloc cloc-common cloc-foundation cloc-pythia)
+    add_dependencies(cloc cloc-common cloc-foundation cloc-pythia cloc-ratchet)
 endif()

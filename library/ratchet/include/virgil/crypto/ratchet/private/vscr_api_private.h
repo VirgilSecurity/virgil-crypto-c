@@ -81,10 +81,6 @@ struct vscr_api_t {
     //  Interface unique identifier.
     //
     vscr_api_tag_t api_tag;
-    //
-    //  Implementation unique identifier.
-    //
-    vscr_impl_tag_t impl_tag;
 };
 
 

@@ -40,8 +40,10 @@ import VirgilCryptoCommon
 /// Provide interface for symmetric ciphers.
 @objc(VSCFCipher) public protocol Cipher : Encrypt, Decrypt, CipherInfo {
 
+    /// Setup IV or nonce.
     @objc func setNonce(nonce: Data)
 
+    /// Set cipher encryption / decryption key.
     @objc func setKey(key: Data)
 }
 
