@@ -51,14 +51,13 @@
 #include <virgil/crypto/foundation/vscf_asn1wr.h>
 #include <virgil/crypto/foundation/vscf_asn1rd.h>
 
+// clang-format on
+//  @end
+
 #include <pb_encode.h>
 #include <pb_decode.h>
 #include <Message.pb.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
-
-// clang-format on
-//  @end
-
 
 //  @generated
 // --------------------------------------------------------------------------
