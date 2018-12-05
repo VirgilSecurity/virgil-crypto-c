@@ -170,6 +170,15 @@ endif()
 
 
 # ---------------------------------------------------------------------------
+#   Integration tests
+# ---------------------------------------------------------------------------
+if(ENABLE_TESTING AND NOT CMAKE_CROSSCOMPILING)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
+
+
+# ---------------------------------------------------------------------------
 #   Library wrappers
 # ---------------------------------------------------------------------------
 if(VIRGIL_WRAP_ALL OR VIRGIL_WRAP_GO)
@@ -178,15 +187,6 @@ endif()
 
 if(VIRGIL_WRAP_ALL OR VIRGIL_WRAP_PHP)
     add_subdirectory("wrappers/php")
-endif()
-
-
-# ---------------------------------------------------------------------------
-#   Integration tests
-# ---------------------------------------------------------------------------
-if(ENABLE_TESTING AND NOT CMAKE_CROSSCOMPILING)
-    enable_testing()
-    add_subdirectory(tests)
 endif()
 
 
