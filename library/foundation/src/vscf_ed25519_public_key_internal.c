@@ -59,8 +59,6 @@
 #include "vscf_key_api.h"
 #include "vscf_public_key.h"
 #include "vscf_public_key_api.h"
-#include "vscf_encrypt.h"
-#include "vscf_encrypt_api.h"
 #include "vscf_verify.h"
 #include "vscf_verify_api.h"
 #include "vscf_export_public_key.h"
@@ -123,29 +121,6 @@ static const vscf_public_key_api_t public_key_api = {
     //  Link to the inherited interface API 'key'.
     //
     &key_api
-};
-
-//
-//  Configuration of the interface API 'encrypt api'.
-//
-static const vscf_encrypt_api_t encrypt_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'encrypt' MUST be equal to the 'vscf_api_tag_ENCRYPT'.
-    //
-    vscf_api_tag_ENCRYPT,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_ED25519_PUBLIC_KEY,
-    //
-    //  Encrypt given data.
-    //
-    (vscf_encrypt_api_encrypt_fn)vscf_ed25519_public_key_encrypt,
-    //
-    //  Calculate required buffer length to hold the encrypted data.
-    //
-    (vscf_encrypt_api_encrypted_len_fn)vscf_ed25519_public_key_encrypted_len
 };
 
 //
@@ -360,8 +335,6 @@ static const vscf_api_t *
 vscf_ed25519_public_key_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
-        case vscf_api_tag_ENCRYPT:
-            return (const vscf_api_t *) &encrypt_api;
         case vscf_api_tag_EXPORT_PUBLIC_KEY:
             return (const vscf_api_t *) &export_public_key_api;
         case vscf_api_tag_IMPORT_PUBLIC_KEY:

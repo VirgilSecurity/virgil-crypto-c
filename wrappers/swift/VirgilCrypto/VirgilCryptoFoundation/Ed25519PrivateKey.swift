@@ -38,7 +38,7 @@ import VSCFoundation
 import VirgilCryptoCommon
 
 /// This is implementation of ED25519 private key
-@objc(VSCFEd25519PrivateKey) public class Ed25519PrivateKey: NSObject, Key, GenerateKey, PrivateKey, Decrypt, Sign, ExportPrivateKey, ImportPrivateKey, ComputeSharedKey {
+@objc(VSCFEd25519PrivateKey) public class Ed25519PrivateKey: NSObject, Key, GenerateKey, PrivateKey, Sign, ExportPrivateKey, ImportPrivateKey, ComputeSharedKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -100,36 +100,6 @@ import VirgilCryptoCommon
         let proxyResult = vscf_ed25519_private_key_extract_public_key(self.c_ctx)
 
         return PublicKeyProxy.init(c_ctx: proxyResult!)
-    }
-
-    /// Decrypt given data.
-    @objc public func decrypt(data: Data) throws -> Data {
-        let outCount = self.decryptedLen(dataLen: data.count)
-        var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(outBuf)
-        }
-
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
-                vsc_buffer_init(outBuf)
-                vsc_buffer_use(outBuf, outPointer, outCount)
-                return vscf_ed25519_private_key_decrypt(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
-            })
-        })
-        out.count = vsc_buffer_len(outBuf)
-
-        try FoundationError.handleError(fromC: proxyResult)
-
-        return out
-    }
-
-    /// Calculate required buffer length to hold the decrypted data.
-    @objc public func decryptedLen(dataLen: Int) -> Int {
-        let proxyResult = vscf_ed25519_private_key_decrypted_len(self.c_ctx, dataLen)
-
-        return proxyResult
     }
 
     /// Sign data given private key.

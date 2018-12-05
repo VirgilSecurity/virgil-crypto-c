@@ -186,19 +186,6 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_ed25519_private_key_extract_public_key(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl);
 
 //
-//  Decrypt given data.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_decrypt(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vsc_data_t data,
-        vsc_buffer_t *out);
-
-//
-//  Calculate required buffer length to hold the decrypted data.
-//
-VSCF_PUBLIC size_t
-vscf_ed25519_private_key_decrypted_len(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, size_t data_len);
-
-//
 //  Sign data given private key.
 //
 VSCF_PUBLIC vscf_error_t

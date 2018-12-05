@@ -118,30 +118,6 @@ vscf_ed25519_public_key_key_bitlen(vscf_ed25519_public_key_impl_t *ed25519_publi
 }
 
 //
-//  Encrypt given data.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_ed25519_public_key_encrypt(
-        vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_data_t data, vsc_buffer_t *out) {
-
-    VSCF_ASSERT_PTR(ed25519_public_key_impl);
-    VSCF_ASSERT_PTR(vsc_buffer_is_valid(out));
-    VSCF_ASSERT_PTR(data.bytes);
-    return vscf_SUCCESS;
-}
-
-//
-//  Calculate required buffer length to hold the encrypted data.
-//
-VSCF_PUBLIC size_t
-vscf_ed25519_public_key_encrypted_len(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, size_t data_len) {
-
-    VSCF_ASSERT_PTR(ed25519_public_key_impl);
-    VSCF_ASSERT(data_len != 0);
-    return 0;
-}
-
-//
 //  Verify data with given public key and signature.
 //
 VSCF_PUBLIC bool
