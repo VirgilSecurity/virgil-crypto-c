@@ -382,18 +382,7 @@ vsce_phe_client_enrollment_record_len(vsce_phe_client_t *phe_client_ctx) {
 
     VSCE_UNUSED(phe_client_ctx);
 
-    //    size_t size = 0;
-    //    EnrollmentRecord record = EnrollmentRecord_init_zero;
-    //    bool pb_status = true;
-    //    pb_status = pb_get_encoded_size(&size, EnrollmentRecord_fields, &record);
-    //    VSCE_ASSERT(pb_status);
-    //
-    //    return size;
-
-    // NOTE: code above computes this value, cached result is used below.
-    // Update this value in case protobuf model is changed
-
-    return 202;
+    return EnrollmentRecord_size;
 }
 
 VSCE_PUBLIC vsce_error_t
@@ -545,15 +534,7 @@ vsce_phe_client_verify_password_request_len(vsce_phe_client_t *phe_client_ctx) {
 
     VSCE_UNUSED(phe_client_ctx);
 
-    // size_t size = 0;
-    // VerifyPasswordRequest record = VerifyPasswordRequest_init_zero;
-    // VSCE_ASSERT(pb_get_encoded_size(&size, VerifyPasswordRequest_fields, &record));
-    //
-    // return size;
-
-    // NOTE: code above computes this value, cached result is used below.
-    // Update this value in case protobuf model is changed
-    return 101;
+    return VerifyPasswordRequest_size;
 }
 
 VSCE_PUBLIC vsce_error_t
