@@ -8,6 +8,8 @@
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 
+    <require module="buffer defs" scope="private" project="common"/>
+
     <dependency name="random" interface="random" project="foundation"/>
 
     <property name="utils" class="phe utils"/>

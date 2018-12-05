@@ -55,6 +55,7 @@
 #include <PHEModels.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 // clang-format on
 //  @end
@@ -438,19 +439,27 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
         goto proof_err;
     }
 
-    vsc_buffer_t *nc = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH);
+    byte nc_buffer[vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH];
+
+    vsc_buffer_t nc;
+    vsc_buffer_init(&nc);
+    vsc_buffer_use(&nc, nc_buffer, sizeof(nc_buffer));
 
     vscf_error_t f_status;
-    f_status = vscf_random(phe_client_ctx->random, vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH, nc);
+    f_status = vscf_random(phe_client_ctx->random, vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH, &nc);
 
     if (f_status != vscf_SUCCESS) {
         status = vsce_RNG_ERROR;
         goto rng_err1;
     }
 
-    vsc_buffer_t *rnd_m = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH);
-    vsc_buffer_make_secure(rnd_m);
-    f_status = vscf_random(phe_client_ctx->random, vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH, rnd_m);
+    byte rnd_m_buffer[vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH];
+
+    vsc_buffer_t rnd_m;
+    vsc_buffer_init(&rnd_m);
+    vsc_buffer_use(&rnd_m, rnd_m_buffer, sizeof(rnd_m_buffer));
+
+    f_status = vscf_random(phe_client_ctx->random, vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH, &rnd_m);
     if (f_status != vscf_SUCCESS) {
         status = vsce_RNG_ERROR;
         goto rng_err2;
@@ -460,13 +469,13 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
     mbedtls_ecp_point_init(&hc0);
     mbedtls_ecp_point_init(&hc1);
 
-    vsce_phe_hash_hc0(phe_client_ctx->phe_hash, vsc_buffer_data(nc), password, &hc0);
-    vsce_phe_hash_hc1(phe_client_ctx->phe_hash, vsc_buffer_data(nc), password, &hc1);
+    vsce_phe_hash_hc0(phe_client_ctx->phe_hash, vsc_buffer_data(&nc), password, &hc0);
+    vsce_phe_hash_hc1(phe_client_ctx->phe_hash, vsc_buffer_data(&nc), password, &hc1);
 
     mbedtls_ecp_point M;
     mbedtls_ecp_point_init(&M);
 
-    vsce_phe_hash_data_to_point(phe_client_ctx->phe_hash, vsc_buffer_data(rnd_m), &M);
+    vsce_phe_hash_data_to_point(phe_client_ctx->phe_hash, vsc_buffer_data(&rnd_m), &M);
 
     vsce_phe_hash_derive_account_key(phe_client_ctx->phe_hash, &M, account_key);
 
@@ -485,7 +494,7 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
 
     EnrollmentRecord record = EnrollmentRecord_init_zero;
     memcpy(record.ns, response.ns, sizeof(response.ns));
-    memcpy(record.nc, vsc_buffer_bytes(nc), vsc_buffer_len(nc));
+    memcpy(record.nc, vsc_buffer_bytes(&nc), vsc_buffer_len(&nc));
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(
             &phe_client_ctx->group, &t0, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, record.t_0, sizeof(record.t_0));
@@ -510,10 +519,12 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
     mbedtls_ecp_point_free(&M);
 
 rng_err1:
-    vsc_buffer_destroy(&nc);
+    vsc_buffer_delete(&nc);
 
 rng_err2:
-    vsc_buffer_destroy(&rnd_m);
+    vsc_buffer_delete(&rnd_m);
+
+    vsce_zeroize(rnd_m_buffer, sizeof(rnd_m_buffer));
 
 proof_err:
     mbedtls_ecp_point_free(&c0);
