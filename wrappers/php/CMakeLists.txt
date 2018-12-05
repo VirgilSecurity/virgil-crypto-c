@@ -36,14 +36,59 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(virgil_crypto_php VERSION 0.5.0 LANGUAGES C)
 
-#
-# Derive installation path.
-#
+# ---------------------------------------------------------------------------
+#   PHP wrapper build options
+# ---------------------------------------------------------------------------
+set(PHP_VERSION "" CACHE STRING "Required exact PHP version. Keep empty to find currently available version.")
+
 if(VIRGIL_INSTALL_WRAP_STANDALONE)
     get_filename_component(PHP_DESTINATION "${VIRGIL_INSTALL_WRAP_PREFIX}/php" ABSOLUTE)
 else()
     set(PHP_DESTINATION "${VIRGIL_INSTALL_WRAP_PREFIX}")
 endif()
 
-add_subdirectory(php-cpp)
-add_subdirectory(example)
+# ---------------------------------------------------------------------------
+#   Find PHP module and create target 'php' from it
+# ---------------------------------------------------------------------------
+set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+
+if(PHP_VERSION)
+    find_package(PHP ${PHP_VERSION} EXACT REQUIRED)
+else()
+    find_package(PHP REQUIRED)
+endif()
+
+if(NOT PHP_FOUND)
+    message(FATAL_ERROR "PHP headers and libraries needed for compiling extensions is not found.")
+endif()
+
+if(PHP_LIBRARIES)
+    add_library(phplib STATIC IMPORTED)
+    set_target_properties(phplib PROPERTIES IMPORTED_IMPLIB "${PHP_LIBRARIES}")
+else()
+    add_library(phplib INTERFACE IMPORTED)
+endif()
+
+target_include_directories(phplib SYSTEM INTERFACE "${PHP_INCLUDE_DIRS}")
+
+if(PHP_DEFINITIONS)
+    target_compile_definitions(phplib INTERFACE ${PHP_DEFINITIONS})
+endif()
+
+if(PHP_EXECUTABLE)
+    message(STATUS "Found PHP (cli): ${PHP_EXECUTABLE} (found version: ${PHP_VERSION})")
+else()
+    message(WARNING "PHP (cli) is not found - PHP tests will be disabled!")
+endif()
+
+if(PHPUNIT_EXECUTABLE)
+    message(STATUS "Found PHPUnit: ${PHPUNIT_EXECUTABLE} (found version: ${PHPUNIT_VERSION})")
+else()
+    message(WARNING "PHPUnit is not found - PHP tests will be disabled!")
+endif()
+
+
+# ---------------------------------------------------------------------------
+#   Add per project extension build
+# ---------------------------------------------------------------------------
+add_subdirectory(pythia)
