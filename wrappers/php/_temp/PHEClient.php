@@ -179,9 +179,9 @@ class PHEClient
     public function rotateKeys(string $updateToken): array
     {
         $newClientPrivateKey = "";
-        $newServerPrivateKey = "";
+        $newServerPublicKey = "";
 
-        return [$newClientPrivateKey, $newServerPrivateKey];
+        return [$newClientPrivateKey, $newServerPublicKey];
     }
 
     //<method name="update enrollment record">
