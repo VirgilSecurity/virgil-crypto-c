@@ -61,8 +61,6 @@
 #include "vscf_generate_key_api.h"
 #include "vscf_private_key.h"
 #include "vscf_private_key_api.h"
-#include "vscf_decrypt.h"
-#include "vscf_decrypt_api.h"
 #include "vscf_sign.h"
 #include "vscf_sign_api.h"
 #include "vscf_export_private_key.h"
@@ -152,29 +150,6 @@ static const vscf_private_key_api_t private_key_api = {
     //  Extract public part of the key.
     //
     (vscf_private_key_api_extract_public_key_fn)vscf_ed25519_private_key_extract_public_key
-};
-
-//
-//  Configuration of the interface API 'decrypt api'.
-//
-static const vscf_decrypt_api_t decrypt_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'decrypt' MUST be equal to the 'vscf_api_tag_DECRYPT'.
-    //
-    vscf_api_tag_DECRYPT,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_ED25519_PRIVATE_KEY,
-    //
-    //  Decrypt given data.
-    //
-    (vscf_decrypt_api_decrypt_fn)vscf_ed25519_private_key_decrypt,
-    //
-    //  Calculate required buffer length to hold the decrypted data.
-    //
-    (vscf_decrypt_api_decrypted_len_fn)vscf_ed25519_private_key_decrypted_len
 };
 
 //
@@ -454,8 +429,6 @@ vscf_ed25519_private_key_find_api(vscf_api_tag_t api_tag) {
     switch(api_tag) {
         case vscf_api_tag_COMPUTE_SHARED_KEY:
             return (const vscf_api_t *) &compute_shared_key_api;
-        case vscf_api_tag_DECRYPT:
-            return (const vscf_api_t *) &decrypt_api;
         case vscf_api_tag_EXPORT_PRIVATE_KEY:
             return (const vscf_api_t *) &export_private_key_api;
         case vscf_api_tag_GENERATE_KEY:

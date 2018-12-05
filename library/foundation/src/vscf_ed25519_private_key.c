@@ -157,33 +157,6 @@ vscf_ed25519_private_key_extract_public_key(vscf_ed25519_private_key_impl_t *ed2
 }
 
 //
-//  Decrypt given data.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_decrypt(
-        vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vsc_data_t data, vsc_buffer_t *out) {
-
-    //  TODO: This is STUB. Implement me.
-    // will add in the feature
-    VSCF_ASSERT_PTR(ed25519_private_key_impl);
-    VSCF_ASSERT_PTR(data.bytes);
-    VSCF_ASSERT_PTR(out);
-    return vscf_SUCCESS;
-}
-
-//
-//  Calculate required buffer length to hold the decrypted data.
-//
-VSCF_PUBLIC size_t
-vscf_ed25519_private_key_decrypted_len(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, size_t data_len) {
-
-    //  TODO: This is STUB. Implement me.
-    VSCF_ASSERT_PTR(ed25519_private_key_impl);
-    VSCF_ASSERT(data_len != 0);
-    return 0;
-}
-
-//
 //  Sign data given private key.
 //
 VSCF_PUBLIC vscf_error_t
