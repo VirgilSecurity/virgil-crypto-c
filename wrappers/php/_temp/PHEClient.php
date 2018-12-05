@@ -59,11 +59,13 @@ class PHEClient
     //<return enum="error"/>
     //</method>
     /**
-     * @return string | Exception
+     * @return string
+     * @throws Exception
      */
-    public function generateClientPrivateKey():string
+    public function generateClientPrivateKey(): string
     {
         $clientPrivateKey = "";
+
         return $clientPrivateKey;
     }
 
@@ -76,6 +78,7 @@ class PHEClient
     public function enrollmentRecordLen(): int
     {
         $int = 5;
+
         return $int;
     }
 
@@ -94,7 +97,8 @@ class PHEClient
     /**
      * @param string $enrollmentResponse
      * @param string $password
-     * @return array | Exception
+     * @return array
+     * @throws Exception
      */
     public function enrollAccount(string $enrollmentResponse, string $password): array
     {
@@ -113,6 +117,7 @@ class PHEClient
     public function verifyPasswordRequestLen(): int
     {
         $int = 5;
+
         return $int;
     }
 
@@ -128,11 +133,13 @@ class PHEClient
     /**
      * @param string $data
      * @param string $enrollmentRecord
-     * @return string | Exception
+     * @return string
+     * @throws Exception
      */
     public function createVerifyPasswordRequest(string $data, string $enrollmentRecord): string
     {
         $verifyPasswordRequest = "";
+
         return $verifyPasswordRequest;
     }
 
@@ -151,18 +158,19 @@ class PHEClient
      * @param string $password
      * @param string $enrollmentRecord
      * @param string $verifyPasswordResponse
-     * @return string | Exception
+     * @return string
+     * @throws Exception
      */
     public function checkResponseAndDecrypt(string $password, string $enrollmentRecord, string
     $verifyPasswordResponse): string
     {
         $accountKey = "";
+
         return $accountKey;
     }
 
     //<method name="rotate keys">
     //<argument name="update token" class="data"/>
-    //
     //<argument name="new client private key" class="buffer" access="writeonly">
     //<length constant=".(class_phe_common_constant_phe_private_key_length)"/>
     //</argument>
@@ -174,7 +182,8 @@ class PHEClient
     //</method>
     /**
      * @param string $updateToken
-     * @return array | Exception
+     * @return array
+     * @throws Exception
      */
     public function rotateKeys(string $updateToken): array
     {
@@ -196,11 +205,13 @@ class PHEClient
     /**
      * @param string $enrollmentRecord
      * @param string $updateToken
-     * @return array | Exception
+     * @return string
+     * @throws Exception
      */
     public function updateEnrollmentRecord(string $enrollmentRecord, string $updateToken): string
     {
         $newEnrollmentRecord = "";
+
         return $newEnrollmentRecord;
     }
 }
