@@ -82,7 +82,11 @@ enum vsce_error_t {
     //
     //  Protobuf decode failed
     //
-    vsce_PROTOBUF_DECODE_ERROR = 4
+    vsce_PROTOBUF_DECODE_ERROR = 4,
+    //
+    //  Invalid ECP
+    //
+    vsce_INVALID_ECP = 5
 };
 typedef enum vsce_error_t vsce_error_t;
 

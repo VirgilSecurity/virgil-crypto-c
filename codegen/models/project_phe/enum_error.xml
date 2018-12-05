@@ -19,4 +19,8 @@
         Protobuf decode failed
     </constant>
 
+    <constant name="Invalid ecp" of_class="global" value="5">
+        Invalid ECP
+    </constant>
+
 </enum>
