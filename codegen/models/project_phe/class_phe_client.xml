@@ -19,11 +19,27 @@
     <property name="server public key" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_phe_common_constant_phe_public_key_length)"/>
     </property>
+    <property name="keys are set" type="boolean"/>
 
-    <constructor name="with keys">
+    <property name="y" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
+    <property name="y inv" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
+    <property name="minus y" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
+    <property name="X" class="mbedtls_ecp_point" library="mbedtls" access="readwrite" is_reference="0"/>
+    <property name="one" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
+    <property name="minus one" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
+
+    <method name="set keys">
         <argument name="client private key" class="data"/>
         <argument name="server public key" class="data"/>
-    </constructor>
+    </method>
+
+    <method name="generate client private key">
+        <argument name="client private key" class="buffer" access="writeonly">
+            <length constant=".(class_phe_common_constant_phe_private_key_length)"/>
+        </argument>
+
+        <return enum="error"/>
+    </method>
 
     <method name="enrollment record len">
         <return type="size"/>

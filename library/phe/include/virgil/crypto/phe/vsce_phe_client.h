@@ -52,8 +52,8 @@
 #include "vsce_error.h"
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -61,8 +61,8 @@
 #endif
 
 #if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 #if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -113,9 +113,6 @@ vsce_phe_client_cleanup(vsce_phe_client_t *phe_client_ctx);
 VSCE_PUBLIC vsce_phe_client_t *
 vsce_phe_client_new(void);
 
-VSCE_PUBLIC vsce_phe_client_t *
-vsce_phe_client_new_with_keys(vsc_data_t client_private_key, vsc_data_t server_public_key);
-
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
@@ -154,6 +151,13 @@ vsce_phe_client_take_random(vsce_phe_client_t *phe_client_ctx, vscf_impl_t *rand
 //
 VSCE_PUBLIC void
 vsce_phe_client_release_random(vsce_phe_client_t *phe_client_ctx);
+
+VSCE_PUBLIC void
+vsce_phe_client_set_keys(vsce_phe_client_t *phe_client_ctx, vsc_data_t client_private_key,
+        vsc_data_t server_public_key);
+
+VSCE_PUBLIC vsce_error_t
+vsce_phe_client_generate_client_private_key(vsce_phe_client_t *phe_client_ctx, vsc_buffer_t *client_private_key);
 
 VSCE_PUBLIC size_t
 vsce_phe_client_enrollment_record_len(vsce_phe_client_t *phe_client_ctx);
