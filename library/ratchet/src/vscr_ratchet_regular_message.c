@@ -266,14 +266,26 @@ VSCR_PUBLIC size_t
 vscr_ratchet_regular_message_serialize_len_ext(vscr_ratchet_regular_message_t *ratchet_regular_message_ctx) {
 
     VSCR_ASSERT_PTR(ratchet_regular_message_ctx);
-    size_t size = 0;
+
     // TODO: Optimize
+    size_t size = 0;
     RegularMessage regular_message = RegularMessage_init_zero;
-    bool pb_status = true;
+    bool pb_status;
+
+    memcpy(regular_message.cipher_text.bytes, ratchet_regular_message_ctx->cipher_text->bytes,
+           ratchet_regular_message_ctx->cipher_text->len);
+
+    regular_message.cipher_text.size += ratchet_regular_message_ctx->cipher_text->len;
+
+    memcpy(regular_message.public_key, ratchet_regular_message_ctx->public_key->bytes,
+           ratchet_regular_message_ctx->public_key->len);
+
+    regular_message.counter = ratchet_regular_message_ctx->counter;
+
+    regular_message.version = ratchet_regular_message_ctx->version;
+
     pb_status = pb_get_encoded_size(&size, RegularMessage_fields, &regular_message);
     VSCR_ASSERT(pb_status);
-
-    size += ratchet_regular_message_ctx->cipher_text->len;
 
     return size;
 }
@@ -282,19 +294,13 @@ VSCR_PUBLIC vscr_error_t
 vscr_ratchet_regular_message_serialize(vscr_ratchet_regular_message_t *ratchet_regular_message_ctx,
         vsc_buffer_t *output) {
 
-    //  RATCHETRegularMessage ::= SEQUENCE {
-    //       version INTEGER,
-    //       counter INTEGER,
-    //       public_key OCTET_STRING,
-    //       cipher_text OCTET_STRING }
-
     VSCR_ASSERT_PTR(ratchet_regular_message_ctx);
     VSCR_ASSERT(vsc_buffer_left(output) >= vscr_ratchet_regular_message_serialize_len_ext(ratchet_regular_message_ctx));
 
     RegularMessage regular_message = RegularMessage_init_zero;
     bool status;
 
-    pb_ostream_t ostream = pb_ostream_from_buffer(output->bytes, output->capacity);
+    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(output), vsc_buffer_capacity(output));
 
     memcpy(regular_message.cipher_text.bytes, ratchet_regular_message_ctx->cipher_text->bytes,
            ratchet_regular_message_ctx->cipher_text->len);
@@ -322,12 +328,6 @@ vscr_ratchet_regular_message_serialize(vscr_ratchet_regular_message_t *ratchet_r
 
 VSCR_PUBLIC vscr_ratchet_regular_message_t *
 vscr_ratchet_regular_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
-
-    //  RATCHETRegularMessage ::= SEQUENCE {
-    //       version INTEGER,
-    //       counter INTEGER,
-    //       public_key OCTET_STRING,
-    //       cipher_text OCTET_STRING }
 
     VSCR_ASSERT(vsc_data_is_valid(input));
 
