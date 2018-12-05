@@ -106,6 +106,20 @@ struct vsce_phe_client_t {
     byte client_private_key[vsce_phe_common_PHE_PRIVATE_KEY_LENGTH];
 
     byte server_public_key[vsce_phe_common_PHE_PUBLIC_KEY_LENGTH];
+
+    bool keys_are_set;
+
+    mbedtls_mpi y;
+
+    mbedtls_mpi y_inv;
+
+    mbedtls_mpi minus_y;
+
+    mbedtls_ecp_point x;
+
+    mbedtls_mpi one;
+
+    mbedtls_mpi minus_one;
 };
 
 
