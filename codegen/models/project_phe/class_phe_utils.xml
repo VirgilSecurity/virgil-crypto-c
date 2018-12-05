@@ -6,6 +6,8 @@
     <require header="mbedtls/ecp.h" scope="context"/>
     <require header="mbedtls/bignum.h" scope="public"/>
 
+    <require module="buffer defs" scope="private" project="common"/>
+
     <dependency name="random" interface="random" project="foundation"/>
 
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>

@@ -54,6 +54,7 @@
 #include <PHEModels.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 // clang-format on
 //  @end
@@ -344,12 +345,17 @@ VSCE_PUBLIC size_t
 vsce_phe_server_enrollment_response_len(vsce_phe_server_t *phe_server_ctx) {
 
     VSCE_UNUSED(phe_server_ctx);
-    size_t size = 0;
-    // TODO: Optimize
-    EnrollmentResponse response = EnrollmentResponse_init_zero;
-    VSCE_ASSERT(pb_get_encoded_size(&size, EnrollmentResponse_fields, &response));
 
-    return size;
+    //    size_t size = 0;
+    //    EnrollmentResponse response = EnrollmentResponse_init_zero;
+    //    VSCE_ASSERT(pb_get_encoded_size(&size, EnrollmentResponse_fields, &response));
+    //
+    //    return size;
+
+    // NOTE: code above computes this value, cached result is used below.
+    // Update this value in case protobuf model is changed
+
+    return 406;
 }
 
 VSCE_PUBLIC vsce_error_t
@@ -364,8 +370,13 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t ser
 
     vsce_error_t status = vsce_SUCCESS;
 
-    vsc_buffer_t *ns = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_SERVER_IDENTIFIER_LENGTH);
-    vscf_error_t f_status = vscf_random(phe_server_ctx->random, vsce_phe_common_PHE_SERVER_IDENTIFIER_LENGTH, ns);
+    EnrollmentResponse response = EnrollmentResponse_init_zero;
+
+    vsc_buffer_t ns;
+    vsc_buffer_init(&ns);
+    vsc_buffer_use(&ns, response.ns, sizeof(response.ns));
+
+    vscf_error_t f_status = vscf_random(phe_server_ctx->random, vsce_phe_common_PHE_SERVER_IDENTIFIER_LENGTH, &ns);
 
     if (f_status != vscf_SUCCESS) {
         status = vsce_RNG_ERROR;
@@ -376,8 +387,8 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t ser
     mbedtls_ecp_point_init(&hs0);
     mbedtls_ecp_point_init(&hs1);
 
-    vsce_phe_hash_hs0(phe_server_ctx->phe_hash, vsc_buffer_data(ns), &hs0);
-    vsce_phe_hash_hs1(phe_server_ctx->phe_hash, vsc_buffer_data(ns), &hs1);
+    vsce_phe_hash_hs0(phe_server_ctx->phe_hash, vsc_buffer_data(&ns), &hs0);
+    vsce_phe_hash_hs1(phe_server_ctx->phe_hash, vsc_buffer_data(&ns), &hs1);
 
     mbedtls_mpi x;
     mbedtls_mpi_init(&x);
@@ -393,10 +404,6 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t ser
     VSCE_ASSERT(mbedtls_status == 0);
     mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &c1, &x, &hs1, NULL /* FIXME */, NULL);
     VSCE_ASSERT(mbedtls_status == 0);
-
-    EnrollmentResponse response = EnrollmentResponse_init_zero;
-
-    memcpy(response.ns, vsc_buffer_bytes(ns), vsc_buffer_len(ns));
 
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(
@@ -427,8 +434,7 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t ser
     mbedtls_mpi_free(&x);
 
 err:
-
-    vsc_buffer_destroy(&ns);
+    vsc_buffer_delete(&ns);
 
     return status;
 }
@@ -437,15 +443,20 @@ VSCE_PUBLIC size_t
 vsce_phe_server_verify_password_response_len(vsce_phe_server_t *phe_server_ctx) {
 
     VSCE_UNUSED(phe_server_ctx);
-    size_t size1 = 0, size2 = 0;
-    // TODO: Optimize
-    VerifyPasswordResponse response = VerifyPasswordResponse_init_zero;
-    response.which_proof = VerifyPasswordResponse_success_tag;
-    VSCE_ASSERT(pb_get_encoded_size(&size1, VerifyPasswordResponse_fields, &response));
 
-    response.which_proof = VerifyPasswordResponse_fail_tag;
-    VSCE_ASSERT(pb_get_encoded_size(&size2, VerifyPasswordResponse_fields, &response));
-    return size1 > size2 ? size1 : size2;
+    //    size_t size1 = 0, size2 = 0;
+    //    VerifyPasswordResponse response = VerifyPasswordResponse_init_zero;
+    //    response.which_proof = VerifyPasswordResponse_success_tag;
+    //    VSCE_ASSERT(pb_get_encoded_size(&size1, VerifyPasswordResponse_fields, &response));
+    //
+    //    response.which_proof = VerifyPasswordResponse_fail_tag;
+    //    VSCE_ASSERT(pb_get_encoded_size(&size2, VerifyPasswordResponse_fields, &response));
+    //    return size1 > size2 ? size1 : size2;
+
+    // NOTE: code above computes this value, cached result is used below.
+    // Update this value in case protobuf model is changed
+
+    return 406;
 }
 
 VSCE_PUBLIC vsce_error_t
@@ -476,7 +487,10 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t se
 
     int mbedtls_status = 0;
     mbedtls_status = mbedtls_ecp_point_read_binary(&phe_server_ctx->group, &c0, request.c_0, sizeof(request.c_0));
-    VSCE_ASSERT(mbedtls_status == 0);
+    if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_server_ctx->group, &c0) != 0) {
+        status = vsce_INVALID_ECP;
+        goto ecp_err;
+    }
 
     mbedtls_ecp_point hs0, hs1;
     mbedtls_ecp_point_init(&hs0);
@@ -553,7 +567,6 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t se
     }
 
 err:
-    mbedtls_ecp_point_free(&c0);
     mbedtls_ecp_point_free(&c1);
     mbedtls_ecp_point_free(&hs0);
     mbedtls_ecp_point_free(&hs1);
@@ -561,8 +574,10 @@ err:
 
     mbedtls_mpi_free(&x);
 
-pb_err:
+ecp_err:
+    mbedtls_ecp_point_free(&c0);
 
+pb_err:
     return status;
 }
 
@@ -675,6 +690,19 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
 
     VSCE_ASSERT_PTR(failure_proof);
 
+    vsce_error_t status = vsce_SUCCESS;
+
+    int mbedtls_status = 0;
+
+    mbedtls_ecp_point X;
+    mbedtls_ecp_point_init(&X);
+    mbedtls_status =
+            mbedtls_ecp_point_read_binary(&phe_server_ctx->group, &X, server_public_key.bytes, server_public_key.len);
+    if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_server_ctx->group, &X) != 0) {
+        status = vsce_INVALID_ECP;
+        goto ecp_err;
+    }
+
     mbedtls_mpi r;
     mbedtls_mpi_init(&r);
 
@@ -682,7 +710,7 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     mbedtls_mpi_init(&blind_A);
     mbedtls_mpi_init(&blind_B);
 
-    vsce_error_t status = vsce_phe_utils_random_z(phe_server_ctx->utils, &r);
+    status = vsce_phe_utils_random_z(phe_server_ctx->utils, &r);
 
     if (status != vsce_SUCCESS)
         goto err;
@@ -700,7 +728,6 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     mbedtls_mpi minus_r;
     mbedtls_mpi_init(&minus_r);
 
-    int mbedtls_status = 0;
     mbedtls_status = mbedtls_mpi_sub_mpi(&minus_r, &phe_server_ctx->group.N, &r);
     VSCE_ASSERT(mbedtls_status == 0);
 
@@ -718,12 +745,6 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     mbedtls_status = mbedtls_mpi_mod_mpi(&minus_RX, &minus_RX, &phe_server_ctx->group.N);
     VSCE_ASSERT(mbedtls_status == 0);
     mbedtls_status = mbedtls_ecp_muladd(&phe_server_ctx->group, c1, &r, c0, &minus_RX, hs0);
-    VSCE_ASSERT(mbedtls_status == 0);
-
-    mbedtls_ecp_point X;
-    mbedtls_ecp_point_init(&X);
-    mbedtls_status =
-            mbedtls_ecp_point_read_binary(&phe_server_ctx->group, &X, server_public_key.bytes, server_public_key.len);
     VSCE_ASSERT(mbedtls_status == 0);
 
     mbedtls_ecp_point term1, term2, term3, term4;
@@ -806,13 +827,14 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     mbedtls_ecp_point_free(&term3);
     mbedtls_ecp_point_free(&term4);
 
-    mbedtls_ecp_point_free(&X);
-
 err:
     mbedtls_mpi_free(&r);
 
     mbedtls_mpi_free(&blind_A);
     mbedtls_mpi_free(&blind_B);
+
+ecp_err:
+    mbedtls_ecp_point_free(&X);
 
     return status;
 }
@@ -821,12 +843,17 @@ VSCE_PUBLIC size_t
 vsce_phe_server_update_token_len(vsce_phe_server_t *phe_server_ctx) {
 
     VSCE_UNUSED(phe_server_ctx);
-    size_t size = 0;
-    // TODO: Optimize
-    UpdateToken token = UpdateToken_init_zero;
-    VSCE_ASSERT(pb_get_encoded_size(&size, UpdateToken_fields, &token));
 
-    return size;
+    //    size_t size = 0;
+    //    UpdateToken token = UpdateToken_init_zero;
+    //    VSCE_ASSERT(pb_get_encoded_size(&size, UpdateToken_fields, &token));
+    //
+    //    return size;
+
+    // NOTE: code above computes this value, cached result is used below.
+    // Update this value in case protobuf model is changed
+
+    return 68;
 }
 
 VSCE_PUBLIC vsce_error_t

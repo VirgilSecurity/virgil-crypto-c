@@ -51,6 +51,7 @@
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 // clang-format on
 //  @end
@@ -276,12 +277,13 @@ vsce_phe_utils_random_z(vsce_phe_utils_t *phe_utils_ctx, mbedtls_mpi *z) {
     vsce_error_t status = vsce_SUCCESS;
 
     byte buff[vsce_phe_common_PHE_PRIVATE_KEY_LENGTH];
-    vsc_buffer_t *buffer = vsc_buffer_new();
-    vsc_buffer_use(buffer, buff, sizeof(buff));
+    vsc_buffer_t buffer;
+    vsc_buffer_init(&buffer);
+    vsc_buffer_use(&buffer, buff, sizeof(buff));
 
     do {
-        vsc_buffer_reset(buffer);
-        vscf_error_t f_status = vscf_random(phe_utils_ctx->random, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, buffer);
+        vsc_buffer_reset(&buffer);
+        vscf_error_t f_status = vscf_random(phe_utils_ctx->random, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, &buffer);
 
         if (f_status != vscf_SUCCESS)
             goto err;
@@ -291,7 +293,7 @@ vsce_phe_utils_random_z(vsce_phe_utils_t *phe_utils_ctx, mbedtls_mpi *z) {
 
 err:
     vsce_zeroize(buff, sizeof(buff));
-    vsc_buffer_destroy(&buffer);
+    vsc_buffer_delete(&buffer);
 
     return status;
 }
