@@ -346,16 +346,7 @@ vsce_phe_server_enrollment_response_len(vsce_phe_server_t *phe_server_ctx) {
 
     VSCE_UNUSED(phe_server_ctx);
 
-    //    size_t size = 0;
-    //    EnrollmentResponse response = EnrollmentResponse_init_zero;
-    //    VSCE_ASSERT(pb_get_encoded_size(&size, EnrollmentResponse_fields, &response));
-    //
-    //    return size;
-
-    // NOTE: code above computes this value, cached result is used below.
-    // Update this value in case protobuf model is changed
-
-    return 406;
+    return EnrollmentResponse_size;
 }
 
 VSCE_PUBLIC vsce_error_t
@@ -444,19 +435,7 @@ vsce_phe_server_verify_password_response_len(vsce_phe_server_t *phe_server_ctx) 
 
     VSCE_UNUSED(phe_server_ctx);
 
-    //    size_t size1 = 0, size2 = 0;
-    //    VerifyPasswordResponse response = VerifyPasswordResponse_init_zero;
-    //    response.which_proof = VerifyPasswordResponse_success_tag;
-    //    VSCE_ASSERT(pb_get_encoded_size(&size1, VerifyPasswordResponse_fields, &response));
-    //
-    //    response.which_proof = VerifyPasswordResponse_fail_tag;
-    //    VSCE_ASSERT(pb_get_encoded_size(&size2, VerifyPasswordResponse_fields, &response));
-    //    return size1 > size2 ? size1 : size2;
-
-    // NOTE: code above computes this value, cached result is used below.
-    // Update this value in case protobuf model is changed
-
-    return 406;
+    return VerifyPasswordResponse_size;
 }
 
 VSCE_PUBLIC vsce_error_t
@@ -844,16 +823,7 @@ vsce_phe_server_update_token_len(vsce_phe_server_t *phe_server_ctx) {
 
     VSCE_UNUSED(phe_server_ctx);
 
-    //    size_t size = 0;
-    //    UpdateToken token = UpdateToken_init_zero;
-    //    VSCE_ASSERT(pb_get_encoded_size(&size, UpdateToken_fields, &token));
-    //
-    //    return size;
-
-    // NOTE: code above computes this value, cached result is used below.
-    // Update this value in case protobuf model is changed
-
-    return 68;
+    return UpdateToken_size;
 }
 
 VSCE_PUBLIC vsce_error_t
