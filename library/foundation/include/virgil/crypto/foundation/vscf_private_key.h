@@ -56,7 +56,18 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_key.h"
+#include "vscf_error.h"
 #include "vscf_api.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
@@ -82,13 +93,51 @@ typedef struct vscf_private_key_api_t vscf_private_key_api_t;
 //  Extract public part of the key.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_private_key_extract_public_key(vscf_impl_t *impl);
+vscf_private_key_extract_public_key(const vscf_impl_t *impl);
+
+//
+//  Export private key in the binary format.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA private key must be exported in format defined in
+//  RFC 3447 Appendix A.1.2.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_private_key_export_private_key(const vscf_impl_t *impl, vsc_buffer_t *out);
+
+//
+//  Return length in bytes required to hold exported private key.
+//
+VSCF_PUBLIC size_t
+vscf_private_key_exported_private_key_len(const vscf_impl_t *impl);
+
+//
+//  Import private key from the binary format.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA private key must be imported from the format defined in
+//  RFC 3447 Appendix A.1.2.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_private_key_import_private_key(vscf_impl_t *impl, vsc_data_t data);
+
+//
+//  Returns constant 'can export private key'.
+//
+VSCF_PUBLIC bool
+vscf_private_key_can_export_private_key(const vscf_private_key_api_t *private_key_api);
+
+//
+//  Returns constant 'can import private key'.
+//
+VSCF_PUBLIC bool
+vscf_private_key_can_import_private_key(const vscf_private_key_api_t *private_key_api);
 
 //
 //  Return private key API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_private_key_api_t *
-vscf_private_key_api(vscf_impl_t *impl);
+vscf_private_key_api(const vscf_impl_t *impl);
 
 //
 //  Return key API.
@@ -100,19 +149,13 @@ vscf_private_key_key_api(const vscf_private_key_api_t *private_key_api);
 //  Check if given object implements interface 'private key'.
 //
 VSCF_PUBLIC bool
-vscf_private_key_is_implemented(vscf_impl_t *impl);
+vscf_private_key_is_implemented(const vscf_impl_t *impl);
 
 //
 //  Returns interface unique identifier.
 //
 VSCF_PUBLIC vscf_api_tag_t
 vscf_private_key_api_tag(const vscf_private_key_api_t *private_key_api);
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_private_key_impl_tag(const vscf_private_key_api_t *private_key_api);
 
 
 // --------------------------------------------------------------------------

@@ -138,8 +138,12 @@ print_buffer(vsc_buffer_t *buffer);
 //  Use Unity to check given data.
 //
 #define TEST_ASSERT_EQUAL_DATA(lhs, rhs)                                                                               \
-    TEST_ASSERT_EQUAL((lhs).len, (rhs).len);                                                                           \
-    TEST_ASSERT_EQUAL_HEX8_ARRAY((lhs).bytes, (rhs).bytes, (rhs).len)
+    do {                                                                                                               \
+        TEST_ASSERT_EQUAL((lhs).len, (rhs).len);                                                                       \
+        if ((lhs).len > 0) {                                                                                           \
+            TEST_ASSERT_EQUAL_HEX8_ARRAY((lhs).bytes, (rhs).bytes, (rhs).len);                                         \
+        }                                                                                                              \
+    } while (0)
 
 //
 //  Use Unity to check given data with buffer.

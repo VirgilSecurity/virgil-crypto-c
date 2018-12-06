@@ -77,14 +77,21 @@ function(target_protobuf_sources target)
         get_filename_component(proto_file_path "${proto_file}" DIRECTORY)
         get_filename_component(proto_file_name "${proto_file}" NAME_WE)
 
+        if(EXISTS "${proto_file_path}/${proto_file_name}.options")
+            set(proto_options_file "${proto_file_name}.options")
+        endif()
+
         add_custom_command(
                 OUTPUT
-                    ${proto_file_name}.pb.h ${proto_file_name}.pb.c
+                    "${CMAKE_CURRENT_BINARY_DIR}/${proto_file_name}.pb.h"
+                    "${CMAKE_CURRENT_BINARY_DIR}/${proto_file_name}.pb.c"
                 COMMAND
-                    "${PROTOC_EXE}" --nanopb_out=. --proto_path="${proto_file_path}" "${proto_file}"
+                    "${PROTOC_EXE}" --nanopb_out=-f"${proto_options_file}":"${CMAKE_CURRENT_BINARY_DIR}"
+                                    --proto_path=. "${proto_file_name}.proto"
                 DEPENDS
-                    "${proto_file}"
+                    "${proto_file}" "${proto_options_file}"
                 COMMENT "Processing protobuf model: ${proto_file}"
+                WORKING_DIRECTORY "${proto_file_path}"
                 )
 
         target_sources(${target}

@@ -1,0 +1,12 @@
+framework module VSCPhe {
+    header "vsce_assert.h"
+    header "vsce_library.h"
+    header "vsce_memory.h"
+    header "vsce_platform.h"
+    header "vsce_error_ctx.h"
+    header "vsce_phe_client.h"
+    header "vsce_phe_common.h"
+    header "vsce_phe_server.h"
+    header "vsce_error.h"
+    export *
+}

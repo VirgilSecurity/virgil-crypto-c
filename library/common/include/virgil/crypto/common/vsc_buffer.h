@@ -55,6 +55,7 @@
 
 #include "vsc_library.h"
 #include "vsc_data.h"
+#include "vsc_buffer.h"
 
 // clang-format on
 //  @end
@@ -131,6 +132,18 @@ vsc_buffer_destroy(vsc_buffer_t **buffer_ctx_ref);
 //
 VSC_PUBLIC vsc_buffer_t *
 vsc_buffer_copy(vsc_buffer_t *buffer_ctx);
+
+//
+//  Returns true if buffer has no data written.
+//
+VSC_PUBLIC bool
+vsc_buffer_is_empty(const vsc_buffer_t *buffer_ctx);
+
+//
+//  Return true if buffers are equal.
+//
+VSC_PUBLIC bool
+vsc_buffer_equal(const vsc_buffer_t *buffer_ctx, const vsc_buffer_t *rhs);
 
 //
 //  Allocates inner buffer with a given capacity.
@@ -237,6 +250,18 @@ vsc_buffer_increase_used_bytes(vsc_buffer_t *buffer_ctx, size_t len);
 //
 VSC_PUBLIC void
 vsc_buffer_decrease_used_bytes(vsc_buffer_t *buffer_ctx, size_t len);
+
+//
+//  Copy null-terminated string to the buffer.
+//
+VSC_PUBLIC void
+vsc_buffer_write_str(vsc_buffer_t *buffer_ctx, const char *str);
+
+//
+//  Copy data to the buffer.
+//
+VSC_PUBLIC void
+vsc_buffer_write_data(vsc_buffer_t *buffer_ctx, vsc_data_t data);
 
 //
 //  Reset to the initial state.

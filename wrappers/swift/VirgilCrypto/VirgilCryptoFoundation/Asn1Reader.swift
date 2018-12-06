@@ -42,50 +42,79 @@ import VirgilCryptoCommon
 /// Note, that all "get" do not change reading position.
 @objc(VSCFAsn1Reader) public protocol Asn1Reader : CContext {
 
+    /// Reset all internal states and prepare to new ASN.1 reading operations.
     @objc func reset(data: Data)
 
+    /// Return last error.
     @objc func error() throws
 
+    /// Get tag of the current ASN.1 element.
     @objc func getTag() -> Int32
 
+    /// Get length of the current ASN.1 element.
     @objc func getLen() -> Int
 
+    /// Read ASN.1 type: TAG.
+    /// Return element length.
     @objc func readTag(tag: Int32) -> Int
 
+    /// Read ASN.1 type: INTEGER.
     @objc func readInt() -> Int32
 
+    /// Read ASN.1 type: INTEGER.
     @objc func readInt8() -> Int8
 
+    /// Read ASN.1 type: INTEGER.
     @objc func readInt16() -> Int16
 
+    /// Read ASN.1 type: INTEGER.
     @objc func readInt32() -> Int32
 
+    /// Read ASN.1 type: INTEGER.
     @objc func readInt64() -> Int64
 
+    /// Read ASN.1 type: INTEGER.
     @objc func readUint() -> UInt32
 
+    /// Read ASN.1 type: INTEGER.
     @objc func readUint8() -> UInt8
 
+    /// Read ASN.1 type: INTEGER.
     @objc func readUint16() -> UInt16
 
+    /// Read ASN.1 type: INTEGER.
     @objc func readUint32() -> UInt32
 
+    /// Read ASN.1 type: INTEGER.
     @objc func readUint64() -> UInt64
 
+    /// Read ASN.1 type: BOOLEAN.
     @objc func readBool() -> Bool
 
+    /// Read ASN.1 type: NULL.
     @objc func readNull()
 
+    /// Read ASN.1 type: OCTET STRING.
     @objc func readOctetStr() -> Data
 
+    /// Read ASN.1 type: BIT STRING.
+    @objc func readBitstringAsOctetStr() -> Data
+
+    /// Read ASN.1 type: UTF8String.
     @objc func readUtf8Str() -> Data
 
+    /// Read ASN.1 type: OID.
     @objc func readOid() -> Data
 
+    /// Read raw data of given length.
     @objc func readData(len: Int) -> Data
 
+    /// Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+    /// Return element length.
     @objc func readSequence() -> Int
 
+    /// Read ASN.1 type: CONSTRUCTED | SET.
+    /// Return element length.
     @objc func readSet() -> Int
 }
 
@@ -227,6 +256,13 @@ import VirgilCryptoCommon
     /// Read ASN.1 type: OCTET STRING.
     @objc public func readOctetStr() -> Data {
         let proxyResult = vscf_asn1_reader_read_octet_str(self.c_ctx)
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
+
+    /// Read ASN.1 type: BIT STRING.
+    @objc public func readBitstringAsOctetStr() -> Data {
+        let proxyResult = vscf_asn1_reader_read_bitstring_as_octet_str(self.c_ctx)
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }

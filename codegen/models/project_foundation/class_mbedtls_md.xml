@@ -3,10 +3,10 @@
 
     <require header="mbedtls/md.h" scope="public"/>
 
-    <method name="map impl tag" is_static="1">
-        Map implementation tag to correspond 'mbedtls_md_type_t'.
+    <method name="from hash alg" is_static="1">
+        Map hash alg to correspond 'mbedtls_md_type_t'.
 
-        <argument name="impl tag" enum="impl/tag"/>
+        <argument name="hash alg" enum="hash alg"/>
         <return enum="mbedtls_md_type_t" library="mbedtls"/>
     </method>
 </class>

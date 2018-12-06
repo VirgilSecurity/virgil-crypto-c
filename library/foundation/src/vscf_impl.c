@@ -72,7 +72,7 @@
 //  Or NULL if object does not implement requested 'API'.
 //
 VSCF_PUBLIC const vscf_api_t *
-vscf_impl_api(vscf_impl_t *impl, vscf_api_tag_t api_tag) {
+vscf_impl_api(const vscf_impl_t *impl, vscf_api_tag_t api_tag) {
 
     VSCF_ASSERT_PTR(impl);
     VSCF_ASSERT_PTR(impl->info);
@@ -82,18 +82,6 @@ vscf_impl_api(vscf_impl_t *impl, vscf_api_tag_t api_tag) {
     }
 
     return impl->info->find_api_cb(api_tag);
-}
-
-//
-//  Return unique 'Implementation TAG'.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_impl_tag(vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-    VSCF_ASSERT_PTR (impl->info);
-
-    return impl->info->impl_tag;
 }
 
 //
