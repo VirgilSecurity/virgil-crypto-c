@@ -140,7 +140,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         0 /*allow_null*/)
 
     ZEND_ARG_INFO(0, c_ctx)
-    ZEND_ARG_TYPE_INFO(0, password, IS_STRING ,0)
+    ZEND_ARG_TYPE_INFO(0, password, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
 
@@ -185,7 +185,7 @@ PHP_FUNCTION(vscp_pythia_blind_php) {
     //
     if(status != vscp_SUCCESS) {
         zend_throw_exception(NULL, "Pythia error", status);
-        goto cleanup;
+        goto fail;
     }
 
     //
@@ -201,7 +201,12 @@ PHP_FUNCTION(vscp_pythia_blind_php) {
     add_next_index_str(return_value, out_blinded_password);
     add_next_index_str(return_value, out_blinding_secret);
 
-cleanup:
+    goto success;
+
+fail:
+    zend_string_free(out_blinded_password);
+    zend_string_free(out_blinding_secret);
+success:
     vsc_buffer_destroy(&blinded_password);
     vsc_buffer_destroy(&blinding_secret);
 }
