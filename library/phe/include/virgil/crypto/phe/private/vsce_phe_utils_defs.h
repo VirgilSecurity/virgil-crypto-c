@@ -34,67 +34,85 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
-
-#ifndef MBEDTLS_CONFIG_H
-#define MBEDTLS_CONFIG_H
+// clang-format off
 
 
-//
-//  Common
-//
-#cmakedefine MBEDTLS_ERROR_C
-#cmakedefine MBEDTLS_PLATFORM_C
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
 
-//
-//  Required by library vsc::foundation
-//
-#cmakedefine MBEDTLS_SHA256_C
-#cmakedefine MBEDTLS_SHA512_C
-#cmakedefine MBEDTLS_CIPHER_C
-#cmakedefine MBEDTLS_AES_C
-#cmakedefine MBEDTLS_GCM_C
-#cmakedefine MBEDTLS_MD_C
-#cmakedefine MBEDTLS_BIGNUM_C
-#cmakedefine MBEDTLS_PKCS1_V21
-#cmakedefine MBEDTLS_OID_C
-#cmakedefine MBEDTLS_RSA_C
-#cmakedefine MBEDTLS_ASN1_PARSE_C
-#cmakedefine MBEDTLS_ASN1_WRITE_C
-#cmakedefine MBEDTLS_GENPRIME
-#cmakedefine MBEDTLS_PLATFORM_ENTROPY
-#cmakedefine MBEDTLS_TIMING_C
-#cmakedefine MBEDTLS_HAVEGE_C
-#cmakedefine MBEDTLS_BASE64_C
 
-#if !defined(MBEDTLS_PLATFORM_ENTROPY)
-#   define MBEDTLS_NO_PLATFORM_ENTROPY
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'phe utils' types definition.
+// --------------------------------------------------------------------------
+
+#ifndef VSCE_PHE_UTILS_DEFS_H_INCLUDED
+#define VSCE_PHE_UTILS_DEFS_H_INCLUDED
+
+#include "vsce_library.h"
+
+#include <mbedtls/ecp.h>
+
+#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
 #endif
 
-//
-//  Required by library vsc::pythia
-//
-#cmakedefine MBEDTLS_CTR_DRBG_C
-#cmakedefine MBEDTLS_ENTROPY_C
+#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
+#endif
+
+// clang-format on
+//  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
 
 //
-//  Required by library vsc::phe
+//  Handle 'phe utils' context.
 //
-#cmakedefine MBEDTLS_ECP_C
-#cmakedefine MBEDTLS_ECP_DP_SECP256R1_ENABLED
+struct vsce_phe_utils_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vsce_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *random;
 
-//
-//  Alternative implementations
-//
-#cmakedefine MBEDTLS_SHA256_ALT
-#cmakedefine MBEDTLS_SHA512_ALT
-#cmakedefine MBEDTLS_AES_ALT
-#cmakedefine MBEDTLS_GCM_ALT
+    mbedtls_ecp_group group;
+};
 
-//
-//  Non configurable options
-//
-#define MBEDTLS_NO_DEFAULT_ENTROPY_SOURCES
 
-#include "check_config.h"
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
 
-#endif /* MBEDTLS_CONFIG_H */
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCE_PHE_UTILS_DEFS_H_INCLUDED
+//  @end
