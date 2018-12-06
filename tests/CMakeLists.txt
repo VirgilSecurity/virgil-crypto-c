@@ -54,3 +54,7 @@ endif()
 if(TARGET vsc::ratchet)
     add_subdirectory(ratchet)
 endif()
+
+if(TARGET vsc::phe)
+    add_subdirectory(phe)
+endif()

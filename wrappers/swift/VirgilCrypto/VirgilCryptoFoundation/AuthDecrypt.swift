@@ -40,8 +40,11 @@ import VirgilCryptoCommon
 /// Provide interface for data encryption.
 @objc(VSCFAuthDecrypt) public protocol AuthDecrypt : CipherAuthInfo {
 
+    /// Decrypt given data.
+    /// If 'tag' is not give, then it will be taken from the 'enc'.
     @objc func authDecrypt(data: Data, authData: Data, tag: Data) throws -> Data
 
+    /// Calculate required buffer length to hold the authenticated decrypted data.
     @objc func authDecryptedLen(dataLen: Int) -> Int
 }
 

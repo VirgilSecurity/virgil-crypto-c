@@ -85,18 +85,6 @@ vscf_impl_api(const vscf_impl_t *impl, vscf_api_tag_t api_tag) {
 }
 
 //
-//  Return unique 'Implementation TAG'.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_impl_tag(vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-    VSCF_ASSERT_PTR (impl->info);
-
-    return impl->info->impl_tag;
-}
-
-//
 //  Cleanup implementation object and it's dependencies.
 //
 VSCF_PUBLIC void

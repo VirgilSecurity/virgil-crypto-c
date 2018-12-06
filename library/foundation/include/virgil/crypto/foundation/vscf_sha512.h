@@ -57,6 +57,7 @@
 #include "vscf_impl.h"
 #include "vscf_hash_info.h"
 #include "vscf_hash.h"
+#include "vscf_hash_alg.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -167,6 +168,12 @@ vscf_sha512_hash_info_api(void);
 //
 VSCF_PUBLIC const vscf_hash_api_t *
 vscf_sha512_hash_api(void);
+
+//
+//  Return implemented hash algorithm type.
+//
+VSCF_PUBLIC vscf_hash_alg_t
+vscf_sha512_alg(void);
 
 //
 //  Calculate hash over given data.

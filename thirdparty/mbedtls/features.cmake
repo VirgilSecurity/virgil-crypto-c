@@ -47,6 +47,7 @@ include_guard()
 
 option(MBEDTLS_LIBRARY "Enable build of the 'mbedtls' library" ON)
 option(MBEDTLS_ERROR_C "" ON)
+option(MBEDTLS_PLATFORM_C "" ON)
 option(MBEDTLS_SHA256_C "" ON)
 option(MBEDTLS_SHA512_C "" ON)
 option(MBEDTLS_CIPHER_C "" ON)
@@ -54,6 +55,8 @@ option(MBEDTLS_AES_C "" ON)
 option(MBEDTLS_GCM_C "" ON)
 option(MBEDTLS_MD_C "" ON)
 option(MBEDTLS_BIGNUM_C "" ON)
+option(MBEDTLS_ECP_C "" ON)
+option(MBEDTLS_ECP_DP_SECP256R1_ENABLED "" ON)
 option(MBEDTLS_PKCS1_V21 "" ON)
 option(MBEDTLS_OID_C "" ON)
 option(MBEDTLS_ASN1_PARSE_C "" ON)
@@ -62,6 +65,7 @@ option(MBEDTLS_GENPRIME "" ON)
 option(MBEDTLS_TIMING_C "" ON)
 option(MBEDTLS_HAVEGE_C "" ON)
 option(MBEDTLS_PLATFORM_ENTROPY "" ON)
+option(MBEDTLS_BASE64_C "" ON)
 option(MBEDTLS_RSA_C "" ON)
 option(MBEDTLS_CTR_DRBG_C "" ON)
 option(MBEDTLS_ENTROPY_C "" ON)
@@ -72,6 +76,7 @@ option(MBEDTLS_GCM_ALT "" OFF)
 mark_as_advanced(
         MBEDTLS_LIBRARY
         MBEDTLS_ERROR_C
+        MBEDTLS_PLATFORM_C
         MBEDTLS_SHA256_C
         MBEDTLS_SHA512_C
         MBEDTLS_CIPHER_C
@@ -79,6 +84,8 @@ mark_as_advanced(
         MBEDTLS_GCM_C
         MBEDTLS_MD_C
         MBEDTLS_BIGNUM_C
+        MBEDTLS_ECP_C
+        MBEDTLS_ECP_DP_SECP256R1_ENABLED
         MBEDTLS_PKCS1_V21
         MBEDTLS_OID_C
         MBEDTLS_ASN1_PARSE_C
@@ -87,6 +94,7 @@ mark_as_advanced(
         MBEDTLS_TIMING_C
         MBEDTLS_HAVEGE_C
         MBEDTLS_PLATFORM_ENTROPY
+        MBEDTLS_BASE64_C
         MBEDTLS_RSA_C
         MBEDTLS_CTR_DRBG_C
         MBEDTLS_ENTROPY_C

@@ -1,14 +1,21 @@
 <interface name="key">
     Common information about asymmetric key.
 
-    <method name="key len">
+    <method name="alg" is_const="1">
+        Return implemented asymmetric key algorithm type.
+
+        <return enum="key alg"/>
+    </method>
+
+
+    <method name="key len" is_const="1">
         Length of the key in bytes.
 
         <return type="size"/>
     </method>
 
 
-    <method name="key bitlen">
+    <method name="key bitlen" is_const="1">
         Length of the key in bits.
 
         <return type="size"/>
