@@ -173,6 +173,11 @@ typedef void (*vscf_asn1_reader_api_read_null_fn)(vscf_impl_t *impl);
 typedef vsc_data_t (*vscf_asn1_reader_api_read_octet_str_fn)(vscf_impl_t *impl);
 
 //
+//  Callback. Read ASN.1 type: BIT STRING.
+//
+typedef vsc_data_t (*vscf_asn1_reader_api_read_bitstring_as_octet_str_fn)(vscf_impl_t *impl);
+
+//
 //  Callback. Read ASN.1 type: UTF8String.
 //
 typedef vsc_data_t (*vscf_asn1_reader_api_read_utf8_str_fn)(vscf_impl_t *impl);
@@ -208,10 +213,6 @@ struct vscf_asn1_reader_api_t {
     //  For interface 'asn1_reader' MUST be equal to the 'vscf_api_tag_ASN1_READER'.
     //
     vscf_api_tag_t api_tag;
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_t impl_tag;
     //
     //  Reset all internal states and prepare to new ASN.1 reading operations.
     //
@@ -285,6 +286,10 @@ struct vscf_asn1_reader_api_t {
     //  Read ASN.1 type: OCTET STRING.
     //
     vscf_asn1_reader_api_read_octet_str_fn read_octet_str_cb;
+    //
+    //  Read ASN.1 type: BIT STRING.
+    //
+    vscf_asn1_reader_api_read_bitstring_as_octet_str_fn read_bitstring_as_octet_str_cb;
     //
     //  Read ASN.1 type: UTF8String.
     //

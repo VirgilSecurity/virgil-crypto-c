@@ -54,10 +54,12 @@
 // clang-format on
 //  @end
 
+
 #include <pb_encode.h>
 #include <pb_decode.h>
 #include <Message.pb.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
+
 
 //  @generated
 // --------------------------------------------------------------------------

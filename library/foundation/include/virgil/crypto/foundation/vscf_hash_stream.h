@@ -130,12 +130,6 @@ vscf_hash_stream_is_implemented(const vscf_impl_t *impl);
 VSCF_PUBLIC vscf_api_tag_t
 vscf_hash_stream_api_tag(const vscf_hash_stream_api_t *hash_stream_api);
 
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_hash_stream_impl_tag(const vscf_hash_stream_api_t *hash_stream_api);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

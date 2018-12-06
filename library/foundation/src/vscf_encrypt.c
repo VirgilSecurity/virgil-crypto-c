@@ -124,17 +124,6 @@ vscf_encrypt_api_tag(const vscf_encrypt_api_t *encrypt_api) {
     return encrypt_api->api_tag;
 }
 
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_encrypt_impl_tag(const vscf_encrypt_api_t *encrypt_api) {
-
-    VSCF_ASSERT_PTR (encrypt_api);
-
-    return encrypt_api->impl_tag;
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

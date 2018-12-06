@@ -101,6 +101,15 @@ vscf_sha224_cleanup_ctx(vscf_sha224_impl_t *sha224_impl) {
 }
 
 //
+//  Return implemented hash algorithm type.
+//
+VSCF_PUBLIC vscf_hash_alg_t
+vscf_sha224_alg(void) {
+
+    return vscf_hash_alg_SHA224;
+}
+
+//
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
