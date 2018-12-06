@@ -1,0 +1,10 @@
+{
+  "autoload": {
+    "classmap": [
+      "vendor/"
+    ]
+  },
+  "require": {
+    "phpunit/phpunit": "^7"
+  }
+}
