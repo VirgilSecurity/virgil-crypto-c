@@ -145,11 +145,6 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_regular_message.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_sender_chain.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -200,7 +195,6 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_RATCHET_PREKEY_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_prekey_message.h>"
             "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_receiver_chain.h>"
             "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAIN_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_receiver_chain_list_node.h>"
-            "$<$<BOOL:${VSCR_RATCHET_REGULAR_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_regular_message.h>"
             "$<$<BOOL:${VSCR_RATCHET_SENDER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_sender_chain.h>"
             "$<$<BOOL:${VSCR_RATCHET_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_session.h>"
             "$<$<BOOL:${VSCR_RATCHET_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/private/vscr_ratchet_session_defs.h>"
@@ -231,7 +225,6 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_RATCHET_PREKEY_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_prekey_message.c>"
             "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_receiver_chain.c>"
             "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAIN_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_receiver_chain_list_node.c>"
-            "$<$<BOOL:${VSCR_RATCHET_REGULAR_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_regular_message.c>"
             "$<$<BOOL:${VSCR_RATCHET_SENDER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_sender_chain.c>"
             "$<$<BOOL:${VSCR_RATCHET_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_session.c>"
             "$<$<BOOL:${VSCR_RATCHET_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_session_defs.c>"

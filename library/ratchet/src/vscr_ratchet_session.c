@@ -409,7 +409,7 @@ VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session_ctx, vsc_buffer_t *sender_identity_public_key,
         vsc_buffer_t *sender_ephemeral_public_key, vsc_buffer_t *ratchet_public_key,
         vsc_buffer_t *receiver_identity_private_key, vsc_buffer_t *receiver_long_term_private_key,
-        vsc_buffer_t *receiver_one_time_private_key, const vscr_ratchet_regular_message_t *message) {
+        vsc_buffer_t *receiver_one_time_private_key, const RegularMessage message) {
 
     VSCR_ASSERT_PTR(ratchet_session_ctx);
 

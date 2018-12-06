@@ -49,7 +49,6 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
-#include "vscr_ratchet_regular_message.h"
 #include "vscr_ratchet_message_key.h"
 #include "vscr_ratchet_chain_key.h"
 #include "vscr_error_ctx.h"
@@ -75,6 +74,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include "Message.pb.h"
 
 
 //  @generated
@@ -172,7 +173,7 @@ vscr_ratchet_release_cipher(vscr_ratchet_t *ratchet_ctx);
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key,
-        const vscr_ratchet_regular_message_t *message);
+                     RegularMessage regular_message);
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_private_key);
