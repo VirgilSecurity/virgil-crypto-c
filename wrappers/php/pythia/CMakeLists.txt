@@ -36,6 +36,19 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(virgil_crypto_pythia_php VERSION ${virgil_crypto_php_VERSION} LANGUAGES C)
 
+
+#
+# Check dependencies
+#
+if(NOT VIRGIL_LIB_PYTHIA)
+    message(WARNING "Skip building the PHP wrapper for library Pythia, which is not built.")
+    return()
+endif()
+
+
+#
+# Create PHP extension library
+#
 add_library(pythia_php SHARED "")
 set_target_properties(pythia_php PROPERTIES
         C_STANDARD 99
@@ -53,6 +66,8 @@ target_sources(pythia_php
         )
 
 target_link_libraries(pythia_php
+    PUBLIC
+        vsc::pythia
     PRIVATE
         phplib
         "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-undefined dynamic_lookup>"
@@ -69,4 +84,3 @@ if(ENABLE_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE)
             COMMAND "${PHP_EXECUTABLE}" -d "extension=$<TARGET_FILE:pythia_php>" -d safe_mode=Off "${PHPUNIT_EXECUTABLE}" --include-path . PythiaTest
             )
 endif()
-
