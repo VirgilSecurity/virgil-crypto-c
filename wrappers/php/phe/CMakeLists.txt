@@ -41,7 +41,7 @@ project(virgil_crypto_phe_php VERSION ${virgil_crypto_php_VERSION} LANGUAGES C)
 # Check dependencies
 #
 if(NOT VIRGIL_LIB_PHE)
-    message(WARNING "Skip building the PHP wrapper for library PHE, which is not built.")
+    message(STATUS "Skip building the PHP wrapper for library PHE, which is not built.")
     return()
 endif()
 
@@ -73,7 +73,7 @@ target_link_libraries(phe_php
         "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-undefined dynamic_lookup>"
     )
 
-if(ENABLE_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE)
+if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE)
     add_test(
             NAME test_phe_php
             COMMAND "${PHP_EXECUTABLE}" -d "extension=$<TARGET_FILE:phe_php>" -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
