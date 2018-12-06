@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2018 Virgil Security Inc.
 //
 //  All rights reserved.
@@ -33,68 +31,53 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-// --------------------------------------------------------------------------
 
-#ifndef MBEDTLS_CONFIG_H
-#define MBEDTLS_CONFIG_H
+#include "test_data_simple_swu.h"
 
+const byte test_simple_swu_hash1_DEC[] = {
+        "f3adca11915f1edf34a228e3aed79fbb34737f028741595410b3817e69bb6f56"
+};
 
-//
-//  Common
-//
-#cmakedefine MBEDTLS_ERROR_C
-#cmakedefine MBEDTLS_PLATFORM_C
+const byte test_simple_swu_x1_DEC[] = {
+        "98961140665513202099949527671188598357073154743453831835087605751841592205265"
+};
 
-//
-//  Required by library vsc::foundation
-//
-#cmakedefine MBEDTLS_SHA256_C
-#cmakedefine MBEDTLS_SHA512_C
-#cmakedefine MBEDTLS_CIPHER_C
-#cmakedefine MBEDTLS_AES_C
-#cmakedefine MBEDTLS_GCM_C
-#cmakedefine MBEDTLS_MD_C
-#cmakedefine MBEDTLS_BIGNUM_C
-#cmakedefine MBEDTLS_PKCS1_V21
-#cmakedefine MBEDTLS_OID_C
-#cmakedefine MBEDTLS_RSA_C
-#cmakedefine MBEDTLS_ASN1_PARSE_C
-#cmakedefine MBEDTLS_ASN1_WRITE_C
-#cmakedefine MBEDTLS_GENPRIME
-#cmakedefine MBEDTLS_PLATFORM_ENTROPY
-#cmakedefine MBEDTLS_TIMING_C
-#cmakedefine MBEDTLS_HAVEGE_C
-#cmakedefine MBEDTLS_BASE64_C
+const byte test_simple_swu_y1_DEC[] = {
+        "96901867652408139372430876548444592023045378705303176822621915144992255442028"
+};
 
-#if !defined(MBEDTLS_PLATFORM_ENTROPY)
-#   define MBEDTLS_NO_PLATFORM_ENTROPY
-#endif
+const byte test_simple_swu_hash2_DEC[] = {
+        "0435562be4b4dc0605ef077ee015be12f3c189dcfdd830e535b076000e3d1ed3"
+};
 
-//
-//  Required by library vsc::pythia
-//
-#cmakedefine MBEDTLS_CTR_DRBG_C
-#cmakedefine MBEDTLS_ENTROPY_C
+const byte test_simple_swu_x2_DEC[] = {
+        "82631351409592308865866007164583686358318012812204374400003568408405894942018"
+};
 
-//
-//  Required by library vsc::phe
-//
-#cmakedefine MBEDTLS_ECP_C
-#cmakedefine MBEDTLS_ECP_DP_SECP256R1_ENABLED
+const byte test_simple_swu_y2_DEC[] = {
+        "61517254438303197335701350506590825854257845121325404623337818255145552341515"
+};
 
-//
-//  Alternative implementations
-//
-#cmakedefine MBEDTLS_SHA256_ALT
-#cmakedefine MBEDTLS_SHA512_ALT
-#cmakedefine MBEDTLS_AES_ALT
-#cmakedefine MBEDTLS_GCM_ALT
+const vsc_data_t test_simple_swu_hash1 = {
+        test_simple_swu_hash1_DEC, sizeof(test_simple_swu_hash1_DEC)
+};
 
-//
-//  Non configurable options
-//
-#define MBEDTLS_NO_DEFAULT_ENTROPY_SOURCES
+const vsc_data_t test_simple_swu_x1 = {
+        test_simple_swu_x1_DEC, sizeof(test_simple_swu_x1_DEC)
+};
 
-#include "check_config.h"
+const vsc_data_t test_simple_swu_y1 = {
+        test_simple_swu_y1_DEC, sizeof(test_simple_swu_y1_DEC)
+};
 
-#endif /* MBEDTLS_CONFIG_H */
+const vsc_data_t test_simple_swu_hash2 = {
+        test_simple_swu_hash2_DEC, sizeof(test_simple_swu_hash2_DEC)
+};
+
+const vsc_data_t test_simple_swu_x2 = {
+        test_simple_swu_x2_DEC, sizeof(test_simple_swu_x2_DEC)
+};
+
+const vsc_data_t test_simple_swu_y2 = {
+        test_simple_swu_y2_DEC, sizeof(test_simple_swu_y2_DEC)
+};

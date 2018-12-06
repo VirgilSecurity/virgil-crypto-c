@@ -34,27 +34,21 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_c_integration_tests VERSION 0.1.0 LANGUAGES C)
+project(test_data_phe VERSION 0.1.0 LANGUAGES C)
 
-add_subdirectory(unity)
-add_subdirectory(test_utils)
+add_library(test_data_phe "")
+target_sources(test_data_phe
+        PRIVATE
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_simple_swu.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_phe_hash.h"
 
-if(TARGET vsc::common)
-    add_subdirectory(common)
-endif()
+        PRIVATE
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_simple_swu.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_phe_hash.c"
+        )
 
-if(TARGET vsc::foundation)
-    add_subdirectory(foundation)
-endif()
+target_include_directories(test_data_phe
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        )
 
-if(TARGET vsc::pythia)
-    add_subdirectory(pythia)
-endif()
-
-if(TARGET vsc::ratchet)
-    add_subdirectory(ratchet)
-endif()
-
-if(TARGET vsc::phe)
-    add_subdirectory(phe)
-endif()
+target_link_libraries(test_data_phe vsc::common)
