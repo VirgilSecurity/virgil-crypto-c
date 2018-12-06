@@ -41,7 +41,7 @@ project(virgil_crypto_pythia_php VERSION ${virgil_crypto_php_VERSION} LANGUAGES 
 # Check dependencies
 #
 if(NOT VIRGIL_LIB_PYTHIA)
-    message(WARNING "Skip building the PHP wrapper for library Pythia, which is not built.")
+    message(STATUS "Skip building the PHP wrapper for library Pythia, which is not built.")
     return()
 endif()
 
@@ -78,7 +78,7 @@ configure_file(
         "${CMAKE_CURRENT_BINARY_DIR}/PythiaTest.php"
         )
 
-if(ENABLE_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE)
+if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE)
     add_test(
             NAME test_pythia_php
             COMMAND "${PHP_EXECUTABLE}" -d "extension=$<TARGET_FILE:pythia_php>" -d safe_mode=Off "${PHPUNIT_EXECUTABLE}" --include-path . PythiaTest
