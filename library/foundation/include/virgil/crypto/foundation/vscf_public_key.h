@@ -56,18 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_key.h"
-#include "vscf_error.h"
 #include "vscf_api.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#   include <VSCCommon/vsc_data.h>
-#endif
 
 // clang-format on
 //  @end
@@ -88,44 +77,6 @@ extern "C" {
 //  Contains API requirements of the interface 'public key'.
 //
 typedef struct vscf_public_key_api_t vscf_public_key_api_t;
-
-//
-//  Export public key in the binary format.
-//
-//  Binary format must be defined in the key specification.
-//  For instance, RSA public key must be exported in format defined in
-//  RFC 3447 Appendix A.1.1.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_public_key_export_public_key(const vscf_impl_t *impl, vsc_buffer_t *out);
-
-//
-//  Return length in bytes required to hold exported public key.
-//
-VSCF_PUBLIC size_t
-vscf_public_key_exported_public_key_len(const vscf_impl_t *impl);
-
-//
-//  Import public key from the binary format.
-//
-//  Binary format must be defined in the key specification.
-//  For instance, RSA public key must be imported from the format defined in
-//  RFC 3447 Appendix A.1.1.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_public_key_import_public_key(vscf_impl_t *impl, vsc_data_t data);
-
-//
-//  Returns constant 'can export public key'.
-//
-VSCF_PUBLIC bool
-vscf_public_key_can_export_public_key(const vscf_public_key_api_t *public_key_api);
-
-//
-//  Returns constant 'can import public key'.
-//
-VSCF_PUBLIC bool
-vscf_public_key_can_import_public_key(const vscf_public_key_api_t *public_key_api);
 
 //
 //  Return public key API, or NULL if it is not implemented.
@@ -150,6 +101,12 @@ vscf_public_key_is_implemented(const vscf_impl_t *impl);
 //
 VSCF_PUBLIC vscf_api_tag_t
 vscf_public_key_api_tag(const vscf_public_key_api_t *public_key_api);
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_public_key_impl_tag(const vscf_public_key_api_t *public_key_api);
 
 
 // --------------------------------------------------------------------------

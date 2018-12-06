@@ -62,19 +62,3 @@ function(enable_target_profiling target)
             PRIVATE $<$<C_COMPILER_ID:GNU>:-pg>
             )
 endfunction()
-
-# ---------------------------------------------------------------------------
-#   Add __FILENAME__ compiler definition, that handles file name
-#   without path, to each source file.
-# ---------------------------------------------------------------------------
-function(target_add_filename_definitions target)
-    get_target_property(SOURCES ${target} SOURCES)
-    foreach(src ${SOURCES})
-        get_filename_component(file_name "${src}" NAME)
-        get_filename_component(file_ext "${src}" EXT)
-
-        if(file_ext STREQUAL ".c")
-            set_property(SOURCE "${src}" APPEND_STRING PROPERTY COMPILE_DEFINITIONS "__FILENAME__=\"${file_name}\"")
-        endif()
-    endforeach()
-endfunction()

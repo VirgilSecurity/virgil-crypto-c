@@ -81,6 +81,10 @@ struct vscf_api_t {
     //  Interface unique identifier.
     //
     vscf_api_tag_t api_tag;
+    //
+    //  Implementation unique identifier.
+    //
+    vscf_impl_tag_t impl_tag;
 };
 
 

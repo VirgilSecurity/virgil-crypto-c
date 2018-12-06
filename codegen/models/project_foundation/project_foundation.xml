@@ -54,11 +54,8 @@
     <module name="memory" from="shared"/>
 
     <enum name="error"/>
-    <enum name="asn1 tag"/>
-    <enum name="key alg"/>
-    <enum name="hash alg"/>
+    <enum name="asn1"/>
 
-    <interface name="defaults" from="shared"/>
     <interface name="cipher"/>
     <interface name="auth encrypt"/>
     <interface name="auth decrypt"/>
@@ -85,8 +82,10 @@
     <interface name="verify"/>
     <interface name="generate key"/>
     <interface name="compute shared key"/>
-    <interface name="key serializer"/>
-    <interface name="key deserializer"/>
+    <interface name="export public key"/>
+    <interface name="export private key"/>
+    <interface name="import public key"/>
+    <interface name="import private key"/>
 
     <interface name="asn1 reader"/>
     <interface name="asn1 writer"/>
@@ -95,17 +94,11 @@
     <class name="mbedtls bignum asn1 writer"/>
     <class name="mbedtls bignum asn1 reader"/>
     <class name="mbedtls md"/>
-    <class name="raw key"/>
-    <class name="oid"/>
-    <class name="base64"/>
-    <class name="pem"/>
-    <class name="pem title"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>
     <implementor name="mbedtls rng"/>
     <implementor name="virgil"/>
-    <implementor name="virgil pkcs8"/>
 
     <module name="mbedtls bridge random"/>
     <module name="mbedtls bridge entropy"/>

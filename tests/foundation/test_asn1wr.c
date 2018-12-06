@@ -33,8 +33,6 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#define UNITY_BEGIN() UnityBegin(__FILENAME__)
-
 #include "unity.h"
 #include "test_utils.h"
 
@@ -631,26 +629,6 @@ test__asn1wr_write_oid__argument_oid_sha256__returns_encoded_oid_sha256(void) {
 }
 
 void
-test__asn1wr_write_octet_str_as_bitstring__argument_bitstring__returns_encoded_bitstring(void) {
-
-    vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
-    VSCF_ASSERT_PTR(asn1wr);
-
-    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_BIT_STRING.len);
-
-    vscf_asn1wr_reset(asn1wr, vsc_buffer_ptr(asn1), vsc_buffer_left(asn1));
-
-    size_t len = vscf_asn1wr_write_octet_str_as_bitstring(asn1wr, test_asn1_decoded_BIT_STRING);
-    size_t writtenBytes = vscf_asn1wr_finish(asn1wr);
-    vsc_buffer_reserve(asn1, writtenBytes);
-
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_asn1_encoded_BIT_STRING, asn1);
-
-    vsc_buffer_destroy(&asn1);
-    vscf_asn1wr_destroy(&asn1wr);
-}
-
-void
 test__asn1wr_write_sequence__argument_len_32__returns_encoded_sequence_with_len_32(void) {
 
     vscf_asn1wr_impl_t *asn1wr = vscf_asn1wr_new();
@@ -759,7 +737,6 @@ main(void) {
     RUN_TEST(test__asn1wr_write_octet_str__argument_octet_string__returns_encoded_octet_string);
     RUN_TEST(test__asn1wr_write_utf8_str_argument_utf8_string__returns_encoded_utf8_string);
     RUN_TEST(test__asn1wr_write_oid__argument_oid_sha256__returns_encoded_oid_sha256);
-    RUN_TEST(test__asn1wr_write_octet_str_as_bitstring__argument_bitstring__returns_encoded_bitstring);
 
     RUN_TEST(test__asn1wr_write_sequence__argument_len_32__returns_encoded_sequence_with_len_32);
     RUN_TEST(test__asn1wr_write_set__argument_len_32__returns_encoded_set_with_len_32);

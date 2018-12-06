@@ -75,7 +75,7 @@ import VirgilCryptoCommon
         vscf_hkdf_use_hash(self.c_ctx, hash.c_ctx)
     }
 
-    /// Derive key of the requested length from the given data, salt and info.
+    /// Calculate hash over given data.
     @objc public func derive(data: Data, salt: Data, info: Data, keyLen: Int) -> Data {
         let keyCount = keyLen
         var key = Data(count: keyCount)

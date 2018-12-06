@@ -40,10 +40,8 @@ import VirgilCryptoCommon
 /// Defines generic interface for the entropy source.
 @objc(VSCFEntropySource) public protocol EntropySource : CContext {
 
-    /// Defines that implemented source is strong.
     @objc func isStrong() -> Bool
 
-    /// Gather entropy of the requested length.
     @objc func gather(len: Int) throws -> Data
 }
 

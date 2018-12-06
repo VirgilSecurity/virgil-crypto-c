@@ -219,22 +219,6 @@ VSCF_PUBLIC size_t
 vscf_asn1_writer_write_octet_str(vscf_impl_t *impl, vsc_data_t value);
 
 //
-//  Write ASN.1 type: BIT STRING with all zero unused bits.
-//
-//  Return count of written bytes.
-//
-VSCF_PUBLIC size_t
-vscf_asn1_writer_write_octet_str_as_bitstring(vscf_impl_t *impl, vsc_data_t value);
-
-//
-//  Write raw data directly to the ASN.1 structure.
-//  Return count of written bytes.
-//  Note, use this method carefully.
-//
-VSCF_PUBLIC size_t
-vscf_asn1_writer_write_data(vscf_impl_t *impl, vsc_data_t data);
-
-//
 //  Write ASN.1 type: UTF8String.
 //  Return count of written bytes.
 //
@@ -279,6 +263,12 @@ vscf_asn1_writer_is_implemented(const vscf_impl_t *impl);
 //
 VSCF_PUBLIC vscf_api_tag_t
 vscf_asn1_writer_api_tag(const vscf_asn1_writer_api_t *asn1_writer_api);
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_asn1_writer_impl_tag(const vscf_asn1_writer_api_t *asn1_writer_api);
 
 
 // --------------------------------------------------------------------------

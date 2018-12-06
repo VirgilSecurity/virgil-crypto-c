@@ -2,7 +2,7 @@
     Provides interface to the key derivation function (KDF) algorithms.
 
     <method name="derive">
-        Derive key of the requested length from the given data.
+        Calculate hash over given data.
 
         <argument name="data" class="data"/>
         <argument name="key len" type="size"/>

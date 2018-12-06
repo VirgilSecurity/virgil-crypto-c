@@ -65,18 +65,6 @@
 // --------------------------------------------------------------------------
 
 //
-//  Return implemented hash algorithm type.
-//
-VSCF_PUBLIC vscf_hash_alg_t
-vscf_hash_info_alg(const vscf_hash_info_api_t *hash_info_api) {
-
-    VSCF_ASSERT_PTR (hash_info_api);
-
-    VSCF_ASSERT_PTR (hash_info_api->alg_cb);
-    return hash_info_api->alg_cb ();
-}
-
-//
 //  Returns constant 'digest len'.
 //
 VSCF_PUBLIC size_t
@@ -130,6 +118,17 @@ vscf_hash_info_api_tag(const vscf_hash_info_api_t *hash_info_api) {
     VSCF_ASSERT_PTR (hash_info_api);
 
     return hash_info_api->api_tag;
+}
+
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_hash_info_impl_tag(const vscf_hash_info_api_t *hash_info_api) {
+
+    VSCF_ASSERT_PTR (hash_info_api);
+
+    return hash_info_api->impl_tag;
 }
 
 

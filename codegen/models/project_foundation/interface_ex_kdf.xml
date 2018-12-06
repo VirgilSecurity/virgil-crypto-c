@@ -2,7 +2,7 @@
     Provides interface to the key derivation function (HKDF) algorithms.
 
     <method name="derive">
-        Derive key of the requested length from the given data, salt and info.
+        Calculate hash over given data.
 
         <argument name="data" class="data"/>
         <argument name="salt" class="data"/>

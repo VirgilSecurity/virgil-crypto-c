@@ -152,14 +152,13 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Resolve model: implementation.interface.constant.
 # ---------------------------------------------------------------------------
-function implementation_resolve_interface_constant (constant_definition, constant_declaration, parent)
-    check_arguments (my, "constant_definition, constant_declaration, parent", my)
+function implementation_resolve_interface_constant (constant_declaration, constant_definition, parent)
+    check_arguments (my, "constant_declaration, constant_definition, parent", my)
 
-    component_require_attr_name (my.constant_definition)
-    component_require_attr_value (my.constant_definition)
+    component_require_attr_name (my.constant_declaration)
+    component_require_attr_value (my.constant_declaration)
 
-    my.constant_definition. ?= my.constant_declaration. ?
-    my.constant_definition.type = my.constant_declaration.type
+    my.constant_declaration. ?= my.constant_definition. ?
 endfunction
 
 # ---------------------------------------------------------------------------

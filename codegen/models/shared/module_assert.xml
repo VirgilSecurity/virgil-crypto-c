@@ -22,8 +22,7 @@
             callback=".(class_assert_callback_handler)"
             visibility="private"
             declaration="private"
-            definition="private"
-            access="readwrite">
+            definition="private">
 
         Active handler for assertion fail.
 

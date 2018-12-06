@@ -33,7 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#include "test_data_asn1.h"
+#include "test_data_sha224.h"
 
 
 //
@@ -235,22 +235,6 @@ const byte test_asn1_decoded_OID_SHA256_BYTES[] = {
 
 const vsc_data_t test_asn1_decoded_OID_SHA256 = {
     test_asn1_decoded_OID_SHA256_BYTES, sizeof(test_asn1_decoded_OID_SHA256_BYTES)
-};
-
-const byte test_asn1_encoded_BIT_STRING_BYTES[] = {
-    0x03, 0x04, 0x00, 0xAA, 0xBB, 0xCC
-};
-
-const vsc_data_t test_asn1_encoded_BIT_STRING = {
-    test_asn1_encoded_BIT_STRING_BYTES, sizeof(test_asn1_encoded_BIT_STRING_BYTES)
-};
-
-const byte test_asn1_decoded_BIT_STRING_BYTES[] = {
-    0xAA, 0xBB, 0xCC
-};
-
-const vsc_data_t test_asn1_decoded_BIT_STRING = {
-    test_asn1_decoded_BIT_STRING_BYTES, sizeof(test_asn1_decoded_BIT_STRING_BYTES)
 };
 
 

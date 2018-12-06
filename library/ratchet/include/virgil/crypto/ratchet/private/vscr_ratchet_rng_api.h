@@ -95,6 +95,10 @@ struct vscr_ratchet_rng_api_t {
     //
     vscr_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscr_impl_tag_t impl_tag;
+    //
     //  Interface for ratchet rng
     //
     vscr_ratchet_rng_api_generate_random_data_fn generate_random_data_cb;

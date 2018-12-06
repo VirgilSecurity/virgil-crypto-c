@@ -56,7 +56,6 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_key_alg.h"
 
 // clang-format on
 //  @end
@@ -74,19 +73,14 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Return implemented asymmetric key algorithm type.
-//
-typedef vscf_key_alg_t (*vscf_key_api_alg_fn)(const vscf_impl_t *impl);
-
-//
 //  Callback. Length of the key in bytes.
 //
-typedef size_t (*vscf_key_api_key_len_fn)(const vscf_impl_t *impl);
+typedef size_t (*vscf_key_api_key_len_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Length of the key in bits.
 //
-typedef size_t (*vscf_key_api_key_bitlen_fn)(const vscf_impl_t *impl);
+typedef size_t (*vscf_key_api_key_bitlen_fn)(vscf_impl_t *impl);
 
 //
 //  Contains API requirements of the interface 'key'.
@@ -98,9 +92,9 @@ struct vscf_key_api_t {
     //
     vscf_api_tag_t api_tag;
     //
-    //  Return implemented asymmetric key algorithm type.
+    //  Implementation unique identifier, MUST be second in the structure.
     //
-    vscf_key_api_alg_fn alg_cb;
+    vscf_impl_tag_t impl_tag;
     //
     //  Length of the key in bytes.
     //

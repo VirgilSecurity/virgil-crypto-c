@@ -121,6 +121,17 @@ vscf_cipher_auth_api_tag(const vscf_cipher_auth_api_t *cipher_auth_api) {
     return cipher_auth_api->api_tag;
 }
 
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_cipher_auth_impl_tag(const vscf_cipher_auth_api_t *cipher_auth_api) {
+
+    VSCF_ASSERT_PTR (cipher_auth_api);
+
+    return cipher_auth_api->impl_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

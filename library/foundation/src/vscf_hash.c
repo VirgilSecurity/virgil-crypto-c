@@ -121,6 +121,17 @@ vscf_hash_api_tag(const vscf_hash_api_t *hash_api) {
     return hash_api->api_tag;
 }
 
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_hash_impl_tag(const vscf_hash_api_t *hash_api) {
+
+    VSCF_ASSERT_PTR (hash_api);
+
+    return hash_api->impl_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

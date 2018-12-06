@@ -78,10 +78,10 @@ static bool
 vscf_asn1wr_mbedtls_has_error(vscf_asn1wr_impl_t *asn1wr_impl, int code);
 
 //
-//  Write raw data and with given tag the to ASN.1 structure.
+//  Write raw data of specific tag the to the buffer.
 //
 static size_t
-vscf_asn1wr_write_tag_data(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t data, int tag);
+vscf_asn1wr_write_raw_data(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t data, int tag);
 
 
 // --------------------------------------------------------------------------
@@ -149,10 +149,10 @@ vscf_asn1wr_mbedtls_has_error(vscf_asn1wr_impl_t *asn1wr_impl, int code) {
 }
 
 //
-//  Write raw data and with given tag the to ASN.1 structure.
+//  Write raw data of specific tag the to the buffer.
 //
 static size_t
-vscf_asn1wr_write_tag_data(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t data, int tag) {
+vscf_asn1wr_write_raw_data(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t data, int tag) {
 
     VSCF_ASSERT_PTR(asn1wr_impl);
     VSCF_ASSERT_PTR(data.bytes);
@@ -161,8 +161,14 @@ vscf_asn1wr_write_tag_data(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t data, int
         return 0;
     }
 
+    int ret = mbedtls_asn1_write_raw_buffer(&asn1wr_impl->curr, asn1wr_impl->start, data.bytes, data.len);
+
+    if (vscf_asn1wr_mbedtls_has_error(asn1wr_impl, ret)) {
+        return 0;
+    }
+
     size_t size = 0;
-    size += vscf_asn1wr_write_data(asn1wr_impl, data);
+
     size += vscf_asn1wr_write_len(asn1wr_impl, data.len);
     size += vscf_asn1wr_write_tag(asn1wr_impl, tag);
 
@@ -170,7 +176,7 @@ vscf_asn1wr_write_tag_data(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t data, int
         return 0;
     }
 
-    return size;
+    return (size_t)ret + size;
 }
 
 //
@@ -582,55 +588,7 @@ vscf_asn1wr_write_octet_str(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t value) {
     VSCF_ASSERT_PTR(asn1wr_impl);
     VSCF_ASSERT_PTR(value.bytes);
 
-    return vscf_asn1wr_write_tag_data(asn1wr_impl, value, MBEDTLS_ASN1_OCTET_STRING);
-}
-
-//
-//  Write ASN.1 type: BIT STRING with all zero unused bits.
-//
-//  Return count of written bytes.
-//
-VSCF_PUBLIC size_t
-vscf_asn1wr_write_octet_str_as_bitstring(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t value) {
-
-    VSCF_ASSERT_PTR(asn1wr_impl);
-    VSCF_ASSERT(vsc_data_is_valid(value));
-
-    size_t written_count = vscf_asn1wr_write_data(asn1wr_impl, value);
-
-    if (asn1wr_impl->error != vscf_SUCCESS) {
-        return 0;
-    }
-
-    if (*asn1wr_impl->curr != 0x00) {
-        byte zero_byte = 0x00;
-        written_count += vscf_asn1wr_write_data(asn1wr_impl, vsc_data(&zero_byte, 1));
-    }
-
-    written_count += vscf_asn1wr_write_len(asn1wr_impl, written_count);
-    written_count += vscf_asn1wr_write_tag(asn1wr_impl, MBEDTLS_ASN1_BIT_STRING);
-
-    return written_count;
-}
-
-//
-//  Write raw data directly to the ASN.1 structure.
-//  Return count of written bytes.
-//  Note, use this method carefully.
-//
-VSCF_PUBLIC size_t
-vscf_asn1wr_write_data(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t data) {
-
-    VSCF_ASSERT_PTR(asn1wr_impl);
-    VSCF_ASSERT(vsc_data_is_valid(data));
-
-    int ret = mbedtls_asn1_write_raw_buffer(&asn1wr_impl->curr, asn1wr_impl->start, data.bytes, data.len);
-
-    if (vscf_asn1wr_mbedtls_has_error(asn1wr_impl, ret)) {
-        return 0;
-    }
-
-    return data.len;
+    return vscf_asn1wr_write_raw_data(asn1wr_impl, value, MBEDTLS_ASN1_OCTET_STRING);
 }
 
 //
@@ -643,7 +601,7 @@ vscf_asn1wr_write_utf8_str(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t value) {
     VSCF_ASSERT_PTR(asn1wr_impl);
     VSCF_ASSERT_PTR(value.bytes);
 
-    return vscf_asn1wr_write_tag_data(asn1wr_impl, value, MBEDTLS_ASN1_UTF8_STRING);
+    return vscf_asn1wr_write_raw_data(asn1wr_impl, value, MBEDTLS_ASN1_UTF8_STRING);
 }
 
 //
@@ -656,7 +614,7 @@ vscf_asn1wr_write_oid(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t value) {
     VSCF_ASSERT_PTR(asn1wr_impl);
     VSCF_ASSERT_PTR(value.bytes);
 
-    return vscf_asn1wr_write_tag_data(asn1wr_impl, value, MBEDTLS_ASN1_OID);
+    return vscf_asn1wr_write_raw_data(asn1wr_impl, value, MBEDTLS_ASN1_OID);
 }
 
 //

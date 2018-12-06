@@ -109,7 +109,15 @@ set_target_properties(pythia_wrap PROPERTIES
 #
 # Add __FILENAME__ definition, that handles file name without path, to each source file.
 #
-target_add_filename_definitions(pythia_wrap)
+get_target_property(SOURCES pythia_wrap SOURCES)
+foreach(src ${SOURCES})
+    get_filename_component(file_name "${src}" NAME)
+    get_filename_component(file_ext "${src}" EXT)
+
+    if(file_ext STREQUAL ".c")
+            set_property(SOURCE "${src}" APPEND_STRING PROPERTY COMPILE_DEFINITIONS "__FILENAME__=\"${file_name}\"")
+    endif()
+endforeach()
 
 #
 # Enable profiling

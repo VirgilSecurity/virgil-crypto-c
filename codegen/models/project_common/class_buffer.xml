@@ -28,22 +28,6 @@
     </property>
 
 
-    <method name="is empty" is_const="1">
-        Returns true if buffer has no data written.
-
-        <return type="boolean"/>
-    </method>
-
-
-    <method name="equal" is_const="1">
-        Return true if buffers are equal.
-
-        <argument name="rhs" class="self" access="readonly"/>
-
-        <return type="boolean"/>
-    </method>
-
-
     <constructor name="with capacity">
         Allocate context and underlying byte array.
 
@@ -175,20 +159,6 @@
         Decrease used bytes by given length.
 
         <argument name="len" type="size"/>
-    </method>
-
-
-    <method name="write str">
-        Copy null-terminated string to the buffer.
-
-        <argument name="str" type="string"/>
-    </method>
-
-
-    <method name="write data">
-        Copy data to the buffer.
-
-        <argument name="data" class="data"/>
     </method>
 
 

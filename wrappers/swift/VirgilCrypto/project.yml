@@ -172,10 +172,6 @@ targets:
       - target: VirgilCryptoRatchet_$platform
 
 aggregateTargets:
-  Clean_Binaries:
-    buildScripts:
-      - script: rm -fr "${PROJECT_DIR}/Binaries"
-
   Build_iOS:
     targets:
       - VirgilCryptoCommon_iOS

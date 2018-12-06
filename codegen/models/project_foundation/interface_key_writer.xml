@@ -1,0 +1,39 @@
+<interface name="key writer">
+    Provide interface to for key marshaling.
+
+
+    <method name="write public key">
+        Write public key object.
+
+        <argument name="out" class="buffer"/>
+
+        <return enum="error"/>
+    </method>
+
+
+    <method name="write private key">
+        Write private key object.
+
+        <argument name="out" class="buffer"/>
+
+        <return enum="error"/>
+    </method>
+
+
+    <method name="estimate public key out len">
+        Return length in bytes required to hold written public key.
+        Note, this is time consuming operation.
+        Note, estimation is approximate.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="estimate private key out len">
+        Return length in bytes required to hold written private key.
+        Note, this is time consuming operation.
+        Note, estimation is approximate.
+
+        <return type="size"/>
+    </method>
+</interface>

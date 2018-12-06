@@ -40,10 +40,8 @@ import VirgilCryptoCommon
 /// Common interface to get random data.
 @objc(VSCFRandom) public protocol Random : CContext {
 
-    /// Generate random bytes.
     @objc func random(dataLen: Int) throws -> Data
 
-    /// Retreive new seed data from the entropy sources.
     @objc func reseed() throws
 }
 

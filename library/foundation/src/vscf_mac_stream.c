@@ -162,6 +162,17 @@ vscf_mac_stream_api_tag(const vscf_mac_stream_api_t *mac_stream_api) {
     return mac_stream_api->api_tag;
 }
 
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_mac_stream_impl_tag(const vscf_mac_stream_api_t *mac_stream_api) {
+
+    VSCF_ASSERT_PTR (mac_stream_api);
+
+    return mac_stream_api->impl_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

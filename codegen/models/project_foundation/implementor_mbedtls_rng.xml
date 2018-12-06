@@ -5,7 +5,6 @@
     <implementation name="entropy accumulator">
         Implementation based on a simple entropy accumulator.
 
-        <interface name="defaults"/>
         <interface name="entropy source"/>
 
         <require interface="entropy source"/>
@@ -23,6 +22,10 @@
             <property name="source count" type="size"/>
         </context>
 
+        <method name="setup defaults" declaration="public">
+            Setup entropy sources available for the current system.
+        </method>
+
         <method name="add source" declaration="public">
             Add given entropy source to the accumulator.
             Threshold defines minimum number of bytes that must be gathered
@@ -38,7 +41,6 @@
         Implementation of the RNG using deterministic random bit generators
         based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).
 
-        <interface name="defaults"/>
         <interface name="random"/>
 
         <require impl="entropy accumulator"/>
@@ -58,6 +60,10 @@
             <require header="mbedtls/ctr_drbg.h" library="mbedtls"/>
             <property name="ctx" class="mbedtls_ctr_drbg_context" library="mbedtls" is_reference="0"/>
         </context>
+
+        <method name="setup defaults" declaration="public">
+            Setup entropy sources available for the current system.
+        </method>
 
         <method name="enable prediction resistance" declaration="public">
             Force entropy to be gathered at the beginning of every call to

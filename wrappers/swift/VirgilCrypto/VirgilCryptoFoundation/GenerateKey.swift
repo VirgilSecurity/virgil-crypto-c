@@ -40,8 +40,6 @@ import VirgilCryptoCommon
 /// Interface for private or secret key generation.
 @objc(VSCFGenerateKey) public protocol GenerateKey : CContext {
 
-    /// Generate new private or secret key.
-    /// Note, this operation can be slow.
     @objc func generateKey() throws
 }
 

@@ -83,6 +83,10 @@ static const vscr_ratchet_rng_api_t ratchet_rng_api = {
     //
     vscr_api_tag_RATCHET_RNG,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscr_impl_tag_VIRGIL_RATCHET_FAKE_RNG,
+    //
     //  Interface for ratchet rng
     //
     (vscr_ratchet_rng_api_generate_random_data_fn)vscr_virgil_ratchet_fake_rng_generate_random_data
@@ -92,6 +96,10 @@ static const vscr_ratchet_rng_api_t ratchet_rng_api = {
 //  Compile-time known information about 'virgil ratchet fake rng' implementation.
 //
 static const vscr_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscr_impl_tag_VIRGIL_RATCHET_FAKE_RNG,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.

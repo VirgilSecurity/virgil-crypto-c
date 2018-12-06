@@ -131,13 +131,6 @@
     </method>
 
 
-    <method name="read bitstring as octet str">
-        Read ASN.1 type: BIT STRING.
-
-        <return class="data"/>
-    </method>
-
-
     <method name="read utf8 str">
         Read ASN.1 type: UTF8String.
 

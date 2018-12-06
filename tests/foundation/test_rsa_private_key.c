@@ -33,8 +33,6 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#define UNITY_BEGIN() UnityBegin(__FILENAME__)
-
 #include "unity.h"
 #include "test_utils.h"
 
@@ -45,7 +43,7 @@
 
 #include "vscf_assert.h"
 
-#include "vscf_public_key.h"
+#include "vscf_export_public_key.h"
 #include "vscf_rsa_private_key.h"
 #include "vscf_rsa_public_key.h"
 #include "vscf_asn1rd.h"
@@ -130,8 +128,6 @@ test__rsa_private_key_decrypt__with_imported_2048_PRIVATE_KEY_PKCS1_and_2048_ENC
 void
 test__rsa_private_key_extract_public_key__from_imported_2048_PRIVATE_KEY_PKCS1__when_exported_equals_2048_PUBLIC_KEY_PKCS1(
         void) {
-
-#if VSCF_RSA_PUBLIC_KEY
     //  Setup dependencies
     vscf_rsa_private_key_impl_t *private_key_impl = vscf_rsa_private_key_new();
 
@@ -147,9 +143,9 @@ test__rsa_private_key_extract_public_key__from_imported_2048_PRIVATE_KEY_PKCS1__
     TEST_ASSERT_NOT_NULL(public_key_impl);
 
     vsc_buffer_t *exported_key_buf =
-            vsc_buffer_new_with_capacity(vscf_public_key_exported_public_key_len(public_key_impl));
+            vsc_buffer_new_with_capacity(vscf_export_public_key_exported_public_key_len(public_key_impl));
 
-    vscf_error_t export_err = vscf_public_key_export_public_key(public_key_impl, exported_key_buf);
+    vscf_error_t export_err = vscf_export_public_key(public_key_impl, exported_key_buf);
     VSCF_ASSERT(export_err == vscf_SUCCESS);
 
     //  Check
@@ -160,9 +156,6 @@ test__rsa_private_key_extract_public_key__from_imported_2048_PRIVATE_KEY_PKCS1__
     vscf_rsa_private_key_destroy(&private_key_impl);
     vscf_impl_destroy(&public_key_impl);
     vsc_buffer_destroy(&exported_key_buf);
-#else
-    TEST_IGNORE_MESSAGE("VSCF_RSA_PUBLIC_KEY is disabled");
-#endif
 }
 
 void
