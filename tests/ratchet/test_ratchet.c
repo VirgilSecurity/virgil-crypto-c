@@ -45,6 +45,8 @@
 #include "vscr_virgil_ratchet_fake_rng_impl.h"
 #include "test_data_ratchet.h"
 
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
+#include <pb_decode.h>
 #include <ed25519/ed25519.h>
 
 static void
@@ -79,12 +81,19 @@ initialize(vscr_ratchet_t *ratchet_alice, vscr_ratchet_t *ratchet_bob, vsc_buffe
     vscr_error_ctx_t error_ctx;
     vscr_error_ctx_reset(&error_ctx);
 
-    vscr_ratchet_regular_message_t *regular_message = vscr_ratchet_regular_message_deserialize(vsc_buffer_data(*cipher_text), &error_ctx);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+    RegularMessage regular_message = RegularMessage_init_zero;
+
+    bool status = true;
+
+    pb_istream_t istream = pb_istream_from_buffer(vsc_buffer_data(*cipher_text).bytes, vsc_buffer_data(*cipher_text).len);
+
+    status = pb_decode(&istream, RegularMessage_fields, &regular_message);
+
+    // FIXME
+    TEST_ASSERT_EQUAL(1, status);
 
     vscr_ratchet_respond(ratchet_bob, test_ratchet_shared_secret, ratchet_public_key, regular_message);
 
-    vscr_ratchet_regular_message_destroy(&regular_message);
     vsc_buffer_destroy(&ratchet_private_key);
     vsc_buffer_destroy(&ratchet_public_key);
 }
