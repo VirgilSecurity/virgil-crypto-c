@@ -1,0 +1,10 @@
+<interface name="defaults">
+    Provide interface to setup predefined values to the uninitialized
+    class dependencies.
+
+    <method name="setup defaults">
+        Setup predefined values to the uninitialized class dependencies.
+
+        <return enum="error"/>
+    </method>
+</interface>

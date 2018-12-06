@@ -73,16 +73,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible implementations within crypto library.
-//
-enum vscr_impl_tag_t {
-    vscr_impl_tag_BEGIN = 0,
-    vscr_impl_tag_VIRGIL_RATCHET_FAKE_RNG,
-    vscr_impl_tag_END
-};
-typedef enum vscr_impl_tag_t vscr_impl_tag_t;
-
-//
 //  Generic type for any 'implementation'.
 //
 typedef struct vscr_impl_t vscr_impl_t;
@@ -93,13 +83,7 @@ typedef struct vscr_impl_t vscr_impl_t;
 //  Or NULL if object does not implement requested 'API'.
 //
 VSCR_PUBLIC const vscr_api_t *
-vscr_impl_api(vscr_impl_t *impl, vscr_api_tag_t api_tag);
-
-//
-//  Return unique 'Implementation TAG'.
-//
-VSCR_PUBLIC vscr_impl_tag_t
-vscr_impl_tag(vscr_impl_t *impl);
+vscr_impl_api(const vscr_impl_t *impl, vscr_api_tag_t api_tag);
 
 //
 //  Cleanup implementation object and it's dependencies.

@@ -40,8 +40,10 @@ import VirgilCryptoCommon
 /// Provide interface for data encryption.
 @objc(VSCFEncrypt) public protocol Encrypt : CContext {
 
+    /// Encrypt given data.
     @objc func encrypt(data: Data) throws -> Data
 
+    /// Calculate required buffer length to hold the encrypted data.
     @objc func encryptedLen(dataLen: Int) -> Int
 }
 

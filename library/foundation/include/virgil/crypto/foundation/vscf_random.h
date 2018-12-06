@@ -102,25 +102,19 @@ vscf_random_reseed(vscf_impl_t *impl);
 //  Return random API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_random_api_t *
-vscf_random_api(vscf_impl_t *impl);
+vscf_random_api(const vscf_impl_t *impl);
 
 //
 //  Check if given object implements interface 'random'.
 //
 VSCF_PUBLIC bool
-vscf_random_is_implemented(vscf_impl_t *impl);
+vscf_random_is_implemented(const vscf_impl_t *impl);
 
 //
 //  Returns interface unique identifier.
 //
 VSCF_PUBLIC vscf_api_tag_t
 vscf_random_api_tag(const vscf_random_api_t *random_api);
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_random_impl_tag(const vscf_random_api_t *random_api);
 
 
 // --------------------------------------------------------------------------

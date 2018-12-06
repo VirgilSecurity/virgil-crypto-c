@@ -65,10 +65,23 @@
 // --------------------------------------------------------------------------
 
 //
+//  Return implemented asymmetric key algorithm type.
+//
+VSCF_PUBLIC vscf_key_alg_t
+vscf_key_alg(const vscf_impl_t *impl) {
+
+    const vscf_key_api_t *key_api = vscf_key_api (impl);
+    VSCF_ASSERT_PTR (key_api);
+
+    VSCF_ASSERT_PTR (key_api->alg_cb);
+    return key_api->alg_cb (impl);
+}
+
+//
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
-vscf_key_key_len(vscf_impl_t *impl) {
+vscf_key_key_len(const vscf_impl_t *impl) {
 
     const vscf_key_api_t *key_api = vscf_key_api (impl);
     VSCF_ASSERT_PTR (key_api);
@@ -81,7 +94,7 @@ vscf_key_key_len(vscf_impl_t *impl) {
 //  Length of the key in bits.
 //
 VSCF_PUBLIC size_t
-vscf_key_key_bitlen(vscf_impl_t *impl) {
+vscf_key_key_bitlen(const vscf_impl_t *impl) {
 
     const vscf_key_api_t *key_api = vscf_key_api (impl);
     VSCF_ASSERT_PTR (key_api);
@@ -94,7 +107,7 @@ vscf_key_key_bitlen(vscf_impl_t *impl) {
 //  Return key API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_key_api_t *
-vscf_key_api(vscf_impl_t *impl) {
+vscf_key_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -106,7 +119,7 @@ vscf_key_api(vscf_impl_t *impl) {
 //  Check if given object implements interface 'key'.
 //
 VSCF_PUBLIC bool
-vscf_key_is_implemented(vscf_impl_t *impl) {
+vscf_key_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -122,17 +135,6 @@ vscf_key_api_tag(const vscf_key_api_t *key_api) {
     VSCF_ASSERT_PTR (key_api);
 
     return key_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_key_impl_tag(const vscf_key_api_t *key_api) {
-
-    VSCF_ASSERT_PTR (key_api);
-
-    return key_api->impl_tag;
 }
 
 

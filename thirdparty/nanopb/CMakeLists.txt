@@ -37,10 +37,52 @@
 
 include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 
-if(NOT NANOPB_LIBRARY)
+if(NOT PB_LIBRARY)
     message(STATUS "Skip build of library: nanopb")
     return()
 endif()
+
+set(NANOPB_COMPILE_DEFINITIONS "")
+
+if(PB_ENABLE_MALLOC)
+    list(APPEND NANOPB_COMPILE_DEFINITIONS PB_ENABLE_MALLOC)
+endif()
+
+if(PB_NO_PACKED_STRUCTS)
+    list(APPEND NANOPB_COMPILE_DEFINITIONS PB_NO_PACKED_STRUCTS)
+endif()
+
+if(PB_MAX_REQUIRED_FIELDS)
+    list(APPEND NANOPB_COMPILE_DEFINITIONS PB_MAX_REQUIRED_FIELDS)
+endif()
+
+if(PB_FIELD_16BIT)
+    list(APPEND NANOPB_COMPILE_DEFINITIONS PB_FIELD_16BIT)
+endif()
+
+if(PB_FIELD_32BIT)
+    list(APPEND NANOPB_COMPILE_DEFINITIONS PB_FIELD_32BIT)
+endif()
+
+if(PB_NO_ERRMSG)
+    list(APPEND NANOPB_COMPILE_DEFINITIONS PB_NO_ERRMSG)
+endif()
+
+if(PB_BUFFER_ONLY)
+    list(APPEND NANOPB_COMPILE_DEFINITIONS PB_BUFFER_ONLY)
+endif()
+
+if(PB_OLD_CALLBACK_STYLE)
+    list(APPEND NANOPB_COMPILE_DEFINITIONS PB_OLD_CALLBACK_STYLE)
+endif()
+
+set(NANOPB_COMPILE_DEFINITIONS_STR "")
+list(LENGTH NANOPB_COMPILE_DEFINITIONS NANOPB_COMPILE_DEFINITIONS_LEN)
+if(NANOPB_COMPILE_DEFINITIONS_LEN GREATER 0)
+    string(REPLACE ";" " " NANOPB_COMPILE_DEFINITIONS_STR "${NANOPB_COMPILE_DEFINITIONS}")
+    set(NANOPB_COMPILE_DEFINITIONS_STR "-D${NANOPB_COMPILE_DEFINITIONS_STR}")
+endif()
+
 
 # ---------------------------------------------------------------------------
 #   Build Options
@@ -73,7 +115,7 @@ ExternalProject_Add(protobuf-nanopb-bin-ext
         BUILD_IN_SOURCE
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ""
-        INSTALL_COMMAND cmake -E copy_directory
+        INSTALL_COMMAND "${CMAKE_COMMAND}" -E copy_directory
             "${CMAKE_CURRENT_BINARY_DIR}/protobuf-nanopb-bin-ext/src/protobuf-nanopb-bin-ext/generator-bin"
             "${NANOPB_INSTALL_LOCATION}/bin"
         )
@@ -93,6 +135,7 @@ ExternalProject_Add(protobuf-nanopb-ext
             "-Dnanopb_BUILD_RUNTIME=ON"
             "-Dnanopb_BUILD_GENERATOR=OFF"
             "-Dnanopb_MSVC_STATIC_RUNTIME=ON"
+            "-DCMAKE_C_FLAGS=\"${NANOPB_COMPILE_DEFINITIONS_STR}\""
         BUILD_BYPRODUCTS
             "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopb${CMAKE_STATIC_LIBRARY_SUFFIX}"
             "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopbd${CMAKE_STATIC_LIBRARY_SUFFIX}"
@@ -133,8 +176,9 @@ set_target_properties(protobuf-nanopb
             "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopbd${CMAKE_STATIC_LIBRARY_SUFFIX}"
         INTERFACE_INCLUDE_DIRECTORIES
             "${NANOPB_INSTALL_LOCATION}/include"
+        INTERFACE_COMPILE_DEFINITIONS
+            "${NANOPB_COMPILE_DEFINITIONS}"
         )
-
 
 # ---------------------------------------------------------------------------
 #   Alias library alias

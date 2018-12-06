@@ -40,6 +40,7 @@ import VirgilCryptoCommon
 /// Provide interface for verifying data with public key.
 @objc(VSCFVerify) public protocol Verify : CContext {
 
+    /// Verify data with given public key and signature.
     @objc func verify(data: Data, signature: Data) -> Bool
 }
 
