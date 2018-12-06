@@ -73,28 +73,26 @@
 
 
 //
-//  Map hash alg to correspond 'mbedtls_md_type_t'.
+//  Map implementation tag to correspond 'mbedtls_md_type_t'.
 //
 VSCF_PUBLIC mbedtls_md_type_t
-vscf_mbedtls_md_from_hash_alg(vscf_hash_alg_t hash_alg) {
+vscf_mbedtls_md_map_impl_tag(vscf_impl_tag_t impl_tag) {
 
-    VSCF_ASSERT(hash_alg != vscf_hash_alg_NONE);
-
-    switch (hash_alg) {
-    case vscf_hash_alg_SHA224:
+    switch (impl_tag) {
+    case vscf_impl_tag_SHA224:
         return MBEDTLS_MD_SHA224;
 
-    case vscf_hash_alg_SHA256:
+    case vscf_impl_tag_SHA256:
         return MBEDTLS_MD_SHA256;
 
-    case vscf_hash_alg_SHA384:
+    case vscf_impl_tag_SHA384:
         return MBEDTLS_MD_SHA384;
 
-    case vscf_hash_alg_SHA512:
+    case vscf_impl_tag_SHA512:
         return MBEDTLS_MD_SHA512;
 
     default:
-        VSCF_ASSERT_OPT(false && "Can not map hash alg to mbedtls_md_type_t.");
+        VSCF_ASSERT_OPT(false && "Can not map implementation tag to mbedtls_md_type_t.");
         return MBEDTLS_MD_NONE;
     }
 }

@@ -70,7 +70,7 @@ endfunction
 #   Examples:
 #       {struct, buffer, buffer} - returns "class_buffer_struct_buffer"
 #       {struct, inner/buffer, buffer} - returns "class_inner_struct_buffer"
-#       {enum, api/tag,} - returns "class_api_enum_tag"
+#       {enum, impl/tag,} - returns "class_impl_enum_tag"
 #       {struct, codes,} - returns "global_struct_codes"
 # ---------------------------------------------------------------------------
 function c_component_derive_instance_type_uid (type_id, type_value, of_class)
@@ -674,8 +674,7 @@ function c_component_map_instance_attr_is_const (c_instance, instance)
                     (!item_in(my.instance, "argument, return") | is_true(my.instance.is_reference))) | \
             (defined (my.instance.type) & is_true(my.instance.is_reference)) | \
             (defined (my.instance.type) & count (my.instance.array)) | \
-            (defined (my.instance.enum) & count (my.instance.array)) | \
-            item_in(my.instance, "variable"))
+            (defined (my.instance.enum) & count (my.instance.array)))
         my.c_instance.is_const_type = "1"
     endif
 

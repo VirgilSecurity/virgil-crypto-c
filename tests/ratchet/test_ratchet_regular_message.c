@@ -32,9 +32,6 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-
-#define UNITY_BEGIN() UnityBegin(__FILENAME__)
-
 #include "unity.h"
 #include "test_utils.h"
 
@@ -42,21 +39,12 @@
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscr_ratchet_regular_message.h"
-
 #include "test_data_ratchet_regular_message.h"
 
-
 void
-test__1(void) {
-    vsc_buffer_t *public_key = vsc_buffer_new_with_capacity(test_ratchet_regular_message_public_key.len);
-    memcpy(vsc_buffer_ptr(public_key), test_ratchet_regular_message_public_key.bytes,
-            test_ratchet_regular_message_public_key.len);
-    vsc_buffer_reserve(public_key, test_ratchet_regular_message_public_key.len);
-
-    vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(test_ratchet_regular_message_cipher_text.len);
-    memcpy(vsc_buffer_ptr(cipher_text), test_ratchet_regular_message_cipher_text.bytes,
-            test_ratchet_regular_message_cipher_text.len);
-    vsc_buffer_reserve(cipher_text, test_ratchet_regular_message_cipher_text.len);
+test__constructor__create_object__object_has_correct_values(void) {
+    vsc_buffer_t *public_key = vsc_buffer_new_with_data(test_ratchet_regular_message_public_key);
+    vsc_buffer_t *cipher_text = vsc_buffer_new_with_data(test_ratchet_regular_message_cipher_text);
 
     vscr_ratchet_regular_message_t *msg1 = vscr_ratchet_regular_message_new_with_members(
             test_ratchet_regular_message_version, test_ratchet_regular_message_counter, public_key, cipher_text);
@@ -69,6 +57,20 @@ test__1(void) {
     TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->cipher_text), test_ratchet_regular_message_cipher_text.bytes,
             test_ratchet_regular_message_cipher_text.len);
     TEST_ASSERT_EQUAL_INT(test_ratchet_regular_message_cipher_text.len, vsc_buffer_len(msg1->cipher_text));
+
+    vscr_ratchet_regular_message_destroy(&msg1);
+
+    vsc_buffer_destroy(&public_key);
+    vsc_buffer_destroy(&cipher_text);
+}
+
+void
+test__serialization__serialize_deserialize__objects_are_equal(void) {
+    vsc_buffer_t *public_key = vsc_buffer_new_with_data(test_ratchet_regular_message_public_key);
+    vsc_buffer_t *cipher_text = vsc_buffer_new_with_data(test_ratchet_regular_message_cipher_text);
+
+    vscr_ratchet_regular_message_t *msg1 = vscr_ratchet_regular_message_new_with_members(
+            test_ratchet_regular_message_version, test_ratchet_regular_message_counter, public_key, cipher_text);
 
     size_t len = vscr_ratchet_regular_message_serialize_len(vsc_buffer_len(msg1->cipher_text));
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(len);
@@ -86,7 +88,7 @@ test__1(void) {
             vsc_buffer_bytes(msg1->public_key), vsc_buffer_bytes(msg2->public_key), vsc_buffer_len(msg1->public_key));
     TEST_ASSERT_EQUAL_INT(vsc_buffer_len(msg1->cipher_text), vsc_buffer_len(msg2->cipher_text));
     TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->cipher_text), vsc_buffer_bytes(msg2->cipher_text),
-            vsc_buffer_len(msg1->cipher_text));
+                             vsc_buffer_len(msg1->cipher_text));
 
     vscr_ratchet_regular_message_destroy(&msg1);
     vscr_ratchet_regular_message_destroy(&msg2);
@@ -97,16 +99,9 @@ test__1(void) {
 }
 
 void
-test__2(void) {
-    vsc_buffer_t *public_key = vsc_buffer_new_with_capacity(test_ratchet_regular_message_public_key.len);
-    memcpy(vsc_buffer_ptr(public_key), test_ratchet_regular_message_public_key.bytes,
-            test_ratchet_regular_message_public_key.len);
-    vsc_buffer_reserve(public_key, test_ratchet_regular_message_public_key.len);
-
-    vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(test_ratchet_regular_message_cipher_text_big.len);
-    memcpy(vsc_buffer_ptr(cipher_text), test_ratchet_regular_message_cipher_text_big.bytes,
-            test_ratchet_regular_message_cipher_text_big.len);
-    vsc_buffer_reserve(cipher_text, test_ratchet_regular_message_cipher_text_big.len);
+test__constructor__create_big_object__object_has_correct_values(void) {
+    vsc_buffer_t *public_key = vsc_buffer_new_with_data(test_ratchet_regular_message_public_key);
+    vsc_buffer_t *cipher_text = vsc_buffer_new_with_data(test_ratchet_regular_message_cipher_text_big);
 
     vscr_ratchet_regular_message_t *msg1 =
             vscr_ratchet_regular_message_new_with_members(test_ratchet_regular_message_version_big,
@@ -121,6 +116,21 @@ test__2(void) {
             test_ratchet_regular_message_cipher_text_big.len);
     TEST_ASSERT_EQUAL_INT(test_ratchet_regular_message_cipher_text_big.len, vsc_buffer_len(msg1->cipher_text));
 
+    vscr_ratchet_regular_message_destroy(&msg1);
+
+    vsc_buffer_destroy(&public_key);
+    vsc_buffer_destroy(&cipher_text);
+}
+
+void
+test__serialization__serialize_deserialize_big_object__objects_are_equal(void) {
+    vsc_buffer_t *public_key = vsc_buffer_new_with_data(test_ratchet_regular_message_public_key);
+    vsc_buffer_t *cipher_text = vsc_buffer_new_with_data(test_ratchet_regular_message_cipher_text_big);
+
+    vscr_ratchet_regular_message_t *msg1 =
+            vscr_ratchet_regular_message_new_with_members(test_ratchet_regular_message_version_big,
+                                                          test_ratchet_regular_message_counter_big, public_key, cipher_text);
+
     size_t len = vscr_ratchet_regular_message_serialize_len(vsc_buffer_len(msg1->cipher_text));
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(len);
 
@@ -137,7 +147,7 @@ test__2(void) {
             vsc_buffer_bytes(msg1->public_key), vsc_buffer_bytes(msg2->public_key), vsc_buffer_len(msg1->public_key));
     TEST_ASSERT_EQUAL_INT(vsc_buffer_len(msg1->cipher_text), vsc_buffer_len(msg2->cipher_text));
     TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->cipher_text), vsc_buffer_bytes(msg2->cipher_text),
-            vsc_buffer_len(msg1->cipher_text));
+                             vsc_buffer_len(msg1->cipher_text));
 
     vscr_ratchet_regular_message_destroy(&msg1);
     vscr_ratchet_regular_message_destroy(&msg2);
@@ -158,8 +168,10 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__1);
-    RUN_TEST(test__2);
+    RUN_TEST(test__constructor__create_object__object_has_correct_values);
+    RUN_TEST(test__serialization__serialize_deserialize__objects_are_equal);
+    RUN_TEST(test__constructor__create_big_object__object_has_correct_values);
+    RUN_TEST(test__serialization__serialize_deserialize_big_object__objects_are_equal);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

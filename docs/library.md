@@ -99,7 +99,7 @@ Base attributes for require. Defines dependency to: module, header,
 feature.
 
     <require
-      [ scope = "public | private | context"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ project = "..." ]
       [ library = "..." ]
       [ module = "..." ]
@@ -116,13 +116,16 @@ feature.
 The require item can have these attributes:
 
 scope:
-    Defines scope for required component. The scope attribute is optional.
-    Its default value is "public". It can take one of the following values:
+    Defines component visibility within scope. This attribute must not be
+    inherited. Note, scope attribute can be used for components, that can not
+    be defined in terms of 'declaration' and 'definition'. The scope
+    attribute is optional. Its default value is "public". It can take one of
+    the following values:
 
 Value: Meaning:
-public: Required component is visible for outside world.
-private: Required component can be accessed within specific source file only.
-context: Component is required by context, so it is visible if context is visible.
+public: Component is visible for outside world.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 project:
     Defines project name that component refers to. The project attribute is
@@ -161,7 +164,7 @@ Base attributes for require. Define alternative requirements that can be
 used, and in fact replace each other.
 
     <alternative
-      [ scope = "public | private | context"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
       [ project = "..." ]
       [ library = "..." ]
       [ module = "..." ]
@@ -176,13 +179,16 @@ used, and in fact replace each other.
 The alternative item can have these attributes:
 
 scope:
-    Defines scope for required component. The scope attribute is optional.
-    Its default value is "public". It can take one of the following values:
+    Defines component visibility within scope. This attribute must not be
+    inherited. Note, scope attribute can be used for components, that can not
+    be defined in terms of 'declaration' and 'definition'. The scope
+    attribute is optional. Its default value is "public". It can take one of
+    the following values:
 
 Value: Meaning:
-public: Required component is visible for outside world.
-private: Required component can be accessed within specific source file only.
-context: Component is required by context, so it is visible if context is visible.
+public: Component is visible for outside world.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 project:
     Defines project name that component refers to. The project attribute is

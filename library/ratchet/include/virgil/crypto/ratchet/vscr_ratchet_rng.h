@@ -109,6 +109,12 @@ vscr_ratchet_rng_is_implemented(const vscr_impl_t *impl);
 VSCR_PUBLIC vscr_api_tag_t
 vscr_ratchet_rng_api_tag(const vscr_ratchet_rng_api_t *ratchet_rng_api);
 
+//
+//  Returns implementation unique identifier.
+//
+VSCR_PUBLIC vscr_impl_tag_t
+vscr_ratchet_rng_impl_tag(const vscr_ratchet_rng_api_t *ratchet_rng_api);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

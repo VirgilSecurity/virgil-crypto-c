@@ -68,9 +68,6 @@ endfunction()
 #   ExternalProject_Add().
 # ---------------------------------------------------------------------------
 function(TRANSITIVE_COMMON_ARGS_ADD)
-    transitive_args_add(
-            CMAKE_POSITION_INDEPENDENT_CODE
-    )
 endfunction()
 
 

@@ -124,6 +124,17 @@ vscf_entropy_source_api_tag(const vscf_entropy_source_api_t *entropy_source_api)
     return entropy_source_api->api_tag;
 }
 
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_entropy_source_impl_tag(const vscf_entropy_source_api_t *entropy_source_api) {
+
+    VSCF_ASSERT_PTR (entropy_source_api);
+
+    return entropy_source_api->impl_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

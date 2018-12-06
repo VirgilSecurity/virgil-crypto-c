@@ -83,6 +83,10 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     //
     vscf_api_tag_ASN1_WRITER,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ASN1WR,
+    //
     //  Reset all internal states and prepare to new ASN.1 writing operations.
     //
     (vscf_asn1_writer_api_reset_fn)vscf_asn1wr_reset,
@@ -175,18 +179,6 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     //
     (vscf_asn1_writer_api_write_octet_str_fn)vscf_asn1wr_write_octet_str,
     //
-    //  Write ASN.1 type: BIT STRING with all zero unused bits.
-    //
-    //  Return count of written bytes.
-    //
-    (vscf_asn1_writer_api_write_octet_str_as_bitstring_fn)vscf_asn1wr_write_octet_str_as_bitstring,
-    //
-    //  Write raw data directly to the ASN.1 structure.
-    //  Return count of written bytes.
-    //  Note, use this method carefully.
-    //
-    (vscf_asn1_writer_api_write_data_fn)vscf_asn1wr_write_data,
-    //
     //  Write ASN.1 type: UTF8String.
     //  Return count of written bytes.
     //
@@ -212,6 +204,10 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
 //  Compile-time known information about 'asn1wr' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_ASN1WR,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.

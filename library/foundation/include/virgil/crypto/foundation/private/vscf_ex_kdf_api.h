@@ -83,7 +83,7 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Derive key of the requested length from the given data, salt and info.
+//  Callback. Calculate hash over given data.
 //
 typedef void (*vscf_ex_kdf_api_derive_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_data_t salt, vsc_data_t info,
         vsc_buffer_t *key, size_t key_len);
@@ -98,7 +98,11 @@ struct vscf_ex_kdf_api_t {
     //
     vscf_api_tag_t api_tag;
     //
-    //  Derive key of the requested length from the given data, salt and info.
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
+    //  Calculate hash over given data.
     //
     vscf_ex_kdf_api_derive_fn derive_cb;
 };

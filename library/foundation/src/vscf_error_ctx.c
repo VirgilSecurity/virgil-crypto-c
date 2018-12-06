@@ -97,7 +97,7 @@ vscf_error_ctx_reset(vscf_error_ctx_t *error_ctx_ctx) {
 //
 //  Update context with given error.
 //
-VSCF_PRIVATE void
+VSCF_PUBLIC void
 vscf_error_ctx_update(vscf_error_ctx_t *error_ctx_ctx, vscf_error_t error) {
 
     VSCF_ASSERT_PTR(error_ctx_ctx);

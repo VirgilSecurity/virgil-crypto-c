@@ -135,8 +135,8 @@ vscf_hkdf_extract(vscf_hkdf_impl_t *hkdf_impl, vsc_data_t data, vsc_data_t salt,
 //  Expands the pseudorandom key to the desired length.
 //
 static void
-vscf_hkdf_expand(vscf_hkdf_impl_t *hkdf_impl, vsc_buffer_t *pr_key, vsc_data_t info, vsc_buffer_t *key,
-        size_t key_len) {
+vscf_hkdf_expand(
+        vscf_hkdf_impl_t *hkdf_impl, vsc_buffer_t *pr_key, vsc_data_t info, vsc_buffer_t *key, size_t key_len) {
 
     unsigned char counter = 0x00;
     size_t hmac_len = vscf_hmac_digest_len(&hkdf_impl->hmac);
@@ -164,7 +164,7 @@ vscf_hkdf_expand(vscf_hkdf_impl_t *hkdf_impl, vsc_buffer_t *pr_key, vsc_data_t i
 }
 
 //
-//  Derive key of the requested length from the given data, salt and info.
+//  Calculate hash over given data.
 //
 VSCF_PUBLIC void
 vscf_hkdf_derive(vscf_hkdf_impl_t *hkdf_impl, vsc_data_t data, vsc_data_t salt, vsc_data_t info, vsc_buffer_t *key,

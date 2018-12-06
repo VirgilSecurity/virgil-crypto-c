@@ -118,6 +118,12 @@ vscf_decrypt_is_implemented(const vscf_impl_t *impl);
 VSCF_PUBLIC vscf_api_tag_t
 vscf_decrypt_api_tag(const vscf_decrypt_api_t *decrypt_api);
 
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_decrypt_impl_tag(const vscf_decrypt_api_t *decrypt_api);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

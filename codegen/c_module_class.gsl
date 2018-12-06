@@ -83,13 +83,6 @@ function _X13_add_context_struct (class, declaration, definition, destination, m
             component_clean_copy (property, struct)
         endfor
     endnew
-
-    if my.definition <> "external"
-        for my.class.require where 0.scope="context"
-            my.copied_require = item_copy_to(require, my.destination)
-            my.copied_require.scope = my.definition
-        endfor
-    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -379,9 +372,6 @@ function _X13_add_constructor (class, constructor, destination, meta)
     new method to my.destination
         . = my.constructor. ?
         .name = cat (! my.class.is_value_type ?? my.names.method_new ? "", my.constructor.name)
-        .declaration ?= my.constructor.declaration ?
-        .definition ?= my.constructor.definition ?
-        .visibility ?= my.constructor.visibility ?
 
         for my.constructor.argument
             component_clean_copy (argument, method)

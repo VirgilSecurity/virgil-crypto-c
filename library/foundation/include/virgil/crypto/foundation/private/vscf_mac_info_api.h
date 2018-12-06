@@ -87,6 +87,10 @@ struct vscf_mac_info_api_t {
     //
     vscf_api_tag_t api_tag;
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_t impl_tag;
+    //
     //  Size of the digest (mac output) in bytes.
     //
     vscf_mac_info_api_digest_len_fn digest_len_cb;

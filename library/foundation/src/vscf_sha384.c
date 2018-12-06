@@ -101,15 +101,6 @@ vscf_sha384_cleanup_ctx(vscf_sha384_impl_t *sha384_impl) {
 }
 
 //
-//  Return implemented hash algorithm type.
-//
-VSCF_PUBLIC vscf_hash_alg_t
-vscf_sha384_alg(void) {
-
-    return vscf_hash_alg_SHA384;
-}
-
-//
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void

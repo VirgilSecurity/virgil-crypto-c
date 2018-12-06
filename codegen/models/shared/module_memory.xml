@@ -31,8 +31,7 @@
               callback=".(global_callback_alloc)"
               of_class="memory"
               declaration="private"
-              definition="private"
-              access="readwrite">
+              definition="private">
 
         Current allocation function.
 
@@ -44,8 +43,7 @@
               callback=".(global_callback_dealloc)"
               of_class="memory"
               declaration="private"
-              definition="private"
-              access="readwrite">
+              definition="private">
 
         Current de-allocation function.
 

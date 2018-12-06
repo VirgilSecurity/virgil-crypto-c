@@ -97,6 +97,8 @@ endfunction
 function interface_resolve_constant (constant, parent)
     check_arguments (my, "constant, parent", my)
 
+    my.constant.type ?= "size"
+
     component_resolve_constant (my.constant, my.parent)
 endfunction
 

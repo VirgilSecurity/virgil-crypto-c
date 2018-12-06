@@ -40,7 +40,6 @@ import VirgilCryptoCommon
 /// Provides interface to the stateless MAC (message authentication code) algorithms.
 @objc(VSCFMac) public protocol Mac : MacInfo {
 
-    /// Calculate MAC over given data.
     @objc func mac(key: Data, data: Data) -> Data
 }
 

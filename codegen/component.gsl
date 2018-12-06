@@ -543,23 +543,6 @@ function component_resolve_attr_scope (component, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve attribute: require.scope.
-# ---------------------------------------------------------------------------
-function component_resolve_attr_require_scope (require_base, parent)
-    check_argument (my, "require_base", my)
-
-    my.require_base.scope ?= "public" #   must not be inherited
-
-    my.valid_scopes = "public, private, context"
-    if ! string_in (my.require_base.scope, my.valid_scopes)
-        my.component_dump = component_dump (my.require_base)
-
-        echo_fatal ("Invalid required component scope '$(my.component_dump:)'. " + \
-                    "Expected {$(my.valid_scopes)}", my)
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Resolve attribute: class.
 # ---------------------------------------------------------------------------
 function component_resolve_attr_of_class (component, parent)
@@ -650,7 +633,7 @@ function component_resolve_instance_attr_type (instance, parent)
 
     component_require_attr_type (my.instance, my)
 
-    my.valid_types = "nothing, boolean, integer, unsigned, size, byte, string, char"
+    my.valid_types = "nothing, boolean, integer, unsigned, size, byte, string, error"
     if ! string_in (my.instance.type, my.valid_types)
         my.instance_dump = component_instance_dump (my.instance)
 
@@ -1225,14 +1208,6 @@ function component_resolve_constant (constant, parent)
 
     component_require_attr_name (my.constant, my)
 
-    my.constant.type ?= "size"
-
-    my.valid_types = "size, integer, boolean"
-    if ! string_in (my.constant.type, my.valid_types)
-        echo_fatal ("Invalid constant attribute type=\"$(my.constant.type:)\"." + \
-                    " Expected {$(my.valid_types)}", my)
-    endif
-
     if ! item_in (my.parent ?, "enum, interface")
         component_require_attr_value (my.constant, my)
     endif
@@ -1477,7 +1452,7 @@ function component_resolve_require_base (require_base, parent)
     assert_attribute_one_of (my.require_base, "module, header, feature, interface, class, impl, enum", my)
 
     component_resolve_landlord (my.require_base, my.parent)
-    component_resolve_attr_require_scope (my.require_base, my.parent)
+    component_resolve_attr_scope (my.require_base, my.parent)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1559,20 +1534,18 @@ endfunction
 # ###########################################################################
 
 # ---------------------------------------------------------------------------
-#   Add 'impl' argument to the method.
-#
-#   If method 'is_const', then 'impl' access will be 'readonly'.
+#   Add 'impl' argument to the destination with given ot 'readwrite' access.
 # ---------------------------------------------------------------------------
-function component_create_argument_impl (method, meta)
-    check_arguments (my, "method, meta", my)
+function component_create_argument_impl (destination, meta, access)
+    check_arguments (my, "destination, meta", my)
 
     my.names = meta_names (my.meta)
 
-    my.argument = item_prepend_new ("argument", my.method)
+    my.argument = item_prepend_new ("argument", my.destination)
     scope my.argument
         .name = my.names.argument_impl
         .class = my.names.type_impl
-        .access = is_true(my.method.is_const) ?? "readonly" ? "readwrite"
+        .access = my.access ? "readwrite"
     endscope
     return my.argument
 endfunction

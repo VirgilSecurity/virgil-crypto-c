@@ -37,16 +37,10 @@ import Foundation
 import VSCFoundation
 import VirgilCryptoCommon
 
-@objc(VSCFRsaPrivateKey) public class RsaPrivateKey: NSObject, Key, GenerateKey, Decrypt, Sign, PrivateKey {
+@objc(VSCFRsaPrivateKey) public class RsaPrivateKey: NSObject, Key, GenerateKey, PrivateKey, Decrypt, Sign, ExportPrivateKey, ImportPrivateKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
-
-    /// Define whether a private key can be imported or not.
-    @objc public let canImportPrivateKey: Bool = true
-
-    /// Define whether a private key can be exported or not.
-    @objc public let canExportPrivateKey: Bool = true
 
     /// Create underlying C context.
     public override init() {
@@ -98,13 +92,6 @@ import VirgilCryptoCommon
         vscf_rsa_private_key_set_keygen_params(self.c_ctx, bitlen, exponent)
     }
 
-    /// Return implemented asymmetric key algorithm type.
-    @objc public func alg() -> KeyAlg {
-        let proxyResult = vscf_rsa_private_key_alg(self.c_ctx)
-
-        return KeyAlg.init(fromC: proxyResult)
-    }
-
     /// Length of the key in bytes.
     @objc public func keyLen() -> Int {
         let proxyResult = vscf_rsa_private_key_key_len(self.c_ctx)
@@ -125,6 +112,13 @@ import VirgilCryptoCommon
         let proxyResult = vscf_rsa_private_key_generate_key(self.c_ctx)
 
         try FoundationError.handleError(fromC: proxyResult)
+    }
+
+    /// Extract public part of the key.
+    @objc public func extractPublicKey() -> PublicKey {
+        let proxyResult = vscf_rsa_private_key_extract_public_key(self.c_ctx)
+
+        return PublicKeyProxy.init(c_ctx: proxyResult!)
     }
 
     /// Decrypt given data.
@@ -187,18 +181,7 @@ import VirgilCryptoCommon
         return proxyResult
     }
 
-    /// Extract public part of the key.
-    @objc public func extractPublicKey() -> PublicKey {
-        let proxyResult = vscf_rsa_private_key_extract_public_key(self.c_ctx)
-
-        return PublicKeyProxy.init(c_ctx: proxyResult!)
-    }
-
     /// Export private key in the binary format.
-    ///
-    /// Binary format must be defined in the key specification.
-    /// For instance, RSA private key must be exported in format defined in
-    /// RFC 3447 Appendix A.1.2.
     @objc public func exportPrivateKey() throws -> Data {
         let outCount = self.exportedPrivateKeyLen()
         var out = Data(count: outCount)
@@ -227,10 +210,6 @@ import VirgilCryptoCommon
     }
 
     /// Import private key from the binary format.
-    ///
-    /// Binary format must be defined in the key specification.
-    /// For instance, RSA private key must be imported from the format defined in
-    /// RFC 3447 Appendix A.1.2.
     @objc public func importPrivateKey(data: Data) throws {
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
             return vscf_rsa_private_key_import_private_key(self.c_ctx, vsc_data(dataPointer, data.count))

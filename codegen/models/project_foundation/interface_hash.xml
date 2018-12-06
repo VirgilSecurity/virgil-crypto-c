@@ -10,5 +10,6 @@
         <argument name="digest" class="buffer">
             <length constant="digest len"/>
         </argument>
+
     </method>
 </interface>

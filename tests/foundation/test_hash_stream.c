@@ -32,8 +32,6 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#define UNITY_BEGIN() UnityBegin(__FILENAME__)
-
 #include "unity.h"
 #include "test_utils.h"
 

@@ -126,6 +126,17 @@ vscf_compute_shared_key_api_tag(const vscf_compute_shared_key_api_t *compute_sha
     return compute_shared_key_api->api_tag;
 }
 
+//
+//  Returns implementation unique identifier.
+//
+VSCF_PUBLIC vscf_impl_tag_t
+vscf_compute_shared_key_impl_tag(const vscf_compute_shared_key_api_t *compute_shared_key_api) {
+
+    VSCF_ASSERT_PTR (compute_shared_key_api);
+
+    return compute_shared_key_api->impl_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

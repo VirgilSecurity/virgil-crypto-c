@@ -43,7 +43,6 @@
 //  Common
 //
 #cmakedefine MBEDTLS_ERROR_C
-#cmakedefine MBEDTLS_PLATFORM_C
 
 //
 //  Required by library vsc::foundation
@@ -64,7 +63,6 @@
 #cmakedefine MBEDTLS_PLATFORM_ENTROPY
 #cmakedefine MBEDTLS_TIMING_C
 #cmakedefine MBEDTLS_HAVEGE_C
-#cmakedefine MBEDTLS_BASE64_C
 
 #if !defined(MBEDTLS_PLATFORM_ENTROPY)
 #   define MBEDTLS_NO_PLATFORM_ENTROPY

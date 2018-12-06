@@ -40,7 +40,6 @@ import VirgilCryptoCommon
 /// Provides interface to the key derivation function (HKDF) algorithms.
 @objc(VSCFExKdf) public protocol ExKdf : CContext {
 
-    /// Derive key of the requested length from the given data, salt and info.
     @objc func derive(data: Data, salt: Data, info: Data, keyLen: Int) -> Data
 }
 
@@ -61,7 +60,7 @@ import VirgilCryptoCommon
         vscf_impl_delete(self.c_ctx)
     }
 
-    /// Derive key of the requested length from the given data, salt and info.
+    /// Calculate hash over given data.
     @objc public func derive(data: Data, salt: Data, info: Data, keyLen: Int) -> Data {
         let keyCount = keyLen
         var key = Data(count: keyCount)

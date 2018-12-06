@@ -85,6 +85,10 @@ static const vscf_random_api_t random_api = {
     //
     vscf_api_tag_RANDOM,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_FAKE_RANDOM,
+    //
     //  Generate random bytes.
     //
     (vscf_random_api_random_fn)vscf_fake_random_random,
@@ -104,6 +108,10 @@ static const vscf_entropy_source_api_t entropy_source_api = {
     //
     vscf_api_tag_ENTROPY_SOURCE,
     //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_FAKE_RANDOM,
+    //
     //  Defines that implemented source is strong.
     //
     (vscf_entropy_source_api_is_strong_fn)vscf_fake_random_is_strong,
@@ -117,6 +125,10 @@ static const vscf_entropy_source_api_t entropy_source_api = {
 //  Compile-time known information about 'fake random' implementation.
 //
 static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_FAKE_RANDOM,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
