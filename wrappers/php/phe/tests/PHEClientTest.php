@@ -35,7 +35,7 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-require_once '../PHEClient.php';
+require_once 'PHEClient.php';
 
 class PHEClientTest extends \PHPUnit\Framework\TestCase
 {

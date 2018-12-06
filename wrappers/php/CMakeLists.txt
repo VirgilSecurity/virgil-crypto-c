@@ -92,3 +92,4 @@ endif()
 #   Add per project extension build
 # ---------------------------------------------------------------------------
 add_subdirectory(pythia)
+add_subdirectory(phe)
