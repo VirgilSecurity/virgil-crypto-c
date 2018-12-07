@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_c_phe VERSION 0.1.0 LANGUAGES C)
+project(virgil_crypto_c_phe VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 
 # ---------------------------------------------------------------------------
 #   Check dependencies
@@ -89,7 +89,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 #
 # Define include headers
 #
-target_include_directories(ratchet
+target_include_directories(phe
         PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/phe>

@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(test_data_ratchet VERSION 0.1.0 LANGUAGES C)
+project(test_data_ratchet VERSION ${virgil_crypto_c_ratchet_tests_VERSION} LANGUAGES C)
 
 add_library(test_data_ratchet "")
 target_sources(test_data_ratchet
