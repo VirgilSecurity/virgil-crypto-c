@@ -35,18 +35,32 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
+/**
+ * Class PHEClient
+ */
 class PHEClient
 {
+    /**
+     * @var
+     */
     private $c_ctx;
 
+    /**
+     * PHEClient constructor.
+     * @return void
+     */
     public function __construct()
     {
         $this->c_ctx = vsce_phe_client_new_php();
     }
 
+    /**
+     * PHEClient destructor.
+     * @return void
+     */
     public function __destruct()
     {
-        return vsce_phe_client_dtor_php($this->c_ctx);
+        vsce_phe_client_dtor_php($this->c_ctx);
     }
 
     /**
