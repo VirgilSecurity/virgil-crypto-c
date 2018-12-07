@@ -82,6 +82,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         0 /*allow_null*/)
 ZEND_END_ARG_INFO()
 
+
 PHP_FUNCTION(vsce_phe_client_new_php) {
     vsce_phe_client_t *phe_client = vsce_phe_client_new();
     zend_resource *phe_client_res = zend_register_resource(phe_client, le_vsce_phe_client);
@@ -121,7 +122,9 @@ PHP_FUNCTION(vsce_phe_client_enrollment_record_len_php) {
     vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_client);
     VSCE_ASSERT_PTR(phe_client);
 
-    RETVAL_LONG(vsce_phe_client_enrollment_record_len(phe_client));
+    size_t proxy_result = vsce_phe_client_enrollment_record_len(phe_client);
+
+    RETVAL_LONG(proxy_result);
 }
 
 //
@@ -157,7 +160,9 @@ PHP_FUNCTION(vsce_phe_client_verify_password_request_len_php) {
     vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_client);
     VSCE_ASSERT_PTR(phe_client);
 
-    RETVAL_LONG(vsce_phe_client_verify_password_request_len(phe_client));
+    size_t proxy_result = vsce_phe_client_verify_password_request_len(phe_client);
+
+    RETVAL_LONG(proxy_result);
 }
 
 //
@@ -253,7 +258,7 @@ success:
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         arginfo_vsce_phe_client_rotate_keys_php /*name*/,
         0 /*return_reference*/,
-        3 /*required_num_args*/,
+        2 /*required_num_args*/,
         IS_ARRAY /*type*/,
         0 /*allow_null*/)
 
@@ -406,6 +411,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         0 /*allow_null*/)
 
     ZEND_ARG_INFO(0, c_ctx)
+    ZEND_ARG_TYPE_INFO(0, enrollment_record, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, update_token, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
 
@@ -481,6 +488,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         0 /*allow_null*/)
 
     ZEND_ARG_INFO(0, c_ctx)
+    ZEND_ARG_TYPE_INFO(0, password, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, enrollment_record, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
 
@@ -556,6 +565,9 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         0 /*allow_null*/)
 
     ZEND_ARG_INFO(0, c_ctx)
+    ZEND_ARG_TYPE_INFO(0, password, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, enrollment_record, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, verify_password_response, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
 
@@ -627,7 +639,7 @@ success:
 //
 //  Wrap method: vsce_phe_client_set_keys
 //
-ZEND_BEGIN_ARG_INFO(arginfo_vsce_phe_client_set_keys_php /*name*/, 0 /*return_reference*/)
+ZEND_BEGIN_ARG_INFO(arginfo_vsce_phe_client_set_keys_php /*name*/, 0 /*return_reference*/, 1, IS_VOID, 0)
     ZEND_ARG_INFO(0, c_ctx)
 ZEND_END_ARG_INFO()
 
@@ -666,14 +678,14 @@ PHP_FUNCTION(vsce_phe_client_set_keys_php) {
 }
 
 //
-//  Wrap method: vsce_phe_client_dtor_php
+//  Wrap method: vsce_phe_client_delete_php
 //
-ZEND_BEGIN_ARG_INFO(arginfo_vsce_phe_client_dtor_php /*name*/, 0 /*_unused*/)
+ZEND_BEGIN_ARG_INFO(arginfo_vsce_phe_client_delete_php /*name*/, 0 /*_unused*/, 1, IS_VOID, 0)
     ZEND_ARG_INFO(0, c_ctx)
 ZEND_END_ARG_INFO()
 
 
-PHP_FUNCTION(vsce_phe_client_dtor_php) {
+PHP_FUNCTION(vsce_phe_client_delete_php) {
     //
     //  Declare input arguments
     //
