@@ -665,6 +665,36 @@ PHP_FUNCTION(vsce_phe_client_set_keys_php) {
     RETURN_TRUE;
 }
 
+//
+//  Wrap method: vsce_phe_client_dtor_php
+//
+ZEND_BEGIN_ARG_INFO(arginfo_vsce_phe_client_dtor_php /*name*/, 0 /*_unused*/)
+    ZEND_ARG_INFO(0, c_ctx)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vsce_phe_client_dtor_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Fetch for type checking and then release
+    //
+    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_client);
+    VSCE_ASSERT_PTR(phe_client);
+    zend_list_delete(Z_RES_P(in_cctx));
+    RETURN_TRUE;
+}
+
 // --------------------------------------------------------------------------
 //  Define all function entries
 // --------------------------------------------------------------------------
@@ -679,7 +709,7 @@ static zend_function_entry vsce_phe_client_php_functions[] = {
     PHP_FE(vsce_phe_client_update_enrollment_record_php, arginfo_vsce_phe_client_update_enrollment_record_php)
     PHP_FE(vsce_phe_client_create_verify_password_request_php, arginfo_vsce_phe_client_create_verify_password_request_php)
     PHP_FE(vsce_phe_client_check_response_and_decrypt_php, arginfo_vsce_phe_client_check_response_and_decrypt_php)
-//    PHP_FE(vsce_phe_client_delete_php, arginfo_vsce_phe_client_delete_php)
+    PHP_FE(vsce_phe_client_dtor_php, arginfo_vsce_phe_client_dtor_php)
     PHP_FE_END
 };
 
