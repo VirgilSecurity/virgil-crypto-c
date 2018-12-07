@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(benchmark_data VERSION 0.1.0 LANGUAGES C)
+project(benchmark_data VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 
 add_library(benchmark_data "")
 target_sources(benchmark_data

@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_go VERSION 5.0.0 LANGUAGES C)
+project(virgil_crypto_go VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 
 #
 # Derive installation path.

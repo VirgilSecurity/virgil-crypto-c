@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_c_pythia_integration_tests VERSION 0.1.0 LANGUAGES C)
+project(virgil_crypto_c_pythia_tests VERSION ${virgil_crypto_c_tests_VERSION} LANGUAGES C)
 
 macro(_add_test test)
     add_executable(${test} ${test}.c)
