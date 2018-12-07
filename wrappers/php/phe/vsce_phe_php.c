@@ -639,8 +639,16 @@ success:
 //
 //  Wrap method: vsce_phe_client_set_keys
 //
-ZEND_BEGIN_ARG_INFO(arginfo_vsce_phe_client_set_keys_php /*name*/, 0 /*return_reference*/, 1, IS_VOID, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_phe_client_set_keys_php /*name*/, 
+        0 /*return_reference*/, 
+        3 /*required_num_args*/, 
+        IS_VOID /*type*/, 
+        0 /*allow_null*/)
+
     ZEND_ARG_INFO(0, c_ctx)
+    ZEND_ARG_TYPE_INFO(0, client_private_key, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, server_public_key, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
 
@@ -680,7 +688,12 @@ PHP_FUNCTION(vsce_phe_client_set_keys_php) {
 //
 //  Wrap method: vsce_phe_client_delete_php
 //
-ZEND_BEGIN_ARG_INFO(arginfo_vsce_phe_client_delete_php /*name*/, 0 /*_unused*/, 1, IS_VOID, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_phe_client_delete_php /*name*/, 
+        0 /*_unused*/, 
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
     ZEND_ARG_INFO(0, c_ctx)
 ZEND_END_ARG_INFO()
 
@@ -721,7 +734,7 @@ static zend_function_entry vsce_phe_client_php_functions[] = {
     PHP_FE(vsce_phe_client_update_enrollment_record_php, arginfo_vsce_phe_client_update_enrollment_record_php)
     PHP_FE(vsce_phe_client_create_verify_password_request_php, arginfo_vsce_phe_client_create_verify_password_request_php)
     PHP_FE(vsce_phe_client_check_response_and_decrypt_php, arginfo_vsce_phe_client_check_response_and_decrypt_php)
-    PHP_FE(vsce_phe_client_dtor_php, arginfo_vsce_phe_client_dtor_php)
+    PHP_FE(vsce_phe_client_delete_php, arginfo_vsce_phe_client_delete_php)
     PHP_FE_END
 };
 
