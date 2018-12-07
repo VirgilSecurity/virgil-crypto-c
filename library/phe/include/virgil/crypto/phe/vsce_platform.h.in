@@ -34,67 +34,71 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
-#ifndef MBEDTLS_CONFIG_H
-#define MBEDTLS_CONFIG_H
 
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
+
+
+//  @description
+// --------------------------------------------------------------------------
+//  This file contains platform specific information that is known during compilation.
+// --------------------------------------------------------------------------
+
+#ifndef VSCE_PLATFORM_H_INCLUDED
+#define VSCE_PLATFORM_H_INCLUDED
+
+// clang-format on
+//  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
 
 //
-//  Common
+//  Defines namespace include prefix for project 'common'.
 //
-#cmakedefine MBEDTLS_ERROR_C
-#cmakedefine MBEDTLS_PLATFORM_C
-
-//
-//  Required by library vsc::foundation
-//
-#cmakedefine MBEDTLS_SHA256_C
-#cmakedefine MBEDTLS_SHA512_C
-#cmakedefine MBEDTLS_CIPHER_C
-#cmakedefine MBEDTLS_AES_C
-#cmakedefine MBEDTLS_GCM_C
-#cmakedefine MBEDTLS_MD_C
-#cmakedefine MBEDTLS_BIGNUM_C
-#cmakedefine MBEDTLS_PKCS1_V21
-#cmakedefine MBEDTLS_OID_C
-#cmakedefine MBEDTLS_RSA_C
-#cmakedefine MBEDTLS_ASN1_PARSE_C
-#cmakedefine MBEDTLS_ASN1_WRITE_C
-#cmakedefine MBEDTLS_GENPRIME
-#cmakedefine MBEDTLS_PLATFORM_ENTROPY
-#cmakedefine MBEDTLS_TIMING_C
-#cmakedefine MBEDTLS_HAVEGE_C
-#cmakedefine MBEDTLS_BASE64_C
-
-#if !defined(MBEDTLS_PLATFORM_ENTROPY)
-#   define MBEDTLS_NO_PLATFORM_ENTROPY
+#if !defined(VSCE_BUILD_INTERFACE)
+#cmakedefine01 VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#else
+#define VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK 0
 #endif
 
 //
-//  Required by library vsc::pythia
+//  Defines namespace include prefix for project 'foundation'.
 //
-#cmakedefine MBEDTLS_CTR_DRBG_C
-#cmakedefine MBEDTLS_ENTROPY_C
+#if !defined(VSCE_BUILD_INTERFACE)
+#cmakedefine01 VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#else
+#define VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK 0
+#endif
 
-//
-//  Required by library vsc::phe
-//
-#cmakedefine MBEDTLS_ECP_C
-#cmakedefine MBEDTLS_ECP_DP_SECP256R1_ENABLED
 
-//
-//  Alternative implementations
-//
-#cmakedefine MBEDTLS_SHA256_ALT
-#cmakedefine MBEDTLS_SHA512_ALT
-#cmakedefine MBEDTLS_AES_ALT
-#cmakedefine MBEDTLS_GCM_ALT
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
 
-//
-//  Non configurable options
-//
-#define MBEDTLS_NO_DEFAULT_ENTROPY_SOURCES
 
-#include "check_config.h"
+#ifdef __cplusplus
+}
+#endif
 
-#endif /* MBEDTLS_CONFIG_H */
+
+//  @footer
+#endif // VSCE_PLATFORM_H_INCLUDED
+//  @end

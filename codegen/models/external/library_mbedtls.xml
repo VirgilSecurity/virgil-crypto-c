@@ -13,6 +13,8 @@
     <feature name="GCM C"/>
     <feature name="MD C"/>
     <feature name="BIGNUM C"/>
+    <feature name="ECP C"/>
+    <feature name="ECP_DP_SECP256R1_ENABLED"/>
     <feature name="PKCS1 V21"/>
     <feature name="OID C"/>
     <feature name="ASN1 PARSE C"/>

@@ -55,6 +55,8 @@ option(MBEDTLS_AES_C "" ON)
 option(MBEDTLS_GCM_C "" ON)
 option(MBEDTLS_MD_C "" ON)
 option(MBEDTLS_BIGNUM_C "" ON)
+option(MBEDTLS_ECP_C "" ON)
+option(MBEDTLS_ECP_DP_SECP256R1_ENABLED "" ON)
 option(MBEDTLS_PKCS1_V21 "" ON)
 option(MBEDTLS_OID_C "" ON)
 option(MBEDTLS_ASN1_PARSE_C "" ON)
@@ -82,6 +84,8 @@ mark_as_advanced(
         MBEDTLS_GCM_C
         MBEDTLS_MD_C
         MBEDTLS_BIGNUM_C
+        MBEDTLS_ECP_C
+        MBEDTLS_ECP_DP_SECP256R1_ENABLED
         MBEDTLS_PKCS1_V21
         MBEDTLS_OID_C
         MBEDTLS_ASN1_PARSE_C
