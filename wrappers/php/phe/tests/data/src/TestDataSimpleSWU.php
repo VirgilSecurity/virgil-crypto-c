@@ -35,29 +35,37 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-require_once 'PHEClient.php';
-
-class PHEClientTest extends \PHPUnit\Framework\TestCase
+interface TestDataSimpleSWU
 {
-    const STRING = "random_string";
-    const INT = 123456;
+    const TEST_SIMPLE_SWU_HASH1_DEC = "f3adca11915f1edf34a228e3aed79fbb34737f028741595410b3817e69bb6f56";
+    const TEST_SIMPLE_SWU_X1_DEC = "98961140665513202099949527671188598357073154743453831835087605751841592205265";
+    const TEST_SIMPLE_SWU_Y1_DEC = "96901867652408139372430876548444592023045378705303176822621915144992255442028";
+    const TEST_SIMPLE_SWU_HASH2_DEC = "0435562be4b4dc0605ef077ee015be12f3c189dcfdd830e535b076000e3d1ed3";
+    const TEST_SIMPLE_SWU_X2_DEC = "82631351409592308865866007164583686358318012812204374400003568408405894942018";
+    const TEST_SIMPLE_SWU_Y2_DEC = "61517254438303197335701350506590825854257845121325404623337818255145552341515";
 
-    private $pheclient;
+    //const vsc_data_t TEST_SIMPLE_SWU_HASH1 = {
+    //    test_simple_swu_hash1_DEC, sizeof(test_simple_swu_hash1_DEC)
+    //};
 
-    public function setUp()
-    {
-        $this->pheclient = new PHEClient();
-    }
+    //const vsc_data_t TEST_SIMPLE_SWU_X1 = {
+    //    test_simple_swu_x1_DEC, sizeof(test_simple_swu_x1_DEC)
+    //};
 
-    public function test_correct_return_types()
-    {
-        $this->assertInternalType('string', $this->pheclient->generateClientPrivateKey());
-        $this->assertInternalType('array', $this->pheclient->enrollmentRecordLen()); // INT
-        $this->assertInternalType('array', $this->pheclient->enrollAccount(self::STRING, self::STRING));
-        $this->assertInternalType('array', $this->pheclient->verifyPasswordRequestLen()); // INT
-        $this->assertInternalType('string', $this->pheclient->createVerifyPasswordRequest(self::STRING, self::STRING));
-        $this->assertInternalType('string', $this->pheclient->checkResponseAndDecrypt(self::STRING, self::STRING, self::STRING));
-        $this->assertInternalType('array', $this->pheclient->rotateKeys(self::STRING));
-        $this->assertInternalType('string', $this->pheclient->updateEnrollmentRecord(self::STRING, self::STRING));
-    }
+    //const vsc_data_t TEST_SIMPLE_SWU_Y1 = {
+    //    test_simple_swu_y1_DEC, sizeof(test_simple_swu_y1_DEC)
+    //};
+
+    //const vsc_data_t TEST_SIMPLE_SWU_HASH2 = {
+    //    test_simple_swu_hash2_DEC, sizeof(test_simple_swu_hash2_DEC)
+    //};
+
+    //const vsc_data_t TEST_SIMPLE_SWU_X2 = {
+    //    test_simple_swu_x2_DEC, sizeof(test_simple_swu_x2_DEC)
+    //};
+
+    //const vsc_data_t TEST_SIMPLE_SWU_Y2 = {
+    //    test_simple_swu_y2_DEC, sizeof(test_simple_swu_y2_DEC)
+    //};
+
 }

@@ -37,6 +37,18 @@
 
 class PHEClient
 {
+    private $c_ctx;
+
+    public function __construct()
+    {
+        $this->c_ctx = vsce_phe_client_new_php();
+    }
+
+//    public function __destruct()
+//    {
+//        return vscp_pythia_php_dtor();
+//    }
+
     //<method name="set keys">
     //<argument name="client private key" class="data"/>
     //<argument name="server public key" class="data"/>
@@ -64,22 +76,18 @@ class PHEClient
      */
     public function generateClientPrivateKey(): string
     {
-        $clientPrivateKey = "";
-
-        return $clientPrivateKey;
+        return vsce_phe_client_generate_client_private_key_php($this->c_ctx);
     }
 
     //<method name="enrollment record len">
     //<return type="size"/>
     //</method>
     /**
-     * @return int
+     * @return array
      */
-    public function enrollmentRecordLen(): int
+    public function enrollmentRecordLen(): array
     {
-        $int = 5;
-
-        return $int;
+        return vsce_phe_client_enrollment_record_len_php($this->c_ctx);
     }
 
     //<method name="enroll account">
@@ -102,23 +110,18 @@ class PHEClient
      */
     public function enrollAccount(string $enrollmentResponse, string $password): array
     {
-        $enrollmentRecord = "";
-        $accountKey = "";
-
-        return [$enrollmentRecord, $accountKey];
+        return vsce_phe_client_enroll_account_php($this->c_ctx, $enrollmentResponse, $password);
     }
 
     //<method name="verify password request len">
     //<return type="size"/>
     //</method>
     /**
-     * @return int
+     * @return array
      */
-    public function verifyPasswordRequestLen(): int
+    public function verifyPasswordRequestLen(): array
     {
-        $int = 5;
-
-        return $int;
+        return vsce_phe_client_verify_password_request_len_php($this->c_ctx);
     }
 
     //<method name="create verify password request">
@@ -187,10 +190,7 @@ class PHEClient
      */
     public function rotateKeys(string $updateToken): array
     {
-        $newClientPrivateKey = "";
-        $newServerPublicKey = "";
-
-        return [$newClientPrivateKey, $newServerPublicKey];
+        return vsce_phe_client_rotate_keys($this->c_ctx, $updateToken);
     }
 
     //<method name="update enrollment record">
