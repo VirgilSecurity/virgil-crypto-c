@@ -1,0 +1,78 @@
+<class name="phe hash" context="private" scope="internal">
+
+    <require header="stdarg.h" scope="private" is_system="1"/>
+
+    <require class="phe common" scope="public"/>
+    <require impl="hkdf" project="foundation" scope="private"/>
+    <require header="mbedtls/ecp.h" scope="public"/>
+    <require header="mbedtls/bignum.h" scope="context"/>
+
+    <require module="buffer defs" scope="private" project="common"/>
+
+    <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
+    <dependency name="sha512" impl="sha512" project="foundation"/>
+    <dependency name="simple swu" class="simple swu"/>
+
+    <method name="derive account key" declaration="public">
+        <argument name="M" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="account key" class="buffer" access="readwrite"/>
+    </method>
+
+    <method name="data to point" declaration="public">
+        <argument name="data" class="data"/>
+        <argument name="p" class="mbedtls_ecp_point" library="mbedtls" access="writeonly"/>
+    </method>
+
+    <method name="hc0" declaration="public">
+        <argument name="nc" class="data"/>
+        <argument name="password" class="data"/>
+        <argument name="hc0" class="mbedtls_ecp_point" library="mbedtls" access="writeonly"/>
+    </method>
+
+    <method name="hc1" declaration="public">
+        <argument name="nc" class="data"/>
+        <argument name="password" class="data"/>
+        <argument name="hc1" class="mbedtls_ecp_point" library="mbedtls" access="writeonly"/>
+    </method>
+
+    <method name="hs0" declaration="public">
+        <argument name="ns" class="data"/>
+        <argument name="hs0" class="mbedtls_ecp_point" library="mbedtls" access="writeonly"/>
+    </method>
+
+    <method name="hs1" declaration="public">
+        <argument name="ns" class="data"/>
+        <argument name="hs1" class="mbedtls_ecp_point" library="mbedtls" access="writeonly"/>
+    </method>
+
+    <method name="derive Z" declaration="private">
+        <argument name="buffer" class="data"/>
+        <argument name="success" type="boolean"/>
+
+        <argument name="Z" class="mbedtls_mpi" library="mbedtls" access="writeonly"/>
+    </method>
+
+    <method name="hash Z success" declaration="public">
+        <argument name="server public key" class="data"/>
+        <argument name="c0" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="c1" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="term1" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="term2" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="term3" class="mbedtls_ecp_point" library="mbedtls"/>
+
+        <argument name="Z" class="mbedtls_mpi" library="mbedtls" access="writeonly"/>
+    </method>
+
+    <method name="hash Z failure" declaration="public">
+        <argument name="server public key" class="data"/>
+        <argument name="c0" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="c1" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="term1" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="term2" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="term3" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="term4" class="mbedtls_ecp_point" library="mbedtls"/>
+
+        <argument name="Z" class="mbedtls_mpi" library="mbedtls" access="writeonly"/>
+    </method>
+
+</class>
