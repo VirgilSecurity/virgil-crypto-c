@@ -44,15 +44,11 @@ class PHEClient
         $this->c_ctx = vsce_phe_client_new_php();
     }
 
-//    public function __destruct()
-//    {
-//        return vscp_pythia_php_dtor();
-//    }
+    public function __destruct()
+    {
+        return vsce_phe_client_dtor_php($this->c_ctx);
+    }
 
-    //<method name="set keys">
-    //<argument name="client private key" class="data"/>
-    //<argument name="server public key" class="data"/>
-    //</method>
     /**
      * @param string $clientPrivateKey
      * @param string $serverPublicKey
@@ -60,16 +56,9 @@ class PHEClient
      */
     public function setKeys(string $clientPrivateKey, string $serverPublicKey): void
     {
-//        vsce_phe_client_set_keys($this->c_ctx, $clientPrivateKey, $serverPublicKey);
+        vsce_phe_client_set_keys($this->c_ctx, $clientPrivateKey, $serverPublicKey);
     }
 
-    //<method name="generate client private key">
-    //<argument name="client private key" class="buffer" access="writeonly">
-    //<length constant=".(class_phe_common_constant_phe_private_key_length)"/>
-    //</argument>
-    //
-    //<return enum="error"/>
-    //</method>
    /**
     * @return string
     * @throws Exception
@@ -79,9 +68,6 @@ class PHEClient
        return vsce_phe_client_generate_client_private_key_php($this->c_ctx);
    }
 
-    //<method name="enrollment record len">
-    //<return type="size"/>
-    //</method>
     /**
      * @return int
      */
@@ -90,18 +76,6 @@ class PHEClient
         return vsce_phe_client_enrollment_record_len_php($this->c_ctx);
     }
 
-    //<method name="enroll account">
-    //<argument name="enrollment response" class="data"/>
-    //<argument name="password" class="data"/>
-    //<argument name="enrollment record" class="buffer" access="writeonly">
-    //<length method="enrollment record len"/>
-    //</argument>
-    //<argument name="account key" class="buffer" access="writeonly">
-    //<length constant=".(class_phe_common_constant_phe_secret_message_length)"/>
-    //</argument>
-    //
-    //<return enum="error"/>
-    //</method>
     /**
      * @param string $enrollmentResponse
      * @param string $password
@@ -113,9 +87,6 @@ class PHEClient
         return vsce_phe_client_enroll_account_php($this->c_ctx, $enrollmentResponse, $password);
     }
 
-    //<method name="verify password request len">
-    //<return type="size"/>
-    //</method>
     /**
      * @return int
      */
@@ -124,65 +95,31 @@ class PHEClient
         return vsce_phe_client_verify_password_request_len_php($this->c_ctx);
     }
 
-    //<method name="create verify password request">
-    //<argument name="password" class="data"/>
-    //<argument name="enrollment record" class="data"/>
-    //<argument name="verify password request" class="buffer" access="writeonly">
-    //<length method="verify password request len"/>
-    //</argument>
-    //
-    //<return enum="error"/>
-    //</method>
-//    /**
-//     * @param string $data
-//     * @param string $enrollmentRecord
-//     * @return string
-//     * @throws Exception
-//     */
-//    public function createVerifyPasswordRequest(string $data, string $enrollmentRecord): string
-//    {
-//        $verifyPasswordRequest = "";
-//
-//        return $verifyPasswordRequest;
-//    }
+    /**
+     * @param string $password
+     * @param string $enrollmentRecord
+     * @return string
+     * @throws Exception
+     */
+    public function createVerifyPasswordRequest(string $password, string $enrollmentRecord): string
+    {
+        return vsce_phe_client_create_verify_password_request($this->c_ctx, $password, $enrollmentRecord);
+    }
 
+    /**
+     * @param string $password
+     * @param string $enrollmentRecord
+     * @param string $verifyPasswordResponse
+     * @return string
+     * @throws Exception
+     */
+    public function checkResponseAndDecrypt(string $password, string $enrollmentRecord, string
+    $verifyPasswordResponse): string
+    {
+        return vsce_phe_client_check_response_and_decrypt_php($this->c_ctx, $password, $enrollmentRecord,
+            $verifyPasswordResponse);
+    }
 
-    //<method name="check response and decrypt">
-    //<argument name="password" class="data"/>
-    //<argument name="enrollment record" class="data"/>
-    //<argument name="verify password response" class="data"/>
-    //<argument name="account key" class="buffer" access="writeonly">
-    //<length constant=".(class_phe_common_constant_phe_secret_message_length)"/>
-    //</argument>
-    //
-    //<return enum="error"/>
-    //</method>
-//    /**
-//     * @param string $password
-//     * @param string $enrollmentRecord
-//     * @param string $verifyPasswordResponse
-//     * @return string
-//     * @throws Exception
-//     */
-//    public function checkResponseAndDecrypt(string $password, string $enrollmentRecord, string
-//    $verifyPasswordResponse): string
-//    {
-//        $accountKey = "";
-//
-//        return $accountKey;
-//    }
-
-    //<method name="rotate keys">
-    //<argument name="update token" class="data"/>
-    //<argument name="new client private key" class="buffer" access="writeonly">
-    //<length constant=".(class_phe_common_constant_phe_private_key_length)"/>
-    //</argument>
-    //<argument name="new server public key" class="buffer" access="writeonly">
-    //<length constant=".(class_phe_common_constant_phe_public_key_length)"/>
-    //</argument>
-    //
-    //<return enum="error"/>
-    //</method>
     /**
      * @param string $updateToken
      * @return array
@@ -193,15 +130,6 @@ class PHEClient
         return vsce_phe_client_rotate_keys_php($this->c_ctx, $updateToken);
     }
 
-    //<method name="update enrollment record">
-    //<argument name="enrollment record" class="data"/>
-    //<argument name="update token" class="data"/>
-    //<argument name="new enrollment record" class="buffer" access="writeonly">
-    //<length method="enrollment record len"/>
-    //</argument>
-    //
-    //<return enum="error"/>
-    //</method>
     /**
      * @param string $enrollmentRecord
      * @param string $updateToken
