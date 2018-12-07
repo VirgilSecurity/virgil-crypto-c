@@ -39,6 +39,7 @@
 
 #include "vsce_assert.h"
 #include "vsce_phe_client.h"
+#include "vsce_phe_common.h"
 
 #include <php.h>
 #include <zend_exceptions.h>
@@ -82,19 +83,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vsce_phe_client_new_php) {
-    //
-    //  Create new object
-    //
     vsce_phe_client_t *phe_client = vsce_phe_client_new();
-
-    //
-    //  Register newly created object as resource
-    //
     zend_resource *phe_client_res = zend_register_resource(phe_client, le_vsce_phe_client);
-
-    //
-    //  Return newly created object
-    //
     RETVAL_RES(phe_client_res);
 }
 
@@ -131,55 +121,7 @@ PHP_FUNCTION(vsce_phe_client_enrollment_record_len_php) {
     vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_client);
     VSCE_ASSERT_PTR(phe_client);
 
-    //a! vsc_data_t password = vsc_data((const byte*)in_password, in_password_len);
-
-    //  Allocate output buffer for output 'blinded_password'
-    //a! zend_string *out_blinded_password = zend_string_alloc(vscp_pythia_blinded_password_buf_len(), 0);
-    //a! vsc_buffer_t *blinded_password = vsc_buffer_new();
-    //a! vsc_buffer_use(blinded_password, (byte *)ZSTR_VAL(out_blinded_password), ZSTR_LEN(out_blinded_password));
-
-    zend_string *out_enrollment_record_len = zend_string_alloc(vsce_phe_client_enrollment_record_len(phe_client), 0);
-    //a! vsc_buffer_t *blinded_password = vsc_buffer_new();
-    //a! vsc_buffer_use(blinded_password, (byte *)ZSTR_VAL(out_blinded_password), ZSTR_LEN(out_blinded_password));
-
-    //  Allocate output buffer for output 'blinding_secret'
-    //a! zend_string *out_blinding_secret = zend_string_alloc(vscp_pythia_blinding_secret_buf_len(), 0);
-    //a! vsc_buffer_t *blinding_secret = vsc_buffer_new();
-    //a! vsc_buffer_use(blinding_secret, (byte *)ZSTR_VAL(out_blinding_secret), ZSTR_LEN(out_blinding_secret));
-
-    //a! vscp_error_t status = vscp_pythia_blind(pythia, password, blinded_password, blinding_secret);
-
-    //
-    //  Handle error
-    //
-    //a! if(status != vscp_SUCCESS) {
-    //a!     zend_throw_exception(NULL, "Pythia error", status);
-    //a!     goto fail;
-    //a! }
-
-    //
-    //  Correct string length to the actual
-    //
-    //a! ZSTR_LEN(out_blinded_password) = vsc_buffer_len(blinded_password);
-    //a! ZSTR_LEN(out_blinding_secret) = vsc_buffer_len(blinding_secret);
-
-    //
-    //  Write returned result
-    //
-    array_init(return_value);
-    //a! add_next_index_str(return_value, out_blinded_password);
-    add_next_index_str(return_value, out_enrollment_record_len);
-    //a! add_next_index_str(return_value, out_blinding_secret);
-    // add_next_index_str(return_value, out_blinding_secret);
-
-    //a! goto success;
-
-    //a! fail:
-        //a! zend_string_free(out_blinded_password);
-        //a! zend_string_free(out_blinding_secret);
-    //a! success:
-        //a! vsc_buffer_destroy(&blinded_password);
-        //a! vsc_buffer_destroy(&blinding_secret);
+    RETVAL_LONG(vsce_phe_client_enrollment_record_len(phe_client));
 }
 
 //
@@ -215,143 +157,96 @@ PHP_FUNCTION(vsce_phe_client_verify_password_request_len_php) {
     vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_client);
     VSCE_ASSERT_PTR(phe_client);
 
-    //a! vsc_data_t password = vsc_data((const byte*)in_password, in_password_len);
-
-    //  Allocate output buffer for output 'blinded_password'
-    //a! zend_string *out_blinded_password = zend_string_alloc(vscp_pythia_blinded_password_buf_len(), 0);
-    //a! vsc_buffer_t *blinded_password = vsc_buffer_new();
-    //a! vsc_buffer_use(blinded_password, (byte *)ZSTR_VAL(out_blinded_password), ZSTR_LEN(out_blinded_password));
-
-    zend_string *out_password_request_len = zend_string_alloc(vsce_phe_client_verify_password_request_len(phe_client), 0);
-    //a! vsc_buffer_t *blinded_password = vsc_buffer_new();
-    //a! vsc_buffer_use(blinded_password, (byte *)ZSTR_VAL(out_blinded_password), ZSTR_LEN(out_blinded_password));
-
-    //  Allocate output buffer for output 'blinding_secret'
-    //a! zend_string *out_blinding_secret = zend_string_alloc(vscp_pythia_blinding_secret_buf_len(), 0);
-    //a! vsc_buffer_t *blinding_secret = vsc_buffer_new();
-    //a! vsc_buffer_use(blinding_secret, (byte *)ZSTR_VAL(out_blinding_secret), ZSTR_LEN(out_blinding_secret));
-
-    //a! vscp_error_t status = vscp_pythia_blind(pythia, password, blinded_password, blinding_secret);
-
-    //
-    //  Handle error
-    //
-    //a! if(status != vscp_SUCCESS) {
-    //a!     zend_throw_exception(NULL, "Pythia error", status);
-    //a!     goto fail;
-    //a! }
-
-    //
-    //  Correct string length to the actual
-    //
-    //a! ZSTR_LEN(out_blinded_password) = vsc_buffer_len(blinded_password);
-    //a! ZSTR_LEN(out_blinding_secret) = vsc_buffer_len(blinding_secret);
-
-    //
-    //  Write returned result
-    //
-    array_init(return_value);
-    //a! add_next_index_str(return_value, out_blinded_password);
-    add_next_index_str(return_value, out_password_request_len);
-    //a! add_next_index_str(return_value, out_blinding_secret);
-    // add_next_index_str(return_value, out_blinding_secret);
-
-    //a! goto success;
-
-    //a! fail:
-        //a! zend_string_free(out_blinded_password);
-        //a! zend_string_free(out_blinding_secret);
-    //a! success:
-        //a! vsc_buffer_destroy(&blinded_password);
-        //a! vsc_buffer_destroy(&blinding_secret);
+    RETVAL_LONG(vsce_phe_client_verify_password_request_len(phe_client));
 }
 
-//
-//  Wrap method: vsce_phe_client_enroll_account
-//
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
-        arginfo_vsce_phe_client_enroll_account_php /*name*/,
-        0 /*return_reference*/,
-        3 /*required_num_args*/,
-        IS_ARRAY /*type*/,
-        0 /*allow_null*/)
+// //
+// //  Wrap method: vsce_phe_client_enroll_account
+// //
+// ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+//         arginfo_vsce_phe_client_enroll_account_php /*name*/,
+//         0 /*return_reference*/,
+//         3 /*required_num_args*/,
+//         IS_ARRAY /*type*/,
+//         0 /*allow_null*/)
 
-    ZEND_ARG_INFO(0, c_ctx)
-    ZEND_ARG_TYPE_INFO(0, in_enrollment_response, IS_STRING, 0)
-    ZEND_ARG_TYPE_INFO(0, password, IS_STRING, 0)
-ZEND_END_ARG_INFO()
+//     ZEND_ARG_INFO(0, c_ctx)
+//     ZEND_ARG_TYPE_INFO(0, in_enrollment_response, IS_STRING, 0)
+//     ZEND_ARG_TYPE_INFO(0, password, IS_STRING, 0)
+// ZEND_END_ARG_INFO()
 
 
-PHP_FUNCTION(vsce_phe_client_enroll_account_php) {
-    //
-    //  Declare input arguments
-    //
-    zval *in_cctx = NULL;
-    char *in_enrollment_response = NULL;
-    size_t in_enrollment_response_len = 0;
-    char *in_password = NULL;
-    size_t in_password_len = 0;
+// PHP_FUNCTION(vsce_phe_client_enroll_account_php) {
+//     //
+//     //  Declare input arguments
+//     //
+//     zval *in_cctx = NULL;
+//     char *in_enrollment_response = NULL;
+//     size_t in_enrollment_response_len = 0;
+//     char *in_password = NULL;
+//     size_t in_password_len = 0;
 
-    //
-    //  Parse arguments
-    //
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 3, 3)
-        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
-        Z_PARAM_STRING_EX(in_enrollment_response, in_enrollment_response_len, 1 /*check_null*/, 0 /*deref and separate*/)
-        Z_PARAM_STRING_EX(in_password, in_password_len, 1 /*check_null*/, 0 /*deref and separate*/)
-    ZEND_PARSE_PARAMETERS_END();
+//     //
+//     //  Parse arguments
+//     //
+//     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 3, 3)
+//         Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+//         Z_PARAM_STRING_EX(in_enrollment_response, in_enrollment_response_len, 1 /*check_null*/, 0 /*deref and separate*/)
+//         Z_PARAM_STRING_EX(in_password, in_password_len, 1 /*check_null*/, 0 /*deref and separate*/)
+//     ZEND_PARSE_PARAMETERS_END();
 
-    //
-    //  Proxy call
-    //
-    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_client);
-    VSCE_ASSERT_PTR(phe_client);
+//     //
+//     //  Proxy call
+//     //
+//     vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_client);
+//     VSCE_ASSERT_PTR(phe_client);
 
-    vsc_data_t enrollment_response = vsc_data((const byte*)in_enrollment_response, in_enrollment_response_len);
-    vsc_data_t password = vsc_data((const byte*)in_password, in_password_len);
+//     vsc_data_t enrollment_response = vsc_data((const byte*)in_enrollment_response, in_enrollment_response_len);
+//     vsc_data_t password = vsc_data((const byte*)in_password, in_password_len);
 
-    //  Allocate output buffer for output 'enrollment_record'
-    // zend_string *out_blinded_password = zend_string_alloc(vscp_pythia_blinded_password_buf_len(), 0);
-    // vsc_buffer_t *blinded_password = vsc_buffer_new();
-    // vsc_buffer_use(blinded_password, (byte *)ZSTR_VAL(out_blinded_password), ZSTR_LEN(out_blinded_password));
+//     //  Allocate output buffer for output 'enrollment_record'
+//     // zend_string *out_blinded_password = zend_string_alloc(vscp_pythia_blinded_password_buf_len(), 0);
+//     // vsc_buffer_t *blinded_password = vsc_buffer_new();
+//     // vsc_buffer_use(blinded_password, (byte *)ZSTR_VAL(out_blinded_password), ZSTR_LEN(out_blinded_password));
 
-    //  Allocate output buffer for output 'account_key'
-    // zend_string *out_blinding_secret = zend_string_alloc(vscp_pythia_blinding_secret_buf_len(), 0);
-    // vsc_buffer_t *blinding_secret = vsc_buffer_new();
-    // vsc_buffer_use(blinding_secret, (byte *)ZSTR_VAL(out_blinding_secret), ZSTR_LEN(out_blinding_secret));
+//     //  Allocate output buffer for output 'account_key'
+//     // zend_string *out_blinding_secret = zend_string_alloc(vscp_pythia_blinding_secret_buf_len(), 0);
+//     // vsc_buffer_t *blinding_secret = vsc_buffer_new();
+//     // vsc_buffer_use(blinding_secret, (byte *)ZSTR_VAL(out_blinding_secret), ZSTR_LEN(out_blinding_secret));
 
-    vsce_error_t status = vsce_phe_client_enroll_account(phe_client, enrollment_response, password, enrollment_record, account_key);
+//     vsce_error_t status = vsce_phe_client_enroll_account(phe_client, enrollment_response, password, enrollment_record, account_key);
 
-    //
-    //  Handle error
-    //
-    if(status != vsce_SUCCESS) {
-        zend_throw_exception(NULL, "PHE_Client error", status);
-        goto fail;
-    }
+//     //
+//     //  Handle error
+//     //
+//     if(status != vsce_SUCCESS) {
+//         zend_throw_exception(NULL, "PHE_Client error", status);
+//         goto fail;
+//     }
 
-    //
-    //  Correct string length to the actual
-    //
-    // ZSTR_LEN(out_blinded_password) = vsc_buffer_len(blinded_password);
-    // ZSTR_LEN(out_blinding_secret) = vsc_buffer_len(blinding_secret);
+//     //
+//     //  Correct string length to the actual
+//     //
+//     // ZSTR_LEN(out_blinded_password) = vsc_buffer_len(blinded_password);
+//     // ZSTR_LEN(out_blinding_secret) = vsc_buffer_len(blinding_secret);
 
-    //
-    //  Write returned result
-    //
-    array_init(return_value);
-    add_next_index_str(return_value, out_enrollment_record);
-    add_next_index_str(return_value, out_account_key);
+//     //
+//     //  Write returned result
+//     //
+//     array_init(return_value);
+//     add_next_index_str(return_value, out_enrollment_record);
+//     add_next_index_str(return_value, out_account_key);
 
-    goto success;
+//     goto success;
 
-fail:
-    zend_string_free(out_enrollment_record);
-    zend_string_free(out_account_key);
-success:
-    vsc_buffer_destroy(&enrollment_record);
-    vsc_buffer_destroy(&account_key);
-}
+// fail:
+//     zend_string_free(out_enrollment_record);
+//     zend_string_free(out_account_key);
+// success:
+//     vsc_buffer_destroy(&enrollment_record);
+//     vsc_buffer_destroy(&account_key);
+// }
+
 
 //
 //  Wrap method: vsce_phe_client_generate_client_private_key
@@ -359,8 +254,8 @@ success:
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         arginfo_vsce_phe_client_generate_client_private_key_php /*name*/,
         0 /*return_reference*/,
-        2 /*required_num_args*/,
-        IS_ARRAY /*type*/,
+        1 /*required_num_args*/,
+        IS_STRING /*type*/,
         0 /*allow_null*/)
 
     ZEND_ARG_INFO(0, c_ctx)
@@ -387,8 +282,8 @@ PHP_FUNCTION(vsce_phe_client_generate_client_private_key_php) {
     VSCE_ASSERT_PTR(phe_client);
 
     //  Allocate output buffer for output 'client_private_key'
-    zend_string *out_client_private_key = zend_string_alloc(32, 0);
-    vsc_buffer_t *out_client_private_key = vsc_buffer_new();
+    zend_string *out_client_private_key = zend_string_alloc(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, 0);
+    vsc_buffer_t *client_private_key = vsc_buffer_new();
     vsc_buffer_use(client_private_key, (byte *)ZSTR_VAL(out_client_private_key), ZSTR_LEN(out_client_private_key));
 
     vsce_error_t status = vsce_phe_client_generate_client_private_key(phe_client, client_private_key);
@@ -397,7 +292,7 @@ PHP_FUNCTION(vsce_phe_client_generate_client_private_key_php) {
     //  Handle error
     //
     if(status != vsce_SUCCESS) {
-        zend_throw_exception(NULL, "PHE_Client error", status);
+        zend_throw_exception(NULL, "PHE Client error", status);
         goto fail;
     }
 
@@ -409,8 +304,7 @@ PHP_FUNCTION(vsce_phe_client_generate_client_private_key_php) {
     //
     //  Write returned result
     //
-    array_init(return_value);
-    add_next_index_str(return_value, out_client_private_key);
+    RETVAL_STR(out_client_private_key);
 
     goto success;
 
@@ -420,98 +314,99 @@ success:
     vsc_buffer_destroy(&client_private_key);
 }
 
-//
-//  Wrap method: vsce_phe_client_rotate_keys
-//
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
-        arginfo_vsce_phe_client_rotate_keys_php /*name*/,
-        0 /*return_reference*/,
-        2 /*required_num_args*/,
-        IS_ARRAY /*type*/,
-        0 /*allow_null*/)
+// //
+// //  Wrap method: vsce_phe_client_rotate_keys
+// //
+// ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+//         arginfo_vsce_phe_client_rotate_keys_php /*name*/,
+//         0 /*return_reference*/,
+//         2 /*required_num_args*/,
+//         IS_ARRAY /*type*/,
+//         0 /*allow_null*/)
 
-    ZEND_ARG_INFO(0, c_ctx)
-    ZEND_ARG_TYPE_INFO(0, update_token, IS_STRING, 0)
-ZEND_END_ARG_INFO()
+//     ZEND_ARG_INFO(0, c_ctx)
+//     ZEND_ARG_TYPE_INFO(0, update_token, IS_STRING, 0)
+// ZEND_END_ARG_INFO()
 
 
-PHP_FUNCTION(vsce_phe_client_rotate_keys_php) {
-    //
-    //  Declare input arguments
-    //
-    zval *in_cctx = NULL;
-    char *in_update_token = NULL;
-    size_t in_update_token_len = 0;
+// PHP_FUNCTION(vsce_phe_client_rotate_keys_php) {
+//     //
+//     //  Declare input arguments
+//     //
+//     zval *in_cctx = NULL;
+//     char *in_update_token = NULL;
+//     size_t in_update_token_len = 0;
 
-    //
-    //  Parse arguments
-    //
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
-        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
-        Z_PARAM_STRING_EX(in_update_token, in_update_token_len, 1 /*check_null*/, 0 /*deref and separate*/)
-    ZEND_PARSE_PARAMETERS_END();
+//     //
+//     //  Parse arguments
+//     //
+//     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+//         Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+//         Z_PARAM_STRING_EX(in_update_token, in_update_token_len, 1 /*check_null*/, 0 /*deref and separate*/)
+//     ZEND_PARSE_PARAMETERS_END();
 
-    //
-    //  Proxy call
-    //
-    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_client);
-    VSCE_ASSERT_PTR(phe_client);
+//     //
+//     //  Proxy call
+//     //
+//     vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_client);
+//     VSCE_ASSERT_PTR(phe_client);
 
-    vsc_data_t update_token = vsc_data((const byte*)in_update_token, in_update_token_len);
+//     vsc_data_t update_token = vsc_data((const byte*)in_update_token, in_update_token_len);
 
-    //  Allocate output buffer for output 'blinded_password'
-    zend_string *out_blinded_password = zend_string_alloc(vscp_pythia_blinded_password_buf_len(), 0);
-    vsc_buffer_t *blinded_password = vsc_buffer_new();
-    vsc_buffer_use(blinded_password, (byte *)ZSTR_VAL(out_blinded_password), ZSTR_LEN(out_blinded_password));
+//     //  Allocate output buffer for output 'blinded_password'
+//     zend_string *out_blinded_password = zend_string_alloc(vscp_pythia_blinded_password_buf_len(), 0);
+//     vsc_buffer_t *blinded_password = vsc_buffer_new();
+//     vsc_buffer_use(blinded_password, (byte *)ZSTR_VAL(out_blinded_password), ZSTR_LEN(out_blinded_password));
 
-    //  Allocate output buffer for output 'blinding_secret'
-    zend_string *out_blinding_secret = zend_string_alloc(vscp_pythia_blinding_secret_buf_len(), 0);
-    vsc_buffer_t *blinding_secret = vsc_buffer_new();
-    vsc_buffer_use(blinding_secret, (byte *)ZSTR_VAL(out_blinding_secret), ZSTR_LEN(out_blinding_secret));
+//     //  Allocate output buffer for output 'blinding_secret'
+//     zend_string *out_blinding_secret = zend_string_alloc(vscp_pythia_blinding_secret_buf_len(), 0);
+//     vsc_buffer_t *blinding_secret = vsc_buffer_new();
+//     vsc_buffer_use(blinding_secret, (byte *)ZSTR_VAL(out_blinding_secret), ZSTR_LEN(out_blinding_secret));
 
-    vscp_error_t status = vsce_phe_client_rotate_keys(phe_client, update_token, new_client_private_key, new_server_public_key);
+//     vscp_error_t status = vsce_phe_client_rotate_keys(phe_client, update_token, new_client_private_key, new_server_public_key);
 
-    //
-    //  Handle error
-    //
-    if(status != vsce_SUCCESS) {
-        zend_throw_exception(NULL, "PHE_Client error", status);
-        goto fail;
-    }
+//     //
+//     //  Handle error
+//     //
+//     if(status != vsce_SUCCESS) {
+//         zend_throw_exception(NULL, "PHE_Client error", status);
+//         goto fail;
+//     }
 
-    //
-    //  Correct string length to the actual
-    //
-    ZSTR_LEN(out_blinded_password) = vsc_buffer_len(blinded_password);
-    ZSTR_LEN(out_blinding_secret) = vsc_buffer_len(blinding_secret);
+//     //
+//     //  Correct string length to the actual
+//     //
+//     ZSTR_LEN(out_blinded_password) = vsc_buffer_len(blinded_password);
+//     ZSTR_LEN(out_blinding_secret) = vsc_buffer_len(blinding_secret);
 
-    //
-    //  Write returned result
-    //
-    array_init(return_value);
-    add_next_index_str(return_value, out_blinded_password);
-    add_next_index_str(return_value, out_blinding_secret);
+//     //
+//     //  Write returned result
+//     //
+//     array_init(return_value);
+//     add_next_index_str(return_value, out_blinded_password);
+//     add_next_index_str(return_value, out_blinding_secret);
 
-    goto success;
+//     goto success;
 
-fail:
-    zend_string_free(out_blinded_password);
-    zend_string_free(out_blinding_secret);
-success:
-    vsc_buffer_destroy(&blinded_password);
-    vsc_buffer_destroy(&blinding_secret);
-}
+// fail:
+//     zend_string_free(out_blinded_password);
+//     zend_string_free(out_blinding_secret);
+// success:
+//     vsc_buffer_destroy(&blinded_password);
+//     vsc_buffer_destroy(&blinding_secret);
+// }
 
 // --------------------------------------------------------------------------
 //  Define all function entries
 // --------------------------------------------------------------------------
 static zend_function_entry vsce_phe_client_php_functions[] = {
     PHP_FE(vsce_phe_client_new_php, arginfo_vsce_phe_client_new_php)
+    // PHP_FE(vsce_phe_client_set_keys_php, arginfo_vsce_phe_client_set_keys_php)
     PHP_FE(vsce_phe_client_enrollment_record_len_php, arginfo_vsce_phe_client_enrollment_record_len_php)
     PHP_FE(vsce_phe_client_verify_password_request_len_php, arginfo_vsce_phe_client_verify_password_request_len_php)
-    PHP_FE(vsce_phe_client_enroll_account_php, arginfo_vsce_phe_client_enroll_account_php)
-    PHP_FE(vsce_phe_client_generate_client_private_key_php, arginfo_vsce_phe_client_generate_client_private_key_php)
-    PHP_FE(мsce_phe_client_rotate_keys_php, arginfo_vsce_phe_client_rotate_keys_php)
+//    PHP_FE(vsce_phe_client_enroll_account_php, arginfo_vsce_phe_client_enroll_account_php)
+   PHP_FE(vsce_phe_client_generate_client_private_key_php, arginfo_vsce_phe_client_generate_client_private_key_php)
+//    PHP_FE(мsce_phe_client_rotate_keys_php, arginfo_vsce_phe_client_rotate_keys_php)
 //    PHP_FE(vsce_phe_client_delete_php, arginfo_vsce_phe_client_delete_php)
     PHP_FE_END
 };
