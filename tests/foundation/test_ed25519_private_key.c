@@ -8,9 +8,9 @@
 #include "vscf_assert.h"
 
 #include "vscf_export_public_key.h"
+#include "vscf_export_private_key.h"
 #include "vscf_ed25519_private_key.h"
 #include "vscf_ed25519_public_key.h"
-#include "vscf_random.h"
 #include "vscf_fake_random.h"
 
 #include "test_data_ed25519.h"
@@ -56,7 +56,7 @@ test__ed25519_private_key_extract_public_key__from_imported_PRIVATE_KEY__when_ex
     VSCF_ASSERT(result == vscf_SUCCESS);
 
     //  Extract public key
-    vscf_ed25519_public_key_impl_t *public_key_impl = vscf_ed25519_private_key_extract_public_key(private_key_impl);
+    vscf_impl_t *public_key_impl = vscf_ed25519_private_key_extract_public_key(private_key_impl);
     TEST_ASSERT_NOT_NULL(public_key_impl);
 
     vsc_buffer_t *exported_key_buf =
@@ -123,6 +123,35 @@ test__ed25519_private_key_export_private_key_with_imported_ed25519_PRIVATE_KEY__
             test_ed25519_PRIVATE_KEY.bytes, vsc_buffer_bytes(exported_key_buf), vsc_buffer_len(exported_key_buf));
     vscf_ed25519_private_key_destroy(&private_key_impl);
     vsc_buffer_destroy(&exported_key_buf);
+}
+
+void
+test__ed25519_private_key_generate_key__exported_equals_GENERATED_PRIVATE_KEY(void) {
+    //  Setup dependencies
+    vscf_ed25519_private_key_impl_t *private_key_impl = vscf_ed25519_private_key_new();
+
+    vscf_fake_random_impl_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_data(fake_random, test_ed25519_RANDOM);
+    vscf_ed25519_private_key_take_random(private_key_impl, vscf_fake_random_impl(fake_random));
+
+    vscf_error_t gen_res = vscf_ed25519_private_key_generate_key(private_key_impl);
+
+    //  Check
+    TEST_ASSERT_EQUAL(vscf_SUCCESS, gen_res);
+
+    vsc_buffer_t *exported_key_buf =
+            vsc_buffer_new_with_capacity(vscf_ed25519_private_key_exported_private_key_len(private_key_impl));
+
+    vscf_error_t export_res = vscf_ed25519_private_key_export_private_key(private_key_impl, exported_key_buf);
+
+    TEST_ASSERT_EQUAL(vscf_SUCCESS, export_res);
+    TEST_ASSERT_EQUAL(test_ed25519_GENERATED_PRIVATE_KEY.len, vsc_buffer_len(exported_key_buf));
+    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_ed25519_GENERATED_PRIVATE_KEY.bytes, vsc_buffer_bytes(exported_key_buf),
+            vsc_buffer_len(exported_key_buf));
+
+    //  Cleanup
+    vsc_buffer_destroy(&exported_key_buf);
+    vscf_ed25519_private_key_destroy(&private_key_impl);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
