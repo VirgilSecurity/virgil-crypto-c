@@ -39,9 +39,6 @@ require_once 'PHEClient.php';
 
 class PHEClientTest extends \PHPUnit\Framework\TestCase
 {
-    const STRING = "random_string";
-    const INT = 123456;
-
     private $pheClient;
     private $pheClientNewPHPFunc;
 
@@ -53,14 +50,14 @@ class PHEClientTest extends \PHPUnit\Framework\TestCase
 
     public function test_correct_return_types()
     {
-        $this->assertInternalType('string', $this->pheClient->generateClientPrivateKey());
-        $this->assertInternalType('int', $this->pheClient->enrollmentRecordLen());
-//        $this->assertInternalType('array', $this->pheclient->enrollAccount(self::STRING, self::STRING));
-        $this->assertInternalType('int', $this->pheClient->verifyPasswordRequestLen());
+        $this->assertInternalType('string', $this->pheClient->generateClientPrivateKey());// done
+        $this->assertInternalType('int', $this->pheClient->enrollmentRecordLen());// done
+//        $this->assertInternalType('array', $this->pheclient->enrollAccount(self::STRING, self::STRING));// done
+        $this->assertInternalType('int', $this->pheClient->verifyPasswordRequestLen()); // done
 //        $this->assertInternalType('string', $this->pheclient->createVerifyPasswordRequest(self::STRING, self::STRING));
 //        $this->assertInternalType('string', $this->pheclient->checkResponseAndDecrypt(self::STRING, self::STRING, self::STRING));
-//        $this->assertInternalType('array', $this->pheclient->rotateKeys(self::STRING));
-//        $this->assertInternalType('string', $this->pheclient->updateEnrollmentRecord(self::STRING, self::STRING));
+//        $this->assertInternalType('array', $this->pheclient->rotateKeys(self::STRING));// done
+//        $this->assertInternalType('string', $this->pheclient->updateEnrollmentRecord(self::STRING, self::STRING));//done
     }
 
     public function testEnrollmentRecordLenFunction() {
@@ -77,4 +74,11 @@ class PHEClientTest extends \PHPUnit\Framework\TestCase
         $generateClientPrivateKeyFunction = vsce_phe_client_verify_password_request_len_php($this->pheClientNewPHPFunc);
         $this->assertNotEmpty($generateClientPrivateKeyFunction);
     }
+
+//    public function testEnrollAccountFunction()
+//    {
+//        $enrollAccountFunction = vsce_phe_client_enroll_account_php($this->pheClientNewPHPFunc, self::STRING,
+//            self::STRING);
+//        $this->assertNotEmpty($enrollAccountFunction);
+//    }
 }
