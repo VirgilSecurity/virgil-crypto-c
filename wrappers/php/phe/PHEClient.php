@@ -102,16 +102,16 @@ class PHEClient
     //
     //<return enum="error"/>
     //</method>
-//    /**
-//     * @param string $enrollmentResponse
-//     * @param string $password
-//     * @return array
-//     * @throws Exception
-//     */
-//    public function enrollAccount(string $enrollmentResponse, string $password): array
-//    {
-//        return vsce_phe_client_enroll_account_php($this->c_ctx, $enrollmentResponse, $password);
-//    }
+    /**
+     * @param string $enrollmentResponse
+     * @param string $password
+     * @return array
+     * @throws Exception
+     */
+    public function enrollAccount(string $enrollmentResponse, string $password): array
+    {
+        return vsce_phe_client_enroll_account_php($this->c_ctx, $enrollmentResponse, $password);
+    }
 
     //<method name="verify password request len">
     //<return type="size"/>
@@ -183,15 +183,15 @@ class PHEClient
     //
     //<return enum="error"/>
     //</method>
-//    /**
-//     * @param string $updateToken
-//     * @return array
-//     * @throws Exception
-//     */
-//    public function rotateKeys(string $updateToken): array
-//    {
-//        return vsce_phe_client_rotate_keys($this->c_ctx, $updateToken);
-//    }
+    /**
+     * @param string $updateToken
+     * @return array
+     * @throws Exception
+     */
+    public function rotateKeys(string $updateToken): array
+    {
+        return vsce_phe_client_rotate_keys_php($this->c_ctx, $updateToken);
+    }
 
     //<method name="update enrollment record">
     //<argument name="enrollment record" class="data"/>
@@ -202,16 +202,14 @@ class PHEClient
     //
     //<return enum="error"/>
     //</method>
-//    /**
-//     * @param string $enrollmentRecord
-//     * @param string $updateToken
-//     * @return string
-//     * @throws Exception
-//     */
-//    public function updateEnrollmentRecord(string $enrollmentRecord, string $updateToken): string
-//    {
-//        $newEnrollmentRecord = "";
-//
-//        return $newEnrollmentRecord;
-//    }
+    /**
+     * @param string $enrollmentRecord
+     * @param string $updateToken
+     * @return string
+     * @throws Exception
+     */
+    public function updateEnrollmentRecord(string $enrollmentRecord, string $updateToken): string
+    {
+        return vsce_phe_client_update_enrollment_record($this->c_ctx, $enrollmentRecord, $updateToken);
+    }
 }
