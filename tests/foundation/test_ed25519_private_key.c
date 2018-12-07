@@ -170,6 +170,7 @@ main(void) {
     RUN_TEST(test__ed25519_private_key_extract_public_key__from_imported_PRIVATE_KEY__when_exported_equals_PUBLIC_KEY);
     RUN_TEST(test__ed25519_private_key_sign__with_imported_PRIVATE_KEY_and_MESSAGE__equals_MESSAGE_SIGNATURE);
     RUN_TEST(test__ed25519_private_key_export_private_key_with_imported_ed25519_PRIVATE_KEY__when_exported_equals_ed25519_PRIVATE_KEY);
+    RUN_TEST(test__ed25519_private_key_generate_key__exported_equals_GENERATED_PRIVATE_KEY);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
