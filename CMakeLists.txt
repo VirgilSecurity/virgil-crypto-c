@@ -246,3 +246,44 @@ if(CLOC_EXECUTABLE)
     add_custom_target(cloc)
     add_dependencies(cloc cloc-common cloc-foundation cloc-pythia cloc-ratchet)
 endif()
+
+
+# ---------------------------------------------------------------------------
+#   Configure CPack
+# ---------------------------------------------------------------------------
+set(VIRGIL_PACKAGE_LANGUAGE "C" CACHE STRING "[CPack] Package language name (used in the archive name)")
+set(VIRGIL_PACKAGE_LANGUAGE_VERSION "" CACHE STRING "[CPack] Package language version (used in the archive name)")
+set(VIRGIL_PACKAGE_PLATFORM "${CMAKE_SYSTEM_NAME}" CACHE STRING "[CPack] Platform name (used in the archive name)")
+set(VIRGIL_PACKAGE_PLATFORM_VERSION "${CMAKE_SYSTEM_VERSION}" CACHE STRING "[CPack] Platform version (used in the archive name)")
+set(VIRGIL_PACKAGE_PLATFORM_ARCH "" CACHE STRING "[CPack] Platform architecture (used in the archive name)")
+
+#
+#  Define package name in the format "library-language[-platform]", where
+#     library = name-version
+#     language = name[-version]
+#     platform = name[-version][-arch]
+#
+set(VIRGIL_PACKAGE_NAME "virgil-crypto")
+list(APPEND VIRGIL_PACKAGE_NAME ${virgil_crypto_VERSION})
+list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_LANGUAGE})
+list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_LANGUAGE_VERSION})
+list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_PLATFORM})
+list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_PLATFORM_VERSION})
+list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_PLATFORM_ARCH})
+
+string(REPLACE ";" "-" VIRGIL_PACKAGE_NAME "${VIRGIL_PACKAGE_NAME}")
+string(TOLOWER "${VIRGIL_PACKAGE_NAME}" VIRGIL_PACKAGE_NAME)
+
+
+if(WIN32)
+    set(CPACK_GENERATOR ZIP)
+else()
+    set(CPACK_GENERATOR TGZ)
+endif()
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Virgil Security Crypto library")
+set(CPACK_PACKAGE_VENDOR "Virgil Security, Inc.")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_LIST_DIR}/LICENSE")
+set(CPACK_PACKAGE_FILE_NAME "${VIRGIL_PACKAGE_NAME}")
+set(CPACK_OUTPUT_FILE_PREFIX "packages")
+
+include (CPack)
