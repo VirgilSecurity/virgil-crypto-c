@@ -50,14 +50,15 @@ class PHEClientTest extends \PHPUnit\Framework\TestCase
 
     public function test_correct_return_types()
     {
-        $this->assertInternalType('string', $this->pheClient->generateClientPrivateKey());// done
-        $this->assertInternalType('int', $this->pheClient->enrollmentRecordLen());// done
-//        $this->assertInternalType('array', $this->pheclient->enrollAccount(self::STRING, self::STRING));// done
-        $this->assertInternalType('int', $this->pheClient->verifyPasswordRequestLen()); // done
-//        $this->assertInternalType('string', $this->pheclient->createVerifyPasswordRequest(self::STRING, self::STRING));
+        $this->assertInternalType('string', $this->pheClient->generateClientPrivateKey());
+        $this->assertInternalType('int', $this->pheClient->enrollmentRecordLen());
+//        $this->assertInternalType('array', $this->pheclient->enrollAccount(self::STRING, self::STRING));
+        $this->assertInternalType('int', $this->pheClient->verifyPasswordRequestLen());
+//        $this->assertInternalType('string', $this->pheclient->createVerifyPasswordRequest(self::STRING,
+// self::STRING));
 //        $this->assertInternalType('string', $this->pheclient->checkResponseAndDecrypt(self::STRING, self::STRING, self::STRING));
-//        $this->assertInternalType('array', $this->pheclient->rotateKeys(self::STRING));// done
-//        $this->assertInternalType('string', $this->pheclient->updateEnrollmentRecord(self::STRING, self::STRING));//done
+//        $this->assertInternalType('array', $this->pheclient->rotateKeys(self::STRING));
+//        $this->assertInternalType('string', $this->pheclient->updateEnrollmentRecord(self::STRING, self::STRING));
     }
 
     public function testEnrollmentRecordLenFunction() {
