@@ -251,10 +251,20 @@ endif()
 # ---------------------------------------------------------------------------
 #   Configure CPack
 # ---------------------------------------------------------------------------
+
+#
+#  Use [MAJOR].[MINOR] package version if it is not a cross-compiling build
+#
+if(CMAKE_CROSSCOMPILING)
+    set(SYSTEM_VERSION_SHORT ${CMAKE_SYSTEM_VERSION})
+else()
+    string(REGEX REPLACE "([0-9]+\\.[0-9]+).*" "\\1" SYSTEM_VERSION_SHORT "${CMAKE_SYSTEM_VERSION}")
+endif()
+
 set(VIRGIL_PACKAGE_LANGUAGE "C" CACHE STRING "[CPack] Package language name (used in the archive name)")
 set(VIRGIL_PACKAGE_LANGUAGE_VERSION "" CACHE STRING "[CPack] Package language version (used in the archive name)")
 set(VIRGIL_PACKAGE_PLATFORM "${CMAKE_SYSTEM_NAME}" CACHE STRING "[CPack] Platform name (used in the archive name)")
-set(VIRGIL_PACKAGE_PLATFORM_VERSION "${CMAKE_SYSTEM_VERSION}" CACHE STRING "[CPack] Platform version (used in the archive name)")
+set(VIRGIL_PACKAGE_PLATFORM_VERSION "${SYSTEM_VERSION_SHORT}" CACHE STRING "[CPack] Platform version (used in the archive name)")
 set(VIRGIL_PACKAGE_PLATFORM_ARCH "" CACHE STRING "[CPack] Platform architecture (used in the archive name)")
 
 #
