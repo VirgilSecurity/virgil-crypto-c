@@ -166,5 +166,6 @@ vscf_ed25519_public_key_import_public_key(vscf_ed25519_public_key_impl_t *ed2551
     vsc_buffer_t *dst = vsc_buffer_new();
     vsc_buffer_use(dst, ed25519_public_key_impl->public_key, ED25519_KEY_LEN);
     vscf_endianness_reverse_memcpy(data, dst);
+    vsc_buffer_destroy(&dst);
     return vscf_SUCCESS;
 }

@@ -114,7 +114,7 @@ test__ed25519_private_key_export_private_key_with_imported_ed25519_PRIVATE_KEY__
     vsc_buffer_t *exported_key_buf =
             vsc_buffer_new_with_capacity(vscf_ed25519_private_key_exported_private_key_len(private_key_impl));
 
-    vscf_error_t export_err = vscf_export_private_key(private_key_impl, exported_key_buf);
+    vscf_error_t export_err = vscf_ed25519_private_key_export_private_key(private_key_impl, exported_key_buf);
     VSCF_ASSERT(export_err == vscf_SUCCESS);
 
     // Check
