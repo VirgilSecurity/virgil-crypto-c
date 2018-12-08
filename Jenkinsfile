@@ -29,9 +29,10 @@ def build_LangC_Unix(slave) {
     return { node(slave) {
         clearContentUnix()
         unstash 'src'
-        sh 'cmake -DCMAKE_INSTALL_PREFIX=install -Bbuild -H.'
-        sh 'cmake --build build'
-        sh 'cmake --build build --target install'
-        archiveArtifacts('install/**')
+        sh 'mkdir -p build install && pushd build'
+        sh 'make -j10'
+        sh 'cpack'
+        sh 'popd build'
+        archiveArtifacts('build/packages/**')
     }}
 }
