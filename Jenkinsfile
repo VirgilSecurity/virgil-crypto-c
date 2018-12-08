@@ -29,11 +29,10 @@ def build_LangC_Unix(slave) {
     return { node(slave) {
         clearContentUnix()
         unstash 'src'
-        sh 'mkdir -p build install && pushd build'
-        sh 'cmake ..'
-        sh 'make -j10'
-        sh 'cpack'
-        sh 'popd build'
-        archiveArtifacts('build/packages/**')
+        sh 'mkdir build'
+        dir('build') {
+            sh 'cmake .. && make -j10 && cpack'
+            archiveArtifacts('packages/**')
+        }
     }}
 }
