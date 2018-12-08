@@ -31,7 +31,9 @@ def build_LangC_Unix(slave) {
         unstash 'src'
         sh 'mkdir build'
         dir('build') {
-            sh 'cmake .. && make -j10 && cpack'
+            sh 'cmake -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) ..'
+            sh 'make -j10'
+            sh 'cpack'
             archiveArtifacts('packages/**')
         }
     }}
