@@ -30,6 +30,7 @@ def build_LangC_Unix(slave) {
         clearContentUnix()
         unstash 'src'
         sh 'mkdir -p build install && pushd build'
+        sh 'cmake ..'
         sh 'make -j10'
         sh 'cpack'
         sh 'popd build'
