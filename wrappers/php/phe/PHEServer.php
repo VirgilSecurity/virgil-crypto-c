@@ -57,7 +57,7 @@ class PHEServer
      */
     public function __destruct()
     {
-        vsce_phe_client_dtor_php($this->c_ctx);
+        vsce_phe_client_delete_php($this->c_ctx);
     }
 
     //<method name="generate server key pair">
