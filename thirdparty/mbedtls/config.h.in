@@ -95,6 +95,12 @@
 //
 #define MBEDTLS_NO_DEFAULT_ENTROPY_SOURCES
 
+//
+// EC optimizations
+//
+#define MBEDTLS_ECP_NIST_OPTIM 1
+#define MBEDTLS_ECP_FIXED_POINT_OPTIM 1
+
 #include "check_config.h"
 
 #endif /* MBEDTLS_CONFIG_H */

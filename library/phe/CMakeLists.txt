@@ -89,7 +89,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 #
 # Define include headers
 #
-target_include_directories(ratchet
+target_include_directories(phe
         PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/phe>
