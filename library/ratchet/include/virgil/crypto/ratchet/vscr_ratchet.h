@@ -75,7 +75,10 @@
 extern "C" {
 #endif
 
-#include "Message.pb.h"
+#include <pb_encode.h>
+#include <pb_decode.h>
+#include <Message.pb.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 
 //  @generated
@@ -182,13 +185,13 @@ VSCR_PUBLIC size_t
 vscr_ratchet_encrypt_len(vscr_ratchet_t *ratchet_ctx, size_t plain_text_len);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_encrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text, vsc_buffer_t *cipher_text);
+vscr_ratchet_encrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text, RegularMessage *regular_message);
 
 VSCR_PUBLIC size_t
 vscr_ratchet_decrypt_len(vscr_ratchet_t *ratchet_ctx, size_t cipher_text_len);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t cipher_text, vsc_buffer_t *plain_text);
+vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, RegularMessage *regular_message, vsc_buffer_t *plain_text);
 
 VSCR_PUBLIC size_t
 vscr_ratchet_serialize_len(vscr_ratchet_t *ratchet_ctx);
