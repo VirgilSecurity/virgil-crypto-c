@@ -73,8 +73,6 @@
 extern "C" {
 #endif
 
-#include <vscr_ratchet_message.h>
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -203,10 +201,10 @@ vscr_ratchet_session_encrypt(vscr_ratchet_session_t *ratchet_session_ctx, vsc_da
         vsc_buffer_t *cipher_text);
 
 VSCR_PUBLIC size_t
-vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, const vscr_ratchet_message_t *message);
+vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, Message message);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session_ctx, const vscr_ratchet_message_t *message,
+vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session_ctx, Message message,
         vsc_buffer_t *plain_text);
 
 VSCR_PUBLIC size_t

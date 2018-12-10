@@ -120,11 +120,6 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_message.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_message_key.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -185,7 +180,6 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_RATCHET_CHAIN_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_chain_key.h>"
             "$<$<BOOL:${VSCR_RATCHET_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_cipher.h>"
             "$<$<BOOL:${VSCR_RATCHET_COMMON}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_common.h>"
-            "$<$<BOOL:${VSCR_RATCHET_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_message.h>"
             "$<$<BOOL:${VSCR_RATCHET_MESSAGE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_message_key.h>"
             "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_receiver_chain.h>"
             "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAIN_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_ratchet_receiver_chain_list_node.h>"
@@ -214,7 +208,6 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_RATCHET_CHAIN_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_chain_key.c>"
             "$<$<BOOL:${VSCR_RATCHET_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_cipher.c>"
             "$<$<BOOL:${VSCR_RATCHET_COMMON}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_common.c>"
-            "$<$<BOOL:${VSCR_RATCHET_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_message.c>"
             "$<$<BOOL:${VSCR_RATCHET_MESSAGE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_message_key.c>"
             "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAIN}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_receiver_chain.c>"
             "$<$<BOOL:${VSCR_RATCHET_RECEIVER_CHAIN_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_receiver_chain_list_node.c>"

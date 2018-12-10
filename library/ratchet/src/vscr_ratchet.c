@@ -680,13 +680,13 @@ vscr_ratchet_encrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text, Regular
         return result;
     }
 
-    (*regular_message).version = vscr_ratchet_common_RATCHET_REGULAR_MESSAGE_VERSION;
-    (*regular_message).counter = message_key->index;
+    regular_message->version = vscr_ratchet_common_RATCHET_REGULAR_MESSAGE_VERSION;
+    regular_message->counter = message_key->index;
 
-    memcpy((*regular_message).public_key, ratchet_ctx->sender_chain->public_key->bytes, ratchet_ctx->sender_chain->public_key->len);
+    memcpy(regular_message->public_key, ratchet_ctx->sender_chain->public_key->bytes, ratchet_ctx->sender_chain->public_key->len);
 
-    memcpy((*regular_message).cipher_text.bytes, buffer->bytes, buffer->len);
-    (*regular_message).cipher_text.size += buffer->len;
+    memcpy(regular_message->cipher_text.bytes, buffer->bytes, buffer->len);
+    regular_message->cipher_text.size += buffer->len;
 
     vscr_ratchet_message_key_destroy(&message_key);
     vsc_buffer_destroy(&buffer);
@@ -709,7 +709,7 @@ vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, RegularMessage *regular_messag
     VSCR_ASSERT_PTR(ratchet_ctx);
     VSCR_ASSERT_PTR(plain_text);
 
-    if ((*regular_message).version != vscr_ratchet_common_RATCHET_REGULAR_MESSAGE_VERSION) {
+    if (regular_message->version != vscr_ratchet_common_RATCHET_REGULAR_MESSAGE_VERSION) {
         return vscr_MESSAGE_VERSION_DOESN_T_MATCH;
     }
 
