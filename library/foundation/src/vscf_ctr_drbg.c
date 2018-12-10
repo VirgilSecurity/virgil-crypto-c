@@ -137,20 +137,6 @@ vscf_ctr_drbg_did_release_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
 }
 
 //
-//  Setup entropy sources available for the current system.
-//
-VSCF_PUBLIC void
-vscf_ctr_drbg_setup_defaults(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
-
-    VSCF_ASSERT_PTR(ctr_drbg_impl);
-
-    vscf_entropy_accumulator_impl_t *entropy_source = vscf_entropy_accumulator_new();
-    vscf_entropy_accumulator_setup_defaults(entropy_source);
-    vscf_ctr_drbg_use_entropy_source(ctr_drbg_impl, vscf_entropy_accumulator_impl(entropy_source));
-    vscf_entropy_accumulator_destroy(&entropy_source);
-}
-
-//
 //  Force entropy to be gathered at the beginning of every call to
 //  the random() method.
 //  Note, use this if your entropy source has sufficient throughput.
@@ -184,9 +170,24 @@ VSCF_PUBLIC void
 vscf_ctr_drbg_set_entropy_len(vscf_ctr_drbg_impl_t *ctr_drbg_impl, size_t len) {
 
     VSCF_ASSERT_PTR(ctr_drbg_impl);
-    VSCF_ASSERT(len < INT_MAX);
+    VSCF_ASSERT(len <= MBEDTLS_CTR_DRBG_MAX_SEED_INPUT);
 
-    mbedtls_ctr_drbg_set_entropy_len(&ctr_drbg_impl->ctx, (int)len);
+    mbedtls_ctr_drbg_set_entropy_len(&ctr_drbg_impl->ctx, len);
+}
+
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_ctr_drbg_setup_defaults(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
+
+    VSCF_ASSERT_PTR(ctr_drbg_impl);
+
+    vscf_entropy_accumulator_impl_t *entropy_source = vscf_entropy_accumulator_new();
+    vscf_entropy_accumulator_setup_defaults(entropy_source);
+    vscf_error_t status =
+            vscf_ctr_drbg_take_entropy_source(ctr_drbg_impl, vscf_entropy_accumulator_impl(entropy_source));
+    return status;
 }
 
 //

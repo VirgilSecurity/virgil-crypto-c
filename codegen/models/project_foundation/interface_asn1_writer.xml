@@ -188,6 +188,28 @@
     </method>
 
 
+    <method name="write octet str as bitstring">
+        Write ASN.1 type: BIT STRING with all zero unused bits.
+
+        Return count of written bytes.
+
+        <argument name="value" class="data"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="write data">
+        Write raw data directly to the ASN.1 structure.
+        Return count of written bytes.
+        Note, use this method carefully.
+
+        <argument name="data" class="data"/>
+
+        <return type="size"/>
+    </method>
+
+
     <method name="write utf8 str">
         Write ASN.1 type: UTF8String.
         Return count of written bytes.

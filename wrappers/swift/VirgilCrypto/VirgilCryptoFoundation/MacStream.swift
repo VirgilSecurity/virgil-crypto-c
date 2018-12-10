@@ -40,12 +40,17 @@ import VirgilCryptoCommon
 /// Provides interface to the MAC (message authentication code) algorithms.
 @objc(VSCFMacStream) public protocol MacStream : MacInfo {
 
+    /// Start a new MAC.
     @objc func start(key: Data)
 
+    /// Add given data to the MAC.
     @objc func update(data: Data)
 
+    /// Accomplish MAC and return it's result (a message digest).
     @objc func finish() -> Data
 
+    /// Prepare to authenticate a new message with the same key
+    /// as the previous MAC operation.
     @objc func reset()
 }
 

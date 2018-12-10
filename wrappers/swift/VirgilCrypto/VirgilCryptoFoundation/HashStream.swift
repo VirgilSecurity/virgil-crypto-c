@@ -40,10 +40,13 @@ import VirgilCryptoCommon
 /// Provide interface to calculate hash (message digest) over a stream.
 @objc(VSCFHashStream) public protocol HashStream : HashInfo {
 
+    /// Start a new hashing.
     @objc func start()
 
+    /// Add given data to the hash.
     @objc func update(data: Data)
 
+    /// Accompilsh hashing and return it's result (a message digest).
     @objc func finish() -> Data
 }
 
@@ -72,6 +75,13 @@ import VirgilCryptoCommon
     /// Release underlying C context.
     deinit {
         vscf_impl_delete(self.c_ctx)
+    }
+
+    /// Return implemented hash algorithm type.
+    @objc public func alg() -> HashAlg {
+        let proxyResult = vscf_hash_info_alg(vscf_hash_info_api(self.c_ctx))
+
+        return HashAlg.init(fromC: proxyResult)
     }
 
     /// Start a new hashing.

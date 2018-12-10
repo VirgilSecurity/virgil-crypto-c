@@ -40,6 +40,7 @@ import VirgilCryptoCommon
 /// Provide details about implemented MAC (message authentication code) algorithm.
 @objc(VSCFMacInfo) public protocol MacInfo : CContext {
 
+    /// Size of the digest (mac output) in bytes.
     @objc func digestLen() -> Int
 }
 

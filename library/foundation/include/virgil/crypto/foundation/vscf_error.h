@@ -119,29 +119,45 @@ enum vscf_error_t {
     //
     vscf_error_BAD_PKCS1_PRIVATE_KEY = -206,
     //
+    //  ASN.1 representation of PKCS#8 public key is corrupted.
+    //
+    vscf_error_BAD_PKCS8_PUBLIC_KEY = -207,
+    //
+    //  ASN.1 representation of PKCS#8 private key is corrupted.
+    //
+    vscf_error_BAD_PKCS8_PRIVATE_KEY = -208,
+    //
     //  Encrypted data is corrupted.
     //
-    vscf_error_BAD_ENCRYPTED_DATA = -207,
+    vscf_error_BAD_ENCRYPTED_DATA = -209,
     //
     //  Underlying random operation returns error.
     //
-    vscf_error_RANDOM_FAILED = -208,
+    vscf_error_RANDOM_FAILED = -210,
     //
     //  Generation of the private or secret key failed.
     //
-    vscf_error_KEY_GENERATION_FAILED = -209,
+    vscf_error_KEY_GENERATION_FAILED = -211,
     //
     //  One of the entropy sources failed.
     //
-    vscf_error_ENTROPY_SOURCE_FAILED = -210,
+    vscf_error_ENTROPY_SOURCE_FAILED = -212,
     //
     //  Requested data to be generated is too big.
     //
-    vscf_error_RNG_REQUESTED_DATA_TOO_BIG = -211,
+    vscf_error_RNG_REQUESTED_DATA_TOO_BIG = -213,
+    //
+    //  Base64 encoded string contains invalid characters.
+    //
+    vscf_error_BAD_BASE64 = -214,
+    //
+    //  PEM data is corrupted.
+    //
+    vscf_error_BAD_PEM = -215
     //
     //  Exchange key return zero.
     //
-    vscf_error_SHARED_KEY_EXCHANGE_FAILED = -301
+    vscf_error_SHARED_KEY_EXCHANGE_FAILED = -216
 };
 typedef enum vscf_error_t vscf_error_t;
 
