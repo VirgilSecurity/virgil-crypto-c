@@ -1182,10 +1182,10 @@ success:
 //  Wrap method: vsce_phe_client_set_keys
 //
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
-        arginfo_vsce_phe_client_set_keys_php /*name*/, 
-        0 /*return_reference*/, 
-        3 /*required_num_args*/, 
-        IS_VOID /*type*/, 
+        arginfo_vsce_phe_client_set_keys_php /*name*/,
+        0 /*return_reference*/,
+        3 /*required_num_args*/,
+        IS_VOID /*type*/,
         0 /*allow_null*/)
 
     ZEND_ARG_INFO(0, c_ctx)
@@ -1299,17 +1299,17 @@ static void vsce_phe_client_dtor_php(zend_resource *rsrc) {
     vsce_phe_client_delete((vsce_phe_client_t *)rsrc->ptr);
 }
 
-//static void vsce_phe_server_dtor_php(zend_resource *rsrc) {
-//    vsce_phe_server_delete((vsce_phe_server_t *)rsrc->ptr);
-//}
+static void vsce_phe_server_dtor_php(zend_resource *rsrc) {
+   vsce_phe_server_delete((vsce_phe_server_t *)rsrc->ptr);
+}
 
 PHP_MINIT_FUNCTION(vsce_phe_php) {
 
-    le_vsce_phe_client = zend_register_list_destructors_ex(vsce_phe_client_dtor_php, NULL, VSCE_PHE_CLIENT_PHP_RES_NAME,
-     module_number);
+    le_vsce_phe_client = zend_register_list_destructors_ex(
+            vsce_phe_client_dtor_php, NULL, VSCE_PHE_CLIENT_PHP_RES_NAME, module_number);
 
-//    le_vsce_phe_server = zend_register_list_destructors_ex(vsce_phe_server_dtor_php, NULL, VSCE_PHE_SERVER_PHP_RES_NAME,
-//     module_number);
+   le_vsce_phe_server = zend_register_list_destructors_ex(
+            vsce_phe_server_dtor_php, NULL, VSCE_PHE_SERVER_PHP_RES_NAME, module_number);
 
     return SUCCESS;
 }
