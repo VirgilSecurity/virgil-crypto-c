@@ -48,7 +48,6 @@
 #include "vsce_memory.h"
 #include "vsce_assert.h"
 #include "vsce_phe_client_defs.h"
-#include "vsce_phe_utils.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
@@ -56,6 +55,7 @@
 #include <pb_decode.h>
 #include <pb_encode.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
+#include <virgil/crypto/foundation/private/vscf_mbedtls_bridge_random.h>
 
 // clang-format on
 //  @end
@@ -269,9 +269,6 @@ vsce_phe_client_init_ctx(vsce_phe_client_t *phe_client_ctx) {
 
     vsce_phe_client_take_random(phe_client_ctx, vscf_ctr_drbg_impl(rng));
 
-    phe_client_ctx->utils = vsce_phe_utils_new();
-    vsce_phe_utils_use_random(phe_client_ctx->utils, phe_client_ctx->random);
-
     mbedtls_ecp_group_init(&phe_client_ctx->group);
     int mbedtls_status = mbedtls_ecp_group_load(&phe_client_ctx->group, MBEDTLS_ECP_DP_SECP256R1);
     VSCE_ASSERT(mbedtls_status == 0);
@@ -304,7 +301,6 @@ vsce_phe_client_cleanup_ctx(vsce_phe_client_t *phe_client_ctx) {
     VSCE_ASSERT_PTR(phe_client_ctx);
 
     mbedtls_ecp_group_free(&phe_client_ctx->group);
-    vsce_phe_utils_destroy(&phe_client_ctx->utils);
     vsce_phe_hash_destroy(&phe_client_ctx->phe_hash);
 
     mbedtls_mpi_free(&phe_client_ctx->one);
@@ -356,16 +352,20 @@ vsce_phe_client_generate_client_private_key(vsce_phe_client_t *phe_client_ctx, v
     VSCE_ASSERT(vsc_buffer_len(client_private_key) == 0);
     VSCE_ASSERT(vsc_buffer_left(client_private_key) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
 
+    vsce_error_t status = vsce_SUCCESS;
+
     mbedtls_mpi priv;
     mbedtls_mpi_init(&priv);
 
-    vsce_error_t status = vsce_phe_utils_random_z(phe_client_ctx->utils, &priv);
+    int mbedtls_status = 0;
+    mbedtls_status =
+            mbedtls_ecp_gen_privkey(&phe_client_ctx->group, &priv, vscf_mbedtls_bridge_random, phe_client_ctx->random);
 
-    if (status != vsce_SUCCESS) {
+    if (mbedtls_status != 0) {
+        status = vsce_RNG_ERROR;
         goto err;
     }
 
-    int mbedtls_status = 0;
     mbedtls_status = mbedtls_mpi_write_binary(
             &priv, vsc_buffer_ptr(client_private_key), vsc_buffer_capacity(client_private_key));
     vsc_buffer_reserve(client_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);

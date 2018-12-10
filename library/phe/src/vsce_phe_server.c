@@ -55,6 +55,7 @@
 #include <pb_decode.h>
 #include <pb_encode.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
+#include <virgil/crypto/foundation/private/vscf_mbedtls_bridge_random.h>
 
 // clang-format on
 //  @end
@@ -270,9 +271,6 @@ vsce_phe_server_init_ctx(vsce_phe_server_t *phe_server_ctx) {
 
     vsce_phe_server_take_random(phe_server_ctx, vscf_ctr_drbg_impl(rng));
 
-    phe_server_ctx->utils = vsce_phe_utils_new();
-    vsce_phe_utils_use_random(phe_server_ctx->utils, phe_server_ctx->random);
-
     mbedtls_ecp_group_init(&phe_server_ctx->group);
     int status = mbedtls_ecp_group_load(&phe_server_ctx->group, MBEDTLS_ECP_DP_SECP256R1);
     VSCE_ASSERT(status == 0);
@@ -289,7 +287,6 @@ vsce_phe_server_cleanup_ctx(vsce_phe_server_t *phe_server_ctx) {
     VSCE_ASSERT_PTR(phe_server_ctx);
 
     vsce_phe_hash_destroy(&phe_server_ctx->phe_hash);
-    vsce_phe_utils_destroy(&phe_server_ctx->utils);
     mbedtls_ecp_group_free(&phe_server_ctx->group);
 }
 
@@ -304,26 +301,26 @@ vsce_phe_server_generate_server_key_pair(
     VSCE_ASSERT(vsc_buffer_len(server_public_key) == 0);
     VSCE_ASSERT(vsc_buffer_left(server_public_key) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
+    vsce_error_t status = vsce_SUCCESS;
+    int mbedtls_status = 0;
+
     mbedtls_mpi priv;
     mbedtls_mpi_init(&priv);
-
-    vsce_error_t status = vsce_phe_utils_random_z(phe_server_ctx->utils, &priv);
-
-    if (status != vsce_SUCCESS) {
-        goto err;
-    }
-
-    int mbedtls_status = 0;
-    mbedtls_status = mbedtls_mpi_write_binary(
-            &priv, vsc_buffer_ptr(server_private_key), vsc_buffer_capacity(server_private_key));
-    vsc_buffer_reserve(server_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
-    VSCE_ASSERT(mbedtls_status == 0);
 
     mbedtls_ecp_point pub;
     mbedtls_ecp_point_init(&pub);
 
-    mbedtls_status =
-            mbedtls_ecp_mul(&phe_server_ctx->group, &pub, &priv, &phe_server_ctx->group.G, /* FIXME */ NULL, NULL);
+    mbedtls_status = mbedtls_ecp_gen_keypair(
+            &phe_server_ctx->group, &priv, &pub, vscf_mbedtls_bridge_random, phe_server_ctx->random);
+
+    if (mbedtls_status != 0) {
+        status = vsce_RNG_ERROR;
+        goto err;
+    }
+
+    mbedtls_status = mbedtls_mpi_write_binary(
+            &priv, vsc_buffer_ptr(server_private_key), vsc_buffer_capacity(server_private_key));
+    vsc_buffer_reserve(server_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT(mbedtls_status == 0);
 
     size_t olen = 0;
@@ -333,9 +330,8 @@ vsce_phe_server_generate_server_key_pair(
     VSCE_ASSERT(mbedtls_status == 0);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
-    mbedtls_ecp_point_free(&pub);
-
 err:
+    mbedtls_ecp_point_free(&pub);
     mbedtls_mpi_free(&priv);
 
     return status;
@@ -574,19 +570,23 @@ vsce_phe_server_prove_success(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     VSCE_ASSERT_PTR(c1);
     VSCE_ASSERT_PTR(success_proof);
 
+    vsce_error_t status = vsce_SUCCESS;
+
     mbedtls_mpi blind_x;
     mbedtls_mpi_init(&blind_x);
 
-    vsce_error_t status = vsce_phe_utils_random_z(phe_server_ctx->utils, &blind_x);
+    int mbedtls_status = 0;
+    mbedtls_status = mbedtls_ecp_gen_privkey(
+            &phe_server_ctx->group, &blind_x, vscf_mbedtls_bridge_random, phe_server_ctx->random);
 
-    if (status != vsce_SUCCESS) {
+    if (mbedtls_status != 0) {
+        status = vsce_RNG_ERROR;
         goto err;
     }
 
     mbedtls_mpi x;
     mbedtls_mpi_init(&x);
 
-    int mbedtls_status = 0;
     mbedtls_status = mbedtls_mpi_read_binary(&x, server_private_key.bytes, server_private_key.len);
     VSCE_ASSERT(mbedtls_status == 0);
 
@@ -677,6 +677,7 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     mbedtls_ecp_point_init(&X);
     mbedtls_status =
             mbedtls_ecp_point_read_binary(&phe_server_ctx->group, &X, server_public_key.bytes, server_public_key.len);
+
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_server_ctx->group, &X) != 0) {
         status = vsce_INVALID_ECP;
         goto ecp_err;
@@ -689,20 +690,29 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     mbedtls_mpi_init(&blind_A);
     mbedtls_mpi_init(&blind_B);
 
-    status = vsce_phe_utils_random_z(phe_server_ctx->utils, &r);
+    mbedtls_status =
+            mbedtls_ecp_gen_privkey(&phe_server_ctx->group, &r, vscf_mbedtls_bridge_random, phe_server_ctx->random);
 
-    if (status != vsce_SUCCESS)
+    if (mbedtls_status != 0) {
+        status = vsce_RNG_ERROR;
         goto err;
+    }
 
-    status = vsce_phe_utils_random_z(phe_server_ctx->utils, &blind_A);
+    mbedtls_status = mbedtls_ecp_gen_privkey(
+            &phe_server_ctx->group, &blind_A, vscf_mbedtls_bridge_random, phe_server_ctx->random);
 
-    if (status != vsce_SUCCESS)
+    if (mbedtls_status != 0) {
+        status = vsce_RNG_ERROR;
         goto err;
+    }
 
-    status = vsce_phe_utils_random_z(phe_server_ctx->utils, &blind_B);
+    mbedtls_status = mbedtls_ecp_gen_privkey(
+            &phe_server_ctx->group, &blind_B, vscf_mbedtls_bridge_random, phe_server_ctx->random);
 
-    if (status != vsce_SUCCESS)
+    if (mbedtls_status != 0) {
+        status = vsce_RNG_ERROR;
         goto err;
+    }
 
     mbedtls_mpi minus_r;
     mbedtls_mpi_init(&minus_r);
@@ -840,6 +850,8 @@ vsce_phe_server_rotate_keys(vsce_phe_server_t *phe_server_ctx, vsc_data_t server
     VSCE_ASSERT(vsc_buffer_len(new_server_public_key) == 0);
     VSCE_ASSERT(vsc_buffer_left(new_server_public_key) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
+    vsce_error_t status = vsce_SUCCESS;
+
     mbedtls_mpi x;
     mbedtls_mpi_init(&x);
     int mbedtls_status = 0;
@@ -850,15 +862,21 @@ vsce_phe_server_rotate_keys(vsce_phe_server_t *phe_server_ctx, vsc_data_t server
     mbedtls_mpi_init(&a);
     mbedtls_mpi_init(&b);
 
-    vsce_error_t status = vsce_phe_utils_random_z(phe_server_ctx->utils, &a);
+    mbedtls_status =
+            mbedtls_ecp_gen_privkey(&phe_server_ctx->group, &a, vscf_mbedtls_bridge_random, phe_server_ctx->random);
 
-    if (status != vsce_SUCCESS)
+    if (mbedtls_status != 0) {
+        status = vsce_RNG_ERROR;
         goto err;
+    }
 
-    status = vsce_phe_utils_random_z(phe_server_ctx->utils, &b);
+    mbedtls_status =
+            mbedtls_ecp_gen_privkey(&phe_server_ctx->group, &b, vscf_mbedtls_bridge_random, phe_server_ctx->random);
 
-    if (status != vsce_SUCCESS)
+    if (mbedtls_status != 0) {
+        status = vsce_RNG_ERROR;
         goto err;
+    }
 
     UpdateToken token = UpdateToken_init_zero;
 
