@@ -39,6 +39,7 @@
 
 #include "vsce_assert.h"
 #include "vsce_phe_client.h"
+#include "vsce_phe_server.h"
 #include "vsce_phe_common.h"
 
 #include <php.h>
@@ -49,27 +50,480 @@
 // --------------------------------------------------------------------------
 //  Constants
 // --------------------------------------------------------------------------
-const char VSCE_PHE_CLIENT_PHP_VERSION[] = "0.5.0";
-const char VSCE_PHE_CLIENT_PHP_EXTNAME[] = "vsce_phe_client_php";
+const char VSCE_PHE_PHP_VERSION[] = "0.5.0";
+const char VSCE_PHE_PHP_EXTNAME[] = "vsce_phe_php";
+
 const char VSCE_PHE_CLIENT_PHP_RES_NAME[] = "vsce_phe_client_t";
+const char VSCE_PHE_SERVER_PHP_RES_NAME[] = "vsce_phe_server_t";
 
 
 // --------------------------------------------------------------------------
 //  Registered resources
 // --------------------------------------------------------------------------
 int le_vsce_phe_client;
+int le_vsce_phe_server;
 
 
 // --------------------------------------------------------------------------
 //  Extension init functions declaration
 // --------------------------------------------------------------------------
-PHP_MINIT_FUNCTION(vsce_phe_client_php);
-PHP_MSHUTDOWN_FUNCTION(vsce_phe_client_php);
+PHP_MINIT_FUNCTION(vsce_phe_php);
+PHP_MSHUTDOWN_FUNCTION(vsce_phe_php);
 
 
 // --------------------------------------------------------------------------
 //  Functions wrapping
 // --------------------------------------------------------------------------
+
+// === add server >>>
+
+//
+//  Wrap method: vsce_phe_server_enrollment_response_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_phe_server_enrollment_response_len_php /*name*/,
+        0 /*return_reference*/,
+        1 /*required_num_args*/, // 0-4
+        IS_LONG /*type*/, // IS_ARRAY/IS_STRING/IS_LONG/IS_VOID
+        0 /*allow_null*/)
+
+    ZEND_ARG_INFO(0, c_ctx)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vsce_phe_server_enrollment_response_len_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Proxy call
+    //
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_cctx, VSCE_PHE_SERVER_PHP_RES_NAME, le_vsce_phe_server);
+    VSCE_ASSERT_PTR(phe_server);
+
+    //
+    //  Write returned result
+    //
+    size_t proxy_result = vsce_phe_server_enrollment_response_len(phe_server);
+    RETVAL_LONG(proxy_result);
+}
+
+//
+//  Wrap method: vsce_phe_server_verify_password_response_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_phe_server_verify_password_response_len_php /*name*/,
+        0 /*return_reference*/,
+        1 /*required_num_args*/, // 0-4
+        IS_LONG /*type*/, // IS_ARRAY/IS_STRING/IS_LONG/IS_VOID
+        0 /*allow_null*/)
+
+    ZEND_ARG_INFO(0, c_ctx)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vsce_phe_server_verify_password_response_len_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Proxy call
+    //
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_cctx, VSCE_PHE_SERVER_PHP_RES_NAME, le_vsce_phe_server);
+    VSCE_ASSERT_PTR(phe_server);
+
+    //
+    //  Write returned result
+    //
+    size_t proxy_result = vsce_phe_server_verify_password_response_len(phe_server);
+    RETVAL_LONG(proxy_result);
+}
+
+//
+//  Wrap method: vsce_phe_server_update_token_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_phe_server_update_token_len_php /*name*/,
+        0 /*return_reference*/,
+        1 /*required_num_args*/, // 0-4
+        IS_LONG /*type*/, // IS_ARRAY/IS_STRING/IS_LONG/IS_VOID
+        0 /*allow_null*/)
+
+    ZEND_ARG_INFO(0, c_ctx)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vsce_phe_server_update_token_len_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Proxy call
+    //
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_cctx, VSCE_PHE_SERVER_PHP_RES_NAME, le_vsce_phe_server);
+    VSCE_ASSERT_PTR(phe_server);
+
+    //
+    //  Write returned result
+    //
+    size_t proxy_result = vsce_phe_server_update_token_len(phe_server);
+    RETVAL_LONG(proxy_result);
+}
+
+//
+//  Wrap method: vsce_phe_server_rotate_keys
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_phe_server_rotate_keys_php /*name*/,
+        0 /*return_reference*/,
+        2 /*required_num_args*/, // 0-4
+        IS_ARRAY /*type*/, // IS_ARRAY/IS_STRING/IS_LONG/IS_VOID
+        0 /*allow_null*/)
+
+    ZEND_ARG_INFO(0, c_ctx)
+    ZEND_ARG_TYPE_INFO(0, server_private_key, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vsce_phe_server_rotate_keys_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+    char *in_server_private_key = NULL;
+    size_t in_server_private_key_len = 0;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+        Z_PARAM_STRING_EX(in_server_private_key, in_server_private_key_len, 1 /*check_null*/, 0 /*deref and separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Proxy call
+    //
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_cctx, VSCE_PHE_SERVER_PHP_RES_NAME, le_vsce_phe_server);
+    VSCE_ASSERT_PTR(phe_server);
+
+    vsc_data_t server_private_key = vsc_data((const byte*)in_server_private_key, in_server_private_key_len);
+
+    //  Allocate output buffer for output 'new_server_private_key'
+    zend_string *out_new_server_private_key = zend_string_alloc(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, 0);
+    vsc_buffer_t *new_server_private_key = vsc_buffer_new();
+    vsc_buffer_use(new_server_private_key, (byte *)ZSTR_VAL(out_new_server_private_key), ZSTR_LEN(out_new_server_private_key));
+
+    //  Allocate output buffer for output 'new_server_public_key'
+    zend_string *out_new_server_public_key = zend_string_alloc(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH, 0);
+    vsc_buffer_t *new_server_public_key = vsc_buffer_new();
+    vsc_buffer_use(new_server_public_key, (byte *)ZSTR_VAL(out_new_server_public_key), ZSTR_LEN(out_new_server_public_key));
+
+    //  Allocate output buffer for output 'update_token'
+    zend_string *out_update_token = zend_string_alloc(vsce_phe_server_update_token_len(phe_server), 0);
+    vsc_buffer_t *update_token = vsc_buffer_new();
+    vsc_buffer_use(update_token, (byte *)ZSTR_VAL(out_update_token), ZSTR_LEN(out_update_token));
+
+    vsce_error_t status = vsce_phe_server_rotate_keys(phe_server, server_private_key, new_server_private_key, new_server_public_key, update_token);
+
+    //
+    //  Handle error
+    //
+    if(status != vsce_SUCCESS) {
+        zend_throw_exception(NULL, "PHE Server error", status);
+        goto fail;
+    }
+
+    //
+    //  Correct string length to the actual
+    //
+    ZSTR_LEN(out_new_server_private_key) = vsc_buffer_len(new_server_private_key);
+    ZSTR_LEN(out_new_server_public_key) = vsc_buffer_len(new_server_public_key);
+    ZSTR_LEN(out_update_token) = vsc_buffer_len(update_token);
+
+    //
+    //  Write returned result
+    //
+    array_init(return_value);
+    add_next_index_str(return_value, out_new_server_private_key);
+    add_next_index_str(return_value, out_new_server_public_key);
+    add_next_index_str(return_value, out_update_token);
+
+    goto success;
+
+fail:
+    zend_string_free(out_new_server_private_key);
+    zend_string_free(out_new_server_public_key);
+    zend_string_free(out_update_token);
+success:
+    vsc_buffer_destroy(&new_server_private_key);
+    vsc_buffer_destroy(&new_server_public_key);
+    vsc_buffer_destroy(&update_token);
+}
+
+//
+//  Wrap method: vsce_phe_server_generate_server_key_pair
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_phe_server_generate_server_key_pair_php /*name*/,
+        0 /*return_reference*/,
+        1 /*required_num_args*/, // 0-4
+        IS_ARRAY /*type*/, // IS_ARRAY/IS_STRING/IS_LONG/IS_VOID
+        0 /*allow_null*/)
+
+    ZEND_ARG_INFO(0, c_ctx)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vsce_phe_server_generate_server_key_pair_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Proxy call
+    //
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_cctx, VSCE_PHE_SERVER_PHP_RES_NAME, le_vsce_phe_server);
+    VSCE_ASSERT_PTR(phe_server);
+
+    //  Allocate output buffer for output 'server_private_key'
+    zend_string *out_server_private_key = zend_string_alloc(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, 0);
+    vsc_buffer_t *server_private_key = vsc_buffer_new();
+    vsc_buffer_use(server_private_key, (byte *)ZSTR_VAL(out_server_private_key), ZSTR_LEN(out_server_private_key));
+
+    //  Allocate output buffer for output 'server_public_key'
+    zend_string *out_server_public_key = zend_string_alloc(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH, 0);
+    vsc_buffer_t *server_public_key = vsc_buffer_new();
+    vsc_buffer_use(server_public_key, (byte *)ZSTR_VAL(out_server_public_key), ZSTR_LEN(out_server_public_key));
+
+    vsce_error_t status = vsce_phe_server_generate_server_key_pair(phe_server, server_private_key, server_public_key);
+
+    //
+    //  Handle error
+    //
+    if(status != vsce_SUCCESS) {
+        zend_throw_exception(NULL, "PHE Server error", status);
+        goto fail;
+    }
+
+    //
+    //  Correct string length to the actual
+    //
+    ZSTR_LEN(out_server_private_key) = vsc_buffer_len(server_private_key);
+    ZSTR_LEN(out_server_public_key) = vsc_buffer_len(server_public_key);
+
+    //
+    //  Write returned result
+    //
+    array_init(return_value);
+    add_next_index_str(return_value, out_server_private_key);
+    add_next_index_str(return_value, out_server_public_key);
+
+    goto success;
+
+fail:
+    zend_string_free(out_server_private_key);
+    zend_string_free(out_server_public_key);
+success:
+    vsc_buffer_destroy(&server_private_key);
+    vsc_buffer_destroy(&server_public_key);
+}
+
+//
+//  Wrap method: vsce_phe_server_verify_password
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_phe_server_verify_password_php /*name*/,
+        0 /*return_reference*/,
+        4 /*required_num_args*/, // 0-4
+        IS_STRING /*type*/, // IS_ARRAY/IS_STRING/IS_LONG/IS_VOID
+        0 /*allow_null*/)
+
+    ZEND_ARG_INFO(0, c_ctx)
+    ZEND_ARG_TYPE_INFO(0, server_private_key, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, server_public_key, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, verify_password_request, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vsce_phe_server_verify_password_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+    char *in_server_private_key = NULL;
+    size_t in_server_private_key_len = 0;
+    char *in_server_public_key = NULL;
+    size_t in_server_public_key_len = 0;
+    char *in_verify_password_request = NULL;
+    size_t in_verify_password_request_len = 0;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 4, 4)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+        Z_PARAM_STRING_EX(in_server_private_key, in_server_private_key_len, 1 /*check_null*/, 0 /*deref and separate*/)
+        Z_PARAM_STRING_EX(in_server_public_key, in_server_public_key_len, 1 /*check_null*/, 0 /*deref and separate*/)
+        Z_PARAM_STRING_EX(in_verify_password_request, in_verify_password_request_len, 1 /*check_null*/, 0 /*deref and separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Proxy call
+    //
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_cctx, VSCE_PHE_SERVER_PHP_RES_NAME, le_vsce_phe_server);
+    VSCE_ASSERT_PTR(phe_server);
+
+    vsc_data_t server_private_key = vsc_data((const byte*)in_server_private_key, in_server_private_key_len);
+    vsc_data_t server_public_key = vsc_data((const byte*)in_server_public_key, in_server_public_key_len);
+    vsc_data_t verify_password_request = vsc_data((const byte*)in_verify_password_request, in_verify_password_request_len);
+
+    //  Allocate output buffer for output 'verify_password_response'
+    zend_string *out_verify_password_response = zend_string_alloc(vsce_phe_server_verify_password_response_len(phe_server), 0);
+    vsc_buffer_t *verify_password_response = vsc_buffer_new();
+    vsc_buffer_use(verify_password_response, (byte *)ZSTR_VAL(out_verify_password_response), ZSTR_LEN(out_verify_password_response));
+
+    vsce_error_t status = vsce_phe_server_verify_password(phe_server, server_private_key, server_public_key, verify_password_request, verify_password_response);
+
+    //
+    //  Handle error
+    //
+    if(status != vsce_SUCCESS) {
+        zend_throw_exception(NULL, "PHE Server error", status);
+        goto fail;
+    }
+
+    //
+    //  Correct string length to the actual
+    //
+    ZSTR_LEN(out_verify_password_response) = vsc_buffer_len(verify_password_response);
+
+    //
+    //  Write returned result
+    //
+    RETVAL_STR(out_verify_password_response);
+
+    goto success;
+
+fail:
+    zend_string_free(out_verify_password_response);
+success:
+    vsc_buffer_destroy(&verify_password_response);
+}
+
+//
+//  Wrap method: vsce_phe_server_get_enrollment
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_phe_server_get_enrollment_php /*name*/,
+        0 /*return_reference*/,
+        3 /*required_num_args*/, // 0-4
+        IS_STRING /*type*/, // IS_ARRAY/IS_STRING/IS_LONG/IS_VOID
+        0 /*allow_null*/)
+
+    ZEND_ARG_INFO(0, c_ctx)
+    ZEND_ARG_TYPE_INFO(0, server_private_key, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, server_public_key, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vsce_phe_server_get_enrollment_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+    char *in_server_private_key = NULL;
+    size_t in_server_private_key_len = 0;
+    char *in_server_public_key = NULL;
+    size_t in_server_public_key_len = 0;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 3, 3)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+        Z_PARAM_STRING_EX(in_server_private_key, in_server_private_key_len, 1 /*check_null*/, 0 /*deref and separate*/)
+        Z_PARAM_STRING_EX(in_server_public_key, in_server_public_key_len, 1 /*check_null*/, 0 /*deref and separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Proxy call
+    //
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_cctx, VSCE_PHE_SERVER_PHP_RES_NAME, le_vsce_phe_server);
+    VSCE_ASSERT_PTR(phe_server);
+
+    vsc_data_t server_private_key = vsc_data((const byte*)in_server_private_key, in_server_private_key_len);
+    vsc_data_t server_public_key = vsc_data((const byte*)in_server_public_key, in_server_public_key_len);
+
+    //  Allocate output buffer for output 'enrollment_response'
+    zend_string *out_enrollment_response = zend_string_alloc(vsce_phe_server_enrollment_response_len(phe_server), 0);
+    vsc_buffer_t *enrollment_response = vsc_buffer_new();
+    vsc_buffer_use(enrollment_response, (byte *)ZSTR_VAL(out_enrollment_response), ZSTR_LEN(out_enrollment_response));
+
+    vsce_error_t status = vsce_phe_server_get_enrollment(phe_server, server_private_key, server_public_key, enrollment_response);
+
+    //
+    //  Handle error
+    //
+    if(status != vsce_SUCCESS) {
+        zend_throw_exception(NULL, "PHE Server error", status);
+        goto fail;
+    }
+
+    //
+    //  Correct string length to the actual
+    //
+    ZSTR_LEN(out_enrollment_response) = vsc_buffer_len(enrollment_response);
+
+    //
+    //  Write returned result
+    //
+    RETVAL_STR(out_enrollment_response);
+
+    goto success;
+
+fail:
+    zend_string_free(out_enrollment_response);
+success:
+    vsc_buffer_destroy(&enrollment_response);
+}
+
+// === add server <<<
 
 //
 //  Wrap method: vsce_phe_client_new
@@ -738,6 +1192,17 @@ static zend_function_entry vsce_phe_client_php_functions[] = {
     PHP_FE_END
 };
 
+static zend_function_entry vsce_phe_server_php_functions[] = {
+    PHP_FE(vsce_phe_server_enrollment_response_len_php, arginfo_vsce_phe_server_enrollment_response_len_php)
+    PHP_FE(vsce_phe_server_verify_password_response_len_php, arginfo_vsce_phe_server_verify_password_response_len_php)
+    PHP_FE(vsce_phe_server_update_token_len_php, arginfo_vsce_phe_server_update_token_len_php)
+    PHP_FE(vsce_phe_server_rotate_keys_php, arginfo_vsce_phe_server_rotate_keys_php)
+    PHP_FE(vsce_phe_server_generate_server_key_pair_php, arginfo_vsce_phe_server_generate_server_key_pair_php)
+    PHP_FE(vsce_phe_server_verify_password_php, arginfo_vsce_phe_server_verify_password_php)
+    PHP_FE(vsce_phe_server_get_enrollment_php, arginfo_vsce_phe_server_get_enrollment_php)
+    PHP_FE_END
+};
+
 
 // --------------------------------------------------------------------------
 //  Extension module definition
@@ -746,15 +1211,15 @@ zend_module_entry vsce_phe_client_php_module_entry = {
 #if ZEND_MODULE_API_NO >= 20010901
     STANDARD_MODULE_HEADER,
 #endif
-    VSCE_PHE_CLIENT_PHP_EXTNAME,
+    VSCE_PHE_PHP_EXTNAME,
     vsce_phe_client_php_functions,
-    PHP_MINIT(vsce_phe_client_php),
-    PHP_MSHUTDOWN(vsce_phe_client_php),
+    PHP_MINIT(vsce_phe_php),
+    PHP_MSHUTDOWN(vsce_phe_php),
     NULL,
     NULL,
     NULL,
 #if ZEND_MODULE_API_NO >= 20010901
-    VSCE_PHE_CLIENT_PHP_VERSION,
+    VSCE_PHE_PHP_VERSION,
 #endif
     STANDARD_MODULE_PROPERTIES
 };
@@ -769,15 +1234,22 @@ static void vsce_phe_client_dtor_php(zend_resource *rsrc) {
     vsce_phe_client_delete((vsce_phe_client_t *)rsrc->ptr);
 }
 
-PHP_MINIT_FUNCTION(vsce_phe_client_php) {
+static void vsce_phe_server_dtor_php(zend_resource *rsrc) {
+    vsce_phe_server_delete((vsce_phe_server_t *)rsrc->ptr);
+}
+
+PHP_MINIT_FUNCTION(vsce_phe_php) {
 
     le_vsce_phe_client = zend_register_list_destructors_ex(vsce_phe_client_dtor_php, NULL, VSCE_PHE_CLIENT_PHP_RES_NAME,
+     module_number);
+
+    le_vsce_phe_server = zend_register_list_destructors_ex(vsce_phe_server_dtor_php, NULL, VSCE_PHE_SERVER_PHP_RES_NAME,
      module_number);
 
     return SUCCESS;
 }
 
-PHP_MSHUTDOWN_FUNCTION(vsce_phe_client_php) {
+PHP_MSHUTDOWN_FUNCTION(vsce_phe_php) {
 
     return SUCCESS;
 }
