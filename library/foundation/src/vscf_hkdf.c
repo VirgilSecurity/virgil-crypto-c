@@ -164,7 +164,7 @@ vscf_hkdf_expand(
 }
 
 //
-//  Calculate hash over given data.
+//  Derive key of the requested length from the given data, salt and info.
 //
 VSCF_PUBLIC void
 vscf_hkdf_derive(vscf_hkdf_impl_t *hkdf_impl, vsc_data_t data, vsc_data_t salt, vsc_data_t info, vsc_buffer_t *key,

@@ -1269,7 +1269,7 @@ function lang_ref (maybe_ref, lang)
                 " Supported languages are {$(my.valid_langs:)}", my)
     endif
 
-    if regexp.match ("\\.\\(([^_]+)(.+)?\\)", my.maybe_ref, my.maybe_lang, my.uid_tail)
+    if regexp.match ("\\.\\(([^_)]+)([^)]+)?\\)", my.maybe_ref, my.maybe_lang, my.uid_tail)
         if defined (my.uid_tail) & my.maybe_lang = my.lang
             #   Already prefixed with requested language
             return my.maybe_ref

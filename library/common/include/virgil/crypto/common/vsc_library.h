@@ -104,35 +104,35 @@ extern "C" {
 //
 //  Custom implementation of the number ceil algorithm.
 //
-#define VSC_CEIL(x,y) (1 + (((x) - 1) / (y)))
+#define VSC_CEIL(x,y) (0 == (x) ? 0 : 1 + (((x) - 1) / (y)))
 
 //
 //  Mark argument or function return value as "unused".
 //
 #define VSC_UNUSED(x) (void)(x)
 
-//  TDOD: Review with approach: https://gcc.gnu.org/wiki/Visibility
-#if defined (__WINDOWS__)
-#   if defined VSC_STATIC
-#       define VSC_PUBLIC
-#   elif defined VSC_INTERNAL_BUILD
-#       if defined DLL_PUBLIC
-#           define VSC_PUBLIC __declspec(dllexport)
+#if defined(_WIN32) || defined(__CYGWIN__)
+#   ifdef VSC_BUILD_SHARED_LIBS
+#       ifdef __GNUC__
+#           define VSC_PUBLIC __attribute__ ((dllexport))
 #       else
-#           define VSC_PUBLIC
+#           define VSC_PUBLIC __declspec(dllexport)
 #       endif
-#   elif defined VSC_PUBLICS
-#       define VSC_PUBLIC __declspec(dllexport)
+#   elsif !defined(c_global_macros_internal_build)
+#       ifdef __GNUC__
+#           define VSC_PUBLIC __attribute__ ((dllimport))
+#       else
+#           define VSC_PUBLIC __declspec(dllimport)
+#       endif
 #   else
-#       define VSC_PUBLIC __declspec(dllimport)
+#       define VSC_PUBLIC
 #   endif
 #   define VSC_PRIVATE
 #else
-#   if (defined __GNUC__ && __GNUC__ >= 4) || defined __INTEL_COMPILER
+#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER)
 #       define VSC_PUBLIC __attribute__ ((visibility ("default")))
 #       define VSC_PRIVATE __attribute__ ((visibility ("hidden")))
 #   else
-#       define VSC_PUBLIC
 #       define VSC_PRIVATE
 #   endif
 #endif

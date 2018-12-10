@@ -32,7 +32,9 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
+
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
 #include "unity.h"
 #include "test_utils.h"
 
@@ -40,7 +42,9 @@
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscr_ratchet_regular_message.h"
+
 #include "test_data_ratchet_regular_message.h"
+
 
 void
 test__1(void) {
@@ -66,7 +70,7 @@ test__1(void) {
             test_ratchet_regular_message_cipher_text.len);
     TEST_ASSERT_EQUAL_INT(test_ratchet_regular_message_cipher_text.len, vsc_buffer_len(msg1->cipher_text));
 
-    size_t len = vscr_ratchet_regular_message_serialize_len(msg1->cipher_text->len);
+    size_t len = vscr_ratchet_regular_message_serialize_len(vsc_buffer_len(msg1->cipher_text));
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(len);
 
     TEST_ASSERT_EQUAL(vscr_ratchet_regular_message_serialize(msg1, buffer), vscr_SUCCESS);
@@ -117,7 +121,7 @@ test__2(void) {
             test_ratchet_regular_message_cipher_text_big.len);
     TEST_ASSERT_EQUAL_INT(test_ratchet_regular_message_cipher_text_big.len, vsc_buffer_len(msg1->cipher_text));
 
-    size_t len = vscr_ratchet_regular_message_serialize_len(msg1->cipher_text->len);
+    size_t len = vscr_ratchet_regular_message_serialize_len(vsc_buffer_len(msg1->cipher_text));
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(len);
 
     TEST_ASSERT_EQUAL(vscr_ratchet_regular_message_serialize(msg1, buffer), vscr_SUCCESS);

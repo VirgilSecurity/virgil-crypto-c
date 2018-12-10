@@ -1,0 +1,100 @@
+<class name="phe server" context="private">
+
+    <require class="phe common" scope="public"/>
+    <require impl="ctr drbg" project="foundation" scope="private"/>
+
+    <require header="PHEModels.pb.h" scope="private"/>
+    <require header="pb_decode.h" scope="private"/>
+    <require header="pb_encode.h" scope="private"/>
+
+    <require module="buffer defs" scope="private" project="common"/>
+
+    <dependency name="random" interface="random" project="foundation"/>
+
+    <property name="utils" class="phe utils"/>
+    <property name="phe hash" class="phe hash"/>
+    <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
+
+    <method name="generate server key pair">
+        <argument name="server private key" class="buffer" access="writeonly">
+            <length constant=".(class_phe_common_constant_phe_private_key_length)"/>
+        </argument>
+        <argument name="server public key" class="buffer" access="writeonly">
+            <length constant=".(class_phe_common_constant_phe_public_key_length)"/>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="enrollment response len">
+        <return type="size"/>
+    </method>
+
+    <method name="get enrollment">
+        <argument name="server private key" class="data"/>
+        <argument name="server public key" class="data"/>
+        <argument name="enrollment response" class="buffer" access="writeonly">
+            <length method="enrollment response len"/>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="verify password response len">
+        <return type="size"/>
+    </method>
+
+    <method name="verify password">
+        <argument name="server private key" class="data"/>
+        <argument name="server public key" class="data"/>
+        <argument name="verify password request" class="data"/>
+        <argument name="verify password response" class="buffer" access="writeonly">
+            <length method="verify password response len"/>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="prove success" declaration="private">
+        <argument name="server private key" class="data"/>
+        <argument name="server public key" class="data"/>
+        <argument name="hs0" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="hs1" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="c0" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="c1" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="success proof" class="ProofOfSuccess" library="nanopb" access="writeonly"/>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="prove failure" declaration="private">
+        <argument name="server private key" class="data"/>
+        <argument name="server public key" class="data"/>
+        <argument name="c0" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="hs0" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="c1" class="mbedtls_ecp_point" library="mbedtls" access="writeonly"/>
+        <argument name="failure proof" class="ProofOfFail" library="nanopb" access="writeonly"/>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="update token len">
+        <return type="size"/>
+    </method>
+
+    <method name="rotate keys">
+        <argument name="server private key" class="data"/>
+        <argument name="new server private key" class="buffer" access="writeonly">
+            <length constant=".(class_phe_common_constant_phe_private_key_length)"/>
+        </argument>
+        <argument name="new server public key" class="buffer" access="writeonly">
+            <length constant=".(class_phe_common_constant_phe_public_key_length)"/>
+        </argument>
+        <argument name="update token" class="buffer" access="writeonly">
+            <length method="update token len"/>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+
+</class>

@@ -66,6 +66,8 @@ extern const vsc_data_t test_asn1_encoded_UTF8_STRING;
 extern const vsc_data_t test_asn1_decoded_UTF8_STRING;
 extern const vsc_data_t test_asn1_encoded_OID_SHA256;
 extern const vsc_data_t test_asn1_decoded_OID_SHA256;
+extern const vsc_data_t test_asn1_encoded_BIT_STRING;
+extern const vsc_data_t test_asn1_decoded_BIT_STRING;
 
 //
 // Containers

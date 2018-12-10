@@ -111,17 +111,6 @@ vscr_ratchet_rng_api_tag(const vscr_ratchet_rng_api_t *ratchet_rng_api) {
     return ratchet_rng_api->api_tag;
 }
 
-//
-//  Returns implementation unique identifier.
-//
-VSCR_PUBLIC vscr_impl_tag_t
-vscr_ratchet_rng_impl_tag(const vscr_ratchet_rng_api_t *ratchet_rng_api) {
-
-    VSCR_ASSERT_PTR (ratchet_rng_api);
-
-    return ratchet_rng_api->impl_tag;
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

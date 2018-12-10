@@ -41,6 +41,7 @@ import VirgilCryptoFoundation
 /// Interface for ratchet rng
 @objc(VSCRRatchetRng) public protocol RatchetRng : CContext {
 
+    /// Interface for ratchet rng
     @objc func generateRandomData(size: Int) -> Data
 }
 
