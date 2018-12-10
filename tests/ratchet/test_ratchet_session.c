@@ -134,8 +134,8 @@ initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *sessio
 
     vsc_buffer_t *sender_ephemeral_key = vsc_buffer_new_with_data(vsc_data(prekey_message.sender_ephemeral_key,
             sizeof(prekey_message.sender_ephemeral_key)));
-    vsc_buffer_t *public_key = vsc_buffer_new_with_data(vsc_data(prekey_message.sender_ephemeral_key,
-            sizeof(prekey_message.sender_ephemeral_key)));
+    vsc_buffer_t *public_key = vsc_buffer_new_with_data(vsc_data(regular_message.public_key,
+            sizeof(regular_message.public_key)));
 
     TEST_ASSERT_EQUAL_INT(
             vscr_SUCCESS, vscr_ratchet_session_respond(session_bob, alice_identity_public_key,
