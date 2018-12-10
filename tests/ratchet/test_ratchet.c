@@ -46,7 +46,6 @@
 #include "test_data_ratchet.h"
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
-#include <pb_decode.h>
 #include <ed25519/ed25519.h>
 
 static void
@@ -93,11 +92,7 @@ test__1(void) {
 
     initialize(ratchet_alice, ratchet_bob, &regular_message);
 
-    // FIXME
-    size_t plain_text_len = 0;
-    bool pb_status = true;
-    pb_status = pb_get_encoded_size(&plain_text_len, RegularMessage_fields, &regular_message);
-    TEST_ASSERT_EQUAL(true, pb_status);
+    size_t plain_text_len = vscr_ratchet_decrypt_len(ratchet_bob, regular_message.cipher_text.size);
 
     vsc_buffer_t *decrypted = vsc_buffer_new_with_capacity(plain_text_len);
     vscr_error_t result = vscr_ratchet_decrypt(ratchet_bob, &regular_message, decrypted);
@@ -140,9 +135,7 @@ test__2(void) {
     vscr_error_t result = vscr_ratchet_encrypt(ratchet_alice, test_ratchet_plain_text2, &regular_message2);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
-    // FIXME
-    size_t plain_text2_len = 40; // test_ratchet_plain_text2.len;
-    //size_t plain_text_len = vscr_ratchet_decrypt_len(ratchet_bob, vsc_buffer_len(cipher_text1));
+    size_t plain_text2_len = vscr_ratchet_decrypt_len(ratchet_bob, regular_message2.cipher_text.size);
 
     vsc_buffer_t *decrypted2 = vsc_buffer_new_with_capacity(plain_text2_len);
     result = vscr_ratchet_decrypt(ratchet_bob, &regular_message2, decrypted2);
@@ -152,10 +145,9 @@ test__2(void) {
     TEST_ASSERT_EQUAL_MEMORY(
             test_ratchet_plain_text2.bytes, vsc_buffer_bytes(decrypted2), test_ratchet_plain_text2.len);
 
-    // FIXME
-    size_t plain_text_len1 = 50; // test_ratchet_plain_text1.len;
+    size_t plain_text1_len = vscr_ratchet_decrypt_len(ratchet_bob, regular_message1.cipher_text.size);
 
-    vsc_buffer_t *decrypted = vsc_buffer_new_with_capacity(plain_text_len1);
+    vsc_buffer_t *decrypted = vsc_buffer_new_with_capacity(plain_text1_len);
     result = vscr_ratchet_decrypt(ratchet_bob, &regular_message1, decrypted);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
@@ -173,9 +165,9 @@ test__3(void) {
     vscr_ratchet_t *ratchet_alice = vscr_ratchet_new();
     vscr_ratchet_t *ratchet_bob = vscr_ratchet_new();
 
-    RegularMessage regularMessage = RegularMessage_init_zero;
+    RegularMessage regular_message = RegularMessage_init_zero;
 
-    initialize(ratchet_alice, ratchet_bob, &regularMessage);
+    initialize(ratchet_alice, ratchet_bob, &regular_message);
 
     // FIXME
     vscr_impl_t *rng = vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new());
@@ -215,16 +207,15 @@ test__3(void) {
             receiver = ratchet_alice;
         }
 
-        RegularMessage regularMessage = RegularMessage_init_zero;
+        RegularMessage regular_message = RegularMessage_init_zero;
 
-        vscr_error_t result = vscr_ratchet_encrypt(sender, vsc_buffer_data(plain_text), &regularMessage);
+        vscr_error_t result = vscr_ratchet_encrypt(sender, vsc_buffer_data(plain_text), &regular_message);
         TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
-        // FIXME
-        size_t plain_text_len = 1000; // plain_text->len;
+        size_t plain_text_len = vscr_ratchet_decrypt_len(ratchet_bob, regular_message.cipher_text.size);
 
         vsc_buffer_t *decrypted = vsc_buffer_new_with_capacity(plain_text_len);
-        result = vscr_ratchet_decrypt(receiver, &regularMessage, decrypted);
+        result = vscr_ratchet_decrypt(receiver, &regular_message, decrypted);
         TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
         TEST_ASSERT_EQUAL_INT(vsc_buffer_len(plain_text), vsc_buffer_len(decrypted));
