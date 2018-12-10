@@ -78,6 +78,59 @@ PHP_MSHUTDOWN_FUNCTION(vsce_phe_php);
 // === add server >>>
 
 //
+//  Wrap method: vsce_phe_server_new
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_phe_server_new_php /*name*/,
+        0 /*return_reference*/,
+        0 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vsce_phe_server_new_php) {
+    vsce_phe_server_t *phe_server = vsce_phe_server_new();
+    zend_resource *phe_server_res = zend_register_resource(phe_server, le_vsce_phe_server);
+    RETVAL_RES(phe_server_res);
+}
+
+//
+//  Wrap method: vsce_phe_server_delete_php
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_phe_server_delete_php /*name*/,
+        0 /*_unused*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+    ZEND_ARG_INFO(0, c_ctx)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vsce_phe_server_delete_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Fetch for type checking and then release
+    //
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_cctx, VSCE_PHE_SERVER_PHP_RES_NAME, le_vsce_phe_server);
+    VSCE_ASSERT_PTR(phe_server);
+    zend_list_delete(Z_RES_P(in_cctx));
+    RETURN_TRUE;
+}
+
+//
 //  Wrap method: vsce_phe_server_enrollment_response_len
 //
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
@@ -541,6 +594,41 @@ PHP_FUNCTION(vsce_phe_client_new_php) {
     vsce_phe_client_t *phe_client = vsce_phe_client_new();
     zend_resource *phe_client_res = zend_register_resource(phe_client, le_vsce_phe_client);
     RETVAL_RES(phe_client_res);
+}
+
+//
+//  Wrap method: vsce_phe_client_delete_php
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_phe_client_delete_php /*name*/,
+        0 /*_unused*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+    ZEND_ARG_INFO(0, c_ctx)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vsce_phe_client_delete_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Fetch for type checking and then release
+    //
+    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_client);
+    VSCE_ASSERT_PTR(phe_client);
+    zend_list_delete(Z_RES_P(in_cctx));
+    RETURN_TRUE;
 }
 
 //
@@ -1139,46 +1227,12 @@ PHP_FUNCTION(vsce_phe_client_set_keys_php) {
     RETURN_TRUE;
 }
 
-//
-//  Wrap method: vsce_phe_client_delete_php
-//
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
-        arginfo_vsce_phe_client_delete_php /*name*/, 
-        0 /*_unused*/, 
-        1 /*required_num_args*/,
-        IS_VOID /*type*/,
-        0 /*allow_null*/)
-    ZEND_ARG_INFO(0, c_ctx)
-ZEND_END_ARG_INFO()
-
-
-PHP_FUNCTION(vsce_phe_client_delete_php) {
-    //
-    //  Declare input arguments
-    //
-    zval *in_cctx = NULL;
-
-    //
-    //  Parse arguments
-    //
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
-        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
-    ZEND_PARSE_PARAMETERS_END();
-
-    //
-    //  Fetch for type checking and then release
-    //
-    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_client);
-    VSCE_ASSERT_PTR(phe_client);
-    zend_list_delete(Z_RES_P(in_cctx));
-    RETURN_TRUE;
-}
-
 // --------------------------------------------------------------------------
 //  Define all function entries
 // --------------------------------------------------------------------------
-static zend_function_entry vsce_phe_client_php_functions[] = {
+static zend_function_entry vsce_phe_php_functions[] = {
     PHP_FE(vsce_phe_client_new_php, arginfo_vsce_phe_client_new_php)
+    PHP_FE(vsce_phe_client_delete_php, arginfo_vsce_phe_client_delete_php)
     PHP_FE(vsce_phe_client_set_keys_php, arginfo_vsce_phe_client_set_keys_php)
     PHP_FE(vsce_phe_client_enrollment_record_len_php, arginfo_vsce_phe_client_enrollment_record_len_php)
     PHP_FE(vsce_phe_client_verify_password_request_len_php, arginfo_vsce_phe_client_verify_password_request_len_php)
@@ -1188,11 +1242,9 @@ static zend_function_entry vsce_phe_client_php_functions[] = {
     PHP_FE(vsce_phe_client_update_enrollment_record_php, arginfo_vsce_phe_client_update_enrollment_record_php)
     PHP_FE(vsce_phe_client_create_verify_password_request_php, arginfo_vsce_phe_client_create_verify_password_request_php)
     PHP_FE(vsce_phe_client_check_response_and_decrypt_php, arginfo_vsce_phe_client_check_response_and_decrypt_php)
-    PHP_FE(vsce_phe_client_delete_php, arginfo_vsce_phe_client_delete_php)
-    PHP_FE_END
-};
 
-static zend_function_entry vsce_phe_server_php_functions[] = {
+    PHP_FE(vsce_phe_server_new_php, arginfo_vsce_phe_server_new_php)
+    PHP_FE(vsce_phe_server_delete_php, arginfo_vsce_phe_server_delete_php)
     PHP_FE(vsce_phe_server_enrollment_response_len_php, arginfo_vsce_phe_server_enrollment_response_len_php)
     PHP_FE(vsce_phe_server_verify_password_response_len_php, arginfo_vsce_phe_server_verify_password_response_len_php)
     PHP_FE(vsce_phe_server_update_token_len_php, arginfo_vsce_phe_server_update_token_len_php)
@@ -1203,16 +1255,29 @@ static zend_function_entry vsce_phe_server_php_functions[] = {
     PHP_FE_END
 };
 
+//static zend_function_entry vsce_phe_server_php_functions[] = {
+//    PHP_FE(vsce_phe_server_new_php, arginfo_vsce_phe_server_new_php)
+//    PHP_FE(vsce_phe_server_delete_php, arginfo_vsce_phe_server_delete_php)
+//    PHP_FE(vsce_phe_server_enrollment_response_len_php, arginfo_vsce_phe_server_enrollment_response_len_php)
+//    PHP_FE(vsce_phe_server_verify_password_response_len_php, arginfo_vsce_phe_server_verify_password_response_len_php)
+//    PHP_FE(vsce_phe_server_update_token_len_php, arginfo_vsce_phe_server_update_token_len_php)
+//    PHP_FE(vsce_phe_server_rotate_keys_php, arginfo_vsce_phe_server_rotate_keys_php)
+//    PHP_FE(vsce_phe_server_generate_server_key_pair_php, arginfo_vsce_phe_server_generate_server_key_pair_php)
+//    PHP_FE(vsce_phe_server_verify_password_php, arginfo_vsce_phe_server_verify_password_php)
+//    PHP_FE(vsce_phe_server_get_enrollment_php, arginfo_vsce_phe_server_get_enrollment_php)
+//    PHP_FE_END
+//};
+
 
 // --------------------------------------------------------------------------
 //  Extension module definition
 // --------------------------------------------------------------------------
-zend_module_entry vsce_phe_client_php_module_entry = {
+zend_module_entry vsce_phe_php_module_entry = {
 #if ZEND_MODULE_API_NO >= 20010901
     STANDARD_MODULE_HEADER,
 #endif
     VSCE_PHE_PHP_EXTNAME,
-    vsce_phe_client_php_functions,
+    vsce_phe_php_functions,
     PHP_MINIT(vsce_phe_php),
     PHP_MSHUTDOWN(vsce_phe_php),
     NULL,
@@ -1224,7 +1289,7 @@ zend_module_entry vsce_phe_client_php_module_entry = {
     STANDARD_MODULE_PROPERTIES
 };
 
-ZEND_GET_MODULE(vsce_phe_client_php)
+ZEND_GET_MODULE(vsce_phe_php)
 
 
 // --------------------------------------------------------------------------
@@ -1234,17 +1299,17 @@ static void vsce_phe_client_dtor_php(zend_resource *rsrc) {
     vsce_phe_client_delete((vsce_phe_client_t *)rsrc->ptr);
 }
 
-static void vsce_phe_server_dtor_php(zend_resource *rsrc) {
-    vsce_phe_server_delete((vsce_phe_server_t *)rsrc->ptr);
-}
+//static void vsce_phe_server_dtor_php(zend_resource *rsrc) {
+//    vsce_phe_server_delete((vsce_phe_server_t *)rsrc->ptr);
+//}
 
 PHP_MINIT_FUNCTION(vsce_phe_php) {
 
     le_vsce_phe_client = zend_register_list_destructors_ex(vsce_phe_client_dtor_php, NULL, VSCE_PHE_CLIENT_PHP_RES_NAME,
      module_number);
 
-    le_vsce_phe_server = zend_register_list_destructors_ex(vsce_phe_server_dtor_php, NULL, VSCE_PHE_SERVER_PHP_RES_NAME,
-     module_number);
+//    le_vsce_phe_server = zend_register_list_destructors_ex(vsce_phe_server_dtor_php, NULL, VSCE_PHE_SERVER_PHP_RES_NAME,
+//     module_number);
 
     return SUCCESS;
 }
