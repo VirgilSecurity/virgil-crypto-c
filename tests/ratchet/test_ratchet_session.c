@@ -49,11 +49,11 @@
 #include "test_data_ratchet_session.h"
 #include "test_data_ratchet.h"
 
-#include <virgil/crypto/ratchet/vscr_ratchet_prekey_message.h>
 #include <ed25519/ed25519.h>
+#include <Message.pb.h>
 
 static void
-initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *session_bob, vscr_ratchet_message_t **ratchet_message) {
+initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *session_bob, Message *ratchet_message) {
     vscr_ratchet_session_take_rng(session_alice, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
     vscr_ratchet_session_take_rng(session_bob, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
 
@@ -122,23 +122,27 @@ initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *sessio
     vscr_error_ctx_t error_ctx;
     vscr_error_ctx_reset(&error_ctx);
 
-    *ratchet_message = vscr_ratchet_message_deserialize(vsc_buffer_data(cipher_text), &error_ctx);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+    bool status = true;
+    pb_istream_t istream = pb_istream_from_buffer(vsc_buffer_data(cipher_text).bytes,
+                                                  vsc_buffer_data(cipher_text).len);
 
-    vscr_ratchet_prekey_message_t *prekey_message = vscr_ratchet_prekey_message_deserialize(vsc_buffer_data((**ratchet_message).message), &error_ctx);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+    status = pb_decode(&istream, Message_fields, ratchet_message);
+    TEST_ASSERT_EQUAL(true, status);
 
-    vscr_ratchet_regular_message_t *regular_message = vscr_ratchet_regular_message_deserialize(vsc_buffer_data(prekey_message->message), &error_ctx);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+    PrekeyMessage prekey_message = ratchet_message->message.prekey_message;
+    RegularMessage regular_message = ratchet_message->message.prekey_message.regular_message;
+
+    vsc_buffer_t *sender_ephemeral_key = vsc_buffer_new_with_data(vsc_data(prekey_message.sender_ephemeral_key,
+            sizeof(prekey_message.sender_ephemeral_key)));
+    vsc_buffer_t *public_key = vsc_buffer_new_with_data(vsc_data(prekey_message.sender_ephemeral_key,
+            sizeof(prekey_message.sender_ephemeral_key)));
 
     TEST_ASSERT_EQUAL_INT(
             vscr_SUCCESS, vscr_ratchet_session_respond(session_bob, alice_identity_public_key,
-                                  prekey_message->sender_ephemeral_key, regular_message->public_key,
-                                  bob_identity_private_key,
-                                  bob_longterm_private_key, bob_onetime_private_key, regular_message));
+                                                       sender_ephemeral_key, public_key,
+                                                       bob_identity_private_key,
+                                                       bob_longterm_private_key, bob_onetime_private_key, regular_message));
 
-    vscr_ratchet_regular_message_destroy(&regular_message);
-    vscr_ratchet_prekey_message_destroy(&prekey_message);
     vsc_buffer_destroy(&alice_identity_public_key);
     vsc_buffer_destroy(&bob_identity_private_key);
     vsc_buffer_destroy(&bob_identity_public_key);
@@ -152,7 +156,8 @@ void
 test__1(void) {
     vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
     vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
-    vscr_ratchet_message_t *ratchet_message;
+
+    Message ratchet_message = Message_init_zero;
 
     initialize(session_alice, session_bob, &ratchet_message);
 
@@ -168,8 +173,6 @@ test__1(void) {
 
     vsc_buffer_destroy(&plain_text);
 
-    vscr_ratchet_message_destroy(&ratchet_message);
-
     vscr_ratchet_session_destroy(&session_alice);
     vscr_ratchet_session_destroy(&session_bob);
 }
@@ -178,7 +181,7 @@ void
 test__2(void) {
     vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
     vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
-    vscr_ratchet_message_t *ratchet_message;
+    Message ratchet_message = Message_init_zero;
 
     initialize(session_alice, session_bob, &ratchet_message);
 
@@ -191,9 +194,13 @@ test__2(void) {
     vscr_error_ctx_t error_ctx;
     vscr_error_ctx_reset(&error_ctx);
 
-    vscr_ratchet_message_t *ratchet_message1 =
-            vscr_ratchet_message_deserialize(vsc_buffer_data(cipher_text1), &error_ctx);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+    Message ratchet_message1 = Message_init_zero;
+    bool status = true;
+    pb_istream_t istream1 = pb_istream_from_buffer(vsc_buffer_data(cipher_text1).bytes,
+                                                   vsc_buffer_data(cipher_text1).len);
+
+    status = pb_decode(&istream1, Message_fields, &ratchet_message1);
+    TEST_ASSERT_EQUAL(true, status);
 
     size_t len2 = vscr_ratchet_session_decrypt_len(session_bob, ratchet_message1);
     vsc_buffer_t *plain_text1 = vsc_buffer_new_with_capacity(len2);
@@ -213,9 +220,13 @@ test__2(void) {
 
     vscr_error_ctx_reset(&error_ctx);
 
-    vscr_ratchet_message_t *ratchet_message2 =
-            vscr_ratchet_message_deserialize(vsc_buffer_data(cipher_text2), &error_ctx);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+    Message ratchet_message2 = Message_init_zero;
+    status = true;
+    pb_istream_t istream2 = pb_istream_from_buffer(vsc_buffer_data(cipher_text2).bytes,
+                                                   vsc_buffer_data(cipher_text2).len);
+
+    status = pb_decode(&istream2, Message_fields, &ratchet_message2);
+    TEST_ASSERT_EQUAL(true, status);
 
     size_t len4 = vscr_ratchet_session_decrypt_len(session_alice, ratchet_message2);
     vsc_buffer_t *plain_text2 = vsc_buffer_new_with_capacity(len4);
@@ -232,9 +243,6 @@ test__2(void) {
     vsc_buffer_destroy(&cipher_text2);
     vsc_buffer_destroy(&plain_text2);
 
-    vscr_ratchet_message_destroy(&ratchet_message1);
-    vscr_ratchet_message_destroy(&ratchet_message2);
-
     vscr_ratchet_session_destroy(&session_alice);
     vscr_ratchet_session_destroy(&session_bob);
 }
@@ -243,7 +251,8 @@ void
 test__3(void) {
     vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
     vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
-    vscr_ratchet_message_t *ratchet_message;
+
+    Message ratchet_message = Message_init_zero;
 
     initialize(session_alice, session_bob, &ratchet_message);
 
@@ -294,9 +303,13 @@ test__3(void) {
         vscr_error_ctx_t error_ctx;
         vscr_error_ctx_reset(&error_ctx);
 
-        vscr_ratchet_message_t *ratchet_message =
-                vscr_ratchet_message_deserialize(vsc_buffer_data(cipher_text), &error_ctx);
-        TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+        Message ratchet_message = Message_init_zero;
+        bool status = true;
+        pb_istream_t istream = pb_istream_from_buffer(vsc_buffer_data(cipher_text).bytes,
+                                                      vsc_buffer_data(cipher_text).len);
+
+        status = pb_decode(&istream, Message_fields, &ratchet_message);
+        TEST_ASSERT_EQUAL(true, status);
 
         size_t plain_text_len = vscr_ratchet_session_decrypt_len(receiver, ratchet_message);
         vsc_buffer_t *decrypted = vsc_buffer_new_with_capacity(plain_text_len);
@@ -309,7 +322,6 @@ test__3(void) {
         vsc_buffer_destroy(&plain_text);
         vsc_buffer_destroy(&cipher_text);
         vsc_buffer_destroy(&decrypted);
-        vscr_ratchet_message_destroy(&ratchet_message);
     }
 
     vscr_impl_destroy(&rng);

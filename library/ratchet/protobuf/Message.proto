@@ -17,8 +17,9 @@ message PrekeyMessage {
 }
 
 message Message {
+	uint32 version = 1;
 	oneof message {
-		RegularMessage regular_message = 1;
-		PrekeyMessage prekey_message = 2;
+		RegularMessage regular_message = 2;
+		PrekeyMessage prekey_message = 3;
 	}
 }
