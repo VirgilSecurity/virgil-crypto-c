@@ -70,7 +70,7 @@ class PHEClient
      */
     public function setKeys(string $clientPrivateKey, string $serverPublicKey): void
     {
-        vsce_phe_client_set_keys($this->c_ctx, $clientPrivateKey, $serverPublicKey);
+        vsce_phe_client_set_keys_php($this->c_ctx, $clientPrivateKey, $serverPublicKey);
     }
 
    /**
@@ -117,7 +117,7 @@ class PHEClient
      */
     public function createVerifyPasswordRequest(string $password, string $enrollmentRecord): string
     {
-        return vsce_phe_client_create_verify_password_request($this->c_ctx, $password, $enrollmentRecord);
+        return vsce_phe_client_create_verify_password_request_php($this->c_ctx, $password, $enrollmentRecord);
     }
 
     /**
@@ -152,6 +152,6 @@ class PHEClient
      */
     public function updateEnrollmentRecord(string $enrollmentRecord, string $updateToken): string
     {
-        return vsce_phe_client_update_enrollment_record($this->c_ctx, $enrollmentRecord, $updateToken);
+        return vsce_phe_client_update_enrollment_record_php($this->c_ctx, $enrollmentRecord, $updateToken);
     }
 }

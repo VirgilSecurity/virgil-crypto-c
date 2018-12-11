@@ -60,16 +60,6 @@ class PHEServer
         vsce_phe_client_delete_php($this->c_ctx);
     }
 
-    //<method name="generate server key pair">
-    //<argument name="server private key" class="buffer" access="writeonly">
-    //<length constant=".(class_phe_common_constant_phe_private_key_length)"/>
-    //</argument>
-    //<argument name="server public key" class="buffer" access="writeonly">
-    //<length constant=".(class_phe_common_constant_phe_public_key_length)"/>
-    //</argument>
-    //
-    //<return enum="error"/>
-    //</method>
     /**
      * @return array
      * @throws Exception
@@ -79,9 +69,6 @@ class PHEServer
         return vsce_phe_server_generate_server_key_pair_php($this->c_ctx);
     }
 
-    //<method name="enrollment response len">
-    //<return type="size"/>
-    //</method>
     /**
      * @return int
      */
@@ -90,15 +77,6 @@ class PHEServer
         return vsce_phe_server_enrollment_response_len_php($this->c_ctx);
     }
 
-    //<method name="get enrollment">
-    //<argument name="server private key" class="data"/>
-    //<argument name="server public key" class="data"/>
-    //<argument name="enrollment response" class="buffer" access="writeonly">
-    //<length method="enrollment record len"/>
-    //</argument>
-    //
-    //<return enum="error"/>
-    //</method>
     /**
      * @param string $serverPrivateKey
      * @param string $serverPublicKey
@@ -110,9 +88,6 @@ class PHEServer
         return vsce_phe_server_get_enrollment_php($this->c_ctx, $serverPrivateKey, $serverPublicKey);
     }
 
-    //<method name="verify password response len">
-    //<return type="size"/>
-    //</method>
     /**
      * @return int
      */
@@ -121,16 +96,6 @@ class PHEServer
         return vsce_phe_server_verify_password_response_len_php($this->c_ctx);
     }
 
-    //<method name="verify password">
-    //<argument name="server private key" class="data"/>
-    //<argument name="server public key" class="data"/>
-    //<argument name="verify password request" class="data"/>
-    //<argument name="verify password response" class="buffer" access="writeonly">
-    //<length method="verify password response len"/>
-    //</argument>
-    //
-    //<return enum="error"/>
-    //</method>
     /**
      * @param string $serverPrivateKey
      * @param string $serverPublicKey
@@ -143,9 +108,6 @@ class PHEServer
         return vsce_phe_server_verify_password_php($this->c_ctx, $serverPrivateKey, $serverPublicKey, $verifyPasswordRequest);
     }
 
-    //<method name="update token len">
-    //<return type="size"/>
-    //</method>
     /**
      * @return int
      */
@@ -154,20 +116,6 @@ class PHEServer
         return vsce_phe_server_update_token_len_php($this->c_ctx);
     }
 
-    //<method name="rotate keys">
-    //<argument name="server private key" class="data"/>
-    //<argument name="new server private key" class="buffer" access="writeonly">
-    //<length constant=".(class_phe_common_constant_phe_private_key_length)"/>
-    //</argument>
-    //<argument name="new server public key" class="buffer" access="writeonly">
-    //<length constant=".(class_phe_common_constant_phe_private_key_length)"/>
-    //</argument>
-    //<argument name="update token" class="buffer" access="writeonly">
-    //<length method="update token len"/>
-    //</argument>
-    //
-    //<return enum="error"/>
-    //</method>
     /**
      * @param string $serverPrivateKey
      * @return array
