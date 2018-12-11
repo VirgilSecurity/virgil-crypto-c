@@ -410,7 +410,7 @@ VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session_ctx, vsc_buffer_t *sender_identity_public_key,
         vsc_buffer_t *sender_ephemeral_public_key, vsc_buffer_t *ratchet_public_key,
         vsc_buffer_t *receiver_identity_private_key, vsc_buffer_t *receiver_long_term_private_key,
-        vsc_buffer_t *receiver_one_time_private_key, const RegularMessage message) {
+        vsc_buffer_t *receiver_one_time_private_key, const RegularMessage *message) {
 
     VSCR_ASSERT_PTR(ratchet_session_ctx);
 
@@ -580,25 +580,25 @@ vscr_ratchet_session_encrypt(vscr_ratchet_session_t *ratchet_session_ctx, vsc_da
 }
 
 VSCR_PUBLIC size_t
-vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, const Message message) {
+vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, const Message *message) {
 
     VSCR_UNUSED(ratchet_session_ctx);
 
     size_t len = 0;
 
     // FIXME
-    if (message.which_message == Message_regular_message_tag) {
-        len = vscr_ratchet_decrypt_len(ratchet_session_ctx->ratchet, message.message.regular_message.cipher_text.size);
-    } else if (message.which_message == Message_prekey_message_tag) {
+    if (message->which_message == Message_regular_message_tag) {
+        len = vscr_ratchet_decrypt_len(ratchet_session_ctx->ratchet, message->message.regular_message.cipher_text.size);
+    } else if (message->which_message == Message_prekey_message_tag) {
         len = vscr_ratchet_decrypt_len(ratchet_session_ctx->ratchet,
-                message.message.prekey_message.regular_message.cipher_text.size);
+                message->message.prekey_message.regular_message.cipher_text.size);
     }
 
     return len;
 }
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session_ctx, Message message,
+vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session_ctx, Message *message,
         vsc_buffer_t *plain_text) {
 
     VSCR_ASSERT_PTR(ratchet_session_ctx);
@@ -606,14 +606,14 @@ vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session_ctx, Messag
 
     vscr_error_t result;
 
-    if (message.which_message == Message_regular_message_tag) {
-        result = vscr_ratchet_decrypt(ratchet_session_ctx->ratchet, &message.message.regular_message, plain_text);
-    } else if (message.which_message == Message_prekey_message_tag) {
+    if (message->which_message == Message_regular_message_tag) {
+        result = vscr_ratchet_decrypt(ratchet_session_ctx->ratchet, &message->message.regular_message, plain_text);
+    } else if (message->which_message == Message_prekey_message_tag) {
         vscr_error_ctx_t error_ctx;
         vscr_error_ctx_reset(&error_ctx);
 
         result = vscr_ratchet_decrypt(
-                ratchet_session_ctx->ratchet, &message.message.prekey_message.regular_message, plain_text);
+                ratchet_session_ctx->ratchet, &message->message.prekey_message.regular_message, plain_text);
     } else {
         result = vscr_WRONG_MESSAGE_FORMAT;
     }

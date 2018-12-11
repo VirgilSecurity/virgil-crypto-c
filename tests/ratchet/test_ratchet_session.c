@@ -141,7 +141,7 @@ initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *sessio
             vscr_SUCCESS, vscr_ratchet_session_respond(session_bob, alice_identity_public_key,
                                                        sender_ephemeral_key, public_key,
                                                        bob_identity_private_key,
-                                                       bob_longterm_private_key, bob_onetime_private_key, regular_message));
+                                                       bob_longterm_private_key, bob_onetime_private_key, &regular_message));
 
     vsc_buffer_destroy(&alice_identity_public_key);
     vsc_buffer_destroy(&bob_identity_private_key);
@@ -161,10 +161,10 @@ test__1(void) {
 
     initialize(session_alice, session_bob, &ratchet_message);
 
-    size_t len2 = vscr_ratchet_session_decrypt_len(session_bob, ratchet_message);
+    size_t len2 = vscr_ratchet_session_decrypt_len(session_bob, &ratchet_message);
     vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(len2);
 
-    vscr_error_t result = vscr_ratchet_session_decrypt(session_bob, ratchet_message, plain_text);
+    vscr_error_t result = vscr_ratchet_session_decrypt(session_bob, &ratchet_message, plain_text);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
     TEST_ASSERT_EQUAL_INT(test_ratchet_plain_text1.len, vsc_buffer_len(plain_text));
@@ -202,10 +202,10 @@ test__2(void) {
     status = pb_decode(&istream1, Message_fields, &ratchet_message1);
     TEST_ASSERT_EQUAL(true, status);
 
-    size_t len2 = vscr_ratchet_session_decrypt_len(session_bob, ratchet_message1);
+    size_t len2 = vscr_ratchet_session_decrypt_len(session_bob, &ratchet_message1);
     vsc_buffer_t *plain_text1 = vsc_buffer_new_with_capacity(len2);
 
-    result = vscr_ratchet_session_decrypt(session_bob, ratchet_message1, plain_text1);
+    result = vscr_ratchet_session_decrypt(session_bob, &ratchet_message1, plain_text1);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
     TEST_ASSERT_EQUAL_INT(test_ratchet_plain_text1.len, vsc_buffer_len(plain_text1));
@@ -228,10 +228,10 @@ test__2(void) {
     status = pb_decode(&istream2, Message_fields, &ratchet_message2);
     TEST_ASSERT_EQUAL(true, status);
 
-    size_t len4 = vscr_ratchet_session_decrypt_len(session_alice, ratchet_message2);
+    size_t len4 = vscr_ratchet_session_decrypt_len(session_alice, &ratchet_message2);
     vsc_buffer_t *plain_text2 = vsc_buffer_new_with_capacity(len4);
 
-    result = vscr_ratchet_session_decrypt(session_alice, ratchet_message2, plain_text2);
+    result = vscr_ratchet_session_decrypt(session_alice, &ratchet_message2, plain_text2);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
     TEST_ASSERT_EQUAL_INT(test_ratchet_plain_text2.len, vsc_buffer_len(plain_text2));
@@ -311,9 +311,9 @@ test__3(void) {
         status = pb_decode(&istream, Message_fields, &ratchet_message);
         TEST_ASSERT_EQUAL(true, status);
 
-        size_t plain_text_len = vscr_ratchet_session_decrypt_len(receiver, ratchet_message);
+        size_t plain_text_len = vscr_ratchet_session_decrypt_len(receiver, &ratchet_message);
         vsc_buffer_t *decrypted = vsc_buffer_new_with_capacity(plain_text_len);
-        result = vscr_ratchet_session_decrypt(receiver, ratchet_message, decrypted);
+        result = vscr_ratchet_session_decrypt(receiver, &ratchet_message, decrypted);
         TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
         TEST_ASSERT_EQUAL_INT(vsc_buffer_len(plain_text), vsc_buffer_len(decrypted));
