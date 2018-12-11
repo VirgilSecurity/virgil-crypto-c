@@ -176,7 +176,7 @@ vscr_ratchet_release_cipher(vscr_ratchet_t *ratchet_ctx);
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key,
-                     RegularMessage regular_message);
+                     const RegularMessage *regular_message);
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_private_key);
