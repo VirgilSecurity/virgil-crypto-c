@@ -38,10 +38,16 @@ import VSCFoundation
 import VirgilCryptoCommon
 
 /// This is implementation of ED25519 public key
-@objc(VSCFEd25519PublicKey) public class Ed25519PublicKey: NSObject, Key, PublicKey, Verify, ExportPublicKey, ImportPublicKey {
+@objc(VSCFEd25519PublicKey) public class Ed25519PublicKey: NSObject, Key, Verify, PublicKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
+
+    /// Defines whether a public key can be imported or not.
+    @objc public let canImportPublicKey: Bool = true
+
+    /// Define whether a public key can be exported or not.
+    @objc public let canExportPublicKey: Bool = true
 
     /// Create underlying C context.
     public override init() {
@@ -66,6 +72,13 @@ import VirgilCryptoCommon
     /// Release underlying C context.
     deinit {
         vscf_ed25519_public_key_delete(self.c_ctx)
+    }
+
+    /// Return implemented asymmetric key algorithm type.
+    @objc public func alg() -> KeyAlg {
+        let proxyResult = vscf_ed25519_public_key_alg(self.c_ctx)
+
+        return KeyAlg.init(fromC: proxyResult)
     }
 
     /// Length of the key in bytes.
@@ -94,6 +107,10 @@ import VirgilCryptoCommon
     }
 
     /// Export public key in the binary format.
+    ///
+    /// Binary format must be defined in the key specification.
+    /// For instance, RSA public key must be exported in format defined in
+    /// RFC 3447 Appendix A.1.1.
     @objc public func exportPublicKey() throws -> Data {
         let outCount = self.exportedPublicKeyLen()
         var out = Data(count: outCount)
@@ -122,6 +139,10 @@ import VirgilCryptoCommon
     }
 
     /// Import public key from the binary format.
+    ///
+    /// Binary format must be defined in the key specification.
+    /// For instance, RSA public key must be imported from the format defined in
+    /// RFC 3447 Appendix A.1.1.
     @objc public func importPublicKey(data: Data) throws {
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> vscf_error_t in
             return vscf_ed25519_public_key_import_public_key(self.c_ctx, vsc_data(dataPointer, data.count))
