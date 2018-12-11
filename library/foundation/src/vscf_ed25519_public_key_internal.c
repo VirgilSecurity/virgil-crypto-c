@@ -57,14 +57,10 @@
 #include "vscf_ed25519_public_key_impl.h"
 #include "vscf_key.h"
 #include "vscf_key_api.h"
-#include "vscf_public_key.h"
-#include "vscf_public_key_api.h"
 #include "vscf_verify.h"
 #include "vscf_verify_api.h"
-#include "vscf_export_public_key.h"
-#include "vscf_export_public_key_api.h"
-#include "vscf_import_public_key.h"
-#include "vscf_import_public_key_api.h"
+#include "vscf_public_key.h"
+#include "vscf_public_key_api.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -91,9 +87,9 @@ static const vscf_key_api_t key_api = {
     //
     vscf_api_tag_KEY,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
+    //  Return implemented asymmetric key algorithm type.
     //
-    vscf_impl_tag_ED25519_PUBLIC_KEY,
+    (vscf_key_api_alg_fn)vscf_ed25519_public_key_alg,
     //
     //  Length of the key in bytes.
     //
@@ -102,25 +98,6 @@ static const vscf_key_api_t key_api = {
     //  Length of the key in bits.
     //
     (vscf_key_api_key_bitlen_fn)vscf_ed25519_public_key_key_bitlen
-};
-
-//
-//  Configuration of the interface API 'public key api'.
-//
-static const vscf_public_key_api_t public_key_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'public_key' MUST be equal to the 'vscf_api_tag_PUBLIC_KEY'.
-    //
-    vscf_api_tag_PUBLIC_KEY,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_ED25519_PUBLIC_KEY,
-    //
-    //  Link to the inherited interface API 'key'.
-    //
-    &key_api
 };
 
 //
@@ -133,65 +110,58 @@ static const vscf_verify_api_t verify_api = {
     //
     vscf_api_tag_VERIFY,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_ED25519_PUBLIC_KEY,
-    //
     //  Verify data with given public key and signature.
     //
     (vscf_verify_api_verify_fn)vscf_ed25519_public_key_verify
 };
 
 //
-//  Configuration of the interface API 'export public key api'.
+//  Configuration of the interface API 'public key api'.
 //
-static const vscf_export_public_key_api_t export_public_key_api = {
+static const vscf_public_key_api_t public_key_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'export_public_key' MUST be equal to the 'vscf_api_tag_EXPORT_PUBLIC_KEY'.
+    //  For interface 'public_key' MUST be equal to the 'vscf_api_tag_PUBLIC_KEY'.
     //
-    vscf_api_tag_EXPORT_PUBLIC_KEY,
+    vscf_api_tag_PUBLIC_KEY,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
+    //  Link to the inherited interface API 'key'.
     //
-    vscf_impl_tag_ED25519_PUBLIC_KEY,
+    &key_api,
     //
     //  Export public key in the binary format.
     //
-    (vscf_export_public_key_api_export_public_key_fn)vscf_ed25519_public_key_export_public_key,
+    //  Binary format must be defined in the key specification.
+    //  For instance, RSA public key must be exported in format defined in
+    //  RFC 3447 Appendix A.1.1.
+    //
+    (vscf_public_key_api_export_public_key_fn)vscf_ed25519_public_key_export_public_key,
     //
     //  Return length in bytes required to hold exported public key.
     //
-    (vscf_export_public_key_api_exported_public_key_len_fn)vscf_ed25519_public_key_exported_public_key_len
-};
-
-//
-//  Configuration of the interface API 'import public key api'.
-//
-static const vscf_import_public_key_api_t import_public_key_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'import_public_key' MUST be equal to the 'vscf_api_tag_IMPORT_PUBLIC_KEY'.
-    //
-    vscf_api_tag_IMPORT_PUBLIC_KEY,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_ED25519_PUBLIC_KEY,
+    (vscf_public_key_api_exported_public_key_len_fn)vscf_ed25519_public_key_exported_public_key_len,
     //
     //  Import public key from the binary format.
     //
-    (vscf_import_public_key_api_import_public_key_fn)vscf_ed25519_public_key_import_public_key
+    //  Binary format must be defined in the key specification.
+    //  For instance, RSA public key must be imported from the format defined in
+    //  RFC 3447 Appendix A.1.1.
+    //
+    (vscf_public_key_api_import_public_key_fn)vscf_ed25519_public_key_import_public_key,
+    //
+    //  Define whether a public key can be exported or not.
+    //
+    vscf_ed25519_public_key_CAN_EXPORT_PUBLIC_KEY,
+    //
+    //  Defines whether a public key can be imported or not.
+    //
+    vscf_ed25519_public_key_CAN_IMPORT_PUBLIC_KEY
 };
 
 //
 //  Compile-time known information about 'ed25519 public key' implementation.
 //
 static const vscf_impl_info_t info = {
-    //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_ED25519_PUBLIC_KEY,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
@@ -304,15 +274,6 @@ vscf_ed25519_public_key_copy(vscf_ed25519_public_key_impl_t *ed25519_public_key_
 }
 
 //
-//  Returns instance of the implemented interface 'public key'.
-//
-VSCF_PUBLIC const vscf_public_key_api_t *
-vscf_ed25519_public_key_public_key_api(void) {
-
-    return &public_key_api;
-}
-
-//
 //  Return size of 'vscf_ed25519_public_key_impl_t' type.
 //
 VSCF_PUBLIC size_t
@@ -335,10 +296,6 @@ static const vscf_api_t *
 vscf_ed25519_public_key_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
-        case vscf_api_tag_EXPORT_PUBLIC_KEY:
-            return (const vscf_api_t *) &export_public_key_api;
-        case vscf_api_tag_IMPORT_PUBLIC_KEY:
-            return (const vscf_api_t *) &import_public_key_api;
         case vscf_api_tag_KEY:
             return (const vscf_api_t *) &key_api;
         case vscf_api_tag_PUBLIC_KEY:

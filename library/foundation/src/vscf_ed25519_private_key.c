@@ -101,6 +101,16 @@ vscf_ed25519_private_key_cleanup_ctx(vscf_ed25519_private_key_impl_t *ed25519_pr
 }
 
 //
+//  Return implemented asymmetric key algorithm type.
+//
+VSCF_PUBLIC vscf_key_alg_t
+vscf_ed25519_private_key_alg(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl) {
+
+    VSCF_ASSERT_PTR(ed25519_private_key_impl);
+    return vscf_key_alg_ED25519;
+}
+
+//
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
@@ -141,25 +151,6 @@ vscf_ed25519_private_key_generate_key(vscf_ed25519_private_key_impl_t *ed25519_p
 }
 
 //
-//  Extract public part of the key.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_ed25519_private_key_extract_public_key(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl) {
-
-    VSCF_ASSERT_PTR(ed25519_private_key_impl);
-    vscf_ed25519_public_key_impl_t *ed25519_public_key_impl = vscf_ed25519_public_key_new();
-    VSCF_ASSERT_ALLOC(ed25519_public_key_impl != NULL);
-    int ret = ed25519_get_pubkey(ed25519_public_key_impl->public_key, ed25519_private_key_impl->secret_key);
-    VSCF_ASSERT(ret == 0);
-    vscf_ed25519_public_key_impl_t *ed25519_public_key_le_impl = vscf_ed25519_public_key_new();
-    vsc_buffer_t *dst = vsc_buffer_new();
-    vsc_buffer_use(dst, ed25519_public_key_le_impl->public_key, ED25519_KEY_LEN);
-    vscf_endianness_reverse_memcpy(vsc_data(ed25519_public_key_impl->public_key, ED25519_KEY_LEN), dst);
-    vsc_buffer_destroy(&dst);
-    return vscf_ed25519_public_key_impl(ed25519_public_key_le_impl);
-}
-
-//
 //  Sign data given private key.
 //
 VSCF_PUBLIC vscf_error_t
@@ -187,7 +178,30 @@ vscf_ed25519_private_key_signature_len(vscf_ed25519_private_key_impl_t *ed25519_
 }
 
 //
+//  Extract public part of the key.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_ed25519_private_key_extract_public_key(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl) {
+
+    VSCF_ASSERT_PTR(ed25519_private_key_impl);
+    vscf_ed25519_public_key_impl_t *ed25519_public_key_impl = vscf_ed25519_public_key_new();
+    VSCF_ASSERT_ALLOC(ed25519_public_key_impl != NULL);
+    int ret = ed25519_get_pubkey(ed25519_public_key_impl->public_key, ed25519_private_key_impl->secret_key);
+    VSCF_ASSERT(ret == 0);
+    vscf_ed25519_public_key_impl_t *ed25519_public_key_le_impl = vscf_ed25519_public_key_new();
+    vsc_buffer_t *dst = vsc_buffer_new();
+    vsc_buffer_use(dst, ed25519_public_key_le_impl->public_key, ED25519_KEY_LEN);
+    vscf_endianness_reverse_memcpy(vsc_data(ed25519_public_key_impl->public_key, ED25519_KEY_LEN), dst);
+    vsc_buffer_destroy(&dst);
+    return vscf_ed25519_public_key_impl(ed25519_public_key_le_impl);
+}
+
+//
 //  Export private key in the binary format.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA private key must be exported in format defined in
+//  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_error_t
 vscf_ed25519_private_key_export_private_key(
@@ -212,6 +226,10 @@ vscf_ed25519_private_key_exported_private_key_len(vscf_ed25519_private_key_impl_
 
 //
 //  Import private key from the binary format.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA private key must be imported from the format defined in
+//  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_error_t
 vscf_ed25519_private_key_import_private_key(

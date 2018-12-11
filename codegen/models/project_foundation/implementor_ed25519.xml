@@ -16,10 +16,11 @@
       </context>
 
       <interface name="key"/>
-      <interface name="public key"/>
       <interface name="verify"/>
-      <interface name="export public key"/>
-      <interface name="import public key"/>
+      <interface name="public key">
+          <constant name="can import public key" value="true"/>
+          <constant name="can export public key" value="true"/>
+      </interface>
 
     </implementation>
 
@@ -43,10 +44,11 @@
 
       <interface name="key"/>
       <interface name="generate key"/>
-      <interface name="private key"/>
       <interface name="sign"/>
-      <interface name="export private key"/>
-      <interface name="import private key"/>
+      <interface name="private key">
+          <constant name="can import private key" value="true"/>
+          <constant name="can export private key" value="true"/>
+      </interface>
       <interface name="compute shared key"/>
 
     </implementation>

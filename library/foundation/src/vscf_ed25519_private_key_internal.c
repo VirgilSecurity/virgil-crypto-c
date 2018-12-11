@@ -59,14 +59,10 @@
 #include "vscf_key_api.h"
 #include "vscf_generate_key.h"
 #include "vscf_generate_key_api.h"
-#include "vscf_private_key.h"
-#include "vscf_private_key_api.h"
 #include "vscf_sign.h"
 #include "vscf_sign_api.h"
-#include "vscf_export_private_key.h"
-#include "vscf_export_private_key_api.h"
-#include "vscf_import_private_key.h"
-#include "vscf_import_private_key_api.h"
+#include "vscf_private_key.h"
+#include "vscf_private_key_api.h"
 #include "vscf_compute_shared_key.h"
 #include "vscf_compute_shared_key_api.h"
 #include "vscf_random.h"
@@ -96,9 +92,9 @@ static const vscf_key_api_t key_api = {
     //
     vscf_api_tag_KEY,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
+    //  Return implemented asymmetric key algorithm type.
     //
-    vscf_impl_tag_ED25519_PRIVATE_KEY,
+    (vscf_key_api_alg_fn)vscf_ed25519_private_key_alg,
     //
     //  Length of the key in bytes.
     //
@@ -119,37 +115,10 @@ static const vscf_generate_key_api_t generate_key_api = {
     //
     vscf_api_tag_GENERATE_KEY,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_ED25519_PRIVATE_KEY,
-    //
     //  Generate new private or secret key.
     //  Note, this operation can be slow.
     //
     (vscf_generate_key_api_generate_key_fn)vscf_ed25519_private_key_generate_key
-};
-
-//
-//  Configuration of the interface API 'private key api'.
-//
-static const vscf_private_key_api_t private_key_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'private_key' MUST be equal to the 'vscf_api_tag_PRIVATE_KEY'.
-    //
-    vscf_api_tag_PRIVATE_KEY,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_ED25519_PRIVATE_KEY,
-    //
-    //  Link to the inherited interface API 'key'.
-    //
-    &key_api,
-    //
-    //  Extract public part of the key.
-    //
-    (vscf_private_key_api_extract_public_key_fn)vscf_ed25519_private_key_extract_public_key
 };
 
 //
@@ -162,10 +131,6 @@ static const vscf_sign_api_t sign_api = {
     //
     vscf_api_tag_SIGN,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_ED25519_PRIVATE_KEY,
-    //
     //  Sign data given private key.
     //
     (vscf_sign_api_sign_fn)vscf_ed25519_private_key_sign,
@@ -176,45 +141,50 @@ static const vscf_sign_api_t sign_api = {
 };
 
 //
-//  Configuration of the interface API 'export private key api'.
+//  Configuration of the interface API 'private key api'.
 //
-static const vscf_export_private_key_api_t export_private_key_api = {
+static const vscf_private_key_api_t private_key_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'export_private_key' MUST be equal to the 'vscf_api_tag_EXPORT_PRIVATE_KEY'.
+    //  For interface 'private_key' MUST be equal to the 'vscf_api_tag_PRIVATE_KEY'.
     //
-    vscf_api_tag_EXPORT_PRIVATE_KEY,
+    vscf_api_tag_PRIVATE_KEY,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
+    //  Link to the inherited interface API 'key'.
     //
-    vscf_impl_tag_ED25519_PRIVATE_KEY,
+    &key_api,
+    //
+    //  Extract public part of the key.
+    //
+    (vscf_private_key_api_extract_public_key_fn)vscf_ed25519_private_key_extract_public_key,
     //
     //  Export private key in the binary format.
     //
-    (vscf_export_private_key_api_export_private_key_fn)vscf_ed25519_private_key_export_private_key,
+    //  Binary format must be defined in the key specification.
+    //  For instance, RSA private key must be exported in format defined in
+    //  RFC 3447 Appendix A.1.2.
+    //
+    (vscf_private_key_api_export_private_key_fn)vscf_ed25519_private_key_export_private_key,
     //
     //  Return length in bytes required to hold exported private key.
     //
-    (vscf_export_private_key_api_exported_private_key_len_fn)vscf_ed25519_private_key_exported_private_key_len
-};
-
-//
-//  Configuration of the interface API 'import private key api'.
-//
-static const vscf_import_private_key_api_t import_private_key_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'import_private_key' MUST be equal to the 'vscf_api_tag_IMPORT_PRIVATE_KEY'.
-    //
-    vscf_api_tag_IMPORT_PRIVATE_KEY,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_ED25519_PRIVATE_KEY,
+    (vscf_private_key_api_exported_private_key_len_fn)vscf_ed25519_private_key_exported_private_key_len,
     //
     //  Import private key from the binary format.
     //
-    (vscf_import_private_key_api_import_private_key_fn)vscf_ed25519_private_key_import_private_key
+    //  Binary format must be defined in the key specification.
+    //  For instance, RSA private key must be imported from the format defined in
+    //  RFC 3447 Appendix A.1.2.
+    //
+    (vscf_private_key_api_import_private_key_fn)vscf_ed25519_private_key_import_private_key,
+    //
+    //  Define whether a private key can be exported or not.
+    //
+    vscf_ed25519_private_key_CAN_EXPORT_PRIVATE_KEY,
+    //
+    //  Define whether a private key can be imported or not.
+    //
+    vscf_ed25519_private_key_CAN_IMPORT_PRIVATE_KEY
 };
 
 //
@@ -226,10 +196,6 @@ static const vscf_compute_shared_key_api_t compute_shared_key_api = {
     //  For interface 'compute_shared_key' MUST be equal to the 'vscf_api_tag_COMPUTE_SHARED_KEY'.
     //
     vscf_api_tag_COMPUTE_SHARED_KEY,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_ED25519_PRIVATE_KEY,
     //
     //  Compute shared key for 2 asymmetric keys.
     //  Note, shared key can be used only for symmetric cryptography.
@@ -245,10 +211,6 @@ static const vscf_compute_shared_key_api_t compute_shared_key_api = {
 //  Compile-time known information about 'ed25519 private key' implementation.
 //
 static const vscf_impl_info_t info = {
-    //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_ED25519_PRIVATE_KEY,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
@@ -429,12 +391,8 @@ vscf_ed25519_private_key_find_api(vscf_api_tag_t api_tag) {
     switch(api_tag) {
         case vscf_api_tag_COMPUTE_SHARED_KEY:
             return (const vscf_api_t *) &compute_shared_key_api;
-        case vscf_api_tag_EXPORT_PRIVATE_KEY:
-            return (const vscf_api_t *) &export_private_key_api;
         case vscf_api_tag_GENERATE_KEY:
             return (const vscf_api_t *) &generate_key_api;
-        case vscf_api_tag_IMPORT_PRIVATE_KEY:
-            return (const vscf_api_t *) &import_private_key_api;
         case vscf_api_tag_KEY:
             return (const vscf_api_t *) &key_api;
         case vscf_api_tag_PRIVATE_KEY:
