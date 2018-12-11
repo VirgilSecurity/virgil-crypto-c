@@ -77,7 +77,7 @@ initialize(vscr_ratchet_t *ratchet_alice, vscr_ratchet_t *ratchet_bob, RegularMe
     vscr_error_ctx_t error_ctx;
     vscr_error_ctx_reset(&error_ctx);
 
-    vscr_ratchet_respond(ratchet_bob, test_ratchet_shared_secret, ratchet_public_key, *regular_message);
+    vscr_ratchet_respond(ratchet_bob, test_ratchet_shared_secret, ratchet_public_key, regular_message);
 
     vsc_buffer_destroy(&ratchet_private_key);
     vsc_buffer_destroy(&ratchet_public_key);
