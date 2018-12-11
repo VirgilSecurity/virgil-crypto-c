@@ -971,7 +971,7 @@ PHP_FUNCTION(vsce_phe_client_update_enrollment_record_php) {
     //
     //  Parse arguments
     //
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 3, 3)
         Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
         Z_PARAM_STRING_EX(in_enrollment_record, in_enrollment_record_len, 1 /*check_null*/, 0 /*deref and separate*/)
         Z_PARAM_STRING_EX(in_update_token, in_update_token_len, 1 /*check_null*/, 0 /*deref and separate*/)
@@ -1048,7 +1048,7 @@ PHP_FUNCTION(vsce_phe_client_create_verify_password_request_php) {
     //
     //  Parse arguments
     //
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 3, 3)
         Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
         Z_PARAM_STRING_EX(in_password, in_password_len, 1 /*check_null*/, 0 /*deref and separate*/)
         Z_PARAM_STRING_EX(in_enrollment_record, in_enrollment_record_len, 1 /*check_null*/, 0 /*deref and separate*/)
@@ -1128,7 +1128,7 @@ PHP_FUNCTION(vsce_phe_client_check_response_and_decrypt_php) {
     //
     //  Parse arguments
     //
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 4, 4)
         Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
         Z_PARAM_STRING_EX(in_password, in_password_len, 1 /*check_null*/, 0 /*deref and separate*/)
         Z_PARAM_STRING_EX(in_enrollment_record, in_enrollment_record_len, 1 /*check_null*/, 0 /*deref and separate*/)
@@ -1207,7 +1207,7 @@ PHP_FUNCTION(vsce_phe_client_set_keys_php) {
     //
     //  Parse arguments
     //
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 3, 3)
         Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
         Z_PARAM_STRING_EX(in_client_private_key, in_client_private_key_len, 1 /*check_null*/, 0 /*deref and separate*/)
         Z_PARAM_STRING_EX(in_server_public_key, in_server_public_key_len, 1 /*check_null*/, 0 /*deref and separate*/)
