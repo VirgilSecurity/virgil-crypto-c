@@ -99,7 +99,7 @@ import VSCFoundation
     case badPem = -215
 
     /// Exchange key return zero.
-    case sharedKeyExchangeFailed = -301
+    case sharedKeyExchangeFailed = -216
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC error: vscf_error_t) {
