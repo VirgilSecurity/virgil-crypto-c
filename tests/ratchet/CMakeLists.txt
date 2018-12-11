@@ -50,8 +50,6 @@ macro(_add_test test)
     endif()
 endmacro()
 
-_add_test (test_ratchet_regular_message)
-_add_test (test_ratchet_prekey_message)
 _add_test (test_ratchet_message)
 _add_test (test_ratchet)
 _add_test (test_ratchet_session)
