@@ -7,8 +7,7 @@
 
 #include "vscf_assert.h"
 
-#include "vscf_export_public_key.h"
-#include "vscf_export_private_key.h"
+#include "vscf_public_key.h"
 #include "vscf_ed25519_private_key.h"
 #include "vscf_ed25519_public_key.h"
 #include "vscf_fake_random.h"
@@ -60,9 +59,9 @@ test__ed25519_private_key_extract_public_key__from_imported_PRIVATE_KEY__when_ex
     TEST_ASSERT_NOT_NULL(public_key_impl);
 
     vsc_buffer_t *exported_key_buf =
-            vsc_buffer_new_with_capacity(vscf_export_public_key_exported_public_key_len(public_key_impl));
+            vsc_buffer_new_with_capacity(vscf_public_key_exported_public_key_len(public_key_impl));
 
-    vscf_error_t export_err = vscf_export_public_key(public_key_impl, exported_key_buf);
+    vscf_error_t export_err = vscf_public_key_export_public_key(public_key_impl, exported_key_buf);
     VSCF_ASSERT(export_err == vscf_SUCCESS);
 
     //  Check

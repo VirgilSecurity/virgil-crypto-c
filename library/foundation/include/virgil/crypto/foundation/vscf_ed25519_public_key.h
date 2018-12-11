@@ -55,7 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_public_key.h"
+#include "vscf_key_alg.h"
 #include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -82,6 +82,20 @@ extern "C" {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Public integral constants.
+//
+enum {
+    //
+    //  Defines whether a public key can be imported or not.
+    //
+    vscf_ed25519_public_key_CAN_IMPORT_PUBLIC_KEY = true,
+    //
+    //  Define whether a public key can be exported or not.
+    //
+    vscf_ed25519_public_key_CAN_EXPORT_PUBLIC_KEY = true
+};
 
 //
 //  Handles implementation details.
@@ -143,10 +157,10 @@ VSCF_PUBLIC vscf_ed25519_public_key_impl_t *
 vscf_ed25519_public_key_copy(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl);
 
 //
-//  Returns instance of the implemented interface 'public key'.
+//  Return implemented asymmetric key algorithm type.
 //
-VSCF_PUBLIC const vscf_public_key_api_t *
-vscf_ed25519_public_key_public_key_api(void);
+VSCF_PUBLIC vscf_key_alg_t
+vscf_ed25519_public_key_alg(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl);
 
 //
 //  Length of the key in bytes.
@@ -170,6 +184,10 @@ vscf_ed25519_public_key_verify(vscf_ed25519_public_key_impl_t *ed25519_public_ke
 //
 //  Export public key in the binary format.
 //
+//  Binary format must be defined in the key specification.
+//  For instance, RSA public key must be exported in format defined in
+//  RFC 3447 Appendix A.1.1.
+//
 VSCF_PUBLIC vscf_error_t
 vscf_ed25519_public_key_export_public_key(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_buffer_t *out);
 
@@ -181,6 +199,10 @@ vscf_ed25519_public_key_exported_public_key_len(vscf_ed25519_public_key_impl_t *
 
 //
 //  Import public key from the binary format.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA public key must be imported from the format defined in
+//  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_error_t
 vscf_ed25519_public_key_import_public_key(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_data_t data);

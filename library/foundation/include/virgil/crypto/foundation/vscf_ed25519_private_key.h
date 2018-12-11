@@ -55,6 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
+#include "vscf_key_alg.h"
 #include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -81,6 +82,20 @@ extern "C" {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Public integral constants.
+//
+enum {
+    //
+    //  Define whether a private key can be imported or not.
+    //
+    vscf_ed25519_private_key_CAN_IMPORT_PRIVATE_KEY = true,
+    //
+    //  Define whether a private key can be exported or not.
+    //
+    vscf_ed25519_private_key_CAN_EXPORT_PRIVATE_KEY = true
+};
 
 //
 //  Handles implementation details.
@@ -161,6 +176,12 @@ VSCF_PUBLIC void
 vscf_ed25519_private_key_release_random(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl);
 
 //
+//  Return implemented asymmetric key algorithm type.
+//
+VSCF_PUBLIC vscf_key_alg_t
+vscf_ed25519_private_key_alg(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl);
+
+//
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
@@ -180,12 +201,6 @@ VSCF_PUBLIC vscf_error_t
 vscf_ed25519_private_key_generate_key(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl);
 
 //
-//  Extract public part of the key.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_ed25519_private_key_extract_public_key(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl);
-
-//
 //  Sign data given private key.
 //
 VSCF_PUBLIC vscf_error_t
@@ -199,7 +214,17 @@ VSCF_PUBLIC size_t
 vscf_ed25519_private_key_signature_len(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl);
 
 //
+//  Extract public part of the key.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_ed25519_private_key_extract_public_key(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl);
+
+//
 //  Export private key in the binary format.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA private key must be exported in format defined in
+//  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_error_t
 vscf_ed25519_private_key_export_private_key(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl,
@@ -213,6 +238,10 @@ vscf_ed25519_private_key_exported_private_key_len(vscf_ed25519_private_key_impl_
 
 //
 //  Import private key from the binary format.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA private key must be imported from the format defined in
+//  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_error_t
 vscf_ed25519_private_key_import_private_key(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vsc_data_t data);

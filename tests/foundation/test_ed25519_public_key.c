@@ -7,7 +7,6 @@
 
 #include "vscf_assert.h"
 
-#include "vscf_export_public_key.h"
 #include "vscf_ed25519_public_key.h"
 #include "vscf_random.h"
 #include "vscf_fake_random.h"

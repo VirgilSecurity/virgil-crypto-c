@@ -98,6 +98,16 @@ vscf_ed25519_public_key_cleanup_ctx(vscf_ed25519_public_key_impl_t *ed25519_publ
 }
 
 //
+//  Return implemented asymmetric key algorithm type.
+//
+VSCF_PUBLIC vscf_key_alg_t
+vscf_ed25519_public_key_alg(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
+
+    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    return vscf_key_alg_ED25519;
+}
+
+//
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
@@ -134,6 +144,10 @@ vscf_ed25519_public_key_verify(
 //
 //  Export public key in the binary format.
 //
+//  Binary format must be defined in the key specification.
+//  For instance, RSA public key must be exported in format defined in
+//  RFC 3447 Appendix A.1.1.
+//
 VSCF_PUBLIC vscf_error_t
 vscf_ed25519_public_key_export_public_key(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_buffer_t *out) {
 
@@ -156,6 +170,10 @@ vscf_ed25519_public_key_exported_public_key_len(vscf_ed25519_public_key_impl_t *
 
 //
 //  Import public key from the binary format.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA public key must be imported from the format defined in
+//  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_error_t
 vscf_ed25519_public_key_import_public_key(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_data_t data) {
