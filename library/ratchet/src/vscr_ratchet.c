@@ -621,7 +621,7 @@ vscr_ratchet_encrypt_len(vscr_ratchet_t *ratchet_ctx, size_t plain_text_len) {
     //       cipher_text OCTET_STRING }
 
     size_t top_sequence_len = 1 + 3 /* SEQUENCE */
-                              + 1 + 1 + 2 /* INTEGER */
+                              + 1 + 1 + 5 /* INTEGER */
                               + 1 + 1 + 5 /* INTEGER */
                               + 1 + 1 + 32 /* public_key */
                               + 1 + 3 + vscr_ratchet_cipher_encrypt_len(ratchet_ctx->cipher, plain_text_len); /* cipher_text */
@@ -916,7 +916,7 @@ vscr_ratchet_serialize_len(vscr_ratchet_t *ratchet_ctx) {
     //       root key OCTET_STRING }
 
     size_t top_sequence_len = 1 + 3 /* SEQUENCE */
-                              + 1 + 1 + 2 /* INTEGER */
+                              + 1 + 1 + 5 /* INTEGER */
                               + 1 + 1 + 32 /* KEY */
                               + 1 + 1 + 32 /* KEY */
                               + 1 + 1 + 32 /* KEY */

@@ -488,27 +488,19 @@ vscr_ratchet_session_encrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, si
 
     VSCR_ASSERT_PTR(ratchet_session_ctx);
 
-    // FIXME
-    if (ratchet_session_ctx->received_first_response) {
-        size_t top_sequence_len = 1 + 3 /* SEQUENCE */
-                                + 1 + 1 + 2 /* INTEGER */
-                                + 1 + 1 + 2 /* INTEGER */
-                                + 1 + 3 + vscr_ratchet_encrypt_len(ratchet_session_ctx->ratchet, plain_text_len); /* message */
-        return top_sequence_len;
-    } else {
-        size_t top_sequence_len = 1 + 3 /* SEQUENCE */
-                                  + 1 + 1 + 2 /* INTEGER */
-                                  + 1 + 1 + 2 /* INTEGER */
-                                  + 1 + 3 /* SEQUENCE */
-                                  + 1 + 1 + 2 /* version */
-                                  + 1 + 1 + 32 /* sender_identity_key */
-                                  + 1 + 1 + 32 /* sender_ephemeral_key */
-                                  + 1 + 1 + 32 /* receiver_long_term_key */
-                                  + 1 + 1 + 32 /* receiver_one_time_public_key */
-                                  + 1 + 3 + vscr_ratchet_encrypt_len(ratchet_session_ctx->ratchet, plain_text_len); /* message */
+    size_t top_sequence_len = 1 + 3 /* SEQUENCE */
+                              + 1 + 1 + 5 /* VERSION */
+                              + 1 + 3 + vscr_ratchet_encrypt_len(ratchet_session_ctx->ratchet, plain_text_len); /* message */
 
-        return top_sequence_len;
+    if (!ratchet_session_ctx->received_first_response) {
+        top_sequence_len += 1 + 1 + 5 /* version */
+                            + 1 + 1 + 32 /* sender_identity_key */
+                            + 1 + 1 + 32 /* sender_ephemeral_key */
+                            + 1 + 1 + 32 /* receiver_long_term_key */
+                            + 1 + 1 + 32; /* receiver_one_time_public_key */
     }
+
+    return top_sequence_len;
 }
 
 VSCR_PUBLIC vscr_error_t
@@ -646,7 +638,7 @@ vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *ratchet_session_ctx) 
     //       ratchet OCTET_STRING }
 
     size_t top_sequence_len = 1 + 3 /* SEQUENCE */
-                              + 1 + 1 + 2 /* INTEGER */
+                              + 1 + 1 + 5 /* INTEGER */
                               + 1 + 1 + 32 /* KEY */
                               + 1 + 1 + 32 /* KEY */
                               + 1 + 1 + 32 /* KEY */
