@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Converter between big endian and little endian datas
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,22 +50,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Defines enumeration of possible asymmetric key algorithms.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_KEY_ALG_H_INCLUDED
-#define VSCF_KEY_ALG_H_INCLUDED
+#include "vscf_endianness.h"
+#include "vscf_memory.h"
+#include "vscf_assert.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -67,16 +63,6 @@ extern "C" {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Defines enumeration of possible asymmetric key algorithms.
-//
-enum vscf_key_alg_t {
-    vscf_key_alg_NONE = 0,
-    vscf_key_alg_RSA,
-    vscf_key_alg_ED25519
-};
-typedef enum vscf_key_alg_t vscf_key_alg_t;
 
 
 // --------------------------------------------------------------------------
@@ -86,11 +72,19 @@ typedef enum vscf_key_alg_t vscf_key_alg_t;
 //  @end
 
 
-#ifdef __cplusplus
+//
+//  Copy memory buffer with convertion from little endian to big endian and back
+//
+VSCF_PUBLIC void
+vscf_endianness_reverse_memcpy(vsc_data_t src, vsc_buffer_t *dst) {
+
+    VSCF_ASSERT(vsc_data_is_valid(src));
+    VSCF_ASSERT_PTR(dst);
+    VSCF_ASSERT(vsc_buffer_is_valid(dst));
+    byte *dest = vsc_buffer_ptr(dst);
+    VSCF_ASSERT(src.len <= vsc_buffer_left(dst));
+    for (size_t i = 0; i < src.len; i++) {
+        dest[src.len - 1 - i] = src.bytes[i];
+    }
+    vsc_buffer_increase_used_bytes(dst, src.len);
 }
-#endif
-
-
-//  @footer
-#endif // VSCF_KEY_ALG_H_INCLUDED
-//  @end

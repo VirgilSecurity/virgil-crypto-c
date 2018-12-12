@@ -47,11 +47,20 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Defines enumeration of possible asymmetric key algorithms.
+//  Types of the 'ed25519 public key' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_KEY_ALG_H_INCLUDED
-#define VSCF_KEY_ALG_H_INCLUDED
+#ifndef VSCF_ED25519_PUBLIC_KEY_IMPL_H_INCLUDED
+#define VSCF_ED25519_PUBLIC_KEY_IMPL_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_impl_private.h"
+#include "vscf_ed25519_public_key.h"
+
+#include <ed25519/ed25519.h>
 
 // clang-format on
 //  @end
@@ -69,14 +78,26 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Defines enumeration of possible asymmetric key algorithms.
+//  Handles implementation details.
 //
-enum vscf_key_alg_t {
-    vscf_key_alg_NONE = 0,
-    vscf_key_alg_RSA,
-    vscf_key_alg_ED25519
+struct vscf_ed25519_public_key_impl_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Implementation specific context.
+    //
+    byte public_key[ED25519_KEY_LEN];
+    //
+    //  Implementation specific context.
+    //
+    byte signature[ED25519_KEY_LEN];
 };
-typedef enum vscf_key_alg_t vscf_key_alg_t;
 
 
 // --------------------------------------------------------------------------
@@ -92,5 +113,5 @@ typedef enum vscf_key_alg_t vscf_key_alg_t;
 
 
 //  @footer
-#endif // VSCF_KEY_ALG_H_INCLUDED
+#endif // VSCF_ED25519_PUBLIC_KEY_IMPL_H_INCLUDED
 //  @end
