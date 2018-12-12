@@ -57,7 +57,7 @@ class PHEServer
      */
     public function __destruct()
     {
-        vsce_phe_client_delete_php($this->c_ctx);
+        vsce_phe_server_delete_php($this->c_ctx);
     }
 
     /**
@@ -67,14 +67,6 @@ class PHEServer
     public function generateServerKeyPair(): array
     {
         return vsce_phe_server_generate_server_key_pair_php($this->c_ctx);
-    }
-
-    /**
-     * @return int
-     */
-    public function enrollmentResponseLen(): int
-    {
-        return vsce_phe_server_enrollment_response_len_php($this->c_ctx);
     }
 
     /**
@@ -89,14 +81,6 @@ class PHEServer
     }
 
     /**
-     * @return int
-     */
-    public function verifyPasswordResponseLen(): int
-    {
-        return vsce_phe_server_verify_password_response_len_php($this->c_ctx);
-    }
-
-    /**
      * @param string $serverPrivateKey
      * @param string $serverPublicKey
      * @param $verifyPasswordRequest
@@ -106,14 +90,6 @@ class PHEServer
     public function verifyPassword(string $serverPrivateKey, string $serverPublicKey, $verifyPasswordRequest): string
     {
         return vsce_phe_server_verify_password_php($this->c_ctx, $serverPrivateKey, $serverPublicKey, $verifyPasswordRequest);
-    }
-
-    /**
-     * @return int
-     */
-    public function updateTokenLen(): int
-    {
-        return vsce_phe_server_update_token_len_php($this->c_ctx);
     }
 
     /**
