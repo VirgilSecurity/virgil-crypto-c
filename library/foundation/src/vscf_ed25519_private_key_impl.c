@@ -37,6 +37,15 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'ed25519 private key' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,22 +53,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Defines enumeration of possible asymmetric key algorithms.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_KEY_ALG_H_INCLUDED
-#define VSCF_KEY_ALG_H_INCLUDED
+#include "vscf_ed25519_private_key_impl.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -68,29 +65,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Defines enumeration of possible asymmetric key algorithms.
-//
-enum vscf_key_alg_t {
-    vscf_key_alg_NONE = 0,
-    vscf_key_alg_RSA,
-    vscf_key_alg_ED25519
-};
-typedef enum vscf_key_alg_t vscf_key_alg_t;
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_KEY_ALG_H_INCLUDED
 //  @end

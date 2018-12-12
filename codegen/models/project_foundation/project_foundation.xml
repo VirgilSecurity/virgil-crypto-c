@@ -100,12 +100,14 @@
     <class name="base64"/>
     <class name="pem"/>
     <class name="pem title"/>
+    <class name="endianness"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>
     <implementor name="mbedtls rng"/>
     <implementor name="virgil"/>
     <implementor name="virgil pkcs8"/>
+    <implementor name="ed25519"/>
 
     <module name="mbedtls bridge random"/>
     <module name="mbedtls bridge entropy"/>
