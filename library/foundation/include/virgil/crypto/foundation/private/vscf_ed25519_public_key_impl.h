@@ -44,10 +44,23 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCE_PHE_COMMON_H_INCLUDED
-#define VSCE_PHE_COMMON_H_INCLUDED
 
-#include "vsce_library.h"
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'ed25519 public key' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_ED25519_PUBLIC_KEY_IMPL_H_INCLUDED
+#define VSCF_ED25519_PUBLIC_KEY_IMPL_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_impl_private.h"
+#include "vscf_ed25519_public_key.h"
+
+#include <ed25519/ed25519.h>
 
 // clang-format on
 //  @end
@@ -65,41 +78,25 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Public integral constants.
+//  Handles implementation details.
 //
-enum {
+struct vscf_ed25519_public_key_impl_t {
     //
-    //  PHE elliptic curve point binary length
+    //  Compile-time known information about this implementation.
     //
-    vsce_phe_common_PHE_POINT_LENGTH = 65,
+    const vscf_impl_info_t *info;
     //
-    //  PHE max password length
+    //  Reference counter.
     //
-    vsce_phe_common_PHE_MAX_PASSWORD_LENGTH = 128,
+    size_t refcnt;
     //
-    //  PHE server identifier length
+    //  Implementation specific context.
     //
-    vsce_phe_common_PHE_SERVER_IDENTIFIER_LENGTH = 32,
+    byte public_key[ED25519_KEY_LEN];
     //
-    //  PHE client identifier length
+    //  Implementation specific context.
     //
-    vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH = 32,
-    //
-    //  PHE account key length
-    //
-    vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH = 32,
-    //
-    //  PHE private key length
-    //
-    vsce_phe_common_PHE_PRIVATE_KEY_LENGTH = 32,
-    //
-    //  PHE public key length
-    //
-    vsce_phe_common_PHE_PUBLIC_KEY_LENGTH = 65,
-    //
-    //  PHE hash length
-    //
-    vsce_phe_common_PHE_HASH_LEN = 32
+    byte signature[ED25519_KEY_LEN];
 };
 
 
@@ -116,5 +113,5 @@ enum {
 
 
 //  @footer
-#endif // VSCE_PHE_COMMON_H_INCLUDED
+#endif // VSCF_ED25519_PUBLIC_KEY_IMPL_H_INCLUDED
 //  @end

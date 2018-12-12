@@ -37,6 +37,15 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'ed25519 private key' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,18 +53,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCE_PHE_COMMON_H_INCLUDED
-#define VSCE_PHE_COMMON_H_INCLUDED
-
-#include "vsce_library.h"
+#include "vscf_ed25519_private_key_impl.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -64,57 +65,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Public integral constants.
-//
-enum {
-    //
-    //  PHE elliptic curve point binary length
-    //
-    vsce_phe_common_PHE_POINT_LENGTH = 65,
-    //
-    //  PHE max password length
-    //
-    vsce_phe_common_PHE_MAX_PASSWORD_LENGTH = 128,
-    //
-    //  PHE server identifier length
-    //
-    vsce_phe_common_PHE_SERVER_IDENTIFIER_LENGTH = 32,
-    //
-    //  PHE client identifier length
-    //
-    vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH = 32,
-    //
-    //  PHE account key length
-    //
-    vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH = 32,
-    //
-    //  PHE private key length
-    //
-    vsce_phe_common_PHE_PRIVATE_KEY_LENGTH = 32,
-    //
-    //  PHE public key length
-    //
-    vsce_phe_common_PHE_PUBLIC_KEY_LENGTH = 65,
-    //
-    //  PHE hash length
-    //
-    vsce_phe_common_PHE_HASH_LEN = 32
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCE_PHE_COMMON_H_INCLUDED
 //  @end

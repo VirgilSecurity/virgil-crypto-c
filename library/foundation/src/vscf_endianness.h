@@ -44,10 +44,26 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCE_PHE_COMMON_H_INCLUDED
-#define VSCE_PHE_COMMON_H_INCLUDED
 
-#include "vsce_library.h"
+//  @description
+// --------------------------------------------------------------------------
+//  Converter between big endian and little endian datas
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_ENDIANNESS_H_INCLUDED
+#define VSCF_ENDIANNESS_H_INCLUDED
+
+#include "vscf_library.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -65,42 +81,10 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Public integral constants.
+//  Copy memory buffer with convertion from little endian to big endian and back
 //
-enum {
-    //
-    //  PHE elliptic curve point binary length
-    //
-    vsce_phe_common_PHE_POINT_LENGTH = 65,
-    //
-    //  PHE max password length
-    //
-    vsce_phe_common_PHE_MAX_PASSWORD_LENGTH = 128,
-    //
-    //  PHE server identifier length
-    //
-    vsce_phe_common_PHE_SERVER_IDENTIFIER_LENGTH = 32,
-    //
-    //  PHE client identifier length
-    //
-    vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH = 32,
-    //
-    //  PHE account key length
-    //
-    vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH = 32,
-    //
-    //  PHE private key length
-    //
-    vsce_phe_common_PHE_PRIVATE_KEY_LENGTH = 32,
-    //
-    //  PHE public key length
-    //
-    vsce_phe_common_PHE_PUBLIC_KEY_LENGTH = 65,
-    //
-    //  PHE hash length
-    //
-    vsce_phe_common_PHE_HASH_LEN = 32
-};
+VSCF_PUBLIC void
+vscf_endianness_reverse_memcpy(vsc_data_t src, vsc_buffer_t *dst);
 
 
 // --------------------------------------------------------------------------
@@ -116,5 +100,5 @@ enum {
 
 
 //  @footer
-#endif // VSCE_PHE_COMMON_H_INCLUDED
+#endif // VSCF_ENDIANNESS_H_INCLUDED
 //  @end
