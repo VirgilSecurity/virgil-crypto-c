@@ -96,6 +96,8 @@ option(VSCF_PKCS8_DER_SERIALIZER "Enable implementation 'pkcs8 der serializer'."
 option(VSCF_PKCS8_DER_DESERIALIZER "Enable implementation 'pkcs8 der deserializer'." ON)
 option(VSCF_PKCS8_SERIALIZER "Enable implementation 'pkcs8 serializer'." ON)
 option(VSCF_PKCS8_DESERIALIZER "Enable implementation 'pkcs8 deserializer'." ON)
+option(VSCF_ED25519_PUBLIC_KEY "Enable implementation 'ed25519 public key'." ON)
+option(VSCF_ED25519_PRIVATE_KEY "Enable implementation 'ed25519 private key'." ON)
 option(VSCF_ERROR_CTX "Enable class 'error ctx'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER "Enable class 'mbedtls bignum asn1 writer'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_READER "Enable class 'mbedtls bignum asn1 reader'." ON)
@@ -105,6 +107,7 @@ option(VSCF_OID "Enable class 'oid'." ON)
 option(VSCF_BASE64 "Enable class 'base64'." ON)
 option(VSCF_PEM "Enable class 'pem'." ON)
 option(VSCF_PEM_TITLE "Enable class 'pem title'." ON)
+option(VSCF_ENDIANNESS "Enable class 'endianness'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_DEFAULTS
@@ -157,6 +160,8 @@ mark_as_advanced(
         VSCF_PKCS8_DER_DESERIALIZER
         VSCF_PKCS8_SERIALIZER
         VSCF_PKCS8_DESERIALIZER
+        VSCF_ED25519_PUBLIC_KEY
+        VSCF_ED25519_PRIVATE_KEY
         VSCF_ERROR_CTX
         VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
         VSCF_MBEDTLS_BIGNUM_ASN1_READER
@@ -166,6 +171,7 @@ mark_as_advanced(
         VSCF_BASE64
         VSCF_PEM
         VSCF_PEM_TITLE
+        VSCF_ENDIANNESS
         )
 
 if(VSCF_CIPHER AND NOT VSCF_ENCRYPT)
@@ -812,6 +818,51 @@ if(VSCF_PKCS8_DESERIALIZER AND NOT VSCF_KEY_DESERIALIZER)
     message("--")
     message("Feature VSCF_PKCS8_DESERIALIZER depends on the feature:")
     message("     VSCF_KEY_DESERIALIZER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ED25519_PUBLIC_KEY AND NOT ED25519_LIBRARY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ED25519_PUBLIC_KEY depends on the feature:")
+    message("     ED25519_LIBRARY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ED25519_PUBLIC_KEY AND NOT VSCF_ENDIANNESS)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ED25519_PUBLIC_KEY depends on the feature:")
+    message("     VSCF_ENDIANNESS - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ED25519_PRIVATE_KEY AND NOT ED25519_LIBRARY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ED25519_PRIVATE_KEY depends on the feature:")
+    message("     ED25519_LIBRARY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ED25519_PRIVATE_KEY AND NOT VSCF_ENDIANNESS)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ED25519_PRIVATE_KEY depends on the feature:")
+    message("     VSCF_ENDIANNESS - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ED25519_PRIVATE_KEY AND NOT VSCF_RANDOM)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ED25519_PRIVATE_KEY depends on the feature:")
+    message("     VSCF_RANDOM - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
