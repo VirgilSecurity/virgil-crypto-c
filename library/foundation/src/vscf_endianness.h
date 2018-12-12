@@ -47,11 +47,23 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Defines enumeration of possible asymmetric key algorithms.
+//  Converter between big endian and little endian datas
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_KEY_ALG_H_INCLUDED
-#define VSCF_KEY_ALG_H_INCLUDED
+#ifndef VSCF_ENDIANNESS_H_INCLUDED
+#define VSCF_ENDIANNESS_H_INCLUDED
+
+#include "vscf_library.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -69,14 +81,10 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Defines enumeration of possible asymmetric key algorithms.
+//  Copy memory buffer with convertion from little endian to big endian and back
 //
-enum vscf_key_alg_t {
-    vscf_key_alg_NONE = 0,
-    vscf_key_alg_RSA,
-    vscf_key_alg_ED25519
-};
-typedef enum vscf_key_alg_t vscf_key_alg_t;
+VSCF_PUBLIC void
+vscf_endianness_reverse_memcpy(vsc_data_t src, vsc_buffer_t *dst);
 
 
 // --------------------------------------------------------------------------
@@ -92,5 +100,5 @@ typedef enum vscf_key_alg_t vscf_key_alg_t;
 
 
 //  @footer
-#endif // VSCF_KEY_ALG_H_INCLUDED
+#endif // VSCF_ENDIANNESS_H_INCLUDED
 //  @end

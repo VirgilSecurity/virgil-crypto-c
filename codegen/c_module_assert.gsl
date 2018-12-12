@@ -105,7 +105,7 @@ function c_module_assert_extend (module, project, projects_api)
                     .(c_class_assert_method_trigger)(error_message, file, line);
                 ")
 
-                my.method_code ?= ""
+                my.method_code = ""
                 my.method_code += my.method_part1 + terminator
                 my.method_code += my.method_part2 + terminator
 

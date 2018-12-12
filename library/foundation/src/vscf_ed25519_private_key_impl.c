@@ -39,10 +39,10 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Implements custom assert mechanism, which:
-//      - allows to choose assertion handler from predefined set,
-//        or provide custom assertion handler;
-//      - allows to choose which assertion leave in production build.
+//  Types of the 'ed25519 private key' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
 
@@ -53,12 +53,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsce_assert.h"
-
-#include <virgil/crypto/foundation/vscf_error.h>
-#include <mbedtls/config.h>
-#include <mbedtls/error.h>
-#include <stdio.h>
+#include "vscf_ed25519_private_key_impl.h"
 
 // clang-format on
 //  @end
@@ -69,102 +64,6 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Return pointer to the last component in the path.
-//
-static const char *
-vsce_assert_path_basename(const char *path);
-
-//
-//  Active handler for assertion fail.
-//
-static vsce_assert_handler_fn active_handler = vsce_assert_abort;
-
-//
-//  Change active assertion handler.
-//
-VSCE_PUBLIC void
-vsce_assert_change_handler(vsce_assert_handler_fn handler_cb) {
-
-    VSCE_ASSERT (handler_cb);
-    active_handler = handler_cb;
-}
-
-//
-//  Assertion handler, that print given information and abort program.
-//  This is default handler.
-//
-VSCE_PUBLIC void
-vsce_assert_abort(const char *message, const char *file, int line) {
-
-    printf ("Assertion failed: %s, file %s, line %d\n",
-            message, vsce_assert_path_basename (file), line);
-
-    printf ("Abort");
-
-    abort ();
-}
-
-//
-//  Trigger active assertion handler.
-//
-VSCE_PUBLIC void
-vsce_assert_trigger(const char *message, const char *file, int line) {
-
-    active_handler (message, file, line);
-}
-
-//
-//  Return pointer to the last component in the path.
-//
-static const char *
-vsce_assert_path_basename(const char *path) {
-
-    const char *result = path;
-    for (const char *symbol = path; *symbol != '\0' && (symbol - path < 255); ++symbol) {
-
-        const char *next_symbol = symbol + 1;
-
-        if (*next_symbol != '\0' && (*symbol == '\\' || *symbol == '/')) {
-            result = next_symbol;
-        }
-    }
-
-    return result;
-}
-
-//
-//  Tell assertion handler that error of project 'foundation' is not handled.
-//
-VSCE_PUBLIC void
-vsce_assert_trigger_unhandled_error_of_project_foundation(int error, const char *file, int line) {
-
-    char error_message[48] = {0x00};
-    snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
-
-    vsce_assert_trigger(error_message, file, line);
-}
-
-//
-//  Tell assertion handler that error of library 'mbedtls' is not handled.
-//
-VSCE_PUBLIC void
-vsce_assert_trigger_unhandled_error_of_library_mbedtls(int error, const char *file, int line) {
-
-    #if defined(MBEDTLS_ERROR_C)
-        char error_message[256] = {0x00};
-        mbedtls_strerror(error, error_message, sizeof(error_message));
-    #else
-        char error_message[32] = {0x00};
-        if (error < 0) {
-            error = -error;
-        }
-        snprintf(error_message, sizeof(error_message), "Unhandled mbedTLS error -0x%04x", error);
-    #endif
-
-    vsce_assert_trigger(error_message, file, line);
-}
 
 
 // --------------------------------------------------------------------------
