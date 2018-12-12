@@ -110,7 +110,9 @@ option(VIRGIL_INSTALL_DEPS_CMAKE "Install dependencies CMake configuration file"
 #
 # Wrappers
 #
-option(VIRGIL_INSTALL_WRAP_STANDALONE "Install each wrapper to separate directory" ON)
+option(VIRGIL_INSTALL_WRAP_SRCS "Install wrapper sources" ON)
+option(VIRGIL_INSTALL_WRAP_LIBS "Install wrapper libraries" ON)
+option(VIRGIL_INSTALL_WRAP_DEPS "Install wrapper dependencies" ON)
 
 
 # ---------------------------------------------------------------------------
@@ -121,11 +123,6 @@ option(VIRGIL_INSTALL_WRAP_STANDALONE "Install each wrapper to separate director
 # Use common options from the module 'GNUInstallDirs'.
 #
 include(GNUInstallDirs)
-
-#
-# Define installation options for wrappers.
-#
-set(VIRGIL_INSTALL_WRAP_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Path where available wrappers will be installed")
 
 
 # ---------------------------------------------------------------------------
