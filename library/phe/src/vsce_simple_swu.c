@@ -208,42 +208,42 @@ vsce_simple_swu_init_ctx(vsce_simple_swu_t *simple_swu_ctx) {
 
     int mbedtls_status = 0;
     mbedtls_status = mbedtls_ecp_group_load(&simple_swu_ctx->group, MBEDTLS_ECP_DP_SECP256R1);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_mpi_init(&simple_swu_ctx->group.A);
     mbedtls_status = mbedtls_mpi_sub_int(&simple_swu_ctx->group.A, &simple_swu_ctx->group.P, 3);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_mpi_init(&simple_swu_ctx->two);
     mbedtls_status = mbedtls_mpi_lset(&simple_swu_ctx->two, 2);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_mpi_init(&simple_swu_ctx->three);
     mbedtls_status = mbedtls_mpi_lset(&simple_swu_ctx->three, 3);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_mpi_init(&simple_swu_ctx->p34);
     mbedtls_status = mbedtls_mpi_copy(&simple_swu_ctx->p34, &simple_swu_ctx->group.P);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_sub_int(&simple_swu_ctx->p34, &simple_swu_ctx->p34, 3);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_div_int(&simple_swu_ctx->p34, NULL, &simple_swu_ctx->p34, 4);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_mpi_init(&simple_swu_ctx->p14);
     mbedtls_status = mbedtls_mpi_copy(&simple_swu_ctx->p14, &simple_swu_ctx->group.P);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_add_int(&simple_swu_ctx->p14, &simple_swu_ctx->p14, 1);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_div_int(&simple_swu_ctx->p14, NULL, &simple_swu_ctx->p14, 4);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_mpi_init(&simple_swu_ctx->mba);
     mbedtls_status = mbedtls_mpi_inv_mod(&simple_swu_ctx->mba, &simple_swu_ctx->group.A, &simple_swu_ctx->group.P);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_mul_mpi(&simple_swu_ctx->mba, &simple_swu_ctx->mba, &simple_swu_ctx->group.B);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_sub_mpi(&simple_swu_ctx->mba, &simple_swu_ctx->group.P, &simple_swu_ctx->mba);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 }
 
 //
@@ -278,109 +278,109 @@ vsce_simple_swu_bignum_to_point(vsce_simple_swu_t *simple_swu_ctx, const mbedtls
     //   alpha = -t^2
     int mbedtls_status = 0;
     mbedtls_status = mbedtls_mpi_exp_mod(&alpha, t, &simple_swu_ctx->two, &simple_swu_ctx->group.P, NULL /* FIXME */);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_sub_mpi(&alpha, &simple_swu_ctx->group.P, &alpha);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     //    x2 = -(b / a) * (1 + 1/(alpha^2+alpha))
     mbedtls_mpi x2;
     mbedtls_mpi_init(&x2);
 
     mbedtls_status = mbedtls_mpi_copy(&x2, &alpha);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_exp_mod(&x2, &x2, &simple_swu_ctx->two, &simple_swu_ctx->group.P, NULL /* FIXME */);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_add_mpi(&x2, &x2, &alpha);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_inv_mod(&x2, &x2, &simple_swu_ctx->group.P);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_add_int(&x2, &x2, 1);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_mul_mpi(&x2, &x2, &simple_swu_ctx->mba);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_mod_mpi(&x2, &x2, &simple_swu_ctx->group.P);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     //    x3 = alpha * x2
     mbedtls_mpi x3;
     mbedtls_mpi_init(&x3);
     mbedtls_status = mbedtls_mpi_mul_mpi(&x3, &alpha, &x2);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_mod_mpi(&x3, &x3, &simple_swu_ctx->group.P);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     //    h2 = x2^3 + a*x2 + b
     mbedtls_mpi h2;
     mbedtls_mpi_init(&h2);
     mbedtls_status = mbedtls_mpi_exp_mod(&h2, &x2, &simple_swu_ctx->three, &simple_swu_ctx->group.P, NULL /* FIXME */);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_mpi h2_temp;
     mbedtls_mpi_init(&h2_temp);
     mbedtls_status = mbedtls_mpi_mul_mpi(&h2_temp, &x2, &simple_swu_ctx->group.A);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_add_mpi(&h2_temp, &h2_temp, &simple_swu_ctx->group.B);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_add_mpi(&h2, &h2, &h2_temp);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_mod_mpi(&h2, &h2, &simple_swu_ctx->group.P);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     //    h3 = x3^3 + a*x3 + b
     mbedtls_mpi h3;
     mbedtls_mpi_init(&h3);
     mbedtls_status = mbedtls_mpi_exp_mod(&h3, &x3, &simple_swu_ctx->three, &simple_swu_ctx->group.P, NULL /* FIXME */);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_mpi h3_temp;
     mbedtls_mpi_init(&h3_temp);
     mbedtls_status = mbedtls_mpi_mul_mpi(&h3_temp, &x3, &simple_swu_ctx->group.A);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_add_mpi(&h3_temp, &h3_temp, &simple_swu_ctx->group.B);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_add_mpi(&h3, &h3, &h3_temp);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_mod_mpi(&h3, &h3, &simple_swu_ctx->group.P);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     //    tmp = h2 ^ ((p - 3) // 4)
     mbedtls_mpi tmp;
     mbedtls_mpi_init(&tmp);
     mbedtls_status = mbedtls_mpi_exp_mod(&tmp, &h2, &simple_swu_ctx->p34, &simple_swu_ctx->group.P, NULL /* FIXME */);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     //    if tmp^2 * h2 == 1:
     mbedtls_mpi tmp22h2;
     mbedtls_mpi_init(&tmp22h2);
     mbedtls_status = mbedtls_mpi_copy(&tmp22h2, &tmp);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status =
             mbedtls_mpi_exp_mod(&tmp22h2, &tmp22h2, &simple_swu_ctx->two, &simple_swu_ctx->group.P, NULL /* FIXME */);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_mul_mpi(&tmp22h2, &tmp22h2, &h2);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_mod_mpi(&tmp22h2, &tmp22h2, &simple_swu_ctx->group.P);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     if (mbedtls_mpi_cmp_int(&tmp22h2, 1) == 0) {
         //    return (x2, tmp * h2)
         mbedtls_status = mbedtls_mpi_copy(&p->X, &x2);
-        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
         mbedtls_status = mbedtls_mpi_mul_mpi(&p->Y, &tmp, &h2);
-        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
         mbedtls_status = mbedtls_mpi_mod_mpi(&p->Y, &p->Y, &simple_swu_ctx->group.P);
-        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     } else {
         //    return (x3, h3 ^ ((p+1)//4))
         mbedtls_status = mbedtls_mpi_copy(&p->X, &x3);
-        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
         mbedtls_status =
                 mbedtls_mpi_exp_mod(&p->Y, &h3, &simple_swu_ctx->p14, &simple_swu_ctx->group.P, NULL /* FIXME */);
-        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     }
 
     mbedtls_status = mbedtls_mpi_lset(&p->Z, 1);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_mpi_free(&alpha);
     mbedtls_mpi_free(&x2);
