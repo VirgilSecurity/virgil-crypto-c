@@ -95,7 +95,7 @@ if(CMAKE_HOST_APPLE)
 
 elseif(CMAKE_HOST_WIN32)
     set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v3.6.1/protoc-3.6.1-win32.zip")
-    set(PROTOC_BIN_HASH "4a6fee9397619db14b695f19625c6b29f04c89cf4294f88c6426677b84610051")
+    set(PROTOC_BIN_HASH "65e5d6f890e8df5b6b411e3fdbad04c33b2bd34a3576f343a8986589bd8d05e2")
 
 else()
     set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v3.6.1/protoc-3.6.1-linux-x86_64.zip")
