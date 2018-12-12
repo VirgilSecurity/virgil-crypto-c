@@ -47,6 +47,7 @@
 #include "vscr_virgil_ratchet_fake_rng_impl.h"
 
 #include "test_data_ratchet_session.h"
+#include "test_data_ratchet_prekey_message.h"
 #include "test_data_ratchet.h"
 
 #include <ed25519/ed25519.h>
@@ -330,6 +331,49 @@ test__3(void) {
     vscr_ratchet_session_destroy(&session_bob);
 }
 
+void
+test__serialization__serialize_deserialize__objects_are_equal(void) {
+    bool received_first_response = true;
+    vsc_buffer_t *sender_identity_key = vsc_buffer_new_with_data(test_ratchet_prekey_message_sender_identity_key);
+    vsc_buffer_t *sender_ephemeral_key = vsc_buffer_new_with_data(test_ratchet_prekey_message_sender_ephemeral_key);
+    vsc_buffer_t *receiver_longterm_key= vsc_buffer_new_with_data(test_ratchet_prekey_message_receiver_longterm_key);
+    vsc_buffer_t *receiver_onetime_key = vsc_buffer_new_with_data(test_ratchet_prekey_message_receiver_onetime_key);
+
+    vscr_ratchet_t *ratchet = vscr_ratchet_new();
+
+    vscr_ratchet_session_t *ratchet_session = vscr_ratchet_session_new_with_members(received_first_response,
+                                                                                    sender_identity_key,
+                                                                                    sender_ephemeral_key,
+                                                                                    receiver_longterm_key,
+                                                                                    receiver_onetime_key,
+                                                                                    &ratchet); // FIXME
+    size_t len = vscr_ratchet_session_serialize_len(ratchet_session);
+    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(len);
+
+    vscr_error_t result = vscr_ratchet_session_serialize(ratchet_session, buffer);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
+
+    vscr_error_ctx_t *err_ctx = NULL;
+    vscr_ratchet_session_t *deserialized_ratchet_session = vscr_ratchet_session_deserialize(vsc_buffer_data(buffer), err_ctx);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, err_ctx->error);
+
+    TEST_ASSERT_EQUAL(ratchet_session->received_first_response, deserialized_ratchet_session->received_first_response);
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(deserialized_ratchet_session->sender_identity_public_key),
+                             vsc_buffer_bytes(ratchet_session->sender_identity_public_key),
+                             vsc_buffer_len(ratchet_session->sender_identity_public_key));
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(deserialized_ratchet_session->sender_ephemeral_public_key),
+                             vsc_buffer_bytes(ratchet_session->sender_ephemeral_public_key),
+                             vsc_buffer_len(ratchet_session->sender_ephemeral_public_key));
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(deserialized_ratchet_session->receiver_longterm_public_key),
+                             vsc_buffer_bytes(ratchet_session->receiver_longterm_public_key),
+                             vsc_buffer_len(ratchet_session->receiver_longterm_public_key));
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(deserialized_ratchet_session->receiver_onetime_public_key),
+                             vsc_buffer_bytes(ratchet_session->receiver_onetime_public_key),
+                             vsc_buffer_len(ratchet_session->receiver_onetime_public_key));
+
+    // FIXME: check ratchet
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -344,6 +388,7 @@ main(void) {
     RUN_TEST(test__1);
     RUN_TEST(test__2);
     RUN_TEST(test__3);
+    RUN_TEST(test__serialization__serialize_deserialize__objects_are_equal);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
