@@ -88,7 +88,7 @@ enum vsce_error_t {
     //
     vsce_INVALID_ECP = 5,
     //
-    //  Invalid ECP
+    //  Invalid private key
     //
     vsce_INVALID_PRIVATE_KEY = 6
 };

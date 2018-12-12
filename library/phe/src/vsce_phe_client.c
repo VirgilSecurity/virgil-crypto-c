@@ -468,13 +468,13 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
         goto rng_err1;
     }
 
-    byte rnd_m_buffer[vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH];
+    byte rnd_m_buffer[vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH];
 
     vsc_buffer_t rnd_m;
     vsc_buffer_init(&rnd_m);
     vsc_buffer_use(&rnd_m, rnd_m_buffer, sizeof(rnd_m_buffer));
 
-    f_status = vscf_random(phe_client_ctx->random, vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH, &rnd_m);
+    f_status = vscf_random(phe_client_ctx->random, vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH, &rnd_m);
     if (f_status != vscf_SUCCESS) {
         status = vsce_RNG_ERROR;
         goto rng_err2;
