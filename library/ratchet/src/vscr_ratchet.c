@@ -52,8 +52,6 @@
 #include "vscr_ratchet_receiver_chain.h"
 #include "vscr_ratchet_skipped_message_key.h"
 
-#include <virgil/crypto/foundation/vscf_asn1wr.h>
-#include <virgil/crypto/foundation/vscf_asn1rd.h>
 #include <virgil/crypto/foundation/vscf_sha256.h>
 #include <virgil/crypto/foundation/vscf_hmac.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>
@@ -110,8 +108,7 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *ratchet_ctx, const vscr_
         const RegularMessage *message, vsc_buffer_t *buffer);
 
 static vscr_error_t
-vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *ratchet_ctx, const RegularMessage *message,
-        vsc_buffer_t *buffer);
+vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *ratchet_ctx, const RegularMessage *message, vsc_buffer_t *buffer);
 
 static vscr_ratchet_receiver_chain_t *
 vscr_ratchet_find_receiver_chain(vscr_ratchet_t *ratchet_ctx, const RegularMessage *message);
@@ -485,8 +482,7 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *ratchet_ctx, const vscr_
 }
 
 static vscr_error_t
-vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *ratchet_ctx, const RegularMessage *message,
-        vsc_buffer_t *buffer) {
+vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *ratchet_ctx, const RegularMessage *message, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(ratchet_ctx);
     VSCR_ASSERT_PTR(buffer);

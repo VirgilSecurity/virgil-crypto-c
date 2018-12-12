@@ -78,7 +78,7 @@ import VirgilCryptoFoundation
         vscr_ratchet_use_cipher(self.c_ctx, cipher.c_ctx)
     }
 
-    @objc public func respond(sharedSecret: Data, ratchetPublicKey: Data, message: RatchetRegularMessage) throws {
+    @objc public func respond(sharedSecret: Data, ratchetPublicKey: Data, message: RegularMessage) throws {
         let proxyResult = sharedSecret.withUnsafeBytes({ (sharedSecretPointer: UnsafePointer<byte>) -> vscr_error_t in
             ratchetPublicKey.withUnsafeBytes({ (ratchetPublicKeyPointer: UnsafePointer<byte>) -> vscr_error_t in
                 var ratchetPublicKeyBuf = vsc_buffer_new_with_data(vsc_data(ratchetPublicKeyPointer, ratchetPublicKey.count))
@@ -112,26 +112,12 @@ import VirgilCryptoFoundation
         return proxyResult
     }
 
-    @objc public func encrypt(plainText: Data) throws -> Data {
-        let cipherTextCount = self.encryptLen(plainTextLen: plainText.count)
-        var cipherText = Data(count: cipherTextCount)
-        var cipherTextBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(cipherTextBuf)
-        }
-
+    @objc public func encrypt(plainText: Data, regularMessage: RegularMessage) throws {
         let proxyResult = plainText.withUnsafeBytes({ (plainTextPointer: UnsafePointer<byte>) -> vscr_error_t in
-            cipherText.withUnsafeMutableBytes({ (cipherTextPointer: UnsafeMutablePointer<byte>) -> vscr_error_t in
-                vsc_buffer_init(cipherTextBuf)
-                vsc_buffer_use(cipherTextBuf, cipherTextPointer, cipherTextCount)
-                return vscr_ratchet_encrypt(self.c_ctx, vsc_data(plainTextPointer, plainText.count), cipherTextBuf)
-            })
+            return vscr_ratchet_encrypt(self.c_ctx, vsc_data(plainTextPointer, plainText.count), regularMessage.c_ctx)
         })
-        cipherText.count = vsc_buffer_len(cipherTextBuf)
 
         try RatchetError.handleError(fromC: proxyResult)
-
-        return cipherText
     }
 
     @objc public func decryptLen(cipherTextLen: Int) -> Int {
@@ -140,7 +126,7 @@ import VirgilCryptoFoundation
         return proxyResult
     }
 
-    @objc public func decrypt(cipherText: Data) throws -> Data {
+    @objc public func decrypt(regularMessage: RegularMessage) throws -> Data {
         let plainTextCount = self.decryptLen(cipherTextLen: cipherText.count)
         var plainText = Data(count: plainTextCount)
         var plainTextBuf = vsc_buffer_new()
@@ -148,12 +134,10 @@ import VirgilCryptoFoundation
             vsc_buffer_delete(plainTextBuf)
         }
 
-        let proxyResult = cipherText.withUnsafeBytes({ (cipherTextPointer: UnsafePointer<byte>) -> vscr_error_t in
-            plainText.withUnsafeMutableBytes({ (plainTextPointer: UnsafeMutablePointer<byte>) -> vscr_error_t in
-                vsc_buffer_init(plainTextBuf)
-                vsc_buffer_use(plainTextBuf, plainTextPointer, plainTextCount)
-                return vscr_ratchet_decrypt(self.c_ctx, vsc_data(cipherTextPointer, cipherText.count), plainTextBuf)
-            })
+        let proxyResult = plainText.withUnsafeMutableBytes({ (plainTextPointer: UnsafeMutablePointer<byte>) -> vscr_error_t in
+            vsc_buffer_init(plainTextBuf)
+            vsc_buffer_use(plainTextBuf, plainTextPointer, plainTextCount)
+            return vscr_ratchet_decrypt(self.c_ctx, regularMessage.c_ctx, plainTextBuf)
         })
         plainText.count = vsc_buffer_len(plainTextBuf)
 

@@ -204,8 +204,7 @@ VSCR_PUBLIC size_t
 vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, const Message *message);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session_ctx, Message *message,
-        vsc_buffer_t *plain_text);
+vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session_ctx, Message *message, vsc_buffer_t *plain_text);
 
 VSCR_PUBLIC size_t
 vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *ratchet_session_ctx);

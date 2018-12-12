@@ -3,7 +3,6 @@
     <require impl="asn1wr" project="foundation" scope="private"/>
     <require impl="asn1rd" project="foundation" scope="private"/>
 
-    <require class="ratchet prekey message" scope="private"/>
     <require class="ratchet common" scope="public"/>
 
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
@@ -46,7 +45,7 @@
         <argument name="receiver identity private key" class="buffer" access="retain"/>
         <argument name="receiver long term private key" class="buffer" access="retain"/>
         <argument name="receiver one time private key" class="buffer" access="retain"/>
-        <argument name="message" class="ratchet regular message"/>
+        <argument name="message" class="RegularMessage" library="nanopb" access="readonly"/>
 
         <return enum="error"/>
     </method>
@@ -69,13 +68,13 @@
     </method>
 
     <method name="decrypt len">
-        <argument name="message" class="ratchet message"/>
+        <argument name="message" class="Message" library="nanopb" access="readonly"/>
 
         <return type="size"/>
     </method>
 
     <method name="decrypt">
-        <argument name="message" class="ratchet message"/>
+        <argument name="message" class="Message" library="nanopb" access="readwrite"/>
         <argument name="plain text" class="buffer">
             <length method="decrypt len">
                 <proxy argument="message" to="message"/>

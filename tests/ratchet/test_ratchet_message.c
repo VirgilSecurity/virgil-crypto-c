@@ -37,11 +37,7 @@
 #include "unity.h"
 #include "test_utils.h"
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET_MESSAGE
-#if TEST_DEPENDENCIES_AVAILABLE
-
 #include <vscr_ratchet.h>
-#include <Message.pb.h>
 #include "test_data_ratchet_message.h"
 #include "test_data_ratchet_regular_message.h"
 #include "test_data_ratchet_prekey_message.h"
@@ -203,8 +199,6 @@ test__serialization__serialize_deserialize_big_object__objects_are_equal(void) {
     vsc_buffer_destroy(&buffer);
 }
 
-#endif // TEST_DEPENDENCIES_AVAILABLE
-
 
 // --------------------------------------------------------------------------
 // Entrypoint.
@@ -213,12 +207,8 @@ int
 main(void) {
     UNITY_BEGIN();
 
-#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__serialization__serialize_deserialize__objects_are_equal);
     RUN_TEST(test__serialization__serialize_deserialize_big_object__objects_are_equal);
-#else
-    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
-#endif
 
     return UNITY_END();
 }
