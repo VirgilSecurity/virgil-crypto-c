@@ -134,7 +134,7 @@ import VirgilCryptoFoundation
         try RatchetError.handleError(fromC: proxyResult)
     }
 
-    @objc public func respond(senderIdentityPublicKey: Data, senderEphemeralPublicKey: Data, ratchetPublicKey: Data, receiverIdentityPrivateKey: Data, receiverLongTermPrivateKey: Data, receiverOneTimePrivateKey: Data, message: RatchetRegularMessage) throws {
+    @objc public func respond(senderIdentityPublicKey: Data, senderEphemeralPublicKey: Data, ratchetPublicKey: Data, receiverIdentityPrivateKey: Data, receiverLongTermPrivateKey: Data, receiverOneTimePrivateKey: Data, message: RegularMessage) throws {
         let proxyResult = senderIdentityPublicKey.withUnsafeBytes({ (senderIdentityPublicKeyPointer: UnsafePointer<byte>) -> vscr_error_t in
             senderEphemeralPublicKey.withUnsafeBytes({ (senderEphemeralPublicKeyPointer: UnsafePointer<byte>) -> vscr_error_t in
                 ratchetPublicKey.withUnsafeBytes({ (ratchetPublicKeyPointer: UnsafePointer<byte>) -> vscr_error_t in
@@ -209,13 +209,13 @@ import VirgilCryptoFoundation
         return cipherText
     }
 
-    @objc public func decryptLen(message: RatchetMessage) -> Int {
+    @objc public func decryptLen(message: Message) -> Int {
         let proxyResult = vscr_ratchet_session_decrypt_len(self.c_ctx, message.c_ctx)
 
         return proxyResult
     }
 
-    @objc public func decrypt(message: RatchetMessage) throws -> Data {
+    @objc public func decrypt(message: Message) throws -> Data {
         let plainTextCount = self.decryptLen(message: message)
         var plainText = Data(count: plainTextCount)
         var plainTextBuf = vsc_buffer_new()
