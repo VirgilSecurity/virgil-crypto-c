@@ -32,6 +32,8 @@
     <method name="set keys">
         <argument name="client private key" class="data"/>
         <argument name="server public key" class="data"/>
+
+        <return enum="error"/>
     </method>
 
     <method name="generate client private key">

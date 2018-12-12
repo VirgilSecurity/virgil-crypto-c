@@ -23,4 +23,8 @@
         Invalid ECP
     </constant>
 
+    <constant name="Invalid private key" of_class="global" value="6">
+        Invalid ECP
+    </constant>
+
 </enum>
