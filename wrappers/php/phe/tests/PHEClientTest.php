@@ -35,6 +35,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
+require_once 'PHEClient.php';
+require_once 'PHEServer.php';
+
 class PHEClientTest extends \PHPUnit\Framework\TestCase
 {
     protected $client;
@@ -42,15 +45,15 @@ class PHEClientTest extends \PHPUnit\Framework\TestCase
 
     protected function setUp()
     {
-        $this->client = vsce_phe_client_new_php();
-        $this->server = vsce_phe_server_new_php();
+        $this->client = new PHEClient();
+        $this->server = new PHEServer();
     }
 
     public function testFullFlowRandomCorrectPwdShouldSucceed()
     {
         $password = "password";
 
-        $serverKeyPair = vsce_phe_server_generate_server_key_pair_php($this->server); // [{privateKey}, {publicKey}]
+        $serverKeyPair = $this->server->generateServerKeyPair(); // [{privateKey}, {publicKey}]
         $this->assertInternalType('array', $serverKeyPair);
         $this->assertCount(2, $serverKeyPair);
 
@@ -63,47 +66,44 @@ class PHEClientTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(65, strlen($serverPublicKey));
         $this->assertEquals(32, strlen($serverPrivateKey));
 
-        $clientPrivateKey = vsce_phe_client_generate_client_private_key_php($this->client); // {privateKey}
+        $clientPrivateKey = $this->client->generateClientPrivateKey(); // {privateKey}
         $this->assertInternalType('string', $clientPrivateKey);
 
-        vsce_phe_client_set_keys_php($this->client, $clientPrivateKey, $serverPublicKey); // void
+        $this->client->setKeys($clientPrivateKey, $serverPublicKey); // void
 
-        $serverEnrollmentResponseLen = vsce_phe_server_enrollment_response_len_php($this->server);
-        $this->assertInternalType('int', $serverEnrollmentResponseLen);
+        $serverEnrollment = $this->server->getEnrollment($serverPrivateKey, $serverPublicKey);
+        $this->assertNotEmpty($serverEnrollment);
+        $this->assertInternalType('string', $serverEnrollment);
 
-//        $serverEnrollment = vsce_phe_server_get_enrollment_php($this->server, $serverPrivateKey, $serverPublicKey);
-//        $this->assertNotEmpty($serverEnrollment);
-//        $this->assertInternalType('string', $serverEnrollment);
+        $clientEnrollAccount = $this->client->enrollAccount($serverEnrollment, $password);
+        $this->assertInternalType('array', $clientEnrollAccount);
+        $this->assertCount(2, $clientEnrollAccount);
 
-        $clientEnrollmentRecordLen = vsce_phe_client_enrollment_record_len_php($this->client);
-        $this->assertInternalType('int', $clientEnrollmentRecordLen);
+        $clientEnrollmentRecord = $clientEnrollAccount[0];
+        $clientAccountKey = $clientEnrollAccount[1];
+        $this->assertInternalType('string', $clientEnrollmentRecord);
+        $this->assertInternalType('string', $clientAccountKey);
 
-//        $clientEnrollAccount = vsce_phe_client_enroll_account_php($this->client, $serverEnrollment, $password);
+        $clientCreateVerifyPasswordRequest = $this->client->createVerifyPasswordRequest($password,
+            $clientEnrollmentRecord);
+        $this->assertNotEmpty($clientCreateVerifyPasswordRequest);
+        $this->assertInternalType('string', $clientCreateVerifyPasswordRequest);
 
-        $clientVerifyPasswordRequestLen = vsce_phe_client_verify_password_request_len_php($this->client);
-        $this->assertInternalType('int', $clientVerifyPasswordRequestLen);
+        $serverVerifyPassword = $this->server->verifyPassword($serverPrivateKey, $serverPublicKey,
+            $clientCreateVerifyPasswordRequest);
+        $this->assertInternalType('string', $serverVerifyPassword);
 
-//        $clientCreateVerifyPasswordRequest = vsce_phe_client_create_verify_password_request_php($this->client,
-//            $password, $clientEnrollmentRecordLen);
-//        $this->assertNotEmpty($clientCreateVerifyPasswordRequest);
-//        $this->assertInternalType('string', $clientCreateVerifyPasswordRequest);
-
-        $serverVerifyPasswordResponseLen = vsce_phe_server_verify_password_response_len_php($this->server);
-        $this->assertInternalType('int', $serverVerifyPasswordResponseLen);
-
-//        $serverVerifyPassword = vsce_phe_server_verify_password_php($this->server, $serverPrivateKey, $serverPublicKey,
-//            $clientVerifyPasswordRequestLen);
-
-//        $clientCheckResponseAndDecrypt = vsce_phe_client_check_response_and_decrypt_php($this->client, $password,
-//            $clientEnrollmentRecordLen, $serverVerifyPasswordResponseLen);
+        $clientCheckResponseAndDecrypt = $this->client->checkResponseAndDecrypt($password,
+            $clientEnrollmentRecord, $serverVerifyPassword);
+        $this->assertInternalType('string', $clientCheckResponseAndDecrypt);
+        $this->assertEquals(32, strlen($clientAccountKey));
+        $this->assertEquals(32, strlen($clientCheckResponseAndDecrypt));
+        $this->assertEquals($clientAccountKey, $clientCheckResponseAndDecrypt);
     }
 
     public function testRotationRandomRotationServerPublicKeysMatch()
     {
-        $serverUpdateTokenLen = vsce_phe_server_update_token_len_php($this->server);
-        $this->assertInternalType('int', $serverUpdateTokenLen);
-
-        $serverKeyPair = vsce_phe_server_generate_server_key_pair_php($this->server); // [{privateKey}, {publicKey}]
+        $serverKeyPair = $this->server->generateServerKeyPair(); // [{privateKey}, {publicKey}]
         $this->assertInternalType('array', $serverKeyPair);
         $this->assertCount(2, $serverKeyPair);
         $serverPrivateKey = $serverKeyPair[0];
@@ -111,7 +111,7 @@ class PHEClientTest extends \PHPUnit\Framework\TestCase
         $this->assertInternalType('string', $serverPrivateKey);
         $this->assertInternalType('string', $serverPublicKey);
 
-        $serverRotateKeys = vsce_phe_server_rotate_keys_php($this->server, $serverPrivateKey);
+        $serverRotateKeys = $this->server->rotateKeys($serverPrivateKey);
         $this->assertInternalType('array', $serverRotateKeys);
         $serverRotatedPrivateKey = $serverRotateKeys[0];
         $serverRotatedPublicKey = $serverRotateKeys[1];
@@ -121,13 +121,13 @@ class PHEClientTest extends \PHPUnit\Framework\TestCase
         $this->assertInternalType('string', $serverUpdateToken);
         $this->assertNotEmpty($serverUpdateToken);
 
-        $clientPrivateKey = vsce_phe_client_generate_client_private_key_php($this->client); // {privateKey}
+        $clientPrivateKey = $this->client->generateClientPrivateKey(); // {privateKey}
         $this->assertInternalType('string', $clientPrivateKey);
         $this->assertNotEmpty($clientPrivateKey);
 
-        vsce_phe_client_set_keys_php($this->client, $clientPrivateKey, $serverRotatedPublicKey); // void
+        $this->client->setKeys($clientPrivateKey, $serverRotatedPublicKey);
 
-        $clientRotateKeys = vsce_phe_client_rotate_keys_php($this->client, $serverUpdateToken);
+        $clientRotateKeys = $this->client->rotateKeys($serverUpdateToken);
         $this->assertInternalType('array', $clientRotateKeys);
         $clientNewPrivateKey = $clientRotateKeys[0];
         $serverNewPublicKey = $clientRotateKeys[1];
@@ -136,29 +136,5 @@ class PHEClientTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(strlen($serverPublicKey), strlen($serverNewPublicKey));
         $this->assertEquals(strlen($clientPrivateKey), strlen($clientNewPrivateKey));
-    }
-
-//    public function testRotationRandomRotationEnrollmentRecordUpdatedSuccessfully()
-//    {
-//        $password = "password";
-//
-//        $serverKeyPair = vsce_phe_server_generate_server_key_pair_php($this->server); // [{privateKey}, {publicKey}]
-//        $this->assertInternalType('array', $serverKeyPair);
-//        $this->assertCount(2, $serverKeyPair);
-//        $serverPrivateKey = $serverKeyPair[0];
-//        $serverPublicKey = $serverKeyPair[1];
-//        $this->assertInternalType('string', $serverPrivateKey);
-//        $this->assertInternalType('string', $serverPublicKey);
-//
-//        $enrollmentResponse = vsce_phe_server_enrollment_response_len_php($this->server);
-//        $serverGetEnrollment = vsce_phe_server_get_enrollment_php($this->server, $serverPrivateKey, $serverPublicKey);
-//
-//        $this->assertNotEmpty($serverGetEnrollment);
-//    }
-
-    protected function tearDown()
-    {
-        vsce_phe_client_delete_php($this->client);
-        vsce_phe_server_delete_php($this->server);
     }
 }

@@ -67,6 +67,7 @@ class PHEClient
      * @param string $clientPrivateKey
      * @param string $serverPublicKey
      * @return void
+     * @throws Exception
      */
     public function setKeys(string $clientPrivateKey, string $serverPublicKey): void
     {
@@ -83,14 +84,6 @@ class PHEClient
    }
 
     /**
-     * @return int
-     */
-    public function enrollmentRecordLen(): int
-    {
-        return vsce_phe_client_enrollment_record_len_php($this->c_ctx);
-    }
-
-    /**
      * @param string $enrollmentResponse
      * @param string $password
      * @return array
@@ -99,14 +92,6 @@ class PHEClient
     public function enrollAccount(string $enrollmentResponse, string $password): array
     {
         return vsce_phe_client_enroll_account_php($this->c_ctx, $enrollmentResponse, $password);
-    }
-
-    /**
-     * @return int
-     */
-    public function verifyPasswordRequestLen(): int
-    {
-        return vsce_phe_client_verify_password_request_len_php($this->c_ctx);
     }
 
     /**
