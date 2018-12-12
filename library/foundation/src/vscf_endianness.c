@@ -34,73 +34,57 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
-
-#ifndef MBEDTLS_CONFIG_H
-#define MBEDTLS_CONFIG_H
+// clang-format off
 
 
-//
-//  Common
-//
-#cmakedefine MBEDTLS_ERROR_C
-#cmakedefine MBEDTLS_PLATFORM_C
+//  @description
+// --------------------------------------------------------------------------
+//  Converter between big endian and little endian datas
+// --------------------------------------------------------------------------
+
+
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
+
+#include "vscf_endianness.h"
+#include "vscf_memory.h"
+#include "vscf_assert.h"
+
+// clang-format on
+//  @end
+
+
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
+
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 //
-//  Required by library vsc::foundation
+//  Copy memory buffer with convertion from little endian to big endian and back
 //
-#cmakedefine MBEDTLS_SHA256_C
-#cmakedefine MBEDTLS_SHA512_C
-#cmakedefine MBEDTLS_CIPHER_C
-#cmakedefine MBEDTLS_AES_C
-#cmakedefine MBEDTLS_GCM_C
-#cmakedefine MBEDTLS_MD_C
-#cmakedefine MBEDTLS_BIGNUM_C
-#cmakedefine MBEDTLS_PKCS1_V21
-#cmakedefine MBEDTLS_OID_C
-#cmakedefine MBEDTLS_RSA_C
-#cmakedefine MBEDTLS_ASN1_PARSE_C
-#cmakedefine MBEDTLS_ASN1_WRITE_C
-#cmakedefine MBEDTLS_GENPRIME
-#cmakedefine MBEDTLS_PLATFORM_ENTROPY
-#cmakedefine MBEDTLS_TIMING_C
-#cmakedefine MBEDTLS_HAVEGE_C
-#cmakedefine MBEDTLS_BASE64_C
+VSCF_PUBLIC void
+vscf_endianness_reverse_memcpy(vsc_data_t src, vsc_buffer_t *dst) {
 
-#if !defined(MBEDTLS_PLATFORM_ENTROPY)
-#   define MBEDTLS_NO_PLATFORM_ENTROPY
-#endif
-
-//
-//  Required by library vsc::pythia
-//
-#cmakedefine MBEDTLS_CTR_DRBG_C
-#cmakedefine MBEDTLS_ENTROPY_C
-
-//
-//  Required by library vsc::phe
-//
-#cmakedefine MBEDTLS_ECP_C
-#cmakedefine MBEDTLS_ECP_DP_SECP256R1_ENABLED
-
-//
-//  Alternative implementations
-//
-#cmakedefine MBEDTLS_SHA256_ALT
-#cmakedefine MBEDTLS_SHA512_ALT
-#cmakedefine MBEDTLS_AES_ALT
-#cmakedefine MBEDTLS_GCM_ALT
-
-//
-//  Non configurable options
-//
-#define MBEDTLS_NO_DEFAULT_ENTROPY_SOURCES
-
-//
-// EC optimizations
-//
-#define MBEDTLS_ECP_NIST_OPTIM 1
-#define MBEDTLS_ECP_FIXED_POINT_OPTIM 1
-
-#include "check_config.h"
-
-#endif /* MBEDTLS_CONFIG_H */
+    VSCF_ASSERT(vsc_data_is_valid(src));
+    VSCF_ASSERT_PTR(dst);
+    VSCF_ASSERT(vsc_buffer_is_valid(dst));
+    byte *dest = vsc_buffer_ptr(dst);
+    VSCF_ASSERT(src.len <= vsc_buffer_left(dst));
+    for (size_t i = 0; i < src.len; i++) {
+        dest[src.len - 1 - i] = src.bytes[i];
+    }
+    vsc_buffer_increase_used_bytes(dst, src.len);
+}
