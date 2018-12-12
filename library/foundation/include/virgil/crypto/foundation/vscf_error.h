@@ -153,7 +153,11 @@ enum vscf_error_t {
     //
     //  PEM data is corrupted.
     //
-    vscf_error_BAD_PEM = -215
+    vscf_error_BAD_PEM = -215,
+    //
+    //  Exchange key return zero.
+    //
+    vscf_error_SHARED_KEY_EXCHANGE_FAILED = -216
 };
 typedef enum vscf_error_t vscf_error_t;
 

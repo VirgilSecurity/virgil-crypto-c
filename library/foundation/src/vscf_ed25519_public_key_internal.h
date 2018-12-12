@@ -47,11 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Defines enumeration of possible asymmetric key algorithms.
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_KEY_ALG_H_INCLUDED
-#define VSCF_KEY_ALG_H_INCLUDED
+#ifndef VSCF_ED25519_PUBLIC_KEY_INTERNAL_H_INCLUDED
+#define VSCF_ED25519_PUBLIC_KEY_INTERNAL_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_ed25519_public_key.h"
 
 // clang-format on
 //  @end
@@ -69,14 +73,20 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Defines enumeration of possible asymmetric key algorithms.
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_ed25519_public_key_init() is called.
+//  Note, that context is already zeroed.
 //
-enum vscf_key_alg_t {
-    vscf_key_alg_NONE = 0,
-    vscf_key_alg_RSA,
-    vscf_key_alg_ED25519
-};
-typedef enum vscf_key_alg_t vscf_key_alg_t;
+VSCF_PRIVATE void
+vscf_ed25519_public_key_init_ctx(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl);
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_ed25519_public_key_cleanup_ctx(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl);
 
 
 // --------------------------------------------------------------------------
@@ -92,5 +102,5 @@ typedef enum vscf_key_alg_t vscf_key_alg_t;
 
 
 //  @footer
-#endif // VSCF_KEY_ALG_H_INCLUDED
+#endif // VSCF_ED25519_PUBLIC_KEY_INTERNAL_H_INCLUDED
 //  @end

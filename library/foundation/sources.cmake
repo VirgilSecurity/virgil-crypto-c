@@ -255,6 +255,16 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ed25519_private_key.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ed25519_public_key.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_entropy_accumulator.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -464,6 +474,12 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ctr_drbg.h>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg_internal.h>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_ctr_drbg_impl.h>"
+            "$<$<BOOL:${VSCF_ED25519_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ed25519_private_key.h>"
+            "$<$<BOOL:${VSCF_ED25519_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ed25519_private_key_internal.h>"
+            "$<$<BOOL:${VSCF_ED25519_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_ed25519_private_key_impl.h>"
+            "$<$<BOOL:${VSCF_ED25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ed25519_public_key.h>"
+            "$<$<BOOL:${VSCF_ED25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ed25519_public_key_internal.h>"
+            "$<$<BOOL:${VSCF_ED25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_ed25519_public_key_impl.h>"
             "$<$<BOOL:${VSCF_ENTROPY_ACCUMULATOR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_entropy_accumulator.h>"
             "$<$<BOOL:${VSCF_ENTROPY_ACCUMULATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_entropy_accumulator_internal.h>"
             "$<$<BOOL:${VSCF_ENTROPY_ACCUMULATOR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_entropy_accumulator_impl.h>"
@@ -513,6 +529,7 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_SHA512}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha512_internal.h>"
             "$<$<BOOL:${VSCF_SHA512}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_sha512_impl.h>"
             "$<$<BOOL:${VSCF_BASE64}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_base64.h>"
+            "$<$<BOOL:${VSCF_ENDIANNESS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_endianness.h>"
             "$<$<BOOL:${VSCF_ERROR_CTX}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error_ctx.h>"
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_READER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_reader.h>"
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_WRITER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_writer.h>"
@@ -609,6 +626,12 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg.c>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg_internal.c>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg_impl.c>"
+            "$<$<BOOL:${VSCF_ED25519_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ed25519_private_key.c>"
+            "$<$<BOOL:${VSCF_ED25519_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ed25519_private_key_internal.c>"
+            "$<$<BOOL:${VSCF_ED25519_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ed25519_private_key_impl.c>"
+            "$<$<BOOL:${VSCF_ED25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ed25519_public_key.c>"
+            "$<$<BOOL:${VSCF_ED25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ed25519_public_key_internal.c>"
+            "$<$<BOOL:${VSCF_ED25519_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ed25519_public_key_impl.c>"
             "$<$<BOOL:${VSCF_ENTROPY_ACCUMULATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_entropy_accumulator.c>"
             "$<$<BOOL:${VSCF_ENTROPY_ACCUMULATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_entropy_accumulator_internal.c>"
             "$<$<BOOL:${VSCF_ENTROPY_ACCUMULATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_entropy_accumulator_impl.c>"
@@ -658,6 +681,7 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_SHA512}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha512_internal.c>"
             "$<$<BOOL:${VSCF_SHA512}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha512_impl.c>"
             "$<$<BOOL:${VSCF_BASE64}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_base64.c>"
+            "$<$<BOOL:${VSCF_ENDIANNESS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_endianness.c>"
             "$<$<BOOL:${VSCF_ERROR_CTX}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_error_ctx.c>"
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_READER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_reader.c>"
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_WRITER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_writer.c>"
