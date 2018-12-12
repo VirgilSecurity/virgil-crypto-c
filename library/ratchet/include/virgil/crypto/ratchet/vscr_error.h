@@ -68,13 +68,13 @@ enum vscr_error_t {
     //
     vscr_SUCCESS = 0,
     //
-    //  Error during ASN.1 serialization
+    //  Error during protobuf serialization
     //
-    vscr_ASN1_WRITE_ERROR = 1,
+    vscr_PROTOBUF_ENCODE_ERROR = 1,
     //
-    //  Error during ASN.1 deserialization
+    //  Error during protobuf deserialization
     //
-    vscr_ASN1_READ_ERROR = 2,
+    vscr_PROTOBUF_DECODE_ERROR = 2,
     //
     //  Message version doesn't match
     //
