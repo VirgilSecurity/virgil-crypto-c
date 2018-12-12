@@ -407,11 +407,18 @@ vsce_phe_hash_hc0(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t nc, vsc_data_t passw
 
     static const byte hc0_domain[] = "hc0";
 
-    byte buffer[sizeof(hc0_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH + password.len];
+    enum {
+        max_length = sizeof(hc0_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH +
+                     vsce_phe_common_PHE_MAX_PASSWORD_LENGTH
+    };
+
+    const size_t length = sizeof(hc0_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH + password.len;
+
+    byte buffer[max_length];
 
     vsc_buffer_t buff;
     vsc_buffer_init(&buff);
-    vsc_buffer_use(&buff, buffer, sizeof(buffer));
+    vsc_buffer_use(&buff, buffer, length);
 
     memcpy(vsc_buffer_ptr(&buff), hc0_domain, sizeof(hc0_domain) - 1);
     vsc_buffer_reserve(&buff, sizeof(hc0_domain) - 1);
@@ -421,6 +428,8 @@ vsce_phe_hash_hc0(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t nc, vsc_data_t passw
 
     memcpy(vsc_buffer_ptr(&buff), password.bytes, password.len);
     vsc_buffer_reserve(&buff, password.len);
+
+    VSCE_ASSERT(vsc_buffer_left(&buff) == 0);
 
     vsce_phe_hash_data_to_point(phe_hash_ctx, vsc_buffer_data(&buff), hc0);
 
@@ -440,11 +449,18 @@ vsce_phe_hash_hc1(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t nc, vsc_data_t passw
 
     static const byte hc1_domain[] = "hc1";
 
-    byte buffer[sizeof(hc1_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH + password.len];
+    enum {
+        max_length = sizeof(hc1_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH +
+                     vsce_phe_common_PHE_MAX_PASSWORD_LENGTH
+    };
+
+    const size_t length = sizeof(hc1_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH + password.len;
+
+    byte buffer[max_length];
 
     vsc_buffer_t buff;
     vsc_buffer_init(&buff);
-    vsc_buffer_use(&buff, buffer, sizeof(buffer));
+    vsc_buffer_use(&buff, buffer, length);
 
     memcpy(vsc_buffer_ptr(&buff), hc1_domain, sizeof(hc1_domain) - 1);
     vsc_buffer_reserve(&buff, sizeof(hc1_domain) - 1);
@@ -454,6 +470,8 @@ vsce_phe_hash_hc1(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t nc, vsc_data_t passw
 
     memcpy(vsc_buffer_ptr(&buff), password.bytes, password.len);
     vsc_buffer_reserve(&buff, password.len);
+
+    VSCE_ASSERT(vsc_buffer_left(&buff) == 0);
 
     vsce_phe_hash_data_to_point(phe_hash_ctx, vsc_buffer_data(&buff), hc1);
 
@@ -471,7 +489,9 @@ vsce_phe_hash_hs0(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t ns, mbedtls_ecp_poin
 
     static const byte hs0_domain[] = "hs0";
 
-    byte buffer[sizeof(hs0_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH];
+    enum { length = sizeof(hs0_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH };
+
+    byte buffer[length];
 
     vsc_buffer_t buff;
     vsc_buffer_init(&buff);
@@ -482,6 +502,8 @@ vsce_phe_hash_hs0(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t ns, mbedtls_ecp_poin
 
     memcpy(vsc_buffer_ptr(&buff), ns.bytes, ns.len);
     vsc_buffer_reserve(&buff, ns.len);
+
+    VSCE_ASSERT(vsc_buffer_left(&buff) == 0);
 
     vsce_phe_hash_data_to_point(phe_hash_ctx, vsc_buffer_data(&buff), hs0);
 
@@ -499,7 +521,9 @@ vsce_phe_hash_hs1(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t ns, mbedtls_ecp_poin
 
     static const byte hs1_domain[] = "hs1";
 
-    byte buffer[sizeof(hs1_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH];
+    enum { length = sizeof(hs1_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH };
+
+    byte buffer[length];
 
     vsc_buffer_t buff;
     vsc_buffer_init(&buff);
@@ -510,6 +534,8 @@ vsce_phe_hash_hs1(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t ns, mbedtls_ecp_poin
 
     memcpy(vsc_buffer_ptr(&buff), ns.bytes, ns.len);
     vsc_buffer_reserve(&buff, ns.len);
+
+    VSCE_ASSERT(vsc_buffer_left(&buff) == 0);
 
     vsce_phe_hash_data_to_point(phe_hash_ctx, vsc_buffer_data(&buff), hs1);
 
