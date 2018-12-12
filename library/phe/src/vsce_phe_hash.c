@@ -71,7 +71,7 @@ push_points_to_buffer(vsce_phe_hash_t *phe_hash_ctx, vsc_buffer_t *buffer, size_
         mbedtls_ecp_point_write_binary(&phe_hash_ctx->group, p, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
                 vsc_buffer_ptr(buffer), vsc_buffer_left(buffer));
         vsc_buffer_reserve(buffer, olen);
-        VSCE_ASSERT(mbedtls_status == 0);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
         VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
     }
 
@@ -317,7 +317,7 @@ vsce_phe_hash_init_ctx(vsce_phe_hash_t *phe_hash_ctx) {
 
     int mbedtls_status = 0;
     mbedtls_status = mbedtls_ecp_group_load(&phe_hash_ctx->group, MBEDTLS_ECP_DP_SECP256R1);
-    VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
 }
 
 //
@@ -350,7 +350,7 @@ vsce_phe_hash_derive_account_key(vsce_phe_hash_t *phe_hash_ctx, const mbedtls_ec
     int mbedtls_status = mbedtls_ecp_point_write_binary(&phe_hash_ctx->group, m, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
             vsc_buffer_ptr(&M_buf), vsce_phe_common_PHE_POINT_LENGTH);
     vsc_buffer_reserve(&M_buf, vsce_phe_common_PHE_POINT_LENGTH);
-    VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
     vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
@@ -386,7 +386,7 @@ vsce_phe_hash_data_to_point(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t data, mbed
     vsc_data_t buff_data = vsc_data_slice_beg(vsc_buffer_data(&buff), 0, vsce_phe_common_PHE_HASH_LEN);
     int mbedtls_status = 0;
     mbedtls_status = mbedtls_mpi_read_binary(&t, buff_data.bytes, buff_data.len);
-    VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
 
     vsce_simple_swu_bignum_to_point(phe_hash_ctx->simple_swu, &t, p);
 
@@ -547,7 +547,7 @@ vsce_phe_hash_derive_z(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t buffer, bool su
     do {
         vsc_buffer_reset(&z_buff);
         int mbedtls_status = mbedtls_mpi_copy(z, &phe_hash_ctx->group.N);
-        VSCE_ASSERT(mbedtls_status == 0);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
 
         vsc_data_t domain = success ? vsc_data(z_success_domain, sizeof(z_success_domain) - 1)
                                     : vsc_data(z_failure_domain, sizeof(z_failure_domain) - 1);
@@ -556,7 +556,7 @@ vsce_phe_hash_derive_z(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t buffer, bool su
                 vsc_buffer_capacity(&z_buff));
 
         mbedtls_status = mbedtls_mpi_read_binary(z, vsc_buffer_bytes(&z_buff), vsc_buffer_len(&z_buff));
-        VSCE_ASSERT(mbedtls_status == 0);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(VSCE_ASSERT(mbedtls_status == 0);
     } while (mbedtls_ecp_check_privkey(&phe_hash_ctx->group, z) != 0);
 
     vscf_hkdf_destroy(&hkdf);
