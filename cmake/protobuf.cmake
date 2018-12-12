@@ -86,7 +86,7 @@ function(target_protobuf_sources target)
 
         if(EXISTS "${proto_file_path}/${proto_file_name}.options")
             set(proto_options_file "${proto_file_name}.options")
-            set(proto_options "-vf${proto_options_file}")
+            set(proto_options "-f${proto_options_file}")
         else()
             set(proto_options_file "")
             set(proto_options "")
