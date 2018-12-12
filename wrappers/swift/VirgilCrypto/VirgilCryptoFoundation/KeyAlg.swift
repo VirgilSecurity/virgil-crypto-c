@@ -43,6 +43,8 @@ import VSCFoundation
 
     case rsa
 
+    case ed25519
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC keyAlg: vscf_key_alg_t) {
         self.init(rawValue: Int(keyAlg.rawValue))!

@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Converter between big endian and little endian datas
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,18 +50,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCE_PHE_COMMON_H_INCLUDED
-#define VSCE_PHE_COMMON_H_INCLUDED
-
-#include "vsce_library.h"
+#include "vscf_endianness.h"
+#include "vscf_memory.h"
+#include "vscf_assert.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -63,44 +63,6 @@ extern "C" {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Public integral constants.
-//
-enum {
-    //
-    //  PHE elliptic curve point binary length
-    //
-    vsce_phe_common_PHE_POINT_LENGTH = 65,
-    //
-    //  PHE max password length
-    //
-    vsce_phe_common_PHE_MAX_PASSWORD_LENGTH = 128,
-    //
-    //  PHE server identifier length
-    //
-    vsce_phe_common_PHE_SERVER_IDENTIFIER_LENGTH = 32,
-    //
-    //  PHE client identifier length
-    //
-    vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH = 32,
-    //
-    //  PHE account key length
-    //
-    vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH = 32,
-    //
-    //  PHE private key length
-    //
-    vsce_phe_common_PHE_PRIVATE_KEY_LENGTH = 32,
-    //
-    //  PHE public key length
-    //
-    vsce_phe_common_PHE_PUBLIC_KEY_LENGTH = 65,
-    //
-    //  PHE hash length
-    //
-    vsce_phe_common_PHE_HASH_LEN = 32
-};
 
 
 // --------------------------------------------------------------------------
@@ -110,11 +72,19 @@ enum {
 //  @end
 
 
-#ifdef __cplusplus
+//
+//  Copy memory buffer with convertion from little endian to big endian and back
+//
+VSCF_PUBLIC void
+vscf_endianness_reverse_memcpy(vsc_data_t src, vsc_buffer_t *dst) {
+
+    VSCF_ASSERT(vsc_data_is_valid(src));
+    VSCF_ASSERT_PTR(dst);
+    VSCF_ASSERT(vsc_buffer_is_valid(dst));
+    byte *dest = vsc_buffer_ptr(dst);
+    VSCF_ASSERT(src.len <= vsc_buffer_left(dst));
+    for (size_t i = 0; i < src.len; i++) {
+        dest[src.len - 1 - i] = src.bytes[i];
+    }
+    vsc_buffer_increase_used_bytes(dst, src.len);
 }
-#endif
-
-
-//  @footer
-#endif // VSCE_PHE_COMMON_H_INCLUDED
-//  @end

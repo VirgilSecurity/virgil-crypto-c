@@ -1,7 +1,6 @@
 <class name="phe client" context="private">
 
     <require class="phe common" scope="public"/>
-    <require class="phe utils" scope="private"/>
     <require impl="ctr drbg" project="foundation" scope="private"/>
 
     <require header="PHEModels.pb.h" scope="private"/>
@@ -9,10 +8,10 @@
     <require header="pb_encode.h" scope="private"/>
 
     <require module="buffer defs" scope="private" project="common"/>
+    <require module="mbedtls bridge random" scope="private" project="foundation"/>
 
     <dependency name="random" interface="random" project="foundation"/>
 
-    <property name="utils" class="phe utils"/>
     <property name="phe hash" class="phe hash" access="readwrite"/>
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
     <property name="client private key" type="byte" access="readwrite">
@@ -33,6 +32,8 @@
     <method name="set keys">
         <argument name="client private key" class="data"/>
         <argument name="server public key" class="data"/>
+
+        <return enum="error"/>
     </method>
 
     <method name="generate client private key">
