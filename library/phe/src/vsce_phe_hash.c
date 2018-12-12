@@ -557,7 +557,7 @@ vsce_phe_hash_derive_z(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t buffer, bool su
 
         mbedtls_status = mbedtls_mpi_read_binary(z, vsc_buffer_bytes(&z_buff), vsc_buffer_len(&z_buff));
         VSCE_ASSERT(mbedtls_status == 0);
-    } while (mbedtls_mpi_cmp_mpi(z, &phe_hash_ctx->group.N) >= 0);
+    } while (mbedtls_ecp_check_privkey(&phe_hash_ctx->group, z) != 0);
 
     vscf_hkdf_destroy(&hkdf);
 

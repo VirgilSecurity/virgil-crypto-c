@@ -86,7 +86,11 @@ enum vsce_error_t {
     //
     //  Invalid ECP
     //
-    vsce_INVALID_ECP = 5
+    vsce_INVALID_ECP = 5,
+    //
+    //  Invalid ECP
+    //
+    vsce_INVALID_PRIVATE_KEY = 6
 };
 typedef enum vsce_error_t vsce_error_t;
 
