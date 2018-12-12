@@ -697,7 +697,8 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vs
                 mbedtls_ecp_muladd(&phe_client_ctx->group, &M, &phe_client_ctx->one, &t1, &phe_client_ctx->one, &M);
         VSCE_ASSERT(mbedtls_status == 0);
 
-        mbedtls_status = mbedtls_ecp_mul(&phe_client_ctx->group, &M, &phe_client_ctx->y_inv, &M, NULL, NULL);
+        mbedtls_status = mbedtls_ecp_mul(&phe_client_ctx->group, &M, &phe_client_ctx->y_inv, &M,
+                vscf_mbedtls_bridge_random, phe_client_ctx->random);
         VSCE_ASSERT(mbedtls_status == 0);
 
         vsce_phe_hash_derive_account_key(phe_client_ctx->phe_hash, &M, account_key);
@@ -806,7 +807,8 @@ vsce_phe_client_check_success_proof(vsce_phe_client_t *phe_client_ctx, const Pro
     mbedtls_status = mbedtls_ecp_muladd(&phe_client_ctx->group, &t1, &phe_client_ctx->one, &term1, &challenge, c0);
     VSCE_ASSERT(mbedtls_status == 0);
 
-    mbedtls_status = mbedtls_ecp_mul(&phe_client_ctx->group, &t2, &blind_x, &hs0, NULL, NULL);
+    mbedtls_status = mbedtls_ecp_mul(
+            &phe_client_ctx->group, &t2, &blind_x, &hs0, vscf_mbedtls_bridge_random, phe_client_ctx->random);
     VSCE_ASSERT(mbedtls_status == 0);
 
     if (mbedtls_ecp_point_cmp(&t1, &t2) != 0) {
@@ -823,7 +825,8 @@ vsce_phe_client_check_success_proof(vsce_phe_client_t *phe_client_ctx, const Pro
     mbedtls_status = mbedtls_ecp_muladd(&phe_client_ctx->group, &t1, &phe_client_ctx->one, &term2, &challenge, c1);
     VSCE_ASSERT(mbedtls_status == 0);
 
-    mbedtls_status = mbedtls_ecp_mul(&phe_client_ctx->group, &t2, &blind_x, &hs1, NULL, NULL);
+    mbedtls_status = mbedtls_ecp_mul(
+            &phe_client_ctx->group, &t2, &blind_x, &hs1, vscf_mbedtls_bridge_random, phe_client_ctx->random);
     VSCE_ASSERT(mbedtls_status == 0);
 
     if (mbedtls_ecp_point_cmp(&t1, &t2) != 0) {
@@ -841,7 +844,8 @@ vsce_phe_client_check_success_proof(vsce_phe_client_t *phe_client_ctx, const Pro
             &phe_client_ctx->group, &t1, &phe_client_ctx->one, &term3, &challenge, &phe_client_ctx->x);
     VSCE_ASSERT(mbedtls_status == 0);
 
-    mbedtls_status = mbedtls_ecp_mul(&phe_client_ctx->group, &t2, &blind_x, &phe_client_ctx->group.G, NULL, NULL);
+    mbedtls_status = mbedtls_ecp_mul(&phe_client_ctx->group, &t2, &blind_x, &phe_client_ctx->group.G,
+            vscf_mbedtls_bridge_random, phe_client_ctx->random);
     VSCE_ASSERT(mbedtls_status == 0);
 
     if (mbedtls_ecp_point_cmp(&t1, &t2) != 0) {
