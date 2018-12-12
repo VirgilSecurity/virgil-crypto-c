@@ -34,26 +34,53 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_go VERSION 5.0.0 LANGUAGES C)
+project(virgil_crypto_pythia_php VERSION ${virgil_crypto_php_VERSION} LANGUAGES C)
+
 
 #
-# Derive installation path.
+# Check dependencies
 #
-if(VIRGIL_INSTALL_WRAP_STANDALONE)
-    get_filename_component(GO_DESTINATION "${VIRGIL_INSTALL_WRAP_PREFIX}/go" ABSOLUTE)
-else()
-    set(GO_DESTINATION "${VIRGIL_INSTALL_WRAP_PREFIX}")
+if(NOT VIRGIL_LIB_PYTHIA)
+    message(STATUS "Skip building the PHP wrapper for library Pythia, which is not built.")
+    return()
 endif()
 
+
 #
-# Install Golang files.
+# Create PHP extension library
 #
-install(
-        DIRECTORY
-            "${CMAKE_CURRENT_LIST_DIR}/foundation"
-            "${CMAKE_CURRENT_LIST_DIR}/pythia"
-        DESTINATION
-            gosrc
-        FILES_MATCHING PATTERN
-            "*.go"
+add_library(pythia_php SHARED "")
+set_target_properties(pythia_php PROPERTIES
+        C_STANDARD 99
+        DEBUG_POSTFIX "_d"
+        OUTPUT_NAME vscp_pythia_php
+        PREFIX ""
+        SUFFIX ".so"
+        VERSION ${virgil_crypto_pythia_php_VERSION}
+        SOVERSION ${virgil_crypto_pythia_php_VERSION_MAJOR}
         )
+
+target_sources(pythia_php
+        PRIVATE
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/vscp_pythia_php.c>
+        )
+
+target_link_libraries(pythia_php
+    PUBLIC
+        vsc::pythia
+    PRIVATE
+        phplib
+        "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-undefined dynamic_lookup>"
+    )
+
+configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/PythiaTest.php"
+        "${CMAKE_CURRENT_BINARY_DIR}/PythiaTest.php"
+        )
+
+if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE)
+    add_test(
+            NAME test_pythia_php
+            COMMAND "${PHP_EXECUTABLE}" -d "extension=$<TARGET_FILE:pythia_php>" -d safe_mode=Off "${PHPUNIT_EXECUTABLE}" --include-path . PythiaTest
+            )
+endif()
