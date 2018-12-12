@@ -56,6 +56,8 @@
 #include "vsce_assert.h"
 
 #include <virgil/crypto/foundation/vscf_error.h>
+#include <mbedtls/config.h>
+#include <mbedtls/error.h>
 #include <stdio.h>
 
 // clang-format on
@@ -140,6 +142,26 @@ vsce_assert_trigger_unhandled_error_of_project_foundation(int error, const char 
 
     char error_message[48] = {0x00};
     snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
+
+    vsce_assert_trigger(error_message, file, line);
+}
+
+//
+//  Tell assertion handler that error of library 'mbedtls' is not handled.
+//
+VSCE_PUBLIC void
+vsce_assert_trigger_unhandled_error_of_library_mbedtls(int error, const char *file, int line) {
+
+    #if defined(MBEDTLS_ERROR_C)
+        char error_message[256] = {0x00};
+        mbedtls_strerror(error, error_message, sizeof(error_message));
+    #else
+        char error_message[32] = {0x00};
+        if (error < 0) {
+            error = -error;
+        }
+        snprintf(error_message, sizeof(error_message), "Unhandled mbedTLS error -0x%04x", error);
+    #endif
 
     vsce_assert_trigger(error_message, file, line);
 }
