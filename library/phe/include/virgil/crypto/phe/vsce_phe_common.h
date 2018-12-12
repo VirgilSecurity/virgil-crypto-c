@@ -68,14 +68,37 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
+    //
+    //  PHE elliptic curve point binary length
+    //
     vsce_phe_common_PHE_POINT_LENGTH = 65,
+    //
+    //  PHE max password length
+    //
     vsce_phe_common_PHE_MAX_PASSWORD_LENGTH = 128,
+    //
+    //  PHE server identifier length
+    //
     vsce_phe_common_PHE_SERVER_IDENTIFIER_LENGTH = 32,
+    //
+    //  PHE client identifier length
+    //
     vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH = 32,
-    vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH = 32,
+    //
+    //  PHE account key length
+    //
     vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH = 32,
+    //
+    //  PHE private key length
+    //
     vsce_phe_common_PHE_PRIVATE_KEY_LENGTH = 32,
+    //
+    //  PHE public key length
+    //
     vsce_phe_common_PHE_PUBLIC_KEY_LENGTH = 65,
+    //
+    //  PHE hash length
+    //
     vsce_phe_common_PHE_HASH_LEN = 32
 };
 
