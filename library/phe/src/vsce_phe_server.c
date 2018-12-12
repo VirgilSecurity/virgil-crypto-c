@@ -392,9 +392,9 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t ser
     mbedtls_ecp_point_init(&c1);
 
     mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &c0, &x, &hs0, NULL /* FIXME */, NULL);
-    VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &c1, &x, &hs1, NULL /* FIXME */, NULL);
-    VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(
