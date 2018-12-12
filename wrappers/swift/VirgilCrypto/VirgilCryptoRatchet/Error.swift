@@ -38,11 +38,11 @@ import VSCRatchet
 
 @objc(VSCRRatchetError) public enum RatchetError: Int, Error {
 
-    /// Error during ASN.1 serialization
-    case asn1WriteError = 1
+    /// Error during protobuf serialization
+    case protobufEncodeError = 1
 
-    /// Error during ASN.1 deserialization
-    case asn1ReadError = 2
+    /// Error during protobuf deserialization
+    case protobufDecodeError = 2
 
     /// Message version doesn't match
     case messageVersionDoesnTMatch = 3
