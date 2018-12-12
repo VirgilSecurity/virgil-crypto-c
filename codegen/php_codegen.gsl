@@ -1,3 +1,4 @@
+.template 0
 #   Copyright (C) 2015-2018 Virgil Security Inc.
 #
 #   All rights reserved.
@@ -32,28 +33,13 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+# ---------------------------------------------------------------------------
+#   Functions for PHP primitives generation: protocol, class, enum, etc.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
 
-project(virgil_crypto_go VERSION 5.0.0 LANGUAGES C)
+gsl from "common.gsl"
 
-#
-# Derive installation path.
-#
-if(VIRGIL_INSTALL_WRAP_STANDALONE)
-    get_filename_component(GO_DESTINATION "${VIRGIL_INSTALL_WRAP_PREFIX}/go" ABSOLUTE)
-else()
-    set(GO_DESTINATION "${VIRGIL_INSTALL_WRAP_PREFIX}")
-endif()
-
-#
-# Install Golang files.
-#
-install(
-        DIRECTORY
-            "${CMAKE_CURRENT_LIST_DIR}/foundation"
-            "${CMAKE_CURRENT_LIST_DIR}/pythia"
-        DESTINATION
-            gosrc
-        FILES_MATCHING PATTERN
-            "*.go"
-        )
+.endtemplate
