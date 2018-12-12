@@ -63,10 +63,9 @@ include("cmake/protobuf.cmake")
 option(BUILD_SHARED_LIBS "On/Off build shared libraries." OFF)
 
 #
-# Test & bench
+# Test
 #
 option(ENABLE_TESTING "On/Off library integration tests." ON)
-option(ENABLE_BENCHMARKS "On/Off build library benchmarks." ON)
 
 #
 # Libraries
@@ -194,14 +193,6 @@ endif()
 if(ENABLE_TESTING AND NOT CMAKE_CROSSCOMPILING)
     enable_testing()
     add_subdirectory(tests)
-endif()
-
-
-# ---------------------------------------------------------------------------
-#   Benchmarks
-# ---------------------------------------------------------------------------
-if(ENABLE_BENCHMARKS AND NOT CMAKE_CROSSCOMPILING)
-    add_subdirectory(benchmarks)
 endif()
 
 
