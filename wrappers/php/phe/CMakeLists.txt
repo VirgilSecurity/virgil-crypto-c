@@ -37,18 +37,18 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 project(virgil_crypto_phe_php VERSION ${virgil_crypto_php_VERSION} LANGUAGES C)
 
 
-#
-# Check dependencies
-#
+# ---------------------------------------------------------------------------
+#   Check dependencies
+# ---------------------------------------------------------------------------
 if(NOT VIRGIL_LIB_PHE)
     message(STATUS "Skip building the PHP wrapper for library PHE, which is not built.")
     return()
 endif()
 
 
-#
-# Create PHP extension library
-#
+# ---------------------------------------------------------------------------
+#   Create PHP extension library
+# ---------------------------------------------------------------------------
 add_library(phe_php SHARED "")
 set_target_properties(phe_php PROPERTIES
         C_STANDARD 99
@@ -73,10 +73,25 @@ target_link_libraries(phe_php
         "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-undefined dynamic_lookup>"
     )
 
+
+# ---------------------------------------------------------------------------
+#   Test
+# ---------------------------------------------------------------------------
 if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE)
     add_test(
             NAME test_phe_php
             COMMAND "${PHP_EXECUTABLE}" -d "extension=$<TARGET_FILE:phe_php>" -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
                     --include-path "${CMAKE_CURRENT_LIST_DIR}" "${CMAKE_CURRENT_LIST_DIR}/tests/PHEClientTest.php"
+            )
+endif()
+
+
+# ---------------------------------------------------------------------------
+#   Install
+# ---------------------------------------------------------------------------
+if(VIRGIL_INSTALL_WRAP_LIBS)
+    install(TARGETS phe_php
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
             )
 endif()

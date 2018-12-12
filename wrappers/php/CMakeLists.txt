@@ -41,11 +41,6 @@ project(virgil_crypto_php VERSION 0.5.0 LANGUAGES C)
 # ---------------------------------------------------------------------------
 set(PHP_VERSION "" CACHE STRING "Required exact PHP version. Keep empty to find currently available version.")
 
-if(VIRGIL_INSTALL_WRAP_STANDALONE)
-    get_filename_component(PHP_DESTINATION "${VIRGIL_INSTALL_WRAP_PREFIX}/php" ABSOLUTE)
-else()
-    set(PHP_DESTINATION "${VIRGIL_INSTALL_WRAP_PREFIX}")
-endif()
 
 # ---------------------------------------------------------------------------
 #   Find PHP module and create target 'php' from it
