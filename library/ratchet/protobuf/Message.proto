@@ -11,8 +11,8 @@ message PrekeyMessage {
 	uint32 version = 1;
 	bytes sender_identity_key = 2;
 	bytes sender_ephemeral_key = 3;
-	bytes receiver_long_term_key = 4;
-	bytes receiver_one_time_key = 5;
+	bytes receiver_longterm_key = 4;
+	bytes receiver_onetime_key = 5;
 	RegularMessage regular_message = 6;
 }
 
@@ -20,8 +20,8 @@ message Session {
 	bool received_first_response = 1;
 	bytes sender_identity_key = 2;
 	bytes sender_ephemeral_key = 3;
-	bytes receiver_long_term_key = 4;
-	bytes receiver_one_time_key = 5;
+	bytes receiver_longterm_key = 4;
+	bytes receiver_onetime_key = 5;
 	bytes ratchet = 6;
 }
 

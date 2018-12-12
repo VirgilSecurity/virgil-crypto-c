@@ -66,8 +66,8 @@ test__serialization__serialize_deserialize__objects_are_equal(void) {
     prekey_message.version = test_ratchet_prekey_message_protocol_version;
     memcpy(prekey_message.sender_identity_key, sender_identity_key->bytes, sender_identity_key->len);
     memcpy(prekey_message.sender_ephemeral_key, sender_ephemeral_key->bytes, sender_ephemeral_key->len);
-    memcpy(prekey_message.receiver_long_term_key, receiver_longterm_key->bytes, receiver_longterm_key->len);
-    memcpy(prekey_message.receiver_one_time_key, receiver_onetime_key->bytes, receiver_onetime_key->len);
+    memcpy(prekey_message.receiver_longterm_key, receiver_longterm_key->bytes, receiver_longterm_key->len);
+    memcpy(prekey_message.receiver_onetime_key, receiver_onetime_key->bytes, receiver_onetime_key->len);
     prekey_message.regular_message = regular_message;
 
     Message ratchet_message = Message_init_zero;
@@ -115,9 +115,9 @@ test__serialization__serialize_deserialize__objects_are_equal(void) {
                              test_ratchet_prekey_message_sender_identity_key.len);
     TEST_ASSERT_EQUAL_MEMORY(decoded_prekey_message.sender_ephemeral_key, test_ratchet_prekey_message_sender_ephemeral_key.bytes,
                              test_ratchet_prekey_message_sender_identity_key.len);
-    TEST_ASSERT_EQUAL_MEMORY(decoded_prekey_message.receiver_long_term_key, test_ratchet_prekey_message_receiver_longterm_key.bytes,
+    TEST_ASSERT_EQUAL_MEMORY(decoded_prekey_message.receiver_longterm_key, test_ratchet_prekey_message_receiver_longterm_key.bytes,
                              test_ratchet_prekey_message_sender_identity_key.len);
-    TEST_ASSERT_EQUAL_MEMORY(decoded_prekey_message.receiver_one_time_key, test_ratchet_prekey_message_receiver_onetime_key.bytes,
+    TEST_ASSERT_EQUAL_MEMORY(decoded_prekey_message.receiver_onetime_key, test_ratchet_prekey_message_receiver_onetime_key.bytes,
                              test_ratchet_prekey_message_sender_identity_key.len);
 
     RegularMessage decoded_regular_message = decoded_prekey_message.regular_message;

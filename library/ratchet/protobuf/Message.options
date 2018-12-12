@@ -3,11 +3,11 @@ RegularMessage.cipher_text max_size:32768
 
 PrekeyMessage.sender_identity_key max_size:32 fixed_length:true
 PrekeyMessage.sender_ephemeral_key max_size:32 fixed_length:true
-PrekeyMessage.receiver_long_term_key max_size:32 fixed_length:true
-PrekeyMessage.receiver_one_time_key max_size:32 fixed_length:true
+PrekeyMessage.receiver_longterm_key max_size:32 fixed_length:true
+PrekeyMessage.receiver_onetime_key max_size:32 fixed_length:true
 
 Session.sender_identity_key max_size:32 fixed_length:true
 Session.sender_ephemeral_key max_size:32 fixed_length:true
-Session.receiver_long_term_key max_size:32 fixed_length:true
-Session.receiver_one_time_key max_size:32 fixed_length:true
+Session.receiver_longterm_key max_size:32 fixed_length:true
+Session.receiver_onetime_key max_size:32 fixed_length:true
 Session.ratchet max_size:32 fixed_length:true
