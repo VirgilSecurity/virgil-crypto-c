@@ -1,8 +1,5 @@
 <class name="ratchet session" context="private">
 
-    <require impl="asn1wr" project="foundation" scope="private"/>
-    <require impl="asn1rd" project="foundation" scope="private"/>
-
     <require class="ratchet common" scope="public"/>
 
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
