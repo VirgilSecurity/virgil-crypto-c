@@ -103,6 +103,10 @@ struct vsc_buffer_t {
     //  in a secure manner.
     //
     bool is_secure;
+    //
+    //  Defines that buffer is the owner of the underlying bytes.
+    //
+    bool is_owner;
 };
 
 

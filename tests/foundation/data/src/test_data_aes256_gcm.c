@@ -39,6 +39,10 @@
 //  Test vector 1
 //  AES-GCM NIST Validation (AES-256,128,0,0,128) #0
 //
+const vsc_data_t test_aes256_gcm_VECTOR_1_DATA = {(const byte *)0xDEADBEAF, 0};
+
+const vsc_data_t test_aes256_gcm_VECTOR_1_ENC = {(const byte *)0xDEADBEAF, 0};
+
 const byte test_aes256_gcm_VECTOR_1_KEY_BYTES[] = {
     0xfb, 0x80, 0x94, 0xdd, 0x2e, 0xdd, 0xb3, 0xd8,
     0x00, 0x4b, 0xb7, 0x91, 0x34, 0x02, 0x3c, 0xa2,
@@ -46,14 +50,17 @@ const byte test_aes256_gcm_VECTOR_1_KEY_BYTES[] = {
     0x8a, 0xbd, 0xf2, 0x13, 0x0e, 0x8b, 0xec, 0xb8,
 };
 
-const byte test_aes256_gcm_VECTOR_1_DATA_BYTES[] = {};
+const vsc_data_t test_aes256_gcm_VECTOR_1_KEY = {
+    test_aes256_gcm_VECTOR_1_KEY_BYTES, sizeof(test_aes256_gcm_VECTOR_1_KEY_BYTES)
+};
 
 const byte test_aes256_gcm_VECTOR_1_NONCE_BYTES[] = {
     0x49, 0x1a, 0x14, 0xe1, 0x3b, 0x59, 0x1c, 0xf2,
     0xf3, 0x9d, 0xa9, 0x6b, 0x68, 0x82, 0xb5, 0xe5,
 };
 
-const byte test_aes256_gcm_VECTOR_1_ENC_BYTES[] = {
+const vsc_data_t test_aes256_gcm_VECTOR_1_NONCE = {
+    test_aes256_gcm_VECTOR_1_NONCE_BYTES, sizeof(test_aes256_gcm_VECTOR_1_NONCE_BYTES)
 };
 
 const byte test_aes256_gcm_VECTOR_1_AUTH_TAG_BYTES[] = {
@@ -61,30 +68,13 @@ const byte test_aes256_gcm_VECTOR_1_AUTH_TAG_BYTES[] = {
     0xed, 0xfc, 0xef, 0xd5, 0xb1, 0x23, 0xd5, 0x20,
 };
 
+const vsc_data_t test_aes256_gcm_VECTOR_1_AUTH_TAG = {
+    test_aes256_gcm_VECTOR_1_AUTH_TAG_BYTES, sizeof(test_aes256_gcm_VECTOR_1_AUTH_TAG_BYTES)
+};
+
 const byte test_aes256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG_BYTES[] = {
     0x80, 0x88, 0x3f, 0x2c, 0x92, 0x54, 0x34, 0xa5,
     0xed, 0xfc, 0xef, 0xd5, 0xb1, 0x23, 0xd5, 0x20,
-};
-
-
-const vsc_data_t test_aes256_gcm_VECTOR_1_KEY = {
-    test_aes256_gcm_VECTOR_1_KEY_BYTES, sizeof(test_aes256_gcm_VECTOR_1_KEY_BYTES)
-};
-
-const vsc_data_t test_aes256_gcm_VECTOR_1_DATA = {
-    test_aes256_gcm_VECTOR_1_DATA_BYTES, sizeof(test_aes256_gcm_VECTOR_1_DATA_BYTES)
-};
-
-const vsc_data_t test_aes256_gcm_VECTOR_1_NONCE = {
-    test_aes256_gcm_VECTOR_1_NONCE_BYTES, sizeof(test_aes256_gcm_VECTOR_1_NONCE_BYTES)
-};
-
-const vsc_data_t test_aes256_gcm_VECTOR_1_ENC = {
-    test_aes256_gcm_VECTOR_1_ENC_BYTES, sizeof(test_aes256_gcm_VECTOR_1_ENC_BYTES)
-};
-
-const vsc_data_t test_aes256_gcm_VECTOR_1_AUTH_TAG = {
-    test_aes256_gcm_VECTOR_1_AUTH_TAG_BYTES, sizeof(test_aes256_gcm_VECTOR_1_AUTH_TAG_BYTES)
 };
 
 const vsc_data_t test_aes256_gcm_VECTOR_1_ENC_PLUS_AUTH_TAG = {
@@ -102,8 +92,6 @@ const byte test_aes256_gcm_VECTOR_2_KEY_BYTES[] = {
     0x2d, 0x15, 0x51, 0x83, 0x73, 0x0d, 0x21, 0xd7,
     0x1e, 0xd8, 0xe2, 0x28, 0x4e, 0xc3, 0x08, 0xe3,
 };
-
-const byte test_aes256_gcm_VECTOR_2_DATA_BYTES[] = {};
 
 const byte test_aes256_gcm_VECTOR_2_NONCE_BYTES[] = {
     0x78, 0xbe, 0xf6, 0x55, 0xdf, 0xd8, 0x99, 0x0b,
@@ -129,7 +117,6 @@ const byte test_aes256_gcm_VECTOR_2_ADD_BYTES[] = {
     0xd9, 0x52, 0xf8, 0x11, 0x9f, 0xf1, 0x11, 0x1d,
 };
 
-const byte test_aes256_gcm_VECTOR_2_ENC_BYTES[] = {};
 
 const byte test_aes256_gcm_VECTOR_2_AUTH_TAG_BYTES[] = {
     0xf1, 0x5d, 0xdf, 0x93, 0x8b, 0xbf, 0x52, 0xc2,
@@ -141,9 +128,7 @@ const vsc_data_t test_aes256_gcm_VECTOR_2_KEY = {
     test_aes256_gcm_VECTOR_2_KEY_BYTES, sizeof(test_aes256_gcm_VECTOR_2_KEY_BYTES)
 };
 
-const vsc_data_t test_aes256_gcm_VECTOR_2_DATA = {
-    test_aes256_gcm_VECTOR_2_DATA_BYTES, sizeof(test_aes256_gcm_VECTOR_2_DATA_BYTES)
-};
+const vsc_data_t test_aes256_gcm_VECTOR_2_DATA = {(const byte *)0xDEADBEAF, 0};
 
 const vsc_data_t test_aes256_gcm_VECTOR_2_NONCE = {
     test_aes256_gcm_VECTOR_2_NONCE_BYTES, sizeof(test_aes256_gcm_VECTOR_2_NONCE_BYTES)
@@ -153,9 +138,7 @@ const vsc_data_t test_aes256_gcm_VECTOR_2_ADD = {
     test_aes256_gcm_VECTOR_2_ADD_BYTES, sizeof(test_aes256_gcm_VECTOR_2_ADD_BYTES)
 };
 
-const vsc_data_t test_aes256_gcm_VECTOR_2_ENC = {
-    test_aes256_gcm_VECTOR_2_ENC_BYTES, sizeof(test_aes256_gcm_VECTOR_2_ENC_BYTES)
-};
+const vsc_data_t test_aes256_gcm_VECTOR_2_ENC = {(const byte *)0xDEADBEAF, 0};
 
 const vsc_data_t test_aes256_gcm_VECTOR_2_AUTH_TAG = {
     test_aes256_gcm_VECTOR_2_AUTH_TAG_BYTES, sizeof(test_aes256_gcm_VECTOR_2_AUTH_TAG_BYTES)

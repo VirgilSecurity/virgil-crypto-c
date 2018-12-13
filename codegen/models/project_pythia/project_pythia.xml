@@ -69,5 +69,6 @@
         snprintf(error_message, sizeof(error_message), "Unhandled vsc::pythia error -0x%04x", error);
     </error_message_getter>
 
-    <wrapper lang="swift"/>
+    <!-- <wrapper lang="swift"/> -->
+    <wrapper lang="php"/>
 </project>

@@ -394,7 +394,7 @@ target_sources(foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_assert.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_library.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_memory.h"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bridge_random.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_mbedtls_bridge_random.h"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bridge_entropy.h"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bridge_entropy_poll.h"
             "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/foundation/vscf_platform.h"
