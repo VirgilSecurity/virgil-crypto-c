@@ -332,6 +332,40 @@ test__3(void) {
 }
 
 void
+test__constructor__create_object__object_has_correct_values(void) {
+    bool received_first_response = true;
+    vsc_buffer_t *sender_identity_key = vsc_buffer_new_with_data(test_ratchet_prekey_message_sender_identity_key);
+    vsc_buffer_t *sender_ephemeral_key = vsc_buffer_new_with_data(test_ratchet_prekey_message_sender_ephemeral_key);
+    vsc_buffer_t *receiver_longterm_key= vsc_buffer_new_with_data(test_ratchet_prekey_message_receiver_longterm_key);
+    vsc_buffer_t *receiver_onetime_key = vsc_buffer_new_with_data(test_ratchet_prekey_message_receiver_onetime_key);
+
+    vscr_ratchet_t *ratchet = vscr_ratchet_new();
+
+    vscr_ratchet_session_t *ratchet_session = vscr_ratchet_session_new_with_members(received_first_response,
+                                                                                    sender_identity_key,
+                                                                                    sender_ephemeral_key,
+                                                                                    receiver_longterm_key,
+                                                                                    receiver_onetime_key,
+                                                                                    &ratchet); // FIXME
+
+    TEST_ASSERT_EQUAL(ratchet_session->received_first_response, received_first_response);
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(sender_identity_key),
+                             vsc_buffer_bytes(ratchet_session->sender_identity_public_key),
+                             vsc_buffer_len(ratchet_session->sender_identity_public_key));
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(sender_ephemeral_key),
+                             vsc_buffer_bytes(ratchet_session->sender_ephemeral_public_key),
+                             vsc_buffer_len(ratchet_session->sender_ephemeral_public_key));
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(receiver_longterm_key),
+                             vsc_buffer_bytes(ratchet_session->receiver_longterm_public_key),
+                             vsc_buffer_len(ratchet_session->receiver_longterm_public_key));
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(receiver_onetime_key),
+                             vsc_buffer_bytes(ratchet_session->receiver_onetime_public_key),
+                             vsc_buffer_len(ratchet_session->receiver_onetime_public_key));
+
+    // FIXME: check ratchet
+}
+
+void
 test__serialization__serialize_deserialize__objects_are_equal(void) {
     bool received_first_response = true;
     vsc_buffer_t *sender_identity_key = vsc_buffer_new_with_data(test_ratchet_prekey_message_sender_identity_key);
@@ -388,6 +422,8 @@ main(void) {
     RUN_TEST(test__1);
     RUN_TEST(test__2);
     RUN_TEST(test__3);
+
+    RUN_TEST(test__constructor__create_object__object_has_correct_values);
 
     // FIXME
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
