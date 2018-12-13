@@ -50,6 +50,7 @@
 #include "vsce_phe_client_defs.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
+#include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <PHEModels.pb.h>
 #include <pb_decode.h>
@@ -133,6 +134,7 @@ vsce_phe_client_cleanup(vsce_phe_client_t *phe_client_ctx) {
         vsce_phe_client_cleanup_ctx(phe_client_ctx);
 
         vsce_phe_client_release_random(phe_client_ctx);
+        vsce_phe_client_release_operation_random(phe_client_ctx);
 
         vsce_zeroize(phe_client_ctx, sizeof(vsce_phe_client_t));
     }
@@ -244,6 +246,48 @@ vsce_phe_client_release_random(vsce_phe_client_t *phe_client_ctx) {
     vscf_impl_destroy(&phe_client_ctx->random);
 }
 
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCE_PUBLIC void
+vsce_phe_client_use_operation_random(vsce_phe_client_t *phe_client_ctx, vscf_impl_t *operation_random) {
+
+    VSCE_ASSERT_PTR(phe_client_ctx);
+    VSCE_ASSERT_PTR(operation_random);
+    VSCE_ASSERT_PTR(phe_client_ctx->operation_random == NULL);
+
+    VSCE_ASSERT(vscf_random_is_implemented(operation_random));
+
+    phe_client_ctx->operation_random = vscf_impl_copy(operation_random);
+}
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCE_PUBLIC void
+vsce_phe_client_take_operation_random(vsce_phe_client_t *phe_client_ctx, vscf_impl_t *operation_random) {
+
+    VSCE_ASSERT_PTR(phe_client_ctx);
+    VSCE_ASSERT_PTR(operation_random);
+    VSCE_ASSERT_PTR(phe_client_ctx->operation_random == NULL);
+
+    VSCE_ASSERT(vscf_random_is_implemented(operation_random));
+
+    phe_client_ctx->operation_random = operation_random;
+}
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCE_PUBLIC void
+vsce_phe_client_release_operation_random(vsce_phe_client_t *phe_client_ctx) {
+
+    VSCE_ASSERT_PTR(phe_client_ctx);
+
+    vscf_impl_destroy(&phe_client_ctx->operation_random);
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -264,10 +308,14 @@ vsce_phe_client_init_ctx(vsce_phe_client_t *phe_client_ctx) {
 
     phe_client_ctx->phe_hash = vsce_phe_hash_new();
 
-    vscf_ctr_drbg_impl_t *rng = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(rng);
+    vscf_ctr_drbg_impl_t *rng1, *rng2;
+    rng1 = vscf_ctr_drbg_new();
+    rng2 = vscf_ctr_drbg_new();
+    vscf_ctr_drbg_setup_defaults(rng1);
+    vscf_ctr_drbg_setup_defaults(rng2);
 
-    vsce_phe_client_take_random(phe_client_ctx, vscf_ctr_drbg_impl(rng));
+    vsce_phe_client_take_random(phe_client_ctx, vscf_ctr_drbg_impl(rng1));
+    vsce_phe_client_take_operation_random(phe_client_ctx, vscf_ctr_drbg_impl(rng2));
 
     mbedtls_ecp_group_init(&phe_client_ctx->group);
     int mbedtls_status = mbedtls_ecp_group_load(&phe_client_ctx->group, MBEDTLS_ECP_DP_SECP256R1);
@@ -732,7 +780,7 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vs
         VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
         mbedtls_status = mbedtls_ecp_mul(&phe_client_ctx->group, &M, &phe_client_ctx->y_inv, &M,
-                vscf_mbedtls_bridge_random, phe_client_ctx->random);
+                vscf_mbedtls_bridge_random, phe_client_ctx->operation_random);
         VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
         vsce_phe_hash_derive_account_key(phe_client_ctx->phe_hash, &M, account_key);
@@ -848,7 +896,7 @@ vsce_phe_client_check_success_proof(vsce_phe_client_t *phe_client_ctx, const Pro
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_status = mbedtls_ecp_mul(
-            &phe_client_ctx->group, &t2, &blind_x, &hs0, vscf_mbedtls_bridge_random, phe_client_ctx->random);
+            &phe_client_ctx->group, &t2, &blind_x, &hs0, vscf_mbedtls_bridge_random, phe_client_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     if (mbedtls_ecp_point_cmp(&t1, &t2) != 0) {
@@ -866,7 +914,7 @@ vsce_phe_client_check_success_proof(vsce_phe_client_t *phe_client_ctx, const Pro
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_status = mbedtls_ecp_mul(
-            &phe_client_ctx->group, &t2, &blind_x, &hs1, vscf_mbedtls_bridge_random, phe_client_ctx->random);
+            &phe_client_ctx->group, &t2, &blind_x, &hs1, vscf_mbedtls_bridge_random, phe_client_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     if (mbedtls_ecp_point_cmp(&t1, &t2) != 0) {
@@ -885,7 +933,7 @@ vsce_phe_client_check_success_proof(vsce_phe_client_t *phe_client_ctx, const Pro
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_status = mbedtls_ecp_mul(&phe_client_ctx->group, &t2, &blind_x, &phe_client_ctx->group.G,
-            vscf_mbedtls_bridge_random, phe_client_ctx->random);
+            vscf_mbedtls_bridge_random, phe_client_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     if (mbedtls_ecp_point_cmp(&t1, &t2) != 0) {

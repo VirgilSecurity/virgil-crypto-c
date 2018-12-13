@@ -50,6 +50,7 @@
 #include "vsce_phe_server_defs.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
+#include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <PHEModels.pb.h>
 #include <pb_decode.h>
@@ -135,6 +136,7 @@ vsce_phe_server_cleanup(vsce_phe_server_t *phe_server_ctx) {
         vsce_phe_server_cleanup_ctx(phe_server_ctx);
 
         vsce_phe_server_release_random(phe_server_ctx);
+        vsce_phe_server_release_operation_random(phe_server_ctx);
 
         vsce_zeroize(phe_server_ctx, sizeof(vsce_phe_server_t));
     }
@@ -246,6 +248,48 @@ vsce_phe_server_release_random(vsce_phe_server_t *phe_server_ctx) {
     vscf_impl_destroy(&phe_server_ctx->random);
 }
 
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCE_PUBLIC void
+vsce_phe_server_use_operation_random(vsce_phe_server_t *phe_server_ctx, vscf_impl_t *operation_random) {
+
+    VSCE_ASSERT_PTR(phe_server_ctx);
+    VSCE_ASSERT_PTR(operation_random);
+    VSCE_ASSERT_PTR(phe_server_ctx->operation_random == NULL);
+
+    VSCE_ASSERT(vscf_random_is_implemented(operation_random));
+
+    phe_server_ctx->operation_random = vscf_impl_copy(operation_random);
+}
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCE_PUBLIC void
+vsce_phe_server_take_operation_random(vsce_phe_server_t *phe_server_ctx, vscf_impl_t *operation_random) {
+
+    VSCE_ASSERT_PTR(phe_server_ctx);
+    VSCE_ASSERT_PTR(operation_random);
+    VSCE_ASSERT_PTR(phe_server_ctx->operation_random == NULL);
+
+    VSCE_ASSERT(vscf_random_is_implemented(operation_random));
+
+    phe_server_ctx->operation_random = operation_random;
+}
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCE_PUBLIC void
+vsce_phe_server_release_operation_random(vsce_phe_server_t *phe_server_ctx) {
+
+    VSCE_ASSERT_PTR(phe_server_ctx);
+
+    vscf_impl_destroy(&phe_server_ctx->operation_random);
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -266,10 +310,14 @@ vsce_phe_server_init_ctx(vsce_phe_server_t *phe_server_ctx) {
 
     phe_server_ctx->phe_hash = vsce_phe_hash_new();
 
-    vscf_ctr_drbg_impl_t *rng = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(rng);
+    vscf_ctr_drbg_impl_t *rng1, *rng2;
+    rng1 = vscf_ctr_drbg_new();
+    rng2 = vscf_ctr_drbg_new();
+    vscf_ctr_drbg_setup_defaults(rng1);
+    vscf_ctr_drbg_setup_defaults(rng2);
 
-    vsce_phe_server_take_random(phe_server_ctx, vscf_ctr_drbg_impl(rng));
+    vsce_phe_server_take_random(phe_server_ctx, vscf_ctr_drbg_impl(rng1));
+    vsce_phe_server_take_operation_random(phe_server_ctx, vscf_ctr_drbg_impl(rng2));
 
     mbedtls_ecp_group_init(&phe_server_ctx->group);
     int status = mbedtls_ecp_group_load(&phe_server_ctx->group, MBEDTLS_ECP_DP_SECP256R1);
@@ -392,12 +440,12 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t ser
     mbedtls_ecp_point c0, c1;
     mbedtls_ecp_point_init(&c0);
     mbedtls_ecp_point_init(&c1);
-  
-    mbedtls_status =
-            mbedtls_ecp_mul(&phe_server_ctx->group, &c0, &x, &hs0, vscf_mbedtls_bridge_random, phe_server_ctx->random);
+
+    mbedtls_status = mbedtls_ecp_mul(
+            &phe_server_ctx->group, &c0, &x, &hs0, vscf_mbedtls_bridge_random, phe_server_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    mbedtls_status =
-            mbedtls_ecp_mul(&phe_server_ctx->group, &c1, &x, &hs1, vscf_mbedtls_bridge_random, phe_server_ctx->random);
+    mbedtls_status = mbedtls_ecp_mul(
+            &phe_server_ctx->group, &c1, &x, &hs1, vscf_mbedtls_bridge_random, phe_server_ctx->operation_random);
 
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
@@ -504,7 +552,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t se
     mbedtls_ecp_point_init(&hs0x);
 
     mbedtls_status = mbedtls_ecp_mul(
-            &phe_server_ctx->group, &hs0x, &x, &hs0, vscf_mbedtls_bridge_random, phe_server_ctx->random);
+            &phe_server_ctx->group, &hs0x, &x, &hs0, vscf_mbedtls_bridge_random, phe_server_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_ecp_point c1;
@@ -514,7 +562,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t se
         // Password matches
 
         mbedtls_status = mbedtls_ecp_mul(
-                &phe_server_ctx->group, &c1, &x, &hs1, vscf_mbedtls_bridge_random, phe_server_ctx->random);
+                &phe_server_ctx->group, &c1, &x, &hs1, vscf_mbedtls_bridge_random, phe_server_ctx->operation_random);
         VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
         VerifyPasswordResponse response = VerifyPasswordResponse_init_zero;
@@ -626,14 +674,14 @@ vsce_phe_server_prove_success(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     mbedtls_ecp_point_init(&term2);
     mbedtls_ecp_point_init(&term3);
 
-    mbedtls_status = mbedtls_ecp_mul(
-            &phe_server_ctx->group, &term1, &blind_x, hs0, vscf_mbedtls_bridge_random, phe_server_ctx->random);
+    mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &term1, &blind_x, hs0, vscf_mbedtls_bridge_random,
+            phe_server_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    mbedtls_status = mbedtls_ecp_mul(
-            &phe_server_ctx->group, &term2, &blind_x, hs1, vscf_mbedtls_bridge_random, phe_server_ctx->random);
+    mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &term2, &blind_x, hs1, vscf_mbedtls_bridge_random,
+            phe_server_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &term3, &blind_x, &phe_server_ctx->group.G,
-            vscf_mbedtls_bridge_random, phe_server_ctx->random);
+            vscf_mbedtls_bridge_random, phe_server_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_mpi challenge;
@@ -784,16 +832,16 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     mbedtls_ecp_point_init(&term4);
 
     mbedtls_status = mbedtls_ecp_mul(
-            &phe_server_ctx->group, &term1, &blind_A, c0, vscf_mbedtls_bridge_random, phe_server_ctx->random);
+            &phe_server_ctx->group, &term1, &blind_A, c0, vscf_mbedtls_bridge_random, phe_server_ctx->operation_random);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+    mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &term2, &blind_B, hs0, vscf_mbedtls_bridge_random,
+            phe_server_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_ecp_mul(
-            &phe_server_ctx->group, &term2, &blind_B, hs0, vscf_mbedtls_bridge_random, phe_server_ctx->random);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    mbedtls_status = mbedtls_ecp_mul(
-            &phe_server_ctx->group, &term3, &blind_A, &X, vscf_mbedtls_bridge_random, phe_server_ctx->random);
+            &phe_server_ctx->group, &term3, &blind_A, &X, vscf_mbedtls_bridge_random, phe_server_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &term4, &blind_B, &phe_server_ctx->group.G,
-            vscf_mbedtls_bridge_random, phe_server_ctx->random);
+            vscf_mbedtls_bridge_random, phe_server_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_mpi challenge_A, challenge_B;
@@ -960,7 +1008,7 @@ vsce_phe_server_rotate_keys(vsce_phe_server_t *phe_server_ctx, vsc_data_t server
     mbedtls_ecp_point_init(&new_X);
 
     mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &new_X, &new_x, &phe_server_ctx->group.G,
-            vscf_mbedtls_bridge_random, phe_server_ctx->random);
+            vscf_mbedtls_bridge_random, phe_server_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     size_t olen = 0;

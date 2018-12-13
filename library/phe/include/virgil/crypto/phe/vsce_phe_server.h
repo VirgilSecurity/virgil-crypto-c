@@ -152,6 +152,25 @@ vsce_phe_server_take_random(vsce_phe_server_t *phe_server_ctx, vscf_impl_t *rand
 VSCE_PUBLIC void
 vsce_phe_server_release_random(vsce_phe_server_t *phe_server_ctx);
 
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCE_PUBLIC void
+vsce_phe_server_use_operation_random(vsce_phe_server_t *phe_server_ctx, vscf_impl_t *operation_random);
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCE_PUBLIC void
+vsce_phe_server_take_operation_random(vsce_phe_server_t *phe_server_ctx, vscf_impl_t *operation_random);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCE_PUBLIC void
+vsce_phe_server_release_operation_random(vsce_phe_server_t *phe_server_ctx);
+
 VSCE_PUBLIC vsce_error_t
 vsce_phe_server_generate_server_key_pair(vsce_phe_server_t *phe_server_ctx, vsc_buffer_t *server_private_key,
         vsc_buffer_t *server_public_key);

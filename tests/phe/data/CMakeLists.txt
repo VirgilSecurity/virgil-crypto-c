@@ -41,10 +41,12 @@ target_sources(test_data_phe
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_simple_swu.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_phe_hash.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_phe_server_client.h"
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_simple_swu.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_phe_hash.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_phe_server_client.c"
         )
 
 target_include_directories(test_data_phe
