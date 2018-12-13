@@ -16,6 +16,34 @@ message PrekeyMessage {
 	RegularMessage regular_message = 6;
 }
 
+message Key {
+	uint32 index = 1;
+	bytes key = 2;
+}
+
+message SenderChain {
+	bytes private_key = 1;
+	bytes public_key = 2;
+	Key chain_key = 3;
+}
+
+message ReceiverChain {
+	bytes public_key = 1;
+	Key chain_key = 2;
+}
+
+message SkippedMessageKey {
+	bytes public_key = 1;
+	Key message_key = 2;
+}
+
+message Ratchet {
+	SenderChain sender_chain = 1;
+	bytes root_key = 2;
+	repeated ReceiverChain receiver_chains = 3;
+	repeated SkippedMessageKey skipped_message_keys = 4;
+}
+
 message Session {
 	bool received_first_response = 1;
 	bytes sender_identity_key = 2;

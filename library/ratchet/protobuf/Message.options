@@ -6,6 +6,19 @@ PrekeyMessage.sender_ephemeral_key max_size:32 fixed_length:true
 PrekeyMessage.receiver_longterm_key max_size:32 fixed_length:true
 PrekeyMessage.receiver_onetime_key max_size:32 fixed_length:true
 
+Key.key max_size:32 fixed_length:true
+
+SenderChain.private_key max_size:32 fixed_length:true
+SenderChain.public_key max_size:32 fixed_length:true
+
+ReceiverChain.public_key max_size:32 fixed_length:true
+
+SkippedMessageKey.public_key max_size:32 fixed_length:true
+
+Ratchet.root_key max_size:32 fixed_length:true
+Ratchet.receiver_chains max_size:5
+Ratchet.skipped_message_keys max_size:40
+
 Session.sender_identity_key max_size:32 fixed_length:true
 Session.sender_ephemeral_key max_size:32 fixed_length:true
 Session.receiver_longterm_key max_size:32 fixed_length:true
