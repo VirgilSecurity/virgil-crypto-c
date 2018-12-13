@@ -47,6 +47,7 @@
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <ed25519/ed25519.h>
+#include <virgil/crypto/ratchet/private/vscr_ratchet_defs.h>
 
 static void
 initialize(vscr_ratchet_t *ratchet_alice, vscr_ratchet_t *ratchet_bob, RegularMessage *regular_message) {
@@ -230,6 +231,124 @@ test__3(void) {
     vscr_ratchet_destroy(&ratchet_bob);
 }
 
+void
+test__serialization__serialize_deserialize__objects_are_equal(void) {
+    // Initialize
+    vscr_ratchet_t *ratchet = vscr_ratchet_new();
+
+    vscr_ratchet_cipher_t *ratchet_cipher = vscr_ratchet_cipher_new();
+    vscr_ratchet_use_cipher(ratchet, ratchet_cipher);
+
+    vscr_ratchet_take_rng(ratchet, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
+
+    vsc_buffer_t *ratchet_private_key = vsc_buffer_new_with_capacity(test_ratchet_ratchet_private_key.len);
+    memcpy(vsc_buffer_ptr(ratchet_private_key), test_ratchet_ratchet_private_key.bytes,
+           test_ratchet_ratchet_private_key.len);
+    vsc_buffer_reserve(ratchet_private_key, test_ratchet_ratchet_private_key.len);
+
+    TEST_ASSERT_EQUAL_INT(
+            vscr_SUCCESS, vscr_ratchet_initiate(ratchet, test_ratchet_shared_secret, ratchet_private_key));
+
+    TEST_ASSERT(ratchet->cipher);
+    TEST_ASSERT(ratchet->rng);
+
+    vscr_ratchet_sender_chain_t *sender_chain = ratchet->sender_chain;
+    TEST_ASSERT(sender_chain);
+    TEST_ASSERT(sender_chain->public_key);
+    TEST_ASSERT(sender_chain->private_key);
+
+    vscr_ratchet_chain_key_t chain_key = sender_chain->chain_key;
+    vscr_ratchet_receiver_chain_list_node_t *receiver_chains = ratchet->receiver_chains;
+    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_keys = ratchet->skipped_message_keys;
+
+    // Serialize
+    size_t len = vscr_ratchet_serialize_len(ratchet);
+    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(len);
+
+    vscr_error_t result = vscr_ratchet_serialize(ratchet, buffer);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
+
+
+    // Deserialize
+    vscr_error_ctx_t *err_ctx = NULL;
+    vscr_ratchet_t *decoded_ratchet = vscr_ratchet_deserialize(vsc_buffer_data(buffer), err_ctx);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, err_ctx->error);
+
+    TEST_ASSERT(decoded_ratchet->cipher);
+    TEST_ASSERT(decoded_ratchet->rng);
+
+    vscr_ratchet_sender_chain_t *decoded_sender_chain = decoded_ratchet->sender_chain;
+    TEST_ASSERT(decoded_sender_chain);
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(decoded_sender_chain->public_key),
+                             vsc_buffer_bytes(sender_chain->public_key),
+                             vsc_buffer_len(sender_chain->public_key));
+    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(decoded_sender_chain->private_key),
+                             vsc_buffer_bytes(sender_chain->private_key),
+                             vsc_buffer_len(sender_chain->private_key));
+
+    vscr_ratchet_chain_key_t decoded_chain_key = decoded_sender_chain->chain_key;
+    TEST_ASSERT_EQUAL_INT(chain_key.index, decoded_chain_key.index);
+    TEST_ASSERT_EQUAL_MEMORY(decoded_chain_key.key, chain_key.key, sizeof(chain_key.key));
+
+    TEST_ASSERT_EQUAL_MEMORY(decoded_ratchet->root_key, ratchet->root_key, sizeof(ratchet->root_key));
+
+    vscr_ratchet_receiver_chain_list_node_t *decoded_receiver_chains = ratchet->receiver_chains;
+    vscr_ratchet_skipped_message_key_list_node_t *decoded_skipped_message_keys = ratchet->skipped_message_keys;
+
+    size_t chains_count = 0;
+    while (receiver_chains) {
+
+        TEST_ASSERT(receiver_chains->value);
+        TEST_ASSERT(decoded_receiver_chains->value);
+        TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(receiver_chains->value->public_key),
+                                 vsc_buffer_bytes(decoded_receiver_chains->value->public_key),
+                                 vsc_buffer_len(receiver_chains->value->public_key));
+
+        vscr_ratchet_chain_key_t chain_key = receiver_chains->value->chain_key;
+        vscr_ratchet_chain_key_t decoded_chain_key = decoded_receiver_chains->value->chain_key;
+        TEST_ASSERT_EQUAL_INT(chain_key.index, decoded_chain_key.index);
+        TEST_ASSERT_EQUAL_MEMORY(chain_key.key, decoded_chain_key.key, sizeof(chain_key.key));
+
+        chains_count += 1;
+        receiver_chains = receiver_chains->next;
+        decoded_receiver_chains = decoded_receiver_chains->next;
+    }
+
+    TEST_ASSERT_EQUAL(NULL, decoded_receiver_chains);
+
+    size_t keys_count = 0;
+    while (skipped_message_keys) {
+        TEST_ASSERT(skipped_message_keys->value);
+        TEST_ASSERT(decoded_skipped_message_keys->value);
+        TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(skipped_message_keys->value->public_key),
+                                 vsc_buffer_bytes(decoded_skipped_message_keys->value->public_key),
+                                 vsc_buffer_len(skipped_message_keys->value->public_key));
+
+        vscr_ratchet_message_key_t *message_key = skipped_message_keys->value->message_key;
+        vscr_ratchet_message_key_t *decoded_message_key = decoded_skipped_message_keys->value->message_key;
+        TEST_ASSERT_EQUAL_INT(message_key->index, decoded_message_key->index);
+        TEST_ASSERT_EQUAL_MEMORY(message_key->key, decoded_message_key->key, sizeof(message_key->key));
+
+        keys_count += 1;
+        skipped_message_keys = skipped_message_keys->next;
+        decoded_skipped_message_keys = decoded_skipped_message_keys->next;
+
+        vscr_ratchet_message_key_destroy(&message_key);
+        vscr_ratchet_message_key_destroy(&decoded_message_key);
+    }
+
+    TEST_ASSERT_EQUAL(NULL, decoded_skipped_message_keys);
+
+    vsc_buffer_destroy(&buffer);
+    vscr_ratchet_sender_chain_destroy(&sender_chain);
+    vscr_ratchet_sender_chain_destroy(&decoded_sender_chain);
+    vscr_ratchet_skipped_message_key_list_node_destroy(&skipped_message_keys);
+    vscr_ratchet_skipped_message_key_list_node_destroy(&decoded_skipped_message_keys);
+    vscr_ratchet_receiver_chain_list_node_destroy(&receiver_chains);
+    vscr_ratchet_receiver_chain_list_node_destroy(&decoded_receiver_chains);
+    vscr_ratchet_destroy(&ratchet);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -244,6 +363,10 @@ main(void) {
     RUN_TEST(test__1);
     RUN_TEST(test__2);
     RUN_TEST(test__3);
+
+    // FIXME
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+    //RUN_TEST(test__serialization__serialize_deserialize__objects_are_equal);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
