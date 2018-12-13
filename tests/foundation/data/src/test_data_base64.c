@@ -42,17 +42,9 @@
 //
 //  BASE64("") = ""
 //
-const byte test_base64_DECODED_EMPTY_BYTES[] = {};
+const vsc_data_t test_base64_DECODED_EMPTY = {(const byte *)0xDEADBEAF, 0};
 
-const vsc_data_t test_base64_DECODED_EMPTY = {
-    test_base64_DECODED_EMPTY_BYTES, sizeof(test_base64_DECODED_EMPTY_BYTES)
-};
-
-const byte test_base64_ENCODED_EMPTY_BYTES[] = {};
-
-const vsc_data_t test_base64_ENCODED_EMPTY = {
-    test_base64_ENCODED_EMPTY_BYTES, sizeof(test_base64_ENCODED_EMPTY_BYTES)
-};
+const vsc_data_t test_base64_ENCODED_EMPTY = {(const byte *)0xDEADBEAF, 0};
 
 //
 //  BASE64("f") = "Zg=="
