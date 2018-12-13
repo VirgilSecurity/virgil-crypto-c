@@ -95,6 +95,10 @@ struct vsce_phe_client_t {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *random;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *operation_random;
 
     vsce_phe_hash_t *phe_hash;
 

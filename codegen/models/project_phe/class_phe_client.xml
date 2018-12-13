@@ -11,6 +11,7 @@
     <require module="mbedtls bridge random" scope="private" project="foundation"/>
 
     <dependency name="random" interface="random" project="foundation"/>
+    <dependency name="operation random" interface="random" project="foundation"/>
 
     <property name="phe hash" class="phe hash" access="readwrite"/>
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
