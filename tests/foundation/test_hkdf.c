@@ -54,10 +54,12 @@
 // --------------------------------------------------------------------------
 //  Should have it to prevent linkage erros in MSVC.
 // --------------------------------------------------------------------------
+// clang-format off
 void setUp(void) { }
 void tearDown(void) { }
 void suiteSetUp(void) { }
 int suiteTearDown(int num_failures) { return num_failures; }
+// clang-format on
 
 
 // --------------------------------------------------------------------------
