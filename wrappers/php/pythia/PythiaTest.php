@@ -1,3 +1,4 @@
+<?php
 //  @license
 // --------------------------------------------------------------------------
 //  Copyright (C) 2015-2018 Virgil Security Inc.
@@ -34,85 +35,19 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
-// clang-format off
+// @end
 
 
-//  @warning
-// --------------------------------------------------------------------------
-//  This file is partially generated.
-//  Generated blocks are enclosed between tags [@<tag>, @end].
-//  User's code can be added between tags [@end, @<tag>].
-// --------------------------------------------------------------------------
+class PythiaTest extends PHPUnit\Framework\TestCase {
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'phe utils' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSCE_PHE_UTILS_DEFS_H_INCLUDED
-#define VSCE_PHE_UTILS_DEFS_H_INCLUDED
-
-#include "vsce_library.h"
-
-#include <mbedtls/ecp.h>
-
-#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_impl.h>
-#endif
-
-#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_impl.h>
-#endif
-
-// clang-format on
-//  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-//  @generated
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated section start.
-// --------------------------------------------------------------------------
-
-//
-//  Handle 'phe utils' context.
-//
-struct vsce_phe_utils_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vsce_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-
-    mbedtls_ecp_group group;
-};
-
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
+    public function test_blind_argumentPassword_returnsResult() {
+        $pythia = vscp_pythia_new_php();
+        $result = vscp_pythia_blind_php($pythia, "password");
+        $this->assertEquals(2, count($result));
+        list($blindedPassword, $blindingSecret) = $result;
+        $this->assertEquals(49, strlen($blindedPassword));
+        $this->assertEquals(33, strlen($blindingSecret));
+    }
 }
-#endif
 
-
-//  @footer
-#endif // VSCE_PHE_UTILS_DEFS_H_INCLUDED
-//  @end
+?>

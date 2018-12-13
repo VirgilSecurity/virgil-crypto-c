@@ -152,7 +152,7 @@ vsce_phe_client_take_random(vsce_phe_client_t *phe_client_ctx, vscf_impl_t *rand
 VSCE_PUBLIC void
 vsce_phe_client_release_random(vsce_phe_client_t *phe_client_ctx);
 
-VSCE_PUBLIC void
+VSCE_PUBLIC vsce_error_t
 vsce_phe_client_set_keys(vsce_phe_client_t *phe_client_ctx, vsc_data_t client_private_key,
         vsc_data_t server_public_key);
 

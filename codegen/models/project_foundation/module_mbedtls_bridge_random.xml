@@ -1,4 +1,4 @@
-<module name="mbedtls bridge random" scope="internal">
+<module name="mbedtls bridge random" scope="private">
     <require module="library"/>
     <require module="assert" scope="private"/>
     <require class="impl" scope="private"/>
