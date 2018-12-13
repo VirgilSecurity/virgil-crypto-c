@@ -46,6 +46,18 @@
 #include "test_data_ratchet_regular_message.h"
 
 
+// --------------------------------------------------------------------------
+//  Should have it to prevent linkage erros in MSVC.
+// --------------------------------------------------------------------------
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+
+
+// --------------------------------------------------------------------------
+//  Test functions.
+// --------------------------------------------------------------------------
 void
 test__1(void) {
     vsc_buffer_t *public_key = vsc_buffer_new_with_capacity(test_ratchet_regular_message_public_key.len);

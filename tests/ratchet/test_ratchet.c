@@ -49,6 +49,18 @@
 #include <ed25519/ed25519.h>
 
 
+// --------------------------------------------------------------------------
+//  Should have it to prevent linkage erros in MSVC.
+// --------------------------------------------------------------------------
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+
+
+// --------------------------------------------------------------------------
+//  Test functions.
+// --------------------------------------------------------------------------
 static void
 initialize(vscr_ratchet_t *ratchet_alice, vscr_ratchet_t *ratchet_bob) {
     vscr_ratchet_kdf_info_t *kdf_info = vscr_ratchet_kdf_info_new();
