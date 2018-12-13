@@ -58,7 +58,7 @@ test__enroll_account__mocked_rnd__should_match(void) {
     vsce_phe_client_take_random(client, vscf_fake_random_impl(fake_random));
 
     TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_enroll_account(client, test_phe_server_enrollment_response,
-                                            test_phe_server_public_key, buffer1, buffer2));
+                                            test_phe_client_password, buffer1, buffer2));
 
     TEST_ASSERT_EQUAL(test_phe_client_enrollment_record.len, vsc_buffer_len(buffer1));
     TEST_ASSERT_EQUAL_MEMORY(
