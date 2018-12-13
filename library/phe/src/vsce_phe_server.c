@@ -451,13 +451,13 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t ser
 
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(
-            &phe_server_ctx->group, &c0, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, response.c_0, sizeof(response.c_0));
+            &phe_server_ctx->group, &c0, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, response.c0, sizeof(response.c0));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
     olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(
-            &phe_server_ctx->group, &c1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, response.c_1, sizeof(response.c_1));
+            &phe_server_ctx->group, &c1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, response.c1, sizeof(response.c1));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
@@ -535,7 +535,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t se
     mbedtls_ecp_point c0;
     mbedtls_ecp_point_init(&c0);
 
-    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_server_ctx->group, &c0, request.c_0, sizeof(request.c_0));
+    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_server_ctx->group, &c0, request.c0, sizeof(request.c0));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_server_ctx->group, &c0) != 0) {
         status = vsce_INVALID_ECP;
         goto ecp_err;
@@ -578,7 +578,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t se
 
         size_t olen = 0;
         mbedtls_status = mbedtls_ecp_point_write_binary(
-                &phe_server_ctx->group, &c1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, response.c_1, sizeof(response.c_1));
+                &phe_server_ctx->group, &c1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, response.c1, sizeof(response.c1));
         VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
         VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
@@ -602,7 +602,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t se
 
         size_t olen = 0;
         mbedtls_status = mbedtls_ecp_point_write_binary(
-                &phe_server_ctx->group, &c1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, response.c_1, sizeof(response.c_1));
+                &phe_server_ctx->group, &c1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, response.c1, sizeof(response.c1));
         VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
         VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
@@ -701,21 +701,21 @@ vsce_phe_server_prove_success(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
 
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            success_proof->term_1, sizeof(success_proof->term_1));
+            success_proof->term1, sizeof(success_proof->term1));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    VSCE_ASSERT(olen == sizeof(success_proof->term_1));
+    VSCE_ASSERT(olen == sizeof(success_proof->term1));
 
     olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term2, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            success_proof->term_2, sizeof(success_proof->term_2));
+            success_proof->term2, sizeof(success_proof->term2));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    VSCE_ASSERT(olen == sizeof(success_proof->term_2));
+    VSCE_ASSERT(olen == sizeof(success_proof->term2));
 
     olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term3, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            success_proof->term_3, sizeof(success_proof->term_3));
+            success_proof->term3, sizeof(success_proof->term3));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    VSCE_ASSERT(olen == sizeof(success_proof->term_3));
+    VSCE_ASSERT(olen == sizeof(success_proof->term3));
 
     mbedtls_status = mbedtls_mpi_write_binary(&blind_x, success_proof->blind_x, sizeof(success_proof->blind_x));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
@@ -869,27 +869,27 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
 
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            failure_proof->term_1, sizeof(failure_proof->term_1));
+            failure_proof->term1, sizeof(failure_proof->term1));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    VSCE_ASSERT(olen == sizeof(failure_proof->term_1));
+    VSCE_ASSERT(olen == sizeof(failure_proof->term1));
 
     olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term2, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            failure_proof->term_2, sizeof(failure_proof->term_2));
+            failure_proof->term2, sizeof(failure_proof->term2));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    VSCE_ASSERT(olen == sizeof(failure_proof->term_2));
+    VSCE_ASSERT(olen == sizeof(failure_proof->term2));
 
     olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term3, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            failure_proof->term_3, sizeof(failure_proof->term_3));
+            failure_proof->term3, sizeof(failure_proof->term3));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    VSCE_ASSERT(olen == sizeof(failure_proof->term_3));
+    VSCE_ASSERT(olen == sizeof(failure_proof->term3));
 
     olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term4, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            failure_proof->term_4, sizeof(failure_proof->term_4));
+            failure_proof->term4, sizeof(failure_proof->term4));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    VSCE_ASSERT(olen == sizeof(failure_proof->term_4));
+    VSCE_ASSERT(olen == sizeof(failure_proof->term4));
 
     mbedtls_status = mbedtls_mpi_write_binary(&blind_A, failure_proof->blind_a, sizeof(failure_proof->blind_a));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
