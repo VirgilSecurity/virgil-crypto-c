@@ -483,12 +483,12 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
     mbedtls_ecp_point_init(&c1);
 
     int mbedtls_status = 0;
-    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &c0, response.c_0, sizeof(response.c_0));
+    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &c0, response.c0, sizeof(response.c0));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_client_ctx->group, &c0) != 0) {
         status = vsce_INVALID_ECP;
         goto proof_err;
     }
-    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &c1, response.c_1, sizeof(response.c_1));
+    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &c1, response.c1, sizeof(response.c1));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_client_ctx->group, &c1) != 0) {
         status = vsce_INVALID_ECP;
         goto proof_err;
@@ -558,12 +558,12 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
     memcpy(record.ns, response.ns, sizeof(response.ns));
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(
-            &phe_client_ctx->group, &t0, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, record.t_0, sizeof(record.t_0));
+            &phe_client_ctx->group, &t0, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, record.t0, sizeof(record.t0));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
     olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(
-            &phe_client_ctx->group, &t1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, record.t_1, sizeof(record.t_1));
+            &phe_client_ctx->group, &t1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, record.t1, sizeof(record.t1));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
@@ -637,7 +637,7 @@ vsce_phe_client_create_verify_password_request(vsce_phe_client_t *phe_client_ctx
 
     mbedtls_ecp_point t0;
     mbedtls_ecp_point_init(&t0);
-    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &t0, record.t_0, sizeof(record.t_0));
+    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &t0, record.t0, sizeof(record.t0));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_client_ctx->group, &t0) != 0) {
         status = vsce_INVALID_ECP;
         goto ecp_err;
@@ -658,7 +658,7 @@ vsce_phe_client_create_verify_password_request(vsce_phe_client_t *phe_client_ctx
     VerifyPasswordRequest request = VerifyPasswordRequest_init_zero;
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(
-            &phe_client_ctx->group, &c0, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, request.c_0, sizeof(request.c_0));
+            &phe_client_ctx->group, &c0, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, request.c0, sizeof(request.c0));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     memcpy(request.ns, record.ns, sizeof(record.ns));
 
@@ -732,17 +732,17 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vs
     mbedtls_ecp_point_init(&c1);
 
     int mbedtls_status = 0;
-    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &t0, record.t_0, sizeof(record.t_0));
+    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &t0, record.t0, sizeof(record.t0));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_client_ctx->group, &t0) != 0) {
         status = vsce_INVALID_ECP;
         goto ecp_err;
     }
-    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &t1, record.t_1, sizeof(record.t_1));
+    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &t1, record.t1, sizeof(record.t1));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_client_ctx->group, &t1) != 0) {
         status = vsce_INVALID_ECP;
         goto ecp_err;
     }
-    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &c1, response.c_1, sizeof(response.c_1));
+    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &c1, response.c1, sizeof(response.c1));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_client_ctx->group, &c1) != 0) {
         status = vsce_INVALID_ECP;
         goto ecp_err;
@@ -839,21 +839,21 @@ vsce_phe_client_check_success_proof(vsce_phe_client_t *phe_client_ctx, const Pro
 
     int mbedtls_status = 0;
     mbedtls_status = mbedtls_ecp_point_read_binary(
-            &phe_client_ctx->group, &term1, success_proof->term_1, sizeof(success_proof->term_1));
+            &phe_client_ctx->group, &term1, success_proof->term1, sizeof(success_proof->term1));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_client_ctx->group, &term1) != 0) {
         status = vsce_INVALID_ECP;
         goto ecp_err;
     }
 
     mbedtls_status = mbedtls_ecp_point_read_binary(
-            &phe_client_ctx->group, &term2, success_proof->term_2, sizeof(success_proof->term_2));
+            &phe_client_ctx->group, &term2, success_proof->term2, sizeof(success_proof->term2));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_client_ctx->group, &term2) != 0) {
         status = vsce_INVALID_ECP;
         goto ecp_err;
     }
 
     mbedtls_status = mbedtls_ecp_point_read_binary(
-            &phe_client_ctx->group, &term3, success_proof->term_3, sizeof(success_proof->term_3));
+            &phe_client_ctx->group, &term3, success_proof->term3, sizeof(success_proof->term3));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_client_ctx->group, &term3) != 0) {
         status = vsce_INVALID_ECP;
         goto ecp_err;
@@ -981,29 +981,29 @@ vsce_phe_client_check_fail_proof(vsce_phe_client_t *phe_client_ctx, const ProofO
     mbedtls_ecp_point_init(&term4);
 
     int mbedtls_status = 0;
-    mbedtls_status = mbedtls_ecp_point_read_binary(
-            &phe_client_ctx->group, &term1, fail_proof->term_1, sizeof(fail_proof->term_1));
+    mbedtls_status =
+            mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &term1, fail_proof->term1, sizeof(fail_proof->term1));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_client_ctx->group, &term1) != 0) {
         status = vsce_INVALID_ECP;
         goto ecp_err;
     }
 
-    mbedtls_status = mbedtls_ecp_point_read_binary(
-            &phe_client_ctx->group, &term2, fail_proof->term_2, sizeof(fail_proof->term_2));
+    mbedtls_status =
+            mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &term2, fail_proof->term2, sizeof(fail_proof->term2));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_client_ctx->group, &term2) != 0) {
         status = vsce_INVALID_ECP;
         goto ecp_err;
     }
 
-    mbedtls_status = mbedtls_ecp_point_read_binary(
-            &phe_client_ctx->group, &term3, fail_proof->term_3, sizeof(fail_proof->term_3));
+    mbedtls_status =
+            mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &term3, fail_proof->term3, sizeof(fail_proof->term3));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_client_ctx->group, &term3) != 0) {
         status = vsce_INVALID_ECP;
         goto ecp_err;
     }
 
-    mbedtls_status = mbedtls_ecp_point_read_binary(
-            &phe_client_ctx->group, &term4, fail_proof->term_4, sizeof(fail_proof->term_4));
+    mbedtls_status =
+            mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &term4, fail_proof->term4, sizeof(fail_proof->term4));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_client_ctx->group, &term4) != 0) {
         status = vsce_INVALID_ECP;
         goto ecp_err;
@@ -1255,13 +1255,13 @@ vsce_phe_client_update_enrollment_record(vsce_phe_client_t *phe_client_ctx, vsc_
     mbedtls_ecp_point_init(&t0);
     mbedtls_ecp_point_init(&t1);
 
-    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &t0, record.t_0, sizeof(record.t_0));
+    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &t0, record.t0, sizeof(record.t0));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_client_ctx->group, &t0) != 0) {
         status = vsce_INVALID_ECP;
         goto ecp_err;
     }
 
-    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &t1, record.t_1, sizeof(record.t_1));
+    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_client_ctx->group, &t1, record.t1, sizeof(record.t1));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_client_ctx->group, &t1) != 0) {
         status = vsce_INVALID_ECP;
         goto ecp_err;
@@ -1290,13 +1290,13 @@ vsce_phe_client_update_enrollment_record(vsce_phe_client_t *phe_client_ctx, vsc_
     memcpy(new_record.nc, record.nc, sizeof(new_record.nc));
 
     size_t olen = 0;
-    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_client_ctx->group, &new_t0, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            new_record.t_0, sizeof(new_record.t_0));
+    mbedtls_status = mbedtls_ecp_point_write_binary(
+            &phe_client_ctx->group, &new_t0, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, new_record.t0, sizeof(new_record.t0));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     olen = 0;
-    mbedtls_status = mbedtls_ecp_point_write_binary(&phe_client_ctx->group, &new_t1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            new_record.t_1, sizeof(new_record.t_1));
+    mbedtls_status = mbedtls_ecp_point_write_binary(
+            &phe_client_ctx->group, &new_t1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, new_record.t1, sizeof(new_record.t1));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     pb_ostream_t ostream =
