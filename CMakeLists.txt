@@ -67,6 +67,7 @@ option(BUILD_SHARED_LIBS "On/Off build shared libraries." OFF)
 #
 option(ENABLE_TESTING "On/Off integration tests." ON)
 option(ENABLE_BENCHMARKS "On/Off build library benchmarks." ON)
+option(VIRGIL_CSHARP_TESTING "On/Off PHP wrapper integration tests." ON)
 
 option(VIRGIL_C_TESTING "On/Off C library integration tests." ON)
 option(VIRGIL_PHP_TESTING "On/Off PHP wrapper integration tests." ON)
@@ -87,7 +88,7 @@ option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
 option(VIRGIL_WRAP_ALL "Build all available wrappers on the given platform" OFF)
 option(VIRGIL_WRAP_GO "Build 'Golang' wrapper" OFF)
 option(VIRGIL_WRAP_PHP "Build 'PHP' wrapper" OFF)
-
+option(VIRGIL_WRAP_CSHARP "Build 'CSHARP' wrapper" ON)
 
 # ---------------------------------------------------------------------------
 #   Install options
@@ -192,6 +193,7 @@ if(VIRGIL_C_TESTING AND NOT CMAKE_CROSSCOMPILING)
     add_subdirectory(tests)
 endif()
 
+
 # ---------------------------------------------------------------------------
 #   Library wrappers
 # ---------------------------------------------------------------------------
@@ -201,6 +203,10 @@ endif()
 
 if(VIRGIL_WRAP_ALL OR VIRGIL_WRAP_PHP)
     add_subdirectory("wrappers/php")
+endif()
+
+if(VIRGIL_WRAP_ALL OR VIRGIL_WRAP_CSHARP)
+    add_subdirectory("wrappers/csharp")
 endif()
 
 
