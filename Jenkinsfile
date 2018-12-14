@@ -94,16 +94,16 @@ def build_LangPHP_Linux(slave) {
         sh '''
             source /opt/remi/php71/enable
             cmake -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
-                  -DVIRGIL_WRAP_PHP=ON
-                  -DVIRGIL_C_TESTING=OFF
-                  -DVIRGIL_LIB_RATCHET=OFF
-                  -DVIRGIL_LIB_PYTHIA=OFF
-                  -DVIRGIL_INSTALL_CMAKE=OFF
-                  -DVIRGIL_INSTALL_DEPS_CMAKE=OFF
-                  -DVIRGIL_INSTALL_DEPS_HDRS=OFF
-                  -DVIRGIL_INSTALL_DEPS_LIBS=OFF
-                  -DVIRGIL_INSTALL_HDRS=OFF
-                  -DVIRGIL_INSTALL_LIBS=OFF
+                  -DVIRGIL_WRAP_PHP=ON \
+                  -DVIRGIL_C_TESTING=OFF \
+                  -DVIRGIL_LIB_RATCHET=OFF \
+                  -DVIRGIL_LIB_PYTHIA=OFF \
+                  -DVIRGIL_INSTALL_CMAKE=OFF \
+                  -DVIRGIL_INSTALL_DEPS_CMAKE=OFF \
+                  -DVIRGIL_INSTALL_DEPS_HDRS=OFF \
+                  -DVIRGIL_INSTALL_DEPS_LIBS=OFF \
+                  -DVIRGIL_INSTALL_HDRS=OFF \
+                  -DVIRGIL_INSTALL_LIBS=OFF \
                   -Bbuild -H.
             cmake --build build -- -j10
             cd build
