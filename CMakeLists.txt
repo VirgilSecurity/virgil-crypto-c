@@ -271,7 +271,7 @@ set(VIRGIL_PACKAGE_PLATFORM_ARCH "" CACHE STRING "[CPack] Platform architecture 
 #     language = name[-version]
 #     platform = name[-version][-arch]
 #
-set(VIRGIL_PACKAGE_NAME "virgil-crypto")
+set(VIRGIL_PACKAGE_NAME "virgil-crypto-c")
 list(APPEND VIRGIL_PACKAGE_NAME ${virgil_crypto_VERSION})
 list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_LANGUAGE})
 list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_LANGUAGE_VERSION})
