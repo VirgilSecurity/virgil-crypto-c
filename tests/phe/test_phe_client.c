@@ -159,6 +159,49 @@ test__check_response__mocked_rnd_invalid_pwd__should_match(void) {
     vsce_phe_client_destroy(&client);
 }
 
+void
+test__rotate_key__test_vector__should_match(void) {
+    vsce_phe_client_t *client = vsce_phe_client_new();
+
+    vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key);
+
+    vsc_buffer_t *buffer1, *buffer2;
+    buffer1 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    buffer2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+
+    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_rotate_keys(client, test_phe_server_token, buffer1, buffer2));
+
+    TEST_ASSERT_EQUAL(test_phe_client_rotated_client_sk.len, vsc_buffer_len(buffer1));
+    TEST_ASSERT_EQUAL_MEMORY(
+            test_phe_client_rotated_client_sk.bytes, vsc_buffer_bytes(buffer1), vsc_buffer_len(buffer1));
+
+    TEST_ASSERT_EQUAL(test_phe_server_rotated_server_pub.len, vsc_buffer_len(buffer2));
+    TEST_ASSERT_EQUAL_MEMORY(
+            test_phe_server_rotated_server_pub.bytes, vsc_buffer_bytes(buffer2), vsc_buffer_len(buffer2));
+
+    vsc_buffer_destroy(&buffer1);
+    vsc_buffer_destroy(&buffer2);
+    vsce_phe_client_destroy(&client);
+}
+
+void
+test__update_record__test_vector__should_match(void) {
+    vsce_phe_client_t *client = vsce_phe_client_new();
+
+    vsce_phe_client_set_keys(client, test_phe_client_private_key, test_phe_server_public_key);
+
+    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vsce_phe_client_enrollment_record_len(client));
+
+    TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_update_enrollment_record(
+                                            client, test_phe_client_enrollment_record, test_phe_server_token, buffer));
+
+    TEST_ASSERT_EQUAL(test_phe_client_updated_record.len, vsc_buffer_len(buffer));
+    TEST_ASSERT_EQUAL_MEMORY(test_phe_client_updated_record.bytes, vsc_buffer_bytes(buffer), vsc_buffer_len(buffer));
+
+    vsc_buffer_destroy(&buffer);
+    vsce_phe_client_destroy(&client);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 // --------------------------------------------------------------------------
@@ -174,6 +217,8 @@ main(void) {
     RUN_TEST(test__verify_password__mocked_rnd_invalid_pwd__should_match);
     RUN_TEST(test__check_response__mocked_rnd__should_match);
     RUN_TEST(test__check_response__mocked_rnd_invalid_pwd__should_match);
+    RUN_TEST(test__rotate_key__test_vector__should_match);
+    RUN_TEST(test__update_record__test_vector__should_match);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
