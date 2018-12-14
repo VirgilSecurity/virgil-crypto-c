@@ -94,8 +94,8 @@ def build_LangPHP_Linux(slave) {
         sh '''
             source /opt/remi/php72/enable
             cmake -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
-                  -DVIRGIL_PACKAGE_LANGUAGE=php
-                  -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2
+                  -DVIRGIL_PACKAGE_LANGUAGE=php \
+                  -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 \
                   -DVIRGIL_WRAP_PHP=ON \
                   -DVIRGIL_INSTALL_WRAP_SRCS=ON \
                   -DVIRGIL_INSTALL_WRAP_LIBS=ON \
