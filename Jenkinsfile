@@ -2,6 +2,7 @@
 
 // --------------------------------------------------------------------------
 stage 'Grab SCM'
+// --------------------------------------------------------------------------
 
 node('master') {
     clearContentUnix()
@@ -11,13 +12,32 @@ node('master') {
 
 // --------------------------------------------------------------------------
 stage 'Build'
+// --------------------------------------------------------------------------
 
+
+// --------------------------------------------------------------------------
+//  Create parallel build for all nodes
+// --------------------------------------------------------------------------
 def nodes = [:]
+
+//
+//  Language: C
+//
 nodes['lang-c-platform-linux'] = build_LangC_Unix('build-centos7')
 nodes['lang-c-platform-macos'] = build_LangC_Unix('build-os-x')
 nodes['lang-c-platform-win8-mingw64'] = build_LangC_Windows_MinGW('build-win8')
+
+//
+//  Language: PHP
+//
+nodes['lang-php-platform-linux'] = build_LangPHP_Linux('build-centos7')
+
 parallel nodes
 
+
+// --------------------------------------------------------------------------
+//  Helper functions
+// --------------------------------------------------------------------------
 def clearContentUnix() {
     sh 'rm -fr -- *'
 }
@@ -30,6 +50,10 @@ def archiveArtifacts(pattern) {
     step([$class: 'ArtifactArchiver', artifacts: pattern, fingerprint: true, onlyIfSuccessful: true])
 }
 
+
+// --------------------------------------------------------------------------
+//  Build nodes for language: C
+// --------------------------------------------------------------------------
 def build_LangC_Unix(slave) {
     return { node(slave) {
         clearContentUnix()
@@ -55,6 +79,37 @@ def build_LangC_Windows_MinGW(slave) {
         }
         dir('build') {
             bat 'cpack'
+            archiveArtifacts('packages/**')
+        }
+    }}
+}
+
+// --------------------------------------------------------------------------
+//  Build nodes for language: PHP
+// --------------------------------------------------------------------------
+def build_LangPHP_Linux(slave) {
+    return { node(slave) {
+        clearContentUnix()
+        unstash 'src'
+        sh '''
+            source /opt/rh/rh-php71/enable
+            cmake -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
+                  -DVIRGIL_WRAP_PHP=ON
+                  -DVIRGIL_C_TESTING=OFF
+                  -DVIRGIL_LIB_RATCHET=OFF
+                  -DVIRGIL_LIB_PYTHIA=OFF
+                  -DVIRGIL_INSTALL_CMAKE=OFF
+                  -DVIRGIL_INSTALL_DEPS_CMAKE=OFF
+                  -DVIRGIL_INSTALL_DEPS_HDRS=OFF
+                  -DVIRGIL_INSTALL_DEPS_LIBS=OFF
+                  -DVIRGIL_INSTALL_HDRS=OFF
+                  -DVIRGIL_INSTALL_LIBS=OFF
+                  -Bbuild -H.
+            cmake --build build -- -j10
+            cd build
+            cpack
+        '''
+        dir('build') {
             archiveArtifacts('packages/**')
         }
     }}
