@@ -95,3 +95,14 @@ if(VIRGIL_INSTALL_WRAP_LIBS)
             RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
             )
 endif()
+
+if(VIRGIL_INSTALL_WRAP_SRCS)
+    install(
+            DIRECTORY
+                "${CMAKE_CURRENT_LIST_DIR}"
+            DESTINATION
+                "${VIRGIL_INSTALL_WRAP_SRCDIR}"
+            FILES_MATCHING PATTERN
+                "*.php"
+            )
+endif()
