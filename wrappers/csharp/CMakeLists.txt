@@ -63,9 +63,12 @@ if(NOT CSHARP_COMPILER)
 endif()
 
 if(NOT NUGET_EXECUTABLE)
-	message(FATAL_ERROR "nuget is not found.")
+	message("nuget is not found. CSharp xUnit tests will be disabled!")
 endif()
 
+if(NOT DOTNET_EXECUTABLE)
+	message(WARNING "dotnet is not found. CSharp xUnit tests will be disabled!")
+endif()
 # ---------------------------------------------------------------------------
 #   Add per project extension build
 # ---------------------------------------------------------------------------

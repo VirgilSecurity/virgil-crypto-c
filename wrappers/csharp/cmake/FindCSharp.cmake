@@ -72,5 +72,5 @@ mark_as_advanced( CSHARP_TYPE CSHARP_VERSION CSHARP_COMPILER CSHARP_INTERPRETER 
 get_filename_component( current_list_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 set( CSHARP_USE_FILE ${current_list_path}/UseCSharp.cmake )
 
-find_program(NUGET_EXECUTABLE NAMES nuget)
-
+find_program(NUGET_EXECUTABLE NAMES nuget nuget.exe)
+find_program(DOTNET_EXECUTABLE NAMES dotnet dotnet.exe)

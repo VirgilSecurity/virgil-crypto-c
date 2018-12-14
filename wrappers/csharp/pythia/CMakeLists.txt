@@ -55,30 +55,28 @@ target_sources(example
 
 csharp_add_library(example_cs "${CMAKE_CURRENT_SOURCE_DIR}/example.cs")
 
-set(test_project_name "NetCoreXUnitTest")
-set(test_solution "${test_project_name}.sln")
+if(ENABLE_TESTING AND VIRGIL_CSHARP_TESTING AND DOTNET_EXECUTABLE AND NUGET_EXECUTABLE)
+	set(test_project_name "NetCoreXUnitTest")
+	set(test_solution "${test_project_name}.sln")
 
-
-configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/${test_project_name}.csproj"
-        "${CMAKE_CURRENT_BINARY_DIR}/${test_project_name}.csproj"
-        )
-configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/${test_solution}"
-        "${CMAKE_CURRENT_BINARY_DIR}/${test_solution}"
-        )
-configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/ExampleUnitTest.cs"
-        "${CMAKE_CURRENT_BINARY_DIR}/ExampleUnitTest.cs"
-        )
-
-execute_process(
-  COMMAND nuget restore "${test_solution}"
-  WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-  )
-#if(ENABLE_TESTING AND VIRGIL_CSHARP_TESTING AND CSHARP_COMPILER)
+	configure_file(
+		    "${CMAKE_CURRENT_SOURCE_DIR}/${test_project_name}.csproj"
+		    "${CMAKE_CURRENT_BINARY_DIR}/${test_project_name}.csproj"
+	)
+	configure_file(
+	        "${CMAKE_CURRENT_SOURCE_DIR}/${test_solution}"
+	        "${CMAKE_CURRENT_BINARY_DIR}/${test_solution}"
+	)
+	configure_file(
+	        "${CMAKE_CURRENT_SOURCE_DIR}/ExampleUnitTest.cs"
+	        "${CMAKE_CURRENT_BINARY_DIR}/ExampleUnitTest.cs"
+	)
+	execute_process(
+			COMMAND ${NUGET_EXECUTABLE} restore "${test_solution}"
+			WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+	)
     add_test(
 		    NAME test_pythia_csharp
-		    COMMAND dotnet test
+		    COMMAND ${DOTNET_EXECUTABLE} test
 	)
-#endif()
+endif()
