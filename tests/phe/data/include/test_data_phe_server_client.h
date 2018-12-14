@@ -50,5 +50,10 @@ extern const vsc_data_t test_phe_server_verify_password_resp;
 extern const vsc_data_t test_phe_client_bad_password;
 extern const vsc_data_t test_phe_client_verify_bad_password_req;
 extern const vsc_data_t test_phe_server_verify_bad_password_resp;
+extern const vsc_data_t test_phe_server_token;
+extern const vsc_data_t test_phe_server_rotated_server_pub;
+extern const vsc_data_t test_phe_server_rotated_server_sk;
+extern const vsc_data_t test_phe_client_rotated_client_sk;
+extern const vsc_data_t test_phe_client_updated_record;
 
 #endif //VIRGIL_CRYPTO_C_TOP_TEST_DATA_PHE_SERVER_H

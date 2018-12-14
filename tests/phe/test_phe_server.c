@@ -111,6 +111,41 @@ test__verify_password__invalid_password__should_match(void) {
     vsce_phe_server_destroy(&server);
 }
 
+void
+test__rotate_keys__mocked_rnd__should_match(void) {
+    vsce_phe_server_t *server = vsce_phe_server_new();
+
+    vsc_buffer_t *buffer1, *buffer2, *buffer3;
+    buffer1 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    buffer2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    buffer3 = vsc_buffer_new_with_capacity(vsce_phe_server_update_token_len(server));
+
+    vscf_fake_random_impl_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_data(fake_random, test_phe_server_rnd);
+
+    vsce_phe_server_release_random(server);
+    vsce_phe_server_take_random(server, vscf_fake_random_impl(fake_random));
+
+    TEST_ASSERT_EQUAL(
+            vsce_SUCCESS, vsce_phe_server_rotate_keys(server, test_phe_server_private_key, buffer1, buffer2, buffer3));
+
+    TEST_ASSERT_EQUAL(test_phe_server_rotated_server_sk.len, vsc_buffer_len(buffer1));
+    TEST_ASSERT_EQUAL_MEMORY(
+            test_phe_server_rotated_server_sk.bytes, vsc_buffer_bytes(buffer1), vsc_buffer_len(buffer1));
+
+    TEST_ASSERT_EQUAL(test_phe_server_rotated_server_pub.len, vsc_buffer_len(buffer2));
+    TEST_ASSERT_EQUAL_MEMORY(
+            test_phe_server_rotated_server_pub.bytes, vsc_buffer_bytes(buffer2), vsc_buffer_len(buffer2));
+
+    TEST_ASSERT_EQUAL(test_phe_server_token.len, vsc_buffer_len(buffer3));
+    TEST_ASSERT_EQUAL_MEMORY(test_phe_server_token.bytes, vsc_buffer_bytes(buffer3), vsc_buffer_len(buffer3));
+
+    vsc_buffer_destroy(&buffer1);
+    vsc_buffer_destroy(&buffer2);
+    vsc_buffer_destroy(&buffer3);
+    vsce_phe_server_destroy(&server);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 // --------------------------------------------------------------------------
@@ -124,6 +159,7 @@ main(void) {
     RUN_TEST(test__get_enrollment__mocked_rnd__should_match);
     RUN_TEST(test__verify_password__valid_password__should_match);
     RUN_TEST(test__verify_password__invalid_password__should_match);
+    RUN_TEST(test__rotate_keys__mocked_rnd__should_match);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
