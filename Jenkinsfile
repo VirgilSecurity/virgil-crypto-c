@@ -31,6 +31,7 @@ nodes['lang-c-platform-win8-mingw64'] = build_LangC_Windows_MinGW('build-win8')
 //  Language: PHP
 //
 nodes['lang-php-platform-linux'] = build_LangPHP_Linux('build-centos7')
+nodes['lang-php-platform-macos'] = build_LangPHP_MacOS('build-os-x')
 
 parallel nodes
 
@@ -93,6 +94,42 @@ def build_LangPHP_Linux(slave) {
         unstash 'src'
         sh '''
             source /opt/remi/php72/enable
+            cmake -DCMAKE_INSTALL_LIBDIR=. \
+                  -DVIRGIL_INSTALL_WRAP_SRCDIR=. \
+                  -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
+                  -DVIRGIL_PACKAGE_LANGUAGE=php \
+                  -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 \
+                  -DVIRGIL_WRAP_PHP=ON \
+                  -DVIRGIL_INSTALL_WRAP_SRCS=ON \
+                  -DVIRGIL_INSTALL_WRAP_LIBS=ON \
+                  -DVIRGIL_INSTALL_WRAP_DEPS=ON \
+                  -DVIRGIL_C_TESTING=OFF \
+                  -DVIRGIL_LIB_RATCHET=OFF \
+                  -DVIRGIL_LIB_PYTHIA=OFF \
+                  -DVIRGIL_INSTALL_CMAKE=OFF \
+                  -DVIRGIL_INSTALL_DEPS_CMAKE=OFF \
+                  -DVIRGIL_INSTALL_DEPS_HDRS=OFF \
+                  -DVIRGIL_INSTALL_DEPS_LIBS=OFF \
+                  -DVIRGIL_INSTALL_HDRS=OFF \
+                  -DVIRGIL_INSTALL_LIBS=OFF \
+                  -Bbuild -H.
+            cmake --build build -- -j10
+            cd build
+            cpack
+        '''
+        dir('build') {
+            archiveArtifacts('packages/**')
+        }
+    }}
+}
+
+def build_LangPHP_MacOS(slave) {
+    return { node(slave) {
+        clearContentUnix()
+        unstash 'src'
+        def phpVersions = "php56 php70 php71 php72"
+        sh '''
+            brew unlink ${phpVersions} && brew link php72 --force
             cmake -DCMAKE_INSTALL_LIBDIR=. \
                   -DVIRGIL_INSTALL_WRAP_SRCDIR=. \
                   -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
