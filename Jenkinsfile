@@ -92,7 +92,7 @@ def build_LangPHP_Linux(slave) {
         clearContentUnix()
         unstash 'src'
         sh '''
-            source /opt/rh/rh-php71/enable
+            source /opt/remi/php71/enable
             cmake -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
                   -DVIRGIL_WRAP_PHP=ON
                   -DVIRGIL_C_TESTING=OFF
