@@ -46,6 +46,7 @@
 include_guard()
 
 option(VSCE_LIBRARY "Enable build of the 'phe' library" ON)
+option(VSCE_MULTI_THREAD "Enable multi-threading safety for PHE library." ON)
 option(VSCE_ERROR_CTX "Enable class 'error ctx'." ON)
 option(VSCE_PHE_COMMON "Enable class 'phe common'." ON)
 option(VSCE_SIMPLE_SWU "Enable class 'simple swu'." ON)
@@ -54,6 +55,7 @@ option(VSCE_PHE_SERVER "Enable class 'phe server'." ON)
 option(VSCE_PHE_CLIENT "Enable class 'phe client'." ON)
 mark_as_advanced(
         VSCE_LIBRARY
+        VSCE_MULTI_THREAD
         VSCE_ERROR_CTX
         VSCE_PHE_COMMON
         VSCE_SIMPLE_SWU

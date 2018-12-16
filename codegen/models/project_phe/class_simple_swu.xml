@@ -8,6 +8,7 @@
     <require header="mbedtls/bignum.h" scope="public"/>
 
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
+    <property name="A" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
     <property name="two" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
     <property name="three" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
     <property name="p34" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>

@@ -57,6 +57,7 @@
     </method>
 
     <method name="prove success" declaration="private">
+        <argument name="op group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
         <argument name="server private key" class="data"/>
         <argument name="server public key" class="data"/>
         <argument name="hs0" class="mbedtls_ecp_point" library="mbedtls"/>
@@ -69,6 +70,7 @@
     </method>
 
     <method name="prove failure" declaration="private">
+        <argument name="op group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
         <argument name="server private key" class="data"/>
         <argument name="server public key" class="data"/>
         <argument name="c0" class="mbedtls_ecp_point" library="mbedtls"/>
@@ -96,6 +98,14 @@
         </argument>
 
         <return enum="error"/>
+    </method>
+
+    <method name="get op group" declaration="private">
+        <return class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
+    </method>
+
+    <method name="free op group" declaration="private" is_static="1">
+        <argument name="op group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
     </method>
 
 </class>

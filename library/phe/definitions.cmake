@@ -52,6 +52,7 @@ endif()
 target_compile_definitions(phe
         PUBLIC
             "VSCE_LIBRARY=$<BOOL:${VSCE_LIBRARY}>"
+            "VSCE_MULTI_THREAD=$<BOOL:${VSCE_MULTI_THREAD}>"
             "VSCE_ERROR_CTX=$<BOOL:${VSCE_ERROR_CTX}>"
             "VSCE_PHE_COMMON=$<BOOL:${VSCE_PHE_COMMON}>"
             "VSCE_SIMPLE_SWU=$<BOOL:${VSCE_SIMPLE_SWU}>"
