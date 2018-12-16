@@ -79,7 +79,7 @@
     </method>
 
     <method name="enroll account">
-        Uses fresh EnrollmentResponse from PHE server and user's password (or its hash) to create
+        Uses fresh EnrollmentResponse from PHE server (see get enrollment func) and user's password (or its hash) to create
         a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
         Also generates a random seed which then can be used to generate symmetric or private key to protect user's data
 
@@ -166,6 +166,7 @@
             - vsce_INVALID_ECP if input points are invalid
             - vsce_INVALID_PRIVATE_KEY if provided private key in invalid
             - vsce_INVALID_SUCCESS_PROOF if provided proof is not valid
+            - vsce_INVALID_FAIL_PROOF if provided proof is not valid
         </return>
     </method>
 

@@ -37,6 +37,13 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class for server-side PHE crypto operations.
+//  This class is thread-safe in case if VSCE_MULTI_THREAD defined
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -345,6 +352,9 @@ vsce_phe_server_cleanup_ctx(vsce_phe_server_t *phe_server_ctx) {
     mbedtls_ecp_group_free(&phe_server_ctx->group);
 }
 
+//
+//  Generates new NIST P-256 server key pair for some client
+//
 VSCE_PUBLIC vsce_error_t
 vsce_phe_server_generate_server_key_pair(
         vsce_phe_server_t *phe_server_ctx, vsc_buffer_t *server_private_key, vsc_buffer_t *server_public_key) {
@@ -395,6 +405,9 @@ err:
     return status;
 }
 
+//
+//  Buffer size needed to fit EnrollmentResponse
+//
 VSCE_PUBLIC size_t
 vsce_phe_server_enrollment_response_len(vsce_phe_server_t *phe_server_ctx) {
 
@@ -403,6 +416,9 @@ vsce_phe_server_enrollment_response_len(vsce_phe_server_t *phe_server_ctx) {
     return EnrollmentResponse_size;
 }
 
+//
+//  Generates a new random enrollment and proof for a new user
+//
 VSCE_PUBLIC vsce_error_t
 vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
         vsc_data_t server_public_key, vsc_buffer_t *enrollment_response) {
@@ -473,8 +489,12 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t ser
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
-    vsce_phe_server_prove_success(
+    status = vsce_phe_server_prove_success(
             phe_server_ctx, op_group, server_private_key, server_public_key, &hs0, &hs1, &c0, &c1, &response.proof);
+
+    if (status != vsce_SUCCESS) {
+        goto err;
+    }
 
     pb_ostream_t ostream =
             pb_ostream_from_buffer(vsc_buffer_ptr(enrollment_response), vsc_buffer_capacity(enrollment_response));
@@ -482,6 +502,7 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t ser
     VSCE_ASSERT(pb_encode(&ostream, EnrollmentResponse_fields, &response));
     vsc_buffer_reserve(enrollment_response, ostream.bytes_written);
 
+err:
     mbedtls_ecp_point_free(&hs0);
     mbedtls_ecp_point_free(&hs1);
     mbedtls_ecp_point_free(&c0);
@@ -498,6 +519,9 @@ priv_err:
     return status;
 }
 
+//
+//  Buffer size needed to fit VerifyPasswordResponse
+//
 VSCE_PUBLIC size_t
 vsce_phe_server_verify_password_response_len(vsce_phe_server_t *phe_server_ctx) {
 
@@ -506,6 +530,9 @@ vsce_phe_server_verify_password_response_len(vsce_phe_server_t *phe_server_ctx) 
     return VerifyPasswordResponse_size;
 }
 
+//
+//  Verifies existing user's password and generates response with proof
+//
 VSCE_PUBLIC vsce_error_t
 vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
         vsc_data_t server_public_key, vsc_data_t verify_password_request, vsc_buffer_t *verify_password_response) {
@@ -941,6 +968,9 @@ priv_err:
     return status;
 }
 
+//
+//  Buffer size needed to fit UpdateToken
+//
 VSCE_PUBLIC size_t
 vsce_phe_server_update_token_len(vsce_phe_server_t *phe_server_ctx) {
 
@@ -949,6 +979,9 @@ vsce_phe_server_update_token_len(vsce_phe_server_t *phe_server_ctx) {
     return UpdateToken_size;
 }
 
+//
+//  Updates server's private and public keys and issues an update token for use on client's side
+//
 VSCE_PUBLIC vsce_error_t
 vsce_phe_server_rotate_keys(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
         vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key, vsc_buffer_t *update_token) {

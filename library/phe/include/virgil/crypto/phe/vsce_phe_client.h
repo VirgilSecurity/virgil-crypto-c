@@ -200,7 +200,7 @@ VSCE_PUBLIC size_t
 vsce_phe_client_enrollment_record_len(vsce_phe_client_t *phe_client_ctx);
 
 //
-//  Uses fresh EnrollmentResponse from PHE server and user's password (or its hash) to create
+//  Uses fresh EnrollmentResponse from PHE server (see get enrollment func) and user's password (or its hash) to create
 //  a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
 //  Also generates a random seed which then can be used to generate symmetric or private key to protect user's data
 //
