@@ -44,6 +44,13 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class for server-side PHE crypto operations.
+//  This class is thread-safe in case if VSCE_MULTI_THREAD defined
+// --------------------------------------------------------------------------
+
 #ifndef VSCE_PHE_SERVER_H_INCLUDED
 #define VSCE_PHE_SERVER_H_INCLUDED
 
@@ -171,27 +178,48 @@ vsce_phe_server_take_operation_random(vsce_phe_server_t *phe_server_ctx, vscf_im
 VSCE_PUBLIC void
 vsce_phe_server_release_operation_random(vsce_phe_server_t *phe_server_ctx);
 
+//
+//  Generates new NIST P-256 server key pair for some client
+//
 VSCE_PUBLIC vsce_error_t
 vsce_phe_server_generate_server_key_pair(vsce_phe_server_t *phe_server_ctx, vsc_buffer_t *server_private_key,
         vsc_buffer_t *server_public_key);
 
+//
+//  Buffer size needed to fit EnrollmentResponse
+//
 VSCE_PUBLIC size_t
 vsce_phe_server_enrollment_response_len(vsce_phe_server_t *phe_server_ctx);
 
+//
+//  Generates a new random enrollment and proof for a new user
+//
 VSCE_PUBLIC vsce_error_t
 vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
         vsc_data_t server_public_key, vsc_buffer_t *enrollment_response);
 
+//
+//  Buffer size needed to fit VerifyPasswordResponse
+//
 VSCE_PUBLIC size_t
 vsce_phe_server_verify_password_response_len(vsce_phe_server_t *phe_server_ctx);
 
+//
+//  Verifies existing user's password and generates response with proof
+//
 VSCE_PUBLIC vsce_error_t
 vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
         vsc_data_t server_public_key, vsc_data_t verify_password_request, vsc_buffer_t *verify_password_response);
 
+//
+//  Buffer size needed to fit UpdateToken
+//
 VSCE_PUBLIC size_t
 vsce_phe_server_update_token_len(vsce_phe_server_t *phe_server_ctx);
 
+//
+//  Updates server's private and public keys and issues an update token for use on client's side
+//
 VSCE_PUBLIC vsce_error_t
 vsce_phe_server_rotate_keys(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
         vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key, vsc_buffer_t *update_token);
