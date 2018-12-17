@@ -35,8 +35,3 @@ script:
 
 after_success:
   - cmake --build build --target cloc
-
-jobs:
-  include:
-    - stage: benchmark
-      script: echo "Benchmark is not ready yet."
