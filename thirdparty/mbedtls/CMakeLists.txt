@@ -75,9 +75,9 @@ configure_file(
 include(ExternalProject)
 ExternalProject_Add(mbedtls-ext
         GIT_REPOSITORY
-            https://github.com/VirgilSecurity/mbedtls
+            https://github.com/ARMmbed/mbedtls
         GIT_TAG
-            development
+            mbedtls-2.14.0
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
