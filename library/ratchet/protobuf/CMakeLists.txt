@@ -72,8 +72,7 @@ set_target_properties(ratchet_pb PROPERTIES
         )
 
 target_protobuf_sources(ratchet_pb
-        "${CMAKE_CURRENT_SOURCE_DIR}/Boss.proto"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Person.proto"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Message.proto"
         )
 
 target_link_libraries(ratchet_pb nanopb::protobuf-nanopb)

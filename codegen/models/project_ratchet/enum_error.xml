@@ -3,12 +3,12 @@
         No errors was occurred.
     </constant>
 
-    <constant name="asn1 write error" of_class="global" value="1">
-        Error during ASN.1 serialization
+    <constant name="protobuf encode error" of_class="global" value="1">
+        Error during protobuf serialization
     </constant>
 
-    <constant name="asn1 read error" of_class="global" value="2">
-        Error during ASN.1 deserialization
+    <constant name="protobuf decode error" of_class="global" value="2">
+        Error during protobuf deserialization
     </constant>
 
     <constant name="message version doesn't match" of_class="global" value="3">
