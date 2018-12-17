@@ -32,6 +32,7 @@ nodes['lang-c-platform-win8-mingw64'] = build_LangC_Windows_MinGW('build-win8')
 //
 nodes['lang-php-platform-linux'] = build_LangPHP_Linux('build-centos7')
 nodes['lang-php-platform-macos'] = build_LangPHP_MacOS('build-os-x')
+nodes['lang-php-platform-windows'] = build_LangPHP_MacOS('build-win8')
 
 parallel nodes
 
