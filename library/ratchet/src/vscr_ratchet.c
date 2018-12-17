@@ -1008,12 +1008,12 @@ vscr_ratchet_serialize(vscr_ratchet_t *ratchet_ctx, vsc_buffer_t *output) {
     vscr_ratchet_skipped_message_key_list_node_destroy(&skipped_message_keys);
 
     // Serialize
-    bool status = true;
-    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(output), vsc_buffer_capacity(output));
-
-    status = pb_encode(&ostream, Ratchet_fields, &ratchet);
-
-    vsc_buffer_reserve(output, ostream.bytes_written);
+//    bool status = true;
+//    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(output), vsc_buffer_capacity(output));
+//
+//    status = pb_encode(&ostream, Ratchet_fields, &ratchet);
+//
+//    vsc_buffer_reserve(output, ostream.bytes_written);
 
     //  TODO: This is STUB. Implement me.
     VSCR_UNUSED(ratchet_ctx);
