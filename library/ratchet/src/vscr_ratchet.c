@@ -1013,7 +1013,7 @@ vscr_ratchet_serialize(vscr_ratchet_t *ratchet_ctx, vsc_buffer_t *output) {
 
     status = pb_encode(&ostream, Ratchet_fields, &ratchet);
 
-    vsc_buffer_reserve(buffer, ostream.bytes_written);
+    vsc_buffer_reserve(output, ostream.bytes_written);
 
     //  TODO: This is STUB. Implement me.
     VSCR_UNUSED(ratchet_ctx);
