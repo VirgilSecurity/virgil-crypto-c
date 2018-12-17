@@ -39,7 +39,7 @@ project(virgil_crypto_csharp VERSION 0.5.0 LANGUAGES C)
 # ---------------------------------------------------------------------------
 #   CSharp wrapper build options
 # ---------------------------------------------------------------------------
-set(CSHARP_VERSION "" CACHE STRING "Required exact PHP version. Keep empty to find currently available version.")
+set(CSHARP_VERSION "" CACHE STRING "Required exact CSharp version. Keep empty to find currently available version.")
 
 if(VIRGIL_INSTALL_WRAP_STANDALONE)
     get_filename_component(CSHARP_DESTINATION "${VIRGIL_INSTALL_WRAP_PREFIX}/csharp" ABSOLUTE)
@@ -53,9 +53,9 @@ endif()
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 if(CSHARP_VERSION)
-    find_package(CSHARP ${CSHARP_VERSION} EXACT REQUIRED)
+    find_package(CSharp ${CSHARP_VERSION} EXACT REQUIRED)
 else()
-    find_package(CSHARP REQUIRED)
+    find_package(CSharp REQUIRED)
 endif()
 
 if(NOT CSHARP_COMPILER)
