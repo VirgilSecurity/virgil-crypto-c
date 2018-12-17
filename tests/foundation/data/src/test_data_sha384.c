@@ -38,11 +38,7 @@
 //
 //  Test Vector 1
 //
-const byte test_sha384_VECTOR_1_INPUT_BYTES[] = {};
-
-const vsc_data_t test_sha384_VECTOR_1_INPUT = {
-    test_sha384_VECTOR_1_INPUT_BYTES, sizeof(test_sha384_VECTOR_1_INPUT_BYTES)
-};
+const vsc_data_t test_sha384_VECTOR_1_INPUT = {(const byte *)0xDEADBEAF, 0};
 
 const byte test_sha384_VECTOR_1_DIGEST_BYTES[] = {
     0x38, 0xb0, 0x60, 0xa7, 0x51, 0xac, 0x96, 0x38,

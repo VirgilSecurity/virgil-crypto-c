@@ -38,11 +38,7 @@
 //
 //  Test Vector 1
 //
-const byte test_kdf2_VECTOR_1_DATA_BYTES[] = {};
-
-const vsc_data_t test_kdf2_VECTOR_1_DATA = {
-    test_kdf2_VECTOR_1_DATA_BYTES, sizeof(test_kdf2_VECTOR_1_DATA_BYTES)
-};
+const vsc_data_t test_kdf2_VECTOR_1_DATA = {(const byte *)0xDEADBEAF, 0};
 
 const byte test_kdf2_VECTOR_1_KEY_BYTES[] = {
     0xb4, 0x07, 0x11, 0xa8, 0x8c, 0x70, 0x39, 0x75,

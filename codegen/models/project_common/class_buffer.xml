@@ -28,6 +28,11 @@
     </property>
 
 
+    <property name="is owner" type="boolean">
+        Defines that buffer is the owner of the underlying bytes.
+    </property>
+
+
     <method name="is empty" is_const="1">
         Returns true if buffer has no data written.
 

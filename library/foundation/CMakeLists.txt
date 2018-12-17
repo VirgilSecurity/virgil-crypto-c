@@ -81,7 +81,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 #
 # Link to dependencies
 #
-target_link_libraries(foundation PUBLIC vsc::common mbed::crypto)
+target_link_libraries(foundation PUBLIC vsc::common mbed::crypto ed25519)
 
 #
 # Define specific compilation and linkage flags.
@@ -209,4 +209,3 @@ if(VIRGIL_INSTALL_CMAKE)
                 "${CMAKE_INSTALL_LIBDIR}/cmake/vsc_foundation"
             )
 endif()
-

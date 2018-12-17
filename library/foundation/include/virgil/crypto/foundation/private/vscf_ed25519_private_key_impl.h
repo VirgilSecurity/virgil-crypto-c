@@ -44,22 +44,24 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCE_PHE_UTILS_H_INCLUDED
-#define VSCE_PHE_UTILS_H_INCLUDED
 
-#include "vsce_library.h"
-#include "vsce_error.h"
-#include "vsce_phe_common.h"
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'ed25519 private key' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
 
-#include <mbedtls/bignum.h>
+#ifndef VSCF_ED25519_PRIVATE_KEY_IMPL_H_INCLUDED
+#define VSCF_ED25519_PRIVATE_KEY_IMPL_H_INCLUDED
 
-#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_impl.h>
-#endif
+#include "vscf_library.h"
+#include "vscf_impl_private.h"
+#include "vscf_ed25519_private_key.h"
+#include "vscf_impl.h"
 
-#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_impl.h>
-#endif
+#include <ed25519/ed25519.h>
 
 // clang-format on
 //  @end
@@ -77,75 +79,30 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'phe utils' context.
+//  Handles implementation details.
 //
-typedef struct vsce_phe_utils_t vsce_phe_utils_t;
-
-//
-//  Return size of 'vsce_phe_utils_t'.
-//
-VSCE_PUBLIC size_t
-vsce_phe_utils_ctx_size(void);
-
-//
-//  Perform initialization of pre-allocated context.
-//
-VSCE_PUBLIC void
-vsce_phe_utils_init(vsce_phe_utils_t *phe_utils_ctx);
-
-//
-//  Release all inner resources including class dependencies.
-//
-VSCE_PUBLIC void
-vsce_phe_utils_cleanup(vsce_phe_utils_t *phe_utils_ctx);
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCE_PUBLIC vsce_phe_utils_t *
-vsce_phe_utils_new(void);
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
-//
-VSCE_PUBLIC void
-vsce_phe_utils_delete(vsce_phe_utils_t *phe_utils_ctx);
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vsce_phe_utils_new ()'.
-//
-VSCE_PUBLIC void
-vsce_phe_utils_destroy(vsce_phe_utils_t **phe_utils_ctx_ref);
-
-//
-//  Copy given class context by increasing reference counter.
-//
-VSCE_PUBLIC vsce_phe_utils_t *
-vsce_phe_utils_copy(vsce_phe_utils_t *phe_utils_ctx);
-
-//
-//  Setup dependency to the interface 'random' with shared ownership.
-//
-VSCE_PUBLIC void
-vsce_phe_utils_use_random(vsce_phe_utils_t *phe_utils_ctx, vscf_impl_t *random);
-
-//
-//  Setup dependency to the interface 'random' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCE_PUBLIC void
-vsce_phe_utils_take_random(vsce_phe_utils_t *phe_utils_ctx, vscf_impl_t *random);
-
-//
-//  Release dependency to the interface 'random'.
-//
-VSCE_PUBLIC void
-vsce_phe_utils_release_random(vsce_phe_utils_t *phe_utils_ctx);
-
-VSCE_PUBLIC vsce_error_t
-vsce_phe_utils_random_z(vsce_phe_utils_t *phe_utils_ctx, mbedtls_mpi *z);
+struct vscf_ed25519_private_key_impl_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *random;
+    //
+    //  Implementation specific context.
+    //
+    byte secret_key[ED25519_KEY_LEN];
+    //
+    //  Implementation specific context.
+    //
+    byte signature[ED25519_SIG_LEN];
+};
 
 
 // --------------------------------------------------------------------------
@@ -161,5 +118,5 @@ vsce_phe_utils_random_z(vsce_phe_utils_t *phe_utils_ctx, mbedtls_mpi *z);
 
 
 //  @footer
-#endif // VSCE_PHE_UTILS_H_INCLUDED
+#endif // VSCF_ED25519_PRIVATE_KEY_IMPL_H_INCLUDED
 //  @end

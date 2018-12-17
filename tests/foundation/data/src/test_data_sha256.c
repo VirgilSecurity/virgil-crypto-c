@@ -38,11 +38,7 @@
 //
 //  Test Vector 1
 //
-const byte test_sha256_VECTOR_1_INPUT_BYTES[] = {};
-
-const vsc_data_t test_sha256_VECTOR_1_INPUT = {
-    test_sha256_VECTOR_1_INPUT_BYTES, sizeof(test_sha256_VECTOR_1_INPUT_BYTES)
-};
+const vsc_data_t test_sha256_VECTOR_1_INPUT = {(const byte *)0xDEADBEAF, 0};
 
 const byte test_sha256_VECTOR_1_DIGEST_BYTES[] = {
     0xe3, 0xb0, 0xc4, 0x42, 0x98, 0xfc, 0x1c, 0x14,

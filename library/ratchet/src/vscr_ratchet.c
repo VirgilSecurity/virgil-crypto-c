@@ -925,101 +925,101 @@ VSCR_PUBLIC vscr_error_t
 vscr_ratchet_serialize(vscr_ratchet_t *ratchet_ctx, vsc_buffer_t *output) {
 
     //  RATCHETRatchet ::= SEQUENCE {
-    //       sender chain OCTET_STRING,
-    //       receiver chains OCTET_STRING,
-    //       skipped message keys OCTET_STRING,
-    //       root key OCTET_STRING }
+        //       sender chain OCTET_STRING,
+        //       receiver chains OCTET_STRING,
+        //       skipped message keys OCTET_STRING,
+        //       root key OCTET_STRING }
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
-    VSCR_ASSERT(vsc_buffer_left(output) >= vscr_ratchet_serialize_len(ratchet_ctx));
+        VSCR_ASSERT_PTR(ratchet_ctx);
+        VSCR_ASSERT(vsc_buffer_left(output) >= vscr_ratchet_serialize_len(ratchet_ctx));
 
-    // Chain key
-    Key chain_key = Key_init_zero;
+        // Chain key
+        Key chain_key = Key_init_zero;
 
-    chain_key.index = ratchet_ctx->sender_chain->chain_key.index;
+        chain_key.index = ratchet_ctx->sender_chain->chain_key.index;
 
-    memcpy(ratchet_ctx->sender_chain->chain_key.key, ratchet_ctx->sender_chain->chain_key.key,
-           sizeof(ratchet_ctx->sender_chain->chain_key.key));
+        memcpy(ratchet_ctx->sender_chain->chain_key.key, ratchet_ctx->sender_chain->chain_key.key,
+               sizeof(ratchet_ctx->sender_chain->chain_key.key));
 
-    // Sender chain
-    SenderChain sender_chain = SenderChain_init_zero;
+        // Sender chain
+        SenderChain sender_chain = SenderChain_init_zero;
 
-    memcpy(sender_chain.private_key, ratchet_ctx->sender_chain->private_key->bytes,
-           ratchet_ctx->sender_chain->private_key->len);
+        memcpy(sender_chain.private_key, ratchet_ctx->sender_chain->private_key->bytes,
+               ratchet_ctx->sender_chain->private_key->len);
 
-    memcpy(sender_chain.public_key, ratchet_ctx->sender_chain->public_key->bytes,
-           ratchet_ctx->sender_chain->public_key->len);
+        memcpy(sender_chain.public_key, ratchet_ctx->sender_chain->public_key->bytes,
+               ratchet_ctx->sender_chain->public_key->len);
 
-    sender_chain.chain_key = chain_key;
+        sender_chain.chain_key = chain_key;
 
-    // Ratchet
-    Ratchet ratchet = Ratchet_init_zero;
+        // Ratchet
+        Ratchet ratchet = Ratchet_init_zero;
 
-    memcpy(ratchet.root_key, ratchet_ctx->root_key, sizeof(ratchet_ctx->root_key));
-    ratchet.sender_chain = sender_chain;
+        memcpy(ratchet.root_key, ratchet_ctx->root_key, sizeof(ratchet_ctx->root_key));
+        ratchet.sender_chain = sender_chain;
 
-    // Receiver chains
-    vscr_ratchet_receiver_chain_list_node_t *receiver_chains = vscr_ratchet_receiver_chain_list_node_new();
-    receiver_chains = ratchet_ctx->receiver_chains;
+        // Receiver chains
+        vscr_ratchet_receiver_chain_list_node_t *receiver_chains = vscr_ratchet_receiver_chain_list_node_new();
+        receiver_chains = ratchet_ctx->receiver_chains;
 
-    size_t chains_count = 0;
-    while (receiver_chains) {
-        ReceiverChain receiver_chain = ReceiverChain_init_zero;
+        size_t chains_count = 0;
+        while (receiver_chains) {
+            ReceiverChain receiver_chain = ReceiverChain_init_zero;
 
-        memcpy(receiver_chain.public_key, receiver_chains->value->public_key->bytes,
-               receiver_chains->value->public_key->len);
+            memcpy(receiver_chain.public_key, receiver_chains->value->public_key->bytes,
+                   receiver_chains->value->public_key->len);
 
-        memcpy(receiver_chain.chain_key.key, receiver_chains->value->chain_key.key,
-               sizeof(receiver_chains->value->chain_key.key));
+            memcpy(receiver_chain.chain_key.key, receiver_chains->value->chain_key.key,
+                   sizeof(receiver_chains->value->chain_key.key));
 
-        receiver_chain.chain_key.index = receiver_chains->value->chain_key.index;
+            receiver_chain.chain_key.index = receiver_chains->value->chain_key.index;
 
-        ratchet.receiver_chains[chains_count] = receiver_chain;
-        ratchet.receiver_chains_count += 1;
+            ratchet.receiver_chains[chains_count] = receiver_chain;
+            ratchet.receiver_chains_count += 1;
 
-        chains_count += 1;
-        receiver_chains = receiver_chains->next;
-    }
+            chains_count += 1;
+            receiver_chains = receiver_chains->next;
+        }
 
-    // Skipped message keys
-    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_keys = vscr_ratchet_skipped_message_key_list_node_new();
-    skipped_message_keys = ratchet_ctx->skipped_message_keys;
+        // Skipped message keys
+        vscr_ratchet_skipped_message_key_list_node_t *skipped_message_keys = vscr_ratchet_skipped_message_key_list_node_new();
+        skipped_message_keys = ratchet_ctx->skipped_message_keys;
 
-    size_t skipped_message_keys_count = 0;
-    while (skipped_message_keys) {
-        SkippedMessageKey skipped_message_key = SkippedMessageKey_init_zero;
+        size_t skipped_message_keys_count = 0;
+        while (skipped_message_keys) {
+            SkippedMessageKey skipped_message_key = SkippedMessageKey_init_zero;
 
-        memcpy(skipped_message_key.public_key, skipped_message_keys->value->public_key->bytes,
-               skipped_message_keys->value->public_key->len);
+            memcpy(skipped_message_key.public_key, skipped_message_keys->value->public_key->bytes,
+                   skipped_message_keys->value->public_key->len);
 
-        memcpy(skipped_message_key.message_key.key, skipped_message_keys->value->message_key->key,
-               sizeof(skipped_message_keys->value->message_key->key));
+            memcpy(skipped_message_key.message_key.key, skipped_message_keys->value->message_key->key,
+                   sizeof(skipped_message_keys->value->message_key->key));
 
-        skipped_message_key.message_key.index = skipped_message_keys->value->message_key->index;
+            skipped_message_key.message_key.index = skipped_message_keys->value->message_key->index;
 
-        ratchet.skipped_message_keys[skipped_message_keys_count] = skipped_message_key;
-        ratchet.skipped_message_keys_count += 1;
+            ratchet.skipped_message_keys[skipped_message_keys_count] = skipped_message_key;
+            ratchet.skipped_message_keys_count += 1;
 
-        skipped_message_keys_count += 1;
-        skipped_message_keys = skipped_message_keys->next;
-    }
+            skipped_message_keys_count += 1;
+            skipped_message_keys = skipped_message_keys->next;
+        }
 
-    vscr_ratchet_receiver_chain_list_node_destroy(&receiver_chains);
-    vscr_ratchet_skipped_message_key_list_node_destroy(&skipped_message_keys);
+        vscr_ratchet_receiver_chain_list_node_destroy(&receiver_chains);
+        vscr_ratchet_skipped_message_key_list_node_destroy(&skipped_message_keys);
 
-    // Serialize
-//    bool status = true;
-//    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(output), vsc_buffer_capacity(output));
-//
-//    status = pb_encode(&ostream, Ratchet_fields, &ratchet);
-//
-//    vsc_buffer_reserve(output, ostream.bytes_written);
+        // Serialize
+    //    bool status = true;
+    //    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(output), vsc_buffer_capacity(output));
+    //
+    //    status = pb_encode(&ostream, Ratchet_fields, &ratchet);
+    //
+    //    vsc_buffer_reserve(output, ostream.bytes_written);
 
-    //  TODO: This is STUB. Implement me.
-    VSCR_UNUSED(ratchet_ctx);
-    VSCR_UNUSED(output);
+        //  TODO: This is STUB. Implement me.
+        VSCR_UNUSED(ratchet_ctx);
+        VSCR_UNUSED(output);
 
-    return vscr_SUCCESS;
+        return vscr_SUCCESS;
 }
 
 VSCR_PUBLIC vscr_ratchet_t *
