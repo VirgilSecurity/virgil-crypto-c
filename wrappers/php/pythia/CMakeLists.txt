@@ -55,10 +55,15 @@ set_target_properties(pythia_php PROPERTIES
         DEBUG_POSTFIX "_d"
         OUTPUT_NAME vscp_pythia_php
         PREFIX ""
-        SUFFIX ".so"
         VERSION ${virgil_crypto_pythia_php_VERSION}
         SOVERSION ${virgil_crypto_pythia_php_VERSION_MAJOR}
         )
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set_target_properties(phe_php PROPERTIES SUFFIX ".dll")
+else()
+    set_target_properties(phe_php PROPERTIES SUFFIX ".so")
+endif()
 
 target_sources(pythia_php
         PRIVATE

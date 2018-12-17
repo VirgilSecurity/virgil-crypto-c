@@ -55,10 +55,15 @@ set_target_properties(phe_php PROPERTIES
         DEBUG_POSTFIX "_d"
         OUTPUT_NAME vsce_phe_php
         PREFIX ""
-        SUFFIX ".so"
         VERSION ${virgil_crypto_phe_php_VERSION}
         SOVERSION ${virgil_crypto_phe_php_VERSION_MAJOR}
         )
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set_target_properties(phe_php PROPERTIES SUFFIX ".dll")
+else()
+    set_target_properties(phe_php PROPERTIES SUFFIX ".so")
+endif()
 
 target_sources(phe_php
         PRIVATE
@@ -72,7 +77,6 @@ target_link_libraries(phe_php
         phplib
         "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-undefined dynamic_lookup>"
     )
-
 
 # ---------------------------------------------------------------------------
 #   Test
