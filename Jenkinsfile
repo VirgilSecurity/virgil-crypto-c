@@ -75,7 +75,6 @@ def build_LangC_Windows_MinGW(slave) {
         clearContentWindows()
         unstash 'src'
         withEnv(["PATH=C:\\Program Files\\mingw-w64\\x86_64-8.1.0-win32-seh-rt_v6-rev0\\mingw64\\bin;${env.PATH}"]) {
-            bat 'echo %PATH%'
             bat 'cmake -G"MinGW Makefiles" -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 -Bbuild -H.'
             bat 'cmake --build build -- -j10'
         }
