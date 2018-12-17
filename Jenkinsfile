@@ -168,8 +168,7 @@ def build_LangPHP_Windows(slave) {
                  "PHP_DEVEL_HOME=C:\\php-7.2.6-devel",\
                  "PHPUNIT_HOME=C:\\phpunit-7.2.4"]) {
             bat '''
-                call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
-                nmake /?
+                echo %PATH%
             '''
         }
     }}
