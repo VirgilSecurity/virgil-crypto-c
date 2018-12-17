@@ -199,3 +199,18 @@ def build_LangPHP_Windows(slave) {
         }
     }}
 }
+
+
+// --------------------------------------------------------------------------
+stage 'Checksum'
+// --------------------------------------------------------------------------
+
+node('master') {
+    def branchSubPath =  env.BRANCH_NAME ? '/branches/' + env.BRANCH_NAME : ''
+    def shortJobName = env.BRANCH_NAME ? env.JOB_NAME.replace('/' + env.BRANCH_NAME, '') : env.JOB_NAME
+    def artifactsDir =
+            env.JENKINS_HOME + '/jobs/' + shortJobName + branchSubPath + '/builds/' + env.BUILD_NUMBER + '/archive'
+    dir(artifactsDir) {
+        sh 'find . -type f -name "virgil-crypto-c-*" -exec sh -c "sha256sum {} | cut -d\' \' -f1-1 > {}.sha256" \\;'
+    }
+}
