@@ -63,7 +63,7 @@ def build_LangC_Unix(slave) {
         unstash 'src'
         sh 'mkdir build'
         dir('build') {
-            sh 'cmake -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) ..'
+            sh 'cmake -DCMAKE_BUILD_TYPE=Release -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) ..'
             sh 'make -j10'
             sh 'cpack'
             archiveArtifacts('packages/**')
@@ -76,7 +76,7 @@ def build_LangC_Windows_MinGW(slave) {
         clearContentWindows()
         unstash 'src'
         withEnv(["PATH=C:\\Program Files\\mingw-w64\\x86_64-8.1.0-win32-seh-rt_v6-rev0\\mingw64\\bin;${env.PATH}"]) {
-            bat 'cmake -G"MinGW Makefiles" -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 -Bbuild -H.'
+            bat 'cmake -G"MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 -Bbuild -H.'
             bat 'cmake --build build -- -j10'
         }
         dir('build') {
@@ -95,7 +95,8 @@ def build_LangPHP_Linux(slave) {
         unstash 'src'
         sh '''
             source /opt/remi/php72/enable
-            cmake -DCMAKE_INSTALL_LIBDIR=lib \
+            cmake -DCMAKE_BUILD_TYPE=Release \
+                  -DCMAKE_INSTALL_LIBDIR=lib \
                   -DVIRGIL_INSTALL_PHP_SRCDIR=src \
                   -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
                   -DVIRGIL_PACKAGE_LANGUAGE=php \
@@ -131,7 +132,8 @@ def build_LangPHP_MacOS(slave) {
         def phpVersions = "php56 php70 php71 php72"
         sh '''
             brew unlink ${phpVersions} && brew link php72 --force
-            cmake -DCMAKE_INSTALL_LIBDIR=lib \
+            cmake -DCMAKE_BUILD_TYPE=Release \
+                  -DCMAKE_INSTALL_LIBDIR=lib \
                   -DVIRGIL_INSTALL_PHP_SRCDIR=src \
                   -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
                   -DVIRGIL_PACKAGE_LANGUAGE=php \
@@ -171,6 +173,7 @@ def build_LangPHP_Windows(slave) {
                 set PATH=%PATH:"=%
                 call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
                 cmake -G"NMake Makefiles" ^
+                      -DCMAKE_BUILD_TYPE=Release ^
                       -DCMAKE_INSTALL_LIBDIR=lib ^
                       -DVIRGIL_INSTALL_PHP_SRCDIR=src ^
                       -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
