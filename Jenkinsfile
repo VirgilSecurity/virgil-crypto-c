@@ -168,7 +168,31 @@ def build_LangPHP_Windows(slave) {
                  "PHP_DEVEL_HOME=C:\\php-7.2.6-devel",\
                  "PHPUNIT_HOME=C:\\phpunit-7.2.4"]) {
             bat '''
-                echo %PATH%
+                set PATH=%PATH:"=%
+                call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
+                cmake -G"NMake Makefiles" ^
+                      -DCMAKE_INSTALL_LIBDIR=lib ^
+                      -DVIRGIL_INSTALL_PHP_SRCDIR=src ^
+                      -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
+                      -DVIRGIL_PACKAGE_LANGUAGE=php ^
+                      -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 ^
+                      -DVIRGIL_WRAP_PHP=ON ^
+                      -DVIRGIL_INSTALL_WRAP_SRCS=ON ^
+                      -DVIRGIL_INSTALL_WRAP_LIBS=ON ^
+                      -DVIRGIL_INSTALL_WRAP_DEPS=ON ^
+                      -DVIRGIL_C_TESTING=OFF ^
+                      -DVIRGIL_LIB_RATCHET=OFF ^
+                      -DVIRGIL_LIB_PYTHIA=OFF ^
+                      -DVIRGIL_INSTALL_CMAKE=OFF ^
+                      -DVIRGIL_INSTALL_DEPS_CMAKE=OFF ^
+                      -DVIRGIL_INSTALL_DEPS_HDRS=OFF ^
+                      -DVIRGIL_INSTALL_DEPS_LIBS=OFF ^
+                      -DVIRGIL_INSTALL_HDRS=OFF ^
+                      -DVIRGIL_INSTALL_LIBS=OFF ^
+                      -Bbuild -H.
+            cmake --build build
+            cd build
+            cpack
             '''
         }
     }}
