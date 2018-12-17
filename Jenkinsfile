@@ -94,8 +94,8 @@ def build_LangPHP_Linux(slave) {
         unstash 'src'
         sh '''
             source /opt/remi/php72/enable
-            cmake -DCMAKE_INSTALL_LIBDIR=. \
-                  -DVIRGIL_INSTALL_WRAP_SRCDIR=. \
+            cmake -DCMAKE_INSTALL_LIBDIR=lib \
+                  -DVIRGIL_INSTALL_PHP_SRCDIR=src \
                   -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
                   -DVIRGIL_PACKAGE_LANGUAGE=php \
                   -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 \
@@ -130,8 +130,8 @@ def build_LangPHP_MacOS(slave) {
         def phpVersions = "php56 php70 php71 php72"
         sh '''
             brew unlink ${phpVersions} && brew link php72 --force
-            cmake -DCMAKE_INSTALL_LIBDIR=. \
-                  -DVIRGIL_INSTALL_WRAP_SRCDIR=. \
+            cmake -DCMAKE_INSTALL_LIBDIR=lib \
+                  -DVIRGIL_INSTALL_PHP_SRCDIR=src \
                   -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
                   -DVIRGIL_PACKAGE_LANGUAGE=php \
                   -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 \
