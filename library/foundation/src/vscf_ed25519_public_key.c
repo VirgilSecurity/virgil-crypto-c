@@ -131,8 +131,8 @@ vscf_ed25519_public_key_key_bitlen(vscf_ed25519_public_key_impl_t *ed25519_publi
 //  Verify data with given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_ed25519_public_key_verify(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_data_t data,
-        vsc_data_t signature) {
+vscf_ed25519_public_key_verify(
+        vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_data_t data, vsc_data_t signature) {
 
     VSCF_ASSERT_PTR(ed25519_public_key_impl);
     VSCF_ASSERT_PTR(signature.bytes);

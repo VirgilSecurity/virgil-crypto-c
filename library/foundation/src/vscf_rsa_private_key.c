@@ -118,8 +118,8 @@ vscf_rsa_private_key_cleanup_ctx(vscf_rsa_private_key_impl_t *rsa_private_key_im
 //  Setup parameters that is used during key generation.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_set_keygen_params(vscf_rsa_private_key_impl_t *rsa_private_key_impl, size_t bitlen,
-        size_t exponent) {
+vscf_rsa_private_key_set_keygen_params(
+        vscf_rsa_private_key_impl_t *rsa_private_key_impl, size_t bitlen, size_t exponent) {
 
     VSCF_ASSERT_PTR(rsa_private_key_impl);
     VSCF_ASSERT(bitlen >= 128 && bitlen <= 16384);
@@ -301,44 +301,44 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_rsa_private_key_extract_public_key(vscf_rsa_private_key_impl_t *rsa_private_key_impl) {
 
     VSCF_ASSERT_PTR(rsa_private_key_impl);
-        VSCF_ASSERT(mbedtls_rsa_check_pubkey(&rsa_private_key_impl->rsa_ctx) == 0);
+    VSCF_ASSERT(mbedtls_rsa_check_pubkey(&rsa_private_key_impl->rsa_ctx) == 0);
 
-    #if VSCF_RSA_PUBLIC_KEY
-        vscf_rsa_public_key_impl_t *rsa_public_key_impl = vscf_rsa_public_key_new();
-        VSCF_ASSERT_ALLOC(rsa_public_key_impl != NULL);
+#if VSCF_RSA_PUBLIC_KEY
+    vscf_rsa_public_key_impl_t *rsa_public_key_impl = vscf_rsa_public_key_new();
+    VSCF_ASSERT_ALLOC(rsa_public_key_impl != NULL);
 
-        mbedtls_rsa_context *rsa_public_ctx = &rsa_public_key_impl->rsa_ctx;
-        mbedtls_rsa_context *rsa_private_ctx = &rsa_private_key_impl->rsa_ctx;
+    mbedtls_rsa_context *rsa_public_ctx = &rsa_public_key_impl->rsa_ctx;
+    mbedtls_rsa_context *rsa_private_ctx = &rsa_private_key_impl->rsa_ctx;
 
-        int copy_n_ret = mbedtls_mpi_copy(&rsa_public_ctx->N, &rsa_private_ctx->N);
-        int copy_e_ret = mbedtls_mpi_copy(&rsa_public_ctx->E, &rsa_private_ctx->E);
+    int copy_n_ret = mbedtls_mpi_copy(&rsa_public_ctx->N, &rsa_private_ctx->N);
+    int copy_e_ret = mbedtls_mpi_copy(&rsa_public_ctx->E, &rsa_private_ctx->E);
 
-        VSCF_ASSERT_ALLOC(rsa_public_key_impl != NULL);
-        VSCF_ASSERT_ALLOC((0 == copy_n_ret) && (0 == copy_e_ret));
+    VSCF_ASSERT_ALLOC(rsa_public_key_impl != NULL);
+    VSCF_ASSERT_ALLOC((0 == copy_n_ret) && (0 == copy_e_ret));
 
-        rsa_public_ctx->len = rsa_private_ctx->len;
+    rsa_public_ctx->len = rsa_private_ctx->len;
 
-        if (rsa_private_key_impl->hash) {
-            vscf_rsa_public_key_use_hash(rsa_public_key_impl, rsa_private_key_impl->hash);
-        }
+    if (rsa_private_key_impl->hash) {
+        vscf_rsa_public_key_use_hash(rsa_public_key_impl, rsa_private_key_impl->hash);
+    }
 
-        if (rsa_private_key_impl->random) {
-            vscf_rsa_public_key_use_random(rsa_public_key_impl, rsa_private_key_impl->random);
-        }
+    if (rsa_private_key_impl->random) {
+        vscf_rsa_public_key_use_random(rsa_public_key_impl, rsa_private_key_impl->random);
+    }
 
-        if (rsa_private_key_impl->asn1rd) {
-            vscf_rsa_public_key_use_asn1rd(rsa_public_key_impl, rsa_private_key_impl->asn1rd);
-        }
+    if (rsa_private_key_impl->asn1rd) {
+        vscf_rsa_public_key_use_asn1rd(rsa_public_key_impl, rsa_private_key_impl->asn1rd);
+    }
 
-        if (rsa_private_key_impl->asn1wr) {
-            vscf_rsa_public_key_use_asn1wr(rsa_public_key_impl, rsa_private_key_impl->asn1wr);
-        }
+    if (rsa_private_key_impl->asn1wr) {
+        vscf_rsa_public_key_use_asn1wr(rsa_public_key_impl, rsa_private_key_impl->asn1wr);
+    }
 
-        return vscf_rsa_public_key_impl(rsa_public_key_impl);
-    #else
-        VSCF_ASSERT(VSCF_RSA_PUBLIC_KEY && "VSCF_RSA_PUBLIC_KEY feature is diabled");
-        return NULL;
-    #endif
+    return vscf_rsa_public_key_impl(rsa_public_key_impl);
+#else
+    VSCF_ASSERT(VSCF_RSA_PUBLIC_KEY && "VSCF_RSA_PUBLIC_KEY feature is diabled");
+    return NULL;
+#endif
 }
 
 //

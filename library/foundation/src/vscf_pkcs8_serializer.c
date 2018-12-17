@@ -112,8 +112,8 @@ vscf_pkcs8_serializer_setup_defaults(vscf_pkcs8_serializer_impl_t *pkcs8_seriali
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs8_serializer_serialized_public_key_len(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl,
-        const vscf_impl_t *public_key) {
+vscf_pkcs8_serializer_serialized_public_key_len(
+        vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl, const vscf_impl_t *public_key) {
 
     VSCF_ASSERT_PTR(pkcs8_serializer_impl);
     VSCF_ASSERT_PTR(pkcs8_serializer_impl->der_serializer);
@@ -132,8 +132,8 @@ vscf_pkcs8_serializer_serialized_public_key_len(vscf_pkcs8_serializer_impl_t *pk
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_pkcs8_serializer_serialize_public_key(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl,
-        const vscf_impl_t *public_key, vsc_buffer_t *out) {
+vscf_pkcs8_serializer_serialize_public_key(
+        vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl, const vscf_impl_t *public_key, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(pkcs8_serializer_impl);
     VSCF_ASSERT_PTR(pkcs8_serializer_impl->der_serializer);
@@ -170,8 +170,8 @@ vscf_pkcs8_serializer_serialize_public_key(vscf_pkcs8_serializer_impl_t *pkcs8_s
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs8_serializer_serialized_private_key_len(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl,
-        const vscf_impl_t *private_key) {
+vscf_pkcs8_serializer_serialized_private_key_len(
+        vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl, const vscf_impl_t *private_key) {
 
     VSCF_ASSERT_PTR(pkcs8_serializer_impl);
     VSCF_ASSERT_PTR(pkcs8_serializer_impl->der_serializer);
@@ -190,8 +190,8 @@ vscf_pkcs8_serializer_serialized_private_key_len(vscf_pkcs8_serializer_impl_t *p
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_pkcs8_serializer_serialize_private_key(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl,
-        const vscf_impl_t *private_key, vsc_buffer_t *out) {
+vscf_pkcs8_serializer_serialize_private_key(
+        vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl, const vscf_impl_t *private_key, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(pkcs8_serializer_impl);
     VSCF_ASSERT_PTR(pkcs8_serializer_impl->der_serializer);
