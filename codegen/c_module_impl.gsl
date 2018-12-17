@@ -64,32 +64,6 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-#   Add type that enumerates all possible implementations within crypto.
-# ---------------------------------------------------------------------------
-function _L24_add_enum_tag (meta, destination)
-    check_arguments (my, "meta, destination", my)
-
-    my.names = meta_names (my.meta)
-
-    new enum to my.destination
-        . = "Enumerates all possible implementations within crypto library."
-
-        .name = my.names.enum_tag
-        .of_class = my.names.class_impl
-        .definition = "public"
-
-        new constant
-            .name = my.names.enum_constant_begin
-            .value = "0"
-        endnew
-
-        new constant
-            .name = my.names.enum_constant_end
-        endnew
-    endnew
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Add method that return 'API' with implementation's meta information.
 # ---------------------------------------------------------------------------
 function _L24_add_method_get_api (meta, destination)
@@ -105,6 +79,7 @@ function _L24_add_method_get_api (meta, destination)
         "
 
         .name = my.names.method_api
+        .is_const = "1"
 
         new return
             .class = ".(class_api_struct_api)"
@@ -127,36 +102,6 @@ function _L24_add_method_get_api (meta, destination)
             }
 
             return .(_argument_impl)->info->find_api_cb(.(_argument_api_tag));
-            "
-        endnew
-    endnew
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Add method that return unique 'Implementation TAG'.
-# ---------------------------------------------------------------------------
-function _L24_add_method_get_tag (meta, destination)
-    check_arguments (my, "meta, destination", my)
-
-    my.names = meta_names (my.meta)
-
-    new method to my.destination
-        . = "\Return unique 'Implementation TAG'."
-
-        .name = my.names.enum_tag
-
-        new return
-            .enum = ".(class_impl_enum_tag)"
-        endnew
-
-        component_create_argument_impl (method, my.meta)
-
-        new code
-            . = "
-            .(c_class_assert_macros_ptr) (impl);
-            .(c_class_assert_macros_ptr) (impl->info);
-
-            return impl->info->impl_tag;
             "
         endnew
     endnew
@@ -322,37 +267,12 @@ function c_module_impl_create (meta, destination)
         endnew
 
         _L24_add_type_self (my.meta, module)
-        _L24_add_enum_tag (my.meta, module)
         _L24_add_method_get_api (my.meta, module)
-        _L24_add_method_get_tag (my.meta, module)
         _L24_add_method_cleanup (my.meta, module)
         _L24_add_method_delete (my.meta, module)
         _L24_add_method_destroy (my.meta, module)
         _L24_add_method_copy (my.meta, module)
     endnew
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return enumeration type for implementations within given source.
-# ---------------------------------------------------------------------------
-function c_module_impl_find_enum_tag (source, meta)
-    check_arguments (my, "source, meta", my)
-
-    my.names = meta_names (my.meta)
-
-    my.module = my.source->module (name = my.names.module_impl) ?
-    if ! defined (my.module)
-        echo_fatal ("Module '$(my.names.module_impl:)' \
-                is not found within given source.", my)
-    endif
-
-    my.enum = my.module->enum (name = my.names.enum_tag) ?
-    if ! defined (my.enum)
-        echo_fatal ("Enum '$(my.names.enum_tag:)' \
-                is not found within module '$(my.names.module_impl:)'.", my)
-    endif
-
-    return my.enum
 endfunction
 
 .endtemplate

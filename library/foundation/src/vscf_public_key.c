@@ -65,10 +65,79 @@
 // --------------------------------------------------------------------------
 
 //
+//  Export public key in the binary format.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA public key must be exported in format defined in
+//  RFC 3447 Appendix A.1.1.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_public_key_export_public_key(const vscf_impl_t *impl, vsc_buffer_t *out) {
+
+    const vscf_public_key_api_t *public_key_api = vscf_public_key_api (impl);
+    VSCF_ASSERT_PTR (public_key_api);
+
+    VSCF_ASSERT_PTR (public_key_api->export_public_key_cb);
+    return public_key_api->export_public_key_cb (impl, out);
+}
+
+//
+//  Return length in bytes required to hold exported public key.
+//
+VSCF_PUBLIC size_t
+vscf_public_key_exported_public_key_len(const vscf_impl_t *impl) {
+
+    const vscf_public_key_api_t *public_key_api = vscf_public_key_api (impl);
+    VSCF_ASSERT_PTR (public_key_api);
+
+    VSCF_ASSERT_PTR (public_key_api->exported_public_key_len_cb);
+    return public_key_api->exported_public_key_len_cb (impl);
+}
+
+//
+//  Import public key from the binary format.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA public key must be imported from the format defined in
+//  RFC 3447 Appendix A.1.1.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_public_key_import_public_key(vscf_impl_t *impl, vsc_data_t data) {
+
+    const vscf_public_key_api_t *public_key_api = vscf_public_key_api (impl);
+    VSCF_ASSERT_PTR (public_key_api);
+
+    VSCF_ASSERT_PTR (public_key_api->import_public_key_cb);
+    return public_key_api->import_public_key_cb (impl, data);
+}
+
+//
+//  Returns constant 'can export public key'.
+//
+VSCF_PUBLIC bool
+vscf_public_key_can_export_public_key(const vscf_public_key_api_t *public_key_api) {
+
+    VSCF_ASSERT_PTR (public_key_api);
+
+    return public_key_api->can_export_public_key;
+}
+
+//
+//  Returns constant 'can import public key'.
+//
+VSCF_PUBLIC bool
+vscf_public_key_can_import_public_key(const vscf_public_key_api_t *public_key_api) {
+
+    VSCF_ASSERT_PTR (public_key_api);
+
+    return public_key_api->can_import_public_key;
+}
+
+//
 //  Return public key API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_public_key_api_t *
-vscf_public_key_api(vscf_impl_t *impl) {
+vscf_public_key_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -91,7 +160,7 @@ vscf_public_key_key_api(const vscf_public_key_api_t *public_key_api) {
 //  Check if given object implements interface 'public key'.
 //
 VSCF_PUBLIC bool
-vscf_public_key_is_implemented(vscf_impl_t *impl) {
+vscf_public_key_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -107,17 +176,6 @@ vscf_public_key_api_tag(const vscf_public_key_api_t *public_key_api) {
     VSCF_ASSERT_PTR (public_key_api);
 
     return public_key_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_public_key_impl_tag(const vscf_public_key_api_t *public_key_api) {
-
-    VSCF_ASSERT_PTR (public_key_api);
-
-    return public_key_api->impl_tag;
 }
 
 

@@ -71,20 +71,35 @@ import VSCFoundation
     /// ASN.1 representation of PKCS#1 private key is corrupted.
     case badPkcs1PrivateKey = -206
 
+    /// ASN.1 representation of PKCS#8 public key is corrupted.
+    case badPkcs8PublicKey = -207
+
+    /// ASN.1 representation of PKCS#8 private key is corrupted.
+    case badPkcs8PrivateKey = -208
+
     /// Encrypted data is corrupted.
-    case badEncryptedData = -207
+    case badEncryptedData = -209
 
     /// Underlying random operation returns error.
-    case randomFailed = -208
+    case randomFailed = -210
 
     /// Generation of the private or secret key failed.
-    case keyGenerationFailed = -209
+    case keyGenerationFailed = -211
 
     /// One of the entropy sources failed.
-    case entropySourceFailed = -210
+    case entropySourceFailed = -212
 
     /// Requested data to be generated is too big.
-    case rngRequestedDataTooBig = -211
+    case rngRequestedDataTooBig = -213
+
+    /// Base64 encoded string contains invalid characters.
+    case badBase64 = -214
+
+    /// PEM data is corrupted.
+    case badPem = -215
+
+    /// Exchange key return zero.
+    case sharedKeyExchangeFailed = -216
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC error: vscf_error_t) {

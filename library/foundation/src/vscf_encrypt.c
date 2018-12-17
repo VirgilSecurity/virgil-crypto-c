@@ -94,7 +94,7 @@ vscf_encrypt_encrypted_len(vscf_impl_t *impl, size_t data_len) {
 //  Return encrypt API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_encrypt_api_t *
-vscf_encrypt_api(vscf_impl_t *impl) {
+vscf_encrypt_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -106,7 +106,7 @@ vscf_encrypt_api(vscf_impl_t *impl) {
 //  Check if given object implements interface 'encrypt'.
 //
 VSCF_PUBLIC bool
-vscf_encrypt_is_implemented(vscf_impl_t *impl) {
+vscf_encrypt_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -122,17 +122,6 @@ vscf_encrypt_api_tag(const vscf_encrypt_api_t *encrypt_api) {
     VSCF_ASSERT_PTR (encrypt_api);
 
     return encrypt_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_encrypt_impl_tag(const vscf_encrypt_api_t *encrypt_api) {
-
-    VSCF_ASSERT_PTR (encrypt_api);
-
-    return encrypt_api->impl_tag;
 }
 
 

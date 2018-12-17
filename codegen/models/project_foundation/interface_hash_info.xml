@@ -8,4 +8,10 @@
     <constant name="block len" type="size">
         Block length of the digest function in bytes.
     </constant>
+
+    <method name="alg" is_static="1">
+        Return implemented hash algorithm type.
+
+        <return enum="hash alg"/>
+    </method>
 </interface>

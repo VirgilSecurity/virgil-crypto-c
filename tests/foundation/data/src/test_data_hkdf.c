@@ -164,17 +164,10 @@ const vsc_data_t test_hkdf_VECTOR_3_KEY = {
     test_hkdf_VECTOR_3_KEY_BYTES, sizeof(test_hkdf_VECTOR_3_KEY_BYTES)
 };
 
-const byte test_hkdf_VECTOR_3_SALT_BYTES[] = {};
 
-const vsc_data_t test_hkdf_VECTOR_3_SALT = {
-    test_hkdf_VECTOR_3_SALT_BYTES, sizeof(test_hkdf_VECTOR_3_SALT_BYTES)
-};
+const vsc_data_t test_hkdf_VECTOR_3_SALT = {(const byte *)0xDEADBEAF, 0};
 
-const byte test_hkdf_VECTOR_3_INFO_BYTES[] = {};
-
-const vsc_data_t test_hkdf_VECTOR_3_INFO = {
-    test_hkdf_VECTOR_3_INFO_BYTES, sizeof(test_hkdf_VECTOR_3_INFO_BYTES)
-};
+const vsc_data_t test_hkdf_VECTOR_3_INFO = {(const byte *)0xDEADBEAF, 0};
 
 const byte test_hkdf_VECTOR_3_DERIVED_DATA_BYTES[] = {
     0x8d, 0xa4, 0xe7, 0x75, 0xa5, 0x63, 0xc1, 0x8f,

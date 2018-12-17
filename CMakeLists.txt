@@ -36,6 +36,13 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(virgil_crypto_c_top VERSION 0.1.0 LANGUAGES C)
 
+
+# ---------------------------------------------------------------------------
+#   Forced build options
+# ---------------------------------------------------------------------------
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+
 # ---------------------------------------------------------------------------
 #   Helper modules
 # ---------------------------------------------------------------------------
@@ -58,8 +65,11 @@ option(BUILD_SHARED_LIBS "On/Off build shared libraries." OFF)
 #
 # Test & bench
 #
-option(ENABLE_TESTING "On/Off library integration tests." ON)
+option(ENABLE_TESTING "On/Off integration tests." ON)
 option(ENABLE_BENCHMARKS "On/Off build library benchmarks." ON)
+
+option(VIRGIL_C_TESTING "On/Off C library integration tests." ON)
+option(VIRGIL_PHP_TESTING "On/Off PHP wrapper integration tests." ON)
 
 #
 # Libraries
@@ -69,12 +79,14 @@ option(VIRGIL_LIB_FOUNDATION "Build 'foundation' library" ON)
 option(VIRGIL_LIB_PYTHIA "Build 'pythia' library" ON)
 option(VIRGIL_LIB_ED25519 "Build 'ed25519' library" ON)
 option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" ON)
+option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
 
 #
 # Wrappers
 #
 option(VIRGIL_WRAP_ALL "Build all available wrappers on the given platform" OFF)
 option(VIRGIL_WRAP_GO "Build 'Golang' wrapper" OFF)
+option(VIRGIL_WRAP_PHP "Build 'PHP' wrapper" OFF)
 
 
 # ---------------------------------------------------------------------------
@@ -98,7 +110,9 @@ option(VIRGIL_INSTALL_DEPS_CMAKE "Install dependencies CMake configuration file"
 #
 # Wrappers
 #
-option(VIRGIL_INSTALL_WRAP_STANDALONE "Install each wrapper to separate directory" ON)
+option(VIRGIL_INSTALL_WRAP_SRCS "Install wrapper sources" ON)
+option(VIRGIL_INSTALL_WRAP_LIBS "Install wrapper libraries" ON)
+option(VIRGIL_INSTALL_WRAP_DEPS "Install wrapper dependencies" ON)
 
 
 # ---------------------------------------------------------------------------
@@ -109,11 +123,6 @@ option(VIRGIL_INSTALL_WRAP_STANDALONE "Install each wrapper to separate director
 # Use common options from the module 'GNUInstallDirs'.
 #
 include(GNUInstallDirs)
-
-#
-# Define installation options for wrappers.
-#
-set(VIRGIL_INSTALL_WRAP_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Path where available wrappers will be installed")
 
 
 # ---------------------------------------------------------------------------
@@ -167,6 +176,21 @@ if(VIRGIL_LIB_RATCHET)
     add_subdirectory("library/ratchet")
 endif()
 
+if(VIRGIL_LIB_PHE)
+    add_subdirectory("library/phe")
+endif()
+
+
+# ---------------------------------------------------------------------------
+#   Integration tests
+# ---------------------------------------------------------------------------
+if(ENABLE_TESTING)
+    enable_testing()
+endif()
+
+if(VIRGIL_C_TESTING AND NOT CMAKE_CROSSCOMPILING)
+    add_subdirectory(tests)
+endif()
 
 # ---------------------------------------------------------------------------
 #   Library wrappers
@@ -175,13 +199,8 @@ if(VIRGIL_WRAP_ALL OR VIRGIL_WRAP_GO)
     add_subdirectory("wrappers/go")
 endif()
 
-
-# ---------------------------------------------------------------------------
-#   Integration tests
-# ---------------------------------------------------------------------------
-if(ENABLE_TESTING AND NOT CMAKE_CROSSCOMPILING)
-    enable_testing()
-    add_subdirectory(tests)
+if(VIRGIL_WRAP_ALL OR VIRGIL_WRAP_PHP)
+    add_subdirectory("wrappers/php")
 endif()
 
 
@@ -201,28 +220,36 @@ find_program(CLOC_EXECUTABLE cloc)
 if(CLOC_EXECUTABLE)
     add_custom_target(cloc-common
             COMMAND ${CLOC_EXECUTABLE}
-                "${CMAKE_CURRENT_LIST_DIR}/library/common/include/virgil"
-                "${CMAKE_CURRENT_LIST_DIR}/library/common/include/virgil/private"
+                "${CMAKE_CURRENT_LIST_DIR}/library/common/include/virgil/crypto/common"
+                "${CMAKE_CURRENT_LIST_DIR}/library/common/include/virgil/crypto/common/private"
                 "${CMAKE_CURRENT_LIST_DIR}/library/common/src"
             COMMENT "Calculate lines of the 'common' library..."
             )
 
     add_custom_target(cloc-foundation
             COMMAND ${CLOC_EXECUTABLE}
-                "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil"
-                "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil/private"
+                "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil/crypto/foundation"
+                "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil/crypto/foundation/private"
                 "${CMAKE_CURRENT_LIST_DIR}/library/foundation/src"
             COMMENT "Calculate lines of the 'foundation' library..."
             )
 
     add_custom_target(cloc-pythia
             COMMAND ${CLOC_EXECUTABLE}
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil"
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/private"
+                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia"
+                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia/private"
+                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/src"
+            COMMENT "Calculate lines of the 'pythia' library..."
+            )
+
+    add_custom_target(cloc-ratchet
+            COMMAND ${CLOC_EXECUTABLE}
+                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia"
+                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia/private"
                 "${CMAKE_CURRENT_LIST_DIR}/library/pythia/src"
             COMMENT "Calculate lines of the 'pythia' library..."
             )
 
     add_custom_target(cloc)
-    add_dependencies(cloc cloc-common cloc-foundation cloc-pythia)
+    add_dependencies(cloc cloc-common cloc-foundation cloc-pythia cloc-ratchet)
 endif()

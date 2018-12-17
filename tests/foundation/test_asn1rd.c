@@ -33,6 +33,8 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
 #include "unity.h"
 #include "test_utils.h"
 
@@ -433,6 +435,21 @@ test__asn1rd_read_oid__encoded_oid_sha256_returns_decoded_oid_sha256(void) {
     vscf_asn1rd_destroy(&asn1rd);
 }
 
+void
+test__asn1rd_read_bistring_as_octet_str__encoded_bitstring_returns_decoded_bitstring(void) {
+
+    vscf_asn1rd_impl_t *asn1rd = vscf_asn1rd_new();
+    VSCF_ASSERT_PTR(asn1rd);
+
+    vscf_asn1rd_reset(asn1rd, test_asn1_encoded_BIT_STRING);
+
+    vsc_data_t decoded_bitstring = vscf_asn1rd_read_bitstring_as_octet_str(asn1rd);
+
+    TEST_ASSERT_EQUAL_DATA(test_asn1_decoded_BIT_STRING, decoded_bitstring);
+
+    vscf_asn1rd_destroy(&asn1rd);
+}
+
 // --------------------------------------------------------------------------
 // Test 'error' method.
 // --------------------------------------------------------------------------
@@ -528,6 +545,7 @@ main(void) {
     RUN_TEST(test__asn1rd_read_octet_str__encoded_octet_string__returns_decoded_octet_string);
     RUN_TEST(test__asn1rd_read_utf8_str__encoded_utf8_string__returns_string_test);
     RUN_TEST(test__asn1rd_read_oid__encoded_oid_sha256_returns_decoded_oid_sha256);
+    RUN_TEST(test__asn1rd_read_bistring_as_octet_str__encoded_bitstring_returns_decoded_bitstring);
 
     RUN_TEST(test__asn1rd_error__after_read_null__returns_SUCCESS);
     RUN_TEST(test__asn1rd_error__after_read_int_twice__returns_OUT_OF_DATA);
