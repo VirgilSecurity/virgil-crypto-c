@@ -37,111 +37,167 @@
 #include "unity.h"
 #include "test_utils.h"
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET_MESSAGE
-#if TEST_DEPENDENCIES_AVAILABLE
-
-#include "vscr_ratchet_message.h"
+#include <vscr_ratchet.h>
 #include "test_data_ratchet_message.h"
-
-void
-test__constructor__create_object__object_has_correct_values(void) {
-    vsc_buffer_t *message = vsc_buffer_new_with_data(test_ratchet_ratchet_message_message);
-
-    vscr_ratchet_message_t *msg1 = vscr_ratchet_message_new_with_members(test_ratchet_ratchet_message_version,
-            vscr_ratchet_message_TYPE_PREKEY, message);
-
-    TEST_ASSERT_EQUAL_INT(test_ratchet_ratchet_message_version, msg1->version);
-    TEST_ASSERT_EQUAL_INT(vscr_ratchet_message_TYPE_PREKEY, msg1->type);
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->message), test_ratchet_ratchet_message_message.bytes,
-                             test_ratchet_ratchet_message_message.len);
-    TEST_ASSERT_EQUAL_INT(test_ratchet_ratchet_message_message.len, vsc_buffer_len(msg1->message));
-
-    vscr_ratchet_message_destroy(&msg1);
-
-    vsc_buffer_destroy(&message);
-}
+#include "test_data_ratchet_regular_message.h"
+#include "test_data_ratchet_prekey_message.h"
 
 void
 test__serialization__serialize_deserialize__objects_are_equal(void) {
-    vsc_buffer_t *message = vsc_buffer_new_with_data(test_ratchet_ratchet_message_message);
+    vsc_buffer_t *sender_identity_key = vsc_buffer_new_with_data(test_ratchet_prekey_message_sender_identity_key);
+    vsc_buffer_t *sender_ephemeral_key = vsc_buffer_new_with_data(test_ratchet_prekey_message_sender_ephemeral_key);
+    vsc_buffer_t *receiver_longterm_key= vsc_buffer_new_with_data(test_ratchet_prekey_message_receiver_longterm_key);
+    vsc_buffer_t *receiver_onetime_key = vsc_buffer_new_with_data(test_ratchet_prekey_message_receiver_onetime_key);
 
-    vscr_ratchet_message_t *msg1 = vscr_ratchet_message_new_with_members(test_ratchet_ratchet_message_version,
-                                                                         vscr_ratchet_message_TYPE_PREKEY, message);
+    vsc_buffer_t *public_key = vsc_buffer_new_with_data(test_ratchet_regular_message_public_key);
+    vsc_buffer_t *cipher_text = vsc_buffer_new_with_data(test_ratchet_regular_message_cipher_text);
 
-    size_t len = vscr_ratchet_message_serialize_len_ext(msg1);
+    RegularMessage regular_message = RegularMessage_init_zero;
+
+    regular_message.version = test_ratchet_regular_message_version;
+    regular_message.counter = test_ratchet_regular_message_counter;
+
+    memcpy(regular_message.public_key, public_key->bytes, public_key->len);
+    memcpy(regular_message.cipher_text.bytes, cipher_text->bytes, cipher_text->len);
+    regular_message.cipher_text.size += cipher_text->len;
+
+    PrekeyMessage prekey_message = PrekeyMessage_init_zero;
+
+    prekey_message.version = test_ratchet_prekey_message_protocol_version;
+    memcpy(prekey_message.sender_identity_key, sender_identity_key->bytes, sender_identity_key->len);
+    memcpy(prekey_message.sender_ephemeral_key, sender_ephemeral_key->bytes, sender_ephemeral_key->len);
+    memcpy(prekey_message.receiver_longterm_key, receiver_longterm_key->bytes, receiver_longterm_key->len);
+    memcpy(prekey_message.receiver_onetime_key, receiver_onetime_key->bytes, receiver_onetime_key->len);
+    prekey_message.regular_message = regular_message;
+
+    Message ratchet_message = Message_init_zero;
+
+    ratchet_message.version = test_ratchet_ratchet_message_version;
+    ratchet_message.which_message = Message_prekey_message_tag;
+
+    ratchet_message.message.prekey_message = prekey_message;
+
+    size_t len = 0;
+    bool status = true;
+    status = pb_get_encoded_size(&len, Message_fields, &ratchet_message);
+
+    TEST_ASSERT_EQUAL(status, true);
+
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(len);
 
-    TEST_ASSERT_EQUAL(vscr_ratchet_message_serialize(msg1, buffer), vscr_SUCCESS);
+    status = true;
+    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(buffer), vsc_buffer_capacity(buffer));
 
-    vscr_error_ctx_t err_ctx;
-    vscr_error_ctx_reset(&err_ctx);
-    vscr_ratchet_message_t *msg2 = vscr_ratchet_message_deserialize(vsc_buffer_data(buffer), &err_ctx);
+    status = pb_encode(&ostream, Message_fields, &ratchet_message);
 
-    TEST_ASSERT_EQUAL(err_ctx.error, vscr_SUCCESS);
+    vsc_buffer_reserve(buffer, ostream.bytes_written);
 
-    TEST_ASSERT_EQUAL_INT(vsc_buffer_len(msg1->message), vsc_buffer_len(msg2->message));
+    TEST_ASSERT_EQUAL(status, true);
+    TEST_ASSERT_EQUAL(ostream.bytes_written, len);
+
+    Message decoded_ratchet_message = Message_init_zero;
+    status = true;
+    pb_istream_t istream = pb_istream_from_buffer(vsc_buffer_data(buffer).bytes,
+                                                  vsc_buffer_data(buffer).len);
+    status = pb_decode(&istream, Message_fields, &decoded_ratchet_message);
+
+    TEST_ASSERT_EQUAL(status, true);
+
+    TEST_ASSERT_EQUAL_INT(test_ratchet_ratchet_message_version, decoded_ratchet_message.version);
+    TEST_ASSERT_EQUAL(ratchet_message.which_message, decoded_ratchet_message.which_message);
+    TEST_ASSERT_EQUAL(ratchet_message.which_message, Message_prekey_message_tag);
+
+    PrekeyMessage decoded_prekey_message = decoded_ratchet_message.message.prekey_message;
+
+    TEST_ASSERT_EQUAL_INT(test_ratchet_prekey_message_protocol_version, decoded_prekey_message.version);
+
+    TEST_ASSERT_EQUAL_MEMORY(decoded_prekey_message.sender_identity_key, test_ratchet_prekey_message_sender_identity_key.bytes,
+                             test_ratchet_prekey_message_sender_identity_key.len);
+    TEST_ASSERT_EQUAL_MEMORY(decoded_prekey_message.sender_ephemeral_key, test_ratchet_prekey_message_sender_ephemeral_key.bytes,
+                             test_ratchet_prekey_message_sender_identity_key.len);
+    TEST_ASSERT_EQUAL_MEMORY(decoded_prekey_message.receiver_longterm_key, test_ratchet_prekey_message_receiver_longterm_key.bytes,
+                             test_ratchet_prekey_message_sender_identity_key.len);
+    TEST_ASSERT_EQUAL_MEMORY(decoded_prekey_message.receiver_onetime_key, test_ratchet_prekey_message_receiver_onetime_key.bytes,
+                             test_ratchet_prekey_message_sender_identity_key.len);
+
+    RegularMessage decoded_regular_message = decoded_prekey_message.regular_message;
+
+    TEST_ASSERT_EQUAL_INT(test_ratchet_regular_message_version, decoded_regular_message.version);
+    TEST_ASSERT_EQUAL_INT(test_ratchet_regular_message_counter, decoded_regular_message.counter);
+
     TEST_ASSERT_EQUAL_MEMORY(
-            vsc_buffer_bytes(msg1->message), vsc_buffer_bytes(msg2->message), vsc_buffer_len(msg1->message));
-    TEST_ASSERT_EQUAL_INT(msg1->version, msg2->version);
-    TEST_ASSERT_EQUAL_INT(msg1->type, msg2->type);
+            decoded_regular_message.public_key, vsc_buffer_bytes(public_key), vsc_buffer_len(public_key));
+    TEST_ASSERT_EQUAL_INT(decoded_regular_message.cipher_text.size, vsc_buffer_len(cipher_text));
+    TEST_ASSERT_EQUAL_MEMORY(decoded_regular_message.cipher_text.bytes, vsc_buffer_bytes(cipher_text),
+                             vsc_buffer_len(cipher_text));
 
-    vscr_ratchet_message_destroy(&msg1);
-    vscr_ratchet_message_destroy(&msg2);
-
-    vsc_buffer_destroy(&message);
     vsc_buffer_destroy(&buffer);
-}
-
-void
-test__constructor__create_big_object__object_has_correct_values(void) {
-    vsc_buffer_t *message = vsc_buffer_new_with_data(test_ratchet_ratchet_message_message_big);
-
-    vscr_ratchet_message_t *msg1 = vscr_ratchet_message_new_with_members(test_ratchet_ratchet_message_version_big,
-                                                                         vscr_ratchet_message_TYPE_REGULAR, message);
-
-    TEST_ASSERT_EQUAL_INT(test_ratchet_ratchet_message_version_big, msg1->version);
-    TEST_ASSERT_EQUAL_INT(vscr_ratchet_message_TYPE_REGULAR, msg1->type);
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(msg1->message), test_ratchet_ratchet_message_message_big.bytes,
-                             test_ratchet_ratchet_message_message_big.len);
-    TEST_ASSERT_EQUAL_INT(test_ratchet_ratchet_message_message_big.len, vsc_buffer_len(msg1->message));
-
-    vscr_ratchet_message_destroy(&msg1);
-
-    vsc_buffer_destroy(&message);
 }
 
 void
 test__serialization__serialize_deserialize_big_object__objects_are_equal(void) {
-    vsc_buffer_t *message = vsc_buffer_new_with_data(test_ratchet_ratchet_message_message_big);
+    vsc_buffer_t *public_key = vsc_buffer_new_with_data(test_ratchet_regular_message_public_key);
+    vsc_buffer_t *cipher_text = vsc_buffer_new_with_data(test_ratchet_regular_message_cipher_text_big);
 
-    vscr_ratchet_message_t *msg1 = vscr_ratchet_message_new_with_members(test_ratchet_ratchet_message_version_big,
-                                                                         vscr_ratchet_message_TYPE_REGULAR, message);
+    RegularMessage regular_message = RegularMessage_init_zero;
 
-    size_t len = vscr_ratchet_message_serialize_len_ext(msg1);
+    regular_message.version = test_ratchet_regular_message_version_big;
+    regular_message.counter = test_ratchet_regular_message_counter_big;
+
+    memcpy(regular_message.public_key, public_key->bytes, public_key->len);
+    memcpy(regular_message.cipher_text.bytes, cipher_text->bytes, cipher_text->len);
+    regular_message.cipher_text.size += cipher_text->len;
+
+    Message ratchet_message = Message_init_zero;
+
+    ratchet_message.version = test_ratchet_ratchet_message_version_big;
+    ratchet_message.which_message = Message_regular_message_tag;
+
+    ratchet_message.message.regular_message = regular_message;
+
+    size_t len = 0;
+    bool status = true;
+    status = pb_get_encoded_size(&len, Message_fields, &ratchet_message);
+
+    TEST_ASSERT_EQUAL(status, true);
+
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(len);
 
-    TEST_ASSERT_EQUAL(vscr_ratchet_message_serialize(msg1, buffer), vscr_SUCCESS);
+    status = true;
+    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(buffer), vsc_buffer_capacity(buffer));
 
-    vscr_error_ctx_t err_ctx;
-    vscr_error_ctx_reset(&err_ctx);
-    vscr_ratchet_message_t *msg2 = vscr_ratchet_message_deserialize(vsc_buffer_data(buffer), &err_ctx);
+    status = pb_encode(&ostream, Message_fields, &ratchet_message);
 
-    TEST_ASSERT_EQUAL(err_ctx.error, vscr_SUCCESS);
+    vsc_buffer_reserve(buffer, ostream.bytes_written);
 
-    TEST_ASSERT_EQUAL_INT(vsc_buffer_len(msg1->message), vsc_buffer_len(msg2->message));
+    TEST_ASSERT_EQUAL(status, true);
+    TEST_ASSERT_EQUAL(ostream.bytes_written, len);
+
+    Message decoded_ratchet_message = Message_init_zero;
+    status = true;
+    pb_istream_t istream = pb_istream_from_buffer(vsc_buffer_data(buffer).bytes,
+                                                  vsc_buffer_data(buffer).len);
+    status = pb_decode(&istream, Message_fields, &decoded_ratchet_message);
+
+    TEST_ASSERT_EQUAL(status, true);
+
+    TEST_ASSERT_EQUAL_INT(test_ratchet_ratchet_message_version_big, decoded_ratchet_message.version);
+    TEST_ASSERT_EQUAL(ratchet_message.which_message, decoded_ratchet_message.which_message);
+    TEST_ASSERT_EQUAL(ratchet_message.which_message, Message_regular_message_tag);
+
+    RegularMessage decoded_regular_message = decoded_ratchet_message.message.regular_message;
+
+    TEST_ASSERT_EQUAL_INT(test_ratchet_regular_message_version_big, decoded_regular_message.version);
+    TEST_ASSERT_EQUAL_INT(test_ratchet_regular_message_counter_big, decoded_regular_message.counter);
+
     TEST_ASSERT_EQUAL_MEMORY(
-            vsc_buffer_bytes(msg1->message), vsc_buffer_bytes(msg2->message), vsc_buffer_len(msg1->message));
-    TEST_ASSERT_EQUAL_INT(msg1->version, msg2->version);
-    TEST_ASSERT_EQUAL_INT(msg1->type, msg2->type);
+            decoded_regular_message.public_key, vsc_buffer_bytes(public_key), vsc_buffer_len(public_key));
+    TEST_ASSERT_EQUAL_INT(decoded_regular_message.cipher_text.size, vsc_buffer_len(cipher_text));
+    TEST_ASSERT_EQUAL_MEMORY(decoded_regular_message.cipher_text.bytes, vsc_buffer_bytes(cipher_text),
+                             vsc_buffer_len(cipher_text));
 
-    vscr_ratchet_message_destroy(&msg1);
-    vscr_ratchet_message_destroy(&msg2);
-
-    vsc_buffer_destroy(&message);
     vsc_buffer_destroy(&buffer);
 }
-
-#endif // TEST_DEPENDENCIES_AVAILABLE
 
 
 // --------------------------------------------------------------------------
@@ -151,14 +207,8 @@ int
 main(void) {
     UNITY_BEGIN();
 
-#if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__constructor__create_object__object_has_correct_values);
     RUN_TEST(test__serialization__serialize_deserialize__objects_are_equal);
-    RUN_TEST(test__constructor__create_big_object__object_has_correct_values);
     RUN_TEST(test__serialization__serialize_deserialize_big_object__objects_are_equal);
-#else
-    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
-#endif
 
     return UNITY_END();
 }

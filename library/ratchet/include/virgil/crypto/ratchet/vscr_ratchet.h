@@ -49,7 +49,6 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
-#include "vscr_ratchet_regular_message.h"
 #include "vscr_ratchet_message_key.h"
 #include "vscr_ratchet_chain_key.h"
 #include "vscr_error_ctx.h"
@@ -57,6 +56,10 @@
 #include "vscr_impl.h"
 #include "vscr_ratchet_cipher.h"
 #include "vscr_error.h"
+
+#include <Message.pb.h>
+#include <pb_decode.h>
+#include <pb_encode.h>
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -75,6 +78,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 
 //  @generated
@@ -172,7 +177,7 @@ vscr_ratchet_release_cipher(vscr_ratchet_t *ratchet_ctx);
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key,
-        const vscr_ratchet_regular_message_t *message);
+        const RegularMessage *message);
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_private_key);
@@ -181,13 +186,13 @@ VSCR_PUBLIC size_t
 vscr_ratchet_encrypt_len(vscr_ratchet_t *ratchet_ctx, size_t plain_text_len);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_encrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text, vsc_buffer_t *cipher_text);
+vscr_ratchet_encrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text, RegularMessage *regular_message);
 
 VSCR_PUBLIC size_t
 vscr_ratchet_decrypt_len(vscr_ratchet_t *ratchet_ctx, size_t cipher_text_len);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t cipher_text, vsc_buffer_t *plain_text);
+vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, RegularMessage *regular_message, vsc_buffer_t *plain_text);
 
 VSCR_PUBLIC size_t
 vscr_ratchet_serialize_len(vscr_ratchet_t *ratchet_ctx);

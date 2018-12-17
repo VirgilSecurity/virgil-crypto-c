@@ -50,8 +50,6 @@
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet.h"
-#include "vscr_ratchet_regular_message.h"
-#include "vscr_ratchet_message.h"
 #include "vscr_error_ctx.h"
 #include "vscr_ratchet_session.h"
 #include "vscr_impl.h"
@@ -193,7 +191,7 @@ VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session_ctx, vsc_buffer_t *sender_identity_public_key,
         vsc_buffer_t *sender_ephemeral_public_key, vsc_buffer_t *ratchet_public_key,
         vsc_buffer_t *receiver_identity_private_key, vsc_buffer_t *receiver_long_term_private_key,
-        vsc_buffer_t *receiver_one_time_private_key, const vscr_ratchet_regular_message_t *message);
+        vsc_buffer_t *receiver_one_time_private_key, const RegularMessage *message);
 
 VSCR_PUBLIC size_t
 vscr_ratchet_session_encrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, size_t plain_text_len);
@@ -203,11 +201,10 @@ vscr_ratchet_session_encrypt(vscr_ratchet_session_t *ratchet_session_ctx, vsc_da
         vsc_buffer_t *cipher_text);
 
 VSCR_PUBLIC size_t
-vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, const vscr_ratchet_message_t *message);
+vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, const Message *message);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session_ctx, const vscr_ratchet_message_t *message,
-        vsc_buffer_t *plain_text);
+vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session_ctx, Message *message, vsc_buffer_t *plain_text);
 
 VSCR_PUBLIC size_t
 vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *ratchet_session_ctx);
