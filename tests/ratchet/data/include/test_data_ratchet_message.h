@@ -32,31 +32,16 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+#ifndef VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_MESSAGE_H
+#define VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_MESSAGE_H
 
-#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+#include "vsc_data.h"
 
-#include "unity.h"
-#include "test_utils.h"
+extern const uint8_t test_ratchet_ratchet_message_version;
+extern const vsc_data_t test_ratchet_ratchet_message_message;
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET_PREKEY_MESSAGE
-#if TEST_DEPENDENCIES_AVAILABLE
-
-#endif // TEST_DEPENDENCIES_AVAILABLE
+extern const uint8_t test_ratchet_ratchet_message_version_big;
+extern const vsc_data_t test_ratchet_ratchet_message_message_big;
 
 
-// --------------------------------------------------------------------------
-// Entrypoint.
-// --------------------------------------------------------------------------
-int
-main(void) {
-    UNITY_BEGIN();
-
-#if TEST_DEPENDENCIES_AVAILABLE
-    // TODO:
-    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
-#else
-    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
-#endif
-
-    return UNITY_END();
-}
+#endif //VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_MESSAGE_H

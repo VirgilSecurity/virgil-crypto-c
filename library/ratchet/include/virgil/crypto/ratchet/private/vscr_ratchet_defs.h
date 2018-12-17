@@ -59,7 +59,6 @@
 #include "vscr_ratchet_skipped_message_key_list_node.h"
 #include "vscr_impl.h"
 #include "vscr_ratchet_cipher.h"
-#include "vscr_ratchet_kdf_info.h"
 
 // clang-format on
 //  @end
@@ -96,10 +95,6 @@ struct vscr_ratchet_t {
     //  Dependency to the class 'ratchet cipher'.
     //
     vscr_ratchet_cipher_t *cipher;
-    //
-    //  Dependency to the class 'ratchet kdf info'.
-    //
-    vscr_ratchet_kdf_info_t *kdf_info;
 
     vscr_ratchet_sender_chain_t *sender_chain;
 
