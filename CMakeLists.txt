@@ -65,8 +65,11 @@ option(BUILD_SHARED_LIBS "On/Off build shared libraries." OFF)
 #
 # Test & bench
 #
-option(ENABLE_TESTING "On/Off library integration tests." ON)
+option(ENABLE_TESTING "On/Off integration tests." ON)
 option(ENABLE_BENCHMARKS "On/Off build library benchmarks." ON)
+
+option(VIRGIL_C_TESTING "On/Off C library integration tests." ON)
+option(VIRGIL_PHP_TESTING "On/Off PHP wrapper integration tests." ON)
 
 #
 # Libraries
@@ -83,6 +86,7 @@ option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
 #
 option(VIRGIL_WRAP_ALL "Build all available wrappers on the given platform" OFF)
 option(VIRGIL_WRAP_GO "Build 'Golang' wrapper" OFF)
+option(VIRGIL_WRAP_PHP "Build 'PHP' wrapper" OFF)
 
 
 # ---------------------------------------------------------------------------
@@ -106,7 +110,9 @@ option(VIRGIL_INSTALL_DEPS_CMAKE "Install dependencies CMake configuration file"
 #
 # Wrappers
 #
-option(VIRGIL_INSTALL_WRAP_STANDALONE "Install each wrapper to separate directory" ON)
+option(VIRGIL_INSTALL_WRAP_SRCS "Install wrapper sources" ON)
+option(VIRGIL_INSTALL_WRAP_LIBS "Install wrapper libraries" ON)
+option(VIRGIL_INSTALL_WRAP_DEPS "Install wrapper dependencies" ON)
 
 
 # ---------------------------------------------------------------------------
@@ -117,11 +123,6 @@ option(VIRGIL_INSTALL_WRAP_STANDALONE "Install each wrapper to separate director
 # Use common options from the module 'GNUInstallDirs'.
 #
 include(GNUInstallDirs)
-
-#
-# Define installation options for wrappers.
-#
-set(VIRGIL_INSTALL_WRAP_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Path where available wrappers will be installed")
 
 
 # ---------------------------------------------------------------------------
@@ -181,19 +182,25 @@ endif()
 
 
 # ---------------------------------------------------------------------------
+#   Integration tests
+# ---------------------------------------------------------------------------
+if(ENABLE_TESTING)
+    enable_testing()
+endif()
+
+if(VIRGIL_C_TESTING AND NOT CMAKE_CROSSCOMPILING)
+    add_subdirectory(tests)
+endif()
+
+# ---------------------------------------------------------------------------
 #   Library wrappers
 # ---------------------------------------------------------------------------
 if(VIRGIL_WRAP_ALL OR VIRGIL_WRAP_GO)
     add_subdirectory("wrappers/go")
 endif()
 
-
-# ---------------------------------------------------------------------------
-#   Integration tests
-# ---------------------------------------------------------------------------
-if(ENABLE_TESTING AND NOT CMAKE_CROSSCOMPILING)
-    enable_testing()
-    add_subdirectory(tests)
+if(VIRGIL_WRAP_ALL OR VIRGIL_WRAP_PHP)
+    add_subdirectory("wrappers/php")
 endif()
 
 

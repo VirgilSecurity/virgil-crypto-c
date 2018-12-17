@@ -154,6 +154,26 @@ extern "C" {
     } while (0)
 
 //
+//  This macros can be used as library 'mbedtls' error handlind post-condition.
+//
+#define VSCE_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(error)                                                      \
+    do {                                                                                                        \
+        VSCE_ASSERT((error) != 0);                                                                              \
+        vsce_assert_trigger_unhandled_error_of_library_mbedtls((int)(error), VSCE_FILE_PATH_OR_NAME, __LINE__); \
+    } while (0)
+
+//
+//  This macros can be used to ensure that library 'mbedtls' operation
+//  returns success status code.
+//
+#define VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status)              \
+    do {                                                         \
+        if ((status) != 0) {                                     \
+            VSCE_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(status); \
+        }                                                        \
+    } while (0)
+
+//
 //  Assertion handler callback type.
 //
 typedef void (*vsce_assert_handler_fn)(const char *message, const char *file, int line);
@@ -182,6 +202,12 @@ vsce_assert_trigger(const char *message, const char *file, int line);
 //
 VSCE_PUBLIC void
 vsce_assert_trigger_unhandled_error_of_project_foundation(int error, const char *file, int line);
+
+//
+//  Tell assertion handler that error of library 'mbedtls' is not handled.
+//
+VSCE_PUBLIC void
+vsce_assert_trigger_unhandled_error_of_library_mbedtls(int error, const char *file, int line);
 
 
 // --------------------------------------------------------------------------

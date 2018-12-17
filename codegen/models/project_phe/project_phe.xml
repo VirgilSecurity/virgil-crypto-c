@@ -47,6 +47,11 @@
 
     <require project="common" feature="library"/>
     <require project="foundation" feature="library"/>
+    <require library="mbedtls" feature="library"/>
+
+    <feature name="multi thread" default="on">
+        Enable multi-threading safety for PHE library.
+    </feature>
 
     <module name="assert" from="shared"/>
     <module name="library" from="shared"/>
@@ -58,7 +63,6 @@
     <class name="phe common"/>
     <class name="simple swu"/>
     <class name="phe hash"/>
-    <class name="phe utils"/>
     <class name="phe server"/>
     <class name="phe client"/>
 </project>

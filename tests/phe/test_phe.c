@@ -39,7 +39,7 @@
 #include "test_utils.h"
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_CLIENT &&VSCE_PHE_SERVER
+#define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_CLIENT && VSCE_PHE_SERVER
 #if TEST_DEPENDENCIES_AVAILABLE
 
 static void
@@ -103,10 +103,10 @@ test__full_flow__random_correct_pwd__should_succeed() {
                                             vsc_buffer_data(server_public_key), enrollment_response));
 
     vsc_buffer_t *enrollment_record = vsc_buffer_new_with_capacity(vsce_phe_client_enrollment_record_len(client));
-    vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH);
+    vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
     TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_enroll_account(client, vsc_buffer_data(enrollment_response),
                                             pwd_data, enrollment_record, account_key));
-    TEST_ASSERT_EQUAL(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH, vsc_buffer_len(account_key));
+    TEST_ASSERT_EQUAL(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH, vsc_buffer_len(account_key));
 
     vsc_buffer_t *verify_password_request =
             vsc_buffer_new_with_capacity(vsce_phe_client_verify_password_request_len(client));
@@ -119,7 +119,7 @@ test__full_flow__random_correct_pwd__should_succeed() {
                                             vsc_buffer_data(server_public_key),
                                             vsc_buffer_data(verify_password_request), verify_password_response));
 
-    vsc_buffer_t *account_key2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH);
+    vsc_buffer_t *account_key2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
     TEST_ASSERT_EQUAL(vsce_SUCCESS,
             vsce_phe_client_check_response_and_decrypt(client, pwd_data, vsc_buffer_data(enrollment_record),
                     vsc_buffer_data(verify_password_response), account_key2));
@@ -167,7 +167,7 @@ test__full_flow__random_incorrect_pwd__should_fail() {
                                             vsc_buffer_data(server_public_key), enrollment_response));
 
     vsc_buffer_t *enrollment_record = vsc_buffer_new_with_capacity(vsce_phe_client_enrollment_record_len(client));
-    vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH);
+    vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
     TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_enroll_account(client, vsc_buffer_data(enrollment_response),
                                             pwd1_data, enrollment_record, account_key));
 
@@ -182,7 +182,7 @@ test__full_flow__random_incorrect_pwd__should_fail() {
                                             vsc_buffer_data(server_public_key),
                                             vsc_buffer_data(verify_password_request), verify_password_response));
 
-    vsc_buffer_t *account_key2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH);
+    vsc_buffer_t *account_key2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
     TEST_ASSERT_EQUAL(vsce_SUCCESS,
             vsce_phe_client_check_response_and_decrypt(client, pwd2_data, vsc_buffer_data(enrollment_record),
                     vsc_buffer_data(verify_password_response), account_key2));
@@ -262,10 +262,10 @@ test__rotation__random_rotation__enrollment_record_updated_successfully() {
                                             vsc_buffer_data(server_public_key), enrollment_response));
 
     vsc_buffer_t *enrollment_record = vsc_buffer_new_with_capacity(vsce_phe_client_enrollment_record_len(client));
-    vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH);
+    vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
     TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_enroll_account(client, vsc_buffer_data(enrollment_response),
                                             pwd_data, enrollment_record, account_key));
-    TEST_ASSERT_EQUAL(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH, vsc_buffer_len(account_key));
+    TEST_ASSERT_EQUAL(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH, vsc_buffer_len(account_key));
 
     vsc_buffer_t *new_server_private_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     vsc_buffer_t *new_server_public_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
@@ -302,7 +302,7 @@ test__rotation__random_rotation__enrollment_record_updated_successfully() {
                                             vsc_buffer_data(new_server_public_key),
                                             vsc_buffer_data(verify_password_request), verify_password_response));
 
-    vsc_buffer_t *account_key2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH);
+    vsc_buffer_t *account_key2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
     TEST_ASSERT_EQUAL(vsce_SUCCESS,
             vsce_phe_client_check_response_and_decrypt(new_client, pwd_data, vsc_buffer_data(new_enrollment_record),
                     vsc_buffer_data(verify_password_response), account_key2));
@@ -358,10 +358,10 @@ test__full_flow__incorrect_server_public_key_correct_pwd__should_fail() {
                                             vsc_buffer_data(server_public_key), enrollment_response));
 
     vsc_buffer_t *enrollment_record = vsc_buffer_new_with_capacity(vsce_phe_client_enrollment_record_len(client));
-    vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH);
+    vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
     TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_enroll_account(client, vsc_buffer_data(enrollment_response),
                                             pwd_data, enrollment_record, account_key));
-    TEST_ASSERT_EQUAL(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH, vsc_buffer_len(account_key));
+    TEST_ASSERT_EQUAL(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH, vsc_buffer_len(account_key));
 
     vsc_buffer_t *verify_password_request =
             vsc_buffer_new_with_capacity(vsce_phe_client_verify_password_request_len(client));
@@ -374,7 +374,7 @@ test__full_flow__incorrect_server_public_key_correct_pwd__should_fail() {
                                             vsc_buffer_data(server_public_key),
                                             vsc_buffer_data(verify_password_request), verify_password_response));
 
-    vsc_buffer_t *account_key2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH);
+    vsc_buffer_t *account_key2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
     TEST_ASSERT_EQUAL(vsce_INVALID_SUCCESS_PROOF,
             vsce_phe_client_check_response_and_decrypt(client2, pwd_data, vsc_buffer_data(enrollment_record),
                     vsc_buffer_data(verify_password_response), account_key2));
@@ -428,7 +428,7 @@ test__full_flow__incorrect_server_public_key_incorrect_pwd__should_fail() {
                                             vsc_buffer_data(server_public_key), enrollment_response));
 
     vsc_buffer_t *enrollment_record = vsc_buffer_new_with_capacity(vsce_phe_client_enrollment_record_len(client));
-    vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH);
+    vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
     TEST_ASSERT_EQUAL(vsce_SUCCESS, vsce_phe_client_enroll_account(client, vsc_buffer_data(enrollment_response),
                                             pwd1_data, enrollment_record, account_key));
 
@@ -443,7 +443,7 @@ test__full_flow__incorrect_server_public_key_incorrect_pwd__should_fail() {
                                             vsc_buffer_data(server_public_key),
                                             vsc_buffer_data(verify_password_request), verify_password_response));
 
-    vsc_buffer_t *account_key2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH);
+    vsc_buffer_t *account_key2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
     TEST_ASSERT_EQUAL(vsce_INVALID_FAIL_PROOF,
             vsce_phe_client_check_response_and_decrypt(client2, pwd2_data, vsc_buffer_data(enrollment_record),
                     vsc_buffer_data(verify_password_response), account_key2));

@@ -219,14 +219,12 @@ vsc_buffer_cleanup_ctx(vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
 
-    if (buffer_ctx->bytes != NULL) {
-        if (buffer_ctx->is_secure) {
-            vsc_buffer_erase(buffer_ctx);
-        }
+    if (buffer_ctx->is_secure && buffer_ctx->is_owner) {
+        vsc_buffer_erase(buffer_ctx);
+    }
 
-        if (buffer_ctx->bytes_dealloc_cb != NULL) {
-            buffer_ctx->bytes_dealloc_cb(buffer_ctx->bytes);
-        }
+    if (buffer_ctx->bytes != NULL && buffer_ctx->bytes_dealloc_cb != NULL) {
+        buffer_ctx->bytes_dealloc_cb(buffer_ctx->bytes);
     }
 }
 
@@ -244,6 +242,7 @@ vsc_buffer_new_with_capacity(size_t capacity) {
     buffer_ctx->bytes = (byte *)(buffer_ctx) + sizeof(vsc_buffer_t);
     buffer_ctx->capacity = capacity;
     buffer_ctx->self_dealloc_cb = vsc_dealloc;
+    buffer_ctx->is_owner = true;
 
     return buffer_ctx;
 }
@@ -259,6 +258,7 @@ vsc_buffer_new_with_data(vsc_data_t data) {
     vsc_buffer_t *buffer_ctx = vsc_buffer_new_with_capacity(data.len);
     memcpy(buffer_ctx->bytes, data.bytes, data.len);
     buffer_ctx->len = data.len;
+    buffer_ctx->is_owner = true;
 
     return buffer_ctx;
 }
@@ -333,6 +333,7 @@ vsc_buffer_use(vsc_buffer_t *buffer_ctx, byte *bytes, size_t bytes_len) {
     buffer_ctx->capacity = bytes_len;
     buffer_ctx->len = 0;
     buffer_ctx->bytes_dealloc_cb = NULL;
+    buffer_ctx->is_owner = false;
 }
 
 //
@@ -354,6 +355,7 @@ vsc_buffer_take(vsc_buffer_t *buffer_ctx, byte *bytes, size_t bytes_len, vsc_dea
     buffer_ctx->capacity = bytes_len;
     buffer_ctx->len = 0;
     buffer_ctx->bytes_dealloc_cb = dealloc_cb;
+    buffer_ctx->is_owner = true;
 }
 
 //

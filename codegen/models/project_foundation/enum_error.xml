@@ -82,4 +82,8 @@
     <constant name="bad pem" value="-215">
         PEM data is corrupted.
     </constant>
+    
+    <constant name="shared key exchange failed" value="-216">
+        Exchange key return zero.
+    </constant>
 </enum>

@@ -71,7 +71,7 @@ push_points_to_buffer(vsce_phe_hash_t *phe_hash_ctx, vsc_buffer_t *buffer, size_
         mbedtls_ecp_point_write_binary(&phe_hash_ctx->group, p, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
                 vsc_buffer_ptr(buffer), vsc_buffer_left(buffer));
         vsc_buffer_reserve(buffer, olen);
-        VSCE_ASSERT(mbedtls_status == 0);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
         VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
     }
 
@@ -317,7 +317,7 @@ vsce_phe_hash_init_ctx(vsce_phe_hash_t *phe_hash_ctx) {
 
     int mbedtls_status = 0;
     mbedtls_status = mbedtls_ecp_group_load(&phe_hash_ctx->group, MBEDTLS_ECP_DP_SECP256R1);
-    VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 }
 
 //
@@ -339,7 +339,7 @@ vsce_phe_hash_derive_account_key(vsce_phe_hash_t *phe_hash_ctx, const mbedtls_ec
     VSCE_ASSERT_PTR(phe_hash_ctx);
     VSCE_ASSERT_PTR(m);
     VSCE_ASSERT(vsc_buffer_len(account_key) == 0);
-    VSCE_ASSERT(vsc_buffer_capacity(account_key) == vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
+    VSCE_ASSERT(vsc_buffer_capacity(account_key) >= vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
 
     byte M_buffer[vsce_phe_common_PHE_POINT_LENGTH];
     vsc_buffer_t M_buf;
@@ -350,7 +350,7 @@ vsce_phe_hash_derive_account_key(vsce_phe_hash_t *phe_hash_ctx, const mbedtls_ec
     int mbedtls_status = mbedtls_ecp_point_write_binary(&phe_hash_ctx->group, m, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
             vsc_buffer_ptr(&M_buf), vsce_phe_common_PHE_POINT_LENGTH);
     vsc_buffer_reserve(&M_buf, vsce_phe_common_PHE_POINT_LENGTH);
-    VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
     vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
@@ -386,7 +386,7 @@ vsce_phe_hash_data_to_point(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t data, mbed
     vsc_data_t buff_data = vsc_data_slice_beg(vsc_buffer_data(&buff), 0, vsce_phe_common_PHE_HASH_LEN);
     int mbedtls_status = 0;
     mbedtls_status = mbedtls_mpi_read_binary(&t, buff_data.bytes, buff_data.len);
-    VSCE_ASSERT(mbedtls_status == 0);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     vsce_simple_swu_bignum_to_point(phe_hash_ctx->simple_swu, &t, p);
 
@@ -407,11 +407,18 @@ vsce_phe_hash_hc0(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t nc, vsc_data_t passw
 
     static const byte hc0_domain[] = "hc0";
 
-    byte buffer[sizeof(hc0_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH + password.len];
+    enum {
+        max_length = sizeof(hc0_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH +
+                     vsce_phe_common_PHE_MAX_PASSWORD_LENGTH
+    };
+
+    const size_t length = sizeof(hc0_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH + password.len;
+
+    byte buffer[max_length];
 
     vsc_buffer_t buff;
     vsc_buffer_init(&buff);
-    vsc_buffer_use(&buff, buffer, sizeof(buffer));
+    vsc_buffer_use(&buff, buffer, length);
 
     memcpy(vsc_buffer_ptr(&buff), hc0_domain, sizeof(hc0_domain) - 1);
     vsc_buffer_reserve(&buff, sizeof(hc0_domain) - 1);
@@ -421,6 +428,8 @@ vsce_phe_hash_hc0(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t nc, vsc_data_t passw
 
     memcpy(vsc_buffer_ptr(&buff), password.bytes, password.len);
     vsc_buffer_reserve(&buff, password.len);
+
+    VSCE_ASSERT(vsc_buffer_left(&buff) == 0);
 
     vsce_phe_hash_data_to_point(phe_hash_ctx, vsc_buffer_data(&buff), hc0);
 
@@ -440,11 +449,18 @@ vsce_phe_hash_hc1(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t nc, vsc_data_t passw
 
     static const byte hc1_domain[] = "hc1";
 
-    byte buffer[sizeof(hc1_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH + password.len];
+    enum {
+        max_length = sizeof(hc1_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH +
+                     vsce_phe_common_PHE_MAX_PASSWORD_LENGTH
+    };
+
+    const size_t length = sizeof(hc1_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH + password.len;
+
+    byte buffer[max_length];
 
     vsc_buffer_t buff;
     vsc_buffer_init(&buff);
-    vsc_buffer_use(&buff, buffer, sizeof(buffer));
+    vsc_buffer_use(&buff, buffer, length);
 
     memcpy(vsc_buffer_ptr(&buff), hc1_domain, sizeof(hc1_domain) - 1);
     vsc_buffer_reserve(&buff, sizeof(hc1_domain) - 1);
@@ -454,6 +470,8 @@ vsce_phe_hash_hc1(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t nc, vsc_data_t passw
 
     memcpy(vsc_buffer_ptr(&buff), password.bytes, password.len);
     vsc_buffer_reserve(&buff, password.len);
+
+    VSCE_ASSERT(vsc_buffer_left(&buff) == 0);
 
     vsce_phe_hash_data_to_point(phe_hash_ctx, vsc_buffer_data(&buff), hc1);
 
@@ -471,7 +489,9 @@ vsce_phe_hash_hs0(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t ns, mbedtls_ecp_poin
 
     static const byte hs0_domain[] = "hs0";
 
-    byte buffer[sizeof(hs0_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH];
+    enum { length = sizeof(hs0_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH };
+
+    byte buffer[length];
 
     vsc_buffer_t buff;
     vsc_buffer_init(&buff);
@@ -482,6 +502,8 @@ vsce_phe_hash_hs0(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t ns, mbedtls_ecp_poin
 
     memcpy(vsc_buffer_ptr(&buff), ns.bytes, ns.len);
     vsc_buffer_reserve(&buff, ns.len);
+
+    VSCE_ASSERT(vsc_buffer_left(&buff) == 0);
 
     vsce_phe_hash_data_to_point(phe_hash_ctx, vsc_buffer_data(&buff), hs0);
 
@@ -499,7 +521,9 @@ vsce_phe_hash_hs1(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t ns, mbedtls_ecp_poin
 
     static const byte hs1_domain[] = "hs1";
 
-    byte buffer[sizeof(hs1_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH];
+    enum { length = sizeof(hs1_domain) - 1 + vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH };
+
+    byte buffer[length];
 
     vsc_buffer_t buff;
     vsc_buffer_init(&buff);
@@ -510,6 +534,8 @@ vsce_phe_hash_hs1(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t ns, mbedtls_ecp_poin
 
     memcpy(vsc_buffer_ptr(&buff), ns.bytes, ns.len);
     vsc_buffer_reserve(&buff, ns.len);
+
+    VSCE_ASSERT(vsc_buffer_left(&buff) == 0);
 
     vsce_phe_hash_data_to_point(phe_hash_ctx, vsc_buffer_data(&buff), hs1);
 
@@ -547,7 +573,7 @@ vsce_phe_hash_derive_z(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t buffer, bool su
     do {
         vsc_buffer_reset(&z_buff);
         int mbedtls_status = mbedtls_mpi_copy(z, &phe_hash_ctx->group.N);
-        VSCE_ASSERT(mbedtls_status == 0);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
         vsc_data_t domain = success ? vsc_data(z_success_domain, sizeof(z_success_domain) - 1)
                                     : vsc_data(z_failure_domain, sizeof(z_failure_domain) - 1);
@@ -556,8 +582,8 @@ vsce_phe_hash_derive_z(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t buffer, bool su
                 vsc_buffer_capacity(&z_buff));
 
         mbedtls_status = mbedtls_mpi_read_binary(z, vsc_buffer_bytes(&z_buff), vsc_buffer_len(&z_buff));
-        VSCE_ASSERT(mbedtls_status == 0);
-    } while (mbedtls_mpi_cmp_mpi(z, &phe_hash_ctx->group.N) >= 0);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+    } while (mbedtls_ecp_check_privkey(&phe_hash_ctx->group, z) != 0);
 
     vscf_hkdf_destroy(&hkdf);
 

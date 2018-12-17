@@ -98,6 +98,9 @@ import VSCFoundation
     /// PEM data is corrupted.
     case badPem = -215
 
+    /// Exchange key return zero.
+    case sharedKeyExchangeFailed = -216
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC error: vscf_error_t) {
         self.init(rawValue: Int(error.rawValue))!
