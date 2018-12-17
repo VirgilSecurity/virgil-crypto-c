@@ -26,7 +26,7 @@ def nodes = [:]
 //
 nodes['lang-c-platform-linux'] = build_LangC_Unix('build-centos7')
 nodes['lang-c-platform-macos'] = build_LangC_Unix('build-os-x')
-nodes['lang-c-platform-win8-mingw64'] = build_LangC_Windows_MinGW('build-win8')
+nodes['lang-c-platform-win8-mingw64'] = build_LangC_Windows('build-win8')
 
 //
 //  Language: PHP
@@ -61,26 +61,39 @@ def build_LangC_Unix(slave) {
     return { node(slave) {
         clearContentUnix()
         unstash 'src'
-        sh 'mkdir build'
+        sh '''
+            cmake -DCMAKE_BUILD_TYPE=Release \
+                  -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
+                  -DVIRGIL_LIB_RATCHET=OFF \
+                  -Bbuild -H.
+            cmake --build build -- -j10
+            cd build
+            cpack
+        '''
         dir('build') {
-            sh 'cmake -DCMAKE_BUILD_TYPE=Release -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) ..'
-            sh 'make -j10'
-            sh 'cpack'
             archiveArtifacts('packages/**')
         }
     }}
 }
 
-def build_LangC_Windows_MinGW(slave) {
+def build_LangC_Windows(slave) {
     return { node(slave) {
         clearContentWindows()
         unstash 'src'
-        withEnv(["PATH=C:\\Program Files\\mingw-w64\\x86_64-8.1.0-win32-seh-rt_v6-rev0\\mingw64\\bin;${env.PATH}"]) {
-            bat 'cmake -G"MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 -Bbuild -H.'
-            bat 'cmake --build build -- -j10'
-        }
+        bat '''
+            set PATH=%PATH:"=%
+            call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
+            cmake -G"NMake Makefiles" ^
+                  -DCMAKE_BUILD_TYPE=Release ^
+                  -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
+                  -DVIRGIL_LIB_RATCHET=OFF ^
+                  -DVIRGIL_LIB_PYTHIA=OFF ^
+                  -Bbuild -H.
+            cmake --build build
+            cd build
+            cpack
+        '''
         dir('build') {
-            bat 'cpack'
             archiveArtifacts('packages/**')
         }
     }}
