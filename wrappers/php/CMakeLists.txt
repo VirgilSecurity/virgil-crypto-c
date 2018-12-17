@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_php VERSION 0.5.0 LANGUAGES C)
+project(virgil_crypto_php VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 
 # ---------------------------------------------------------------------------
 #   PHP wrapper build and install options
