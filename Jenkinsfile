@@ -194,5 +194,8 @@ def build_LangPHP_Windows(slave) {
             cpack
             '''
         }
+        dir('build') {
+            archiveArtifacts('packages/**')
+        }
     }}
 }
