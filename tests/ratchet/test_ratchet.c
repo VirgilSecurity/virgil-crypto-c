@@ -107,7 +107,8 @@ test__1(void) {
     result = vscr_ratchet_encrypt(ratchet_bob, test_ratchet_plain_text2, &regular_message2);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
-    size_t plain_text2_len = vscr_ratchet_decrypt_len(ratchet_alice, vscr_ratchet_encrypt_len(ratchet_bob, test_ratchet_plain_text2.len));
+    size_t plain_text2_len = vscr_ratchet_decrypt_len(
+            ratchet_alice, vscr_ratchet_encrypt_len(ratchet_bob, test_ratchet_plain_text2.len));
     vsc_buffer_t *decrypted2 = vsc_buffer_new_with_capacity(plain_text2_len);
     result = vscr_ratchet_decrypt(ratchet_alice, &regular_message2, decrypted2);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
@@ -243,7 +244,7 @@ test__serialization__serialize_deserialize__objects_are_equal(void) {
 
     vsc_buffer_t *ratchet_private_key = vsc_buffer_new_with_capacity(test_ratchet_ratchet_private_key.len);
     memcpy(vsc_buffer_ptr(ratchet_private_key), test_ratchet_ratchet_private_key.bytes,
-           test_ratchet_ratchet_private_key.len);
+            test_ratchet_ratchet_private_key.len);
     vsc_buffer_reserve(ratchet_private_key, test_ratchet_ratchet_private_key.len);
 
     TEST_ASSERT_EQUAL_INT(
@@ -280,11 +281,9 @@ test__serialization__serialize_deserialize__objects_are_equal(void) {
     vscr_ratchet_sender_chain_t *decoded_sender_chain = decoded_ratchet->sender_chain;
     TEST_ASSERT(decoded_sender_chain);
     TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(decoded_sender_chain->public_key),
-                             vsc_buffer_bytes(sender_chain->public_key),
-                             vsc_buffer_len(sender_chain->public_key));
+            vsc_buffer_bytes(sender_chain->public_key), vsc_buffer_len(sender_chain->public_key));
     TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(decoded_sender_chain->private_key),
-                             vsc_buffer_bytes(sender_chain->private_key),
-                             vsc_buffer_len(sender_chain->private_key));
+            vsc_buffer_bytes(sender_chain->private_key), vsc_buffer_len(sender_chain->private_key));
 
     vscr_ratchet_chain_key_t decoded_chain_key = decoded_sender_chain->chain_key;
     TEST_ASSERT_EQUAL_INT(chain_key.index, decoded_chain_key.index);
@@ -301,8 +300,8 @@ test__serialization__serialize_deserialize__objects_are_equal(void) {
         TEST_ASSERT(receiver_chains->value);
         TEST_ASSERT(decoded_receiver_chains->value);
         TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(receiver_chains->value->public_key),
-                                 vsc_buffer_bytes(decoded_receiver_chains->value->public_key),
-                                 vsc_buffer_len(receiver_chains->value->public_key));
+                vsc_buffer_bytes(decoded_receiver_chains->value->public_key),
+                vsc_buffer_len(receiver_chains->value->public_key));
 
         vscr_ratchet_chain_key_t chain_key = receiver_chains->value->chain_key;
         vscr_ratchet_chain_key_t decoded_chain_key = decoded_receiver_chains->value->chain_key;
@@ -321,8 +320,8 @@ test__serialization__serialize_deserialize__objects_are_equal(void) {
         TEST_ASSERT(skipped_message_keys->value);
         TEST_ASSERT(decoded_skipped_message_keys->value);
         TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(skipped_message_keys->value->public_key),
-                                 vsc_buffer_bytes(decoded_skipped_message_keys->value->public_key),
-                                 vsc_buffer_len(skipped_message_keys->value->public_key));
+                vsc_buffer_bytes(decoded_skipped_message_keys->value->public_key),
+                vsc_buffer_len(skipped_message_keys->value->public_key));
 
         vscr_ratchet_message_key_t *message_key = skipped_message_keys->value->message_key;
         vscr_ratchet_message_key_t *decoded_message_key = decoded_skipped_message_keys->value->message_key;
@@ -366,7 +365,7 @@ main(void) {
 
     // FIXME
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
-    //RUN_TEST(test__serialization__serialize_deserialize__objects_are_equal);
+    // RUN_TEST(test__serialization__serialize_deserialize__objects_are_equal);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

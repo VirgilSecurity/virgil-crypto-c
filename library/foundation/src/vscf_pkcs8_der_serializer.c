@@ -101,8 +101,8 @@ vscf_pkcs8_der_serializer_setup_defaults(vscf_pkcs8_der_serializer_impl_t *pkcs8
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs8_der_serializer_serialized_public_key_len(vscf_pkcs8_der_serializer_impl_t *pkcs8_der_serializer_impl,
-        const vscf_impl_t *public_key) {
+vscf_pkcs8_der_serializer_serialized_public_key_len(
+        vscf_pkcs8_der_serializer_impl_t *pkcs8_der_serializer_impl, const vscf_impl_t *public_key) {
 
     VSCF_ASSERT_PTR(pkcs8_der_serializer_impl);
     VSCF_ASSERT_PTR(public_key);
@@ -110,8 +110,8 @@ vscf_pkcs8_der_serializer_serialized_public_key_len(vscf_pkcs8_der_serializer_im
     VSCF_ASSERT(vscf_public_key_can_export_public_key(vscf_public_key_api(public_key)));
 
     size_t wrappedKeyLen = vscf_public_key_exported_public_key_len(public_key);
-    size_t len = 1 + 4 + //  SubjectPublicKeyInfo ::= SEQUENCE {
-                 1 + 1 + 32 + //          algorithm AlgorithmIdentifier,
+    size_t len = 1 + 4 +                //  SubjectPublicKeyInfo ::= SEQUENCE {
+                 1 + 1 + 32 +           //          algorithm AlgorithmIdentifier,
                  1 + 4 + wrappedKeyLen; //          subjectPublicKey BIT STRING
                                         //  }
 
@@ -124,8 +124,8 @@ vscf_pkcs8_der_serializer_serialized_public_key_len(vscf_pkcs8_der_serializer_im
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_pkcs8_der_serializer_serialize_public_key(vscf_pkcs8_der_serializer_impl_t *pkcs8_der_serializer_impl,
-        const vscf_impl_t *public_key, vsc_buffer_t *out) {
+vscf_pkcs8_der_serializer_serialize_public_key(
+        vscf_pkcs8_der_serializer_impl_t *pkcs8_der_serializer_impl, const vscf_impl_t *public_key, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(pkcs8_der_serializer_impl);
     VSCF_ASSERT_PTR(public_key);
@@ -190,8 +190,8 @@ vscf_pkcs8_der_serializer_serialize_public_key(vscf_pkcs8_der_serializer_impl_t 
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs8_der_serializer_serialized_private_key_len(vscf_pkcs8_der_serializer_impl_t *pkcs8_der_serializer_impl,
-        const vscf_impl_t *private_key) {
+vscf_pkcs8_der_serializer_serialized_private_key_len(
+        vscf_pkcs8_der_serializer_impl_t *pkcs8_der_serializer_impl, const vscf_impl_t *private_key) {
 
     VSCF_ASSERT_PTR(pkcs8_der_serializer_impl);
     VSCF_ASSERT_PTR(private_key);
@@ -200,11 +200,11 @@ vscf_pkcs8_der_serializer_serialized_private_key_len(vscf_pkcs8_der_serializer_i
 
 
     size_t wrappedKeyLen = vscf_private_key_exported_private_key_len(private_key);
-    size_t len = 1 + 4 + //  PrivateKeyInfo ::= SEQUENCE {
-                 1 + 1 + 1 + //          version Version,
-                 1 + 1 + 32 + //          privateKeyAlgorithm PrivateKeyAlgorithmIdentifier,
+    size_t len = 1 + 4 +                 //  PrivateKeyInfo ::= SEQUENCE {
+                 1 + 1 + 1 +             //          version Version,
+                 1 + 1 + 32 +            //          privateKeyAlgorithm PrivateKeyAlgorithmIdentifier,
                  1 + 5 + wrappedKeyLen + //          privateKey PrivateKey,
-                 0; //          attributes [0] IMPLICIT Attributes OPTIONAL
+                 0;                      //          attributes [0] IMPLICIT Attributes OPTIONAL
                                          //  }
 
     return len;

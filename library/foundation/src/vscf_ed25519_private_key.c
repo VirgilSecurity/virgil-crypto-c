@@ -154,8 +154,8 @@ vscf_ed25519_private_key_generate_key(vscf_ed25519_private_key_impl_t *ed25519_p
 //  Sign data given private key.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_sign(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vsc_data_t data,
-        vsc_buffer_t *signature) {
+vscf_ed25519_private_key_sign(
+        vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vsc_data_t data, vsc_buffer_t *signature) {
 
     VSCF_ASSERT_PTR(ed25519_private_key_impl);
     VSCF_ASSERT(vsc_buffer_is_valid(signature));
@@ -204,8 +204,8 @@ vscf_ed25519_private_key_extract_public_key(vscf_ed25519_private_key_impl_t *ed2
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_export_private_key(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl,
-        vsc_buffer_t *out) {
+vscf_ed25519_private_key_export_private_key(
+        vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(ed25519_private_key_impl);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
@@ -232,8 +232,8 @@ vscf_ed25519_private_key_exported_private_key_len(vscf_ed25519_private_key_impl_
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_private_key_import_private_key(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl,
-        vsc_data_t data) {
+vscf_ed25519_private_key_import_private_key(
+        vscf_ed25519_private_key_impl_t *ed25519_private_key_impl, vsc_data_t data) {
 
     VSCF_ASSERT_PTR(ed25519_private_key_impl);
     VSCF_ASSERT_PTR(data.bytes);
