@@ -62,7 +62,7 @@ set_target_properties(phe_php PROPERTIES
 
 target_sources(phe_php
         PRIVATE
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/vsce_phe_php.c>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/extension/vsce_phe_php.c>
         )
 
 target_link_libraries(phe_php
@@ -81,7 +81,7 @@ if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTAB
     add_test(
             NAME test_phe_php
             COMMAND "${PHP_EXECUTABLE}" -d "extension=$<TARGET_FILE:phe_php>" -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
-                    --include-path "${CMAKE_CURRENT_LIST_DIR}" "${CMAKE_CURRENT_LIST_DIR}/tests/PHEClientTest.php"
+                    --include-path "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_LIST_DIR}/tests/PHEClientTest.php"
             )
 endif()
 
@@ -99,9 +99,9 @@ endif()
 if(VIRGIL_INSTALL_WRAP_SRCS)
     install(
             DIRECTORY
-                "${CMAKE_CURRENT_LIST_DIR}"
+                "${CMAKE_CURRENT_LIST_DIR}/src/"
             DESTINATION
-                "${VIRGIL_INSTALL_WRAP_SRCDIR}"
+                "${VIRGIL_INSTALL_PHP_SRCDIR}/phe"
             FILES_MATCHING PATTERN
                 "*.php"
             )

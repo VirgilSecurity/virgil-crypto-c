@@ -123,9 +123,6 @@ option(VIRGIL_INSTALL_WRAP_DEPS "Install wrapper dependencies" ON)
 #
 include(GNUInstallDirs)
 
-set(VIRGIL_INSTALL_WRAP_SRCDIR "${CMAKE_INSTALL_LIBDIR}" CACHE STRING
-            "Directory name where wrapper sources will be installed")
-
 
 # ---------------------------------------------------------------------------
 #   Dependencies / thirdparty libraries

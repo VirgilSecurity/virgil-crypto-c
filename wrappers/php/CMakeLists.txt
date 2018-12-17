@@ -37,9 +37,10 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 project(virgil_crypto_php VERSION 0.5.0 LANGUAGES C)
 
 # ---------------------------------------------------------------------------
-#   PHP wrapper build options
+#   PHP wrapper build and install options
 # ---------------------------------------------------------------------------
 set(PHP_VERSION "" CACHE STRING "Required exact PHP version. Keep empty to find currently available version.")
+set(VIRGIL_INSTALL_PHP_SRCDIR "phpsrc" CACHE STRING "Directory name where PHP sources will be installed")
 
 
 # ---------------------------------------------------------------------------

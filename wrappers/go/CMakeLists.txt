@@ -32,9 +32,13 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(virgil_crypto_go VERSION ${virgil_crypto_VERSION} LANGUAGES C)
+
+
+set(VIRGIL_INSTALL_GO_SRCDIR "gosrc" CACHE STRING "Directory name where Go sources will be installed")
 
 if(VIRGIL_INSTALL_WRAP_SRCS)
     install(
@@ -42,7 +46,7 @@ if(VIRGIL_INSTALL_WRAP_SRCS)
                 "${CMAKE_CURRENT_LIST_DIR}/foundation"
                 "${CMAKE_CURRENT_LIST_DIR}/pythia"
             DESTINATION
-                "${VIRGIL_INSTALL_WRAP_SRCDIR}"
+                "${VIRGIL_INSTALL_GO_SRCDIR}"
             FILES_MATCHING PATTERN
                 "*.go"
             )
