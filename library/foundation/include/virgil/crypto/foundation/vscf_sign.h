@@ -104,25 +104,19 @@ vscf_sign_signature_len(vscf_impl_t *impl);
 //  Return sign API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_sign_api_t *
-vscf_sign_api(vscf_impl_t *impl);
+vscf_sign_api(const vscf_impl_t *impl);
 
 //
 //  Check if given object implements interface 'sign'.
 //
 VSCF_PUBLIC bool
-vscf_sign_is_implemented(vscf_impl_t *impl);
+vscf_sign_is_implemented(const vscf_impl_t *impl);
 
 //
 //  Returns interface unique identifier.
 //
 VSCF_PUBLIC vscf_api_tag_t
 vscf_sign_api_tag(const vscf_sign_api_t *sign_api);
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_sign_impl_tag(const vscf_sign_api_t *sign_api);
 
 
 // --------------------------------------------------------------------------

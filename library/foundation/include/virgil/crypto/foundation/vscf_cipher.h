@@ -104,7 +104,7 @@ vscf_cipher_set_key(vscf_impl_t *impl, vsc_data_t key);
 //  Return cipher API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_cipher_api_t *
-vscf_cipher_api(vscf_impl_t *impl);
+vscf_cipher_api(const vscf_impl_t *impl);
 
 //
 //  Return encrypt API.
@@ -128,19 +128,13 @@ vscf_cipher_cipher_info_api(const vscf_cipher_api_t *cipher_api);
 //  Check if given object implements interface 'cipher'.
 //
 VSCF_PUBLIC bool
-vscf_cipher_is_implemented(vscf_impl_t *impl);
+vscf_cipher_is_implemented(const vscf_impl_t *impl);
 
 //
 //  Returns interface unique identifier.
 //
 VSCF_PUBLIC vscf_api_tag_t
 vscf_cipher_api_tag(const vscf_cipher_api_t *cipher_api);
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_cipher_impl_tag(const vscf_cipher_api_t *cipher_api);
 
 
 // --------------------------------------------------------------------------

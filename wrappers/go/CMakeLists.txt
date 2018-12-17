@@ -53,7 +53,7 @@ install(
             "${CMAKE_CURRENT_LIST_DIR}/foundation"
             "${CMAKE_CURRENT_LIST_DIR}/pythia"
         DESTINATION
-            "${GO_DESTINATION}"
+            gosrc
         FILES_MATCHING PATTERN
             "*.go"
         )

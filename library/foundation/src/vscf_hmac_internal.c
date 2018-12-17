@@ -88,10 +88,6 @@ static const vscf_mac_info_api_t mac_info_api = {
     //
     vscf_api_tag_MAC_INFO,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_HMAC,
-    //
     //  Size of the digest (mac output) in bytes.
     //
     (vscf_mac_info_api_digest_len_fn)vscf_hmac_digest_len
@@ -106,10 +102,6 @@ static const vscf_mac_api_t mac_api = {
     //  For interface 'mac' MUST be equal to the 'vscf_api_tag_MAC'.
     //
     vscf_api_tag_MAC,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_HMAC,
     //
     //  Link to the inherited interface API 'mac info'.
     //
@@ -129,10 +121,6 @@ static const vscf_mac_stream_api_t mac_stream_api = {
     //  For interface 'mac_stream' MUST be equal to the 'vscf_api_tag_MAC_STREAM'.
     //
     vscf_api_tag_MAC_STREAM,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_HMAC,
     //
     //  Link to the inherited interface API 'mac info'.
     //
@@ -160,10 +148,6 @@ static const vscf_mac_stream_api_t mac_stream_api = {
 //  Compile-time known information about 'hmac' implementation.
 //
 static const vscf_impl_info_t info = {
-    //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_HMAC,
     //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.

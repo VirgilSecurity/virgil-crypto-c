@@ -81,7 +81,7 @@ vscf_mac_info_digest_len(vscf_impl_t *impl) {
 //  Return mac info API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_mac_info_api_t *
-vscf_mac_info_api(vscf_impl_t *impl) {
+vscf_mac_info_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -93,7 +93,7 @@ vscf_mac_info_api(vscf_impl_t *impl) {
 //  Check if given object implements interface 'mac info'.
 //
 VSCF_PUBLIC bool
-vscf_mac_info_is_implemented(vscf_impl_t *impl) {
+vscf_mac_info_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
@@ -109,17 +109,6 @@ vscf_mac_info_api_tag(const vscf_mac_info_api_t *mac_info_api) {
     VSCF_ASSERT_PTR (mac_info_api);
 
     return mac_info_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_mac_info_impl_tag(const vscf_mac_info_api_t *mac_info_api) {
-
-    VSCF_ASSERT_PTR (mac_info_api);
-
-    return mac_info_api->impl_tag;
 }
 
 

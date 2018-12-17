@@ -1255,6 +1255,15 @@ function make_ref_swift (uid)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Wraps given UID as 'Reference UID' specific for PHP language.
+# ---------------------------------------------------------------------------
+function make_ref_php (uid)
+    check_argument (my, "uid", my)
+
+    return make_ref (my.uid, "php")
+endfunction
+
+# ---------------------------------------------------------------------------
 #   If given first parameter contains universal ref of format .(<uid>), then
 #   return language specific ref of format .(<lang>_<uid>).
 # ---------------------------------------------------------------------------
@@ -1269,7 +1278,7 @@ function lang_ref (maybe_ref, lang)
                 " Supported languages are {$(my.valid_langs:)}", my)
     endif
 
-    if regexp.match ("\\.\\(([^_]+)(.+)?\\)", my.maybe_ref, my.maybe_lang, my.uid_tail)
+    if regexp.match ("\\.\\(([^_)]+)([^)]+)?\\)", my.maybe_ref, my.maybe_lang, my.uid_tail)
         if defined (my.uid_tail) & my.maybe_lang = my.lang
             #   Already prefixed with requested language
             return my.maybe_ref
@@ -1342,6 +1351,14 @@ function swift_lang_ref (maybe_ref)
     return lang_ref (my.maybe_ref, "swift")
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Shortcut for lang_ref (my.maybe_ref, "php")
+# ---------------------------------------------------------------------------
+function php_lang_ref (maybe_ref)
+    check_argument (my, "maybe_ref", my)
+
+    return lang_ref (my.maybe_ref, "php")
+endfunction
 
 # ###########################################################################
 #   Debug helpers

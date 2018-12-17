@@ -249,6 +249,12 @@ VSCF_PUBLIC vsc_data_t
 vscf_asn1rd_read_octet_str(vscf_asn1rd_impl_t *asn1rd_impl);
 
 //
+//  Read ASN.1 type: BIT STRING.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_asn1rd_read_bitstring_as_octet_str(vscf_asn1rd_impl_t *asn1rd_impl);
+
+//
 //  Read ASN.1 type: UTF8String.
 //
 VSCF_PUBLIC vsc_data_t

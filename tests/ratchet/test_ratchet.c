@@ -32,9 +32,11 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <ed25519/ed25519.h>
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
 #include <virgil/crypto/ratchet/vscr_ratchet_message.h>
 #include <virgil/crypto/ratchet/vscr_ratchet_prekey_message.h>
+
 #include "unity.h"
 #include "test_utils.h"
 
@@ -45,6 +47,8 @@
 #include "vscr_ratchet.h"
 #include "vscr_virgil_ratchet_fake_rng_impl.h"
 #include "test_data_ratchet.h"
+
+#include <ed25519/ed25519.h>
 
 static void
 initialize(vscr_ratchet_t *ratchet_alice, vscr_ratchet_t *ratchet_bob, vsc_buffer_t **cipher_text) {

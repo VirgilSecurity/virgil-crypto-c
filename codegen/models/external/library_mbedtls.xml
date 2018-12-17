@@ -5,6 +5,7 @@
     External library: https://github.com/ARMmbed/mbedtls
 
     <feature name="ERROR C"/>
+    <feature name="PLATFORM C"/>
     <feature name="SHA256 C"/>
     <feature name="SHA512 C"/>
     <feature name="CIPHER C"/>
@@ -12,6 +13,8 @@
     <feature name="GCM C"/>
     <feature name="MD C"/>
     <feature name="BIGNUM C"/>
+    <feature name="ECP C"/>
+    <feature name="ECP_DP_SECP256R1_ENABLED"/>
     <feature name="PKCS1 V21"/>
     <feature name="OID C"/>
     <feature name="ASN1 PARSE C"/>
@@ -20,6 +23,7 @@
     <feature name="TIMING C"/>
     <feature name="HAVEGE C"/>
     <feature name="PLATFORM ENTROPY"/>
+    <feature name="BASE64 C"/>
 
     <feature name="RSA C">
         <require feature="BIGNUM C"/>

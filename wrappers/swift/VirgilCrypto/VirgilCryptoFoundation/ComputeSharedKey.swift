@@ -41,8 +41,11 @@ import VirgilCryptoCommon
 /// Assume that this interface is implemented on the private key.
 @objc(VSCFComputeSharedKey) public protocol ComputeSharedKey : CContext {
 
+    /// Compute shared key for 2 asymmetric keys.
+    /// Note, shared key can be used only for symmetric cryptography.
     @objc func computeSharedKey(publicKey: PublicKey) throws -> Data
 
+    /// Return number of bytes required to hold shared key.
     @objc func sharedKeyLen() -> Int
 }
 

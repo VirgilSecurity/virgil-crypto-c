@@ -81,7 +81,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 #
 # Link to dependencies
 #
-target_link_libraries(foundation PUBLIC vsc::common mbed::crypto)
+target_link_libraries(foundation PUBLIC vsc::common mbed::crypto ed25519)
 
 #
 # Define specific compilation and linkage flags.
@@ -95,15 +95,7 @@ set_target_properties(foundation PROPERTIES
 #
 # Add __FILENAME__ definition, that handles file name without path, to each source file.
 #
-get_target_property(SOURCES foundation SOURCES)
-foreach(src ${SOURCES})
-    get_filename_component(file_name "${src}" NAME)
-    get_filename_component(file_ext "${src}" EXT)
-
-    if(file_ext STREQUAL ".c")
-            set_property(SOURCE "${src}" APPEND_STRING PROPERTY COMPILE_DEFINITIONS "__FILENAME__=\"${file_name}\"")
-    endif()
-endforeach()
+target_add_filename_definitions(foundation)
 
 #
 # Enable profiling
@@ -158,8 +150,9 @@ include (CMakePackageConfigHelpers)
 #
 if(VIRGIL_INSTALL_HDRS)
     install(
-            DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/"
+            DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/" "${CMAKE_CURRENT_BINARY_DIR}/include/"
             DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+            PATTERN "*.h.in" EXCLUDE
             )
 endif()
 
@@ -216,4 +209,3 @@ if(VIRGIL_INSTALL_CMAKE)
                 "${CMAKE_INSTALL_LIBDIR}/cmake/vsc_foundation"
             )
 endif()
-
