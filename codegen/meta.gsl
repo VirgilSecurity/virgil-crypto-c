@@ -518,16 +518,16 @@ function _X17_add_entity_class (meta, class)
     new entity to my.meta
         .id = my.id
 
-        _X17_add_name (entity, "argument context", cat (my.class.name, "ctx"))
-        _X17_add_link (entity, "argument context", "_argument_$(make_id (my.class.name, "ctx"))")
+        _X17_add_name (entity, "argument context", my.class.name)
+        _X17_add_link (entity, "argument context", "_argument_$(make_id (my.class.name))")
         _X17_add_link (entity, "argument context type", make_id ("class", my.class.name, "struct", my.class.name))
 
         _X17_add_smart_name (entity, "class method", "ctx size")
 
         _X17_add_name (entity, "class module", my.class.name)
         _X17_add_name (entity, "class module defs", cat (my.class.name, "defs"))
-        _X17_add_name (entity, "class argument ctx", cat (my.class.name, "ctx"))
-        _X17_add_link (entity, "class argument ctx", make_id ("_argument", my.class.name, "ctx"))
+        _X17_add_name (entity, "class argument ctx", my.class.name)
+        _X17_add_link (entity, "class argument ctx", make_id ("_argument", my.class.name))
         _X17_add_link (entity, "class struct ctx", make_id ("class", my.class.name, "struct", my.class.name))
         _X17_add_link (entity, "class method init", make_id ("class", my.class.name, "method init"))
         _X17_add_link (entity, "class method init ctx", make_id ("class", my.class.name, "method init ctx"))

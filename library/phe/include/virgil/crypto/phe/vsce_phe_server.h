@@ -106,13 +106,13 @@ vsce_phe_server_ctx_size(void);
 //  Perform initialization of pre-allocated context.
 //
 VSCE_PUBLIC void
-vsce_phe_server_init(vsce_phe_server_t *phe_server_ctx);
+vsce_phe_server_init(vsce_phe_server_t *phe_server);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCE_PUBLIC void
-vsce_phe_server_cleanup(vsce_phe_server_t *phe_server_ctx);
+vsce_phe_server_cleanup(vsce_phe_server_t *phe_server);
 
 //
 //  Allocate context and perform it's initialization.
@@ -125,103 +125,103 @@ vsce_phe_server_new(void);
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCE_PUBLIC void
-vsce_phe_server_delete(vsce_phe_server_t *phe_server_ctx);
+vsce_phe_server_delete(vsce_phe_server_t *phe_server);
 
 //
 //  Delete given context and nullifies reference.
 //  This is a reverse action of the function 'vsce_phe_server_new ()'.
 //
 VSCE_PUBLIC void
-vsce_phe_server_destroy(vsce_phe_server_t **phe_server_ctx_ref);
+vsce_phe_server_destroy(vsce_phe_server_t **phe_server_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCE_PUBLIC vsce_phe_server_t *
-vsce_phe_server_shallow_copy(vsce_phe_server_t *phe_server_ctx);
+vsce_phe_server_shallow_copy(vsce_phe_server_t *phe_server);
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCE_PUBLIC void
-vsce_phe_server_use_random(vsce_phe_server_t *phe_server_ctx, vscf_impl_t *random);
+vsce_phe_server_use_random(vsce_phe_server_t *phe_server, vscf_impl_t *random);
 
 //
 //  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCE_PUBLIC void
-vsce_phe_server_take_random(vsce_phe_server_t *phe_server_ctx, vscf_impl_t *random);
+vsce_phe_server_take_random(vsce_phe_server_t *phe_server, vscf_impl_t *random);
 
 //
 //  Release dependency to the interface 'random'.
 //
 VSCE_PUBLIC void
-vsce_phe_server_release_random(vsce_phe_server_t *phe_server_ctx);
+vsce_phe_server_release_random(vsce_phe_server_t *phe_server);
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCE_PUBLIC void
-vsce_phe_server_use_operation_random(vsce_phe_server_t *phe_server_ctx, vscf_impl_t *operation_random);
+vsce_phe_server_use_operation_random(vsce_phe_server_t *phe_server, vscf_impl_t *operation_random);
 
 //
 //  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCE_PUBLIC void
-vsce_phe_server_take_operation_random(vsce_phe_server_t *phe_server_ctx, vscf_impl_t *operation_random);
+vsce_phe_server_take_operation_random(vsce_phe_server_t *phe_server, vscf_impl_t *operation_random);
 
 //
 //  Release dependency to the interface 'random'.
 //
 VSCE_PUBLIC void
-vsce_phe_server_release_operation_random(vsce_phe_server_t *phe_server_ctx);
+vsce_phe_server_release_operation_random(vsce_phe_server_t *phe_server);
 
 //
 //  Generates new NIST P-256 server key pair for some client
 //
 VSCE_PUBLIC vsce_error_t
-vsce_phe_server_generate_server_key_pair(vsce_phe_server_t *phe_server_ctx, vsc_buffer_t *server_private_key,
+vsce_phe_server_generate_server_key_pair(vsce_phe_server_t *phe_server, vsc_buffer_t *server_private_key,
         vsc_buffer_t *server_public_key);
 
 //
 //  Buffer size needed to fit EnrollmentResponse
 //
 VSCE_PUBLIC size_t
-vsce_phe_server_enrollment_response_len(vsce_phe_server_t *phe_server_ctx);
+vsce_phe_server_enrollment_response_len(vsce_phe_server_t *phe_server);
 
 //
 //  Generates a new random enrollment and proof for a new user
 //
 VSCE_PUBLIC vsce_error_t
-vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
+vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server, vsc_data_t server_private_key,
         vsc_data_t server_public_key, vsc_buffer_t *enrollment_response);
 
 //
 //  Buffer size needed to fit VerifyPasswordResponse
 //
 VSCE_PUBLIC size_t
-vsce_phe_server_verify_password_response_len(vsce_phe_server_t *phe_server_ctx);
+vsce_phe_server_verify_password_response_len(vsce_phe_server_t *phe_server);
 
 //
 //  Verifies existing user's password and generates response with proof
 //
 VSCE_PUBLIC vsce_error_t
-vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
+vsce_phe_server_verify_password(vsce_phe_server_t *phe_server, vsc_data_t server_private_key,
         vsc_data_t server_public_key, vsc_data_t verify_password_request, vsc_buffer_t *verify_password_response);
 
 //
 //  Buffer size needed to fit UpdateToken
 //
 VSCE_PUBLIC size_t
-vsce_phe_server_update_token_len(vsce_phe_server_t *phe_server_ctx);
+vsce_phe_server_update_token_len(vsce_phe_server_t *phe_server);
 
 //
 //  Updates server's private and public keys and issues an update token for use on client's side
 //
 VSCE_PUBLIC vsce_error_t
-vsce_phe_server_rotate_keys(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
+vsce_phe_server_rotate_keys(vsce_phe_server_t *phe_server, vsc_data_t server_private_key,
         vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key, vsc_buffer_t *update_token);
 
 

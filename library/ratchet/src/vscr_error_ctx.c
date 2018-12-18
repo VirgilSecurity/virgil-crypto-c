@@ -88,22 +88,22 @@ vscr_error_ctx_ctx_size(void) {
 //  Reset context to the "no error" state.
 //
 VSCR_PUBLIC void
-vscr_error_ctx_reset(vscr_error_ctx_t *error_ctx_ctx) {
+vscr_error_ctx_reset(vscr_error_ctx_t *error_ctx) {
 
-    VSCR_ASSERT_PTR(error_ctx_ctx);
-    error_ctx_ctx->error = vscr_SUCCESS;
+    VSCR_ASSERT_PTR(error_ctx);
+    error_ctx->error = vscr_SUCCESS;
 }
 
 //
 //  Update context with given error.
 //
 VSCR_PRIVATE void
-vscr_error_ctx_update(vscr_error_ctx_t *error_ctx_ctx, vscr_error_t error) {
+vscr_error_ctx_update(vscr_error_ctx_t *error_ctx, vscr_error_t error) {
 
-    VSCR_ASSERT_PTR(error_ctx_ctx);
+    VSCR_ASSERT_PTR(error_ctx);
 
     if (error != vscr_SUCCESS) {
-        error_ctx_ctx->error = error;
+        error_ctx->error = error;
     }
 }
 
@@ -111,8 +111,8 @@ vscr_error_ctx_update(vscr_error_ctx_t *error_ctx_ctx, vscr_error_t error) {
 //  Reset context to the "no error" state.
 //
 VSCR_PUBLIC vscr_error_t
-vscr_error_ctx_error(const vscr_error_ctx_t *error_ctx_ctx) {
+vscr_error_ctx_error(const vscr_error_ctx_t *error_ctx) {
 
-    VSCR_ASSERT_PTR(error_ctx_ctx);
-    return error_ctx_ctx->error;
+    VSCR_ASSERT_PTR(error_ctx);
+    return error_ctx->error;
 }

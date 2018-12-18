@@ -87,13 +87,13 @@ vsc_buffer_ctx_size(void);
 //  Perform initialization of pre-allocated context.
 //
 VSC_PUBLIC void
-vsc_buffer_init(vsc_buffer_t *buffer_ctx);
+vsc_buffer_init(vsc_buffer_t *buffer);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSC_PUBLIC void
-vsc_buffer_cleanup(vsc_buffer_t *buffer_ctx);
+vsc_buffer_cleanup(vsc_buffer_t *buffer);
 
 //
 //  Allocate context and perform it's initialization.
@@ -118,32 +118,32 @@ vsc_buffer_new_with_data(vsc_data_t data);
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSC_PUBLIC void
-vsc_buffer_delete(vsc_buffer_t *buffer_ctx);
+vsc_buffer_delete(vsc_buffer_t *buffer);
 
 //
 //  Delete given context and nullifies reference.
 //  This is a reverse action of the function 'vsc_buffer_new ()'.
 //
 VSC_PUBLIC void
-vsc_buffer_destroy(vsc_buffer_t **buffer_ctx_ref);
+vsc_buffer_destroy(vsc_buffer_t **buffer_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSC_PUBLIC vsc_buffer_t *
-vsc_buffer_shallow_copy(vsc_buffer_t *buffer_ctx);
+vsc_buffer_shallow_copy(vsc_buffer_t *buffer);
 
 //
 //  Returns true if buffer has no data written.
 //
 VSC_PUBLIC bool
-vsc_buffer_is_empty(const vsc_buffer_t *buffer_ctx);
+vsc_buffer_is_empty(const vsc_buffer_t *buffer);
 
 //
 //  Return true if buffers are equal.
 //
 VSC_PUBLIC bool
-vsc_buffer_equal(const vsc_buffer_t *buffer_ctx, const vsc_buffer_t *rhs);
+vsc_buffer_equal(const vsc_buffer_t *buffer, const vsc_buffer_t *rhs);
 
 //
 //  Allocates inner buffer with a given capacity.
@@ -152,7 +152,7 @@ vsc_buffer_equal(const vsc_buffer_t *buffer_ctx, const vsc_buffer_t *rhs);
 //  Postcondition: inner buffer is allocated.
 //
 VSC_PUBLIC void
-vsc_buffer_alloc(vsc_buffer_t *buffer_ctx, size_t capacity);
+vsc_buffer_alloc(vsc_buffer_t *buffer, size_t capacity);
 
 //
 //  Use given data as output buffer.
@@ -161,7 +161,7 @@ vsc_buffer_alloc(vsc_buffer_t *buffer_ctx, size_t capacity);
 //  Precondition: buffer does not hold any bytes.
 //
 VSC_PUBLIC void
-vsc_buffer_use(vsc_buffer_t *buffer_ctx, byte *bytes, size_t bytes_len);
+vsc_buffer_use(vsc_buffer_t *buffer, byte *bytes, size_t bytes_len);
 
 //
 //  Use given data as output buffer.
@@ -170,106 +170,106 @@ vsc_buffer_use(vsc_buffer_t *buffer_ctx, byte *bytes, size_t bytes_len);
 //  Precondition: buffer does not hold any bytes.
 //
 VSC_PUBLIC void
-vsc_buffer_take(vsc_buffer_t *buffer_ctx, byte *bytes, size_t bytes_len, vsc_dealloc_fn dealloc_cb);
+vsc_buffer_take(vsc_buffer_t *buffer, byte *bytes, size_t bytes_len, vsc_dealloc_fn dealloc_cb);
 
 //
 //  Tell buffer that it holds sensitive that must be erased
 //  in a secure manner during destruction.
 //
 VSC_PUBLIC void
-vsc_buffer_make_secure(vsc_buffer_t *buffer_ctx);
+vsc_buffer_make_secure(vsc_buffer_t *buffer);
 
 //
 //  Returns true if buffer full.
 //
 VSC_PUBLIC bool
-vsc_buffer_is_full(const vsc_buffer_t *buffer_ctx);
+vsc_buffer_is_full(const vsc_buffer_t *buffer);
 
 //
 //  Returns true if buffer is configured and has valid internal states.
 //
 VSC_PUBLIC bool
-vsc_buffer_is_valid(const vsc_buffer_t *buffer_ctx);
+vsc_buffer_is_valid(const vsc_buffer_t *buffer);
 
 //
 //  Returns underlying buffer bytes.
 //
 VSC_PUBLIC const byte *
-vsc_buffer_bytes(const vsc_buffer_t *buffer_ctx);
+vsc_buffer_bytes(const vsc_buffer_t *buffer);
 
 //
 //  Returns underlying buffer bytes as object.
 //
 VSC_PUBLIC vsc_data_t
-vsc_buffer_data(const vsc_buffer_t *buffer_ctx);
+vsc_buffer_data(const vsc_buffer_t *buffer);
 
 //
 //  Returns buffer capacity.
 //
 VSC_PUBLIC size_t
-vsc_buffer_capacity(const vsc_buffer_t *buffer_ctx);
+vsc_buffer_capacity(const vsc_buffer_t *buffer);
 
 //
 //  Returns buffer length - length of bytes actually used.
 //
 VSC_PUBLIC size_t
-vsc_buffer_len(const vsc_buffer_t *buffer_ctx);
+vsc_buffer_len(const vsc_buffer_t *buffer);
 
 //
 //  Returns length of the bytes that are not in use yet.
 //
 VSC_PUBLIC size_t
-vsc_buffer_unused_len(const vsc_buffer_t *buffer_ctx);
+vsc_buffer_unused_len(const vsc_buffer_t *buffer);
 
 //
 //  Returns writable pointer to the buffer first element.
 //
 VSC_PUBLIC byte *
-vsc_buffer_begin(vsc_buffer_t *buffer_ctx);
+vsc_buffer_begin(vsc_buffer_t *buffer);
 
 //
 //  Returns pointer to the first unsed byte in the buffer.
 //
 VSC_PUBLIC byte *
-vsc_buffer_unused_bytes(vsc_buffer_t *buffer_ctx);
+vsc_buffer_unused_bytes(vsc_buffer_t *buffer);
 
 //
 //  Increase used bytes by given length.
 //
 VSC_PUBLIC void
-vsc_buffer_inc_used(vsc_buffer_t *buffer_ctx, size_t len);
+vsc_buffer_inc_used(vsc_buffer_t *buffer, size_t len);
 
 //
 //  Decrease used bytes by given length.
 //
 VSC_PUBLIC void
-vsc_buffer_dec_used(vsc_buffer_t *buffer_ctx, size_t len);
+vsc_buffer_dec_used(vsc_buffer_t *buffer, size_t len);
 
 //
 //  Copy null-terminated string to the buffer.
 //
 VSC_PUBLIC void
-vsc_buffer_write_str(vsc_buffer_t *buffer_ctx, const char *str);
+vsc_buffer_write_str(vsc_buffer_t *buffer, const char *str);
 
 //
 //  Copy data to the buffer.
 //
 VSC_PUBLIC void
-vsc_buffer_write_data(vsc_buffer_t *buffer_ctx, vsc_data_t data);
+vsc_buffer_write_data(vsc_buffer_t *buffer, vsc_data_t data);
 
 //
 //  Reset to the initial state.
 //  After reset inner buffer can be re-used.
 //
 VSC_PUBLIC void
-vsc_buffer_reset(vsc_buffer_t *buffer_ctx);
+vsc_buffer_reset(vsc_buffer_t *buffer);
 
 //
 //  Zeroing buffer in secure manner.
 //  And reset it to the initial state.
 //
 VSC_PUBLIC void
-vsc_buffer_erase(vsc_buffer_t *buffer_ctx);
+vsc_buffer_erase(vsc_buffer_t *buffer);
 
 
 // --------------------------------------------------------------------------
