@@ -33,18 +33,23 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
 #include "unity.h"
 #include "test_utils.h"
 #include "test_data_simple_swu.h"
-#include <mbedtls/ecp.h>
-#include <mbedtls/bignum.h>
-#include <virgil/crypto/foundation/vscf_random.h>
-#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
-#include <vsce_simple_swu.h>
 #include "test_data_simple_swu.h"
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCE_SIMPLE_SWU
+#include <mbedtls/ecp.h>
+#include <mbedtls/bignum.h>
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCE_SIMPLE_SWU &&VSCF_RANDOM &&VSCF_CTR_DRBG
 #if TEST_DEPENDENCIES_AVAILABLE
+
+#include "vsce_simple_swu.h"
+
+#include <virgil/crypto/foundation/vscf_random.h>
+#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 
 
 // --------------------------------------------------------------------------
