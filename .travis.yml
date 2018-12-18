@@ -15,6 +15,14 @@ install:
   - sudo bash cmake-3.11.1-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local
   - export PATH="/usr/local/bin:$PATH"
   - travis_retry sudo apt-get install -y -qq cloc
+  - travis_retry sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+  - travis_retry sudo apt install apt-transport-https
+  - travis_retry echo "deb https://download.mono-project.com/repo/ubuntu stable-trusty main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+  - travis_retry sudo apt update
+  - travis_retry sudo apt-get -f install
+  - travis_retry sudo apt install libgdiplus
+  - travis_retry sudo apt install mono-devel
+  - travis_retry sudo apt install nuget
 
 before_script:
   - ${CC} --version
