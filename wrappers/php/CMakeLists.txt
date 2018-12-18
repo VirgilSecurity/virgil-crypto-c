@@ -34,12 +34,13 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_php VERSION 0.5.0 LANGUAGES C)
+project(virgil_crypto_php VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 
 # ---------------------------------------------------------------------------
-#   PHP wrapper build options
+#   PHP wrapper build and install options
 # ---------------------------------------------------------------------------
 set(PHP_VERSION "" CACHE STRING "Required exact PHP version. Keep empty to find currently available version.")
+set(VIRGIL_INSTALL_PHP_SRCDIR "phpsrc" CACHE STRING "Directory name where PHP sources will be installed")
 
 
 # ---------------------------------------------------------------------------
@@ -59,7 +60,7 @@ endif()
 
 if(PHP_LIBRARIES)
     add_library(phplib STATIC IMPORTED)
-    set_target_properties(phplib PROPERTIES IMPORTED_IMPLIB "${PHP_LIBRARIES}")
+    set_target_properties(phplib PROPERTIES IMPORTED_LOCATION "${PHP_LIBRARIES}")
 else()
     add_library(phplib INTERFACE IMPORTED)
 endif()
@@ -67,7 +68,7 @@ endif()
 target_include_directories(phplib SYSTEM INTERFACE "${PHP_INCLUDE_DIRS}")
 
 if(PHP_DEFINITIONS)
-    target_compile_definitions(phplib INTERFACE ${PHP_DEFINITIONS})
+    target_compile_definitions(phplib INTERFACE ${PHP_DEFINITIONS} ZEND_DEBUG=0)
 endif()
 
 if(PHP_EXECUTABLE)

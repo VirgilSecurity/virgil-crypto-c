@@ -67,6 +67,13 @@ function(target_protobuf_sources target)
     endif()
 
     #
+    # Check nanopb plug-in.
+    #
+    if(NOT PROTOC_GEN_NANOPB)
+        message(FATAL_ERROR "CMake variable PROTOC_GEN_NANOPB that points to the nanopb plug-in script is not defined.")
+    endif()
+
+    #
     # Create generation command per proto file
     #
     foreach(proto_file ${ARGN})
@@ -79,6 +86,10 @@ function(target_protobuf_sources target)
 
         if(EXISTS "${proto_file_path}/${proto_file_name}.options")
             set(proto_options_file "${proto_file_name}.options")
+            set(proto_options "-f${proto_options_file}")
+        else()
+            set(proto_options_file "")
+            set(proto_options "")
         endif()
 
         add_custom_command(
@@ -86,7 +97,8 @@ function(target_protobuf_sources target)
                     "${CMAKE_CURRENT_BINARY_DIR}/${proto_file_name}.pb.h"
                     "${CMAKE_CURRENT_BINARY_DIR}/${proto_file_name}.pb.c"
                 COMMAND
-                    "${PROTOC_EXE}" --nanopb_out=-f"${proto_options_file}":"${CMAKE_CURRENT_BINARY_DIR}"
+                    "${PROTOC_EXE}" --plugin=protoc-gen-nanopb="${PROTOC_GEN_NANOPB}"
+                                    --nanopb_out=${proto_options}:"${CMAKE_CURRENT_BINARY_DIR}"
                                     --proto_path=. "${proto_file_name}.proto"
                 DEPENDS
                     "${proto_file}" "${proto_options_file}"

@@ -47,6 +47,20 @@
 #include "test_data_pem.h"
 
 
+// --------------------------------------------------------------------------
+//  Should have it to prevent linkage erros in MSVC.
+// --------------------------------------------------------------------------
+// clang-format off
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+// clang-format on
+
+
+// --------------------------------------------------------------------------
+//  Test functions.
+// --------------------------------------------------------------------------
 void
 test__unwrap__broken_pem_no_header__returns_error_bad_pem(void) {
 

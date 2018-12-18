@@ -55,14 +55,19 @@ set_target_properties(phe_php PROPERTIES
         DEBUG_POSTFIX "_d"
         OUTPUT_NAME vsce_phe_php
         PREFIX ""
-        SUFFIX ".so"
         VERSION ${virgil_crypto_phe_php_VERSION}
         SOVERSION ${virgil_crypto_phe_php_VERSION_MAJOR}
         )
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set_target_properties(phe_php PROPERTIES SUFFIX ".dll")
+else()
+    set_target_properties(phe_php PROPERTIES SUFFIX ".so")
+endif()
+
 target_sources(phe_php
         PRIVATE
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/vsce_phe_php.c>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/extension/vsce_phe_php.c>
         )
 
 target_link_libraries(phe_php
@@ -73,7 +78,6 @@ target_link_libraries(phe_php
         "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-undefined dynamic_lookup>"
     )
 
-
 # ---------------------------------------------------------------------------
 #   Test
 # ---------------------------------------------------------------------------
@@ -81,7 +85,7 @@ if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTAB
     add_test(
             NAME test_phe_php
             COMMAND "${PHP_EXECUTABLE}" -d "extension=$<TARGET_FILE:phe_php>" -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
-                    --include-path "${CMAKE_CURRENT_LIST_DIR}" "${CMAKE_CURRENT_LIST_DIR}/tests/PHEClientTest.php"
+                    --include-path "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_LIST_DIR}/tests/PHEClientTest.php"
             )
 endif()
 
@@ -93,5 +97,16 @@ if(VIRGIL_INSTALL_WRAP_LIBS)
     install(TARGETS phe_php
             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
             RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            )
+endif()
+
+if(VIRGIL_INSTALL_WRAP_SRCS)
+    install(
+            DIRECTORY
+                "${CMAKE_CURRENT_LIST_DIR}/src/"
+            DESTINATION
+                "${VIRGIL_INSTALL_PHP_SRCDIR}/phe"
+            FILES_MATCHING PATTERN
+                "*.php"
             )
 endif()
