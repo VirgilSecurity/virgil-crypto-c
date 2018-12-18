@@ -82,7 +82,7 @@ vscr_virgil_ratchet_fake_rng_generate_random_data(
         vscr_virgil_ratchet_fake_rng_impl_t *virgil_ratchet_fake_rng_impl, size_t size, vsc_buffer_t *random) {
 
     VSCR_UNUSED(virgil_ratchet_fake_rng_impl);
-    VSCR_ASSERT(vsc_buffer_left(random) >= size);
+    VSCR_ASSERT(vsc_buffer_unused_len(random) >= size);
 
     static size_t used = 0;
     static const byte fake_random_data[] = {
@@ -16477,8 +16477,8 @@ vscr_virgil_ratchet_fake_rng_generate_random_data(
         VSCR_ASSERT(done < size);
         size_t next_chunk_size =
                 sizeof(fake_random_data) - used < size - done ? sizeof(fake_random_data) - used : size - done;
-        memcpy(vsc_buffer_ptr(random), &fake_random_data[used], next_chunk_size);
-        vsc_buffer_reserve(random, next_chunk_size);
+        memcpy(vsc_buffer_unused_bytes(random), &fake_random_data[used], next_chunk_size);
+        vsc_buffer_inc_used(random, next_chunk_size);
         done += next_chunk_size;
         used = (used + next_chunk_size) % sizeof(fake_random_data);
     }

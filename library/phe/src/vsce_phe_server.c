@@ -361,10 +361,10 @@ vsce_phe_server_generate_server_key_pair(
 
     VSCE_ASSERT_PTR(phe_server_ctx);
     VSCE_ASSERT(vsc_buffer_len(server_private_key) == 0);
-    VSCE_ASSERT(vsc_buffer_left(server_private_key) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT(vsc_buffer_unused_len(server_private_key) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     vsc_buffer_make_secure(server_private_key);
     VSCE_ASSERT(vsc_buffer_len(server_public_key) == 0);
-    VSCE_ASSERT(vsc_buffer_left(server_public_key) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT(vsc_buffer_unused_len(server_public_key) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
     mbedtls_ecp_group *op_group = vsce_phe_server_get_op_group(phe_server_ctx);
 
@@ -385,14 +385,14 @@ vsce_phe_server_generate_server_key_pair(
     }
 
     mbedtls_status = mbedtls_mpi_write_binary(
-            &priv, vsc_buffer_ptr(server_private_key), vsc_buffer_capacity(server_private_key));
-    vsc_buffer_reserve(server_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+            &priv, vsc_buffer_unused_bytes(server_private_key), vsc_buffer_capacity(server_private_key));
+    vsc_buffer_inc_used(server_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &pub, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            vsc_buffer_ptr(server_public_key), vsc_buffer_capacity(server_public_key));
-    vsc_buffer_reserve(server_public_key, olen);
+            vsc_buffer_unused_bytes(server_public_key), vsc_buffer_capacity(server_public_key));
+    vsc_buffer_inc_used(server_public_key, olen);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
@@ -425,7 +425,7 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t ser
 
     VSCE_ASSERT_PTR(phe_server_ctx);
     VSCE_ASSERT(vsc_buffer_len(enrollment_response) == 0);
-    VSCE_ASSERT(vsc_buffer_left(enrollment_response) >= vsce_phe_server_enrollment_response_len(phe_server_ctx));
+    VSCE_ASSERT(vsc_buffer_unused_len(enrollment_response) >= vsce_phe_server_enrollment_response_len(phe_server_ctx));
     VSCE_ASSERT(server_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT(server_public_key.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
@@ -496,11 +496,11 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t ser
         goto err;
     }
 
-    pb_ostream_t ostream =
-            pb_ostream_from_buffer(vsc_buffer_ptr(enrollment_response), vsc_buffer_capacity(enrollment_response));
+    pb_ostream_t ostream = pb_ostream_from_buffer(
+            vsc_buffer_unused_bytes(enrollment_response), vsc_buffer_capacity(enrollment_response));
 
     VSCE_ASSERT(pb_encode(&ostream, EnrollmentResponse_fields, &response));
-    vsc_buffer_reserve(enrollment_response, ostream.bytes_written);
+    vsc_buffer_inc_used(enrollment_response, ostream.bytes_written);
 
 err:
     mbedtls_ecp_point_free(&hs0);
@@ -539,8 +539,8 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t se
 
     VSCE_ASSERT_PTR(phe_server_ctx);
     VSCE_ASSERT(vsc_buffer_len(verify_password_response) == 0);
-    VSCE_ASSERT(
-            vsc_buffer_left(verify_password_response) >= vsce_phe_server_verify_password_response_len(phe_server_ctx));
+    VSCE_ASSERT(vsc_buffer_unused_len(verify_password_response) >=
+                vsce_phe_server_verify_password_response_len(phe_server_ctx));
     VSCE_ASSERT(server_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT(server_public_key.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
@@ -626,9 +626,9 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t se
         VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
         pb_ostream_t ostream = pb_ostream_from_buffer(
-                vsc_buffer_ptr(verify_password_response), vsc_buffer_capacity(verify_password_response));
+                vsc_buffer_unused_bytes(verify_password_response), vsc_buffer_capacity(verify_password_response));
         VSCE_ASSERT(pb_encode(&ostream, VerifyPasswordResponse_fields, &response));
-        vsc_buffer_reserve(verify_password_response, ostream.bytes_written);
+        vsc_buffer_inc_used(verify_password_response, ostream.bytes_written);
     } else {
         // Password doesn't match
 
@@ -650,9 +650,9 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t se
         VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
         pb_ostream_t ostream = pb_ostream_from_buffer(
-                vsc_buffer_ptr(verify_password_response), vsc_buffer_capacity(verify_password_response));
+                vsc_buffer_unused_bytes(verify_password_response), vsc_buffer_capacity(verify_password_response));
         VSCE_ASSERT(pb_encode(&ostream, VerifyPasswordResponse_fields, &response));
-        vsc_buffer_reserve(verify_password_response, ostream.bytes_written);
+        vsc_buffer_inc_used(verify_password_response, ostream.bytes_written);
     }
 
 err:
@@ -989,12 +989,12 @@ vsce_phe_server_rotate_keys(vsce_phe_server_t *phe_server_ctx, vsc_data_t server
     VSCE_ASSERT_PTR(phe_server_ctx);
     VSCE_ASSERT(server_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT(vsc_buffer_len(update_token) == 0);
-    VSCE_ASSERT(vsc_buffer_left(update_token) >= vsce_phe_server_update_token_len(phe_server_ctx));
+    VSCE_ASSERT(vsc_buffer_unused_len(update_token) >= vsce_phe_server_update_token_len(phe_server_ctx));
     VSCE_ASSERT(vsc_buffer_len(new_server_private_key) == 0);
-    VSCE_ASSERT(vsc_buffer_left(new_server_private_key) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT(vsc_buffer_unused_len(new_server_private_key) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     vsc_buffer_make_secure(new_server_private_key);
     VSCE_ASSERT(vsc_buffer_len(new_server_public_key) == 0);
-    VSCE_ASSERT(vsc_buffer_left(new_server_public_key) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT(vsc_buffer_unused_len(new_server_public_key) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
     mbedtls_ecp_group *op_group = vsce_phe_server_get_op_group(phe_server_ctx);
 
@@ -1039,9 +1039,10 @@ vsce_phe_server_rotate_keys(vsce_phe_server_t *phe_server_ctx, vsc_data_t server
     mbedtls_status = mbedtls_mpi_write_binary(&b, token.b, sizeof(token.b));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
-    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(update_token), vsc_buffer_capacity(update_token));
+    pb_ostream_t ostream =
+            pb_ostream_from_buffer(vsc_buffer_unused_bytes(update_token), vsc_buffer_capacity(update_token));
     VSCE_ASSERT(pb_encode(&ostream, UpdateToken_fields, &token));
-    vsc_buffer_reserve(update_token, ostream.bytes_written);
+    vsc_buffer_inc_used(update_token, ostream.bytes_written);
 
     mbedtls_mpi new_x;
     mbedtls_mpi_init(&new_x);
@@ -1054,8 +1055,8 @@ vsce_phe_server_rotate_keys(vsce_phe_server_t *phe_server_ctx, vsc_data_t server
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_status = mbedtls_mpi_write_binary(
-            &new_x, vsc_buffer_ptr(new_server_private_key), vsc_buffer_capacity(new_server_private_key));
-    vsc_buffer_reserve(new_server_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+            &new_x, vsc_buffer_unused_bytes(new_server_private_key), vsc_buffer_capacity(new_server_private_key));
+    vsc_buffer_inc_used(new_server_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_ecp_point new_X;
@@ -1067,8 +1068,8 @@ vsce_phe_server_rotate_keys(vsce_phe_server_t *phe_server_ctx, vsc_data_t server
 
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &new_X, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            vsc_buffer_ptr(new_server_public_key), vsc_buffer_capacity(new_server_public_key));
-    vsc_buffer_reserve(new_server_public_key, vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+            vsc_buffer_unused_bytes(new_server_public_key), vsc_buffer_capacity(new_server_public_key));
+    vsc_buffer_inc_used(new_server_public_key, vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 

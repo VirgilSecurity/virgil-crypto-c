@@ -368,8 +368,8 @@ vscr_ratchet_create_chain_key(const vscr_ratchet_t *ratchet_ctx, const vsc_buffe
     vsc_buffer_t *secret = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
     vsc_buffer_make_secure(secret);
 
-    if (curve25519_key_exchange(vsc_buffer_ptr(secret), vsc_buffer_bytes(public_key), vsc_buffer_bytes(private_key)) !=
-            0) {
+    if (curve25519_key_exchange(
+                vsc_buffer_unused_bytes(secret), vsc_buffer_bytes(public_key), vsc_buffer_bytes(private_key)) != 0) {
         vsc_buffer_destroy(&secret);
 
         return vscr_CURVE25519_ERROR;
@@ -589,14 +589,15 @@ vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc
     // TODO: Optimize
     vsc_buffer_t *ratchet_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
 
-    if (curve25519_get_pubkey(vsc_buffer_ptr(ratchet_public_key), vsc_buffer_bytes(ratchet_private_key)) != 0) {
+    if (curve25519_get_pubkey(vsc_buffer_unused_bytes(ratchet_public_key), vsc_buffer_bytes(ratchet_private_key)) !=
+            0) {
         vsc_buffer_destroy(&derived_secret);
         vsc_buffer_destroy(&ratchet_public_key);
 
         return vscr_CURVE25519_ERROR;
     }
 
-    vsc_buffer_reserve(ratchet_public_key, ED25519_KEY_LEN);
+    vsc_buffer_inc_used(ratchet_public_key, ED25519_KEY_LEN);
     sender_chain->public_key = ratchet_public_key;
 
     vsc_buffer_destroy(&derived_secret);
@@ -638,10 +639,11 @@ vscr_ratchet_encrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text, Regular
         // FIXME
         vscr_ratchet_rng_generate_random_data(ratchet_ctx->rng, ED25519_KEY_LEN, ratchet_private_key);
         vsc_buffer_t *ratchet_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
-        result = curve25519_get_pubkey(vsc_buffer_ptr(ratchet_public_key), vsc_buffer_bytes(ratchet_private_key)) == 0
+        result = curve25519_get_pubkey(
+                         vsc_buffer_unused_bytes(ratchet_public_key), vsc_buffer_bytes(ratchet_private_key)) == 0
                          ? vscr_SUCCESS
                          : vscr_CURVE25519_ERROR;
-        vsc_buffer_reserve(ratchet_public_key, ED25519_KEY_LEN);
+        vsc_buffer_inc_used(ratchet_public_key, ED25519_KEY_LEN);
 
         vscr_ratchet_sender_chain_t *sender_chain = vscr_ratchet_sender_chain_new();
         sender_chain->private_key = ratchet_private_key;
@@ -931,7 +933,7 @@ vscr_ratchet_serialize(vscr_ratchet_t *ratchet_ctx, vsc_buffer_t *output) {
     //       root key OCTET_STRING }
 
     VSCR_ASSERT_PTR(ratchet_ctx);
-    VSCR_ASSERT(vsc_buffer_left(output) >= vscr_ratchet_serialize_len(ratchet_ctx));
+    VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_serialize_len(ratchet_ctx));
 
     // Chain key
     Key chain_key = Key_init_zero;
@@ -1010,11 +1012,11 @@ vscr_ratchet_serialize(vscr_ratchet_t *ratchet_ctx, vsc_buffer_t *output) {
 
     // Serialize
     //    bool status = true;
-    //    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(output), vsc_buffer_capacity(output));
+    //    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_capacity(output));
     //
     //    status = pb_encode(&ostream, Ratchet_fields, &ratchet);
     //
-    //    vsc_buffer_reserve(output, ostream.bytes_written);
+    //    vsc_buffer_inc_used(output, ostream.bytes_written);
 
     //  TODO: This is STUB. Implement me.
     VSCR_UNUSED(ratchet_ctx);

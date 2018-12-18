@@ -199,12 +199,13 @@ vscf_ctr_drbg_random(vscf_ctr_drbg_impl_t *ctr_drbg_impl, size_t data_len, vsc_b
     VSCF_ASSERT_PTR(ctr_drbg_impl);
     VSCF_ASSERT(data_len > 0);
     VSCF_ASSERT_PTR(data);
-    VSCF_ASSERT(vsc_buffer_left(data) >= data_len);
+    VSCF_ASSERT(vsc_buffer_unused_len(data) >= data_len);
 
-    int status = mbedtls_ctr_drbg_random(&ctr_drbg_impl->ctx, vsc_buffer_ptr(data), vsc_buffer_left(data));
+    int status =
+            mbedtls_ctr_drbg_random(&ctr_drbg_impl->ctx, vsc_buffer_unused_bytes(data), vsc_buffer_unused_len(data));
     switch (status) {
     case 0:
-        vsc_buffer_reserve(data, data_len);
+        vsc_buffer_inc_used(data, data_len);
         return vscf_SUCCESS;
 
     case MBEDTLS_ERR_CTR_DRBG_ENTROPY_SOURCE_FAILED:

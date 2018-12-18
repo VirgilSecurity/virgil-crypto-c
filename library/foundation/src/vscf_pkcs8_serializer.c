@@ -141,8 +141,8 @@ vscf_pkcs8_serializer_serialize_public_key(
     VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(
-            vsc_buffer_left(out) >= vscf_pkcs8_serializer_serialized_public_key_len(pkcs8_serializer_impl, public_key));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >=
+                vscf_pkcs8_serializer_serialized_public_key_len(pkcs8_serializer_impl, public_key));
 
 
     //  TODO: Optimize alloc.
@@ -199,7 +199,7 @@ vscf_pkcs8_serializer_serialize_private_key(
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_left(out) >=
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >=
                 vscf_pkcs8_serializer_serialized_private_key_len(pkcs8_serializer_impl, private_key));
 
     //  TODO: Optimize alloc.

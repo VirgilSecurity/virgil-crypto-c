@@ -192,7 +192,7 @@ vscf_rsa_private_key_decrypt(vscf_rsa_private_key_impl_t *rsa_private_key_impl, 
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT(vsc_buffer_is_valid(out));
 
-    VSCF_ASSERT_OPT(vsc_buffer_left(out) >= vscf_rsa_private_key_decrypted_len(rsa_private_key_impl, data.len));
+    VSCF_ASSERT_OPT(vsc_buffer_unused_len(out) >= vscf_rsa_private_key_decrypted_len(rsa_private_key_impl, data.len));
 
     VSCF_ASSERT(mbedtls_rsa_check_privkey(&rsa_private_key_impl->rsa_ctx) == 0);
 
@@ -206,14 +206,14 @@ vscf_rsa_private_key_decrypt(vscf_rsa_private_key_impl_t *rsa_private_key_impl, 
 
     size_t out_len = 0;
     int ret = mbedtls_rsa_rsaes_oaep_decrypt(&rsa_private_key_impl->rsa_ctx, vscf_mbedtls_bridge_random,
-            rsa_private_key_impl->random, MBEDTLS_RSA_PRIVATE, NULL, 0, &out_len, data.bytes, vsc_buffer_ptr(out),
-            vsc_buffer_left(out));
+            rsa_private_key_impl->random, MBEDTLS_RSA_PRIVATE, NULL, 0, &out_len, data.bytes,
+            vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 
     if (ret != 0) {
         return vscf_error_BAD_ENCRYPTED_DATA;
     }
 
-    vsc_buffer_reserve(out, out_len);
+    vsc_buffer_inc_used(out, out_len);
 
     return vscf_SUCCESS;
 }
@@ -244,7 +244,7 @@ vscf_rsa_private_key_sign(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vsc
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT(vsc_buffer_is_valid(signature));
 
-    VSCF_ASSERT_OPT(vsc_buffer_left(signature) >= vscf_rsa_private_key_signature_len(rsa_private_key_impl));
+    VSCF_ASSERT_OPT(vsc_buffer_unused_len(signature) >= vscf_rsa_private_key_signature_len(rsa_private_key_impl));
 
     VSCF_ASSERT(mbedtls_rsa_check_privkey(&rsa_private_key_impl->rsa_ctx) == 0);
 
@@ -264,7 +264,7 @@ vscf_rsa_private_key_sign(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vsc
 
     int ret = mbedtls_rsa_rsassa_pss_sign(rsa_ctx, vscf_mbedtls_bridge_random, rsa_private_key_impl->random,
             MBEDTLS_RSA_PRIVATE, md_alg, (unsigned int)vsc_buffer_len(data_hash_buf), vsc_buffer_bytes(data_hash_buf),
-            vsc_buffer_ptr(signature));
+            vsc_buffer_unused_bytes(signature));
 
     vsc_buffer_destroy(&data_hash_buf);
 
@@ -272,7 +272,7 @@ vscf_rsa_private_key_sign(vscf_rsa_private_key_impl_t *rsa_private_key_impl, vsc
 
     switch (ret) {
     case 0:
-        vsc_buffer_reserve(signature, vscf_rsa_private_key_signature_len(rsa_private_key_impl));
+        vsc_buffer_inc_used(signature, vscf_rsa_private_key_signature_len(rsa_private_key_impl));
         return vscf_SUCCESS;
 
     case MBEDTLS_ERR_RSA_RNG_FAILED:
@@ -375,7 +375,7 @@ vscf_rsa_private_key_export_private_key(vscf_rsa_private_key_impl_t *rsa_private
     vscf_error_ctx_t error_ctx;
     vscf_error_ctx_reset(&error_ctx);
 
-    vscf_asn1_writer_reset(asn1wr, vsc_buffer_ptr(out), vsc_buffer_left(out));
+    vscf_asn1_writer_reset(asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 
     size_t top_sequence_len = 0;
 
@@ -415,7 +415,7 @@ vscf_rsa_private_key_export_private_key(vscf_rsa_private_key_impl_t *rsa_private
     }
 
     size_t writtenBytes = vscf_asn1_writer_finish(asn1wr);
-    vsc_buffer_reserve(out, writtenBytes);
+    vsc_buffer_inc_used(out, writtenBytes);
 
     return vscf_SUCCESS;
 }

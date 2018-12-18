@@ -97,14 +97,14 @@ vscf_platform_entropy_gather(vscf_platform_entropy_impl_t *platform_entropy_impl
     VSCF_ASSERT_PTR(len > 0);
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_left(out) >= len);
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= len);
 
     size_t olen = 0;
-    int status = mbedtls_platform_entropy_poll(NULL, vsc_buffer_ptr(out), vsc_buffer_left(out), &olen);
+    int status = mbedtls_platform_entropy_poll(NULL, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out), &olen);
 
     switch (status) {
     case 0:
-        vsc_buffer_reserve(out, olen);
+        vsc_buffer_inc_used(out, olen);
         return vscf_SUCCESS;
 
     case MBEDTLS_ERR_ENTROPY_SOURCE_FAILED:

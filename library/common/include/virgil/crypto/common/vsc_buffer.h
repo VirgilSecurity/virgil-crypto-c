@@ -216,16 +216,10 @@ VSC_PUBLIC size_t
 vsc_buffer_len(const vsc_buffer_t *buffer_ctx);
 
 //
-//  Returns length of left bytes - bytes that are not in use yet.
+//  Returns length of the bytes that are not in use yet.
 //
 VSC_PUBLIC size_t
-vsc_buffer_left(const vsc_buffer_t *buffer_ctx);
-
-//
-//  Returns pointer to the current wirte position.
-//
-VSC_PUBLIC byte *
-vsc_buffer_ptr(vsc_buffer_t *buffer_ctx);
+vsc_buffer_unused_len(const vsc_buffer_t *buffer_ctx);
 
 //
 //  Returns writable pointer to the buffer first element.
@@ -234,22 +228,22 @@ VSC_PUBLIC byte *
 vsc_buffer_begin(vsc_buffer_t *buffer_ctx);
 
 //
-//  Increase used bytes by given length.
+//  Returns pointer to the first unsed byte in the buffer.
 //
-VSC_PUBLIC void
-vsc_buffer_reserve(vsc_buffer_t *buffer_ctx, size_t len);
+VSC_PUBLIC byte *
+vsc_buffer_unused_bytes(vsc_buffer_t *buffer_ctx);
 
 //
 //  Increase used bytes by given length.
 //
 VSC_PUBLIC void
-vsc_buffer_increase_used_bytes(vsc_buffer_t *buffer_ctx, size_t len);
+vsc_buffer_inc_used(vsc_buffer_t *buffer_ctx, size_t len);
 
 //
 //  Decrease used bytes by given length.
 //
 VSC_PUBLIC void
-vsc_buffer_decrease_used_bytes(vsc_buffer_t *buffer_ctx, size_t len);
+vsc_buffer_dec_used(vsc_buffer_t *buffer_ctx, size_t len);
 
 //
 //  Copy null-terminated string to the buffer.
@@ -272,6 +266,7 @@ vsc_buffer_reset(vsc_buffer_t *buffer_ctx);
 
 //
 //  Zeroing buffer in secure manner.
+//  And reset it to the initial state.
 //
 VSC_PUBLIC void
 vsc_buffer_erase(vsc_buffer_t *buffer_ctx);

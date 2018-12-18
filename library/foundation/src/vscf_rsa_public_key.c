@@ -152,7 +152,7 @@ vscf_rsa_public_key_encrypt(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
 
-    VSCF_ASSERT_OPT(vsc_buffer_left(out) >= vscf_rsa_public_key_key_len(rsa_public_key_impl));
+    VSCF_ASSERT_OPT(vsc_buffer_unused_len(out) >= vscf_rsa_public_key_key_len(rsa_public_key_impl));
 
     size_t hash_len = vscf_hash_info_digest_len(vscf_hash_hash_info_api(rsa_public_key_impl->hash));
     VSCF_ASSERT_OPT(vscf_rsa_public_key_key_len(rsa_public_key_impl) >= data.len + 2 * hash_len + 2);
@@ -162,11 +162,12 @@ vscf_rsa_public_key_encrypt(vscf_rsa_public_key_impl_t *rsa_public_key_impl, vsc
     mbedtls_rsa_set_padding(&rsa_public_key_impl->rsa_ctx, MBEDTLS_RSA_PKCS_V21, md_alg);
 
     int result = mbedtls_rsa_rsaes_oaep_encrypt(&rsa_public_key_impl->rsa_ctx, vscf_mbedtls_bridge_random,
-            rsa_public_key_impl->random, MBEDTLS_RSA_PUBLIC, NULL, 0, data.len, data.bytes, vsc_buffer_ptr(out));
+            rsa_public_key_impl->random, MBEDTLS_RSA_PUBLIC, NULL, 0, data.len, data.bytes,
+            vsc_buffer_unused_bytes(out));
 
     switch (result) {
     case 0:
-        vsc_buffer_reserve(out, vscf_rsa_public_key_key_len(rsa_public_key_impl));
+        vsc_buffer_inc_used(out, vscf_rsa_public_key_key_len(rsa_public_key_impl));
         return vscf_SUCCESS;
 
     case MBEDTLS_ERR_RSA_RNG_FAILED:
@@ -254,7 +255,7 @@ vscf_rsa_public_key_export_public_key(vscf_rsa_public_key_impl_t *rsa_public_key
     vscf_error_ctx_t error_ctx;
     vscf_error_ctx_reset(&error_ctx);
 
-    vscf_asn1_writer_reset(asn1wr, vsc_buffer_ptr(out), vsc_buffer_left(out));
+    vscf_asn1_writer_reset(asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 
     vscf_asn1_writer_write_sequence(asn1wr, vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->E, &error_ctx) +
                                                     vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->N, &error_ctx));
@@ -266,7 +267,7 @@ vscf_rsa_public_key_export_public_key(vscf_rsa_public_key_impl_t *rsa_public_key
     }
 
     size_t writtenBytes = vscf_asn1_writer_finish(asn1wr);
-    vsc_buffer_reserve(out, writtenBytes);
+    vsc_buffer_inc_used(out, writtenBytes);
 
     return vscf_SUCCESS;
 }

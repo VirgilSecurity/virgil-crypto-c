@@ -153,7 +153,7 @@ vscf_ed25519_public_key_export_public_key(vscf_ed25519_public_key_impl_t *ed2551
 
     VSCF_ASSERT_PTR(ed25519_public_key_impl);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_left(out) >= ED25519_KEY_LEN);
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= ED25519_KEY_LEN);
     vscf_endianness_reverse_memcpy(vsc_data(ed25519_public_key_impl->public_key, ED25519_KEY_LEN), out);
     return vscf_SUCCESS;
 }

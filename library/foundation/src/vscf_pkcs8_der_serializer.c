@@ -133,7 +133,7 @@ vscf_pkcs8_der_serializer_serialize_public_key(
     VSCF_ASSERT(vscf_public_key_can_export_public_key(vscf_public_key_api(public_key)));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_left(out) >=
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >=
                 vscf_pkcs8_der_serializer_serialized_public_key_len(pkcs8_der_serializer_impl, public_key));
     VSCF_ASSERT_PTR(pkcs8_der_serializer_impl->asn1_writer);
 
@@ -143,7 +143,7 @@ vscf_pkcs8_der_serializer_serialize_public_key(
     //  }
 
     vscf_impl_t *asn1_writer = pkcs8_der_serializer_impl->asn1_writer;
-    vscf_asn1_writer_reset(asn1_writer, vsc_buffer_ptr(out), vsc_buffer_left(out));
+    vscf_asn1_writer_reset(asn1_writer, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
     size_t total_count = 0;
 
     //
@@ -179,7 +179,7 @@ vscf_pkcs8_der_serializer_serialize_public_key(
     //
     VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
 
-    vsc_buffer_increase_used_bytes(out, vscf_asn1_writer_finish(asn1_writer));
+    vsc_buffer_inc_used(out, vscf_asn1_writer_finish(asn1_writer));
 
     return vscf_SUCCESS;
 }
@@ -225,7 +225,7 @@ vscf_pkcs8_der_serializer_serialize_private_key(vscf_pkcs8_der_serializer_impl_t
     VSCF_ASSERT(vscf_private_key_can_export_private_key(vscf_private_key_api(private_key)));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_left(out) >=
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >=
                 vscf_pkcs8_der_serializer_serialized_private_key_len(pkcs8_der_serializer_impl, private_key));
     VSCF_ASSERT_PTR(pkcs8_der_serializer_impl->asn1_writer);
 
@@ -237,7 +237,7 @@ vscf_pkcs8_der_serializer_serialize_private_key(vscf_pkcs8_der_serializer_impl_t
     //  }
 
     vscf_impl_t *asn1_writer = pkcs8_der_serializer_impl->asn1_writer;
-    vscf_asn1_writer_reset(asn1_writer, vsc_buffer_ptr(out), vsc_buffer_left(out));
+    vscf_asn1_writer_reset(asn1_writer, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
     size_t total_count = 0;
 
     //
@@ -278,7 +278,7 @@ vscf_pkcs8_der_serializer_serialize_private_key(vscf_pkcs8_der_serializer_impl_t
     //
     VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
 
-    vsc_buffer_increase_used_bytes(out, vscf_asn1_writer_finish(asn1_writer));
+    vsc_buffer_inc_used(out, vscf_asn1_writer_finish(asn1_writer));
 
     return vscf_SUCCESS;
 }
