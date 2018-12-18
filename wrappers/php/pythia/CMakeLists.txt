@@ -60,9 +60,9 @@ set_target_properties(pythia_php PROPERTIES
         )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    set_target_properties(phe_php PROPERTIES SUFFIX ".dll")
+    set_target_properties(pythia_php PROPERTIES SUFFIX ".dll")
 else()
-    set_target_properties(phe_php PROPERTIES SUFFIX ".so")
+    set_target_properties(pythia_php PROPERTIES SUFFIX ".so")
 endif()
 
 target_sources(pythia_php
