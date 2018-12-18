@@ -37,15 +37,16 @@ import Foundation
 import VSCFoundation
 import VirgilCryptoCommon
 
-/// Provides interface to the key derivation function (HKDF) algorithms.
-@objc(VSCFExKdf) public protocol ExKdf : CContext {
+/// Provides interface to the key derivation function (KDF) algorithms
+/// that use salt and teration count.
+@objc(VSCFSaltedKdf) public protocol SaltedKdf : CContext {
 
     /// Derive key of the requested length from the given data, salt and info.
     @objc func derive(data: Data, salt: Data, info: Data, keyLen: Int) -> Data
 }
 
 /// Implement interface methods
-@objc(VSCFExKdfProxy) internal class ExKdfProxy: NSObject, ExKdf {
+@objc(VSCFSaltedKdfProxy) internal class SaltedKdfProxy: NSObject, SaltedKdf {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -76,7 +77,7 @@ import VirgilCryptoCommon
                     key.withUnsafeMutableBytes({ (keyPointer: UnsafeMutablePointer<byte>) -> Void in
                         vsc_buffer_init(keyBuf)
                         vsc_buffer_use(keyBuf, keyPointer, keyCount)
-                        vscf_ex_kdf_derive(self.c_ctx, vsc_data(dataPointer, data.count), vsc_data(saltPointer, salt.count), vsc_data(infoPointer, info.count), keyBuf, keyLen)
+                        vscf_salted_kdf_derive(self.c_ctx, vsc_data(dataPointer, data.count), vsc_data(saltPointer, salt.count), vsc_data(infoPointer, info.count), keyBuf, keyLen)
                     })
                 })
             })

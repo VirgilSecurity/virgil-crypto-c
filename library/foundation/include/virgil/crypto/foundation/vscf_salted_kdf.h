@@ -47,11 +47,12 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Provides interface to the key derivation function (HKDF) algorithms.
+//  Provides interface to the key derivation function (KDF) algorithms
+//  that use salt and teration count.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_EX_KDF_H_INCLUDED
-#define VSCF_EX_KDF_H_INCLUDED
+#ifndef VSCF_SALTED_KDF_H_INCLUDED
+#define VSCF_SALTED_KDF_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
@@ -83,34 +84,34 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'ex kdf'.
+//  Contains API requirements of the interface 'salted kdf'.
 //
-typedef struct vscf_ex_kdf_api_t vscf_ex_kdf_api_t;
+typedef struct vscf_salted_kdf_api_t vscf_salted_kdf_api_t;
 
 //
 //  Derive key of the requested length from the given data, salt and info.
 //
 VSCF_PUBLIC void
-vscf_ex_kdf_derive(vscf_impl_t *impl, vsc_data_t data, vsc_data_t salt, vsc_data_t info, vsc_buffer_t *key,
+vscf_salted_kdf_derive(vscf_impl_t *impl, vsc_data_t data, vsc_data_t salt, vsc_data_t info, vsc_buffer_t *key,
         size_t key_len);
 
 //
-//  Return ex kdf API, or NULL if it is not implemented.
+//  Return salted kdf API, or NULL if it is not implemented.
 //
-VSCF_PUBLIC const vscf_ex_kdf_api_t *
-vscf_ex_kdf_api(const vscf_impl_t *impl);
+VSCF_PUBLIC const vscf_salted_kdf_api_t *
+vscf_salted_kdf_api(const vscf_impl_t *impl);
 
 //
-//  Check if given object implements interface 'ex kdf'.
+//  Check if given object implements interface 'salted kdf'.
 //
 VSCF_PUBLIC bool
-vscf_ex_kdf_is_implemented(const vscf_impl_t *impl);
+vscf_salted_kdf_is_implemented(const vscf_impl_t *impl);
 
 //
 //  Returns interface unique identifier.
 //
 VSCF_PUBLIC vscf_api_tag_t
-vscf_ex_kdf_api_tag(const vscf_ex_kdf_api_t *ex_kdf_api);
+vscf_salted_kdf_api_tag(const vscf_salted_kdf_api_t *salted_kdf_api);
 
 
 // --------------------------------------------------------------------------
@@ -126,5 +127,5 @@ vscf_ex_kdf_api_tag(const vscf_ex_kdf_api_t *ex_kdf_api);
 
 
 //  @footer
-#endif // VSCF_EX_KDF_H_INCLUDED
+#endif // VSCF_SALTED_KDF_H_INCLUDED
 //  @end

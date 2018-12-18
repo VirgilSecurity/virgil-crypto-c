@@ -19,7 +19,7 @@
     <implementation name="hkdf">
         Virgil Security implementation of the HKDF (RFC 6234) algorithm.
 
-        <interface name="ex kdf"/>
+        <interface name="salted kdf"/>
 
         <dependency name="hash" interface="hash stream"/>
 

@@ -1,5 +1,6 @@
-<interface name="ex kdf">
-    Provides interface to the key derivation function (HKDF) algorithms.
+<interface name="salted kdf">
+    Provides interface to the key derivation function (KDF) algorithms
+    that use salt and teration count.
 
     <method name="derive">
         Derive key of the requested length from the given data, salt and info.
