@@ -43,6 +43,10 @@ else( UNIX )
   find_package( Mono )
 endif( )
 
+if( NOT ( CSHARP_DOTNET_FOUND OR CSHARP_MONO_FOUND ) )
+  message(FATAL_ERROR ".NET Framework or Mono Framework is not found.")
+endif( )
+
 if( CSHARP_DOTNET_FOUND )
   set( CSHARP_TYPE ".NET" CACHE STRING "Using the .NET compiler" )
   set( CSHARP_VERSION ${CSHARP_DOTNET_VERSION} CACHE STRING "C# .NET compiler version" FORCE )
@@ -62,7 +66,6 @@ if ( WIN32 )
     set( CSHARP_COMPILER "call ${CSHARP_COMPILER}" )
   endif ( )
 endif( )
-
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(CSharp DEFAULT_MSG CSHARP_TYPE CSHARP_VERSION CSHARP_COMPILER)
 
 mark_as_advanced( CSHARP_TYPE CSHARP_VERSION CSHARP_COMPILER CSHARP_INTERPRETER CSHARP_PLATFORM CSHARP_SDK )
