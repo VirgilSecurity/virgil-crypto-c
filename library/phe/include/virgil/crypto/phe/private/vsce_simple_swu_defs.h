@@ -88,6 +88,8 @@ struct vsce_simple_swu_t {
 
     mbedtls_ecp_group group;
 
+    mbedtls_mpi a;
+
     mbedtls_mpi two;
 
     mbedtls_mpi three;

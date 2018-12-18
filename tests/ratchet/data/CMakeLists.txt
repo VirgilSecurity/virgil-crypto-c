@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(test_data_ratchet VERSION 0.1.0 LANGUAGES C)
+project(test_data_ratchet VERSION ${virgil_crypto_c_ratchet_tests_VERSION} LANGUAGES C)
 
 add_library(test_data_ratchet "")
 target_sources(test_data_ratchet
@@ -42,11 +42,15 @@ target_sources(test_data_ratchet
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_regular_message.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_session.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_prekey_message.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ratchet_message.h"
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_regular_message.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_session.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_prekey_message.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ratchet_message.c"
         )
 
 target_include_directories(test_data_ratchet

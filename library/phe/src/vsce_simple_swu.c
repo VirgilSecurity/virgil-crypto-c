@@ -209,8 +209,9 @@ vsce_simple_swu_init_ctx(vsce_simple_swu_t *simple_swu_ctx) {
     int mbedtls_status = 0;
     mbedtls_status = mbedtls_ecp_group_load(&simple_swu_ctx->group, MBEDTLS_ECP_DP_SECP256R1);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    mbedtls_mpi_init(&simple_swu_ctx->group.A);
-    mbedtls_status = mbedtls_mpi_sub_int(&simple_swu_ctx->group.A, &simple_swu_ctx->group.P, 3);
+
+    mbedtls_mpi_init(&simple_swu_ctx->a);
+    mbedtls_status = mbedtls_mpi_sub_int(&simple_swu_ctx->a, &simple_swu_ctx->group.P, 3);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_mpi_init(&simple_swu_ctx->two);
@@ -238,7 +239,7 @@ vsce_simple_swu_init_ctx(vsce_simple_swu_t *simple_swu_ctx) {
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_mpi_init(&simple_swu_ctx->mba);
-    mbedtls_status = mbedtls_mpi_inv_mod(&simple_swu_ctx->mba, &simple_swu_ctx->group.A, &simple_swu_ctx->group.P);
+    mbedtls_status = mbedtls_mpi_inv_mod(&simple_swu_ctx->mba, &simple_swu_ctx->a, &simple_swu_ctx->group.P);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_mul_mpi(&simple_swu_ctx->mba, &simple_swu_ctx->mba, &simple_swu_ctx->group.B);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
@@ -256,7 +257,7 @@ vsce_simple_swu_cleanup_ctx(vsce_simple_swu_t *simple_swu_ctx) {
 
     VSCE_ASSERT_PTR(simple_swu_ctx);
 
-    mbedtls_mpi_free(&simple_swu_ctx->group.A);
+    mbedtls_mpi_free(&simple_swu_ctx->a);
     mbedtls_ecp_group_free(&simple_swu_ctx->group);
     mbedtls_mpi_free(&simple_swu_ctx->two);
     mbedtls_mpi_free(&simple_swu_ctx->three);
@@ -320,7 +321,7 @@ vsce_simple_swu_bignum_to_point(vsce_simple_swu_t *simple_swu_ctx, const mbedtls
 
     mbedtls_mpi h2_temp;
     mbedtls_mpi_init(&h2_temp);
-    mbedtls_status = mbedtls_mpi_mul_mpi(&h2_temp, &x2, &simple_swu_ctx->group.A);
+    mbedtls_status = mbedtls_mpi_mul_mpi(&h2_temp, &x2, &simple_swu_ctx->a);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_add_mpi(&h2_temp, &h2_temp, &simple_swu_ctx->group.B);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
@@ -337,7 +338,7 @@ vsce_simple_swu_bignum_to_point(vsce_simple_swu_t *simple_swu_ctx, const mbedtls
 
     mbedtls_mpi h3_temp;
     mbedtls_mpi_init(&h3_temp);
-    mbedtls_status = mbedtls_mpi_mul_mpi(&h3_temp, &x3, &simple_swu_ctx->group.A);
+    mbedtls_status = mbedtls_mpi_mul_mpi(&h3_temp, &x3, &simple_swu_ctx->a);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_mpi_add_mpi(&h3_temp, &h3_temp, &simple_swu_ctx->group.B);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);

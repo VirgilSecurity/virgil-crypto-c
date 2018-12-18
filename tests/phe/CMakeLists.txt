@@ -34,12 +34,13 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_c_phe_tests VERSION 0.1.0 LANGUAGES C)
+project(virgil_crypto_c_phe_tests VERSION ${virgil_crypto_c_tests_VERSION} LANGUAGES C)
 
 add_subdirectory(data)
 
 macro(_add_test test)
     add_executable(${test} ${test}.c)
+    target_add_filename_definitions(${test})
     target_link_libraries(${test} unity test_utils test_data_phe vsc::phe)
     set_target_properties(${test} PROPERTIES C_STANDARD "99")
     add_test (NAME ${test} COMMAND ${test})
@@ -52,3 +53,5 @@ endmacro()
 _add_test (test_simple_swu)
 _add_test (test_phe_hash)
 _add_test (test_phe)
+_add_test (test_phe_server)
+_add_test (test_phe_client)

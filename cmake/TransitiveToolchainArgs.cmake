@@ -70,6 +70,7 @@ endfunction()
 function(TRANSITIVE_COMMON_ARGS_ADD)
     transitive_args_add(
             CMAKE_POSITION_INDEPENDENT_CODE
+            CMAKE_INSTALL_LIBDIR
     )
 endfunction()
 

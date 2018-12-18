@@ -1,9 +1,12 @@
 <class name="ratchet session" context="private">
 
-    <require class="ratchet prekey message" scope="private"/>
     <require class="ratchet common" scope="public"/>
 
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
+
+    <constant name="max ratchet length" definition="public" value="1024 * 1024">
+        FIXME
+    </constant>
 
     <dependency name="rng" interface="ratchet rng"/>
     <dependency class="ratchet" name="ratchet"/>
@@ -13,6 +16,15 @@
     <property name="sender ephemeral public key" class="buffer" access="readwrite"/>
     <property name="receiver longterm public key" class="buffer" access="readwrite"/>
     <property name="receiver onetime public key" class="buffer" access="readwrite"/>
+
+    <constructor name="with members">
+        <argument name="received first response" type="boolean"/>
+        <argument name="sender identity public key" class="buffer" access="readwrite"/>
+        <argument name="sender ephemeral public key" class="buffer" access="readwrite"/>
+        <argument name="receiver longterm public key" class="buffer" access="readwrite"/>
+        <argument name="receiver onetime public key" class="buffer" access="readwrite"/>
+        <argument name="ratchet" class="ratchet" access="disown"/>
+    </constructor>
 
     <method name="initiate">
         <argument name="sender identity private key" class="data"/>
@@ -30,6 +42,7 @@
         <argument name="receiver identity private key" class="buffer" access="retain"/>
         <argument name="receiver long term private key" class="buffer" access="retain"/>
         <argument name="receiver one time private key" class="buffer" access="retain"/>
+        <argument name="message" class="RegularMessage" library="nanopb" access="readonly"/>
 
         <return enum="error"/>
     </method>
@@ -52,13 +65,13 @@
     </method>
 
     <method name="decrypt len">
-        <argument name="message" class="ratchet message"/>
+        <argument name="message" class="Message" library="nanopb" access="readonly"/>
 
         <return type="size"/>
     </method>
 
     <method name="decrypt">
-        <argument name="message" class="ratchet message"/>
+        <argument name="message" class="Message" library="nanopb" access="readwrite"/>
         <argument name="plain text" class="buffer">
             <length method="decrypt len">
                 <proxy argument="message" to="message"/>
@@ -66,6 +79,25 @@
         </argument>
 
         <return enum="error"/>
+    </method>
+
+    <method name="serialize len">
+        <return type="size"/>
+    </method>
+
+    <method name="serialize">
+        <argument name="output" class="buffer">
+            <length method="serialize len"/>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="deserialize" is_static="1">
+        <argument name="input" class="data"/>
+        <argument name="err ctx" class="error ctx" access="readwrite"/>
+
+        <return class="self" access="disown"/>
     </method>
 
 </class>

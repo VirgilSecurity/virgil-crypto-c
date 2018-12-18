@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_c_ratchet_pb VERSION 0.1.0 LANGUAGES C)
+project(virgil_crypto_c_ratchet_pb VERSION ${virgil_crypto_c_ratchet_VERSION} LANGUAGES C)
 
 # ---------------------------------------------------------------------------
 #   Check dependencies
@@ -72,8 +72,7 @@ set_target_properties(ratchet_pb PROPERTIES
         )
 
 target_protobuf_sources(ratchet_pb
-        "${CMAKE_CURRENT_SOURCE_DIR}/Boss.proto"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Person.proto"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Message.proto"
         )
 
 target_link_libraries(ratchet_pb nanopb::protobuf-nanopb)

@@ -339,7 +339,7 @@ vsce_phe_hash_derive_account_key(vsce_phe_hash_t *phe_hash_ctx, const mbedtls_ec
     VSCE_ASSERT_PTR(phe_hash_ctx);
     VSCE_ASSERT_PTR(m);
     VSCE_ASSERT(vsc_buffer_len(account_key) == 0);
-    VSCE_ASSERT(vsc_buffer_capacity(account_key) == vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
+    VSCE_ASSERT(vsc_buffer_capacity(account_key) >= vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
 
     byte M_buffer[vsce_phe_common_PHE_POINT_LENGTH];
     vsc_buffer_t M_buf;

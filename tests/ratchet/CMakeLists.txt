@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_c_ratchet_tests VERSION 0.1.0 LANGUAGES C)
+project(virgil_crypto_c_ratchet_tests VERSION ${virgil_crypto_c_tests_VERSION} LANGUAGES C)
 
 add_subdirectory(data)
 
@@ -50,8 +50,6 @@ macro(_add_test test)
     endif()
 endmacro()
 
-_add_test (test_ratchet_regular_message)
-_add_test (test_ratchet_prekey_message)
 _add_test (test_ratchet_message)
 _add_test (test_ratchet)
 _add_test (test_ratchet_session)

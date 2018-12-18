@@ -4,11 +4,6 @@
     <require impl="hkdf" project="foundation" scope="private"/>
 
     <dependency name="aes256 gcm" impl="aes256 gcm" project="foundation"/>
-    <property name="kdf info" class="buffer" access="readwrite"/>
-
-    <constructor name="with members">
-        <argument name="kdf info" class="data"/>
-    </constructor>
 
     <method name="encrypt len">
         <argument name="plain text len" type="size"/>

@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_c_top VERSION 0.1.0 LANGUAGES C)
+project(virgil_crypto VERSION 0.1.0 LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
@@ -63,14 +63,13 @@ include("cmake/protobuf.cmake")
 option(BUILD_SHARED_LIBS "On/Off build shared libraries." OFF)
 
 #
-# Test & bench
+# Test
 #
 option(ENABLE_TESTING "On/Off integration tests." ON)
-option(ENABLE_BENCHMARKS "On/Off build library benchmarks." ON)
-option(VIRGIL_CSHARP_TESTING "On/Off PHP wrapper integration tests." ON)
 
 option(VIRGIL_C_TESTING "On/Off C library integration tests." ON)
 option(VIRGIL_PHP_TESTING "On/Off PHP wrapper integration tests." ON)
+option(VIRGIL_CSHARP_TESTING "On/Off CSharp wrapper integration tests." ON)
 
 #
 # Libraries
@@ -89,6 +88,7 @@ option(VIRGIL_WRAP_ALL "Build all available wrappers on the given platform" OFF)
 option(VIRGIL_WRAP_GO "Build 'Golang' wrapper" OFF)
 option(VIRGIL_WRAP_PHP "Build 'PHP' wrapper" OFF)
 option(VIRGIL_WRAP_CSHARP "Build 'CSHARP' wrapper" ON)
+
 
 # ---------------------------------------------------------------------------
 #   Install options
@@ -211,14 +211,6 @@ endif()
 
 
 # ---------------------------------------------------------------------------
-#   Benchmarks
-# ---------------------------------------------------------------------------
-if(ENABLE_BENCHMARKS AND NOT CMAKE_CROSSCOMPILING)
-    add_subdirectory(benchmarks)
-endif()
-
-
-# ---------------------------------------------------------------------------
 #   Code line stats
 # ---------------------------------------------------------------------------
 find_program(CLOC_EXECUTABLE cloc)
@@ -259,3 +251,54 @@ if(CLOC_EXECUTABLE)
     add_custom_target(cloc)
     add_dependencies(cloc cloc-common cloc-foundation cloc-pythia cloc-ratchet)
 endif()
+
+
+# ---------------------------------------------------------------------------
+#   Configure CPack
+# ---------------------------------------------------------------------------
+
+#
+#  Use [MAJOR].[MINOR] package version if it is not a cross-compiling build
+#
+if(CMAKE_CROSSCOMPILING)
+    set(SYSTEM_VERSION_SHORT ${CMAKE_SYSTEM_VERSION})
+else()
+    string(REGEX REPLACE "([0-9]+\\.[0-9]+).*" "\\1" SYSTEM_VERSION_SHORT "${CMAKE_SYSTEM_VERSION}")
+endif()
+
+set(VIRGIL_PACKAGE_LANGUAGE "C" CACHE STRING "[CPack] Package language name (used in the archive name)")
+set(VIRGIL_PACKAGE_LANGUAGE_VERSION "" CACHE STRING "[CPack] Package language version (used in the archive name)")
+set(VIRGIL_PACKAGE_PLATFORM "${CMAKE_SYSTEM_NAME}" CACHE STRING "[CPack] Platform name (used in the archive name)")
+set(VIRGIL_PACKAGE_PLATFORM_VERSION "${SYSTEM_VERSION_SHORT}" CACHE STRING "[CPack] Platform version (used in the archive name)")
+set(VIRGIL_PACKAGE_PLATFORM_ARCH "" CACHE STRING "[CPack] Platform architecture (used in the archive name)")
+
+#
+#  Define package name in the format "library-language[-platform]", where
+#     library = name-version
+#     language = name[-version]
+#     platform = name[-version][-arch]
+#
+set(VIRGIL_PACKAGE_NAME "virgil-crypto-c")
+list(APPEND VIRGIL_PACKAGE_NAME ${virgil_crypto_VERSION})
+list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_LANGUAGE})
+list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_LANGUAGE_VERSION})
+list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_PLATFORM})
+list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_PLATFORM_VERSION})
+list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_PLATFORM_ARCH})
+
+string(REPLACE ";" "-" VIRGIL_PACKAGE_NAME "${VIRGIL_PACKAGE_NAME}")
+string(TOLOWER "${VIRGIL_PACKAGE_NAME}" VIRGIL_PACKAGE_NAME)
+
+
+if(WIN32)
+    set(CPACK_GENERATOR ZIP)
+else()
+    set(CPACK_GENERATOR TGZ)
+endif()
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Virgil Security Crypto library")
+set(CPACK_PACKAGE_VENDOR "Virgil Security, Inc.")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_LIST_DIR}/LICENSE")
+set(CPACK_PACKAGE_FILE_NAME "${VIRGIL_PACKAGE_NAME}")
+set(CPACK_OUTPUT_FILE_PREFIX "packages")
+
+include (CPack)

@@ -33,21 +33,41 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
 #include "unity.h"
 #include "test_utils.h"
-#include <mbedtls/ecp.h>
-#include <mbedtls/bignum.h>
-#include <virgil/crypto/foundation/vscf_random.h>
-#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
-#include <vsce_simple_swu.h>
-#include <vsce_phe_hash.h>
 #include "test_data_phe_hash.h"
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_HASH
+#include <mbedtls/ecp.h>
+#include <mbedtls/bignum.h>
+
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_HASH &&VSCE_SIMPLE_SWU &&VSCF_RANDOM &&VSCF_CTR_DRBG
 #if TEST_DEPENDENCIES_AVAILABLE
 
+#include "vsce_simple_swu.h"
+#include "vsce_phe_hash.h"
+
+#include <virgil/crypto/foundation/vscf_random.h>
+#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
+
+// --------------------------------------------------------------------------
+//  Should have it to prevent linkage erros in MSVC.
+// --------------------------------------------------------------------------
+// clang-format off
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+// clang-format on
+
+
+// --------------------------------------------------------------------------
+//  Test functions.
+// --------------------------------------------------------------------------
 void
-test__data2point__const_hash__should_match() {
+test__data2point__const_hash__should_match(void) {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
@@ -78,7 +98,7 @@ test__data2point__const_hash__should_match() {
 }
 
 void
-test__hs0__const_hash__should_match() {
+test__hs0__const_hash__should_match(void) {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
@@ -113,7 +133,7 @@ test__hs0__const_hash__should_match() {
 }
 
 void
-test__hs1__const_hash__should_match() {
+test__hs1__const_hash__should_match(void) {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
@@ -148,7 +168,7 @@ test__hs1__const_hash__should_match() {
 }
 
 void
-test__hc0__const_hash__should_match() {
+test__hc0__const_hash__should_match(void) {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
@@ -183,7 +203,7 @@ test__hc0__const_hash__should_match() {
 }
 
 void
-test__hc1__const_hash__should_match() {
+test__hc1__const_hash__should_match(void) {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
@@ -218,7 +238,7 @@ test__hc1__const_hash__should_match() {
 }
 
 void
-test__hash_z_s_success__const_hash__should_match() {
+test__hash_z_s_success__const_hash__should_match(void) {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
@@ -276,7 +296,7 @@ test__hash_z_s_success__const_hash__should_match() {
 }
 
 void
-test__hash_z_s_failure__const_hash__should_match() {
+test__hash_z_s_failure__const_hash__should_match(void) {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);

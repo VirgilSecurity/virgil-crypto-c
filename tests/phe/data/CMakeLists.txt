@@ -34,17 +34,19 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(test_data_phe VERSION 0.1.0 LANGUAGES C)
+project(test_data_phe VERSION ${virgil_crypto_c_phe_tests_VERSION} LANGUAGES C)
 
 add_library(test_data_phe "")
 target_sources(test_data_phe
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_simple_swu.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_phe_hash.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_phe_server_client.h"
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_simple_swu.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_phe_hash.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_phe_server_client.c"
         )
 
 target_include_directories(test_data_phe

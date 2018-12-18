@@ -49,6 +49,10 @@
     <require project="foundation" feature="library"/>
     <require library="mbedtls" feature="library"/>
 
+    <feature name="multi thread" default="on">
+        Enable multi-threading safety for PHE library.
+    </feature>
+
     <module name="assert" from="shared"/>
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>

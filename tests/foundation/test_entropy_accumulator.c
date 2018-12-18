@@ -48,6 +48,20 @@
 #include "test_data_entropy_accumulator.h"
 
 
+// --------------------------------------------------------------------------
+//  Should have it to prevent linkage erros in MSVC.
+// --------------------------------------------------------------------------
+// clang-format off
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+// clang-format on
+
+
+// --------------------------------------------------------------------------
+//  Test functions.
+// --------------------------------------------------------------------------
 void
 test__entropy_accumulator__zero_entropy_and_len_64__returns__entropy_set_1(void) {
     vscf_fake_random_impl_t *entropy = vscf_fake_random_new();

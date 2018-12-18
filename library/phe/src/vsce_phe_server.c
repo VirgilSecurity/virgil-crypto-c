@@ -37,6 +37,13 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class for server-side PHE crypto operations.
+//  This class is thread-safe in case if VSCE_MULTI_THREAD defined
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -49,6 +56,7 @@
 #include "vsce_assert.h"
 #include "vsce_phe_server_defs.h"
 
+#include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <PHEModels.pb.h>
@@ -84,14 +92,21 @@ static void
 vsce_phe_server_cleanup_ctx(vsce_phe_server_t *phe_server_ctx);
 
 static vsce_error_t
-vsce_phe_server_prove_success(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
-        vsc_data_t server_public_key, const mbedtls_ecp_point *hs0, const mbedtls_ecp_point *hs1,
-        const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, ProofOfSuccess *success_proof);
+vsce_phe_server_prove_success(vsce_phe_server_t *phe_server_ctx, mbedtls_ecp_group *op_group,
+        vsc_data_t server_private_key, vsc_data_t server_public_key, const mbedtls_ecp_point *hs0,
+        const mbedtls_ecp_point *hs1, const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1,
+        ProofOfSuccess *success_proof);
 
 static vsce_error_t
-vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
-        vsc_data_t server_public_key, const mbedtls_ecp_point *c0, const mbedtls_ecp_point *hs0, mbedtls_ecp_point *c1,
-        ProofOfFail *failure_proof);
+vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, mbedtls_ecp_group *op_group,
+        vsc_data_t server_private_key, vsc_data_t server_public_key, const mbedtls_ecp_point *c0,
+        const mbedtls_ecp_point *hs0, mbedtls_ecp_point *c1, ProofOfFail *failure_proof);
+
+static mbedtls_ecp_group *
+vsce_phe_server_get_op_group(vsce_phe_server_t *phe_server_ctx);
+
+static void
+vsce_phe_server_free_op_group(mbedtls_ecp_group *op_group);
 
 //
 //  Return size of 'vsce_phe_server_t'.
@@ -135,6 +150,7 @@ vsce_phe_server_cleanup(vsce_phe_server_t *phe_server_ctx) {
         vsce_phe_server_cleanup_ctx(phe_server_ctx);
 
         vsce_phe_server_release_random(phe_server_ctx);
+        vsce_phe_server_release_operation_random(phe_server_ctx);
 
         vsce_zeroize(phe_server_ctx, sizeof(vsce_phe_server_t));
     }
@@ -246,6 +262,48 @@ vsce_phe_server_release_random(vsce_phe_server_t *phe_server_ctx) {
     vscf_impl_destroy(&phe_server_ctx->random);
 }
 
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCE_PUBLIC void
+vsce_phe_server_use_operation_random(vsce_phe_server_t *phe_server_ctx, vscf_impl_t *operation_random) {
+
+    VSCE_ASSERT_PTR(phe_server_ctx);
+    VSCE_ASSERT_PTR(operation_random);
+    VSCE_ASSERT_PTR(phe_server_ctx->operation_random == NULL);
+
+    VSCE_ASSERT(vscf_random_is_implemented(operation_random));
+
+    phe_server_ctx->operation_random = vscf_impl_copy(operation_random);
+}
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCE_PUBLIC void
+vsce_phe_server_take_operation_random(vsce_phe_server_t *phe_server_ctx, vscf_impl_t *operation_random) {
+
+    VSCE_ASSERT_PTR(phe_server_ctx);
+    VSCE_ASSERT_PTR(operation_random);
+    VSCE_ASSERT_PTR(phe_server_ctx->operation_random == NULL);
+
+    VSCE_ASSERT(vscf_random_is_implemented(operation_random));
+
+    phe_server_ctx->operation_random = operation_random;
+}
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCE_PUBLIC void
+vsce_phe_server_release_operation_random(vsce_phe_server_t *phe_server_ctx) {
+
+    VSCE_ASSERT_PTR(phe_server_ctx);
+
+    vscf_impl_destroy(&phe_server_ctx->operation_random);
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -266,10 +324,14 @@ vsce_phe_server_init_ctx(vsce_phe_server_t *phe_server_ctx) {
 
     phe_server_ctx->phe_hash = vsce_phe_hash_new();
 
-    vscf_ctr_drbg_impl_t *rng = vscf_ctr_drbg_new();
-    vscf_ctr_drbg_setup_defaults(rng);
+    vscf_ctr_drbg_impl_t *rng1, *rng2;
+    rng1 = vscf_ctr_drbg_new();
+    rng2 = vscf_ctr_drbg_new();
+    vscf_ctr_drbg_setup_defaults(rng1);
+    vscf_ctr_drbg_setup_defaults(rng2);
 
-    vsce_phe_server_take_random(phe_server_ctx, vscf_ctr_drbg_impl(rng));
+    vsce_phe_server_take_random(phe_server_ctx, vscf_ctr_drbg_impl(rng1));
+    vsce_phe_server_take_operation_random(phe_server_ctx, vscf_ctr_drbg_impl(rng2));
 
     mbedtls_ecp_group_init(&phe_server_ctx->group);
     int status = mbedtls_ecp_group_load(&phe_server_ctx->group, MBEDTLS_ECP_DP_SECP256R1);
@@ -290,6 +352,9 @@ vsce_phe_server_cleanup_ctx(vsce_phe_server_t *phe_server_ctx) {
     mbedtls_ecp_group_free(&phe_server_ctx->group);
 }
 
+//
+//  Generates new NIST P-256 server key pair for some client
+//
 VSCE_PUBLIC vsce_error_t
 vsce_phe_server_generate_server_key_pair(
         vsce_phe_server_t *phe_server_ctx, vsc_buffer_t *server_private_key, vsc_buffer_t *server_public_key) {
@@ -301,6 +366,8 @@ vsce_phe_server_generate_server_key_pair(
     VSCE_ASSERT(vsc_buffer_len(server_public_key) == 0);
     VSCE_ASSERT(vsc_buffer_left(server_public_key) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
+    mbedtls_ecp_group *op_group = vsce_phe_server_get_op_group(phe_server_ctx);
+
     vsce_error_t status = vsce_SUCCESS;
     int mbedtls_status = 0;
 
@@ -310,8 +377,7 @@ vsce_phe_server_generate_server_key_pair(
     mbedtls_ecp_point pub;
     mbedtls_ecp_point_init(&pub);
 
-    mbedtls_status = mbedtls_ecp_gen_keypair(
-            &phe_server_ctx->group, &priv, &pub, vscf_mbedtls_bridge_random, phe_server_ctx->random);
+    mbedtls_status = mbedtls_ecp_gen_keypair(op_group, &priv, &pub, vscf_mbedtls_bridge_random, phe_server_ctx->random);
 
     if (mbedtls_status != 0) {
         status = vsce_RNG_ERROR;
@@ -334,9 +400,14 @@ err:
     mbedtls_ecp_point_free(&pub);
     mbedtls_mpi_free(&priv);
 
+    vsce_phe_server_free_op_group(op_group);
+
     return status;
 }
 
+//
+//  Buffer size needed to fit EnrollmentResponse
+//
 VSCE_PUBLIC size_t
 vsce_phe_server_enrollment_response_len(vsce_phe_server_t *phe_server_ctx) {
 
@@ -345,6 +416,9 @@ vsce_phe_server_enrollment_response_len(vsce_phe_server_t *phe_server_ctx) {
     return EnrollmentResponse_size;
 }
 
+//
+//  Generates a new random enrollment and proof for a new user
+//
 VSCE_PUBLIC vsce_error_t
 vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
         vsc_data_t server_public_key, vsc_buffer_t *enrollment_response) {
@@ -354,6 +428,8 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t ser
     VSCE_ASSERT(vsc_buffer_left(enrollment_response) >= vsce_phe_server_enrollment_response_len(phe_server_ctx));
     VSCE_ASSERT(server_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT(server_public_key.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+
+    mbedtls_ecp_group *op_group = vsce_phe_server_get_op_group(phe_server_ctx);
 
     vsce_error_t status = vsce_SUCCESS;
 
@@ -392,29 +468,33 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t ser
     mbedtls_ecp_point c0, c1;
     mbedtls_ecp_point_init(&c0);
     mbedtls_ecp_point_init(&c1);
-  
-    mbedtls_status =
-            mbedtls_ecp_mul(&phe_server_ctx->group, &c0, &x, &hs0, vscf_mbedtls_bridge_random, phe_server_ctx->random);
+
+    mbedtls_status = mbedtls_ecp_mul(
+            &phe_server_ctx->group, &c0, &x, &hs0, vscf_mbedtls_bridge_random, phe_server_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    mbedtls_status =
-            mbedtls_ecp_mul(&phe_server_ctx->group, &c1, &x, &hs1, vscf_mbedtls_bridge_random, phe_server_ctx->random);
+    mbedtls_status = mbedtls_ecp_mul(
+            &phe_server_ctx->group, &c1, &x, &hs1, vscf_mbedtls_bridge_random, phe_server_ctx->operation_random);
 
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(
-            &phe_server_ctx->group, &c0, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, response.c_0, sizeof(response.c_0));
+            &phe_server_ctx->group, &c0, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, response.c0, sizeof(response.c0));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
     olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(
-            &phe_server_ctx->group, &c1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, response.c_1, sizeof(response.c_1));
+            &phe_server_ctx->group, &c1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, response.c1, sizeof(response.c1));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
-    vsce_phe_server_prove_success(
-            phe_server_ctx, server_private_key, server_public_key, &hs0, &hs1, &c0, &c1, &response.proof);
+    status = vsce_phe_server_prove_success(
+            phe_server_ctx, op_group, server_private_key, server_public_key, &hs0, &hs1, &c0, &c1, &response.proof);
+
+    if (status != vsce_SUCCESS) {
+        goto err;
+    }
 
     pb_ostream_t ostream =
             pb_ostream_from_buffer(vsc_buffer_ptr(enrollment_response), vsc_buffer_capacity(enrollment_response));
@@ -422,6 +502,7 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server_ctx, vsc_data_t ser
     VSCE_ASSERT(pb_encode(&ostream, EnrollmentResponse_fields, &response));
     vsc_buffer_reserve(enrollment_response, ostream.bytes_written);
 
+err:
     mbedtls_ecp_point_free(&hs0);
     mbedtls_ecp_point_free(&hs1);
     mbedtls_ecp_point_free(&c0);
@@ -433,9 +514,14 @@ rng_err:
 priv_err:
     mbedtls_mpi_free(&x);
 
+    vsce_phe_server_free_op_group(op_group);
+
     return status;
 }
 
+//
+//  Buffer size needed to fit VerifyPasswordResponse
+//
 VSCE_PUBLIC size_t
 vsce_phe_server_verify_password_response_len(vsce_phe_server_t *phe_server_ctx) {
 
@@ -444,6 +530,9 @@ vsce_phe_server_verify_password_response_len(vsce_phe_server_t *phe_server_ctx) 
     return VerifyPasswordResponse_size;
 }
 
+//
+//  Verifies existing user's password and generates response with proof
+//
 VSCE_PUBLIC vsce_error_t
 vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
         vsc_data_t server_public_key, vsc_data_t verify_password_request, vsc_buffer_t *verify_password_response) {
@@ -454,6 +543,8 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t se
             vsc_buffer_left(verify_password_response) >= vsce_phe_server_verify_password_response_len(phe_server_ctx));
     VSCE_ASSERT(server_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT(server_public_key.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+
+    mbedtls_ecp_group *op_group = vsce_phe_server_get_op_group(phe_server_ctx);
 
     vsce_error_t status = vsce_SUCCESS;
 
@@ -487,7 +578,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t se
     mbedtls_ecp_point c0;
     mbedtls_ecp_point_init(&c0);
 
-    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_server_ctx->group, &c0, request.c_0, sizeof(request.c_0));
+    mbedtls_status = mbedtls_ecp_point_read_binary(&phe_server_ctx->group, &c0, request.c0, sizeof(request.c0));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&phe_server_ctx->group, &c0) != 0) {
         status = vsce_INVALID_ECP;
         goto ecp_err;
@@ -504,7 +595,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t se
     mbedtls_ecp_point_init(&hs0x);
 
     mbedtls_status = mbedtls_ecp_mul(
-            &phe_server_ctx->group, &hs0x, &x, &hs0, vscf_mbedtls_bridge_random, phe_server_ctx->random);
+            &phe_server_ctx->group, &hs0x, &x, &hs0, vscf_mbedtls_bridge_random, phe_server_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_ecp_point c1;
@@ -514,15 +605,15 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t se
         // Password matches
 
         mbedtls_status = mbedtls_ecp_mul(
-                &phe_server_ctx->group, &c1, &x, &hs1, vscf_mbedtls_bridge_random, phe_server_ctx->random);
+                &phe_server_ctx->group, &c1, &x, &hs1, vscf_mbedtls_bridge_random, phe_server_ctx->operation_random);
         VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
         VerifyPasswordResponse response = VerifyPasswordResponse_init_zero;
         response.res = true;
 
         response.which_proof = VerifyPasswordResponse_success_tag;
-        status = vsce_phe_server_prove_success(
-                phe_server_ctx, server_private_key, server_public_key, &hs0, &hs1, &c0, &c1, &response.proof.success);
+        status = vsce_phe_server_prove_success(phe_server_ctx, op_group, server_private_key, server_public_key, &hs0,
+                &hs1, &c0, &c1, &response.proof.success);
 
         if (status != vsce_SUCCESS) {
             goto err;
@@ -530,7 +621,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t se
 
         size_t olen = 0;
         mbedtls_status = mbedtls_ecp_point_write_binary(
-                &phe_server_ctx->group, &c1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, response.c_1, sizeof(response.c_1));
+                &phe_server_ctx->group, &c1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, response.c1, sizeof(response.c1));
         VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
         VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
@@ -546,7 +637,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t se
 
         response.which_proof = VerifyPasswordResponse_fail_tag;
         status = vsce_phe_server_prove_failure(
-                phe_server_ctx, server_private_key, server_public_key, &c0, &hs0, &c1, &response.proof.fail);
+                phe_server_ctx, op_group, server_private_key, server_public_key, &c0, &hs0, &c1, &response.proof.fail);
 
         if (status != vsce_SUCCESS) {
             goto err;
@@ -554,7 +645,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server_ctx, vsc_data_t se
 
         size_t olen = 0;
         mbedtls_status = mbedtls_ecp_point_write_binary(
-                &phe_server_ctx->group, &c1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, response.c_1, sizeof(response.c_1));
+                &phe_server_ctx->group, &c1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, response.c1, sizeof(response.c1));
         VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
         VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
@@ -578,13 +669,16 @@ priv_err:
 
     mbedtls_mpi_free(&x);
 
+    vsce_phe_server_free_op_group(op_group);
+
     return status;
 }
 
 static vsce_error_t
-vsce_phe_server_prove_success(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
-        vsc_data_t server_public_key, const mbedtls_ecp_point *hs0, const mbedtls_ecp_point *hs1,
-        const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, ProofOfSuccess *success_proof) {
+vsce_phe_server_prove_success(vsce_phe_server_t *phe_server_ctx, mbedtls_ecp_group *op_group,
+        vsc_data_t server_private_key, vsc_data_t server_public_key, const mbedtls_ecp_point *hs0,
+        const mbedtls_ecp_point *hs1, const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1,
+        ProofOfSuccess *success_proof) {
 
     VSCE_ASSERT_PTR(phe_server_ctx);
     VSCE_ASSERT(server_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
@@ -627,13 +721,13 @@ vsce_phe_server_prove_success(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     mbedtls_ecp_point_init(&term3);
 
     mbedtls_status = mbedtls_ecp_mul(
-            &phe_server_ctx->group, &term1, &blind_x, hs0, vscf_mbedtls_bridge_random, phe_server_ctx->random);
+            op_group, &term1, &blind_x, hs0, vscf_mbedtls_bridge_random, phe_server_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_ecp_mul(
-            &phe_server_ctx->group, &term2, &blind_x, hs1, vscf_mbedtls_bridge_random, phe_server_ctx->random);
+            op_group, &term2, &blind_x, hs1, vscf_mbedtls_bridge_random, phe_server_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &term3, &blind_x, &phe_server_ctx->group.G,
-            vscf_mbedtls_bridge_random, phe_server_ctx->random);
+    mbedtls_status = mbedtls_ecp_mul(op_group, &term3, &blind_x, &phe_server_ctx->group.G, vscf_mbedtls_bridge_random,
+            phe_server_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_mpi challenge;
@@ -653,21 +747,21 @@ vsce_phe_server_prove_success(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
 
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            success_proof->term_1, sizeof(success_proof->term_1));
+            success_proof->term1, sizeof(success_proof->term1));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    VSCE_ASSERT(olen == sizeof(success_proof->term_1));
+    VSCE_ASSERT(olen == sizeof(success_proof->term1));
 
     olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term2, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            success_proof->term_2, sizeof(success_proof->term_2));
+            success_proof->term2, sizeof(success_proof->term2));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    VSCE_ASSERT(olen == sizeof(success_proof->term_2));
+    VSCE_ASSERT(olen == sizeof(success_proof->term2));
 
     olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term3, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            success_proof->term_3, sizeof(success_proof->term_3));
+            success_proof->term3, sizeof(success_proof->term3));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    VSCE_ASSERT(olen == sizeof(success_proof->term_3));
+    VSCE_ASSERT(olen == sizeof(success_proof->term3));
 
     mbedtls_status = mbedtls_mpi_write_binary(&blind_x, success_proof->blind_x, sizeof(success_proof->blind_x));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
@@ -688,9 +782,9 @@ err:
 }
 
 static vsce_error_t
-vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
-        vsc_data_t server_public_key, const mbedtls_ecp_point *c0, const mbedtls_ecp_point *hs0, mbedtls_ecp_point *c1,
-        ProofOfFail *failure_proof) {
+vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, mbedtls_ecp_group *op_group,
+        vsc_data_t server_private_key, vsc_data_t server_public_key, const mbedtls_ecp_point *c0,
+        const mbedtls_ecp_point *hs0, mbedtls_ecp_point *c1, ProofOfFail *failure_proof) {
 
     VSCE_ASSERT_PTR(phe_server_ctx);
 
@@ -774,7 +868,7 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     mbedtls_status = mbedtls_mpi_mod_mpi(&minus_RX, &minus_RX, &phe_server_ctx->group.N);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
-    mbedtls_status = mbedtls_ecp_muladd(&phe_server_ctx->group, c1, &r, c0, &minus_RX, hs0);
+    mbedtls_status = mbedtls_ecp_muladd(op_group, c1, &r, c0, &minus_RX, hs0);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_ecp_point term1, term2, term3, term4;
@@ -784,16 +878,16 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
     mbedtls_ecp_point_init(&term4);
 
     mbedtls_status = mbedtls_ecp_mul(
-            &phe_server_ctx->group, &term1, &blind_A, c0, vscf_mbedtls_bridge_random, phe_server_ctx->random);
+            &phe_server_ctx->group, &term1, &blind_A, c0, vscf_mbedtls_bridge_random, phe_server_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_ecp_mul(
-            &phe_server_ctx->group, &term2, &blind_B, hs0, vscf_mbedtls_bridge_random, phe_server_ctx->random);
+            op_group, &term2, &blind_B, hs0, vscf_mbedtls_bridge_random, phe_server_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     mbedtls_status = mbedtls_ecp_mul(
-            &phe_server_ctx->group, &term3, &blind_A, &X, vscf_mbedtls_bridge_random, phe_server_ctx->random);
+            &phe_server_ctx->group, &term3, &blind_A, &X, vscf_mbedtls_bridge_random, phe_server_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &term4, &blind_B, &phe_server_ctx->group.G,
-            vscf_mbedtls_bridge_random, phe_server_ctx->random);
+    mbedtls_status = mbedtls_ecp_mul(op_group, &term4, &blind_B, &phe_server_ctx->group.G, vscf_mbedtls_bridge_random,
+            phe_server_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_mpi challenge_A, challenge_B;
@@ -821,27 +915,27 @@ vsce_phe_server_prove_failure(vsce_phe_server_t *phe_server_ctx, vsc_data_t serv
 
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            failure_proof->term_1, sizeof(failure_proof->term_1));
+            failure_proof->term1, sizeof(failure_proof->term1));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    VSCE_ASSERT(olen == sizeof(failure_proof->term_1));
+    VSCE_ASSERT(olen == sizeof(failure_proof->term1));
 
     olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term2, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            failure_proof->term_2, sizeof(failure_proof->term_2));
+            failure_proof->term2, sizeof(failure_proof->term2));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    VSCE_ASSERT(olen == sizeof(failure_proof->term_2));
+    VSCE_ASSERT(olen == sizeof(failure_proof->term2));
 
     olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term3, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            failure_proof->term_3, sizeof(failure_proof->term_3));
+            failure_proof->term3, sizeof(failure_proof->term3));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    VSCE_ASSERT(olen == sizeof(failure_proof->term_3));
+    VSCE_ASSERT(olen == sizeof(failure_proof->term3));
 
     olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_server_ctx->group, &term4, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            failure_proof->term_4, sizeof(failure_proof->term_4));
+            failure_proof->term4, sizeof(failure_proof->term4));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    VSCE_ASSERT(olen == sizeof(failure_proof->term_4));
+    VSCE_ASSERT(olen == sizeof(failure_proof->term4));
 
     mbedtls_status = mbedtls_mpi_write_binary(&blind_A, failure_proof->blind_a, sizeof(failure_proof->blind_a));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
@@ -874,6 +968,9 @@ priv_err:
     return status;
 }
 
+//
+//  Buffer size needed to fit UpdateToken
+//
 VSCE_PUBLIC size_t
 vsce_phe_server_update_token_len(vsce_phe_server_t *phe_server_ctx) {
 
@@ -882,6 +979,9 @@ vsce_phe_server_update_token_len(vsce_phe_server_t *phe_server_ctx) {
     return UpdateToken_size;
 }
 
+//
+//  Updates server's private and public keys and issues an update token for use on client's side
+//
 VSCE_PUBLIC vsce_error_t
 vsce_phe_server_rotate_keys(vsce_phe_server_t *phe_server_ctx, vsc_data_t server_private_key,
         vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key, vsc_buffer_t *update_token) {
@@ -895,6 +995,8 @@ vsce_phe_server_rotate_keys(vsce_phe_server_t *phe_server_ctx, vsc_data_t server
     vsc_buffer_make_secure(new_server_private_key);
     VSCE_ASSERT(vsc_buffer_len(new_server_public_key) == 0);
     VSCE_ASSERT(vsc_buffer_left(new_server_public_key) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+
+    mbedtls_ecp_group *op_group = vsce_phe_server_get_op_group(phe_server_ctx);
 
     vsce_error_t status = vsce_SUCCESS;
 
@@ -959,8 +1061,8 @@ vsce_phe_server_rotate_keys(vsce_phe_server_t *phe_server_ctx, vsc_data_t server
     mbedtls_ecp_point new_X;
     mbedtls_ecp_point_init(&new_X);
 
-    mbedtls_status = mbedtls_ecp_mul(&phe_server_ctx->group, &new_X, &new_x, &phe_server_ctx->group.G,
-            vscf_mbedtls_bridge_random, phe_server_ctx->random);
+    mbedtls_status = mbedtls_ecp_mul(op_group, &new_X, &new_x, &phe_server_ctx->group.G, vscf_mbedtls_bridge_random,
+            phe_server_ctx->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     size_t olen = 0;
@@ -981,5 +1083,33 @@ err:
 priv_err:
     mbedtls_mpi_free(&x);
 
+    vsce_phe_server_free_op_group(op_group);
+
     return status;
+}
+
+static mbedtls_ecp_group *
+vsce_phe_server_get_op_group(vsce_phe_server_t *phe_server_ctx) {
+
+#if VSCE_MULTI_THREAD
+    VSCE_UNUSED(phe_server_ctx);
+
+    mbedtls_ecp_group *new_group = (mbedtls_ecp_group *)vsce_alloc(sizeof(mbedtls_ecp_group));
+    mbedtls_ecp_group_init(new_group);
+
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_ecp_group_load(new_group, MBEDTLS_ECP_DP_SECP256R1));
+
+    return new_group;
+#else
+    return &phe_server_ctx->group;
+#endif
+}
+
+static void
+vsce_phe_server_free_op_group(mbedtls_ecp_group *op_group) {
+
+#if VSCE_MULTI_THREAD
+    mbedtls_ecp_group_free(op_group);
+    vsce_dealloc(op_group);
+#endif
 }

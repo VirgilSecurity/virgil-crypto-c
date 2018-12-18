@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(test_utils VERSION 0.1.0 LANGUAGES C)
+project(test_utils VERSION ${virgil_crypto_c_tests_VERSION} LANGUAGES C)
 
 if(NOT TARGET unity)
     message(FATAL_ERROR "Required library 'unity' is not found - looking for target 'unity'.")

@@ -44,6 +44,13 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class for client-side PHE crypto operations.
+//  This class is thread-safe in case if VSCE_MULTI_THREAD defined
+// --------------------------------------------------------------------------
+
 #ifndef VSCE_PHE_CLIENT_H_INCLUDED
 #define VSCE_PHE_CLIENT_H_INCLUDED
 
@@ -152,35 +159,88 @@ vsce_phe_client_take_random(vsce_phe_client_t *phe_client_ctx, vscf_impl_t *rand
 VSCE_PUBLIC void
 vsce_phe_client_release_random(vsce_phe_client_t *phe_client_ctx);
 
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCE_PUBLIC void
+vsce_phe_client_use_operation_random(vsce_phe_client_t *phe_client_ctx, vscf_impl_t *operation_random);
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCE_PUBLIC void
+vsce_phe_client_take_operation_random(vsce_phe_client_t *phe_client_ctx, vscf_impl_t *operation_random);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCE_PUBLIC void
+vsce_phe_client_release_operation_random(vsce_phe_client_t *phe_client_ctx);
+
+//
+//  Sets client private and server public key
+//  Call this method before any other methods except `update enrollment record` and `generate client private key`
+//  This function should be called only once
+//
 VSCE_PUBLIC vsce_error_t
 vsce_phe_client_set_keys(vsce_phe_client_t *phe_client_ctx, vsc_data_t client_private_key,
         vsc_data_t server_public_key);
 
+//
+//  Generates client private key
+//
 VSCE_PUBLIC vsce_error_t
 vsce_phe_client_generate_client_private_key(vsce_phe_client_t *phe_client_ctx, vsc_buffer_t *client_private_key);
 
+//
+//  Buffer size needed to fit EnrollmentRecord
+//
 VSCE_PUBLIC size_t
 vsce_phe_client_enrollment_record_len(vsce_phe_client_t *phe_client_ctx);
 
+//
+//  Uses fresh EnrollmentResponse from PHE server (see get enrollment func) and user's password (or its hash) to create
+//  a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
+//  Also generates a random seed which then can be used to generate symmetric or private key to protect user's data
+//
 VSCE_PUBLIC vsce_error_t
 vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enrollment_response, vsc_data_t password,
         vsc_buffer_t *enrollment_record, vsc_buffer_t *account_key);
 
+//
+//  Buffer size needed to fit VerifyPasswordRequest
+//
 VSCE_PUBLIC size_t
 vsce_phe_client_verify_password_request_len(vsce_phe_client_t *phe_client_ctx);
 
+//
+//  Creates a request for further password verification at the PHE server side.
+//
 VSCE_PUBLIC vsce_error_t
 vsce_phe_client_create_verify_password_request(vsce_phe_client_t *phe_client_ctx, vsc_data_t password,
         vsc_data_t enrollment_record, vsc_buffer_t *verify_password_request);
 
+//
+//  Verifies PHE server's answer
+//  If login succeeded, extracts account key
+//  If login failed account key will be empty
+//
 VSCE_PUBLIC vsce_error_t
 vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vsc_data_t password,
         vsc_data_t enrollment_record, vsc_data_t verify_password_response, vsc_buffer_t *account_key);
 
+//
+//  Updates client's private key and server's public key using server's update token
+//  Use output values to instantiate new client instance with new keys
+//
 VSCE_PUBLIC vsce_error_t
 vsce_phe_client_rotate_keys(vsce_phe_client_t *phe_client_ctx, vsc_data_t update_token,
         vsc_buffer_t *new_client_private_key, vsc_buffer_t *new_server_public_key);
 
+//
+//  Updates EnrollmentRecord using server's update token
+//
 VSCE_PUBLIC vsce_error_t
 vsce_phe_client_update_enrollment_record(vsce_phe_client_t *phe_client_ctx, vsc_data_t enrollment_record,
         vsc_data_t update_token, vsc_buffer_t *new_enrollment_record);
