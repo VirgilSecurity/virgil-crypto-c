@@ -66,6 +66,7 @@ option(BUILD_SHARED_LIBS "On/Off build shared libraries." OFF)
 # Test
 #
 option(ENABLE_TESTING "On/Off integration tests." ON)
+option(ENABLE_PROFILING "On/Off GProf compilation options." OFF)
 
 option(VIRGIL_C_TESTING "On/Off C library integration tests." ON)
 option(VIRGIL_PHP_TESTING "On/Off PHP wrapper integration tests." ON)
