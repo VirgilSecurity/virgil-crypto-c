@@ -197,7 +197,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add function that 'copy' implementation object by increasing ref counter.
 # ---------------------------------------------------------------------------
-function _L24_add_method_copy (meta, destination)
+function _L24_add_method_shallow_copy (meta, destination)
     check_arguments (my, "meta, destination", my)
 
     my.names = meta_names (my.meta)
@@ -205,10 +205,9 @@ function _L24_add_method_copy (meta, destination)
     new method to my.destination
         . = "
         Copy implementation object by increasing reference counter.
-        If deep copy is required interface 'clonable' can be used.
         "
 
-        .name = my.names.method_copy
+        .name = my.names.method_shallow_copy
 
         component_create_argument_impl (method, my.meta)
         component_create_return_impl (method, my.meta)
@@ -271,7 +270,7 @@ function c_module_impl_create (meta, destination)
         _L24_add_method_cleanup (my.meta, module)
         _L24_add_method_delete (my.meta, module)
         _L24_add_method_destroy (my.meta, module)
-        _L24_add_method_copy (my.meta, module)
+        _L24_add_method_shallow_copy (my.meta, module)
     endnew
 endfunction
 

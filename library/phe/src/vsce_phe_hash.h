@@ -133,7 +133,7 @@ vsce_phe_hash_destroy(vsce_phe_hash_t **phe_hash_ctx_ref);
 //  Copy given class context by increasing reference counter.
 //
 VSCE_PUBLIC vsce_phe_hash_t *
-vsce_phe_hash_copy(vsce_phe_hash_t *phe_hash_ctx);
+vsce_phe_hash_shallow_copy(vsce_phe_hash_t *phe_hash_ctx);
 
 //
 //  Setup dependency to the implementation 'sha512' with shared ownership.

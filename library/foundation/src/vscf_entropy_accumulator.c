@@ -121,7 +121,7 @@ vscf_entropy_accumulator_add_source(
     VSCF_ASSERT(threshold > 0);
     VSCF_ASSERT(entropy_accumulator_impl->source_count < vscf_entropy_accumulator_SOURCES_MAX);
 
-    entropy_accumulator_impl->sources[entropy_accumulator_impl->source_count++] = vscf_impl_copy(source);
+    entropy_accumulator_impl->sources[entropy_accumulator_impl->source_count++] = vscf_impl_shallow_copy(source);
 
     int status = mbedtls_entropy_add_source(&entropy_accumulator_impl->ctx, vscf_mbedtls_bridge_entropy_poll, source,
             threshold, vscf_entropy_source_is_strong(source));

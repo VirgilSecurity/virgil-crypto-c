@@ -126,7 +126,7 @@ vscr_ratchet_message_key_destroy(vscr_ratchet_message_key_t **ratchet_message_ke
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_message_key_t *
-vscr_ratchet_message_key_copy(vscr_ratchet_message_key_t *ratchet_message_key_ctx);
+vscr_ratchet_message_key_shallow_copy(vscr_ratchet_message_key_t *ratchet_message_key_ctx);
 
 
 // --------------------------------------------------------------------------

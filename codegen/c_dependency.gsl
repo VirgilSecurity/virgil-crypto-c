@@ -141,7 +141,8 @@ function c_dependency_add_method_use (dependency, declaration, definition, desti
             my.dependency_property = my.names.c_dependency_property_$(make_id (my.dependency.name))
             my.full_dependency = "$(my.refs.c_argument_context)->$(my.dependency_property)"
 
-            my.method_dependency_copy = my.refs.c_dependency_method_copy_$(make_id (my.dependency.name)) ?
+            my.method_dependency_shallow_copy = \
+                    my.refs.c_dependency_method_shallow_copy_$(make_id (my.dependency.name)) ?
             my.method_dependency_check = my.refs.c_dependency_method_check_$(make_id (my.dependency.name)) ?
             my.method_dependency_did_setup = my.refs.c_dependency_method_did_setup_$(make_id (dependency.name)) ?
 
@@ -157,9 +158,9 @@ function c_dependency_add_method_use (dependency, declaration, definition, desti
                 "
             endif
 
-            if defined(my.method_dependency_copy)
+            if defined(my.method_dependency_shallow_copy)
                 my.impl_setup_dependency = "\
-                    $(my.full_dependency) = $(my.method_dependency_copy)($(my.dependency_arg));
+                    $(my.full_dependency) = $(my.method_dependency_shallow_copy)($(my.dependency_arg));
                 "
             else
                 my.impl_setup_dependency = "\

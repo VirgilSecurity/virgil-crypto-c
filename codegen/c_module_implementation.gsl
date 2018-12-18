@@ -689,14 +689,14 @@ function _Z19_add_method_destroy (impl, declaration, definition, destination, me
 endfunction
 
 # ---------------------------------------------------------------------------
-function _Z19_add_method_copy (impl, declaration, definition, destination, meta)
+function _Z19_add_method_shallow_copy (impl, declaration, definition, destination, meta)
     check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
     new method to my.destination
-        .name = my.names.method_copy
+        .name = my.names.method_shallow_copy
         .declaration = my.declaration
         .definition = my.definition
 
@@ -714,7 +714,7 @@ function _Z19_add_method_copy (impl, declaration, definition, destination, meta)
 
             . = "\
             // Proxy to the parent implementation.
-            return ($(my.type_impl) *).(c_class_impl_method_copy)((.(c_class_impl_struct_impl) *)$(my.arg_impl));
+            return ($(my.type_impl) *).(c_class_impl_method_shallow_copy)((.(c_class_impl_struct_impl) *)$(my.arg_impl));
             "
         endnew
     endnew
@@ -779,7 +779,7 @@ function _Z19_add_lifecycle_methods (impl, declaration, definition, destination,
     _Z19_add_method_new (my.impl, my.declaration, my.definition, my.destination, my.meta)
     _Z19_add_method_delete (my.impl, my.declaration, my.definition, my.destination, my.meta)
     _Z19_add_method_destroy (my.impl, my.declaration, my.definition, my.destination, my.meta)
-    _Z19_add_method_copy (my.impl, my.declaration, my.definition, my.destination, my.meta)
+    _Z19_add_method_shallow_copy (my.impl, my.declaration, my.definition, my.destination, my.meta)
 endfunction
 
 

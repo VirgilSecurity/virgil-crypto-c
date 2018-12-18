@@ -136,7 +136,7 @@ vscr_virgil_ratchet_fake_rng_destroy(vscr_virgil_ratchet_fake_rng_impl_t **virgi
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCR_PUBLIC vscr_virgil_ratchet_fake_rng_impl_t *
-vscr_virgil_ratchet_fake_rng_copy(vscr_virgil_ratchet_fake_rng_impl_t *virgil_ratchet_fake_rng_impl);
+vscr_virgil_ratchet_fake_rng_shallow_copy(vscr_virgil_ratchet_fake_rng_impl_t *virgil_ratchet_fake_rng_impl);
 
 //
 //  Interface for ratchet rng

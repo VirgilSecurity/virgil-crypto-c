@@ -152,7 +152,7 @@ function _X17_add_entity_common (meta)
         _X17_add_smart_name (entity, "method", "take")
         _X17_add_smart_name (entity, "method", "init ctx")
         _X17_add_smart_name (entity, "method", "cleanup ctx")
-        _X17_add_smart_name (entity, "method", "copy")
+        _X17_add_smart_name (entity, "method", "shallow_copy")
 
         _X17_add_smart_name (entity, "enum", "tag")
         _X17_add_smart_name (entity, "enum constant", "begin")
@@ -395,8 +395,8 @@ function _X17_add_dependencies (entity, source, class_uid_prefix, property_uid_p
 
 
         if defined(dependency.interface)
-            _X17_add_link (entity, "dependency method copy $(dependency.name)", \
-                    make_id ("class impl method copy"), dependency.project)
+            _X17_add_link (entity, "dependency method shallow copy $(dependency.name)", \
+                    make_id ("class impl method shallow copy"), dependency.project)
 
             _X17_add_link (entity, "dependency method destroy $(dependency.name)", \
                     make_id ("class impl method destroy"), dependency.project)
@@ -405,8 +405,8 @@ function _X17_add_dependencies (entity, source, class_uid_prefix, property_uid_p
                     make_id ("class", dependency.type_name, "method", "is implemented"), dependency.project)
 
         elsif defined(dependency.class) | defined(dependency.impl)
-            _X17_add_link (entity, "dependency method copy $(dependency.name)", \
-                    make_id ("class", dependency.type_name, "method", "copy"), dependency.project)
+            _X17_add_link (entity, "dependency method shallow copy $(dependency.name)", \
+                    make_id ("class", dependency.type_name, "method", "shallow copy"), dependency.project)
 
             _X17_add_link (entity, "dependency method destroy $(dependency.name)", \
                     make_id ("class", dependency.type_name, "method", "destroy"), dependency.project)

@@ -1373,7 +1373,7 @@ function php_create_class_default_constructor (php_class, class, wrapper, meta)
 
             new php_code to php_constructor
                 . = "\
-                    self.c_ctx = $(class_derive_c_method_copy (my.class))(c_ctx)
+                    self.c_ctx = $(class_derive_c_method_shallow_copy (my.class))(c_ctx)
                     super.init()
                 "
             endnew
@@ -1872,7 +1872,7 @@ function php_insert_enum (php_enum)
     #s!            enum $(my.php_enum.name:)$(my.php_inheritance_list?:) {
     #s!")
 
-    php_insert_code ("class $(my.php_enum.name:) $(terminator){")    
+    php_insert_code ("class $(my.php_enum.name:) $(terminator){")
 
     for my.php_enum.php_constant
         newline ()

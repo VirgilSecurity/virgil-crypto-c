@@ -318,10 +318,10 @@ vscf_ed25519_private_key_destroy(vscf_ed25519_private_key_impl_t **ed25519_priva
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_ed25519_private_key_impl_t *
-vscf_ed25519_private_key_copy(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl) {
+vscf_ed25519_private_key_shallow_copy(vscf_ed25519_private_key_impl_t *ed25519_private_key_impl) {
 
     // Proxy to the parent implementation.
-    return (vscf_ed25519_private_key_impl_t *)vscf_impl_copy((vscf_impl_t *)ed25519_private_key_impl);
+    return (vscf_ed25519_private_key_impl_t *)vscf_impl_shallow_copy((vscf_impl_t *)ed25519_private_key_impl);
 }
 
 //
@@ -355,7 +355,7 @@ vscf_ed25519_private_key_use_random(vscf_ed25519_private_key_impl_t *ed25519_pri
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
-    ed25519_private_key_impl->random = vscf_impl_copy(random);
+    ed25519_private_key_impl->random = vscf_impl_shallow_copy(random);
 }
 
 //

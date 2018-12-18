@@ -151,7 +151,7 @@ vscf_ctr_drbg_destroy(vscf_ctr_drbg_impl_t **ctr_drbg_impl_ref);
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_ctr_drbg_impl_t *
-vscf_ctr_drbg_copy(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
+vscf_ctr_drbg_shallow_copy(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
 
 //
 //  Setup dependency to the interface 'entropy source' with shared ownership.

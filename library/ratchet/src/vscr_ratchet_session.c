@@ -185,7 +185,7 @@ vscr_ratchet_session_destroy(vscr_ratchet_session_t **ratchet_session_ctx_ref) {
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_session_t *
-vscr_ratchet_session_copy(vscr_ratchet_session_t *ratchet_session_ctx) {
+vscr_ratchet_session_shallow_copy(vscr_ratchet_session_t *ratchet_session_ctx) {
 
     VSCR_ASSERT_PTR(ratchet_session_ctx);
 
@@ -206,7 +206,7 @@ vscr_ratchet_session_use_rng(vscr_ratchet_session_t *ratchet_session_ctx, vscr_i
 
     VSCR_ASSERT(vscr_ratchet_rng_is_implemented(rng));
 
-    ratchet_session_ctx->rng = vscr_impl_copy(rng);
+    ratchet_session_ctx->rng = vscr_impl_shallow_copy(rng);
 }
 
 //
@@ -246,7 +246,7 @@ vscr_ratchet_session_use_ratchet(vscr_ratchet_session_t *ratchet_session_ctx, vs
     VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(ratchet_session_ctx->ratchet == NULL);
 
-    ratchet_session_ctx->ratchet = vscr_ratchet_copy(ratchet);
+    ratchet_session_ctx->ratchet = vscr_ratchet_shallow_copy(ratchet);
 }
 
 //
@@ -381,7 +381,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session_ctx, vsc_d
                 vsc_buffer_bytes(receiver_one_time_public_key), vsc_buffer_bytes(ephemeral_private_key));
         vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
-        ratchet_session_ctx->receiver_onetime_public_key = vsc_buffer_copy(receiver_one_time_public_key);
+        ratchet_session_ctx->receiver_onetime_public_key = vsc_buffer_shallow_copy(receiver_one_time_public_key);
     }
 
     ratchet_session_ctx->sender_identity_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
@@ -396,7 +396,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session_ctx, vsc_d
             vsc_buffer_bytes(ephemeral_private_key));
     vsc_buffer_inc_used(ratchet_session_ctx->sender_ephemeral_public_key, ED25519_KEY_LEN);
 
-    ratchet_session_ctx->receiver_longterm_public_key = vsc_buffer_copy(receiver_long_term_public_key);
+    ratchet_session_ctx->receiver_longterm_public_key = vsc_buffer_shallow_copy(receiver_long_term_public_key);
 
     vscr_error_t result =
             vscr_ratchet_initiate(ratchet_session_ctx->ratchet, vsc_buffer_data(shared_secret), ratchet_private_key);
@@ -463,8 +463,8 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session_ctx, vsc_bu
         vsc_buffer_inc_used(ratchet_session_ctx->receiver_onetime_public_key, ED25519_KEY_LEN);
     }
 
-    ratchet_session_ctx->sender_identity_public_key = vsc_buffer_copy(sender_identity_public_key);
-    ratchet_session_ctx->sender_ephemeral_public_key = vsc_buffer_copy(sender_ephemeral_public_key);
+    ratchet_session_ctx->sender_identity_public_key = vsc_buffer_shallow_copy(sender_identity_public_key);
+    ratchet_session_ctx->sender_ephemeral_public_key = vsc_buffer_shallow_copy(sender_ephemeral_public_key);
 
     ratchet_session_ctx->receiver_longterm_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
     curve25519_status |= (unsigned int)curve25519_get_pubkey(

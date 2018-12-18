@@ -138,7 +138,7 @@ vscf_hmac_destroy(vscf_hmac_impl_t **hmac_impl_ref);
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_hmac_impl_t *
-vscf_hmac_copy(vscf_hmac_impl_t *hmac_impl);
+vscf_hmac_shallow_copy(vscf_hmac_impl_t *hmac_impl);
 
 //
 //  Setup dependency to the interface 'hash stream' with shared ownership.

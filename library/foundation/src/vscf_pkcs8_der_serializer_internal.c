@@ -233,10 +233,10 @@ vscf_pkcs8_der_serializer_destroy(vscf_pkcs8_der_serializer_impl_t **pkcs8_der_s
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_pkcs8_der_serializer_impl_t *
-vscf_pkcs8_der_serializer_copy(vscf_pkcs8_der_serializer_impl_t *pkcs8_der_serializer_impl) {
+vscf_pkcs8_der_serializer_shallow_copy(vscf_pkcs8_der_serializer_impl_t *pkcs8_der_serializer_impl) {
 
     // Proxy to the parent implementation.
-    return (vscf_pkcs8_der_serializer_impl_t *)vscf_impl_copy((vscf_impl_t *)pkcs8_der_serializer_impl);
+    return (vscf_pkcs8_der_serializer_impl_t *)vscf_impl_shallow_copy((vscf_impl_t *)pkcs8_der_serializer_impl);
 }
 
 //
@@ -271,7 +271,7 @@ vscf_pkcs8_der_serializer_use_asn1_writer(vscf_pkcs8_der_serializer_impl_t *pkcs
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
 
-    pkcs8_der_serializer_impl->asn1_writer = vscf_impl_copy(asn1_writer);
+    pkcs8_der_serializer_impl->asn1_writer = vscf_impl_shallow_copy(asn1_writer);
 }
 
 //

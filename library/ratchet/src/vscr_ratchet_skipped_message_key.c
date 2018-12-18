@@ -174,7 +174,7 @@ vscr_ratchet_skipped_message_key_destroy(vscr_ratchet_skipped_message_key_t **ra
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_skipped_message_key_t *
-vscr_ratchet_skipped_message_key_copy(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key_ctx) {
+vscr_ratchet_skipped_message_key_shallow_copy(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key_ctx) {
 
     VSCR_ASSERT_PTR(ratchet_skipped_message_key_ctx);
 

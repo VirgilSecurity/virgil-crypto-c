@@ -138,7 +138,7 @@ vscf_kdf1_destroy(vscf_kdf1_impl_t **kdf1_impl_ref);
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_kdf1_impl_t *
-vscf_kdf1_copy(vscf_kdf1_impl_t *kdf1_impl);
+vscf_kdf1_shallow_copy(vscf_kdf1_impl_t *kdf1_impl);
 
 //
 //  Setup dependency to the interface 'hash stream' with shared ownership.

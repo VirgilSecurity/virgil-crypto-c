@@ -207,7 +207,7 @@ vsce_phe_hash_destroy(vsce_phe_hash_t **phe_hash_ctx_ref) {
 //  Copy given class context by increasing reference counter.
 //
 VSCE_PUBLIC vsce_phe_hash_t *
-vsce_phe_hash_copy(vsce_phe_hash_t *phe_hash_ctx) {
+vsce_phe_hash_shallow_copy(vsce_phe_hash_t *phe_hash_ctx) {
 
     VSCE_ASSERT_PTR(phe_hash_ctx);
 
@@ -226,7 +226,7 @@ vsce_phe_hash_use_sha512(vsce_phe_hash_t *phe_hash_ctx, vscf_sha512_impl_t *sha5
     VSCE_ASSERT_PTR(sha512);
     VSCE_ASSERT_PTR(phe_hash_ctx->sha512 == NULL);
 
-    phe_hash_ctx->sha512 = vscf_sha512_copy(sha512);
+    phe_hash_ctx->sha512 = vscf_sha512_shallow_copy(sha512);
 }
 
 //
@@ -264,7 +264,7 @@ vsce_phe_hash_use_simple_swu(vsce_phe_hash_t *phe_hash_ctx, vsce_simple_swu_t *s
     VSCE_ASSERT_PTR(simple_swu);
     VSCE_ASSERT_PTR(phe_hash_ctx->simple_swu == NULL);
 
-    phe_hash_ctx->simple_swu = vsce_simple_swu_copy(simple_swu);
+    phe_hash_ctx->simple_swu = vsce_simple_swu_shallow_copy(simple_swu);
 }
 
 //

@@ -174,7 +174,7 @@ vscr_ratchet_sender_chain_destroy(vscr_ratchet_sender_chain_t **ratchet_sender_c
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_sender_chain_t *
-vscr_ratchet_sender_chain_copy(vscr_ratchet_sender_chain_t *ratchet_sender_chain_ctx) {
+vscr_ratchet_sender_chain_shallow_copy(vscr_ratchet_sender_chain_t *ratchet_sender_chain_ctx) {
 
     VSCR_ASSERT_PTR(ratchet_sender_chain_ctx);
 
