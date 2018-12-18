@@ -254,14 +254,14 @@ vscf_rsa_private_key_sign(vscf_rsa_private_key_t *rsa_private_key, vsc_data_t da
     vscf_hash(rsa_private_key->hash, data, data_hash_buf);
 
     //  Sign
-    mbedtls_rsa_context *rsa_ctx = &rsa_private_key->rsa_ctx;
+    mbedtls_rsa_context *rsa = &rsa_private_key->rsa_ctx;
     mbedtls_md_type_t md_alg =
             vscf_mbedtls_md_from_hash_alg(vscf_hash_info_alg(vscf_hash_hash_info_api(rsa_private_key->hash)));
 
     mbedtls_rsa_set_padding(&rsa_private_key->rsa_ctx, MBEDTLS_RSA_PKCS_V21, md_alg);
 
-    int ret = mbedtls_rsa_rsassa_pss_sign(rsa_ctx, vscf_mbedtls_bridge_random, rsa_private_key->random,
-            MBEDTLS_RSA_PRIVATE, md_alg, (unsigned int)vsc_buffer_len(data_hash_buf), vsc_buffer_bytes(data_hash_buf),
+    int ret = mbedtls_rsa_rsassa_pss_sign(rsa, vscf_mbedtls_bridge_random, rsa_private_key->random, MBEDTLS_RSA_PRIVATE,
+            md_alg, (unsigned int)vsc_buffer_len(data_hash_buf), vsc_buffer_bytes(data_hash_buf),
             vsc_buffer_unused_bytes(signature));
 
     vsc_buffer_destroy(&data_hash_buf);
@@ -305,16 +305,16 @@ vscf_rsa_private_key_extract_public_key(vscf_rsa_private_key_t *rsa_private_key)
     vscf_rsa_public_key_t *rsa_public_key = vscf_rsa_public_key_new();
     VSCF_ASSERT_ALLOC(rsa_public_key != NULL);
 
-    mbedtls_rsa_context *rsa_public_ctx = &rsa_public_key->rsa_ctx;
-    mbedtls_rsa_context *rsa_private_ctx = &rsa_private_key->rsa_ctx;
+    mbedtls_rsa_context *rsa_public = &rsa_public_key->rsa_ctx;
+    mbedtls_rsa_context *rsa_private = &rsa_private_key->rsa_ctx;
 
-    int copy_n_ret = mbedtls_mpi_copy(&rsa_public_ctx->N, &rsa_private_ctx->N);
-    int copy_e_ret = mbedtls_mpi_copy(&rsa_public_ctx->E, &rsa_private_ctx->E);
+    int copy_n_ret = mbedtls_mpi_copy(&rsa_public->N, &rsa_private->N);
+    int copy_e_ret = mbedtls_mpi_copy(&rsa_public->E, &rsa_private->E);
 
     VSCF_ASSERT_ALLOC(rsa_public_key != NULL);
     VSCF_ASSERT_ALLOC((0 == copy_n_ret) && (0 == copy_e_ret));
 
-    rsa_public_ctx->len = rsa_private_ctx->len;
+    rsa_public->len = rsa_private->len;
 
     if (rsa_private_key->hash) {
         vscf_rsa_public_key_use_hash(rsa_public_key, rsa_private_key->hash);
@@ -367,48 +367,48 @@ vscf_rsa_private_key_export_private_key(vscf_rsa_private_key_t *rsa_private_key,
     VSCF_ASSERT(mbedtls_rsa_check_privkey(&rsa_private_key->rsa_ctx) == 0);
 
     vscf_impl_t *asn1wr = rsa_private_key->asn1wr;
-    mbedtls_rsa_context *rsa_ctx = &rsa_private_key->rsa_ctx;
+    mbedtls_rsa_context *rsa = &rsa_private_key->rsa_ctx;
 
 
-    vscf_error_ctx_t error_ctx;
-    vscf_error_ctx_reset(&error_ctx);
+    vscf_error_ctx_t error;
+    vscf_error_ctx_reset(&error);
 
     vscf_asn1_writer_reset(asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 
     size_t top_sequence_len = 0;
 
     // Write QP - modulus
-    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->QP, &error_ctx);
+    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->QP, &error);
 
     // Write DQ - publicExponent
-    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->DQ, &error_ctx);
+    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->DQ, &error);
 
     // Write DP - privateExponent
-    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->DP, &error_ctx);
+    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->DP, &error);
 
     // Write Q - prime1
-    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->Q, &error_ctx);
+    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->Q, &error);
 
     // Write P - prime2
-    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->P, &error_ctx);
+    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->P, &error);
 
     // Write D - exponent1
-    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->D, &error_ctx);
+    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->D, &error);
 
     // Write E - exponent2
-    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->E, &error_ctx);
+    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->E, &error);
 
     // Write N - coefficient
-    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->N, &error_ctx);
+    top_sequence_len += vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->N, &error);
 
     // Write version (0)
     top_sequence_len += vscf_asn1_writer_write_int(asn1wr, 0);
 
     vscf_asn1_writer_write_sequence(asn1wr, top_sequence_len);
 
-    vscf_error_ctx_update(&error_ctx, vscf_asn1_writer_error(asn1wr));
+    vscf_error_ctx_update(&error, vscf_asn1_writer_error(asn1wr));
 
-    if (vscf_error_ctx_error(&error_ctx) != vscf_SUCCESS) {
+    if (vscf_error_ctx_error(&error) != vscf_SUCCESS) {
         return vscf_error_SMALL_BUFFER;
     }
 
@@ -463,7 +463,7 @@ vscf_rsa_private_key_import_private_key(vscf_rsa_private_key_t *rsa_private_key,
     VSCF_ASSERT_PTR(rsa_private_key->asn1rd);
 
     vscf_impl_t *asn1rd = rsa_private_key->asn1rd;
-    mbedtls_rsa_context *rsa_ctx = &rsa_private_key->rsa_ctx;
+    mbedtls_rsa_context *rsa = &rsa_private_key->rsa_ctx;
 
     // start
     vscf_asn1_reader_reset(asn1rd, data);
@@ -475,33 +475,33 @@ vscf_rsa_private_key_import_private_key(vscf_rsa_private_key_t *rsa_private_key,
         return vscf_error_BAD_PKCS1_PRIVATE_KEY;
     }
 
-    vscf_error_ctx_t error_ctx;
-    vscf_error_ctx_reset(&error_ctx);
+    vscf_error_ctx_t error;
+    vscf_error_ctx_reset(&error);
 
     // modulus
-    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->N, &error_ctx);
+    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa->N, &error);
 
     // publicExponent
-    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->E, &error_ctx);
+    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa->E, &error);
 
     // privateExponent
-    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->D, &error_ctx);
+    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa->D, &error);
 
     // prime1
-    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->P, &error_ctx);
+    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa->P, &error);
 
     // prime2
-    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->Q, &error_ctx);
+    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa->Q, &error);
 
     // Handle both errors: ASN.1 reader and mbedtls bignum reader.
-    if (vscf_error_ctx_error(&error_ctx) != vscf_SUCCESS) {
+    if (vscf_error_ctx_error(&error) != vscf_SUCCESS) {
         return vscf_error_BAD_PKCS1_PRIVATE_KEY;
     }
 
     /* Complete the RSA private key */
-    rsa_ctx->len = mbedtls_mpi_size(&rsa_ctx->N);
+    rsa->len = mbedtls_mpi_size(&rsa->N);
 
-    int rsa_complete_ret = mbedtls_rsa_complete(rsa_ctx);
+    int rsa_complete_ret = mbedtls_rsa_complete(rsa);
     VSCF_ASSERT_ALLOC(rsa_complete_ret == 0);
 
     return vscf_SUCCESS;

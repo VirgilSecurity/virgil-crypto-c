@@ -72,8 +72,8 @@
 #define VSCP_LOCAL_THREAD_STORAGE
 #endif
 
-static VSCP_LOCAL_THREAD_STORAGE mbedtls_entropy_context g_entropy_ctx;
-static VSCP_LOCAL_THREAD_STORAGE mbedtls_ctr_drbg_context g_rng_ctx;
+static VSCP_LOCAL_THREAD_STORAGE mbedtls_entropy_context g_entropy;
+static VSCP_LOCAL_THREAD_STORAGE mbedtls_ctr_drbg_context g_rng;
 static VSCP_LOCAL_THREAD_STORAGE size_t g_instances = 0;
 static bool g_globally_inited = false;
 
@@ -102,7 +102,7 @@ static bool g_globally_inited = false;
 //  Note, that context is already zeroed.
 //
 static void
-vscp_pythia_init_ctx(vscp_pythia_t *pythia_ctx);
+vscp_pythia_init_ctx(vscp_pythia_t *pythia);
 
 //
 //  Release all inner resources.
@@ -110,7 +110,7 @@ vscp_pythia_init_ctx(vscp_pythia_t *pythia_ctx);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscp_pythia_cleanup_ctx(vscp_pythia_t *pythia_ctx);
+vscp_pythia_cleanup_ctx(vscp_pythia_t *pythia);
 
 //
 //  Callback for the pythia random.
@@ -131,35 +131,35 @@ vscp_pythia_ctx_size(void) {
 //  Perform initialization of pre-allocated context.
 //
 VSCP_PUBLIC void
-vscp_pythia_init(vscp_pythia_t *pythia_ctx) {
+vscp_pythia_init(vscp_pythia_t *pythia) {
 
-    VSCP_ASSERT_PTR(pythia_ctx);
+    VSCP_ASSERT_PTR(pythia);
 
-    vscp_zeroize(pythia_ctx, sizeof(vscp_pythia_t));
+    vscp_zeroize(pythia, sizeof(vscp_pythia_t));
 
-    pythia_ctx->refcnt = 1;
+    pythia->refcnt = 1;
 
-    vscp_pythia_init_ctx(pythia_ctx);
+    vscp_pythia_init_ctx(pythia);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCP_PUBLIC void
-vscp_pythia_cleanup(vscp_pythia_t *pythia_ctx) {
+vscp_pythia_cleanup(vscp_pythia_t *pythia) {
 
-    if (pythia_ctx == NULL) {
+    if (pythia == NULL) {
         return;
     }
 
-    if (pythia_ctx->refcnt == 0) {
+    if (pythia->refcnt == 0) {
         return;
     }
 
-    if (--pythia_ctx->refcnt == 0) {
-        vscp_pythia_cleanup_ctx(pythia_ctx);
+    if (--pythia->refcnt == 0) {
+        vscp_pythia_cleanup_ctx(pythia);
 
-        vscp_zeroize(pythia_ctx, sizeof(vscp_pythia_t));
+        vscp_zeroize(pythia, sizeof(vscp_pythia_t));
     }
 }
 
@@ -169,14 +169,14 @@ vscp_pythia_cleanup(vscp_pythia_t *pythia_ctx) {
 VSCP_PUBLIC vscp_pythia_t *
 vscp_pythia_new(void) {
 
-    vscp_pythia_t *pythia_ctx = (vscp_pythia_t *) vscp_alloc(sizeof (vscp_pythia_t));
-    VSCP_ASSERT_ALLOC(pythia_ctx);
+    vscp_pythia_t *pythia = (vscp_pythia_t *) vscp_alloc(sizeof (vscp_pythia_t));
+    VSCP_ASSERT_ALLOC(pythia);
 
-    vscp_pythia_init(pythia_ctx);
+    vscp_pythia_init(pythia);
 
-    pythia_ctx->self_dealloc_cb = vscp_dealloc;
+    pythia->self_dealloc_cb = vscp_dealloc;
 
-    return pythia_ctx;
+    return pythia;
 }
 
 //
@@ -184,18 +184,18 @@ vscp_pythia_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCP_PUBLIC void
-vscp_pythia_delete(vscp_pythia_t *pythia_ctx) {
+vscp_pythia_delete(vscp_pythia_t *pythia) {
 
-    if (pythia_ctx == NULL) {
+    if (pythia == NULL) {
         return;
     }
 
-    vscp_dealloc_fn self_dealloc_cb = pythia_ctx->self_dealloc_cb;
+    vscp_dealloc_fn self_dealloc_cb = pythia->self_dealloc_cb;
 
-    vscp_pythia_cleanup(pythia_ctx);
+    vscp_pythia_cleanup(pythia);
 
-    if (pythia_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(pythia_ctx);
+    if (pythia->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(pythia);
     }
 }
 
@@ -204,27 +204,27 @@ vscp_pythia_delete(vscp_pythia_t *pythia_ctx) {
 //  This is a reverse action of the function 'vscp_pythia_new ()'.
 //
 VSCP_PUBLIC void
-vscp_pythia_destroy(vscp_pythia_t **pythia_ctx_ref) {
+vscp_pythia_destroy(vscp_pythia_t **pythia_ref) {
 
-    VSCP_ASSERT_PTR(pythia_ctx_ref);
+    VSCP_ASSERT_PTR(pythia_ref);
 
-    vscp_pythia_t *pythia_ctx = *pythia_ctx_ref;
-    *pythia_ctx_ref = NULL;
+    vscp_pythia_t *pythia = *pythia_ref;
+    *pythia_ref = NULL;
 
-    vscp_pythia_delete(pythia_ctx);
+    vscp_pythia_delete(pythia);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCP_PUBLIC vscp_pythia_t *
-vscp_pythia_shallow_copy(vscp_pythia_t *pythia_ctx) {
+vscp_pythia_shallow_copy(vscp_pythia_t *pythia) {
 
-    VSCP_ASSERT_PTR(pythia_ctx);
+    VSCP_ASSERT_PTR(pythia);
 
-    ++pythia_ctx->refcnt;
+    ++pythia->refcnt;
 
-    return pythia_ctx;
+    return pythia;
 }
 
 
@@ -241,36 +241,36 @@ vscp_pythia_shallow_copy(vscp_pythia_t *pythia_ctx) {
 //  Note, that context is already zeroed.
 //
 static void
-vscp_pythia_init_ctx(vscp_pythia_t *pythia_ctx) {
+vscp_pythia_init_ctx(vscp_pythia_t *pythia) {
 
-    VSCP_ASSERT_PTR(pythia_ctx);
+    VSCP_ASSERT_PTR(pythia);
     VSCP_ASSERT(g_globally_inited && "Call vscp_global_init() before use any class function.");
 
     if (g_instances++ > 0) {
         return;
     }
 
-    mbedtls_entropy_init(&g_entropy_ctx);
-    mbedtls_ctr_drbg_init(&g_rng_ctx);
+    mbedtls_entropy_init(&g_entropy);
+    mbedtls_ctr_drbg_init(&g_rng);
 
 #if !defined(MBEDTLS_NO_PLATFORM_ENTROPY)
-    mbedtls_entropy_add_source(&g_entropy_ctx, mbedtls_platform_entropy_poll, NULL, MBEDTLS_ENTROPY_MIN_PLATFORM,
+    mbedtls_entropy_add_source(&g_entropy, mbedtls_platform_entropy_poll, NULL, MBEDTLS_ENTROPY_MIN_PLATFORM,
             MBEDTLS_ENTROPY_SOURCE_STRONG);
 #endif
 
 #if defined(MBEDTLS_TIMING_C)
     mbedtls_entropy_add_source(
-            &g_entropy_ctx, mbedtls_hardclock_poll, NULL, MBEDTLS_ENTROPY_MIN_HARDCLOCK, MBEDTLS_ENTROPY_SOURCE_WEAK);
+            &g_entropy, mbedtls_hardclock_poll, NULL, MBEDTLS_ENTROPY_MIN_HARDCLOCK, MBEDTLS_ENTROPY_SOURCE_WEAK);
 #endif
 
 #if defined(MBEDTLS_HAVEGE_C)
-    mbedtls_entropy_add_source(&g_entropy_ctx, mbedtls_havege_poll, &g_entropy_ctx.havege_data,
-            MBEDTLS_ENTROPY_MIN_HAVEGE, MBEDTLS_ENTROPY_SOURCE_STRONG);
+    mbedtls_entropy_add_source(&g_entropy, mbedtls_havege_poll, &g_entropy.havege_data, MBEDTLS_ENTROPY_MIN_HAVEGE,
+            MBEDTLS_ENTROPY_SOURCE_STRONG);
 #endif
 
     const unsigned char pers[] = "vscp_pythia";
     size_t pers_len = sizeof(pers);
-    int status = mbedtls_ctr_drbg_seed(&g_rng_ctx, mbedtls_entropy_func, &g_entropy_ctx, pers, pers_len);
+    int status = mbedtls_ctr_drbg_seed(&g_rng, mbedtls_entropy_func, &g_entropy, pers, pers_len);
     VSCP_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
 }
 
@@ -280,16 +280,16 @@ vscp_pythia_init_ctx(vscp_pythia_t *pythia_ctx) {
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscp_pythia_cleanup_ctx(vscp_pythia_t *pythia_ctx) {
+vscp_pythia_cleanup_ctx(vscp_pythia_t *pythia) {
 
-    VSCP_ASSERT_PTR(pythia_ctx);
+    VSCP_ASSERT_PTR(pythia);
 
     if (--g_instances > 0) {
         return;
     }
 
-    mbedtls_entropy_free(&g_entropy_ctx);
-    mbedtls_ctr_drbg_free(&g_rng_ctx);
+    mbedtls_entropy_free(&g_entropy);
+    mbedtls_ctr_drbg_free(&g_rng);
 }
 
 //
@@ -413,9 +413,9 @@ vscp_pythia_password_update_token_buf_len(void) {
 //
 VSCP_PUBLIC vscp_error_t
 vscp_pythia_blind(
-        vscp_pythia_t *pythia_ctx, vsc_data_t password, vsc_buffer_t *blinded_password, vsc_buffer_t *blinding_secret) {
+        vscp_pythia_t *pythia, vsc_data_t password, vsc_buffer_t *blinded_password, vsc_buffer_t *blinding_secret) {
 
-    VSCP_ASSERT_PTR(pythia_ctx);
+    VSCP_ASSERT_PTR(pythia);
     VSCP_ASSERT_PTR(password.bytes);
     VSCP_ASSERT_PTR(blinded_password);
     VSCP_ASSERT_PTR(blinding_secret);
@@ -443,10 +443,10 @@ vscp_pythia_blind(
 //  Deblinds 'transformed password' value with previously returned 'blinding secret' from blind().
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_deblind(vscp_pythia_t *pythia_ctx, vsc_data_t transformed_password, vsc_data_t blinding_secret,
+vscp_pythia_deblind(vscp_pythia_t *pythia, vsc_data_t transformed_password, vsc_data_t blinding_secret,
         vsc_buffer_t *deblinded_password) {
 
-    VSCP_ASSERT_PTR(pythia_ctx);
+    VSCP_ASSERT_PTR(pythia);
     VSCP_ASSERT_PTR(transformed_password.bytes);
     VSCP_ASSERT_PTR(blinding_secret.bytes);
     VSCP_ASSERT_PTR(deblinded_password);
@@ -472,11 +472,11 @@ vscp_pythia_deblind(vscp_pythia_t *pythia_ctx, vsc_data_t transformed_password, 
 //  Computes transformation private and public key.
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_compute_transformation_key_pair(vscp_pythia_t *pythia_ctx, vsc_data_t transformation_key_id,
+vscp_pythia_compute_transformation_key_pair(vscp_pythia_t *pythia, vsc_data_t transformation_key_id,
         vsc_data_t pythia_secret, vsc_data_t pythia_scope_secret, vsc_buffer_t *transformation_private_key,
         vsc_buffer_t *transformation_public_key) {
 
-    VSCP_ASSERT_PTR(pythia_ctx);
+    VSCP_ASSERT_PTR(pythia);
     VSCP_ASSERT_PTR(transformation_key_id.bytes);
     VSCP_ASSERT_PTR(pythia_secret.bytes);
     VSCP_ASSERT_PTR(pythia_scope_secret.bytes);
@@ -509,10 +509,10 @@ vscp_pythia_compute_transformation_key_pair(vscp_pythia_t *pythia_ctx, vsc_data_
 //  Transforms blinded password using transformation private key.
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_transform(vscp_pythia_t *pythia_ctx, vsc_data_t blinded_password, vsc_data_t tweak,
+vscp_pythia_transform(vscp_pythia_t *pythia, vsc_data_t blinded_password, vsc_data_t tweak,
         vsc_data_t transformation_private_key, vsc_buffer_t *transformed_password, vsc_buffer_t *transformed_tweak) {
 
-    VSCP_ASSERT_PTR(pythia_ctx);
+    VSCP_ASSERT_PTR(pythia);
     VSCP_ASSERT_PTR(blinded_password.bytes);
     VSCP_ASSERT_PTR(tweak.bytes);
     VSCP_ASSERT_PTR(transformation_private_key.bytes);
@@ -545,11 +545,11 @@ vscp_pythia_transform(vscp_pythia_t *pythia_ctx, vsc_data_t blinded_password, vs
 //  Generates proof that server possesses secret values that were used to transform password.
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_prove(vscp_pythia_t *pythia_ctx, vsc_data_t transformed_password, vsc_data_t blinded_password,
+vscp_pythia_prove(vscp_pythia_t *pythia, vsc_data_t transformed_password, vsc_data_t blinded_password,
         vsc_data_t transformed_tweak, vsc_data_t transformation_private_key, vsc_data_t transformation_public_key,
         vsc_buffer_t *proof_value_c, vsc_buffer_t *proof_value_u) {
 
-    VSCP_ASSERT_PTR(pythia_ctx);
+    VSCP_ASSERT_PTR(pythia);
     VSCP_ASSERT_PTR(transformed_password.bytes);
     VSCP_ASSERT_PTR(blinded_password.bytes);
     VSCP_ASSERT_PTR(transformed_tweak.bytes);
@@ -588,10 +588,10 @@ vscp_pythia_prove(vscp_pythia_t *pythia_ctx, vsc_data_t transformed_password, vs
 //  assuming that client has previously stored transformation public key.
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_verify(vscp_pythia_t *pythia_ctx, vsc_data_t transformed_password, vsc_data_t blinded_password,
+vscp_pythia_verify(vscp_pythia_t *pythia, vsc_data_t transformed_password, vsc_data_t blinded_password,
         vsc_data_t tweak, vsc_data_t transformation_public_key, vsc_data_t proof_value_c, vsc_data_t proof_value_u) {
 
-    VSCP_ASSERT_PTR(pythia_ctx);
+    VSCP_ASSERT_PTR(pythia);
     VSCP_ASSERT_PTR(transformed_password.bytes);
     VSCP_ASSERT_PTR(blinded_password.bytes);
     VSCP_ASSERT_PTR(tweak.bytes);
@@ -628,10 +628,10 @@ vscp_pythia_verify(vscp_pythia_t *pythia_ctx, vsc_data_t transformed_password, v
 //  This action should increment version of the 'pythia scope secret'.
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_get_password_update_token(vscp_pythia_t *pythia_ctx, vsc_data_t previous_transformation_private_key,
+vscp_pythia_get_password_update_token(vscp_pythia_t *pythia, vsc_data_t previous_transformation_private_key,
         vsc_data_t new_transformation_private_key, vsc_buffer_t *password_update_token) {
 
-    VSCP_ASSERT_PTR(pythia_ctx);
+    VSCP_ASSERT_PTR(pythia);
     VSCP_ASSERT_PTR(previous_transformation_private_key.bytes);
     VSCP_ASSERT_PTR(new_transformation_private_key.bytes);
     VSCP_ASSERT_PTR(password_update_token);
@@ -662,10 +662,10 @@ vscp_pythia_get_password_update_token(vscp_pythia_t *pythia_ctx, vsc_data_t prev
 //  After this call, 'transform()' called with new arguments will return corresponding values.
 //
 VSCP_PUBLIC vscp_error_t
-vscp_pythia_update_deblinded_with_token(vscp_pythia_t *pythia_ctx, vsc_data_t deblinded_password,
+vscp_pythia_update_deblinded_with_token(vscp_pythia_t *pythia, vsc_data_t deblinded_password,
         vsc_data_t password_update_token, vsc_buffer_t *updated_deblinded_password) {
 
-    VSCP_ASSERT_PTR(pythia_ctx);
+    VSCP_ASSERT_PTR(pythia);
     VSCP_ASSERT_PTR(deblinded_password.bytes);
     VSCP_ASSERT_PTR(password_update_token.bytes);
     VSCP_ASSERT_PTR(updated_deblinded_password);
@@ -695,6 +695,6 @@ static void
 vscp_pythia_random_handler(byte *out, int out_len, void *ctx) {
 
     VSCP_UNUSED(ctx);
-    int status = mbedtls_ctr_drbg_random(&g_rng_ctx, out, out_len);
+    int status = mbedtls_ctr_drbg_random(&g_rng, out, out_len);
     VSCP_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
 }

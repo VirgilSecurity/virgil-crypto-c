@@ -71,7 +71,7 @@
 //  Note, that context is already zeroed.
 //
 static void
-vscf_raw_key_init_ctx(vscf_raw_key_t *raw_key_ctx);
+vscf_raw_key_init_ctx(vscf_raw_key_t *raw_key);
 
 //
 //  Release all inner resources.
@@ -79,7 +79,7 @@ vscf_raw_key_init_ctx(vscf_raw_key_t *raw_key_ctx);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscf_raw_key_cleanup_ctx(vscf_raw_key_t *raw_key_ctx);
+vscf_raw_key_cleanup_ctx(vscf_raw_key_t *raw_key);
 
 //
 //  Return size of 'vscf_raw_key_t'.
@@ -94,35 +94,35 @@ vscf_raw_key_ctx_size(void) {
 //  Perform initialization of pre-allocated context.
 //
 VSCF_PUBLIC void
-vscf_raw_key_init(vscf_raw_key_t *raw_key_ctx) {
+vscf_raw_key_init(vscf_raw_key_t *raw_key) {
 
-    VSCF_ASSERT_PTR(raw_key_ctx);
+    VSCF_ASSERT_PTR(raw_key);
 
-    vscf_zeroize(raw_key_ctx, sizeof(vscf_raw_key_t));
+    vscf_zeroize(raw_key, sizeof(vscf_raw_key_t));
 
-    raw_key_ctx->refcnt = 1;
+    raw_key->refcnt = 1;
 
-    vscf_raw_key_init_ctx(raw_key_ctx);
+    vscf_raw_key_init_ctx(raw_key);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCF_PUBLIC void
-vscf_raw_key_cleanup(vscf_raw_key_t *raw_key_ctx) {
+vscf_raw_key_cleanup(vscf_raw_key_t *raw_key) {
 
-    if (raw_key_ctx == NULL) {
+    if (raw_key == NULL) {
         return;
     }
 
-    if (raw_key_ctx->refcnt == 0) {
+    if (raw_key->refcnt == 0) {
         return;
     }
 
-    if (--raw_key_ctx->refcnt == 0) {
-        vscf_raw_key_cleanup_ctx(raw_key_ctx);
+    if (--raw_key->refcnt == 0) {
+        vscf_raw_key_cleanup_ctx(raw_key);
 
-        vscf_zeroize(raw_key_ctx, sizeof(vscf_raw_key_t));
+        vscf_zeroize(raw_key, sizeof(vscf_raw_key_t));
     }
 }
 
@@ -132,14 +132,14 @@ vscf_raw_key_cleanup(vscf_raw_key_t *raw_key_ctx) {
 VSCF_PUBLIC vscf_raw_key_t *
 vscf_raw_key_new(void) {
 
-    vscf_raw_key_t *raw_key_ctx = (vscf_raw_key_t *) vscf_alloc(sizeof (vscf_raw_key_t));
-    VSCF_ASSERT_ALLOC(raw_key_ctx);
+    vscf_raw_key_t *raw_key = (vscf_raw_key_t *) vscf_alloc(sizeof (vscf_raw_key_t));
+    VSCF_ASSERT_ALLOC(raw_key);
 
-    vscf_raw_key_init(raw_key_ctx);
+    vscf_raw_key_init(raw_key);
 
-    raw_key_ctx->self_dealloc_cb = vscf_dealloc;
+    raw_key->self_dealloc_cb = vscf_dealloc;
 
-    return raw_key_ctx;
+    return raw_key;
 }
 
 //
@@ -147,18 +147,18 @@ vscf_raw_key_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCF_PUBLIC void
-vscf_raw_key_delete(vscf_raw_key_t *raw_key_ctx) {
+vscf_raw_key_delete(vscf_raw_key_t *raw_key) {
 
-    if (raw_key_ctx == NULL) {
+    if (raw_key == NULL) {
         return;
     }
 
-    vscf_dealloc_fn self_dealloc_cb = raw_key_ctx->self_dealloc_cb;
+    vscf_dealloc_fn self_dealloc_cb = raw_key->self_dealloc_cb;
 
-    vscf_raw_key_cleanup(raw_key_ctx);
+    vscf_raw_key_cleanup(raw_key);
 
-    if (raw_key_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(raw_key_ctx);
+    if (raw_key->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(raw_key);
     }
 }
 
@@ -167,27 +167,27 @@ vscf_raw_key_delete(vscf_raw_key_t *raw_key_ctx) {
 //  This is a reverse action of the function 'vscf_raw_key_new ()'.
 //
 VSCF_PUBLIC void
-vscf_raw_key_destroy(vscf_raw_key_t **raw_key_ctx_ref) {
+vscf_raw_key_destroy(vscf_raw_key_t **raw_key_ref) {
 
-    VSCF_ASSERT_PTR(raw_key_ctx_ref);
+    VSCF_ASSERT_PTR(raw_key_ref);
 
-    vscf_raw_key_t *raw_key_ctx = *raw_key_ctx_ref;
-    *raw_key_ctx_ref = NULL;
+    vscf_raw_key_t *raw_key = *raw_key_ref;
+    *raw_key_ref = NULL;
 
-    vscf_raw_key_delete(raw_key_ctx);
+    vscf_raw_key_delete(raw_key);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_raw_key_shallow_copy(vscf_raw_key_t *raw_key_ctx) {
+vscf_raw_key_shallow_copy(vscf_raw_key_t *raw_key) {
 
-    VSCF_ASSERT_PTR(raw_key_ctx);
+    VSCF_ASSERT_PTR(raw_key);
 
-    ++raw_key_ctx->refcnt;
+    ++raw_key->refcnt;
 
-    return raw_key_ctx;
+    return raw_key;
 }
 
 
@@ -204,9 +204,9 @@ vscf_raw_key_shallow_copy(vscf_raw_key_t *raw_key_ctx) {
 //  Note, that context is already zeroed.
 //
 static void
-vscf_raw_key_init_ctx(vscf_raw_key_t *raw_key_ctx) {
+vscf_raw_key_init_ctx(vscf_raw_key_t *raw_key) {
 
-    VSCF_ASSERT_PTR(raw_key_ctx);
+    VSCF_ASSERT_PTR(raw_key);
 }
 
 //
@@ -215,10 +215,10 @@ vscf_raw_key_init_ctx(vscf_raw_key_t *raw_key_ctx) {
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscf_raw_key_cleanup_ctx(vscf_raw_key_t *raw_key_ctx) {
+vscf_raw_key_cleanup_ctx(vscf_raw_key_t *raw_key) {
 
-    VSCF_ASSERT_PTR(raw_key_ctx);
-    vsc_buffer_destroy(&raw_key_ctx->bytes);
+    VSCF_ASSERT_PTR(raw_key);
+    vsc_buffer_destroy(&raw_key->bytes);
 }
 
 //
@@ -231,14 +231,14 @@ vscf_raw_key_new_with_data(vscf_key_alg_t alg, vsc_data_t raw_key_data) {
     VSCF_ASSERT(alg != vscf_key_alg_NONE);
     VSCF_ASSERT(vsc_data_is_valid(raw_key_data));
 
-    vscf_raw_key_t *raw_key_ctx = vscf_raw_key_new();
+    vscf_raw_key_t *raw_key = vscf_raw_key_new();
 
-    raw_key_ctx->alg = alg;
-    raw_key_ctx->bytes = vsc_buffer_new_with_data(raw_key_data);
+    raw_key->alg = alg;
+    raw_key->bytes = vsc_buffer_new_with_data(raw_key_data);
 
-    vsc_buffer_make_secure(raw_key_ctx->bytes);
+    vsc_buffer_make_secure(raw_key->bytes);
 
-    return raw_key_ctx;
+    return raw_key;
 }
 
 //
@@ -251,37 +251,37 @@ vscf_raw_key_new_with_buffer(vscf_key_alg_t alg, vsc_buffer_t *buffer) {
     VSCF_ASSERT_PTR(buffer);
     VSCF_ASSERT(vsc_buffer_is_valid(buffer));
 
-    vscf_raw_key_t *raw_key_ctx = vscf_raw_key_new();
+    vscf_raw_key_t *raw_key = vscf_raw_key_new();
 
-    raw_key_ctx->alg = alg;
-    raw_key_ctx->bytes = vsc_buffer_shallow_copy(buffer);
+    raw_key->alg = alg;
+    raw_key->bytes = vsc_buffer_shallow_copy(buffer);
 
-    vsc_buffer_make_secure(raw_key_ctx->bytes);
+    vsc_buffer_make_secure(raw_key->bytes);
 
-    return raw_key_ctx;
+    return raw_key;
 }
 
 //
 //  Returns asymmetric algorithm type that raw key belongs to.
 //
 VSCF_PUBLIC vscf_key_alg_t
-vscf_raw_key_alg(vscf_raw_key_t *raw_key_ctx) {
+vscf_raw_key_alg(vscf_raw_key_t *raw_key) {
 
-    VSCF_ASSERT_PTR(raw_key_ctx);
+    VSCF_ASSERT_PTR(raw_key);
 
-    return raw_key_ctx->alg;
+    return raw_key->alg;
 }
 
 //
 //  Return raw key data.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_raw_key_data(vscf_raw_key_t *raw_key_ctx) {
+vscf_raw_key_data(vscf_raw_key_t *raw_key) {
 
-    VSCF_ASSERT_PTR(raw_key_ctx);
-    VSCF_ASSERT(raw_key_ctx->alg != vscf_key_alg_NONE);
-    VSCF_ASSERT(raw_key_ctx->bytes != NULL);
-    VSCF_ASSERT(vsc_buffer_is_valid(raw_key_ctx->bytes));
+    VSCF_ASSERT_PTR(raw_key);
+    VSCF_ASSERT(raw_key->alg != vscf_key_alg_NONE);
+    VSCF_ASSERT(raw_key->bytes != NULL);
+    VSCF_ASSERT(vsc_buffer_is_valid(raw_key->bytes));
 
-    return vsc_buffer_data(raw_key_ctx->bytes);
+    return vsc_buffer_data(raw_key->bytes);
 }

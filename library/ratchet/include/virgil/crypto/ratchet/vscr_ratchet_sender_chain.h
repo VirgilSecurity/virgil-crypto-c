@@ -104,13 +104,13 @@ vscr_ratchet_sender_chain_ctx_size(void);
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_init(vscr_ratchet_sender_chain_t *ratchet_sender_chain_ctx);
+vscr_ratchet_sender_chain_init(vscr_ratchet_sender_chain_t *ratchet_sender_chain);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_cleanup(vscr_ratchet_sender_chain_t *ratchet_sender_chain_ctx);
+vscr_ratchet_sender_chain_cleanup(vscr_ratchet_sender_chain_t *ratchet_sender_chain);
 
 //
 //  Allocate context and perform it's initialization.
@@ -123,20 +123,20 @@ vscr_ratchet_sender_chain_new(void);
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_delete(vscr_ratchet_sender_chain_t *ratchet_sender_chain_ctx);
+vscr_ratchet_sender_chain_delete(vscr_ratchet_sender_chain_t *ratchet_sender_chain);
 
 //
 //  Delete given context and nullifies reference.
 //  This is a reverse action of the function 'vscr_ratchet_sender_chain_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_destroy(vscr_ratchet_sender_chain_t **ratchet_sender_chain_ctx_ref);
+vscr_ratchet_sender_chain_destroy(vscr_ratchet_sender_chain_t **ratchet_sender_chain_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_sender_chain_t *
-vscr_ratchet_sender_chain_shallow_copy(vscr_ratchet_sender_chain_t *ratchet_sender_chain_ctx);
+vscr_ratchet_sender_chain_shallow_copy(vscr_ratchet_sender_chain_t *ratchet_sender_chain);
 
 
 // --------------------------------------------------------------------------

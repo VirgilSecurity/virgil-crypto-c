@@ -249,19 +249,19 @@ vscf_rsa_public_key_export_public_key(vscf_rsa_public_key_t *rsa_public_key, vsc
     VSCF_ASSERT(mbedtls_rsa_check_pubkey(&rsa_public_key->rsa_ctx) == 0);
 
     vscf_impl_t *asn1wr = rsa_public_key->asn1wr;
-    mbedtls_rsa_context *rsa_ctx = &rsa_public_key->rsa_ctx;
+    mbedtls_rsa_context *rsa = &rsa_public_key->rsa_ctx;
 
-    vscf_error_ctx_t error_ctx;
-    vscf_error_ctx_reset(&error_ctx);
+    vscf_error_ctx_t error;
+    vscf_error_ctx_reset(&error);
 
     vscf_asn1_writer_reset(asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 
-    vscf_asn1_writer_write_sequence(asn1wr, vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->E, &error_ctx) +
-                                                    vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa_ctx->N, &error_ctx));
+    vscf_asn1_writer_write_sequence(asn1wr, vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->E, &error) +
+                                                    vscf_mbedtls_bignum_write_asn1(asn1wr, &rsa->N, &error));
 
-    vscf_error_ctx_update(&error_ctx, vscf_asn1_writer_error(asn1wr));
+    vscf_error_ctx_update(&error, vscf_asn1_writer_error(asn1wr));
 
-    if (vscf_error_ctx_error(&error_ctx) != vscf_SUCCESS) {
+    if (vscf_error_ctx_error(&error) != vscf_SUCCESS) {
         return vscf_error_SMALL_BUFFER;
     }
 
@@ -303,27 +303,27 @@ vscf_rsa_public_key_import_public_key(vscf_rsa_public_key_t *rsa_public_key, vsc
     VSCF_ASSERT_PTR(data.len > 0);
 
     vscf_impl_t *asn1rd = rsa_public_key->asn1rd;
-    mbedtls_rsa_context *rsa_ctx = &rsa_public_key->rsa_ctx;
+    mbedtls_rsa_context *rsa = &rsa_public_key->rsa_ctx;
 
-    vscf_error_ctx_t error_ctx;
-    vscf_error_ctx_reset(&error_ctx);
+    vscf_error_ctx_t error;
+    vscf_error_ctx_reset(&error);
 
     vscf_asn1_reader_reset(asn1rd, data);
     vscf_asn1_reader_read_sequence(asn1rd);
 
-    vscf_error_ctx_update(&error_ctx, vscf_asn1_reader_error(asn1rd));
+    vscf_error_ctx_update(&error, vscf_asn1_reader_error(asn1rd));
 
-    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->N, &error_ctx);
-    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa_ctx->E, &error_ctx);
+    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa->N, &error);
+    vscf_mbedtls_bignum_read_asn1(asn1rd, &rsa->E, &error);
 
 
-    if (vscf_error_ctx_error(&error_ctx) != vscf_SUCCESS) {
+    if (vscf_error_ctx_error(&error) != vscf_SUCCESS) {
         return vscf_error_BAD_PKCS1_PUBLIC_KEY;
     }
 
-    rsa_ctx->len = mbedtls_mpi_size(&rsa_ctx->N);
+    rsa->len = mbedtls_mpi_size(&rsa->N);
 
-    if (mbedtls_rsa_complete(rsa_ctx) != 0 || mbedtls_rsa_check_pubkey(rsa_ctx) != 0) {
+    if (mbedtls_rsa_complete(rsa) != 0 || mbedtls_rsa_check_pubkey(rsa) != 0) {
         return vscf_error_BAD_PKCS1_PUBLIC_KEY;
     }
 
