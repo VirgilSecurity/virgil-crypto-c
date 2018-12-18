@@ -9,6 +9,11 @@ node('master') {
     clearContentUnix()
     checkout scm
     stash includes: '**', name: 'src'
+    sh '''
+        mkdir packages
+        cp VERSION packages/
+    '''
+    archiveArtifacts('packages/VERSION')
 }
 
 
