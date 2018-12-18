@@ -64,10 +64,10 @@ int suiteTearDown(int num_failures) { return num_failures; }
 // --------------------------------------------------------------------------
 void
 test__entropy_accumulator__zero_entropy_and_len_64__returns__entropy_set_1(void) {
-    vscf_fake_random_impl_t *entropy = vscf_fake_random_new();
+    vscf_fake_random_t *entropy = vscf_fake_random_new();
     vscf_fake_random_setup_source_byte(entropy, 0x00);
 
-    vscf_entropy_accumulator_impl_t *entropy_accumulator = vscf_entropy_accumulator_new();
+    vscf_entropy_accumulator_t *entropy_accumulator = vscf_entropy_accumulator_new();
     vscf_entropy_accumulator_add_source(entropy_accumulator, vscf_fake_random_impl(entropy), 32);
 
     size_t len = 64;

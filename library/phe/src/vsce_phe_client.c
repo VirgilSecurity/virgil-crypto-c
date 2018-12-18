@@ -322,7 +322,7 @@ vsce_phe_client_init_ctx(vsce_phe_client_t *phe_client_ctx) {
 
     phe_client_ctx->phe_hash = vsce_phe_hash_new();
 
-    vscf_ctr_drbg_impl_t *rng1, *rng2;
+    vscf_ctr_drbg_t *rng1, *rng2;
     rng1 = vscf_ctr_drbg_new();
     rng2 = vscf_ctr_drbg_new();
     vscf_ctr_drbg_setup_defaults(rng1);

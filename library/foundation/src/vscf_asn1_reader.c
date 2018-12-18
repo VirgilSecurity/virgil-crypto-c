@@ -72,7 +72,7 @@
 VSCF_PUBLIC void
 vscf_asn1_reader_reset(vscf_impl_t *impl, vsc_data_t data) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->reset_cb);
@@ -85,7 +85,7 @@ vscf_asn1_reader_reset(vscf_impl_t *impl, vsc_data_t data) {
 VSCF_PUBLIC vscf_error_t
 vscf_asn1_reader_error(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->error_cb);
@@ -98,7 +98,7 @@ vscf_asn1_reader_error(vscf_impl_t *impl) {
 VSCF_PUBLIC int
 vscf_asn1_reader_get_tag(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->get_tag_cb);
@@ -111,7 +111,7 @@ vscf_asn1_reader_get_tag(vscf_impl_t *impl) {
 VSCF_PUBLIC size_t
 vscf_asn1_reader_get_len(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->get_len_cb);
@@ -125,7 +125,7 @@ vscf_asn1_reader_get_len(vscf_impl_t *impl) {
 VSCF_PUBLIC size_t
 vscf_asn1_reader_read_tag(vscf_impl_t *impl, int tag) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_tag_cb);
@@ -138,7 +138,7 @@ vscf_asn1_reader_read_tag(vscf_impl_t *impl, int tag) {
 VSCF_PUBLIC int
 vscf_asn1_reader_read_int(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_int_cb);
@@ -151,7 +151,7 @@ vscf_asn1_reader_read_int(vscf_impl_t *impl) {
 VSCF_PUBLIC int8_t
 vscf_asn1_reader_read_int8(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_int8_cb);
@@ -164,7 +164,7 @@ vscf_asn1_reader_read_int8(vscf_impl_t *impl) {
 VSCF_PUBLIC int16_t
 vscf_asn1_reader_read_int16(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_int16_cb);
@@ -177,7 +177,7 @@ vscf_asn1_reader_read_int16(vscf_impl_t *impl) {
 VSCF_PUBLIC int32_t
 vscf_asn1_reader_read_int32(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_int32_cb);
@@ -190,7 +190,7 @@ vscf_asn1_reader_read_int32(vscf_impl_t *impl) {
 VSCF_PUBLIC int64_t
 vscf_asn1_reader_read_int64(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_int64_cb);
@@ -203,7 +203,7 @@ vscf_asn1_reader_read_int64(vscf_impl_t *impl) {
 VSCF_PUBLIC unsigned int
 vscf_asn1_reader_read_uint(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_uint_cb);
@@ -216,7 +216,7 @@ vscf_asn1_reader_read_uint(vscf_impl_t *impl) {
 VSCF_PUBLIC uint8_t
 vscf_asn1_reader_read_uint8(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_uint8_cb);
@@ -229,7 +229,7 @@ vscf_asn1_reader_read_uint8(vscf_impl_t *impl) {
 VSCF_PUBLIC uint16_t
 vscf_asn1_reader_read_uint16(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_uint16_cb);
@@ -242,7 +242,7 @@ vscf_asn1_reader_read_uint16(vscf_impl_t *impl) {
 VSCF_PUBLIC uint32_t
 vscf_asn1_reader_read_uint32(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_uint32_cb);
@@ -255,7 +255,7 @@ vscf_asn1_reader_read_uint32(vscf_impl_t *impl) {
 VSCF_PUBLIC uint64_t
 vscf_asn1_reader_read_uint64(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_uint64_cb);
@@ -268,7 +268,7 @@ vscf_asn1_reader_read_uint64(vscf_impl_t *impl) {
 VSCF_PUBLIC bool
 vscf_asn1_reader_read_bool(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_bool_cb);
@@ -281,7 +281,7 @@ vscf_asn1_reader_read_bool(vscf_impl_t *impl) {
 VSCF_PUBLIC void
 vscf_asn1_reader_read_null(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_null_cb);
@@ -294,7 +294,7 @@ vscf_asn1_reader_read_null(vscf_impl_t *impl) {
 VSCF_PUBLIC vsc_data_t
 vscf_asn1_reader_read_octet_str(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_octet_str_cb);
@@ -307,7 +307,7 @@ vscf_asn1_reader_read_octet_str(vscf_impl_t *impl) {
 VSCF_PUBLIC vsc_data_t
 vscf_asn1_reader_read_bitstring_as_octet_str(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_bitstring_as_octet_str_cb);
@@ -320,7 +320,7 @@ vscf_asn1_reader_read_bitstring_as_octet_str(vscf_impl_t *impl) {
 VSCF_PUBLIC vsc_data_t
 vscf_asn1_reader_read_utf8_str(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_utf8_str_cb);
@@ -333,7 +333,7 @@ vscf_asn1_reader_read_utf8_str(vscf_impl_t *impl) {
 VSCF_PUBLIC vsc_data_t
 vscf_asn1_reader_read_oid(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_oid_cb);
@@ -346,7 +346,7 @@ vscf_asn1_reader_read_oid(vscf_impl_t *impl) {
 VSCF_PUBLIC vsc_data_t
 vscf_asn1_reader_read_data(vscf_impl_t *impl, size_t len) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_data_cb);
@@ -360,7 +360,7 @@ vscf_asn1_reader_read_data(vscf_impl_t *impl, size_t len) {
 VSCF_PUBLIC size_t
 vscf_asn1_reader_read_sequence(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_sequence_cb);
@@ -374,7 +374,7 @@ vscf_asn1_reader_read_sequence(vscf_impl_t *impl) {
 VSCF_PUBLIC size_t
 vscf_asn1_reader_read_set(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_set_cb);
@@ -389,7 +389,7 @@ vscf_asn1_reader_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_ASN1_READER);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_ASN1_READER);
     return (const vscf_asn1_reader_api_t *) api;
 }
 
@@ -401,7 +401,7 @@ vscf_asn1_reader_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_ASN1_READER) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_ASN1_READER) != NULL;
 }
 
 //

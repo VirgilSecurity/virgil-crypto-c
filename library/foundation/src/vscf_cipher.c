@@ -70,7 +70,7 @@
 VSCF_PUBLIC void
 vscf_cipher_set_nonce(vscf_impl_t *impl, vsc_data_t nonce) {
 
-    const vscf_cipher_api_t *cipher_api = vscf_cipher_api (impl);
+    const vscf_cipher_api_t *cipher_api = vscf_cipher_api(impl);
     VSCF_ASSERT_PTR (cipher_api);
 
     VSCF_ASSERT_PTR (cipher_api->set_nonce_cb);
@@ -83,7 +83,7 @@ vscf_cipher_set_nonce(vscf_impl_t *impl, vsc_data_t nonce) {
 VSCF_PUBLIC void
 vscf_cipher_set_key(vscf_impl_t *impl, vsc_data_t key) {
 
-    const vscf_cipher_api_t *cipher_api = vscf_cipher_api (impl);
+    const vscf_cipher_api_t *cipher_api = vscf_cipher_api(impl);
     VSCF_ASSERT_PTR (cipher_api);
 
     VSCF_ASSERT_PTR (cipher_api->set_key_cb);
@@ -98,7 +98,7 @@ vscf_cipher_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_CIPHER);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_CIPHER);
     return (const vscf_cipher_api_t *) api;
 }
 
@@ -143,7 +143,7 @@ vscf_cipher_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_CIPHER) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_CIPHER) != NULL;
 }
 
 //

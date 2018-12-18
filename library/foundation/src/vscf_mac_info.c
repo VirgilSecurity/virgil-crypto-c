@@ -70,7 +70,7 @@
 VSCF_PUBLIC size_t
 vscf_mac_info_digest_len(vscf_impl_t *impl) {
 
-    const vscf_mac_info_api_t *mac_info_api = vscf_mac_info_api (impl);
+    const vscf_mac_info_api_t *mac_info_api = vscf_mac_info_api(impl);
     VSCF_ASSERT_PTR (mac_info_api);
 
     VSCF_ASSERT_PTR (mac_info_api->digest_len_cb);
@@ -85,7 +85,7 @@ vscf_mac_info_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_MAC_INFO);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_MAC_INFO);
     return (const vscf_mac_info_api_t *) api;
 }
 
@@ -97,7 +97,7 @@ vscf_mac_info_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_MAC_INFO) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_MAC_INFO) != NULL;
 }
 
 //

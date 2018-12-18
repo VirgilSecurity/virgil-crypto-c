@@ -78,7 +78,7 @@ extern "C" {
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_ctr_drbg_init_ctx(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
+vscf_ctr_drbg_init_ctx(vscf_ctr_drbg_t *ctr_drbg);
 
 //
 //  Release resources of the implementation specific context.
@@ -86,7 +86,7 @@ vscf_ctr_drbg_init_ctx(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_ctr_drbg_cleanup_ctx(vscf_ctr_drbg_impl_t *ctr_drbg_impl);
+vscf_ctr_drbg_cleanup_ctx(vscf_ctr_drbg_t *ctr_drbg);
 
 
 // --------------------------------------------------------------------------

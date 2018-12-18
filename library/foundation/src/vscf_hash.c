@@ -84,7 +84,7 @@ vscf_hash_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_HASH);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_HASH);
     return (const vscf_hash_api_t *) api;
 }
 
@@ -107,7 +107,7 @@ vscf_hash_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_HASH) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_HASH) != NULL;
 }
 
 //

@@ -100,10 +100,10 @@ enum {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_ed25519_public_key_impl_t vscf_ed25519_public_key_impl_t;
+typedef struct vscf_ed25519_public_key_t vscf_ed25519_public_key_t;
 
 //
-//  Return size of 'vscf_ed25519_public_key_impl_t' type.
+//  Return size of 'vscf_ed25519_public_key_t' type.
 //
 VSCF_PUBLIC size_t
 vscf_ed25519_public_key_impl_size(void);
@@ -112,26 +112,26 @@ vscf_ed25519_public_key_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ed25519_public_key_impl(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl);
+vscf_ed25519_public_key_impl(vscf_ed25519_public_key_t *ed25519_public_key);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_ed25519_public_key_init(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl);
+vscf_ed25519_public_key_init(vscf_ed25519_public_key_t *ed25519_public_key);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_ed25519_public_key_init()'.
 //
 VSCF_PUBLIC void
-vscf_ed25519_public_key_cleanup(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl);
+vscf_ed25519_public_key_cleanup(vscf_ed25519_public_key_t *ed25519_public_key);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_ed25519_public_key_impl_t *
+VSCF_PUBLIC vscf_ed25519_public_key_t *
 vscf_ed25519_public_key_new(void);
 
 //
@@ -139,7 +139,7 @@ vscf_ed25519_public_key_new(void);
 //  This is a reverse action of the function 'vscf_ed25519_public_key_new()'.
 //
 VSCF_PUBLIC void
-vscf_ed25519_public_key_delete(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl);
+vscf_ed25519_public_key_delete(vscf_ed25519_public_key_t *ed25519_public_key);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -147,39 +147,38 @@ vscf_ed25519_public_key_delete(vscf_ed25519_public_key_impl_t *ed25519_public_ke
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_ed25519_public_key_destroy(vscf_ed25519_public_key_impl_t **ed25519_public_key_impl_ref);
+vscf_ed25519_public_key_destroy(vscf_ed25519_public_key_t **ed25519_public_key_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_ed25519_public_key_impl_t *
-vscf_ed25519_public_key_shallow_copy(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl);
+VSCF_PUBLIC vscf_ed25519_public_key_t *
+vscf_ed25519_public_key_shallow_copy(vscf_ed25519_public_key_t *ed25519_public_key);
 
 //
 //  Return implemented asymmetric key algorithm type.
 //
 VSCF_PUBLIC vscf_key_alg_t
-vscf_ed25519_public_key_alg(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl);
+vscf_ed25519_public_key_alg(vscf_ed25519_public_key_t *ed25519_public_key);
 
 //
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_public_key_key_len(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl);
+vscf_ed25519_public_key_key_len(vscf_ed25519_public_key_t *ed25519_public_key);
 
 //
 //  Length of the key in bits.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_public_key_key_bitlen(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl);
+vscf_ed25519_public_key_key_bitlen(vscf_ed25519_public_key_t *ed25519_public_key);
 
 //
 //  Verify data with given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_ed25519_public_key_verify(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_data_t data,
-        vsc_data_t signature);
+vscf_ed25519_public_key_verify(vscf_ed25519_public_key_t *ed25519_public_key, vsc_data_t data, vsc_data_t signature);
 
 //
 //  Export public key in the binary format.
@@ -189,13 +188,13 @@ vscf_ed25519_public_key_verify(vscf_ed25519_public_key_impl_t *ed25519_public_ke
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_public_key_export_public_key(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_buffer_t *out);
+vscf_ed25519_public_key_export_public_key(vscf_ed25519_public_key_t *ed25519_public_key, vsc_buffer_t *out);
 
 //
 //  Return length in bytes required to hold exported public key.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_public_key_exported_public_key_len(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl);
+vscf_ed25519_public_key_exported_public_key_len(vscf_ed25519_public_key_t *ed25519_public_key);
 
 //
 //  Import public key from the binary format.
@@ -205,7 +204,7 @@ vscf_ed25519_public_key_exported_public_key_len(vscf_ed25519_public_key_impl_t *
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_public_key_import_public_key(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_data_t data);
+vscf_ed25519_public_key_import_public_key(vscf_ed25519_public_key_t *ed25519_public_key, vsc_data_t data);
 
 
 // --------------------------------------------------------------------------

@@ -70,7 +70,7 @@
 VSCF_PUBLIC vscf_impl_t *
 vscf_private_key_extract_public_key(const vscf_impl_t *impl) {
 
-    const vscf_private_key_api_t *private_key_api = vscf_private_key_api (impl);
+    const vscf_private_key_api_t *private_key_api = vscf_private_key_api(impl);
     VSCF_ASSERT_PTR (private_key_api);
 
     VSCF_ASSERT_PTR (private_key_api->extract_public_key_cb);
@@ -87,7 +87,7 @@ vscf_private_key_extract_public_key(const vscf_impl_t *impl) {
 VSCF_PUBLIC vscf_error_t
 vscf_private_key_export_private_key(const vscf_impl_t *impl, vsc_buffer_t *out) {
 
-    const vscf_private_key_api_t *private_key_api = vscf_private_key_api (impl);
+    const vscf_private_key_api_t *private_key_api = vscf_private_key_api(impl);
     VSCF_ASSERT_PTR (private_key_api);
 
     VSCF_ASSERT_PTR (private_key_api->export_private_key_cb);
@@ -100,7 +100,7 @@ vscf_private_key_export_private_key(const vscf_impl_t *impl, vsc_buffer_t *out) 
 VSCF_PUBLIC size_t
 vscf_private_key_exported_private_key_len(const vscf_impl_t *impl) {
 
-    const vscf_private_key_api_t *private_key_api = vscf_private_key_api (impl);
+    const vscf_private_key_api_t *private_key_api = vscf_private_key_api(impl);
     VSCF_ASSERT_PTR (private_key_api);
 
     VSCF_ASSERT_PTR (private_key_api->exported_private_key_len_cb);
@@ -117,7 +117,7 @@ vscf_private_key_exported_private_key_len(const vscf_impl_t *impl) {
 VSCF_PUBLIC vscf_error_t
 vscf_private_key_import_private_key(vscf_impl_t *impl, vsc_data_t data) {
 
-    const vscf_private_key_api_t *private_key_api = vscf_private_key_api (impl);
+    const vscf_private_key_api_t *private_key_api = vscf_private_key_api(impl);
     VSCF_ASSERT_PTR (private_key_api);
 
     VSCF_ASSERT_PTR (private_key_api->import_private_key_cb);
@@ -154,7 +154,7 @@ vscf_private_key_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_PRIVATE_KEY);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_PRIVATE_KEY);
     return (const vscf_private_key_api_t *) api;
 }
 
@@ -177,7 +177,7 @@ vscf_private_key_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_PRIVATE_KEY) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_PRIVATE_KEY) != NULL;
 }
 
 //

@@ -70,7 +70,7 @@
 VSCF_PUBLIC vscf_error_t
 vscf_encrypt(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out) {
 
-    const vscf_encrypt_api_t *encrypt_api = vscf_encrypt_api (impl);
+    const vscf_encrypt_api_t *encrypt_api = vscf_encrypt_api(impl);
     VSCF_ASSERT_PTR (encrypt_api);
 
     VSCF_ASSERT_PTR (encrypt_api->encrypt_cb);
@@ -83,7 +83,7 @@ vscf_encrypt(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out) {
 VSCF_PUBLIC size_t
 vscf_encrypt_encrypted_len(vscf_impl_t *impl, size_t data_len) {
 
-    const vscf_encrypt_api_t *encrypt_api = vscf_encrypt_api (impl);
+    const vscf_encrypt_api_t *encrypt_api = vscf_encrypt_api(impl);
     VSCF_ASSERT_PTR (encrypt_api);
 
     VSCF_ASSERT_PTR (encrypt_api->encrypted_len_cb);
@@ -98,7 +98,7 @@ vscf_encrypt_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_ENCRYPT);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_ENCRYPT);
     return (const vscf_encrypt_api_t *) api;
 }
 
@@ -110,7 +110,7 @@ vscf_encrypt_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_ENCRYPT) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_ENCRYPT) != NULL;
 }
 
 //

@@ -63,7 +63,7 @@ int suiteTearDown(int num_failures) { return num_failures; }
 void
 test__deserialize_public_key__rsa2048__no_errors(void) {
 #if VSCF_RSA_PUBLIC_KEY
-    vscf_pkcs8_der_deserializer_impl_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
+    vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
     vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
 
     vscf_error_ctx_t error_ctx;
@@ -84,7 +84,7 @@ test__deserialize_public_key__rsa2048__no_errors(void) {
 void
 test__deserialize_public_key__rsa2048__equals_to_rsa_2048_public_key_pkcs1_der(void) {
 #if VSCF_RSA_PUBLIC_KEY
-    vscf_pkcs8_der_deserializer_impl_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
+    vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
     vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
 
     vscf_error_ctx_t error;
@@ -106,7 +106,7 @@ test__deserialize_public_key__rsa2048__equals_to_rsa_2048_public_key_pkcs1_der(v
 void
 test__deserialize_private_key__rsa2048__no_errors(void) {
 #if VSCF_RSA_PRIVATE_KEY
-    vscf_pkcs8_der_deserializer_impl_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
+    vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
     vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
 
     vscf_error_ctx_t error_ctx;
@@ -127,7 +127,7 @@ test__deserialize_private_key__rsa2048__no_errors(void) {
 void
 test__deserialize_private_key__rsa2048__equals_to_rsa_2048_private_key_pkcs1_der(void) {
 #if VSCF_RSA_PRIVATE_KEY
-    vscf_pkcs8_der_deserializer_impl_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
+    vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
     vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
 
     vscf_error_ctx_t error;

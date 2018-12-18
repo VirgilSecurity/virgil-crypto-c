@@ -54,7 +54,7 @@
 #include "vscr_virgil_ratchet_fake_rng_internal.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-#include "vscr_virgil_ratchet_fake_rng_impl.h"
+#include "vscr_virgil_ratchet_fake_rng_defs.h"
 #include "vscr_ratchet_rng.h"
 #include "vscr_ratchet_rng_api.h"
 #include "vscr_impl.h"
@@ -111,14 +111,14 @@ static const vscr_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCR_PUBLIC void
-vscr_virgil_ratchet_fake_rng_init(vscr_virgil_ratchet_fake_rng_impl_t *virgil_ratchet_fake_rng_impl) {
+vscr_virgil_ratchet_fake_rng_init(vscr_virgil_ratchet_fake_rng_t *virgil_ratchet_fake_rng) {
 
-    VSCR_ASSERT_PTR(virgil_ratchet_fake_rng_impl);
+    VSCR_ASSERT_PTR(virgil_ratchet_fake_rng);
 
-    vscr_zeroize(virgil_ratchet_fake_rng_impl, sizeof(vscr_virgil_ratchet_fake_rng_impl_t));
+    vscr_zeroize(virgil_ratchet_fake_rng, sizeof(vscr_virgil_ratchet_fake_rng_t));
 
-    virgil_ratchet_fake_rng_impl->info = &info;
-    virgil_ratchet_fake_rng_impl->refcnt = 1;
+    virgil_ratchet_fake_rng->info = &info;
+    virgil_ratchet_fake_rng->refcnt = 1;
 }
 
 //
@@ -126,36 +126,36 @@ vscr_virgil_ratchet_fake_rng_init(vscr_virgil_ratchet_fake_rng_impl_t *virgil_ra
 //  This is a reverse action of the function 'vscr_virgil_ratchet_fake_rng_init()'.
 //
 VSCR_PUBLIC void
-vscr_virgil_ratchet_fake_rng_cleanup(vscr_virgil_ratchet_fake_rng_impl_t *virgil_ratchet_fake_rng_impl) {
+vscr_virgil_ratchet_fake_rng_cleanup(vscr_virgil_ratchet_fake_rng_t *virgil_ratchet_fake_rng) {
 
-    if (virgil_ratchet_fake_rng_impl == NULL || virgil_ratchet_fake_rng_impl->info == NULL) {
+    if (virgil_ratchet_fake_rng == NULL || virgil_ratchet_fake_rng->info == NULL) {
         return;
     }
 
-    if (virgil_ratchet_fake_rng_impl->refcnt == 0) {
+    if (virgil_ratchet_fake_rng->refcnt == 0) {
         return;
     }
 
-    if (--virgil_ratchet_fake_rng_impl->refcnt > 0) {
+    if (--virgil_ratchet_fake_rng->refcnt > 0) {
         return;
     }
 
-    vscr_zeroize(virgil_ratchet_fake_rng_impl, sizeof(vscr_virgil_ratchet_fake_rng_impl_t));
+    vscr_zeroize(virgil_ratchet_fake_rng, sizeof(vscr_virgil_ratchet_fake_rng_t));
 }
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCR_PUBLIC vscr_virgil_ratchet_fake_rng_impl_t *
+VSCR_PUBLIC vscr_virgil_ratchet_fake_rng_t *
 vscr_virgil_ratchet_fake_rng_new(void) {
 
-    vscr_virgil_ratchet_fake_rng_impl_t *virgil_ratchet_fake_rng_impl = (vscr_virgil_ratchet_fake_rng_impl_t *) vscr_alloc(sizeof (vscr_virgil_ratchet_fake_rng_impl_t));
-    VSCR_ASSERT_ALLOC(virgil_ratchet_fake_rng_impl);
+    vscr_virgil_ratchet_fake_rng_t *virgil_ratchet_fake_rng = (vscr_virgil_ratchet_fake_rng_t *) vscr_alloc(sizeof (vscr_virgil_ratchet_fake_rng_t));
+    VSCR_ASSERT_ALLOC(virgil_ratchet_fake_rng);
 
-    vscr_virgil_ratchet_fake_rng_init(virgil_ratchet_fake_rng_impl);
+    vscr_virgil_ratchet_fake_rng_init(virgil_ratchet_fake_rng);
 
-    return virgil_ratchet_fake_rng_impl;
+    return virgil_ratchet_fake_rng;
 }
 
 //
@@ -163,12 +163,12 @@ vscr_virgil_ratchet_fake_rng_new(void) {
 //  This is a reverse action of the function 'vscr_virgil_ratchet_fake_rng_new()'.
 //
 VSCR_PUBLIC void
-vscr_virgil_ratchet_fake_rng_delete(vscr_virgil_ratchet_fake_rng_impl_t *virgil_ratchet_fake_rng_impl) {
+vscr_virgil_ratchet_fake_rng_delete(vscr_virgil_ratchet_fake_rng_t *virgil_ratchet_fake_rng) {
 
-    vscr_virgil_ratchet_fake_rng_cleanup(virgil_ratchet_fake_rng_impl);
+    vscr_virgil_ratchet_fake_rng_cleanup(virgil_ratchet_fake_rng);
 
-    if (virgil_ratchet_fake_rng_impl && (virgil_ratchet_fake_rng_impl->refcnt == 0)) {
-        vscr_dealloc(virgil_ratchet_fake_rng_impl);
+    if (virgil_ratchet_fake_rng && (virgil_ratchet_fake_rng->refcnt == 0)) {
+        vscr_dealloc(virgil_ratchet_fake_rng);
     }
 }
 
@@ -178,44 +178,44 @@ vscr_virgil_ratchet_fake_rng_delete(vscr_virgil_ratchet_fake_rng_impl_t *virgil_
 //  Given reference is nullified.
 //
 VSCR_PUBLIC void
-vscr_virgil_ratchet_fake_rng_destroy(vscr_virgil_ratchet_fake_rng_impl_t **virgil_ratchet_fake_rng_impl_ref) {
+vscr_virgil_ratchet_fake_rng_destroy(vscr_virgil_ratchet_fake_rng_t **virgil_ratchet_fake_rng_ref) {
 
-    VSCR_ASSERT_PTR(virgil_ratchet_fake_rng_impl_ref);
+    VSCR_ASSERT_PTR(virgil_ratchet_fake_rng_ref);
 
-    vscr_virgil_ratchet_fake_rng_impl_t *virgil_ratchet_fake_rng_impl = *virgil_ratchet_fake_rng_impl_ref;
-    *virgil_ratchet_fake_rng_impl_ref = NULL;
+    vscr_virgil_ratchet_fake_rng_t *virgil_ratchet_fake_rng = *virgil_ratchet_fake_rng_ref;
+    *virgil_ratchet_fake_rng_ref = NULL;
 
-    vscr_virgil_ratchet_fake_rng_delete(virgil_ratchet_fake_rng_impl);
+    vscr_virgil_ratchet_fake_rng_delete(virgil_ratchet_fake_rng);
 }
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCR_PUBLIC vscr_virgil_ratchet_fake_rng_impl_t *
-vscr_virgil_ratchet_fake_rng_shallow_copy(vscr_virgil_ratchet_fake_rng_impl_t *virgil_ratchet_fake_rng_impl) {
+VSCR_PUBLIC vscr_virgil_ratchet_fake_rng_t *
+vscr_virgil_ratchet_fake_rng_shallow_copy(vscr_virgil_ratchet_fake_rng_t *virgil_ratchet_fake_rng) {
 
     // Proxy to the parent implementation.
-    return (vscr_virgil_ratchet_fake_rng_impl_t *)vscr_impl_shallow_copy((vscr_impl_t *)virgil_ratchet_fake_rng_impl);
+    return (vscr_virgil_ratchet_fake_rng_t *)vscr_impl_shallow_copy((vscr_impl_t *)virgil_ratchet_fake_rng);
 }
 
 //
-//  Return size of 'vscr_virgil_ratchet_fake_rng_impl_t' type.
+//  Return size of 'vscr_virgil_ratchet_fake_rng_t' type.
 //
 VSCR_PUBLIC size_t
 vscr_virgil_ratchet_fake_rng_impl_size(void) {
 
-    return sizeof (vscr_virgil_ratchet_fake_rng_impl_t);
+    return sizeof (vscr_virgil_ratchet_fake_rng_t);
 }
 
 //
 //  Cast to the 'vscr_impl_t' type.
 //
 VSCR_PUBLIC vscr_impl_t *
-vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_impl_t *virgil_ratchet_fake_rng_impl) {
+vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_t *virgil_ratchet_fake_rng) {
 
-    VSCR_ASSERT_PTR(virgil_ratchet_fake_rng_impl);
-    return (vscr_impl_t *)(virgil_ratchet_fake_rng_impl);
+    VSCR_ASSERT_PTR(virgil_ratchet_fake_rng);
+    return (vscr_impl_t *)(virgil_ratchet_fake_rng);
 }
 
 static const vscr_api_t *

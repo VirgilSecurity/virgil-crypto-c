@@ -70,7 +70,7 @@
 VSCF_PUBLIC bool
 vscf_entropy_source_is_strong(vscf_impl_t *impl) {
 
-    const vscf_entropy_source_api_t *entropy_source_api = vscf_entropy_source_api (impl);
+    const vscf_entropy_source_api_t *entropy_source_api = vscf_entropy_source_api(impl);
     VSCF_ASSERT_PTR (entropy_source_api);
 
     VSCF_ASSERT_PTR (entropy_source_api->is_strong_cb);
@@ -83,7 +83,7 @@ vscf_entropy_source_is_strong(vscf_impl_t *impl) {
 VSCF_PUBLIC vscf_error_t
 vscf_entropy_source_gather(vscf_impl_t *impl, size_t len, vsc_buffer_t *out) {
 
-    const vscf_entropy_source_api_t *entropy_source_api = vscf_entropy_source_api (impl);
+    const vscf_entropy_source_api_t *entropy_source_api = vscf_entropy_source_api(impl);
     VSCF_ASSERT_PTR (entropy_source_api);
 
     VSCF_ASSERT_PTR (entropy_source_api->gather_cb);
@@ -98,7 +98,7 @@ vscf_entropy_source_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_ENTROPY_SOURCE);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_ENTROPY_SOURCE);
     return (const vscf_entropy_source_api_t *) api;
 }
 
@@ -110,7 +110,7 @@ vscf_entropy_source_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_ENTROPY_SOURCE) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_ENTROPY_SOURCE) != NULL;
 }
 
 //

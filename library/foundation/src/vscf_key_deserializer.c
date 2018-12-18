@@ -70,7 +70,7 @@
 VSCF_PUBLIC vscf_raw_key_t *
 vscf_key_deserializer_deserialize_public_key(vscf_impl_t *impl, vsc_data_t public_key_data, vscf_error_ctx_t *error) {
 
-    const vscf_key_deserializer_api_t *key_deserializer_api = vscf_key_deserializer_api (impl);
+    const vscf_key_deserializer_api_t *key_deserializer_api = vscf_key_deserializer_api(impl);
     VSCF_ASSERT_PTR (key_deserializer_api);
 
     VSCF_ASSERT_PTR (key_deserializer_api->deserialize_public_key_cb);
@@ -83,7 +83,7 @@ vscf_key_deserializer_deserialize_public_key(vscf_impl_t *impl, vsc_data_t publi
 VSCF_PUBLIC vscf_raw_key_t *
 vscf_key_deserializer_deserialize_private_key(vscf_impl_t *impl, vsc_data_t private_key_data, vscf_error_ctx_t *error) {
 
-    const vscf_key_deserializer_api_t *key_deserializer_api = vscf_key_deserializer_api (impl);
+    const vscf_key_deserializer_api_t *key_deserializer_api = vscf_key_deserializer_api(impl);
     VSCF_ASSERT_PTR (key_deserializer_api);
 
     VSCF_ASSERT_PTR (key_deserializer_api->deserialize_private_key_cb);
@@ -98,7 +98,7 @@ vscf_key_deserializer_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_KEY_DESERIALIZER);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_KEY_DESERIALIZER);
     return (const vscf_key_deserializer_api_t *) api;
 }
 
@@ -110,7 +110,7 @@ vscf_key_deserializer_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_KEY_DESERIALIZER) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_KEY_DESERIALIZER) != NULL;
 }
 
 //

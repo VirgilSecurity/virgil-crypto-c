@@ -59,7 +59,7 @@
 #include "vscf_asn1rd.h"
 #include "vscf_asn1_tag.h"
 #include "vscf_asn1_reader.h"
-#include "vscf_pkcs8_der_deserializer_impl.h"
+#include "vscf_pkcs8_der_deserializer_defs.h"
 #include "vscf_pkcs8_der_deserializer_internal.h"
 
 // clang-format on
@@ -84,12 +84,12 @@
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_pkcs8_der_deserializer_setup_defaults(vscf_pkcs8_der_deserializer_impl_t *pkcs8_der_deserializer_impl) {
+vscf_pkcs8_der_deserializer_setup_defaults(vscf_pkcs8_der_deserializer_t *pkcs8_der_deserializer) {
 
-    VSCF_ASSERT_PTR(pkcs8_der_deserializer_impl);
+    VSCF_ASSERT_PTR(pkcs8_der_deserializer);
 
-    if (NULL == pkcs8_der_deserializer_impl->asn1_reader) {
-        vscf_pkcs8_der_deserializer_take_asn1_reader(pkcs8_der_deserializer_impl, vscf_asn1rd_impl(vscf_asn1rd_new()));
+    if (NULL == pkcs8_der_deserializer->asn1_reader) {
+        vscf_pkcs8_der_deserializer_take_asn1_reader(pkcs8_der_deserializer, vscf_asn1rd_impl(vscf_asn1rd_new()));
     }
 
     return vscf_SUCCESS;
@@ -99,12 +99,12 @@ vscf_pkcs8_der_deserializer_setup_defaults(vscf_pkcs8_der_deserializer_impl_t *p
 //  Deserialize given public key as an interchangeable format to the object.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_pkcs8_der_deserializer_deserialize_public_key(vscf_pkcs8_der_deserializer_impl_t *pkcs8_der_deserializer_impl,
-        vsc_data_t public_key_data, vscf_error_ctx_t *error) {
+vscf_pkcs8_der_deserializer_deserialize_public_key(
+        vscf_pkcs8_der_deserializer_t *pkcs8_der_deserializer, vsc_data_t public_key_data, vscf_error_ctx_t *error) {
 
-    VSCF_ASSERT_PTR(pkcs8_der_deserializer_impl);
+    VSCF_ASSERT_PTR(pkcs8_der_deserializer);
     VSCF_ASSERT(vsc_data_is_valid(public_key_data));
-    VSCF_ASSERT_PTR(pkcs8_der_deserializer_impl->asn1_reader);
+    VSCF_ASSERT_PTR(pkcs8_der_deserializer->asn1_reader);
 
     //  SubjectPublicKeyInfo ::= SEQUENCE {
     //          algorithm AlgorithmIdentifier,
@@ -115,7 +115,7 @@ vscf_pkcs8_der_deserializer_deserialize_public_key(vscf_pkcs8_der_deserializer_i
         vscf_error_ctx_reset(error);
     }
 
-    vscf_impl_t *asn1_reader = pkcs8_der_deserializer_impl->asn1_reader;
+    vscf_impl_t *asn1_reader = pkcs8_der_deserializer->asn1_reader;
     vscf_asn1_reader_reset(asn1_reader, public_key_data);
 
     //
@@ -152,12 +152,12 @@ vscf_pkcs8_der_deserializer_deserialize_public_key(vscf_pkcs8_der_deserializer_i
 //  Deserialize given private key as an interchangeable format to the object.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_pkcs8_der_deserializer_deserialize_private_key(vscf_pkcs8_der_deserializer_impl_t *pkcs8_der_deserializer_impl,
-        vsc_data_t private_key_data, vscf_error_ctx_t *error) {
+vscf_pkcs8_der_deserializer_deserialize_private_key(
+        vscf_pkcs8_der_deserializer_t *pkcs8_der_deserializer, vsc_data_t private_key_data, vscf_error_ctx_t *error) {
 
-    VSCF_ASSERT_PTR(pkcs8_der_deserializer_impl);
+    VSCF_ASSERT_PTR(pkcs8_der_deserializer);
     VSCF_ASSERT(vsc_data_is_valid(private_key_data));
-    VSCF_ASSERT_PTR(pkcs8_der_deserializer_impl->asn1_reader);
+    VSCF_ASSERT_PTR(pkcs8_der_deserializer->asn1_reader);
 
     //  PrivateKeyInfo ::= SEQUENCE {
     //          version Version,
@@ -170,7 +170,7 @@ vscf_pkcs8_der_deserializer_deserialize_private_key(vscf_pkcs8_der_deserializer_
         vscf_error_ctx_reset(error);
     }
 
-    vscf_impl_t *asn1_reader = pkcs8_der_deserializer_impl->asn1_reader;
+    vscf_impl_t *asn1_reader = pkcs8_der_deserializer->asn1_reader;
     vscf_asn1_reader_reset(asn1_reader, private_key_data);
 
     //

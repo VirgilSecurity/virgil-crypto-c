@@ -99,7 +99,7 @@ struct vscr_ratchet_cipher_t {
     //
     //  Dependency to the implementation 'aes256 gcm'.
     //
-    vscf_aes256_gcm_impl_t *aes256_gcm;
+    vscf_aes256_gcm_t *aes256_gcm;
 };
 
 //
@@ -150,14 +150,14 @@ vscr_ratchet_cipher_shallow_copy(vscr_ratchet_cipher_t *ratchet_cipher_ctx);
 //  Setup dependency to the implementation 'aes256 gcm' with shared ownership.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_use_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vscf_aes256_gcm_impl_t *aes256_gcm);
+vscr_ratchet_cipher_use_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vscf_aes256_gcm_t *aes256_gcm);
 
 //
 //  Setup dependency to the implementation 'aes256 gcm' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_take_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vscf_aes256_gcm_impl_t *aes256_gcm);
+vscr_ratchet_cipher_take_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vscf_aes256_gcm_t *aes256_gcm);
 
 //
 //  Release dependency to the implementation 'aes256 gcm'.

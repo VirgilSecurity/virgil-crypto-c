@@ -211,7 +211,7 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
 
     if my.impl.context <> "none"
         new require to my.destination
-            .module = my.names.implementation_module_impl
+            .module = my.names.implementation_module_defs
             .scope = "private"
         endnew
 
@@ -251,7 +251,7 @@ function _Z19_add_includes_for_module_internal (impl, destination, meta)
         endnew
 
         new require to my.destination
-            .module = my.names.implementation_module_impl
+            .module = my.names.implementation_module_defs
             .scope = "private"
         endnew
     else
@@ -329,7 +329,7 @@ function c_dependency_add_argument (dependency, destination, after_argument, met
 
     scope my.argument
         .name = my.dependency.name
-        .class = ref(my.dependency.uid)
+        .class = ref (my.dependency.uid)
         .access = dependency.access
     endscope
 
@@ -348,7 +348,7 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
 
     new struct to my.destination
         . = "Handles implementation details."
-        .name = my.names.struct_impl
+        .name = my.impl.name
         .declaration = my.declaration
         .definition = my.definition
 
@@ -1026,7 +1026,7 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
 
     my.names = meta_names (my.meta)
 
-    echo_trace ("Create module: $(my.names.implementation_module_impl)", my)
+    echo_trace ("Create module: $(my.names.implementation_module_defs)", my)
 
     new module to my.destination
         .= "\
@@ -1036,7 +1036,7 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
         object in the stack memory.
         "
 
-        .name = my.names.implementation_module_impl
+        .name = my.names.implementation_module_defs
         .of_class = my.names.implementation_class
         .scope = "private"
         .feature = my.impl.name

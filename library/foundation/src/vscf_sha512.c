@@ -53,7 +53,7 @@
 #include "vscf_sha512.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_sha512_impl.h"
+#include "vscf_sha512_defs.h"
 #include "vscf_sha512_internal.h"
 
 // clang-format on
@@ -80,11 +80,11 @@
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_sha512_init_ctx(vscf_sha512_impl_t *sha512_impl) {
+vscf_sha512_init_ctx(vscf_sha512_t *sha512) {
 
-    VSCF_ASSERT_PTR(sha512_impl);
+    VSCF_ASSERT_PTR(sha512);
 
-    mbedtls_sha512_init(&sha512_impl->hash_ctx);
+    mbedtls_sha512_init(&sha512->hash_ctx);
 }
 
 //
@@ -93,11 +93,11 @@ vscf_sha512_init_ctx(vscf_sha512_impl_t *sha512_impl) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_sha512_cleanup_ctx(vscf_sha512_impl_t *sha512_impl) {
+vscf_sha512_cleanup_ctx(vscf_sha512_t *sha512) {
 
-    VSCF_ASSERT_PTR(sha512_impl);
+    VSCF_ASSERT_PTR(sha512);
 
-    mbedtls_sha512_free(&sha512_impl->hash_ctx);
+    mbedtls_sha512_free(&sha512->hash_ctx);
 }
 
 //
@@ -128,36 +128,36 @@ vscf_sha512_hash(vsc_data_t data, vsc_buffer_t *digest) {
 //  Start a new hashing.
 //
 VSCF_PUBLIC void
-vscf_sha512_start(vscf_sha512_impl_t *sha512_impl) {
+vscf_sha512_start(vscf_sha512_t *sha512) {
 
-    VSCF_ASSERT_PTR(sha512_impl);
+    VSCF_ASSERT_PTR(sha512);
 
     const int is384 = 0;
-    mbedtls_sha512_starts(&sha512_impl->hash_ctx, is384);
+    mbedtls_sha512_starts(&sha512->hash_ctx, is384);
 }
 
 //
 //  Add given data to the hash.
 //
 VSCF_PUBLIC void
-vscf_sha512_update(vscf_sha512_impl_t *sha512_impl, vsc_data_t data) {
+vscf_sha512_update(vscf_sha512_t *sha512, vsc_data_t data) {
 
-    VSCF_ASSERT_PTR(sha512_impl);
+    VSCF_ASSERT_PTR(sha512);
     VSCF_ASSERT(vsc_data_is_valid(data));
 
-    mbedtls_sha512_update(&sha512_impl->hash_ctx, data.bytes, data.len);
+    mbedtls_sha512_update(&sha512->hash_ctx, data.bytes, data.len);
 }
 
 //
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_sha512_finish(vscf_sha512_impl_t *sha512_impl, vsc_buffer_t *digest) {
+vscf_sha512_finish(vscf_sha512_t *sha512, vsc_buffer_t *digest) {
 
-    VSCF_ASSERT_PTR(sha512_impl);
+    VSCF_ASSERT_PTR(sha512);
     VSCF_ASSERT(vsc_buffer_is_valid(digest));
     VSCF_ASSERT(vsc_buffer_unused_len(digest) >= vscf_sha512_DIGEST_LEN);
 
-    mbedtls_sha512_finish(&sha512_impl->hash_ctx, vsc_buffer_unused_bytes(digest));
+    mbedtls_sha512_finish(&sha512->hash_ctx, vsc_buffer_unused_bytes(digest));
     vsc_buffer_inc_used(digest, vscf_sha512_DIGEST_LEN);
 }

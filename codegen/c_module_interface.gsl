@@ -214,7 +214,7 @@ function _L23_add_stateful_methods (interface, destination, meta)
 
         new code to my.proxy_method
             . = "\
-            const $(my.api_type:) *$(my.api_name:) = $(my.refs.c_interface_method_api) (.(_argument_impl));
+            const $(my.api_type:) *$(my.api_name:) = $(my.refs.c_interface_method_api)(.(_argument_impl));
             .(c_class_assert_macros_ptr) ($(my.api_name:));
 
             .(c_class_assert_macros_ptr) ($(my.callback:));
@@ -323,7 +323,7 @@ function _L23_add_method_get_api (interface, destination, meta)
             .(c_class_assert_macros_ptr) (.(_argument_impl));
 
             const .(c_class_api_struct_api) *api = \
-                    .(c_class_impl_method_api) (.(_argument_impl), $(my.refs.c_interface_constant_tag));
+                    .(c_class_impl_method_api)(.(_argument_impl), $(my.refs.c_interface_constant_tag));
             return (const $(my.api_type:) *) api;
             "
         endnew
@@ -393,7 +393,7 @@ function _L23_add_method_check_api (interface, destination, meta)
             . = "\
             .(c_class_assert_macros_ptr) (.(_argument_impl));
 
-            return .(c_class_impl_method_api) (.(_argument_impl), $(my.refs.c_interface_constant_tag)) != NULL;
+            return .(c_class_impl_method_api)(.(_argument_impl), $(my.refs.c_interface_constant_tag)) != NULL;
             "
         endnew
     endnew

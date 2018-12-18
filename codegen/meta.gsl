@@ -358,7 +358,7 @@ function _X17_add_dependencies (entity, source, class_uid_prefix, property_uid_p
 
         elsif defined (dependency.impl)
             _X17_add_link (entity, "dependency type $(dependency.name)", \
-                    make_id ("class", dependency.type_name, "struct impl"), dependency.project)
+                    make_id ("class", dependency.type_name, "struct", dependency.type_name), dependency.project)
 
         elsif defined (dependency.class)
             _X17_add_link (entity, "dependency type $(dependency.name)", \
@@ -435,18 +435,18 @@ function _X17_add_entity_implementation (meta, implementation)
         #   Public
         my.name = my.implementation.name
 
-        _X17_add_name (entity, "argument context", cat (my.name, "impl"))
-        _X17_add_link (entity, "argument context", "_argument_$(make_id (my.name, "impl"))")
-        _X17_add_link (entity, "argument context type", make_id ("class", my.name, "struct", "impl"))
+        _X17_add_name (entity, "argument context", my.name)
+        _X17_add_link (entity, "argument context", "_argument_$(make_id (my.name))")
+        _X17_add_link (entity, "argument context type", make_id ("class", my.name, "struct", my.name))
 
         _X17_add_name (entity, "implementation class", my.name)
 
         _X17_add_name (entity, "implementation module", my.name)
-        _X17_add_name (entity, "implementation module impl", cat (my.name, "impl"))
+        _X17_add_name (entity, "implementation module defs", cat (my.name, "defs"))
         _X17_add_name (entity, "implementation module internal", cat (my.name, "internal"))
 
-        _X17_add_name (entity, "implementation argument impl", cat (my.name, "impl"))
-        _X17_add_link (entity, "implementation struct impl", make_id ("class", my.name, "struct", "impl"))
+        _X17_add_name (entity, "implementation argument impl", my.name)
+        _X17_add_link (entity, "implementation struct impl", make_id ("class", my.name, "struct", my.name))
 
         _X17_add_link (entity, "implementation method init ctx", make_id ("class", my.name, "method", "init ctx"))
         _X17_add_link (entity, "implementation method cleanup ctx", make_id ("class", my.name, "method", "cleanup ctx"))

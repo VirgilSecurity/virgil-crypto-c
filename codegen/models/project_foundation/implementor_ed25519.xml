@@ -27,7 +27,7 @@
     <implementation name="ed25519 private key">
       This is implementation of ED25519 private key
       <require library="ed25519" feature="library"/>
-      <require module="ed25519 public key impl"/>
+      <require module="ed25519 public key defs"/>
       <require class="endianness"/>
 
       <context>

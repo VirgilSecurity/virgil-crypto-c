@@ -62,7 +62,7 @@
 #include "vscf_pkcs8_der_serializer.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_key_serializer.h"
-#include "vscf_pkcs8_serializer_impl.h"
+#include "vscf_pkcs8_serializer_defs.h"
 #include "vscf_pkcs8_serializer_internal.h"
 
 #include <mbedtls/pem.h>
@@ -89,18 +89,18 @@
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_pkcs8_serializer_setup_defaults(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl) {
+vscf_pkcs8_serializer_setup_defaults(vscf_pkcs8_serializer_t *pkcs8_serializer) {
 
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl);
+    VSCF_ASSERT_PTR(pkcs8_serializer);
 
-    if (NULL == pkcs8_serializer_impl->asn1_writer) {
-        pkcs8_serializer_impl->asn1_writer = vscf_asn1wr_impl(vscf_asn1wr_new());
+    if (NULL == pkcs8_serializer->asn1_writer) {
+        pkcs8_serializer->asn1_writer = vscf_asn1wr_impl(vscf_asn1wr_new());
     }
 
-    if (NULL == pkcs8_serializer_impl->der_serializer) {
-        vscf_pkcs8_der_serializer_impl_t *der_serializer = vscf_pkcs8_der_serializer_new();
-        vscf_pkcs8_der_serializer_use_asn1_writer(der_serializer, pkcs8_serializer_impl->asn1_writer);
-        pkcs8_serializer_impl->der_serializer = vscf_pkcs8_der_serializer_impl(der_serializer);
+    if (NULL == pkcs8_serializer->der_serializer) {
+        vscf_pkcs8_der_serializer_t *der_serializer = vscf_pkcs8_der_serializer_new();
+        vscf_pkcs8_der_serializer_use_asn1_writer(der_serializer, pkcs8_serializer->asn1_writer);
+        pkcs8_serializer->der_serializer = vscf_pkcs8_der_serializer_impl(der_serializer);
     }
 
     return vscf_SUCCESS;
@@ -113,14 +113,14 @@ vscf_pkcs8_serializer_setup_defaults(vscf_pkcs8_serializer_impl_t *pkcs8_seriali
 //
 VSCF_PUBLIC size_t
 vscf_pkcs8_serializer_serialized_public_key_len(
-        vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl, const vscf_impl_t *public_key) {
+        vscf_pkcs8_serializer_t *pkcs8_serializer, const vscf_impl_t *public_key) {
 
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl);
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl->der_serializer);
+    VSCF_ASSERT_PTR(pkcs8_serializer);
+    VSCF_ASSERT_PTR(pkcs8_serializer->der_serializer);
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
 
-    size_t der_len = vscf_key_serializer_serialized_public_key_len(pkcs8_serializer_impl->der_serializer, public_key);
+    size_t der_len = vscf_key_serializer_serialized_public_key_len(pkcs8_serializer->der_serializer, public_key);
     size_t pem_len = vscf_pem_wrapped_len(vscf_pem_title_public_key, der_len);
 
     return pem_len;
@@ -133,24 +133,23 @@ vscf_pkcs8_serializer_serialized_public_key_len(
 //
 VSCF_PUBLIC vscf_error_t
 vscf_pkcs8_serializer_serialize_public_key(
-        vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl, const vscf_impl_t *public_key, vsc_buffer_t *out) {
+        vscf_pkcs8_serializer_t *pkcs8_serializer, const vscf_impl_t *public_key, vsc_buffer_t *out) {
 
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl);
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl->der_serializer);
+    VSCF_ASSERT_PTR(pkcs8_serializer);
+    VSCF_ASSERT_PTR(pkcs8_serializer->der_serializer);
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >=
-                vscf_pkcs8_serializer_serialized_public_key_len(pkcs8_serializer_impl, public_key));
+                vscf_pkcs8_serializer_serialized_public_key_len(pkcs8_serializer, public_key));
 
 
     //  TODO: Optimize alloc.
-    size_t der_len = vscf_key_serializer_serialized_public_key_len(pkcs8_serializer_impl->der_serializer, public_key);
+    size_t der_len = vscf_key_serializer_serialized_public_key_len(pkcs8_serializer->der_serializer, public_key);
     vsc_buffer_t *der = vsc_buffer_new_with_capacity(der_len);
 
-    vscf_error_t status =
-            vscf_key_serializer_serialize_public_key(pkcs8_serializer_impl->der_serializer, public_key, der);
+    vscf_error_t status = vscf_key_serializer_serialize_public_key(pkcs8_serializer->der_serializer, public_key, der);
 
     if (status != vscf_SUCCESS) {
         vsc_buffer_destroy(&der);
@@ -171,14 +170,14 @@ vscf_pkcs8_serializer_serialize_public_key(
 //
 VSCF_PUBLIC size_t
 vscf_pkcs8_serializer_serialized_private_key_len(
-        vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl, const vscf_impl_t *private_key) {
+        vscf_pkcs8_serializer_t *pkcs8_serializer, const vscf_impl_t *private_key) {
 
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl);
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl->der_serializer);
+    VSCF_ASSERT_PTR(pkcs8_serializer);
+    VSCF_ASSERT_PTR(pkcs8_serializer->der_serializer);
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
 
-    size_t der_len = vscf_key_serializer_serialized_private_key_len(pkcs8_serializer_impl->der_serializer, private_key);
+    size_t der_len = vscf_key_serializer_serialized_private_key_len(pkcs8_serializer->der_serializer, private_key);
     size_t pem_len = vscf_pem_wrapped_len(vscf_pem_title_private_key, der_len);
 
     return pem_len;
@@ -191,23 +190,22 @@ vscf_pkcs8_serializer_serialized_private_key_len(
 //
 VSCF_PUBLIC vscf_error_t
 vscf_pkcs8_serializer_serialize_private_key(
-        vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl, const vscf_impl_t *private_key, vsc_buffer_t *out) {
+        vscf_pkcs8_serializer_t *pkcs8_serializer, const vscf_impl_t *private_key, vsc_buffer_t *out) {
 
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl);
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl->der_serializer);
+    VSCF_ASSERT_PTR(pkcs8_serializer);
+    VSCF_ASSERT_PTR(pkcs8_serializer->der_serializer);
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >=
-                vscf_pkcs8_serializer_serialized_private_key_len(pkcs8_serializer_impl, private_key));
+                vscf_pkcs8_serializer_serialized_private_key_len(pkcs8_serializer, private_key));
 
     //  TODO: Optimize alloc.
-    size_t der_len = vscf_key_serializer_serialized_private_key_len(pkcs8_serializer_impl->der_serializer, private_key);
+    size_t der_len = vscf_key_serializer_serialized_private_key_len(pkcs8_serializer->der_serializer, private_key);
     vsc_buffer_t *der = vsc_buffer_new_with_capacity(der_len);
 
-    vscf_error_t status =
-            vscf_key_serializer_serialize_private_key(pkcs8_serializer_impl->der_serializer, private_key, der);
+    vscf_error_t status = vscf_key_serializer_serialize_private_key(pkcs8_serializer->der_serializer, private_key, der);
 
     if (status != vscf_SUCCESS) {
         vsc_buffer_destroy(&der);

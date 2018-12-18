@@ -54,7 +54,7 @@
 #include "vscf_asn1rd_internal.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_asn1rd_impl.h"
+#include "vscf_asn1rd_defs.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_asn1_reader_api.h"
 #include "vscf_impl.h"
@@ -206,16 +206,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_init(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_init(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    vscf_zeroize(asn1rd_impl, sizeof(vscf_asn1rd_impl_t));
+    vscf_zeroize(asn1rd, sizeof(vscf_asn1rd_t));
 
-    asn1rd_impl->info = &info;
-    asn1rd_impl->refcnt = 1;
+    asn1rd->info = &info;
+    asn1rd->refcnt = 1;
 
-    vscf_asn1rd_init_ctx(asn1rd_impl);
+    vscf_asn1rd_init_ctx(asn1rd);
 }
 
 //
@@ -223,38 +223,38 @@ vscf_asn1rd_init(vscf_asn1rd_impl_t *asn1rd_impl) {
 //  This is a reverse action of the function 'vscf_asn1rd_init()'.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_cleanup(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_cleanup(vscf_asn1rd_t *asn1rd) {
 
-    if (asn1rd_impl == NULL || asn1rd_impl->info == NULL) {
+    if (asn1rd == NULL || asn1rd->info == NULL) {
         return;
     }
 
-    if (asn1rd_impl->refcnt == 0) {
+    if (asn1rd->refcnt == 0) {
         return;
     }
 
-    if (--asn1rd_impl->refcnt > 0) {
+    if (--asn1rd->refcnt > 0) {
         return;
     }
 
-    vscf_asn1rd_cleanup_ctx(asn1rd_impl);
+    vscf_asn1rd_cleanup_ctx(asn1rd);
 
-    vscf_zeroize(asn1rd_impl, sizeof(vscf_asn1rd_impl_t));
+    vscf_zeroize(asn1rd, sizeof(vscf_asn1rd_t));
 }
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_asn1rd_impl_t *
+VSCF_PUBLIC vscf_asn1rd_t *
 vscf_asn1rd_new(void) {
 
-    vscf_asn1rd_impl_t *asn1rd_impl = (vscf_asn1rd_impl_t *) vscf_alloc(sizeof (vscf_asn1rd_impl_t));
-    VSCF_ASSERT_ALLOC(asn1rd_impl);
+    vscf_asn1rd_t *asn1rd = (vscf_asn1rd_t *) vscf_alloc(sizeof (vscf_asn1rd_t));
+    VSCF_ASSERT_ALLOC(asn1rd);
 
-    vscf_asn1rd_init(asn1rd_impl);
+    vscf_asn1rd_init(asn1rd);
 
-    return asn1rd_impl;
+    return asn1rd;
 }
 
 //
@@ -262,12 +262,12 @@ vscf_asn1rd_new(void) {
 //  This is a reverse action of the function 'vscf_asn1rd_new()'.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_delete(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_delete(vscf_asn1rd_t *asn1rd) {
 
-    vscf_asn1rd_cleanup(asn1rd_impl);
+    vscf_asn1rd_cleanup(asn1rd);
 
-    if (asn1rd_impl && (asn1rd_impl->refcnt == 0)) {
-        vscf_dealloc(asn1rd_impl);
+    if (asn1rd && (asn1rd->refcnt == 0)) {
+        vscf_dealloc(asn1rd);
     }
 }
 
@@ -277,44 +277,44 @@ vscf_asn1rd_delete(vscf_asn1rd_impl_t *asn1rd_impl) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_destroy(vscf_asn1rd_impl_t **asn1rd_impl_ref) {
+vscf_asn1rd_destroy(vscf_asn1rd_t **asn1rd_ref) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl_ref);
+    VSCF_ASSERT_PTR(asn1rd_ref);
 
-    vscf_asn1rd_impl_t *asn1rd_impl = *asn1rd_impl_ref;
-    *asn1rd_impl_ref = NULL;
+    vscf_asn1rd_t *asn1rd = *asn1rd_ref;
+    *asn1rd_ref = NULL;
 
-    vscf_asn1rd_delete(asn1rd_impl);
+    vscf_asn1rd_delete(asn1rd);
 }
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_asn1rd_impl_t *
-vscf_asn1rd_shallow_copy(vscf_asn1rd_impl_t *asn1rd_impl) {
+VSCF_PUBLIC vscf_asn1rd_t *
+vscf_asn1rd_shallow_copy(vscf_asn1rd_t *asn1rd) {
 
     // Proxy to the parent implementation.
-    return (vscf_asn1rd_impl_t *)vscf_impl_shallow_copy((vscf_impl_t *)asn1rd_impl);
+    return (vscf_asn1rd_t *)vscf_impl_shallow_copy((vscf_impl_t *)asn1rd);
 }
 
 //
-//  Return size of 'vscf_asn1rd_impl_t' type.
+//  Return size of 'vscf_asn1rd_t' type.
 //
 VSCF_PUBLIC size_t
 vscf_asn1rd_impl_size(void) {
 
-    return sizeof (vscf_asn1rd_impl_t);
+    return sizeof (vscf_asn1rd_t);
 }
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_asn1rd_impl(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_impl(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
-    return (vscf_impl_t *)(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
+    return (vscf_impl_t *)(asn1rd);
 }
 
 static const vscf_api_t *
