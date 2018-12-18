@@ -206,7 +206,7 @@ vscr_ratchet_cipher_destroy(vscr_ratchet_cipher_t **ratchet_cipher_ctx_ref) {
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_cipher_t *
-vscr_ratchet_cipher_copy(vscr_ratchet_cipher_t *ratchet_cipher_ctx) {
+vscr_ratchet_cipher_shallow_copy(vscr_ratchet_cipher_t *ratchet_cipher_ctx) {
 
     VSCR_ASSERT_PTR(ratchet_cipher_ctx);
 
@@ -225,7 +225,7 @@ vscr_ratchet_cipher_use_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vs
     VSCR_ASSERT_PTR(aes256_gcm);
     VSCR_ASSERT_PTR(ratchet_cipher_ctx->aes256_gcm == NULL);
 
-    ratchet_cipher_ctx->aes256_gcm = vscf_aes256_gcm_copy(aes256_gcm);
+    ratchet_cipher_ctx->aes256_gcm = vscf_aes256_gcm_shallow_copy(aes256_gcm);
 }
 
 //

@@ -317,10 +317,10 @@ vscf_asn1wr_destroy(vscf_asn1wr_impl_t **asn1wr_impl_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_asn1wr_impl_t *
-vscf_asn1wr_copy(vscf_asn1wr_impl_t *asn1wr_impl) {
+vscf_asn1wr_shallow_copy(vscf_asn1wr_impl_t *asn1wr_impl) {
 
     // Proxy to the parent implementation.
-    return (vscf_asn1wr_impl_t *)vscf_impl_copy((vscf_impl_t *)asn1wr_impl);
+    return (vscf_asn1wr_impl_t *)vscf_impl_shallow_copy((vscf_impl_t *)asn1wr_impl);
 }
 
 //

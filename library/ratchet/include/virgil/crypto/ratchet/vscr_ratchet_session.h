@@ -142,7 +142,7 @@ vscr_ratchet_session_destroy(vscr_ratchet_session_t **ratchet_session_ctx_ref);
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_session_t *
-vscr_ratchet_session_copy(vscr_ratchet_session_t *ratchet_session_ctx);
+vscr_ratchet_session_shallow_copy(vscr_ratchet_session_t *ratchet_session_ctx);
 
 //
 //  Setup dependency to the interface 'ratchet rng' with shared ownership.

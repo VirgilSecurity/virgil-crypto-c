@@ -196,10 +196,10 @@ vscf_kdf2_destroy(vscf_kdf2_impl_t **kdf2_impl_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_kdf2_impl_t *
-vscf_kdf2_copy(vscf_kdf2_impl_t *kdf2_impl) {
+vscf_kdf2_shallow_copy(vscf_kdf2_impl_t *kdf2_impl) {
 
     // Proxy to the parent implementation.
-    return (vscf_kdf2_impl_t *)vscf_impl_copy((vscf_impl_t *)kdf2_impl);
+    return (vscf_kdf2_impl_t *)vscf_impl_shallow_copy((vscf_impl_t *)kdf2_impl);
 }
 
 //
@@ -233,7 +233,7 @@ vscf_kdf2_use_hash(vscf_kdf2_impl_t *kdf2_impl, vscf_impl_t *hash) {
 
     VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
 
-    kdf2_impl->hash = vscf_impl_copy(hash);
+    kdf2_impl->hash = vscf_impl_shallow_copy(hash);
 }
 
 //

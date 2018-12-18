@@ -234,10 +234,10 @@ vscf_ctr_drbg_destroy(vscf_ctr_drbg_impl_t **ctr_drbg_impl_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_ctr_drbg_impl_t *
-vscf_ctr_drbg_copy(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
+vscf_ctr_drbg_shallow_copy(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
 
     // Proxy to the parent implementation.
-    return (vscf_ctr_drbg_impl_t *)vscf_impl_copy((vscf_impl_t *)ctr_drbg_impl);
+    return (vscf_ctr_drbg_impl_t *)vscf_impl_shallow_copy((vscf_impl_t *)ctr_drbg_impl);
 }
 
 //
@@ -271,7 +271,7 @@ vscf_ctr_drbg_use_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl, vscf_impl_
 
     VSCF_ASSERT(vscf_entropy_source_is_implemented(entropy_source));
 
-    ctr_drbg_impl->entropy_source = vscf_impl_copy(entropy_source);
+    ctr_drbg_impl->entropy_source = vscf_impl_shallow_copy(entropy_source);
 
     return vscf_ctr_drbg_did_setup_entropy_source(ctr_drbg_impl);
 }

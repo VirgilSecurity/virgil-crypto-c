@@ -141,7 +141,7 @@ vscf_raw_key_destroy(vscf_raw_key_t **raw_key_ctx_ref);
 //  Copy given class context by increasing reference counter.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_raw_key_copy(vscf_raw_key_t *raw_key_ctx);
+vscf_raw_key_shallow_copy(vscf_raw_key_t *raw_key_ctx);
 
 //
 //  Returns asymmetric algorithm type that raw key belongs to.

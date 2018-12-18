@@ -297,10 +297,10 @@ vscf_rsa_public_key_destroy(vscf_rsa_public_key_impl_t **rsa_public_key_impl_ref
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_rsa_public_key_impl_t *
-vscf_rsa_public_key_copy(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
+vscf_rsa_public_key_shallow_copy(vscf_rsa_public_key_impl_t *rsa_public_key_impl) {
 
     // Proxy to the parent implementation.
-    return (vscf_rsa_public_key_impl_t *)vscf_impl_copy((vscf_impl_t *)rsa_public_key_impl);
+    return (vscf_rsa_public_key_impl_t *)vscf_impl_shallow_copy((vscf_impl_t *)rsa_public_key_impl);
 }
 
 //
@@ -358,7 +358,7 @@ vscf_rsa_public_key_use_random(vscf_rsa_public_key_impl_t *rsa_public_key_impl, 
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
-    rsa_public_key_impl->random = vscf_impl_copy(random);
+    rsa_public_key_impl->random = vscf_impl_shallow_copy(random);
 }
 
 //
@@ -400,7 +400,7 @@ vscf_rsa_public_key_use_asn1rd(vscf_rsa_public_key_impl_t *rsa_public_key_impl, 
 
     VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1rd));
 
-    rsa_public_key_impl->asn1rd = vscf_impl_copy(asn1rd);
+    rsa_public_key_impl->asn1rd = vscf_impl_shallow_copy(asn1rd);
 }
 
 //
@@ -442,7 +442,7 @@ vscf_rsa_public_key_use_asn1wr(vscf_rsa_public_key_impl_t *rsa_public_key_impl, 
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1wr));
 
-    rsa_public_key_impl->asn1wr = vscf_impl_copy(asn1wr);
+    rsa_public_key_impl->asn1wr = vscf_impl_shallow_copy(asn1wr);
 }
 
 //

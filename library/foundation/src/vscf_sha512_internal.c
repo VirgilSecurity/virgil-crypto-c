@@ -255,10 +255,10 @@ vscf_sha512_destroy(vscf_sha512_impl_t **sha512_impl_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_sha512_impl_t *
-vscf_sha512_copy(vscf_sha512_impl_t *sha512_impl) {
+vscf_sha512_shallow_copy(vscf_sha512_impl_t *sha512_impl) {
 
     // Proxy to the parent implementation.
-    return (vscf_sha512_impl_t *)vscf_impl_copy((vscf_impl_t *)sha512_impl);
+    return (vscf_sha512_impl_t *)vscf_impl_shallow_copy((vscf_impl_t *)sha512_impl);
 }
 
 //

@@ -211,7 +211,7 @@ vsce_phe_server_destroy(vsce_phe_server_t **phe_server_ctx_ref) {
 //  Copy given class context by increasing reference counter.
 //
 VSCE_PUBLIC vsce_phe_server_t *
-vsce_phe_server_copy(vsce_phe_server_t *phe_server_ctx) {
+vsce_phe_server_shallow_copy(vsce_phe_server_t *phe_server_ctx) {
 
     VSCE_ASSERT_PTR(phe_server_ctx);
 
@@ -232,7 +232,7 @@ vsce_phe_server_use_random(vsce_phe_server_t *phe_server_ctx, vscf_impl_t *rando
 
     VSCE_ASSERT(vscf_random_is_implemented(random));
 
-    phe_server_ctx->random = vscf_impl_copy(random);
+    phe_server_ctx->random = vscf_impl_shallow_copy(random);
 }
 
 //
@@ -274,7 +274,7 @@ vsce_phe_server_use_operation_random(vsce_phe_server_t *phe_server_ctx, vscf_imp
 
     VSCE_ASSERT(vscf_random_is_implemented(operation_random));
 
-    phe_server_ctx->operation_random = vscf_impl_copy(operation_random);
+    phe_server_ctx->operation_random = vscf_impl_shallow_copy(operation_random);
 }
 
 //

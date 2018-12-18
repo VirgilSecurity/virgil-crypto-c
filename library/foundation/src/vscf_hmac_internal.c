@@ -255,10 +255,10 @@ vscf_hmac_destroy(vscf_hmac_impl_t **hmac_impl_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_hmac_impl_t *
-vscf_hmac_copy(vscf_hmac_impl_t *hmac_impl) {
+vscf_hmac_shallow_copy(vscf_hmac_impl_t *hmac_impl) {
 
     // Proxy to the parent implementation.
-    return (vscf_hmac_impl_t *)vscf_impl_copy((vscf_impl_t *)hmac_impl);
+    return (vscf_hmac_impl_t *)vscf_impl_shallow_copy((vscf_impl_t *)hmac_impl);
 }
 
 //
@@ -292,7 +292,7 @@ vscf_hmac_use_hash(vscf_hmac_impl_t *hmac_impl, vscf_impl_t *hash) {
 
     VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
 
-    hmac_impl->hash = vscf_impl_copy(hash);
+    hmac_impl->hash = vscf_impl_shallow_copy(hash);
 }
 
 //

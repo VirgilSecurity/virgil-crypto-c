@@ -138,7 +138,7 @@ vsce_phe_client_destroy(vsce_phe_client_t **phe_client_ctx_ref);
 //  Copy given class context by increasing reference counter.
 //
 VSCE_PUBLIC vsce_phe_client_t *
-vsce_phe_client_copy(vsce_phe_client_t *phe_client_ctx);
+vsce_phe_client_shallow_copy(vsce_phe_client_t *phe_client_ctx);
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.

@@ -131,7 +131,7 @@ vscr_ratchet_receiver_chain_list_node_destroy(
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_receiver_chain_list_node_t *
-vscr_ratchet_receiver_chain_list_node_copy(
+vscr_ratchet_receiver_chain_list_node_shallow_copy(
         vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node_ctx);
 
 

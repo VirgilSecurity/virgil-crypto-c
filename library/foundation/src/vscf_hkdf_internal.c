@@ -200,10 +200,10 @@ vscf_hkdf_destroy(vscf_hkdf_impl_t **hkdf_impl_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_hkdf_impl_t *
-vscf_hkdf_copy(vscf_hkdf_impl_t *hkdf_impl) {
+vscf_hkdf_shallow_copy(vscf_hkdf_impl_t *hkdf_impl) {
 
     // Proxy to the parent implementation.
-    return (vscf_hkdf_impl_t *)vscf_impl_copy((vscf_impl_t *)hkdf_impl);
+    return (vscf_hkdf_impl_t *)vscf_impl_shallow_copy((vscf_impl_t *)hkdf_impl);
 }
 
 //
@@ -237,7 +237,7 @@ vscf_hkdf_use_hash(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hash) {
 
     VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
 
-    hkdf_impl->hash = vscf_impl_copy(hash);
+    hkdf_impl->hash = vscf_impl_shallow_copy(hash);
 }
 
 //

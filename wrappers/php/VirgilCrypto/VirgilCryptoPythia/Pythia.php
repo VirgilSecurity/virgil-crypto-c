@@ -68,7 +68,7 @@ class Pythia {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public function __construct($c_ctx) {
-        self.c_ctx = vscp_pythia_copy(c_ctx)
+        self.c_ctx = vscp_pythia_shallow_copy(c_ctx)
         super.init()
     }
 

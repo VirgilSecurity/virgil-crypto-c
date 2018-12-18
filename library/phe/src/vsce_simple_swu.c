@@ -177,7 +177,7 @@ vsce_simple_swu_destroy(vsce_simple_swu_t **simple_swu_ctx_ref) {
 //  Copy given class context by increasing reference counter.
 //
 VSCE_PUBLIC vsce_simple_swu_t *
-vsce_simple_swu_copy(vsce_simple_swu_t *simple_swu_ctx) {
+vsce_simple_swu_shallow_copy(vsce_simple_swu_t *simple_swu_ctx) {
 
     VSCE_ASSERT_PTR(simple_swu_ctx);
 

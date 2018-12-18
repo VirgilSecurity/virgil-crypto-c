@@ -144,7 +144,7 @@ vscr_ratchet_cipher_destroy(vscr_ratchet_cipher_t **ratchet_cipher_ctx_ref);
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_cipher_t *
-vscr_ratchet_cipher_copy(vscr_ratchet_cipher_t *ratchet_cipher_ctx);
+vscr_ratchet_cipher_shallow_copy(vscr_ratchet_cipher_t *ratchet_cipher_ctx);
 
 //
 //  Setup dependency to the implementation 'aes256 gcm' with shared ownership.

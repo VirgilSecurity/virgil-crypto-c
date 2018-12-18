@@ -138,7 +138,7 @@ vscp_impl_destroy(vscp_impl_t **impl_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCP_PUBLIC vscp_impl_t *
-vscp_impl_copy(vscp_impl_t *impl) {
+vscp_impl_shallow_copy(vscp_impl_t *impl) {
 
     VSCP_ASSERT_PTR (impl);
 

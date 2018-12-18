@@ -139,7 +139,7 @@ vscf_pkcs8_der_deserializer_destroy(vscf_pkcs8_der_deserializer_impl_t **pkcs8_d
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_pkcs8_der_deserializer_impl_t *
-vscf_pkcs8_der_deserializer_copy(vscf_pkcs8_der_deserializer_impl_t *pkcs8_der_deserializer_impl);
+vscf_pkcs8_der_deserializer_shallow_copy(vscf_pkcs8_der_deserializer_impl_t *pkcs8_der_deserializer_impl);
 
 //
 //  Setup dependency to the interface 'asn1 reader' with shared ownership.

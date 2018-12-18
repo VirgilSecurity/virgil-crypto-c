@@ -137,7 +137,7 @@ vscf_asn1rd_destroy(vscf_asn1rd_impl_t **asn1rd_impl_ref);
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_asn1rd_impl_t *
-vscf_asn1rd_copy(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_shallow_copy(vscf_asn1rd_impl_t *asn1rd_impl);
 
 //
 //  Reset all internal states and prepare to new ASN.1 reading operations.

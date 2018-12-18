@@ -206,10 +206,10 @@ vscf_platform_entropy_destroy(vscf_platform_entropy_impl_t **platform_entropy_im
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_platform_entropy_impl_t *
-vscf_platform_entropy_copy(vscf_platform_entropy_impl_t *platform_entropy_impl) {
+vscf_platform_entropy_shallow_copy(vscf_platform_entropy_impl_t *platform_entropy_impl) {
 
     // Proxy to the parent implementation.
-    return (vscf_platform_entropy_impl_t *)vscf_impl_copy((vscf_impl_t *)platform_entropy_impl);
+    return (vscf_platform_entropy_impl_t *)vscf_impl_shallow_copy(vscf_impl_t *)platform_entropy_impl);
 }
 
 //

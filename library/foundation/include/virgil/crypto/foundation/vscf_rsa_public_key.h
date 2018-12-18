@@ -155,7 +155,7 @@ vscf_rsa_public_key_destroy(vscf_rsa_public_key_impl_t **rsa_public_key_impl_ref
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_rsa_public_key_impl_t *
-vscf_rsa_public_key_copy(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
+vscf_rsa_public_key_shallow_copy(vscf_rsa_public_key_impl_t *rsa_public_key_impl);
 
 //
 //  Setup dependency to the interface api 'hash' with shared ownership.

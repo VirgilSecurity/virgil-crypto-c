@@ -155,7 +155,7 @@ vscf_sha384_destroy(vscf_sha384_impl_t **sha384_impl_ref);
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_sha384_impl_t *
-vscf_sha384_copy(vscf_sha384_impl_t *sha384_impl);
+vscf_sha384_shallow_copy(vscf_sha384_impl_t *sha384_impl);
 
 //
 //  Returns instance of the implemented interface 'hash info'.

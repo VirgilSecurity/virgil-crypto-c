@@ -222,10 +222,10 @@ vscf_fake_random_destroy(vscf_fake_random_impl_t **fake_random_impl_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_fake_random_impl_t *
-vscf_fake_random_copy(vscf_fake_random_impl_t *fake_random_impl) {
+vscf_fake_random_shallow_copy(vscf_fake_random_impl_t *fake_random_impl) {
 
     // Proxy to the parent implementation.
-    return (vscf_fake_random_impl_t *)vscf_impl_copy((vscf_impl_t *)fake_random_impl);
+    return (vscf_fake_random_impl_t *)vscf_impl_shallow_copy((vscf_impl_t *)fake_random_impl);
 }
 
 //

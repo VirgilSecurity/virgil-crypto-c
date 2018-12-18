@@ -126,10 +126,9 @@ vscr_impl_destroy(vscr_impl_t **impl_ref) {
 
 //
 //  Copy implementation object by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCR_PUBLIC vscr_impl_t *
-vscr_impl_copy(vscr_impl_t *impl) {
+vscr_impl_shallow_copy(vscr_impl_t *impl) {
 
     VSCR_ASSERT_PTR (impl);
 

@@ -137,7 +137,7 @@ vscf_pkcs8_serializer_destroy(vscf_pkcs8_serializer_impl_t **pkcs8_serializer_im
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_pkcs8_serializer_impl_t *
-vscf_pkcs8_serializer_copy(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl);
+vscf_pkcs8_serializer_shallow_copy(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl);
 
 //
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.

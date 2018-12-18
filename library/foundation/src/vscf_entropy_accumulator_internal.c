@@ -218,10 +218,10 @@ vscf_entropy_accumulator_destroy(vscf_entropy_accumulator_impl_t **entropy_accum
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_entropy_accumulator_impl_t *
-vscf_entropy_accumulator_copy(vscf_entropy_accumulator_impl_t *entropy_accumulator_impl) {
+vscf_entropy_accumulator_shallow_copy(vscf_entropy_accumulator_impl_t *entropy_accumulator_impl) {
 
     // Proxy to the parent implementation.
-    return (vscf_entropy_accumulator_impl_t *)vscf_impl_copy((vscf_impl_t *)entropy_accumulator_impl);
+    return (vscf_entropy_accumulator_impl_t *)vscf_impl_shallow_copy((vscf_impl_t *)entropy_accumulator_impl);
 }
 
 //

@@ -154,7 +154,7 @@ vscf_ed25519_public_key_destroy(vscf_ed25519_public_key_impl_t **ed25519_public_
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_ed25519_public_key_impl_t *
-vscf_ed25519_public_key_copy(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl);
+vscf_ed25519_public_key_shallow_copy(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl);
 
 //
 //  Return implemented asymmetric key algorithm type.

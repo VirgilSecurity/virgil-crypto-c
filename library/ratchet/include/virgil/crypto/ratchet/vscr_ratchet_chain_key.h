@@ -127,7 +127,7 @@ vscr_ratchet_chain_key_destroy(vscr_ratchet_chain_key_t **ratchet_chain_key_ctx_
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_chain_key_t *
-vscr_ratchet_chain_key_copy(vscr_ratchet_chain_key_t *ratchet_chain_key_ctx);
+vscr_ratchet_chain_key_shallow_copy(vscr_ratchet_chain_key_t *ratchet_chain_key_ctx);
 
 VSCR_PUBLIC void
 vscr_ratchet_chain_key_clone(const vscr_ratchet_chain_key_t *ratchet_chain_key_ctx, vscr_ratchet_chain_key_t *dst);
