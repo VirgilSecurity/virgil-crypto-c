@@ -23,6 +23,11 @@ install:
   - travis_retry sudo apt install libgdiplus
   - travis_retry sudo apt install mono-devel
   - travis_retry sudo apt install nuget
+  - travis_retry wget -q https://packages.microsoft.com/config/ubuntu/14.04/packages-microsoft-prod.deb
+  - travis_retry sudo dpkg -i packages-microsoft-prod.deb
+  - travis_retry sudo apt-get install apt-transport-https
+  - travis_retry sudo apt-get update
+  - travis_retry sudo apt-get install dotnet-sdk-2.2
 
 before_script:
   - ${CC} --version
