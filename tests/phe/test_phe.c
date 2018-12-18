@@ -32,15 +32,21 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/crypto/phe/vsce_phe_client.h>
-#include <virgil/crypto/foundation/private/vscf_ctr_drbg_impl.h>
-#include <virgil/crypto/phe/vsce_phe_server.h>
+
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
 #include "unity.h"
 #include "test_utils.h"
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_CLIENT &&VSCE_PHE_SERVER
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_CLIENT &&VSCE_PHE_SERVER &&VSCF_CTR_DRBG
 #if TEST_DEPENDENCIES_AVAILABLE
+
+#include "vsce_phe_client.h"
+#include "vsce_phe_server.h"
+
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
+#include <virgil/crypto/foundation/private/vscf_ctr_drbg_impl.h>
 
 
 // --------------------------------------------------------------------------

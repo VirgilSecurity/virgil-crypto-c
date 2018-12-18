@@ -32,15 +32,20 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include <virgil/crypto/phe/vsce_phe_server.h>
+
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
 #include "unity.h"
 #include "test_utils.h"
 #include "test_data_phe_server_client.h"
-#include <virgil/crypto/foundation/vscf_fake_random.h>
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_SERVER
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_SERVER &&VSCF_FAKE_RANDOM
 #if TEST_DEPENDENCIES_AVAILABLE
 
+#include "vsce_phe_server.h"
+
+#include <virgil/crypto/foundation/vscf_fake_random.h>
 
 // --------------------------------------------------------------------------
 //  Should have it to prevent linkage erros in MSVC.
