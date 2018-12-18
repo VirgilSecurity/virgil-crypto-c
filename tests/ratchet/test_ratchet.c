@@ -42,7 +42,7 @@
 
 #include "vscr_ratchet_rng.h"
 #include "vscr_ratchet.h"
-#include "vscr_virgil_ratchet_fake_rng_impl.h"
+#include "vscr_virgil_ratchet_fake_rng_defs.h"
 #include "test_data_ratchet.h"
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>

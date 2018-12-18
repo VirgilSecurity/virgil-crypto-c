@@ -53,7 +53,7 @@
 #include "vscr_virgil_ratchet_fake_rng.h"
 #include "vscr_assert.h"
 #include "vscr_memory.h"
-#include "vscr_virgil_ratchet_fake_rng_impl.h"
+#include "vscr_virgil_ratchet_fake_rng_defs.h"
 #include "vscr_virgil_ratchet_fake_rng_internal.h"
 
 // clang-format on
@@ -79,9 +79,9 @@
 //
 VSCR_PUBLIC void
 vscr_virgil_ratchet_fake_rng_generate_random_data(
-        vscr_virgil_ratchet_fake_rng_impl_t *virgil_ratchet_fake_rng_impl, size_t size, vsc_buffer_t *random) {
+        vscr_virgil_ratchet_fake_rng_t *virgil_ratchet_fake_rng, size_t size, vsc_buffer_t *random) {
 
-    VSCR_UNUSED(virgil_ratchet_fake_rng_impl);
+    VSCR_UNUSED(virgil_ratchet_fake_rng);
     VSCR_ASSERT(vsc_buffer_unused_len(random) >= size);
 
     static size_t used = 0;

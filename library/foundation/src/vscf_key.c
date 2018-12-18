@@ -70,7 +70,7 @@
 VSCF_PUBLIC vscf_key_alg_t
 vscf_key_alg(const vscf_impl_t *impl) {
 
-    const vscf_key_api_t *key_api = vscf_key_api (impl);
+    const vscf_key_api_t *key_api = vscf_key_api(impl);
     VSCF_ASSERT_PTR (key_api);
 
     VSCF_ASSERT_PTR (key_api->alg_cb);
@@ -83,7 +83,7 @@ vscf_key_alg(const vscf_impl_t *impl) {
 VSCF_PUBLIC size_t
 vscf_key_key_len(const vscf_impl_t *impl) {
 
-    const vscf_key_api_t *key_api = vscf_key_api (impl);
+    const vscf_key_api_t *key_api = vscf_key_api(impl);
     VSCF_ASSERT_PTR (key_api);
 
     VSCF_ASSERT_PTR (key_api->key_len_cb);
@@ -96,7 +96,7 @@ vscf_key_key_len(const vscf_impl_t *impl) {
 VSCF_PUBLIC size_t
 vscf_key_key_bitlen(const vscf_impl_t *impl) {
 
-    const vscf_key_api_t *key_api = vscf_key_api (impl);
+    const vscf_key_api_t *key_api = vscf_key_api(impl);
     VSCF_ASSERT_PTR (key_api);
 
     VSCF_ASSERT_PTR (key_api->key_bitlen_cb);
@@ -111,7 +111,7 @@ vscf_key_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_KEY);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_KEY);
     return (const vscf_key_api_t *) api;
 }
 
@@ -123,7 +123,7 @@ vscf_key_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_KEY) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_KEY) != NULL;
 }
 
 //

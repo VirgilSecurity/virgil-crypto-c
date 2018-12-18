@@ -54,7 +54,7 @@
 #include "vscf_pkcs8_serializer_internal.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_pkcs8_serializer_impl.h"
+#include "vscf_pkcs8_serializer_defs.h"
 #include "vscf_defaults.h"
 #include "vscf_defaults_api.h"
 #include "vscf_key_serializer.h"
@@ -150,14 +150,14 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_serializer_init(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl) {
+vscf_pkcs8_serializer_init(vscf_pkcs8_serializer_t *pkcs8_serializer) {
 
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl);
+    VSCF_ASSERT_PTR(pkcs8_serializer);
 
-    vscf_zeroize(pkcs8_serializer_impl, sizeof(vscf_pkcs8_serializer_impl_t));
+    vscf_zeroize(pkcs8_serializer, sizeof(vscf_pkcs8_serializer_t));
 
-    pkcs8_serializer_impl->info = &info;
-    pkcs8_serializer_impl->refcnt = 1;
+    pkcs8_serializer->info = &info;
+    pkcs8_serializer->refcnt = 1;
 }
 
 //
@@ -165,39 +165,39 @@ vscf_pkcs8_serializer_init(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl) 
 //  This is a reverse action of the function 'vscf_pkcs8_serializer_init()'.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_serializer_cleanup(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl) {
+vscf_pkcs8_serializer_cleanup(vscf_pkcs8_serializer_t *pkcs8_serializer) {
 
-    if (pkcs8_serializer_impl == NULL || pkcs8_serializer_impl->info == NULL) {
+    if (pkcs8_serializer == NULL || pkcs8_serializer->info == NULL) {
         return;
     }
 
-    if (pkcs8_serializer_impl->refcnt == 0) {
+    if (pkcs8_serializer->refcnt == 0) {
         return;
     }
 
-    if (--pkcs8_serializer_impl->refcnt > 0) {
+    if (--pkcs8_serializer->refcnt > 0) {
         return;
     }
 
-    vscf_pkcs8_serializer_release_asn1_writer(pkcs8_serializer_impl);
-    vscf_pkcs8_serializer_release_der_serializer(pkcs8_serializer_impl);
+    vscf_pkcs8_serializer_release_asn1_writer(pkcs8_serializer);
+    vscf_pkcs8_serializer_release_der_serializer(pkcs8_serializer);
 
-    vscf_zeroize(pkcs8_serializer_impl, sizeof(vscf_pkcs8_serializer_impl_t));
+    vscf_zeroize(pkcs8_serializer, sizeof(vscf_pkcs8_serializer_t));
 }
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_pkcs8_serializer_impl_t *
+VSCF_PUBLIC vscf_pkcs8_serializer_t *
 vscf_pkcs8_serializer_new(void) {
 
-    vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl = (vscf_pkcs8_serializer_impl_t *) vscf_alloc(sizeof (vscf_pkcs8_serializer_impl_t));
-    VSCF_ASSERT_ALLOC(pkcs8_serializer_impl);
+    vscf_pkcs8_serializer_t *pkcs8_serializer = (vscf_pkcs8_serializer_t *) vscf_alloc(sizeof (vscf_pkcs8_serializer_t));
+    VSCF_ASSERT_ALLOC(pkcs8_serializer);
 
-    vscf_pkcs8_serializer_init(pkcs8_serializer_impl);
+    vscf_pkcs8_serializer_init(pkcs8_serializer);
 
-    return pkcs8_serializer_impl;
+    return pkcs8_serializer;
 }
 
 //
@@ -205,12 +205,12 @@ vscf_pkcs8_serializer_new(void) {
 //  This is a reverse action of the function 'vscf_pkcs8_serializer_new()'.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_serializer_delete(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl) {
+vscf_pkcs8_serializer_delete(vscf_pkcs8_serializer_t *pkcs8_serializer) {
 
-    vscf_pkcs8_serializer_cleanup(pkcs8_serializer_impl);
+    vscf_pkcs8_serializer_cleanup(pkcs8_serializer);
 
-    if (pkcs8_serializer_impl && (pkcs8_serializer_impl->refcnt == 0)) {
-        vscf_dealloc(pkcs8_serializer_impl);
+    if (pkcs8_serializer && (pkcs8_serializer->refcnt == 0)) {
+        vscf_dealloc(pkcs8_serializer);
     }
 }
 
@@ -220,59 +220,59 @@ vscf_pkcs8_serializer_delete(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_serializer_destroy(vscf_pkcs8_serializer_impl_t **pkcs8_serializer_impl_ref) {
+vscf_pkcs8_serializer_destroy(vscf_pkcs8_serializer_t **pkcs8_serializer_ref) {
 
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl_ref);
+    VSCF_ASSERT_PTR(pkcs8_serializer_ref);
 
-    vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl = *pkcs8_serializer_impl_ref;
-    *pkcs8_serializer_impl_ref = NULL;
+    vscf_pkcs8_serializer_t *pkcs8_serializer = *pkcs8_serializer_ref;
+    *pkcs8_serializer_ref = NULL;
 
-    vscf_pkcs8_serializer_delete(pkcs8_serializer_impl);
+    vscf_pkcs8_serializer_delete(pkcs8_serializer);
 }
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_pkcs8_serializer_impl_t *
-vscf_pkcs8_serializer_shallow_copy(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl) {
+VSCF_PUBLIC vscf_pkcs8_serializer_t *
+vscf_pkcs8_serializer_shallow_copy(vscf_pkcs8_serializer_t *pkcs8_serializer) {
 
     // Proxy to the parent implementation.
-    return (vscf_pkcs8_serializer_impl_t *)vscf_impl_shallow_copy((vscf_impl_t *)pkcs8_serializer_impl);
+    return (vscf_pkcs8_serializer_t *)vscf_impl_shallow_copy((vscf_impl_t *)pkcs8_serializer);
 }
 
 //
-//  Return size of 'vscf_pkcs8_serializer_impl_t' type.
+//  Return size of 'vscf_pkcs8_serializer_t' type.
 //
 VSCF_PUBLIC size_t
 vscf_pkcs8_serializer_impl_size(void) {
 
-    return sizeof (vscf_pkcs8_serializer_impl_t);
+    return sizeof (vscf_pkcs8_serializer_t);
 }
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_pkcs8_serializer_impl(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl) {
+vscf_pkcs8_serializer_impl(vscf_pkcs8_serializer_t *pkcs8_serializer) {
 
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl);
-    return (vscf_impl_t *)(pkcs8_serializer_impl);
+    VSCF_ASSERT_PTR(pkcs8_serializer);
+    return (vscf_impl_t *)(pkcs8_serializer);
 }
 
 //
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_serializer_use_asn1_writer(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl, vscf_impl_t *asn1_writer) {
+vscf_pkcs8_serializer_use_asn1_writer(vscf_pkcs8_serializer_t *pkcs8_serializer, vscf_impl_t *asn1_writer) {
 
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl);
+    VSCF_ASSERT_PTR(pkcs8_serializer);
     VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl->asn1_writer == NULL);
+    VSCF_ASSERT_PTR(pkcs8_serializer->asn1_writer == NULL);
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
 
-    pkcs8_serializer_impl->asn1_writer = vscf_impl_shallow_copy(asn1_writer);
+    pkcs8_serializer->asn1_writer = vscf_impl_shallow_copy(asn1_writer);
 }
 
 //
@@ -280,42 +280,41 @@ vscf_pkcs8_serializer_use_asn1_writer(vscf_pkcs8_serializer_impl_t *pkcs8_serial
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_serializer_take_asn1_writer(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl, vscf_impl_t *asn1_writer) {
+vscf_pkcs8_serializer_take_asn1_writer(vscf_pkcs8_serializer_t *pkcs8_serializer, vscf_impl_t *asn1_writer) {
 
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl);
+    VSCF_ASSERT_PTR(pkcs8_serializer);
     VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl->asn1_writer == NULL);
+    VSCF_ASSERT_PTR(pkcs8_serializer->asn1_writer == NULL);
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
 
-    pkcs8_serializer_impl->asn1_writer = asn1_writer;
+    pkcs8_serializer->asn1_writer = asn1_writer;
 }
 
 //
 //  Release dependency to the interface 'asn1 writer'.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_serializer_release_asn1_writer(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl) {
+vscf_pkcs8_serializer_release_asn1_writer(vscf_pkcs8_serializer_t *pkcs8_serializer) {
 
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl);
+    VSCF_ASSERT_PTR(pkcs8_serializer);
 
-    vscf_impl_destroy(&pkcs8_serializer_impl->asn1_writer);
+    vscf_impl_destroy(&pkcs8_serializer->asn1_writer);
 }
 
 //
 //  Setup dependency to the interface 'key serializer' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_serializer_use_der_serializer(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl,
-        vscf_impl_t *der_serializer) {
+vscf_pkcs8_serializer_use_der_serializer(vscf_pkcs8_serializer_t *pkcs8_serializer, vscf_impl_t *der_serializer) {
 
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl);
+    VSCF_ASSERT_PTR(pkcs8_serializer);
     VSCF_ASSERT_PTR(der_serializer);
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl->der_serializer == NULL);
+    VSCF_ASSERT_PTR(pkcs8_serializer->der_serializer == NULL);
 
     VSCF_ASSERT(vscf_key_serializer_is_implemented(der_serializer));
 
-    pkcs8_serializer_impl->der_serializer = vscf_impl_shallow_copy(der_serializer);
+    pkcs8_serializer->der_serializer = vscf_impl_shallow_copy(der_serializer);
 }
 
 //
@@ -323,27 +322,26 @@ vscf_pkcs8_serializer_use_der_serializer(vscf_pkcs8_serializer_impl_t *pkcs8_ser
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_serializer_take_der_serializer(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl,
-        vscf_impl_t *der_serializer) {
+vscf_pkcs8_serializer_take_der_serializer(vscf_pkcs8_serializer_t *pkcs8_serializer, vscf_impl_t *der_serializer) {
 
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl);
+    VSCF_ASSERT_PTR(pkcs8_serializer);
     VSCF_ASSERT_PTR(der_serializer);
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl->der_serializer == NULL);
+    VSCF_ASSERT_PTR(pkcs8_serializer->der_serializer == NULL);
 
     VSCF_ASSERT(vscf_key_serializer_is_implemented(der_serializer));
 
-    pkcs8_serializer_impl->der_serializer = der_serializer;
+    pkcs8_serializer->der_serializer = der_serializer;
 }
 
 //
 //  Release dependency to the interface 'key serializer'.
 //
 VSCF_PUBLIC void
-vscf_pkcs8_serializer_release_der_serializer(vscf_pkcs8_serializer_impl_t *pkcs8_serializer_impl) {
+vscf_pkcs8_serializer_release_der_serializer(vscf_pkcs8_serializer_t *pkcs8_serializer) {
 
-    VSCF_ASSERT_PTR(pkcs8_serializer_impl);
+    VSCF_ASSERT_PTR(pkcs8_serializer);
 
-    vscf_impl_destroy(&pkcs8_serializer_impl->der_serializer);
+    vscf_impl_destroy(&pkcs8_serializer->der_serializer);
 }
 
 static const vscf_api_t *

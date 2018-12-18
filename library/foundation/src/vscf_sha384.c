@@ -53,7 +53,7 @@
 #include "vscf_sha384.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_sha384_impl.h"
+#include "vscf_sha384_defs.h"
 #include "vscf_sha384_internal.h"
 
 // clang-format on
@@ -80,11 +80,11 @@
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_sha384_init_ctx(vscf_sha384_impl_t *sha384_impl) {
+vscf_sha384_init_ctx(vscf_sha384_t *sha384) {
 
-    VSCF_ASSERT_PTR(sha384_impl);
+    VSCF_ASSERT_PTR(sha384);
 
-    mbedtls_sha512_init(&sha384_impl->hash_ctx);
+    mbedtls_sha512_init(&sha384->hash_ctx);
 }
 
 //
@@ -93,11 +93,11 @@ vscf_sha384_init_ctx(vscf_sha384_impl_t *sha384_impl) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_sha384_cleanup_ctx(vscf_sha384_impl_t *sha384_impl) {
+vscf_sha384_cleanup_ctx(vscf_sha384_t *sha384) {
 
-    VSCF_ASSERT_PTR(sha384_impl);
+    VSCF_ASSERT_PTR(sha384);
 
-    mbedtls_sha512_free(&sha384_impl->hash_ctx);
+    mbedtls_sha512_free(&sha384->hash_ctx);
 }
 
 //
@@ -128,36 +128,36 @@ vscf_sha384_hash(vsc_data_t data, vsc_buffer_t *digest) {
 //  Start a new hashing.
 //
 VSCF_PUBLIC void
-vscf_sha384_start(vscf_sha384_impl_t *sha384_impl) {
+vscf_sha384_start(vscf_sha384_t *sha384) {
 
-    VSCF_ASSERT_PTR(sha384_impl);
+    VSCF_ASSERT_PTR(sha384);
 
     const int is384 = 1;
-    mbedtls_sha512_starts(&sha384_impl->hash_ctx, is384);
+    mbedtls_sha512_starts(&sha384->hash_ctx, is384);
 }
 
 //
 //  Add given data to the hash.
 //
 VSCF_PUBLIC void
-vscf_sha384_update(vscf_sha384_impl_t *sha384_impl, vsc_data_t data) {
+vscf_sha384_update(vscf_sha384_t *sha384, vsc_data_t data) {
 
-    VSCF_ASSERT_PTR(sha384_impl);
+    VSCF_ASSERT_PTR(sha384);
     VSCF_ASSERT(vsc_data_is_valid(data));
 
-    mbedtls_sha512_update(&sha384_impl->hash_ctx, data.bytes, data.len);
+    mbedtls_sha512_update(&sha384->hash_ctx, data.bytes, data.len);
 }
 
 //
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_sha384_finish(vscf_sha384_impl_t *sha384_impl, vsc_buffer_t *digest) {
+vscf_sha384_finish(vscf_sha384_t *sha384, vsc_buffer_t *digest) {
 
-    VSCF_ASSERT_PTR(sha384_impl);
+    VSCF_ASSERT_PTR(sha384);
     VSCF_ASSERT(vsc_buffer_is_valid(digest));
     VSCF_ASSERT(vsc_buffer_unused_len(digest) >= vscf_sha384_DIGEST_LEN);
 
-    mbedtls_sha512_finish(&sha384_impl->hash_ctx, vsc_buffer_unused_bytes(digest));
+    mbedtls_sha512_finish(&sha384->hash_ctx, vsc_buffer_unused_bytes(digest));
     vsc_buffer_inc_used(digest, vscf_sha384_DIGEST_LEN);
 }

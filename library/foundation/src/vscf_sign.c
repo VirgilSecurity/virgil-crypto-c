@@ -70,7 +70,7 @@
 VSCF_PUBLIC vscf_error_t
 vscf_sign(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *signature) {
 
-    const vscf_sign_api_t *sign_api = vscf_sign_api (impl);
+    const vscf_sign_api_t *sign_api = vscf_sign_api(impl);
     VSCF_ASSERT_PTR (sign_api);
 
     VSCF_ASSERT_PTR (sign_api->sign_cb);
@@ -83,7 +83,7 @@ vscf_sign(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *signature) {
 VSCF_PUBLIC size_t
 vscf_sign_signature_len(vscf_impl_t *impl) {
 
-    const vscf_sign_api_t *sign_api = vscf_sign_api (impl);
+    const vscf_sign_api_t *sign_api = vscf_sign_api(impl);
     VSCF_ASSERT_PTR (sign_api);
 
     VSCF_ASSERT_PTR (sign_api->signature_len_cb);
@@ -98,7 +98,7 @@ vscf_sign_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_SIGN);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_SIGN);
     return (const vscf_sign_api_t *) api;
 }
 
@@ -110,7 +110,7 @@ vscf_sign_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_SIGN) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_SIGN) != NULL;
 }
 
 //

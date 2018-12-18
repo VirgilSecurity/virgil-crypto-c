@@ -46,7 +46,7 @@
 #include "vsce_phe_server.h"
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
-#include <virgil/crypto/foundation/private/vscf_ctr_drbg_impl.h>
+#include <virgil/crypto/foundation/private/vscf_ctr_drbg_defs.h>
 
 
 // --------------------------------------------------------------------------
@@ -65,7 +65,7 @@ int suiteTearDown(int num_failures) { return num_failures; }
 // --------------------------------------------------------------------------
 static void
 generate_pwd(vsc_buffer_t **pwd_ref) {
-    vscf_ctr_drbg_impl_t rng;
+    vscf_ctr_drbg_t rng;
     vscf_ctr_drbg_init(&rng);
     vscf_ctr_drbg_setup_defaults(&rng);
 

@@ -139,14 +139,14 @@ vsce_phe_hash_shallow_copy(vsce_phe_hash_t *phe_hash_ctx);
 //  Setup dependency to the implementation 'sha512' with shared ownership.
 //
 VSCE_PUBLIC void
-vsce_phe_hash_use_sha512(vsce_phe_hash_t *phe_hash_ctx, vscf_sha512_impl_t *sha512);
+vsce_phe_hash_use_sha512(vsce_phe_hash_t *phe_hash_ctx, vscf_sha512_t *sha512);
 
 //
 //  Setup dependency to the implementation 'sha512' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCE_PUBLIC void
-vsce_phe_hash_take_sha512(vsce_phe_hash_t *phe_hash_ctx, vscf_sha512_impl_t *sha512);
+vsce_phe_hash_take_sha512(vsce_phe_hash_t *phe_hash_ctx, vscf_sha512_t *sha512);
 
 //
 //  Release dependency to the implementation 'sha512'.

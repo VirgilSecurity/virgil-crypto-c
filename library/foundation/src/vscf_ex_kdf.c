@@ -71,7 +71,7 @@ VSCF_PUBLIC void
 vscf_ex_kdf_derive(vscf_impl_t *impl, vsc_data_t data, vsc_data_t salt, vsc_data_t info, vsc_buffer_t *key,
         size_t key_len) {
 
-    const vscf_ex_kdf_api_t *ex_kdf_api = vscf_ex_kdf_api (impl);
+    const vscf_ex_kdf_api_t *ex_kdf_api = vscf_ex_kdf_api(impl);
     VSCF_ASSERT_PTR (ex_kdf_api);
 
     VSCF_ASSERT_PTR (ex_kdf_api->derive_cb);
@@ -86,7 +86,7 @@ vscf_ex_kdf_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_EX_KDF);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_EX_KDF);
     return (const vscf_ex_kdf_api_t *) api;
 }
 
@@ -98,7 +98,7 @@ vscf_ex_kdf_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_EX_KDF) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_EX_KDF) != NULL;
 }
 
 //

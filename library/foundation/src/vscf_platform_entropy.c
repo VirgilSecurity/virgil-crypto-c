@@ -81,9 +81,9 @@
 //  Defines that implemented source is strong.
 //
 VSCF_PUBLIC bool
-vscf_platform_entropy_is_strong(vscf_platform_entropy_impl_t *platform_entropy_impl) {
+vscf_platform_entropy_is_strong(vscf_platform_entropy_t *platform_entropy) {
 
-    VSCF_ASSERT_PTR(platform_entropy_impl);
+    VSCF_ASSERT_PTR(platform_entropy);
     return true;
 }
 
@@ -91,9 +91,9 @@ vscf_platform_entropy_is_strong(vscf_platform_entropy_impl_t *platform_entropy_i
 //  Gather entropy of the requested length.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_platform_entropy_gather(vscf_platform_entropy_impl_t *platform_entropy_impl, size_t len, vsc_buffer_t *out) {
+vscf_platform_entropy_gather(vscf_platform_entropy_t *platform_entropy, size_t len, vsc_buffer_t *out) {
 
-    VSCF_ASSERT_PTR(platform_entropy_impl);
+    VSCF_ASSERT_PTR(platform_entropy);
     VSCF_ASSERT_PTR(len > 0);
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));

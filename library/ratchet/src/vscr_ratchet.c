@@ -375,7 +375,7 @@ vscr_ratchet_create_chain_key(const vscr_ratchet_t *ratchet_ctx, const vsc_buffe
         return vscr_CURVE25519_ERROR;
     }
 
-    vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
+    vscf_hkdf_t *hkdf = vscf_hkdf_new();
 
     vscf_hkdf_take_hash(hkdf, vscf_sha256_impl(vscf_sha256_new()));
 
@@ -406,7 +406,7 @@ vscr_ratchet_advance_chain_key(vscr_ratchet_chain_key_t *chain_key) {
     vsc_buffer_t *buffer = vsc_buffer_new();
     vsc_buffer_use(buffer, chain_key->key, sizeof(chain_key->key));
 
-    vscf_hmac_impl_t *hmac = vscf_hmac_new();
+    vscf_hmac_t *hmac = vscf_hmac_new();
     vscf_hmac_take_hash(hmac, vscf_sha256_impl(vscf_sha256_new()));
     vscf_hmac_mac(hmac, vsc_data(chain_key->key, sizeof(chain_key->key)),
             vsc_data(ratchet_chain_key_seed, sizeof(ratchet_chain_key_seed)), buffer);
@@ -426,7 +426,7 @@ vscr_ratchet_create_message_key(const vscr_ratchet_chain_key_t *chain_key) {
 
     vsc_buffer_t *buffer = vsc_buffer_new();
     vsc_buffer_use(buffer, message_key->key, sizeof(message_key->key));
-    vscf_hmac_impl_t *hmac = vscf_hmac_new();
+    vscf_hmac_t *hmac = vscf_hmac_new();
     vscf_hmac_take_hash(hmac, vscf_sha256_impl(vscf_sha256_new()));
     vscf_hmac_mac(hmac, vsc_data(chain_key->key, sizeof(chain_key->key)),
             vsc_data(ratchet_message_key_seed, sizeof(ratchet_message_key_seed)), buffer);
@@ -522,7 +522,7 @@ vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_
 
     VSCR_ASSERT(!ratchet_ctx->receiver_chains);
 
-    vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
+    vscf_hkdf_t *hkdf = vscf_hkdf_new();
     vscf_hkdf_take_hash(hkdf, vscf_sha256_impl(vscf_sha256_new()));
 
     vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(2 * vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
@@ -566,7 +566,7 @@ vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc
 
     VSCR_ASSERT_PTR(!ratchet_ctx->sender_chain);
 
-    vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
+    vscf_hkdf_t *hkdf = vscf_hkdf_new();
     vscf_hkdf_take_hash(hkdf, vscf_sha256_impl(vscf_sha256_new()));
 
     vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(2 * vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);

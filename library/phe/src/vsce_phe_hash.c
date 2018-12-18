@@ -220,7 +220,7 @@ vsce_phe_hash_shallow_copy(vsce_phe_hash_t *phe_hash_ctx) {
 //  Setup dependency to the implementation 'sha512' with shared ownership.
 //
 VSCE_PUBLIC void
-vsce_phe_hash_use_sha512(vsce_phe_hash_t *phe_hash_ctx, vscf_sha512_impl_t *sha512) {
+vsce_phe_hash_use_sha512(vsce_phe_hash_t *phe_hash_ctx, vscf_sha512_t *sha512) {
 
     VSCE_ASSERT_PTR(phe_hash_ctx);
     VSCE_ASSERT_PTR(sha512);
@@ -234,7 +234,7 @@ vsce_phe_hash_use_sha512(vsce_phe_hash_t *phe_hash_ctx, vscf_sha512_impl_t *sha5
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCE_PUBLIC void
-vsce_phe_hash_take_sha512(vsce_phe_hash_t *phe_hash_ctx, vscf_sha512_impl_t *sha512) {
+vsce_phe_hash_take_sha512(vsce_phe_hash_t *phe_hash_ctx, vscf_sha512_t *sha512) {
 
     VSCE_ASSERT_PTR(phe_hash_ctx);
     VSCE_ASSERT_PTR(sha512);
@@ -353,7 +353,7 @@ vsce_phe_hash_derive_account_key(vsce_phe_hash_t *phe_hash_ctx, const mbedtls_ec
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
-    vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
+    vscf_hkdf_t *hkdf = vscf_hkdf_new();
 
     vscf_hkdf_use_hash(hkdf, vscf_sha512_impl(phe_hash_ctx->sha512));
 
@@ -548,7 +548,7 @@ vsce_phe_hash_derive_z(vsce_phe_hash_t *phe_hash_ctx, vsc_data_t buffer, bool su
 
     VSCE_ASSERT_PTR(phe_hash_ctx);
 
-    vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
+    vscf_hkdf_t *hkdf = vscf_hkdf_new();
 
     byte key_buffer[vscf_sha512_DIGEST_LEN];
 

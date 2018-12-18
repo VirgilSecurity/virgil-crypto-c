@@ -63,7 +63,7 @@ vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vsc_
     VSCR_ASSERT_PTR(ratchet_cipher_ctx);
     VSCR_ASSERT_PTR(ratchet_cipher_ctx->aes256_gcm);
 
-    vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
+    vscf_hkdf_t *hkdf = vscf_hkdf_new();
     vscf_hkdf_take_hash(hkdf, vscf_sha256_impl(vscf_sha256_new()));
 
     vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(vscf_aes256_gcm_KEY_LEN + vscf_aes256_gcm_NONCE_LEN);
@@ -219,7 +219,7 @@ vscr_ratchet_cipher_shallow_copy(vscr_ratchet_cipher_t *ratchet_cipher_ctx) {
 //  Setup dependency to the implementation 'aes256 gcm' with shared ownership.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_use_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vscf_aes256_gcm_impl_t *aes256_gcm) {
+vscr_ratchet_cipher_use_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vscf_aes256_gcm_t *aes256_gcm) {
 
     VSCR_ASSERT_PTR(ratchet_cipher_ctx);
     VSCR_ASSERT_PTR(aes256_gcm);
@@ -233,7 +233,7 @@ vscr_ratchet_cipher_use_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vs
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_take_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vscf_aes256_gcm_impl_t *aes256_gcm) {
+vscr_ratchet_cipher_take_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher_ctx, vscf_aes256_gcm_t *aes256_gcm) {
 
     VSCR_ASSERT_PTR(ratchet_cipher_ctx);
     VSCR_ASSERT_PTR(aes256_gcm);

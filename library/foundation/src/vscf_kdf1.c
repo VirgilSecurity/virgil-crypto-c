@@ -54,7 +54,7 @@
 #include "vscf_assert.h"
 #include "vscf_memory.h"
 #include "vscf_hash_stream.h"
-#include "vscf_kdf1_impl.h"
+#include "vscf_kdf1_defs.h"
 #include "vscf_kdf1_internal.h"
 
 // clang-format on
@@ -79,17 +79,17 @@
 //  Derive key of the requested length from the given data.
 //
 VSCF_PUBLIC void
-vscf_kdf1_derive(vscf_kdf1_impl_t *kdf1_impl, vsc_data_t data, size_t key_len, vsc_buffer_t *key) {
+vscf_kdf1_derive(vscf_kdf1_t *kdf1, vsc_data_t data, size_t key_len, vsc_buffer_t *key) {
 
-    VSCF_ASSERT_PTR(kdf1_impl);
-    VSCF_ASSERT_PTR(kdf1_impl->hash);
+    VSCF_ASSERT_PTR(kdf1);
+    VSCF_ASSERT_PTR(kdf1->hash);
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT(vsc_buffer_is_valid(key));
     VSCF_ASSERT(vsc_buffer_unused_len(key) >= key_len);
 
 
     // Get HASH parameters
-    size_t digest_len = vscf_hash_info_digest_len(vscf_hash_info_api(kdf1_impl->hash));
+    size_t digest_len = vscf_hash_info_digest_len(vscf_hash_info_api(kdf1->hash));
 
     // Get KDF parameters
     size_t counter_len = VSCF_CEIL(key_len, digest_len);
@@ -103,18 +103,18 @@ vscf_kdf1_derive(vscf_kdf1_impl_t *kdf1_impl, vsc_data_t data, size_t key_len, v
         counter_string[2] = (unsigned char)((counter >> 8)) & 255;
         counter_string[3] = (unsigned char)(counter & 255);
 
-        vscf_hash_stream_start(kdf1_impl->hash);
-        vscf_hash_stream_update(kdf1_impl->hash, data);
-        vscf_hash_stream_update(kdf1_impl->hash, vsc_data(counter_string, sizeof(counter_string)));
+        vscf_hash_stream_start(kdf1->hash);
+        vscf_hash_stream_update(kdf1->hash, data);
+        vscf_hash_stream_update(kdf1->hash, vsc_data(counter_string, sizeof(counter_string)));
 
         if (digest_len <= key_left_len) {
-            vscf_hash_stream_finish(kdf1_impl->hash, key);
+            vscf_hash_stream_finish(kdf1->hash, key);
             key_left_len -= digest_len;
 
         } else {
             vsc_buffer_t *digest = vsc_buffer_new_with_capacity(digest_len);
 
-            vscf_hash_stream_finish(kdf1_impl->hash, digest);
+            vscf_hash_stream_finish(kdf1->hash, digest);
             memcpy(vsc_buffer_unused_bytes(key), vsc_buffer_bytes(digest), key_left_len);
             vsc_buffer_inc_used(key, key_left_len);
             key_left_len = 0;

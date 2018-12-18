@@ -85,10 +85,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_fake_random_impl_t vscf_fake_random_impl_t;
+typedef struct vscf_fake_random_t vscf_fake_random_t;
 
 //
-//  Return size of 'vscf_fake_random_impl_t' type.
+//  Return size of 'vscf_fake_random_t' type.
 //
 VSCF_PUBLIC size_t
 vscf_fake_random_impl_size(void);
@@ -97,26 +97,26 @@ vscf_fake_random_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_fake_random_impl(vscf_fake_random_impl_t *fake_random_impl);
+vscf_fake_random_impl(vscf_fake_random_t *fake_random);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_fake_random_init(vscf_fake_random_impl_t *fake_random_impl);
+vscf_fake_random_init(vscf_fake_random_t *fake_random);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_fake_random_init()'.
 //
 VSCF_PUBLIC void
-vscf_fake_random_cleanup(vscf_fake_random_impl_t *fake_random_impl);
+vscf_fake_random_cleanup(vscf_fake_random_t *fake_random);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_fake_random_impl_t *
+VSCF_PUBLIC vscf_fake_random_t *
 vscf_fake_random_new(void);
 
 //
@@ -124,7 +124,7 @@ vscf_fake_random_new(void);
 //  This is a reverse action of the function 'vscf_fake_random_new()'.
 //
 VSCF_PUBLIC void
-vscf_fake_random_delete(vscf_fake_random_impl_t *fake_random_impl);
+vscf_fake_random_delete(vscf_fake_random_t *fake_random);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -132,51 +132,51 @@ vscf_fake_random_delete(vscf_fake_random_impl_t *fake_random_impl);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_fake_random_destroy(vscf_fake_random_impl_t **fake_random_impl_ref);
+vscf_fake_random_destroy(vscf_fake_random_t **fake_random_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_fake_random_impl_t *
-vscf_fake_random_shallow_copy(vscf_fake_random_impl_t *fake_random_impl);
+VSCF_PUBLIC vscf_fake_random_t *
+vscf_fake_random_shallow_copy(vscf_fake_random_t *fake_random);
 
 //
 //  Configure random number generator to generate sequence filled with given byte.
 //
 VSCF_PUBLIC void
-vscf_fake_random_setup_source_byte(vscf_fake_random_impl_t *fake_random_impl, byte byte_source);
+vscf_fake_random_setup_source_byte(vscf_fake_random_t *fake_random, byte byte_source);
 
 //
 //  Configure random number generator to generate random sequence from given data.
 //  Note, that given data is used as circular source.
 //
 VSCF_PUBLIC void
-vscf_fake_random_setup_source_data(vscf_fake_random_impl_t *fake_random_impl, vsc_data_t data_source);
+vscf_fake_random_setup_source_data(vscf_fake_random_t *fake_random, vsc_data_t data_source);
 
 //
 //  Generate random bytes.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_fake_random_random(vscf_fake_random_impl_t *fake_random_impl, size_t data_len, vsc_buffer_t *data);
+vscf_fake_random_random(vscf_fake_random_t *fake_random, size_t data_len, vsc_buffer_t *data);
 
 //
 //  Retreive new seed data from the entropy sources.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_fake_random_reseed(vscf_fake_random_impl_t *fake_random_impl);
+vscf_fake_random_reseed(vscf_fake_random_t *fake_random);
 
 //
 //  Defines that implemented source is strong.
 //
 VSCF_PUBLIC bool
-vscf_fake_random_is_strong(vscf_fake_random_impl_t *fake_random_impl);
+vscf_fake_random_is_strong(vscf_fake_random_t *fake_random);
 
 //
 //  Gather entropy of the requested length.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_fake_random_gather(vscf_fake_random_impl_t *fake_random_impl, size_t len, vsc_buffer_t *out);
+vscf_fake_random_gather(vscf_fake_random_t *fake_random, size_t len, vsc_buffer_t *out);
 
 
 // --------------------------------------------------------------------------

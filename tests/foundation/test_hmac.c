@@ -66,7 +66,7 @@ int suiteTearDown(int num_failures) { return num_failures; }
 void
 test__hmac_mac__sha256_vector_1__success(void) {
 
-    vscf_hmac_impl_t *hmac = vscf_hmac_new();
+    vscf_hmac_t *hmac = vscf_hmac_new();
     vscf_hmac_take_hash(hmac, vscf_sha256_impl(vscf_sha256_new()));
 
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha256_DIGEST_LEN);
@@ -84,7 +84,7 @@ test__hmac_mac__sha256_vector_1__success(void) {
 void
 test__hmac_mac__sha256_vector_2__success(void) {
 
-    vscf_hmac_impl_t *hmac = vscf_hmac_new();
+    vscf_hmac_t *hmac = vscf_hmac_new();
     vscf_hmac_take_hash(hmac, vscf_sha256_impl(vscf_sha256_new()));
 
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha256_DIGEST_LEN);
@@ -102,7 +102,7 @@ test__hmac_mac__sha256_vector_2__success(void) {
 void
 test__hmac_mac__sha256_vector_3__success(void) {
 
-    vscf_hmac_impl_t *hmac = vscf_hmac_new();
+    vscf_hmac_t *hmac = vscf_hmac_new();
     vscf_hmac_take_hash(hmac, vscf_sha256_impl(vscf_sha256_new()));
 
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha256_DIGEST_LEN);
