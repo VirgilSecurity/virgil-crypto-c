@@ -46,8 +46,23 @@
 #define TEST_DEPENDENCIES_AVAILABLE VSCE_SIMPLE_SWU
 #if TEST_DEPENDENCIES_AVAILABLE
 
+
+// --------------------------------------------------------------------------
+//  Should have it to prevent linkage erros in MSVC.
+// --------------------------------------------------------------------------
+// clang-format off
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+// clang-format on
+
+
+// --------------------------------------------------------------------------
+//  Test functions.
+// --------------------------------------------------------------------------
 void
-test__simple_swu__random_hashes__should_be_on_curve() {
+test__simple_swu__random_hashes__should_be_on_curve(void) {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
@@ -97,7 +112,7 @@ test__simple_swu__random_hashes__should_be_on_curve() {
 }
 
 void
-test__simple_swu__const_hash1__should_match() {
+test__simple_swu__const_hash1__should_match(void) {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
@@ -133,7 +148,7 @@ test__simple_swu__const_hash1__should_match() {
 }
 
 void
-test__simple_swu__const_hash2__should_match() {
+test__simple_swu__const_hash2__should_match(void) {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
     mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);

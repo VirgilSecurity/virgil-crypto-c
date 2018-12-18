@@ -37,32 +37,37 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 project(virgil_crypto_pythia_php VERSION ${virgil_crypto_php_VERSION} LANGUAGES C)
 
 
-#
-# Check dependencies
-#
+# ---------------------------------------------------------------------------
+#   Check dependencies
+# ---------------------------------------------------------------------------
 if(NOT VIRGIL_LIB_PYTHIA)
     message(STATUS "Skip building the PHP wrapper for library Pythia, which is not built.")
     return()
 endif()
 
 
-#
-# Create PHP extension library
-#
+# ---------------------------------------------------------------------------
+#   Create PHP extension library
+# ---------------------------------------------------------------------------
 add_library(pythia_php SHARED "")
 set_target_properties(pythia_php PROPERTIES
         C_STANDARD 99
         DEBUG_POSTFIX "_d"
         OUTPUT_NAME vscp_pythia_php
         PREFIX ""
-        SUFFIX ".so"
         VERSION ${virgil_crypto_pythia_php_VERSION}
         SOVERSION ${virgil_crypto_pythia_php_VERSION_MAJOR}
         )
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set_target_properties(phe_php PROPERTIES SUFFIX ".dll")
+else()
+    set_target_properties(phe_php PROPERTIES SUFFIX ".so")
+endif()
+
 target_sources(pythia_php
         PRIVATE
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/vscp_pythia_php.c>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/extension/vscp_pythia_php.c>
         )
 
 target_link_libraries(pythia_php
@@ -73,14 +78,34 @@ target_link_libraries(pythia_php
         "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-undefined dynamic_lookup>"
     )
 
-configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/PythiaTest.php"
-        "${CMAKE_CURRENT_BINARY_DIR}/PythiaTest.php"
-        )
-
+# ---------------------------------------------------------------------------
+#   Test
+# ---------------------------------------------------------------------------
 if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE)
     add_test(
             NAME test_pythia_php
-            COMMAND "${PHP_EXECUTABLE}" -d "extension=$<TARGET_FILE:pythia_php>" -d safe_mode=Off "${PHPUNIT_EXECUTABLE}" --include-path . PythiaTest
+            COMMAND "${PHP_EXECUTABLE}" -d "extension=$<TARGET_FILE:pythia_php>" -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
+                    --include-path "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_LIST_DIR}/tests/PythiaTest.php"
+            )
+endif()
+
+# ---------------------------------------------------------------------------
+#   Install
+# ---------------------------------------------------------------------------
+if(VIRGIL_INSTALL_WRAP_LIBS)
+    install(TARGETS pythia_php
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            )
+endif()
+
+if(VIRGIL_INSTALL_WRAP_SRCS)
+    install(
+            DIRECTORY
+                "${CMAKE_CURRENT_LIST_DIR}/src"
+            DESTINATION
+                "${VIRGIL_INSTALL_PHP_SRCDIR}/pythia"
+            FILES_MATCHING PATTERN
+                "*.php"
             )
 endif()

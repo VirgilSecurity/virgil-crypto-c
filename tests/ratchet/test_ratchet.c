@@ -49,6 +49,20 @@
 #include <ed25519/ed25519.h>
 #include <virgil/crypto/ratchet/private/vscr_ratchet_defs.h>
 
+// --------------------------------------------------------------------------
+//  Should have it to prevent linkage erros in MSVC.
+// --------------------------------------------------------------------------
+// clang-format off
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+// clang-format on
+
+
+// --------------------------------------------------------------------------
+//  Test functions.
+// --------------------------------------------------------------------------
 static void
 initialize(vscr_ratchet_t *ratchet_alice, vscr_ratchet_t *ratchet_bob, RegularMessage *regular_message) {
     vscr_ratchet_cipher_t *ratchet_cipher = vscr_ratchet_cipher_new();

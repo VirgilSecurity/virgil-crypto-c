@@ -47,6 +47,21 @@
 
 #include "test_data_ctr_drbg.h"
 
+
+// --------------------------------------------------------------------------
+//  Should have it to prevent linkage erros in MSVC.
+// --------------------------------------------------------------------------
+// clang-format off
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+// clang-format on
+
+
+// --------------------------------------------------------------------------
+//  Test functions.
+// --------------------------------------------------------------------------
 void
 test__ctr_drbg_random__zero_entropy_and_len_128__returns__random_set_1(void) {
     vscf_fake_random_impl_t *entropy = vscf_fake_random_new();

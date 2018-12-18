@@ -50,7 +50,7 @@
 // --------------------------------------------------------------------------
 //  Constants
 // --------------------------------------------------------------------------
-const char VSCE_PHE_PHP_VERSION[] = "0.5.0";
+const char VSCE_PHE_PHP_VERSION[] = "0.1.0";
 const char VSCE_PHE_PHP_EXTNAME[] = "vsce_phe_php";
 
 const char VSCE_PHE_CLIENT_PHP_RES_NAME[] = "vsce_phe_client_t";
@@ -253,7 +253,7 @@ PHP_FUNCTION(vsce_phe_client_enroll_account_php) {
     vsc_buffer_use(enrollment_record, (byte *)ZSTR_VAL(out_enrollment_record), ZSTR_LEN(out_enrollment_record));
 
     //  Allocate output buffer for output 'account_key'
-    zend_string *out_account_key = zend_string_alloc(vsce_phe_common_PHE_SECRET_MESSAGE_LENGTH, 0);
+    zend_string *out_account_key = zend_string_alloc(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH, 0);
     vsc_buffer_t *account_key = vsc_buffer_new();
     vsc_buffer_use(account_key, (byte *)ZSTR_VAL(out_account_key), ZSTR_LEN(out_account_key));
 

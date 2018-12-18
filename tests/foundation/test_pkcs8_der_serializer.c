@@ -51,9 +51,19 @@
 
 
 // --------------------------------------------------------------------------
+//  Should have it to prevent linkage erros in MSVC.
+// --------------------------------------------------------------------------
+// clang-format off
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+// clang-format on
+
+
+// --------------------------------------------------------------------------
 // PKCS#8 RSA keys.
 // --------------------------------------------------------------------------
-
 void
 test__serialized_public_key_len__rsa2048__greater_then_293(void) {
 #if VSCF_RSA_PUBLIC_KEY

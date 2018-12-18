@@ -14,6 +14,21 @@
 
 #include "test_data_ed25519.h"
 
+
+// --------------------------------------------------------------------------
+//  Should have it to prevent linkage erros in MSVC.
+// --------------------------------------------------------------------------
+// clang-format off
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+// clang-format on
+
+
+// --------------------------------------------------------------------------
+//  Test functions.
+// --------------------------------------------------------------------------
 void
 test__ed25519_private_key_key_len__imported_PRIVATE_KEY__returns_32(void) {
     vscf_ed25519_private_key_impl_t *private_key_impl = vscf_ed25519_private_key_new();

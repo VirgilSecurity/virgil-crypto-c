@@ -42,6 +42,21 @@
 #define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_CLIENT &&VSCE_PHE_SERVER
 #if TEST_DEPENDENCIES_AVAILABLE
 
+
+// --------------------------------------------------------------------------
+//  Should have it to prevent linkage erros in MSVC.
+// --------------------------------------------------------------------------
+// clang-format off
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+// clang-format on
+
+
+// --------------------------------------------------------------------------
+//  Test functions.
+// --------------------------------------------------------------------------
 static void
 generate_pwd(vsc_buffer_t **pwd_ref) {
     vscf_ctr_drbg_impl_t rng;
@@ -85,7 +100,7 @@ init(vsce_phe_server_t **server_ref, vsce_phe_client_t **client_ref, vsc_buffer_
 }
 
 void
-test__full_flow__random_correct_pwd__should_succeed() {
+test__full_flow__random_correct_pwd__should_succeed(void) {
     vsce_phe_server_t *server;
     vsce_phe_client_t *client;
     vsc_buffer_t *server_private_key, *server_public_key;
@@ -144,7 +159,7 @@ test__full_flow__random_correct_pwd__should_succeed() {
 }
 
 void
-test__full_flow__random_incorrect_pwd__should_fail() {
+test__full_flow__random_incorrect_pwd__should_fail(void) {
     vsce_phe_server_t *server;
     vsce_phe_client_t *client;
     vsc_buffer_t *server_private_key, *server_public_key;
@@ -207,7 +222,7 @@ test__full_flow__random_incorrect_pwd__should_fail() {
 }
 
 void
-test__rotation__random_rotation__server_public_keys_match() {
+test__rotation__random_rotation__server_public_keys_match(void) {
     vsce_phe_server_t *server;
     vsce_phe_client_t *client;
     vsc_buffer_t *server_private_key, *server_public_key;
@@ -244,7 +259,7 @@ test__rotation__random_rotation__server_public_keys_match() {
 }
 
 void
-test__rotation__random_rotation__enrollment_record_updated_successfully() {
+test__rotation__random_rotation__enrollment_record_updated_successfully(void) {
     vsce_phe_server_t *server;
     vsce_phe_client_t *client;
     vsc_buffer_t *server_private_key, *server_public_key;
@@ -335,7 +350,7 @@ test__rotation__random_rotation__enrollment_record_updated_successfully() {
 }
 
 void
-test__full_flow__incorrect_server_public_key_correct_pwd__should_fail() {
+test__full_flow__incorrect_server_public_key_correct_pwd__should_fail(void) {
     vsce_phe_server_t *server;
     vsce_phe_client_t *client;
     vsc_buffer_t *server_private_key, *server_public_key;
@@ -400,7 +415,7 @@ test__full_flow__incorrect_server_public_key_correct_pwd__should_fail() {
 }
 
 void
-test__full_flow__incorrect_server_public_key_incorrect_pwd__should_fail() {
+test__full_flow__incorrect_server_public_key_incorrect_pwd__should_fail(void) {
     vsce_phe_server_t *server;
     vsce_phe_client_t *client;
     vsc_buffer_t *server_private_key, *server_public_key;
