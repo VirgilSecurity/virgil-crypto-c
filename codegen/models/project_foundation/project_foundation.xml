@@ -67,7 +67,7 @@
     <interface name="cipher info"/>
     <interface name="decrypt"/>
     <interface name="encrypt"/>
-    <interface name="ex kdf"/>
+    <interface name="salted kdf"/>
     <interface name="hash"/>
     <interface name="hash info"/>
     <interface name="hash stream"/>

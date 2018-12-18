@@ -89,7 +89,6 @@ enum vscf_api_tag_t {
     vscf_api_tag_DEFAULTS,
     vscf_api_tag_ENCRYPT,
     vscf_api_tag_ENTROPY_SOURCE,
-    vscf_api_tag_EX_KDF,
     vscf_api_tag_GENERATE_KEY,
     vscf_api_tag_HASH,
     vscf_api_tag_HASH_INFO,
@@ -104,6 +103,7 @@ enum vscf_api_tag_t {
     vscf_api_tag_PRIVATE_KEY,
     vscf_api_tag_PUBLIC_KEY,
     vscf_api_tag_RANDOM,
+    vscf_api_tag_SALTED_KDF,
     vscf_api_tag_SIGN,
     vscf_api_tag_VERIFY,
     vscf_api_tag_END

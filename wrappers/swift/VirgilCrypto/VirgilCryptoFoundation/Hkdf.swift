@@ -38,7 +38,7 @@ import VSCFoundation
 import VirgilCryptoCommon
 
 /// Virgil Security implementation of the HKDF (RFC 6234) algorithm.
-@objc(VSCFHkdf) public class Hkdf: NSObject, ExKdf {
+@objc(VSCFHkdf) public class Hkdf: NSObject, SaltedKdf {
 
     @objc public let hashCounterMax: Int = 255
 

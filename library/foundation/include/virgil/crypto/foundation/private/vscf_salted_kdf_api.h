@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'ex kdf' API.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,10 +44,36 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_ex_kdf_api.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Interface 'salted kdf' API.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_SALTED_KDF_API_H_INCLUDED
+#define VSCF_SALTED_KDF_API_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_api.h"
+#include "vscf_impl.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -62,9 +82,40 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Callback. Derive key of the requested length from the given data, salt and info.
+//
+typedef void (*vscf_salted_kdf_api_derive_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_data_t salt, vsc_data_t info,
+        vsc_buffer_t *key, size_t key_len);
+
+//
+//  Contains API requirements of the interface 'salted kdf'.
+//
+struct vscf_salted_kdf_api_t {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'salted_kdf' MUST be equal to the 'vscf_api_tag_SALTED_KDF'.
+    //
+    vscf_api_tag_t api_tag;
+    //
+    //  Derive key of the requested length from the given data, salt and info.
+    //
+    vscf_salted_kdf_api_derive_fn derive_cb;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_SALTED_KDF_API_H_INCLUDED
 //  @end

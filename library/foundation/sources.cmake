@@ -150,11 +150,6 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ex_kdf.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_generate_key.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -221,6 +216,11 @@ set_property(
 
 set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_random.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_salted_kdf.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -428,8 +428,6 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_ENCRYPT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_encrypt_api.h>"
             "$<$<BOOL:${VSCF_ENTROPY_SOURCE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_entropy_source.h>"
             "$<$<BOOL:${VSCF_ENTROPY_SOURCE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_entropy_source_api.h>"
-            "$<$<BOOL:${VSCF_EX_KDF}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ex_kdf.h>"
-            "$<$<BOOL:${VSCF_EX_KDF}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_ex_kdf_api.h>"
             "$<$<BOOL:${VSCF_GENERATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_generate_key.h>"
             "$<$<BOOL:${VSCF_GENERATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_generate_key_api.h>"
             "$<$<BOOL:${VSCF_HASH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_hash.h>"
@@ -458,6 +456,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_public_key_api.h>"
             "$<$<BOOL:${VSCF_RANDOM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_random.h>"
             "$<$<BOOL:${VSCF_RANDOM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_random_api.h>"
+            "$<$<BOOL:${VSCF_SALTED_KDF}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_salted_kdf.h>"
+            "$<$<BOOL:${VSCF_SALTED_KDF}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_salted_kdf_api.h>"
             "$<$<BOOL:${VSCF_SIGN}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_sign.h>"
             "$<$<BOOL:${VSCF_SIGN}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_sign_api.h>"
             "$<$<BOOL:${VSCF_VERIFY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_verify.h>"
@@ -580,8 +580,6 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_ENCRYPT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_encrypt_api.c>"
             "$<$<BOOL:${VSCF_ENTROPY_SOURCE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_entropy_source.c>"
             "$<$<BOOL:${VSCF_ENTROPY_SOURCE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_entropy_source_api.c>"
-            "$<$<BOOL:${VSCF_EX_KDF}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ex_kdf.c>"
-            "$<$<BOOL:${VSCF_EX_KDF}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ex_kdf_api.c>"
             "$<$<BOOL:${VSCF_GENERATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_generate_key.c>"
             "$<$<BOOL:${VSCF_GENERATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_generate_key_api.c>"
             "$<$<BOOL:${VSCF_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash.c>"
@@ -610,6 +608,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_public_key_api.c>"
             "$<$<BOOL:${VSCF_RANDOM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_random.c>"
             "$<$<BOOL:${VSCF_RANDOM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_random_api.c>"
+            "$<$<BOOL:${VSCF_SALTED_KDF}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_salted_kdf.c>"
+            "$<$<BOOL:${VSCF_SALTED_KDF}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_salted_kdf_api.c>"
             "$<$<BOOL:${VSCF_SIGN}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sign.c>"
             "$<$<BOOL:${VSCF_SIGN}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sign_api.c>"
             "$<$<BOOL:${VSCF_VERIFY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_verify.c>"

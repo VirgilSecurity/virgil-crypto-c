@@ -37,6 +37,13 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Provides interface to the key derivation function (KDF) algorithms
+//  that use salt and teration count.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,36 +51,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'ex kdf' API.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_EX_KDF_API_H_INCLUDED
-#define VSCF_EX_KDF_API_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_api.h"
-#include "vscf_impl.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#   include <VSCCommon/vsc_buffer.h>
-#endif
+#include "vscf_salted_kdf.h"
+#include "vscf_assert.h"
+#include "vscf_salted_kdf_api.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -83,39 +66,56 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Derive key of the requested length from the given data, salt and info.
+//  Derive key of the requested length from the given data, salt and info.
 //
-typedef void (*vscf_ex_kdf_api_derive_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_data_t salt, vsc_data_t info,
-        vsc_buffer_t *key, size_t key_len);
+VSCF_PUBLIC void
+vscf_salted_kdf_derive(vscf_impl_t *impl, vsc_data_t data, vsc_data_t salt, vsc_data_t info, vsc_buffer_t *key,
+        size_t key_len) {
+
+    const vscf_salted_kdf_api_t *salted_kdf_api = vscf_salted_kdf_api(impl);
+    VSCF_ASSERT_PTR (salted_kdf_api);
+
+    VSCF_ASSERT_PTR (salted_kdf_api->derive_cb);
+    salted_kdf_api->derive_cb (impl, data, salt, info, key, key_len);
+}
 
 //
-//  Contains API requirements of the interface 'ex kdf'.
+//  Return salted kdf API, or NULL if it is not implemented.
 //
-struct vscf_ex_kdf_api_t {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'ex_kdf' MUST be equal to the 'vscf_api_tag_EX_KDF'.
-    //
-    vscf_api_tag_t api_tag;
-    //
-    //  Derive key of the requested length from the given data, salt and info.
-    //
-    vscf_ex_kdf_api_derive_fn derive_cb;
-};
+VSCF_PUBLIC const vscf_salted_kdf_api_t *
+vscf_salted_kdf_api(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_SALTED_KDF);
+    return (const vscf_salted_kdf_api_t *) api;
+}
+
+//
+//  Check if given object implements interface 'salted kdf'.
+//
+VSCF_PUBLIC bool
+vscf_salted_kdf_is_implemented(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    return vscf_impl_api(impl, vscf_api_tag_SALTED_KDF) != NULL;
+}
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_salted_kdf_api_tag(const vscf_salted_kdf_api_t *salted_kdf_api) {
+
+    VSCF_ASSERT_PTR (salted_kdf_api);
+
+    return salted_kdf_api->api_tag;
+}
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_EX_KDF_API_H_INCLUDED
 //  @end
