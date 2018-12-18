@@ -27,6 +27,7 @@ install:
   - travis_retry sudo dpkg -i packages-microsoft-prod.deb
   - travis_retry sudo apt-get install apt-transport-https
   - travis_retry sudo apt-get update
+  - travis_retry sudo apt-get -f install
   - travis_retry sudo apt-get install dotnet-sdk-2.2
 
 before_script:
