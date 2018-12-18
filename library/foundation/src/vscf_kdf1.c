@@ -85,7 +85,7 @@ vscf_kdf1_derive(vscf_kdf1_impl_t *kdf1_impl, vsc_data_t data, size_t key_len, v
     VSCF_ASSERT_PTR(kdf1_impl->hash);
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT(vsc_buffer_is_valid(key));
-    VSCF_ASSERT(vsc_buffer_left(key) >= key_len);
+    VSCF_ASSERT(vsc_buffer_unused_len(key) >= key_len);
 
 
     // Get HASH parameters
@@ -115,8 +115,8 @@ vscf_kdf1_derive(vscf_kdf1_impl_t *kdf1_impl, vsc_data_t data, size_t key_len, v
             vsc_buffer_t *digest = vsc_buffer_new_with_capacity(digest_len);
 
             vscf_hash_stream_finish(kdf1_impl->hash, digest);
-            memcpy(vsc_buffer_ptr(key), vsc_buffer_bytes(digest), key_left_len);
-            vsc_buffer_reserve(key, key_left_len);
+            memcpy(vsc_buffer_unused_bytes(key), vsc_buffer_bytes(digest), key_left_len);
+            vsc_buffer_inc_used(key, key_left_len);
             key_left_len = 0;
 
             vsc_buffer_erase(digest);

@@ -153,12 +153,12 @@ vscf_hkdf_expand(
 
         if (need >= hmac_len) {
             vscf_hmac_finish(&hkdf_impl->hmac, key);
-            previous_mac = vsc_data(vsc_buffer_ptr(key) - hmac_len, hmac_len);
+            previous_mac = vsc_data(vsc_buffer_unused_bytes(key) - hmac_len, hmac_len);
         } else {
             vsc_buffer_reset(pr_key);
             vscf_hmac_finish(&hkdf_impl->hmac, pr_key);
-            memcpy(vsc_buffer_ptr(key), vsc_buffer_bytes(pr_key), need);
-            vsc_buffer_reserve(key, need);
+            memcpy(vsc_buffer_unused_bytes(key), vsc_buffer_bytes(pr_key), need);
+            vsc_buffer_inc_used(key, need);
         }
     } while (counter * hmac_len < key_len);
 }
@@ -177,7 +177,7 @@ vscf_hkdf_derive(vscf_hkdf_impl_t *hkdf_impl, vsc_data_t data, vsc_data_t salt, 
     VSCF_ASSERT(vsc_data_is_valid(info));
     VSCF_ASSERT_PTR(key);
     VSCF_ASSERT(key_len > 0);
-    VSCF_ASSERT(vsc_buffer_left(key) >= key_len);
+    VSCF_ASSERT(vsc_buffer_unused_len(key) >= key_len);
 
     vscf_hmac_release_hash(&hkdf_impl->hmac);
     vscf_hmac_use_hash(&hkdf_impl->hmac, hkdf_impl->hash);

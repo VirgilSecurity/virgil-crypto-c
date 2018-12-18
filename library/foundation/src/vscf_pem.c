@@ -110,7 +110,7 @@ vscf_pem_wrap(const char *title, vsc_data_t data, vsc_buffer_t *pem) {
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(pem);
     VSCF_ASSERT(vsc_buffer_is_valid(pem));
-    VSCF_ASSERT(vsc_buffer_left(pem) >= vscf_pem_wrapped_len(title, data.len));
+    VSCF_ASSERT(vsc_buffer_unused_len(pem) >= vscf_pem_wrapped_len(title, data.len));
 
     //
     //  Write header.
@@ -147,7 +147,7 @@ vscf_pem_wrap(const char *title, vsc_data_t data, vsc_buffer_t *pem) {
     vsc_buffer_write_str(pem, title);
     vsc_buffer_write_str(pem, k_title_tail);
 
-    *vsc_buffer_ptr(pem) = 0x00;
+    *vsc_buffer_unused_bytes(pem) = 0x00;
 }
 
 //
@@ -169,7 +169,7 @@ vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) {
     VSCF_ASSERT(vsc_data_is_valid(pem));
     VSCF_ASSERT_PTR(data);
     VSCF_ASSERT(vsc_buffer_is_valid(data));
-    VSCF_ASSERT(vsc_buffer_left(data) >= vscf_pem_unwrapped_len(pem.len));
+    VSCF_ASSERT(vsc_buffer_unused_len(data) >= vscf_pem_unwrapped_len(pem.len));
 
     //
     //  Grab PEM header.
@@ -220,7 +220,7 @@ vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) {
     //  Decode body
     //
     vscf_error_t status = vscf_base64_decode(vsc_data_from_str(body_begin, footer_begin - body_begin), data);
-    *vsc_buffer_ptr(data) = 0x00;
+    *vsc_buffer_unused_bytes(data) = 0x00;
 
     if (status != vscf_SUCCESS) {
         return vscf_error_BAD_PEM;

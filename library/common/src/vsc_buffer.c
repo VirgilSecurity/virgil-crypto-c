@@ -442,27 +442,15 @@ vsc_buffer_len(const vsc_buffer_t *buffer_ctx) {
 }
 
 //
-//  Returns length of left bytes - bytes that are not in use yet.
+//  Returns length of the bytes that are not in use yet.
 //
 VSC_PUBLIC size_t
-vsc_buffer_left(const vsc_buffer_t *buffer_ctx) {
+vsc_buffer_unused_len(const vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
     VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
 
     return (size_t)(buffer_ctx->capacity - buffer_ctx->len);
-}
-
-//
-//  Returns pointer to the current wirte position.
-//
-VSC_PUBLIC byte *
-vsc_buffer_ptr(vsc_buffer_t *buffer_ctx) {
-
-    VSC_ASSERT_PTR(buffer_ctx);
-    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
-
-    return buffer_ctx->bytes + buffer_ctx->len;
 }
 
 //
@@ -478,25 +466,25 @@ vsc_buffer_begin(vsc_buffer_t *buffer_ctx) {
 }
 
 //
-//  Increase used bytes by given length.
+//  Returns pointer to the first unsed byte in the buffer.
 //
-VSC_PUBLIC void
-vsc_buffer_reserve(vsc_buffer_t *buffer_ctx, size_t len) {
+VSC_PUBLIC byte *
+vsc_buffer_unused_bytes(vsc_buffer_t *buffer_ctx) {
 
     VSC_ASSERT_PTR(buffer_ctx);
-    VSC_ASSERT(len <= vsc_buffer_left(buffer_ctx));
+    VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
 
-    buffer_ctx->len += len;
+    return buffer_ctx->bytes + buffer_ctx->len;
 }
 
 //
 //  Increase used bytes by given length.
 //
 VSC_PUBLIC void
-vsc_buffer_increase_used_bytes(vsc_buffer_t *buffer_ctx, size_t len) {
+vsc_buffer_inc_used(vsc_buffer_t *buffer_ctx, size_t len) {
 
     VSC_ASSERT_PTR(buffer_ctx);
-    VSC_ASSERT(len <= vsc_buffer_left(buffer_ctx));
+    VSC_ASSERT(len <= vsc_buffer_unused_len(buffer_ctx));
 
     buffer_ctx->len += len;
 }
@@ -505,7 +493,7 @@ vsc_buffer_increase_used_bytes(vsc_buffer_t *buffer_ctx, size_t len) {
 //  Decrease used bytes by given length.
 //
 VSC_PUBLIC void
-vsc_buffer_decrease_used_bytes(vsc_buffer_t *buffer_ctx, size_t len) {
+vsc_buffer_dec_used(vsc_buffer_t *buffer_ctx, size_t len) {
 
     VSC_ASSERT_PTR(buffer_ctx);
     VSC_ASSERT(len <= buffer_ctx->len);
@@ -524,11 +512,11 @@ vsc_buffer_write_str(vsc_buffer_t *buffer_ctx, const char *str) {
     VSC_ASSERT_PTR(str);
 
     size_t str_len = strlen(str);
-    VSC_ASSERT(str_len <= vsc_buffer_left(buffer_ctx));
+    VSC_ASSERT(str_len <= vsc_buffer_unused_len(buffer_ctx));
 
-    size_t write_len = str_len > vsc_buffer_left(buffer_ctx) ? vsc_buffer_left(buffer_ctx) : str_len;
+    size_t write_len = str_len > vsc_buffer_unused_len(buffer_ctx) ? vsc_buffer_unused_len(buffer_ctx) : str_len;
 
-    memcpy(vsc_buffer_ptr(buffer_ctx), (const byte *)str, write_len);
+    memcpy(vsc_buffer_unused_bytes(buffer_ctx), (const byte *)str, write_len);
 
     buffer_ctx->len += write_len;
 }
@@ -542,11 +530,11 @@ vsc_buffer_write_data(vsc_buffer_t *buffer_ctx, vsc_data_t data) {
     VSC_ASSERT_PTR(buffer_ctx);
     VSC_ASSERT(vsc_buffer_is_valid(buffer_ctx));
     VSC_ASSERT(vsc_data_is_valid(data));
-    VSC_ASSERT(data.len <= vsc_buffer_left(buffer_ctx));
+    VSC_ASSERT(data.len <= vsc_buffer_unused_len(buffer_ctx));
 
-    size_t write_len = data.len > vsc_buffer_left(buffer_ctx) ? vsc_buffer_left(buffer_ctx) : data.len;
+    size_t write_len = data.len > vsc_buffer_unused_len(buffer_ctx) ? vsc_buffer_unused_len(buffer_ctx) : data.len;
 
-    memcpy(vsc_buffer_ptr(buffer_ctx), data.bytes, write_len);
+    memcpy(vsc_buffer_unused_bytes(buffer_ctx), data.bytes, write_len);
 
     buffer_ctx->len += write_len;
 }
@@ -566,6 +554,7 @@ vsc_buffer_reset(vsc_buffer_t *buffer_ctx) {
 
 //
 //  Zeroing buffer in secure manner.
+//  And reset it to the initial state.
 //
 VSC_PUBLIC void
 vsc_buffer_erase(vsc_buffer_t *buffer_ctx) {
@@ -576,4 +565,5 @@ vsc_buffer_erase(vsc_buffer_t *buffer_ctx) {
     buffer_ctx->len = 0;
 
     vsc_erase(buffer_ctx->bytes, buffer_ctx->capacity);
+    vsc_buffer_reset(buffer_ctx);
 }

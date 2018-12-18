@@ -435,7 +435,7 @@ vsce_phe_client_generate_client_private_key(vsce_phe_client_t *phe_client_ctx, v
     VSCE_ASSERT_PTR(phe_client_ctx);
 
     VSCE_ASSERT(vsc_buffer_len(client_private_key) == 0);
-    VSCE_ASSERT(vsc_buffer_left(client_private_key) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT(vsc_buffer_unused_len(client_private_key) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
 
     vsce_error_t status = vsce_SUCCESS;
 
@@ -452,8 +452,8 @@ vsce_phe_client_generate_client_private_key(vsce_phe_client_t *phe_client_ctx, v
     }
 
     mbedtls_status = mbedtls_mpi_write_binary(
-            &priv, vsc_buffer_ptr(client_private_key), vsc_buffer_capacity(client_private_key));
-    vsc_buffer_reserve(client_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+            &priv, vsc_buffer_unused_bytes(client_private_key), vsc_buffer_capacity(client_private_key));
+    vsc_buffer_inc_used(client_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
 err:
@@ -485,9 +485,9 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
     VSCE_ASSERT_PTR(phe_client_ctx);
     VSCE_ASSERT(phe_client_ctx->keys_are_set);
     VSCE_ASSERT(vsc_buffer_len(enrollment_record) == 0);
-    VSCE_ASSERT(vsc_buffer_left(enrollment_record) >= vsce_phe_client_enrollment_record_len(phe_client_ctx));
+    VSCE_ASSERT(vsc_buffer_unused_len(enrollment_record) >= vsce_phe_client_enrollment_record_len(phe_client_ctx));
     VSCE_ASSERT(vsc_buffer_len(account_key) == 0);
-    VSCE_ASSERT(vsc_buffer_left(account_key) >= vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
+    VSCE_ASSERT(vsc_buffer_unused_len(account_key) >= vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
     vsc_buffer_make_secure(account_key);
     VSCE_ASSERT(password.len > 0);
     VSCE_ASSERT(password.len <= vsce_phe_common_PHE_MAX_PASSWORD_LENGTH);
@@ -599,9 +599,9 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enr
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
     pb_ostream_t ostream =
-            pb_ostream_from_buffer(vsc_buffer_ptr(enrollment_record), vsc_buffer_capacity(enrollment_record));
+            pb_ostream_from_buffer(vsc_buffer_unused_bytes(enrollment_record), vsc_buffer_capacity(enrollment_record));
     VSCE_ASSERT(pb_encode(&ostream, EnrollmentRecord_fields, &record));
-    vsc_buffer_reserve(enrollment_record, ostream.bytes_written);
+    vsc_buffer_inc_used(enrollment_record, ostream.bytes_written);
 
     mbedtls_ecp_point_free(&t0);
     mbedtls_ecp_point_free(&t1);
@@ -649,8 +649,8 @@ vsce_phe_client_create_verify_password_request(vsce_phe_client_t *phe_client_ctx
     VSCE_ASSERT_PTR(phe_client_ctx);
     VSCE_ASSERT(phe_client_ctx->keys_are_set);
     VSCE_ASSERT(vsc_buffer_len(verify_password_request) == 0);
-    VSCE_ASSERT(
-            vsc_buffer_left(verify_password_request) >= vsce_phe_client_verify_password_request_len(phe_client_ctx));
+    VSCE_ASSERT(vsc_buffer_unused_len(verify_password_request) >=
+                vsce_phe_client_verify_password_request_len(phe_client_ctx));
     VSCE_ASSERT(password.len > 0);
     VSCE_ASSERT(password.len <= vsce_phe_common_PHE_MAX_PASSWORD_LENGTH);
 
@@ -702,9 +702,9 @@ vsce_phe_client_create_verify_password_request(vsce_phe_client_t *phe_client_ctx
     memcpy(request.ns, record.ns, sizeof(record.ns));
 
     pb_ostream_t ostream = pb_ostream_from_buffer(
-            vsc_buffer_ptr(verify_password_request), vsc_buffer_capacity(verify_password_request));
+            vsc_buffer_unused_bytes(verify_password_request), vsc_buffer_capacity(verify_password_request));
     VSCE_ASSERT(pb_encode(&ostream, VerifyPasswordRequest_fields, &request));
-    vsc_buffer_reserve(verify_password_request, ostream.bytes_written);
+    vsc_buffer_inc_used(verify_password_request, ostream.bytes_written);
 
     mbedtls_ecp_point_free(&c0);
     mbedtls_ecp_point_free(&hc0);
@@ -730,7 +730,7 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vs
     VSCE_ASSERT_PTR(phe_client_ctx);
     VSCE_ASSERT(phe_client_ctx->keys_are_set);
     VSCE_ASSERT(vsc_buffer_len(account_key) == 0);
-    VSCE_ASSERT(vsc_buffer_left(account_key) >= vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
+    VSCE_ASSERT(vsc_buffer_unused_len(account_key) >= vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
     vsc_buffer_make_secure(account_key);
     VSCE_ASSERT(password.len > 0);
     VSCE_ASSERT(password.len <= vsce_phe_common_PHE_MAX_PASSWORD_LENGTH);
@@ -1151,10 +1151,10 @@ vsce_phe_client_rotate_keys(vsce_phe_client_t *phe_client_ctx, vsc_data_t update
     VSCE_ASSERT_PTR(phe_client_ctx);
     VSCE_ASSERT(phe_client_ctx->keys_are_set);
     VSCE_ASSERT(vsc_buffer_len(new_client_private_key) == 0);
-    VSCE_ASSERT(vsc_buffer_left(new_client_private_key) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT(vsc_buffer_unused_len(new_client_private_key) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     vsc_buffer_make_secure(new_client_private_key);
     VSCE_ASSERT(vsc_buffer_len(new_server_public_key) == 0);
-    VSCE_ASSERT(vsc_buffer_left(new_server_public_key) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT(vsc_buffer_unused_len(new_server_public_key) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
     mbedtls_ecp_group *op_group = vsce_phe_client_get_op_group(phe_client_ctx);
 
@@ -1208,8 +1208,8 @@ vsce_phe_client_rotate_keys(vsce_phe_client_t *phe_client_ctx, vsc_data_t update
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_status = mbedtls_mpi_write_binary(
-            &new_y, vsc_buffer_ptr(new_client_private_key), vsc_buffer_capacity(new_client_private_key));
-    vsc_buffer_reserve(new_client_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+            &new_y, vsc_buffer_unused_bytes(new_client_private_key), vsc_buffer_capacity(new_client_private_key));
+    vsc_buffer_inc_used(new_client_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_ecp_point new_X;
@@ -1220,8 +1220,8 @@ vsce_phe_client_rotate_keys(vsce_phe_client_t *phe_client_ctx, vsc_data_t update
 
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&phe_client_ctx->group, &new_X, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            vsc_buffer_ptr(new_server_public_key), vsc_buffer_capacity(new_server_public_key));
-    vsc_buffer_reserve(new_server_public_key, olen);
+            vsc_buffer_unused_bytes(new_server_public_key), vsc_buffer_capacity(new_server_public_key));
+    vsc_buffer_inc_used(new_server_public_key, olen);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
@@ -1248,7 +1248,7 @@ vsce_phe_client_update_enrollment_record(vsce_phe_client_t *phe_client_ctx, vsc_
 
     VSCE_ASSERT_PTR(phe_client_ctx);
     VSCE_ASSERT(vsc_buffer_len(new_enrollment_record) == 0);
-    VSCE_ASSERT(vsc_buffer_left(new_enrollment_record) >= vsce_phe_client_enrollment_record_len(phe_client_ctx));
+    VSCE_ASSERT(vsc_buffer_unused_len(new_enrollment_record) >= vsce_phe_client_enrollment_record_len(phe_client_ctx));
 
     mbedtls_ecp_group *op_group = vsce_phe_client_get_op_group(phe_client_ctx);
 
@@ -1356,11 +1356,11 @@ vsce_phe_client_update_enrollment_record(vsce_phe_client_t *phe_client_ctx, vsc_
             &phe_client_ctx->group, &new_t1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, new_record.t1, sizeof(new_record.t1));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
-    pb_ostream_t ostream =
-            pb_ostream_from_buffer(vsc_buffer_ptr(new_enrollment_record), vsc_buffer_capacity(new_enrollment_record));
+    pb_ostream_t ostream = pb_ostream_from_buffer(
+            vsc_buffer_unused_bytes(new_enrollment_record), vsc_buffer_capacity(new_enrollment_record));
 
     VSCE_ASSERT(pb_encode(&ostream, EnrollmentRecord_fields, &new_record));
-    vsc_buffer_reserve(new_enrollment_record, ostream.bytes_written);
+    vsc_buffer_inc_used(new_enrollment_record, ostream.bytes_written);
 
     mbedtls_ecp_point_free(&hs0);
     mbedtls_ecp_point_free(&hs1);

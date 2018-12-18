@@ -303,7 +303,7 @@ vscr_ratchet_cipher_encrypt(
 
     VSCR_ASSERT_PTR(ratchet_cipher_ctx);
 
-    VSCR_ASSERT(vsc_buffer_left(buffer) >= vscr_ratchet_cipher_encrypt_len(ratchet_cipher_ctx, plain_text.len));
+    VSCR_ASSERT(vsc_buffer_unused_len(buffer) >= vscr_ratchet_cipher_encrypt_len(ratchet_cipher_ctx, plain_text.len));
 
     vscr_ratchet_cipher_setup_cipher(ratchet_cipher_ctx, key);
 
@@ -322,7 +322,7 @@ vscr_ratchet_cipher_decrypt(
 
     VSCR_UNUSED(ratchet_cipher_ctx);
 
-    VSCR_ASSERT(vsc_buffer_left(buffer) >= vscr_ratchet_cipher_decrypt_len(ratchet_cipher_ctx, cipher_text.len));
+    VSCR_ASSERT(vsc_buffer_unused_len(buffer) >= vscr_ratchet_cipher_decrypt_len(ratchet_cipher_ctx, cipher_text.len));
 
     vscr_ratchet_cipher_setup_cipher(ratchet_cipher_ctx, key);
 

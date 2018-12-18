@@ -122,7 +122,7 @@ vscf_hmac_mac(vscf_hmac_impl_t *hmac_impl, vsc_data_t key, vsc_data_t data, vsc_
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(mac);
     VSCF_ASSERT(vsc_buffer_is_valid(mac));
-    VSCF_ASSERT(vsc_buffer_left(mac) >= vscf_hmac_digest_len(hmac_impl));
+    VSCF_ASSERT(vsc_buffer_unused_len(mac) >= vscf_hmac_digest_len(hmac_impl));
 
     vscf_hmac_start(hmac_impl, key);
     vscf_hmac_update(hmac_impl, data);
@@ -167,7 +167,7 @@ vscf_hmac_start(vscf_hmac_impl_t *hmac_impl, vsc_data_t key) {
     byte *ipad = vsc_buffer_begin(hmac_impl->ipad);
     size_t ipad_len = vsc_buffer_capacity(hmac_impl->ipad);
     VSCF_ASSERT_SAFE(ipad_len >= key.len);
-    vsc_buffer_reserve(hmac_impl->ipad, ipad_len);
+    vsc_buffer_inc_used(hmac_impl->ipad, ipad_len);
 
     for (size_t i = 0; i < key.len; ++i) {
         ipad[i] = key.bytes[i] ^ 0x36;
@@ -204,7 +204,7 @@ vscf_hmac_finish(vscf_hmac_impl_t *hmac_impl, vsc_buffer_t *mac) {
     VSCF_ASSERT_PTR(hmac_impl);
     VSCF_ASSERT_PTR(mac);
     VSCF_ASSERT(vsc_buffer_is_valid(mac));
-    VSCF_ASSERT(vsc_buffer_left(mac) >= vscf_hmac_digest_len(hmac_impl));
+    VSCF_ASSERT(vsc_buffer_unused_len(mac) >= vscf_hmac_digest_len(hmac_impl));
 
     VSCF_ASSERT_PTR(hmac_impl->hash);
     VSCF_ASSERT_PTR(hmac_impl->ipad);
@@ -226,12 +226,12 @@ vscf_hmac_finish(vscf_hmac_impl_t *hmac_impl, vsc_buffer_t *mac) {
     //  Store temporary digest.
     size_t digest_len = vscf_hash_info_digest_len(vscf_hash_info_api(hmac_impl->hash));
     vscf_hash_stream_finish(hmac_impl->hash, mac);
-    vsc_buffer_decrease_used_bytes(mac, digest_len);
+    vsc_buffer_dec_used(mac, digest_len);
 
     //  Get resulting digest.
     vscf_hash_stream_start(hmac_impl->hash);
     vscf_hash_stream_update(hmac_impl->hash, vsc_data(opad, opad_len));
-    vscf_hash_stream_update(hmac_impl->hash, vsc_data(vsc_buffer_ptr(mac), digest_len));
+    vscf_hash_stream_update(hmac_impl->hash, vsc_data(vsc_buffer_unused_bytes(mac), digest_len));
     vscf_hash_stream_finish(hmac_impl->hash, mac);
 
     vscf_dealloc(opad);

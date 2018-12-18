@@ -117,11 +117,11 @@ vscf_sha512_hash(vsc_data_t data, vsc_buffer_t *digest) {
 
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT(vsc_buffer_is_valid(digest));
-    VSCF_ASSERT(vsc_buffer_left(digest) >= vscf_sha512_DIGEST_LEN);
+    VSCF_ASSERT(vsc_buffer_unused_len(digest) >= vscf_sha512_DIGEST_LEN);
 
     const int is384 = 0;
-    mbedtls_sha512(data.bytes, data.len, vsc_buffer_ptr(digest), is384);
-    vsc_buffer_reserve(digest, vscf_sha512_DIGEST_LEN);
+    mbedtls_sha512(data.bytes, data.len, vsc_buffer_unused_bytes(digest), is384);
+    vsc_buffer_inc_used(digest, vscf_sha512_DIGEST_LEN);
 }
 
 //
@@ -156,8 +156,8 @@ vscf_sha512_finish(vscf_sha512_impl_t *sha512_impl, vsc_buffer_t *digest) {
 
     VSCF_ASSERT_PTR(sha512_impl);
     VSCF_ASSERT(vsc_buffer_is_valid(digest));
-    VSCF_ASSERT(vsc_buffer_left(digest) >= vscf_sha512_DIGEST_LEN);
+    VSCF_ASSERT(vsc_buffer_unused_len(digest) >= vscf_sha512_DIGEST_LEN);
 
-    mbedtls_sha512_finish(&sha512_impl->hash_ctx, vsc_buffer_ptr(digest));
-    vsc_buffer_reserve(digest, vscf_sha512_DIGEST_LEN);
+    mbedtls_sha512_finish(&sha512_impl->hash_ctx, vsc_buffer_unused_bytes(digest));
+    vsc_buffer_inc_used(digest, vscf_sha512_DIGEST_LEN);
 }

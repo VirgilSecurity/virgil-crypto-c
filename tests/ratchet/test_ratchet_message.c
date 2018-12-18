@@ -86,11 +86,11 @@ test__serialization__serialize_deserialize__objects_are_equal(void) {
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(len);
 
     status = true;
-    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(buffer), vsc_buffer_capacity(buffer));
+    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(buffer), vsc_buffer_capacity(buffer));
 
     status = pb_encode(&ostream, Message_fields, &ratchet_message);
 
-    vsc_buffer_reserve(buffer, ostream.bytes_written);
+    vsc_buffer_inc_used(buffer, ostream.bytes_written);
 
     TEST_ASSERT_EQUAL(status, true);
     TEST_ASSERT_EQUAL(ostream.bytes_written, len);
@@ -166,11 +166,11 @@ test__serialization__serialize_deserialize_big_object__objects_are_equal(void) {
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(len);
 
     status = true;
-    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(buffer), vsc_buffer_capacity(buffer));
+    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(buffer), vsc_buffer_capacity(buffer));
 
     status = pb_encode(&ostream, Message_fields, &ratchet_message);
 
-    vsc_buffer_reserve(buffer, ostream.bytes_written);
+    vsc_buffer_inc_used(buffer, ostream.bytes_written);
 
     TEST_ASSERT_EQUAL(status, true);
     TEST_ASSERT_EQUAL(ostream.bytes_written, len);

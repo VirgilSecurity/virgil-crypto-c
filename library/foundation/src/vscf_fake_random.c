@@ -140,11 +140,11 @@ vscf_fake_random_random(vscf_fake_random_impl_t *fake_random_impl, size_t data_l
     VSCF_ASSERT_PTR(data);
     VSCF_ASSERT(vsc_buffer_is_valid(data));
 
-    VSCF_ASSERT(vsc_buffer_left(data) >= data_len);
+    VSCF_ASSERT(vsc_buffer_unused_len(data) >= data_len);
 
-    const byte *end = vsc_buffer_ptr(data) + data_len;
+    const byte *end = vsc_buffer_unused_bytes(data) + data_len;
 
-    for (byte *write_ptr = vsc_buffer_ptr(data); write_ptr < end; ++write_ptr) {
+    for (byte *write_ptr = vsc_buffer_unused_bytes(data); write_ptr < end; ++write_ptr) {
         if (fake_random_impl->data_source.bytes != NULL) {
             *write_ptr = *(fake_random_impl->data_source.bytes + fake_random_impl->pos);
 
@@ -156,7 +156,7 @@ vscf_fake_random_random(vscf_fake_random_impl_t *fake_random_impl, size_t data_l
         }
     }
 
-    vsc_buffer_reserve(data, data_len);
+    vsc_buffer_inc_used(data, data_len);
 
     return vscf_SUCCESS;
 }
@@ -193,7 +193,7 @@ vscf_fake_random_gather(vscf_fake_random_impl_t *fake_random_impl, size_t len, v
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
 
-    VSCF_ASSERT(vsc_buffer_left(out) >= len);
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= len);
 
     return vscf_fake_random_random(fake_random_impl, len, out);
 }
