@@ -54,5 +54,4 @@
     <class name="buffer"/>
 
     <wrapper lang="swift"/>
-    <!-- <wrapper lang="php"/> -->
 </project>
