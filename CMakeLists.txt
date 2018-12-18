@@ -307,6 +307,6 @@ set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Virgil Security Crypto library")
 set(CPACK_PACKAGE_VENDOR "Virgil Security, Inc.")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_LIST_DIR}/LICENSE")
 set(CPACK_PACKAGE_FILE_NAME "${VIRGIL_PACKAGE_NAME}")
-set(CPACK_OUTPUT_FILE_PREFIX "packages")
+set(CPACK_OUTPUT_FILE_PREFIX "packages" CACHE PATH "Output directory for CPack archives")
 
 include (CPack)
