@@ -50,7 +50,6 @@
 #include "vscr_library.h"
 #include "vscr_error_ctx.h"
 #include "vscr_ratchet.h"
-#include "vscr_impl.h"
 #include "vscr_ratchet_cipher.h"
 #include "vscr_error.h"
 
@@ -59,13 +58,21 @@
 #include <pb_encode.h>
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_data.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
 #endif
 
 // clang-format on
@@ -133,20 +140,20 @@ VSCR_PUBLIC vscr_ratchet_t *
 vscr_ratchet_shallow_copy(vscr_ratchet_t *ratchet);
 
 //
-//  Setup dependency to the interface 'ratchet rng' with shared ownership.
+//  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCR_PUBLIC void
-vscr_ratchet_use_rng(vscr_ratchet_t *ratchet, vscr_impl_t *rng);
+vscr_ratchet_use_rng(vscr_ratchet_t *ratchet, vscf_impl_t *rng);
 
 //
-//  Setup dependency to the interface 'ratchet rng' and transfer ownership.
+//  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCR_PUBLIC void
-vscr_ratchet_take_rng(vscr_ratchet_t *ratchet, vscr_impl_t *rng);
+vscr_ratchet_take_rng(vscr_ratchet_t *ratchet, vscf_impl_t *rng);
 
 //
-//  Release dependency to the interface 'ratchet rng'.
+//  Release dependency to the interface 'random'.
 //
 VSCR_PUBLIC void
 vscr_ratchet_release_rng(vscr_ratchet_t *ratchet);
@@ -170,9 +177,11 @@ vscr_ratchet_take_cipher(vscr_ratchet_t *ratchet, vscr_ratchet_cipher_t *cipher)
 VSCR_PUBLIC void
 vscr_ratchet_release_cipher(vscr_ratchet_t *ratchet);
 
+VSCR_PUBLIC void
+vscr_ratchet_setup_defaults(vscr_ratchet_t *ratchet);
+
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_respond(vscr_ratchet_t *ratchet, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key,
-        const RegularMessage *message);
+vscr_ratchet_respond(vscr_ratchet_t *ratchet, vsc_data_t shared_secret, const RegularMessage *message);
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_initiate(vscr_ratchet_t *ratchet, vsc_data_t shared_secret, vsc_buffer_t *ratchet_private_key);

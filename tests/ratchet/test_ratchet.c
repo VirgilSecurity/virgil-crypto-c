@@ -40,14 +40,13 @@
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include "vscr_ratchet_rng.h"
 #include "vscr_ratchet.h"
-#include "vscr_virgil_ratchet_fake_rng_defs.h"
 #include "test_data_ratchet.h"
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <ed25519/ed25519.h>
 #include <virgil/crypto/ratchet/private/vscr_ratchet_defs.h>
+#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 
 // --------------------------------------------------------------------------
 //  Should have it to prevent linkage erros in MSVC.
@@ -65,13 +64,9 @@ int suiteTearDown(int num_failures) { return num_failures; }
 // --------------------------------------------------------------------------
 static void
 initialize(vscr_ratchet_t *ratchet_alice, vscr_ratchet_t *ratchet_bob, RegularMessage *regular_message) {
-    vscr_ratchet_cipher_t *ratchet_cipher = vscr_ratchet_cipher_new();
-    vscr_ratchet_use_cipher(ratchet_alice, ratchet_cipher);
-    vscr_ratchet_use_cipher(ratchet_bob, ratchet_cipher);
-    vscr_ratchet_cipher_destroy(&ratchet_cipher);
 
-    vscr_ratchet_take_rng(ratchet_alice, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
-    vscr_ratchet_take_rng(ratchet_bob, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
+    vscr_ratchet_setup_defaults(ratchet_alice);
+    vscr_ratchet_setup_defaults(ratchet_bob);
 
     vsc_buffer_t *ratchet_private_key = vsc_buffer_new_with_capacity(test_ratchet_ratchet_private_key.len);
     memcpy(vsc_buffer_unused_bytes(ratchet_private_key), test_ratchet_ratchet_private_key.bytes,
@@ -92,7 +87,7 @@ initialize(vscr_ratchet_t *ratchet_alice, vscr_ratchet_t *ratchet_bob, RegularMe
     vscr_error_ctx_t error_ctx;
     vscr_error_ctx_reset(&error_ctx);
 
-    vscr_ratchet_respond(ratchet_bob, test_ratchet_shared_secret, ratchet_public_key, regular_message);
+    vscr_ratchet_respond(ratchet_bob, test_ratchet_shared_secret, regular_message);
 
     vsc_buffer_destroy(&ratchet_private_key);
     vsc_buffer_destroy(&ratchet_public_key);
@@ -186,13 +181,14 @@ test__3(void) {
     initialize(ratchet_alice, ratchet_bob, &regular_message);
 
     // FIXME
-    vscr_impl_t *rng = vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new());
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    vscf_ctr_drbg_setup_defaults(rng);
 
     for (int i = 0; i < 100; i++) {
         byte rnd_plain_text_len;
         vsc_buffer_t *fake_buffer1 = vsc_buffer_new();
         vsc_buffer_use(fake_buffer1, &rnd_plain_text_len, sizeof(rnd_plain_text_len));
-        vscr_ratchet_rng_generate_random_data(rng, sizeof(rnd_plain_text_len), fake_buffer1);
+        vscf_ctr_drbg_random(rng, sizeof(rnd_plain_text_len), fake_buffer1);
 
         if (rnd_plain_text_len == 0)
             rnd_plain_text_len = 10;
@@ -200,7 +196,7 @@ test__3(void) {
         byte dice_rnd;
         vsc_buffer_t *fake_buffer2 = vsc_buffer_new();
         vsc_buffer_use(fake_buffer2, &dice_rnd, sizeof(dice_rnd));
-        vscr_ratchet_rng_generate_random_data(rng, sizeof(dice_rnd), fake_buffer2);
+        vscf_ctr_drbg_random(rng, sizeof(dice_rnd), fake_buffer2);
         bool dice = dice_rnd % 2 == 0;
 
         if (i == 0)
@@ -210,7 +206,7 @@ test__3(void) {
         vsc_buffer_destroy(&fake_buffer2);
 
         vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(rnd_plain_text_len);
-        vscr_ratchet_rng_generate_random_data(rng, vsc_buffer_capacity(plain_text), plain_text);
+        vscf_ctr_drbg_random(rng, vsc_buffer_capacity(plain_text), plain_text);
 
         vscr_ratchet_t *sender, *receiver;
 
@@ -241,7 +237,7 @@ test__3(void) {
         vsc_buffer_destroy(&decrypted);
     }
 
-    vscr_impl_destroy(&rng);
+    vscf_ctr_drbg_destroy(&rng);
     vscr_ratchet_destroy(&ratchet_alice);
     vscr_ratchet_destroy(&ratchet_bob);
 }
@@ -250,11 +246,6 @@ void
 test__serialization__serialize_deserialize__objects_are_equal(void) {
     // Initialize
     vscr_ratchet_t *ratchet = vscr_ratchet_new();
-
-    vscr_ratchet_cipher_t *ratchet_cipher = vscr_ratchet_cipher_new();
-    vscr_ratchet_use_cipher(ratchet, ratchet_cipher);
-
-    vscr_ratchet_take_rng(ratchet, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
 
     vsc_buffer_t *ratchet_private_key = vsc_buffer_new_with_capacity(test_ratchet_ratchet_private_key.len);
     memcpy(vsc_buffer_unused_bytes(ratchet_private_key), test_ratchet_ratchet_private_key.bytes,

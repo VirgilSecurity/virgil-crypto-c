@@ -1,0 +1,65 @@
+<class name="ratchet message" context="private">
+
+    <require class="ratchet common" scope="public"/>
+
+    <require impl="ctr drbg" project="foundation" scope="private"/>
+
+    <require header="RatchetModels.pb.h" scope="context"/>
+    <require header="pb_decode.h" scope="private"/>
+    <require header="pb_encode.h" scope="private"/>
+
+    <constant name="ratchet message type prekey" value="0"/>
+    <constant name="ratchet message type regular" value="1"/>
+
+    <property name="message" class="Message" library="nanopb" access="readwrite"/>
+
+    <method name="get type">
+        FIXME
+
+        <return type="size"/>
+    </method>
+
+    <method name="get long term public key">
+        FIXME
+
+        <return class="data"/>
+    </method>
+
+    <method name="compute long term public key id">
+        FIXME
+
+        <return class="data"/>
+    </method>
+
+    <method name="get one time public key">
+        FIXME
+
+        <return class="data"/>
+    </method>
+
+    <method name="compute one time public key id">
+        FIXME
+
+        <return class="data"/>
+    </method>
+
+    <method name="serialize len">
+        <return type="size"/>
+    </method>
+
+    <method name="serialize">
+        <argument name="output" class="buffer">
+            <length method="serialize len"/>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="deserialize" is_static="1">
+        <argument name="input" class="data"/>
+        <argument name="err ctx" class="error ctx" access="readwrite"/>
+
+        <return class="self" access="disown"/>
+    </method>
+
+</class>

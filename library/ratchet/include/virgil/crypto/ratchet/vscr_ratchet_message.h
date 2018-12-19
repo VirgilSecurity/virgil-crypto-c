@@ -44,24 +44,22 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Interface for ratchet rng
-// --------------------------------------------------------------------------
-
-#ifndef VSCR_RATCHET_RNG_H_INCLUDED
-#define VSCR_RATCHET_RNG_H_INCLUDED
+#ifndef VSCR_RATCHET_MESSAGE_H_INCLUDED
+#define VSCR_RATCHET_MESSAGE_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_impl.h"
-#include "vscr_api.h"
+#include "vscr_ratchet_common.h"
+#include "vscr_error_ctx.h"
+#include "vscr_ratchet_message.h"
+#include "vscr_error.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_buffer.h>
 #endif
 
@@ -81,33 +79,100 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'ratchet rng'.
+//  Public integral constants.
 //
-typedef struct vscr_ratchet_rng_api_t vscr_ratchet_rng_api_t;
+enum {
+    vscr_ratchet_message_RATCHET_MESSAGE_TYPE_PREKEY = 0,
+    vscr_ratchet_message_RATCHET_MESSAGE_TYPE_REGULAR = 1
+};
 
 //
-//  Interface for ratchet rng
+//  Handle 'ratchet message' context.
+//
+typedef struct vscr_ratchet_message_t vscr_ratchet_message_t;
+
+//
+//  Return size of 'vscr_ratchet_message_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_message_ctx_size(void);
+
+//
+//  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_rng_generate_random_data(vscr_impl_t *impl, size_t size, vsc_buffer_t *random);
+vscr_ratchet_message_init(vscr_ratchet_message_t *ratchet_message);
 
 //
-//  Return ratchet rng API, or NULL if it is not implemented.
+//  Release all inner resources including class dependencies.
 //
-VSCR_PUBLIC const vscr_ratchet_rng_api_t *
-vscr_ratchet_rng_api(const vscr_impl_t *impl);
+VSCR_PUBLIC void
+vscr_ratchet_message_cleanup(vscr_ratchet_message_t *ratchet_message);
 
 //
-//  Check if given object implements interface 'ratchet rng'.
+//  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC bool
-vscr_ratchet_rng_is_implemented(const vscr_impl_t *impl);
+VSCR_PUBLIC vscr_ratchet_message_t *
+vscr_ratchet_message_new(void);
 
 //
-//  Returns interface unique identifier.
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if context was allocated by the caller.
 //
-VSCR_PUBLIC vscr_api_tag_t
-vscr_ratchet_rng_api_tag(const vscr_ratchet_rng_api_t *ratchet_rng_api);
+VSCR_PUBLIC void
+vscr_ratchet_message_delete(vscr_ratchet_message_t *ratchet_message);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscr_ratchet_message_new ()'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_message_destroy(vscr_ratchet_message_t **ratchet_message_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCR_PUBLIC vscr_ratchet_message_t *
+vscr_ratchet_message_shallow_copy(vscr_ratchet_message_t *ratchet_message);
+
+//
+//  FIXME
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_message_get_type(vscr_ratchet_message_t *ratchet_message);
+
+//
+//  FIXME
+//
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_message_get_long_term_public_key(vscr_ratchet_message_t *ratchet_message);
+
+//
+//  FIXME
+//
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_message_compute_long_term_public_key_id(vscr_ratchet_message_t *ratchet_message);
+
+//
+//  FIXME
+//
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_message_get_one_time_public_key(vscr_ratchet_message_t *ratchet_message);
+
+//
+//  FIXME
+//
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_message_compute_one_time_public_key_id(vscr_ratchet_message_t *ratchet_message);
+
+VSCR_PUBLIC size_t
+vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *ratchet_message);
+
+VSCR_PUBLIC vscr_error_t
+vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *output);
+
+VSCR_PUBLIC vscr_ratchet_message_t *
+vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx);
 
 
 // --------------------------------------------------------------------------
@@ -123,5 +188,5 @@ vscr_ratchet_rng_api_tag(const vscr_ratchet_rng_api_t *ratchet_rng_api);
 
 
 //  @footer
-#endif // VSCR_RATCHET_RNG_H_INCLUDED
+#endif // VSCR_RATCHET_MESSAGE_H_INCLUDED
 //  @end

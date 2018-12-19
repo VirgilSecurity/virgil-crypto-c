@@ -3,10 +3,12 @@
     <require impl="sha256" project="foundation" scope="private"/>
     <require impl="hmac" project="foundation" scope="private"/>
     <require impl="hkdf" project="foundation" scope="private"/>
+    <require impl="ctr drbg" project="foundation" scope="private"/>
 
     <require class="ratchet common" scope="context"/>
     <require class="ratchet message key" scope="private"/>
     <require class="ratchet chain key" scope="private"/>
+    <require module="ratchet message defs" scope="private"/>
 
     <require header="RatchetModels.pb.h" scope="public"/>
     <require header="pb_decode.h" scope="public"/>
@@ -24,7 +26,7 @@
         <value value="0x01"/>
     </variable>
 
-    <dependency name="rng" interface="ratchet rng" access="readwrite"/>
+    <dependency name="rng" interface="random" project="foundation"/>
     <dependency name="cipher" class="ratchet cipher" access="readwrite"/>
     <property name="sender chain" class="ratchet sender chain" access="readwrite"/>
     <property name="receiver chains" class="ratchet receiver chain list node" access="readwrite"/>
@@ -32,6 +34,9 @@
     <property name="root key" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_shared_key_length)"/>
     </property>
+
+    <method name="setup defaults">
+    </method>
 
     <method name="create chain key" declaration="private" is_const="1">
         <argument name="private key" class="buffer" access="readonly"/>
@@ -73,7 +78,6 @@
 
     <method name="respond">
         <argument name="shared secret" class="data"/>
-        <argument name="ratchet public key" class="buffer" access="retain"/>
         <argument name="message" class="RegularMessage" library="nanopb" access="readonly"/>
 
         <return enum="error"/>

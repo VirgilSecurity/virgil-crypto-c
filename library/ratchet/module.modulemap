@@ -3,12 +3,9 @@ framework module VSCRatchet {
     header "vscr_library.h"
     header "vscr_memory.h"
     header "vscr_platform.h"
-    header "vscr_api.h"
-    header "vscr_impl.h"
-    header "vscr_ratchet_rng.h"
-    header "vscr_virgil_ratchet_fake_rng.h"
     header "vscr_error_ctx.h"
     header "vscr_ratchet_common.h"
+    header "vscr_ratchet_message.h"
     header "vscr_ratchet_session.h"
     header "vscr_error.h"
     export *

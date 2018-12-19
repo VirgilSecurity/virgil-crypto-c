@@ -49,10 +49,9 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
-#include "vscr_ratchet.h"
+#include "vscr_ratchet_message.h"
 #include "vscr_error_ctx.h"
 #include "vscr_ratchet_session.h"
-#include "vscr_impl.h"
 #include "vscr_error.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -60,9 +59,17 @@
 #   include <virgil/crypto/common/vsc_data.h>
 #endif
 
+#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#endif
+
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
 #endif
 
 // clang-format on
@@ -119,11 +126,6 @@ vscr_ratchet_session_cleanup(vscr_ratchet_session_t *ratchet_session);
 VSCR_PUBLIC vscr_ratchet_session_t *
 vscr_ratchet_session_new(void);
 
-VSCR_PUBLIC vscr_ratchet_session_t *
-vscr_ratchet_session_new_with_members(bool received_first_response, vsc_buffer_t *sender_identity_public_key,
-        vsc_buffer_t *sender_ephemeral_public_key, vsc_buffer_t *receiver_longterm_public_key,
-        vsc_buffer_t *receiver_onetime_public_key, vscr_ratchet_t **ratchet_ref);
-
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
@@ -145,23 +147,26 @@ VSCR_PUBLIC vscr_ratchet_session_t *
 vscr_ratchet_session_shallow_copy(vscr_ratchet_session_t *ratchet_session);
 
 //
-//  Setup dependency to the interface 'ratchet rng' with shared ownership.
+//  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_use_rng(vscr_ratchet_session_t *ratchet_session, vscr_impl_t *rng);
+vscr_ratchet_session_use_rng(vscr_ratchet_session_t *ratchet_session, vscf_impl_t *rng);
 
 //
-//  Setup dependency to the interface 'ratchet rng' and transfer ownership.
+//  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_take_rng(vscr_ratchet_session_t *ratchet_session, vscr_impl_t *rng);
+vscr_ratchet_session_take_rng(vscr_ratchet_session_t *ratchet_session, vscf_impl_t *rng);
 
 //
-//  Release dependency to the interface 'ratchet rng'.
+//  Release dependency to the interface 'random'.
 //
 VSCR_PUBLIC void
 vscr_ratchet_session_release_rng(vscr_ratchet_session_t *ratchet_session);
+
+VSCR_PUBLIC void
+vscr_ratchet_session_setup_defaults(vscr_ratchet_session_t *ratchet_session);
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_t sender_identity_private_key,
@@ -170,9 +175,8 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_buffer_t *sender_identity_public_key,
-        vsc_buffer_t *sender_ephemeral_public_key, vsc_buffer_t *ratchet_public_key,
         vsc_buffer_t *receiver_identity_private_key, vsc_buffer_t *receiver_long_term_private_key,
-        vsc_buffer_t *receiver_one_time_private_key, const RegularMessage *message);
+        vsc_buffer_t *receiver_one_time_private_key, const vscr_ratchet_message_t *message);
 
 VSCR_PUBLIC size_t
 vscr_ratchet_session_encrypt_len(vscr_ratchet_session_t *ratchet_session, size_t plain_text_len);
@@ -181,10 +185,11 @@ VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_encrypt(vscr_ratchet_session_t *ratchet_session, vsc_data_t plain_text, vsc_buffer_t *cipher_text);
 
 VSCR_PUBLIC size_t
-vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session, const Message *message);
+vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session, const vscr_ratchet_message_t *message);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session, Message *message, vsc_buffer_t *plain_text);
+vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session, const vscr_ratchet_message_t *message,
+        vsc_buffer_t *plain_text);
 
 VSCR_PUBLIC size_t
 vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *ratchet_session);

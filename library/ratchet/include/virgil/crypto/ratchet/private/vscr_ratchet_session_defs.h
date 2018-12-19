@@ -55,14 +55,21 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet.h"
-#include "vscr_impl.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
+#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#endif
+
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_buffer.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
 #endif
 
 // clang-format on
@@ -93,9 +100,11 @@ struct vscr_ratchet_session_t {
     //
     size_t refcnt;
     //
-    //  Dependency to the interface 'ratchet rng'.
+    //  Dependency to the interface 'random'.
     //
-    vscr_impl_t *rng;
+    vscf_impl_t *rng;
+
+    bool is_initiator;
 
     vscr_ratchet_t *ratchet;
 
@@ -105,9 +114,9 @@ struct vscr_ratchet_session_t {
 
     vsc_buffer_t *sender_ephemeral_public_key;
 
-    vsc_buffer_t *receiver_longterm_public_key;
+    vsc_buffer_t *receiver_long_term_public_key;
 
-    vsc_buffer_t *receiver_onetime_public_key;
+    vsc_buffer_t *receiver_one_time_public_key;
 };
 
 

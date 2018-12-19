@@ -58,8 +58,15 @@
 #include "vscr_ratchet_sender_chain.h"
 #include "vscr_ratchet_receiver_chain_list_node.h"
 #include "vscr_ratchet_skipped_message_key_list_node.h"
-#include "vscr_impl.h"
 #include "vscr_ratchet_cipher.h"
+
+#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
+#endif
 
 // clang-format on
 //  @end
@@ -89,9 +96,9 @@ struct vscr_ratchet_t {
     //
     size_t refcnt;
     //
-    //  Dependency to the interface 'ratchet rng'.
+    //  Dependency to the interface 'random'.
     //
-    vscr_impl_t *rng;
+    vscf_impl_t *rng;
     //
     //  Dependency to the class 'ratchet cipher'.
     //
