@@ -121,7 +121,7 @@ vscp_hash_info_api_tag(const vscp_hash_info_api_t *hash_info_api) {
 //  Returns implementation unique identifier.
 //
 VSCP_PUBLIC vscp_impl_tag_t
-vscp_hash_info_impl_tag(const vscp_hash_info_api_t *hash_info_api) {
+vscp_hash_info_tag(const vscp_hash_info_api_t *hash_info_api) {
 
     VSCP_ASSERT_PTR (hash_info_api);
 

@@ -66,7 +66,7 @@ import VirgilCryptoCommon
     /// Acquire retained C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscf_ctr_drbg_copy(c_ctx)
+        self.c_ctx = vscf_ctr_drbg_shallow_copy(c_ctx)
         super.init()
     }
 

@@ -42,7 +42,7 @@
 
 #include "vscr_ratchet_rng.h"
 #include "vscr_ratchet.h"
-#include "vscr_virgil_ratchet_fake_rng_impl.h"
+#include "vscr_virgil_ratchet_fake_rng_defs.h"
 #include "test_data_ratchet.h"
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
@@ -74,14 +74,14 @@ initialize(vscr_ratchet_t *ratchet_alice, vscr_ratchet_t *ratchet_bob, RegularMe
     vscr_ratchet_take_rng(ratchet_bob, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
 
     vsc_buffer_t *ratchet_private_key = vsc_buffer_new_with_capacity(test_ratchet_ratchet_private_key.len);
-    memcpy(vsc_buffer_ptr(ratchet_private_key), test_ratchet_ratchet_private_key.bytes,
+    memcpy(vsc_buffer_unused_bytes(ratchet_private_key), test_ratchet_ratchet_private_key.bytes,
             test_ratchet_ratchet_private_key.len);
-    vsc_buffer_reserve(ratchet_private_key, test_ratchet_ratchet_private_key.len);
+    vsc_buffer_inc_used(ratchet_private_key, test_ratchet_ratchet_private_key.len);
 
     vsc_buffer_t *ratchet_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
-    TEST_ASSERT_EQUAL_INT(
-            0, curve25519_get_pubkey(vsc_buffer_ptr(ratchet_public_key), test_ratchet_ratchet_private_key.bytes));
-    vsc_buffer_reserve(ratchet_public_key, test_ratchet_ratchet_private_key.len);
+    TEST_ASSERT_EQUAL_INT(0,
+            curve25519_get_pubkey(vsc_buffer_unused_bytes(ratchet_public_key), test_ratchet_ratchet_private_key.bytes));
+    vsc_buffer_inc_used(ratchet_public_key, test_ratchet_ratchet_private_key.len);
 
     TEST_ASSERT_EQUAL_INT(
             vscr_SUCCESS, vscr_ratchet_initiate(ratchet_alice, test_ratchet_shared_secret, ratchet_private_key));
@@ -257,9 +257,9 @@ test__serialization__serialize_deserialize__objects_are_equal(void) {
     vscr_ratchet_take_rng(ratchet, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
 
     vsc_buffer_t *ratchet_private_key = vsc_buffer_new_with_capacity(test_ratchet_ratchet_private_key.len);
-    memcpy(vsc_buffer_ptr(ratchet_private_key), test_ratchet_ratchet_private_key.bytes,
+    memcpy(vsc_buffer_unused_bytes(ratchet_private_key), test_ratchet_ratchet_private_key.bytes,
             test_ratchet_ratchet_private_key.len);
-    vsc_buffer_reserve(ratchet_private_key, test_ratchet_ratchet_private_key.len);
+    vsc_buffer_inc_used(ratchet_private_key, test_ratchet_ratchet_private_key.len);
 
     TEST_ASSERT_EQUAL_INT(
             vscr_SUCCESS, vscr_ratchet_initiate(ratchet, test_ratchet_shared_secret, ratchet_private_key));

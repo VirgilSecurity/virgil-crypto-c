@@ -72,7 +72,7 @@
 VSCF_PUBLIC vscf_error_t
 vscf_compute_shared_key(vscf_impl_t *impl, const vscf_impl_t *public_key, vsc_buffer_t *shared_key) {
 
-    const vscf_compute_shared_key_api_t *compute_shared_key_api = vscf_compute_shared_key_api (impl);
+    const vscf_compute_shared_key_api_t *compute_shared_key_api = vscf_compute_shared_key_api(impl);
     VSCF_ASSERT_PTR (compute_shared_key_api);
 
     VSCF_ASSERT_PTR (compute_shared_key_api->compute_shared_key_cb);
@@ -85,7 +85,7 @@ vscf_compute_shared_key(vscf_impl_t *impl, const vscf_impl_t *public_key, vsc_bu
 VSCF_PUBLIC size_t
 vscf_compute_shared_key_shared_key_len(vscf_impl_t *impl) {
 
-    const vscf_compute_shared_key_api_t *compute_shared_key_api = vscf_compute_shared_key_api (impl);
+    const vscf_compute_shared_key_api_t *compute_shared_key_api = vscf_compute_shared_key_api(impl);
     VSCF_ASSERT_PTR (compute_shared_key_api);
 
     VSCF_ASSERT_PTR (compute_shared_key_api->shared_key_len_cb);
@@ -100,7 +100,7 @@ vscf_compute_shared_key_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_COMPUTE_SHARED_KEY);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_COMPUTE_SHARED_KEY);
     return (const vscf_compute_shared_key_api_t *) api;
 }
 
@@ -112,7 +112,7 @@ vscf_compute_shared_key_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_COMPUTE_SHARED_KEY) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_COMPUTE_SHARED_KEY) != NULL;
 }
 
 //

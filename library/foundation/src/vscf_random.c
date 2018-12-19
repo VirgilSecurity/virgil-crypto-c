@@ -70,7 +70,7 @@
 VSCF_PUBLIC vscf_error_t
 vscf_random(vscf_impl_t *impl, size_t data_len, vsc_buffer_t *data) {
 
-    const vscf_random_api_t *random_api = vscf_random_api (impl);
+    const vscf_random_api_t *random_api = vscf_random_api(impl);
     VSCF_ASSERT_PTR (random_api);
 
     VSCF_ASSERT_PTR (random_api->random_cb);
@@ -83,7 +83,7 @@ vscf_random(vscf_impl_t *impl, size_t data_len, vsc_buffer_t *data) {
 VSCF_PUBLIC vscf_error_t
 vscf_random_reseed(vscf_impl_t *impl) {
 
-    const vscf_random_api_t *random_api = vscf_random_api (impl);
+    const vscf_random_api_t *random_api = vscf_random_api(impl);
     VSCF_ASSERT_PTR (random_api);
 
     VSCF_ASSERT_PTR (random_api->reseed_cb);
@@ -98,7 +98,7 @@ vscf_random_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_RANDOM);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_RANDOM);
     return (const vscf_random_api_t *) api;
 }
 
@@ -110,7 +110,7 @@ vscf_random_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_RANDOM) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_RANDOM) != NULL;
 }
 
 //

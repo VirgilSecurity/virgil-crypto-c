@@ -70,27 +70,27 @@ enum vsce_error_t {
     //
     //  Success proof check failed.
     //
-    vsce_INVALID_SUCCESS_PROOF = 1,
+    vsce_error_INVALID_SUCCESS_PROOF,
     //
     //  Failure proof check failed.
     //
-    vsce_INVALID_FAIL_PROOF = 2,
+    vsce_error_INVALID_FAIL_PROOF,
     //
     //  RNG returned error
     //
-    vsce_RNG_ERROR = 3,
+    vsce_error_RNG_ERROR,
     //
     //  Protobuf decode failed
     //
-    vsce_PROTOBUF_DECODE_ERROR = 4,
+    vsce_error_PROTOBUF_DECODE_ERROR,
     //
     //  Invalid ECP
     //
-    vsce_INVALID_ECP = 5,
+    vsce_error_INVALID_ECP,
     //
     //  Invalid private key
     //
-    vsce_INVALID_PRIVATE_KEY = 6
+    vsce_error_INVALID_PRIVATE_KEY
 };
 typedef enum vsce_error_t vsce_error_t;
 

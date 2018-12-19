@@ -42,7 +42,7 @@
         <require class="mbedtls bignum asn1 reader"/>
         <require module="mbedtls bridge random"/>
         <require class="mbedtls md"/>
-        <require module="rsa public key impl"/>
+        <require module="rsa public key defs"/>
 
         <require header="mbedtls/bignum.h"/>
 

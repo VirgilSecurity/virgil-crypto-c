@@ -124,14 +124,14 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_platform_entropy_init(vscf_platform_entropy_impl_t *platform_entropy_impl) {
+vscf_platform_entropy_init(vscf_platform_entropy_t *platform_entropy) {
 
-    VSCF_ASSERT_PTR(platform_entropy_impl);
+    VSCF_ASSERT_PTR(platform_entropy);
 
-    vscf_zeroize(platform_entropy_impl, sizeof(vscf_platform_entropy_impl_t));
+    vscf_zeroize(platform_entropy, sizeof(vscf_platform_entropy_t));
 
-    platform_entropy_impl->info = &info;
-    platform_entropy_impl->refcnt = 1;
+    platform_entropy->info = &info;
+    platform_entropy->refcnt = 1;
 }
 
 //
@@ -139,34 +139,34 @@ vscf_platform_entropy_init(vscf_platform_entropy_impl_t *platform_entropy_impl) 
 //  This is a reverse action of the function 'vscf_platform_entropy_init()'.
 //
 VSCF_PUBLIC void
-vscf_platform_entropy_cleanup(vscf_platform_entropy_impl_t *platform_entropy_impl) {
+vscf_platform_entropy_cleanup(vscf_platform_entropy_t *platform_entropy) {
 
-    if (platform_entropy_impl == NULL || platform_entropy_impl->info == NULL) {
+    if (platform_entropy_impl == NULL || platform_entropy->info == NULL) {
         return;
     }
 
-    if (platform_entropy_impl->refcnt == 0) {
+    if (platform_entropy->refcnt == 0) {
         return;
     }
 
-    if (--platform_entropy_impl->refcnt > 0) {
+    if (--platform_entropy->refcnt > 0) {
         return;
     }
 
-    vscf_zeroize(platform_entropy_impl, sizeof(vscf_platform_entropy_impl_t));
+    vscf_zeroize(platform_entropy, sizeof(vscf_platform_entropy_t));
 }
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_platform_entropy_impl_t *
+VSCF_PUBLIC vscf_platform_entropy_t *
 vscf_platform_entropy_new(void) {
 
-    vscf_platform_entropy_impl_t *platform_entropy_impl = (vscf_platform_entropy_impl_t *) vscf_alloc(sizeof (vscf_platform_entropy_impl_t));
-    VSCF_ASSERT_ALLOC(platform_entropy_impl);
+    vscf_platform_entropy_t *platform_entropy = (vscf_platform_entropy_t *) vscf_alloc(sizeof (vscf_platform_entropy_t));
+    VSCF_ASSERT_ALLOC(platform_entropy);
 
-    vscf_platform_entropy_init(platform_entropy_impl);
+    vscf_platform_entropy_init(platform_entropy);
 
     return platform_entropy_impl;
 }
@@ -176,12 +176,12 @@ vscf_platform_entropy_new(void) {
 //  This is a reverse action of the function 'vscf_platform_entropy_new()'.
 //
 VSCF_PUBLIC void
-vscf_platform_entropy_delete(vscf_platform_entropy_impl_t *platform_entropy_impl) {
+vscf_platform_entropy_delete(vscf_platform_entropy_t *platform_entropy) {
 
-    vscf_platform_entropy_cleanup(platform_entropy_impl);
+    vscf_platform_entropy_cleanup(platform_entropy);
 
-    if (platform_entropy_impl && (platform_entropy_impl->refcnt == 0)) {
-        vscf_dealloc(platform_entropy_impl);
+    if (platform_entropy_impl && (platform_entropy->refcnt == 0)) {
+        vscf_dealloc(platform_entropy);
     }
 }
 
@@ -191,44 +191,44 @@ vscf_platform_entropy_delete(vscf_platform_entropy_impl_t *platform_entropy_impl
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_platform_entropy_destroy(vscf_platform_entropy_impl_t **platform_entropy_impl_ref) {
+vscf_platform_entropy_destroy(vscf_platform_entropy_t **platform_entropy_impl_ref) {
 
     VSCF_ASSERT_PTR(platform_entropy_impl_ref);
 
-    vscf_platform_entropy_impl_t *platform_entropy_impl = *platform_entropy_impl_ref;
+    vscf_platform_entropy_t *platform_entropy = *platform_entropy_impl_ref;
     *platform_entropy_impl_ref = NULL;
 
-    vscf_platform_entropy_delete(platform_entropy_impl);
+    vscf_platform_entropy_delete(platform_entropy);
 }
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_platform_entropy_impl_t *
-vscf_platform_entropy_copy(vscf_platform_entropy_impl_t *platform_entropy_impl) {
+VSCF_PUBLIC vscf_platform_entropy_t *
+vscf_platform_entropy_shallow_copy(vscf_platform_entropy_t *platform_entropy) {
 
     // Proxy to the parent implementation.
-    return (vscf_platform_entropy_impl_t *)vscf_impl_copy((vscf_impl_t *)platform_entropy_impl);
+    return (vscf_platform_entropy_t *)vscf_impl_shallow_copy(vscf_impl_t *)platform_entropy);
 }
 
 //
-//  Return size of 'vscf_platform_entropy_impl_t' type.
+//  Return size of 'vscf_platform_entropy_t' type.
 //
 VSCF_PUBLIC size_t
 vscf_platform_entropy_impl_size(void) {
 
-    return sizeof (vscf_platform_entropy_impl_t);
+    return sizeof (vscf_platform_entropy_t);
 }
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_platform_entropy_impl(vscf_platform_entropy_impl_t *platform_entropy_impl) {
+vscf_platform_entropy_impl(vscf_platform_entropy_t *platform_entropy) {
 
-    VSCF_ASSERT_PTR(platform_entropy_impl);
-    return (vscf_impl_t *)(platform_entropy_impl);
+    VSCF_ASSERT_PTR(platform_entropy);
+    return (vscf_impl_t *)(platform_entropy);
 }
 
 static const vscf_api_t *

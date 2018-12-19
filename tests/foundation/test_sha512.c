@@ -64,12 +64,12 @@ int suiteTearDown(int num_failures) { return num_failures; }
 // --------------------------------------------------------------------------
 void
 test__impl__valid_arg__returns_not_null(void) {
-    vscf_sha512_impl_t *sha512_impl = vscf_sha512_new();
-    vscf_impl_t *impl = vscf_sha512_impl(sha512_impl);
+    vscf_sha512_t *sha512 = vscf_sha512_new();
+    vscf_impl_t *impl = vscf_sha512_impl(sha512);
 
     TEST_ASSERT_NOT_NULL(impl);
 
-    vscf_sha512_destroy(&sha512_impl);
+    vscf_sha512_destroy(&sha512);
 }
 
 void
@@ -157,52 +157,52 @@ test__hash__vector_3__success(void) {
 void
 test__hash_stream__vector_1__success(void) {
 
-    vscf_sha512_impl_t *sha512_impl = vscf_sha512_new();
+    vscf_sha512_t *sha512 = vscf_sha512_new();
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
 
-    vscf_sha512_start(sha512_impl);
-    vscf_sha512_update(sha512_impl, test_sha512_VECTOR_1_INPUT);
-    vscf_sha512_finish(sha512_impl, digest);
+    vscf_sha512_start(sha512);
+    vscf_sha512_update(sha512, test_sha512_VECTOR_1_INPUT);
+    vscf_sha512_finish(sha512, digest);
 
     TEST_ASSERT_EQUAL(test_sha512_VECTOR_1_DIGEST.len, vsc_buffer_len(digest));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_VECTOR_1_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
 
     vsc_buffer_destroy(&digest);
-    vscf_sha512_destroy(&sha512_impl);
+    vscf_sha512_destroy(&sha512);
 }
 
 void
 test__hash_stream__vector_2__success(void) {
 
-    vscf_sha512_impl_t *sha512_impl = vscf_sha512_new();
+    vscf_sha512_t *sha512 = vscf_sha512_new();
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
 
-    vscf_sha512_start(sha512_impl);
-    vscf_sha512_update(sha512_impl, test_sha512_VECTOR_2_INPUT);
-    vscf_sha512_finish(sha512_impl, digest);
+    vscf_sha512_start(sha512);
+    vscf_sha512_update(sha512, test_sha512_VECTOR_2_INPUT);
+    vscf_sha512_finish(sha512, digest);
 
     TEST_ASSERT_EQUAL(test_sha512_VECTOR_2_DIGEST.len, vsc_buffer_len(digest));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_VECTOR_2_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
 
     vsc_buffer_destroy(&digest);
-    vscf_sha512_destroy(&sha512_impl);
+    vscf_sha512_destroy(&sha512);
 }
 
 void
 test__hash_stream__vector_3__success(void) {
 
-    vscf_sha512_impl_t *sha512_impl = vscf_sha512_new();
+    vscf_sha512_t *sha512 = vscf_sha512_new();
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
 
-    vscf_sha512_start(sha512_impl);
-    vscf_sha512_update(sha512_impl, test_sha512_VECTOR_3_INPUT);
-    vscf_sha512_finish(sha512_impl, digest);
+    vscf_sha512_start(sha512);
+    vscf_sha512_update(sha512, test_sha512_VECTOR_3_INPUT);
+    vscf_sha512_finish(sha512, digest);
 
     TEST_ASSERT_EQUAL(test_sha512_VECTOR_3_DIGEST.len, vsc_buffer_len(digest));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha512_VECTOR_3_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
 
     vsc_buffer_destroy(&digest);
-    vscf_sha512_destroy(&sha512_impl);
+    vscf_sha512_destroy(&sha512);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE

@@ -9,6 +9,7 @@ node('master') {
     clearContentUnix()
     checkout scm
     stash includes: '**', name: 'src'
+    archiveArtifacts('VERSION')
 }
 
 
@@ -65,13 +66,14 @@ def build_LangC_Unix(slave) {
             cmake -DCMAKE_BUILD_TYPE=Release \
                   -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
                   -DVIRGIL_LIB_RATCHET=OFF \
+                  -DCPACK_OUTPUT_FILE_PREFIX=c \
                   -Bbuild -H.
             cmake --build build -- -j10
             cd build
             cpack
         '''
         dir('build') {
-            archiveArtifacts('packages/**')
+            archiveArtifacts('c/**')
         }
     }}
 }
@@ -88,13 +90,14 @@ def build_LangC_Windows(slave) {
                   -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
                   -DVIRGIL_LIB_RATCHET=OFF ^
                   -DVIRGIL_LIB_PYTHIA=OFF ^
+                  -DCPACK_OUTPUT_FILE_PREFIX=c ^
                   -Bbuild -H.
             cmake --build build
             cd build
             cpack
         '''
         dir('build') {
-            archiveArtifacts('packages/**')
+            archiveArtifacts('c/**')
         }
     }}
 }
@@ -127,13 +130,14 @@ def build_LangPHP_Linux(slave) {
                   -DVIRGIL_INSTALL_DEPS_LIBS=OFF \
                   -DVIRGIL_INSTALL_HDRS=OFF \
                   -DVIRGIL_INSTALL_LIBS=OFF \
+                  -DCPACK_OUTPUT_FILE_PREFIX=php \
                   -Bbuild -H.
             cmake --build build -- -j10
             cd build
             cpack
         '''
         dir('build') {
-            archiveArtifacts('packages/**')
+            archiveArtifacts('php/**')
         }
     }}
 }
@@ -164,13 +168,14 @@ def build_LangPHP_MacOS(slave) {
                   -DVIRGIL_INSTALL_DEPS_LIBS=OFF \
                   -DVIRGIL_INSTALL_HDRS=OFF \
                   -DVIRGIL_INSTALL_LIBS=OFF \
+                  -DCPACK_OUTPUT_FILE_PREFIX=php \
                   -Bbuild -H.
             cmake --build build -- -j10
             cd build
             cpack
         '''
         dir('build') {
-            archiveArtifacts('packages/**')
+            archiveArtifacts('php/**')
         }
     }}
 }
@@ -205,6 +210,7 @@ def build_LangPHP_Windows(slave) {
                       -DVIRGIL_INSTALL_DEPS_LIBS=OFF ^
                       -DVIRGIL_INSTALL_HDRS=OFF ^
                       -DVIRGIL_INSTALL_LIBS=OFF ^
+                      -DCPACK_OUTPUT_FILE_PREFIX=php ^
                       -Bbuild -H.
             cmake --build build
             cd build
@@ -212,7 +218,7 @@ def build_LangPHP_Windows(slave) {
             '''
         }
         dir('build') {
-            archiveArtifacts('packages/**')
+            archiveArtifacts('php/**')
         }
     }}
 }

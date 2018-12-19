@@ -39,7 +39,7 @@
         </argument>
 
         <return enum="error">
-            - vsce_RNG_ERROR in case rng failed
+            - vsce_error_RNG_ERROR in case rng failed
         </return>
     </method>
 
@@ -68,8 +68,8 @@
         </argument>
 
         <return enum="error">
-            - vsce_INVALID_PRIVATE_KEY if provided private key in invalid
-            - vsce_RNG_ERROR in case rng failed
+            - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
+            - vsce_error_RNG_ERROR in case rng failed
         </return>
     </method>
 
@@ -101,10 +101,10 @@
         </argument>
 
         <return enum="error">
-            - vsce_PROTOBUF_DECODE_ERROR if input model is invalid
-            - vsce_INVALID_ECP if input points are invalid
-            - vsce_INVALID_PRIVATE_KEY if provided private key in invalid
-            - vsce_RNG_ERROR in case rng failed
+            - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
+            - vsce_error_INVALID_ECP if input points are invalid
+            - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
+            - vsce_error_RNG_ERROR in case rng failed
         </return>
     </method>
 
@@ -167,8 +167,8 @@
         </argument>
 
         <return enum="error">
-            - vsce_INVALID_PRIVATE_KEY if provided private key in invalid
-            - vsce_RNG_ERROR in case rng failed
+            - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
+            - vsce_error_RNG_ERROR in case rng failed
         </return>
     </method>
 

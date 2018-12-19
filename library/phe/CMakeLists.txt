@@ -128,10 +128,12 @@ endforeach()
 #
 # Enable profiling
 #
-if(COMMAND enable_target_profiling)
-    enable_target_profiling(phe)
-else()
-    message(STATUS "To enable profiling create function 'enable_target_profiling(<target>)'.")
+if(ENABLE_PROFILING)
+    if(COMMAND enable_target_profiling)
+        enable_target_profiling(phe)
+    else()
+        message(STATUS "To enable profiling create function 'enable_target_profiling(<target>)'.")
+    endif()
 endif()
 
 #

@@ -78,7 +78,7 @@ extern "C" {
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_hmac_init_ctx(vscf_hmac_impl_t *hmac_impl);
+vscf_hmac_init_ctx(vscf_hmac_t *hmac);
 
 //
 //  Release resources of the implementation specific context.
@@ -86,7 +86,7 @@ vscf_hmac_init_ctx(vscf_hmac_impl_t *hmac_impl);
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_hmac_cleanup_ctx(vscf_hmac_impl_t *hmac_impl);
+vscf_hmac_cleanup_ctx(vscf_hmac_t *hmac);
 
 
 // --------------------------------------------------------------------------

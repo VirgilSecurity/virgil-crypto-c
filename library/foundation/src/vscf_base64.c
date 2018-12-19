@@ -99,13 +99,14 @@ vscf_base64_encode(vsc_data_t data, vsc_buffer_t *str) {
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(str);
     VSCF_ASSERT(vsc_buffer_is_valid(str));
-    VSCF_ASSERT(vsc_buffer_left(str) >= vscf_base64_encoded_len(data.len));
+    VSCF_ASSERT(vsc_buffer_unused_len(str) >= vscf_base64_encoded_len(data.len));
 
     size_t len = 0;
-    int status = mbedtls_base64_encode(vsc_buffer_ptr(str), vsc_buffer_left(str), &len, data.bytes, data.len);
+    int status =
+            mbedtls_base64_encode(vsc_buffer_unused_bytes(str), vsc_buffer_unused_len(str), &len, data.bytes, data.len);
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
 
-    vsc_buffer_increase_used_bytes(str, len);
+    vsc_buffer_inc_used(str, len);
 }
 
 //
@@ -132,10 +133,11 @@ vscf_base64_decode(vsc_data_t str, vsc_buffer_t *data) {
     VSCF_ASSERT(vsc_data_is_valid(str));
     VSCF_ASSERT_PTR(data);
     VSCF_ASSERT(vsc_buffer_is_valid(data));
-    VSCF_ASSERT(vsc_buffer_left(data) >= vscf_base64_decoded_len(str.len));
+    VSCF_ASSERT(vsc_buffer_unused_len(data) >= vscf_base64_decoded_len(str.len));
 
     size_t len = 0;
-    int status = mbedtls_base64_decode(vsc_buffer_ptr(data), vsc_buffer_left(data), &len, str.bytes, str.len);
+    int status =
+            mbedtls_base64_decode(vsc_buffer_unused_bytes(data), vsc_buffer_unused_len(data), &len, str.bytes, str.len);
 
     switch (status) {
     case 0:
@@ -149,7 +151,7 @@ vscf_base64_decode(vsc_data_t str, vsc_buffer_t *data) {
         return vscf_error_UNHANDLED_THIRDPARTY_ERROR;
     }
 
-    vsc_buffer_increase_used_bytes(data, len);
+    vsc_buffer_inc_used(data, len);
 
     return vscf_SUCCESS;
 }

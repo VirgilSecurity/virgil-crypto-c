@@ -1153,7 +1153,7 @@ function component_resolve_dependency (dependency, parent)
             .uid = make_id (my.project_uid, "class", .type_name, "struct", .type_name)
 
         elsif defined(0.impl)
-            .uid = make_id (my.project_uid, "class", .type_name, "struct", "impl")
+            .uid = make_id (my.project_uid, "class", .type_name, "struct", .type_name)
         else
             echo_fatal ("Unhandled dependency type within code generation.", my)
         endif

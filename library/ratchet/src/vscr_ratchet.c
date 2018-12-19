@@ -78,7 +78,7 @@ static const uint8_t ratchet_kdf_ratchet_info[] = {"VIRGIL_RATCHET_KDF_RATCHET_I
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_init_ctx(vscr_ratchet_t *ratchet_ctx);
+vscr_ratchet_init_ctx(vscr_ratchet_t *ratchet);
 
 //
 //  Release all inner resources.
@@ -86,10 +86,10 @@ vscr_ratchet_init_ctx(vscr_ratchet_t *ratchet_ctx);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_cleanup_ctx(vscr_ratchet_t *ratchet_ctx);
+vscr_ratchet_cleanup_ctx(vscr_ratchet_t *ratchet);
 
 static vscr_error_t
-vscr_ratchet_create_chain_key(const vscr_ratchet_t *ratchet_ctx, const vsc_buffer_t *private_key,
+vscr_ratchet_create_chain_key(const vscr_ratchet_t *ratchet, const vsc_buffer_t *private_key,
         const vsc_buffer_t *public_key, byte new_root_key[vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH],
         vscr_ratchet_chain_key_t *chain_key);
 
@@ -100,28 +100,27 @@ static vscr_ratchet_message_key_t *
 vscr_ratchet_create_message_key(const vscr_ratchet_chain_key_t *chain_key);
 
 static vscr_error_t
-vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *ratchet_ctx, const vscr_ratchet_chain_key_t *chain_key,
+vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *ratchet, const vscr_ratchet_chain_key_t *chain_key,
         const RegularMessage *message, vsc_buffer_t *buffer);
 
 static vscr_error_t
-vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *ratchet_ctx, const RegularMessage *message, vsc_buffer_t *buffer);
+vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *ratchet, const RegularMessage *message, vsc_buffer_t *buffer);
 
 static vscr_ratchet_receiver_chain_t *
-vscr_ratchet_find_receiver_chain(vscr_ratchet_t *ratchet_ctx, const RegularMessage *message);
+vscr_ratchet_find_receiver_chain(vscr_ratchet_t *ratchet, const RegularMessage *message);
 
 static vscr_ratchet_skipped_message_key_t *
-vscr_ratchet_find_skipped_message_key(vscr_ratchet_t *ratchet_ctx, const RegularMessage *message);
+vscr_ratchet_find_skipped_message_key(vscr_ratchet_t *ratchet, const RegularMessage *message);
 
 static void
-vscr_ratchet_erase_skipped_message_key(vscr_ratchet_t *ratchet_ctx,
+vscr_ratchet_erase_skipped_message_key(vscr_ratchet_t *ratchet,
         vscr_ratchet_skipped_message_key_t *skipped_message_key);
 
 static void
-vscr_ratchet_add_receiver_chain(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_receiver_chain_t *receiver_chain);
+vscr_ratchet_add_receiver_chain(vscr_ratchet_t *ratchet, vscr_ratchet_receiver_chain_t *receiver_chain);
 
 static void
-vscr_ratchet_add_skipped_message_key(vscr_ratchet_t *ratchet_ctx,
-        vscr_ratchet_skipped_message_key_t *skipped_message_key);
+vscr_ratchet_add_skipped_message_key(vscr_ratchet_t *ratchet, vscr_ratchet_skipped_message_key_t *skipped_message_key);
 
 static const uint8_t ratchet_chain_key_seed[] = {
     0x02
@@ -144,38 +143,38 @@ vscr_ratchet_ctx_size(void) {
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_init(vscr_ratchet_t *ratchet_ctx) {
+vscr_ratchet_init(vscr_ratchet_t *ratchet) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
 
-    vscr_zeroize(ratchet_ctx, sizeof(vscr_ratchet_t));
+    vscr_zeroize(ratchet, sizeof(vscr_ratchet_t));
 
-    ratchet_ctx->refcnt = 1;
+    ratchet->refcnt = 1;
 
-    vscr_ratchet_init_ctx(ratchet_ctx);
+    vscr_ratchet_init_ctx(ratchet);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cleanup(vscr_ratchet_t *ratchet_ctx) {
+vscr_ratchet_cleanup(vscr_ratchet_t *ratchet) {
 
-    if (ratchet_ctx == NULL) {
+    if (ratchet == NULL) {
         return;
     }
 
-    if (ratchet_ctx->refcnt == 0) {
+    if (ratchet->refcnt == 0) {
         return;
     }
 
-    if (--ratchet_ctx->refcnt == 0) {
-        vscr_ratchet_cleanup_ctx(ratchet_ctx);
+    if (--ratchet->refcnt == 0) {
+        vscr_ratchet_cleanup_ctx(ratchet);
 
-        vscr_ratchet_release_rng(ratchet_ctx);
-        vscr_ratchet_release_cipher(ratchet_ctx);
+        vscr_ratchet_release_rng(ratchet);
+        vscr_ratchet_release_cipher(ratchet);
 
-        vscr_zeroize(ratchet_ctx, sizeof(vscr_ratchet_t));
+        vscr_zeroize(ratchet, sizeof(vscr_ratchet_t));
     }
 }
 
@@ -185,14 +184,14 @@ vscr_ratchet_cleanup(vscr_ratchet_t *ratchet_ctx) {
 VSCR_PUBLIC vscr_ratchet_t *
 vscr_ratchet_new(void) {
 
-    vscr_ratchet_t *ratchet_ctx = (vscr_ratchet_t *) vscr_alloc(sizeof (vscr_ratchet_t));
-    VSCR_ASSERT_ALLOC(ratchet_ctx);
+    vscr_ratchet_t *ratchet = (vscr_ratchet_t *) vscr_alloc(sizeof (vscr_ratchet_t));
+    VSCR_ASSERT_ALLOC(ratchet);
 
-    vscr_ratchet_init(ratchet_ctx);
+    vscr_ratchet_init(ratchet);
 
-    ratchet_ctx->self_dealloc_cb = vscr_dealloc;
+    ratchet->self_dealloc_cb = vscr_dealloc;
 
-    return ratchet_ctx;
+    return ratchet;
 }
 
 //
@@ -200,18 +199,18 @@ vscr_ratchet_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_delete(vscr_ratchet_t *ratchet_ctx) {
+vscr_ratchet_delete(vscr_ratchet_t *ratchet) {
 
-    if (ratchet_ctx == NULL) {
+    if (ratchet == NULL) {
         return;
     }
 
-    vscr_dealloc_fn self_dealloc_cb = ratchet_ctx->self_dealloc_cb;
+    vscr_dealloc_fn self_dealloc_cb = ratchet->self_dealloc_cb;
 
-    vscr_ratchet_cleanup(ratchet_ctx);
+    vscr_ratchet_cleanup(ratchet);
 
-    if (ratchet_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(ratchet_ctx);
+    if (ratchet->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(ratchet);
     }
 }
 
@@ -220,42 +219,42 @@ vscr_ratchet_delete(vscr_ratchet_t *ratchet_ctx) {
 //  This is a reverse action of the function 'vscr_ratchet_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_destroy(vscr_ratchet_t **ratchet_ctx_ref) {
+vscr_ratchet_destroy(vscr_ratchet_t **ratchet_ref) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx_ref);
+    VSCR_ASSERT_PTR(ratchet_ref);
 
-    vscr_ratchet_t *ratchet_ctx = *ratchet_ctx_ref;
-    *ratchet_ctx_ref = NULL;
+    vscr_ratchet_t *ratchet = *ratchet_ref;
+    *ratchet_ref = NULL;
 
-    vscr_ratchet_delete(ratchet_ctx);
+    vscr_ratchet_delete(ratchet);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_t *
-vscr_ratchet_copy(vscr_ratchet_t *ratchet_ctx) {
+vscr_ratchet_shallow_copy(vscr_ratchet_t *ratchet) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
 
-    ++ratchet_ctx->refcnt;
+    ++ratchet->refcnt;
 
-    return ratchet_ctx;
+    return ratchet;
 }
 
 //
 //  Setup dependency to the interface 'ratchet rng' with shared ownership.
 //
 VSCR_PUBLIC void
-vscr_ratchet_use_rng(vscr_ratchet_t *ratchet_ctx, vscr_impl_t *rng) {
+vscr_ratchet_use_rng(vscr_ratchet_t *ratchet, vscr_impl_t *rng) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(rng);
-    VSCR_ASSERT_PTR(ratchet_ctx->rng == NULL);
+    VSCR_ASSERT_PTR(ratchet->rng == NULL);
 
     VSCR_ASSERT(vscr_ratchet_rng_is_implemented(rng));
 
-    ratchet_ctx->rng = vscr_impl_copy(rng);
+    ratchet->rng = vscr_impl_shallow_copy(rng);
 }
 
 //
@@ -263,39 +262,39 @@ vscr_ratchet_use_rng(vscr_ratchet_t *ratchet_ctx, vscr_impl_t *rng) {
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCR_PUBLIC void
-vscr_ratchet_take_rng(vscr_ratchet_t *ratchet_ctx, vscr_impl_t *rng) {
+vscr_ratchet_take_rng(vscr_ratchet_t *ratchet, vscr_impl_t *rng) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(rng);
-    VSCR_ASSERT_PTR(ratchet_ctx->rng == NULL);
+    VSCR_ASSERT_PTR(ratchet->rng == NULL);
 
     VSCR_ASSERT(vscr_ratchet_rng_is_implemented(rng));
 
-    ratchet_ctx->rng = rng;
+    ratchet->rng = rng;
 }
 
 //
 //  Release dependency to the interface 'ratchet rng'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_release_rng(vscr_ratchet_t *ratchet_ctx) {
+vscr_ratchet_release_rng(vscr_ratchet_t *ratchet) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
 
-    vscr_impl_destroy(&ratchet_ctx->rng);
+    vscr_impl_destroy(&ratchet->rng);
 }
 
 //
 //  Setup dependency to the class 'ratchet cipher' with shared ownership.
 //
 VSCR_PUBLIC void
-vscr_ratchet_use_cipher(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_cipher_t *cipher) {
+vscr_ratchet_use_cipher(vscr_ratchet_t *ratchet, vscr_ratchet_cipher_t *cipher) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(cipher);
-    VSCR_ASSERT_PTR(ratchet_ctx->cipher == NULL);
+    VSCR_ASSERT_PTR(ratchet->cipher == NULL);
 
-    ratchet_ctx->cipher = vscr_ratchet_cipher_copy(cipher);
+    ratchet->cipher = vscr_ratchet_cipher_shallow_copy(cipher);
 }
 
 //
@@ -303,24 +302,24 @@ vscr_ratchet_use_cipher(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_cipher_t *ciph
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCR_PUBLIC void
-vscr_ratchet_take_cipher(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_cipher_t *cipher) {
+vscr_ratchet_take_cipher(vscr_ratchet_t *ratchet, vscr_ratchet_cipher_t *cipher) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(cipher);
-    VSCR_ASSERT_PTR(ratchet_ctx->cipher == NULL);
+    VSCR_ASSERT_PTR(ratchet->cipher == NULL);
 
-    ratchet_ctx->cipher = cipher;
+    ratchet->cipher = cipher;
 }
 
 //
 //  Release dependency to the class 'ratchet cipher'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_release_cipher(vscr_ratchet_t *ratchet_ctx) {
+vscr_ratchet_release_cipher(vscr_ratchet_t *ratchet) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
 
-    vscr_ratchet_cipher_destroy(&ratchet_ctx->cipher);
+    vscr_ratchet_cipher_destroy(&ratchet->cipher);
 }
 
 
@@ -337,9 +336,9 @@ vscr_ratchet_release_cipher(vscr_ratchet_t *ratchet_ctx) {
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_init_ctx(vscr_ratchet_t *ratchet_ctx) {
+vscr_ratchet_init_ctx(vscr_ratchet_t *ratchet) {
 
-    VSCR_UNUSED(ratchet_ctx);
+    VSCR_UNUSED(ratchet);
 }
 
 //
@@ -348,19 +347,19 @@ vscr_ratchet_init_ctx(vscr_ratchet_t *ratchet_ctx) {
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_cleanup_ctx(vscr_ratchet_t *ratchet_ctx) {
+vscr_ratchet_cleanup_ctx(vscr_ratchet_t *ratchet) {
 
-    vscr_ratchet_sender_chain_destroy(&ratchet_ctx->sender_chain);
-    vscr_ratchet_receiver_chain_list_node_destroy(&ratchet_ctx->receiver_chains);
-    vscr_ratchet_skipped_message_key_list_node_destroy(&ratchet_ctx->skipped_message_keys);
+    vscr_ratchet_sender_chain_destroy(&ratchet->sender_chain);
+    vscr_ratchet_receiver_chain_list_node_destroy(&ratchet->receiver_chains);
+    vscr_ratchet_skipped_message_key_list_node_destroy(&ratchet->skipped_message_keys);
 }
 
 static vscr_error_t
-vscr_ratchet_create_chain_key(const vscr_ratchet_t *ratchet_ctx, const vsc_buffer_t *private_key,
+vscr_ratchet_create_chain_key(const vscr_ratchet_t *ratchet, const vsc_buffer_t *private_key,
         const vsc_buffer_t *public_key, byte new_root_key[vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH],
         vscr_ratchet_chain_key_t *chain_key) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(private_key);
     VSCR_ASSERT_PTR(public_key);
     VSCR_ASSERT_PTR(chain_key);
@@ -368,20 +367,20 @@ vscr_ratchet_create_chain_key(const vscr_ratchet_t *ratchet_ctx, const vsc_buffe
     vsc_buffer_t *secret = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
     vsc_buffer_make_secure(secret);
 
-    if (curve25519_key_exchange(vsc_buffer_ptr(secret), vsc_buffer_bytes(public_key), vsc_buffer_bytes(private_key)) !=
-            0) {
+    if (curve25519_key_exchange(
+                vsc_buffer_unused_bytes(secret), vsc_buffer_bytes(public_key), vsc_buffer_bytes(private_key)) != 0) {
         vsc_buffer_destroy(&secret);
 
         return vscr_CURVE25519_ERROR;
     }
 
-    vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
+    vscf_hkdf_t *hkdf = vscf_hkdf_new();
 
     vscf_hkdf_take_hash(hkdf, vscf_sha256_impl(vscf_sha256_new()));
 
     vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(2 * vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
     vsc_buffer_make_secure(derived_secret);
-    vscf_hkdf_derive(hkdf, vsc_buffer_data(secret), vsc_data(ratchet_ctx->root_key, sizeof(ratchet_ctx->root_key)),
+    vscf_hkdf_derive(hkdf, vsc_buffer_data(secret), vsc_data(ratchet->root_key, sizeof(ratchet->root_key)),
             vsc_data(ratchet_kdf_ratchet_info, sizeof(ratchet_kdf_ratchet_info)), derived_secret,
             vsc_buffer_capacity(derived_secret));
 
@@ -406,7 +405,7 @@ vscr_ratchet_advance_chain_key(vscr_ratchet_chain_key_t *chain_key) {
     vsc_buffer_t *buffer = vsc_buffer_new();
     vsc_buffer_use(buffer, chain_key->key, sizeof(chain_key->key));
 
-    vscf_hmac_impl_t *hmac = vscf_hmac_new();
+    vscf_hmac_t *hmac = vscf_hmac_new();
     vscf_hmac_take_hash(hmac, vscf_sha256_impl(vscf_sha256_new()));
     vscf_hmac_mac(hmac, vsc_data(chain_key->key, sizeof(chain_key->key)),
             vsc_data(ratchet_chain_key_seed, sizeof(ratchet_chain_key_seed)), buffer);
@@ -426,7 +425,7 @@ vscr_ratchet_create_message_key(const vscr_ratchet_chain_key_t *chain_key) {
 
     vsc_buffer_t *buffer = vsc_buffer_new();
     vsc_buffer_use(buffer, message_key->key, sizeof(message_key->key));
-    vscf_hmac_impl_t *hmac = vscf_hmac_new();
+    vscf_hmac_t *hmac = vscf_hmac_new();
     vscf_hmac_take_hash(hmac, vscf_sha256_impl(vscf_sha256_new()));
     vscf_hmac_mac(hmac, vsc_data(chain_key->key, sizeof(chain_key->key)),
             vsc_data(ratchet_message_key_seed, sizeof(ratchet_message_key_seed)), buffer);
@@ -440,10 +439,10 @@ vscr_ratchet_create_message_key(const vscr_ratchet_chain_key_t *chain_key) {
 }
 
 static vscr_error_t
-vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *ratchet_ctx, const vscr_ratchet_chain_key_t *chain_key,
+vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *ratchet, const vscr_ratchet_chain_key_t *chain_key,
         const RegularMessage *message, vsc_buffer_t *buffer) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(chain_key);
     VSCR_ASSERT_PTR(buffer);
 
@@ -467,7 +466,7 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *ratchet_ctx, const vscr_
     vscr_ratchet_message_key_t *message_key = vscr_ratchet_create_message_key(new_chain_key);
 
     vscr_error_t result =
-            vscr_ratchet_cipher_decrypt(ratchet_ctx->cipher, vsc_data(message_key->key, sizeof(message_key->key)),
+            vscr_ratchet_cipher_decrypt(ratchet->cipher, vsc_data(message_key->key, sizeof(message_key->key)),
                     vsc_data(message->cipher_text.bytes, message->cipher_text.size), buffer);
 
     vscr_ratchet_chain_key_destroy(&new_chain_key);
@@ -477,12 +476,12 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *ratchet_ctx, const vscr_
 }
 
 static vscr_error_t
-vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *ratchet_ctx, const RegularMessage *message, vsc_buffer_t *buffer) {
+vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *ratchet, const RegularMessage *message, vsc_buffer_t *buffer) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(buffer);
 
-    if (!ratchet_ctx->sender_chain) {
+    if (!ratchet->sender_chain) {
         return vscr_BAD_MESSAGE;
     }
 
@@ -494,7 +493,7 @@ vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *ratchet_ctx, const RegularMes
     vsc_buffer_t *public_key = vsc_buffer_new_with_data(vsc_data(message->public_key, sizeof(message->public_key)));
     vscr_ratchet_receiver_chain_t *new_chain = vscr_ratchet_receiver_chain_new();
     vscr_error_t result = vscr_ratchet_create_chain_key(
-            ratchet_ctx, ratchet_ctx->sender_chain->private_key, public_key, new_root_key, &new_chain->chain_key);
+            ratchet, ratchet->sender_chain->private_key, public_key, new_root_key, &new_chain->chain_key);
 
     if (result != vscr_SUCCESS) {
         vscr_ratchet_receiver_chain_destroy(&new_chain);
@@ -503,7 +502,7 @@ vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *ratchet_ctx, const RegularMes
         return result;
     }
 
-    result = vscr_ratchet_decrypt_for_existing_chain(ratchet_ctx, &new_chain->chain_key, message, buffer);
+    result = vscr_ratchet_decrypt_for_existing_chain(ratchet, &new_chain->chain_key, message, buffer);
 
     vscr_ratchet_receiver_chain_destroy(&new_chain);
     vscr_zeroize(new_root_key, vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
@@ -512,17 +511,17 @@ vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *ratchet_ctx, const RegularMes
 }
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key,
+vscr_ratchet_respond(vscr_ratchet_t *ratchet, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key,
         const RegularMessage *message) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(ratchet_public_key);
     VSCR_ASSERT(vsc_buffer_len(ratchet_public_key) == ED25519_KEY_LEN);
     VSCR_ASSERT(shared_secret.len == 3 * ED25519_DH_LEN || shared_secret.len == 4 * ED25519_DH_LEN);
 
-    VSCR_ASSERT(!ratchet_ctx->receiver_chains);
+    VSCR_ASSERT(!ratchet->receiver_chains);
 
-    vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
+    vscf_hkdf_t *hkdf = vscf_hkdf_new();
     vscf_hkdf_take_hash(hkdf, vscf_sha256_impl(vscf_sha256_new()));
 
     vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(2 * vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
@@ -532,22 +531,20 @@ vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_
             vsc_buffer_capacity(derived_secret));
     vscf_hkdf_destroy(&hkdf);
 
-    memcpy(ratchet_ctx->root_key, vsc_buffer_bytes(derived_secret), vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
+    memcpy(ratchet->root_key, vsc_buffer_bytes(derived_secret), vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
 
     vscr_ratchet_receiver_chain_t *receiver_chain = vscr_ratchet_receiver_chain_new();
     receiver_chain->chain_key.index = 0;
     memcpy(receiver_chain->chain_key.key,
             vsc_buffer_bytes(derived_secret) + vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH,
             vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
-    receiver_chain->public_key = vsc_buffer_copy(ratchet_public_key);
+    receiver_chain->public_key = vsc_buffer_shallow_copy(ratchet_public_key);
 
-    vscr_ratchet_add_receiver_chain(ratchet_ctx, receiver_chain);
+    vscr_ratchet_add_receiver_chain(ratchet, receiver_chain);
 
-    vsc_buffer_t *buffer =
-            vsc_buffer_new_with_capacity(vscr_ratchet_decrypt_len(ratchet_ctx, message->cipher_text.size));
+    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vscr_ratchet_decrypt_len(ratchet, message->cipher_text.size));
     vsc_buffer_make_secure(buffer);
-    vscr_error_t status =
-            vscr_ratchet_decrypt_for_existing_chain(ratchet_ctx, &receiver_chain->chain_key, message, buffer);
+    vscr_error_t status = vscr_ratchet_decrypt_for_existing_chain(ratchet, &receiver_chain->chain_key, message, buffer);
     vsc_buffer_destroy(&buffer);
 
     vscr_ratchet_receiver_chain_destroy(&receiver_chain);
@@ -557,16 +554,16 @@ vscr_ratchet_respond(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_
 }
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc_buffer_t *ratchet_private_key) {
+vscr_ratchet_initiate(vscr_ratchet_t *ratchet, vsc_data_t shared_secret, vsc_buffer_t *ratchet_private_key) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(ratchet_private_key);
     VSCR_ASSERT(vsc_buffer_len(ratchet_private_key) == ED25519_KEY_LEN);
     VSCR_ASSERT(shared_secret.len == 3 * ED25519_DH_LEN || shared_secret.len == 4 * ED25519_DH_LEN);
 
-    VSCR_ASSERT_PTR(!ratchet_ctx->sender_chain);
+    VSCR_ASSERT_PTR(!ratchet->sender_chain);
 
-    vscf_hkdf_impl_t *hkdf = vscf_hkdf_new();
+    vscf_hkdf_t *hkdf = vscf_hkdf_new();
     vscf_hkdf_take_hash(hkdf, vscf_sha256_impl(vscf_sha256_new()));
 
     vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(2 * vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
@@ -576,11 +573,11 @@ vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc
             vsc_buffer_capacity(derived_secret));
     vscf_hkdf_destroy(&hkdf);
 
-    memcpy(ratchet_ctx->root_key, vsc_buffer_bytes(derived_secret), vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
+    memcpy(ratchet->root_key, vsc_buffer_bytes(derived_secret), vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
 
     vscr_ratchet_sender_chain_t *sender_chain = vscr_ratchet_sender_chain_new();
-    ratchet_ctx->sender_chain = sender_chain;
-    sender_chain->private_key = vsc_buffer_copy(ratchet_private_key);
+    ratchet->sender_chain = sender_chain;
+    sender_chain->private_key = vsc_buffer_shallow_copy(ratchet_private_key);
     sender_chain->chain_key.index = 0;
     memcpy(sender_chain->chain_key.key,
             vsc_buffer_bytes(derived_secret) + vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH,
@@ -589,14 +586,15 @@ vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc
     // TODO: Optimize
     vsc_buffer_t *ratchet_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
 
-    if (curve25519_get_pubkey(vsc_buffer_ptr(ratchet_public_key), vsc_buffer_bytes(ratchet_private_key)) != 0) {
+    if (curve25519_get_pubkey(vsc_buffer_unused_bytes(ratchet_public_key), vsc_buffer_bytes(ratchet_private_key)) !=
+            0) {
         vsc_buffer_destroy(&derived_secret);
         vsc_buffer_destroy(&ratchet_public_key);
 
         return vscr_CURVE25519_ERROR;
     }
 
-    vsc_buffer_reserve(ratchet_public_key, ED25519_KEY_LEN);
+    vsc_buffer_inc_used(ratchet_public_key, ED25519_KEY_LEN);
     sender_chain->public_key = ratchet_public_key;
 
     vsc_buffer_destroy(&derived_secret);
@@ -605,9 +603,9 @@ vscr_ratchet_initiate(vscr_ratchet_t *ratchet_ctx, vsc_data_t shared_secret, vsc
 }
 
 VSCR_PUBLIC size_t
-vscr_ratchet_encrypt_len(vscr_ratchet_t *ratchet_ctx, size_t plain_text_len) {
+vscr_ratchet_encrypt_len(vscr_ratchet_t *ratchet, size_t plain_text_len) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
 
     //  RATCHETRegularMessage ::= SEQUENCE {
     //       version INTEGER,
@@ -620,55 +618,56 @@ vscr_ratchet_encrypt_len(vscr_ratchet_t *ratchet_ctx, size_t plain_text_len) {
                               + 1 + 1 + 5  /* INTEGER */
                               + 1 + 1 + 32 /* public_key */
                               + 1 + 3 +
-                              vscr_ratchet_cipher_encrypt_len(ratchet_ctx->cipher, plain_text_len); /* cipher_text */
+                              vscr_ratchet_cipher_encrypt_len(ratchet->cipher, plain_text_len); /* cipher_text */
 
     return top_sequence_len;
 }
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_encrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text, RegularMessage *regular_message) {
+vscr_ratchet_encrypt(vscr_ratchet_t *ratchet, vsc_data_t plain_text, RegularMessage *regular_message) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
 
     vscr_error_t result = vscr_SUCCESS;
 
-    if (!ratchet_ctx->sender_chain) {
+    if (!ratchet->sender_chain) {
         vsc_buffer_t *ratchet_private_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
         vsc_buffer_make_secure(ratchet_private_key);
         // FIXME
-        vscr_ratchet_rng_generate_random_data(ratchet_ctx->rng, ED25519_KEY_LEN, ratchet_private_key);
+        vscr_ratchet_rng_generate_random_data(ratchet->rng, ED25519_KEY_LEN, ratchet_private_key);
         vsc_buffer_t *ratchet_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
-        result = curve25519_get_pubkey(vsc_buffer_ptr(ratchet_public_key), vsc_buffer_bytes(ratchet_private_key)) == 0
+        result = curve25519_get_pubkey(
+                         vsc_buffer_unused_bytes(ratchet_public_key), vsc_buffer_bytes(ratchet_private_key)) == 0
                          ? vscr_SUCCESS
                          : vscr_CURVE25519_ERROR;
-        vsc_buffer_reserve(ratchet_public_key, ED25519_KEY_LEN);
+        vsc_buffer_inc_used(ratchet_public_key, ED25519_KEY_LEN);
 
         vscr_ratchet_sender_chain_t *sender_chain = vscr_ratchet_sender_chain_new();
         sender_chain->private_key = ratchet_private_key;
         sender_chain->public_key = ratchet_public_key;
 
-        ratchet_ctx->sender_chain = sender_chain;
+        ratchet->sender_chain = sender_chain;
 
         if (result != vscr_SUCCESS) {
             return result;
         }
 
-        result = vscr_ratchet_create_chain_key(ratchet_ctx, sender_chain->private_key,
-                ratchet_ctx->receiver_chains->value->public_key, ratchet_ctx->root_key, &sender_chain->chain_key);
+        result = vscr_ratchet_create_chain_key(ratchet, sender_chain->private_key,
+                ratchet->receiver_chains->value->public_key, ratchet->root_key, &sender_chain->chain_key);
     }
 
     if (result != vscr_SUCCESS) {
         return result;
     }
 
-    vscr_ratchet_message_key_t *message_key = vscr_ratchet_create_message_key(&ratchet_ctx->sender_chain->chain_key);
+    vscr_ratchet_message_key_t *message_key = vscr_ratchet_create_message_key(&ratchet->sender_chain->chain_key);
 
-    vscr_ratchet_advance_chain_key(&ratchet_ctx->sender_chain->chain_key);
+    vscr_ratchet_advance_chain_key(&ratchet->sender_chain->chain_key);
 
     vsc_buffer_t *buffer =
-            vsc_buffer_new_with_capacity(vscr_ratchet_cipher_encrypt_len(ratchet_ctx->cipher, plain_text.len));
+            vsc_buffer_new_with_capacity(vscr_ratchet_cipher_encrypt_len(ratchet->cipher, plain_text.len));
     result = vscr_ratchet_cipher_encrypt(
-            ratchet_ctx->cipher, vsc_data(message_key->key, sizeof(message_key->key)), plain_text, buffer);
+            ratchet->cipher, vsc_data(message_key->key, sizeof(message_key->key)), plain_text, buffer);
 
     if (result != vscr_SUCCESS) {
         vscr_ratchet_message_key_destroy(&message_key);
@@ -679,8 +678,8 @@ vscr_ratchet_encrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text, Regular
     regular_message->version = vscr_ratchet_common_RATCHET_REGULAR_MESSAGE_VERSION;
     regular_message->counter = message_key->index;
 
-    memcpy(regular_message->public_key, ratchet_ctx->sender_chain->public_key->bytes,
-            ratchet_ctx->sender_chain->public_key->len);
+    memcpy(regular_message->public_key, ratchet->sender_chain->public_key->bytes,
+            ratchet->sender_chain->public_key->len);
 
     memcpy(regular_message->cipher_text.bytes, buffer->bytes, buffer->len);
     regular_message->cipher_text.size += buffer->len;
@@ -692,18 +691,18 @@ vscr_ratchet_encrypt(vscr_ratchet_t *ratchet_ctx, vsc_data_t plain_text, Regular
 }
 
 VSCR_PUBLIC size_t
-vscr_ratchet_decrypt_len(vscr_ratchet_t *ratchet_ctx, size_t cipher_text_len) {
+vscr_ratchet_decrypt_len(vscr_ratchet_t *ratchet, size_t cipher_text_len) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
 
     // TODO: Optimize, real cipher text length is smaller
-    return vscr_ratchet_cipher_decrypt_len(ratchet_ctx->cipher, cipher_text_len);
+    return vscr_ratchet_cipher_decrypt_len(ratchet->cipher, cipher_text_len);
 }
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, RegularMessage *regular_message, vsc_buffer_t *plain_text) {
+vscr_ratchet_decrypt(vscr_ratchet_t *ratchet, RegularMessage *regular_message, vsc_buffer_t *plain_text) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(plain_text);
 
     if (regular_message->version != vscr_ratchet_common_RATCHET_REGULAR_MESSAGE_VERSION) {
@@ -712,28 +711,28 @@ vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, RegularMessage *regular_messag
 
     vscr_error_t result;
 
-    vscr_ratchet_receiver_chain_t *receiver_chain = vscr_ratchet_find_receiver_chain(ratchet_ctx, regular_message);
+    vscr_ratchet_receiver_chain_t *receiver_chain = vscr_ratchet_find_receiver_chain(ratchet, regular_message);
 
     if (!receiver_chain) {
-        result = vscr_ratchet_decrypt_for_new_chain(ratchet_ctx, regular_message, plain_text);
+        result = vscr_ratchet_decrypt_for_new_chain(ratchet, regular_message, plain_text);
     } else if (receiver_chain->chain_key.index > regular_message->counter) {
         vscr_ratchet_skipped_message_key_t *skipped_message_key =
-                vscr_ratchet_find_skipped_message_key(ratchet_ctx, regular_message);
+                vscr_ratchet_find_skipped_message_key(ratchet, regular_message);
 
         if (!skipped_message_key) {
             result = vscr_BAD_MESSAGE;
         } else {
-            result = vscr_ratchet_cipher_decrypt(ratchet_ctx->cipher,
+            result = vscr_ratchet_cipher_decrypt(ratchet->cipher,
                     vsc_data(skipped_message_key->message_key->key, sizeof(skipped_message_key->message_key->key)),
                     vsc_data(regular_message->cipher_text.bytes, regular_message->cipher_text.size), plain_text);
 
             if (result == vscr_SUCCESS) {
-                vscr_ratchet_erase_skipped_message_key(ratchet_ctx, skipped_message_key);
+                vscr_ratchet_erase_skipped_message_key(ratchet, skipped_message_key);
             }
         }
     } else {
         result = vscr_ratchet_decrypt_for_existing_chain(
-                ratchet_ctx, &receiver_chain->chain_key, regular_message, plain_text);
+                ratchet, &receiver_chain->chain_key, regular_message, plain_text);
     }
 
     if (result != vscr_SUCCESS) {
@@ -746,15 +745,15 @@ vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, RegularMessage *regular_messag
         // FIXME
         vsc_buffer_t *buffer =
                 vsc_buffer_new_with_data(vsc_data(regular_message->public_key, sizeof(regular_message->public_key)));
-        new_receiver_chain->public_key = vsc_buffer_copy(buffer);
+        new_receiver_chain->public_key = vsc_buffer_shallow_copy(buffer);
 
         // TODO: Optimize
-        result = vscr_ratchet_create_chain_key(ratchet_ctx, ratchet_ctx->sender_chain->private_key,
-                new_receiver_chain->public_key, ratchet_ctx->root_key, &new_receiver_chain->chain_key);
+        result = vscr_ratchet_create_chain_key(ratchet, ratchet->sender_chain->private_key,
+                new_receiver_chain->public_key, ratchet->root_key, &new_receiver_chain->chain_key);
 
-        vscr_ratchet_add_receiver_chain(ratchet_ctx, new_receiver_chain);
+        vscr_ratchet_add_receiver_chain(ratchet, new_receiver_chain);
 
-        vscr_ratchet_sender_chain_destroy(&ratchet_ctx->sender_chain);
+        vscr_ratchet_sender_chain_destroy(&ratchet->sender_chain);
         receiver_chain = new_receiver_chain;
         vscr_ratchet_receiver_chain_destroy(&new_receiver_chain);
     }
@@ -762,9 +761,9 @@ vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, RegularMessage *regular_messag
     while (receiver_chain->chain_key.index < (*regular_message).counter) {
         vscr_ratchet_skipped_message_key_t *skipped_message_key = vscr_ratchet_skipped_message_key_new();
         skipped_message_key->message_key = vscr_ratchet_create_message_key(&receiver_chain->chain_key);
-        skipped_message_key->public_key = vsc_buffer_copy(receiver_chain->public_key);
+        skipped_message_key->public_key = vsc_buffer_shallow_copy(receiver_chain->public_key);
         vscr_ratchet_advance_chain_key(&receiver_chain->chain_key);
-        vscr_ratchet_add_skipped_message_key(ratchet_ctx, skipped_message_key);
+        vscr_ratchet_add_skipped_message_key(ratchet, skipped_message_key);
         vscr_ratchet_skipped_message_key_destroy(&skipped_message_key);
     }
 
@@ -774,11 +773,11 @@ vscr_ratchet_decrypt(vscr_ratchet_t *ratchet_ctx, RegularMessage *regular_messag
 }
 
 static vscr_ratchet_receiver_chain_t *
-vscr_ratchet_find_receiver_chain(vscr_ratchet_t *ratchet_ctx, const RegularMessage *message) {
+vscr_ratchet_find_receiver_chain(vscr_ratchet_t *ratchet, const RegularMessage *message) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
 
-    vscr_ratchet_receiver_chain_list_node_t *chain_list_node = ratchet_ctx->receiver_chains;
+    vscr_ratchet_receiver_chain_list_node_t *chain_list_node = ratchet->receiver_chains;
 
     while (chain_list_node) {
         if (!memcmp(message->public_key, vsc_buffer_bytes(chain_list_node->value->public_key), ED25519_KEY_LEN)) {
@@ -791,11 +790,11 @@ vscr_ratchet_find_receiver_chain(vscr_ratchet_t *ratchet_ctx, const RegularMessa
 }
 
 static vscr_ratchet_skipped_message_key_t *
-vscr_ratchet_find_skipped_message_key(vscr_ratchet_t *ratchet_ctx, const RegularMessage *message) {
+vscr_ratchet_find_skipped_message_key(vscr_ratchet_t *ratchet, const RegularMessage *message) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
 
-    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_key_list_node = ratchet_ctx->skipped_message_keys;
+    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_key_list_node = ratchet->skipped_message_keys;
 
     while (skipped_message_key_list_node) {
         if (message->counter == skipped_message_key_list_node->value->message_key->index &&
@@ -811,20 +810,20 @@ vscr_ratchet_find_skipped_message_key(vscr_ratchet_t *ratchet_ctx, const Regular
 
 static void
 vscr_ratchet_erase_skipped_message_key(
-        vscr_ratchet_t *ratchet_ctx, vscr_ratchet_skipped_message_key_t *skipped_message_key) {
+        vscr_ratchet_t *ratchet, vscr_ratchet_skipped_message_key_t *skipped_message_key) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(skipped_message_key);
 
     vscr_ratchet_skipped_message_key_list_node_t *skipped_message_key_list_node_prev = NULL;
-    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_key_list_node = ratchet_ctx->skipped_message_keys;
+    vscr_ratchet_skipped_message_key_list_node_t *skipped_message_key_list_node = ratchet->skipped_message_keys;
 
     while (skipped_message_key_list_node) {
         if (skipped_message_key_list_node->value == skipped_message_key) {
             if (skipped_message_key_list_node_prev) {
                 skipped_message_key_list_node_prev->next = skipped_message_key_list_node->next;
             } else {
-                ratchet_ctx->skipped_message_keys = skipped_message_key_list_node->next;
+                ratchet->skipped_message_keys = skipped_message_key_list_node->next;
             }
 
             skipped_message_key_list_node->next = NULL;
@@ -842,17 +841,17 @@ vscr_ratchet_erase_skipped_message_key(
 }
 
 static void
-vscr_ratchet_add_receiver_chain(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_receiver_chain_t *receiver_chain) {
+vscr_ratchet_add_receiver_chain(vscr_ratchet_t *ratchet, vscr_ratchet_receiver_chain_t *receiver_chain) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(receiver_chain);
 
     vscr_ratchet_receiver_chain_list_node_t *receiver_chain_list_node = vscr_ratchet_receiver_chain_list_node_new();
-    receiver_chain_list_node->value = vscr_ratchet_receiver_chain_copy(receiver_chain);
-    receiver_chain_list_node->next = ratchet_ctx->receiver_chains;
-    ratchet_ctx->receiver_chains = receiver_chain_list_node;
+    receiver_chain_list_node->value = vscr_ratchet_receiver_chain_shallow_copy(receiver_chain);
+    receiver_chain_list_node->next = ratchet->receiver_chains;
+    ratchet->receiver_chains = receiver_chain_list_node;
 
-    if (!ratchet_ctx->receiver_chains->next) {
+    if (!ratchet->receiver_chains->next) {
         return;
     }
 
@@ -870,19 +869,18 @@ vscr_ratchet_add_receiver_chain(vscr_ratchet_t *ratchet_ctx, vscr_ratchet_receiv
 }
 
 static void
-vscr_ratchet_add_skipped_message_key(
-        vscr_ratchet_t *ratchet_ctx, vscr_ratchet_skipped_message_key_t *skipped_message_key) {
+vscr_ratchet_add_skipped_message_key(vscr_ratchet_t *ratchet, vscr_ratchet_skipped_message_key_t *skipped_message_key) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(skipped_message_key);
 
     vscr_ratchet_skipped_message_key_list_node_t *skipped_message_key_list_node =
             vscr_ratchet_skipped_message_key_list_node_new();
-    skipped_message_key_list_node->value = vscr_ratchet_skipped_message_key_copy(skipped_message_key);
-    skipped_message_key_list_node->next = ratchet_ctx->skipped_message_keys;
+    skipped_message_key_list_node->value = vscr_ratchet_skipped_message_key_shallow_copy(skipped_message_key);
+    skipped_message_key_list_node->next = ratchet->skipped_message_keys;
 
-    if (!ratchet_ctx->skipped_message_keys) {
-        ratchet_ctx->skipped_message_keys = skipped_message_key_list_node;
+    if (!ratchet->skipped_message_keys) {
+        ratchet->skipped_message_keys = skipped_message_key_list_node;
 
         return;
     }
@@ -901,9 +899,9 @@ vscr_ratchet_add_skipped_message_key(
 }
 
 VSCR_PUBLIC size_t
-vscr_ratchet_serialize_len(vscr_ratchet_t *ratchet_ctx) {
+vscr_ratchet_serialize_len(vscr_ratchet_t *ratchet) {
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
+    VSCR_ASSERT_PTR(ratchet);
 
     //  RATCHETRatchet ::= SEQUENCE {
     //       sender chain OCTET_STRING,
@@ -922,7 +920,7 @@ vscr_ratchet_serialize_len(vscr_ratchet_t *ratchet_ctx) {
 }
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_serialize(vscr_ratchet_t *ratchet_ctx, vsc_buffer_t *output) {
+vscr_ratchet_serialize(vscr_ratchet_t *ratchet, vsc_buffer_t *output) {
 
     //  RATCHETRatchet ::= SEQUENCE {
     //       sender chain OCTET_STRING,
@@ -930,37 +928,36 @@ vscr_ratchet_serialize(vscr_ratchet_t *ratchet_ctx, vsc_buffer_t *output) {
     //       skipped message keys OCTET_STRING,
     //       root key OCTET_STRING }
 
-    VSCR_ASSERT_PTR(ratchet_ctx);
-    VSCR_ASSERT(vsc_buffer_left(output) >= vscr_ratchet_serialize_len(ratchet_ctx));
+    VSCR_ASSERT_PTR(ratchet);
+    VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_serialize_len(ratchet));
 
     // Chain key
     Key chain_key = Key_init_zero;
 
-    chain_key.index = ratchet_ctx->sender_chain->chain_key.index;
+    chain_key.index = ratchet->sender_chain->chain_key.index;
 
-    memcpy(ratchet_ctx->sender_chain->chain_key.key, ratchet_ctx->sender_chain->chain_key.key,
-            sizeof(ratchet_ctx->sender_chain->chain_key.key));
+    memcpy(ratchet->sender_chain->chain_key.key, ratchet->sender_chain->chain_key.key,
+            sizeof(ratchet->sender_chain->chain_key.key));
 
     // Sender chain
     SenderChain sender_chain = SenderChain_init_zero;
 
-    memcpy(sender_chain.private_key, ratchet_ctx->sender_chain->private_key->bytes,
-            ratchet_ctx->sender_chain->private_key->len);
+    memcpy(sender_chain.private_key, ratchet->sender_chain->private_key->bytes,
+            ratchet->sender_chain->private_key->len);
 
-    memcpy(sender_chain.public_key, ratchet_ctx->sender_chain->public_key->bytes,
-            ratchet_ctx->sender_chain->public_key->len);
+    memcpy(sender_chain.public_key, ratchet->sender_chain->public_key->bytes, ratchet->sender_chain->public_key->len);
 
     sender_chain.chain_key = chain_key;
 
     // Ratchet
-    Ratchet ratchet = Ratchet_init_zero;
+    Ratchet ratchet_value = Ratchet_init_zero;
 
-    memcpy(ratchet.root_key, ratchet_ctx->root_key, sizeof(ratchet_ctx->root_key));
-    ratchet.sender_chain = sender_chain;
+    memcpy(ratchet_value.root_key, ratchet->root_key, sizeof(ratchet->root_key));
+    ratchet_value.sender_chain = sender_chain;
 
     // Receiver chains
     vscr_ratchet_receiver_chain_list_node_t *receiver_chains = vscr_ratchet_receiver_chain_list_node_new();
-    receiver_chains = ratchet_ctx->receiver_chains;
+    receiver_chains = ratchet->receiver_chains;
 
     size_t chains_count = 0;
     while (receiver_chains) {
@@ -974,8 +971,8 @@ vscr_ratchet_serialize(vscr_ratchet_t *ratchet_ctx, vsc_buffer_t *output) {
 
         receiver_chain.chain_key.index = receiver_chains->value->chain_key.index;
 
-        ratchet.receiver_chains[chains_count] = receiver_chain;
-        ratchet.receiver_chains_count += 1;
+        ratchet_value.receiver_chains[chains_count] = receiver_chain;
+        ratchet_value.receiver_chains_count += 1;
 
         chains_count += 1;
         receiver_chains = receiver_chains->next;
@@ -984,7 +981,7 @@ vscr_ratchet_serialize(vscr_ratchet_t *ratchet_ctx, vsc_buffer_t *output) {
     // Skipped message keys
     vscr_ratchet_skipped_message_key_list_node_t *skipped_message_keys =
             vscr_ratchet_skipped_message_key_list_node_new();
-    skipped_message_keys = ratchet_ctx->skipped_message_keys;
+    skipped_message_keys = ratchet->skipped_message_keys;
 
     size_t skipped_message_keys_count = 0;
     while (skipped_message_keys) {
@@ -998,8 +995,8 @@ vscr_ratchet_serialize(vscr_ratchet_t *ratchet_ctx, vsc_buffer_t *output) {
 
         skipped_message_key.message_key.index = skipped_message_keys->value->message_key->index;
 
-        ratchet.skipped_message_keys[skipped_message_keys_count] = skipped_message_key;
-        ratchet.skipped_message_keys_count += 1;
+        ratchet_value.skipped_message_keys[skipped_message_keys_count] = skipped_message_key;
+        ratchet_value.skipped_message_keys_count += 1;
 
         skipped_message_keys_count += 1;
         skipped_message_keys = skipped_message_keys->next;
@@ -1010,14 +1007,14 @@ vscr_ratchet_serialize(vscr_ratchet_t *ratchet_ctx, vsc_buffer_t *output) {
 
     // Serialize
     //    bool status = true;
-    //    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_ptr(output), vsc_buffer_capacity(output));
+    //    pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_capacity(output));
     //
     //    status = pb_encode(&ostream, Ratchet_fields, &ratchet);
     //
-    //    vsc_buffer_reserve(output, ostream.bytes_written);
+    //    vsc_buffer_inc_used(output, ostream.bytes_written);
 
     //  TODO: This is STUB. Implement me.
-    VSCR_UNUSED(ratchet_ctx);
+    VSCR_UNUSED(ratchet);
     VSCR_UNUSED(output);
 
     return vscr_SUCCESS;

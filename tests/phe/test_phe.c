@@ -46,7 +46,7 @@
 #include "vsce_phe_server.h"
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
-#include <virgil/crypto/foundation/private/vscf_ctr_drbg_impl.h>
+#include <virgil/crypto/foundation/private/vscf_ctr_drbg_defs.h>
 
 
 // --------------------------------------------------------------------------
@@ -65,7 +65,7 @@ int suiteTearDown(int num_failures) { return num_failures; }
 // --------------------------------------------------------------------------
 static void
 generate_pwd(vsc_buffer_t **pwd_ref) {
-    vscf_ctr_drbg_impl_t rng;
+    vscf_ctr_drbg_t rng;
     vscf_ctr_drbg_init(&rng);
     vscf_ctr_drbg_setup_defaults(&rng);
 
@@ -396,7 +396,7 @@ test__full_flow__incorrect_server_public_key_correct_pwd__should_fail(void) {
                                             vsc_buffer_data(verify_password_request), verify_password_response));
 
     vsc_buffer_t *account_key2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
-    TEST_ASSERT_EQUAL(vsce_INVALID_SUCCESS_PROOF,
+    TEST_ASSERT_EQUAL(vsce_error_INVALID_SUCCESS_PROOF,
             vsce_phe_client_check_response_and_decrypt(client2, pwd_data, vsc_buffer_data(enrollment_record),
                     vsc_buffer_data(verify_password_response), account_key2));
     TEST_ASSERT_EQUAL(0, vsc_buffer_len(account_key2));
@@ -465,7 +465,7 @@ test__full_flow__incorrect_server_public_key_incorrect_pwd__should_fail(void) {
                                             vsc_buffer_data(verify_password_request), verify_password_response));
 
     vsc_buffer_t *account_key2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
-    TEST_ASSERT_EQUAL(vsce_INVALID_FAIL_PROOF,
+    TEST_ASSERT_EQUAL(vsce_error_INVALID_FAIL_PROOF,
             vsce_phe_client_check_response_and_decrypt(client2, pwd2_data, vsc_buffer_data(enrollment_record),
                     vsc_buffer_data(verify_password_response), account_key2));
 

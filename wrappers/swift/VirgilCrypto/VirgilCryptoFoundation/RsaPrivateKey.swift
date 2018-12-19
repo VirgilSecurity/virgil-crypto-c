@@ -64,7 +64,7 @@ import VirgilCryptoCommon
     /// Acquire retained C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscf_rsa_private_key_copy(c_ctx)
+        self.c_ctx = vscf_rsa_private_key_shallow_copy(c_ctx)
         super.init()
     }
 

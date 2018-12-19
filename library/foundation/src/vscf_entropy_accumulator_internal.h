@@ -78,7 +78,7 @@ extern "C" {
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_entropy_accumulator_init_ctx(vscf_entropy_accumulator_impl_t *entropy_accumulator_impl);
+vscf_entropy_accumulator_init_ctx(vscf_entropy_accumulator_t *entropy_accumulator);
 
 //
 //  Release resources of the implementation specific context.
@@ -86,7 +86,7 @@ vscf_entropy_accumulator_init_ctx(vscf_entropy_accumulator_impl_t *entropy_accum
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_entropy_accumulator_cleanup_ctx(vscf_entropy_accumulator_impl_t *entropy_accumulator_impl);
+vscf_entropy_accumulator_cleanup_ctx(vscf_entropy_accumulator_t *entropy_accumulator);
 
 
 // --------------------------------------------------------------------------

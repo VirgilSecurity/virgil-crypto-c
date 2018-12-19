@@ -72,13 +72,13 @@
 VSCF_PRIVATE int
 vscf_mbedtls_bridge_random(void *ctx, byte *data, size_t len) {
 
-    vscf_impl_t *random_ctx = (vscf_impl_t *)ctx;
+    vscf_impl_t *random = (vscf_impl_t *)ctx;
 
     vsc_buffer_t buffer;
     vsc_buffer_init(&buffer);
     vsc_buffer_use(&buffer, (byte *)data, len);
 
-    vscf_error_t result = vscf_random(random_ctx, len, &buffer);
+    vscf_error_t result = vscf_random(random, len, &buffer);
     VSCF_ASSERT(len == vsc_buffer_len(&buffer));
 
     vsc_buffer_cleanup(&buffer);

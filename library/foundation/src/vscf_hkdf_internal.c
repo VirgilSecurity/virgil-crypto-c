@@ -54,9 +54,9 @@
 #include "vscf_hkdf_internal.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_hkdf_impl.h"
-#include "vscf_ex_kdf.h"
-#include "vscf_ex_kdf_api.h"
+#include "vscf_hkdf_defs.h"
+#include "vscf_salted_kdf.h"
+#include "vscf_salted_kdf_api.h"
 #include "vscf_hash_stream.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
@@ -75,18 +75,18 @@ static const vscf_api_t *
 vscf_hkdf_find_api(vscf_api_tag_t api_tag);
 
 //
-//  Configuration of the interface API 'ex kdf api'.
+//  Configuration of the interface API 'salted kdf api'.
 //
-static const vscf_ex_kdf_api_t ex_kdf_api = {
+static const vscf_salted_kdf_api_t salted_kdf_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'ex_kdf' MUST be equal to the 'vscf_api_tag_EX_KDF'.
+    //  For interface 'salted_kdf' MUST be equal to the 'vscf_api_tag_SALTED_KDF'.
     //
-    vscf_api_tag_EX_KDF,
+    vscf_api_tag_SALTED_KDF,
     //
     //  Derive key of the requested length from the given data, salt and info.
     //
-    (vscf_ex_kdf_api_derive_fn)vscf_hkdf_derive
+    (vscf_salted_kdf_api_derive_fn)vscf_hkdf_derive
 };
 
 //
@@ -112,16 +112,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_hkdf_init(vscf_hkdf_impl_t *hkdf_impl) {
+vscf_hkdf_init(vscf_hkdf_t *hkdf) {
 
-    VSCF_ASSERT_PTR(hkdf_impl);
+    VSCF_ASSERT_PTR(hkdf);
 
-    vscf_zeroize(hkdf_impl, sizeof(vscf_hkdf_impl_t));
+    vscf_zeroize(hkdf, sizeof(vscf_hkdf_t));
 
-    hkdf_impl->info = &info;
-    hkdf_impl->refcnt = 1;
+    hkdf->info = &info;
+    hkdf->refcnt = 1;
 
-    vscf_hkdf_init_ctx(hkdf_impl);
+    vscf_hkdf_init_ctx(hkdf);
 }
 
 //
@@ -129,40 +129,40 @@ vscf_hkdf_init(vscf_hkdf_impl_t *hkdf_impl) {
 //  This is a reverse action of the function 'vscf_hkdf_init()'.
 //
 VSCF_PUBLIC void
-vscf_hkdf_cleanup(vscf_hkdf_impl_t *hkdf_impl) {
+vscf_hkdf_cleanup(vscf_hkdf_t *hkdf) {
 
-    if (hkdf_impl == NULL || hkdf_impl->info == NULL) {
+    if (hkdf == NULL || hkdf->info == NULL) {
         return;
     }
 
-    if (hkdf_impl->refcnt == 0) {
+    if (hkdf->refcnt == 0) {
         return;
     }
 
-    if (--hkdf_impl->refcnt > 0) {
+    if (--hkdf->refcnt > 0) {
         return;
     }
 
-    vscf_hkdf_release_hash(hkdf_impl);
+    vscf_hkdf_release_hash(hkdf);
 
-    vscf_hkdf_cleanup_ctx(hkdf_impl);
+    vscf_hkdf_cleanup_ctx(hkdf);
 
-    vscf_zeroize(hkdf_impl, sizeof(vscf_hkdf_impl_t));
+    vscf_zeroize(hkdf, sizeof(vscf_hkdf_t));
 }
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_hkdf_impl_t *
+VSCF_PUBLIC vscf_hkdf_t *
 vscf_hkdf_new(void) {
 
-    vscf_hkdf_impl_t *hkdf_impl = (vscf_hkdf_impl_t *) vscf_alloc(sizeof (vscf_hkdf_impl_t));
-    VSCF_ASSERT_ALLOC(hkdf_impl);
+    vscf_hkdf_t *hkdf = (vscf_hkdf_t *) vscf_alloc(sizeof (vscf_hkdf_t));
+    VSCF_ASSERT_ALLOC(hkdf);
 
-    vscf_hkdf_init(hkdf_impl);
+    vscf_hkdf_init(hkdf);
 
-    return hkdf_impl;
+    return hkdf;
 }
 
 //
@@ -170,12 +170,12 @@ vscf_hkdf_new(void) {
 //  This is a reverse action of the function 'vscf_hkdf_new()'.
 //
 VSCF_PUBLIC void
-vscf_hkdf_delete(vscf_hkdf_impl_t *hkdf_impl) {
+vscf_hkdf_delete(vscf_hkdf_t *hkdf) {
 
-    vscf_hkdf_cleanup(hkdf_impl);
+    vscf_hkdf_cleanup(hkdf);
 
-    if (hkdf_impl && (hkdf_impl->refcnt == 0)) {
-        vscf_dealloc(hkdf_impl);
+    if (hkdf && (hkdf->refcnt == 0)) {
+        vscf_dealloc(hkdf);
     }
 }
 
@@ -185,59 +185,59 @@ vscf_hkdf_delete(vscf_hkdf_impl_t *hkdf_impl) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_hkdf_destroy(vscf_hkdf_impl_t **hkdf_impl_ref) {
+vscf_hkdf_destroy(vscf_hkdf_t **hkdf_ref) {
 
-    VSCF_ASSERT_PTR(hkdf_impl_ref);
+    VSCF_ASSERT_PTR(hkdf_ref);
 
-    vscf_hkdf_impl_t *hkdf_impl = *hkdf_impl_ref;
-    *hkdf_impl_ref = NULL;
+    vscf_hkdf_t *hkdf = *hkdf_ref;
+    *hkdf_ref = NULL;
 
-    vscf_hkdf_delete(hkdf_impl);
+    vscf_hkdf_delete(hkdf);
 }
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_hkdf_impl_t *
-vscf_hkdf_copy(vscf_hkdf_impl_t *hkdf_impl) {
+VSCF_PUBLIC vscf_hkdf_t *
+vscf_hkdf_shallow_copy(vscf_hkdf_t *hkdf) {
 
     // Proxy to the parent implementation.
-    return (vscf_hkdf_impl_t *)vscf_impl_copy((vscf_impl_t *)hkdf_impl);
+    return (vscf_hkdf_t *)vscf_impl_shallow_copy((vscf_impl_t *)hkdf);
 }
 
 //
-//  Return size of 'vscf_hkdf_impl_t' type.
+//  Return size of 'vscf_hkdf_t' type.
 //
 VSCF_PUBLIC size_t
 vscf_hkdf_impl_size(void) {
 
-    return sizeof (vscf_hkdf_impl_t);
+    return sizeof (vscf_hkdf_t);
 }
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_hkdf_impl(vscf_hkdf_impl_t *hkdf_impl) {
+vscf_hkdf_impl(vscf_hkdf_t *hkdf) {
 
-    VSCF_ASSERT_PTR(hkdf_impl);
-    return (vscf_impl_t *)(hkdf_impl);
+    VSCF_ASSERT_PTR(hkdf);
+    return (vscf_impl_t *)(hkdf);
 }
 
 //
 //  Setup dependency to the interface 'hash stream' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_hkdf_use_hash(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hash) {
+vscf_hkdf_use_hash(vscf_hkdf_t *hkdf, vscf_impl_t *hash) {
 
-    VSCF_ASSERT_PTR(hkdf_impl);
+    VSCF_ASSERT_PTR(hkdf);
     VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT_PTR(hkdf_impl->hash == NULL);
+    VSCF_ASSERT_PTR(hkdf->hash == NULL);
 
     VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
 
-    hkdf_impl->hash = vscf_impl_copy(hash);
+    hkdf->hash = vscf_impl_shallow_copy(hash);
 }
 
 //
@@ -245,34 +245,34 @@ vscf_hkdf_use_hash(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hash) {
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_hkdf_take_hash(vscf_hkdf_impl_t *hkdf_impl, vscf_impl_t *hash) {
+vscf_hkdf_take_hash(vscf_hkdf_t *hkdf, vscf_impl_t *hash) {
 
-    VSCF_ASSERT_PTR(hkdf_impl);
+    VSCF_ASSERT_PTR(hkdf);
     VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT_PTR(hkdf_impl->hash == NULL);
+    VSCF_ASSERT_PTR(hkdf->hash == NULL);
 
     VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
 
-    hkdf_impl->hash = hash;
+    hkdf->hash = hash;
 }
 
 //
 //  Release dependency to the interface 'hash stream'.
 //
 VSCF_PUBLIC void
-vscf_hkdf_release_hash(vscf_hkdf_impl_t *hkdf_impl) {
+vscf_hkdf_release_hash(vscf_hkdf_t *hkdf) {
 
-    VSCF_ASSERT_PTR(hkdf_impl);
+    VSCF_ASSERT_PTR(hkdf);
 
-    vscf_impl_destroy(&hkdf_impl->hash);
+    vscf_impl_destroy(&hkdf->hash);
 }
 
 static const vscf_api_t *
 vscf_hkdf_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
-        case vscf_api_tag_EX_KDF:
-            return (const vscf_api_t *) &ex_kdf_api;
+        case vscf_api_tag_SALTED_KDF:
+            return (const vscf_api_t *) &salted_kdf_api;
         default:
             return NULL;
     }

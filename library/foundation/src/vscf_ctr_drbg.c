@@ -55,7 +55,7 @@
 #include "vscf_memory.h"
 #include "vscf_entropy_accumulator.h"
 #include "vscf_entropy_source.h"
-#include "vscf_ctr_drbg_impl.h"
+#include "vscf_ctr_drbg_defs.h"
 #include "vscf_ctr_drbg_internal.h"
 
 // clang-format on
@@ -82,9 +82,9 @@
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_ctr_drbg_init_ctx(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
+vscf_ctr_drbg_init_ctx(vscf_ctr_drbg_t *ctr_drbg) {
 
-    VSCF_ASSERT_PTR(ctr_drbg_impl);
+    VSCF_ASSERT_PTR(ctr_drbg);
 }
 
 //
@@ -93,24 +93,23 @@ vscf_ctr_drbg_init_ctx(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_ctr_drbg_cleanup_ctx(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
+vscf_ctr_drbg_cleanup_ctx(vscf_ctr_drbg_t *ctr_drbg) {
 
-    VSCF_ASSERT_PTR(ctr_drbg_impl);
+    VSCF_ASSERT_PTR(ctr_drbg);
 }
 
 //
 //  This method is called when interface 'entropy source' was setup.
 //
 VSCF_PRIVATE vscf_error_t
-vscf_ctr_drbg_did_setup_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
+vscf_ctr_drbg_did_setup_entropy_source(vscf_ctr_drbg_t *ctr_drbg) {
 
-    VSCF_ASSERT_PTR(ctr_drbg_impl);
-    VSCF_ASSERT_PTR(ctr_drbg_impl->entropy_source);
+    VSCF_ASSERT_PTR(ctr_drbg);
+    VSCF_ASSERT_PTR(ctr_drbg->entropy_source);
 
-    mbedtls_ctr_drbg_init(&ctr_drbg_impl->ctx);
+    mbedtls_ctr_drbg_init(&ctr_drbg->ctx);
 
-    int status = mbedtls_ctr_drbg_seed(
-            &ctr_drbg_impl->ctx, vscf_mbedtls_bridge_entropy, ctr_drbg_impl->entropy_source, NULL, 0);
+    int status = mbedtls_ctr_drbg_seed(&ctr_drbg->ctx, vscf_mbedtls_bridge_entropy, ctr_drbg->entropy_source, NULL, 0);
 
     switch (status) {
     case 0:
@@ -129,11 +128,11 @@ vscf_ctr_drbg_did_setup_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
 //  This method is called when interface 'entropy source' was released.
 //
 VSCF_PRIVATE void
-vscf_ctr_drbg_did_release_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
+vscf_ctr_drbg_did_release_entropy_source(vscf_ctr_drbg_t *ctr_drbg) {
 
-    VSCF_ASSERT_PTR(ctr_drbg_impl);
+    VSCF_ASSERT_PTR(ctr_drbg);
 
-    mbedtls_ctr_drbg_free(&ctr_drbg_impl->ctx);
+    mbedtls_ctr_drbg_free(&ctr_drbg->ctx);
 }
 
 //
@@ -142,11 +141,11 @@ vscf_ctr_drbg_did_release_entropy_source(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
 //  Note, use this if your entropy source has sufficient throughput.
 //
 VSCF_PUBLIC void
-vscf_ctr_drbg_enable_prediction_resistance(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
+vscf_ctr_drbg_enable_prediction_resistance(vscf_ctr_drbg_t *ctr_drbg) {
 
-    VSCF_ASSERT_PTR(ctr_drbg_impl);
+    VSCF_ASSERT_PTR(ctr_drbg);
 
-    mbedtls_ctr_drbg_set_prediction_resistance(&ctr_drbg_impl->ctx, 1);
+    mbedtls_ctr_drbg_set_prediction_resistance(&ctr_drbg->ctx, 1);
 }
 
 //
@@ -154,12 +153,12 @@ vscf_ctr_drbg_enable_prediction_resistance(vscf_ctr_drbg_impl_t *ctr_drbg_impl) 
 //  Default value is reseed interval.
 //
 VSCF_PUBLIC void
-vscf_ctr_drbg_set_reseed_interval(vscf_ctr_drbg_impl_t *ctr_drbg_impl, size_t interval) {
+vscf_ctr_drbg_set_reseed_interval(vscf_ctr_drbg_t *ctr_drbg, size_t interval) {
 
-    VSCF_ASSERT_PTR(ctr_drbg_impl);
+    VSCF_ASSERT_PTR(ctr_drbg);
     VSCF_ASSERT(interval < INT_MAX);
 
-    mbedtls_ctr_drbg_set_reseed_interval(&ctr_drbg_impl->ctx, (int)interval);
+    mbedtls_ctr_drbg_set_reseed_interval(&ctr_drbg->ctx, (int)interval);
 }
 
 //
@@ -167,26 +166,25 @@ vscf_ctr_drbg_set_reseed_interval(vscf_ctr_drbg_impl_t *ctr_drbg_impl, size_t in
 //  The default value is entropy len.
 //
 VSCF_PUBLIC void
-vscf_ctr_drbg_set_entropy_len(vscf_ctr_drbg_impl_t *ctr_drbg_impl, size_t len) {
+vscf_ctr_drbg_set_entropy_len(vscf_ctr_drbg_t *ctr_drbg, size_t len) {
 
-    VSCF_ASSERT_PTR(ctr_drbg_impl);
+    VSCF_ASSERT_PTR(ctr_drbg);
     VSCF_ASSERT(len <= MBEDTLS_CTR_DRBG_MAX_SEED_INPUT);
 
-    mbedtls_ctr_drbg_set_entropy_len(&ctr_drbg_impl->ctx, len);
+    mbedtls_ctr_drbg_set_entropy_len(&ctr_drbg->ctx, len);
 }
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ctr_drbg_setup_defaults(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
+vscf_ctr_drbg_setup_defaults(vscf_ctr_drbg_t *ctr_drbg) {
 
-    VSCF_ASSERT_PTR(ctr_drbg_impl);
+    VSCF_ASSERT_PTR(ctr_drbg);
 
-    vscf_entropy_accumulator_impl_t *entropy_source = vscf_entropy_accumulator_new();
+    vscf_entropy_accumulator_t *entropy_source = vscf_entropy_accumulator_new();
     vscf_entropy_accumulator_setup_defaults(entropy_source);
-    vscf_error_t status =
-            vscf_ctr_drbg_take_entropy_source(ctr_drbg_impl, vscf_entropy_accumulator_impl(entropy_source));
+    vscf_error_t status = vscf_ctr_drbg_take_entropy_source(ctr_drbg, vscf_entropy_accumulator_impl(entropy_source));
     return status;
 }
 
@@ -194,17 +192,17 @@ vscf_ctr_drbg_setup_defaults(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
 //  Generate random bytes.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ctr_drbg_random(vscf_ctr_drbg_impl_t *ctr_drbg_impl, size_t data_len, vsc_buffer_t *data) {
+vscf_ctr_drbg_random(vscf_ctr_drbg_t *ctr_drbg, size_t data_len, vsc_buffer_t *data) {
 
-    VSCF_ASSERT_PTR(ctr_drbg_impl);
+    VSCF_ASSERT_PTR(ctr_drbg);
     VSCF_ASSERT(data_len > 0);
     VSCF_ASSERT_PTR(data);
-    VSCF_ASSERT(vsc_buffer_left(data) >= data_len);
+    VSCF_ASSERT(vsc_buffer_unused_len(data) >= data_len);
 
-    int status = mbedtls_ctr_drbg_random(&ctr_drbg_impl->ctx, vsc_buffer_ptr(data), vsc_buffer_left(data));
+    int status = mbedtls_ctr_drbg_random(&ctr_drbg->ctx, vsc_buffer_unused_bytes(data), vsc_buffer_unused_len(data));
     switch (status) {
     case 0:
-        vsc_buffer_reserve(data, data_len);
+        vsc_buffer_inc_used(data, data_len);
         return vscf_SUCCESS;
 
     case MBEDTLS_ERR_CTR_DRBG_ENTROPY_SOURCE_FAILED:
@@ -223,11 +221,11 @@ vscf_ctr_drbg_random(vscf_ctr_drbg_impl_t *ctr_drbg_impl, size_t data_len, vsc_b
 //  Retreive new seed data from the entropy sources.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ctr_drbg_reseed(vscf_ctr_drbg_impl_t *ctr_drbg_impl) {
+vscf_ctr_drbg_reseed(vscf_ctr_drbg_t *ctr_drbg) {
 
-    VSCF_ASSERT_PTR(ctr_drbg_impl);
+    VSCF_ASSERT_PTR(ctr_drbg);
 
-    int status = mbedtls_ctr_drbg_reseed(&ctr_drbg_impl->ctx, NULL, 0);
+    int status = mbedtls_ctr_drbg_reseed(&ctr_drbg->ctx, NULL, 0);
 
     switch (status) {
     case 0:
