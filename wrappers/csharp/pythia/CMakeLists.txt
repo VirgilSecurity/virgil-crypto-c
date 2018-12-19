@@ -48,14 +48,6 @@ endif()
 
 add_library(example SHARED "")
 
-set_target_properties(example PROPERTIES
-        C_STANDARD 99
-        DEBUG_POSTFIX "_d"
-        OUTPUT_NAME example
-        PREFIX "lib"
-        SUFFIX ".dylib"
-        )
-
 target_sources(example
         PRIVATE
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/example.c>

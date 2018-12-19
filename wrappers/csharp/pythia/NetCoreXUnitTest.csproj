@@ -13,19 +13,27 @@
     <PackageReference Include="xunit.runner.console" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="libs\.DS_Store" />
-    <None Remove="libs\example_cs.dll" />
-    <None Remove="libs\libexample.dylib" />
     <None Remove="example_cs.dll" />
     <None Remove="libexample.dylib" />
+    <None Remove="libexample.so" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="example_cs">
       <HintPath>example_cs.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">
     <Content Include="libexample.dylib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">
+    <Content Include="libexample.so">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(OS)' != 'Unix' ">
+    <Content Include="example.lib">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
