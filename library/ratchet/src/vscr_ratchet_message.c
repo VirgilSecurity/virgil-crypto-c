@@ -250,8 +250,8 @@ vscr_ratchet_message_get_long_term_public_key(vscr_ratchet_message_t *ratchet_me
     VSCR_ASSERT_PTR(ratchet_message);
     VSCR_ASSERT(ratchet_message->message->which_message == Message_prekey_message_tag);
 
-    return vsc_data(ratchet_message->message->message.prekey_message.receiver_longterm_key,
-            sizeof(ratchet_message->message->message.prekey_message.receiver_longterm_key));
+    return vsc_data(ratchet_message->message->message.prekey_message.receiver_long_term_key,
+            sizeof(ratchet_message->message->message.prekey_message.receiver_long_term_key));
 }
 
 //
@@ -265,8 +265,8 @@ vscr_ratchet_message_compute_long_term_public_key_id(vscr_ratchet_message_t *rat
     VSCR_ASSERT_PTR(ratchet_message);
     VSCR_ASSERT(ratchet_message->message->which_message == Message_prekey_message_tag);
 
-    return vsc_data(ratchet_message->message->message.prekey_message.receiver_longterm_key,
-            sizeof(ratchet_message->message->message.prekey_message.receiver_longterm_key));
+    return vsc_data(ratchet_message->message->message.prekey_message.receiver_long_term_key,
+            sizeof(ratchet_message->message->message.prekey_message.receiver_long_term_key));
 }
 
 //
@@ -278,8 +278,8 @@ vscr_ratchet_message_get_one_time_public_key(vscr_ratchet_message_t *ratchet_mes
     VSCR_ASSERT_PTR(ratchet_message);
     VSCR_ASSERT(ratchet_message->message->which_message == Message_prekey_message_tag);
 
-    return vsc_data(ratchet_message->message->message.prekey_message.receiver_onetime_key,
-            sizeof(ratchet_message->message->message.prekey_message.receiver_onetime_key));
+    return vsc_data(ratchet_message->message->message.prekey_message.receiver_one_time_key,
+            sizeof(ratchet_message->message->message.prekey_message.receiver_one_time_key));
 }
 
 //
@@ -293,8 +293,8 @@ vscr_ratchet_message_compute_one_time_public_key_id(vscr_ratchet_message_t *ratc
     VSCR_ASSERT_PTR(ratchet_message);
     VSCR_ASSERT(ratchet_message->message->which_message == Message_prekey_message_tag);
 
-    return vsc_data(ratchet_message->message->message.prekey_message.receiver_onetime_key,
-            sizeof(ratchet_message->message->message.prekey_message.receiver_onetime_key));
+    return vsc_data(ratchet_message->message->message.prekey_message.receiver_one_time_key,
+            sizeof(ratchet_message->message->message.prekey_message.receiver_one_time_key));
 }
 
 VSCR_PUBLIC size_t

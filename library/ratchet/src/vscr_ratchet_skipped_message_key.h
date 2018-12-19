@@ -48,7 +48,12 @@
 #define VSCR_RATCHET_SKIPPED_MESSAGE_KEY_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_ratchet_skipped_message_key.h"
 #include "vscr_ratchet_message_key.h"
+
+#include <RatchetModels.pb.h>
+#include <pb_decode.h>
+#include <pb_encode.h>
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -135,6 +140,14 @@ vscr_ratchet_skipped_message_key_destroy(vscr_ratchet_skipped_message_key_t **ra
 //
 VSCR_PUBLIC vscr_ratchet_skipped_message_key_t *
 vscr_ratchet_skipped_message_key_shallow_copy(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key);
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_message_key_serialize(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key,
+        SkippedMessageKey *skipped_message_key_pb);
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_message_key_deserialize(const SkippedMessageKey *skipped_message_key_pb,
+        vscr_ratchet_skipped_message_key_t *skipped_message_key);
 
 
 // --------------------------------------------------------------------------

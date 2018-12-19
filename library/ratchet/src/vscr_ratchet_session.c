@@ -536,11 +536,12 @@ vscr_ratchet_session_encrypt(
             memcpy(prekey_message.sender_ephemeral_key, vsc_buffer_bytes(ratchet_session->sender_ephemeral_public_key),
                     vsc_buffer_len(ratchet_session->sender_ephemeral_public_key));
 
-            memcpy(prekey_message.receiver_longterm_key,
+            memcpy(prekey_message.receiver_long_term_key,
                     vsc_buffer_bytes(ratchet_session->receiver_long_term_public_key),
                     vsc_buffer_len(ratchet_session->receiver_long_term_public_key));
 
-            memcpy(prekey_message.receiver_onetime_key, vsc_buffer_bytes(ratchet_session->receiver_one_time_public_key),
+            memcpy(prekey_message.receiver_one_time_key,
+                    vsc_buffer_bytes(ratchet_session->receiver_one_time_public_key),
                     vsc_buffer_len(ratchet_session->receiver_one_time_public_key));
 
             prekey_message.regular_message = regular_message;
@@ -614,80 +615,40 @@ vscr_ratchet_session_decrypt(
 VSCR_PUBLIC size_t
 vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *ratchet_session) {
 
-    VSCR_ASSERT_PTR(ratchet_session);
+    VSCR_UNUSED(ratchet_session);
 
-    //  RATCHETSession ::= SEQUENCE {
-    //       received first response BOOL,
-    //       sender identity public key OCTET_STRING,
-    //       sender ephemeral public key OCTET_STRING,
-    //       receiver longterm public key OCTET_STRING,
-    //       receiver onetime public key OCTET_STRING,
-    //       ratchet OCTET_STRING }
-
-    size_t top_sequence_len = 1 + 3                                                           /* SEQUENCE */
-                              + 1 + 1 + 5                                                     /* INTEGER */
-                              + 1 + 1 + 32                                                    /* KEY */
-                              + 1 + 1 + 32                                                    /* KEY */
-                              + 1 + 1 + 32                                                    /* KEY */
-                              + 1 + 1 + 32                                                    /* KEY */
-                              + 1 + 3 + vscr_ratchet_serialize_len(ratchet_session->ratchet); /* message */
-
-
-    return top_sequence_len;
+    return Session_size;
 }
 
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_serialize(vscr_ratchet_session_t *ratchet_session, vsc_buffer_t *output) {
 
-    //  RATCHETSession ::= SEQUENCE {
-    //       received first response BOOL,
-    //       sender identity public key OCTET_STRING,
-    //       sender ephemeral public key OCTET_STRING,
-    //       receiver longterm public key OCTET_STRING,
-    //       receiver onetime public key OCTET_STRING,
-    //       ratchet OCTET_STRING }
-
     VSCR_ASSERT_PTR(ratchet_session);
 
     VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_session_serialize_len(ratchet_session));
 
-    Session ratchet_session_value = Session_init_zero;
+    Session session_pb = Session_init_zero;
 
-    ratchet_session_value.received_first_response = ratchet_session->received_first_response;
+    session_pb.received_first_response = ratchet_session->received_first_response;
+    session_pb.is_initiator = ratchet_session->is_initiator;
 
-    memcpy(ratchet_session_value.sender_identity_key, vsc_buffer_bytes(ratchet_session->sender_identity_public_key),
+    memcpy(session_pb.sender_identity_key, vsc_buffer_bytes(ratchet_session->sender_identity_public_key),
             vsc_buffer_len(ratchet_session->sender_identity_public_key));
 
-    memcpy(ratchet_session_value.sender_ephemeral_key, vsc_buffer_bytes(ratchet_session->sender_ephemeral_public_key),
+    memcpy(session_pb.sender_ephemeral_key, vsc_buffer_bytes(ratchet_session->sender_ephemeral_public_key),
             vsc_buffer_len(ratchet_session->sender_ephemeral_public_key));
 
-    memcpy(ratchet_session_value.receiver_longterm_key,
-            vsc_buffer_bytes(ratchet_session->receiver_long_term_public_key),
+    memcpy(session_pb.receiver_long_term_key, vsc_buffer_bytes(ratchet_session->receiver_long_term_public_key),
             vsc_buffer_len(ratchet_session->receiver_long_term_public_key));
 
-    memcpy(ratchet_session_value.receiver_onetime_key, vsc_buffer_bytes(ratchet_session->receiver_one_time_public_key),
+    memcpy(session_pb.receiver_one_time_key, vsc_buffer_bytes(ratchet_session->receiver_one_time_public_key),
             vsc_buffer_len(ratchet_session->receiver_one_time_public_key));
 
-    vsc_buffer_t *ratchet_buff = vsc_buffer_new_with_capacity(vscr_ratchet_serialize_len(ratchet_session->ratchet));
-    vsc_buffer_make_secure(ratchet_buff);
+    vscr_ratchet_serialize(ratchet_session->ratchet, &session_pb.ratchet);
 
-    vscr_error_t status = vscr_ratchet_serialize(ratchet_session->ratchet, ratchet_buff);
-
-    if (status != vscr_SUCCESS) {
-        return status;
-    }
-
-    vsc_buffer_inc_used(ratchet_buff, vscr_ratchet_serialize_len(ratchet_session->ratchet));
-
-    memcpy(ratchet_session_value.ratchet, vsc_buffer_bytes(ratchet_buff), vsc_buffer_len(ratchet_buff));
-
-    vsc_buffer_destroy(&ratchet_buff);
-
-    bool proto_status = true;
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_capacity(output));
 
-    proto_status = pb_encode(&ostream, Session_fields, &ratchet_session);
-
+    bool proto_status = pb_encode(&ostream, Session_fields, &ratchet_session);
     vsc_buffer_inc_used(output, ostream.bytes_written);
 
     if (!proto_status) {
@@ -700,22 +661,13 @@ vscr_ratchet_session_serialize(vscr_ratchet_session_t *ratchet_session, vsc_buff
 VSCR_PUBLIC vscr_ratchet_session_t *
 vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
 
-    //  RATCHETSession ::= SEQUENCE {
-    //       received first response BOOL,
-    //       sender identity public key OCTET_STRING,
-    //       sender ephemeral public key OCTET_STRING,
-    //       receiver longterm public key OCTET_STRING,
-    //       receiver onetime public key OCTET_STRING,
-    //       ratchet OCTET_STRING }
-
     VSCR_ASSERT(vsc_data_is_valid(input));
 
-    Session ratchet_session_proto = Session_init_zero;
+    Session session_pb = Session_init_zero;
 
-    bool status = true;
     pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 
-    status = pb_decode(&istream, Session_fields, &ratchet_session_proto);
+    bool status = pb_decode(&istream, Session_fields, &session_pb);
 
     if (!status) {
 
@@ -724,34 +676,31 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
         return NULL;
     }
 
-    //    vsc_data_t sender_identity_public_key =
-    //            vsc_data(ratchet_session_proto.sender_identity_key,
-    //            sizeof(ratchet_session_proto.sender_identity_key));
-    //    vsc_data_t sender_ephemeral_public_key =
-    //            vsc_data(ratchet_session_proto.sender_ephemeral_key,
-    //            sizeof(ratchet_session_proto.sender_ephemeral_key));
-    //    vsc_data_t receiver_long_term_public_key =
-    //            vsc_data(ratchet_session_proto.receiver_longterm_key,
-    //            sizeof(ratchet_session_proto.receiver_longterm_key));
-    //    vsc_data_t receiver_one_time_public_key =
-    //            vsc_data(ratchet_session_proto.receiver_onetime_key,
-    //            sizeof(ratchet_session_proto.receiver_onetime_key));
+    vscr_ratchet_session_t *session = vscr_ratchet_session_new();
 
-    vsc_data_t ratchet_buff = vsc_data(ratchet_session_proto.ratchet, sizeof(ratchet_session_proto));
+    session->received_first_response = session_pb.received_first_response;
+    session->is_initiator = session_pb.is_initiator;
 
-    vscr_ratchet_t *ratchet = vscr_ratchet_deserialize(ratchet_buff, err_ctx);
+    session->sender_identity_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
+    session->sender_ephemeral_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
+    session->receiver_long_term_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
+    session->receiver_one_time_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
 
-    if (err_ctx->error != vscr_SUCCESS) {
-        vscr_ratchet_destroy(&ratchet);
+    memcpy(vsc_buffer_unused_bytes(session->sender_identity_public_key), session_pb.sender_identity_key,
+            sizeof(session_pb.sender_identity_key));
 
-        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_WRONG_MESSAGE_FORMAT);
+    memcpy(vsc_buffer_unused_bytes(session->sender_ephemeral_public_key), session_pb.sender_ephemeral_key,
+            sizeof(session_pb.sender_ephemeral_key));
 
-        return NULL;
-    }
+    memcpy(vsc_buffer_unused_bytes(session->receiver_long_term_public_key), session_pb.receiver_long_term_key,
+            sizeof(session_pb.receiver_long_term_key));
 
-    vscr_ratchet_session_t *ratchet_session = vscr_ratchet_session_new();
+    memcpy(vsc_buffer_unused_bytes(session->receiver_one_time_public_key), session_pb.receiver_one_time_key,
+            sizeof(session_pb.receiver_one_time_key));
 
-    // TODO: Set ratchet
+    vscr_ratchet_session_setup_defaults(session);
 
-    return ratchet_session;
+    vscr_ratchet_deserialize(&session_pb.ratchet, session->ratchet);
+
+    return session;
 }

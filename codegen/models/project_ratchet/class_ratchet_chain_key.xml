@@ -2,6 +2,10 @@
 
     <require class="ratchet common" scope="public"/>
 
+    <require header="RatchetModels.pb.h" scope="public"/>
+    <require header="pb_decode.h" scope="public"/>
+    <require header="pb_encode.h" scope="public"/>
+
     <property name="index" type="unsigned" size="4"/>
     <property name="key" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_shared_key_length)"/>
@@ -9,6 +13,15 @@
 
     <method name="clone" is_const="1">
         <argument name="dst" class="self" access="readwrite"/>
+    </method>
+
+    <method name="serialize">
+        <argument name="chain key pb" class="ChainKey" library="nanopb" access="readwrite"/>
+    </method>
+
+    <method name="deserialize" is_static="1">
+        <argument name="chain key pb" class="ChainKey" library="nanopb"/>
+        <argument name="chain key" class="self" access="readwrite"/>
     </method>
 
 </class>

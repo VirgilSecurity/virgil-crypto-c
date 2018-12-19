@@ -48,7 +48,6 @@
 #define VSCR_RATCHET_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_error_ctx.h"
 #include "vscr_ratchet.h"
 #include "vscr_ratchet_cipher.h"
 #include "vscr_error.h"
@@ -198,14 +197,11 @@ vscr_ratchet_decrypt_len(vscr_ratchet_t *ratchet, size_t cipher_text_len);
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_decrypt(vscr_ratchet_t *ratchet, RegularMessage *regular_message, vsc_buffer_t *plain_text);
 
-VSCR_PUBLIC size_t
-vscr_ratchet_serialize_len(vscr_ratchet_t *ratchet);
+VSCR_PUBLIC void
+vscr_ratchet_serialize(vscr_ratchet_t *ratchet, Ratchet *ratchet_pb);
 
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_serialize(vscr_ratchet_t *ratchet, vsc_buffer_t *output);
-
-VSCR_PUBLIC vscr_ratchet_t *
-vscr_ratchet_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx);
+VSCR_PUBLIC void
+vscr_ratchet_deserialize(Ratchet *ratchet_pb, vscr_ratchet_t *ratchet);
 
 
 // --------------------------------------------------------------------------

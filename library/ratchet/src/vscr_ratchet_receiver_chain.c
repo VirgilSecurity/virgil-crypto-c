@@ -48,6 +48,8 @@
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 
+#include <ed25519/ed25519.h>
+
 // clang-format on
 //  @end
 
@@ -215,4 +217,31 @@ vscr_ratchet_receiver_chain_cleanup_ctx(vscr_ratchet_receiver_chain_t *ratchet_r
     VSCR_ASSERT_PTR(ratchet_receiver_chain);
 
     vsc_buffer_destroy(&ratchet_receiver_chain->public_key);
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_receiver_chain_serialize(
+        vscr_ratchet_receiver_chain_t *ratchet_receiver_chain, ReceiverChain *receiver_chain_pb) {
+
+    VSCR_ASSERT_PTR(ratchet_receiver_chain);
+    VSCR_ASSERT_PTR(receiver_chain_pb);
+
+    memcpy(receiver_chain_pb->public_key, vsc_buffer_bytes(ratchet_receiver_chain->public_key),
+            sizeof(receiver_chain_pb->public_key));
+    vscr_ratchet_chain_key_serialize(&ratchet_receiver_chain->chain_key, &receiver_chain_pb->chain_key);
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_receiver_chain_deserialize(
+        const ReceiverChain *receiver_chain_pb, vscr_ratchet_receiver_chain_t *receiver_chain) {
+
+    VSCR_ASSERT_PTR(receiver_chain);
+    VSCR_ASSERT_PTR(receiver_chain_pb);
+
+    receiver_chain->public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
+    memcpy(vsc_buffer_unused_bytes(receiver_chain->public_key), receiver_chain_pb->public_key,
+            sizeof(receiver_chain_pb->public_key));
+    vsc_buffer_inc_used(receiver_chain->public_key, sizeof(receiver_chain_pb->public_key));
+
+    vscr_ratchet_chain_key_deserialize(&receiver_chain_pb->chain_key, &receiver_chain->chain_key);
 }

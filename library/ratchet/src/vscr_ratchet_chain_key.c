@@ -222,3 +222,23 @@ vscr_ratchet_chain_key_clone(const vscr_ratchet_chain_key_t *ratchet_chain_key, 
     dst->index = ratchet_chain_key->index;
     memcpy(dst->key, ratchet_chain_key->key, vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
 }
+
+VSCR_PUBLIC void
+vscr_ratchet_chain_key_serialize(vscr_ratchet_chain_key_t *ratchet_chain_key, ChainKey *chain_key_pb) {
+
+    VSCR_ASSERT_PTR(ratchet_chain_key);
+    VSCR_ASSERT_PTR(chain_key_pb);
+
+    chain_key_pb->index = ratchet_chain_key->index;
+    memcpy(chain_key_pb->key, ratchet_chain_key->key, sizeof(ratchet_chain_key->key));
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_chain_key_deserialize(const ChainKey *chain_key_pb, vscr_ratchet_chain_key_t *chain_key) {
+
+    VSCR_ASSERT_PTR(chain_key);
+    VSCR_ASSERT_PTR(chain_key_pb);
+
+    chain_key->index = chain_key_pb->index;
+    memcpy(chain_key->key, chain_key_pb->key, sizeof(chain_key_pb->key));
+}
