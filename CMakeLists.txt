@@ -92,7 +92,7 @@ option(VIRGIL_LIB_COMMON "Build 'common' library" ON)
 option(VIRGIL_LIB_FOUNDATION "Build 'foundation' library" ON)
 option(VIRGIL_LIB_PYTHIA "Build 'pythia' library" ON)
 option(VIRGIL_LIB_ED25519 "Build 'ed25519' library" ON)
-option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" OFF)
+option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" ON)
 option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
 
 #

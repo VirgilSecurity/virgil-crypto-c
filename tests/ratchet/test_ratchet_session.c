@@ -51,7 +51,7 @@
 #include "test_data_ratchet.h"
 
 #include <ed25519/ed25519.h>
-#include <Message.pb.h>
+#include <RatchetModels.pb.h>
 
 // --------------------------------------------------------------------------
 //  Should have it to prevent linkage erros in MSVC.
@@ -71,20 +71,6 @@ static void
 initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *session_bob, Message *ratchet_message) {
     vscr_ratchet_session_take_rng(session_alice, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
     vscr_ratchet_session_take_rng(session_bob, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
-
-    vscr_ratchet_t *ratchet_alice = vscr_ratchet_new();
-    vscr_ratchet_t *ratchet_bob = vscr_ratchet_new();
-
-    vscr_ratchet_session_take_ratchet(session_alice, ratchet_alice);
-    vscr_ratchet_session_take_ratchet(session_bob, ratchet_bob);
-
-    vscr_ratchet_cipher_t *ratchet_cipher = vscr_ratchet_cipher_new();
-    vscr_ratchet_use_cipher(ratchet_alice, ratchet_cipher);
-    vscr_ratchet_use_cipher(ratchet_bob, ratchet_cipher);
-    vscr_ratchet_cipher_destroy(&ratchet_cipher);
-
-    vscr_ratchet_take_rng(ratchet_alice, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
-    vscr_ratchet_take_rng(ratchet_bob, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
 
     vsc_buffer_t *alice_identity_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
     TEST_ASSERT_EQUAL_INT(0, curve25519_get_pubkey(vsc_buffer_unused_bytes(alice_identity_public_key),
