@@ -149,7 +149,7 @@ vscp_hash_stream_api_tag(const vscp_hash_stream_api_t *hash_stream_api) {
 //  Returns implementation unique identifier.
 //
 VSCP_PUBLIC vscp_impl_tag_t
-vscp_hash_stream_impl_tag(const vscp_hash_stream_api_t *hash_stream_api) {
+vscp_hash_stream_tag(const vscp_hash_stream_api_t *hash_stream_api) {
 
     VSCP_ASSERT_PTR (hash_stream_api);
 

@@ -59,7 +59,7 @@ import VirgilCryptoFoundation
     /// Acquire retained C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: UnsafeMutablePointer<vscr_ratchet_kdf_info_t>) {
-        self.c_ctx = vscr_ratchet_kdf_info_copy(c_ctx)
+        self.c_ctx = vscr_ratchet_kdf_info_shallow_copyc_ctx)
         super.init()
     }
 

@@ -67,40 +67,40 @@ int suiteTearDown(int num_failures) { return num_failures; }
 // --------------------------------------------------------------------------
 void
 test__ed25519_public_key_key_len__imported_PUBLIC_KEY__returns_32(void) {
-    vscf_ed25519_public_key_impl_t *public_key_impl = vscf_ed25519_public_key_new();
-    vscf_error_t result = vscf_ed25519_public_key_import_public_key(public_key_impl, test_ed25519_PUBLIC_KEY);
+    vscf_ed25519_public_key_t *public_key = vscf_ed25519_public_key_new();
+    vscf_error_t result = vscf_ed25519_public_key_import_public_key(public_key, test_ed25519_PUBLIC_KEY);
     VSCF_ASSERT(result == vscf_SUCCESS);
-    TEST_ASSERT_EQUAL(32, vscf_ed25519_public_key_key_len(public_key_impl));
-    vscf_ed25519_public_key_destroy(&public_key_impl);
+    TEST_ASSERT_EQUAL(32, vscf_ed25519_public_key_key_len(public_key));
+    vscf_ed25519_public_key_destroy(&public_key);
 }
 
 void
 test__ed25519_public_key_export_public_key__from_imported_PUBLIC_KEY__expected_equal(void) {
-    vscf_ed25519_public_key_impl_t *public_key_impl = vscf_ed25519_public_key_new();
-    vscf_error_t result = vscf_ed25519_public_key_import_public_key(public_key_impl, test_ed25519_PUBLIC_KEY);
+    vscf_ed25519_public_key_t *public_key = vscf_ed25519_public_key_new();
+    vscf_error_t result = vscf_ed25519_public_key_import_public_key(public_key, test_ed25519_PUBLIC_KEY);
     VSCF_ASSERT(result == vscf_SUCCESS);
     vsc_buffer_t *exported_key_buf =
-            vsc_buffer_new_with_capacity(vscf_ed25519_public_key_exported_public_key_len(public_key_impl));
-    result = vscf_ed25519_public_key_export_public_key(public_key_impl, exported_key_buf);
+            vsc_buffer_new_with_capacity(vscf_ed25519_public_key_exported_public_key_len(public_key));
+    result = vscf_ed25519_public_key_export_public_key(public_key, exported_key_buf);
     TEST_ASSERT_EQUAL(vscf_SUCCESS, result);
     TEST_ASSERT_EQUAL(test_ed25519_PUBLIC_KEY.len, vsc_buffer_len(exported_key_buf));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(
             test_ed25519_PUBLIC_KEY.bytes, vsc_buffer_bytes(exported_key_buf), vsc_buffer_len(exported_key_buf));
     vsc_buffer_destroy(&exported_key_buf);
-    vscf_ed25519_public_key_destroy(&public_key_impl);
+    vscf_ed25519_public_key_destroy(&public_key);
 }
 
 void
 test__ed25519_public_key_verify__with_imported_PUBLIC_KEY_and_DATA_SIGNATURE(void) {
-    vscf_ed25519_public_key_impl_t *public_key_impl = vscf_ed25519_public_key_new();
-    vscf_error_t result = vscf_ed25519_public_key_import_public_key(public_key_impl, test_ed25519_PUBLIC_KEY_REVERSE);
+    vscf_ed25519_public_key_t *public_key = vscf_ed25519_public_key_new();
+    vscf_error_t result = vscf_ed25519_public_key_import_public_key(public_key, test_ed25519_PUBLIC_KEY_REVERSE);
     VSCF_ASSERT(result == vscf_SUCCESS);
-    bool verify_result = vscf_ed25519_public_key_verify(public_key_impl, test_ed25519_MESSAGE, test_ed25519_SIGNATURE);
+    bool verify_result = vscf_ed25519_public_key_verify(public_key, test_ed25519_MESSAGE, test_ed25519_SIGNATURE);
     //  Check
     TEST_ASSERT_EQUAL(true, verify_result);
 
     //  Cleanup
-    vscf_ed25519_public_key_destroy(&public_key_impl);
+    vscf_ed25519_public_key_destroy(&public_key);
 }
 
 

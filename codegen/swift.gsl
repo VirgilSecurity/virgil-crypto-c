@@ -129,11 +129,11 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Return .(UID) that refers to the C class retain method.
 # ---------------------------------------------------------------------------
-function class_derive_c_method_copy (class)
+function class_derive_c_method_shallow_copy (class)
     check_arguments (my, "class", my)
 
     my.of_class = my.class.of_class ? my.class.name
-    return make_ref_c (make_id ("class", my.of_class, "method", "copy"))
+    return make_ref_c (make_id ("class", my.of_class, "method", "shallow copy"))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1717,7 +1717,7 @@ function swift_create_class_default_constructor (swift_class, class, wrapper, me
 
             new swift_code to swift_constructor
                 . = "\
-                    self.c_ctx = $(class_derive_c_method_copy (my.class))(c_ctx)
+                    self.c_ctx = $(class_derive_c_method_shallow_copy (my.class))(c_ctx)
                     super.init()
                 "
             endnew

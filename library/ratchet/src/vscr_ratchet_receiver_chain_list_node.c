@@ -65,7 +65,7 @@
 //
 static void
 vscr_ratchet_receiver_chain_list_node_init_ctx(
-        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node_ctx);
+        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node);
 
 //
 //  Release all inner resources.
@@ -74,7 +74,7 @@ vscr_ratchet_receiver_chain_list_node_init_ctx(
 //
 static void
 vscr_ratchet_receiver_chain_list_node_cleanup_ctx(
-        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node_ctx);
+        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node);
 
 //
 //  Return size of 'vscr_ratchet_receiver_chain_list_node_t'.
@@ -89,16 +89,15 @@ vscr_ratchet_receiver_chain_list_node_ctx_size(void) {
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_receiver_chain_list_node_init(
-        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node_ctx) {
+vscr_ratchet_receiver_chain_list_node_init(vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node) {
 
-    VSCR_ASSERT_PTR(ratchet_receiver_chain_list_node_ctx);
+    VSCR_ASSERT_PTR(ratchet_receiver_chain_list_node);
 
-    vscr_zeroize(ratchet_receiver_chain_list_node_ctx, sizeof(vscr_ratchet_receiver_chain_list_node_t));
+    vscr_zeroize(ratchet_receiver_chain_list_node, sizeof(vscr_ratchet_receiver_chain_list_node_t));
 
-    ratchet_receiver_chain_list_node_ctx->refcnt = 1;
+    ratchet_receiver_chain_list_node->refcnt = 1;
 
-    vscr_ratchet_receiver_chain_list_node_init_ctx(ratchet_receiver_chain_list_node_ctx);
+    vscr_ratchet_receiver_chain_list_node_init_ctx(ratchet_receiver_chain_list_node);
 }
 
 //
@@ -106,20 +105,20 @@ vscr_ratchet_receiver_chain_list_node_init(
 //
 VSCR_PUBLIC void
 vscr_ratchet_receiver_chain_list_node_cleanup(
-        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node_ctx) {
+        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node) {
 
-    if (ratchet_receiver_chain_list_node_ctx == NULL) {
+    if (ratchet_receiver_chain_list_node == NULL) {
         return;
     }
 
-    if (ratchet_receiver_chain_list_node_ctx->refcnt == 0) {
+    if (ratchet_receiver_chain_list_node->refcnt == 0) {
         return;
     }
 
-    if (--ratchet_receiver_chain_list_node_ctx->refcnt == 0) {
-        vscr_ratchet_receiver_chain_list_node_cleanup_ctx(ratchet_receiver_chain_list_node_ctx);
+    if (--ratchet_receiver_chain_list_node->refcnt == 0) {
+        vscr_ratchet_receiver_chain_list_node_cleanup_ctx(ratchet_receiver_chain_list_node);
 
-        vscr_zeroize(ratchet_receiver_chain_list_node_ctx, sizeof(vscr_ratchet_receiver_chain_list_node_t));
+        vscr_zeroize(ratchet_receiver_chain_list_node, sizeof(vscr_ratchet_receiver_chain_list_node_t));
     }
 }
 
@@ -129,14 +128,14 @@ vscr_ratchet_receiver_chain_list_node_cleanup(
 VSCR_PUBLIC vscr_ratchet_receiver_chain_list_node_t *
 vscr_ratchet_receiver_chain_list_node_new(void) {
 
-    vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node_ctx = (vscr_ratchet_receiver_chain_list_node_t *) vscr_alloc(sizeof (vscr_ratchet_receiver_chain_list_node_t));
-    VSCR_ASSERT_ALLOC(ratchet_receiver_chain_list_node_ctx);
+    vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node = (vscr_ratchet_receiver_chain_list_node_t *) vscr_alloc(sizeof (vscr_ratchet_receiver_chain_list_node_t));
+    VSCR_ASSERT_ALLOC(ratchet_receiver_chain_list_node);
 
-    vscr_ratchet_receiver_chain_list_node_init(ratchet_receiver_chain_list_node_ctx);
+    vscr_ratchet_receiver_chain_list_node_init(ratchet_receiver_chain_list_node);
 
-    ratchet_receiver_chain_list_node_ctx->self_dealloc_cb = vscr_dealloc;
+    ratchet_receiver_chain_list_node->self_dealloc_cb = vscr_dealloc;
 
-    return ratchet_receiver_chain_list_node_ctx;
+    return ratchet_receiver_chain_list_node;
 }
 
 //
@@ -145,18 +144,18 @@ vscr_ratchet_receiver_chain_list_node_new(void) {
 //
 VSCR_PUBLIC void
 vscr_ratchet_receiver_chain_list_node_delete(
-        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node_ctx) {
+        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node) {
 
-    if (ratchet_receiver_chain_list_node_ctx == NULL) {
+    if (ratchet_receiver_chain_list_node == NULL) {
         return;
     }
 
-    vscr_dealloc_fn self_dealloc_cb = ratchet_receiver_chain_list_node_ctx->self_dealloc_cb;
+    vscr_dealloc_fn self_dealloc_cb = ratchet_receiver_chain_list_node->self_dealloc_cb;
 
-    vscr_ratchet_receiver_chain_list_node_cleanup(ratchet_receiver_chain_list_node_ctx);
+    vscr_ratchet_receiver_chain_list_node_cleanup(ratchet_receiver_chain_list_node);
 
-    if (ratchet_receiver_chain_list_node_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(ratchet_receiver_chain_list_node_ctx);
+    if (ratchet_receiver_chain_list_node->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(ratchet_receiver_chain_list_node);
     }
 }
 
@@ -166,28 +165,28 @@ vscr_ratchet_receiver_chain_list_node_delete(
 //
 VSCR_PUBLIC void
 vscr_ratchet_receiver_chain_list_node_destroy(
-        vscr_ratchet_receiver_chain_list_node_t **ratchet_receiver_chain_list_node_ctx_ref) {
+        vscr_ratchet_receiver_chain_list_node_t **ratchet_receiver_chain_list_node_ref) {
 
-    VSCR_ASSERT_PTR(ratchet_receiver_chain_list_node_ctx_ref);
+    VSCR_ASSERT_PTR(ratchet_receiver_chain_list_node_ref);
 
-    vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node_ctx = *ratchet_receiver_chain_list_node_ctx_ref;
-    *ratchet_receiver_chain_list_node_ctx_ref = NULL;
+    vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node = *ratchet_receiver_chain_list_node_ref;
+    *ratchet_receiver_chain_list_node_ref = NULL;
 
-    vscr_ratchet_receiver_chain_list_node_delete(ratchet_receiver_chain_list_node_ctx);
+    vscr_ratchet_receiver_chain_list_node_delete(ratchet_receiver_chain_list_node);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_receiver_chain_list_node_t *
-vscr_ratchet_receiver_chain_list_node_copy(
-        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node_ctx) {
+vscr_ratchet_receiver_chain_list_node_shallow_copy(
+        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node) {
 
-    VSCR_ASSERT_PTR(ratchet_receiver_chain_list_node_ctx);
+    VSCR_ASSERT_PTR(ratchet_receiver_chain_list_node);
 
-    ++ratchet_receiver_chain_list_node_ctx->refcnt;
+    ++ratchet_receiver_chain_list_node->refcnt;
 
-    return ratchet_receiver_chain_list_node_ctx;
+    return ratchet_receiver_chain_list_node;
 }
 
 
@@ -205,9 +204,9 @@ vscr_ratchet_receiver_chain_list_node_copy(
 //
 static void
 vscr_ratchet_receiver_chain_list_node_init_ctx(
-        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node_ctx) {
+        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node) {
 
-    VSCR_UNUSED(ratchet_receiver_chain_list_node_ctx);
+    VSCR_UNUSED(ratchet_receiver_chain_list_node);
 }
 
 //
@@ -217,8 +216,8 @@ vscr_ratchet_receiver_chain_list_node_init_ctx(
 //
 static void
 vscr_ratchet_receiver_chain_list_node_cleanup_ctx(
-        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node_ctx) {
+        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node) {
 
-    vscr_ratchet_receiver_chain_destroy(&ratchet_receiver_chain_list_node_ctx->value);
-    vscr_ratchet_receiver_chain_list_node_destroy(&ratchet_receiver_chain_list_node_ctx->next);
+    vscr_ratchet_receiver_chain_destroy(&ratchet_receiver_chain_list_node->value);
+    vscr_ratchet_receiver_chain_list_node_destroy(&ratchet_receiver_chain_list_node->next);
 }

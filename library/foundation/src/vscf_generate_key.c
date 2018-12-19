@@ -71,7 +71,7 @@
 VSCF_PUBLIC vscf_error_t
 vscf_generate_key(vscf_impl_t *impl) {
 
-    const vscf_generate_key_api_t *generate_key_api = vscf_generate_key_api (impl);
+    const vscf_generate_key_api_t *generate_key_api = vscf_generate_key_api(impl);
     VSCF_ASSERT_PTR (generate_key_api);
 
     VSCF_ASSERT_PTR (generate_key_api->generate_key_cb);
@@ -86,7 +86,7 @@ vscf_generate_key_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_GENERATE_KEY);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_GENERATE_KEY);
     return (const vscf_generate_key_api_t *) api;
 }
 
@@ -98,7 +98,7 @@ vscf_generate_key_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_GENERATE_KEY) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_GENERATE_KEY) != NULL;
 }
 
 //

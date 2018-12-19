@@ -64,10 +64,10 @@ int suiteTearDown(int num_failures) { return num_failures; }
 // --------------------------------------------------------------------------
 void
 test__ctr_drbg_random__zero_entropy_and_len_128__returns__random_set_1(void) {
-    vscf_fake_random_impl_t *entropy = vscf_fake_random_new();
+    vscf_fake_random_t *entropy = vscf_fake_random_new();
     vscf_fake_random_setup_source_byte(entropy, 0x00);
 
-    vscf_ctr_drbg_impl_t *random = vscf_ctr_drbg_new();
+    vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
     vscf_ctr_drbg_take_entropy_source(random, vscf_fake_random_impl(entropy));
 
     size_t len = 128;

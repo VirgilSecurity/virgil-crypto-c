@@ -8,7 +8,7 @@
         work_path="generated/foundation/"
         >
 
-    <version major="5" minor="0" patch="1" />
+    <version major="0" minor="1" patch="0"/>
 
     <license>
         Copyright (C) 2015-2018 Virgil Security Inc.
@@ -67,7 +67,7 @@
     <interface name="cipher info"/>
     <interface name="decrypt"/>
     <interface name="encrypt"/>
-    <interface name="ex kdf"/>
+    <interface name="salted kdf"/>
     <interface name="hash"/>
     <interface name="hash info"/>
     <interface name="hash stream"/>

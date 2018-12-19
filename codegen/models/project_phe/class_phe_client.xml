@@ -50,8 +50,8 @@
 
         <return enum="error">
             - vsce_SUCCESS if operation succeeded
-            - vsce_INVALID_PRIVATE_KEY if private key is invalid
-            - vsce_INVALID_ECP if public key is invalid
+            - vsce_error_INVALID_PRIVATE_KEY if private key is invalid
+            - vsce_error_INVALID_ECP if public key is invalid
         </return>
     </method>
 
@@ -66,7 +66,7 @@
         </argument>
 
         <return enum="error">
-            - vsce_RNG_ERROR in case rng failed
+            - vsce_error_RNG_ERROR in case rng failed
         </return>
     </method>
 
@@ -103,10 +103,10 @@
         </argument>
 
         <return enum="error">
-            - vsce_PROTOBUF_DECODE_ERROR if input model is invalid
-            - vsce_INVALID_ECP if input points are invalid
-            - vsce_INVALID_SUCCESS_PROOF if provided proof is not valid
-            - vsce_RNG_ERROR if rng failed
+            - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
+            - vsce_error_INVALID_ECP if input points are invalid
+            - vsce_error_INVALID_SUCCESS_PROOF if provided proof is not valid
+            - vsce_error_RNG_ERROR if rng failed
         </return>
     </method>
 
@@ -135,8 +135,8 @@
         </argument>
 
         <return enum="error">
-            - vsce_PROTOBUF_DECODE_ERROR if input model is invalid
-            - vsce_INVALID_ECP if input points are invalid
+            - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
+            - vsce_error_INVALID_ECP if input points are invalid
         </return>
     </method>
 
@@ -162,11 +162,11 @@
         </argument>
 
         <return enum="error">
-            - vsce_PROTOBUF_DECODE_ERROR if input model is invalid
-            - vsce_INVALID_ECP if input points are invalid
-            - vsce_INVALID_PRIVATE_KEY if provided private key in invalid
-            - vsce_INVALID_SUCCESS_PROOF if provided proof is not valid
-            - vsce_INVALID_FAIL_PROOF if provided proof is not valid
+            - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
+            - vsce_error_INVALID_ECP if input points are invalid
+            - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
+            - vsce_error_INVALID_SUCCESS_PROOF if provided proof is not valid
+            - vsce_error_INVALID_FAIL_PROOF if provided proof is not valid
         </return>
     </method>
 
@@ -232,9 +232,9 @@
         </argument>
 
         <return enum="error">
-            - vsce_PROTOBUF_DECODE_ERROR if input model is invalid
-            - vsce_INVALID_ECP if input points are invalid
-            - vsce_INVALID_PRIVATE_KEY if provided private key in invalid
+            - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
+            - vsce_error_INVALID_ECP if input points are invalid
+            - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
         </return>
     </method>
 

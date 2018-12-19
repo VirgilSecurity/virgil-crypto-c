@@ -72,7 +72,7 @@
 VSCF_PUBLIC void
 vscf_asn1_writer_reset(vscf_impl_t *impl, byte *out, size_t out_len) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->reset_cb);
@@ -86,7 +86,7 @@ vscf_asn1_writer_reset(vscf_impl_t *impl, byte *out, size_t out_len) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_finish(vscf_impl_t *impl) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->finish_cb);
@@ -99,7 +99,7 @@ vscf_asn1_writer_finish(vscf_impl_t *impl) {
 VSCF_PUBLIC vscf_error_t
 vscf_asn1_writer_error(vscf_impl_t *impl) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->error_cb);
@@ -113,7 +113,7 @@ vscf_asn1_writer_error(vscf_impl_t *impl) {
 VSCF_PUBLIC byte *
 vscf_asn1_writer_reserve(vscf_impl_t *impl, size_t len) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->reserve_cb);
@@ -127,7 +127,7 @@ vscf_asn1_writer_reserve(vscf_impl_t *impl, size_t len) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_tag(vscf_impl_t *impl, int tag) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_tag_cb);
@@ -141,7 +141,7 @@ vscf_asn1_writer_write_tag(vscf_impl_t *impl, int tag) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_len(vscf_impl_t *impl, size_t len) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_len_cb);
@@ -155,7 +155,7 @@ vscf_asn1_writer_write_len(vscf_impl_t *impl, size_t len) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_int(vscf_impl_t *impl, int value) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_int_cb);
@@ -169,7 +169,7 @@ vscf_asn1_writer_write_int(vscf_impl_t *impl, int value) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_int8(vscf_impl_t *impl, int8_t value) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_int8_cb);
@@ -183,7 +183,7 @@ vscf_asn1_writer_write_int8(vscf_impl_t *impl, int8_t value) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_int16(vscf_impl_t *impl, int16_t value) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_int16_cb);
@@ -197,7 +197,7 @@ vscf_asn1_writer_write_int16(vscf_impl_t *impl, int16_t value) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_int32(vscf_impl_t *impl, int32_t value) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_int32_cb);
@@ -211,7 +211,7 @@ vscf_asn1_writer_write_int32(vscf_impl_t *impl, int32_t value) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_int64(vscf_impl_t *impl, int64_t value) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_int64_cb);
@@ -225,7 +225,7 @@ vscf_asn1_writer_write_int64(vscf_impl_t *impl, int64_t value) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_uint(vscf_impl_t *impl, unsigned int value) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_uint_cb);
@@ -239,7 +239,7 @@ vscf_asn1_writer_write_uint(vscf_impl_t *impl, unsigned int value) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_uint8(vscf_impl_t *impl, uint8_t value) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_uint8_cb);
@@ -253,7 +253,7 @@ vscf_asn1_writer_write_uint8(vscf_impl_t *impl, uint8_t value) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_uint16(vscf_impl_t *impl, uint16_t value) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_uint16_cb);
@@ -267,7 +267,7 @@ vscf_asn1_writer_write_uint16(vscf_impl_t *impl, uint16_t value) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_uint32(vscf_impl_t *impl, uint32_t value) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_uint32_cb);
@@ -281,7 +281,7 @@ vscf_asn1_writer_write_uint32(vscf_impl_t *impl, uint32_t value) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_uint64(vscf_impl_t *impl, uint64_t value) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_uint64_cb);
@@ -295,7 +295,7 @@ vscf_asn1_writer_write_uint64(vscf_impl_t *impl, uint64_t value) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_bool(vscf_impl_t *impl, bool value) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_bool_cb);
@@ -308,7 +308,7 @@ vscf_asn1_writer_write_bool(vscf_impl_t *impl, bool value) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_null(vscf_impl_t *impl) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_null_cb);
@@ -322,7 +322,7 @@ vscf_asn1_writer_write_null(vscf_impl_t *impl) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_octet_str(vscf_impl_t *impl, vsc_data_t value) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_octet_str_cb);
@@ -337,7 +337,7 @@ vscf_asn1_writer_write_octet_str(vscf_impl_t *impl, vsc_data_t value) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_octet_str_as_bitstring(vscf_impl_t *impl, vsc_data_t value) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_octet_str_as_bitstring_cb);
@@ -352,7 +352,7 @@ vscf_asn1_writer_write_octet_str_as_bitstring(vscf_impl_t *impl, vsc_data_t valu
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_data(vscf_impl_t *impl, vsc_data_t data) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_data_cb);
@@ -366,7 +366,7 @@ vscf_asn1_writer_write_data(vscf_impl_t *impl, vsc_data_t data) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_utf8_str(vscf_impl_t *impl, vsc_data_t value) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_utf8_str_cb);
@@ -380,7 +380,7 @@ vscf_asn1_writer_write_utf8_str(vscf_impl_t *impl, vsc_data_t value) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_oid(vscf_impl_t *impl, vsc_data_t value) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_oid_cb);
@@ -394,7 +394,7 @@ vscf_asn1_writer_write_oid(vscf_impl_t *impl, vsc_data_t value) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_sequence(vscf_impl_t *impl, size_t len) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_sequence_cb);
@@ -408,7 +408,7 @@ vscf_asn1_writer_write_sequence(vscf_impl_t *impl, size_t len) {
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_set(vscf_impl_t *impl, size_t len) {
 
-    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api (impl);
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
     VSCF_ASSERT_PTR (asn1_writer_api);
 
     VSCF_ASSERT_PTR (asn1_writer_api->write_set_cb);
@@ -423,7 +423,7 @@ vscf_asn1_writer_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_ASN1_WRITER);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_ASN1_WRITER);
     return (const vscf_asn1_writer_api_t *) api;
 }
 
@@ -435,7 +435,7 @@ vscf_asn1_writer_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_ASN1_WRITER) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_ASN1_WRITER) != NULL;
 }
 
 //

@@ -73,7 +73,7 @@ vscf_cipher_auth_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_CIPHER_AUTH);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_CIPHER_AUTH);
     return (const vscf_cipher_auth_api_t *) api;
 }
 
@@ -107,7 +107,7 @@ vscf_cipher_auth_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_CIPHER_AUTH) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_CIPHER_AUTH) != NULL;
 }
 
 //

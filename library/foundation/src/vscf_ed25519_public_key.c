@@ -54,7 +54,7 @@
 #include "vscf_assert.h"
 #include "vscf_memory.h"
 #include "vscf_endianness.h"
-#include "vscf_ed25519_public_key_impl.h"
+#include "vscf_ed25519_public_key_defs.h"
 #include "vscf_ed25519_public_key_internal.h"
 
 // clang-format on
@@ -81,9 +81,9 @@
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_ed25519_public_key_init_ctx(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
+vscf_ed25519_public_key_init_ctx(vscf_ed25519_public_key_t *ed25519_public_key) {
 
-    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    VSCF_ASSERT_PTR(ed25519_public_key);
 }
 
 //
@@ -92,18 +92,18 @@ vscf_ed25519_public_key_init_ctx(vscf_ed25519_public_key_impl_t *ed25519_public_
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_ed25519_public_key_cleanup_ctx(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
+vscf_ed25519_public_key_cleanup_ctx(vscf_ed25519_public_key_t *ed25519_public_key) {
 
-    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    VSCF_ASSERT_PTR(ed25519_public_key);
 }
 
 //
 //  Return implemented asymmetric key algorithm type.
 //
 VSCF_PUBLIC vscf_key_alg_t
-vscf_ed25519_public_key_alg(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
+vscf_ed25519_public_key_alg(vscf_ed25519_public_key_t *ed25519_public_key) {
 
-    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    VSCF_ASSERT_PTR(ed25519_public_key);
     return vscf_key_alg_ED25519;
 }
 
@@ -111,9 +111,9 @@ vscf_ed25519_public_key_alg(vscf_ed25519_public_key_impl_t *ed25519_public_key_i
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_public_key_key_len(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
+vscf_ed25519_public_key_key_len(vscf_ed25519_public_key_t *ed25519_public_key) {
 
-    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    VSCF_ASSERT_PTR(ed25519_public_key);
     return ED25519_KEY_LEN;
 }
 
@@ -121,9 +121,9 @@ vscf_ed25519_public_key_key_len(vscf_ed25519_public_key_impl_t *ed25519_public_k
 //  Length of the key in bits.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_public_key_key_bitlen(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
+vscf_ed25519_public_key_key_bitlen(vscf_ed25519_public_key_t *ed25519_public_key) {
 
-    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    VSCF_ASSERT_PTR(ed25519_public_key);
     return (8 * ED25519_KEY_LEN);
 }
 
@@ -131,13 +131,12 @@ vscf_ed25519_public_key_key_bitlen(vscf_ed25519_public_key_impl_t *ed25519_publi
 //  Verify data with given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_ed25519_public_key_verify(
-        vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_data_t data, vsc_data_t signature) {
+vscf_ed25519_public_key_verify(vscf_ed25519_public_key_t *ed25519_public_key, vsc_data_t data, vsc_data_t signature) {
 
-    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    VSCF_ASSERT_PTR(ed25519_public_key);
     VSCF_ASSERT_PTR(signature.bytes);
     VSCF_ASSERT_PTR(data.bytes);
-    int ret = ed25519_verify(signature.bytes, ed25519_public_key_impl->public_key, data.bytes, data.len);
+    int ret = ed25519_verify(signature.bytes, ed25519_public_key->public_key, data.bytes, data.len);
     return (ret == 0);
 }
 
@@ -149,12 +148,12 @@ vscf_ed25519_public_key_verify(
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_public_key_export_public_key(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_buffer_t *out) {
+vscf_ed25519_public_key_export_public_key(vscf_ed25519_public_key_t *ed25519_public_key, vsc_buffer_t *out) {
 
-    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    VSCF_ASSERT_PTR(ed25519_public_key);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_left(out) >= ED25519_KEY_LEN);
-    vscf_endianness_reverse_memcpy(vsc_data(ed25519_public_key_impl->public_key, ED25519_KEY_LEN), out);
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= ED25519_KEY_LEN);
+    vscf_endianness_reverse_memcpy(vsc_data(ed25519_public_key->public_key, ED25519_KEY_LEN), out);
     return vscf_SUCCESS;
 }
 
@@ -162,9 +161,9 @@ vscf_ed25519_public_key_export_public_key(vscf_ed25519_public_key_impl_t *ed2551
 //  Return length in bytes required to hold exported public key.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_public_key_exported_public_key_len(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl) {
+vscf_ed25519_public_key_exported_public_key_len(vscf_ed25519_public_key_t *ed25519_public_key) {
 
-    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    VSCF_ASSERT_PTR(ed25519_public_key);
     return ED25519_KEY_LEN;
 }
 
@@ -176,13 +175,13 @@ vscf_ed25519_public_key_exported_public_key_len(vscf_ed25519_public_key_impl_t *
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_public_key_import_public_key(vscf_ed25519_public_key_impl_t *ed25519_public_key_impl, vsc_data_t data) {
+vscf_ed25519_public_key_import_public_key(vscf_ed25519_public_key_t *ed25519_public_key, vsc_data_t data) {
 
-    VSCF_ASSERT_PTR(ed25519_public_key_impl);
+    VSCF_ASSERT_PTR(ed25519_public_key);
     VSCF_ASSERT_PTR(data.bytes);
     VSCF_ASSERT(data.len == ED25519_KEY_LEN);
     vsc_buffer_t *dst = vsc_buffer_new();
-    vsc_buffer_use(dst, ed25519_public_key_impl->public_key, ED25519_KEY_LEN);
+    vsc_buffer_use(dst, ed25519_public_key->public_key, ED25519_KEY_LEN);
     vscf_endianness_reverse_memcpy(data, dst);
     vsc_buffer_destroy(&dst);
     return vscf_SUCCESS;

@@ -83,10 +83,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_asn1rd_impl_t vscf_asn1rd_impl_t;
+typedef struct vscf_asn1rd_t vscf_asn1rd_t;
 
 //
-//  Return size of 'vscf_asn1rd_impl_t' type.
+//  Return size of 'vscf_asn1rd_t' type.
 //
 VSCF_PUBLIC size_t
 vscf_asn1rd_impl_size(void);
@@ -95,26 +95,26 @@ vscf_asn1rd_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_asn1rd_impl(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_impl(vscf_asn1rd_t *asn1rd);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_init(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_init(vscf_asn1rd_t *asn1rd);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_asn1rd_init()'.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_cleanup(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_cleanup(vscf_asn1rd_t *asn1rd);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_asn1rd_impl_t *
+VSCF_PUBLIC vscf_asn1rd_t *
 vscf_asn1rd_new(void);
 
 //
@@ -122,7 +122,7 @@ vscf_asn1rd_new(void);
 //  This is a reverse action of the function 'vscf_asn1rd_new()'.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_delete(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_delete(vscf_asn1rd_t *asn1rd);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -130,161 +130,161 @@ vscf_asn1rd_delete(vscf_asn1rd_impl_t *asn1rd_impl);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_destroy(vscf_asn1rd_impl_t **asn1rd_impl_ref);
+vscf_asn1rd_destroy(vscf_asn1rd_t **asn1rd_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_asn1rd_impl_t *
-vscf_asn1rd_copy(vscf_asn1rd_impl_t *asn1rd_impl);
+VSCF_PUBLIC vscf_asn1rd_t *
+vscf_asn1rd_shallow_copy(vscf_asn1rd_t *asn1rd);
 
 //
 //  Reset all internal states and prepare to new ASN.1 reading operations.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_reset(vscf_asn1rd_impl_t *asn1rd_impl, vsc_data_t data);
+vscf_asn1rd_reset(vscf_asn1rd_t *asn1rd, vsc_data_t data);
 
 //
 //  Return last error.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_asn1rd_error(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_error(vscf_asn1rd_t *asn1rd);
 
 //
 //  Get tag of the current ASN.1 element.
 //
 VSCF_PUBLIC int
-vscf_asn1rd_get_tag(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_get_tag(vscf_asn1rd_t *asn1rd);
 
 //
 //  Get length of the current ASN.1 element.
 //
 VSCF_PUBLIC size_t
-vscf_asn1rd_get_len(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_get_len(vscf_asn1rd_t *asn1rd);
 
 //
 //  Read ASN.1 type: TAG.
 //  Return element length.
 //
 VSCF_PUBLIC size_t
-vscf_asn1rd_read_tag(vscf_asn1rd_impl_t *asn1rd_impl, int tag);
+vscf_asn1rd_read_tag(vscf_asn1rd_t *asn1rd, int tag);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC int
-vscf_asn1rd_read_int(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_read_int(vscf_asn1rd_t *asn1rd);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC int8_t
-vscf_asn1rd_read_int8(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_read_int8(vscf_asn1rd_t *asn1rd);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC int16_t
-vscf_asn1rd_read_int16(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_read_int16(vscf_asn1rd_t *asn1rd);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC int32_t
-vscf_asn1rd_read_int32(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_read_int32(vscf_asn1rd_t *asn1rd);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC int64_t
-vscf_asn1rd_read_int64(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_read_int64(vscf_asn1rd_t *asn1rd);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC unsigned int
-vscf_asn1rd_read_uint(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_read_uint(vscf_asn1rd_t *asn1rd);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC uint8_t
-vscf_asn1rd_read_uint8(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_read_uint8(vscf_asn1rd_t *asn1rd);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC uint16_t
-vscf_asn1rd_read_uint16(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_read_uint16(vscf_asn1rd_t *asn1rd);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC uint32_t
-vscf_asn1rd_read_uint32(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_read_uint32(vscf_asn1rd_t *asn1rd);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC uint64_t
-vscf_asn1rd_read_uint64(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_read_uint64(vscf_asn1rd_t *asn1rd);
 
 //
 //  Read ASN.1 type: BOOLEAN.
 //
 VSCF_PUBLIC bool
-vscf_asn1rd_read_bool(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_read_bool(vscf_asn1rd_t *asn1rd);
 
 //
 //  Read ASN.1 type: NULL.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_read_null(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_read_null(vscf_asn1rd_t *asn1rd);
 
 //
 //  Read ASN.1 type: OCTET STRING.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_asn1rd_read_octet_str(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_read_octet_str(vscf_asn1rd_t *asn1rd);
 
 //
 //  Read ASN.1 type: BIT STRING.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_asn1rd_read_bitstring_as_octet_str(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_read_bitstring_as_octet_str(vscf_asn1rd_t *asn1rd);
 
 //
 //  Read ASN.1 type: UTF8String.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_asn1rd_read_utf8_str(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_read_utf8_str(vscf_asn1rd_t *asn1rd);
 
 //
 //  Read ASN.1 type: OID.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_asn1rd_read_oid(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_read_oid(vscf_asn1rd_t *asn1rd);
 
 //
 //  Read raw data of given length.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_asn1rd_read_data(vscf_asn1rd_impl_t *asn1rd_impl, size_t len);
+vscf_asn1rd_read_data(vscf_asn1rd_t *asn1rd, size_t len);
 
 //
 //  Read ASN.1 type: CONSTRUCTED | SEQUENCE.
 //  Return element length.
 //
 VSCF_PUBLIC size_t
-vscf_asn1rd_read_sequence(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_read_sequence(vscf_asn1rd_t *asn1rd);
 
 //
 //  Read ASN.1 type: CONSTRUCTED | SET.
 //  Return element length.
 //
 VSCF_PUBLIC size_t
-vscf_asn1rd_read_set(vscf_asn1rd_impl_t *asn1rd_impl);
+vscf_asn1rd_read_set(vscf_asn1rd_t *asn1rd);
 
 
 // --------------------------------------------------------------------------

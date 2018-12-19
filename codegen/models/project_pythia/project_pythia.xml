@@ -9,7 +9,7 @@
         cmake_target="pythia_wrap"
         >
 
-    <version major="0" minor="2" patch="0" />
+    <version major="0" minor="1" patch="0"/>
 
     <license>
         Copyright (C) 2015-2018 Virgil Security Inc.
@@ -69,6 +69,5 @@
         snprintf(error_message, sizeof(error_message), "Unhandled vsc::pythia error -0x%04x", error);
     </error_message_getter>
 
-    <!-- <wrapper lang="swift"/> -->
-    <wrapper lang="php"/>
+    <wrapper lang="swift"/>
 </project>

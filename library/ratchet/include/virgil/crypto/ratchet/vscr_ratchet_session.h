@@ -105,13 +105,13 @@ vscr_ratchet_session_ctx_size(void);
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_init(vscr_ratchet_session_t *ratchet_session_ctx);
+vscr_ratchet_session_init(vscr_ratchet_session_t *ratchet_session);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_cleanup(vscr_ratchet_session_t *ratchet_session_ctx);
+vscr_ratchet_session_cleanup(vscr_ratchet_session_t *ratchet_session);
 
 //
 //  Allocate context and perform it's initialization.
@@ -129,88 +129,87 @@ vscr_ratchet_session_new_with_members(bool received_first_response, vsc_buffer_t
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_delete(vscr_ratchet_session_t *ratchet_session_ctx);
+vscr_ratchet_session_delete(vscr_ratchet_session_t *ratchet_session);
 
 //
 //  Delete given context and nullifies reference.
 //  This is a reverse action of the function 'vscr_ratchet_session_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_destroy(vscr_ratchet_session_t **ratchet_session_ctx_ref);
+vscr_ratchet_session_destroy(vscr_ratchet_session_t **ratchet_session_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_session_t *
-vscr_ratchet_session_copy(vscr_ratchet_session_t *ratchet_session_ctx);
+vscr_ratchet_session_shallow_copy(vscr_ratchet_session_t *ratchet_session);
 
 //
 //  Setup dependency to the interface 'ratchet rng' with shared ownership.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_use_rng(vscr_ratchet_session_t *ratchet_session_ctx, vscr_impl_t *rng);
+vscr_ratchet_session_use_rng(vscr_ratchet_session_t *ratchet_session, vscr_impl_t *rng);
 
 //
 //  Setup dependency to the interface 'ratchet rng' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_take_rng(vscr_ratchet_session_t *ratchet_session_ctx, vscr_impl_t *rng);
+vscr_ratchet_session_take_rng(vscr_ratchet_session_t *ratchet_session, vscr_impl_t *rng);
 
 //
 //  Release dependency to the interface 'ratchet rng'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_release_rng(vscr_ratchet_session_t *ratchet_session_ctx);
+vscr_ratchet_session_release_rng(vscr_ratchet_session_t *ratchet_session);
 
 //
 //  Setup dependency to the class 'ratchet' with shared ownership.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_use_ratchet(vscr_ratchet_session_t *ratchet_session_ctx, vscr_ratchet_t *ratchet);
+vscr_ratchet_session_use_ratchet(vscr_ratchet_session_t *ratchet_session, vscr_ratchet_t *ratchet);
 
 //
 //  Setup dependency to the class 'ratchet' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_take_ratchet(vscr_ratchet_session_t *ratchet_session_ctx, vscr_ratchet_t *ratchet);
+vscr_ratchet_session_take_ratchet(vscr_ratchet_session_t *ratchet_session, vscr_ratchet_t *ratchet);
 
 //
 //  Release dependency to the class 'ratchet'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_release_ratchet(vscr_ratchet_session_t *ratchet_session_ctx);
+vscr_ratchet_session_release_ratchet(vscr_ratchet_session_t *ratchet_session);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session_ctx, vsc_data_t sender_identity_private_key,
+vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_t sender_identity_private_key,
         vsc_data_t receiver_identity_public_key, vsc_buffer_t *receiver_long_term_public_key,
         vsc_buffer_t *receiver_one_time_public_key);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session_ctx, vsc_buffer_t *sender_identity_public_key,
+vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_buffer_t *sender_identity_public_key,
         vsc_buffer_t *sender_ephemeral_public_key, vsc_buffer_t *ratchet_public_key,
         vsc_buffer_t *receiver_identity_private_key, vsc_buffer_t *receiver_long_term_private_key,
         vsc_buffer_t *receiver_one_time_private_key, const RegularMessage *message);
 
 VSCR_PUBLIC size_t
-vscr_ratchet_session_encrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, size_t plain_text_len);
+vscr_ratchet_session_encrypt_len(vscr_ratchet_session_t *ratchet_session, size_t plain_text_len);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_encrypt(vscr_ratchet_session_t *ratchet_session_ctx, vsc_data_t plain_text,
-        vsc_buffer_t *cipher_text);
+vscr_ratchet_session_encrypt(vscr_ratchet_session_t *ratchet_session, vsc_data_t plain_text, vsc_buffer_t *cipher_text);
 
 VSCR_PUBLIC size_t
-vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session_ctx, const Message *message);
+vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session, const Message *message);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session_ctx, Message *message, vsc_buffer_t *plain_text);
+vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session, Message *message, vsc_buffer_t *plain_text);
 
 VSCR_PUBLIC size_t
-vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *ratchet_session_ctx);
+vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *ratchet_session);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_serialize(vscr_ratchet_session_t *ratchet_session_ctx, vsc_buffer_t *output);
+vscr_ratchet_session_serialize(vscr_ratchet_session_t *ratchet_session, vsc_buffer_t *output);
 
 VSCR_PUBLIC vscr_ratchet_session_t *
 vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx);

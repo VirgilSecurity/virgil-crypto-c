@@ -565,7 +565,7 @@ function c_component_map_instance_attr_type (c_instance, instance)
 
         else
             my.project_uid = c_component_derive_instance_project_uid (my.instance)
-            my.type_uid = c_component_derive_instance_type_uid ("struct", "impl", my.instance.impl)
+            my.type_uid = c_component_derive_instance_type_uid ("struct", my.instance.impl, my.instance.impl)
             my.c_instance.type = make_ref_c (make_id(my.project_uid, my.type_uid))
 
         endif

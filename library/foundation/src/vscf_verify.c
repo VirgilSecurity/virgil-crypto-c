@@ -70,7 +70,7 @@
 VSCF_PUBLIC bool
 vscf_verify(vscf_impl_t *impl, vsc_data_t data, vsc_data_t signature) {
 
-    const vscf_verify_api_t *verify_api = vscf_verify_api (impl);
+    const vscf_verify_api_t *verify_api = vscf_verify_api(impl);
     VSCF_ASSERT_PTR (verify_api);
 
     VSCF_ASSERT_PTR (verify_api->verify_cb);
@@ -85,7 +85,7 @@ vscf_verify_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_VERIFY);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_VERIFY);
     return (const vscf_verify_api_t *) api;
 }
 
@@ -97,7 +97,7 @@ vscf_verify_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_VERIFY) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_VERIFY) != NULL;
 }
 
 //

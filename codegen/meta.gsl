@@ -152,7 +152,7 @@ function _X17_add_entity_common (meta)
         _X17_add_smart_name (entity, "method", "take")
         _X17_add_smart_name (entity, "method", "init ctx")
         _X17_add_smart_name (entity, "method", "cleanup ctx")
-        _X17_add_smart_name (entity, "method", "copy")
+        _X17_add_smart_name (entity, "method", "shallow_copy")
 
         _X17_add_smart_name (entity, "enum", "tag")
         _X17_add_smart_name (entity, "enum constant", "begin")
@@ -358,7 +358,7 @@ function _X17_add_dependencies (entity, source, class_uid_prefix, property_uid_p
 
         elsif defined (dependency.impl)
             _X17_add_link (entity, "dependency type $(dependency.name)", \
-                    make_id ("class", dependency.type_name, "struct impl"), dependency.project)
+                    make_id ("class", dependency.type_name, "struct", dependency.type_name), dependency.project)
 
         elsif defined (dependency.class)
             _X17_add_link (entity, "dependency type $(dependency.name)", \
@@ -395,8 +395,8 @@ function _X17_add_dependencies (entity, source, class_uid_prefix, property_uid_p
 
 
         if defined(dependency.interface)
-            _X17_add_link (entity, "dependency method copy $(dependency.name)", \
-                    make_id ("class impl method copy"), dependency.project)
+            _X17_add_link (entity, "dependency method shallow copy $(dependency.name)", \
+                    make_id ("class impl method shallow copy"), dependency.project)
 
             _X17_add_link (entity, "dependency method destroy $(dependency.name)", \
                     make_id ("class impl method destroy"), dependency.project)
@@ -405,8 +405,8 @@ function _X17_add_dependencies (entity, source, class_uid_prefix, property_uid_p
                     make_id ("class", dependency.type_name, "method", "is implemented"), dependency.project)
 
         elsif defined(dependency.class) | defined(dependency.impl)
-            _X17_add_link (entity, "dependency method copy $(dependency.name)", \
-                    make_id ("class", dependency.type_name, "method", "copy"), dependency.project)
+            _X17_add_link (entity, "dependency method shallow copy $(dependency.name)", \
+                    make_id ("class", dependency.type_name, "method", "shallow copy"), dependency.project)
 
             _X17_add_link (entity, "dependency method destroy $(dependency.name)", \
                     make_id ("class", dependency.type_name, "method", "destroy"), dependency.project)
@@ -435,18 +435,18 @@ function _X17_add_entity_implementation (meta, implementation)
         #   Public
         my.name = my.implementation.name
 
-        _X17_add_name (entity, "argument context", cat (my.name, "impl"))
-        _X17_add_link (entity, "argument context", "_argument_$(make_id (my.name, "impl"))")
-        _X17_add_link (entity, "argument context type", make_id ("class", my.name, "struct", "impl"))
+        _X17_add_name (entity, "argument context", my.name)
+        _X17_add_link (entity, "argument context", "_argument_$(make_id (my.name))")
+        _X17_add_link (entity, "argument context type", make_id ("class", my.name, "struct", my.name))
 
         _X17_add_name (entity, "implementation class", my.name)
 
         _X17_add_name (entity, "implementation module", my.name)
-        _X17_add_name (entity, "implementation module impl", cat (my.name, "impl"))
+        _X17_add_name (entity, "implementation module defs", cat (my.name, "defs"))
         _X17_add_name (entity, "implementation module internal", cat (my.name, "internal"))
 
-        _X17_add_name (entity, "implementation argument impl", cat (my.name, "impl"))
-        _X17_add_link (entity, "implementation struct impl", make_id ("class", my.name, "struct", "impl"))
+        _X17_add_name (entity, "implementation argument impl", my.name)
+        _X17_add_link (entity, "implementation struct impl", make_id ("class", my.name, "struct", my.name))
 
         _X17_add_link (entity, "implementation method init ctx", make_id ("class", my.name, "method", "init ctx"))
         _X17_add_link (entity, "implementation method cleanup ctx", make_id ("class", my.name, "method", "cleanup ctx"))
@@ -518,16 +518,16 @@ function _X17_add_entity_class (meta, class)
     new entity to my.meta
         .id = my.id
 
-        _X17_add_name (entity, "argument context", cat (my.class.name, "ctx"))
-        _X17_add_link (entity, "argument context", "_argument_$(make_id (my.class.name, "ctx"))")
+        _X17_add_name (entity, "argument context", my.class.name)
+        _X17_add_link (entity, "argument context", "_argument_$(make_id (my.class.name))")
         _X17_add_link (entity, "argument context type", make_id ("class", my.class.name, "struct", my.class.name))
 
         _X17_add_smart_name (entity, "class method", "ctx size")
 
         _X17_add_name (entity, "class module", my.class.name)
         _X17_add_name (entity, "class module defs", cat (my.class.name, "defs"))
-        _X17_add_name (entity, "class argument ctx", cat (my.class.name, "ctx"))
-        _X17_add_link (entity, "class argument ctx", make_id ("_argument", my.class.name, "ctx"))
+        _X17_add_name (entity, "class argument ctx", my.class.name)
+        _X17_add_link (entity, "class argument ctx", make_id ("_argument", my.class.name))
         _X17_add_link (entity, "class struct ctx", make_id ("class", my.class.name, "struct", my.class.name))
         _X17_add_link (entity, "class method init", make_id ("class", my.class.name, "method init"))
         _X17_add_link (entity, "class method init ctx", make_id ("class", my.class.name, "method init ctx"))

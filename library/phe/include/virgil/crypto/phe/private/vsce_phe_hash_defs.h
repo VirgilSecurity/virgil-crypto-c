@@ -96,7 +96,7 @@ struct vsce_phe_hash_t {
     //
     //  Dependency to the implementation 'sha512'.
     //
-    vscf_sha512_impl_t *sha512;
+    vscf_sha512_t *sha512;
     //
     //  Dependency to the class 'simple swu'.
     //

@@ -71,7 +71,7 @@
 VSCF_PUBLIC vscf_error_t
 vscf_defaults_setup_defaults(vscf_impl_t *impl) {
 
-    const vscf_defaults_api_t *defaults_api = vscf_defaults_api (impl);
+    const vscf_defaults_api_t *defaults_api = vscf_defaults_api(impl);
     VSCF_ASSERT_PTR (defaults_api);
 
     VSCF_ASSERT_PTR (defaults_api->setup_defaults_cb);
@@ -86,7 +86,7 @@ vscf_defaults_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_DEFAULTS);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_DEFAULTS);
     return (const vscf_defaults_api_t *) api;
 }
 
@@ -98,7 +98,7 @@ vscf_defaults_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_DEFAULTS) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_DEFAULTS) != NULL;
 }
 
 //

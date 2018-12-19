@@ -25,7 +25,7 @@
 
         <code>
             #define .(c_class_pythia_macros_buffer_from_buffer) (X) \
-                    {.p = (uint8_t *)vsc_buffer_ptr(X), .allocated = vsc_buffer_left(X), .len = 0}
+                    {.p = (uint8_t *)vsc_buffer_unused_bytes(X), .allocated = vsc_buffer_unused_len(X), .len = 0}
         </code>
     </macros>
 

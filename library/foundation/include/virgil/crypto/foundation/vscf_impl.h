@@ -105,10 +105,9 @@ vscf_impl_destroy(vscf_impl_t **impl_ref);
 
 //
 //  Copy implementation object by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_impl_copy(vscf_impl_t *impl);
+vscf_impl_shallow_copy(vscf_impl_t *impl);
 
 
 // --------------------------------------------------------------------------
