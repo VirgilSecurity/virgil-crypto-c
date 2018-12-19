@@ -1,4 +1,4 @@
-<module name="mbedtls bridge entropy" scope="internal">
+<module name="mbedtls bridge entropy" scope="private">
     <require module="library"/>
     <require module="assert" scope="private"/>
     <require class="impl" scope="private"/>
@@ -6,7 +6,7 @@
     <require module="buffer defs" project="common" scope="private"/>
     <require header="mbedtls/entropy.h" library="mbedtls" scope="private"/>
 
-    <method name="mbedtls bridge entropy" visibility="private">
+    <method name="mbedtls bridge entropy" visibility="public">
         <argument name="ctx" class="any" access="readwrite"/>
         <argument name="data" type="byte" access="readwrite" is_reference="1"/>
         <argument name="len" type="size"/>
