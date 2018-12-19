@@ -5,7 +5,7 @@
     <require interface="random" scope="private"/>
     <require module="buffer defs" project="common" scope="private"/>
 
-    <method name="mbedtls bridge random" visibility="private">
+    <method name="mbedtls bridge random" visibility="public">
         <argument name="ctx" class="any" access="readwrite"/>
         <argument name="data" type="byte" access="readwrite" is_reference="1"/>
         <argument name="len" type="size"/>
