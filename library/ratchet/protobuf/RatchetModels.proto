@@ -11,12 +11,17 @@ message PrekeyMessage {
 	uint32 version = 1;
 	bytes sender_identity_key = 2;
 	bytes sender_ephemeral_key = 3;
-	bytes receiver_longterm_key = 4;
-	bytes receiver_onetime_key = 5;
+	bytes receiver_long_term_key = 4;
+	bytes receiver_one_time_key = 5;
 	RegularMessage regular_message = 6;
 }
 
-message Key {
+message ChainKey {
+	uint32 index = 1;
+	bytes key = 2;
+}
+
+message MessageKey {
 	uint32 index = 1;
 	bytes key = 2;
 }
@@ -24,17 +29,17 @@ message Key {
 message SenderChain {
 	bytes private_key = 1;
 	bytes public_key = 2;
-	Key chain_key = 3;
+	ChainKey chain_key = 3;
 }
 
 message ReceiverChain {
 	bytes public_key = 1;
-	Key chain_key = 2;
+	ChainKey chain_key = 2;
 }
 
 message SkippedMessageKey {
 	bytes public_key = 1;
-	Key message_key = 2;
+	MessageKey message_key = 2;
 }
 
 message Ratchet {
@@ -46,11 +51,12 @@ message Ratchet {
 
 message Session {
 	bool received_first_response = 1;
-	bytes sender_identity_key = 2;
-	bytes sender_ephemeral_key = 3;
-	bytes receiver_longterm_key = 4;
-	bytes receiver_onetime_key = 5;
-	bytes ratchet = 6;
+	bool is_initiator = 2;
+	bytes sender_identity_key = 3;
+	bytes sender_ephemeral_key = 4;
+	bytes receiver_long_term_key = 5;
+	bytes receiver_one_time_key = 6;
+	Ratchet ratchet = 7;
 }
 
 message Message {

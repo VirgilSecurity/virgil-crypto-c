@@ -1,6 +1,21 @@
 <class name="ratchet skipped message key" context="public" scope="internal">
 
+    <require header="RatchetModels.pb.h" scope="public"/>
+    <require header="pb_decode.h" scope="public"/>
+    <require header="pb_encode.h" scope="public"/>
+
+    <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
+
     <property name="public key" class="buffer" access="readwrite"/>
     <property name="message key" class="ratchet message key" access="readwrite"/>
+
+    <method name="serialize">
+        <argument name="skipped message key pb" class="SkippedMessageKey" library="nanopb" access="readwrite"/>
+    </method>
+
+    <method name="deserialize" is_static="1">
+        <argument name="skipped message key pb" class="SkippedMessageKey" library="nanopb"/>
+        <argument name="skipped message key" class="self" access="readwrite"/>
+    </method>
 
 </class>

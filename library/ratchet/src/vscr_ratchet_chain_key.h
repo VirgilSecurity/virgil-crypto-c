@@ -51,6 +51,10 @@
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_chain_key.h"
 
+#include <RatchetModels.pb.h>
+#include <pb_decode.h>
+#include <pb_encode.h>
+
 // clang-format on
 //  @end
 
@@ -131,6 +135,12 @@ vscr_ratchet_chain_key_shallow_copy(vscr_ratchet_chain_key_t *ratchet_chain_key)
 
 VSCR_PUBLIC void
 vscr_ratchet_chain_key_clone(const vscr_ratchet_chain_key_t *ratchet_chain_key, vscr_ratchet_chain_key_t *dst);
+
+VSCR_PUBLIC void
+vscr_ratchet_chain_key_serialize(vscr_ratchet_chain_key_t *ratchet_chain_key, ChainKey *chain_key_pb);
+
+VSCR_PUBLIC void
+vscr_ratchet_chain_key_deserialize(const ChainKey *chain_key_pb, vscr_ratchet_chain_key_t *chain_key);
 
 
 // --------------------------------------------------------------------------

@@ -6,7 +6,6 @@
     <require impl="ctr drbg" project="foundation" scope="private"/>
 
     <require class="ratchet common" scope="context"/>
-    <require class="ratchet message key" scope="private"/>
     <require class="ratchet chain key" scope="private"/>
     <require module="ratchet message defs" scope="private"/>
 
@@ -148,23 +147,13 @@
         <argument name="skipped message key" class="ratchet skipped message key" access="readwrite"/>
     </method>
 
-    <method name="serialize len">
-        <return type="size"/>
-    </method>
-
     <method name="serialize">
-        <argument name="output" class="buffer">
-            <length method="serialize len"/>
-        </argument>
-
-        <return enum="error"/>
+        <argument name="ratchet pb" class="Ratchet" library="nanopb" access="readwrite"/>
     </method>
 
     <method name="deserialize" is_static="1">
-        <argument name="input" class="data"/>
-        <argument name="err ctx" class="error ctx" access="readwrite"/>
-
-        <return class="self" access="disown"/>
+        <argument name="ratchet pb" class="Ratchet" library="nanopb" access="readwrite"/>
+        <argument name="ratchet" class="self" access="readwrite"/>
     </method>
 
 </class>

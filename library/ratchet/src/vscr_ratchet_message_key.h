@@ -49,6 +49,11 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
+#include "vscr_ratchet_message_key.h"
+
+#include <RatchetModels.pb.h>
+#include <pb_decode.h>
+#include <pb_encode.h>
 
 // clang-format on
 //  @end
@@ -127,6 +132,12 @@ vscr_ratchet_message_key_destroy(vscr_ratchet_message_key_t **ratchet_message_ke
 //
 VSCR_PUBLIC vscr_ratchet_message_key_t *
 vscr_ratchet_message_key_shallow_copy(vscr_ratchet_message_key_t *ratchet_message_key);
+
+VSCR_PUBLIC void
+vscr_ratchet_message_key_serialize(vscr_ratchet_message_key_t *ratchet_message_key, MessageKey *message_key_pb);
+
+VSCR_PUBLIC void
+vscr_ratchet_message_key_deserialize(const MessageKey *message_key_pb, vscr_ratchet_message_key_t *message_key);
 
 
 // --------------------------------------------------------------------------

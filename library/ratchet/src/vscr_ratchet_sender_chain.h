@@ -48,7 +48,12 @@
 #define VSCR_RATCHET_SENDER_CHAIN_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_ratchet_sender_chain.h"
 #include "vscr_ratchet_chain_key.h"
+
+#include <RatchetModels.pb.h>
+#include <pb_decode.h>
+#include <pb_encode.h>
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -137,6 +142,12 @@ vscr_ratchet_sender_chain_destroy(vscr_ratchet_sender_chain_t **ratchet_sender_c
 //
 VSCR_PUBLIC vscr_ratchet_sender_chain_t *
 vscr_ratchet_sender_chain_shallow_copy(vscr_ratchet_sender_chain_t *ratchet_sender_chain);
+
+VSCR_PUBLIC void
+vscr_ratchet_sender_chain_serialize(vscr_ratchet_sender_chain_t *ratchet_sender_chain, SenderChain *sender_chain_pb);
+
+VSCR_PUBLIC void
+vscr_ratchet_sender_chain_deserialize(const SenderChain *sender_chain_pb, vscr_ratchet_sender_chain_t *sender_chain);
 
 
 // --------------------------------------------------------------------------
