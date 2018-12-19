@@ -1,4 +1,4 @@
-<class name="ratchet cipher" context="public">
+<class name="ratchet cipher" context="private" scope="private">
 
     <require impl="sha256" project="foundation" scope="private"/>
     <require impl="hkdf" project="foundation" scope="private"/>

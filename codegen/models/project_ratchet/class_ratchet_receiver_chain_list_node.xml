@@ -1,4 +1,4 @@
-<class name="ratchet receiver chain list node" context="public">
+<class name="ratchet receiver chain list node" context="public" scope="internal">
 
     <require class="ratchet receiver chain" scope="public"/>
 
