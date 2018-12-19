@@ -84,10 +84,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_kdf1_impl_t vscf_kdf1_impl_t;
+typedef struct vscf_kdf1_t vscf_kdf1_t;
 
 //
-//  Return size of 'vscf_kdf1_impl_t' type.
+//  Return size of 'vscf_kdf1_t' type.
 //
 VSCF_PUBLIC size_t
 vscf_kdf1_impl_size(void);
@@ -96,26 +96,26 @@ vscf_kdf1_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_kdf1_impl(vscf_kdf1_impl_t *kdf1_impl);
+vscf_kdf1_impl(vscf_kdf1_t *kdf1);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_kdf1_init(vscf_kdf1_impl_t *kdf1_impl);
+vscf_kdf1_init(vscf_kdf1_t *kdf1);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_kdf1_init()'.
 //
 VSCF_PUBLIC void
-vscf_kdf1_cleanup(vscf_kdf1_impl_t *kdf1_impl);
+vscf_kdf1_cleanup(vscf_kdf1_t *kdf1);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_kdf1_impl_t *
+VSCF_PUBLIC vscf_kdf1_t *
 vscf_kdf1_new(void);
 
 //
@@ -123,7 +123,7 @@ vscf_kdf1_new(void);
 //  This is a reverse action of the function 'vscf_kdf1_new()'.
 //
 VSCF_PUBLIC void
-vscf_kdf1_delete(vscf_kdf1_impl_t *kdf1_impl);
+vscf_kdf1_delete(vscf_kdf1_t *kdf1);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -131,39 +131,39 @@ vscf_kdf1_delete(vscf_kdf1_impl_t *kdf1_impl);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_kdf1_destroy(vscf_kdf1_impl_t **kdf1_impl_ref);
+vscf_kdf1_destroy(vscf_kdf1_t **kdf1_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_kdf1_impl_t *
-vscf_kdf1_copy(vscf_kdf1_impl_t *kdf1_impl);
+VSCF_PUBLIC vscf_kdf1_t *
+vscf_kdf1_shallow_copy(vscf_kdf1_t *kdf1);
 
 //
 //  Setup dependency to the interface 'hash stream' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_kdf1_use_hash(vscf_kdf1_impl_t *kdf1_impl, vscf_impl_t *hash);
+vscf_kdf1_use_hash(vscf_kdf1_t *kdf1, vscf_impl_t *hash);
 
 //
 //  Setup dependency to the interface 'hash stream' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_kdf1_take_hash(vscf_kdf1_impl_t *kdf1_impl, vscf_impl_t *hash);
+vscf_kdf1_take_hash(vscf_kdf1_t *kdf1, vscf_impl_t *hash);
 
 //
 //  Release dependency to the interface 'hash stream'.
 //
 VSCF_PUBLIC void
-vscf_kdf1_release_hash(vscf_kdf1_impl_t *kdf1_impl);
+vscf_kdf1_release_hash(vscf_kdf1_t *kdf1);
 
 //
 //  Derive key of the requested length from the given data.
 //
 VSCF_PUBLIC void
-vscf_kdf1_derive(vscf_kdf1_impl_t *kdf1_impl, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
+vscf_kdf1_derive(vscf_kdf1_t *kdf1, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
 
 
 // --------------------------------------------------------------------------

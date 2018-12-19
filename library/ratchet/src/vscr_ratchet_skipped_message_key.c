@@ -64,7 +64,7 @@
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_skipped_message_key_init_ctx(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key_ctx);
+vscr_ratchet_skipped_message_key_init_ctx(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key);
 
 //
 //  Release all inner resources.
@@ -72,7 +72,7 @@ vscr_ratchet_skipped_message_key_init_ctx(vscr_ratchet_skipped_message_key_t *ra
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_skipped_message_key_cleanup_ctx(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key_ctx);
+vscr_ratchet_skipped_message_key_cleanup_ctx(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key);
 
 //
 //  Return size of 'vscr_ratchet_skipped_message_key_t'.
@@ -87,35 +87,35 @@ vscr_ratchet_skipped_message_key_ctx_size(void) {
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_message_key_init(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key_ctx) {
+vscr_ratchet_skipped_message_key_init(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key) {
 
-    VSCR_ASSERT_PTR(ratchet_skipped_message_key_ctx);
+    VSCR_ASSERT_PTR(ratchet_skipped_message_key);
 
-    vscr_zeroize(ratchet_skipped_message_key_ctx, sizeof(vscr_ratchet_skipped_message_key_t));
+    vscr_zeroize(ratchet_skipped_message_key, sizeof(vscr_ratchet_skipped_message_key_t));
 
-    ratchet_skipped_message_key_ctx->refcnt = 1;
+    ratchet_skipped_message_key->refcnt = 1;
 
-    vscr_ratchet_skipped_message_key_init_ctx(ratchet_skipped_message_key_ctx);
+    vscr_ratchet_skipped_message_key_init_ctx(ratchet_skipped_message_key);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_message_key_cleanup(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key_ctx) {
+vscr_ratchet_skipped_message_key_cleanup(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key) {
 
-    if (ratchet_skipped_message_key_ctx == NULL) {
+    if (ratchet_skipped_message_key == NULL) {
         return;
     }
 
-    if (ratchet_skipped_message_key_ctx->refcnt == 0) {
+    if (ratchet_skipped_message_key->refcnt == 0) {
         return;
     }
 
-    if (--ratchet_skipped_message_key_ctx->refcnt == 0) {
-        vscr_ratchet_skipped_message_key_cleanup_ctx(ratchet_skipped_message_key_ctx);
+    if (--ratchet_skipped_message_key->refcnt == 0) {
+        vscr_ratchet_skipped_message_key_cleanup_ctx(ratchet_skipped_message_key);
 
-        vscr_zeroize(ratchet_skipped_message_key_ctx, sizeof(vscr_ratchet_skipped_message_key_t));
+        vscr_zeroize(ratchet_skipped_message_key, sizeof(vscr_ratchet_skipped_message_key_t));
     }
 }
 
@@ -125,14 +125,14 @@ vscr_ratchet_skipped_message_key_cleanup(vscr_ratchet_skipped_message_key_t *rat
 VSCR_PUBLIC vscr_ratchet_skipped_message_key_t *
 vscr_ratchet_skipped_message_key_new(void) {
 
-    vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key_ctx = (vscr_ratchet_skipped_message_key_t *) vscr_alloc(sizeof (vscr_ratchet_skipped_message_key_t));
-    VSCR_ASSERT_ALLOC(ratchet_skipped_message_key_ctx);
+    vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key = (vscr_ratchet_skipped_message_key_t *) vscr_alloc(sizeof (vscr_ratchet_skipped_message_key_t));
+    VSCR_ASSERT_ALLOC(ratchet_skipped_message_key);
 
-    vscr_ratchet_skipped_message_key_init(ratchet_skipped_message_key_ctx);
+    vscr_ratchet_skipped_message_key_init(ratchet_skipped_message_key);
 
-    ratchet_skipped_message_key_ctx->self_dealloc_cb = vscr_dealloc;
+    ratchet_skipped_message_key->self_dealloc_cb = vscr_dealloc;
 
-    return ratchet_skipped_message_key_ctx;
+    return ratchet_skipped_message_key;
 }
 
 //
@@ -140,18 +140,18 @@ vscr_ratchet_skipped_message_key_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_message_key_delete(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key_ctx) {
+vscr_ratchet_skipped_message_key_delete(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key) {
 
-    if (ratchet_skipped_message_key_ctx == NULL) {
+    if (ratchet_skipped_message_key == NULL) {
         return;
     }
 
-    vscr_dealloc_fn self_dealloc_cb = ratchet_skipped_message_key_ctx->self_dealloc_cb;
+    vscr_dealloc_fn self_dealloc_cb = ratchet_skipped_message_key->self_dealloc_cb;
 
-    vscr_ratchet_skipped_message_key_cleanup(ratchet_skipped_message_key_ctx);
+    vscr_ratchet_skipped_message_key_cleanup(ratchet_skipped_message_key);
 
-    if (ratchet_skipped_message_key_ctx->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(ratchet_skipped_message_key_ctx);
+    if (ratchet_skipped_message_key->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(ratchet_skipped_message_key);
     }
 }
 
@@ -160,27 +160,27 @@ vscr_ratchet_skipped_message_key_delete(vscr_ratchet_skipped_message_key_t *ratc
 //  This is a reverse action of the function 'vscr_ratchet_skipped_message_key_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_message_key_destroy(vscr_ratchet_skipped_message_key_t **ratchet_skipped_message_key_ctx_ref) {
+vscr_ratchet_skipped_message_key_destroy(vscr_ratchet_skipped_message_key_t **ratchet_skipped_message_key_ref) {
 
-    VSCR_ASSERT_PTR(ratchet_skipped_message_key_ctx_ref);
+    VSCR_ASSERT_PTR(ratchet_skipped_message_key_ref);
 
-    vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key_ctx = *ratchet_skipped_message_key_ctx_ref;
-    *ratchet_skipped_message_key_ctx_ref = NULL;
+    vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key = *ratchet_skipped_message_key_ref;
+    *ratchet_skipped_message_key_ref = NULL;
 
-    vscr_ratchet_skipped_message_key_delete(ratchet_skipped_message_key_ctx);
+    vscr_ratchet_skipped_message_key_delete(ratchet_skipped_message_key);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_skipped_message_key_t *
-vscr_ratchet_skipped_message_key_copy(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key_ctx) {
+vscr_ratchet_skipped_message_key_shallow_copy(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key) {
 
-    VSCR_ASSERT_PTR(ratchet_skipped_message_key_ctx);
+    VSCR_ASSERT_PTR(ratchet_skipped_message_key);
 
-    ++ratchet_skipped_message_key_ctx->refcnt;
+    ++ratchet_skipped_message_key->refcnt;
 
-    return ratchet_skipped_message_key_ctx;
+    return ratchet_skipped_message_key;
 }
 
 
@@ -197,9 +197,9 @@ vscr_ratchet_skipped_message_key_copy(vscr_ratchet_skipped_message_key_t *ratche
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_skipped_message_key_init_ctx(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key_ctx) {
+vscr_ratchet_skipped_message_key_init_ctx(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key) {
 
-    VSCR_ASSERT_PTR(ratchet_skipped_message_key_ctx);
+    VSCR_ASSERT_PTR(ratchet_skipped_message_key);
 }
 
 //
@@ -208,10 +208,10 @@ vscr_ratchet_skipped_message_key_init_ctx(vscr_ratchet_skipped_message_key_t *ra
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_skipped_message_key_cleanup_ctx(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key_ctx) {
+vscr_ratchet_skipped_message_key_cleanup_ctx(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key) {
 
-    VSCR_ASSERT_PTR(ratchet_skipped_message_key_ctx);
+    VSCR_ASSERT_PTR(ratchet_skipped_message_key);
 
-    vscr_ratchet_message_key_destroy(&ratchet_skipped_message_key_ctx->message_key);
-    vsc_buffer_destroy(&ratchet_skipped_message_key_ctx->public_key);
+    vscr_ratchet_message_key_destroy(&ratchet_skipped_message_key->message_key);
+    vsc_buffer_destroy(&ratchet_skipped_message_key->public_key);
 }

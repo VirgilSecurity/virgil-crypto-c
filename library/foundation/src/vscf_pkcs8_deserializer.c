@@ -62,7 +62,7 @@
 #include "vscf_pkcs8_der_deserializer.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_key_deserializer.h"
-#include "vscf_pkcs8_deserializer_impl.h"
+#include "vscf_pkcs8_deserializer_defs.h"
 #include "vscf_pkcs8_deserializer_internal.h"
 
 // clang-format on
@@ -87,18 +87,18 @@
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_pkcs8_deserializer_setup_defaults(vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl) {
+vscf_pkcs8_deserializer_setup_defaults(vscf_pkcs8_deserializer_t *pkcs8_deserializer) {
 
-    VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
+    VSCF_ASSERT_PTR(pkcs8_deserializer);
 
-    if (NULL == pkcs8_deserializer_impl->asn1_reader) {
-        pkcs8_deserializer_impl->asn1_reader = vscf_asn1rd_impl(vscf_asn1rd_new());
+    if (NULL == pkcs8_deserializer->asn1_reader) {
+        pkcs8_deserializer->asn1_reader = vscf_asn1rd_impl(vscf_asn1rd_new());
     }
 
-    if (NULL == pkcs8_deserializer_impl->der_deserializer) {
-        vscf_pkcs8_der_deserializer_impl_t *der_deserializer = vscf_pkcs8_der_deserializer_new();
-        vscf_pkcs8_der_deserializer_use_asn1_reader(der_deserializer, pkcs8_deserializer_impl->asn1_reader);
-        pkcs8_deserializer_impl->der_deserializer = vscf_pkcs8_der_deserializer_impl(der_deserializer);
+    if (NULL == pkcs8_deserializer->der_deserializer) {
+        vscf_pkcs8_der_deserializer_t *der_deserializer = vscf_pkcs8_der_deserializer_new();
+        vscf_pkcs8_der_deserializer_use_asn1_reader(der_deserializer, pkcs8_deserializer->asn1_reader);
+        pkcs8_deserializer->der_deserializer = vscf_pkcs8_der_deserializer_impl(der_deserializer);
     }
 
     return vscf_SUCCESS;
@@ -109,10 +109,10 @@ vscf_pkcs8_deserializer_setup_defaults(vscf_pkcs8_deserializer_impl_t *pkcs8_des
 //
 VSCF_PUBLIC vscf_raw_key_t *
 vscf_pkcs8_deserializer_deserialize_public_key(
-        vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl, vsc_data_t public_key_data, vscf_error_ctx_t *error) {
+        vscf_pkcs8_deserializer_t *pkcs8_deserializer, vsc_data_t public_key_data, vscf_error_ctx_t *error) {
 
-    VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
-    VSCF_ASSERT_PTR(pkcs8_deserializer_impl->der_deserializer);
+    VSCF_ASSERT_PTR(pkcs8_deserializer);
+    VSCF_ASSERT_PTR(pkcs8_deserializer->der_deserializer);
     VSCF_ASSERT(vsc_data_is_valid(public_key_data));
 
     vsc_data_t title = vscf_pem_title(public_key_data);
@@ -120,7 +120,7 @@ vscf_pkcs8_deserializer_deserialize_public_key(
 
     if (is_der) {
         vscf_raw_key_t *raw_key = vscf_key_deserializer_deserialize_public_key(
-                pkcs8_deserializer_impl->der_deserializer, public_key_data, error);
+                pkcs8_deserializer->der_deserializer, public_key_data, error);
 
         return raw_key;
     }
@@ -142,7 +142,7 @@ vscf_pkcs8_deserializer_deserialize_public_key(
     }
 
     vscf_raw_key_t *raw_key = vscf_key_deserializer_deserialize_public_key(
-            pkcs8_deserializer_impl->der_deserializer, vsc_buffer_data(der), error);
+            pkcs8_deserializer->der_deserializer, vsc_buffer_data(der), error);
 
     vsc_buffer_destroy(&der);
     return raw_key;
@@ -153,10 +153,10 @@ vscf_pkcs8_deserializer_deserialize_public_key(
 //
 VSCF_PUBLIC vscf_raw_key_t *
 vscf_pkcs8_deserializer_deserialize_private_key(
-        vscf_pkcs8_deserializer_impl_t *pkcs8_deserializer_impl, vsc_data_t private_key_data, vscf_error_ctx_t *error) {
+        vscf_pkcs8_deserializer_t *pkcs8_deserializer, vsc_data_t private_key_data, vscf_error_ctx_t *error) {
 
-    VSCF_ASSERT_PTR(pkcs8_deserializer_impl);
-    VSCF_ASSERT_PTR(pkcs8_deserializer_impl->der_deserializer);
+    VSCF_ASSERT_PTR(pkcs8_deserializer);
+    VSCF_ASSERT_PTR(pkcs8_deserializer->der_deserializer);
     VSCF_ASSERT(vsc_data_is_valid(private_key_data));
 
     vsc_data_t title = vscf_pem_title(private_key_data);
@@ -164,7 +164,7 @@ vscf_pkcs8_deserializer_deserialize_private_key(
 
     if (is_der) {
         vscf_raw_key_t *raw_key = vscf_key_deserializer_deserialize_private_key(
-                pkcs8_deserializer_impl->der_deserializer, private_key_data, error);
+                pkcs8_deserializer->der_deserializer, private_key_data, error);
 
         return raw_key;
     }
@@ -186,7 +186,7 @@ vscf_pkcs8_deserializer_deserialize_private_key(
     }
 
     vscf_raw_key_t *raw_key = vscf_key_deserializer_deserialize_private_key(
-            pkcs8_deserializer_impl->der_deserializer, vsc_buffer_data(der), error);
+            pkcs8_deserializer->der_deserializer, vsc_buffer_data(der), error);
 
     vsc_buffer_destroy(&der);
     return raw_key;

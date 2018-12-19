@@ -106,13 +106,13 @@ vsce_phe_client_ctx_size(void);
 //  Perform initialization of pre-allocated context.
 //
 VSCE_PUBLIC void
-vsce_phe_client_init(vsce_phe_client_t *phe_client_ctx);
+vsce_phe_client_init(vsce_phe_client_t *phe_client);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCE_PUBLIC void
-vsce_phe_client_cleanup(vsce_phe_client_t *phe_client_ctx);
+vsce_phe_client_cleanup(vsce_phe_client_t *phe_client);
 
 //
 //  Allocate context and perform it's initialization.
@@ -125,58 +125,58 @@ vsce_phe_client_new(void);
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCE_PUBLIC void
-vsce_phe_client_delete(vsce_phe_client_t *phe_client_ctx);
+vsce_phe_client_delete(vsce_phe_client_t *phe_client);
 
 //
 //  Delete given context and nullifies reference.
 //  This is a reverse action of the function 'vsce_phe_client_new ()'.
 //
 VSCE_PUBLIC void
-vsce_phe_client_destroy(vsce_phe_client_t **phe_client_ctx_ref);
+vsce_phe_client_destroy(vsce_phe_client_t **phe_client_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCE_PUBLIC vsce_phe_client_t *
-vsce_phe_client_copy(vsce_phe_client_t *phe_client_ctx);
+vsce_phe_client_shallow_copy(vsce_phe_client_t *phe_client);
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCE_PUBLIC void
-vsce_phe_client_use_random(vsce_phe_client_t *phe_client_ctx, vscf_impl_t *random);
+vsce_phe_client_use_random(vsce_phe_client_t *phe_client, vscf_impl_t *random);
 
 //
 //  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCE_PUBLIC void
-vsce_phe_client_take_random(vsce_phe_client_t *phe_client_ctx, vscf_impl_t *random);
+vsce_phe_client_take_random(vsce_phe_client_t *phe_client, vscf_impl_t *random);
 
 //
 //  Release dependency to the interface 'random'.
 //
 VSCE_PUBLIC void
-vsce_phe_client_release_random(vsce_phe_client_t *phe_client_ctx);
+vsce_phe_client_release_random(vsce_phe_client_t *phe_client);
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCE_PUBLIC void
-vsce_phe_client_use_operation_random(vsce_phe_client_t *phe_client_ctx, vscf_impl_t *operation_random);
+vsce_phe_client_use_operation_random(vsce_phe_client_t *phe_client, vscf_impl_t *operation_random);
 
 //
 //  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCE_PUBLIC void
-vsce_phe_client_take_operation_random(vsce_phe_client_t *phe_client_ctx, vscf_impl_t *operation_random);
+vsce_phe_client_take_operation_random(vsce_phe_client_t *phe_client, vscf_impl_t *operation_random);
 
 //
 //  Release dependency to the interface 'random'.
 //
 VSCE_PUBLIC void
-vsce_phe_client_release_operation_random(vsce_phe_client_t *phe_client_ctx);
+vsce_phe_client_release_operation_random(vsce_phe_client_t *phe_client);
 
 //
 //  Sets client private and server public key
@@ -184,20 +184,19 @@ vsce_phe_client_release_operation_random(vsce_phe_client_t *phe_client_ctx);
 //  This function should be called only once
 //
 VSCE_PUBLIC vsce_error_t
-vsce_phe_client_set_keys(vsce_phe_client_t *phe_client_ctx, vsc_data_t client_private_key,
-        vsc_data_t server_public_key);
+vsce_phe_client_set_keys(vsce_phe_client_t *phe_client, vsc_data_t client_private_key, vsc_data_t server_public_key);
 
 //
 //  Generates client private key
 //
 VSCE_PUBLIC vsce_error_t
-vsce_phe_client_generate_client_private_key(vsce_phe_client_t *phe_client_ctx, vsc_buffer_t *client_private_key);
+vsce_phe_client_generate_client_private_key(vsce_phe_client_t *phe_client, vsc_buffer_t *client_private_key);
 
 //
 //  Buffer size needed to fit EnrollmentRecord
 //
 VSCE_PUBLIC size_t
-vsce_phe_client_enrollment_record_len(vsce_phe_client_t *phe_client_ctx);
+vsce_phe_client_enrollment_record_len(vsce_phe_client_t *phe_client);
 
 //
 //  Uses fresh EnrollmentResponse from PHE server (see get enrollment func) and user's password (or its hash) to create
@@ -205,20 +204,20 @@ vsce_phe_client_enrollment_record_len(vsce_phe_client_t *phe_client_ctx);
 //  Also generates a random seed which then can be used to generate symmetric or private key to protect user's data
 //
 VSCE_PUBLIC vsce_error_t
-vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client_ctx, vsc_data_t enrollment_response, vsc_data_t password,
+vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client, vsc_data_t enrollment_response, vsc_data_t password,
         vsc_buffer_t *enrollment_record, vsc_buffer_t *account_key);
 
 //
 //  Buffer size needed to fit VerifyPasswordRequest
 //
 VSCE_PUBLIC size_t
-vsce_phe_client_verify_password_request_len(vsce_phe_client_t *phe_client_ctx);
+vsce_phe_client_verify_password_request_len(vsce_phe_client_t *phe_client);
 
 //
 //  Creates a request for further password verification at the PHE server side.
 //
 VSCE_PUBLIC vsce_error_t
-vsce_phe_client_create_verify_password_request(vsce_phe_client_t *phe_client_ctx, vsc_data_t password,
+vsce_phe_client_create_verify_password_request(vsce_phe_client_t *phe_client, vsc_data_t password,
         vsc_data_t enrollment_record, vsc_buffer_t *verify_password_request);
 
 //
@@ -227,7 +226,7 @@ vsce_phe_client_create_verify_password_request(vsce_phe_client_t *phe_client_ctx
 //  If login failed account key will be empty
 //
 VSCE_PUBLIC vsce_error_t
-vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vsc_data_t password,
+vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client, vsc_data_t password,
         vsc_data_t enrollment_record, vsc_data_t verify_password_response, vsc_buffer_t *account_key);
 
 //
@@ -235,14 +234,14 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client_ctx, vs
 //  Use output values to instantiate new client instance with new keys
 //
 VSCE_PUBLIC vsce_error_t
-vsce_phe_client_rotate_keys(vsce_phe_client_t *phe_client_ctx, vsc_data_t update_token,
+vsce_phe_client_rotate_keys(vsce_phe_client_t *phe_client, vsc_data_t update_token,
         vsc_buffer_t *new_client_private_key, vsc_buffer_t *new_server_public_key);
 
 //
 //  Updates EnrollmentRecord using server's update token
 //
 VSCE_PUBLIC vsce_error_t
-vsce_phe_client_update_enrollment_record(vsce_phe_client_t *phe_client_ctx, vsc_data_t enrollment_record,
+vsce_phe_client_update_enrollment_record(vsce_phe_client_t *phe_client, vsc_data_t enrollment_record,
         vsc_data_t update_token, vsc_buffer_t *new_enrollment_record);
 
 

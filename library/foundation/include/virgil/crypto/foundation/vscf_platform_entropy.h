@@ -137,7 +137,7 @@ vscf_platform_entropy_destroy(vscf_platform_entropy_impl_t **platform_entropy_im
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_platform_entropy_impl_t *
-vscf_platform_entropy_copy(vscf_platform_entropy_impl_t *platform_entropy_impl);
+vscf_platform_entropy_shallow_copyvscf_platform_entropy_impl_t *platform_entropy_impl);
 
 //
 //  Defines that implemented source is strong.

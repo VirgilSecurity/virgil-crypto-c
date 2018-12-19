@@ -70,7 +70,7 @@
 VSCF_PUBLIC void
 vscf_hash_stream_start(vscf_impl_t *impl) {
 
-    const vscf_hash_stream_api_t *hash_stream_api = vscf_hash_stream_api (impl);
+    const vscf_hash_stream_api_t *hash_stream_api = vscf_hash_stream_api(impl);
     VSCF_ASSERT_PTR (hash_stream_api);
 
     VSCF_ASSERT_PTR (hash_stream_api->start_cb);
@@ -83,7 +83,7 @@ vscf_hash_stream_start(vscf_impl_t *impl) {
 VSCF_PUBLIC void
 vscf_hash_stream_update(vscf_impl_t *impl, vsc_data_t data) {
 
-    const vscf_hash_stream_api_t *hash_stream_api = vscf_hash_stream_api (impl);
+    const vscf_hash_stream_api_t *hash_stream_api = vscf_hash_stream_api(impl);
     VSCF_ASSERT_PTR (hash_stream_api);
 
     VSCF_ASSERT_PTR (hash_stream_api->update_cb);
@@ -96,7 +96,7 @@ vscf_hash_stream_update(vscf_impl_t *impl, vsc_data_t data) {
 VSCF_PUBLIC void
 vscf_hash_stream_finish(vscf_impl_t *impl, vsc_buffer_t *digest) {
 
-    const vscf_hash_stream_api_t *hash_stream_api = vscf_hash_stream_api (impl);
+    const vscf_hash_stream_api_t *hash_stream_api = vscf_hash_stream_api(impl);
     VSCF_ASSERT_PTR (hash_stream_api);
 
     VSCF_ASSERT_PTR (hash_stream_api->finish_cb);
@@ -111,7 +111,7 @@ vscf_hash_stream_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_HASH_STREAM);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_HASH_STREAM);
     return (const vscf_hash_stream_api_t *) api;
 }
 
@@ -134,7 +134,7 @@ vscf_hash_stream_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_HASH_STREAM) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_HASH_STREAM) != NULL;
 }
 
 //

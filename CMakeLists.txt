@@ -54,6 +54,20 @@ include("cmake/protobuf.cmake")
 
 
 # ---------------------------------------------------------------------------
+#   Version options
+# ---------------------------------------------------------------------------
+set(VIRGIL_CRYPTO_VERSION_LABEL "" CACHE STRING "Version label, i.e. beta, rc1.")
+
+file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "${virgil_crypto_VERSION}")
+
+if(VIRGIL_CRYPTO_VERSION_LABEL)
+    file(APPEND "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "-${VIRGIL_CRYPTO_VERSION_LABEL}")
+endif()
+
+file(APPEND "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "\n")
+
+
+# ---------------------------------------------------------------------------
 #   Build options
 # ---------------------------------------------------------------------------
 
@@ -66,6 +80,7 @@ option(BUILD_SHARED_LIBS "On/Off build shared libraries." OFF)
 # Test
 #
 option(ENABLE_TESTING "On/Off integration tests." ON)
+option(ENABLE_PROFILING "On/Off GProf compilation options." OFF)
 
 option(VIRGIL_C_TESTING "On/Off C library integration tests." ON)
 option(VIRGIL_PHP_TESTING "On/Off PHP wrapper integration tests." ON)
@@ -77,7 +92,7 @@ option(VIRGIL_LIB_COMMON "Build 'common' library" ON)
 option(VIRGIL_LIB_FOUNDATION "Build 'foundation' library" ON)
 option(VIRGIL_LIB_PYTHIA "Build 'pythia' library" ON)
 option(VIRGIL_LIB_ED25519 "Build 'ed25519' library" ON)
-option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" ON)
+option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" OFF)
 option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
 
 #
@@ -292,6 +307,6 @@ set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Virgil Security Crypto library")
 set(CPACK_PACKAGE_VENDOR "Virgil Security, Inc.")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_LIST_DIR}/LICENSE")
 set(CPACK_PACKAGE_FILE_NAME "${VIRGIL_PACKAGE_NAME}")
-set(CPACK_OUTPUT_FILE_PREFIX "packages")
+set(CPACK_OUTPUT_FILE_PREFIX "packages" CACHE STRING "Output directory for CPack archives")
 
 include (CPack)

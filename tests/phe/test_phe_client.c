@@ -68,7 +68,7 @@ test__enroll_account__mocked_rnd__should_match(void) {
     buffer1 = vsc_buffer_new_with_capacity(vsce_phe_client_enrollment_record_len(client));
     buffer2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
 
-    vscf_fake_random_impl_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_data(fake_random, test_phe_server_rnd);
 
     vsce_phe_client_release_random(client);
@@ -97,7 +97,7 @@ test__verify_password__mocked_rnd__should_match(void) {
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vsce_phe_client_enrollment_record_len(client));
 
-    vscf_fake_random_impl_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_data(fake_random, test_phe_server_rnd);
 
     vsce_phe_client_release_random(client);
@@ -122,7 +122,7 @@ test__verify_password__mocked_rnd_invalid_pwd__should_match(void) {
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vsce_phe_client_enrollment_record_len(client));
 
-    vscf_fake_random_impl_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_data(fake_random, test_phe_server_rnd);
 
     vsce_phe_client_release_random(client);

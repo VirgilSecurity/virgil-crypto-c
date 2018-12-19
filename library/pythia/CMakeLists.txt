@@ -114,10 +114,12 @@ target_add_filename_definitions(pythia_wrap)
 #
 # Enable profiling
 #
-if(COMMAND enable_target_profiling)
-    enable_target_profiling(pythia_wrap)
-else()
-    message(STATUS "To enable profiling create function 'enable_target_profiling(<target>)'.")
+if(ENABLE_PROFILING)
+    if(COMMAND enable_target_profiling)
+        enable_target_profiling(pythia_wrap)
+    else()
+        message(STATUS "To enable profiling create function 'enable_target_profiling(<target>)'.")
+    endif()
 endif()
 
 #

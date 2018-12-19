@@ -141,17 +141,10 @@
     </method>
 
 
-    <method name="left" is_const="1">
-        Returns length of left bytes - bytes that are not in use yet.
+    <method name="unused len" is_const="1">
+        Returns length of the bytes that are not in use yet.
 
         <return type="size"/>
-    </method>
-
-
-    <method name="ptr">
-        Returns pointer to the current wirte position.
-
-        <return type="byte" access="readwrite" is_reference="1"/>
     </method>
 
 
@@ -162,21 +155,21 @@
     </method>
 
 
-    <method name="reserve">
+    <method name="unused bytes">
+        Returns pointer to the first unsed byte in the buffer.
+
+        <return type="byte" access="readwrite" is_reference="1"/>
+    </method>
+
+
+    <method name="inc used">
         Increase used bytes by given length.
 
         <argument name="len" type="size"/>
     </method>
 
 
-    <method name="increase used bytes">
-        Increase used bytes by given length.
-
-        <argument name="len" type="size"/>
-    </method>
-
-
-    <method name="decrease used bytes">
+    <method name="dec used">
         Decrease used bytes by given length.
 
         <argument name="len" type="size"/>
@@ -206,7 +199,6 @@
 
     <method name="erase">
         Zeroing buffer in secure manner.
-        <!-- And reset to the initial state. -->
-
+        And reset it to the initial state.
     </method>
 </class>

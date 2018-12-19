@@ -8,7 +8,7 @@
         work_path="generated/common/"
         >
 
-    <version major="0" minor="1" patch="0" />
+    <version major="0" minor="1" patch="0"/>
 
     <license>
         Copyright (C) 2015-2018 Virgil Security Inc.
@@ -54,5 +54,4 @@
     <class name="buffer"/>
 
     <wrapper lang="swift"/>
-    <!-- <wrapper lang="php"/> -->
 </project>

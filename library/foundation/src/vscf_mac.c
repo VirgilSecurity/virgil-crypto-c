@@ -70,7 +70,7 @@
 VSCF_PUBLIC void
 vscf_mac(vscf_impl_t *impl, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac) {
 
-    const vscf_mac_api_t *mac_api = vscf_mac_api (impl);
+    const vscf_mac_api_t *mac_api = vscf_mac_api(impl);
     VSCF_ASSERT_PTR (mac_api);
 
     VSCF_ASSERT_PTR (mac_api->mac_cb);
@@ -85,7 +85,7 @@ vscf_mac_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_MAC);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_MAC);
     return (const vscf_mac_api_t *) api;
 }
 
@@ -108,7 +108,7 @@ vscf_mac_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_MAC) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_MAC) != NULL;
 }
 
 //

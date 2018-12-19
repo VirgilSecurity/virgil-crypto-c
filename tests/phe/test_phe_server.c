@@ -64,7 +64,7 @@ test__get_enrollment__mocked_rnd__should_match(void) {
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vsce_phe_server_enrollment_response_len(server));
 
-    vscf_fake_random_impl_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_data(fake_random, test_phe_server_rnd);
 
     vsce_phe_server_release_random(server);
@@ -87,7 +87,7 @@ test__verify_password__valid_password__should_match(void) {
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vsce_phe_server_verify_password_response_len(server));
 
-    vscf_fake_random_impl_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_data(fake_random, test_phe_server_rnd);
 
     vsce_phe_server_release_random(server);
@@ -110,7 +110,7 @@ test__verify_password__invalid_password__should_match(void) {
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vsce_phe_server_verify_password_response_len(server));
 
-    vscf_fake_random_impl_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_data(fake_random, test_phe_server_rnd);
 
     vsce_phe_server_release_random(server);
@@ -137,7 +137,7 @@ test__rotate_keys__mocked_rnd__should_match(void) {
     buffer2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     buffer3 = vsc_buffer_new_with_capacity(vsce_phe_server_update_token_len(server));
 
-    vscf_fake_random_impl_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_data(fake_random, test_phe_server_rnd);
 
     vsce_phe_server_release_random(server);

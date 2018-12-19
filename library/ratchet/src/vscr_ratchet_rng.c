@@ -70,7 +70,7 @@
 VSCR_PUBLIC void
 vscr_ratchet_rng_generate_random_data(vscr_impl_t *impl, size_t size, vsc_buffer_t *random) {
 
-    const vscr_ratchet_rng_api_t *ratchet_rng_api = vscr_ratchet_rng_api (impl);
+    const vscr_ratchet_rng_api_t *ratchet_rng_api = vscr_ratchet_rng_api(impl);
     VSCR_ASSERT_PTR (ratchet_rng_api);
 
     VSCR_ASSERT_PTR (ratchet_rng_api->generate_random_data_cb);
@@ -85,7 +85,7 @@ vscr_ratchet_rng_api(const vscr_impl_t *impl) {
 
     VSCR_ASSERT_PTR (impl);
 
-    const vscr_api_t *api = vscr_impl_api (impl, vscr_api_tag_RATCHET_RNG);
+    const vscr_api_t *api = vscr_impl_api(impl, vscr_api_tag_RATCHET_RNG);
     return (const vscr_ratchet_rng_api_t *) api;
 }
 
@@ -97,7 +97,7 @@ vscr_ratchet_rng_is_implemented(const vscr_impl_t *impl) {
 
     VSCR_ASSERT_PTR (impl);
 
-    return vscr_impl_api (impl, vscr_api_tag_RATCHET_RNG) != NULL;
+    return vscr_impl_api(impl, vscr_api_tag_RATCHET_RNG) != NULL;
 }
 
 //

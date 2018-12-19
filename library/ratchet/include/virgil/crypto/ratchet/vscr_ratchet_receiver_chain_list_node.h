@@ -95,15 +95,14 @@ vscr_ratchet_receiver_chain_list_node_ctx_size(void);
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_receiver_chain_list_node_init(
-        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node_ctx);
+vscr_ratchet_receiver_chain_list_node_init(vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
 vscr_ratchet_receiver_chain_list_node_cleanup(
-        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node_ctx);
+        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node);
 
 //
 //  Allocate context and perform it's initialization.
@@ -117,7 +116,7 @@ vscr_ratchet_receiver_chain_list_node_new(void);
 //
 VSCR_PUBLIC void
 vscr_ratchet_receiver_chain_list_node_delete(
-        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node_ctx);
+        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node);
 
 //
 //  Delete given context and nullifies reference.
@@ -125,14 +124,14 @@ vscr_ratchet_receiver_chain_list_node_delete(
 //
 VSCR_PUBLIC void
 vscr_ratchet_receiver_chain_list_node_destroy(
-        vscr_ratchet_receiver_chain_list_node_t **ratchet_receiver_chain_list_node_ctx_ref);
+        vscr_ratchet_receiver_chain_list_node_t **ratchet_receiver_chain_list_node_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_receiver_chain_list_node_t *
-vscr_ratchet_receiver_chain_list_node_copy(
-        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node_ctx);
+vscr_ratchet_receiver_chain_list_node_shallow_copy(
+        vscr_ratchet_receiver_chain_list_node_t *ratchet_receiver_chain_list_node);
 
 
 // --------------------------------------------------------------------------

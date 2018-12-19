@@ -61,7 +61,7 @@ target_compile_definitions(foundation
             "VSCF_CIPHER_INFO=$<BOOL:${VSCF_CIPHER_INFO}>"
             "VSCF_DECRYPT=$<BOOL:${VSCF_DECRYPT}>"
             "VSCF_ENCRYPT=$<BOOL:${VSCF_ENCRYPT}>"
-            "VSCF_EX_KDF=$<BOOL:${VSCF_EX_KDF}>"
+            "VSCF_SALTED_KDF=$<BOOL:${VSCF_SALTED_KDF}>"
             "VSCF_HASH=$<BOOL:${VSCF_HASH}>"
             "VSCF_HASH_INFO=$<BOOL:${VSCF_HASH_INFO}>"
             "VSCF_HASH_STREAM=$<BOOL:${VSCF_HASH_STREAM}>"

@@ -55,7 +55,7 @@ option(VSCF_CIPHER_AUTH_INFO "Enable interface 'cipher auth info'." ON)
 option(VSCF_CIPHER_INFO "Enable interface 'cipher info'." ON)
 option(VSCF_DECRYPT "Enable interface 'decrypt'." ON)
 option(VSCF_ENCRYPT "Enable interface 'encrypt'." ON)
-option(VSCF_EX_KDF "Enable interface 'ex kdf'." ON)
+option(VSCF_SALTED_KDF "Enable interface 'salted kdf'." ON)
 option(VSCF_HASH "Enable interface 'hash'." ON)
 option(VSCF_HASH_INFO "Enable interface 'hash info'." ON)
 option(VSCF_HASH_STREAM "Enable interface 'hash stream'." ON)
@@ -119,7 +119,7 @@ mark_as_advanced(
         VSCF_CIPHER_INFO
         VSCF_DECRYPT
         VSCF_ENCRYPT
-        VSCF_EX_KDF
+        VSCF_SALTED_KDF
         VSCF_HASH
         VSCF_HASH_INFO
         VSCF_HASH_STREAM

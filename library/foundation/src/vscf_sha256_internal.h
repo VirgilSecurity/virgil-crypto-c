@@ -78,7 +78,7 @@ extern "C" {
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_sha256_init_ctx(vscf_sha256_impl_t *sha256_impl);
+vscf_sha256_init_ctx(vscf_sha256_t *sha256);
 
 //
 //  Release resources of the implementation specific context.
@@ -86,7 +86,7 @@ vscf_sha256_init_ctx(vscf_sha256_impl_t *sha256_impl);
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_sha256_cleanup_ctx(vscf_sha256_impl_t *sha256_impl);
+vscf_sha256_cleanup_ctx(vscf_sha256_t *sha256);
 
 
 // --------------------------------------------------------------------------

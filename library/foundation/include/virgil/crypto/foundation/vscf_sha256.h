@@ -101,10 +101,10 @@ enum {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_sha256_impl_t vscf_sha256_impl_t;
+typedef struct vscf_sha256_t vscf_sha256_t;
 
 //
-//  Return size of 'vscf_sha256_impl_t' type.
+//  Return size of 'vscf_sha256_t' type.
 //
 VSCF_PUBLIC size_t
 vscf_sha256_impl_size(void);
@@ -113,26 +113,26 @@ vscf_sha256_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_sha256_impl(vscf_sha256_impl_t *sha256_impl);
+vscf_sha256_impl(vscf_sha256_t *sha256);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_sha256_init(vscf_sha256_impl_t *sha256_impl);
+vscf_sha256_init(vscf_sha256_t *sha256);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_sha256_init()'.
 //
 VSCF_PUBLIC void
-vscf_sha256_cleanup(vscf_sha256_impl_t *sha256_impl);
+vscf_sha256_cleanup(vscf_sha256_t *sha256);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_sha256_impl_t *
+VSCF_PUBLIC vscf_sha256_t *
 vscf_sha256_new(void);
 
 //
@@ -140,7 +140,7 @@ vscf_sha256_new(void);
 //  This is a reverse action of the function 'vscf_sha256_new()'.
 //
 VSCF_PUBLIC void
-vscf_sha256_delete(vscf_sha256_impl_t *sha256_impl);
+vscf_sha256_delete(vscf_sha256_t *sha256);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -148,14 +148,14 @@ vscf_sha256_delete(vscf_sha256_impl_t *sha256_impl);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_sha256_destroy(vscf_sha256_impl_t **sha256_impl_ref);
+vscf_sha256_destroy(vscf_sha256_t **sha256_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_sha256_impl_t *
-vscf_sha256_copy(vscf_sha256_impl_t *sha256_impl);
+VSCF_PUBLIC vscf_sha256_t *
+vscf_sha256_shallow_copy(vscf_sha256_t *sha256);
 
 //
 //  Returns instance of the implemented interface 'hash info'.
@@ -185,19 +185,19 @@ vscf_sha256_hash(vsc_data_t data, vsc_buffer_t *digest);
 //  Start a new hashing.
 //
 VSCF_PUBLIC void
-vscf_sha256_start(vscf_sha256_impl_t *sha256_impl);
+vscf_sha256_start(vscf_sha256_t *sha256);
 
 //
 //  Add given data to the hash.
 //
 VSCF_PUBLIC void
-vscf_sha256_update(vscf_sha256_impl_t *sha256_impl, vsc_data_t data);
+vscf_sha256_update(vscf_sha256_t *sha256, vsc_data_t data);
 
 //
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_sha256_finish(vscf_sha256_impl_t *sha256_impl, vsc_buffer_t *digest);
+vscf_sha256_finish(vscf_sha256_t *sha256, vsc_buffer_t *digest);
 
 
 // --------------------------------------------------------------------------

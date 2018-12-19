@@ -81,10 +81,10 @@ vscf_endianness_reverse_memcpy(vsc_data_t src, vsc_buffer_t *dst) {
     VSCF_ASSERT(vsc_data_is_valid(src));
     VSCF_ASSERT_PTR(dst);
     VSCF_ASSERT(vsc_buffer_is_valid(dst));
-    byte *dest = vsc_buffer_ptr(dst);
-    VSCF_ASSERT(src.len <= vsc_buffer_left(dst));
+    byte *dest = vsc_buffer_unused_bytes(dst);
+    VSCF_ASSERT(src.len <= vsc_buffer_unused_len(dst));
     for (size_t i = 0; i < src.len; i++) {
         dest[src.len - 1 - i] = src.bytes[i];
     }
-    vsc_buffer_increase_used_bytes(dst, src.len);
+    vsc_buffer_inc_used(dst, src.len);
 }
