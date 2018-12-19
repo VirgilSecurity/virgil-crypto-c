@@ -1,4 +1,4 @@
-<class name="ratchet skipped message key" context="public">
+<class name="ratchet skipped message key" context="public" scope="internal">
 
     <property name="public key" class="buffer" access="readwrite"/>
     <property name="message key" class="ratchet message key" access="readwrite"/>

@@ -1,14 +1,14 @@
-<class name="ratchet" context="private">
+<class name="ratchet" context="private" scope="internal">
 
     <require impl="sha256" project="foundation" scope="private"/>
     <require impl="hmac" project="foundation" scope="private"/>
     <require impl="hkdf" project="foundation" scope="private"/>
 
-    <require class="ratchet common" scope="public"/>
-    <require class="ratchet message key" scope="public"/>
-    <require class="ratchet chain key" scope="public"/>
+    <require class="ratchet common" scope="context"/>
+    <require class="ratchet message key" scope="private"/>
+    <require class="ratchet chain key" scope="private"/>
 
-    <require header="Message.pb.h" scope="public"/>
+    <require header="RatchetModels.pb.h" scope="public"/>
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
 

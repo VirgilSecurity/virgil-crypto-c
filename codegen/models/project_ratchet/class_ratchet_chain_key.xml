@@ -1,4 +1,4 @@
-<class name="ratchet chain key" context="public">
+<class name="ratchet chain key" context="public" scope="internal">
 
     <require class="ratchet common" scope="public"/>
 

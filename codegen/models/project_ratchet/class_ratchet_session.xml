@@ -2,6 +2,10 @@
 
     <require class="ratchet common" scope="public"/>
 
+    <require header="RatchetModels.pb.h" scope="private"/>
+    <require header="pb_decode.h" scope="private"/>
+    <require header="pb_encode.h" scope="private"/>
+
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
 
     <constant name="max ratchet length" definition="public" value="1024 * 1024">
@@ -9,8 +13,8 @@
     </constant>
 
     <dependency name="rng" interface="ratchet rng"/>
-    <dependency class="ratchet" name="ratchet"/>
 
+    <property class="ratchet" name="ratchet"/>
     <property name="received first response" type="boolean"/>
     <property name="sender identity public key" class="buffer" access="readwrite"/>
     <property name="sender ephemeral public key" class="buffer" access="readwrite"/>
@@ -23,7 +27,7 @@
         <argument name="sender ephemeral public key" class="buffer" access="readwrite"/>
         <argument name="receiver longterm public key" class="buffer" access="readwrite"/>
         <argument name="receiver onetime public key" class="buffer" access="readwrite"/>
-        <argument name="ratchet" class="ratchet" access="disown"/>
+        <argument name="ratchet" class="ratchet" access="disown"/>D
     </constructor>
 
     <method name="initiate">

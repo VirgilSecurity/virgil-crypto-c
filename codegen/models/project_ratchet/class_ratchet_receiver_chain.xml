@@ -1,4 +1,4 @@
-<class name="ratchet receiver chain" context="public">
+<class name="ratchet receiver chain" context="public" scope="internal">
 
     <property name="public key" class="buffer" access="readwrite"/>
     <property name="chain key" class="ratchet chain key" access="readwrite" is_reference="0"/>
