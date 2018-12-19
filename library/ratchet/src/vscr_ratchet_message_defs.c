@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface 'ratchet rng' API.
+//  Class 'ratchet message' types definition.
 // --------------------------------------------------------------------------
 
 
@@ -50,7 +50,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscr_ratchet_rng_api.h"
+#include "vscr_ratchet_message_defs.h"
 
 // clang-format on
 //  @end

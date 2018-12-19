@@ -47,16 +47,18 @@
 #include "vscr_ratchet.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-#include "vscr_ratchet_rng.h"
 #include "vscr_ratchet_defs.h"
 #include "vscr_ratchet_message_key.h"
 #include "vscr_ratchet_chain_key.h"
+#include "vscr_ratchet_message_defs.h"
 #include "vscr_ratchet_receiver_chain.h"
 #include "vscr_ratchet_skipped_message_key.h"
 
+#include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_sha256.h>
 #include <virgil/crypto/foundation/vscf_hmac.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>
+#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <ed25519/ed25519.h>
 
 // clang-format on
@@ -245,45 +247,45 @@ vscr_ratchet_shallow_copy(vscr_ratchet_t *ratchet) {
 }
 
 //
-//  Setup dependency to the interface 'ratchet rng' with shared ownership.
+//  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCR_PUBLIC void
-vscr_ratchet_use_rng(vscr_ratchet_t *ratchet, vscr_impl_t *rng) {
+vscr_ratchet_use_rng(vscr_ratchet_t *ratchet, vscf_impl_t *rng) {
 
     VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(rng);
     VSCR_ASSERT_PTR(ratchet->rng == NULL);
 
-    VSCR_ASSERT(vscr_ratchet_rng_is_implemented(rng));
+    VSCR_ASSERT(vscf_random_is_implemented(rng));
 
-    ratchet->rng = vscr_impl_shallow_copy(rng);
+    ratchet->rng = vscf_impl_shallow_copy(rng);
 }
 
 //
-//  Setup dependency to the interface 'ratchet rng' and transfer ownership.
+//  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCR_PUBLIC void
-vscr_ratchet_take_rng(vscr_ratchet_t *ratchet, vscr_impl_t *rng) {
+vscr_ratchet_take_rng(vscr_ratchet_t *ratchet, vscf_impl_t *rng) {
 
     VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(rng);
     VSCR_ASSERT_PTR(ratchet->rng == NULL);
 
-    VSCR_ASSERT(vscr_ratchet_rng_is_implemented(rng));
+    VSCR_ASSERT(vscf_random_is_implemented(rng));
 
     ratchet->rng = rng;
 }
 
 //
-//  Release dependency to the interface 'ratchet rng'.
+//  Release dependency to the interface 'random'.
 //
 VSCR_PUBLIC void
 vscr_ratchet_release_rng(vscr_ratchet_t *ratchet) {
 
     VSCR_ASSERT_PTR(ratchet);
 
-    vscr_impl_destroy(&ratchet->rng);
+    vscf_impl_destroy(&ratchet->rng);
 }
 
 //
@@ -354,6 +356,20 @@ vscr_ratchet_cleanup_ctx(vscr_ratchet_t *ratchet) {
     vscr_ratchet_sender_chain_destroy(&ratchet->sender_chain);
     vscr_ratchet_receiver_chain_list_node_destroy(&ratchet->receiver_chains);
     vscr_ratchet_skipped_message_key_list_node_destroy(&ratchet->skipped_message_keys);
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_setup_defaults(vscr_ratchet_t *ratchet) {
+
+    VSCR_ASSERT_PTR(ratchet);
+    VSCR_ASSERT(ratchet->rng == NULL);
+    VSCR_ASSERT(ratchet->cipher == NULL);
+
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    vscf_ctr_drbg_setup_defaults(rng);
+
+    vscr_ratchet_take_rng(ratchet, vscf_ctr_drbg_impl(rng));
+    vscr_ratchet_take_cipher(ratchet, vscr_ratchet_cipher_new());
 }
 
 static vscr_error_t
@@ -513,12 +529,9 @@ vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *ratchet, const RegularMessage
 }
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_respond(vscr_ratchet_t *ratchet, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key,
-        const RegularMessage *message) {
+vscr_ratchet_respond(vscr_ratchet_t *ratchet, vsc_data_t shared_secret, const RegularMessage *message) {
 
     VSCR_ASSERT_PTR(ratchet);
-    VSCR_ASSERT_PTR(ratchet_public_key);
-    VSCR_ASSERT(vsc_buffer_len(ratchet_public_key) == ED25519_KEY_LEN);
     VSCR_ASSERT(shared_secret.len == 3 * ED25519_DH_LEN || shared_secret.len == 4 * ED25519_DH_LEN);
 
     VSCR_ASSERT(!ratchet->receiver_chains);
@@ -540,7 +553,7 @@ vscr_ratchet_respond(vscr_ratchet_t *ratchet, vsc_data_t shared_secret, vsc_buff
     memcpy(receiver_chain->chain_key.key,
             vsc_buffer_bytes(derived_secret) + vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH,
             vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
-    receiver_chain->public_key = vsc_buffer_shallow_copy(ratchet_public_key);
+    receiver_chain->public_key = vsc_buffer_new_with_data(vsc_data(message->public_key, sizeof(message->public_key)));
 
     vscr_ratchet_add_receiver_chain(ratchet, receiver_chain);
 
@@ -635,8 +648,10 @@ vscr_ratchet_encrypt(vscr_ratchet_t *ratchet, vsc_data_t plain_text, RegularMess
     if (!ratchet->sender_chain) {
         vsc_buffer_t *ratchet_private_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
         vsc_buffer_make_secure(ratchet_private_key);
-        // FIXME
-        vscr_ratchet_rng_generate_random_data(ratchet->rng, ED25519_KEY_LEN, ratchet_private_key);
+
+        // FIXME: Check status
+        vscf_random(ratchet->rng, ED25519_KEY_LEN, ratchet_private_key);
+
         vsc_buffer_t *ratchet_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
         result = curve25519_get_pubkey(
                          vsc_buffer_unused_bytes(ratchet_public_key), vsc_buffer_bytes(ratchet_private_key)) == 0

@@ -47,22 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'virgil ratchet fake rng' implementation.
+//  Class 'ratchet message' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_VIRGIL_RATCHET_FAKE_RNG_H_INCLUDED
-#define VSCR_VIRGIL_RATCHET_FAKE_RNG_H_INCLUDED
+#ifndef VSCR_RATCHET_MESSAGE_DEFS_H_INCLUDED
+#define VSCR_RATCHET_MESSAGE_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_impl.h"
 
-#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#endif
+#include <RatchetModels.pb.h>
 
 // clang-format on
 //  @end
@@ -80,70 +73,20 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Handle 'ratchet message' context.
 //
-typedef struct vscr_virgil_ratchet_fake_rng_t vscr_virgil_ratchet_fake_rng_t;
+struct vscr_ratchet_message_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscr_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
 
-//
-//  Return size of 'vscr_virgil_ratchet_fake_rng_t' type.
-//
-VSCR_PUBLIC size_t
-vscr_virgil_ratchet_fake_rng_impl_size(void);
-
-//
-//  Cast to the 'vscr_impl_t' type.
-//
-VSCR_PUBLIC vscr_impl_t *
-vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_t *virgil_ratchet_fake_rng);
-
-//
-//  Perform initialization of preallocated implementation context.
-//
-VSCR_PUBLIC void
-vscr_virgil_ratchet_fake_rng_init(vscr_virgil_ratchet_fake_rng_t *virgil_ratchet_fake_rng);
-
-//
-//  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscr_virgil_ratchet_fake_rng_init()'.
-//
-VSCR_PUBLIC void
-vscr_virgil_ratchet_fake_rng_cleanup(vscr_virgil_ratchet_fake_rng_t *virgil_ratchet_fake_rng);
-
-//
-//  Allocate implementation context and perform it's initialization.
-//  Postcondition: check memory allocation result.
-//
-VSCR_PUBLIC vscr_virgil_ratchet_fake_rng_t *
-vscr_virgil_ratchet_fake_rng_new(void);
-
-//
-//  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscr_virgil_ratchet_fake_rng_new()'.
-//
-VSCR_PUBLIC void
-vscr_virgil_ratchet_fake_rng_delete(vscr_virgil_ratchet_fake_rng_t *virgil_ratchet_fake_rng);
-
-//
-//  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscr_virgil_ratchet_fake_rng_new()'.
-//  Given reference is nullified.
-//
-VSCR_PUBLIC void
-vscr_virgil_ratchet_fake_rng_destroy(vscr_virgil_ratchet_fake_rng_t **virgil_ratchet_fake_rng_ref);
-
-//
-//  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
-//
-VSCR_PUBLIC vscr_virgil_ratchet_fake_rng_t *
-vscr_virgil_ratchet_fake_rng_shallow_copy(vscr_virgil_ratchet_fake_rng_t *virgil_ratchet_fake_rng);
-
-//
-//  Interface for ratchet rng
-//
-VSCR_PUBLIC void
-vscr_virgil_ratchet_fake_rng_generate_random_data(vscr_virgil_ratchet_fake_rng_t *virgil_ratchet_fake_rng, size_t size,
-        vsc_buffer_t *random);
+    Message *message;
+};
 
 
 // --------------------------------------------------------------------------
@@ -159,5 +102,5 @@ vscr_virgil_ratchet_fake_rng_generate_random_data(vscr_virgil_ratchet_fake_rng_t
 
 
 //  @footer
-#endif // VSCR_VIRGIL_RATCHET_FAKE_RNG_H_INCLUDED
+#endif // VSCR_RATCHET_MESSAGE_DEFS_H_INCLUDED
 //  @end
