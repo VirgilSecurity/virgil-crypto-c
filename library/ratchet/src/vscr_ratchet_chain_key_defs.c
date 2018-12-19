@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'ratchet chain key' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,34 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'ratchet session' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSCR_RATCHET_SESSION_DEFS_H_INCLUDED
-#define VSCR_RATCHET_SESSION_DEFS_H_INCLUDED
-
-#include "vscr_library.h"
-#include "vscr_ratchet.h"
-#include "vscr_impl.h"
-
-#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#endif
+#include "vscr_ratchet_chain_key_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -80,49 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'ratchet session' context.
-//
-struct vscr_ratchet_session_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'ratchet rng'.
-    //
-    vscr_impl_t *rng;
-
-    vscr_ratchet_t *ratchet;
-
-    bool received_first_response;
-
-    vsc_buffer_t *sender_identity_public_key;
-
-    vsc_buffer_t *sender_ephemeral_public_key;
-
-    vsc_buffer_t *receiver_longterm_public_key;
-
-    vsc_buffer_t *receiver_onetime_public_key;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCR_RATCHET_SESSION_DEFS_H_INCLUDED
 //  @end

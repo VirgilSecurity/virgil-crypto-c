@@ -44,28 +44,28 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_CIPHER_H_INCLUDED
-#define VSCR_RATCHET_CIPHER_H_INCLUDED
+#ifndef VSCR_RATCHET_H_INCLUDED
+#define VSCR_RATCHET_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_error_ctx.h"
+#include "vscr_ratchet.h"
+#include "vscr_impl.h"
+#include "vscr_ratchet_cipher.h"
 #include "vscr_error.h"
+
+#include <RatchetModels.pb.h>
+#include <pb_decode.h>
+#include <pb_encode.h>
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_data.h>
 #endif
 
-#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_aes256_gcm.h>
-#endif
-
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_buffer.h>
-#endif
-
-#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_aes256_gcm.h>
+#   include <VSCCommon/vsc_data.h>
 #endif
 
 // clang-format on
@@ -84,100 +84,119 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet cipher' context.
+//  Handle 'ratchet' context.
 //
-typedef struct vscr_ratchet_cipher_t vscr_ratchet_cipher_t;
-struct vscr_ratchet_cipher_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the implementation 'aes256 gcm'.
-    //
-    vscf_aes256_gcm_t *aes256_gcm;
-};
+typedef struct vscr_ratchet_t vscr_ratchet_t;
 
 //
-//  Return size of 'vscr_ratchet_cipher_t'.
+//  Return size of 'vscr_ratchet_t'.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_cipher_ctx_size(void);
+vscr_ratchet_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_init(vscr_ratchet_cipher_t *ratchet_cipher);
+vscr_ratchet_init(vscr_ratchet_t *ratchet);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_cleanup(vscr_ratchet_cipher_t *ratchet_cipher);
+vscr_ratchet_cleanup(vscr_ratchet_t *ratchet);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_cipher_t *
-vscr_ratchet_cipher_new(void);
+VSCR_PUBLIC vscr_ratchet_t *
+vscr_ratchet_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_delete(vscr_ratchet_cipher_t *ratchet_cipher);
+vscr_ratchet_delete(vscr_ratchet_t *ratchet);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_cipher_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_destroy(vscr_ratchet_cipher_t **ratchet_cipher_ref);
+vscr_ratchet_destroy(vscr_ratchet_t **ratchet_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_cipher_t *
-vscr_ratchet_cipher_shallow_copy(vscr_ratchet_cipher_t *ratchet_cipher);
+VSCR_PUBLIC vscr_ratchet_t *
+vscr_ratchet_shallow_copy(vscr_ratchet_t *ratchet);
 
 //
-//  Setup dependency to the implementation 'aes256 gcm' with shared ownership.
+//  Setup dependency to the interface 'ratchet rng' with shared ownership.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_use_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher, vscf_aes256_gcm_t *aes256_gcm);
+vscr_ratchet_use_rng(vscr_ratchet_t *ratchet, vscr_impl_t *rng);
 
 //
-//  Setup dependency to the implementation 'aes256 gcm' and transfer ownership.
+//  Setup dependency to the interface 'ratchet rng' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_take_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher, vscf_aes256_gcm_t *aes256_gcm);
+vscr_ratchet_take_rng(vscr_ratchet_t *ratchet, vscr_impl_t *rng);
 
 //
-//  Release dependency to the implementation 'aes256 gcm'.
+//  Release dependency to the interface 'ratchet rng'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_release_aes256_gcm(vscr_ratchet_cipher_t *ratchet_cipher);
+vscr_ratchet_release_rng(vscr_ratchet_t *ratchet);
 
-VSCR_PUBLIC size_t
-vscr_ratchet_cipher_encrypt_len(vscr_ratchet_cipher_t *ratchet_cipher, size_t plain_text_len);
+//
+//  Setup dependency to the class 'ratchet cipher' with shared ownership.
+//
+VSCR_PUBLIC void
+vscr_ratchet_use_cipher(vscr_ratchet_t *ratchet, vscr_ratchet_cipher_t *cipher);
 
-VSCR_PUBLIC size_t
-vscr_ratchet_cipher_decrypt_len(vscr_ratchet_cipher_t *ratchet_cipher, size_t cipher_text_len);
+//
+//  Setup dependency to the class 'ratchet cipher' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCR_PUBLIC void
+vscr_ratchet_take_cipher(vscr_ratchet_t *ratchet, vscr_ratchet_cipher_t *cipher);
+
+//
+//  Release dependency to the class 'ratchet cipher'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_release_cipher(vscr_ratchet_t *ratchet);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *ratchet_cipher, vsc_data_t key, vsc_data_t plain_text,
-        vsc_buffer_t *buffer);
+vscr_ratchet_respond(vscr_ratchet_t *ratchet, vsc_data_t shared_secret, vsc_buffer_t *ratchet_public_key,
+        const RegularMessage *message);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *ratchet_cipher, vsc_data_t key, vsc_data_t cipher_text,
-        vsc_buffer_t *buffer);
+vscr_ratchet_initiate(vscr_ratchet_t *ratchet, vsc_data_t shared_secret, vsc_buffer_t *ratchet_private_key);
+
+VSCR_PUBLIC size_t
+vscr_ratchet_encrypt_len(vscr_ratchet_t *ratchet, size_t plain_text_len);
+
+VSCR_PUBLIC vscr_error_t
+vscr_ratchet_encrypt(vscr_ratchet_t *ratchet, vsc_data_t plain_text, RegularMessage *regular_message);
+
+VSCR_PUBLIC size_t
+vscr_ratchet_decrypt_len(vscr_ratchet_t *ratchet, size_t cipher_text_len);
+
+VSCR_PUBLIC vscr_error_t
+vscr_ratchet_decrypt(vscr_ratchet_t *ratchet, RegularMessage *regular_message, vsc_buffer_t *plain_text);
+
+VSCR_PUBLIC size_t
+vscr_ratchet_serialize_len(vscr_ratchet_t *ratchet);
+
+VSCR_PUBLIC vscr_error_t
+vscr_ratchet_serialize(vscr_ratchet_t *ratchet, vsc_buffer_t *output);
+
+VSCR_PUBLIC vscr_ratchet_t *
+vscr_ratchet_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx);
 
 
 // --------------------------------------------------------------------------
@@ -193,5 +212,5 @@ vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *ratchet_cipher, vsc_data_t ke
 
 
 //  @footer
-#endif // VSCR_RATCHET_CIPHER_H_INCLUDED
+#endif // VSCR_RATCHET_H_INCLUDED
 //  @end

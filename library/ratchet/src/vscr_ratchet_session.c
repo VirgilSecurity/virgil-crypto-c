@@ -50,15 +50,13 @@
 #include "vscr_ratchet_rng.h"
 #include "vscr_ratchet_session_defs.h"
 
+#include <RatchetModels.pb.h>
+#include <pb_decode.h>
+#include <pb_encode.h>
 #include <ed25519/ed25519.h>
 
 // clang-format on
 //  @end
-
-
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
-#include <Message.pb.h>
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -124,7 +122,6 @@ vscr_ratchet_session_cleanup(vscr_ratchet_session_t *ratchet_session) {
         vscr_ratchet_session_cleanup_ctx(ratchet_session);
 
         vscr_ratchet_session_release_rng(ratchet_session);
-        vscr_ratchet_session_release_ratchet(ratchet_session);
 
         vscr_zeroize(ratchet_session, sizeof(vscr_ratchet_session_t));
     }
@@ -236,44 +233,6 @@ vscr_ratchet_session_release_rng(vscr_ratchet_session_t *ratchet_session) {
     vscr_impl_destroy(&ratchet_session->rng);
 }
 
-//
-//  Setup dependency to the class 'ratchet' with shared ownership.
-//
-VSCR_PUBLIC void
-vscr_ratchet_session_use_ratchet(vscr_ratchet_session_t *ratchet_session, vscr_ratchet_t *ratchet) {
-
-    VSCR_ASSERT_PTR(ratchet_session);
-    VSCR_ASSERT_PTR(ratchet);
-    VSCR_ASSERT_PTR(ratchet_session->ratchet == NULL);
-
-    ratchet_session->ratchet = vscr_ratchet_shallow_copy(ratchet);
-}
-
-//
-//  Setup dependency to the class 'ratchet' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCR_PUBLIC void
-vscr_ratchet_session_take_ratchet(vscr_ratchet_session_t *ratchet_session, vscr_ratchet_t *ratchet) {
-
-    VSCR_ASSERT_PTR(ratchet_session);
-    VSCR_ASSERT_PTR(ratchet);
-    VSCR_ASSERT_PTR(ratchet_session->ratchet == NULL);
-
-    ratchet_session->ratchet = ratchet;
-}
-
-//
-//  Release dependency to the class 'ratchet'.
-//
-VSCR_PUBLIC void
-vscr_ratchet_session_release_ratchet(vscr_ratchet_session_t *ratchet_session) {
-
-    VSCR_ASSERT_PTR(ratchet_session);
-
-    vscr_ratchet_destroy(&ratchet_session->ratchet);
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -309,6 +268,9 @@ vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *ratchet_session) {
     vsc_buffer_destroy(&ratchet_session->receiver_onetime_public_key);
 }
 
+//
+//  D
+//
 VSCR_PUBLIC vscr_ratchet_session_t *
 vscr_ratchet_session_new_with_members(bool received_first_response, vsc_buffer_t *sender_identity_public_key,
         vsc_buffer_t *sender_ephemeral_public_key, vsc_buffer_t *receiver_longterm_public_key,
@@ -549,17 +511,18 @@ vscr_ratchet_session_encrypt(
 
             prekey_message.version = vscr_ratchet_common_RATCHET_PROTOCOL_VERSION;
 
-            memcpy(prekey_message.sender_identity_key, ratchet_session->sender_identity_public_key->bytes,
-                    ratchet_session->sender_identity_public_key->len);
+            memcpy(prekey_message.sender_identity_key, vsc_buffer_bytes(ratchet_session->sender_identity_public_key),
+                    vsc_buffer_len(ratchet_session->sender_identity_public_key));
 
-            memcpy(prekey_message.sender_ephemeral_key, ratchet_session->sender_ephemeral_public_key->bytes,
-                    ratchet_session->sender_ephemeral_public_key->len);
+            memcpy(prekey_message.sender_ephemeral_key, vsc_buffer_bytes(ratchet_session->sender_ephemeral_public_key),
+                    vsc_buffer_len(ratchet_session->sender_ephemeral_public_key));
 
-            memcpy(prekey_message.receiver_longterm_key, ratchet_session->receiver_longterm_public_key->bytes,
-                    ratchet_session->receiver_longterm_public_key->len);
+            memcpy(prekey_message.receiver_longterm_key,
+                    vsc_buffer_bytes(ratchet_session->receiver_longterm_public_key),
+                    vsc_buffer_len(ratchet_session->receiver_longterm_public_key));
 
-            memcpy(prekey_message.receiver_onetime_key, ratchet_session->receiver_onetime_public_key->bytes,
-                    ratchet_session->receiver_onetime_public_key->len);
+            memcpy(prekey_message.receiver_onetime_key, vsc_buffer_bytes(ratchet_session->receiver_onetime_public_key),
+                    vsc_buffer_len(ratchet_session->receiver_onetime_public_key));
 
             prekey_message.regular_message = regular_message;
 
@@ -671,17 +634,17 @@ vscr_ratchet_session_serialize(vscr_ratchet_session_t *ratchet_session, vsc_buff
 
     ratchet_session_value.received_first_response = ratchet_session->received_first_response;
 
-    memcpy(ratchet_session_value.sender_identity_key, ratchet_session->sender_identity_public_key->bytes,
-            ratchet_session->sender_identity_public_key->len);
+    memcpy(ratchet_session_value.sender_identity_key, vsc_buffer_bytes(ratchet_session->sender_identity_public_key),
+            vsc_buffer_len(ratchet_session->sender_identity_public_key));
 
-    memcpy(ratchet_session_value.sender_ephemeral_key, ratchet_session->sender_ephemeral_public_key->bytes,
-            ratchet_session->sender_ephemeral_public_key->len);
+    memcpy(ratchet_session_value.sender_ephemeral_key, vsc_buffer_bytes(ratchet_session->sender_ephemeral_public_key),
+            vsc_buffer_len(ratchet_session->sender_ephemeral_public_key));
 
-    memcpy(ratchet_session_value.receiver_longterm_key, ratchet_session->receiver_longterm_public_key->bytes,
-            ratchet_session->receiver_longterm_public_key->len);
+    memcpy(ratchet_session_value.receiver_longterm_key, vsc_buffer_bytes(ratchet_session->receiver_longterm_public_key),
+            vsc_buffer_len(ratchet_session->receiver_longterm_public_key));
 
-    memcpy(ratchet_session_value.receiver_onetime_key, ratchet_session->receiver_onetime_public_key->bytes,
-            ratchet_session->receiver_onetime_public_key->len);
+    memcpy(ratchet_session_value.receiver_onetime_key, vsc_buffer_bytes(ratchet_session->receiver_onetime_public_key),
+            vsc_buffer_len(ratchet_session->receiver_onetime_public_key));
 
     vsc_buffer_t *ratchet_buff = vsc_buffer_new_with_capacity(vscr_ratchet_serialize_len(ratchet_session->ratchet));
     vsc_buffer_make_secure(ratchet_buff);
@@ -694,7 +657,7 @@ vscr_ratchet_session_serialize(vscr_ratchet_session_t *ratchet_session, vsc_buff
 
     vsc_buffer_inc_used(ratchet_buff, vscr_ratchet_serialize_len(ratchet_session->ratchet));
 
-    memcpy(ratchet_session_value.ratchet, ratchet_buff->bytes, ratchet_buff->len);
+    memcpy(ratchet_session_value.ratchet, vsc_buffer_bytes(ratchet_buff), vsc_buffer_len(ratchet_buff));
 
     vsc_buffer_destroy(&ratchet_buff);
 

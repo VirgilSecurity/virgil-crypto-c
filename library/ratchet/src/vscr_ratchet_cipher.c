@@ -47,6 +47,7 @@
 #include "vscr_ratchet_cipher.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
+#include "vscr_ratchet_cipher_defs.h"
 
 #include <virgil/crypto/foundation/vscf_sha256.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>

@@ -49,6 +49,8 @@
 #include "vscr_assert.h"
 #include "vscr_ratchet_rng.h"
 #include "vscr_ratchet_defs.h"
+#include "vscr_ratchet_message_key.h"
+#include "vscr_ratchet_chain_key.h"
 #include "vscr_ratchet_receiver_chain.h"
 #include "vscr_ratchet_skipped_message_key.h"
 
@@ -678,11 +680,11 @@ vscr_ratchet_encrypt(vscr_ratchet_t *ratchet, vsc_data_t plain_text, RegularMess
     regular_message->version = vscr_ratchet_common_RATCHET_REGULAR_MESSAGE_VERSION;
     regular_message->counter = message_key->index;
 
-    memcpy(regular_message->public_key, ratchet->sender_chain->public_key->bytes,
-            ratchet->sender_chain->public_key->len);
+    memcpy(regular_message->public_key, vsc_buffer_bytes(ratchet->sender_chain->public_key),
+            vsc_buffer_len(ratchet->sender_chain->public_key));
 
-    memcpy(regular_message->cipher_text.bytes, buffer->bytes, buffer->len);
-    regular_message->cipher_text.size += buffer->len;
+    memcpy(regular_message->cipher_text.bytes, vsc_buffer_bytes(buffer), vsc_buffer_len(buffer));
+    regular_message->cipher_text.size += vsc_buffer_len(buffer);
 
     vscr_ratchet_message_key_destroy(&message_key);
     vsc_buffer_destroy(&buffer);
@@ -942,10 +944,11 @@ vscr_ratchet_serialize(vscr_ratchet_t *ratchet, vsc_buffer_t *output) {
     // Sender chain
     SenderChain sender_chain = SenderChain_init_zero;
 
-    memcpy(sender_chain.private_key, ratchet->sender_chain->private_key->bytes,
-            ratchet->sender_chain->private_key->len);
+    memcpy(sender_chain.private_key, vsc_buffer_bytes(ratchet->sender_chain->private_key),
+            vsc_buffer_len(ratchet->sender_chain->private_key));
 
-    memcpy(sender_chain.public_key, ratchet->sender_chain->public_key->bytes, ratchet->sender_chain->public_key->len);
+    memcpy(sender_chain.public_key, vsc_buffer_bytes(ratchet->sender_chain->public_key),
+            vsc_buffer_len(ratchet->sender_chain->public_key));
 
     sender_chain.chain_key = chain_key;
 
@@ -963,8 +966,8 @@ vscr_ratchet_serialize(vscr_ratchet_t *ratchet, vsc_buffer_t *output) {
     while (receiver_chains) {
         ReceiverChain receiver_chain = ReceiverChain_init_zero;
 
-        memcpy(receiver_chain.public_key, receiver_chains->value->public_key->bytes,
-                receiver_chains->value->public_key->len);
+        memcpy(receiver_chain.public_key, vsc_buffer_bytes(receiver_chains->value->public_key),
+                vsc_buffer_len(receiver_chains->value->public_key));
 
         memcpy(receiver_chain.chain_key.key, receiver_chains->value->chain_key.key,
                 sizeof(receiver_chains->value->chain_key.key));
@@ -987,8 +990,8 @@ vscr_ratchet_serialize(vscr_ratchet_t *ratchet, vsc_buffer_t *output) {
     while (skipped_message_keys) {
         SkippedMessageKey skipped_message_key = SkippedMessageKey_init_zero;
 
-        memcpy(skipped_message_key.public_key, skipped_message_keys->value->public_key->bytes,
-                skipped_message_keys->value->public_key->len);
+        memcpy(skipped_message_key.public_key, vsc_buffer_bytes(skipped_message_keys->value->public_key),
+                vsc_buffer_len(skipped_message_keys->value->public_key));
 
         memcpy(skipped_message_key.message_key.key, skipped_message_keys->value->message_key->key,
                 sizeof(skipped_message_keys->value->message_key->key));

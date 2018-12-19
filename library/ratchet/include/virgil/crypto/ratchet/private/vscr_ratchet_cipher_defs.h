@@ -47,22 +47,20 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Class 'ratchet session' types definition.
+//  Class 'ratchet cipher' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_SESSION_DEFS_H_INCLUDED
-#define VSCR_RATCHET_SESSION_DEFS_H_INCLUDED
+#ifndef VSCR_RATCHET_CIPHER_DEFS_H_INCLUDED
+#define VSCR_RATCHET_CIPHER_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet.h"
-#include "vscr_impl.h"
 
-#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
+#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_aes256_gcm.h>
 #endif
 
-#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
+#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_aes256_gcm.h>
 #endif
 
 // clang-format on
@@ -81,9 +79,9 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet session' context.
+//  Handle 'ratchet cipher' context.
 //
-struct vscr_ratchet_session_t {
+struct vscr_ratchet_cipher_t {
     //
     //  Function do deallocate self context.
     //
@@ -93,21 +91,9 @@ struct vscr_ratchet_session_t {
     //
     size_t refcnt;
     //
-    //  Dependency to the interface 'ratchet rng'.
+    //  Dependency to the implementation 'aes256 gcm'.
     //
-    vscr_impl_t *rng;
-
-    vscr_ratchet_t *ratchet;
-
-    bool received_first_response;
-
-    vsc_buffer_t *sender_identity_public_key;
-
-    vsc_buffer_t *sender_ephemeral_public_key;
-
-    vsc_buffer_t *receiver_longterm_public_key;
-
-    vsc_buffer_t *receiver_onetime_public_key;
+    vscf_aes256_gcm_t *aes256_gcm;
 };
 
 
@@ -124,5 +110,5 @@ struct vscr_ratchet_session_t {
 
 
 //  @footer
-#endif // VSCR_RATCHET_SESSION_DEFS_H_INCLUDED
+#endif // VSCR_RATCHET_CIPHER_DEFS_H_INCLUDED
 //  @end

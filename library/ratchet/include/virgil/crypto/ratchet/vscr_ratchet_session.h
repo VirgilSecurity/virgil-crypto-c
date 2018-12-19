@@ -163,25 +163,6 @@ vscr_ratchet_session_take_rng(vscr_ratchet_session_t *ratchet_session, vscr_impl
 VSCR_PUBLIC void
 vscr_ratchet_session_release_rng(vscr_ratchet_session_t *ratchet_session);
 
-//
-//  Setup dependency to the class 'ratchet' with shared ownership.
-//
-VSCR_PUBLIC void
-vscr_ratchet_session_use_ratchet(vscr_ratchet_session_t *ratchet_session, vscr_ratchet_t *ratchet);
-
-//
-//  Setup dependency to the class 'ratchet' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCR_PUBLIC void
-vscr_ratchet_session_take_ratchet(vscr_ratchet_session_t *ratchet_session, vscr_ratchet_t *ratchet);
-
-//
-//  Release dependency to the class 'ratchet'.
-//
-VSCR_PUBLIC void
-vscr_ratchet_session_release_ratchet(vscr_ratchet_session_t *ratchet_session);
-
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_t sender_identity_private_key,
         vsc_data_t receiver_identity_public_key, vsc_buffer_t *receiver_long_term_public_key,

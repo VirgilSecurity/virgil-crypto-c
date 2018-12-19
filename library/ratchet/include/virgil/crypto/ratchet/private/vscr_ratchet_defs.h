@@ -54,6 +54,7 @@
 #define VSCR_RATCHET_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_ratchet_common.h"
 #include "vscr_ratchet_sender_chain.h"
 #include "vscr_ratchet_receiver_chain_list_node.h"
 #include "vscr_ratchet_skipped_message_key_list_node.h"

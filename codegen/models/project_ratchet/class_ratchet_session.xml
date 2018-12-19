@@ -27,7 +27,7 @@
         <argument name="sender ephemeral public key" class="buffer" access="readwrite"/>
         <argument name="receiver longterm public key" class="buffer" access="readwrite"/>
         <argument name="receiver onetime public key" class="buffer" access="readwrite"/>
-        <argument name="ratchet" class="ratchet" access="disown"/>D
+        <argument name="ratchet" class="ratchet" access="disown"/>
     </constructor>
 
     <method name="initiate">
