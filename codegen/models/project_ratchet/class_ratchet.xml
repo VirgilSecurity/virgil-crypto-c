@@ -1,4 +1,4 @@
-<class name="ratchet" context="private" scope="internal">
+<class name="ratchet" context="internal" scope="internal">
 
     <require impl="sha256" project="foundation" scope="private"/>
     <require impl="hmac" project="foundation" scope="private"/>

@@ -47,8 +47,9 @@
 #include "vscr_ratchet_session.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-#include "vscr_ratchet_session_defs.h"
+#include "vscr_ratchet_common.h"
 #include "vscr_ratchet_message_defs.h"
+#include "vscr_ratchet.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
@@ -66,6 +67,38 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Handle 'ratchet session' context.
+//
+struct vscr_ratchet_session_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscr_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *rng;
+
+    bool is_initiator;
+
+    vscr_ratchet_t *ratchet;
+
+    bool received_first_response;
+
+    byte sender_identity_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+
+    byte sender_ephemeral_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+
+    byte receiver_long_term_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+
+    byte receiver_one_time_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+};
 
 //
 //  Perform context specific initialization.

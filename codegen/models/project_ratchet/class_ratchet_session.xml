@@ -1,4 +1,4 @@
-<class name="ratchet session" context="private">
+<class name="ratchet session" context="internal">
 
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common" scope="context"/>

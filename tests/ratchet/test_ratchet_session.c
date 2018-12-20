@@ -40,9 +40,7 @@
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include "vscr_ratchet_defs.h"
 #include "vscr_ratchet_session.h"
-#include "vscr_ratchet_session_defs.h"
 
 #include "test_data_ratchet_session.h"
 #include "test_data_ratchet_prekey_message.h"
