@@ -1,0 +1,8 @@
+<implementor name="der serialize alg info" is_default="1">
+    <implementation name="alg info der serialize">
+        Serialize algorithm information
+
+        <interface name="alg info der serializer"/>
+
+    </implementation>
+</implementor>

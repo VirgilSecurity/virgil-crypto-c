@@ -1,0 +1,11 @@
+<interface name="alg info der serializer">
+    Provide serialization of algorithms
+
+    <method name="der serialize alg info">
+        Serializer of algorithm information to buffer
+
+        <argument name="alg info data" interface="alg info"/>
+        <return class="buffer"/>
+    </method>
+    
+</interface>

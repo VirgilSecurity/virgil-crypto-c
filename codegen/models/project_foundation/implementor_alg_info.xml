@@ -1,0 +1,63 @@
+<implementor name="alg info" is_default="1">
+    Provide implementation of algorithm information
+
+<!-->
+    <implementation name="base alg">
+        Provide implementation of base algorithms (KDF1, KDF2) without additional options
+
+        <interface name="alg info">
+            <constant name="alg type id" value="kdf"/>
+        </interface>
+
+        <interface name="hash info"/>
+
+    </implementation>
+  -->
+
+    <implementation name="kdf1 alg info">
+        Provide implementation of KDF1 without additional options
+
+        <interface name="alg info">
+            <constant name="alg type id" enum="alg type id" value="kdf1"/>
+        </interface>
+
+        <context>
+            <property name="hash alg" enum="hash alg"/>
+            <property name="hash len" type="size"/>
+        </context>
+
+    </implementation>
+
+    <implementation name="kdf2 alg info">
+        Provide implementation of KDF2 without additional options
+
+        <interface name="alg info">
+            <constant name="alg type id" enum="alg type id" value="kdf2"/>
+        </interface>
+
+        <context>
+            <property name="hash alg" enum="hash alg"/>
+            <property name="hash len" type="size"/>
+        </context>
+
+    </implementation>
+
+    <implementation name="pbkdf1 alg info">
+        Provide implementation of KDF3 without additional options
+
+        <interface name="alg info">
+            <constant name="alg type id" enum="alg type id" value="pbkdf1"/>
+        </interface>
+
+        <context>
+            <property name="hash alg" enum="hash alg"/>
+            <property name="hash len" type="size"/>
+            <property name="hash function" type="string"/>
+            <property name="hash len" type="size"/>
+            <property name="password" class="data" access="readonly"/>
+            <property name="salt" class="data" access="readonly"/>
+            <property name="C" type="integer" access="readonly"/>
+        </context>
+    </implementation>
+
+</implementor>

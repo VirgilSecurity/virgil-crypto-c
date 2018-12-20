@@ -1,0 +1,9 @@
+<enum name="alg type id" definition="public">
+    <constant name="none"/>
+    <constant name="kdf"/>
+    <constant name="kdf1"/>
+    <constant name="kdf2"/>
+    <constant name="kdf3"/>
+    <constant name="pbkdf1"/>
+    <constant name="pbkdf2"/>
+</enum>

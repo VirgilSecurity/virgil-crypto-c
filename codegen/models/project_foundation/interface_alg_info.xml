@@ -1,0 +1,6 @@
+<interface name="alg info">
+    Provide information about key derivation function (KDF) algorithms
+    <constant name="alg type id" enum="alg type id">
+        Define KDF algorithm type
+    </constant>
+</interface>

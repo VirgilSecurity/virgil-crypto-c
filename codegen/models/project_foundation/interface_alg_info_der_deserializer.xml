@@ -1,0 +1,11 @@
+<interface name="alg info der deserializer">
+    Provide deserialization of algorithms
+
+    <method name="der deserialize alg info">
+       Deserializer of algorithm information from buffer
+
+       <argument name="data in der" class="data"/>
+       <return interface="alg info"/>
+   </method>
+
+</interface>
