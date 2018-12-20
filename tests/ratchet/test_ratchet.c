@@ -43,9 +43,7 @@
 #include "vscr_ratchet.h"
 #include "test_data_ratchet.h"
 
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <ed25519/ed25519.h>
-#include <virgil/crypto/ratchet/private/vscr_ratchet_defs.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <virgil/crypto/ratchet/vscr_error_ctx.h>
 
