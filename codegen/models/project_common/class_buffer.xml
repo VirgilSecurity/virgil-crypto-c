@@ -156,7 +156,7 @@
 
 
     <method name="unused bytes">
-        Returns pointer to the first unsed byte in the buffer.
+        Returns pointer to the first unused byte in the buffer.
 
         <return type="byte" access="readwrite" is_reference="1"/>
     </method>
