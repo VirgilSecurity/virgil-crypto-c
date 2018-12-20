@@ -54,7 +54,7 @@
 #include "vsce_phe_client.h"
 #include "vsce_memory.h"
 #include "vsce_assert.h"
-#include "vsce_phe_client_defs.h"
+#include "vsce_phe_hash.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_random.h>
@@ -74,6 +74,50 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Handle 'phe client' context.
+//
+struct vsce_phe_client_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vsce_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *random;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *operation_random;
+
+    vsce_phe_hash_t *phe_hash;
+
+    mbedtls_ecp_group group;
+
+    byte client_private_key[vsce_phe_common_PHE_PRIVATE_KEY_LENGTH];
+
+    byte server_public_key[vsce_phe_common_PHE_PUBLIC_KEY_LENGTH];
+
+    bool keys_are_set;
+
+    mbedtls_mpi y;
+
+    mbedtls_mpi y_inv;
+
+    mbedtls_mpi minus_y;
+
+    mbedtls_ecp_point x;
+
+    mbedtls_mpi one;
+
+    mbedtls_mpi minus_one;
+};
 
 //
 //  Perform context specific initialization.
@@ -494,12 +538,12 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client, vsc_data_t enrollm
 
     vsce_error_t status = vsce_SUCCESS;
 
+    EnrollmentResponse response = EnrollmentResponse_init_zero;
+
     if (enrollment_response.len > EnrollmentResponse_size) {
         status = vsce_error_PROTOBUF_DECODE_ERROR;
         goto pb_err;
     }
-
-    EnrollmentResponse response = EnrollmentResponse_init_zero;
 
     pb_istream_t stream = pb_istream_from_buffer(enrollment_response.bytes, enrollment_response.len);
 
@@ -600,6 +644,7 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *phe_client, vsc_data_t enrollm
             pb_ostream_from_buffer(vsc_buffer_unused_bytes(enrollment_record), vsc_buffer_capacity(enrollment_record));
     VSCE_ASSERT(pb_encode(&ostream, EnrollmentRecord_fields, &record));
     vsc_buffer_inc_used(enrollment_record, ostream.bytes_written);
+    vsce_zeroize(&record, sizeof(record));
 
     mbedtls_ecp_point_free(&t0);
     mbedtls_ecp_point_free(&t1);
@@ -621,6 +666,7 @@ proof_err:
     mbedtls_ecp_point_free(&c1);
 
 pb_err:
+    vsce_zeroize(&response, sizeof(response));
     vsce_phe_client_free_op_group(op_group);
 
     return status;
@@ -656,12 +702,12 @@ vsce_phe_client_create_verify_password_request(vsce_phe_client_t *phe_client, vs
 
     vsce_error_t status = vsce_SUCCESS;
 
+    EnrollmentRecord record = EnrollmentRecord_init_zero;
+
     if (enrollment_record.len > EnrollmentRecord_size) {
         status = vsce_error_PROTOBUF_DECODE_ERROR;
         goto pb_err;
     }
-
-    EnrollmentRecord record = EnrollmentRecord_init_zero;
 
     pb_istream_t istream = pb_istream_from_buffer(enrollment_record.bytes, enrollment_record.len);
     bool pb_status = pb_decode(&istream, EnrollmentRecord_fields, &record);
@@ -703,6 +749,7 @@ vsce_phe_client_create_verify_password_request(vsce_phe_client_t *phe_client, vs
             vsc_buffer_unused_bytes(verify_password_request), vsc_buffer_capacity(verify_password_request));
     VSCE_ASSERT(pb_encode(&ostream, VerifyPasswordRequest_fields, &request));
     vsc_buffer_inc_used(verify_password_request, ostream.bytes_written);
+    vsce_zeroize(&request, sizeof(request));
 
     mbedtls_ecp_point_free(&c0);
     mbedtls_ecp_point_free(&hc0);
@@ -711,6 +758,7 @@ ecp_err:
     mbedtls_ecp_point_free(&t0);
 
 pb_err:
+    vsce_zeroize(&record, sizeof(&record));
     vsce_phe_client_free_op_group(op_group);
 
     return status;
@@ -737,12 +785,13 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client, vsc_da
 
     vsce_error_t status = vsce_SUCCESS;
 
+    VerifyPasswordResponse response = VerifyPasswordResponse_init_zero;
+    EnrollmentRecord record = EnrollmentRecord_init_zero;
+
     if (enrollment_record.len > EnrollmentRecord_size) {
         status = vsce_error_PROTOBUF_DECODE_ERROR;
         goto pb_err;
     }
-
-    EnrollmentRecord record = EnrollmentRecord_init_zero;
 
     pb_istream_t istream1 = pb_istream_from_buffer(enrollment_record.bytes, enrollment_record.len);
     bool pb_status = pb_decode(&istream1, EnrollmentRecord_fields, &record);
@@ -755,8 +804,6 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *phe_client, vsc_da
         status = vsce_error_PROTOBUF_DECODE_ERROR;
         goto pb_err;
     }
-
-    VerifyPasswordResponse response = VerifyPasswordResponse_init_zero;
 
     pb_istream_t istream2 = pb_istream_from_buffer(verify_password_response.bytes, verify_password_response.len);
     pb_status = pb_decode(&istream2, VerifyPasswordResponse_fields, &response);
@@ -856,6 +903,8 @@ ecp_err:
     mbedtls_ecp_point_free(&c1);
 
 pb_err:
+    vsce_zeroize(&record, sizeof(record));
+    vsce_zeroize(&response, sizeof(response));
     vsce_phe_client_free_op_group(op_group);
 
     return status;
@@ -1157,12 +1206,12 @@ vsce_phe_client_rotate_keys(vsce_phe_client_t *phe_client, vsc_data_t update_tok
 
     vsce_error_t status = vsce_SUCCESS;
 
+    UpdateToken token = UpdateToken_init_zero;
+
     if (update_token.len > UpdateToken_size) {
         status = vsce_error_PROTOBUF_DECODE_ERROR;
         goto pb_err;
     }
-
-    UpdateToken token = UpdateToken_init_zero;
 
     pb_istream_t stream = pb_istream_from_buffer(update_token.bytes, update_token.len);
 
@@ -1231,6 +1280,7 @@ priv_err:
     mbedtls_mpi_free(&b);
 
 pb_err:
+    vsce_zeroize(&token, sizeof(token));
     vsce_phe_client_free_op_group(op_group);
 
     return status;
@@ -1251,12 +1301,13 @@ vsce_phe_client_update_enrollment_record(vsce_phe_client_t *phe_client, vsc_data
 
     vsce_error_t status = vsce_SUCCESS;
 
+    UpdateToken token = UpdateToken_init_zero;
+    EnrollmentRecord record = EnrollmentRecord_init_zero;
+
     if (enrollment_record.len > EnrollmentRecord_size) {
         status = vsce_error_PROTOBUF_DECODE_ERROR;
         goto pb_err;
     }
-
-    EnrollmentRecord record = EnrollmentRecord_init_zero;
 
     pb_istream_t stream1 = pb_istream_from_buffer(enrollment_record.bytes, enrollment_record.len);
 
@@ -1270,8 +1321,6 @@ vsce_phe_client_update_enrollment_record(vsce_phe_client_t *phe_client, vsc_data
         status = vsce_error_PROTOBUF_DECODE_ERROR;
         goto pb_err;
     }
-
-    UpdateToken token = UpdateToken_init_zero;
 
     pb_istream_t stream2 = pb_istream_from_buffer(update_token.bytes, update_token.len);
 
@@ -1358,6 +1407,7 @@ vsce_phe_client_update_enrollment_record(vsce_phe_client_t *phe_client, vsc_data
 
     VSCE_ASSERT(pb_encode(&ostream, EnrollmentRecord_fields, &new_record));
     vsc_buffer_inc_used(new_enrollment_record, ostream.bytes_written);
+    vsce_zeroize(&new_record, sizeof(new_record));
 
     mbedtls_ecp_point_free(&hs0);
     mbedtls_ecp_point_free(&hs1);
@@ -1374,6 +1424,8 @@ priv_err:
     mbedtls_mpi_free(&b);
 
 pb_err:
+    vsce_zeroize(&token, sizeof(token));
+    vsce_zeroize(&record, sizeof(record));
     vsce_phe_client_free_op_group(op_group);
 
     return status;
