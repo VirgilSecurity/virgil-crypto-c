@@ -27,7 +27,7 @@ def nodes = [:]
 //
 nodes['lang-c-platform-linux'] = build_LangC_Unix('build-centos7')
 nodes['lang-c-platform-macos'] = build_LangC_Unix('build-os-x')
-nodes['lang-c-platform-win8-mingw64'] = build_LangC_Windows('build-win8')
+nodes['lang-c-platform-windows'] = build_LangC_Windows('build-win8')
 
 //
 //  Language: PHP
