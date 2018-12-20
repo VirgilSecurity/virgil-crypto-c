@@ -33,6 +33,8 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
 #include "unity.h"
 #include "test_utils.h"
 
@@ -41,6 +43,17 @@
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscp_pythia.h"
+
+
+// --------------------------------------------------------------------------
+//  Should have it to prevent linkage erros in MSVC.
+// --------------------------------------------------------------------------
+// clang-format off
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+// clang-format on
 
 
 // --------------------------------------------------------------------------
@@ -86,12 +99,12 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    vscp_init();
+    vscp_global_init();
 
     RUN_TEST(test__new__always__returns_not_null);
     RUN_TEST(test__blind__valid_args___returns_success);
 
-    vscp_cleanup();
+    vscp_global_cleanup();
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -52,6 +53,8 @@
 #include "vscf_verify.h"
 #include "vscf_assert.h"
 #include "vscf_verify_api.h"
+
+// clang-format on
 //  @end
 
 
@@ -67,7 +70,7 @@
 VSCF_PUBLIC bool
 vscf_verify(vscf_impl_t *impl, vsc_data_t data, vsc_data_t signature) {
 
-    const vscf_verify_api_t *verify_api = vscf_verify_api (impl);
+    const vscf_verify_api_t *verify_api = vscf_verify_api(impl);
     VSCF_ASSERT_PTR (verify_api);
 
     VSCF_ASSERT_PTR (verify_api->verify_cb);
@@ -78,11 +81,11 @@ vscf_verify(vscf_impl_t *impl, vsc_data_t data, vsc_data_t signature) {
 //  Return verify API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_verify_api_t *
-vscf_verify_api(vscf_impl_t *impl) {
+vscf_verify_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_VERIFY);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_VERIFY);
     return (const vscf_verify_api_t *) api;
 }
 
@@ -90,11 +93,11 @@ vscf_verify_api(vscf_impl_t *impl) {
 //  Check if given object implements interface 'verify'.
 //
 VSCF_PUBLIC bool
-vscf_verify_is_implemented(vscf_impl_t *impl) {
+vscf_verify_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_VERIFY) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_VERIFY) != NULL;
 }
 
 //
@@ -106,17 +109,6 @@ vscf_verify_api_tag(const vscf_verify_api_t *verify_api) {
     VSCF_ASSERT_PTR (verify_api);
 
     return verify_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_verify_impl_tag(const vscf_verify_api_t *verify_api) {
-
-    VSCF_ASSERT_PTR (verify_api);
-
-    return verify_api->impl_tag;
 }
 
 

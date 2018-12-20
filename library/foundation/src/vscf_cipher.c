@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -52,6 +53,8 @@
 #include "vscf_cipher.h"
 #include "vscf_assert.h"
 #include "vscf_cipher_api.h"
+
+// clang-format on
 //  @end
 
 
@@ -67,7 +70,7 @@
 VSCF_PUBLIC void
 vscf_cipher_set_nonce(vscf_impl_t *impl, vsc_data_t nonce) {
 
-    const vscf_cipher_api_t *cipher_api = vscf_cipher_api (impl);
+    const vscf_cipher_api_t *cipher_api = vscf_cipher_api(impl);
     VSCF_ASSERT_PTR (cipher_api);
 
     VSCF_ASSERT_PTR (cipher_api->set_nonce_cb);
@@ -80,7 +83,7 @@ vscf_cipher_set_nonce(vscf_impl_t *impl, vsc_data_t nonce) {
 VSCF_PUBLIC void
 vscf_cipher_set_key(vscf_impl_t *impl, vsc_data_t key) {
 
-    const vscf_cipher_api_t *cipher_api = vscf_cipher_api (impl);
+    const vscf_cipher_api_t *cipher_api = vscf_cipher_api(impl);
     VSCF_ASSERT_PTR (cipher_api);
 
     VSCF_ASSERT_PTR (cipher_api->set_key_cb);
@@ -91,11 +94,11 @@ vscf_cipher_set_key(vscf_impl_t *impl, vsc_data_t key) {
 //  Return cipher API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_cipher_api_t *
-vscf_cipher_api(vscf_impl_t *impl) {
+vscf_cipher_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_CIPHER);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_CIPHER);
     return (const vscf_cipher_api_t *) api;
 }
 
@@ -136,11 +139,11 @@ vscf_cipher_cipher_info_api(const vscf_cipher_api_t *cipher_api) {
 //  Check if given object implements interface 'cipher'.
 //
 VSCF_PUBLIC bool
-vscf_cipher_is_implemented(vscf_impl_t *impl) {
+vscf_cipher_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_CIPHER) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_CIPHER) != NULL;
 }
 
 //
@@ -152,17 +155,6 @@ vscf_cipher_api_tag(const vscf_cipher_api_t *cipher_api) {
     VSCF_ASSERT_PTR (cipher_api);
 
     return cipher_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_cipher_impl_tag(const vscf_cipher_api_t *cipher_api) {
-
-    VSCF_ASSERT_PTR (cipher_api);
-
-    return cipher_api->impl_tag;
 }
 
 

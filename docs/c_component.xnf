@@ -148,7 +148,7 @@
         TODO: Define if this attribute is useless.
     </attr>
 
-    <attr name="need_definition">
+    <attr name="require_definition">
         Defines if instance requires type definition.
 
         <restrict value="public">

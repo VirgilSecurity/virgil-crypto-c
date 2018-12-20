@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -54,9 +55,9 @@
 #define VSCF_AES256_GCM_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_aes256_gcm.h"
-#include "vscf_aes256_gcm.h"
+
+// clang-format on
 //  @end
 
 
@@ -77,7 +78,7 @@ extern "C" {
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_aes256_gcm_init_ctx(vscf_aes256_gcm_impl_t *aes256_gcm_impl);
+vscf_aes256_gcm_init_ctx(vscf_aes256_gcm_t *aes256_gcm);
 
 //
 //  Release resources of the implementation specific context.
@@ -85,7 +86,7 @@ vscf_aes256_gcm_init_ctx(vscf_aes256_gcm_impl_t *aes256_gcm_impl);
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_aes256_gcm_cleanup_ctx(vscf_aes256_gcm_impl_t *aes256_gcm_impl);
+vscf_aes256_gcm_cleanup_ctx(vscf_aes256_gcm_t *aes256_gcm);
 
 
 // --------------------------------------------------------------------------

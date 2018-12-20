@@ -1,0 +1,26 @@
+<class name="phe common" context="none">
+    <constant name="phe point length" value="65">
+        PHE elliptic curve point binary length
+    </constant>
+    <constant name="phe max password length" value="128">
+        PHE max password length
+    </constant>
+    <constant name="phe server identifier length" value="32">
+        PHE server identifier length
+    </constant>
+    <constant name="phe client identifier length" value="32">
+        PHE client identifier length
+    </constant>
+    <constant name="phe account key length" value="32">
+        PHE account key length
+    </constant>
+    <constant name="phe private key length" value="32">
+        PHE private key length
+    </constant>
+    <constant name="phe public key length" value="65">
+        PHE public key length
+    </constant>
+    <constant name="phe hash len" definition="public" value="32">
+        PHE hash length
+    </constant>
+</class>

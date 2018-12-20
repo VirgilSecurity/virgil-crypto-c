@@ -1,0 +1,6 @@
+<implementor name="virgil ratchet" is_default="0">
+    <implementation name="fake rng">
+
+        <interface name="ratchet rng"/>
+    </implementation>
+</implementor>

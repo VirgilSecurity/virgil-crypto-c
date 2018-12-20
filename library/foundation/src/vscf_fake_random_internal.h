@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -54,9 +55,9 @@
 #define VSCF_FAKE_RANDOM_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_fake_random.h"
-#include "vscf_fake_random.h"
+
+// clang-format on
 //  @end
 
 
@@ -77,7 +78,7 @@ extern "C" {
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_fake_random_init_ctx(vscf_fake_random_impl_t *fake_random_impl);
+vscf_fake_random_init_ctx(vscf_fake_random_t *fake_random);
 
 //
 //  Release resources of the implementation specific context.
@@ -85,7 +86,7 @@ vscf_fake_random_init_ctx(vscf_fake_random_impl_t *fake_random_impl);
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_fake_random_cleanup_ctx(vscf_fake_random_impl_t *fake_random_impl);
+vscf_fake_random_cleanup_ctx(vscf_fake_random_t *fake_random);
 
 
 // --------------------------------------------------------------------------

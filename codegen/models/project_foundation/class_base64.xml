@@ -1,0 +1,50 @@
+<class name="base64" context="none">
+    Implementation of the Base64 algorithm RFC 1421 and RFC 2045.
+
+    <require header="mbedtls/base64.h" scope="private"/>
+
+
+    <method name="encoded len">
+        Calculate length in bytes required to hold an encoded base64 string.
+
+        <argument name="data len" type="size"/>
+        <return type="size"/>
+    </method>
+
+
+    <method name="encode">
+        Encode given data to the base64 format.
+        Note, written buffer is NOT null-terminated.
+
+        <argument name="data" class="data"/>
+
+        <argument name="str" class="buffer">
+            <length method="encoded len">
+                <proxy argument="data" to="data len" cast="data_length"/>
+            </length>
+        </argument>
+    </method>
+
+
+    <method name="decoded len">
+        Calculate length in bytes required to hold a decoded base64 string.
+
+        <argument name="str len" type="size"/>
+        <return type="size"/>
+    </method>
+
+
+    <method name="decode">
+        Decode given data from the base64 format.
+
+        <argument name="str" class="data"/>
+
+        <argument name="data" class="buffer">
+            <length method="decoded len">
+                <proxy argument="str" to="str len" cast="data_length"/>
+            </length>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+</class>

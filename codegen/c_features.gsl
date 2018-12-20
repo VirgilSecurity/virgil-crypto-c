@@ -134,7 +134,7 @@ function c_features_create (source, destination)
     check_arguments (my, "source, destination", my)
 
     for my.source.features
-        echo_trace ("Createing <c_features/> from <$(name (features)) name=\"$(features.name:)/>\"", my)
+        echo_trace ("Creating <c_features/> from <$(name (features)) name=\"$(features.name:)/>\"", my)
 
         my.name = component_landlord_name (features)
         my.landlord = component_landlord_id (features)
@@ -148,6 +148,8 @@ function c_features_create (source, destination)
             .landlord = my.landlord
             .path = features.path
             .cmake_target = features.cmake_target ?
+            .internal_build = "$(features.prefix:c,UPPER)_INTERNAL_BUILD"
+            .build_shared_libs = "$(features.prefix:c,UPPER)_BUILD_SHARED_LIBS"
 
             for features.feature
                 c_feature_create (feature, c_features)

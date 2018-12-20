@@ -1,0 +1,127 @@
+<module name="library" of_class="global">
+    This module contains:
+        - library version;
+        - portable API visibility attributes;
+        - common constants;
+        - common types;
+
+    <c_include file="stdint.h" is_system="1" />
+    <c_include file="stddef.h" is_system="1" />
+    <c_include file="assert.h" is_system="1" />
+    <c_include file="string.h" is_system="1" />
+    <c_include file="stdlib.h" is_system="1" />
+    <c_include file="stdbool.h" is_system="1" />
+
+    <require module="platform"/>
+
+    <c_alias name="byte" type="uint8_t" declaration="public">
+        //  Portable representation of the byte.
+    </c_alias>
+
+    <macros name="major" of_class="version">
+        <code lang="c">
+            #define .(c_class_version_macros_major) .(project_version_major)
+        </code>
+    </macros>
+
+    <macros name="minor" of_class="version">
+        <code lang="c">
+            #define .(c_class_version_macros_minor) .(project_version_minor)
+        </code>
+    </macros>
+
+    <macros name="patch" of_class="version">
+        <code lang="c">
+            #define .(c_class_version_macros_patch) .(project_version_patch)
+        </code>
+    </macros>
+
+    <macros name="make" is_method="1" of_class="version">
+        <code lang="c">
+            #define .(c_class_version_macros_make) (major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
+        </code>
+    </macros>
+
+    <macros name="version" of_class="version">
+        <code lang="c">
+            #define .(c_class_version_macros_version)
+                    .(c_class_version_macros_make) (
+                            .(c_class_version_macros_major),
+                            .(c_class_version_macros_minor),
+                            .(c_class_version_macros_patch))
+        </code>
+    </macros>
+
+    <macroses>
+        <macros name="public"/>
+        <macros name="private"/>
+        <macros name="build shared libs"/>
+        <macros name="internal build"/>
+        <code lang="c">
+            #if defined(_WIN32) || defined(__CYGWIN__)
+            #   ifdef .(c_global_macros_build_shared_libs)
+            #       ifdef __GNUC__
+            #           define .(c_global_macros_public) __attribute__ ((dllexport))
+            #       else
+            #           define .(c_global_macros_public) __declspec(dllexport)
+            #       endif
+            #   elsif !defined(c_global_macros_internal_build)
+            #       ifdef __GNUC__
+            #           define .(c_global_macros_public) __attribute__ ((dllimport))
+            #       else
+            #           define .(c_global_macros_public) __declspec(dllimport)
+            #       endif
+            #   else
+            #       define .(c_global_macros_public)
+            #   endif
+            #   define .(c_global_macros_private)
+            #else
+            #   if (defined(__GNUC__) &amp;&amp; __GNUC__ >= 4) || defined(__INTEL_COMPILER)
+            #       define .(c_global_macros_public)  __attribute__ ((visibility ("default")))
+            #       define .(c_global_macros_private) __attribute__ ((visibility ("hidden")))
+            #   else
+            #       define .(c_global_macros_private)
+            #   endif
+            #endif
+        </code>
+    </macroses>
+
+    <macros name="ceil">
+        Custom implementation of the number ceil algorithm.
+
+        <code>
+            #define .(c_global_macros_ceil) (x,y) (0 == (x) ? 0 : 1 + (((x) - 1) / (y)))
+        </code>
+    </macros>
+
+    <macros name="unused">
+        Mark argument or function return value as "unused".
+
+        <code>
+            #define .(c_global_macros_unused) (x) (void)(x)
+        </code>
+    </macros>
+
+
+    <constant name="pointer size" value="sizeof (void *)">
+        Pointer size in bytes.
+    </constant>
+
+
+    <callback name="alloc">
+
+        Generic allocation function type.
+
+        <return class="any" access="disown" />
+
+        <argument name="size" type="size" />
+    </callback>
+
+
+    <callback name="dealloc">
+
+        Generic de-allocation function type.
+
+        <argument name="mem" class="any" access="writeonly" />
+    </callback>
+</module>

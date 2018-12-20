@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -46,6 +47,8 @@
 #include "vscf_cipher_auth_info.h"
 #include "vscf_assert.h"
 #include "vscf_cipher_auth_info_api.h"
+
+// clang-format on
 //  @end
 
 
@@ -70,11 +73,11 @@ vscf_cipher_auth_info_auth_tag_len(const vscf_cipher_auth_info_api_t *cipher_aut
 //  Return cipher auth info API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_cipher_auth_info_api_t *
-vscf_cipher_auth_info_api(vscf_impl_t *impl) {
+vscf_cipher_auth_info_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_CIPHER_AUTH_INFO);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_CIPHER_AUTH_INFO);
     return (const vscf_cipher_auth_info_api_t *) api;
 }
 
@@ -82,11 +85,11 @@ vscf_cipher_auth_info_api(vscf_impl_t *impl) {
 //  Check if given object implements interface 'cipher auth info'.
 //
 VSCF_PUBLIC bool
-vscf_cipher_auth_info_is_implemented(vscf_impl_t *impl) {
+vscf_cipher_auth_info_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_CIPHER_AUTH_INFO) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_CIPHER_AUTH_INFO) != NULL;
 }
 
 //
@@ -98,17 +101,6 @@ vscf_cipher_auth_info_api_tag(const vscf_cipher_auth_info_api_t *cipher_auth_inf
     VSCF_ASSERT_PTR (cipher_auth_info_api);
 
     return cipher_auth_info_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_cipher_auth_info_impl_tag(const vscf_cipher_auth_info_api_t *cipher_auth_info_api) {
-
-    VSCF_ASSERT_PTR (cipher_auth_info_api);
-
-    return cipher_auth_info_api->impl_tag;
 }
 
 

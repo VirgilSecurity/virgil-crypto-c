@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -52,13 +53,14 @@
 #include "vscf_asn1wr.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_asn1.h"
-#include "vscf_asn1wr_impl.h"
+#include "vscf_asn1_tag.h"
+#include "vscf_asn1wr_defs.h"
 #include "vscf_asn1wr_internal.h"
 
 #include <mbedtls/asn1.h>
 #include <mbedtls/asn1write.h>
-#include <virgil/common/private/vsc_buffer_defs.h>
+
+// clang-format on
 //  @end
 
 
@@ -73,13 +75,13 @@
 //  to the context and return true, otherwise return false.
 //
 static bool
-vscf_asn1wr_mbedtls_has_error(vscf_asn1wr_impl_t *asn1wr_impl, int code);
+vscf_asn1wr_mbedtls_has_error(vscf_asn1wr_t *asn1wr, int code);
 
 //
-//  Write raw data of specific tag the to the buffer.
+//  Write raw data and with given tag the to ASN.1 structure.
 //
 static size_t
-vscf_asn1wr_write_raw_data(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t data, int tag);
+vscf_asn1wr_write_tag_data(vscf_asn1wr_t *asn1wr, vsc_data_t data, int tag);
 
 
 // --------------------------------------------------------------------------
@@ -95,13 +97,13 @@ vscf_asn1wr_write_raw_data(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t data, int
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_asn1wr_init_ctx(vscf_asn1wr_impl_t *asn1wr_impl) {
+vscf_asn1wr_init_ctx(vscf_asn1wr_t *asn1wr) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
-    asn1wr_impl->start = NULL;
-    asn1wr_impl->curr = NULL;
-    asn1wr_impl->error = vscf_error_UNINITIALIZED;
+    asn1wr->start = NULL;
+    asn1wr->curr = NULL;
+    asn1wr->error = vscf_error_UNINITIALIZED;
 }
 
 //
@@ -110,13 +112,13 @@ vscf_asn1wr_init_ctx(vscf_asn1wr_impl_t *asn1wr_impl) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_asn1wr_cleanup_ctx(vscf_asn1wr_impl_t *asn1wr_impl) {
+vscf_asn1wr_cleanup_ctx(vscf_asn1wr_t *asn1wr) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
-    asn1wr_impl->start = NULL;
-    asn1wr_impl->curr = NULL;
-    asn1wr_impl->error = vscf_error_UNINITIALIZED;
+    asn1wr->start = NULL;
+    asn1wr->curr = NULL;
+    asn1wr->error = vscf_error_UNINITIALIZED;
 }
 
 //
@@ -124,9 +126,9 @@ vscf_asn1wr_cleanup_ctx(vscf_asn1wr_impl_t *asn1wr_impl) {
 //  to the context and return true, otherwise return false.
 //
 static bool
-vscf_asn1wr_mbedtls_has_error(vscf_asn1wr_impl_t *asn1wr_impl, int code) {
+vscf_asn1wr_mbedtls_has_error(vscf_asn1wr_t *asn1wr, int code) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
     if (code >= 0) {
         return false;
@@ -134,99 +136,89 @@ vscf_asn1wr_mbedtls_has_error(vscf_asn1wr_impl_t *asn1wr_impl, int code) {
 
     switch (code) {
     case MBEDTLS_ERR_ASN1_BUF_TOO_SMALL:
-        asn1wr_impl->error = vscf_error_SMALL_BUFFER;
+        asn1wr->error = vscf_error_SMALL_BUFFER;
         break;
 
     default:
-        VSCF_ASSERT(0 && "unhandled mbedtls error");
-        asn1wr_impl->error = vscf_error_UNHANDLED_THIRDPARTY_ERROR;
+        VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(code);
+        asn1wr->error = vscf_error_UNHANDLED_THIRDPARTY_ERROR;
+        break;
     }
 
     return true;
 }
 
 //
-//  Write raw data of specific tag the to the buffer.
+//  Write raw data and with given tag the to ASN.1 structure.
 //
 static size_t
-vscf_asn1wr_write_raw_data(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t data, int tag) {
+vscf_asn1wr_write_tag_data(vscf_asn1wr_t *asn1wr, vsc_data_t data, int tag) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
     VSCF_ASSERT_PTR(data.bytes);
 
-    if (asn1wr_impl->error != vscf_SUCCESS) {
-        return 0;
-    }
-
-    int ret = mbedtls_asn1_write_raw_buffer(&asn1wr_impl->curr, asn1wr_impl->start, data.bytes, data.len);
-
-    if (vscf_asn1wr_mbedtls_has_error(asn1wr_impl, ret)) {
+    if (asn1wr->error != vscf_SUCCESS) {
         return 0;
     }
 
     size_t size = 0;
+    size += vscf_asn1wr_write_data(asn1wr, data);
+    size += vscf_asn1wr_write_len(asn1wr, data.len);
+    size += vscf_asn1wr_write_tag(asn1wr, tag);
 
-    size += vscf_asn1wr_write_len(asn1wr_impl, data.len);
-    size += vscf_asn1wr_write_tag(asn1wr_impl, tag);
-
-    if (asn1wr_impl->error != vscf_SUCCESS) {
+    if (asn1wr->error != vscf_SUCCESS) {
         return 0;
     }
 
-    return (size_t)ret + size;
+    return size;
 }
 
 //
 //  Reset all internal states and prepare to new ASN.1 writing operations.
 //
 VSCF_PUBLIC void
-vscf_asn1wr_reset(vscf_asn1wr_impl_t *asn1wr_impl, vsc_buffer_t *out) {
+vscf_asn1wr_reset(vscf_asn1wr_t *asn1wr, byte *out, size_t out_len) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
     VSCF_ASSERT_PTR(out);
-    VSCF_ASSERT(out->bytes);
-    VSCF_ASSERT(out->capacity > 0);
-    VSCF_ASSERT(out->len < out->capacity);
+    VSCF_ASSERT(out_len > 0);
 
-    asn1wr_impl->out = out;
-    asn1wr_impl->start = out->bytes + out->len;
-    asn1wr_impl->curr = out->bytes + out->capacity;
-    asn1wr_impl->error = vscf_SUCCESS;
+    asn1wr->start = out;
+    asn1wr->end = out + out_len;
+    asn1wr->curr = out + out_len;
+    asn1wr->error = vscf_SUCCESS;
 }
 
 //
 //  Move written data to the buffer beginning and forbid further operations.
+//  Returns written size in bytes.
 //
-VSCF_PUBLIC void
-vscf_asn1wr_seal(vscf_asn1wr_impl_t *asn1wr_impl) {
+VSCF_PUBLIC size_t
+vscf_asn1wr_finish(vscf_asn1wr_t *asn1wr) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
+    VSCF_ASSERT(asn1wr->error == vscf_SUCCESS);
 
-    VSCF_ASSERT(asn1wr_impl->error == vscf_SUCCESS);
+    size_t size = (size_t)(asn1wr->end - asn1wr->curr);
 
-    size_t size = (size_t)(asn1wr_impl->out->bytes + asn1wr_impl->out->capacity - asn1wr_impl->curr);
-
-    asn1wr_impl->out->len += size;
-
-    VSCF_ASSERT(asn1wr_impl->out->len <= asn1wr_impl->out->capacity);
-
-    if (asn1wr_impl->start < asn1wr_impl->curr) {
-
-        memmove(asn1wr_impl->start, asn1wr_impl->curr, size);
+    if (asn1wr->start < asn1wr->curr) {
+        memmove(asn1wr->start, asn1wr->curr, size);
     }
 
-    vscf_asn1wr_init_ctx(asn1wr_impl);
+    vscf_asn1wr_init_ctx(asn1wr);
+
+    return size;
 }
 
 //
 //  Return last error.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_asn1wr_error(vscf_asn1wr_impl_t *asn1wr_impl) {
+vscf_asn1wr_error(vscf_asn1wr_t *asn1wr) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
-    return asn1wr_impl->error;
+    return asn1wr->error;
 }
 
 //
@@ -234,17 +226,17 @@ vscf_asn1wr_error(vscf_asn1wr_impl_t *asn1wr_impl) {
 //  Return current writing position.
 //
 VSCF_PUBLIC byte *
-vscf_asn1wr_reserve(vscf_asn1wr_impl_t *asn1wr_impl, size_t len) {
+vscf_asn1wr_reserve(vscf_asn1wr_t *asn1wr, size_t len) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
-    if (asn1wr_impl->start > asn1wr_impl->curr - len) {
-        asn1wr_impl->error = vscf_error_SMALL_BUFFER;
+    if (asn1wr->start > asn1wr->curr - len) {
+        asn1wr->error = vscf_error_SMALL_BUFFER;
         return NULL;
     }
 
-    asn1wr_impl->curr -= len;
-    return asn1wr_impl->curr;
+    asn1wr->curr -= len;
+    return asn1wr->curr;
 }
 
 //
@@ -252,20 +244,20 @@ vscf_asn1wr_reserve(vscf_asn1wr_impl_t *asn1wr_impl, size_t len) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_tag(vscf_asn1wr_impl_t *asn1wr_impl, int tag) {
+vscf_asn1wr_write_tag(vscf_asn1wr_t *asn1wr, int tag) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
     VSCF_ASSERT(tag > 0);
     VSCF_ASSERT(tag <= 0xFF);
 
-    if (asn1wr_impl->error != vscf_SUCCESS) {
+    if (asn1wr->error != vscf_SUCCESS) {
         return 0;
     }
 
-    int ret = mbedtls_asn1_write_tag(&asn1wr_impl->curr, asn1wr_impl->start, (unsigned char)tag);
+    int ret = mbedtls_asn1_write_tag(&asn1wr->curr, asn1wr->start, (unsigned char)tag);
 
-    if (vscf_asn1wr_mbedtls_has_error(asn1wr_impl, ret)) {
+    if (vscf_asn1wr_mbedtls_has_error(asn1wr, ret)) {
         return 0;
     }
 
@@ -277,17 +269,17 @@ vscf_asn1wr_write_tag(vscf_asn1wr_impl_t *asn1wr_impl, int tag) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_len(vscf_asn1wr_impl_t *asn1wr_impl, size_t len) {
+vscf_asn1wr_write_len(vscf_asn1wr_t *asn1wr, size_t len) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
-    if (asn1wr_impl->error != vscf_SUCCESS) {
+    if (asn1wr->error != vscf_SUCCESS) {
         return 0;
     }
 
-    int ret = mbedtls_asn1_write_len(&asn1wr_impl->curr, asn1wr_impl->start, len);
+    int ret = mbedtls_asn1_write_len(&asn1wr->curr, asn1wr->start, len);
 
-    if (vscf_asn1wr_mbedtls_has_error(asn1wr_impl, ret)) {
+    if (vscf_asn1wr_mbedtls_has_error(asn1wr, ret)) {
         return 0;
     }
 
@@ -299,11 +291,11 @@ vscf_asn1wr_write_len(vscf_asn1wr_impl_t *asn1wr_impl, size_t len) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_int(vscf_asn1wr_impl_t *asn1wr_impl, int value) {
+vscf_asn1wr_write_int(vscf_asn1wr_t *asn1wr, int value) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
-    return vscf_asn1wr_write_int64(asn1wr_impl, value);
+    return vscf_asn1wr_write_int64(asn1wr, value);
 }
 
 //
@@ -311,11 +303,11 @@ vscf_asn1wr_write_int(vscf_asn1wr_impl_t *asn1wr_impl, int value) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_int8(vscf_asn1wr_impl_t *asn1wr_impl, int8_t value) {
+vscf_asn1wr_write_int8(vscf_asn1wr_t *asn1wr, int8_t value) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
-    return vscf_asn1wr_write_int64(asn1wr_impl, value);
+    return vscf_asn1wr_write_int64(asn1wr, value);
 }
 
 //
@@ -323,11 +315,11 @@ vscf_asn1wr_write_int8(vscf_asn1wr_impl_t *asn1wr_impl, int8_t value) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_int16(vscf_asn1wr_impl_t *asn1wr_impl, int16_t value) {
+vscf_asn1wr_write_int16(vscf_asn1wr_t *asn1wr, int16_t value) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
-    return vscf_asn1wr_write_int64(asn1wr_impl, value);
+    return vscf_asn1wr_write_int64(asn1wr, value);
 }
 
 //
@@ -335,11 +327,11 @@ vscf_asn1wr_write_int16(vscf_asn1wr_impl_t *asn1wr_impl, int16_t value) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_int32(vscf_asn1wr_impl_t *asn1wr_impl, int32_t value) {
+vscf_asn1wr_write_int32(vscf_asn1wr_t *asn1wr, int32_t value) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
-    return vscf_asn1wr_write_int64(asn1wr_impl, value);
+    return vscf_asn1wr_write_int64(asn1wr, value);
 }
 
 //
@@ -347,7 +339,7 @@ vscf_asn1wr_write_int32(vscf_asn1wr_impl_t *asn1wr_impl, int32_t value) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_int64(vscf_asn1wr_impl_t *asn1wr_impl, int64_t value) {
+vscf_asn1wr_write_int64(vscf_asn1wr_t *asn1wr, int64_t value) {
 
     // Improved implementation taken from MbedTLS PR.
     //
@@ -401,11 +393,11 @@ vscf_asn1wr_write_int64(vscf_asn1wr_impl_t *asn1wr_impl, int64_t value) {
     // the two's complement encoding has to be ensured.
     //
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
     size_t len = 0;
-    unsigned char **p = &asn1wr_impl->curr;
-    unsigned char *start = asn1wr_impl->start;
+    unsigned char **p = &asn1wr->curr;
+    unsigned char *start = asn1wr->start;
 
     uint64_t v, fix7, fix8, cmp;
 
@@ -423,7 +415,7 @@ vscf_asn1wr_write_int64(vscf_asn1wr_impl_t *asn1wr_impl, int64_t value) {
 
     for (;;) {
         if (*p - start < 1) {
-            asn1wr_impl->error = vscf_error_SMALL_BUFFER;
+            asn1wr->error = vscf_error_SMALL_BUFFER;
             return 0;
         }
 
@@ -437,10 +429,10 @@ vscf_asn1wr_write_int64(vscf_asn1wr_impl_t *asn1wr_impl, int64_t value) {
         v = v >> 8 | fix8;
     }
 
-    len += vscf_asn1wr_write_len(asn1wr_impl, len);
-    len += vscf_asn1wr_write_tag(asn1wr_impl, MBEDTLS_ASN1_INTEGER);
+    len += vscf_asn1wr_write_len(asn1wr, len);
+    len += vscf_asn1wr_write_tag(asn1wr, MBEDTLS_ASN1_INTEGER);
 
-    if (vscf_asn1wr_error(asn1wr_impl) != vscf_SUCCESS) {
+    if (vscf_asn1wr_error(asn1wr) != vscf_SUCCESS) {
         return 0;
     }
 
@@ -452,11 +444,11 @@ vscf_asn1wr_write_int64(vscf_asn1wr_impl_t *asn1wr_impl, int64_t value) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_uint(vscf_asn1wr_impl_t *asn1wr_impl, unsigned int value) {
+vscf_asn1wr_write_uint(vscf_asn1wr_t *asn1wr, unsigned int value) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
-    return vscf_asn1wr_write_uint64(asn1wr_impl, value);
+    return vscf_asn1wr_write_uint64(asn1wr, value);
 }
 
 //
@@ -464,11 +456,11 @@ vscf_asn1wr_write_uint(vscf_asn1wr_impl_t *asn1wr_impl, unsigned int value) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_uint8(vscf_asn1wr_impl_t *asn1wr_impl, uint8_t value) {
+vscf_asn1wr_write_uint8(vscf_asn1wr_t *asn1wr, uint8_t value) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
-    return vscf_asn1wr_write_uint64(asn1wr_impl, value);
+    return vscf_asn1wr_write_uint64(asn1wr, value);
 }
 
 //
@@ -476,11 +468,11 @@ vscf_asn1wr_write_uint8(vscf_asn1wr_impl_t *asn1wr_impl, uint8_t value) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_uint16(vscf_asn1wr_impl_t *asn1wr_impl, uint16_t value) {
+vscf_asn1wr_write_uint16(vscf_asn1wr_t *asn1wr, uint16_t value) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
-    return vscf_asn1wr_write_uint64(asn1wr_impl, value);
+    return vscf_asn1wr_write_uint64(asn1wr, value);
 }
 
 //
@@ -488,11 +480,11 @@ vscf_asn1wr_write_uint16(vscf_asn1wr_impl_t *asn1wr_impl, uint16_t value) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_uint32(vscf_asn1wr_impl_t *asn1wr_impl, uint32_t value) {
+vscf_asn1wr_write_uint32(vscf_asn1wr_t *asn1wr, uint32_t value) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
-    return vscf_asn1wr_write_uint64(asn1wr_impl, value);
+    return vscf_asn1wr_write_uint64(asn1wr, value);
 }
 
 //
@@ -500,20 +492,20 @@ vscf_asn1wr_write_uint32(vscf_asn1wr_impl_t *asn1wr_impl, uint32_t value) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_uint64(vscf_asn1wr_impl_t *asn1wr_impl, uint64_t value) {
+vscf_asn1wr_write_uint64(vscf_asn1wr_t *asn1wr, uint64_t value) {
 
     //  Short version of vscf_asn1wr_write_int64() function.
     //  In assumption that given value is unsigned.
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
     size_t len = 0;
-    unsigned char **p = &asn1wr_impl->curr;
-    unsigned char *start = asn1wr_impl->start;
+    unsigned char **p = &asn1wr->curr;
+    unsigned char *start = asn1wr->start;
 
     for (;;) {
         if (*p - start < 1) {
-            asn1wr_impl->error = vscf_error_SMALL_BUFFER;
+            asn1wr->error = vscf_error_SMALL_BUFFER;
             return 0;
         }
 
@@ -527,10 +519,10 @@ vscf_asn1wr_write_uint64(vscf_asn1wr_impl_t *asn1wr_impl, uint64_t value) {
         value = value >> 8;
     }
 
-    len += vscf_asn1wr_write_len(asn1wr_impl, len);
-    len += vscf_asn1wr_write_tag(asn1wr_impl, MBEDTLS_ASN1_INTEGER);
+    len += vscf_asn1wr_write_len(asn1wr, len);
+    len += vscf_asn1wr_write_tag(asn1wr, MBEDTLS_ASN1_INTEGER);
 
-    if (vscf_asn1wr_error(asn1wr_impl) != vscf_SUCCESS) {
+    if (vscf_asn1wr_error(asn1wr) != vscf_SUCCESS) {
         return 0;
     }
 
@@ -542,17 +534,17 @@ vscf_asn1wr_write_uint64(vscf_asn1wr_impl_t *asn1wr_impl, uint64_t value) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_bool(vscf_asn1wr_impl_t *asn1wr_impl, bool value) {
+vscf_asn1wr_write_bool(vscf_asn1wr_t *asn1wr, bool value) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
-    if (asn1wr_impl->error != vscf_SUCCESS) {
+    if (asn1wr->error != vscf_SUCCESS) {
         return 0;
     }
 
-    int ret = mbedtls_asn1_write_bool(&asn1wr_impl->curr, asn1wr_impl->start, value);
+    int ret = mbedtls_asn1_write_bool(&asn1wr->curr, asn1wr->start, value);
 
-    if (vscf_asn1wr_mbedtls_has_error(asn1wr_impl, ret)) {
+    if (vscf_asn1wr_mbedtls_has_error(asn1wr, ret)) {
         return 0;
     }
 
@@ -563,17 +555,17 @@ vscf_asn1wr_write_bool(vscf_asn1wr_impl_t *asn1wr_impl, bool value) {
 //  Write ASN.1 type: NULL.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_null(vscf_asn1wr_impl_t *asn1wr_impl) {
+vscf_asn1wr_write_null(vscf_asn1wr_t *asn1wr) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
-    if (asn1wr_impl->error != vscf_SUCCESS) {
+    if (asn1wr->error != vscf_SUCCESS) {
         return 0;
     }
 
-    int ret = mbedtls_asn1_write_null(&asn1wr_impl->curr, asn1wr_impl->start);
+    int ret = mbedtls_asn1_write_null(&asn1wr->curr, asn1wr->start);
 
-    if (vscf_asn1wr_mbedtls_has_error(asn1wr_impl, ret)) {
+    if (vscf_asn1wr_mbedtls_has_error(asn1wr, ret)) {
         return 0;
     }
 
@@ -585,12 +577,60 @@ vscf_asn1wr_write_null(vscf_asn1wr_impl_t *asn1wr_impl) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_octet_str(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t value) {
+vscf_asn1wr_write_octet_str(vscf_asn1wr_t *asn1wr, vsc_data_t value) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
     VSCF_ASSERT_PTR(value.bytes);
 
-    return vscf_asn1wr_write_raw_data(asn1wr_impl, value, MBEDTLS_ASN1_OCTET_STRING);
+    return vscf_asn1wr_write_tag_data(asn1wr, value, MBEDTLS_ASN1_OCTET_STRING);
+}
+
+//
+//  Write ASN.1 type: BIT STRING with all zero unused bits.
+//
+//  Return count of written bytes.
+//
+VSCF_PUBLIC size_t
+vscf_asn1wr_write_octet_str_as_bitstring(vscf_asn1wr_t *asn1wr, vsc_data_t value) {
+
+    VSCF_ASSERT_PTR(asn1wr);
+    VSCF_ASSERT(vsc_data_is_valid(value));
+
+    size_t written_count = vscf_asn1wr_write_data(asn1wr, value);
+
+    if (asn1wr->error != vscf_SUCCESS) {
+        return 0;
+    }
+
+    if (*asn1wr->curr != 0x00) {
+        byte zero_byte = 0x00;
+        written_count += vscf_asn1wr_write_data(asn1wr, vsc_data(&zero_byte, 1));
+    }
+
+    written_count += vscf_asn1wr_write_len(asn1wr, written_count);
+    written_count += vscf_asn1wr_write_tag(asn1wr, MBEDTLS_ASN1_BIT_STRING);
+
+    return written_count;
+}
+
+//
+//  Write raw data directly to the ASN.1 structure.
+//  Return count of written bytes.
+//  Note, use this method carefully.
+//
+VSCF_PUBLIC size_t
+vscf_asn1wr_write_data(vscf_asn1wr_t *asn1wr, vsc_data_t data) {
+
+    VSCF_ASSERT_PTR(asn1wr);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+
+    int ret = mbedtls_asn1_write_raw_buffer(&asn1wr->curr, asn1wr->start, data.bytes, data.len);
+
+    if (vscf_asn1wr_mbedtls_has_error(asn1wr, ret)) {
+        return 0;
+    }
+
+    return data.len;
 }
 
 //
@@ -598,12 +638,12 @@ vscf_asn1wr_write_octet_str(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t value) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_utf8_str(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t value) {
+vscf_asn1wr_write_utf8_str(vscf_asn1wr_t *asn1wr, vsc_data_t value) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
     VSCF_ASSERT_PTR(value.bytes);
 
-    return vscf_asn1wr_write_raw_data(asn1wr_impl, value, MBEDTLS_ASN1_UTF8_STRING);
+    return vscf_asn1wr_write_tag_data(asn1wr, value, MBEDTLS_ASN1_UTF8_STRING);
 }
 
 //
@@ -611,12 +651,12 @@ vscf_asn1wr_write_utf8_str(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t value) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_oid(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t value) {
+vscf_asn1wr_write_oid(vscf_asn1wr_t *asn1wr, vsc_data_t value) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
     VSCF_ASSERT_PTR(value.bytes);
 
-    return vscf_asn1wr_write_raw_data(asn1wr_impl, value, MBEDTLS_ASN1_OID);
+    return vscf_asn1wr_write_tag_data(asn1wr, value, MBEDTLS_ASN1_OID);
 }
 
 //
@@ -624,14 +664,14 @@ vscf_asn1wr_write_oid(vscf_asn1wr_impl_t *asn1wr_impl, vsc_data_t value) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_sequence(vscf_asn1wr_impl_t *asn1wr_impl, size_t len) {
+vscf_asn1wr_write_sequence(vscf_asn1wr_t *asn1wr, size_t len) {
 
-    VSCF_ASSERT_PTR(asn1wr_impl);
+    VSCF_ASSERT_PTR(asn1wr);
 
     size_t result_len = 0;
 
-    result_len += vscf_asn1wr_write_len(asn1wr_impl, len);
-    result_len += vscf_asn1wr_write_tag(asn1wr_impl, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SEQUENCE);
+    result_len += vscf_asn1wr_write_len(asn1wr, len);
+    result_len += vscf_asn1wr_write_tag(asn1wr, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SEQUENCE);
 
     return result_len;
 }
@@ -641,12 +681,12 @@ vscf_asn1wr_write_sequence(vscf_asn1wr_impl_t *asn1wr_impl, size_t len) {
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_set(vscf_asn1wr_impl_t *asn1wr_impl, size_t len) {
+vscf_asn1wr_write_set(vscf_asn1wr_t *asn1wr, size_t len) {
 
     size_t result_len = 0;
 
-    result_len += vscf_asn1wr_write_len(asn1wr_impl, len);
-    result_len += vscf_asn1wr_write_tag(asn1wr_impl, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SET);
+    result_len += vscf_asn1wr_write_len(asn1wr, len);
+    result_len += vscf_asn1wr_write_tag(asn1wr, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SET);
 
     return result_len;
 }

@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -52,6 +53,8 @@
 #include "vscf_auth_decrypt.h"
 #include "vscf_assert.h"
 #include "vscf_auth_decrypt_api.h"
+
+// clang-format on
 //  @end
 
 
@@ -68,7 +71,7 @@
 VSCF_PUBLIC vscf_error_t
 vscf_auth_decrypt(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data, vsc_data_t tag, vsc_buffer_t *out) {
 
-    const vscf_auth_decrypt_api_t *auth_decrypt_api = vscf_auth_decrypt_api (impl);
+    const vscf_auth_decrypt_api_t *auth_decrypt_api = vscf_auth_decrypt_api(impl);
     VSCF_ASSERT_PTR (auth_decrypt_api);
 
     VSCF_ASSERT_PTR (auth_decrypt_api->auth_decrypt_cb);
@@ -81,7 +84,7 @@ vscf_auth_decrypt(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data, vsc_
 VSCF_PUBLIC size_t
 vscf_auth_decrypt_auth_decrypted_len(vscf_impl_t *impl, size_t data_len) {
 
-    const vscf_auth_decrypt_api_t *auth_decrypt_api = vscf_auth_decrypt_api (impl);
+    const vscf_auth_decrypt_api_t *auth_decrypt_api = vscf_auth_decrypt_api(impl);
     VSCF_ASSERT_PTR (auth_decrypt_api);
 
     VSCF_ASSERT_PTR (auth_decrypt_api->auth_decrypted_len_cb);
@@ -92,23 +95,34 @@ vscf_auth_decrypt_auth_decrypted_len(vscf_impl_t *impl, size_t data_len) {
 //  Return auth decrypt API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_auth_decrypt_api_t *
-vscf_auth_decrypt_api(vscf_impl_t *impl) {
+vscf_auth_decrypt_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_AUTH_DECRYPT);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_AUTH_DECRYPT);
     return (const vscf_auth_decrypt_api_t *) api;
+}
+
+//
+//  Return cipher auth info API.
+//
+VSCF_PUBLIC const vscf_cipher_auth_info_api_t *
+vscf_auth_decrypt_cipher_auth_info_api(const vscf_auth_decrypt_api_t *auth_decrypt_api) {
+
+    VSCF_ASSERT_PTR (auth_decrypt_api);
+
+    return auth_decrypt_api->cipher_auth_info_api;
 }
 
 //
 //  Check if given object implements interface 'auth decrypt'.
 //
 VSCF_PUBLIC bool
-vscf_auth_decrypt_is_implemented(vscf_impl_t *impl) {
+vscf_auth_decrypt_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_AUTH_DECRYPT) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_AUTH_DECRYPT) != NULL;
 }
 
 //
@@ -120,17 +134,6 @@ vscf_auth_decrypt_api_tag(const vscf_auth_decrypt_api_t *auth_decrypt_api) {
     VSCF_ASSERT_PTR (auth_decrypt_api);
 
     return auth_decrypt_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_auth_decrypt_impl_tag(const vscf_auth_decrypt_api_t *auth_decrypt_api) {
-
-    VSCF_ASSERT_PTR (auth_decrypt_api);
-
-    return auth_decrypt_api->impl_tag;
 }
 
 

@@ -52,18 +52,6 @@ gsl from "component.gsl"
 gsl from "c_dependency.gsl"
 gsl from "c_module_interface.gsl"
 
-# ---------------------------------------------------------------------------
-function _Z19_has_methods_with_context_impl (impl)
-    check_argument (my, "impl", my)
-
-    for my.impl.interface
-        for interface.method where context = "impl"
-            return 1
-        endfor
-    endfor
-
-    return 0
-endfunction
 
 # ---------------------------------------------------------------------------
 function _Z19_has_underlying_context (impl)
@@ -92,21 +80,18 @@ function _Z19_add_instance_interface_api (impl, interface_api, destination, meta
         .is_reference = "0"
 
         for my.interface_api.property
-            my.value = item_copy_to (property, variable, "value")
+            my.value = component_clean_copy (property, variable, "value")
 
             scope my.value
                 if property.tag = "api_tag"
                     .value = property.value #   Actually this attribute already there
-
-                elsif property.tag = "impl_tag"
-                    .value = my.refs.implementation_constant_tag
 
                 elsif property.tag = "api"
                     .value = my.refs.implementation_variable_$(make_id (property.name))
 
                 elsif property.tag = "method"
                     .value = my.refs.implementation_method_$(make_id (property.name))
-                    item_copy_to (property, value, "cast")
+                    component_clean_copy (property, value, "cast")
 
                 elsif property.tag = "constant"
                     .value = my.refs.implementation_constant_$(make_id (property.name))
@@ -158,21 +143,18 @@ function _Z19_add_instance_impl_info (impl, source, destination, meta)
         .is_reference = "0"
 
         for my.impl_info.property
-            my.value = item_copy_to (property, variable, "value")
+            my.value = component_clean_copy (property, variable, "value")
             scope my.value
-                if property.tag = "impl_tag"
-                    .value = my.refs.implementation_constant_tag
-
-                elsif property.tag = "find_api"
+                if property.tag = "find_api"
                     .value = my.refs.implementation_method_find_api
 
                 elsif property.tag = "self_cleanup"
                     .value = my.refs.implementation_method_cleanup
-                    item_copy_to (property, value, "cast")
+                    component_clean_copy (property, value, "cast")
 
                 elsif property.tag = "self_delete"
                     .value = my.refs.implementation_method_delete
-                    item_copy_to (property, value, "cast")
+                    component_clean_copy (property, value, "cast")
 
                 else
                     my.property_dump = component_instance_dump (property)
@@ -211,10 +193,6 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
         .module = my.names.module_library
     endnew
 
-    new require
-        .module = my.names.module_error
-    endnew
-
     new require to my.destination
         .module = my.names.module_assert
         .scope = "private"
@@ -226,14 +204,14 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
     endnew
 
     for my.impl.require
-        copy require to my.destination
+        component_clean_copy (require, my.destination)
     endfor
 
     c_dependency_add_requirements (my.impl, my.destination)
 
-    if _Z19_has_methods_with_context_impl (my.impl)
+    if my.impl.context <> "none"
         new require to my.destination
-            .module = my.names.implementation_module_impl
+            .module = my.names.implementation_module_defs
             .scope = "private"
         endnew
 
@@ -256,10 +234,6 @@ function _Z19_add_includes_for_module_internal (impl, destination, meta)
         .module = my.names.module_library
     endnew
 
-    new require
-        .module = my.names.module_error
-    endnew
-
     new require to my.destination
         .module = my.names.module_memory
         .scope = "private"
@@ -270,19 +244,19 @@ function _Z19_add_includes_for_module_internal (impl, destination, meta)
         .scope = "private"
     endnew
 
-    new require to my.destination
-        .module = my.names.implementation_module
-        .scope = "private"
-    endnew
-
-    if _Z19_has_methods_with_context_impl (my.impl)
+    if my.impl.context <> "none"
         new require to my.destination
             .module = my.names.implementation_module
             .scope = "public"
         endnew
 
         new require to my.destination
-            .module = my.names.implementation_module_impl
+            .module = my.names.implementation_module_defs
+            .scope = "private"
+        endnew
+    else
+        new require to my.destination
+            .module = my.names.implementation_module
             .scope = "private"
         endnew
     endif
@@ -355,28 +329,13 @@ function c_dependency_add_argument (dependency, destination, after_argument, met
 
     scope my.argument
         .name = my.dependency.name
-        .class = ref(my.dependency.uid)
+        .class = ref (my.dependency.uid)
         .access = dependency.access
     endscope
 
     return my.argument
 endfunction
 
-# ---------------------------------------------------------------------------
-function _Z19_add_self_tag (implementation, enum, meta)
-    check_arguments (my, "implementation, enum, meta", my)
-
-    my.names = meta_names (my.meta)
-
-    my.insertion_position = my.enum->constant (name = my.names.enum_constant_end) ?
-    if ! defined (my.insertion_position)
-        echo_fatal ("Enum '$(my.enum.name:)' does not contain value '$(my.names.enum_constant_end:)'.", my)
-    endif
-
-    new constant before my.insertion_position
-        .name = my.implementation.name
-    endnew
-endfunction
 
 # ---------------------------------------------------------------------------
 #   Add type that handles implementation details.
@@ -389,7 +348,7 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
 
     new struct to my.destination
         . = "Handles implementation details."
-        .name = my.names.struct_impl
+        .name = my.impl.name
         .declaration = my.declaration
         .definition = my.definition
 
@@ -409,11 +368,25 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
 
         for my.impl.context
             for context.property
-                my.property = item_copy_to (property, struct)
+                my.property = component_clean_copy (property, struct)
                 my.property. ?= "Implementation specific context."
             endfor
         endfor
     endnew
+
+    if my.definition <> "external"
+        for my.impl.context
+            for context.require
+                my.copied_require = item_copy_to(require, module)
+                my.copied_require.scope = my.definition
+            endfor
+        endfor
+
+        for my.impl.require where 0.scope="context"
+            my.copied_require = item_copy_to(require, module)
+            my.copied_require.scope = my.definition
+        endfor
+    endif
 endfunction
 
 
@@ -423,7 +396,7 @@ function _Z19_add_interface_constants (impl, destination, meta)
 
     for my.impl.interface
         for interface.constant
-            copy constant to my.destination
+            component_clean_copy (constant, my.destination)
         endfor
     endfor
 endfunction
@@ -716,14 +689,14 @@ function _Z19_add_method_destroy (impl, declaration, definition, destination, me
 endfunction
 
 # ---------------------------------------------------------------------------
-function _Z19_add_method_copy (impl, declaration, definition, destination, meta)
+function _Z19_add_method_shallow_copy (impl, declaration, definition, destination, meta)
     check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
     new method to my.destination
-        .name = my.names.method_copy
+        .name = my.names.method_shallow_copy
         .declaration = my.declaration
         .definition = my.definition
 
@@ -741,7 +714,7 @@ function _Z19_add_method_copy (impl, declaration, definition, destination, meta)
 
             . = "\
             // Proxy to the parent implementation.
-            return ($(my.type_impl) *).(c_class_impl_method_copy)((.(c_class_impl_struct_impl) *)$(my.arg_impl));
+            return ($(my.type_impl) *).(c_class_impl_method_shallow_copy)((.(c_class_impl_struct_impl) *)$(my.arg_impl));
             "
         endnew
     endnew
@@ -806,7 +779,7 @@ function _Z19_add_lifecycle_methods (impl, declaration, definition, destination,
     _Z19_add_method_new (my.impl, my.declaration, my.definition, my.destination, my.meta)
     _Z19_add_method_delete (my.impl, my.declaration, my.definition, my.destination, my.meta)
     _Z19_add_method_destroy (my.impl, my.declaration, my.definition, my.destination, my.meta)
-    _Z19_add_method_copy (my.impl, my.declaration, my.definition, my.destination, my.meta)
+    _Z19_add_method_shallow_copy (my.impl, my.declaration, my.definition, my.destination, my.meta)
 endfunction
 
 
@@ -866,7 +839,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Define interface method that accept 'api' context.
 # ---------------------------------------------------------------------------
-function _Z19_define_interface_method_with_api_context (method, impl, meta)
+function _Z19_define_interface_static_method (method, impl, meta)
     check_arguments (my, "method, impl, meta", my)
 
     for my.impl.dependency
@@ -877,7 +850,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Define interface method that accept 'impl' context.
 # ---------------------------------------------------------------------------
-function _Z19_define_interface_method_with_impl_context (method, impl, meta)
+function _Z19_define_interface_non_static_method (method, impl, meta)
     check_arguments (my, "method, impl, meta", my)
 
     _Z19_add_argument_impl (my.method, my.meta)
@@ -894,13 +867,13 @@ function _Z19_add_interface_methods (impl, definition, destination, meta)
 
     for my.impl.interface
         for interface.method
-            my.impl_method = item_copy_to (method, my.destination)
+            my.impl_method = component_clean_copy (method, my.destination)
             my.impl_method.definition = my.definition
 
-            if method.context = "api"
-                _Z19_define_interface_method_with_api_context (my.impl_method, my.impl, my.meta)
-            elsif method.context = "impl"
-                _Z19_define_interface_method_with_impl_context (my.impl_method, my.impl, my.meta)
+            if method.is_static
+                _Z19_define_interface_static_method (my.impl_method, my.impl, my.meta)
+            else
+                _Z19_define_interface_non_static_method (my.impl_method, my.impl, my.meta)
             endif
         endfor
     endfor
@@ -912,7 +885,7 @@ endfunction
 function _Z19_add_interface_api_methods (impl, declaration, definition, destination, meta)
     check_arguments (my, "impl, declaration, definition, destination, meta", my)
 
-    for my.impl.interface where ! count (method, method.context = "impl")
+    for my.impl.interface where ! count (method, method.is_static = "0")
         meta_activate_entity (my.meta, interface.name)
 
         my.names = meta_names (my.meta)
@@ -946,7 +919,7 @@ function _Z19_add_constants (impl, destination, meta)
     check_arguments (my, "impl, destination, meta", my)
 
     for my.impl.constant
-        copy constant to my.destination
+        component_clean_copy (constant, my.destination)
     endfor
 endfunction
 
@@ -957,7 +930,7 @@ function _Z19_add_enums (impl, destination, meta)
     check_arguments (my, "impl, destination, meta", my)
 
     for my.impl.enum
-        copy enum to my.destination
+        component_clean_copy (enum, my.destination)
     endfor
 endfunction
 
@@ -968,11 +941,11 @@ function _Z19_add_macroses (impl, destination, meta)
     check_arguments (my, "impl, destination, meta", my)
 
     for my.impl.macros
-        copy macros to my.destination
+        component_clean_copy (macros, my.destination)
     endfor
 
     for my.impl.macroses
-        copy macroses to my.destination
+        component_clean_copy (macroses, my.destination)
     endfor
 endfunction
 
@@ -983,9 +956,9 @@ function _Z19_add_methods (impl, destination, meta)
     check_arguments (my, "impl, destination, meta", my)
 
     for my.impl.method
-        my.copied_method = item_copy_to (method, my.destination)
+        my.copied_method = component_clean_copy (method, my.destination)
 
-        if (my.copied_method.context = "impl")
+        if ! my.copied_method.is_static
             _Z19_add_argument_impl (my.copied_method, my.meta)
         endif
     endfor
@@ -1002,8 +975,8 @@ endfunction
 #       - function that cast implementation type to the common
 #         implementation type - declaration only
 # ---------------------------------------------------------------------------
-function c_module_implementation_create_module_public (impl, enum_impl_tag, destination, meta)
-    check_arguments (my, "impl, enum_impl_tag, destination, meta", my)
+function c_module_implementation_create_module_public (impl, destination, meta)
+    check_arguments (my, "impl, destination, meta", my)
 
     my.names = meta_names (my.meta)
 
@@ -1019,10 +992,9 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
         .feature = my.impl.name
 
         _Z19_add_includes_for_module_public (my.impl, module, my.meta)
-        _Z19_add_self_tag (my.impl, my.enum_impl_tag, my.meta)
         _Z19_add_interface_constants (my.impl, module, my.meta)
 
-        if _Z19_has_methods_with_context_impl (my.impl)
+        if my.impl.context <> "none"
             _Z19_add_type_impl (my.impl, "public", "external", module, my.meta)
             _Z19_add_method_impl_type_size (my.impl, "public", "external", module, my.meta)
             _Z19_add_method_impl_type_cast (my.impl, "public", "external", module, my.meta)
@@ -1032,7 +1004,8 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
             endif
 
             _Z19_add_lifecycle_methods (my.impl, "public", "external", module, my.meta)
-            c_dependency_add_methods (my.impl, "public", "external", module, my.meta)
+            c_dependency_add_lifecycle_methods (my.impl, "public", "external", module, my.meta)
+            c_dependency_add_observer_methods (my.impl, "external", "private", module, my.meta)
         endif
 
         _Z19_add_interface_api_methods (my.impl, "public", "external", module, my.meta)
@@ -1053,7 +1026,7 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
 
     my.names = meta_names (my.meta)
 
-    echo_trace ("Create module: $(my.names.implementation_module_impl)", my)
+    echo_trace ("Create module: $(my.names.implementation_module_defs)", my)
 
     new module to my.destination
         .= "\
@@ -1063,17 +1036,13 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
         object in the stack memory.
         "
 
-        .name = my.names.implementation_module_impl
+        .name = my.names.implementation_module_defs
         .of_class = my.names.implementation_class
         .scope = "private"
         .feature = my.impl.name
 
         new require to module
             .module = my.names.module_library
-        endnew
-
-        new require
-            .module = my.names.module_error
         endnew
 
         new require to module
@@ -1083,15 +1052,6 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
         new require to module
             .module = my.names.implementation_module
         endnew
-
-        for my.impl.context
-            for context.require where defined (require.header)
-                new c_include to module
-                    .file = require.header
-                    .is_system = "1"
-                endnew
-            endfor
-        endfor
 
         _Z19_add_type_impl (my.impl, "external", "public", module, my.meta)
     endnew
@@ -1125,8 +1085,7 @@ function c_module_implementation_create_module_internal (impl, source, destinati
         .scope = "internal"
         .feature = my.impl.name
 
-        if _Z19_has_methods_with_context_impl (my.impl)
-
+        if my.impl.context <> "none"
             _Z19_add_includes_for_module_internal (my.impl, module, my.meta)
             _Z19_add_instances (my.impl, my.source, module, my.meta)
 
@@ -1139,7 +1098,8 @@ function c_module_implementation_create_module_internal (impl, source, destinati
             _Z19_add_method_impl_type_size (my.impl, "external", "private", module, my.meta)
             _Z19_add_method_impl_type_cast (my.impl, "external", "private", module, my.meta)
 
-            c_dependency_add_methods (my.impl, "external", "private", module, my.meta)
+            c_dependency_add_lifecycle_methods (my.impl, "external", "private", module, my.meta)
+            c_dependency_add_observer_methods (my.impl, "private", "external", module, my.meta)
 
         else
             _Z19_add_includes_for_module_internal (my.impl, module, my.meta)
@@ -1162,15 +1122,14 @@ function c_module_implementation_create (source, destination, meta)
     my.refs = meta_refs (my.meta)
 
     my.module_impl = my.source->module (name = my.names.module_impl)
-    my.enum_impl_tag = my.module_impl->enum (name = my.names.enum_tag)
 
     for my.source.implementation by name
         meta_reset_active_entity (my.meta, implementation.name)
 
-        c_module_implementation_create_module_public (implementation, my.enum_impl_tag, my.destination, my.meta)
+        c_module_implementation_create_module_public (implementation, my.destination, my.meta)
         c_module_implementation_create_module_internal (implementation, my.source, my.destination, my.meta)
 
-        if _Z19_has_methods_with_context_impl (implementation)
+        if implementation.context <> "none"
             c_module_implementation_create_module_impl (implementation, my.destination, my.meta)
         endif
 

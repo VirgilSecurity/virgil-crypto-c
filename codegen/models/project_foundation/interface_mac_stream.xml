@@ -1,0 +1,34 @@
+<interface name="mac stream">
+    Provides interface to the MAC (message authentication code) algorithms.
+
+    <inherit interface="mac info" />
+
+
+    <method name="start">
+        Start a new MAC.
+
+        <argument name="key" class="data"/>
+    </method>
+
+
+    <method name="update">
+        Add given data to the MAC.
+
+        <argument name="data" class="data"/>
+    </method>
+
+
+    <method name="finish">
+        Accomplish MAC and return it's result (a message digest).
+
+        <argument name="mac" class="buffer">
+            <length method="digest len"/>
+        </argument>
+   </method>
+
+
+    <method name="reset">
+        Prepare to authenticate a new message with the same key
+        as the previous MAC operation.
+    </method>
+</interface>

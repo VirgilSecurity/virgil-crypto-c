@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -52,12 +53,14 @@
 #include "vscf_asn1rd.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_asn1.h"
-#include "vscf_asn1rd_impl.h"
+#include "vscf_asn1_tag.h"
+#include "vscf_asn1rd_defs.h"
 #include "vscf_asn1rd_internal.h"
 
 #include <mbedtls/asn1.h>
-#include <virgil/common/private/vsc_buffer_defs.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
+
+// clang-format on
 //  @end
 
 
@@ -72,13 +75,13 @@
 //  to the context and return true, otherwise return false.
 //
 static bool
-vscf_asn1rd_mbedtls_has_error(vscf_asn1rd_impl_t *asn1rd_impl, int code);
+vscf_asn1rd_mbedtls_has_error(vscf_asn1rd_t *asn1rd, int code);
 
 //
 //  Read raw data of specific tag the from the buffer.
 //
-static void
-vscf_asn1rd_read_tag_data(vscf_asn1rd_impl_t *asn1rd_impl, int tag, vsc_buffer_t *buffer);
+static vsc_data_t
+vscf_asn1rd_read_tag_data(vscf_asn1rd_t *asn1rd, int tag);
 
 
 // --------------------------------------------------------------------------
@@ -94,13 +97,13 @@ vscf_asn1rd_read_tag_data(vscf_asn1rd_impl_t *asn1rd_impl, int tag, vsc_buffer_t
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_asn1rd_init_ctx(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_init_ctx(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    asn1rd_impl->curr = NULL;
-    asn1rd_impl->end = NULL;
-    asn1rd_impl->error = vscf_error_UNINITIALIZED;
+    asn1rd->curr = NULL;
+    asn1rd->end = NULL;
+    asn1rd->error = vscf_error_UNINITIALIZED;
 }
 
 //
@@ -109,13 +112,13 @@ vscf_asn1rd_init_ctx(vscf_asn1rd_impl_t *asn1rd_impl) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_asn1rd_cleanup_ctx(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_cleanup_ctx(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    asn1rd_impl->curr = NULL;
-    asn1rd_impl->end = NULL;
-    asn1rd_impl->error = vscf_error_UNINITIALIZED;
+    asn1rd->curr = NULL;
+    asn1rd->end = NULL;
+    asn1rd->error = vscf_error_UNINITIALIZED;
 }
 
 //
@@ -123,9 +126,9 @@ vscf_asn1rd_cleanup_ctx(vscf_asn1rd_impl_t *asn1rd_impl) {
 //  to the context and return true, otherwise return false.
 //
 static bool
-vscf_asn1rd_mbedtls_has_error(vscf_asn1rd_impl_t *asn1rd_impl, int code) {
+vscf_asn1rd_mbedtls_has_error(vscf_asn1rd_t *asn1rd, int code) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
     if (0 == code) {
         return false;
@@ -135,16 +138,16 @@ vscf_asn1rd_mbedtls_has_error(vscf_asn1rd_impl_t *asn1rd_impl, int code) {
     case MBEDTLS_ERR_ASN1_INVALID_LENGTH:
     case MBEDTLS_ERR_ASN1_LENGTH_MISMATCH:
     case MBEDTLS_ERR_ASN1_UNEXPECTED_TAG:
-        asn1rd_impl->error = vscf_error_BAD_ASN1;
+        asn1rd->error = vscf_error_BAD_ASN1;
         break;
 
     case MBEDTLS_ERR_ASN1_OUT_OF_DATA:
-        asn1rd_impl->error = vscf_error_OUT_OF_DATA;
+        asn1rd->error = vscf_error_OUT_OF_DATA;
         break;
 
     default:
-        VSCF_ASSERT(0 && "unhandled mbedtls error");
-        asn1rd_impl->error = vscf_error_UNHANDLED_THIRDPARTY_ERROR;
+        VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(code);
+        asn1rd->error = vscf_error_UNHANDLED_THIRDPARTY_ERROR;
         break;
     }
 
@@ -154,100 +157,93 @@ vscf_asn1rd_mbedtls_has_error(vscf_asn1rd_impl_t *asn1rd_impl, int code) {
 //
 //  Read raw data of specific tag the from the buffer.
 //
-static void
-vscf_asn1rd_read_tag_data(vscf_asn1rd_impl_t *asn1rd_impl, int tag, vsc_buffer_t *buffer) {
+static vsc_data_t
+vscf_asn1rd_read_tag_data(vscf_asn1rd_t *asn1rd, int tag) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
-    VSCF_ASSERT_PTR(buffer);
-    VSCF_ASSERT_PTR(buffer->bytes);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    VSCF_ASSERT(asn1rd_impl->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(asn1rd->error != vscf_error_UNINITIALIZED);
 
-    if (asn1rd_impl->error != vscf_SUCCESS) {
-        return;
+    if (asn1rd->error != vscf_SUCCESS) {
+        return vsc_data_empty();
     }
 
     size_t len = 0;
-    int ret = mbedtls_asn1_get_tag(&asn1rd_impl->curr, asn1rd_impl->end, &len, tag);
+    int ret = mbedtls_asn1_get_tag(&asn1rd->curr, asn1rd->end, &len, tag);
 
-    if (vscf_asn1rd_mbedtls_has_error(asn1rd_impl, ret)) {
-        return;
+    if (vscf_asn1rd_mbedtls_has_error(asn1rd, ret)) {
+        return vsc_data_empty();
     }
 
-    VSCF_ASSERT_OPT(asn1rd_impl->curr + len <= asn1rd_impl->end);
+    VSCF_ASSERT_OPT(asn1rd->curr + len <= asn1rd->end);
 
-    if (len > buffer->capacity) {
-        asn1rd_impl->error = vscf_error_SMALL_BUFFER;
-        return;
-    }
+    asn1rd->curr += len;
 
-    memcpy(buffer->bytes, asn1rd_impl->curr, len);
-    buffer->len = len;
-    asn1rd_impl->curr += len;
+    return vsc_data(asn1rd->curr - len, len);
 }
 
 //
 //  Reset all internal states and prepare to new ASN.1 reading operations.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_reset(vscf_asn1rd_impl_t *asn1rd_impl, vsc_data_t data) {
+vscf_asn1rd_reset(vscf_asn1rd_t *asn1rd, vsc_data_t data) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
     VSCF_ASSERT_PTR(data.bytes);
 
-    asn1rd_impl->curr = (byte *)data.bytes;
-    asn1rd_impl->end = data.bytes + data.len;
+    asn1rd->curr = (byte *)data.bytes;
+    asn1rd->end = data.bytes + data.len;
 
-    asn1rd_impl->error = vscf_SUCCESS;
+    asn1rd->error = vscf_SUCCESS;
 }
 
 //
 //  Return last error.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_asn1rd_error(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_error(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    return asn1rd_impl->error;
+    return asn1rd->error;
 }
 
 //
 //  Get tag of the current ASN.1 element.
 //
 VSCF_PUBLIC int
-vscf_asn1rd_get_tag(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_get_tag(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    return *asn1rd_impl->curr;
+    return *asn1rd->curr;
 }
 
 //
 //  Get length of the current ASN.1 element.
 //
 VSCF_PUBLIC size_t
-vscf_asn1rd_get_len(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_get_len(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    VSCF_ASSERT(asn1rd_impl->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(asn1rd->error != vscf_error_UNINITIALIZED);
 
-    if (asn1rd_impl->error != vscf_SUCCESS) {
+    if (asn1rd->error != vscf_SUCCESS) {
         return 0;
     }
 
-    if (asn1rd_impl->curr == asn1rd_impl->end) {
-        asn1rd_impl->error = vscf_error_OUT_OF_DATA;
+    if (asn1rd->curr == asn1rd->end) {
+        asn1rd->error = vscf_error_OUT_OF_DATA;
         return 0;
     }
 
-    byte *p = asn1rd_impl->curr + 1; // skip tag
+    byte *p = asn1rd->curr + 1; // skip tag
 
     size_t len = 0;
-    int ret = mbedtls_asn1_get_len(&p, asn1rd_impl->end, &len);
+    int ret = mbedtls_asn1_get_len(&p, asn1rd->end, &len);
 
-    if (vscf_asn1rd_mbedtls_has_error(asn1rd_impl, ret)) {
+    if (vscf_asn1rd_mbedtls_has_error(asn1rd, ret)) {
         return 0;
     }
 
@@ -259,20 +255,20 @@ vscf_asn1rd_get_len(vscf_asn1rd_impl_t *asn1rd_impl) {
 //  Return element length.
 //
 VSCF_PUBLIC size_t
-vscf_asn1rd_read_tag(vscf_asn1rd_impl_t *asn1rd_impl, int tag) {
+vscf_asn1rd_read_tag(vscf_asn1rd_t *asn1rd, int tag) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    VSCF_ASSERT(asn1rd_impl->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(asn1rd->error != vscf_error_UNINITIALIZED);
 
-    if (asn1rd_impl->error != vscf_SUCCESS) {
+    if (asn1rd->error != vscf_SUCCESS) {
         return 0;
     }
 
     size_t len = 0;
-    int ret = mbedtls_asn1_get_tag(&asn1rd_impl->curr, asn1rd_impl->end, &len, tag);
+    int ret = mbedtls_asn1_get_tag(&asn1rd->curr, asn1rd->end, &len, tag);
 
-    if (vscf_asn1rd_mbedtls_has_error(asn1rd_impl, ret)) {
+    if (vscf_asn1rd_mbedtls_has_error(asn1rd, ret)) {
         return 0;
     }
 
@@ -283,18 +279,18 @@ vscf_asn1rd_read_tag(vscf_asn1rd_impl_t *asn1rd_impl, int tag) {
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC int
-vscf_asn1rd_read_int(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_read_int(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    int64_t value = vscf_asn1rd_read_int64(asn1rd_impl);
+    int64_t value = vscf_asn1rd_read_int64(asn1rd);
 
-    if (asn1rd_impl->error != vscf_SUCCESS) {
+    if (asn1rd->error != vscf_SUCCESS) {
         return 0;
     }
 
     if (value > (int64_t)INT_MAX) {
-        asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        asn1rd->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
 
@@ -305,18 +301,18 @@ vscf_asn1rd_read_int(vscf_asn1rd_impl_t *asn1rd_impl) {
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC int8_t
-vscf_asn1rd_read_int8(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_read_int8(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    int64_t value = vscf_asn1rd_read_int64(asn1rd_impl);
+    int64_t value = vscf_asn1rd_read_int64(asn1rd);
 
-    if (asn1rd_impl->error != vscf_SUCCESS) {
+    if (asn1rd->error != vscf_SUCCESS) {
         return 0;
     }
 
-    if (value > (int64_t)INT8_MAX) {
-        asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+    if (value < (int64_t)INT8_MIN || value > (int64_t)INT8_MAX) {
+        asn1rd->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
 
@@ -327,40 +323,40 @@ vscf_asn1rd_read_int8(vscf_asn1rd_impl_t *asn1rd_impl) {
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC int16_t
-vscf_asn1rd_read_int16(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_read_int16(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    int64_t value = vscf_asn1rd_read_int64(asn1rd_impl);
+    int64_t value = vscf_asn1rd_read_int64(asn1rd);
 
-    if (asn1rd_impl->error != vscf_SUCCESS) {
+    if (asn1rd->error != vscf_SUCCESS) {
         return 0;
     }
 
     if (value > (int64_t)INT16_MAX) {
-        asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        asn1rd->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
 
-    return (int16_t)value;
+    return (int16_t)(0xFFFFFFFF & value);
 }
 
 //
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC int32_t
-vscf_asn1rd_read_int32(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_read_int32(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    int64_t value = vscf_asn1rd_read_int64(asn1rd_impl);
+    int64_t value = vscf_asn1rd_read_int64(asn1rd);
 
-    if (asn1rd_impl->error != vscf_SUCCESS) {
+    if (asn1rd->error != vscf_SUCCESS) {
         return 0;
     }
 
-    if (value > (int64_t)INT32_MAX) {
-        asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+    if (value < (int64_t)INT32_MIN || value > (int64_t)INT32_MAX) {
+        asn1rd->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
 
@@ -371,28 +367,32 @@ vscf_asn1rd_read_int32(vscf_asn1rd_impl_t *asn1rd_impl) {
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC int64_t
-vscf_asn1rd_read_int64(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_read_int64(vscf_asn1rd_t *asn1rd) {
 
     //  Initial implementation is taken from MbedTLS library.
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    size_t len = vscf_asn1rd_read_tag(asn1rd_impl, MBEDTLS_ASN1_INTEGER);
+    size_t len = vscf_asn1rd_read_tag(asn1rd, MBEDTLS_ASN1_INTEGER);
 
-    if (asn1rd_impl->error != vscf_SUCCESS) {
+    if (asn1rd->error != vscf_SUCCESS) {
         return 0;
     }
 
-    if (len == 0 || len > sizeof(int64_t) || (*asn1rd_impl->curr & 0x80) != 0) {
-        asn1rd_impl->error = vscf_error_BAD_ASN1;
+    if (len == 0) {
+        asn1rd->error = vscf_error_BAD_ASN1;
         return 0;
     }
 
-    int64_t value = 0;
+    if (len > sizeof(int64_t)) {
+        asn1rd->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        return 0;
+    }
 
+    int64_t value = (*asn1rd->curr & 0x80) ? -1 : 0;
     while (len-- > 0) {
-        value = (value << 8) | (int64_t)(*asn1rd_impl->curr);
-        ++asn1rd_impl->curr;
+        value = (value << 8) | *asn1rd->curr;
+        ++asn1rd->curr;
     }
 
     return value;
@@ -402,18 +402,18 @@ vscf_asn1rd_read_int64(vscf_asn1rd_impl_t *asn1rd_impl) {
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC unsigned int
-vscf_asn1rd_read_uint(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_read_uint(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    uint64_t value = vscf_asn1rd_read_uint64(asn1rd_impl);
+    uint64_t value = vscf_asn1rd_read_uint64(asn1rd);
 
-    if (asn1rd_impl->error != vscf_SUCCESS) {
+    if (asn1rd->error != vscf_SUCCESS) {
         return 0;
     }
 
     if (value > (uint64_t)UINT_MAX) {
-        asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        asn1rd->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
 
@@ -424,18 +424,18 @@ vscf_asn1rd_read_uint(vscf_asn1rd_impl_t *asn1rd_impl) {
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC uint8_t
-vscf_asn1rd_read_uint8(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_read_uint8(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    uint64_t value = vscf_asn1rd_read_uint64(asn1rd_impl);
+    uint64_t value = vscf_asn1rd_read_uint64(asn1rd);
 
-    if (asn1rd_impl->error != vscf_SUCCESS) {
+    if (asn1rd->error != vscf_SUCCESS) {
         return 0;
     }
 
     if (value > (uint64_t)UINT8_MAX) {
-        asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        asn1rd->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
 
@@ -446,18 +446,18 @@ vscf_asn1rd_read_uint8(vscf_asn1rd_impl_t *asn1rd_impl) {
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC uint16_t
-vscf_asn1rd_read_uint16(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_read_uint16(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    uint64_t value = vscf_asn1rd_read_uint64(asn1rd_impl);
+    uint64_t value = vscf_asn1rd_read_uint64(asn1rd);
 
-    if (asn1rd_impl->error != vscf_SUCCESS) {
+    if (asn1rd->error != vscf_SUCCESS) {
         return 0;
     }
 
     if (value > (uint64_t)UINT16_MAX) {
-        asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        asn1rd->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
 
@@ -468,18 +468,18 @@ vscf_asn1rd_read_uint16(vscf_asn1rd_impl_t *asn1rd_impl) {
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC uint32_t
-vscf_asn1rd_read_uint32(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_read_uint32(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    uint64_t value = vscf_asn1rd_read_uint64(asn1rd_impl);
+    uint64_t value = vscf_asn1rd_read_uint64(asn1rd);
 
-    if (asn1rd_impl->error != vscf_SUCCESS) {
+    if (asn1rd->error != vscf_SUCCESS) {
         return 0;
     }
 
     if (value > (uint64_t)UINT32_MAX) {
-        asn1rd_impl->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        asn1rd->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
 
@@ -490,29 +490,44 @@ vscf_asn1rd_read_uint32(vscf_asn1rd_impl_t *asn1rd_impl) {
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC uint64_t
-vscf_asn1rd_read_uint64(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_read_uint64(vscf_asn1rd_t *asn1rd) {
 
     //  Initial implementation is taken from MbedTLS library.
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    size_t len = vscf_asn1rd_read_tag(asn1rd_impl, MBEDTLS_ASN1_INTEGER);
+    size_t len = vscf_asn1rd_read_tag(asn1rd, MBEDTLS_ASN1_INTEGER);
 
 
-    if (asn1rd_impl->error != vscf_SUCCESS) {
+    if (asn1rd->error != vscf_SUCCESS) {
         return 0;
     }
 
-    if (len == 0 || len > sizeof(int64_t) || (*asn1rd_impl->curr & 0x80) != 0) {
-        asn1rd_impl->error = vscf_error_BAD_ASN1;
+    if (len == 0) {
+        asn1rd->error = vscf_error_BAD_ASN1;
         return 0;
+    }
+
+    if (len > sizeof(uint64_t) + 1) {
+        asn1rd->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+        return 0;
+    }
+
+    if (len == sizeof(uint64_t) + 1) {
+        if (*asn1rd->curr == 0x00) {
+            ++asn1rd->curr;
+            --len;
+        } else {
+            asn1rd->error = vscf_error_ASN1_LOSSY_TYPE_NARROWING;
+            return 0;
+        }
     }
 
     uint64_t value = 0;
 
     while (len-- > 0) {
-        value = (value << 8) | *asn1rd_impl->curr;
-        ++asn1rd_impl->curr;
+        value = (value << 8) | *asn1rd->curr;
+        ++asn1rd->curr;
     }
 
     return value;
@@ -522,20 +537,20 @@ vscf_asn1rd_read_uint64(vscf_asn1rd_impl_t *asn1rd_impl) {
 //  Read ASN.1 type: BOOLEAN.
 //
 VSCF_PUBLIC bool
-vscf_asn1rd_read_bool(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_read_bool(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    VSCF_ASSERT(asn1rd_impl->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(asn1rd->error != vscf_error_UNINITIALIZED);
 
-    if (asn1rd_impl->error != vscf_SUCCESS) {
+    if (asn1rd->error != vscf_SUCCESS) {
         return 0;
     }
 
     int value = 0;
-    int ret = mbedtls_asn1_get_bool(&asn1rd_impl->curr, asn1rd_impl->end, &value);
+    int ret = mbedtls_asn1_get_bool(&asn1rd->curr, asn1rd->end, &value);
 
-    if (vscf_asn1rd_mbedtls_has_error(asn1rd_impl, ret)) {
+    if (vscf_asn1rd_mbedtls_has_error(asn1rd, ret)) {
         return 0;
     }
 
@@ -546,20 +561,20 @@ vscf_asn1rd_read_bool(vscf_asn1rd_impl_t *asn1rd_impl) {
 //  Read ASN.1 type: NULL.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_read_null(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_read_null(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    VSCF_ASSERT(asn1rd_impl->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(asn1rd->error != vscf_error_UNINITIALIZED);
 
-    if (asn1rd_impl->error != vscf_SUCCESS) {
+    if (asn1rd->error != vscf_SUCCESS) {
         return;
     }
 
     size_t len = 0;
-    int ret = mbedtls_asn1_get_tag(&asn1rd_impl->curr, asn1rd_impl->end, &len, MBEDTLS_ASN1_NULL);
+    int ret = mbedtls_asn1_get_tag(&asn1rd->curr, asn1rd->end, &len, MBEDTLS_ASN1_NULL);
 
-    if (vscf_asn1rd_mbedtls_has_error(asn1rd_impl, ret)) {
+    if (vscf_asn1rd_mbedtls_has_error(asn1rd, ret)) {
         return;
     }
 
@@ -569,80 +584,97 @@ vscf_asn1rd_read_null(vscf_asn1rd_impl_t *asn1rd_impl) {
 //
 //  Read ASN.1 type: OCTET STRING.
 //
-VSCF_PUBLIC void
-vscf_asn1rd_read_octet_str(vscf_asn1rd_impl_t *asn1rd_impl, vsc_buffer_t *value) {
+VSCF_PUBLIC vsc_data_t
+vscf_asn1rd_read_octet_str(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
-    VSCF_ASSERT_PTR(value);
-    VSCF_ASSERT_PTR(value->bytes);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    VSCF_ASSERT(asn1rd_impl->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(asn1rd->error != vscf_error_UNINITIALIZED);
 
-    if (asn1rd_impl->error != vscf_SUCCESS) {
-        return;
+    if (asn1rd->error != vscf_SUCCESS) {
+        return vsc_data_empty();
     }
 
-    vscf_asn1rd_read_tag_data(asn1rd_impl, MBEDTLS_ASN1_OCTET_STRING, value);
+    return vscf_asn1rd_read_tag_data(asn1rd, MBEDTLS_ASN1_OCTET_STRING);
+}
+
+//
+//  Read ASN.1 type: BIT STRING.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_asn1rd_read_bitstring_as_octet_str(vscf_asn1rd_t *asn1rd) {
+
+    VSCF_ASSERT_PTR(asn1rd);
+
+    VSCF_ASSERT(asn1rd->error != vscf_error_UNINITIALIZED);
+
+    if (asn1rd->error != vscf_SUCCESS) {
+        return vsc_data_empty();
+    }
+
+    vsc_data_t value = vscf_asn1rd_read_tag_data(asn1rd, MBEDTLS_ASN1_BIT_STRING);
+
+    if ((value.len > 0) && (*value.bytes == 0x00)) {
+        return vsc_data_slice_beg(value, 1, value.len - 1);
+    }
+
+    return value;
 }
 
 //
 //  Read ASN.1 type: UTF8String.
 //
-VSCF_PUBLIC void
-vscf_asn1rd_read_utf8_str(vscf_asn1rd_impl_t *asn1rd_impl, vsc_buffer_t *value) {
+VSCF_PUBLIC vsc_data_t
+vscf_asn1rd_read_utf8_str(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
-    VSCF_ASSERT_PTR(value);
-    VSCF_ASSERT_PTR(value->bytes);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    VSCF_ASSERT(asn1rd_impl->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(asn1rd->error != vscf_error_UNINITIALIZED);
 
-    if (asn1rd_impl->error != vscf_SUCCESS) {
-        return;
+    if (asn1rd->error != vscf_SUCCESS) {
+        return vsc_data_empty();
     }
 
-    vscf_asn1rd_read_tag_data(asn1rd_impl, MBEDTLS_ASN1_UTF8_STRING, value);
+    return vscf_asn1rd_read_tag_data(asn1rd, MBEDTLS_ASN1_UTF8_STRING);
 }
 
 //
 //  Read ASN.1 type: OID.
 //
-VSCF_PUBLIC void
-vscf_asn1rd_read_oid(vscf_asn1rd_impl_t *asn1rd_impl, vsc_buffer_t *value) {
+VSCF_PUBLIC vsc_data_t
+vscf_asn1rd_read_oid(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
-    VSCF_ASSERT_PTR(value);
-    VSCF_ASSERT_PTR(value->bytes);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    VSCF_ASSERT(asn1rd_impl->error != vscf_error_UNINITIALIZED);
+    VSCF_ASSERT(asn1rd->error != vscf_error_UNINITIALIZED);
 
-    if (asn1rd_impl->error != vscf_SUCCESS) {
-        return;
+    if (asn1rd->error != vscf_SUCCESS) {
+        return vsc_data_empty();
     }
 
-    vscf_asn1rd_read_tag_data(asn1rd_impl, MBEDTLS_ASN1_OID, value);
+    return vscf_asn1rd_read_tag_data(asn1rd, MBEDTLS_ASN1_OID);
 }
 
 //
 //  Read raw data of given length.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_asn1rd_read_data(vscf_asn1rd_impl_t *asn1rd_impl, size_t len) {
+vscf_asn1rd_read_data(vscf_asn1rd_t *asn1rd, size_t len) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    if (asn1rd_impl->error != vscf_SUCCESS) {
+    if (asn1rd->error != vscf_SUCCESS) {
         return vsc_data_empty();
     }
 
-    if (asn1rd_impl->curr + len > asn1rd_impl->end) {
-        asn1rd_impl->error = vscf_error_OUT_OF_DATA;
+    if (asn1rd->curr + len > asn1rd->end) {
+        asn1rd->error = vscf_error_OUT_OF_DATA;
         return vsc_data_empty();
     }
 
-    asn1rd_impl->curr += len;
+    asn1rd->curr += len;
 
-    return vsc_data(asn1rd_impl->curr - len, len);
+    return vsc_data(asn1rd->curr - len, len);
 }
 
 //
@@ -650,11 +682,11 @@ vscf_asn1rd_read_data(vscf_asn1rd_impl_t *asn1rd_impl, size_t len) {
 //  Return element length.
 //
 VSCF_PUBLIC size_t
-vscf_asn1rd_read_sequence(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_read_sequence(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    return vscf_asn1rd_read_tag(asn1rd_impl, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SEQUENCE);
+    return vscf_asn1rd_read_tag(asn1rd, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SEQUENCE);
 }
 
 //
@@ -662,9 +694,9 @@ vscf_asn1rd_read_sequence(vscf_asn1rd_impl_t *asn1rd_impl) {
 //  Return element length.
 //
 VSCF_PUBLIC size_t
-vscf_asn1rd_read_set(vscf_asn1rd_impl_t *asn1rd_impl) {
+vscf_asn1rd_read_set(vscf_asn1rd_t *asn1rd) {
 
-    VSCF_ASSERT_PTR(asn1rd_impl);
+    VSCF_ASSERT_PTR(asn1rd);
 
-    return vscf_asn1rd_read_tag(asn1rd_impl, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SET);
+    return vscf_asn1rd_read_tag(asn1rd, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SET);
 }

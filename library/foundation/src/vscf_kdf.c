@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -52,6 +53,8 @@
 #include "vscf_kdf.h"
 #include "vscf_assert.h"
 #include "vscf_kdf_api.h"
+
+// clang-format on
 //  @end
 
 
@@ -62,27 +65,27 @@
 // --------------------------------------------------------------------------
 
 //
-//  Calculate hash over given data.
+//  Derive key of the requested length from the given data.
 //
 VSCF_PUBLIC void
-vscf_kdf_derive(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *key, size_t key_len) {
+vscf_kdf_derive(vscf_impl_t *impl, vsc_data_t data, size_t key_len, vsc_buffer_t *key) {
 
-    const vscf_kdf_api_t *kdf_api = vscf_kdf_api (impl);
+    const vscf_kdf_api_t *kdf_api = vscf_kdf_api(impl);
     VSCF_ASSERT_PTR (kdf_api);
 
     VSCF_ASSERT_PTR (kdf_api->derive_cb);
-    kdf_api->derive_cb (impl, data, key, key_len);
+    kdf_api->derive_cb (impl, data, key_len, key);
 }
 
 //
 //  Return kdf API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_kdf_api_t *
-vscf_kdf_api(vscf_impl_t *impl) {
+vscf_kdf_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_KDF);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_KDF);
     return (const vscf_kdf_api_t *) api;
 }
 
@@ -90,11 +93,11 @@ vscf_kdf_api(vscf_impl_t *impl) {
 //  Check if given object implements interface 'kdf'.
 //
 VSCF_PUBLIC bool
-vscf_kdf_is_implemented(vscf_impl_t *impl) {
+vscf_kdf_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_KDF) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_KDF) != NULL;
 }
 
 //
@@ -106,17 +109,6 @@ vscf_kdf_api_tag(const vscf_kdf_api_t *kdf_api) {
     VSCF_ASSERT_PTR (kdf_api);
 
     return kdf_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_kdf_impl_tag(const vscf_kdf_api_t *kdf_api) {
-
-    VSCF_ASSERT_PTR (kdf_api);
-
-    return kdf_api->impl_tag;
 }
 
 

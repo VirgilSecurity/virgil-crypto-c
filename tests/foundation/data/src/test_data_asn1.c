@@ -33,7 +33,8 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#include "test_data_sha224.h"
+#include "test_data_asn1.h"
+
 
 //
 //  Primitive types
@@ -44,6 +45,14 @@ const byte test_asn1_encoded_INT_2_BYTES[] = {
 
 const vsc_data_t test_asn1_encoded_INT_2 = {
     test_asn1_encoded_INT_2_BYTES, sizeof(test_asn1_encoded_INT_2_BYTES)
+};
+
+const byte test_asn1_encoded_INT_NEG_2_BYTES[] = {
+    0x02, 0x01, 0xFE
+};
+
+const vsc_data_t test_asn1_encoded_INT_NEG_2 = {
+    test_asn1_encoded_INT_NEG_2_BYTES, sizeof(test_asn1_encoded_INT_NEG_2_BYTES)
 };
 
 const byte test_asn1_encoded_BOOLEAN_TRUE_BYTES[] = {
@@ -70,6 +79,109 @@ const vsc_data_t test_asn1_encoded_NULL = {
     test_asn1_encoded_NULL_BYTES, sizeof(test_asn1_encoded_NULL_BYTES)
 };
 
+const byte test_asn1_encoded_INT8_MAX_BYTES[] = {
+  0x02, 0x01, 0x7F
+};
+
+const vsc_data_t test_asn1_encoded_INT8_MAX = {
+    test_asn1_encoded_INT8_MAX_BYTES, sizeof(test_asn1_encoded_INT8_MAX_BYTES)
+};
+
+const byte test_asn1_encoded_INT8_MIN_BYTES[] = {
+  0x02, 0x01, 0x80
+};
+
+const vsc_data_t test_asn1_encoded_INT8_MIN = {
+    test_asn1_encoded_INT8_MIN_BYTES, sizeof(test_asn1_encoded_INT8_MIN_BYTES)
+};
+
+const byte test_asn1_encoded_INT_32760_BYTES[] = {
+  0x02, 0x02, 0x7F, 0xF8
+};
+
+const vsc_data_t test_asn1_encoded_INT_32760 = {
+    test_asn1_encoded_INT_32760_BYTES, sizeof(test_asn1_encoded_INT_32760_BYTES)
+};
+
+const byte test_asn1_encoded_INT_NEG_32760_BYTES[] = {
+  0x02, 0x02, 0x80, 0x08
+};
+
+const vsc_data_t test_asn1_encoded_INT_NEG_32760 = {
+    test_asn1_encoded_INT_NEG_32760_BYTES, sizeof(test_asn1_encoded_INT_NEG_32760_BYTES)
+};
+
+const byte test_asn1_encoded_INT_2147483000_BYTES[] = {
+  0x02, 0x04, 0x7F, 0xFF, 0xFD, 0x78
+};
+
+const vsc_data_t test_asn1_encoded_INT_2147483000 = {
+    test_asn1_encoded_INT_2147483000_BYTES, sizeof(test_asn1_encoded_INT_2147483000_BYTES)
+};
+
+const byte test_asn1_encoded_INT_NEG_2147483000_BYTES[] = {
+  0x02, 0x04, 0x80, 0x00, 0x02, 0x88
+};
+
+const vsc_data_t test_asn1_encoded_INT_NEG_2147483000 = {
+    test_asn1_encoded_INT_NEG_2147483000_BYTES, sizeof(test_asn1_encoded_INT_NEG_2147483000_BYTES)
+};
+
+const byte test_asn1_encoded_INT_255_BYTES[] = {
+  0x02, 0x02, 0x00, 0xFF
+};
+
+const vsc_data_t test_asn1_encoded_INT_255 = {
+    test_asn1_encoded_INT_255_BYTES, sizeof(test_asn1_encoded_INT_255_BYTES)
+};
+
+const byte test_asn1_encoded_INT_0_BYTES[] = {
+  0x02, 0x01, 0x00
+};
+
+const vsc_data_t test_asn1_encoded_INT_0 = {
+    test_asn1_encoded_INT_0_BYTES, sizeof(test_asn1_encoded_INT_0_BYTES)
+};
+
+const byte test_asn1_encoded_UINT16_MAX_BYTES[] = {
+    0x02, 0x03, 0x00, 0xFF, 0xFF
+};
+
+const vsc_data_t test_asn1_encoded_UINT16_MAX = {
+    test_asn1_encoded_UINT16_MAX_BYTES, sizeof(test_asn1_encoded_UINT16_MAX_BYTES)
+};
+
+const byte test_asn1_encoded_UINT32_MAX_BYTES[] = {
+    0x02, 0x05, 0x00, 0xFF, 0xFF, 0xFF, 0xFF
+};
+
+const vsc_data_t test_asn1_encoded_UINT32_MAX = {
+    test_asn1_encoded_UINT32_MAX_BYTES, sizeof(test_asn1_encoded_UINT32_MAX_BYTES)
+};
+
+const byte test_asn1_encoded_INT64_MAX_BYTES[] = {
+    0x02, 0x08, 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+};
+
+const vsc_data_t test_asn1_encoded_INT64_MAX = {
+    test_asn1_encoded_INT64_MAX_BYTES, sizeof(test_asn1_encoded_INT64_MAX_BYTES)
+};
+
+const byte test_asn1_encoded_INT64_MIN_BYTES[] = {
+    0x02, 0x08, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+};
+
+const vsc_data_t test_asn1_encoded_INT64_MIN = {
+    test_asn1_encoded_INT64_MIN_BYTES, sizeof(test_asn1_encoded_INT64_MIN_BYTES)
+};
+
+const byte test_asn1_encoded_UINT64_MAX_BYTES[] = {
+    0x02, 0x09, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+};
+
+const vsc_data_t test_asn1_encoded_UINT64_MAX = {
+    test_asn1_encoded_UINT64_MAX_BYTES, sizeof(test_asn1_encoded_UINT64_MAX_BYTES)
+};
 
 
 //
@@ -125,6 +237,22 @@ const vsc_data_t test_asn1_decoded_OID_SHA256 = {
     test_asn1_decoded_OID_SHA256_BYTES, sizeof(test_asn1_decoded_OID_SHA256_BYTES)
 };
 
+const byte test_asn1_encoded_BIT_STRING_BYTES[] = {
+    0x03, 0x04, 0x00, 0xAA, 0xBB, 0xCC
+};
+
+const vsc_data_t test_asn1_encoded_BIT_STRING = {
+    test_asn1_encoded_BIT_STRING_BYTES, sizeof(test_asn1_encoded_BIT_STRING_BYTES)
+};
+
+const byte test_asn1_decoded_BIT_STRING_BYTES[] = {
+    0xAA, 0xBB, 0xCC
+};
+
+const vsc_data_t test_asn1_decoded_BIT_STRING = {
+    test_asn1_decoded_BIT_STRING_BYTES, sizeof(test_asn1_decoded_BIT_STRING_BYTES)
+};
+
 
 //
 // Containers
@@ -144,4 +272,3 @@ const byte test_asn1_encoded_SET_WITH_LEN_32_BYTES[] = {
 const vsc_data_t test_asn1_encoded_SET_WITH_LEN_32 = {
     test_asn1_encoded_SET_WITH_LEN_32_BYTES, sizeof(test_asn1_encoded_SET_WITH_LEN_32_BYTES)
 };
-

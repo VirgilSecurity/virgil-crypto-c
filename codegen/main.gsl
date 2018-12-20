@@ -48,16 +48,20 @@ gsl from "module.gsl"
 gsl from "interface.gsl"
 gsl from "implementor.gsl"
 gsl from "implementation.gsl"
+gsl from "enum.gsl"
 gsl from "class.gsl"
 gsl from "context.gsl"
 gsl from "meta.gsl"
 gsl from "features.gsl"
 gsl from "projects_api.gsl"
+gsl from "wrapper.gsl"
 
 gsl from "c_features.gsl"
 gsl from "c_module.gsl"
 gsl from "c_module_codegen.gsl"
 
+gsl from "c_module_platform.gsl"
+gsl from "c_module_assert.gsl"
 gsl from "c_module_api.gsl"
 gsl from "c_module_api_private.gsl"
 gsl from "c_module_impl.gsl"
@@ -66,6 +70,7 @@ gsl from "c_module_impl_private.gsl"
 gsl from "c_module_interface.gsl"
 gsl from "c_module_implementation.gsl"
 
+gsl from "c_module_enum.gsl"
 gsl from "c_module_class.gsl"
 
 gsl from "cmake_files_codegen.gsl"
@@ -76,6 +81,38 @@ gsl from "cmake_files_codegen.gsl"
 # ###########################################################################
 
 
+function load_project_model (project, model, destination)
+    check_arguments (my, "project, model", my)
+
+    assert_attribute (my.model, "name", my)
+
+    my.root_path = "models"
+    my.from_path = make_id (my.model.[from] ? "project $(my.project.name)")
+    my.model_file_name = make_id (name (my.model), my.model.name) + ".xml"
+    my.model_file_path = cat_path (my.root_path, my.from_path, my.model_file_name)
+
+    return item_load_from_file (my.model_file_path, my.destination)
+endfunction
+
+
+function load_external_library (library, destination)
+    check_arguments (my, "library", my)
+
+    assert_attribute (my.library, "name", my)
+
+    return item_load_from_file ("models/external/$(make_id ("library", my.library.name)).xml", my.destination)
+endfunction
+
+
+function load_lang_wrapper (wrapper, destination)
+    check_arguments (my, "wrapper", my)
+
+    assert_attribute (my.wrapper, "lang", my)
+
+    return item_load_from_file ("models/wrapper/$(make_id ("wrapper", my.wrapper.lang)).xml", my.destination)
+endfunction
+
+
 function process_project (project, features_list, projects_api, echo_level)
     check_arguments (my, "project, features_list, projects_api, echo_level", my)
 
@@ -83,30 +120,38 @@ function process_project (project, features_list, projects_api, echo_level)
     my.root = XML.new ("my.root")
 
     #   Load project's components.
-    for my.project.interface
-        item_load_from_file ("interface/$(make_id ("interface", interface.name)).xml", my.root)
+    for my.project.module
+        load_project_model (my.project, module, my.root)
     endfor
 
-    for my.project.module
-        item_load_from_file ("module/$(make_id ("module", module.name)).xml", my.root)
+    for my.project.interface
+        load_project_model (my.project, interface, my.root)
     endfor
 
     for my.project.implementor
-        item_load_from_file ("implementation/$(make_id ("implementor", implementor.name)).xml", my.root)
+        load_project_model (my.project, implementor, my.root)
     endfor
 
     for my.project.class
-        item_load_from_file ("class/$(make_id ("class", class.name)).xml", my.root)
+        load_project_model (my.project, class, my.root)
+    endfor
+
+    for my.project.enum
+        load_project_model (my.project, enum, my.root)
     endfor
 
     #   Process project.
     project_resolve (my.project)
     project_generate_structure (my.project)
+    projects_api_reset_project (my.projects_api, my.project)
 
     #   Process Interface / Implementation.
     foreach_interface_resolve (my.root, my.project)
     foreach_implementor_resolve (my.root, my.project)
     foreach_implementation_resolve (my.root, my.project)
+
+    #   Process enumerations.
+    foreach_enum_resolve (my.root, my.project)
 
     #   Process classes.
     foreach_class_resolve (my.root, my.project)
@@ -116,16 +161,17 @@ function process_project (project, features_list, projects_api, echo_level)
 
 
     #   Create feature per high level component.
-    foreach_interface_create_feature (my.root, my.project)
-    foreach_implementation_create_feature (my.root, my.project)
-    foreach_module_create_feature (my.root, my.project)
-    foreach_class_create_feature (my.root, my.project)
+    foreach_interface_create_feature (my.root, my.project, my.project)
+    foreach_implementation_create_feature (my.root, my.project, my.project)
+    foreach_module_create_feature (my.root, my.project, my.project)
+    foreach_class_create_feature (my.root, my.project, my.project)
 
     #   Group features within one component.
     features_list_update_from_project (my.features_list, my.project)
 
     #   Create meta information about high level entities.
     my.meta = meta_create ()
+    meta_add_project (my.meta, my.project)
     foreach_interface_update_meta (my.root, my.meta)
     foreach_implementation_update_meta (my.root, my.meta)
     foreach_class_update_meta (my.root, my.meta)
@@ -135,80 +181,128 @@ function process_project (project, features_list, projects_api, echo_level)
         item_save_to_file (my.meta, "meta.xml", my.project.work_path)
     endif
 
+    if !my.project.skip_codegen_c
+        #   Create platfrom introspection module.
+        c_module_platform_create (my.project, my.root, my.meta)
 
-    #   Create Interface / Implementation related modules.
-    if count (my.root.interface)
-        c_module_api_create (my.meta, my.root)
-        c_module_api_private_create (my.meta, my.root)
+        #   Extend assert module, with project specific asserts.
+        for my.root.module where module.name = "assert"
+            c_module_assert_extend (module, my.project, my.projects_api)
+        endfor
 
-        c_module_impl_create (my.meta, my.root)
-        c_module_impl_private_create (my.meta, my.root)
+        #   Create Interface / Implementation high-level C modules.
+        if count (my.root.interface)
+            c_module_api_create (my.meta, my.root)
+            c_module_api_private_create (my.meta, my.root)
 
-        c_module_interface_create (my.root, my.root, my.meta)
-        c_module_implementation_create (my.root, my.root, my.meta)
+            c_module_impl_create (my.meta, my.root)
+            c_module_impl_private_create (my.meta, my.root)
+
+            c_module_interface_create (my.root, my.root, my.meta)
+            c_module_implementation_create (my.root, my.root, my.meta)
+        endif
+
+        #   Create modules from the classes.
+        c_module_class_create (my.root, my.root, my.meta)
+        c_module_enum_create (my.root, my.root, my.meta)
+
+        #   Process modules.
+        foreach_module_resolve (my.root, my.project)
+        foreach_dump ("module", my.root, my.project.work_path)
+
+        #   Create lang_modules.
+        c_module_create (my.root, my.root, my.project)
+
+        #   Process lang_modules.
+        c_module_resolve (my.root)
+
+        #   Resolve shortcuts for all modules.
+        foreach_component_resolve_shortcut_refs (my.root)
+
+        #   Perform cross projects name resolution.
+        projects_api_cleanup_lang (my.projects_api, "c")
+        projects_api_collect_info (my.projects_api, "c", my.root)
+        projects_api_save (my.projects_api, main.work_path)
+
+        #   Resolve modules.
+        my.type_resolution_map = projects_api_build_type_resolution_map (my.projects_api)
+        if my.echo_level = "debug"
+            item_save_to_file (my.type_resolution_map, "type_resolution_map.xml", my.project.work_path)
+        endif
+
+        for my.root.c_module
+            my.resolved_c_module = resolution_map_apply_to_lang_module (\
+                        my.type_resolution_map, c_module, my.project.work_path)
+
+            move my.resolved_c_module before c_module
+            delete c_module
+
+            c_module_add_headers (my.resolved_c_module, my.projects_api)
+        endfor
+
+        #   At this point all elements are created and resolved.
+        if my.echo_level = "debug"
+            item_save_to_file (my.root, "root.xml", my.project.work_path)
+        endif
+
+        if my.echo_level = "debug"
+            item_save_to_file (my.project, "project.xml", my.project.work_path)
+        endif
+
+        #   Generate code.
+        c_module_generate_sources (my.root)
+
+        #   Generate CMake files.
+        cmake_generate_sources (my.root, my.project)
+        cmake_generate_modulemap (my.root, my.project)
     endif
 
-    #   Create modules from the clsses.
-    c_module_class_create (my.root, my.root, my.meta)
+    #   Generate wrappers code.
+    if !my.project.skip_codegen_wrappers
+        for my.project.wrapper as wrapper_link
+            echo_info ("Processing wrapper <wrapper lang=\"$(wrapper_link.lang:)\"/>")
 
-    #   Process modules.
-    foreach_module_resolve (my.root, my.project)
-    foreach_dump ("module", my.root, my.project.work_path)
+            my.wrapper = load_lang_wrapper (wrapper_link)
+            my.wrappers_destination = XML.new(make_id(my.wrapper.lang, "wrapper", project.name))
 
-    #   Create lang_modules.
-    c_module_create (my.root, my.root, my.project)
+            wrapper_resolve (my.project, my.wrapper)
+            wrapper_create_project_module (my.project, my.wrappers_destination, my.wrapper)
+            wrapper_create_c_context_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
+            wrapper_foreach_enum_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
+            wrapper_foreach_class_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
+            wrapper_foreach_interface_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
+            wrapper_foreach_implementation_create_module (my.root, my.wrappers_destination, my.wrapper, my.meta)
+            wrapper_foreach_module_resolve(my.wrappers_destination, my.wrapper)
+            projects_api_cleanup_lang (my.projects_api, "swift")
+            projects_api_collect_info (my.projects_api, "swift", my.wrappers_destination)
+            projects_api_save (my.projects_api, main.work_path)
 
-    #   Process lang_modules.
-    c_module_resolve (my.root)
+            my.type_resolution_map = projects_api_build_type_resolution_map (my.projects_api, my.wrapper.lang)
+            if my.echo_level = "debug"
+                item_save_to_file (my.type_resolution_map, "type_resolution_map.xml", my.project.work_path)
+            endif
 
-    #   Resolve shortcuts for all modules.
-    foreach_component_resolve_shortcut_refs (my.root)
+            for my.wrappers_destination.$(make_id (my.wrapper.lang, "module")) as wrapper_module
+                my.wrapper_module_resolved = \
+                        resolution_map_apply_to_lang_module (my.type_resolution_map, wrapper_module, my.project.work_path)
+                move my.wrapper_module_resolved before wrapper_module
+                delete wrapper_module
+            endfor
 
-    #   At this point all elements are created and resolved.
-    if my.echo_level = "debug"
-        item_save_to_file (my.root, "root.xml", my.project.work_path)
+            wrapper_generate_project (my.wrappers_destination, my.wrapper)
+            wrapper_generate_sources (my.wrappers_destination, my.wrapper)
+
+            delete my.wrapper
+            delete my.wrappers_destination
+        endfor
     endif
-
-    if my.echo_level = "debug"
-        item_save_to_file (my.project, "project.xml", my.project.work_path)
-    endif
-
-    #   Perform cross projects name resolution.
-    projects_api_reset_project (my.projects_api, my.project)
-    projects_api_collect_info (my.projects_api, my.root)
-    projects_api_save (my.projects_api, main.work_path)
-
-    #   Resolve modules.
-    my.type_resolution_map = projects_api_build_type_resolution_map (my.projects_api)
-
-    for my.root.c_module
-        my.c_module_resolved = \
-                resolution_map_apply_to_lang_module (my.type_resolution_map, c_module, my.project.work_path)
-        move my.c_module_resolved before c_module
-        delete c_module
-    endfor
-
-    my.header_resolution_map = projects_api_build_header_resolution_map (my.projects_api)
-    for my.root.c_module
-        c_module_add_headers (c_module, my.header_resolution_map)
-    endfor
-
-    if my.echo_level = "debug"
-        item_save_to_file (my.type_resolution_map, "type_resolution_map.xml", my.project.work_path)
-        item_save_to_file (my.header_resolution_map, "header_resolution_map.xml", my.project.work_path)
-    endif
-
-    #   Generate code.
-    c_module_generate_sources (my.root)
-
-    #   Generate CMake files.
-    cmake_generate_sources (my.root, my.project)
 endfunction
 
 
-function process_library (library, features_list, echo_level)
-    check_arguments (my, "library, features_list, echo_level", my)
+function process_library (library, features_list, projects_api, echo_level)
+    check_arguments (my, "library, features_list, projects_api, echo_level", my)
 
+    projects_api_update_library (my.projects_api, my.library)
     library_resolve (my.library)
     features_list_update_from_library (my.features_list, my.library)
 endfunction
@@ -227,15 +321,42 @@ function run_main ()
     #   Create container where projects API will be located.
     my.projects_api = projects_api_load (main.work_path)
 
-    #   Process code generation.
+    #   Load and resolve interfaces.
+    #   This is required to generate inherited methods in the wrappers.
+    global.interfaces = XML.new ("interfaces")
     for main.project
-        my.loaded_project = item_load_from_file ("project/$(make_id ("project", project.name)).xml")
-        process_project (my.loaded_project, my.features_list, my.projects_api, main.echo_level)
+        my.loaded_project = load_project_model (project, project)
+        project_resolve (my.loaded_project)
+        for my.loaded_project.interface
+            my.loaded_interface = load_project_model (my.loaded_project, interface, global.interfaces)
+            my.loaded_interface.project = my.loaded_project.name
+            interface_resolve (my.loaded_interface, my.loaded_project)
+        endfor
     endfor
 
-    for main.external where defined (library)
-        my.loaded_library = item_load_from_file ("external/$(make_id ("library", external.library)).xml")
-        process_library (my.loaded_library, my.features_list, main.echo_level)
+    for global.interfaces.interface
+        for interface.inherit
+            interface_resolve_inherit (inherit, global.interfaces, inherit)
+            inherit.project ?= interface.project
+        endfor
+    endfor
+
+    if main.echo_level = "debug"
+        item_save_to_file (global.interfaces, "interfaces.xml", main.work_path)
+    endif
+
+
+    #   Process code generation.
+    for main.library
+        my.loaded_library = load_external_library (library)
+        process_library (my.loaded_library, my.features_list, my.projects_api, main.echo_level)
+    endfor
+
+    for main.project where is_false (project.skip_codegen)
+        my.loaded_project = load_project_model (project, project)
+        my.loaded_project.skip_codegen_c = is_true (project.skip_codegen_c)
+        my.loaded_project.skip_codegen_wrappers = is_true (project.skip_codegen_wrappers)
+        process_project (my.loaded_project, my.features_list, my.projects_api, main.echo_level)
     endfor
 
     #   Create context and populate it with features.
@@ -246,7 +367,7 @@ function run_main ()
     projects_api_save (my.projects_api, main.work_path)
     features_list_save (my.features_list, main.work_path)
 
-    projects_api_collect_info (my.projects_api, my.features_list)
+    projects_api_collect_info (my.projects_api, "c", my.features_list)
     my.resolution_map = projects_api_build_type_resolution_map (my.projects_api)
 
     my.features_list_resolved = resolution_map_apply_to (my.resolution_map, my.features_list, main.work_path)
@@ -254,7 +375,6 @@ function run_main ()
     #   Generate cmake files for features.
     cmake_generate_features (my.features_list_resolved, main->license)
     cmake_generate_definitions (my.features_list_resolved, main->license)
-
 endfunction
 
 # ---------------------------------------------------------------------------

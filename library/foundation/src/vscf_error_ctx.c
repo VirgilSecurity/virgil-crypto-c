@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -55,6 +56,8 @@
 #include "vscf_error_ctx.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
+
+// clang-format on
 //  @end
 
 
@@ -63,6 +66,15 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Return size of 'vscf_error_ctx_t'.
+//
+VSCF_PUBLIC size_t
+vscf_error_ctx_ctx_size(void) {
+
+    return sizeof(vscf_error_ctx_t);
+}
 
 
 // --------------------------------------------------------------------------
@@ -76,22 +88,22 @@
 //  Reset context to the "no error" state.
 //
 VSCF_PUBLIC void
-vscf_error_ctx_reset(vscf_error_ctx_t *error_ctx_ctx) {
+vscf_error_ctx_reset(vscf_error_ctx_t *error_ctx) {
 
-    VSCF_ASSERT_PTR(error_ctx_ctx);
-    error_ctx_ctx->error = vscf_SUCCESS;
+    VSCF_ASSERT_PTR(error_ctx);
+    error_ctx->error = vscf_SUCCESS;
 }
 
 //
 //  Update context with given error.
 //
-VSCF_PUBLIC void
-vscf_error_ctx_update(vscf_error_ctx_t *error_ctx_ctx, vscf_error_t error) {
+VSCF_PRIVATE void
+vscf_error_ctx_update(vscf_error_ctx_t *error_ctx, vscf_error_t error) {
 
-    VSCF_ASSERT_PTR(error_ctx_ctx);
+    VSCF_ASSERT_PTR(error_ctx);
 
     if (error != vscf_SUCCESS) {
-        error_ctx_ctx->error = error;
+        error_ctx->error = error;
     }
 }
 
@@ -99,8 +111,8 @@ vscf_error_ctx_update(vscf_error_ctx_t *error_ctx_ctx, vscf_error_t error) {
 //  Reset context to the "no error" state.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_error_ctx_error(const vscf_error_ctx_t *error_ctx_ctx) {
+vscf_error_ctx_error(const vscf_error_ctx_t *error_ctx) {
 
-    VSCF_ASSERT_PTR(error_ctx_ctx);
-    return error_ctx_ctx->error;
+    VSCF_ASSERT_PTR(error_ctx);
+    return error_ctx->error;
 }

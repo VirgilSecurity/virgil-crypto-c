@@ -73,7 +73,10 @@
             Implementation name.
         </attr>
 
-        <inherit entity="project_attr"/>
+        <inherit entity="scope"/>
+        <inherit entity="visibility"/>
+        <inherit entity="uid"/>
+        <inherit entity="c_prefix"/>
 
         <allow entity="context" occurs="0/1"/>
         <allow entity="interface" occurs="1+"/>

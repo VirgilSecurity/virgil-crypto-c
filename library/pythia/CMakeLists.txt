@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_c_pythia VERSION 0.2.0 LANGUAGES C)
+project(virgil_crypto_c_pythia VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 
 # ---------------------------------------------------------------------------
 #   Check dependencies
@@ -79,24 +79,18 @@ include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 # ---------------------------------------------------------------------------
 
 #
+# Internal configuration
+#
+if(CMAKE_CROSSCOMPILING AND APPLE)
+    set(VSCP_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK YES CACHE INTERNAL "")
+endif()
+
+#
 # Define sources
 #
 add_library(pythia_wrap "")
 include("${CMAKE_CURRENT_LIST_DIR}/sources.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
-
-
-#
-# Define include headers
-#
-target_include_directories(pythia_wrap
-        PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/pythia/private>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
-            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-        )
 
 #
 # Link to dependencies
@@ -115,23 +109,17 @@ set_target_properties(pythia_wrap PROPERTIES
 #
 # Add __FILENAME__ definition, that handles file name without path, to each source file.
 #
-get_target_property(SOURCES pythia_wrap SOURCES)
-foreach(src ${SOURCES})
-    get_filename_component(file_name "${src}" NAME)
-    get_filename_component(file_ext "${src}" EXT)
-
-    if(file_ext STREQUAL ".c")
-            set_property(SOURCE "${src}" APPEND_STRING PROPERTY COMPILE_DEFINITIONS "__FILENAME__=\"${file_name}\"")
-    endif()
-endforeach()
+target_add_filename_definitions(pythia_wrap)
 
 #
 # Enable profiling
 #
-if(COMMAND enable_target_profiling)
-    enable_target_profiling(pythia_wrap)
-else()
-    message(STATUS "To enable profiling create function 'enable_target_profiling(<target>)'.")
+if(ENABLE_PROFILING)
+    if(COMMAND enable_target_profiling)
+        enable_target_profiling(pythia_wrap)
+    else()
+        message(STATUS "To enable profiling create function 'enable_target_profiling(<target>)'.")
+    endif()
 endif()
 
 #
@@ -157,6 +145,18 @@ endif()
 
 
 # ---------------------------------------------------------------------------
+#   Apple specific
+# ---------------------------------------------------------------------------
+if(CMAKE_CROSSCOMPILING AND APPLE AND COMMAND target_apple_framework)
+    target_apple_framework(pythia_wrap
+            NAME VSCPythia
+            VERSION "A"
+            IDENTIFIER com.virgilsecurity.VSCPythia
+            )
+endif()
+
+
+# ---------------------------------------------------------------------------
 #   Install library
 # ---------------------------------------------------------------------------
 include (CMakePackageConfigHelpers)
@@ -166,8 +166,9 @@ include (CMakePackageConfigHelpers)
 #
 if(VIRGIL_INSTALL_HDRS)
     install(
-            DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/"
+            DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/" "${CMAKE_CURRENT_BINARY_DIR}/include/"
             DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+            PATTERN "*.h.in" EXCLUDE
             )
 endif()
 
@@ -180,6 +181,7 @@ if(VIRGIL_INSTALL_LIBS)
             EXPORT vsc_pythiaTargets
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            FRAMEWORK DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             )
 endif()
 

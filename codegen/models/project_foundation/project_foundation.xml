@@ -1,0 +1,130 @@
+<project
+        name="foundation"
+        brief="Virgil Security Crypto Foundation"
+        namespace="virgil crypto foundation"
+        framework="VSCFoundation"
+        prefix="vscf"
+        path="../library/foundation/"
+        work_path="generated/foundation/"
+        >
+
+    <version major="0" minor="1" patch="0"/>
+
+    <license>
+        Copyright (C) 2015-2018 Virgil Security Inc.
+
+        All rights reserved.
+
+        Redistribution and use in source and binary forms, with or without
+        modification, are permitted provided that the following conditions are
+        met:
+
+            (1) Redistributions of source code must retain the above copyright
+            notice, this list of conditions and the following disclaimer.
+
+            (2) Redistributions in binary form must reproduce the above copyright
+            notice, this list of conditions and the following disclaimer in
+            the documentation and/or other materials provided with the
+            distribution.
+
+            (3) Neither the name of the copyright holder nor the names of its
+            contributors may be used to endorse or promote products derived from
+            this software without specific prior written permission.
+
+        THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+        IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+        WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+        DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+        INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+        (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+        SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+        HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+        STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+        IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+        POSSIBILITY OF SUCH DAMAGE.
+
+        Lead Maintainer: Virgil Security Inc. &lt;support@virgilsecurity.com&gt;
+    </license>
+
+    <require project="common" feature="library"/>
+    <require library="mbedtls" feature="library"/>
+
+    <feature name="multi thread" default="on">
+        Enable multi-threading safety for foundation library.
+
+        <require feature="THREADING C" library="mbedtls"/>
+    </feature>
+
+    <module name="assert" from="shared"/>
+    <module name="library" from="shared"/>
+    <module name="memory" from="shared"/>
+
+    <enum name="error"/>
+    <enum name="asn1 tag"/>
+    <enum name="key alg"/>
+    <enum name="hash alg"/>
+
+    <interface name="defaults" from="shared"/>
+    <interface name="cipher"/>
+    <interface name="auth encrypt"/>
+    <interface name="auth decrypt"/>
+    <interface name="cipher auth"/>
+    <interface name="cipher auth info"/>
+    <interface name="cipher info"/>
+    <interface name="decrypt"/>
+    <interface name="encrypt"/>
+    <interface name="salted kdf"/>
+    <interface name="hash"/>
+    <interface name="hash info"/>
+    <interface name="hash stream"/>
+    <interface name="mac"/>
+    <interface name="mac info"/>
+    <interface name="mac stream"/>
+    <interface name="kdf"/>
+    <interface name="random"/>
+    <interface name="entropy source"/>
+
+    <interface name="key"/>
+    <interface name="public key"/>
+    <interface name="private key"/>
+    <interface name="sign"/>
+    <interface name="verify"/>
+    <interface name="generate key"/>
+    <interface name="compute shared key"/>
+    <interface name="key serializer"/>
+    <interface name="key deserializer"/>
+
+    <interface name="asn1 reader"/>
+    <interface name="asn1 writer"/>
+
+    <class name="error"/>
+    <class name="mbedtls bignum asn1 writer"/>
+    <class name="mbedtls bignum asn1 reader"/>
+    <class name="mbedtls md"/>
+    <class name="raw key"/>
+    <class name="oid"/>
+    <class name="base64"/>
+    <class name="pem"/>
+    <class name="pem title"/>
+    <class name="endianness"/>
+
+    <implementor name="mbedtls"/>
+    <implementor name="mbedtls pk"/>
+    <implementor name="mbedtls rng"/>
+    <implementor name="virgil"/>
+    <implementor name="virgil pkcs8"/>
+    <implementor name="ed25519"/>
+
+    <module name="mbedtls bridge random"/>
+    <module name="mbedtls bridge entropy"/>
+    <module name="mbedtls bridge entropy poll"/>
+
+    <error_message_getter success="0">
+        <require enum="error"/>
+
+        char error_message[48] = {0x00};
+        snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
+    </error_message_getter>
+
+    <wrapper lang="swift"/>
+</project>

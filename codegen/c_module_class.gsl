@@ -80,9 +80,16 @@ function _X13_add_context_struct (class, declaration, definition, destination, m
         c_dependency_add_properties (my.class, struct, my.meta)
 
         for my.class.property
-            copy property to struct
+            component_clean_copy (property, struct)
         endfor
     endnew
+
+    if my.definition <> "external"
+        for my.class.require where 0.scope="context"
+            my.copied_require = item_copy_to(require, my.destination)
+            my.copied_require.scope = my.definition
+        endfor
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -111,80 +118,49 @@ function _X13_add_method_context_size (class, destination, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
-function _X13_resolve_argument_ctx (argument, meta)
-    check_arguments (my, "argument, meta", my)
+function _X13_add_argument_ctx (class, method, meta)
+    check_arguments (my, "class, method, meta", my)
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
-    scope my.argument
-        .name ?= my.names.class_argument_ctx
-        .class = my.refs.class_struct_ctx # redefine placeholder class='context'
-        .access ?= "readwrite"
-    endscope
-endfunction
-
-# ---------------------------------------------------------------------------
-function _X13_resolve_return_ctx (ret, meta)
-    check_arguments (my, "ret, meta", my)
-
-    my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
-
-    scope my.ret
-        .class = my.refs.class_struct_ctx # redefine placeholder class='context'
-        .access ?= "disown"
-    endscope
-endfunction
-
-# ---------------------------------------------------------------------------
-function _X13_add_argument_ctx (destination, meta)
-    check_arguments (my, "destination, meta", my)
-
-    my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
-
-    my.argument = item_prepend_new ("argument", my.destination)
+    my.argument = item_prepend_new ("argument", my.method)
 
     scope my.argument
         .name = my.names.class_argument_ctx
         .class = my.refs.class_struct_ctx
-        .access = "readwrite"
+        .access = my.method.is_const ?? "readonly" ? "readwrite"
+        .is_reference = ! my.class.is_value_type
     endscope
 endfunction
 
 # ---------------------------------------------------------------------------
-function _X13_add_return_ctx (destination, meta)
-    check_arguments (my, "destination, meta", my)
-
-    my.refs = meta_refs (my.meta)
-
-    new return to my.destination
-        .class = my.refs.class_struct_ctx
-        .access = "disown"
-    endnew
-endfunction
-
-# ---------------------------------------------------------------------------
-function _X13_add_argument_ctx_ref (destination, meta)
-    check_arguments (my, "destination, meta", my)
+function _X13_add_argument_ctx_ref (class, method, meta)
+    check_arguments (my, "class, method, meta", my)
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
-    new argument to my.destination
+    my.argument = item_prepend_new ("argument", my.method)
+
+    scope my.argument
         .name = my.names.class_argument_ctx
         .class = my.refs.class_struct_ctx
         .access = "disown"
-    endnew
+        .is_reference = "1"
+    endscope
 endfunction
 
 # ---------------------------------------------------------------------------
-function _X13_add_return_error (destination, meta)
-    check_arguments (my, "destination, meta", my)
+function _X13_add_return_ctx (class, method, meta)
+    check_arguments (my, "class, method, meta", my)
 
-    new return to my.destination
-        .type = "error"
+    my.refs = meta_refs (my.meta)
+
+    new return to my.method
+        .class = my.refs.class_struct_ctx
+        .access = my.method.is_const ?? "readonly" ? "disown"
+        .is_reference = ! my.class.is_value_type
     endnew
 endfunction
 
@@ -200,8 +176,10 @@ function _X13_add_method_init (class, destination, meta)
         Perform initialization of pre-allocated context.
         "
         .name = my.names.method_init
+        .is_const = "0"
+        .is_static = "0"
 
-        _X13_add_argument_ctx (method, my.meta)
+        _X13_add_argument_ctx (my.class, method, my.meta)
 
         new code to method
             my.arg_ctx = my.refs.class_argument_ctx
@@ -233,8 +211,11 @@ function _X13_add_method_cleanup (class, destination, meta)
         Release all inner resources including class dependencies.
         "
         .name = my.names.method_cleanup
+        .is_const = "0"
+        .is_static = "0"
 
-        _X13_add_argument_ctx (method, my.meta)
+        _X13_add_argument_ctx (my.class, method, my.meta)
+
 
         new code to method
             my.arg_ctx = my.refs.class_argument_ctx
@@ -293,6 +274,8 @@ function _X13_add_method_init_ctx (class, destination, meta)
         .name = my.names.method_init_ctx
         .definition = "private"
         .declaration = "private"
+        .is_const = "0"
+        .is_static = "0"
 
         . = "\
             Perform context specific initialization.
@@ -300,7 +283,8 @@ function _X13_add_method_init_ctx (class, destination, meta)
             Note, that context is already zeroed.
         "
 
-        _X13_add_argument_ctx (method, my.meta)
+
+        _X13_add_argument_ctx (my.class, method, my.meta)
 
         new code to method
             .type = "stub"
@@ -326,6 +310,8 @@ function _X13_add_method_cleanup_ctx (class, destination, meta)
         .name = my.names.method_cleanup_ctx
         .definition = "private"
         .declaration = "private"
+        .is_const = "0"
+        .is_static = "0"
 
         . = "\
             Release all inner resources.
@@ -333,7 +319,7 @@ function _X13_add_method_cleanup_ctx (class, destination, meta)
             Note, that context will be zeroed automatically next this method.
         "
 
-        _X13_add_argument_ctx (method, my.meta)
+        _X13_add_argument_ctx (my.class, method, my.meta)
 
         new code to method
             .type = "stub"
@@ -362,7 +348,7 @@ function _X13_add_method_new (class, destination, meta)
         "
         .name = my.names.method_new
 
-        _X13_add_return_ctx (method, my.meta)
+        _X13_add_return_ctx (my.class, method, my.meta)
 
         new code to method
             my.type_ctx = my.refs.c_class_struct_ctx
@@ -391,15 +377,17 @@ function _X13_add_constructor (class, constructor, destination, meta)
     my.refs = meta_refs (my.meta)
 
     new method to my.destination
-        .name = cat (my.names.method_new, my.constructor.name)
-
         . = my.constructor. ?
+        .name = cat (! my.class.is_value_type ?? my.names.method_new ? "", my.constructor.name)
+        .declaration ?= my.constructor.declaration ?
+        .definition ?= my.constructor.definition ?
+        .visibility ?= my.constructor.visibility ?
 
         for my.constructor.argument
-            copy argument to method
+            component_clean_copy (argument, method)
         endfor
 
-        _X13_add_return_ctx (method, my.meta)
+        _X13_add_return_ctx (my.class, method, my.meta)
 
         new code to method
             .type = "stub"
@@ -407,13 +395,28 @@ function _X13_add_constructor (class, constructor, destination, meta)
             my.type_ctx = my.refs.c_class_struct_ctx
             my.arg_ctx = my.names.c_class_argument_ctx
 
-            . = "\
-            $(my.type_ctx) *$(my.arg_ctx:) = $(my.refs.c_class_method_new)();
+            if my.class.is_value_type
+                my.object_init = "\
+                    $(my.type_ctx) $(my.arg_ctx:);
+                "
 
-            //   TODO: Perform additional initialization.
+            else
+                my.object_init = "\
+                    $(my.type_ctx) *$(my.arg_ctx:) = $(my.refs.c_class_method_new)();
+                "
+            endif
 
-            return $(my.arg_ctx:);
+            my.object_return = "\
+                //   TODO: Perform initialization.
+
+                return $(my.arg_ctx:);
             "
+
+            my.method_body = ""
+            my.method_body += format_left (my.object_init) + terminator
+            my.method_body += format_left (my.object_return)
+
+            . = my.method_body
         endnew
     endnew
 endfunction
@@ -428,13 +431,15 @@ function _X13_add_method_delete (class, destination, meta)
 
     new method to my.destination
         .name = my.names.method_delete
+        .is_const = "0"
+        .is_static = "0"
 
         . = "\
         Release all inner resources and deallocate context if needed.
         It is safe to call this method even if context was allocated by the caller.
         "
 
-        _X13_add_argument_ctx (method, my.meta)
+        _X13_add_argument_ctx (my.class, method, my.meta)
 
         new code to method
             my.arg_ctx = my.refs.class_argument_ctx
@@ -466,13 +471,15 @@ function _X13_add_method_destroy (class, destination, meta)
 
     new method to my.destination
         .name = my.names.method_destroy
+        .is_const = "0"
+        .is_static = "0"
 
         . = "\
         Delete given context and nullifies reference.
         This is a reverse action of the function '$(my.refs.c_class_method_new) ()'.
         "
 
-        _X13_add_argument_ctx_ref (method, my.meta)
+        _X13_add_argument_ctx_ref (my.class, method, my.meta)
 
         new code to method
             my.arg_ctx_ref = my.refs.class_argument_ctx
@@ -492,21 +499,23 @@ function _X13_add_method_destroy (class, destination, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
-function _X13_add_method_copy (class, destination, meta)
+function _X13_add_method_shallow_copy (class, destination, meta)
     check_arguments (my, "class, destination, meta", my)
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
     new method to my.destination
-        .name = my.names.method_copy
+        .name = my.names.method_shallow_copy
+        .is_const = "0"
+        .is_static = "0"
 
         . = "
         Copy given class context by increasing reference counter.
         "
 
-        _X13_add_argument_ctx (method, my.meta)
-        _X13_add_return_ctx (method, my.meta)
+        _X13_add_argument_ctx (my.class, method, my.meta)
+        _X13_add_return_ctx (my.class, method, my.meta)
 
         new code to method
             my.arg_ctx = my.refs.class_argument_ctx
@@ -525,17 +534,25 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Copy class methods with context resolution.
 # ---------------------------------------------------------------------------
-function _X13_add_method (method, destination, meta)
-    check_arguments (my, "method, destination, meta", my)
+function _X13_add_method (class, method, destination, meta)
+    check_arguments (my, "class, method, destination, meta", my)
 
-    my.copied_method = item_copy_to (my.method, my.destination)
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
 
-    for my.copied_method.argument where string_equal(0.class, "context")
-        _X13_resolve_argument_ctx (argument, my.meta)
+    my.copied_method = component_clean_copy (my.method, my.destination)
+
+    if ! my.copied_method.is_static
+        _X13_add_argument_ctx (my.class, my.copied_method, my.meta)
+    endif
+
+    # redefine placeholder class='self'
+    for my.copied_method.argument where string_equal(0.class, "self")
+        .class = my.refs.class_struct_ctx
     endfor
 
-    for my.copied_method.return where string_equal(0.class, "context")
-        _X13_resolve_return_ctx (return, my.meta)
+    for my.copied_method.return where string_equal(0.class, "self")
+        .class = my.refs.class_struct_ctx
     endfor
 endfunction
 
@@ -557,9 +574,10 @@ function _X13_add_lifecycle_methods (class, destination, meta)
 
     _X13_add_method_delete (my.class, my.destination, my.meta)
     _X13_add_method_destroy (my.class, my.destination, my.meta)
-    _X13_add_method_copy (my.class, my.destination, my.meta)
+    _X13_add_method_shallow_copy (my.class, my.destination, my.meta)
 
-    c_dependency_add_methods (my.class, "public", "private", my.destination, my.meta)
+    c_dependency_add_lifecycle_methods (my.class, "public", "private", my.destination, my.meta)
+    c_dependency_add_observer_methods (my.class, "private", "private", my.destination, my.meta)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -574,16 +592,12 @@ function c_module_class_create_module_public (class, destination, meta)
         . = my.class.?
         .name = my.names.class_module
         .feature = my.class.name
-        .of_class = my.class.of_class ?
-        .c_prefix = my.class.c_prefix ?
+        .of_class = my.class.name
+        .c_prefix = my.class.c_prefix
         .scope = my.class.scope ?
 
         new require to module
             .module = my.names.module_library
-        endnew
-
-        new require to module
-            .module = my.names.module_error
         endnew
 
         new require to module
@@ -614,58 +628,63 @@ function c_module_class_create_module_public (class, destination, meta)
         endif
 
 
-        if my.class.context <> "none" & my.class.context <> "public"
+        if my.class.context <> "none"
             _X13_add_method_context_size (my.class, module, my.meta)
         endif
 
 
         if my.class.lifecycle <> "none" & my.class.context <> "none"
             _X13_add_lifecycle_methods (my.class, module, my.meta)
+
+        elsif my.class.context <> "none"
+            for my.class.constructor
+                _X13_add_constructor (my.class, constructor, module, my.meta)
+            endfor
         endif
 
 
         for my.class.require
-            copy require to module
+            component_clean_copy (require, module)
         endfor
 
         for my.class.c_include
-            copy c_include to module
+            component_clean_copy (c_include, module)
         endfor
 
         for my.class.constant
-            copy constant to module
+            component_clean_copy (constant, module)
         endfor
 
         for my.class.property
-            copy property to module
+            component_clean_copy (property, module)
         endfor
 
         for my.class.enum
-            copy enum to module
+            component_clean_copy (enum, module)
         endfor
 
         for my.class.callback
-            copy callback to module
+            component_clean_copy (callback, module)
         endfor
 
         for my.class.method
-            _X13_add_method (method, module, my.meta)
+            _X13_add_method (my.class, method, module, my.meta)
         endfor
 
         for my.class.macros
-            copy macros to module
+            component_clean_copy (macros, module)
         endfor
 
         for my.class.macroses
-            copy macroses to module
+            component_clean_copy (macroses, module)
         endfor
 
         for my.class.struct
-            copy struct to module
+            component_clean_copy (struct, module)
         endfor
 
         for my.class.variable
-            copy variable to module
+            component_clean_copy (variable, module)
         endfor
     endnew
 endfunction
@@ -683,6 +702,7 @@ function c_module_class_create_module_defs (class, destination, meta)
         .name = my.names.class_module_defs
         .scope = "private"
         .feature = my.class.name
+        .of_class = my.class.name
         . = "
         Class '$(my.class.name:)' types definition.
         "

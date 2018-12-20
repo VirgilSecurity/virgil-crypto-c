@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -55,6 +56,8 @@
 #include "vsc_assert.h"
 
 #include <stdio.h>
+
+// clang-format on
 //  @end
 
 
@@ -71,7 +74,7 @@ static const char *
 vsc_assert_path_basename(const char *path);
 
 //
-//  Active handler for assertion failback.
+//  Active handler for assertion fail.
 //
 static vsc_assert_handler_fn active_handler = vsc_assert_abort;
 

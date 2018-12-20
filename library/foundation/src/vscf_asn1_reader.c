@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -54,6 +55,8 @@
 #include "vscf_asn1_reader.h"
 #include "vscf_assert.h"
 #include "vscf_asn1_reader_api.h"
+
+// clang-format on
 //  @end
 
 
@@ -69,7 +72,7 @@
 VSCF_PUBLIC void
 vscf_asn1_reader_reset(vscf_impl_t *impl, vsc_data_t data) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->reset_cb);
@@ -82,7 +85,7 @@ vscf_asn1_reader_reset(vscf_impl_t *impl, vsc_data_t data) {
 VSCF_PUBLIC vscf_error_t
 vscf_asn1_reader_error(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->error_cb);
@@ -95,7 +98,7 @@ vscf_asn1_reader_error(vscf_impl_t *impl) {
 VSCF_PUBLIC int
 vscf_asn1_reader_get_tag(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->get_tag_cb);
@@ -108,7 +111,7 @@ vscf_asn1_reader_get_tag(vscf_impl_t *impl) {
 VSCF_PUBLIC size_t
 vscf_asn1_reader_get_len(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->get_len_cb);
@@ -122,7 +125,7 @@ vscf_asn1_reader_get_len(vscf_impl_t *impl) {
 VSCF_PUBLIC size_t
 vscf_asn1_reader_read_tag(vscf_impl_t *impl, int tag) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_tag_cb);
@@ -135,7 +138,7 @@ vscf_asn1_reader_read_tag(vscf_impl_t *impl, int tag) {
 VSCF_PUBLIC int
 vscf_asn1_reader_read_int(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_int_cb);
@@ -148,7 +151,7 @@ vscf_asn1_reader_read_int(vscf_impl_t *impl) {
 VSCF_PUBLIC int8_t
 vscf_asn1_reader_read_int8(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_int8_cb);
@@ -161,7 +164,7 @@ vscf_asn1_reader_read_int8(vscf_impl_t *impl) {
 VSCF_PUBLIC int16_t
 vscf_asn1_reader_read_int16(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_int16_cb);
@@ -174,7 +177,7 @@ vscf_asn1_reader_read_int16(vscf_impl_t *impl) {
 VSCF_PUBLIC int32_t
 vscf_asn1_reader_read_int32(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_int32_cb);
@@ -187,7 +190,7 @@ vscf_asn1_reader_read_int32(vscf_impl_t *impl) {
 VSCF_PUBLIC int64_t
 vscf_asn1_reader_read_int64(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_int64_cb);
@@ -200,7 +203,7 @@ vscf_asn1_reader_read_int64(vscf_impl_t *impl) {
 VSCF_PUBLIC unsigned int
 vscf_asn1_reader_read_uint(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_uint_cb);
@@ -213,7 +216,7 @@ vscf_asn1_reader_read_uint(vscf_impl_t *impl) {
 VSCF_PUBLIC uint8_t
 vscf_asn1_reader_read_uint8(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_uint8_cb);
@@ -226,7 +229,7 @@ vscf_asn1_reader_read_uint8(vscf_impl_t *impl) {
 VSCF_PUBLIC uint16_t
 vscf_asn1_reader_read_uint16(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_uint16_cb);
@@ -239,7 +242,7 @@ vscf_asn1_reader_read_uint16(vscf_impl_t *impl) {
 VSCF_PUBLIC uint32_t
 vscf_asn1_reader_read_uint32(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_uint32_cb);
@@ -252,7 +255,7 @@ vscf_asn1_reader_read_uint32(vscf_impl_t *impl) {
 VSCF_PUBLIC uint64_t
 vscf_asn1_reader_read_uint64(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_uint64_cb);
@@ -265,7 +268,7 @@ vscf_asn1_reader_read_uint64(vscf_impl_t *impl) {
 VSCF_PUBLIC bool
 vscf_asn1_reader_read_bool(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_bool_cb);
@@ -278,7 +281,7 @@ vscf_asn1_reader_read_bool(vscf_impl_t *impl) {
 VSCF_PUBLIC void
 vscf_asn1_reader_read_null(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_null_cb);
@@ -288,40 +291,53 @@ vscf_asn1_reader_read_null(vscf_impl_t *impl) {
 //
 //  Read ASN.1 type: OCTET STRING.
 //
-VSCF_PUBLIC void
-vscf_asn1_reader_read_octet_str(vscf_impl_t *impl, vsc_buffer_t *value) {
+VSCF_PUBLIC vsc_data_t
+vscf_asn1_reader_read_octet_str(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_octet_str_cb);
-    asn1_reader_api->read_octet_str_cb (impl, value);
+    return asn1_reader_api->read_octet_str_cb (impl);
+}
+
+//
+//  Read ASN.1 type: BIT STRING.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_asn1_reader_read_bitstring_as_octet_str(vscf_impl_t *impl) {
+
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
+    VSCF_ASSERT_PTR (asn1_reader_api);
+
+    VSCF_ASSERT_PTR (asn1_reader_api->read_bitstring_as_octet_str_cb);
+    return asn1_reader_api->read_bitstring_as_octet_str_cb (impl);
 }
 
 //
 //  Read ASN.1 type: UTF8String.
 //
-VSCF_PUBLIC void
-vscf_asn1_reader_read_utf8_str(vscf_impl_t *impl, vsc_buffer_t *value) {
+VSCF_PUBLIC vsc_data_t
+vscf_asn1_reader_read_utf8_str(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_utf8_str_cb);
-    asn1_reader_api->read_utf8_str_cb (impl, value);
+    return asn1_reader_api->read_utf8_str_cb (impl);
 }
 
 //
 //  Read ASN.1 type: OID.
 //
-VSCF_PUBLIC void
-vscf_asn1_reader_read_oid(vscf_impl_t *impl, vsc_buffer_t *value) {
+VSCF_PUBLIC vsc_data_t
+vscf_asn1_reader_read_oid(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_oid_cb);
-    asn1_reader_api->read_oid_cb (impl, value);
+    return asn1_reader_api->read_oid_cb (impl);
 }
 
 //
@@ -330,7 +346,7 @@ vscf_asn1_reader_read_oid(vscf_impl_t *impl, vsc_buffer_t *value) {
 VSCF_PUBLIC vsc_data_t
 vscf_asn1_reader_read_data(vscf_impl_t *impl, size_t len) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_data_cb);
@@ -344,7 +360,7 @@ vscf_asn1_reader_read_data(vscf_impl_t *impl, size_t len) {
 VSCF_PUBLIC size_t
 vscf_asn1_reader_read_sequence(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_sequence_cb);
@@ -358,7 +374,7 @@ vscf_asn1_reader_read_sequence(vscf_impl_t *impl) {
 VSCF_PUBLIC size_t
 vscf_asn1_reader_read_set(vscf_impl_t *impl) {
 
-    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api (impl);
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_set_cb);
@@ -369,11 +385,11 @@ vscf_asn1_reader_read_set(vscf_impl_t *impl) {
 //  Return asn1 reader API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_asn1_reader_api_t *
-vscf_asn1_reader_api(vscf_impl_t *impl) {
+vscf_asn1_reader_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_ASN1_READER);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_ASN1_READER);
     return (const vscf_asn1_reader_api_t *) api;
 }
 
@@ -381,11 +397,11 @@ vscf_asn1_reader_api(vscf_impl_t *impl) {
 //  Check if given object implements interface 'asn1 reader'.
 //
 VSCF_PUBLIC bool
-vscf_asn1_reader_is_implemented(vscf_impl_t *impl) {
+vscf_asn1_reader_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_ASN1_READER) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_ASN1_READER) != NULL;
 }
 
 //
@@ -397,17 +413,6 @@ vscf_asn1_reader_api_tag(const vscf_asn1_reader_api_t *asn1_reader_api) {
     VSCF_ASSERT_PTR (asn1_reader_api);
 
     return asn1_reader_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_asn1_reader_impl_tag(const vscf_asn1_reader_api_t *asn1_reader_api) {
-
-    VSCF_ASSERT_PTR (asn1_reader_api);
-
-    return asn1_reader_api->impl_tag;
 }
 
 

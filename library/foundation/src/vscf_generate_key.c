@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -52,6 +53,8 @@
 #include "vscf_generate_key.h"
 #include "vscf_assert.h"
 #include "vscf_generate_key_api.h"
+
+// clang-format on
 //  @end
 
 
@@ -68,7 +71,7 @@
 VSCF_PUBLIC vscf_error_t
 vscf_generate_key(vscf_impl_t *impl) {
 
-    const vscf_generate_key_api_t *generate_key_api = vscf_generate_key_api (impl);
+    const vscf_generate_key_api_t *generate_key_api = vscf_generate_key_api(impl);
     VSCF_ASSERT_PTR (generate_key_api);
 
     VSCF_ASSERT_PTR (generate_key_api->generate_key_cb);
@@ -79,11 +82,11 @@ vscf_generate_key(vscf_impl_t *impl) {
 //  Return generate key API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_generate_key_api_t *
-vscf_generate_key_api(vscf_impl_t *impl) {
+vscf_generate_key_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_GENERATE_KEY);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_GENERATE_KEY);
     return (const vscf_generate_key_api_t *) api;
 }
 
@@ -91,11 +94,11 @@ vscf_generate_key_api(vscf_impl_t *impl) {
 //  Check if given object implements interface 'generate key'.
 //
 VSCF_PUBLIC bool
-vscf_generate_key_is_implemented(vscf_impl_t *impl) {
+vscf_generate_key_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_GENERATE_KEY) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_GENERATE_KEY) != NULL;
 }
 
 //
@@ -107,17 +110,6 @@ vscf_generate_key_api_tag(const vscf_generate_key_api_t *generate_key_api) {
     VSCF_ASSERT_PTR (generate_key_api);
 
     return generate_key_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_generate_key_impl_tag(const vscf_generate_key_api_t *generate_key_api) {
-
-    VSCF_ASSERT_PTR (generate_key_api);
-
-    return generate_key_api->impl_tag;
 }
 
 

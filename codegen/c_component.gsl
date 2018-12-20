@@ -56,6 +56,40 @@ gsl from "c_formatter.gsl"
 # ###########################################################################
 
 # ---------------------------------------------------------------------------
+#   If attribute 'project' is defined within <instance/> then return project
+#   prefix, otherwise return empty string.
+# ---------------------------------------------------------------------------
+function c_component_derive_instance_project_uid (instance)
+    check_arguments (my, "instance", my)
+
+    return defined (my.instance.project) ?? make_id ("project", my.instance.project) ? ""
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Crate uid based on the given options.
+#   Examples:
+#       {struct, buffer, buffer} - returns "class_buffer_struct_buffer"
+#       {struct, inner/buffer, buffer} - returns "class_inner_struct_buffer"
+#       {enum, api/tag,} - returns "class_api_enum_tag"
+#       {struct, codes,} - returns "global_struct_codes"
+# ---------------------------------------------------------------------------
+function c_component_derive_instance_type_uid (type_id, type_value, of_class)
+    check_arguments (my, "type_id, type_value", my)
+
+    if regexp.match ("([^\/]+)\/(.+)", my.type_value, my.group1, my.group2)
+        my.of_class = my.group1
+        my.type_value = my.group2
+    endif
+
+    if defined (my.of_class)
+        return make_id ("class", my.of_class, my.type_id, my.type_value)
+
+    else
+        return make_id ("global", my.type_id, my.type_value)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Derive C style in-project constant full name.
 # ---------------------------------------------------------------------------
 function c_derive_constant_name (constant)
@@ -212,31 +246,6 @@ function c_component_derive_unsigned_type (size)
         endif
     else
         return "unsigned int"
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Derive C size type correspond to it's size.
-#   Size: {1, 2, 4, 8}.
-# ---------------------------------------------------------------------------
-function c_component_derive_size_type (size)
-    if defined (my.size)
-        if my.size = "1"
-            return "uint8_t"
-
-        elsif my.size = "2"
-            return "uint16_t"
-
-        elsif my.size = "4"
-            return "uint32_t"
-
-        elsif my.size = "8"
-            return "uint64_t"
-        else
-            echo_fatal ("Unsupported size 'my.size' for C size type", my)
-        endif
-    else
-        return "size_t"
     endif
 endfunction
 
@@ -486,10 +495,13 @@ function c_component_map_instance_attr_type (c_instance, instance)
             my.c_instance.type = "byte"
 
         elsif my.instance.type = "size"
-            my.c_instance.type = c_component_derive_size_type (my.instance.size ?)
+            my.c_instance.type = "size_t"
 
         elsif my.instance.type = "char"
             my.c_instance.type = "char"
+
+        elsif my.instance.type = "varargs"
+            my.c_instance.type = "..."
 
         else
             echo_fatal ("Unsupported instance type '$(my.instance.type)' for C language.", my)
@@ -500,17 +512,66 @@ function c_component_map_instance_attr_type (c_instance, instance)
         if my.instance.class = "any"
             my.c_instance.type = "void"
 
+        elsif is_ref (my.instance.class) | defined (my.instance.library)
+            my.c_instance.type = c_lang_ref (my.instance.class)
+
         else
-            my.c_instance.type = c_component_wrap_uid (my.instance.class)
+            my.project_uid = c_component_derive_instance_project_uid (my.instance)
+            my.type_uid = c_component_derive_instance_type_uid ("struct", my.instance.class, my.instance.class)
+            my.c_instance.type = make_ref_c (make_id(my.project_uid, my.type_uid))
         endif
 
-    elsif has_one_of_attribute (my.instance, "enum, callback, interface, api, impl")
-        my.c_instance.type = c_component_wrap_uid (\
-                my.instance.enum ? \
-                my.instance.callback ? \
-                my.instance.interface ? \
-                my.instance.api ? \
-                my.instance.impl)
+    elsif defined (my.instance.enum)
+        if is_ref (my.instance.enum) | defined (my.instance.library)
+            my.c_instance.type = c_lang_ref (my.instance.enum)
+
+        else
+            my.project_uid = c_component_derive_instance_project_uid (my.instance)
+            my.type_uid = c_component_derive_instance_type_uid ("enum", my.instance.enum, my.instance.enum)
+            my.c_instance.type = make_ref_c (make_id(my.project_uid, my.type_uid))
+        endif
+
+    elsif defined (my.instance.callback)
+        if is_ref (my.instance.callback) | defined (my.instance.library)
+            my.c_instance.type = c_lang_ref (my.instance.callback)
+
+        else
+            my.project_uid = c_component_derive_instance_project_uid (my.instance)
+            my.type_uid = c_component_derive_instance_type_uid ("callback", my.instance.callback, my.instance.callback)
+            my.c_instance.type = make_ref_c (make_id(my.project_uid, my.type_uid))
+        endif
+
+    elsif defined (my.instance.interface)
+        if is_ref (my.instance.interface) | defined (my.instance.library)
+            my.c_instance.type = c_lang_ref (my.instance.interface)
+
+        else
+            my.project_uid = c_component_derive_instance_project_uid (my.instance)
+            my.type_uid = c_component_derive_instance_type_uid ("struct", "impl", "impl")
+            my.c_instance.type = make_ref_c (make_id(my.project_uid, my.type_uid))
+        endif
+
+    elsif defined (my.instance.api)
+        if is_ref (my.instance.api) | defined (my.instance.library)
+            my.c_instance.type = c_lang_ref (my.instance.api)
+
+        else
+            my.project_uid = c_component_derive_instance_project_uid (my.instance)
+            my.type = cat (my.instance.api, "api")
+            my.type_uid = c_component_derive_instance_type_uid ("struct", my.type, my.type)
+            my.c_instance.type = make_ref_c (make_id(my.project_uid, my.type_uid))
+        endif
+
+    elsif defined (my.instance.impl)
+        if is_ref (my.instance.impl) | defined (my.instance.library)
+            my.c_instance.type = c_lang_ref (my.instance.impl)
+
+        else
+            my.project_uid = c_component_derive_instance_project_uid (my.instance)
+            my.type_uid = c_component_derive_instance_type_uid ("struct", my.instance.impl, my.instance.impl)
+            my.c_instance.type = make_ref_c (make_id(my.project_uid, my.type_uid))
+
+        endif
     else
         echo_fatal ("Unreacheable code, component_resolve_instance() must handle this.", my)
     endif
@@ -614,8 +675,10 @@ function c_component_map_instance_attr_is_const (c_instance, instance)
             (count (my.instance.string)) | \
             (has_one_of_attribute (my.instance, "class, interface, api, impl") & \
                     (!item_in(my.instance, "argument, return") | is_true(my.instance.is_reference))) | \
+            (defined (my.instance.type) & is_true(my.instance.is_reference)) | \
             (defined (my.instance.type) & count (my.instance.array)) | \
-            (defined (my.instance.enum) & count (my.instance.array)))
+            (defined (my.instance.enum) & count (my.instance.array)) | \
+            item_in(my.instance, "variable"))
         my.c_instance.is_const_type = "1"
     endif
 
@@ -629,12 +692,12 @@ function c_component_map_instance_attr_is_const (c_instance, instance)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Define attribute: c_instance.need_definition.
+#   Define attribute: c_instance.require_definition.
 # ---------------------------------------------------------------------------
-function c_component_map_instance_attr_need_definition (c_instance, instance)
+function c_component_map_instance_attr_require_definition (c_instance, instance)
     check_arguments (my, "c_instance, instance", my)
 
-    my.c_instance.need_definition ?= my.instance.need_definition ?
+    my.c_instance.require_definition ?= my.instance.require_definition ?
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -649,7 +712,7 @@ function c_component_map_instance (c_instance, instance)
     c_component_map_instance_attr_array (my.c_instance, my.instance)
     c_component_map_instance_attr_string (my.c_instance, my.instance)
     c_component_map_instance_attr_is_const (my.c_instance, my.instance)
-    c_component_map_instance_attr_need_definition (my.c_instance, my.instance)
+    c_component_map_instance_attr_require_definition (my.c_instance, my.instance)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -687,7 +750,8 @@ function c_component_create_modifiers (component, destination)
     check_arguments (my, "component, destination", my)
 
     new c_modifier to my.destination
-        if item_in (my.component, "method") & my.component.declaration = "private"
+        if item_in (my.component, "method") & \
+                my.component.declaration = "private" & my.component.definition = "private"
             .value = "static"
 
         elsif my.component.visibility = "public"
@@ -718,7 +782,7 @@ endfunction
 function c_component_create_include (require, destination)
     check_arguments (my, "require, destination", my)
 
-    if ! has_one_of_attribute (my.require, "header, module, interface, class, impl")
+    if ! has_one_of_attribute (my.require, "header, module, interface, class, impl, enum")
         return
     endif
 
@@ -744,6 +808,10 @@ function c_component_create_include (require, destination)
 
         elsif defined (my.require.impl)
             .file = make_ref (make_id (my.project_uid, "header", my.require.impl), "c")
+            .is_system = my.is_system
+
+        elsif defined (my.require.enum)
+            .file = make_ref (make_id (my.project_uid, "header", my.require.enum), "c")
             .is_system = my.is_system
         endif
 

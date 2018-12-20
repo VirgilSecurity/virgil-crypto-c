@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -52,6 +53,8 @@
 #include "vscf_hash_info.h"
 #include "vscf_assert.h"
 #include "vscf_hash_info_api.h"
+
+// clang-format on
 //  @end
 
 
@@ -60,6 +63,18 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Return implemented hash algorithm type.
+//
+VSCF_PUBLIC vscf_hash_alg_t
+vscf_hash_info_alg(const vscf_hash_info_api_t *hash_info_api) {
+
+    VSCF_ASSERT_PTR (hash_info_api);
+
+    VSCF_ASSERT_PTR (hash_info_api->alg_cb);
+    return hash_info_api->alg_cb ();
+}
 
 //
 //  Returns constant 'digest len'.
@@ -87,11 +102,11 @@ vscf_hash_info_block_len(const vscf_hash_info_api_t *hash_info_api) {
 //  Return hash info API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_hash_info_api_t *
-vscf_hash_info_api(vscf_impl_t *impl) {
+vscf_hash_info_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_HASH_INFO);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_HASH_INFO);
     return (const vscf_hash_info_api_t *) api;
 }
 
@@ -99,11 +114,11 @@ vscf_hash_info_api(vscf_impl_t *impl) {
 //  Check if given object implements interface 'hash info'.
 //
 VSCF_PUBLIC bool
-vscf_hash_info_is_implemented(vscf_impl_t *impl) {
+vscf_hash_info_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_HASH_INFO) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_HASH_INFO) != NULL;
 }
 
 //
@@ -115,17 +130,6 @@ vscf_hash_info_api_tag(const vscf_hash_info_api_t *hash_info_api) {
     VSCF_ASSERT_PTR (hash_info_api);
 
     return hash_info_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_hash_info_impl_tag(const vscf_hash_info_api_t *hash_info_api) {
-
-    VSCF_ASSERT_PTR (hash_info_api);
-
-    return hash_info_api->impl_tag;
 }
 
 

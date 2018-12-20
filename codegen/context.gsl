@@ -80,8 +80,8 @@ function resolution_map_apply_to (resolution_map, model, work_dir)
         echo_fatal ("Can not create directory: $(my.work_dir:). ", my)
     endif
 
-    my.init_file_path = "$(my.work_dir?:)$(name (my.model))_unresolved.xml"
-    my.final_file_path = "$(my.work_dir?:)$(name (my.model)).xml"
+    my.init_file_path = cat_path (my.work_dir, "$(name (my.model))_unresolved.xml")
+    my.final_file_path = cat_path (my.work_dir, "$(name (my.model)).xml")
 
     item_save_to_file (my.model, my.init_file_path)
 
@@ -100,12 +100,9 @@ function resolution_map_apply_to_lang_module (resolution_map, lang_module, work_
 
     echo_trace ("Apply resolution map to <$(name (my.lang_module)) name=\"$(my.lang_module.name:)\"/>", my)
 
-    my.init_module_file_path = \
-            "$(my.work_dir?:)c_module_$(my.lang_module.name:)_unresolved.xml"
-
-    my.final_module_file_path = \
-            "$(my.work_dir?:)c_module_$(my.lang_module.name:).xml"
-
+    my.lang_module_id = make_id (name (my.lang_module), my.lang_module.name)
+    my.init_module_file_path = cat_path (my.work_dir, "$(my.lang_module_id:)_unresolved.xml")
+    my.final_module_file_path = cat_path (my.work_dir, "$(my.lang_module_id:).xml")
 
     item_save_to_file (my.lang_module, my.init_module_file_path)
 
@@ -124,6 +121,13 @@ function context_append_project (context, project)
     assert_attribute (my.project, "version_minor", my)
     assert_attribute (my.project, "version_patch", my)
     assert_attribute (my.project, "version_string", my)
+    assert_attribute (my.project, "prefix", my)
+    assert_attribute (my.project, "framework", my)
+
+    new uid to my.context
+        .uid = "c_global_macros_build_interface"
+        .ref = "$(my.project.prefix:c,UPPER)_BUILD_INTERFACE"
+    endnew
 
     new uid to my.context
         .uid = "project_version_major"
@@ -144,6 +148,11 @@ function context_append_project (context, project)
         .uid = "project_version_string"
         .ref = my.project.version_string
     endnew
+
+    new uid to my.context
+        .uid = "namespace"
+        .ref = my.project.namespace
+    endnew
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -159,6 +168,7 @@ function context_append_hierarchy (context, item)
         new uid to my.context
             .uid = my.item.uid
             .ref = my.item.name
+            .full_ref = my.item.full_name ?
         endnew
     endif
 

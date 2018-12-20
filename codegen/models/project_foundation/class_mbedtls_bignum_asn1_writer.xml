@@ -1,0 +1,19 @@
+<class name="mbedtls bignum asn1 writer" scope="internal">
+    Provide method to write type 'mbedtls_mpi' ASN.1 INTEGER.
+
+    <require library="mbedtls" feature="BIGNUM C"/>
+    <require header="mbedtls/bignum.h" scope="public"/>
+
+    <require interface="asn1 writer" scope="private"/>
+    <require enum="asn1 tag" scope="private"/>
+
+    <method name="write asn1" of_class="mbedtls bignum" is_static="1">
+        Write given MbedTLS big number as ASN.1 INTEGER type.
+        Returns size of written data.
+
+        <argument name="asn1wr" interface="asn1 writer" access="readwrite"/>
+        <argument name="bignum" class="mbedtls_mpi" library="mbedtls"/>
+        <argument name="error" class="error ctx" access="readwrite"/>
+        <return type="size"/>
+    </method>
+</class>

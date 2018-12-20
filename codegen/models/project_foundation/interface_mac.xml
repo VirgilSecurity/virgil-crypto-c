@@ -1,0 +1,15 @@
+<interface name="mac">
+    Provides interface to the stateless MAC (message authentication code) algorithms.
+
+    <inherit interface="mac info"/>
+
+    <method name="mac">
+        Calculate MAC over given data.
+
+        <argument name="key" class="data"/>
+        <argument name="data" class="data"/>
+        <argument name="mac" class="buffer">
+            <length method="digest len"/>
+        </argument>
+    </method>
+</interface>

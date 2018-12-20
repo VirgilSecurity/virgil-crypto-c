@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -52,6 +53,8 @@
 #include "vsc_data.h"
 #include "vsc_memory.h"
 #include "vsc_assert.h"
+
+// clang-format on
 //  @end
 
 
@@ -68,6 +71,15 @@ static const byte empty_data[] = {
     0x00
 };
 
+//
+//  Return size of 'vsc_data_t'.
+//
+VSC_PUBLIC size_t
+vsc_data_ctx_size(void) {
+
+    return sizeof(vsc_data_t);
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -75,15 +87,6 @@ static const byte empty_data[] = {
 // --------------------------------------------------------------------------
 //  @end
 
-
-//
-//  Returns true if underlying byte array is defined.
-//
-VSC_PUBLIC bool
-vsc_data_is_valid(vsc_data_t data_ctx) {
-
-    return data_ctx.bytes != NULL;
-}
 
 //
 //  Creates data from the preallocated bytes.
@@ -97,6 +100,17 @@ vsc_data(const byte *bytes, size_t len) {
 }
 
 //
+//  Creates data from the preallocated string.
+//
+VSC_PUBLIC vsc_data_t
+vsc_data_from_str(const char *str, size_t len) {
+
+    VSC_ASSERT_PTR(str);
+
+    return (vsc_data_t){(const byte *)str, len};
+}
+
+//
 //  Creates empty data.
 //
 VSC_PUBLIC vsc_data_t
@@ -106,25 +120,77 @@ vsc_data_empty(void) {
 }
 
 //
+//  Returns true if underlying byte array is defined.
+//
+VSC_PUBLIC bool
+vsc_data_is_valid(vsc_data_t data) {
+
+    return data.bytes != NULL;
+}
+
+//
+//  Returns true if underlying byte array contains only zeros.
+//
+VSC_PUBLIC bool
+vsc_data_is_zero(vsc_data_t data) {
+
+    VSC_ASSERT(vsc_data_is_valid(data));
+
+    for (size_t pos = 0; pos < data.len; ++pos) {
+        if (data.bytes[pos] != 0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+//
+//  Returns true if underlying byte array is empty.
+//
+VSC_PUBLIC bool
+vsc_data_is_empty(vsc_data_t data) {
+
+    return 0 == data.len;
+}
+
+//
+//  Return true if given datas are equal.
+//
+VSC_PUBLIC bool
+vsc_data_equal(vsc_data_t data, vsc_data_t rhs) {
+
+    VSC_ASSERT(vsc_data_is_valid(data));
+    VSC_ASSERT(vsc_data_is_valid(rhs));
+
+    if (data.len != rhs.len) {
+        return false;
+    }
+
+    bool is_equal = memcmp(data.bytes, rhs.bytes, rhs.len) == 0;
+    return is_equal;
+}
+
+//
 //  Return underlying data slice starting from beginning.
 //
 VSC_PUBLIC vsc_data_t
-vsc_data_slice_beg(vsc_data_t data_ctx, size_t offset, size_t len) {
+vsc_data_slice_beg(vsc_data_t data, size_t offset, size_t len) {
 
-    VSC_ASSERT(vsc_data_is_valid(data_ctx));
-    VSC_ASSERT(data_ctx.len >= offset + len);
+    VSC_ASSERT(vsc_data_is_valid(data));
+    VSC_ASSERT(data.len >= offset + len);
 
-    return (vsc_data_t){data_ctx.bytes + offset, len};
+    return (vsc_data_t){data.bytes + offset, len};
 }
 
 //
 //  Return underlying data slice starting from ending.
 //
 VSC_PUBLIC vsc_data_t
-vsc_data_slice_end(vsc_data_t data_ctx, size_t offset, size_t len) {
+vsc_data_slice_end(vsc_data_t data, size_t offset, size_t len) {
 
-    VSC_ASSERT(vsc_data_is_valid(data_ctx));
-    VSC_ASSERT(data_ctx.len >= offset + len);
+    VSC_ASSERT(vsc_data_is_valid(data));
+    VSC_ASSERT(data.len >= offset + len);
 
-    return (vsc_data_t){data_ctx.bytes + data_ctx.len - offset - len, len};
+    return (vsc_data_t){data.bytes + data.len - offset - len, len};
 }

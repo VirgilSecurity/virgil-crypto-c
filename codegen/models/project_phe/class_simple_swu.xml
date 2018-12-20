@@ -1,0 +1,23 @@
+<class name="simple swu" context="internal" scope="internal">
+
+    <require class="phe common" scope="public"/>
+    <require impl="sha512" project="foundation" scope="private"/>
+    <require header="mbedtls/ecp.h" scope="context"/>
+    <require header="mbedtls/bignum.h" scope="context"/>
+    <require header="mbedtls/ecp.h" scope="public"/>
+    <require header="mbedtls/bignum.h" scope="public"/>
+
+    <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
+    <property name="A" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
+    <property name="two" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
+    <property name="three" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
+    <property name="p34" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
+    <property name="p14" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
+    <property name="mba" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
+
+    <method name="bignum to point">
+        <argument name="t" class="mbedtls_mpi" library="mbedtls" access="readonly"/>
+        <argument name="p" class="mbedtls_ecp_point" library="mbedtls" access="writeonly"/>
+    </method>
+
+</class>

@@ -108,16 +108,16 @@
             Unsigned 8-bit integral type.
         </restrict>
 
-        <restrict value="data">
-            Shortcut for the byte array.
-        </restrict>
-
         <restrict value="string">
             Shortcut for the char array.
         </restrict>
 
-        <restrict value="error">
-            Type for error codes.
+        <restrict value="char">
+            Type for a character.
+        </restrict>
+
+        <restrict value="varargs">
+            Type for variadic arguments.
         </restrict>
     </attr>
 
@@ -129,6 +129,7 @@
             * data   - Special class "data" that is used as an input byte array.
             * buffer - Special class "buffer" that is used as an output byte array.
             * impl   - Universal implementation class.
+            * self   - Allowed within high-level entities, i.e. class, implementation, to refer the context type.
 
         If value differs from the listed above then next algorithm applied:
             1. If value in a format .(uid), then it treated as a reference to
@@ -212,7 +213,7 @@
         </restrict>
     </attr>
 
-    <attr name="need_definition">
+    <attr name="require_definition">
         Defines if instance requires type definition.
 
         <restrict value="public">
@@ -288,6 +289,10 @@
         </restrict>
     </attr>
 
+    <attr name="length_constant">
+        For fixed size string it defines number of characters as integral constant.
+    </attr>
+
     <inherit entity="access"/>
 </entity>
 
@@ -330,6 +335,25 @@
 </entity>
 
 
+<entity name="require_scope" abstract="1">
+    <attr name="scope" default="public">
+        Defines scope for required component.
+
+        <restrict value="public">
+            Required component is visible for outside world.
+        </restrict>
+
+        <restrict value="private">
+            Required component can be accessed within specific source file only.
+        </restrict>
+
+        <restrict value="context">
+            Component is required by context, so it is visible if context is visible.
+        </restrict>
+    </attr>
+</entity>
+
+
 <entity name="require_base" abstract="1">
     Base attributes for require.
 
@@ -357,8 +381,12 @@
         Required implementation name.
     </attr>
 
+    <attr name="enum">
+        Required implementation name.
+    </attr>
+
     <inherit entity="landlord"/>
-    <inherit entity="scope"/>
+    <inherit entity="require_scope"/>
 </entity>
 
 
@@ -439,6 +467,7 @@
         Object name.
     </attr>
 
+    <inherit entity="scope"/>
     <inherit entity="component"/>
     <inherit entity="visibility"/>
     <inherit entity="declaration"/>
@@ -487,19 +516,15 @@
         Method name.
     </attr>
 
-    <attr name="context" default="none">
-        Context meta information about method's first argument.
+    <attr name="is_static" default="0">
+        Defines that method is a class-level method.
 
-        <restrict value="none">
-            Method takes only data arguments (no context).
+        <restrict value="0">
+            Method is a class-level method.
         </restrict>
 
-        <restrict value="api">
-            Method takes interface object as a first argument.
-        </restrict>
-
-        <restrict value="impl">
-            Method takes implementation object as a first argument.
+        <restrict value="1">
+            Method is an object-level method.
         </restrict>
     </attr>
 
@@ -568,7 +593,6 @@
         </restrict>
     </attr>
 
-    <inherit entity="component"/>
     <inherit entity="definition"/>
 
     <allow entity="code" occurs="0/1"/>
@@ -615,6 +639,18 @@
     <attr name="type_name">
         This is auto-resolve attribute!
         It is equal to the one of the attributes: {interface, api, class}.
+    </attr>
+
+    <attr name="has_observers" default="0">
+        Allows to add observer methods for the dependency.
+
+        <restrict value="0">
+            Property is not observed.
+        </restrict>
+
+        <restrict value="1">
+            Property is observed so methods "did_setup" and "did_release" must be generated.
+        </restrict>
     </attr>
 
     <inherit entity="landlord"/>
