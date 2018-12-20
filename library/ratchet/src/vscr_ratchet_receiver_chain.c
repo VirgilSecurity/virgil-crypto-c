@@ -215,8 +215,6 @@ static void
 vscr_ratchet_receiver_chain_cleanup_ctx(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain) {
 
     VSCR_ASSERT_PTR(ratchet_receiver_chain);
-
-    vsc_buffer_destroy(&ratchet_receiver_chain->public_key);
 }
 
 VSCR_PUBLIC void
@@ -226,8 +224,7 @@ vscr_ratchet_receiver_chain_serialize(
     VSCR_ASSERT_PTR(ratchet_receiver_chain);
     VSCR_ASSERT_PTR(receiver_chain_pb);
 
-    memcpy(receiver_chain_pb->public_key, vsc_buffer_bytes(ratchet_receiver_chain->public_key),
-            sizeof(receiver_chain_pb->public_key));
+    memcpy(receiver_chain_pb->public_key, ratchet_receiver_chain->public_key, sizeof(receiver_chain_pb->public_key));
     vscr_ratchet_chain_key_serialize(&ratchet_receiver_chain->chain_key, &receiver_chain_pb->chain_key);
 }
 
@@ -238,10 +235,6 @@ vscr_ratchet_receiver_chain_deserialize(
     VSCR_ASSERT_PTR(receiver_chain);
     VSCR_ASSERT_PTR(receiver_chain_pb);
 
-    receiver_chain->public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
-    memcpy(vsc_buffer_unused_bytes(receiver_chain->public_key), receiver_chain_pb->public_key,
-            sizeof(receiver_chain_pb->public_key));
-    vsc_buffer_inc_used(receiver_chain->public_key, sizeof(receiver_chain_pb->public_key));
-
+    memcpy(receiver_chain->public_key, receiver_chain_pb->public_key, sizeof(receiver_chain_pb->public_key));
     vscr_ratchet_chain_key_deserialize(&receiver_chain_pb->chain_key, &receiver_chain->chain_key);
 }

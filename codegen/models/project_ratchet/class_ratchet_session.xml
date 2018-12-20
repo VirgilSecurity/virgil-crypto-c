@@ -1,6 +1,7 @@
 <class name="ratchet session" context="private">
 
     <require class="ratchet common" scope="public"/>
+    <require class="ratchet common" scope="context"/>
     <require module="ratchet message defs" scope="private"/>
 
     <require impl="ctr drbg" project="foundation" scope="private"/>
@@ -20,10 +21,19 @@
     <property name="is initiator" type="boolean"/>
     <property class="ratchet" name="ratchet"/>
     <property name="received first response" type="boolean"/>
-    <property name="sender identity public key" class="buffer" access="readwrite"/>
-    <property name="sender ephemeral public key" class="buffer" access="readwrite"/>
-    <property name="receiver long term public key" class="buffer" access="readwrite"/>
-    <property name="receiver one time public key" class="buffer" access="readwrite"/>
+
+    <property name="sender identity public key" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+    </property>
+    <property name="sender ephemeral public key" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+    </property>
+    <property name="receiver long term public key" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+    </property>
+    <property name="receiver one time public key" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+    </property>
 
     <method name="setup defaults">
     </method>
@@ -31,17 +41,17 @@
     <method name="initiate">
         <argument name="sender identity private key" class="data"/>
         <argument name="receiver identity public key" class="data"/>
-        <argument name="receiver long term public key" class="buffer" access="retain"/>
-        <argument name="receiver one time public key" class="buffer" access="retain"/>
+        <argument name="receiver long term public key" class="data"/>
+        <argument name="receiver one time public key" class="data"/>
 
         <return enum="error"/>
     </method>
 
     <method name="respond">
-        <argument name="sender identity public key" class="buffer" access="retain"/>
-        <argument name="receiver identity private key" class="buffer" access="retain"/>
-        <argument name="receiver long term private key" class="buffer" access="retain"/>
-        <argument name="receiver one time private key" class="buffer" access="retain"/>
+        <argument name="sender identity public key" class="data"/>
+        <argument name="receiver identity private key" class="data"/>
+        <argument name="receiver long term private key" class="data"/>
+        <argument name="receiver one time private key" class="data"/>
         <argument name="message" class="ratchet message"/>
 
         <return enum="error"/>

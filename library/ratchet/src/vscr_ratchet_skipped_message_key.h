@@ -48,20 +48,13 @@
 #define VSCR_RATCHET_SKIPPED_MESSAGE_KEY_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_ratchet_common.h"
 #include "vscr_ratchet_skipped_message_key.h"
 #include "vscr_ratchet_message_key.h"
 
 #include <RatchetModels.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
-
-#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#endif
 
 // clang-format on
 //  @end
@@ -92,7 +85,7 @@ struct vscr_ratchet_skipped_message_key_t {
     //
     size_t refcnt;
 
-    vsc_buffer_t *public_key;
+    byte public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
 
     vscr_ratchet_message_key_t *message_key;
 };
