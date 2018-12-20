@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -54,9 +55,9 @@
 #define VSCF_SHA256_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_sha256.h"
-#include "vscf_sha256.h"
+
+// clang-format on
 //  @end
 
 
@@ -77,7 +78,7 @@ extern "C" {
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_sha256_init_ctx(vscf_sha256_impl_t *sha256_impl);
+vscf_sha256_init_ctx(vscf_sha256_t *sha256);
 
 //
 //  Release resources of the implementation specific context.
@@ -85,7 +86,7 @@ vscf_sha256_init_ctx(vscf_sha256_impl_t *sha256_impl);
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_sha256_cleanup_ctx(vscf_sha256_impl_t *sha256_impl);
+vscf_sha256_cleanup_ctx(vscf_sha256_t *sha256);
 
 
 // --------------------------------------------------------------------------

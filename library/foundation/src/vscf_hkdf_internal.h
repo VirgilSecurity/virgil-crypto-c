@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -54,9 +55,9 @@
 #define VSCF_HKDF_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_hkdf.h"
-#include "vscf_hkdf.h"
+
+// clang-format on
 //  @end
 
 
@@ -77,7 +78,7 @@ extern "C" {
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_hkdf_init_ctx(vscf_hkdf_impl_t *hkdf_impl);
+vscf_hkdf_init_ctx(vscf_hkdf_t *hkdf);
 
 //
 //  Release resources of the implementation specific context.
@@ -85,7 +86,7 @@ vscf_hkdf_init_ctx(vscf_hkdf_impl_t *hkdf_impl);
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_hkdf_cleanup_ctx(vscf_hkdf_impl_t *hkdf_impl);
+vscf_hkdf_cleanup_ctx(vscf_hkdf_t *hkdf);
 
 
 // --------------------------------------------------------------------------

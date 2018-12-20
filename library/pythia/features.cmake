@@ -45,7 +45,11 @@
 
 include_guard()
 
+option(VSCP_LIBRARY "Enable build of the 'pythia' library" ON)
+option(VSCP_MULTI_THREAD "Enable multi-threading safety for Pythia library." ON)
 option(VSCP_PYTHIA "Enable class 'pythia'." ON)
 mark_as_advanced(
+        VSCP_LIBRARY
+        VSCP_MULTI_THREAD
         VSCP_PYTHIA
         )

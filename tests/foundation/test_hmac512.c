@@ -33,6 +33,8 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
 #include "unity.h"
 #include "test_utils.h"
 
@@ -47,16 +49,27 @@
 
 
 // --------------------------------------------------------------------------
+//  Should have it to prevent linkage erros in MSVC.
+// --------------------------------------------------------------------------
+// clang-format off
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+// clang-format on
+
+
+// --------------------------------------------------------------------------
 // Test implementation helpers & lifecycle functions.
 // --------------------------------------------------------------------------
 void
 test__impl__valid_arg__returns_not_null(void) {
-    vscf_hmac512_impl_t *hmac512_impl = vscf_hmac512_new();
-    vscf_impl_t *impl = vscf_hmac512_impl(hmac512_impl);
+    vscf_hmac512_t *hmac512 = vscf_hmac512_new();
+    vscf_impl_t *impl = vscf_hmac512_impl(hmac512);
 
     TEST_ASSERT_NOT_NULL(impl);
 
-    vscf_hmac512_destroy(&hmac512_impl);
+    vscf_hmac512_destroy(&hmac512);
 }
 
 void
@@ -134,14 +147,14 @@ test__hmac_stream__vector_1_success(void) {
 
     byte digest[vscf_hmac512_DIGEST_LEN] = {0x00};
 
-    vscf_hmac512_impl_t *hmac512_impl = vscf_hmac512_new();
+    vscf_hmac512_t *hmac512 = vscf_hmac512_new();
 
-    vscf_hmac512_reset(hmac512_impl);
-    vscf_hmac512_start(hmac512_impl, test_hmac512_KEY_1_INPUT, test_hmac512_KEY_1_INPUT_LEN);
-    vscf_hmac512_update(hmac512_impl, test_hmac512_VECTOR_1_INPUT, test_hmac512_VECTOR_1_INPUT_LEN);
-    vscf_hmac512_finish(hmac512_impl, digest, vscf_hmac512_DIGEST_LEN);
+    vscf_hmac512_reset(hmac512);
+    vscf_hmac512_start(hmac512, test_hmac512_KEY_1_INPUT, test_hmac512_KEY_1_INPUT_LEN);
+    vscf_hmac512_update(hmac512, test_hmac512_VECTOR_1_INPUT, test_hmac512_VECTOR_1_INPUT_LEN);
+    vscf_hmac512_finish(hmac512, digest, vscf_hmac512_DIGEST_LEN);
 
-    vscf_hmac512_destroy(&hmac512_impl);
+    vscf_hmac512_destroy(&hmac512);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac512_VECTOR_1_DIGEST.bytes, digest, test_hmac512_VECTOR_1_DIGEST_LEN);
 }
@@ -151,14 +164,14 @@ test__hmac_stream__vector_2_success(void) {
 
     byte digest[vscf_hmac512_DIGEST_LEN] = {0x00};
 
-    vscf_hmac512_impl_t *hmac512_impl = vscf_hmac512_new();
+    vscf_hmac512_t *hmac512 = vscf_hmac512_new();
 
-    vscf_hmac512_reset(hmac512_impl);
-    vscf_hmac512_start(hmac512_impl, test_hmac512_KEY_2_INPUT, test_hmac512_KEY_2_INPUT_LEN);
-    vscf_hmac512_update(hmac512_impl, test_hmac512_VECTOR_2_INPUT, test_hmac512_VECTOR_2_INPUT_LEN);
-    vscf_hmac512_finish(hmac512_impl, digest, vscf_hmac512_DIGEST_LEN);
+    vscf_hmac512_reset(hmac512);
+    vscf_hmac512_start(hmac512, test_hmac512_KEY_2_INPUT, test_hmac512_KEY_2_INPUT_LEN);
+    vscf_hmac512_update(hmac512, test_hmac512_VECTOR_2_INPUT, test_hmac512_VECTOR_2_INPUT_LEN);
+    vscf_hmac512_finish(hmac512, digest, vscf_hmac512_DIGEST_LEN);
 
-    vscf_hmac512_destroy(&hmac512_impl);
+    vscf_hmac512_destroy(&hmac512);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac512_VECTOR_2_DIGEST.bytes, digest, test_hmac512_VECTOR_2_DIGEST_LEN);
 }
@@ -168,14 +181,14 @@ test__hmac_stream__vector_3_success(void) {
 
     byte digest[vscf_hmac512_DIGEST_LEN] = {0x00};
 
-    vscf_hmac512_impl_t *hmac512_impl = vscf_hmac512_new();
+    vscf_hmac512_t *hmac512 = vscf_hmac512_new();
 
-    vscf_hmac512_reset(hmac512_impl);
-    vscf_hmac512_start(hmac512_impl, test_hmac512_KEY_3_INPUT, test_hmac512_KEY_3_INPUT_LEN);
-    vscf_hmac512_update(hmac512_impl, test_hmac512_VECTOR_3_INPUT, test_hmac512_VECTOR_3_INPUT_LEN);
-    vscf_hmac512_finish(hmac512_impl, digest, vscf_hmac512_DIGEST_LEN);
+    vscf_hmac512_reset(hmac512);
+    vscf_hmac512_start(hmac512, test_hmac512_KEY_3_INPUT, test_hmac512_KEY_3_INPUT_LEN);
+    vscf_hmac512_update(hmac512, test_hmac512_VECTOR_3_INPUT, test_hmac512_VECTOR_3_INPUT_LEN);
+    vscf_hmac512_finish(hmac512, digest, vscf_hmac512_DIGEST_LEN);
 
-    vscf_hmac512_destroy(&hmac512_impl);
+    vscf_hmac512_destroy(&hmac512);
 
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac512_VECTOR_3_DIGEST.bytes, digest, test_hmac512_VECTOR_3_DIGEST_LEN);
 }

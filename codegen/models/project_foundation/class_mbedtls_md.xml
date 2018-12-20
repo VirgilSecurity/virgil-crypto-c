@@ -1,0 +1,12 @@
+<class name="mbedtls md" scope="internal">
+    Bridge between MbedTLS MD module and virgil foundation.
+
+    <require header="mbedtls/md.h" scope="public"/>
+
+    <method name="from hash alg" is_static="1">
+        Map hash alg to correspond 'mbedtls_md_type_t'.
+
+        <argument name="hash alg" enum="hash alg"/>
+        <return enum="mbedtls_md_type_t" library="mbedtls"/>
+    </method>
+</class>

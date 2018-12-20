@@ -7,27 +7,29 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <interface [project]>
-       <constant name [c_prefix] [of_class] [uid] [feature] [definition] [value]/>
-       <method name [declaration] [visibility] [c_prefix] [of_class] [uid] [feature] [definition]
-            [context]>
+    <interface [c_prefix] [uid] [full_uid] [visibility] [scope]>
+       <constant name [c_prefix] [of_class] [uid] [full_uid] [feature] [definition] [value]/>
+       <method name [definition] [visibility] [c_prefix] [of_class] [uid] [full_uid] [feature]
+            [declaration] [is_static]>
           <return is_reference [project] [access] [type] [class] [enum] [callback] [interface]
-               [api] [impl] [size] [library] [need_definition]>
-             <string [access] [length]/>
+               [api] [impl] [size] [library] [require_definition]>
+             <string [access] [length] [length_constant]/>
              <array [access] [length] [length_constant]/>
           </return>
-          <argument name is_reference [library] [uid] [type] [class] [enum] [callback] [interface]
-               [api] [impl] [size] [project] [need_definition] [access]>
+          <argument name is_reference [project] [uid] [access] [type] [class] [enum] [callback]
+               [interface] [api] [impl] [size] [full_uid] [require_definition]
+               [library]>
              <string .../>
              <array .../>
           </argument>
-          <variable name is_reference [library] [type] [project] [enum] [callback] [interface] [api]
-               [impl] [size] [access] [need_definition] [definition] [declaration]
-               [visibility] [c_prefix] [of_class] [uid] [feature] [class]>
+          <variable name is_reference [access] [type] [project] [enum] [callback] [interface] [api]
+               [impl] [size] [library] [require_definition] [definition] [declaration]
+               [visibility] [c_prefix] [of_class] [uid] [full_uid] [feature]
+               [class]>
              <value is_reference value [library] [type] [class] [enum] [callback] [interface] [api]
-                  [impl] [size] [project] [need_definition] [access]>
+                  [impl] [size] [project] [require_definition] [access]>
                 <cast is_reference [project] [access] [type] [class] [enum] [callback] [interface]
-                     [api] [impl] [size] [library] [need_definition]>
+                     [api] [impl] [size] [library] [require_definition]>
                    <string .../>
                    <array .../>
                 </cast>
@@ -56,17 +58,51 @@ The 'interface' item
 Defines C class interface as a set of constants and methods.
 
     <interface
-      [ project = "..." ]
+      [ c_prefix = "..." ]
+      [ uid = "..." ]
+      [ full_uid = "..." ]
+      [ visibility = "public | private"  ("public") ]
+      [ scope = "public | private | internal"  ("public") ]
         >
         <constant>
         <method>
         <inherit>
     </interface>
 
-The interface item has this single attribute:
+The interface item can have these attributes:
 
-project:
-    Parent project name. The project attribute is optional.
+c_prefix:
+    Prefix that is used for C name resolution. The c_prefix attribute is
+    optional.
+
+uid:
+    Unique component identifier represents name that uniquely identifies
+    component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
+
+visibility:
+    Defines symbol binary visibility. This attribute must not be inherited.
+    The visibility attribute is optional. Its default value is "public". It
+    can take one of the following values:
+
+Value: Meaning:
+public: Symbols of the types and methods are visible in a binary file.
+private: Symbols of the types and methods are hidden in a binary file.
+
+scope:
+    Defines component visibility within scope. This attribute must not be
+    inherited. Note, scope attribute can be used for components, that can not
+    be defined in terms of 'declaration' and 'definition'. The scope
+    attribute is optional. Its default value is "public". It can take one of
+    the following values:
+
+Value: Meaning:
+public: Component is visible for outside world.
+private: Component is visible for outside world via private interface.
+internal: Component is visible only within library or a specific source file.
 
 
 The 'constant' item
@@ -79,6 +115,7 @@ Groups common attributes for the component. Defines integral constant.
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
+      [ full_uid = "..." ]
       [ feature = "..." ]
       [ definition = "public | private | external"  ("private") ]
       [ value = "..." ]
@@ -108,6 +145,10 @@ uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
 
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
+
 feature:
     In-project feature name that is implemented. This attribute is used for
     feature-based compilation. The feature attribute is optional.
@@ -128,14 +169,15 @@ and optionally implementation.
 
     <method
         name = "..."
-      [ declaration = "public | private | external"  ("public") ]
+      [ definition = "public | private | external"  ("private") ]
       [ visibility = "public | private"  ("public") ]
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
+      [ full_uid = "..." ]
       [ feature = "..." ]
-      [ definition = "public | private | external"  ("private") ]
-      [ context = "none | api | impl"  ("none") ]
+      [ declaration = "public | private | external"  ("public") ]
+      [ is_static = "0 | 1"  ("0") ]
         >
         <return>, optional
         <argument>
@@ -186,6 +228,10 @@ uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
 
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
+
 feature:
     In-project feature name that is implemented. This attribute is used for
     feature-based compilation. The feature attribute is optional.
@@ -193,15 +239,14 @@ feature:
 name:
     Method name. The name attribute is required.
 
-context:
-    Context meta information about method's first argument. The context
-    attribute is optional. Its default value is "none". It can take one of
-    the following values:
+is_static:
+    Defines that method is a class-level method. The is_static attribute is
+    optional. Its default value is "0". It can take one of the following
+    values:
 
 Value: Meaning:
-none: Method takes only data arguments (no context).
-api: Method takes interface object as a first argument.
-impl: Method takes implementation object as a first argument.
+0: Method is a class-level method.
+1: Method is an object-level method.
 
 
 The 'return' item
@@ -213,7 +258,7 @@ Defines attributes that related to the instance type. Defines return type.
         is_reference = "0 | 1"
       [ project = "..." ]
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | string | char | varargs" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -222,7 +267,7 @@ Defines attributes that related to the instance type. Defines return type.
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ library = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
         >
         <string>, optional
         <array>, optional
@@ -259,21 +304,23 @@ integer: Signed integral type.
 unsigned: Unsigned integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
-data: Shortcut for the byte array.
 string: Shortcut for the char array.
-error: Type for error codes.
+char: Type for a character.
+varargs: Type for variadic arguments.
 
 class:
     Defines instance class. Possible values are: * any - Any class or type. *
     data - Special class "data" that is used as an input byte array. * buffer
     - Special class "buffer" that is used as an output byte array. * impl -
-    Universal implementation class. If value differs from the listed above
-    then next algorithm applied: 1. If value in a format .(uid), then it
-    treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. If attribute 'library' is defined,
-    then it treated as third-party library class and will be used as-is. 3.
-    Any other value will be treated as cross-project class name and will be
-    converted to the .(uid). The class attribute is optional.
+    Universal implementation class. * self - Allowed within high-level
+    entities, i.e. class, implementation, to refer the context type. If value
+    differs from the listed above then next algorithm applied: 1. If value in
+    a format .(uid), then it treated as a reference to the in-project class
+    and will be substituted during context resolution step. 2. If attribute
+    'library' is defined, then it treated as third-party library class and
+    will be used as-is. 3. Any other value will be treated as cross-project
+    class name and will be converted to the .(uid). The class attribute is
+    optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -323,8 +370,8 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -340,6 +387,7 @@ Defines restrictions to the special class 'string'.
     <string
       [ access = "readonly | writeonly | readwrite | disown" ]
       [ length = "null_terminated | given | fixed | derived"  ("null_terminated") ]
+      [ length_constant = "..." ]
         />
 
 The string item can have these attributes:
@@ -363,6 +411,10 @@ null_terminated: String length is defined by distance from the first character u
 given: String length is given from the client.
 fixed: String length is known at compile time, so it can be substituted automatically.
 derived: String length can be statically derived during string initialization.
+
+length_constant:
+    For fixed size string it defines number of characters as integral
+    constant. The length_constant attribute is optional.
 
 
 The 'array' item
@@ -413,9 +465,10 @@ name, type, and usage information.
     <argument
         name = "..."
         is_reference = "0 | 1"
-      [ library = "..." ]
+      [ project = "..." ]
       [ uid = "..." ]
-      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | string | char | varargs" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -423,9 +476,9 @@ name, type, and usage information.
       [ api = "..." ]
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ project = "..." ]
-      [ need_definition = "public | private" ]
-      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ full_uid = "..." ]
+      [ require_definition = "public | private" ]
+      [ library = "..." ]
         >
         <string>, optional
         <array>, optional
@@ -436,6 +489,10 @@ The argument item can have these attributes:
 uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
+
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
 
 project:
     Defines project name that component refers to. The project attribute is
@@ -466,21 +523,23 @@ integer: Signed integral type.
 unsigned: Unsigned integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
-data: Shortcut for the byte array.
 string: Shortcut for the char array.
-error: Type for error codes.
+char: Type for a character.
+varargs: Type for variadic arguments.
 
 class:
     Defines instance class. Possible values are: * any - Any class or type. *
     data - Special class "data" that is used as an input byte array. * buffer
     - Special class "buffer" that is used as an output byte array. * impl -
-    Universal implementation class. If value differs from the listed above
-    then next algorithm applied: 1. If value in a format .(uid), then it
-    treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. If attribute 'library' is defined,
-    then it treated as third-party library class and will be used as-is. 3.
-    Any other value will be treated as cross-project class name and will be
-    converted to the .(uid). The class attribute is optional.
+    Universal implementation class. * self - Allowed within high-level
+    entities, i.e. class, implementation, to refer the context type. If value
+    differs from the listed above then next algorithm applied: 1. If value in
+    a format .(uid), then it treated as a reference to the in-project class
+    and will be substituted during context resolution step. 2. If attribute
+    'library' is defined, then it treated as third-party library class and
+    will be used as-is. 3. Any other value will be treated as cross-project
+    class name and will be converted to the .(uid). The class attribute is
+    optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -530,8 +589,8 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -551,8 +610,8 @@ attributes for the component. Defines global variable.
     <variable
         name = "..."
         is_reference = "0 | 1"
-      [ library = "..." ]
-      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
+      [ access = "readonly | writeonly | readwrite | disown" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | string | char | varargs" ]
       [ project = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -560,14 +619,15 @@ attributes for the component. Defines global variable.
       [ api = "..." ]
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
-      [ access = "readonly | writeonly | readwrite | disown" ]
-      [ need_definition = "public | private" ]
+      [ library = "..." ]
+      [ require_definition = "public | private" ]
       [ definition = "public | private | external"  ("private") ]
       [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
       [ c_prefix = "..." ]
       [ of_class = "..." ]
       [ uid = "..." ]
+      [ full_uid = "..." ]
       [ feature = "..." ]
       [ class = "..." ]
         >
@@ -607,21 +667,23 @@ integer: Signed integral type.
 unsigned: Unsigned integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
-data: Shortcut for the byte array.
 string: Shortcut for the char array.
-error: Type for error codes.
+char: Type for a character.
+varargs: Type for variadic arguments.
 
 class:
     Defines instance class. Possible values are: * any - Any class or type. *
     data - Special class "data" that is used as an input byte array. * buffer
     - Special class "buffer" that is used as an output byte array. * impl -
-    Universal implementation class. If value differs from the listed above
-    then next algorithm applied: 1. If value in a format .(uid), then it
-    treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. If attribute 'library' is defined,
-    then it treated as third-party library class and will be used as-is. 3.
-    Any other value will be treated as cross-project class name and will be
-    converted to the .(uid). The class attribute is optional.
+    Universal implementation class. * self - Allowed within high-level
+    entities, i.e. class, implementation, to refer the context type. If value
+    differs from the listed above then next algorithm applied: 1. If value in
+    a format .(uid), then it treated as a reference to the in-project class
+    and will be substituted during context resolution step. 2. If attribute
+    'library' is defined, then it treated as third-party library class and
+    will be used as-is. 3. Any other value will be treated as cross-project
+    class name and will be converted to the .(uid). The class attribute is
+    optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -671,8 +733,8 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -720,6 +782,10 @@ uid:
     Unique component identifier represents name that uniquely identifies
     component within models hierarchy. The uid attribute is optional.
 
+full_uid:
+    Unique component identifier represents name that uniquely identifies
+    component within projects hierarchy. The full_uid attribute is optional.
+
 feature:
     In-project feature name that is implemented. This attribute is used for
     feature-based compilation. The feature attribute is optional.
@@ -738,7 +804,7 @@ variable value.
         is_reference = "0 | 1"
         value = "..."
       [ library = "..." ]
-      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | string | char | varargs" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -747,7 +813,7 @@ variable value.
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ project = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
       [ access = "readonly | writeonly | readwrite | disown" ]
         >
         <cast>, optional
@@ -786,21 +852,23 @@ integer: Signed integral type.
 unsigned: Unsigned integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
-data: Shortcut for the byte array.
 string: Shortcut for the char array.
-error: Type for error codes.
+char: Type for a character.
+varargs: Type for variadic arguments.
 
 class:
     Defines instance class. Possible values are: * any - Any class or type. *
     data - Special class "data" that is used as an input byte array. * buffer
     - Special class "buffer" that is used as an output byte array. * impl -
-    Universal implementation class. If value differs from the listed above
-    then next algorithm applied: 1. If value in a format .(uid), then it
-    treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. If attribute 'library' is defined,
-    then it treated as third-party library class and will be used as-is. 3.
-    Any other value will be treated as cross-project class name and will be
-    converted to the .(uid). The class attribute is optional.
+    Universal implementation class. * self - Allowed within high-level
+    entities, i.e. class, implementation, to refer the context type. If value
+    differs from the listed above then next algorithm applied: 1. If value in
+    a format .(uid), then it treated as a reference to the in-project class
+    and will be substituted during context resolution step. 2. If attribute
+    'library' is defined, then it treated as third-party library class and
+    will be used as-is. 3. Any other value will be treated as cross-project
+    class name and will be converted to the .(uid). The class attribute is
+    optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -850,8 +918,8 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
@@ -872,7 +940,7 @@ type to the type defined in this entity.
         is_reference = "0 | 1"
       [ project = "..." ]
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | unsigned | size | byte | data | string | error" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | string | char | varargs" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -881,7 +949,7 @@ type to the type defined in this entity.
       [ impl = "..." ]
       [ size = "1 | 2 | 4 | 8" ]
       [ library = "..." ]
-      [ need_definition = "public | private" ]
+      [ require_definition = "public | private" ]
         >
         <string>, optional
         <array>, optional
@@ -918,21 +986,23 @@ integer: Signed integral type.
 unsigned: Unsigned integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
-data: Shortcut for the byte array.
 string: Shortcut for the char array.
-error: Type for error codes.
+char: Type for a character.
+varargs: Type for variadic arguments.
 
 class:
     Defines instance class. Possible values are: * any - Any class or type. *
     data - Special class "data" that is used as an input byte array. * buffer
     - Special class "buffer" that is used as an output byte array. * impl -
-    Universal implementation class. If value differs from the listed above
-    then next algorithm applied: 1. If value in a format .(uid), then it
-    treated as a reference to the in-project class and will be substituted
-    during context resolution step. 2. If attribute 'library' is defined,
-    then it treated as third-party library class and will be used as-is. 3.
-    Any other value will be treated as cross-project class name and will be
-    converted to the .(uid). The class attribute is optional.
+    Universal implementation class. * self - Allowed within high-level
+    entities, i.e. class, implementation, to refer the context type. If value
+    differs from the listed above then next algorithm applied: 1. If value in
+    a format .(uid), then it treated as a reference to the in-project class
+    and will be substituted during context resolution step. 2. If attribute
+    'library' is defined, then it treated as third-party library class and
+    will be used as-is. 3. Any other value will be treated as cross-project
+    class name and will be converted to the .(uid). The class attribute is
+    optional.
 
 enum:
     Defines enumeration type. 1. If value in a format .(uid), then it treated
@@ -982,8 +1052,8 @@ Value: Meaning:
 0: Instance is not a reference.
 1: Instance is a reference to the other instance.
 
-need_definition:
-    Defines if instance requires type definition. The need_definition
+require_definition:
+    Defines if instance requires type definition. The require_definition
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:

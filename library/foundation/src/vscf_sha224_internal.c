@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -53,7 +54,7 @@
 #include "vscf_sha224_internal.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_sha224_impl.h"
+#include "vscf_sha224_defs.h"
 #include "vscf_hash_info.h"
 #include "vscf_hash_info_api.h"
 #include "vscf_hash.h"
@@ -62,6 +63,8 @@
 #include "vscf_hash_stream_api.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
+
+// clang-format on
 //  @end
 
 
@@ -84,9 +87,9 @@ static const vscf_hash_info_api_t hash_info_api = {
     //
     vscf_api_tag_HASH_INFO,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
+    //  Return implemented hash algorithm type.
     //
-    vscf_impl_tag_SHA224,
+    (vscf_hash_info_api_alg_fn)vscf_sha224_alg,
     //
     //  Length of the digest (hashing output) in bytes.
     //
@@ -107,10 +110,6 @@ static const vscf_hash_api_t hash_api = {
     //
     vscf_api_tag_HASH,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_SHA224,
-    //
     //  Link to the inherited interface API 'hash info'.
     //
     &hash_info_api,
@@ -129,10 +128,6 @@ static const vscf_hash_stream_api_t hash_stream_api = {
     //  For interface 'hash_stream' MUST be equal to the 'vscf_api_tag_HASH_STREAM'.
     //
     vscf_api_tag_HASH_STREAM,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_SHA224,
     //
     //  Link to the inherited interface API 'hash info'.
     //
@@ -156,10 +151,6 @@ static const vscf_hash_stream_api_t hash_stream_api = {
 //
 static const vscf_impl_info_t info = {
     //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_SHA224,
-    //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
     //
@@ -178,16 +169,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_sha224_init(vscf_sha224_impl_t *sha224_impl) {
+vscf_sha224_init(vscf_sha224_t *sha224) {
 
-    VSCF_ASSERT_PTR(sha224_impl);
+    VSCF_ASSERT_PTR(sha224);
 
-    vscf_zeroize(sha224_impl, sizeof(vscf_sha224_impl_t));
+    vscf_zeroize(sha224, sizeof(vscf_sha224_t));
 
-    sha224_impl->info = &info;
-    sha224_impl->refcnt = 1;
+    sha224->info = &info;
+    sha224->refcnt = 1;
 
-    vscf_sha224_init_ctx(sha224_impl);
+    vscf_sha224_init_ctx(sha224);
 }
 
 //
@@ -195,38 +186,38 @@ vscf_sha224_init(vscf_sha224_impl_t *sha224_impl) {
 //  This is a reverse action of the function 'vscf_sha224_init()'.
 //
 VSCF_PUBLIC void
-vscf_sha224_cleanup(vscf_sha224_impl_t *sha224_impl) {
+vscf_sha224_cleanup(vscf_sha224_t *sha224) {
 
-    if (sha224_impl == NULL || sha224_impl->info == NULL) {
+    if (sha224 == NULL || sha224->info == NULL) {
         return;
     }
 
-    if (sha224_impl->refcnt == 0) {
+    if (sha224->refcnt == 0) {
         return;
     }
 
-    if (--sha224_impl->refcnt > 0) {
+    if (--sha224->refcnt > 0) {
         return;
     }
 
-    vscf_sha224_cleanup_ctx(sha224_impl);
+    vscf_sha224_cleanup_ctx(sha224);
 
-    vscf_zeroize(sha224_impl, sizeof(vscf_sha224_impl_t));
+    vscf_zeroize(sha224, sizeof(vscf_sha224_t));
 }
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_sha224_impl_t *
+VSCF_PUBLIC vscf_sha224_t *
 vscf_sha224_new(void) {
 
-    vscf_sha224_impl_t *sha224_impl = (vscf_sha224_impl_t *) vscf_alloc(sizeof (vscf_sha224_impl_t));
-    VSCF_ASSERT_ALLOC(sha224_impl);
+    vscf_sha224_t *sha224 = (vscf_sha224_t *) vscf_alloc(sizeof (vscf_sha224_t));
+    VSCF_ASSERT_ALLOC(sha224);
 
-    vscf_sha224_init(sha224_impl);
+    vscf_sha224_init(sha224);
 
-    return sha224_impl;
+    return sha224;
 }
 
 //
@@ -234,12 +225,12 @@ vscf_sha224_new(void) {
 //  This is a reverse action of the function 'vscf_sha224_new()'.
 //
 VSCF_PUBLIC void
-vscf_sha224_delete(vscf_sha224_impl_t *sha224_impl) {
+vscf_sha224_delete(vscf_sha224_t *sha224) {
 
-    vscf_sha224_cleanup(sha224_impl);
+    vscf_sha224_cleanup(sha224);
 
-    if (sha224_impl && (sha224_impl->refcnt == 0)) {
-        vscf_dealloc(sha224_impl);
+    if (sha224 && (sha224->refcnt == 0)) {
+        vscf_dealloc(sha224);
     }
 }
 
@@ -249,25 +240,25 @@ vscf_sha224_delete(vscf_sha224_impl_t *sha224_impl) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_sha224_destroy(vscf_sha224_impl_t **sha224_impl_ref) {
+vscf_sha224_destroy(vscf_sha224_t **sha224_ref) {
 
-    VSCF_ASSERT_PTR(sha224_impl_ref);
+    VSCF_ASSERT_PTR(sha224_ref);
 
-    vscf_sha224_impl_t *sha224_impl = *sha224_impl_ref;
-    *sha224_impl_ref = NULL;
+    vscf_sha224_t *sha224 = *sha224_ref;
+    *sha224_ref = NULL;
 
-    vscf_sha224_delete(sha224_impl);
+    vscf_sha224_delete(sha224);
 }
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_sha224_impl_t *
-vscf_sha224_copy(vscf_sha224_impl_t *sha224_impl) {
+VSCF_PUBLIC vscf_sha224_t *
+vscf_sha224_shallow_copy(vscf_sha224_t *sha224) {
 
     // Proxy to the parent implementation.
-    return (vscf_sha224_impl_t *)vscf_impl_copy((vscf_impl_t *)sha224_impl);
+    return (vscf_sha224_t *)vscf_impl_shallow_copy((vscf_impl_t *)sha224);
 }
 
 //
@@ -289,22 +280,22 @@ vscf_sha224_hash_api(void) {
 }
 
 //
-//  Return size of 'vscf_sha224_impl_t' type.
+//  Return size of 'vscf_sha224_t' type.
 //
 VSCF_PUBLIC size_t
 vscf_sha224_impl_size(void) {
 
-    return sizeof (vscf_sha224_impl_t);
+    return sizeof (vscf_sha224_t);
 }
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_sha224_impl(vscf_sha224_impl_t *sha224_impl) {
+vscf_sha224_impl(vscf_sha224_t *sha224) {
 
-    VSCF_ASSERT_PTR(sha224_impl);
-    return (vscf_impl_t *)(sha224_impl);
+    VSCF_ASSERT_PTR(sha224);
+    return (vscf_impl_t *)(sha224);
 }
 
 static const vscf_api_t *

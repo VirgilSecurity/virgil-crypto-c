@@ -1,0 +1,10 @@
+<class name="ratchet message key" context="public">
+
+    <require class="ratchet common" scope="public"/>
+
+    <property name="index" type="unsigned" size="4"/>
+    <property name="key" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_shared_key_length)"/>
+    </property>
+
+</class>

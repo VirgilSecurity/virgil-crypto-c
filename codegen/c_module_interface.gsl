@@ -123,15 +123,6 @@ function _L23_add_interface_api_type (interface, declaration, definition, destin
             .tag = "api_tag"
         endnew
 
-        new property to struct
-            . = "\
-            Implementation unique identifier, MUST be second in the structure.
-            "
-            .name = my.names.property_impl_tag
-            .enum = my.refs.class_impl_enum_tag
-            .tag = "impl_tag"
-        endnew
-
         for my.interface.inherit
             assert_attribute (inherit, "interface", my)
 
@@ -153,7 +144,7 @@ function _L23_add_interface_api_type (interface, declaration, definition, destin
         endfor
 
         for my.interface.constant
-            my.property = item_copy_to (constant, struct, "property")
+            my.property = component_clean_copy (constant, struct, "property")
             my.property.tag = "constant"
         endfor
     endnew
@@ -167,10 +158,10 @@ function _L23_add_interface_api_callbacks (interface, destination, meta)
     check_arguments (my, "interface, destination, meta", my)
 
     for my.interface.method
-        my.callback = item_copy_to (method, my.destination, "callback")
+        my.callback = component_clean_copy (method, my.destination, "callback")
         my.callback. = ("Callback. " + string_trim(my.callback.)) ?
 
-        if method.context = "impl"
+        if ! method.is_static
             component_create_argument_impl (my.callback, my.meta)
         endif
     endfor
@@ -207,12 +198,12 @@ function _L23_add_stateful_methods (interface, destination, meta)
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
-    for my.interface.method where context = "impl"
+    for my.interface.method where ! method.is_static
 
         my.api_name = my.names.c_interface_struct_api
         my.api_type = my.refs.c_interface_struct_api
 
-        my.proxy_method = item_copy_to (method, my.destination)
+        my.proxy_method = component_clean_copy (method, my.destination)
 
         component_create_argument_impl (my.proxy_method, my.meta)
 
@@ -223,7 +214,7 @@ function _L23_add_stateful_methods (interface, destination, meta)
 
         new code to my.proxy_method
             . = "\
-            const $(my.api_type:) *$(my.api_name:) = $(my.refs.c_interface_method_api) (.(_argument_impl));
+            const $(my.api_type:) *$(my.api_name:) = $(my.refs.c_interface_method_api)(.(_argument_impl));
             .(c_class_assert_macros_ptr) ($(my.api_name:));
 
             .(c_class_assert_macros_ptr) ($(my.callback:));
@@ -245,8 +236,8 @@ function _L23_add_stateless_methods (interface, destination, meta)
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
-    for my.interface.method where context = "api"
-        my.proxy_method = item_copy_to (method, my.destination)
+    for my.interface.method where method.is_static
+        my.proxy_method = component_clean_copy (method, my.destination)
 
         my.api_name = ".(_argument_$(my.names.c_interface_struct_api:))"
         my.api_type = my.refs.c_interface_struct_api
@@ -286,7 +277,7 @@ function _L23_add_stateless_getters (interface, destination, meta)
             interface_create_api_argument (my.interface, method, my.meta)
 
             new return to method
-                .type = "size"
+                .type = constant.type
             endnew
 
             my.api_name = ".(_argument_$(my.names.c_interface_struct_api:))"
@@ -316,6 +307,7 @@ function _L23_add_method_get_api (interface, destination, meta)
         . = "Return $(my.interface.name:) API, or NULL if it is not implemented."
 
         .name = my.names.method_api
+        .is_const = "1"
 
         component_create_argument_impl (method, my.meta)
 
@@ -331,7 +323,7 @@ function _L23_add_method_get_api (interface, destination, meta)
             .(c_class_assert_macros_ptr) (.(_argument_impl));
 
             const .(c_class_api_struct_api) *api = \
-                    .(c_class_impl_method_api) (.(_argument_impl), $(my.refs.c_interface_constant_tag));
+                    .(c_class_impl_method_api)(.(_argument_impl), $(my.refs.c_interface_constant_tag));
             return (const $(my.api_type:) *) api;
             "
         endnew
@@ -387,8 +379,9 @@ function _L23_add_method_check_api (interface, destination, meta)
         . = "Check if given object implements interface '$(my.interface.name:)'."
 
         .name = my.names.method_is_implemented
+        .is_const = "1"
 
-       component_create_argument_impl (method, my.meta)
+        component_create_argument_impl (method, my.meta)
 
         new return
             .type = "boolean"
@@ -400,7 +393,7 @@ function _L23_add_method_check_api (interface, destination, meta)
             . = "\
             .(c_class_assert_macros_ptr) (.(_argument_impl));
 
-            return .(c_class_impl_method_api) (.(_argument_impl), $(my.refs.c_interface_constant_tag)) != NULL;
+            return .(c_class_impl_method_api)(.(_argument_impl), $(my.refs.c_interface_constant_tag)) != NULL;
             "
         endnew
     endnew
@@ -441,39 +434,6 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-#   Add method that returns implementation unique identifier.
-# ---------------------------------------------------------------------------
-function _L23_add_method_get_impl_tag (interface, destination, meta)
-    check_arguments (my, "interface. destination, meta")
-
-    my.names = meta_names (my.meta)
-    my.refs = meta_refs (my.meta)
-
-    new method to my.destination
-        . = "Returns implementation unique identifier."
-        .name = my.names.property_impl_tag
-
-
-        interface_create_api_argument (my.interface, method, my.meta)
-
-        new return to method
-            .enum = my.refs.class_impl_enum_tag
-        endnew
-
-        my.api_name = ".(_argument_$(my.names.c_interface_struct_api:))"
-
-        new code to method
-            . = "\
-            .(c_class_assert_macros_ptr) ($(my.api_name:));
-
-            return $(my.api_name:)->$(my.refs.c_interface_property_impl_tag);
-            "
-        endnew
-    endnew
-endfunction
-
-
-# ---------------------------------------------------------------------------
 #   Create module with 'Interface Public API'.
 # ---------------------------------------------------------------------------
 function c_module_interface_create_module_public (interface, destination, meta)
@@ -492,10 +452,6 @@ function c_module_interface_create_module_public (interface, destination, meta)
 
         new require to module
             .module = my.names.module_library
-        endnew
-
-        new require
-            .module = my.names.module_error
         endnew
 
         new require to module
@@ -519,7 +475,7 @@ function c_module_interface_create_module_public (interface, destination, meta)
         endfor
 
         for my.interface.require
-            copy require to module
+            component_clean_copy (require, module)
         endfor
 
         my.enum_tag = c_module_api_find_enum_tag (my.destination, my.meta)
@@ -532,7 +488,6 @@ function c_module_interface_create_module_public (interface, destination, meta)
         _L23_add_method_get_inherited_api (my.interface, module, my.meta)
         _L23_add_method_check_api (my.interface, module, my.meta)
         _L23_add_method_get_api_tag (my.interface, module, my.meta)
-        _L23_add_method_get_impl_tag (my.interface, module, my.meta)
     endnew
 endfunction
 
@@ -558,10 +513,6 @@ function c_module_interface_create_module_api (interface, destination, meta)
             .module = my.names.module_library
         endnew
 
-        new require
-            .module = my.names.module_error
-        endnew
-
         new require to module
             .module = my.names.module_api
         endnew
@@ -577,7 +528,7 @@ function c_module_interface_create_module_api (interface, destination, meta)
         endfor
 
         for my.interface.require
-            copy require to module
+            component_clean_copy (require, module)
         endfor
 
         _L23_add_interface_api_type (my.interface, "external", "public", module, my.meta)

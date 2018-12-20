@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -52,8 +53,10 @@
 #include "vscf_sha224.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_sha224_impl.h"
+#include "vscf_sha224_defs.h"
 #include "vscf_sha224_internal.h"
+
+// clang-format on
 //  @end
 
 
@@ -77,11 +80,11 @@
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_sha224_init_ctx(vscf_sha224_impl_t *sha224_impl) {
+vscf_sha224_init_ctx(vscf_sha224_t *sha224) {
 
-    VSCF_ASSERT_PTR(sha224_impl);
+    VSCF_ASSERT_PTR(sha224);
 
-    mbedtls_sha256_init(&sha224_impl->hash_ctx);
+    mbedtls_sha256_init(&sha224->hash_ctx);
 }
 
 //
@@ -90,11 +93,20 @@ vscf_sha224_init_ctx(vscf_sha224_impl_t *sha224_impl) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_sha224_cleanup_ctx(vscf_sha224_impl_t *sha224_impl) {
+vscf_sha224_cleanup_ctx(vscf_sha224_t *sha224) {
 
-    VSCF_ASSERT_PTR(sha224_impl);
+    VSCF_ASSERT_PTR(sha224);
 
-    mbedtls_sha256_free(&sha224_impl->hash_ctx);
+    mbedtls_sha256_free(&sha224->hash_ctx);
+}
+
+//
+//  Return implemented hash algorithm type.
+//
+VSCF_PUBLIC vscf_hash_alg_t
+vscf_sha224_alg(void) {
+
+    return vscf_hash_alg_SHA224;
 }
 
 //
@@ -105,47 +117,47 @@ vscf_sha224_hash(vsc_data_t data, vsc_buffer_t *digest) {
 
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT(vsc_buffer_is_valid(digest));
-    VSCF_ASSERT(vsc_buffer_left(digest) >= vscf_sha224_DIGEST_LEN);
+    VSCF_ASSERT(vsc_buffer_unused_len(digest) >= vscf_sha224_DIGEST_LEN);
 
     const int is224 = 1;
-    mbedtls_sha256(data.bytes, data.len, vsc_buffer_ptr(digest), is224);
-    vsc_buffer_reserve(digest, vscf_sha224_DIGEST_LEN);
+    mbedtls_sha256(data.bytes, data.len, vsc_buffer_unused_bytes(digest), is224);
+    vsc_buffer_inc_used(digest, vscf_sha224_DIGEST_LEN);
 }
 
 //
 //  Start a new hashing.
 //
 VSCF_PUBLIC void
-vscf_sha224_start(vscf_sha224_impl_t *sha224_impl) {
+vscf_sha224_start(vscf_sha224_t *sha224) {
 
-    VSCF_ASSERT_PTR(sha224_impl);
+    VSCF_ASSERT_PTR(sha224);
 
     const int is224 = 1;
-    mbedtls_sha256_starts(&sha224_impl->hash_ctx, is224);
+    mbedtls_sha256_starts(&sha224->hash_ctx, is224);
 }
 
 //
 //  Add given data to the hash.
 //
 VSCF_PUBLIC void
-vscf_sha224_update(vscf_sha224_impl_t *sha224_impl, vsc_data_t data) {
+vscf_sha224_update(vscf_sha224_t *sha224, vsc_data_t data) {
 
-    VSCF_ASSERT_PTR(sha224_impl);
+    VSCF_ASSERT_PTR(sha224);
     VSCF_ASSERT(vsc_data_is_valid(data));
 
-    mbedtls_sha256_update(&sha224_impl->hash_ctx, data.bytes, data.len);
+    mbedtls_sha256_update(&sha224->hash_ctx, data.bytes, data.len);
 }
 
 //
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_sha224_finish(vscf_sha224_impl_t *sha224_impl, vsc_buffer_t *digest) {
+vscf_sha224_finish(vscf_sha224_t *sha224, vsc_buffer_t *digest) {
 
-    VSCF_ASSERT_PTR(sha224_impl);
+    VSCF_ASSERT_PTR(sha224);
     VSCF_ASSERT(vsc_buffer_is_valid(digest));
-    VSCF_ASSERT(vsc_buffer_left(digest) >= vscf_sha224_DIGEST_LEN);
+    VSCF_ASSERT(vsc_buffer_unused_len(digest) >= vscf_sha224_DIGEST_LEN);
 
-    mbedtls_sha256_finish(&sha224_impl->hash_ctx, vsc_buffer_ptr(digest));
-    vsc_buffer_reserve(digest, vscf_sha224_DIGEST_LEN);
+    mbedtls_sha256_finish(&sha224->hash_ctx, vsc_buffer_unused_bytes(digest));
+    vsc_buffer_inc_used(digest, vscf_sha224_DIGEST_LEN);
 }

@@ -1,0 +1,204 @@
+<class name="buffer" context="private">
+    Encapsulates fixed byte array with variable effective data length.
+
+
+    <property name="bytes_dealloc" callback=".(global_callback_dealloc)">
+        Function do deallocate underlying byte array.
+    </property>
+
+
+    <property name="bytes" type="byte" access="readwrite" is_reference="1">
+        Underlying byte array.
+    </property>
+
+
+    <property name="capacity" type="size">
+        Byte array capacity - total allocated bytes.
+    </property>
+
+
+    <property name="len" type="size">
+        Byte array length - actually used bytes from the beginning.
+    </property>
+
+
+    <property name="is secure" type="boolean">
+        Defines that buffer holds sensitive data that must be erased
+        in a secure manner.
+    </property>
+
+
+    <property name="is owner" type="boolean">
+        Defines that buffer is the owner of the underlying bytes.
+    </property>
+
+
+    <method name="is empty" is_const="1">
+        Returns true if buffer has no data written.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="equal" is_const="1">
+        Return true if buffers are equal.
+
+        <argument name="rhs" class="self" access="readonly"/>
+
+        <return type="boolean"/>
+    </method>
+
+
+    <constructor name="with capacity">
+        Allocate context and underlying byte array.
+
+        <argument name="capacity" type="size"/>
+    </constructor>
+
+    <constructor name="with data">
+        Create buffer with copied bytes from given data.
+
+        <argument name="data" class="data"/>
+    </constructor>
+
+    <method name="alloc">
+        Allocates inner buffer with a given capacity.
+        Precondition: buffer is initialized.
+        Precondition: buffer does not hold any bytes.
+        Postcondition: inner buffer is allocated.
+
+        <argument name="capacity" type="size"/>
+    </method>
+
+
+    <method name="use">
+        Use given data as output buffer.
+        Client side is responsible for data deallocation.
+        Precondition: buffer is initialized.
+        Precondition: buffer does not hold any bytes.
+
+        <argument name="bytes" type="byte" access="readwrite" is_reference="1"/>
+        <argument name="bytes len" type="size"/>
+    </method>
+
+
+    <method name="take">
+        Use given data as output buffer.
+        Buffer is responsible for data deallocation.
+        Precondition: buffer is initialized.
+        Precondition: buffer does not hold any bytes.
+
+        <argument name="bytes" type="byte" access="readwrite" is_reference="1"/>
+        <argument name="bytes len" type="size"/>
+        <argument name="dealloc" callback=".(global_callback_dealloc)"/>
+    </method>
+
+
+    <method name="make secure">
+        Tell buffer that it holds sensitive that must be erased
+        in a secure manner during destruction.
+    </method>
+
+
+    <method name="is full" is_const="1">
+        Returns true if buffer full.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="is valid" is_const="1">
+        Returns true if buffer is configured and has valid internal states.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="bytes" is_const="1">
+        Returns underlying buffer bytes.
+
+        <return type="byte" is_reference="1"/>
+    </method>
+
+    <method name="data" is_const="1">
+        Returns underlying buffer bytes as object.
+
+        <return class="data" is_reference="0" access="readwrite"/>
+    </method>
+
+
+    <method name="capacity" is_const="1">
+        Returns buffer capacity.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="len" is_const="1">
+        Returns buffer length - length of bytes actually used.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="unused len" is_const="1">
+        Returns length of the bytes that are not in use yet.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="begin">
+        Returns writable pointer to the buffer first element.
+
+        <return type="byte" access="readwrite" is_reference="1"/>
+    </method>
+
+
+    <method name="unused bytes">
+        Returns pointer to the first unused byte in the buffer.
+
+        <return type="byte" access="readwrite" is_reference="1"/>
+    </method>
+
+
+    <method name="inc used">
+        Increase used bytes by given length.
+
+        <argument name="len" type="size"/>
+    </method>
+
+
+    <method name="dec used">
+        Decrease used bytes by given length.
+
+        <argument name="len" type="size"/>
+    </method>
+
+
+    <method name="write str">
+        Copy null-terminated string to the buffer.
+
+        <argument name="str" type="string"/>
+    </method>
+
+
+    <method name="write data">
+        Copy data to the buffer.
+
+        <argument name="data" class="data"/>
+    </method>
+
+
+    <method name="reset">
+        Reset to the initial state.
+        After reset inner buffer can be re-used.
+
+    </method>
+
+
+    <method name="erase">
+        Zeroing buffer in secure manner.
+        And reset it to the initial state.
+    </method>
+</class>

@@ -33,6 +33,8 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
 #include "unity.h"
 #include "test_utils.h"
 
@@ -49,19 +51,30 @@
 
 
 // --------------------------------------------------------------------------
+//  Should have it to prevent linkage erros in MSVC.
+// --------------------------------------------------------------------------
+// clang-format off
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+// clang-format on
+
+
+// --------------------------------------------------------------------------
 // Test implementation of the interface 'kdf'.
 // --------------------------------------------------------------------------
 void
 test__derive__sha256_vector_1__success(void) {
 
-    vscf_kdf2_impl_t *kdf2_impl = vscf_kdf2_new();
+    vscf_kdf2_t *kdf2 = vscf_kdf2_new();
     vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_kdf2_VECTOR_1_KEY.len);
 
-    vscf_kdf2_take_hash(kdf2_impl, vscf_sha256_impl(vscf_sha256_new()));
+    vscf_kdf2_take_hash(kdf2, vscf_sha256_impl(vscf_sha256_new()));
 
-    vscf_kdf2_derive(kdf2_impl, test_kdf2_VECTOR_1_DATA, key, test_kdf2_VECTOR_1_KEY.len);
+    vscf_kdf2_derive(kdf2, test_kdf2_VECTOR_1_DATA, test_kdf2_VECTOR_1_KEY.len, key);
 
-    vscf_kdf2_destroy(&kdf2_impl);
+    vscf_kdf2_destroy(&kdf2);
 
     TEST_ASSERT_EQUAL(test_kdf2_VECTOR_1_KEY.len, vsc_buffer_len(key));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_kdf2_VECTOR_1_KEY.bytes, vsc_buffer_bytes(key), vsc_buffer_len(key));
@@ -72,14 +85,14 @@ test__derive__sha256_vector_1__success(void) {
 void
 test__derive__sha256_vector_2__success(void) {
 
-    vscf_kdf2_impl_t *kdf2_impl = vscf_kdf2_new();
+    vscf_kdf2_t *kdf2 = vscf_kdf2_new();
     vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_kdf2_VECTOR_2_KEY.len);
 
-    vscf_kdf2_take_hash(kdf2_impl, vscf_sha256_impl(vscf_sha256_new()));
+    vscf_kdf2_take_hash(kdf2, vscf_sha256_impl(vscf_sha256_new()));
 
-    vscf_kdf2_derive(kdf2_impl, test_kdf2_VECTOR_2_DATA, key, test_kdf2_VECTOR_2_KEY.len);
+    vscf_kdf2_derive(kdf2, test_kdf2_VECTOR_2_DATA, test_kdf2_VECTOR_2_KEY.len, key);
 
-    vscf_kdf2_destroy(&kdf2_impl);
+    vscf_kdf2_destroy(&kdf2);
 
     TEST_ASSERT_EQUAL(test_kdf2_VECTOR_2_KEY.len, vsc_buffer_len(key));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_kdf2_VECTOR_2_KEY.bytes, vsc_buffer_bytes(key), vsc_buffer_len(key));
@@ -90,14 +103,14 @@ test__derive__sha256_vector_2__success(void) {
 void
 test__derive__sha256_vector_3__success(void) {
 
-    vscf_kdf2_impl_t *kdf2_impl = vscf_kdf2_new();
+    vscf_kdf2_t *kdf2 = vscf_kdf2_new();
     vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_kdf2_VECTOR_3_KEY.len);
 
-    vscf_kdf2_take_hash(kdf2_impl, vscf_sha256_impl(vscf_sha256_new()));
+    vscf_kdf2_take_hash(kdf2, vscf_sha256_impl(vscf_sha256_new()));
 
-    vscf_kdf2_derive(kdf2_impl, test_kdf2_VECTOR_3_DATA, key, test_kdf2_VECTOR_3_KEY.len);
+    vscf_kdf2_derive(kdf2, test_kdf2_VECTOR_3_DATA, test_kdf2_VECTOR_3_KEY.len, key);
 
-    vscf_kdf2_destroy(&kdf2_impl);
+    vscf_kdf2_destroy(&kdf2);
 
     TEST_ASSERT_EQUAL(test_kdf2_VECTOR_3_KEY.len, vsc_buffer_len(key));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_kdf2_VECTOR_3_KEY.bytes, vsc_buffer_bytes(key), vsc_buffer_len(key));

@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -53,7 +54,7 @@
 #include "vscf_sha512_internal.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_sha512_impl.h"
+#include "vscf_sha512_defs.h"
 #include "vscf_hash_info.h"
 #include "vscf_hash_info_api.h"
 #include "vscf_hash.h"
@@ -62,6 +63,8 @@
 #include "vscf_hash_stream_api.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
+
+// clang-format on
 //  @end
 
 
@@ -84,9 +87,9 @@ static const vscf_hash_info_api_t hash_info_api = {
     //
     vscf_api_tag_HASH_INFO,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
+    //  Return implemented hash algorithm type.
     //
-    vscf_impl_tag_SHA512,
+    (vscf_hash_info_api_alg_fn)vscf_sha512_alg,
     //
     //  Length of the digest (hashing output) in bytes.
     //
@@ -107,10 +110,6 @@ static const vscf_hash_api_t hash_api = {
     //
     vscf_api_tag_HASH,
     //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_SHA512,
-    //
     //  Link to the inherited interface API 'hash info'.
     //
     &hash_info_api,
@@ -129,10 +128,6 @@ static const vscf_hash_stream_api_t hash_stream_api = {
     //  For interface 'hash_stream' MUST be equal to the 'vscf_api_tag_HASH_STREAM'.
     //
     vscf_api_tag_HASH_STREAM,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_SHA512,
     //
     //  Link to the inherited interface API 'hash info'.
     //
@@ -156,10 +151,6 @@ static const vscf_hash_stream_api_t hash_stream_api = {
 //
 static const vscf_impl_info_t info = {
     //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_SHA512,
-    //
     //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
     //  MUST be second in the structure.
     //
@@ -178,16 +169,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_sha512_init(vscf_sha512_impl_t *sha512_impl) {
+vscf_sha512_init(vscf_sha512_t *sha512) {
 
-    VSCF_ASSERT_PTR(sha512_impl);
+    VSCF_ASSERT_PTR(sha512);
 
-    vscf_zeroize(sha512_impl, sizeof(vscf_sha512_impl_t));
+    vscf_zeroize(sha512, sizeof(vscf_sha512_t));
 
-    sha512_impl->info = &info;
-    sha512_impl->refcnt = 1;
+    sha512->info = &info;
+    sha512->refcnt = 1;
 
-    vscf_sha512_init_ctx(sha512_impl);
+    vscf_sha512_init_ctx(sha512);
 }
 
 //
@@ -195,38 +186,38 @@ vscf_sha512_init(vscf_sha512_impl_t *sha512_impl) {
 //  This is a reverse action of the function 'vscf_sha512_init()'.
 //
 VSCF_PUBLIC void
-vscf_sha512_cleanup(vscf_sha512_impl_t *sha512_impl) {
+vscf_sha512_cleanup(vscf_sha512_t *sha512) {
 
-    if (sha512_impl == NULL || sha512_impl->info == NULL) {
+    if (sha512 == NULL || sha512->info == NULL) {
         return;
     }
 
-    if (sha512_impl->refcnt == 0) {
+    if (sha512->refcnt == 0) {
         return;
     }
 
-    if (--sha512_impl->refcnt > 0) {
+    if (--sha512->refcnt > 0) {
         return;
     }
 
-    vscf_sha512_cleanup_ctx(sha512_impl);
+    vscf_sha512_cleanup_ctx(sha512);
 
-    vscf_zeroize(sha512_impl, sizeof(vscf_sha512_impl_t));
+    vscf_zeroize(sha512, sizeof(vscf_sha512_t));
 }
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_sha512_impl_t *
+VSCF_PUBLIC vscf_sha512_t *
 vscf_sha512_new(void) {
 
-    vscf_sha512_impl_t *sha512_impl = (vscf_sha512_impl_t *) vscf_alloc(sizeof (vscf_sha512_impl_t));
-    VSCF_ASSERT_ALLOC(sha512_impl);
+    vscf_sha512_t *sha512 = (vscf_sha512_t *) vscf_alloc(sizeof (vscf_sha512_t));
+    VSCF_ASSERT_ALLOC(sha512);
 
-    vscf_sha512_init(sha512_impl);
+    vscf_sha512_init(sha512);
 
-    return sha512_impl;
+    return sha512;
 }
 
 //
@@ -234,12 +225,12 @@ vscf_sha512_new(void) {
 //  This is a reverse action of the function 'vscf_sha512_new()'.
 //
 VSCF_PUBLIC void
-vscf_sha512_delete(vscf_sha512_impl_t *sha512_impl) {
+vscf_sha512_delete(vscf_sha512_t *sha512) {
 
-    vscf_sha512_cleanup(sha512_impl);
+    vscf_sha512_cleanup(sha512);
 
-    if (sha512_impl && (sha512_impl->refcnt == 0)) {
-        vscf_dealloc(sha512_impl);
+    if (sha512 && (sha512->refcnt == 0)) {
+        vscf_dealloc(sha512);
     }
 }
 
@@ -249,25 +240,25 @@ vscf_sha512_delete(vscf_sha512_impl_t *sha512_impl) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_sha512_destroy(vscf_sha512_impl_t **sha512_impl_ref) {
+vscf_sha512_destroy(vscf_sha512_t **sha512_ref) {
 
-    VSCF_ASSERT_PTR(sha512_impl_ref);
+    VSCF_ASSERT_PTR(sha512_ref);
 
-    vscf_sha512_impl_t *sha512_impl = *sha512_impl_ref;
-    *sha512_impl_ref = NULL;
+    vscf_sha512_t *sha512 = *sha512_ref;
+    *sha512_ref = NULL;
 
-    vscf_sha512_delete(sha512_impl);
+    vscf_sha512_delete(sha512);
 }
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_sha512_impl_t *
-vscf_sha512_copy(vscf_sha512_impl_t *sha512_impl) {
+VSCF_PUBLIC vscf_sha512_t *
+vscf_sha512_shallow_copy(vscf_sha512_t *sha512) {
 
     // Proxy to the parent implementation.
-    return (vscf_sha512_impl_t *)vscf_impl_copy((vscf_impl_t *)sha512_impl);
+    return (vscf_sha512_t *)vscf_impl_shallow_copy((vscf_impl_t *)sha512);
 }
 
 //
@@ -289,22 +280,22 @@ vscf_sha512_hash_api(void) {
 }
 
 //
-//  Return size of 'vscf_sha512_impl_t' type.
+//  Return size of 'vscf_sha512_t' type.
 //
 VSCF_PUBLIC size_t
 vscf_sha512_impl_size(void) {
 
-    return sizeof (vscf_sha512_impl_t);
+    return sizeof (vscf_sha512_t);
 }
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_sha512_impl(vscf_sha512_impl_t *sha512_impl) {
+vscf_sha512_impl(vscf_sha512_t *sha512) {
 
-    VSCF_ASSERT_PTR(sha512_impl);
-    return (vscf_impl_t *)(sha512_impl);
+    VSCF_ASSERT_PTR(sha512);
+    return (vscf_impl_t *)(sha512);
 }
 
 static const vscf_api_t *

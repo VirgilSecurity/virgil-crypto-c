@@ -1,0 +1,77 @@
+<implementor name="mbedtls pk" is_default="1">
+    Asymmetric cryptography implementation with ARM mbedTLS.
+
+    <implementation name="rsa public key">
+        <require library="mbedtls" feature="RSA C"/>
+        <require library="mbedtls" feature="BIGNUM C"/>
+        <require library="mbedtls" feature="PKCS1 V21"/>
+
+        <require enum="asn1 tag"/>
+        <require class="mbedtls bignum asn1 writer"/>
+        <require class="mbedtls bignum asn1 reader"/>
+        <require module="mbedtls bridge random"/>
+        <require class="mbedtls md"/>
+
+        <context>
+            <require header="mbedtls/rsa.h"/>
+            <property name="rsa ctx" class="mbedtls_rsa_context" library="mbedtls" access="readwrite" is_reference="0"/>
+        </context>
+
+        <dependency name="hash" api="hash" access="readonly"/>
+        <dependency name="random" interface="random"/>
+        <dependency name="asn1rd" interface="asn1 reader"/>
+        <dependency name="asn1wr" interface="asn1 writer"/>
+
+        <interface name="key"/>
+        <interface name="encrypt"/>
+        <interface name="verify"/>
+        <interface name="public key">
+            <constant name="can import public key" value="true"/>
+            <constant name="can export public key" value="true"/>
+        </interface>
+    </implementation>
+
+
+    <implementation name="rsa private key">
+        <require library="mbedtls" feature="RSA C"/>
+        <require library="mbedtls" feature="BIGNUM C"/>
+        <require library="mbedtls" feature="PKCS1 V21"/>
+
+        <require enum="asn1 tag"/>
+        <require class="mbedtls bignum asn1 writer"/>
+        <require class="mbedtls bignum asn1 reader"/>
+        <require module="mbedtls bridge random"/>
+        <require class="mbedtls md"/>
+        <require module="rsa public key defs"/>
+
+        <require header="mbedtls/bignum.h"/>
+
+        <context>
+            <require header="mbedtls/rsa.h"/>
+            <property name="rsa ctx" class="mbedtls_rsa_context" library="mbedtls" access="readwrite" is_reference="0"/>
+            <property name="gen bitlen" type="size"/>
+            <property name="gen exponent" type="size"/>
+        </context>
+
+        <dependency name="hash" api="hash" access="readonly"/>
+        <dependency name="random" interface="random"/>
+        <dependency name="asn1rd" interface="asn1 reader"/>
+        <dependency name="asn1wr" interface="asn1 writer"/>
+
+        <method name="set keygen params" visibility="public" declaration="public">
+            Setup parameters that is used during key generation.
+
+            <argument name="bitlen" type="size"/>
+            <argument name="exponent" type="size"/>
+        </method>
+
+        <interface name="key"/>
+        <interface name="generate key"/>
+        <interface name="decrypt"/>
+        <interface name="sign"/>
+        <interface name="private key">
+            <constant name="can import private key" value="true"/>
+            <constant name="can export private key" value="true"/>
+        </interface>
+    </implementation>
+</implementor>

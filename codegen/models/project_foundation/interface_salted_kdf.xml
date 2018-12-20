@@ -1,0 +1,16 @@
+<interface name="salted kdf">
+    Provides interface to the key derivation function (KDF) algorithms
+    that use salt and teration count.
+
+    <method name="derive">
+        Derive key of the requested length from the given data, salt and info.
+
+        <argument name="data" class="data"/>
+        <argument name="salt" class="data"/>
+        <argument name="info" class="data"/>
+        <argument name="key" class="buffer">
+            <length argument="key len"/>
+        </argument>
+        <argument name="key len" type="size" />
+    </method>
+</interface>

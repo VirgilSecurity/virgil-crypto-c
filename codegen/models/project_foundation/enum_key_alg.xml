@@ -1,0 +1,7 @@
+<enum name="key alg" definition="public">
+    Defines enumeration of possible asymmetric key algorithms.
+
+    <constant name="none" value="0"/>
+    <constant name="rsa"/>
+    <constant name="ed25519"/>
+</enum>

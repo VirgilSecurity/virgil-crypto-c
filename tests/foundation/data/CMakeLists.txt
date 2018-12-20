@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(test_data VERSION 0.1.0 LANGUAGES C)
+project(test_data_foundation VERSION ${virgil_crypto_c_foundation_tests_VERSION} LANGUAGES C)
 
 add_library(test_data_foundation "")
 target_sources(test_data_foundation
@@ -46,10 +46,15 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_kdf1.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_kdf2.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_rsa.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ed25519.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_sha224.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_sha256.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_sha384.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_sha512.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_ctr_drbg.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_entropy_accumulator.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_base64.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_pem.h"
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_aes256_gcm.c"
@@ -59,10 +64,15 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_kdf1.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_kdf2.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_rsa.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ed25519.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_sha224.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_sha256.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_sha384.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_sha512.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_ctr_drbg.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_entropy_accumulator.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_base64.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_pem.c"
         )
 
 target_include_directories(test_data_foundation

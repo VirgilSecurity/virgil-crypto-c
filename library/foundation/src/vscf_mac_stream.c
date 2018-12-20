@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -52,6 +53,8 @@
 #include "vscf_mac_stream.h"
 #include "vscf_assert.h"
 #include "vscf_mac_stream_api.h"
+
+// clang-format on
 //  @end
 
 
@@ -67,7 +70,7 @@
 VSCF_PUBLIC void
 vscf_mac_stream_start(vscf_impl_t *impl, vsc_data_t key) {
 
-    const vscf_mac_stream_api_t *mac_stream_api = vscf_mac_stream_api (impl);
+    const vscf_mac_stream_api_t *mac_stream_api = vscf_mac_stream_api(impl);
     VSCF_ASSERT_PTR (mac_stream_api);
 
     VSCF_ASSERT_PTR (mac_stream_api->start_cb);
@@ -80,7 +83,7 @@ vscf_mac_stream_start(vscf_impl_t *impl, vsc_data_t key) {
 VSCF_PUBLIC void
 vscf_mac_stream_update(vscf_impl_t *impl, vsc_data_t data) {
 
-    const vscf_mac_stream_api_t *mac_stream_api = vscf_mac_stream_api (impl);
+    const vscf_mac_stream_api_t *mac_stream_api = vscf_mac_stream_api(impl);
     VSCF_ASSERT_PTR (mac_stream_api);
 
     VSCF_ASSERT_PTR (mac_stream_api->update_cb);
@@ -93,7 +96,7 @@ vscf_mac_stream_update(vscf_impl_t *impl, vsc_data_t data) {
 VSCF_PUBLIC void
 vscf_mac_stream_finish(vscf_impl_t *impl, vsc_buffer_t *mac) {
 
-    const vscf_mac_stream_api_t *mac_stream_api = vscf_mac_stream_api (impl);
+    const vscf_mac_stream_api_t *mac_stream_api = vscf_mac_stream_api(impl);
     VSCF_ASSERT_PTR (mac_stream_api);
 
     VSCF_ASSERT_PTR (mac_stream_api->finish_cb);
@@ -107,7 +110,7 @@ vscf_mac_stream_finish(vscf_impl_t *impl, vsc_buffer_t *mac) {
 VSCF_PUBLIC void
 vscf_mac_stream_reset(vscf_impl_t *impl) {
 
-    const vscf_mac_stream_api_t *mac_stream_api = vscf_mac_stream_api (impl);
+    const vscf_mac_stream_api_t *mac_stream_api = vscf_mac_stream_api(impl);
     VSCF_ASSERT_PTR (mac_stream_api);
 
     VSCF_ASSERT_PTR (mac_stream_api->reset_cb);
@@ -118,11 +121,11 @@ vscf_mac_stream_reset(vscf_impl_t *impl) {
 //  Return mac stream API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_mac_stream_api_t *
-vscf_mac_stream_api(vscf_impl_t *impl) {
+vscf_mac_stream_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_MAC_STREAM);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_MAC_STREAM);
     return (const vscf_mac_stream_api_t *) api;
 }
 
@@ -141,11 +144,11 @@ vscf_mac_stream_mac_info_api(const vscf_mac_stream_api_t *mac_stream_api) {
 //  Check if given object implements interface 'mac stream'.
 //
 VSCF_PUBLIC bool
-vscf_mac_stream_is_implemented(vscf_impl_t *impl) {
+vscf_mac_stream_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_MAC_STREAM) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_MAC_STREAM) != NULL;
 }
 
 //
@@ -157,17 +160,6 @@ vscf_mac_stream_api_tag(const vscf_mac_stream_api_t *mac_stream_api) {
     VSCF_ASSERT_PTR (mac_stream_api);
 
     return mac_stream_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_mac_stream_impl_tag(const vscf_mac_stream_api_t *mac_stream_api) {
-
-    VSCF_ASSERT_PTR (mac_stream_api);
-
-    return mac_stream_api->impl_tag;
 }
 
 

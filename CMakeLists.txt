@@ -34,7 +34,14 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_c_top VERSION 0.1.0 LANGUAGES C)
+project(virgil_crypto VERSION 0.1.0 LANGUAGES C)
+
+
+# ---------------------------------------------------------------------------
+#   Forced build options
+# ---------------------------------------------------------------------------
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 
 # ---------------------------------------------------------------------------
 #   Helper modules
@@ -42,6 +49,22 @@ project(virgil_crypto_c_top VERSION 0.1.0 LANGUAGES C)
 include("cmake/clangformat.cmake")
 include("cmake/helpers.cmake")
 include("cmake/TransitiveArgs.cmake")
+include("cmake/TransitiveToolchainArgs.cmake")
+include("cmake/protobuf.cmake")
+
+
+# ---------------------------------------------------------------------------
+#   Version options
+# ---------------------------------------------------------------------------
+set(VIRGIL_CRYPTO_VERSION_LABEL "" CACHE STRING "Version label, i.e. beta, rc1.")
+
+file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "${virgil_crypto_VERSION}")
+
+if(VIRGIL_CRYPTO_VERSION_LABEL)
+    file(APPEND "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "-${VIRGIL_CRYPTO_VERSION_LABEL}")
+endif()
+
+file(APPEND "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "\n")
 
 
 # ---------------------------------------------------------------------------
@@ -49,10 +72,18 @@ include("cmake/TransitiveArgs.cmake")
 # ---------------------------------------------------------------------------
 
 #
-# Test & bench
+# Global
 #
-option(ENABLE_TESTING "On/Off library integration tests." ON)
-option(ENABLE_BENCHMARKS "On/Off build library benchmarks." ON)
+option(BUILD_SHARED_LIBS "On/Off build shared libraries." OFF)
+
+#
+# Test
+#
+option(ENABLE_TESTING "On/Off integration tests." ON)
+option(ENABLE_PROFILING "On/Off GProf compilation options." OFF)
+
+option(VIRGIL_C_TESTING "On/Off C library integration tests." ON)
+option(VIRGIL_PHP_TESTING "On/Off PHP wrapper integration tests." ON)
 
 #
 # Libraries
@@ -61,12 +92,15 @@ option(VIRGIL_LIB_COMMON "Build 'common' library" ON)
 option(VIRGIL_LIB_FOUNDATION "Build 'foundation' library" ON)
 option(VIRGIL_LIB_PYTHIA "Build 'pythia' library" ON)
 option(VIRGIL_LIB_ED25519 "Build 'ed25519' library" ON)
+option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" OFF)
+option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
 
 #
 # Wrappers
 #
-option(VIRGIL_WRAP_ALL "Build all available wrappers on the given platform" ON)
+option(VIRGIL_WRAP_ALL "Build all available wrappers on the given platform" OFF)
 option(VIRGIL_WRAP_GO "Build 'Golang' wrapper" OFF)
+option(VIRGIL_WRAP_PHP "Build 'PHP' wrapper" OFF)
 
 
 # ---------------------------------------------------------------------------
@@ -90,7 +124,9 @@ option(VIRGIL_INSTALL_DEPS_CMAKE "Install dependencies CMake configuration file"
 #
 # Wrappers
 #
-option(VIRGIL_INSTALL_WRAP_STANDALONE "Install each wrapper to separate directory" ON)
+option(VIRGIL_INSTALL_WRAP_SRCS "Install wrapper sources" ON)
+option(VIRGIL_INSTALL_WRAP_LIBS "Install wrapper libraries" ON)
+option(VIRGIL_INSTALL_WRAP_DEPS "Install wrapper dependencies" ON)
 
 
 # ---------------------------------------------------------------------------
@@ -102,11 +138,6 @@ option(VIRGIL_INSTALL_WRAP_STANDALONE "Install each wrapper to separate director
 #
 include(GNUInstallDirs)
 
-#
-# Define installation options for wrappers.
-#
-set(VIRGIL_INSTALL_WRAP_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Path where available wrappers will be installed")
-
 
 # ---------------------------------------------------------------------------
 #   Dependencies / thirdparty libraries
@@ -116,22 +147,27 @@ set(VIRGIL_INSTALL_WRAP_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Path where 
 # MbedTLS
 #
 if(VIRGIL_LIB_FOUNDATION OR VIRGIL_LIB_PYTHIA)
-    add_subdirectory ("thirdparty/mbedtls")
+    add_subdirectory("thirdparty/mbedtls")
 endif()
 
 #
 # Pythia
 #
 if(VIRGIL_LIB_PYTHIA)
-    add_subdirectory ("thirdparty/pythia")
+    add_subdirectory("thirdparty/pythia")
 endif()
 
 #
 # Ed25519
 #
 if(VIRGIL_LIB_ED25519)
-    add_subdirectory ("thirdparty/ed25519")
+    add_subdirectory("thirdparty/ed25519")
 endif()
+
+#
+# Protobuf
+#
+add_subdirectory("thirdparty/nanopb")
 
 
 # ---------------------------------------------------------------------------
@@ -139,23 +175,23 @@ endif()
 # ---------------------------------------------------------------------------
 
 if(VIRGIL_LIB_COMMON)
-    add_subdirectory ("library/common")
+    add_subdirectory("library/common")
 endif()
 
 if(VIRGIL_LIB_FOUNDATION)
-    add_subdirectory ("library/foundation")
+    add_subdirectory("library/foundation")
 endif()
 
 if(VIRGIL_LIB_PYTHIA)
-    add_subdirectory ("library/pythia")
+    add_subdirectory("library/pythia")
 endif()
 
+if(VIRGIL_LIB_RATCHET)
+    add_subdirectory("library/ratchet")
+endif()
 
-# ---------------------------------------------------------------------------
-#   Library wrappers
-# ---------------------------------------------------------------------------
-if(VIRGIL_WRAP_ALL OR VIRGIL_WRAP_GO)
-    add_subdirectory ("wrappers/go")
+if(VIRGIL_LIB_PHE)
+    add_subdirectory("library/phe")
 endif()
 
 
@@ -164,48 +200,113 @@ endif()
 # ---------------------------------------------------------------------------
 if(ENABLE_TESTING)
     enable_testing()
+endif()
+
+if(VIRGIL_C_TESTING AND NOT CMAKE_CROSSCOMPILING)
     add_subdirectory(tests)
 endif()
 
+# ---------------------------------------------------------------------------
+#   Library wrappers
+# ---------------------------------------------------------------------------
+if(VIRGIL_WRAP_ALL OR VIRGIL_WRAP_GO)
+    add_subdirectory("wrappers/go")
+endif()
 
-# ---------------------------------------------------------------------------
-#   Benchmarks
-# ---------------------------------------------------------------------------
-if(ENABLE_BENCHMARKS)
-    add_subdirectory(benchmarks)
+if(VIRGIL_WRAP_ALL OR VIRGIL_WRAP_PHP)
+    add_subdirectory("wrappers/php")
 endif()
 
 
 # ---------------------------------------------------------------------------
 #   Code line stats
 # ---------------------------------------------------------------------------
-find_program (CLOC_EXECUTABLE cloc)
+find_program(CLOC_EXECUTABLE cloc)
 
 if(CLOC_EXECUTABLE)
     add_custom_target(cloc-common
             COMMAND ${CLOC_EXECUTABLE}
-                "${CMAKE_CURRENT_LIST_DIR}/library/common/include/virgil"
-                "${CMAKE_CURRENT_LIST_DIR}/library/common/include/virgil/private"
+                "${CMAKE_CURRENT_LIST_DIR}/library/common/include/virgil/crypto/common"
+                "${CMAKE_CURRENT_LIST_DIR}/library/common/include/virgil/crypto/common/private"
                 "${CMAKE_CURRENT_LIST_DIR}/library/common/src"
             COMMENT "Calculate lines of the 'common' library..."
             )
 
     add_custom_target(cloc-foundation
             COMMAND ${CLOC_EXECUTABLE}
-                "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil"
-                "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil/private"
+                "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil/crypto/foundation"
+                "${CMAKE_CURRENT_LIST_DIR}/library/foundation/include/virgil/crypto/foundation/private"
                 "${CMAKE_CURRENT_LIST_DIR}/library/foundation/src"
             COMMENT "Calculate lines of the 'foundation' library..."
             )
 
     add_custom_target(cloc-pythia
             COMMAND ${CLOC_EXECUTABLE}
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil"
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/private"
+                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia"
+                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia/private"
+                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/src"
+            COMMENT "Calculate lines of the 'pythia' library..."
+            )
+
+    add_custom_target(cloc-ratchet
+            COMMAND ${CLOC_EXECUTABLE}
+                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia"
+                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia/private"
                 "${CMAKE_CURRENT_LIST_DIR}/library/pythia/src"
             COMMENT "Calculate lines of the 'pythia' library..."
             )
 
     add_custom_target(cloc)
-    add_dependencies(cloc cloc-common cloc-foundation cloc-pythia)
+    add_dependencies(cloc cloc-common cloc-foundation cloc-pythia cloc-ratchet)
 endif()
+
+
+# ---------------------------------------------------------------------------
+#   Configure CPack
+# ---------------------------------------------------------------------------
+
+#
+#  Use [MAJOR].[MINOR] package version if it is not a cross-compiling build
+#
+if(CMAKE_CROSSCOMPILING)
+    set(SYSTEM_VERSION_SHORT ${CMAKE_SYSTEM_VERSION})
+else()
+    string(REGEX REPLACE "([0-9]+\\.[0-9]+).*" "\\1" SYSTEM_VERSION_SHORT "${CMAKE_SYSTEM_VERSION}")
+endif()
+
+set(VIRGIL_PACKAGE_LANGUAGE "C" CACHE STRING "[CPack] Package language name (used in the archive name)")
+set(VIRGIL_PACKAGE_LANGUAGE_VERSION "" CACHE STRING "[CPack] Package language version (used in the archive name)")
+set(VIRGIL_PACKAGE_PLATFORM "${CMAKE_SYSTEM_NAME}" CACHE STRING "[CPack] Platform name (used in the archive name)")
+set(VIRGIL_PACKAGE_PLATFORM_VERSION "${SYSTEM_VERSION_SHORT}" CACHE STRING "[CPack] Platform version (used in the archive name)")
+set(VIRGIL_PACKAGE_PLATFORM_ARCH "" CACHE STRING "[CPack] Platform architecture (used in the archive name)")
+
+#
+#  Define package name in the format "library-language[-platform]", where
+#     library = name-version
+#     language = name[-version]
+#     platform = name[-version][-arch]
+#
+set(VIRGIL_PACKAGE_NAME "virgil-crypto-c")
+list(APPEND VIRGIL_PACKAGE_NAME ${virgil_crypto_VERSION})
+list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_LANGUAGE})
+list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_LANGUAGE_VERSION})
+list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_PLATFORM})
+list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_PLATFORM_VERSION})
+list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_PLATFORM_ARCH})
+
+string(REPLACE ";" "-" VIRGIL_PACKAGE_NAME "${VIRGIL_PACKAGE_NAME}")
+string(TOLOWER "${VIRGIL_PACKAGE_NAME}" VIRGIL_PACKAGE_NAME)
+
+
+if(WIN32)
+    set(CPACK_GENERATOR ZIP)
+else()
+    set(CPACK_GENERATOR TGZ)
+endif()
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Virgil Security Crypto library")
+set(CPACK_PACKAGE_VENDOR "Virgil Security, Inc.")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_LIST_DIR}/LICENSE")
+set(CPACK_PACKAGE_FILE_NAME "${VIRGIL_PACKAGE_NAME}")
+set(CPACK_OUTPUT_FILE_PREFIX "packages" CACHE STRING "Output directory for CPack archives")
+
+include (CPack)

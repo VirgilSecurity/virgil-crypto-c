@@ -90,9 +90,18 @@ function class_resolve_attr_context (class, project)
         my.class_dump = class_dump (my.class)
 
         echo_fatal ("Class attribute context is explicitly 'none'," + \
-                    " when context's 'property' defained as well." + \
+                    " when context's 'property' defined as well." + \
                     "Expected {$(my.valid_contexts)}", my)
     endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: class.is_value_type.
+# ---------------------------------------------------------------------------
+function class_resolve_attr_is_value_type (class, project)
+    check_arguments (my, "class, project", my)
+
+    my.class.is_value_type ?= "0"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -132,14 +141,69 @@ function class_resolve_attr_c_prefix (class, project)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve attribute: class.c_prefix.
+#   Resolve attribute: class.uid.
 # ---------------------------------------------------------------------------
-function class_resolve_attr_project (class, project)
+function class_resolve_attr_uid (class, project)
     check_arguments (my, "class, project", my)
 
-    my.class.project ?= my.project.name
+    my.class.uid = make_id ("class", my.class.name)
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Resolve entity: property.
+# ---------------------------------------------------------------------------
+function class_resolve_property (property, class)
+    check_arguments (my, "property, class", my)
+
+    my.property.access ?= "readwrite"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve entity: method.
+# ---------------------------------------------------------------------------
+function class_resolve_method (method, class)
+    check_arguments (my, "method, class", my)
+
+    if string_equal (my.class.context, "none")
+        my.method.is_static = "1"
+
+        for my.method.argument
+            for argument.length
+                length.class ?= "self"
+            endfor
+        endfor
+    endif
+
+    for my.method.argument where string_equal (0.class ?, "self")
+        .name ?= "ctx"
+        .access ?= "readwrite"
+        .class = my.class.name
+    endfor
+
+    for my.method.return where string_equal (0.class ?, "self")
+        .access ?= "disown"
+        .class = my.class.name
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve entity: constructor.
+# ---------------------------------------------------------------------------
+function class_resolve_constructor (constructor, class)
+    check_arguments (my, "constructor, class", my)
+
+    my.constructor.is_static = "1"
+    component_resolve_method (my.constructor, my.class)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve entity: require.
+# ---------------------------------------------------------------------------
+function class_resolve_require (require, class)
+    check_arguments (my, "require, class", my)
+
+    my.require.scope ?= "private"
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Resolve component: class.
@@ -152,17 +216,31 @@ function class_resolve (class, project)
     assert_attribute (my.class, "name", my)
 
     component_resolve_attr_scope (my.class)
+    component_resolve_attr_visibility (my.class, my.project)
     class_resolve_attr_context (my.class, my.project)
+    class_resolve_attr_is_value_type (my.class, my.project)
     class_resolve_attr_lifecycle (my.class, my.project)
-    class_resolve_attr_of_class (my.class, my.project)
     class_resolve_attr_c_prefix (my.class, my.project)
-    class_resolve_attr_project (my.class, my.project)
+    class_resolve_attr_uid (my.class, my.project)
 
-    for my.class.dependency
-        component_resolve_dependency (dependency, my.class)
+    for my.class.constructor
+        class_resolve_constructor (constructor, my.class)
     endfor
-endfunction
 
+    for my.class.method
+        class_resolve_method (method, my.class)
+    endfor
+
+    for my.class.property
+        class_resolve_property (property, my.class)
+    endfor
+
+    for my.class.require
+        class_resolve_require (require, my.class)
+    endfor
+
+    foreach_component_resolve (my.class)
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Resolve all 'class' entries within 'source'
@@ -189,13 +267,13 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create 'feature' for given 'class'.
 # ---------------------------------------------------------------------------
-function class_create_feature (class, destination)
-    check_arguments (my, "class, destination", my)
+function class_create_feature (class, project, destination)
+    check_arguments (my, "class, project, destination", my)
 
     new feature to my.destination
         . = "Enable class '$(my.class.name)'."
         .name = my.class.name
-        .project = my.class.project
+        .project = my.project.name
 
         for my.class.require where defined (0.feature)
             copy require to feature
@@ -218,11 +296,11 @@ endfunction
 # ---------------------------------------------------------------------------
 #   For each 'class' within 'source' create 'feature'.
 # ---------------------------------------------------------------------------
-function foreach_class_create_feature (source, destination)
-    check_arguments (my, "source, destination", my)
+function foreach_class_create_feature (source, project, destination)
+    check_arguments (my, "source, project, destination", my)
 
     for my.source.class
-        class_create_feature (class, my.destination)
+        class_create_feature (class, project, my.destination)
     endfor
 endfunction
 

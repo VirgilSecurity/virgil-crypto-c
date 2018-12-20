@@ -33,6 +33,8 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
 #include "unity.h"
 #include "test_utils.h"
 
@@ -47,16 +49,27 @@
 
 
 // --------------------------------------------------------------------------
+//  Should have it to prevent linkage erros in MSVC.
+// --------------------------------------------------------------------------
+// clang-format off
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+// clang-format on
+
+
+// --------------------------------------------------------------------------
 // Test implementation helpers & lifecycle functions.
 // --------------------------------------------------------------------------
 void
 test__impl__valid_arg__returns_not_null(void) {
-    vscf_hmac256_impl_t *hmac256_impl = vscf_hmac256_new();
-    vscf_impl_t *impl = vscf_hmac256_impl(hmac256_impl);
+    vscf_hmac256_t *hmac256 = vscf_hmac256_new();
+    vscf_impl_t *impl = vscf_hmac256_impl(hmac256);
 
     TEST_ASSERT_NOT_NULL(impl);
 
-    vscf_hmac256_destroy(&hmac256_impl);
+    vscf_hmac256_destroy(&hmac256);
 }
 
 void
@@ -138,55 +151,55 @@ test__hmac__vector_3__success(void) {
 void
 test__hmac_stream__vector_1_success(void) {
 
-    vscf_hmac256_impl_t *hmac256_impl = vscf_hmac256_new();
+    vscf_hmac256_t *hmac256 = vscf_hmac256_new();
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hmac256_DIGEST_LEN);
 
-    vscf_hmac256_reset(hmac256_impl);
-    vscf_hmac256_start(hmac256_impl, test_hmac256_KEY_1_INPUT);
-    vscf_hmac256_update(hmac256_impl, test_hmac256_VECTOR_1_INPUT);
-    vscf_hmac256_finish(hmac256_impl, digest);
+    vscf_hmac256_reset(hmac256);
+    vscf_hmac256_start(hmac256, test_hmac256_KEY_1_INPUT);
+    vscf_hmac256_update(hmac256, test_hmac256_VECTOR_1_INPUT);
+    vscf_hmac256_finish(hmac256, digest);
 
     TEST_ASSERT_EQUAL(test_hmac256_VECTOR_1_DIGEST.len, vsc_buffer_len(digest));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac256_VECTOR_1_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
 
     vsc_buffer_destroy(&digest);
-    vscf_hmac256_destroy(&hmac256_impl);
+    vscf_hmac256_destroy(&hmac256);
 }
 
 void
 test__hmac_stream__vector_2_success(void) {
 
-    vscf_hmac256_impl_t *hmac256_impl = vscf_hmac256_new();
+    vscf_hmac256_t *hmac256 = vscf_hmac256_new();
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hmac256_DIGEST_LEN);
 
-    vscf_hmac256_reset(hmac256_impl);
-    vscf_hmac256_start(hmac256_impl, test_hmac256_KEY_2_INPUT);
-    vscf_hmac256_update(hmac256_impl, test_hmac256_VECTOR_2_INPUT);
-    vscf_hmac256_finish(hmac256_impl, digest);
+    vscf_hmac256_reset(hmac256);
+    vscf_hmac256_start(hmac256, test_hmac256_KEY_2_INPUT);
+    vscf_hmac256_update(hmac256, test_hmac256_VECTOR_2_INPUT);
+    vscf_hmac256_finish(hmac256, digest);
 
     TEST_ASSERT_EQUAL(test_hmac256_VECTOR_2_DIGEST.len, vsc_buffer_len(digest));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac256_VECTOR_2_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
 
     vsc_buffer_destroy(&digest);
-    vscf_hmac256_destroy(&hmac256_impl);
+    vscf_hmac256_destroy(&hmac256);
 }
 
 void
 test__hmac_stream__vector_3_success(void) {
 
-    vscf_hmac256_impl_t *hmac256_impl = vscf_hmac256_new();
+    vscf_hmac256_t *hmac256 = vscf_hmac256_new();
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hmac256_DIGEST_LEN);
 
-    vscf_hmac256_reset(hmac256_impl);
-    vscf_hmac256_start(hmac256_impl, test_hmac256_KEY_3_INPUT);
-    vscf_hmac256_update(hmac256_impl, test_hmac256_VECTOR_3_INPUT);
-    vscf_hmac256_finish(hmac256_impl, digest);
+    vscf_hmac256_reset(hmac256);
+    vscf_hmac256_start(hmac256, test_hmac256_KEY_3_INPUT);
+    vscf_hmac256_update(hmac256, test_hmac256_VECTOR_3_INPUT);
+    vscf_hmac256_finish(hmac256, digest);
 
     TEST_ASSERT_EQUAL(test_hmac256_VECTOR_3_DIGEST.len, vsc_buffer_len(digest));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_hmac256_VECTOR_3_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
 
     vsc_buffer_destroy(&digest);
-    vscf_hmac256_destroy(&hmac256_impl);
+    vscf_hmac256_destroy(&hmac256);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE

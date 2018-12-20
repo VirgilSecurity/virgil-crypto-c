@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_c_common VERSION 0.1.0 LANGUAGES C)
+project(virgil_crypto_c_common VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 
 #
 # Options
@@ -54,19 +54,6 @@ include("${CMAKE_CURRENT_LIST_DIR}/sources.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 
 #
-# Define include headers
-#
-target_include_directories(common
-        PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/common>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/common/private>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
-            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-        )
-
-
-#
 # Define specific compilation and linkage flags.
 #
 set_target_properties(common PROPERTIES
@@ -78,23 +65,17 @@ set_target_properties(common PROPERTIES
 #
 # Add __FILENAME__ definition, that handles file name without path, to each source file.
 #
-get_target_property(SOURCES common SOURCES)
-foreach(src ${SOURCES})
-    get_filename_component(file_name "${src}" NAME)
-    get_filename_component(file_ext "${src}" EXT)
-
-    if(file_ext STREQUAL ".c")
-            set_property(SOURCE "${src}" APPEND_STRING PROPERTY COMPILE_DEFINITIONS "__FILENAME__=\"${file_name}\"")
-    endif()
-endforeach()
+target_add_filename_definitions(common)
 
 #
 # Enable profiling
 #
-if(COMMAND enable_target_profiling)
-    enable_target_profiling(common)
-else()
-    message(STATUS "To enable profiling create function 'enable_target_profiling(<target>)'.")
+if(ENABLE_PROFILING)
+    if(COMMAND enable_target_profiling)
+        enable_target_profiling(common)
+    else()
+        message(STATUS "To enable profiling create function 'enable_target_profiling(<target>)'.")
+    endif()
 endif()
 
 #
@@ -118,6 +99,19 @@ if(COMMAND add_clangformat)
     add_clangformat(common)
 endif()
 
+
+# ---------------------------------------------------------------------------
+#   Apple specific
+# ---------------------------------------------------------------------------
+if(CMAKE_CROSSCOMPILING AND APPLE AND COMMAND target_apple_framework)
+    target_apple_framework(common
+            NAME VSCCommon
+            VERSION "A"
+            IDENTIFIER com.virgilsecurity.VSCCommon
+            )
+endif()
+
+
 # ---------------------------------------------------------------------------
 #   Install library
 # ---------------------------------------------------------------------------
@@ -128,8 +122,9 @@ include (CMakePackageConfigHelpers)
 #
 if(VIRGIL_INSTALL_HDRS)
     install(
-            DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/"
+            DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/include/" "${CMAKE_CURRENT_BINARY_DIR}/include/"
             DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+            PATTERN "*.h.in" EXCLUDE
             )
 endif()
 
@@ -142,6 +137,7 @@ if(VIRGIL_INSTALL_LIBS)
             EXPORT vsc_commonTargets
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            FRAMEWORK DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             )
 endif()
 

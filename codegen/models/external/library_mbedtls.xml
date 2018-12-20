@@ -1,0 +1,83 @@
+<library
+        name="mbedtls"
+        path="../thirdparty/mbedtls/">
+
+    External library: https://github.com/ARMmbed/mbedtls
+
+    <feature name="ERROR C"/>
+    <feature name="PLATFORM C"/>
+    <feature name="SHA256 C"/>
+    <feature name="SHA512 C"/>
+    <feature name="CIPHER C"/>
+    <feature name="AES C"/>
+    <feature name="GCM C"/>
+    <feature name="MD C"/>
+    <feature name="BIGNUM C"/>
+    <feature name="ECP C"/>
+    <feature name="ECP_DP_SECP256R1_ENABLED"/>
+    <feature name="PKCS1 V21"/>
+    <feature name="OID C"/>
+    <feature name="ASN1 PARSE C"/>
+    <feature name="ASN1 WRITE C"/>
+    <feature name="GENPRIME"/>
+    <feature name="TIMING C"/>
+    <feature name="HAVEGE C"/>
+    <feature name="PLATFORM ENTROPY"/>
+    <feature name="BASE64 C"/>
+    <feature name="THREADING C"/>
+
+    <feature name="RSA C">
+        <require feature="BIGNUM C"/>
+        <require feature="OID C"/>
+        <require feature="PKCS1 V21"/>
+        <require feature="GENPRIME"/>
+    </feature>
+
+    <feature name="CTR_DRBG C">
+        <require feature="ENTROPY C"/>
+        <require>
+            <alternative feature="TIMING C"/>
+            <alternative feature="HAVEGE C"/>
+            <alternative feature="PLATFORM ENTROPY"/>
+        </require>
+    </feature>
+
+    <feature name="ENTROPY C">
+        <require>
+            <alternative feature="SHA256 C"/>
+            <alternative feature="SHA512 C"/>
+        </require>
+    </feature>
+
+    <feature name="SHA256 ALT" default="off">
+        <require feature="SHA256 C"/>
+    </feature>
+
+    <feature name="SHA512 ALT" default="off">
+        <require feature="SHA512 C"/>
+    </feature>
+
+    <feature name="AES ALT" default="off">
+        <require feature="AES C"/>
+    </feature>
+
+    <feature name="GCM ALT" default="off">
+        <require feature="GCM C"/>
+    </feature>
+
+    <error_message_getter success="0">
+        <require header="mbedtls/config.h"/>
+        <require header="mbedtls/error.h"/>
+
+        #if defined(MBEDTLS_ERROR_C)
+            char error_message[256] = {0x00};
+            mbedtls_strerror(error, error_message, sizeof(error_message));
+        #else
+            char error_message[32] = {0x00};
+            if (error &lt; 0) {
+                error = -error;
+            }
+            snprintf(error_message, sizeof(error_message), "Unhandled mbedTLS error -0x%04x", error);
+        #endif
+    </error_message_getter>
+</library>

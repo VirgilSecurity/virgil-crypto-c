@@ -40,6 +40,12 @@
 
 
 //
+//  Common
+//
+#cmakedefine MBEDTLS_ERROR_C
+#cmakedefine MBEDTLS_PLATFORM_C
+
+//
 //  Required by library vsc::foundation
 //
 #cmakedefine MBEDTLS_SHA256_C
@@ -55,6 +61,18 @@
 #cmakedefine MBEDTLS_ASN1_PARSE_C
 #cmakedefine MBEDTLS_ASN1_WRITE_C
 #cmakedefine MBEDTLS_GENPRIME
+#cmakedefine MBEDTLS_PLATFORM_ENTROPY
+#cmakedefine MBEDTLS_TIMING_C
+#cmakedefine MBEDTLS_HAVEGE_C
+#cmakedefine MBEDTLS_BASE64_C
+
+#if !defined(MBEDTLS_PLATFORM_ENTROPY)
+#   define MBEDTLS_NO_PLATFORM_ENTROPY
+#endif
+
+#cmakedefine MBEDTLS_THREADING_C
+#cmakedefine MBEDTLS_THREADING_PTHREAD
+#cmakedefine MBEDTLS_THREADING_SRWLOCK
 
 //
 //  Required by library vsc::pythia
@@ -63,12 +81,29 @@
 #cmakedefine MBEDTLS_ENTROPY_C
 
 //
+//  Required by library vsc::phe
+//
+#cmakedefine MBEDTLS_ECP_C
+#cmakedefine MBEDTLS_ECP_DP_SECP256R1_ENABLED
+
+//
 //  Alternative implementations
 //
 #cmakedefine MBEDTLS_SHA256_ALT
 #cmakedefine MBEDTLS_SHA512_ALT
 #cmakedefine MBEDTLS_AES_ALT
 #cmakedefine MBEDTLS_GCM_ALT
+
+//
+//  Non configurable options
+//
+#define MBEDTLS_NO_DEFAULT_ENTROPY_SOURCES
+
+//
+// EC optimizations
+//
+#define MBEDTLS_ECP_NIST_OPTIM 1
+#define MBEDTLS_ECP_FIXED_POINT_OPTIM 1
 
 #include "check_config.h"
 

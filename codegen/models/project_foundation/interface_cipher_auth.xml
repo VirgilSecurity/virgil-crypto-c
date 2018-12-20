@@ -1,0 +1,7 @@
+<interface name="cipher auth">
+    Mix-in interface that provides specific functionality to authenticated
+    encryption and decryption.
+
+    <inherit interface="auth encrypt"/>
+    <inherit interface="auth decrypt"/>
+</interface>

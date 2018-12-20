@@ -1,5 +1,0 @@
-<interface name="public key">
-    Contains public part of the key.
-
-    <inherit interface="key"/>
-</interface>

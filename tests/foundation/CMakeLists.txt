@@ -34,12 +34,13 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_c_foundation_integration_tests VERSION 0.1.0 LANGUAGES C)
+project(virgil_crypto_c_foundation_tests VERSION ${virgil_crypto_c_tests_VERSION} LANGUAGES C)
 
 add_subdirectory(data)
 
 macro(_add_test test)
     add_executable(${test} ${test}.c)
+    target_add_filename_definitions(${test})
     target_link_libraries(${test} unity test_utils test_data_foundation vsc::foundation)
     set_target_properties(${test} PROPERTIES C_STANDARD "99")
     add_test (NAME ${test} COMMAND ${test})
@@ -65,3 +66,13 @@ _add_test (test_asn1rd)
 _add_test (test_asn1wr)
 _add_test (test_rsa_public_key)
 _add_test (test_rsa_private_key)
+_add_test (test_ctr_drbg)
+_add_test (test_entropy_accumulator)
+_add_test (test_pkcs8_der_serializer)
+_add_test (test_pkcs8_der_deserializer)
+_add_test (test_base64)
+_add_test (test_pem)
+_add_test (test_pkcs8_serializer)
+_add_test (test_pkcs8_deserializer)
+_add_test (test_ed25519_private_key)
+_add_test (test_ed25519_public_key)

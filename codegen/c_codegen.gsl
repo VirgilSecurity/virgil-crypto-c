@@ -121,47 +121,98 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Insert 'include' statement.
 # ---------------------------------------------------------------------------
-function c_insert_include (c_include)
+function c_insert_include (c_include, tab_count, tab_size)
     check_argument (my, "c_include")
+
+    my.tab_count ?= 0
+    my.tab_size ?= 4
+
+    my.spaces_count = my.tab_count * my.tab_size
+
+    if my.spaces_count > 0
+        my.spaces_count -= 1
+    endif
+
+    my.spaces = " " * my.spaces_count
+
     if is_true (my.c_include.is_system)
-        out ("#include <$(my.c_include.file)>")
+        out ("#$(my.spaces)include <$(my.c_include.file:)>")
     else
-        out ("#include \"$(my.c_include.file)\"")
+        out ("#$(my.spaces)include \"$(my.c_include.file:)\"")
     endif
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Insert formatted block of public 'include' statements.
 # ---------------------------------------------------------------------------
-function c_insert_public_includes (component)
-    for my.component.c_include \
-                where string_equal (0.scope ?, "public") & is_false (is_system)
-        newline_if (first () & is_true (my.was_inserted))
-        c_insert_include (c_include)
-        my.was_inserted = 1
-    endfor
-    for my.component.c_include \
-                where string_equal (0.scope ?, "public") & is_true (is_system)
-        newline_if (first () & is_true (my.was_inserted))
-        c_insert_include (c_include)
-        my.was_inserted = 1
-    endfor
-endfunction
+function c_insert_includes (component, scope)
+    check_arguments (my, "component, scope", my)
 
-# ---------------------------------------------------------------------------
-#   Insert formatted block of public 'include' statements.
-# ---------------------------------------------------------------------------
-function c_insert_private_includes (component)
-    for my.component.c_include \
-                where string_equal (0.scope ?, "private") & is_false (is_system)
+    #   Insert required non-system includes.
+    for my.component.c_include where ! defined (c_include.if) & \
+                string_equal (0.scope ?, my.scope) & is_false (is_system)
+
         newline_if (first () & is_true (my.was_inserted))
         c_insert_include (c_include)
         my.was_inserted = 1
     endfor
-    for my.component.c_include \
-                where string_equal (0.scope ?, "private") & is_true (is_system)
+
+    #   Insert optional non-system includes.
+    for my.component.c_include where defined (c_include.if) & \
+                string_equal (0.scope ?, my.scope) & is_false (is_system) by c_include.if
+
+        newline_if (first () & is_true (my.was_inserted))
+
+        if ! defined (my.prev_if)
+            out ("#if $(c_include.if:)")
+
+        elsif my.prev_if <> c_include.if
+            out ("#endif")
+            newline ()
+            out ("#if $(c_include.if:)")
+        endif
+
+        c_insert_include (c_include, 1)
+        my.prev_if = ! last () ?? c_include.if ? # undefined
+
+        if last ()
+            out ("#endif")
+        endif
+
+        my.was_inserted = 1
+    endfor
+
+    #   Insert required system includes.
+    for my.component.c_include where ! defined (c_include.if) & \
+                string_equal (0.scope ?, my.scope) & is_true (is_system)
+
         newline_if (first () & is_true (my.was_inserted))
         c_insert_include (c_include)
+        my.was_inserted = 1
+    endfor
+
+    #   Insert optional system includes.
+    for my.component.c_include where defined (c_include.if) & \
+                string_equal (0.scope ?, my.scope) & is_true (is_system) by c_include.if
+
+        newline_if (first () & is_true (my.was_inserted))
+
+        if ! defined (my.prev_if)
+            out ("#if $(c_include.if:)")
+
+        elsif my.prev_if <> c_include.if
+            out ("#endif")
+            newline ()
+            out ("#if $(c_include.if:)")
+        endif
+
+        c_insert_include (c_include, 1)
+        my.prev_if = ! last () ?? c_include.if ? # undefined
+
+        if last ()
+            out ("#endif")
+        endif
+
         my.was_inserted = 1
     endfor
 endfunction
@@ -171,6 +222,7 @@ endfunction
 # ---------------------------------------------------------------------------
 function c_insert_header_prologue (component, content_before)
     c_insert_block (my.component->c_license., "license")
+    out ("// clang-format off")
     if defined (my.component->c_caution.)
         newline (2)
         c_insert_block (my.component->c_caution., "warning")
@@ -184,7 +236,9 @@ function c_insert_header_prologue (component, content_before)
     out ("#define $(my.component.ONCE_GUARD)")
 
     newline_if (count (my.component.c_include, scope = "public"))
-    c_insert_public_includes (my.component)
+    c_insert_includes (my.component, "public")
+    newline ()
+    out ("// clang-format on")
     c_insert_tag_end ()
 
     newline (2)
@@ -223,6 +277,7 @@ endfunction
 # ---------------------------------------------------------------------------
 function c_insert_source_prologue (component, content_before)
     c_insert_block (my.component->c_license., "license")
+    out ("// clang-format off")
     if defined (my.component.)
         newline (2)
         c_insert_block (my.component., "description")
@@ -233,7 +288,9 @@ function c_insert_source_prologue (component, content_before)
     endif
 
     newline_if (count (my.component.c_include, scope = "private"))
-    c_insert_private_includes (my.component)
+    c_insert_includes (my.component, "private")
+    newline ()
+    out ("// clang-format on")
     c_insert_tag_end ()
 
     if string_defined (my.content_before)
@@ -634,9 +691,9 @@ function c_insert_variable_definition (c_variable)
 
     c_insert_description (my.c_variable)
 
-    my.maybe_static = (my.c_variable.declaration = "private") ?? "static " ? ""
+    my.modifier = (my.c_variable.declaration = "private") ?? "static" ? c_derive_component_modifiers (my.c_variable)
 
-    my.code = "$(my.maybe_static:)$(c_derive_instance_declaration (my.c_variable))"
+    my.code = "$(my.modifier:) $(c_derive_instance_declaration (my.c_variable))"
 
     for my.c_variable.c_value
 

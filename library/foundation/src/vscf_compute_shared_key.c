@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -53,6 +54,8 @@
 #include "vscf_compute_shared_key.h"
 #include "vscf_assert.h"
 #include "vscf_compute_shared_key_api.h"
+
+// clang-format on
 //  @end
 
 
@@ -69,7 +72,7 @@
 VSCF_PUBLIC vscf_error_t
 vscf_compute_shared_key(vscf_impl_t *impl, const vscf_impl_t *public_key, vsc_buffer_t *shared_key) {
 
-    const vscf_compute_shared_key_api_t *compute_shared_key_api = vscf_compute_shared_key_api (impl);
+    const vscf_compute_shared_key_api_t *compute_shared_key_api = vscf_compute_shared_key_api(impl);
     VSCF_ASSERT_PTR (compute_shared_key_api);
 
     VSCF_ASSERT_PTR (compute_shared_key_api->compute_shared_key_cb);
@@ -82,7 +85,7 @@ vscf_compute_shared_key(vscf_impl_t *impl, const vscf_impl_t *public_key, vsc_bu
 VSCF_PUBLIC size_t
 vscf_compute_shared_key_shared_key_len(vscf_impl_t *impl) {
 
-    const vscf_compute_shared_key_api_t *compute_shared_key_api = vscf_compute_shared_key_api (impl);
+    const vscf_compute_shared_key_api_t *compute_shared_key_api = vscf_compute_shared_key_api(impl);
     VSCF_ASSERT_PTR (compute_shared_key_api);
 
     VSCF_ASSERT_PTR (compute_shared_key_api->shared_key_len_cb);
@@ -93,11 +96,11 @@ vscf_compute_shared_key_shared_key_len(vscf_impl_t *impl) {
 //  Return compute shared key API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_compute_shared_key_api_t *
-vscf_compute_shared_key_api(vscf_impl_t *impl) {
+vscf_compute_shared_key_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_COMPUTE_SHARED_KEY);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_COMPUTE_SHARED_KEY);
     return (const vscf_compute_shared_key_api_t *) api;
 }
 
@@ -105,11 +108,11 @@ vscf_compute_shared_key_api(vscf_impl_t *impl) {
 //  Check if given object implements interface 'compute shared key'.
 //
 VSCF_PUBLIC bool
-vscf_compute_shared_key_is_implemented(vscf_impl_t *impl) {
+vscf_compute_shared_key_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_COMPUTE_SHARED_KEY) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_COMPUTE_SHARED_KEY) != NULL;
 }
 
 //
@@ -121,17 +124,6 @@ vscf_compute_shared_key_api_tag(const vscf_compute_shared_key_api_t *compute_sha
     VSCF_ASSERT_PTR (compute_shared_key_api);
 
     return compute_shared_key_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_compute_shared_key_impl_tag(const vscf_compute_shared_key_api_t *compute_shared_key_api) {
-
-    VSCF_ASSERT_PTR (compute_shared_key_api);
-
-    return compute_shared_key_api->impl_tag;
 }
 
 

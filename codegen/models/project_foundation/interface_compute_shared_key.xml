@@ -1,0 +1,23 @@
+<interface name="compute shared key">
+    Provide interface to compute shared key for 2 asymmetric keys.
+    Assume that this interface is implemented on the private key.
+
+    <method name="compute shared key">
+        Compute shared key for 2 asymmetric keys.
+        Note, shared key can be used only for symmetric cryptography.
+
+        <argument name="public key" interface="public key"/>
+        <argument name="shared key" class="buffer">
+            <length method="shared key len"/>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+
+
+    <method name="shared key len">
+        Return number of bytes required to hold shared key.
+
+        <return type="size"/>
+    </method>
+</interface>

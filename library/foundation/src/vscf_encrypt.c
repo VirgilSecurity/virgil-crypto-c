@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @description
@@ -52,6 +53,8 @@
 #include "vscf_encrypt.h"
 #include "vscf_assert.h"
 #include "vscf_encrypt_api.h"
+
+// clang-format on
 //  @end
 
 
@@ -67,7 +70,7 @@
 VSCF_PUBLIC vscf_error_t
 vscf_encrypt(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out) {
 
-    const vscf_encrypt_api_t *encrypt_api = vscf_encrypt_api (impl);
+    const vscf_encrypt_api_t *encrypt_api = vscf_encrypt_api(impl);
     VSCF_ASSERT_PTR (encrypt_api);
 
     VSCF_ASSERT_PTR (encrypt_api->encrypt_cb);
@@ -80,7 +83,7 @@ vscf_encrypt(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out) {
 VSCF_PUBLIC size_t
 vscf_encrypt_encrypted_len(vscf_impl_t *impl, size_t data_len) {
 
-    const vscf_encrypt_api_t *encrypt_api = vscf_encrypt_api (impl);
+    const vscf_encrypt_api_t *encrypt_api = vscf_encrypt_api(impl);
     VSCF_ASSERT_PTR (encrypt_api);
 
     VSCF_ASSERT_PTR (encrypt_api->encrypted_len_cb);
@@ -91,11 +94,11 @@ vscf_encrypt_encrypted_len(vscf_impl_t *impl, size_t data_len) {
 //  Return encrypt API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_encrypt_api_t *
-vscf_encrypt_api(vscf_impl_t *impl) {
+vscf_encrypt_api(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    const vscf_api_t *api = vscf_impl_api (impl, vscf_api_tag_ENCRYPT);
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_ENCRYPT);
     return (const vscf_encrypt_api_t *) api;
 }
 
@@ -103,11 +106,11 @@ vscf_encrypt_api(vscf_impl_t *impl) {
 //  Check if given object implements interface 'encrypt'.
 //
 VSCF_PUBLIC bool
-vscf_encrypt_is_implemented(vscf_impl_t *impl) {
+vscf_encrypt_is_implemented(const vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (impl);
 
-    return vscf_impl_api (impl, vscf_api_tag_ENCRYPT) != NULL;
+    return vscf_impl_api(impl, vscf_api_tag_ENCRYPT) != NULL;
 }
 
 //
@@ -119,17 +122,6 @@ vscf_encrypt_api_tag(const vscf_encrypt_api_t *encrypt_api) {
     VSCF_ASSERT_PTR (encrypt_api);
 
     return encrypt_api->api_tag;
-}
-
-//
-//  Returns implementation unique identifier.
-//
-VSCF_PUBLIC vscf_impl_tag_t
-vscf_encrypt_impl_tag(const vscf_encrypt_api_t *encrypt_api) {
-
-    VSCF_ASSERT_PTR (encrypt_api);
-
-    return encrypt_api->impl_tag;
 }
 
 

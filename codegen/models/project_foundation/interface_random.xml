@@ -1,0 +1,20 @@
+<interface name="random">
+    Common interface to get random data.
+
+    <method name="random">
+        Generate random bytes.
+
+        <argument name="data len" type="size"/>
+        <argument name="data" class="buffer">
+            <length argument="data len"/>
+        </argument>
+
+        <return enum="error"/>
+    </method>
+
+    <method name="reseed">
+        Retreive new seed data from the entropy sources.
+
+        <return enum="error"/>
+    </method>
+</interface>

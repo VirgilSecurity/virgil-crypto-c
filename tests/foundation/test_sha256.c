@@ -33,6 +33,8 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
 #include "unity.h"
 #include "test_utils.h"
 
@@ -47,16 +49,27 @@
 
 
 // --------------------------------------------------------------------------
+//  Should have it to prevent linkage erros in MSVC.
+// --------------------------------------------------------------------------
+// clang-format off
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
+// clang-format on
+
+
+// --------------------------------------------------------------------------
 // Test implementation helpers & lifecycle functions.
 // --------------------------------------------------------------------------
 void
 test__impl__valid_arg__returns_not_null(void) {
-    vscf_sha256_impl_t *sha256_impl = vscf_sha256_new();
-    vscf_impl_t *impl = vscf_sha256_impl(sha256_impl);
+    vscf_sha256_t *sha256 = vscf_sha256_new();
+    vscf_impl_t *impl = vscf_sha256_impl(sha256);
 
     TEST_ASSERT_NOT_NULL(impl);
 
-    vscf_sha256_destroy(&sha256_impl);
+    vscf_sha256_destroy(&sha256);
 }
 
 void
@@ -64,7 +77,7 @@ test__impl__null_arg__call_assert(void) {
 
     vscf_assert_change_handler(mock_assert_handler);
 
-    vscf_impl_t *impl = vscf_sha256_impl(NULL);
+    vscf_sha256_impl(NULL);
 
     TEST_ASSERT_TRUE(g_mock_assert_result.handled);
 
@@ -144,52 +157,52 @@ test__hash__vector_3__success(void) {
 void
 test__hash_stream__vector_1__success(void) {
 
-    vscf_sha256_impl_t *sha256_impl = vscf_sha256_new();
+    vscf_sha256_t *sha256 = vscf_sha256_new();
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha256_DIGEST_LEN);
 
-    vscf_sha256_start(sha256_impl);
-    vscf_sha256_update(sha256_impl, test_sha256_VECTOR_1_INPUT);
-    vscf_sha256_finish(sha256_impl, digest);
+    vscf_sha256_start(sha256);
+    vscf_sha256_update(sha256, test_sha256_VECTOR_1_INPUT);
+    vscf_sha256_finish(sha256, digest);
 
     TEST_ASSERT_EQUAL(test_sha256_VECTOR_1_DIGEST.len, vsc_buffer_len(digest));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_1_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
 
     vsc_buffer_destroy(&digest);
-    vscf_sha256_destroy(&sha256_impl);
+    vscf_sha256_destroy(&sha256);
 }
 
 void
 test__hash_stream__vector_2__success(void) {
 
-    vscf_sha256_impl_t *sha256_impl = vscf_sha256_new();
+    vscf_sha256_t *sha256 = vscf_sha256_new();
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha256_DIGEST_LEN);
 
-    vscf_sha256_start(sha256_impl);
-    vscf_sha256_update(sha256_impl, test_sha256_VECTOR_2_INPUT);
-    vscf_sha256_finish(sha256_impl, digest);
+    vscf_sha256_start(sha256);
+    vscf_sha256_update(sha256, test_sha256_VECTOR_2_INPUT);
+    vscf_sha256_finish(sha256, digest);
 
     TEST_ASSERT_EQUAL(test_sha256_VECTOR_2_DIGEST.len, vsc_buffer_len(digest));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_2_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
 
     vsc_buffer_destroy(&digest);
-    vscf_sha256_destroy(&sha256_impl);
+    vscf_sha256_destroy(&sha256);
 }
 
 void
 test__hash_stream__vector_3__success(void) {
 
-    vscf_sha256_impl_t *sha256_impl = vscf_sha256_new();
+    vscf_sha256_t *sha256 = vscf_sha256_new();
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha256_DIGEST_LEN);
 
-    vscf_sha256_start(sha256_impl);
-    vscf_sha256_update(sha256_impl, test_sha256_VECTOR_3_INPUT);
-    vscf_sha256_finish(sha256_impl, digest);
+    vscf_sha256_start(sha256);
+    vscf_sha256_update(sha256, test_sha256_VECTOR_3_INPUT);
+    vscf_sha256_finish(sha256, digest);
 
     TEST_ASSERT_EQUAL(test_sha256_VECTOR_3_DIGEST.len, vsc_buffer_len(digest));
     TEST_ASSERT_EQUAL_HEX8_ARRAY(test_sha256_VECTOR_3_DIGEST.bytes, vsc_buffer_bytes(digest), vsc_buffer_len(digest));
 
     vsc_buffer_destroy(&digest);
-    vscf_sha256_destroy(&sha256_impl);
+    vscf_sha256_destroy(&sha256);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE

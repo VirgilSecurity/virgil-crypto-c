@@ -64,15 +64,6 @@ function _A12_add_struct_info (meta, destination)
 
         new property
             . = "\
-            Implementation unique identifier, MUST be first in the structure.
-            "
-            .name = my.names.property_impl_tag
-            .enum = ".(class_impl_enum_tag)"
-            .tag = "impl_tag"
-        endnew
-
-        new property
-            . = "\
             Callback that returns API of the requested interface if implemented, otherwise - NULL.
             MUST be second in the structure.
             "
@@ -219,10 +210,6 @@ function c_module_impl_private_create (meta, destination)
 
         new require
             .module = my.names.module_library
-        endnew
-
-        new require
-            .module = my.names.module_error
         endnew
 
         new require

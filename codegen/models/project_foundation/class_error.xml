@@ -1,0 +1,43 @@
+<class name="error ctx" context="public" lifecycle="none">
+    Error context.
+    Can be used for sequential operations, i.e. parsers, to accumulate error.
+    In this way operation is successful if all steps are successful, otherwise
+    last occurred error code can be obtained.
+
+    <property name="error" enum="error"/>
+
+
+    <method name="reset">
+        Reset context to the "no error" state.
+    </method>
+
+
+    <method name="update" visibility="private">
+        Update context with given error.
+
+        <argument name="error" enum="error"/>
+    </method>
+
+
+    <macros name="safe update">
+        Perform update only if context defined, otherwise log error.
+
+        <code>
+            #define .(c_class_error_ctx_macros_safe_update) (CTX, ERR)
+                do {
+                    if (NULL != (CTX)) {
+                        .(c_class_error_ctx_method_update) ((CTX), (ERR));
+                    } else {
+                        /* TODO: Log this error, when logging will be added. */
+                    }
+                } while (false)
+        </code>
+    </macros>
+
+
+    <method name="error" is_const="1">
+        Reset context to the "no error" state.
+
+        <return enum="error"/>
+    </method>
+</class>

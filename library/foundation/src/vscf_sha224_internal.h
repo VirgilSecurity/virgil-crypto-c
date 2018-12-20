@@ -34,6 +34,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
+// clang-format off
 
 
 //  @warning
@@ -54,9 +55,9 @@
 #define VSCF_SHA224_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_sha224.h"
-#include "vscf_sha224.h"
+
+// clang-format on
 //  @end
 
 
@@ -77,7 +78,7 @@ extern "C" {
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_sha224_init_ctx(vscf_sha224_impl_t *sha224_impl);
+vscf_sha224_init_ctx(vscf_sha224_t *sha224);
 
 //
 //  Release resources of the implementation specific context.
@@ -85,7 +86,7 @@ vscf_sha224_init_ctx(vscf_sha224_impl_t *sha224_impl);
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_sha224_cleanup_ctx(vscf_sha224_impl_t *sha224_impl);
+vscf_sha224_cleanup_ctx(vscf_sha224_t *sha224);
 
 
 // --------------------------------------------------------------------------
