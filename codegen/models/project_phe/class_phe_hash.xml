@@ -1,4 +1,4 @@
-<class name="phe hash" context="private" scope="internal">
+<class name="phe hash" context="internal" scope="internal">
 
     <require header="stdarg.h" scope="private" is_system="1"/>
 
@@ -73,6 +73,12 @@
         <argument name="term4" class="mbedtls_ecp_point" library="mbedtls"/>
 
         <argument name="Z" class="mbedtls_mpi" library="mbedtls" access="writeonly"/>
+    </method>
+
+    <method name="push points to buffer" declaration="private">
+        <argument name="buffer" class="buffer" access="readwrite"/>
+        <argument name="count" type="size"/>
+        <argument type="varargs"/>
     </method>
 
 </class>

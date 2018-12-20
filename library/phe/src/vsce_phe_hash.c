@@ -47,8 +47,8 @@
 #include "vsce_phe_hash.h"
 #include "vsce_memory.h"
 #include "vsce_assert.h"
-#include "vsce_phe_hash_defs.h"
 
+#include <mbedtls/bignum.h>
 #include <stdarg.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
@@ -56,34 +56,35 @@
 // clang-format on
 //  @end
 
-
-static void
-push_points_to_buffer(vsce_phe_hash_t *phe_hash, vsc_buffer_t *buffer, size_t count, ...) {
-    va_list points;
-
-    va_start(points, count);
-
-    size_t olen = 0;
-    int mbedtls_status = 0;
-
-    for (size_t i = 0; i < count; i++) {
-        const mbedtls_ecp_point *p = va_arg(points, const mbedtls_ecp_point *);
-        mbedtls_ecp_point_write_binary(&phe_hash->group, p, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-                vsc_buffer_unused_bytes(buffer), vsc_buffer_unused_len(buffer));
-        vsc_buffer_inc_used(buffer, olen);
-        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-        VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
-    }
-
-    va_end(points);
-}
-
-
 //  @generated
 // --------------------------------------------------------------------------
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Handle 'phe hash' context.
+//
+struct vsce_phe_hash_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vsce_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Dependency to the implementation 'sha512'.
+    //
+    vscf_sha512_t *sha512;
+    //
+    //  Dependency to the class 'simple swu'.
+    //
+    vsce_simple_swu_t *simple_swu;
+
+    mbedtls_ecp_group group;
+};
 
 //
 //  Perform context specific initialization.
@@ -103,6 +104,9 @@ vsce_phe_hash_cleanup_ctx(vsce_phe_hash_t *phe_hash);
 
 static void
 vsce_phe_hash_derive_z(vsce_phe_hash_t *phe_hash, vsc_data_t buffer, bool success, mbedtls_mpi *z);
+
+static void
+vsce_phe_hash_push_points_to_buffer(vsce_phe_hash_t *phe_hash, vsc_buffer_t *buffer, size_t count, ...);
 
 //
 //  Return size of 'vsce_phe_hash_t'.
@@ -614,7 +618,7 @@ vsce_phe_hash_hash_z_success(vsce_phe_hash_t *phe_hash, vsc_data_t server_public
     memcpy(vsc_buffer_unused_bytes(&buff), server_public_key.bytes, server_public_key.len);
     vsc_buffer_inc_used(&buff, server_public_key.len);
 
-    push_points_to_buffer(phe_hash, &buff, 6, &phe_hash->group.G, c0, c1, term1, term2, term3);
+    vsce_phe_hash_push_points_to_buffer(phe_hash, &buff, 6, &phe_hash->group.G, c0, c1, term1, term2, term3);
     VSCE_ASSERT(vsc_buffer_unused_len(&buff) == 0);
 
     vsce_phe_hash_derive_z(phe_hash, vsc_buffer_data(&buff), true, z);
@@ -644,10 +648,32 @@ vsce_phe_hash_hash_z_failure(vsce_phe_hash_t *phe_hash, vsc_data_t server_public
     memcpy(vsc_buffer_unused_bytes(&buff), server_public_key.bytes, server_public_key.len);
     vsc_buffer_inc_used(&buff, server_public_key.len);
 
-    push_points_to_buffer(phe_hash, &buff, 7, &phe_hash->group.G, c0, c1, term1, term2, term3, term4);
+    vsce_phe_hash_push_points_to_buffer(phe_hash, &buff, 7, &phe_hash->group.G, c0, c1, term1, term2, term3, term4);
     VSCE_ASSERT(vsc_buffer_unused_len(&buff) == 0);
 
     vsce_phe_hash_derive_z(phe_hash, vsc_buffer_data(&buff), false, z);
 
     vsc_buffer_delete(&buff);
+}
+
+static void
+vsce_phe_hash_push_points_to_buffer(vsce_phe_hash_t *phe_hash, vsc_buffer_t *buffer, size_t count, ...) {
+
+    va_list points;
+
+    va_start(points, count);
+
+    size_t olen = 0;
+    int mbedtls_status = 0;
+
+    for (size_t i = 0; i < count; i++) {
+        const mbedtls_ecp_point *p = va_arg(points, const mbedtls_ecp_point *);
+        mbedtls_ecp_point_write_binary(&phe_hash->group, p, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+                vsc_buffer_unused_bytes(buffer), vsc_buffer_unused_len(buffer));
+        vsc_buffer_inc_used(buffer, olen);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+        VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
+    }
+
+    va_end(points);
 }
