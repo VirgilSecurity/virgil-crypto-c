@@ -46,6 +46,7 @@
 include_guard()
 
 option(VSCF_LIBRARY "Enable build of the 'foundation' library" ON)
+option(VSCF_MULTI_THREAD "Enable multi-threading safety for foundation library." ON)
 option(VSCF_DEFAULTS "Enable interface 'defaults'." ON)
 option(VSCF_CIPHER "Enable interface 'cipher'." ON)
 option(VSCF_AUTH_ENCRYPT "Enable interface 'auth encrypt'." ON)
@@ -110,6 +111,7 @@ option(VSCF_PEM_TITLE "Enable class 'pem title'." ON)
 option(VSCF_ENDIANNESS "Enable class 'endianness'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
+        VSCF_MULTI_THREAD
         VSCF_DEFAULTS
         VSCF_CIPHER
         VSCF_AUTH_ENCRYPT
@@ -173,6 +175,15 @@ mark_as_advanced(
         VSCF_PEM_TITLE
         VSCF_ENDIANNESS
         )
+
+if(VSCF_MULTI_THREAD AND NOT MBEDTLS_THREADING_C)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_MULTI_THREAD depends on the feature:")
+    message("     MBEDTLS_THREADING_C - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
 
 if(VSCF_CIPHER AND NOT VSCF_ENCRYPT)
     message("-- error --")

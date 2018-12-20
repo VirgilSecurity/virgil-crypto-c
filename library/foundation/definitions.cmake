@@ -52,6 +52,7 @@ endif()
 target_compile_definitions(foundation
         PUBLIC
             "VSCF_LIBRARY=$<BOOL:${VSCF_LIBRARY}>"
+            "VSCF_MULTI_THREAD=$<BOOL:${VSCF_MULTI_THREAD}>"
             "VSCF_DEFAULTS=$<BOOL:${VSCF_DEFAULTS}>"
             "VSCF_CIPHER=$<BOOL:${VSCF_CIPHER}>"
             "VSCF_AUTH_ENCRYPT=$<BOOL:${VSCF_AUTH_ENCRYPT}>"
