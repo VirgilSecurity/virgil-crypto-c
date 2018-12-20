@@ -1,4 +1,4 @@
-<class name="ratchet cipher" context="private" scope="private">
+<class name="ratchet cipher" context="internal" scope="private">
 
     <require impl="sha256" project="foundation" scope="private"/>
     <require impl="hkdf" project="foundation" scope="private"/>
@@ -15,6 +15,10 @@
         <argument name="cipher text len" type="size"/>
 
         <return type="size"/>
+    </method>
+
+    <method name="setup cipher" declaration="private">
+        <argument name="key" class="data"/>
     </method>
 
     <method name="encrypt">
