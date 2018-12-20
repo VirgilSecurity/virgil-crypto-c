@@ -466,7 +466,7 @@ vsc_buffer_begin(vsc_buffer_t *buffer) {
 }
 
 //
-//  Returns pointer to the first unsed byte in the buffer.
+//  Returns pointer to the first unused byte in the buffer.
 //
 VSC_PUBLIC byte *
 vsc_buffer_unused_bytes(vsc_buffer_t *buffer) {

@@ -69,7 +69,7 @@
 //  @end
 
 
-VSCF_PRIVATE int
+VSCF_PUBLIC int
 vscf_mbedtls_bridge_random(void *ctx, byte *data, size_t len) {
 
     vscf_impl_t *random = (vscf_impl_t *)ctx;
