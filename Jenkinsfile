@@ -70,6 +70,7 @@ def build_LangC_Unix(slave) {
                   -Bbuild -H.
             cmake --build build -- -j10
             cd build
+            ctest --verbose
             cpack
         '''
         dir('build') {
@@ -94,6 +95,7 @@ def build_LangC_Windows(slave) {
                   -Bbuild -H.
             cmake --build build
             cd build
+            ctest --verbose
             cpack
         '''
         dir('build') {
@@ -134,6 +136,7 @@ def build_LangPHP_Linux(slave) {
                   -Bbuild -H.
             cmake --build build -- -j10
             cd build
+            ctest --verbose
             cpack
         '''
         dir('build') {
@@ -172,6 +175,7 @@ def build_LangPHP_MacOS(slave) {
                   -Bbuild -H.
             cmake --build build -- -j10
             cd build
+            ctest --verbose
             cpack
         '''
         dir('build') {
@@ -214,6 +218,7 @@ def build_LangPHP_Windows(slave) {
                       -Bbuild -H.
             cmake --build build
             cd build
+            ctest --verbose
             cpack
             '''
         }
