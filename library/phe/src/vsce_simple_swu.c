@@ -47,8 +47,9 @@
 #include "vsce_simple_swu.h"
 #include "vsce_memory.h"
 #include "vsce_assert.h"
-#include "vsce_simple_swu_defs.h"
 
+#include <mbedtls/ecp.h>
+#include <mbedtls/bignum.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
 
 // clang-format on
@@ -60,6 +61,34 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Handle 'simple swu' context.
+//
+struct vsce_simple_swu_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vsce_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+
+    mbedtls_ecp_group group;
+
+    mbedtls_mpi a;
+
+    mbedtls_mpi two;
+
+    mbedtls_mpi three;
+
+    mbedtls_mpi p34;
+
+    mbedtls_mpi p14;
+
+    mbedtls_mpi mba;
+};
 
 //
 //  Perform context specific initialization.
