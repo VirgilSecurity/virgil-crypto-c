@@ -20,12 +20,11 @@ install:
   - travis_retry sudo apt install libgdiplus
   - travis_retry sudo apt install mono-devel
   - travis_retry sudo apt install nuget
-  - travis_retry wget -q https://packages.microsoft.com/config/ubuntu/14.04/packages-microsoft-prod.deb
-  - travis_retry sudo dpkg -i packages-microsoft-prod.deb
-  - travis_retry sudo apt-get install apt-transport-https
-  - travis_retry sudo apt-get update
-  - travis_retry sudo apt-get -f install
-  - travis_retry sudo apt-get install dotnet-sdk-2.2
+  - mkdir -p $HOME/dotnet && pushd $HOME/dotnet
+    && wget https://download.visualstudio.microsoft.com/download/pr/80e1d007-d6f0-402f-b047-779464dd989b/9ae5e2df9aa166b720bdb92d19977044/dotnet-sdk-2.2.101-linux-x64.tar.gz
+    && tar zxf dotnet-sdk-2.2.101-linux-x64.tar.gz
+    && popd
+  - export PATH=$PATH:$HOME/dotnet    
   - mkdir -p $HOME/protobuf && pushd $HOME/protobuf
     && wget 'https://github.com/google/protobuf/releases/download/v3.6.1/protoc-3.6.1-linux-x86_64.zip' -O protoc-3.6.1-linux-x86_64.zip
     && unzip protoc-3.6.1-linux-x86_64.zip -d protoc-3.6.1-linux-x86_64
