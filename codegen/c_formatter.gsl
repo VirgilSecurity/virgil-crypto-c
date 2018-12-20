@@ -98,6 +98,10 @@ function c_derive_instance_declaration_name (c_instance)
         return ""
     endif
 
+    if my.c_instance.type = "..."
+        return ""
+    endif
+
     if string_in (my.c_instance.array ? my.c_instance.string, "derived")
         return my.c_instance.name + "[]"
     elsif string_in (my.c_instance.array ? my.c_instance.string, "fixed")

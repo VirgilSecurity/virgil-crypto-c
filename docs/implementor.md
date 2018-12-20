@@ -272,7 +272,7 @@ property.
       [ full_uid = "..." ]
       [ library = "..." ]
       [ access = "readonly | writeonly | readwrite | disown" ]
-      [ type = "nothing | boolean | integer | unsigned | size | byte | string | error" ]
+      [ type = "nothing | boolean | integer | unsigned | size | byte | string | char | varargs" ]
       [ class = "..." ]
       [ enum = "..." ]
       [ callback = "..." ]
@@ -329,7 +329,8 @@ unsigned: Unsigned integral type.
 size: Unsigned integral type for size definition.
 byte: Unsigned 8-bit integral type.
 string: Shortcut for the char array.
-error: Type for error codes.
+char: Type for a character.
+varargs: Type for variadic arguments.
 
 class:
     Defines instance class. Possible values are: * any - Any class or type. *

@@ -650,12 +650,16 @@ function component_resolve_instance_attr_type (instance, parent)
 
     component_require_attr_type (my.instance, my)
 
-    my.valid_types = "nothing, boolean, integer, unsigned, size, byte, string, char"
-    if ! string_in (my.instance.type, my.valid_types)
-        my.instance_dump = component_instance_dump (my.instance)
+    my.instance_dump = component_instance_dump (my.instance)
+    my.valid_types = "nothing, boolean, integer, unsigned, size, byte, string, char, varargs"
 
+    if ! string_in (my.instance.type, my.valid_types)
         echo_fatal ("Invalid instance type '$(my.instance_dump:)'. " + \
                     "Expected {$(my.valid_types)}", my)
+    endif
+
+    if ! item_in(my.instance, "argument") & string_equal(my.instance.type, "varargs")
+        echo_fatal ("Type 'varargs' is allowed for <argment/> only.")
     endif
 
     #   Resolve type shortcuts
@@ -670,7 +674,6 @@ function component_resolve_instance_attr_type (instance, parent)
 
     #   Check "size" attribute
     if defined (my.instance.size) & ! string_in (my.instance.type, "integer, unsigned")
-        my.instance_dump = component_instance_dump (my.instance)
         echo_fatal ("Attribute 'size' is not allowed for instance: $(my.instance_dump:)")
     endif
 endfunction
@@ -1353,9 +1356,12 @@ endfunction
 function component_resolve_argument (argument, parent)
     check_arguments (my, "argument, parent", my)
 
+    if string_equal(my.argument.type, "varargs")
+        my.argument.name ?= "varargs"
+    endif
+
     component_require_attr_name (my.argument, my)
     component_require_lineage (my.parent, my)
-
     component_add_lineage (my.argument, my.parent)
 
     component_resolve_instance (my.argument, my.parent)
