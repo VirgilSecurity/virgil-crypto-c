@@ -215,7 +215,6 @@ vscr_ratchet_skipped_message_key_cleanup_ctx(vscr_ratchet_skipped_message_key_t 
     VSCR_ASSERT_PTR(ratchet_skipped_message_key);
 
     vscr_ratchet_message_key_destroy(&ratchet_skipped_message_key->message_key);
-    vsc_buffer_destroy(&ratchet_skipped_message_key->public_key);
 }
 
 VSCR_PUBLIC void
@@ -225,7 +224,7 @@ vscr_ratchet_skipped_message_key_serialize(
     VSCR_ASSERT_PTR(ratchet_skipped_message_key);
     VSCR_ASSERT_PTR(skipped_message_key_pb);
 
-    memcpy(skipped_message_key_pb->public_key, vsc_buffer_bytes(ratchet_skipped_message_key->public_key),
+    memcpy(skipped_message_key_pb->public_key, ratchet_skipped_message_key->public_key,
             sizeof(skipped_message_key_pb->public_key));
 
     vscr_ratchet_message_key_serialize(ratchet_skipped_message_key->message_key, &skipped_message_key_pb->message_key);
@@ -238,8 +237,7 @@ vscr_ratchet_skipped_message_key_deserialize(
     VSCR_ASSERT_PTR(skipped_message_key_pb);
     VSCR_ASSERT_PTR(skipped_message_key);
 
-    skipped_message_key->public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
-    memcpy(vsc_buffer_unused_bytes(skipped_message_key->public_key), skipped_message_key_pb->public_key,
+    memcpy(skipped_message_key->public_key, skipped_message_key_pb->public_key,
             sizeof(skipped_message_key_pb->public_key));
 
     skipped_message_key->message_key = vscr_ratchet_message_key_new();

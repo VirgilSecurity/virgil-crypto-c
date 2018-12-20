@@ -54,18 +54,11 @@
 #define VSCR_RATCHET_SESSION_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_ratchet_common.h"
 #include "vscr_ratchet.h"
-
-#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
-#endif
-
-#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -110,13 +103,13 @@ struct vscr_ratchet_session_t {
 
     bool received_first_response;
 
-    vsc_buffer_t *sender_identity_public_key;
+    byte sender_identity_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
 
-    vsc_buffer_t *sender_ephemeral_public_key;
+    byte sender_ephemeral_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
 
-    vsc_buffer_t *receiver_long_term_public_key;
+    byte receiver_long_term_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
 
-    vsc_buffer_t *receiver_one_time_public_key;
+    byte receiver_one_time_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
 };
 
 

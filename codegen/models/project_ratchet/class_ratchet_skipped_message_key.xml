@@ -6,7 +6,11 @@
 
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
 
-    <property name="public key" class="buffer" access="readwrite"/>
+    <require class="ratchet common" scope="context"/>
+
+    <property name="public key" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+    </property>
     <property name="message key" class="ratchet message key" access="readwrite"/>
 
     <method name="serialize">

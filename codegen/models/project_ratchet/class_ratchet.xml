@@ -38,8 +38,8 @@
     </method>
 
     <method name="create chain key" declaration="private" is_const="1">
-        <argument name="private key" class="buffer" access="readonly"/>
-        <argument name="public key" class="buffer" access="readonly"/>
+        <argument name="private key" class="data"/>
+        <argument name="public key" class="data"/>
 
         <argument name="new root key" type="byte" access="readwrite">
             <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_shared_key_length)"/>
@@ -84,7 +84,7 @@
 
     <method name="initiate">
         <argument name="shared secret" class="data"/>
-        <argument name="ratchet private key" class="buffer" access="retain"/>
+        <argument name="ratchet private key" class="data"/>
 
         <return enum="error"/>
     </method>
