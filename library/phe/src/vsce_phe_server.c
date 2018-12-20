@@ -527,6 +527,8 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *phe_server, vsc_data_t server_
     VSCE_ASSERT(pb_encode(&ostream, EnrollmentResponse_fields, &response));
     vsc_buffer_inc_used(enrollment_response, ostream.bytes_written);
 
+    vsce_zeroize(&response, sizeof(response));
+
 err:
     mbedtls_ecp_point_free(&hs0);
     mbedtls_ecp_point_free(&hs1);
@@ -585,12 +587,12 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server, vsc_data_t server
         goto priv_err;
     }
 
+    VerifyPasswordRequest request = VerifyPasswordRequest_init_zero;
+
     if (verify_password_request.len > VerifyPasswordRequest_size) {
         status = vsce_error_PROTOBUF_DECODE_ERROR;
         goto pb_err;
     }
-
-    VerifyPasswordRequest request = VerifyPasswordRequest_init_zero;
 
     pb_istream_t istream = pb_istream_from_buffer(verify_password_request.bytes, verify_password_request.len);
     bool pb_status = pb_decode(&istream, VerifyPasswordRequest_fields, &request);
@@ -654,6 +656,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server, vsc_data_t server
                 vsc_buffer_unused_bytes(verify_password_response), vsc_buffer_capacity(verify_password_response));
         VSCE_ASSERT(pb_encode(&ostream, VerifyPasswordResponse_fields, &response));
         vsc_buffer_inc_used(verify_password_response, ostream.bytes_written);
+        vsce_zeroize(&response, sizeof(response));
     } else {
         // Password doesn't match
 
@@ -678,6 +681,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *phe_server, vsc_data_t server
                 vsc_buffer_unused_bytes(verify_password_response), vsc_buffer_capacity(verify_password_response));
         VSCE_ASSERT(pb_encode(&ostream, VerifyPasswordResponse_fields, &response));
         vsc_buffer_inc_used(verify_password_response, ostream.bytes_written);
+        vsce_zeroize(&response, sizeof(response));
     }
 
 err:
@@ -690,6 +694,8 @@ ecp_err:
     mbedtls_ecp_point_free(&c0);
 
 pb_err:
+    vsce_zeroize(&request, sizeof(request));
+
 priv_err:
 
     mbedtls_mpi_free(&x);
@@ -1063,6 +1069,7 @@ vsce_phe_server_rotate_keys(vsce_phe_server_t *phe_server, vsc_data_t server_pri
             pb_ostream_from_buffer(vsc_buffer_unused_bytes(update_token), vsc_buffer_capacity(update_token));
     VSCE_ASSERT(pb_encode(&ostream, UpdateToken_fields, &token));
     vsc_buffer_inc_used(update_token, ostream.bytes_written);
+    vsce_zeroize(&token, sizeof(token));
 
     mbedtls_mpi new_x;
     mbedtls_mpi_init(&new_x);
