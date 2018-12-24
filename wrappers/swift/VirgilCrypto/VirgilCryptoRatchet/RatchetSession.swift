@@ -105,32 +105,12 @@ import VirgilCryptoFoundation
         try RatchetError.handleError(fromC: proxyResult)
     }
 
-    @objc public func encryptLen(plainTextLen: Int) -> Int {
-        let proxyResult = vscr_ratchet_session_encrypt_len(self.c_ctx, plainTextLen)
-
-        return proxyResult
-    }
-
-    @objc public func encrypt(plainText: Data) throws -> Data {
-        let cipherTextCount = self.encryptLen(plainTextLen: plainText.count)
-        var cipherText = Data(count: cipherTextCount)
-        var cipherTextBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(cipherTextBuf)
-        }
-
-        let proxyResult = plainText.withUnsafeBytes({ (plainTextPointer: UnsafePointer<byte>) -> vscr_error_t in
-            cipherText.withUnsafeMutableBytes({ (cipherTextPointer: UnsafeMutablePointer<byte>) -> vscr_error_t in
-                vsc_buffer_init(cipherTextBuf)
-                vsc_buffer_use(cipherTextBuf, cipherTextPointer, cipherTextCount)
-                return vscr_ratchet_session_encrypt(self.c_ctx, vsc_data(plainTextPointer, plainText.count), cipherTextBuf)
-            })
+    @objc public func encrypt(plainText: Data, errCtx: ErrorCtx) -> RatchetMessage {
+        let proxyResult = plainText.withUnsafeBytes({ (plainTextPointer: UnsafePointer<byte>) in
+            return vscr_ratchet_session_encrypt(self.c_ctx, vsc_data(plainTextPointer, plainText.count), errCtx.c_ctx)
         })
-        cipherText.count = vsc_buffer_len(cipherTextBuf)
 
-        try RatchetError.handleError(fromC: proxyResult)
-
-        return cipherText
+        return RatchetMessage.init(take: proxyResult!)
     }
 
     @objc public func decryptLen(message: RatchetMessage) -> Int {

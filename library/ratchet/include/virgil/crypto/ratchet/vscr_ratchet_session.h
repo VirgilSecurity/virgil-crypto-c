@@ -178,11 +178,8 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
         vsc_data_t receiver_identity_private_key, vsc_data_t receiver_long_term_private_key,
         vsc_data_t receiver_one_time_private_key, const vscr_ratchet_message_t *message);
 
-VSCR_PUBLIC size_t
-vscr_ratchet_session_encrypt_len(vscr_ratchet_session_t *ratchet_session, size_t plain_text_len);
-
-VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_encrypt(vscr_ratchet_session_t *ratchet_session, vsc_data_t plain_text, vsc_buffer_t *cipher_text);
+VSCR_PUBLIC vscr_ratchet_message_t *
+vscr_ratchet_session_encrypt(vscr_ratchet_session_t *ratchet_session, vsc_data_t plain_text, vscr_error_ctx_t *err_ctx);
 
 VSCR_PUBLIC size_t
 vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session, const vscr_ratchet_message_t *message);
