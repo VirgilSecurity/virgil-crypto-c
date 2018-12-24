@@ -546,39 +546,11 @@ curve_err:
     return status;
 }
 
-VSCR_PUBLIC size_t
-vscr_ratchet_session_encrypt_len(vscr_ratchet_session_t *ratchet_session, size_t plain_text_len) {
-
-    VSCR_ASSERT_PTR(ratchet_session);
-    VSCR_UNUSED(plain_text_len);
-
-    return Session_size;
-
-    //    // FIXME
-    //
-    //    size_t top_sequence_len = 1 + 3 /* SEQUENCE */
-    //                              + 1 + 1 + 5 /* VERSION */
-    //                              + 1 + 3 +
-    //                              vscr_ratchet_encrypt_len(ratchet_session->ratchet, plain_text_len); /* message */
-    //
-    //    if (!ratchet_session->received_first_response) {
-    //        top_sequence_len += 1 + 1 + 5 /* version */
-    //                            + 1 + 1 + 32 /* sender_identity_key */
-    //                            + 1 + 1 + 32 /* sender_ephemeral_key */
-    //                            + 1 + 1 + 32 /* receiver_long_term_key */
-    //                            + 1 + 1 + 32; /* receiver_one_time_public_key */
-    //    }
-    //
-    //    return top_sequence_len;
-}
-
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC vscr_ratchet_message_t *
 vscr_ratchet_session_encrypt(
-        vscr_ratchet_session_t *ratchet_session, vsc_data_t plain_text, vsc_buffer_t *cipher_text) {
+        vscr_ratchet_session_t *ratchet_session, vsc_data_t plain_text, vscr_error_ctx_t *err_ctx) {
 
     VSCR_ASSERT_PTR(ratchet_session);
-    VSCR_ASSERT(
-            vsc_buffer_unused_len(cipher_text) >= vscr_ratchet_session_encrypt_len(ratchet_session, plain_text.len));
 
     if (!ratchet_session->is_initiator && !ratchet_session->received_first_response) {
         VSCR_ASSERT(false);
@@ -586,25 +558,17 @@ vscr_ratchet_session_encrypt(
 
     vscr_error_t result;
 
-    Message ratchet_message = Message_init_zero;
-    ratchet_message.version = vscr_ratchet_common_RATCHET_MESSAGE_VERSION;
+    vscr_ratchet_message_t *ratchet_message = vscr_ratchet_message_new();
+    ratchet_message->message_pb.version = vscr_ratchet_common_RATCHET_MESSAGE_VERSION;
 
     if (ratchet_session->received_first_response) {
-        ratchet_message.which_message = Message_regular_message_tag;
-        RegularMessage *regular_message = &ratchet_message.message.regular_message;
+        ratchet_message->message_pb.which_message = Message_regular_message_tag;
+        RegularMessage *regular_message = &ratchet_message->message_pb.message.regular_message;
 
         result = vscr_ratchet_encrypt(ratchet_session->ratchet, plain_text, regular_message);
-
-        if (result == vscr_SUCCESS) {
-            pb_ostream_t ostream =
-                    pb_ostream_from_buffer(vsc_buffer_unused_bytes(cipher_text), vsc_buffer_capacity(cipher_text));
-
-            VSCR_ASSERT(pb_encode(&ostream, Message_fields, &ratchet_message));
-            vsc_buffer_inc_used(cipher_text, ostream.bytes_written);
-        }
     } else {
-        ratchet_message.which_message = Message_prekey_message_tag;
-        PrekeyMessage *prekey_message = &ratchet_message.message.prekey_message;
+        ratchet_message->message_pb.which_message = Message_prekey_message_tag;
+        PrekeyMessage *prekey_message = &ratchet_message->message_pb.message.prekey_message;
         RegularMessage *regular_message = &prekey_message->regular_message;
 
         prekey_message->version = vscr_ratchet_common_RATCHET_PROTOCOL_VERSION;
@@ -622,17 +586,17 @@ vscr_ratchet_session_encrypt(
                 sizeof(ratchet_session->receiver_one_time_public_key));
 
         result = vscr_ratchet_encrypt(ratchet_session->ratchet, plain_text, regular_message);
-
-        if (result == vscr_SUCCESS) {
-            pb_ostream_t ostream =
-                    pb_ostream_from_buffer(vsc_buffer_unused_bytes(cipher_text), vsc_buffer_capacity(cipher_text));
-
-            VSCR_ASSERT(pb_encode(&ostream, Message_fields, &ratchet_message));
-            vsc_buffer_inc_used(cipher_text, ostream.bytes_written);
-        }
     }
 
-    return result;
+    if (result != vscr_SUCCESS) {
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, result);
+
+        vscr_ratchet_message_destroy(&ratchet_message);
+
+        return NULL;
+    }
+
+    return ratchet_message;
 }
 
 VSCR_PUBLIC size_t
@@ -716,6 +680,8 @@ vscr_ratchet_session_serialize(vscr_ratchet_session_t *ratchet_session, vsc_buff
 
     VSCR_ASSERT(pb_encode(&ostream, Session_fields, &session_pb));
     vsc_buffer_inc_used(output, ostream.bytes_written);
+
+    vscr_zeroize(&session_pb, sizeof(Session));
 }
 
 VSCR_PUBLIC vscr_ratchet_session_t *
@@ -755,6 +721,8 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
             sizeof(session_pb.receiver_one_time_key));
 
     vscr_ratchet_deserialize(&session_pb.ratchet, session->ratchet);
+
+    vscr_zeroize(&session_pb, sizeof(Session));
 
     return session;
 }
