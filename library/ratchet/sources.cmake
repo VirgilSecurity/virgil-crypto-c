@@ -99,6 +99,11 @@ set_property(
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_msg_type.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
 target_sources(ratchet
     PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_assert.h"
@@ -120,6 +125,7 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_skipped_message_key.h>"
             "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_skipped_message_key_list_node.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_error.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/ratchet/vscr_msg_type.h"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_library.c"
@@ -139,6 +145,7 @@ target_sources(ratchet
             "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_skipped_message_key.c>"
             "$<$<BOOL:${VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscr_ratchet_skipped_message_key_list_node.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscr_error.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vscr_msg_type.c"
         )
 
 target_include_directories(ratchet

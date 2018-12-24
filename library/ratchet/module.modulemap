@@ -8,5 +8,6 @@ framework module VSCRatchet {
     header "vscr_ratchet_message.h"
     header "vscr_ratchet_session.h"
     header "vscr_error.h"
+    header "vscr_msg_type.h"
     export *
 }

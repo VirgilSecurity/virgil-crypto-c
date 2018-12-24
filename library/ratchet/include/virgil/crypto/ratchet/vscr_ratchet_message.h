@@ -51,7 +51,7 @@
 #include "vscr_ratchet_common.h"
 #include "vscr_error_ctx.h"
 #include "vscr_ratchet_message.h"
-#include "vscr_error.h"
+#include "vscr_msg_type.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -135,40 +135,25 @@ vscr_ratchet_message_destroy(vscr_ratchet_message_t **ratchet_message_ref);
 VSCR_PUBLIC vscr_ratchet_message_t *
 vscr_ratchet_message_shallow_copy(vscr_ratchet_message_t *ratchet_message);
 
-//
-//  FIXME
-//
-VSCR_PUBLIC size_t
+VSCR_PUBLIC vscr_msg_type_t
 vscr_ratchet_message_get_type(vscr_ratchet_message_t *ratchet_message);
 
-//
-//  FIXME
-//
 VSCR_PUBLIC vsc_data_t
 vscr_ratchet_message_get_long_term_public_key(vscr_ratchet_message_t *ratchet_message);
 
-//
-//  FIXME
-//
-VSCR_PUBLIC vsc_data_t
-vscr_ratchet_message_compute_long_term_public_key_id(vscr_ratchet_message_t *ratchet_message);
+VSCR_PUBLIC void
+vscr_ratchet_message_compute_long_term_public_key_id(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *buffer);
 
-//
-//  FIXME
-//
 VSCR_PUBLIC vsc_data_t
 vscr_ratchet_message_get_one_time_public_key(vscr_ratchet_message_t *ratchet_message);
 
-//
-//  FIXME
-//
-VSCR_PUBLIC vsc_data_t
-vscr_ratchet_message_compute_one_time_public_key_id(vscr_ratchet_message_t *ratchet_message);
+VSCR_PUBLIC void
+vscr_ratchet_message_compute_one_time_public_key_id(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *buffer);
 
 VSCR_PUBLIC size_t
 vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *ratchet_message);
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC void
 vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *output);
 
 VSCR_PUBLIC vscr_ratchet_message_t *

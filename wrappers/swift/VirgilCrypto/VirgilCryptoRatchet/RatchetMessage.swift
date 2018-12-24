@@ -68,39 +68,72 @@ import VirgilCryptoFoundation
         vscr_ratchet_message_delete(self.c_ctx)
     }
 
-    /// FIXME
-    @objc public func getType() -> Int {
+    @objc public func getType() -> MsgType {
         let proxyResult = vscr_ratchet_message_get_type(self.c_ctx)
 
-        return proxyResult
+        return MsgType.init(fromC: proxyResult)
     }
 
-    /// FIXME
     @objc public func getLongTermPublicKey() -> Data {
         let proxyResult = vscr_ratchet_message_get_long_term_public_key(self.c_ctx)
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
-    /// FIXME
-    @objc public func computeLongTermPublicKeyId() -> Data {
-        let proxyResult = vscr_ratchet_message_compute_long_term_public_key_id(self.c_ctx)
+    @objc public func computeLongTermPublicKeyId(buffer: Data) -> Data {
+        let bufferCount = self.ClassRatchetCommonConstantRatchetKeyIdLength
+        var buffer = Data(count: bufferCount)
+        var bufferBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(bufferBuf)
+        }
 
-        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+        buffer.withUnsafeBytes({ (bufferPointer: UnsafePointer<byte>) -> Void in
+            buffer.withUnsafeMutableBytes({ (bufferPointer: UnsafeMutablePointer<byte>) -> Void in
+                vsc_buffer_init(bufferBuf)
+                vsc_buffer_use(bufferBuf, bufferPointer, bufferCount)
+
+                var bufferBuf = vsc_buffer_new_with_data(vsc_data(bufferPointer, buffer.count))
+                defer {
+                    vsc_buffer_delete(bufferBuf)
+                }
+                vscr_ratchet_message_compute_long_term_public_key_id(self.c_ctx, bufferBuf)
+            })
+        })
+        buffer.count = vsc_buffer_len(bufferBuf)
+
+        return buffer
     }
 
-    /// FIXME
     @objc public func getOneTimePublicKey() -> Data {
         let proxyResult = vscr_ratchet_message_get_one_time_public_key(self.c_ctx)
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
-    /// FIXME
-    @objc public func computeOneTimePublicKeyId() -> Data {
-        let proxyResult = vscr_ratchet_message_compute_one_time_public_key_id(self.c_ctx)
+    @objc public func computeOneTimePublicKeyId(buffer: Data) -> Data {
+        let bufferCount = self.ClassRatchetCommonConstantRatchetKeyIdLength
+        var buffer = Data(count: bufferCount)
+        var bufferBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(bufferBuf)
+        }
 
-        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+        buffer.withUnsafeBytes({ (bufferPointer: UnsafePointer<byte>) -> Void in
+            buffer.withUnsafeMutableBytes({ (bufferPointer: UnsafeMutablePointer<byte>) -> Void in
+                vsc_buffer_init(bufferBuf)
+                vsc_buffer_use(bufferBuf, bufferPointer, bufferCount)
+
+                var bufferBuf = vsc_buffer_new_with_data(vsc_data(bufferPointer, buffer.count))
+                defer {
+                    vsc_buffer_delete(bufferBuf)
+                }
+                vscr_ratchet_message_compute_one_time_public_key_id(self.c_ctx, bufferBuf)
+            })
+        })
+        buffer.count = vsc_buffer_len(bufferBuf)
+
+        return buffer
     }
 
     @objc public func serializeLen() -> Int {
@@ -109,7 +142,7 @@ import VirgilCryptoFoundation
         return proxyResult
     }
 
-    @objc public func serialize() throws -> Data {
+    @objc public func serialize() -> Data {
         let outputCount = self.serializeLen()
         var output = Data(count: outputCount)
         var outputBuf = vsc_buffer_new()
@@ -117,14 +150,12 @@ import VirgilCryptoFoundation
             vsc_buffer_delete(outputBuf)
         }
 
-        let proxyResult = output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutablePointer<byte>) -> vscr_error_t in
+        output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutablePointer<byte>) -> Void in
             vsc_buffer_init(outputBuf)
             vsc_buffer_use(outputBuf, outputPointer, outputCount)
-            return vscr_ratchet_message_serialize(self.c_ctx, outputBuf)
+            vscr_ratchet_message_serialize(self.c_ctx, outputBuf)
         })
         output.count = vsc_buffer_len(outputBuf)
-
-        try RatchetError.handleError(fromC: proxyResult)
 
         return output
     }

@@ -36,38 +36,16 @@
 import Foundation
 import VSCRatchet
 
-@objc(VSCRRatchetError) public enum RatchetError: Int, Error {
+@objc(VSCRMsgType) public enum MsgType: Int {
 
-    /// Error during protobuf deserialization
-    case protobufDecodeError = 1
+    /// Regular message
+    case regular = 0
 
-    /// Message version doesn't match
-    case messageVersionDoesnTMatch = 2
-
-    /// Bad message
-    case badMessage = 3
-
-    /// AES error
-    case aesError = 4
-
-    /// Wrong message format
-    case wrongMessageFormat = 5
-
-    /// RNG failed
-    case rngFailed = 6
-
-    /// curve25519 error
-    case curve25519Error = 7
+    /// Prekey message
+    case prekey = 1
 
     /// Create enumeration value from the correspond C enumeration value.
-    internal init(fromC error: vscr_error_t) {
-        self.init(rawValue: Int(error.rawValue))!
-    }
-
-    /// Check given C error (result), and if it's not "success" then throw correspond exception.
-    internal static func handleError(fromC code: vscr_error_t) throws {
-        if code != vscr_SUCCESS {
-            throw RatchetError(fromC: code)
-        }
+    internal init(fromC msgType: vscr_msg_type_t) {
+        self.init(rawValue: Int(msgType.rawValue))!
     }
 }

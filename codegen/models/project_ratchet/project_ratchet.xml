@@ -53,6 +53,7 @@
     <module name="memory" from="shared"/>
 
     <enum name="error"/>
+    <enum name="msg type"/>
 
     <class name="ratchet common"/>
     <class name="error"/>

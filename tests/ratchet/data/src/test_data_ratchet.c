@@ -38,6 +38,8 @@ const byte test_ratchet_plain_text1_BYTES[] = "Hello, this is first test message
 
 const byte test_ratchet_plain_text2_BYTES[] = "Test message number two";
 
+const byte test_ratchet_plain_text3_BYTES[] = "Third message, just to be 100% sure";
+
 const vsc_data_t test_ratchet_plain_text1 = {
         test_ratchet_plain_text1_BYTES, sizeof(test_ratchet_plain_text1_BYTES)
 };
@@ -46,16 +48,8 @@ const vsc_data_t test_ratchet_plain_text2 = {
         test_ratchet_plain_text2_BYTES, sizeof(test_ratchet_plain_text2_BYTES)
 };
 
-const byte test_ratchet_kdf_info_root_BYTES[] = {
-        0x31, 0xe0, 0x20, 0x5a,
-};
-
-const byte test_ratchet_kdf_info_ratchet_BYTES[] = {
-        0xbf, 0x49, 0xc6, 0x1f,
-};
-
-const byte test_ratchet_kdf_info_cipher_BYTES[] = {
-        0xd6, 0xc9, 0x97, 0x9c,
+const vsc_data_t test_ratchet_plain_text3 = {
+        test_ratchet_plain_text3_BYTES, sizeof(test_ratchet_plain_text3_BYTES)
 };
 
 const byte test_ratchet_shared_secret_BYTES[] = {
@@ -78,18 +72,6 @@ const byte test_ratchet_ratchet_private_key_BYTES[] = {
         0xa8, 0x38, 0x89, 0x5b, 0x7f, 0xb7, 0x87, 0x1b,
         0x03, 0x78, 0xfd, 0xa3, 0xcd, 0xb7, 0x0f, 0x3f,
         0x3f, 0x98, 0x19, 0x9a, 0x0e, 0xc3, 0x5c, 0x4f,
-};
-
-const vsc_data_t test_ratchet_kdf_info_root = {
-        test_ratchet_kdf_info_root_BYTES, sizeof(test_ratchet_kdf_info_root_BYTES)
-};
-
-const vsc_data_t test_ratchet_kdf_info_ratchet = {
-        test_ratchet_kdf_info_ratchet_BYTES, sizeof(test_ratchet_kdf_info_ratchet_BYTES)
-};
-
-const vsc_data_t test_ratchet_kdf_info_cipher = {
-        test_ratchet_kdf_info_cipher_BYTES, sizeof(test_ratchet_kdf_info_cipher_BYTES)
 };
 
 const vsc_data_t test_ratchet_shared_secret = {
