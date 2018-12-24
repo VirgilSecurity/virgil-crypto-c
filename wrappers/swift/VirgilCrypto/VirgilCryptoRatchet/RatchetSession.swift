@@ -165,7 +165,7 @@ import VirgilCryptoFoundation
         return proxyResult
     }
 
-    @objc public func serialize() throws -> Data {
+    @objc public func serialize() -> Data {
         let outputCount = self.serializeLen()
         var output = Data(count: outputCount)
         var outputBuf = vsc_buffer_new()
@@ -173,14 +173,12 @@ import VirgilCryptoFoundation
             vsc_buffer_delete(outputBuf)
         }
 
-        let proxyResult = output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutablePointer<byte>) -> vscr_error_t in
+        output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutablePointer<byte>) -> Void in
             vsc_buffer_init(outputBuf)
             vsc_buffer_use(outputBuf, outputPointer, outputCount)
-            return vscr_ratchet_session_serialize(self.c_ctx, outputBuf)
+            vscr_ratchet_session_serialize(self.c_ctx, outputBuf)
         })
         output.count = vsc_buffer_len(outputBuf)
-
-        try RatchetError.handleError(fromC: proxyResult)
 
         return output
     }

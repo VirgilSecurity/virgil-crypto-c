@@ -44,16 +44,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_ERROR_H_INCLUDED
-#define VSCR_ERROR_H_INCLUDED
+#include "vscr_msg_type.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -62,55 +56,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-enum vscr_error_t {
-    //
-    //  No errors was occurred.
-    //
-    vscr_SUCCESS = 0,
-    //
-    //  Error during protobuf deserialization
-    //
-    vscr_error_PROTOBUF_DECODE_ERROR = 1,
-    //
-    //  Message version doesn't match
-    //
-    vscr_error_MESSAGE_VERSION_DOESN_T_MATCH = 2,
-    //
-    //  Bad message
-    //
-    vscr_error_BAD_MESSAGE = 3,
-    //
-    //  AES error
-    //
-    vscr_error_AES_ERROR = 4,
-    //
-    //  Wrong message format
-    //
-    vscr_error_WRONG_MESSAGE_FORMAT = 5,
-    //
-    //  RNG failed
-    //
-    vscr_error_RNG_FAILED = 6,
-    //
-    //  curve25519 error
-    //
-    vscr_error_CURVE25519_ERROR = 7
-};
-typedef enum vscr_error_t vscr_error_t;
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCR_ERROR_H_INCLUDED
 //  @end

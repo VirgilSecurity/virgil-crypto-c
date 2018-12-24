@@ -99,8 +99,6 @@
         <argument name="output" class="buffer">
             <length method="serialize len"/>
         </argument>
-
-        <return enum="error"/>
     </method>
 
     <method name="deserialize" is_static="1">

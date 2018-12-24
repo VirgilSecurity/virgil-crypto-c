@@ -195,7 +195,7 @@ VSCR_PUBLIC size_t
 vscr_ratchet_decrypt_len(vscr_ratchet_t *ratchet, size_t cipher_text_len);
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_decrypt(vscr_ratchet_t *ratchet, RegularMessage *regular_message, vsc_buffer_t *plain_text);
+vscr_ratchet_decrypt(vscr_ratchet_t *ratchet, const RegularMessage *regular_message, vsc_buffer_t *plain_text);
 
 VSCR_PUBLIC void
 vscr_ratchet_serialize(vscr_ratchet_t *ratchet, Ratchet *ratchet_pb);

@@ -49,7 +49,7 @@
 #include "vscr_assert.h"
 #include "vscr_ratchet_message_defs.h"
 
-#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
+#include <virgil/crypto/foundation/vscf_sha512.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 
@@ -78,6 +78,9 @@ vscr_ratchet_message_init_ctx(vscr_ratchet_message_t *ratchet_message);
 //
 static void
 vscr_ratchet_message_cleanup_ctx(vscr_ratchet_message_t *ratchet_message);
+
+static void
+vscr_ratchet_message_compute_key_id(vsc_data_t key, vsc_buffer_t *buffer);
 
 //
 //  Return size of 'vscr_ratchet_message_t'.
@@ -205,8 +208,6 @@ static void
 vscr_ratchet_message_init_ctx(vscr_ratchet_message_t *ratchet_message) {
 
     VSCR_ASSERT_PTR(ratchet_message);
-
-    ratchet_message->message = vscr_alloc(sizeof(Message));
 }
 
 //
@@ -218,21 +219,16 @@ static void
 vscr_ratchet_message_cleanup_ctx(vscr_ratchet_message_t *ratchet_message) {
 
     VSCR_ASSERT_PTR(ratchet_message);
-
-    vscr_dealloc(ratchet_message->message);
 }
 
-//
-//  FIXME
-//
-VSCR_PUBLIC size_t
+VSCR_PUBLIC vscr_msg_type_t
 vscr_ratchet_message_get_type(vscr_ratchet_message_t *ratchet_message) {
 
     VSCR_ASSERT_PTR(ratchet_message);
 
-    if (ratchet_message->message->which_message == Message_prekey_message_tag) {
+    if (ratchet_message->message_pb.which_message == Message_prekey_message_tag) {
         return vscr_ratchet_message_RATCHET_MESSAGE_TYPE_PREKEY;
-    } else if (ratchet_message->message->which_message == Message_regular_message_tag) {
+    } else if (ratchet_message->message_pb.which_message == Message_regular_message_tag) {
         return vscr_ratchet_message_RATCHET_MESSAGE_TYPE_REGULAR;
     } else {
         VSCR_ASSERT(false);
@@ -241,60 +237,40 @@ vscr_ratchet_message_get_type(vscr_ratchet_message_t *ratchet_message) {
     return 0;
 }
 
-//
-//  FIXME
-//
 VSCR_PUBLIC vsc_data_t
 vscr_ratchet_message_get_long_term_public_key(vscr_ratchet_message_t *ratchet_message) {
 
     VSCR_ASSERT_PTR(ratchet_message);
-    VSCR_ASSERT(ratchet_message->message->which_message == Message_prekey_message_tag);
+    VSCR_ASSERT(ratchet_message->message_pb.which_message == Message_prekey_message_tag);
 
-    return vsc_data(ratchet_message->message->message.prekey_message.receiver_long_term_key,
-            sizeof(ratchet_message->message->message.prekey_message.receiver_long_term_key));
+    return vsc_data(ratchet_message->message_pb.message.prekey_message.receiver_long_term_key,
+            sizeof(ratchet_message->message_pb.message.prekey_message.receiver_long_term_key));
 }
 
-//
-//  FIXME
-//
-VSCR_PUBLIC vsc_data_t
-vscr_ratchet_message_compute_long_term_public_key_id(vscr_ratchet_message_t *ratchet_message) {
-
-    //  TODO: This is STUB. Implement me.
+VSCR_PUBLIC void
+vscr_ratchet_message_compute_long_term_public_key_id(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(ratchet_message);
-    VSCR_ASSERT(ratchet_message->message->which_message == Message_prekey_message_tag);
 
-    return vsc_data(ratchet_message->message->message.prekey_message.receiver_long_term_key,
-            sizeof(ratchet_message->message->message.prekey_message.receiver_long_term_key));
+    vscr_ratchet_message_compute_key_id(vscr_ratchet_message_get_long_term_public_key(ratchet_message), buffer);
 }
 
-//
-//  FIXME
-//
 VSCR_PUBLIC vsc_data_t
 vscr_ratchet_message_get_one_time_public_key(vscr_ratchet_message_t *ratchet_message) {
 
     VSCR_ASSERT_PTR(ratchet_message);
-    VSCR_ASSERT(ratchet_message->message->which_message == Message_prekey_message_tag);
+    VSCR_ASSERT(ratchet_message->message_pb.which_message == Message_prekey_message_tag);
 
-    return vsc_data(ratchet_message->message->message.prekey_message.receiver_one_time_key,
-            sizeof(ratchet_message->message->message.prekey_message.receiver_one_time_key));
+    return vsc_data(ratchet_message->message_pb.message.prekey_message.receiver_one_time_key,
+            sizeof(ratchet_message->message_pb.message.prekey_message.receiver_one_time_key));
 }
 
-//
-//  FIXME
-//
-VSCR_PUBLIC vsc_data_t
-vscr_ratchet_message_compute_one_time_public_key_id(vscr_ratchet_message_t *ratchet_message) {
-
-    //  TODO: This is STUB. Implement me.
+VSCR_PUBLIC void
+vscr_ratchet_message_compute_one_time_public_key_id(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(ratchet_message);
-    VSCR_ASSERT(ratchet_message->message->which_message == Message_prekey_message_tag);
 
-    return vsc_data(ratchet_message->message->message.prekey_message.receiver_one_time_key,
-            sizeof(ratchet_message->message->message.prekey_message.receiver_one_time_key));
+    vscr_ratchet_message_compute_key_id(vscr_ratchet_message_get_one_time_public_key(ratchet_message), buffer);
 }
 
 VSCR_PUBLIC size_t
@@ -302,40 +278,65 @@ vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *ratchet_message) {
 
     VSCR_UNUSED(ratchet_message);
 
-    //  TODO: This is STUB. Implement me.
+    //  TODO: Optimize
 
-    return 500;
+    return Message_size;
 }
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC void
 vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *output) {
 
     VSCR_UNUSED(ratchet_message);
     VSCR_UNUSED(output);
-    VSCR_ASSERT(vsc_buffer_unused_len(output) >= 0); // FIXME
-
-    //  TODO: This is STUB. Implement me.
+    VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_message_serialize_len(ratchet_message));
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_capacity(output));
 
-    bool status = pb_encode(&ostream, Message_fields, ratchet_message->message);
-    VSCR_ASSERT(status); // FIXME
-
-    return vscr_SUCCESS;
+    VSCR_ASSERT(pb_encode(&ostream, Message_fields, &ratchet_message->message_pb));
+    vsc_buffer_inc_used(output, ostream.bytes_written);
 }
 
 VSCR_PUBLIC vscr_ratchet_message_t *
 vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
 
-    VSCR_UNUSED(input);
-    VSCR_UNUSED(err_ctx);
+    VSCR_ASSERT(vsc_data_is_valid(input));
+
+    if (input.len > Message_size) {
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_PROTOBUF_DECODE_ERROR);
+
+        return NULL;
+    }
 
     vscr_ratchet_message_t *message = vscr_ratchet_message_new();
 
     pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 
-    bool status = pb_decode(&istream, Message_fields, message->message);
-    VSCR_ASSERT(status);
+    bool status = pb_decode(&istream, Message_fields, &message->message_pb);
+
+    if (!status) {
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_PROTOBUF_DECODE_ERROR);
+        vscr_ratchet_message_destroy(&message);
+
+        return NULL;
+    }
 
     return message;
+}
+
+static void
+vscr_ratchet_message_compute_key_id(vsc_data_t key, vsc_buffer_t *buffer) {
+
+    VSCR_ASSERT(vsc_buffer_unused_len(buffer) >= vscr_ratchet_common_RATCHET_KEY_ID_LENGTH);
+
+    vscf_sha512_t *sha512 = vscf_sha512_new();
+
+    vsc_buffer_t *buf = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
+
+    vscf_sha512_hash(key, buf);
+
+    memcpy(vsc_buffer_unused_bytes(buffer), vsc_buffer_bytes(buf), vscr_ratchet_common_RATCHET_KEY_ID_LENGTH);
+    vsc_buffer_inc_used(buffer, vscr_ratchet_common_RATCHET_KEY_ID_LENGTH);
+
+    vsc_buffer_destroy(&buf);
+    vscf_sha512_destroy(&sha512);
 }

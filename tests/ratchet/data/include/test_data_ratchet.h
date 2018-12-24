@@ -39,9 +39,7 @@
 
 extern const vsc_data_t test_ratchet_plain_text1;
 extern const vsc_data_t test_ratchet_plain_text2;
-extern const vsc_data_t test_ratchet_kdf_info_root;
-extern const vsc_data_t test_ratchet_kdf_info_ratchet;
-extern const vsc_data_t test_ratchet_kdf_info_cipher;
+extern const vsc_data_t test_ratchet_plain_text3;
 extern const vsc_data_t test_ratchet_shared_secret;
 extern const vsc_data_t test_ratchet_ratchet_private_key;
 

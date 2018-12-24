@@ -1,0 +1,9 @@
+<enum name="msg type" definition="public">
+    <constant name="regular" value="0">
+        Regular message
+    </constant>
+
+    <constant name="prekey" value="1">
+        Prekey message
+    </constant>
+</enum>

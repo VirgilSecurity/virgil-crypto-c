@@ -38,8 +38,13 @@
 #include "vsc_data.h"
 
 extern const vsc_data_t test_ratchet_session_alice_identity_private_key;
+extern const vsc_data_t test_ratchet_session_alice_identity_public_key;
 extern const vsc_data_t test_ratchet_session_bob_identity_private_key;
-extern const vsc_data_t test_ratchet_session_bob_longterm_private_key;
-extern const vsc_data_t test_ratchet_session_bob_onetime_private_key;
+extern const vsc_data_t test_ratchet_session_bob_identity_public_key;
+extern const vsc_data_t test_ratchet_session_bob_long_term_private_key;
+extern const vsc_data_t test_ratchet_session_bob_long_term_public_key;
+extern const vsc_data_t test_ratchet_session_bob_one_time_private_key;
+extern const vsc_data_t test_ratchet_session_bob_one_time_public_key;
+
 
 #endif //VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_SESSION_H

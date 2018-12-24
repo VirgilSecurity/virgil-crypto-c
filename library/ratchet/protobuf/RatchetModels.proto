@@ -1,5 +1,8 @@
 syntax = "proto3";
 
+message Empty {
+}
+
 message RegularMessage {
 	uint32 version = 1;
 	uint32 counter = 2;
@@ -43,10 +46,13 @@ message SkippedMessageKey {
 }
 
 message Ratchet {
-	SenderChain sender_chain = 1;
-	bytes root_key = 2;
-	repeated ReceiverChain receiver_chains = 3;
-	repeated SkippedMessageKey skipped_message_keys = 4;
+	oneof sender_chain {
+		SenderChain sender_chain_value = 1;
+		Empty empty = 2;
+	}
+	bytes root_key = 3;
+	repeated ReceiverChain receiver_chains = 4;
+	repeated SkippedMessageKey skipped_message_keys = 5;
 }
 
 message Session {

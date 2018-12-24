@@ -194,7 +194,7 @@ vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session, const vscr
 VSCR_PUBLIC size_t
 vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *ratchet_session);
 
-VSCR_PUBLIC vscr_error_t
+VSCR_PUBLIC void
 vscr_ratchet_session_serialize(vscr_ratchet_session_t *ratchet_session, vsc_buffer_t *output);
 
 VSCR_PUBLIC vscr_ratchet_session_t *
