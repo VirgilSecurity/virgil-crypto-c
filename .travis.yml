@@ -7,6 +7,11 @@ compiler:
   - gcc
   - clang
 
+addons:
+  apt:
+    packages:
+      valgrind
+
 install:
   - travis_retry wget https://cmake.org/files/v3.11/cmake-3.11.1-Linux-x86_64.sh
   - sudo bash cmake-3.11.1-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local
@@ -28,6 +33,7 @@ install:
 before_script:
   - ${CC} --version
   - cmake --version
+  - valgrind --version
 
 script:
   - cmake -H. -Bbuild -DCMAKE_INSTALL_PREFIX=install
