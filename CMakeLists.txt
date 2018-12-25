@@ -199,7 +199,7 @@ endif()
 #   Integration tests
 # ---------------------------------------------------------------------------
 if(ENABLE_TESTING)
-    enable_testing()
+    include(CTest)
 endif()
 
 if(VIRGIL_C_TESTING AND NOT CMAKE_CROSSCOMPILING)
