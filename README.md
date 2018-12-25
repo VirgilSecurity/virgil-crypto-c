@@ -17,7 +17,7 @@ The library is available for different platforms and contains wrappers for other
 
 ## Features
 
-Virgil Security Crypto C library is decomposed to small libraries with specific purposes, so a developer can freely choose a subset of them.
+Virgil Security Crypto C library is decomposed to small libraries with specific purposes, so a developer can freely choose a subset of them.
 
 ### Library: foundation
 
