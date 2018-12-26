@@ -1,0 +1,10 @@
+<enum name="alg" definition="public">
+    Defines enumeration of possible algorithms
+
+    <constant name="none" value="0"/>
+    <constant name="hash"/>
+    <constant name="kdf1"/>
+    <constant name="kdf2"/>
+    <constant name="pbkdf1"/>
+    <constant name="pbkdf2"/>
+</enum>

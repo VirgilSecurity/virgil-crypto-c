@@ -19,6 +19,23 @@
         <return enum="key alg"/>
     </method>
 
+    <method name="from alg">
+        Return OID for given algorithm.
+
+        <argument name="alg" enum="alg"/>
+
+        <return class="data"/>
+    </method>
+
+
+    <method name="to alg">
+        Return algorithm for given OID.
+
+        <argument name="oid" class="data"/>
+
+        <return enum="alg"/>
+    </method>
+
 
     <method name="equal">
         Return true if given OIDs are equal.

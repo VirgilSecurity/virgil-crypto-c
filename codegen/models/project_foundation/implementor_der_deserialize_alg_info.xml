@@ -1,8 +1,0 @@
-<implementor name = "der deserialize alg info" is_default="1">
-    <implementation name="alg info der deserialize">
-        Deserialize of algorithm information
-
-        <interface name="alg info der deserializer"/>
-
-    </implementation>
-</implementor>

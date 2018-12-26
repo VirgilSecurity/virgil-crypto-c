@@ -55,6 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_key_alg.h"
+#include "vscf_alg.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -90,6 +91,18 @@ vscf_oid_from_key_alg(vscf_key_alg_t key_alg);
 //
 VSCF_PUBLIC vscf_key_alg_t
 vscf_oid_to_key_alg(vsc_data_t oid);
+
+//
+//  Return OID for given algorithm.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_oid_from_alg(vscf_alg_t alg);
+
+//
+//  Return algorithm for given OID.
+//
+VSCF_PUBLIC vscf_alg_t
+vscf_oid_to_alg(vsc_data_t oid);
 
 //
 //  Return true if given OIDs are equal.

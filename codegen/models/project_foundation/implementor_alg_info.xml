@@ -1,27 +1,28 @@
 <implementor name="alg info" is_default="1">
     Provide implementation of algorithm information
 
-<!-->
-    <implementation name="base alg">
-        Provide implementation of base algorithms (KDF1, KDF2) without additional options
+    <require enum="alg type id"/>
+    <require enum="alg"/>
+
+    <implementation name="base hash alg">
+        Provide implementation of base hash algorithms without additional options
 
         <interface name="alg info">
-            <constant name="alg type id" value="kdf"/>
+            <constant name="alg type id" enum="alg type id" value=".(c_enum_alg_type_id_constant_hash)"/>
         </interface>
 
-        <interface name="hash info"/>
-
     </implementation>
-  -->
+
 
     <implementation name="kdf1 alg info">
         Provide implementation of KDF1 without additional options
 
         <interface name="alg info">
-            <constant name="alg type id" enum="alg type id" value="kdf1"/>
+            <constant name="alg type id" enum="alg type id" value=".(c_enum_alg_type_id_constant_kdf1)"/>
         </interface>
 
         <context>
+            <property name="alg" enum="alg"/>
             <property name="hash alg" enum="hash alg"/>
             <property name="hash len" type="size"/>
         </context>
@@ -32,10 +33,11 @@
         Provide implementation of KDF2 without additional options
 
         <interface name="alg info">
-            <constant name="alg type id" enum="alg type id" value="kdf2"/>
+            <constant name="alg type id" enum="alg type id" value=".(c_enum_alg_type_id_constant_kdf2)"/>
         </interface>
 
         <context>
+            <property name="alg" enum="alg"/>
             <property name="hash alg" enum="hash alg"/>
             <property name="hash len" type="size"/>
         </context>
@@ -46,18 +48,69 @@
         Provide implementation of KDF3 without additional options
 
         <interface name="alg info">
-            <constant name="alg type id" enum="alg type id" value="pbkdf1"/>
+            <constant name="alg type id" enum="alg type id" value=".(c_enum_alg_type_id_constant_pbkdf1)"/>
         </interface>
 
         <context>
+            <property name="alg" enum="alg"/>
             <property name="hash alg" enum="hash alg"/>
             <property name="hash len" type="size"/>
-            <property name="hash function" type="string"/>
-            <property name="hash len" type="size"/>
-            <property name="password" class="data" access="readonly"/>
-            <property name="salt" class="data" access="readonly"/>
-            <property name="C" type="integer" access="readonly"/>
+            <property name="salt" class="data" access="readwrite"/>
+            <property name="iter count" type="integer" access="readwrite"/>
         </context>
+    </implementation>
+
+    <implementation name="pbkdf2 alg info">
+        Provide implementation of KDF3 without additional options
+
+        <interface name="alg info">
+            <constant name="alg type id" enum="alg type id" value=".(c_enum_alg_type_id_constant_pbkdf1)"/>
+        </interface>
+
+        <context>
+            <property name="alg" enum="alg"/>
+            <property name="hash alg" enum="hash alg"/>
+            <property name="hash len" type="size"/>
+            <property name="salt" class="data" access="readwrite"/>
+            <property name="keying len" type="size"/>
+            <property name="iter count" type="integer" access="readwrite"/>
+        </context>
+    </implementation>
+
+    <implementation name="alg info der deserialize">
+        Deserialize of algorithm information
+
+        <interface name="alg info der deserializer"/>
+        <require impl="kdf1 alg info" scope="private"/>
+        <require impl="kdf2 alg info" scope="private"/>
+        <require impl="base hash alg" scope="private"/>
+
+        <require class="oid"/>
+        <require class="asn1rd"/>
+        <require enum="asn1 tag"/>
+        <require enum="alg"/>
+
+        <dependency name="asn1 reader" interface="asn1 reader"/>
+        <dependency name="alg info" interface="alg info"/>
+
+    </implementation>
+
+    <implementation name="alg info der serialize">
+        Serialize algorithm information
+
+        <interface name="alg info der serializer"/>
+        <require impl="kdf1 alg info" scope="private"/>
+        <require impl="kdf2 alg info" scope="private"/>
+        <require impl="base hash alg" scope="private"/>
+
+        <require class="oid"/>
+        <require class="asn1wr"/>
+        <require enum="asn1 tag"/>
+        <require enum="alg"/>
+
+        <dependency name="asn1 writer" interface="asn1 writer"/>
+        <dependency name="alg info" interface="alg info"/>
+
     </implementation>
 
 </implementor>
