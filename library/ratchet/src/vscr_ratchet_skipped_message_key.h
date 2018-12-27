@@ -52,7 +52,7 @@
 #include "vscr_ratchet_skipped_message_key.h"
 #include "vscr_ratchet_message_key.h"
 
-#include <RatchetModels.pb.h>
+#include <RatchetSession.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 

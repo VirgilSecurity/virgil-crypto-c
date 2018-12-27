@@ -43,11 +43,8 @@
 #include "vscr_ratchet_session.h"
 
 #include "test_data_ratchet_session.h"
-#include "test_data_ratchet_prekey_message.h"
-#include "test_data_ratchet.h"
 
 #include <ed25519/ed25519.h>
-#include <RatchetModels.pb.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <virgil/crypto/ratchet/private/vscr_ratchet_message_defs.h>
 #include <virgil/crypto/ratchet/vscr_memory.h>
@@ -156,7 +153,7 @@ initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *sessio
     vscr_error_ctx_reset(&error_ctx);
 
     vscr_ratchet_message_t *ratchet_message =
-            vscr_ratchet_session_encrypt(session_alice, test_ratchet_plain_text1, &error_ctx);
+            vscr_ratchet_session_encrypt(session_alice, test_ratchet_session_plain_text1, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
 
     TEST_ASSERT_EQUAL(vscr_ratchet_message_RATCHET_MESSAGE_TYPE_PREKEY, vscr_ratchet_message_get_type(ratchet_message));
@@ -172,9 +169,9 @@ initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *sessio
     vscr_error_t result = vscr_ratchet_session_decrypt(session_bob, ratchet_message, plain_text);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
-    TEST_ASSERT_EQUAL_INT(test_ratchet_plain_text1.len, vsc_buffer_len(plain_text));
+    TEST_ASSERT_EQUAL_INT(test_ratchet_session_plain_text1.len, vsc_buffer_len(plain_text));
     TEST_ASSERT_EQUAL_MEMORY(
-            test_ratchet_plain_text1.bytes, vsc_buffer_bytes(plain_text), test_ratchet_plain_text1.len);
+            test_ratchet_session_plain_text1.bytes, vsc_buffer_bytes(plain_text), test_ratchet_session_plain_text1.len);
 
     vscr_ratchet_message_destroy(&ratchet_message);
 }
@@ -201,7 +198,7 @@ test__encrypt_decrypt_back_and_forth__fixed_plain_text__decrypted_should_match(v
     vscr_error_ctx_reset(&error_ctx);
 
     vscr_ratchet_message_t *ratchet_message =
-            vscr_ratchet_session_encrypt(session_alice, test_ratchet_plain_text2, &error_ctx);
+            vscr_ratchet_session_encrypt(session_alice, test_ratchet_session_plain_text2, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
 
     TEST_ASSERT_EQUAL(vscr_ratchet_message_RATCHET_MESSAGE_TYPE_PREKEY, vscr_ratchet_message_get_type(ratchet_message));
@@ -212,9 +209,9 @@ test__encrypt_decrypt_back_and_forth__fixed_plain_text__decrypted_should_match(v
     vscr_error_t result = vscr_ratchet_session_decrypt(session_bob, ratchet_message, plain_text);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
-    TEST_ASSERT_EQUAL_INT(test_ratchet_plain_text2.len, vsc_buffer_len(plain_text));
+    TEST_ASSERT_EQUAL_INT(test_ratchet_session_plain_text2.len, vsc_buffer_len(plain_text));
     TEST_ASSERT_EQUAL_MEMORY(
-            test_ratchet_plain_text2.bytes, vsc_buffer_bytes(plain_text), test_ratchet_plain_text2.len);
+            test_ratchet_session_plain_text2.bytes, vsc_buffer_bytes(plain_text), test_ratchet_session_plain_text2.len);
 
     vsc_buffer_destroy(&plain_text);
     vscr_ratchet_session_destroy(&session_alice);
@@ -302,11 +299,11 @@ test__encrypt_decrypt__1_out_of_order_msg__decrypted_should_match(void) {
     vscr_error_ctx_reset(&error_ctx);
 
     vscr_ratchet_message_t *ratchet_message1 =
-            vscr_ratchet_session_encrypt(session_alice, test_ratchet_plain_text2, &error_ctx);
+            vscr_ratchet_session_encrypt(session_alice, test_ratchet_session_plain_text2, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
 
     vscr_ratchet_message_t *ratchet_message2 =
-            vscr_ratchet_session_encrypt(session_alice, test_ratchet_plain_text3, &error_ctx);
+            vscr_ratchet_session_encrypt(session_alice, test_ratchet_session_plain_text3, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
 
     size_t len3 = vscr_ratchet_session_decrypt_len(session_bob, ratchet_message2);
@@ -315,9 +312,9 @@ test__encrypt_decrypt__1_out_of_order_msg__decrypted_should_match(void) {
     vscr_error_t result = vscr_ratchet_session_decrypt(session_bob, ratchet_message2, plain_text2);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
-    TEST_ASSERT_EQUAL_INT(test_ratchet_plain_text3.len, vsc_buffer_len(plain_text2));
-    TEST_ASSERT_EQUAL_MEMORY(
-            test_ratchet_plain_text3.bytes, vsc_buffer_bytes(plain_text2), test_ratchet_plain_text3.len);
+    TEST_ASSERT_EQUAL_INT(test_ratchet_session_plain_text3.len, vsc_buffer_len(plain_text2));
+    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_session_plain_text3.bytes, vsc_buffer_bytes(plain_text2),
+            test_ratchet_session_plain_text3.len);
 
     size_t len4 = vscr_ratchet_session_decrypt_len(session_bob, ratchet_message1);
     vsc_buffer_t *plain_text1 = vsc_buffer_new_with_capacity(len4);
@@ -325,9 +322,9 @@ test__encrypt_decrypt__1_out_of_order_msg__decrypted_should_match(void) {
     result = vscr_ratchet_session_decrypt(session_bob, ratchet_message1, plain_text1);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
-    TEST_ASSERT_EQUAL_INT(test_ratchet_plain_text2.len, vsc_buffer_len(plain_text1));
-    TEST_ASSERT_EQUAL_MEMORY(
-            test_ratchet_plain_text2.bytes, vsc_buffer_bytes(plain_text1), test_ratchet_plain_text2.len);
+    TEST_ASSERT_EQUAL_INT(test_ratchet_session_plain_text2.len, vsc_buffer_len(plain_text1));
+    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_session_plain_text2.bytes, vsc_buffer_bytes(plain_text1),
+            test_ratchet_session_plain_text2.len);
 
 
     vsc_buffer_destroy(&plain_text1);
@@ -702,7 +699,7 @@ test__serialization__randomly_skipped_messages__should_work_after_restore(void) 
 
 
     vscr_ratchet_message_t *ratchet_message =
-            vscr_ratchet_session_encrypt(session_alice, test_ratchet_plain_text1, &error_ctx);
+            vscr_ratchet_session_encrypt(session_alice, test_ratchet_session_plain_text1, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
 
     restore_session(&session_alice);
@@ -722,9 +719,9 @@ test__serialization__randomly_skipped_messages__should_work_after_restore(void) 
     vscr_error_t result = vscr_ratchet_session_decrypt(session_bob, ratchet_message, plain_text);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
-    TEST_ASSERT_EQUAL_INT(test_ratchet_plain_text1.len, vsc_buffer_len(plain_text));
+    TEST_ASSERT_EQUAL_INT(test_ratchet_session_plain_text1.len, vsc_buffer_len(plain_text));
     TEST_ASSERT_EQUAL_MEMORY(
-            test_ratchet_plain_text1.bytes, vsc_buffer_bytes(plain_text), test_ratchet_plain_text1.len);
+            test_ratchet_session_plain_text1.bytes, vsc_buffer_bytes(plain_text), test_ratchet_session_plain_text1.len);
 
     restore_session(&session_bob);
 

@@ -9,7 +9,8 @@
     <require class="ratchet chain key" scope="private"/>
     <require module="ratchet message defs" scope="private"/>
 
-    <require header="RatchetModels.pb.h" scope="public"/>
+    <require header="RatchetSession.pb.h" scope="public"/>
+    <require header="RatchetMessage.pb.h" scope="public"/>
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
 

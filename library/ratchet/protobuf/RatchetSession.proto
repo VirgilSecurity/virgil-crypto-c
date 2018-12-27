@@ -1,29 +1,6 @@
 syntax = "proto3";
 
-message Test {
-	oneof message {
-		bytes text1 = 1;
-		bytes text2 = 2;
-	}
-}
-
 message Empty {
-}
-
-message RegularMessage {
-	uint32 version = 1;
-	uint32 counter = 2;
-	bytes public_key = 3;
-	bytes cipher_text = 4;
-}
-
-message PrekeyMessage {
-	uint32 version = 1;
-	bytes sender_identity_key = 2;
-	bytes sender_ephemeral_key = 3;
-	bytes receiver_long_term_key = 4;
-	bytes receiver_one_time_key = 5;
-	RegularMessage regular_message = 6;
 }
 
 message ChainKey {
@@ -70,12 +47,4 @@ message Session {
 	bytes receiver_long_term_key = 5;
 	bytes receiver_one_time_key = 6;
 	Ratchet ratchet = 7;
-}
-
-message Message {
-	uint32 version = 1;
-	oneof message {
-		RegularMessage regular_message = 2;
-		PrekeyMessage prekey_message = 3;
-	}
 }

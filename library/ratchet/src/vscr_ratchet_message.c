@@ -57,6 +57,35 @@
 //  @end
 
 
+bool
+buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void **arg) {
+    VSCR_UNUSED(stream);
+    VSCR_UNUSED(field);
+    VSCR_UNUSED(arg);
+
+    // TODO: Check size
+
+    *arg = vsc_buffer_new_with_capacity(stream->bytes_left);
+    memcpy(vsc_buffer_unused_bytes(*arg), stream->state, stream->bytes_left);
+    vsc_buffer_inc_used(*arg, stream->bytes_left);
+    stream->bytes_left = 0;
+
+    return true;
+}
+
+bool
+buffer_encode_callback(pb_ostream_t *stream, const pb_field_t *field, void *const *arg) {
+    VSCR_UNUSED(stream);
+    VSCR_UNUSED(field);
+    VSCR_UNUSED(arg);
+
+    if (!pb_encode_tag_for_field(stream, field))
+        return false;
+
+    return pb_encode_string(stream, vsc_buffer_bytes(*arg), vsc_buffer_len(*arg));
+}
+
+
 //  @generated
 // --------------------------------------------------------------------------
 // clang-format off
@@ -81,6 +110,12 @@ vscr_ratchet_message_cleanup_ctx(vscr_ratchet_message_t *ratchet_message);
 
 static void
 vscr_ratchet_message_compute_key_id(vsc_data_t key, vsc_buffer_t *buffer);
+
+static void
+vscr_ratchet_message_set_pb_encode_callback(vscr_ratchet_message_t *ratchet_message);
+
+static void
+vscr_ratchet_message_set_pb_decode_callback(vscr_ratchet_message_t *ratchet_message);
 
 //
 //  Return size of 'vscr_ratchet_message_t'.
@@ -226,9 +261,9 @@ vscr_ratchet_message_get_type(vscr_ratchet_message_t *ratchet_message) {
 
     VSCR_ASSERT_PTR(ratchet_message);
 
-    if (ratchet_message->message_pb.which_message == Message_prekey_message_tag) {
+    if (ratchet_message->message_pb.has_prekey_message) {
         return vscr_ratchet_message_RATCHET_MESSAGE_TYPE_PREKEY;
-    } else if (ratchet_message->message_pb.which_message == Message_regular_message_tag) {
+    } else if (ratchet_message->message_pb.has_regular_message) {
         return vscr_ratchet_message_RATCHET_MESSAGE_TYPE_REGULAR;
     } else {
         VSCR_ASSERT(false);
@@ -241,10 +276,10 @@ VSCR_PUBLIC vsc_data_t
 vscr_ratchet_message_get_long_term_public_key(vscr_ratchet_message_t *ratchet_message) {
 
     VSCR_ASSERT_PTR(ratchet_message);
-    VSCR_ASSERT(ratchet_message->message_pb.which_message == Message_prekey_message_tag);
+    VSCR_ASSERT(ratchet_message->message_pb.has_prekey_message);
 
-    return vsc_data(ratchet_message->message_pb.message.prekey_message.receiver_long_term_key,
-            sizeof(ratchet_message->message_pb.message.prekey_message.receiver_long_term_key));
+    return vsc_data(ratchet_message->message_pb.prekey_message.receiver_long_term_key,
+            sizeof(ratchet_message->message_pb.prekey_message.receiver_long_term_key));
 }
 
 VSCR_PUBLIC void
@@ -259,16 +294,23 @@ VSCR_PUBLIC vsc_data_t
 vscr_ratchet_message_get_one_time_public_key(vscr_ratchet_message_t *ratchet_message) {
 
     VSCR_ASSERT_PTR(ratchet_message);
-    VSCR_ASSERT(ratchet_message->message_pb.which_message == Message_prekey_message_tag);
+    VSCR_ASSERT(ratchet_message->message_pb.has_prekey_message);
 
-    return vsc_data(ratchet_message->message_pb.message.prekey_message.receiver_one_time_key,
-            sizeof(ratchet_message->message_pb.message.prekey_message.receiver_one_time_key));
+    if (!ratchet_message->message_pb.prekey_message.has_receiver_one_time_key)
+        return vsc_data_empty();
+
+    return vsc_data(ratchet_message->message_pb.prekey_message.receiver_one_time_key,
+            sizeof(ratchet_message->message_pb.prekey_message.receiver_one_time_key));
 }
 
 VSCR_PUBLIC void
 vscr_ratchet_message_compute_one_time_public_key_id(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(ratchet_message);
+    VSCR_ASSERT(ratchet_message->message_pb.has_prekey_message);
+
+    if (!ratchet_message->message_pb.prekey_message.has_receiver_one_time_key)
+        return;
 
     vscr_ratchet_message_compute_key_id(vscr_ratchet_message_get_one_time_public_key(ratchet_message), buffer);
 }
@@ -280,7 +322,8 @@ vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *ratchet_message) {
 
     //  TODO: Optimize
 
-    return Message_size;
+    // FIXME
+    return 500;
 }
 
 VSCR_PUBLIC void
@@ -289,8 +332,11 @@ vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message, vsc_buff
     VSCR_UNUSED(ratchet_message);
     VSCR_UNUSED(output);
     VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_message_serialize_len(ratchet_message));
+    VSCR_ASSERT(ratchet_message->message_pb.has_prekey_message != ratchet_message->message_pb.has_regular_message);
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_capacity(output));
+
+    vscr_ratchet_message_set_pb_encode_callback(ratchet_message);
 
     VSCR_ASSERT(pb_encode(&ostream, Message_fields, &ratchet_message->message_pb));
     vsc_buffer_inc_used(output, ostream.bytes_written);
@@ -301,19 +347,22 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
 
     VSCR_ASSERT(vsc_data_is_valid(input));
 
-    if (input.len > Message_size) {
-        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_PROTOBUF_DECODE_ERROR);
-
-        return NULL;
-    }
+    // FIXME
+    //    if (input.len > Message_size) {
+    //        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_PROTOBUF_DECODE_ERROR);
+    //
+    //        return NULL;
+    //    }
 
     vscr_ratchet_message_t *message = vscr_ratchet_message_new();
 
     pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 
+    vscr_ratchet_message_set_pb_decode_callback(message);
+
     bool status = pb_decode(&istream, Message_fields, &message->message_pb);
 
-    if (!status) {
+    if (!status || message->message_pb.has_prekey_message == message->message_pb.has_regular_message) {
         VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_PROTOBUF_DECODE_ERROR);
         vscr_ratchet_message_destroy(&message);
 
@@ -339,4 +388,18 @@ vscr_ratchet_message_compute_key_id(vsc_data_t key, vsc_buffer_t *buffer) {
 
     vsc_buffer_destroy(&buf);
     vscf_sha512_destroy(&sha512);
+}
+
+static void
+vscr_ratchet_message_set_pb_encode_callback(vscr_ratchet_message_t *ratchet_message) {
+
+    ratchet_message->message_pb.prekey_message.regular_message.cipher_text.funcs.encode = buffer_encode_callback;
+    ratchet_message->message_pb.regular_message.cipher_text.funcs.encode = buffer_encode_callback;
+}
+
+static void
+vscr_ratchet_message_set_pb_decode_callback(vscr_ratchet_message_t *ratchet_message) {
+
+    ratchet_message->message_pb.prekey_message.regular_message.cipher_text.funcs.decode = buffer_decode_callback;
+    ratchet_message->message_pb.regular_message.cipher_text.funcs.decode = buffer_decode_callback;
 }

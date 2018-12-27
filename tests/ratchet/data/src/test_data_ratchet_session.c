@@ -34,6 +34,24 @@
 
 #include "test_data_ratchet_session.h"
 
+const byte test_ratchet_session_plain_text1_BYTES[] = "Hello, this is first test message";
+
+const byte test_ratchet_session_plain_text2_BYTES[] = "Test message number two";
+
+const byte test_ratchet_session_plain_text3_BYTES[] = "Third message, just to be 100% sure";
+
+const vsc_data_t test_ratchet_session_plain_text1 = {
+        test_ratchet_session_plain_text1_BYTES, sizeof(test_ratchet_session_plain_text1_BYTES)
+};
+
+const vsc_data_t test_ratchet_session_plain_text2 = {
+        test_ratchet_session_plain_text2_BYTES, sizeof(test_ratchet_session_plain_text2_BYTES)
+};
+
+const vsc_data_t test_ratchet_session_plain_text3 = {
+        test_ratchet_session_plain_text3_BYTES, sizeof(test_ratchet_session_plain_text3_BYTES)
+};
+
 const byte test_ratchet_session_alice_identity_private_key_BYTES[] = {
         0x0f, 0xc4, 0x6d, 0x9e, 0x04, 0x49, 0xd7, 0x90,
         0xcb, 0x64, 0xd6, 0xe4, 0xb3, 0x83, 0x24, 0xe9,
