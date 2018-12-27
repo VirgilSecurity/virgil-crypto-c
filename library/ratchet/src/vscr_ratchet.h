@@ -52,7 +52,8 @@
 #include "vscr_ratchet_cipher.h"
 #include "vscr_error.h"
 
-#include <RatchetModels.pb.h>
+#include <RatchetSession.pb.h>
+#include <RatchetMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 

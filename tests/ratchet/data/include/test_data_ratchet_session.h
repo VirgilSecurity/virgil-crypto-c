@@ -37,6 +37,9 @@
 
 #include "vsc_data.h"
 
+extern const vsc_data_t test_ratchet_session_plain_text1;
+extern const vsc_data_t test_ratchet_session_plain_text2;
+extern const vsc_data_t test_ratchet_session_plain_text3;
 extern const vsc_data_t test_ratchet_session_alice_identity_private_key;
 extern const vsc_data_t test_ratchet_session_alice_identity_public_key;
 extern const vsc_data_t test_ratchet_session_bob_identity_private_key;

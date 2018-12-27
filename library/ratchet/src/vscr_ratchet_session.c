@@ -53,7 +53,8 @@
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
-#include <RatchetModels.pb.h>
+#include <RatchetSession.pb.h>
+#include <RatchetMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 #include <ed25519/ed25519.h>
@@ -446,10 +447,11 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
         vsc_data_t receiver_one_time_private_key, const vscr_ratchet_message_t *message) {
 
     VSCR_ASSERT_PTR(ratchet_session);
-    VSCR_ASSERT(message->message_pb.which_message == Message_prekey_message_tag);
-    VSCR_ASSERT(memcmp(message->message_pb.message.prekey_message.sender_identity_key, sender_identity_public_key.bytes,
+    VSCR_ASSERT(message->message_pb.has_prekey_message);
+    VSCR_ASSERT(memcmp(message->message_pb.prekey_message.sender_identity_key, sender_identity_public_key.bytes,
                         sender_identity_public_key.len) == 0);
 
+    // TODO: Check plain text length
     // TODO: Recheck X3DH
 
     VSCR_ASSERT(sender_identity_public_key.len == vscr_ratchet_common_RATCHET_KEY_LENGTH);
@@ -482,7 +484,7 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
 
 
     curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret),
-            message->message_pb.message.prekey_message.sender_ephemeral_key, receiver_identity_private_key.bytes);
+            message->message_pb.prekey_message.sender_ephemeral_key, receiver_identity_private_key.bytes);
 
     if (curve_status != 0) {
         status = vscr_error_CURVE25519_ERROR;
@@ -492,7 +494,7 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
     vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
     curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret),
-            message->message_pb.message.prekey_message.sender_ephemeral_key, receiver_long_term_private_key.bytes);
+            message->message_pb.prekey_message.sender_ephemeral_key, receiver_long_term_private_key.bytes);
 
     if (curve_status != 0) {
         status = vscr_error_CURVE25519_ERROR;
@@ -503,7 +505,7 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
 
     if (receiver_one_time_private_key.len != 0) {
         curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret),
-                message->message_pb.message.prekey_message.sender_ephemeral_key, receiver_one_time_private_key.bytes);
+                message->message_pb.prekey_message.sender_ephemeral_key, receiver_one_time_private_key.bytes);
 
         if (curve_status != 0) {
             status = vscr_error_CURVE25519_ERROR;
@@ -523,9 +525,8 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
 
     memcpy(ratchet_session->sender_identity_public_key, sender_identity_public_key.bytes,
             sender_identity_public_key.len);
-    memcpy(ratchet_session->sender_ephemeral_public_key,
-            message->message_pb.message.prekey_message.sender_ephemeral_key,
-            sizeof(message->message_pb.message.prekey_message.sender_ephemeral_key));
+    memcpy(ratchet_session->sender_ephemeral_public_key, message->message_pb.prekey_message.sender_ephemeral_key,
+            sizeof(message->message_pb.prekey_message.sender_ephemeral_key));
 
     curve_status =
             curve25519_get_pubkey(ratchet_session->receiver_long_term_public_key, receiver_long_term_private_key.bytes);
@@ -536,7 +537,7 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
     }
 
     status = vscr_ratchet_respond(ratchet_session->ratchet, vsc_buffer_data(shared_secret),
-            &message->message_pb.message.prekey_message.regular_message);
+            &message->message_pb.prekey_message.regular_message);
 
     ratchet_session->is_initiator = false;
 
@@ -552,6 +553,8 @@ vscr_ratchet_session_encrypt(
 
     VSCR_ASSERT_PTR(ratchet_session);
 
+    // TODO: Check plain text length
+
     if (!ratchet_session->is_initiator && !ratchet_session->received_first_response) {
         VSCR_ASSERT(false);
     }
@@ -562,13 +565,13 @@ vscr_ratchet_session_encrypt(
     ratchet_message->message_pb.version = vscr_ratchet_common_RATCHET_MESSAGE_VERSION;
 
     if (ratchet_session->received_first_response) {
-        ratchet_message->message_pb.which_message = Message_regular_message_tag;
-        RegularMessage *regular_message = &ratchet_message->message_pb.message.regular_message;
+        ratchet_message->message_pb.has_regular_message = true;
+        RegularMessage *regular_message = &ratchet_message->message_pb.regular_message;
 
         result = vscr_ratchet_encrypt(ratchet_session->ratchet, plain_text, regular_message);
     } else {
-        ratchet_message->message_pb.which_message = Message_prekey_message_tag;
-        PrekeyMessage *prekey_message = &ratchet_message->message_pb.message.prekey_message;
+        ratchet_message->message_pb.has_prekey_message = true;
+        PrekeyMessage *prekey_message = &ratchet_message->message_pb.prekey_message;
         RegularMessage *regular_message = &prekey_message->regular_message;
 
         prekey_message->version = vscr_ratchet_common_RATCHET_PROTOCOL_VERSION;
@@ -604,15 +607,17 @@ vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session, const 
 
     VSCR_UNUSED(ratchet_session);
 
+    // TODO: Check cipher text length
+
     size_t len = 0;
 
     // FIXME
-    if (message->message_pb.which_message == Message_regular_message_tag) {
+    if (message->message_pb.has_regular_message) {
         len = vscr_ratchet_decrypt_len(
-                ratchet_session->ratchet, message->message_pb.message.regular_message.cipher_text.size);
-    } else if (message->message_pb.which_message == Message_prekey_message_tag) {
-        len = vscr_ratchet_decrypt_len(
-                ratchet_session->ratchet, message->message_pb.message.prekey_message.regular_message.cipher_text.size);
+                ratchet_session->ratchet, vsc_buffer_len(message->message_pb.regular_message.cipher_text.arg));
+    } else if (message->message_pb.has_prekey_message) {
+        len = vscr_ratchet_decrypt_len(ratchet_session->ratchet,
+                vsc_buffer_len(message->message_pb.prekey_message.regular_message.cipher_text.arg));
     }
 
     return len;
@@ -623,19 +628,21 @@ vscr_ratchet_session_decrypt(
         vscr_ratchet_session_t *ratchet_session, const vscr_ratchet_message_t *message, vsc_buffer_t *plain_text) {
 
     VSCR_ASSERT_PTR(ratchet_session);
+
+    // TODO: Check cipher text length
+
     VSCR_ASSERT(vsc_buffer_unused_len(plain_text) >= vscr_ratchet_session_decrypt_len(ratchet_session, message));
 
     vscr_error_t result;
 
-    if (message->message_pb.which_message == Message_regular_message_tag) {
-        result = vscr_ratchet_decrypt(
-                ratchet_session->ratchet, &message->message_pb.message.regular_message, plain_text);
-    } else if (message->message_pb.which_message == Message_prekey_message_tag) {
+    if (message->message_pb.has_regular_message) {
+        result = vscr_ratchet_decrypt(ratchet_session->ratchet, &message->message_pb.regular_message, plain_text);
+    } else if (message->message_pb.has_prekey_message) {
         vscr_error_ctx_t error;
         vscr_error_ctx_reset(&error);
 
         result = vscr_ratchet_decrypt(
-                ratchet_session->ratchet, &message->message_pb.message.prekey_message.regular_message, plain_text);
+                ratchet_session->ratchet, &message->message_pb.prekey_message.regular_message, plain_text);
     } else {
         result = vscr_error_WRONG_MESSAGE_FORMAT;
     }

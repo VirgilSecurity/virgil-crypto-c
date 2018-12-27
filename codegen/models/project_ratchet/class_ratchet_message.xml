@@ -4,7 +4,7 @@
 
     <require impl="sha512" project="foundation" scope="private"/>
 
-    <require header="RatchetModels.pb.h" scope="context"/>
+    <require header="RatchetMessage.pb.h" scope="context"/>
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 
@@ -59,4 +59,9 @@
         <argument name="buffer" class="buffer" access="readwrite"/>
     </method>
 
+    <method name="set pb encode callback" declaration="private">
+    </method>
+
+    <method name="set pb decode callback" declaration="private">
+    </method>
 </class>

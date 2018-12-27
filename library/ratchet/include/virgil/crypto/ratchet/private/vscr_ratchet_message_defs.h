@@ -55,7 +55,7 @@
 
 #include "vscr_library.h"
 
-#include <RatchetModels.pb.h>
+#include <RatchetMessage.pb.h>
 
 // clang-format on
 //  @end

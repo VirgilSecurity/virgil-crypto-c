@@ -2,7 +2,7 @@
 
     <require class="ratchet common" scope="public"/>
 
-    <require header="RatchetModels.pb.h" scope="public"/>
+    <require header="RatchetSession.pb.h" scope="public"/>
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
 
