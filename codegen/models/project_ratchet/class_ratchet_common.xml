@@ -8,4 +8,9 @@
     <constant name="max skipped messages" value="40"/>
     <constant name="max receivers chains" value="5"/>
     <constant name="max message gap" value="2000"/>
+    <constant name="max plain text len" value="30000"/>
+    <constant name="max cipher text len" value="32768"/>
+    <constant name="max regular message len" value="32818"/>
+    <constant name="max prekey message len" value="32964"/>
+    <constant name="max message len" value="32964"/>
 </class>
