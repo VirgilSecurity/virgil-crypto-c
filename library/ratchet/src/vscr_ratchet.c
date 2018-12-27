@@ -374,7 +374,7 @@ vscr_ratchet_release_cipher(vscr_ratchet_t *ratchet) {
 static void
 vscr_ratchet_init_ctx(vscr_ratchet_t *ratchet) {
 
-    VSCR_UNUSED(ratchet);
+    VSCR_ASSERT_PTR(ratchet);
 }
 
 //
@@ -384,6 +384,8 @@ vscr_ratchet_init_ctx(vscr_ratchet_t *ratchet) {
 //
 static void
 vscr_ratchet_cleanup_ctx(vscr_ratchet_t *ratchet) {
+
+    VSCR_ASSERT_PTR(ratchet);
 
     vscr_ratchet_sender_chain_destroy(&ratchet->sender_chain);
     vscr_ratchet_receiver_chain_list_node_destroy(&ratchet->receiver_chains);
@@ -494,6 +496,7 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *ratchet, const vscr_ratc
 
     VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(chain_key);
+    VSCR_ASSERT_PTR(message);
     VSCR_ASSERT_PTR(buffer);
 
     // This message should be already decrypted
@@ -528,6 +531,7 @@ static vscr_error_t
 vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *ratchet, const RegularMessage *message, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(ratchet);
+    VSCR_ASSERT_PTR(message);
     VSCR_ASSERT_PTR(buffer);
 
     if (!ratchet->sender_chain) {
@@ -562,6 +566,7 @@ VSCR_PUBLIC vscr_error_t
 vscr_ratchet_respond(vscr_ratchet_t *ratchet, vsc_data_t shared_secret, const RegularMessage *message) {
 
     VSCR_ASSERT_PTR(ratchet);
+    VSCR_ASSERT_PTR(message);
     VSCR_ASSERT(shared_secret.len == 3 * ED25519_DH_LEN || shared_secret.len == 4 * ED25519_DH_LEN);
 
     VSCR_ASSERT(!ratchet->receiver_chains);
@@ -644,11 +649,8 @@ VSCR_PUBLIC size_t
 vscr_ratchet_encrypt_len(vscr_ratchet_t *ratchet, size_t plain_text_len) {
 
     VSCR_ASSERT_PTR(ratchet);
-    VSCR_UNUSED(plain_text_len);
 
-    //    TODO: Replace cipher text with variable length arrays
-
-    return Ratchet_size;
+    return vscr_ratchet_cipher_encrypt_len(ratchet->cipher, plain_text_len);
 }
 
 VSCR_PUBLIC vscr_error_t
@@ -694,8 +696,6 @@ vscr_ratchet_encrypt(vscr_ratchet_t *ratchet, vsc_data_t plain_text, RegularMess
 
     vscr_ratchet_advance_chain_key(&ratchet->sender_chain->chain_key);
 
-    regular_message->cipher_text.arg = vsc_buffer_new_with_capacity(vscr_ratchet_encrypt_len(ratchet, plain_text.len));
-
     result = vscr_ratchet_cipher_encrypt(ratchet->cipher, vsc_data(message_key->key, sizeof(message_key->key)),
             plain_text, regular_message->cipher_text.arg);
 
@@ -719,7 +719,6 @@ vscr_ratchet_decrypt_len(vscr_ratchet_t *ratchet, size_t cipher_text_len) {
 
     VSCR_ASSERT_PTR(ratchet);
 
-    // TODO: Optimize, real cipher text length is smaller
     return vscr_ratchet_cipher_decrypt_len(ratchet->cipher, cipher_text_len);
 }
 

@@ -63,8 +63,6 @@ buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void **arg
     VSCR_UNUSED(field);
     VSCR_UNUSED(arg);
 
-    // TODO: Check size
-
     *arg = vsc_buffer_new_with_capacity(stream->bytes_left);
     memcpy(vsc_buffer_unused_bytes(*arg), stream->state, stream->bytes_left);
     vsc_buffer_inc_used(*arg, stream->bytes_left);
@@ -243,6 +241,9 @@ static void
 vscr_ratchet_message_init_ctx(vscr_ratchet_message_t *ratchet_message) {
 
     VSCR_ASSERT_PTR(ratchet_message);
+
+    ratchet_message->message_pb.has_regular_message = false;
+    ratchet_message->message_pb.has_prekey_message = false;
 }
 
 //
@@ -254,6 +255,18 @@ static void
 vscr_ratchet_message_cleanup_ctx(vscr_ratchet_message_t *ratchet_message) {
 
     VSCR_ASSERT_PTR(ratchet_message);
+
+    RegularMessage *msg = NULL;
+
+    if (ratchet_message->message_pb.has_prekey_message) {
+        msg = &ratchet_message->message_pb.prekey_message.regular_message;
+    } else if (ratchet_message->message_pb.has_regular_message) {
+        msg = &ratchet_message->message_pb.regular_message;
+    }
+
+    if (msg && msg->cipher_text.arg) {
+        vsc_buffer_destroy((vsc_buffer_t **)&msg->cipher_text.arg);
+    }
 }
 
 VSCR_PUBLIC vscr_msg_type_t
@@ -318,12 +331,20 @@ vscr_ratchet_message_compute_one_time_public_key_id(vscr_ratchet_message_t *ratc
 VSCR_PUBLIC size_t
 vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *ratchet_message) {
 
-    VSCR_UNUSED(ratchet_message);
+    VSCR_ASSERT_PTR(ratchet_message);
+    VSCR_ASSERT(ratchet_message->message_pb.has_prekey_message != ratchet_message->message_pb.has_regular_message);
 
-    //  TODO: Optimize
+    if (ratchet_message->message_pb.has_prekey_message) {
+        return vscr_ratchet_common_MAX_PREKEY_MESSAGE_LEN - vscr_ratchet_common_MAX_CIPHER_TEXT_LEN +
+               vsc_buffer_len(ratchet_message->message_pb.prekey_message.regular_message.cipher_text.arg);
+    } else if (ratchet_message->message_pb.has_regular_message) {
+        return vscr_ratchet_common_MAX_REGULAR_MESSAGE_LEN - vscr_ratchet_common_MAX_CIPHER_TEXT_LEN +
+               vsc_buffer_len(ratchet_message->message_pb.regular_message.cipher_text.arg);
+    }
 
-    // FIXME
-    return 500;
+    VSCR_ASSERT(false);
+
+    return 0;
 }
 
 VSCR_PUBLIC void
@@ -347,12 +368,11 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
 
     VSCR_ASSERT(vsc_data_is_valid(input));
 
-    // FIXME
-    //    if (input.len > Message_size) {
-    //        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_PROTOBUF_DECODE_ERROR);
-    //
-    //        return NULL;
-    //    }
+    if (input.len > vscr_ratchet_common_MAX_MESSAGE_LEN) {
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_PROTOBUF_DECODE_ERROR);
+
+        return NULL;
+    }
 
     vscr_ratchet_message_t *message = vscr_ratchet_message_new();
 
