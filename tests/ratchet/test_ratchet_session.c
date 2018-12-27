@@ -707,11 +707,6 @@ test__serialization__randomly_skipped_messages__should_work_after_restore(void) 
 
     restore_session(&session_alice);
 
-    //    vsc_buffer_t *message = vsc_buffer_new_with_capacity(len);
-    //
-    //    memcpy(vsc_buffer_unused_bytes(message), vsc_buffer_bytes(cipher_text), vsc_buffer_len(cipher_text));
-    //    vsc_buffer_inc_used(message, vsc_buffer_len(cipher_text));
-
     TEST_ASSERT_EQUAL(vscr_ratchet_message_RATCHET_MESSAGE_TYPE_PREKEY, vscr_ratchet_message_get_type(ratchet_message));
 
     TEST_ASSERT_EQUAL_INT(vscr_SUCCESS,
