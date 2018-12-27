@@ -1,6 +1,6 @@
 <class name="ratchet" context="internal" scope="internal">
 
-    <require impl="sha256" project="foundation" scope="private"/>
+    <require impl="sha512" project="foundation" scope="private"/>
     <require impl="hmac" project="foundation" scope="private"/>
     <require impl="hkdf" project="foundation" scope="private"/>
     <require impl="ctr drbg" project="foundation" scope="private"/>

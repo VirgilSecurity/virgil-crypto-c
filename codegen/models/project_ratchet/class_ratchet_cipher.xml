@@ -1,6 +1,6 @@
 <class name="ratchet cipher" context="internal" scope="private">
 
-    <require impl="sha256" project="foundation" scope="private"/>
+    <require impl="sha512" project="foundation" scope="private"/>
     <require impl="hkdf" project="foundation" scope="private"/>
 
     <dependency name="aes256 gcm" impl="aes256 gcm" project="foundation"/>

@@ -48,7 +48,7 @@
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 
-#include <virgil/crypto/foundation/vscf_sha256.h>
+#include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>
 
 // clang-format on
@@ -301,7 +301,7 @@ vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *ratchet_cipher, vsc_data
     VSCR_ASSERT_PTR(ratchet_cipher->aes256_gcm);
 
     vscf_hkdf_t *hkdf = vscf_hkdf_new();
-    vscf_hkdf_take_hash(hkdf, vscf_sha256_impl(vscf_sha256_new()));
+    vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
 
     vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(vscf_aes256_gcm_KEY_LEN + vscf_aes256_gcm_NONCE_LEN);
     vsc_buffer_make_secure(derived_secret);
