@@ -694,8 +694,9 @@ vscr_ratchet_encrypt(vscr_ratchet_t *ratchet, vsc_data_t plain_text, RegularMess
 
     vscr_ratchet_advance_chain_key(&ratchet->sender_chain->chain_key);
 
-    vsc_buffer_t *buffer =
-            vsc_buffer_new_with_capacity(vscr_ratchet_cipher_encrypt_len(ratchet->cipher, plain_text.len));
+    vsc_buffer_t *buffer = vsc_buffer_new();
+
+    vsc_buffer_use(buffer, regular_message->cipher_text.bytes, sizeof(regular_message->cipher_text));
 
     result = vscr_ratchet_cipher_encrypt(
             ratchet->cipher, vsc_data(message_key->key, sizeof(message_key->key)), plain_text, buffer);
@@ -709,8 +710,7 @@ vscr_ratchet_encrypt(vscr_ratchet_t *ratchet, vsc_data_t plain_text, RegularMess
 
     memcpy(regular_message->public_key, ratchet->sender_chain->public_key, sizeof(ratchet->sender_chain->public_key));
 
-    memcpy(regular_message->cipher_text.bytes, vsc_buffer_bytes(buffer), vsc_buffer_len(buffer));
-    regular_message->cipher_text.size += vsc_buffer_len(buffer);
+    regular_message->cipher_text.size = (pb_size_t)vsc_buffer_len(buffer);
 
 err:
     vscr_ratchet_message_key_destroy(&message_key);

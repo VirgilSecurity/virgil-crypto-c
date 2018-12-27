@@ -1,3 +1,7 @@
+Test no_unions:true
+Test.text1 max_size:50
+Test.text2 max_size:50
+
 RegularMessage.public_key max_size:32 fixed_length:true
 RegularMessage.cipher_text max_size:32768
 

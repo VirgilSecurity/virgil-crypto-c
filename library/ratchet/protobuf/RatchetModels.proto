@@ -1,5 +1,12 @@
 syntax = "proto3";
 
+message Test {
+	oneof message {
+		bytes text1 = 1;
+		bytes text2 = 2;
+	}
+}
+
 message Empty {
 }
 
