@@ -431,7 +431,7 @@ vscr_ratchet_create_chain_key(const vscr_ratchet_t *ratchet, vsc_data_t private_
     vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(2 * vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
     vsc_buffer_make_secure(derived_secret);
     vscf_hkdf_derive(hkdf, vsc_buffer_data(secret), vsc_data(ratchet->root_key, sizeof(ratchet->root_key)),
-            vsc_data(ratchet_kdf_ratchet_info, sizeof(ratchet_kdf_ratchet_info)), derived_secret,
+            vsc_data(ratchet_kdf_ratchet_info, sizeof(ratchet_kdf_ratchet_info) - 1), derived_secret,
             vsc_buffer_capacity(derived_secret));
 
     memcpy(new_root_key, vsc_buffer_bytes(derived_secret), vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
@@ -591,7 +591,7 @@ vscr_ratchet_respond(vscr_ratchet_t *ratchet, vsc_data_t shared_secret, const Re
     vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(2 * vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
     vsc_buffer_make_secure(derived_secret);
     vscf_hkdf_derive(hkdf, shared_secret, vsc_data_empty(),
-            vsc_data(ratchet_kdf_root_info, sizeof(ratchet_kdf_root_info)), derived_secret,
+            vsc_data(ratchet_kdf_root_info, sizeof(ratchet_kdf_root_info) - 1), derived_secret,
             vsc_buffer_capacity(derived_secret));
     vscf_hkdf_destroy(&hkdf);
 
@@ -634,7 +634,7 @@ vscr_ratchet_initiate(vscr_ratchet_t *ratchet, vsc_data_t shared_secret, vsc_dat
     vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(2 * vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
     vsc_buffer_make_secure(derived_secret);
     vscf_hkdf_derive(hkdf, shared_secret, vsc_data_empty(),
-            vsc_data(ratchet_kdf_root_info, sizeof(ratchet_kdf_root_info)), derived_secret,
+            vsc_data(ratchet_kdf_root_info, sizeof(ratchet_kdf_root_info) - 1), derived_secret,
             vsc_buffer_capacity(derived_secret));
     vscf_hkdf_destroy(&hkdf);
 
