@@ -1,0 +1,8 @@
+<interface name="alg info serializer">
+    Provide serialization of algorithm
+    <method name="serialize">
+        Serialize algorithm info to buffer class
+        <argument name="alg info" interface="alg info"/>
+        <return class="buffer"/>
+    </method>
+</interface>
