@@ -1,18 +1,18 @@
 <implementor name="alg info">
     Provide implementation of algorithm information for algorithm agility
-    <implementation name="sample alg info">
-        Provide sample algorithm information (hash) implementation
+    <implementation name="simple alg info">
+        Provide simple algorithm information (hash) implementation
         <interface name="alg info"/>
     </implementation>
 
-    <implementation name="kdf1 alg info">
+    <implementation name="kdf alg info">
         Provide KDF1 algorithm information implementation
         <interface name="alg info"/>
 
         <context>
-            <property name="hash alg info" impl="sample alg info"/>
-            <property name="salt" class="data"/>
-            <property name="iteration count" type="integer"/>
+            <property name="hash alg info" impl="simple alg info"/>
+            <property name="salt" class="buffer"/>
+            <property name="iteration count" type="size"/>
         </context>
     </implementation>
 </implementor>
