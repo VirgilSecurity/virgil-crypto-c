@@ -6,7 +6,7 @@
     </implementation>
 
     <implementation name="kdf alg info">
-        Provide KDF1 algorithm information implementation
+        Provide KDF algorithm information implementation
         <interface name="alg info"/>
 
         <context>
