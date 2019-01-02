@@ -1,0 +1,12 @@
+<implementor name="alg info compatible">
+    Implementation of algorithm functions
+    <implementation name="sha256">
+        Implementation of SHA256 algorithm information
+        <interface name="alg info compatible"/>
+    </implementation>
+
+    <implementation name="kdf1">
+        Implementation of KDF1 algorithm information
+        <interface name="alg info compatible"/>
+    </implementation>
+</implementor>

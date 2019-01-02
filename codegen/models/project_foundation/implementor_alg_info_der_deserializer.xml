@@ -1,0 +1,7 @@
+<implementor name="alg info deserializer">
+    Implementation of deserialization algorithm information
+    <implementation name="alg info der deserializer">
+        Provide implementation of der deserializer of algorithm information
+        <interface name="alg info deserializer"/>
+    </implementation>
+</implementor>
