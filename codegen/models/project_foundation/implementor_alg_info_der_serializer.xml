@@ -1,0 +1,7 @@
+<implementor name="alg info serializer">
+    Implementation of serialization algorithm information
+    <implementation name="alg info der serializer">
+        Provide implementation of der serializer of algorithm information
+        <interface name="alg info serializer"/>
+    </implementation>
+</implementor>
