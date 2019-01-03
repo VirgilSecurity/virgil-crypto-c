@@ -681,6 +681,7 @@ vscr_ratchet_encrypt(vscr_ratchet_t *ratchet, vsc_data_t plain_text, RegularMess
         vsc_buffer_use(ratchet_private_key, sender_chain->private_key, sizeof(sender_chain->private_key));
 
         vscf_error_t f_status = vscf_random(ratchet->rng, vscr_ratchet_common_RATCHET_KEY_LENGTH, ratchet_private_key);
+        vsc_buffer_destroy(&ratchet_private_key);
 
         if (f_status != vscf_SUCCESS) {
             vscr_ratchet_sender_chain_destroy(&sender_chain);
