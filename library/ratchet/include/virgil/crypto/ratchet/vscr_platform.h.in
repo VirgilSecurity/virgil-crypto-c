@@ -71,7 +71,7 @@ extern "C" {
 //
 //  Defines namespace include prefix for project 'common'.
 //
-#if !defined(VSCR_BUILD_INTERFACE)
+#if !defined(VSCR_INTERNAL_BUILD)
 #cmakedefine01 VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #else
 #define VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK 0
@@ -80,7 +80,7 @@ extern "C" {
 //
 //  Defines namespace include prefix for project 'foundation'.
 //
-#if !defined(VSCR_BUILD_INTERFACE)
+#if !defined(VSCR_INTERNAL_BUILD)
 #cmakedefine01 VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #else
 #define VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK 0
