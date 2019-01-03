@@ -102,6 +102,7 @@ initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *sessio
             test_ratchet_session_plain_text1.bytes, vsc_buffer_bytes(plain_text), test_ratchet_session_plain_text1.len);
 
     vscr_ratchet_message_destroy(&ratchet_message);
+    vsc_buffer_destroy(&plain_text);
 }
 
 void

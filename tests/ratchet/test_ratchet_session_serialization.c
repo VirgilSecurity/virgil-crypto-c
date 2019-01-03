@@ -278,9 +278,13 @@ test__serialization__randomly_skipped_messages__should_work_after_restore(void) 
     vscr_error_t result = vscr_ratchet_session_decrypt(session_bob, ratchet_message, plain_text);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
+    vscr_ratchet_message_destroy(&ratchet_message);
+
     TEST_ASSERT_EQUAL_INT(test_ratchet_session_plain_text1.len, vsc_buffer_len(plain_text));
     TEST_ASSERT_EQUAL_MEMORY(
             test_ratchet_session_plain_text1.bytes, vsc_buffer_bytes(plain_text), test_ratchet_session_plain_text1.len);
+
+    vsc_buffer_destroy(&plain_text);
 
     restore_session(&session_bob);
 
