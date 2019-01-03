@@ -39,7 +39,7 @@ project(virgil_crypto_c_ratchet_tests VERSION ${virgil_crypto_c_tests_VERSION} L
 add_subdirectory(data)
 
 macro(_add_test test)
-    add_executable(${test} ${test}.c)
+    add_executable(${test} ${test}.c unreliable_msg_producer.c)
     target_add_filename_definitions(${test})
     target_link_libraries(${test} unity test_utils test_data_ratchet vsc::ratchet)
     set_target_properties(${test} PROPERTIES C_STANDARD "99")
@@ -52,3 +52,4 @@ endmacro()
 
 _add_test (test_ratchet_message)
 _add_test (test_ratchet_session)
+_add_test (test_ratchet_session_serialization)
