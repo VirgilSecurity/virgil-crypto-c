@@ -97,7 +97,7 @@ msg_cmp(vscr_ratchet_message_t *msg1, vscr_ratchet_message_t *msg2) {
 }
 
 void
-test__serialize_deserialize__fixed_fields__should_be_equal(void) {
+test__serialize_deserialize__fixed_regular_msg__should_be_equal(void) {
     vscr_ratchet_message_t *msg1 = vscr_ratchet_message_new();
 
     msg1->message_pb.has_regular_message = true;
@@ -105,8 +105,8 @@ test__serialize_deserialize__fixed_fields__should_be_equal(void) {
     msg1->message_pb.regular_message.version = 11;
     msg1->message_pb.regular_message.counter = 17;
 
-    memcpy(msg1->message_pb.regular_message.public_key, test_ratchet_session_bob_one_time_public_key.bytes,
-            test_ratchet_session_bob_one_time_public_key.len);
+    memcpy(msg1->message_pb.regular_message.public_key, test_ratchet_session_alice_ephemeral_public_key.bytes,
+            test_ratchet_session_alice_ephemeral_public_key.len);
     msg1->message_pb.regular_message.cipher_text.arg = vsc_buffer_new_with_data(test_ratchet_session_plain_text1);
 
     size_t len = vscr_ratchet_message_serialize_len(msg1);
@@ -127,6 +127,222 @@ test__serialize_deserialize__fixed_fields__should_be_equal(void) {
     vsc_buffer_destroy(&buff);
 }
 
+void
+test__serialize_deserialize__fixed_prekey_msg__should_be_equal(void) {
+    vscr_ratchet_message_t *msg1 = vscr_ratchet_message_new();
+
+    msg1->message_pb.has_prekey_message = true;
+    msg1->message_pb.version = 5;
+    msg1->message_pb.prekey_message.version = 11;
+    msg1->message_pb.prekey_message.regular_message.version = 10;
+    msg1->message_pb.prekey_message.regular_message.counter = 17;
+
+    memcpy(msg1->message_pb.prekey_message.receiver_one_time_key, test_ratchet_session_bob_one_time_public_key.bytes,
+            test_ratchet_session_bob_one_time_public_key.len);
+    msg1->message_pb.prekey_message.has_receiver_one_time_key = true;
+
+    memcpy(msg1->message_pb.prekey_message.receiver_long_term_key, test_ratchet_session_bob_long_term_public_key.bytes,
+            test_ratchet_session_bob_long_term_public_key.len);
+
+    memcpy(msg1->message_pb.prekey_message.sender_identity_key, test_ratchet_session_alice_identity_public_key.bytes,
+            test_ratchet_session_alice_identity_public_key.len);
+
+    memcpy(msg1->message_pb.prekey_message.sender_ephemeral_key, test_ratchet_session_alice_ephemeral_public_key.bytes,
+            test_ratchet_session_alice_ephemeral_public_key.len);
+
+    memcpy(msg1->message_pb.prekey_message.regular_message.public_key,
+            test_ratchet_session_alice_ratchet_public_key.bytes, test_ratchet_session_alice_ratchet_public_key.len);
+    msg1->message_pb.prekey_message.regular_message.cipher_text.arg =
+            vsc_buffer_new_with_data(test_ratchet_session_plain_text1);
+
+    size_t len = vscr_ratchet_message_serialize_len(msg1);
+    vsc_buffer_t *buff = vsc_buffer_new_with_capacity(len);
+    vscr_ratchet_message_serialize(msg1, buff);
+
+    vscr_error_ctx_t error_ctx;
+    vscr_error_ctx_reset(&error_ctx);
+
+    vscr_ratchet_message_t *msg2 = vscr_ratchet_message_deserialize(vsc_buffer_data(buff), &error_ctx);
+    TEST_ASSERT(msg2 != NULL);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+
+    TEST_ASSERT(msg_cmp(msg1, msg2));
+
+    vscr_ratchet_message_destroy(&msg1);
+    vscr_ratchet_message_destroy(&msg2);
+    vsc_buffer_destroy(&buff);
+}
+
+void
+test__serialize_deserialize__fixed_prekey_msg_no_one_time__should_be_equal(void) {
+    vscr_ratchet_message_t *msg1 = vscr_ratchet_message_new();
+
+    msg1->message_pb.has_prekey_message = true;
+    msg1->message_pb.version = 5;
+    msg1->message_pb.prekey_message.version = 11;
+    msg1->message_pb.prekey_message.regular_message.version = 10;
+    msg1->message_pb.prekey_message.regular_message.counter = 17;
+
+    msg1->message_pb.prekey_message.has_receiver_one_time_key = false;
+
+    memcpy(msg1->message_pb.prekey_message.receiver_long_term_key, test_ratchet_session_bob_long_term_public_key.bytes,
+            test_ratchet_session_bob_long_term_public_key.len);
+
+    memcpy(msg1->message_pb.prekey_message.sender_identity_key, test_ratchet_session_alice_identity_public_key.bytes,
+            test_ratchet_session_alice_identity_public_key.len);
+
+    memcpy(msg1->message_pb.prekey_message.sender_ephemeral_key, test_ratchet_session_alice_ephemeral_public_key.bytes,
+            test_ratchet_session_alice_ephemeral_public_key.len);
+
+    memcpy(msg1->message_pb.prekey_message.regular_message.public_key,
+            test_ratchet_session_alice_ratchet_public_key.bytes, test_ratchet_session_alice_ratchet_public_key.len);
+    msg1->message_pb.prekey_message.regular_message.cipher_text.arg =
+            vsc_buffer_new_with_data(test_ratchet_session_plain_text1);
+
+    size_t len = vscr_ratchet_message_serialize_len(msg1);
+    vsc_buffer_t *buff = vsc_buffer_new_with_capacity(len);
+    vscr_ratchet_message_serialize(msg1, buff);
+
+    vscr_error_ctx_t error_ctx;
+    vscr_error_ctx_reset(&error_ctx);
+
+    vscr_ratchet_message_t *msg2 = vscr_ratchet_message_deserialize(vsc_buffer_data(buff), &error_ctx);
+    TEST_ASSERT(msg2 != NULL);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+
+    TEST_ASSERT(msg_cmp(msg1, msg2));
+
+    vscr_ratchet_message_destroy(&msg1);
+    vscr_ratchet_message_destroy(&msg2);
+    vsc_buffer_destroy(&buff);
+}
+
+void
+test__methods__fixed_prekey_msg__should_return_correct_values(void) {
+    vscr_ratchet_message_t *msg1 = vscr_ratchet_message_new();
+
+    msg1->message_pb.has_prekey_message = true;
+    msg1->message_pb.version = 5;
+    msg1->message_pb.prekey_message.version = 11;
+    msg1->message_pb.prekey_message.regular_message.version = 10;
+    msg1->message_pb.prekey_message.regular_message.counter = 17;
+
+    memcpy(msg1->message_pb.prekey_message.receiver_one_time_key, test_ratchet_session_bob_one_time_public_key.bytes,
+            test_ratchet_session_bob_one_time_public_key.len);
+    msg1->message_pb.prekey_message.has_receiver_one_time_key = true;
+
+    memcpy(msg1->message_pb.prekey_message.receiver_long_term_key, test_ratchet_session_bob_long_term_public_key.bytes,
+            test_ratchet_session_bob_long_term_public_key.len);
+
+    memcpy(msg1->message_pb.prekey_message.sender_identity_key, test_ratchet_session_alice_identity_public_key.bytes,
+            test_ratchet_session_alice_identity_public_key.len);
+
+    memcpy(msg1->message_pb.prekey_message.sender_ephemeral_key, test_ratchet_session_alice_ephemeral_public_key.bytes,
+            test_ratchet_session_alice_ephemeral_public_key.len);
+
+    memcpy(msg1->message_pb.prekey_message.regular_message.public_key,
+            test_ratchet_session_alice_ratchet_public_key.bytes, test_ratchet_session_alice_ratchet_public_key.len);
+    msg1->message_pb.prekey_message.regular_message.cipher_text.arg =
+            vsc_buffer_new_with_data(test_ratchet_session_plain_text1);
+
+    TEST_ASSERT_EQUAL(vscr_msg_type_PREKEY, vscr_ratchet_message_get_type(msg1));
+
+    TEST_ASSERT_EQUAL(
+            test_ratchet_session_bob_long_term_public_key.len, vscr_ratchet_message_get_long_term_public_key(msg1).len);
+    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_session_bob_long_term_public_key.bytes,
+            vscr_ratchet_message_get_long_term_public_key(msg1).bytes,
+            test_ratchet_session_bob_long_term_public_key.len);
+
+    TEST_ASSERT_EQUAL(
+            test_ratchet_session_bob_one_time_public_key.len, vscr_ratchet_message_get_one_time_public_key(msg1).len);
+    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_session_bob_one_time_public_key.bytes,
+            vscr_ratchet_message_get_one_time_public_key(msg1).bytes, test_ratchet_session_bob_one_time_public_key.len);
+
+    vsc_buffer_t *buff = vsc_buffer_new_with_capacity(vscr_ratchet_common_RATCHET_KEY_ID_LENGTH);
+    vscr_ratchet_message_compute_long_term_public_key_id(msg1, buff);
+
+    TEST_ASSERT_EQUAL(test_ratchet_session_bob_long_term_key_id.len, vsc_buffer_len(buff));
+    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_session_bob_long_term_key_id.bytes, vsc_buffer_bytes(buff),
+            test_ratchet_session_bob_long_term_key_id.len);
+
+    vsc_buffer_reset(buff);
+    vscr_ratchet_message_compute_one_time_public_key_id(msg1, buff);
+
+    TEST_ASSERT_EQUAL(test_ratchet_session_bob_one_time_key_id.len, vsc_buffer_len(buff));
+    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_session_bob_one_time_key_id.bytes, vsc_buffer_bytes(buff),
+            test_ratchet_session_bob_one_time_key_id.len);
+
+    vscr_ratchet_message_destroy(&msg1);
+    vsc_buffer_destroy(&buff);
+}
+
+void
+test__methods__fixed_prekey_msg_no_one_time__should_return_correct_values(void) {
+    vscr_ratchet_message_t *msg1 = vscr_ratchet_message_new();
+
+    msg1->message_pb.has_prekey_message = true;
+    msg1->message_pb.version = 5;
+    msg1->message_pb.prekey_message.version = 11;
+    msg1->message_pb.prekey_message.regular_message.version = 10;
+    msg1->message_pb.prekey_message.regular_message.counter = 17;
+
+    msg1->message_pb.prekey_message.has_receiver_one_time_key = false;
+
+    memcpy(msg1->message_pb.prekey_message.receiver_long_term_key, test_ratchet_session_bob_long_term_public_key.bytes,
+            test_ratchet_session_bob_long_term_public_key.len);
+
+    memcpy(msg1->message_pb.prekey_message.sender_identity_key, test_ratchet_session_alice_identity_public_key.bytes,
+            test_ratchet_session_alice_identity_public_key.len);
+
+    memcpy(msg1->message_pb.prekey_message.sender_ephemeral_key, test_ratchet_session_alice_ephemeral_public_key.bytes,
+            test_ratchet_session_alice_ephemeral_public_key.len);
+
+    memcpy(msg1->message_pb.prekey_message.regular_message.public_key,
+            test_ratchet_session_alice_ratchet_public_key.bytes, test_ratchet_session_alice_ratchet_public_key.len);
+    msg1->message_pb.prekey_message.regular_message.cipher_text.arg =
+            vsc_buffer_new_with_data(test_ratchet_session_plain_text1);
+
+    TEST_ASSERT_EQUAL(vscr_msg_type_PREKEY, vscr_ratchet_message_get_type(msg1));
+
+    TEST_ASSERT_EQUAL(
+            test_ratchet_session_bob_long_term_public_key.len, vscr_ratchet_message_get_long_term_public_key(msg1).len);
+    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_session_bob_long_term_public_key.bytes,
+            vscr_ratchet_message_get_long_term_public_key(msg1).bytes,
+            test_ratchet_session_bob_long_term_public_key.len);
+
+    TEST_ASSERT_EQUAL(0, vscr_ratchet_message_get_one_time_public_key(msg1).len);
+
+    vsc_buffer_t *buff = vsc_buffer_new_with_capacity(vscr_ratchet_common_RATCHET_KEY_ID_LENGTH);
+    vscr_ratchet_message_compute_long_term_public_key_id(msg1, buff);
+
+    TEST_ASSERT_EQUAL(test_ratchet_session_bob_long_term_key_id.len, vsc_buffer_len(buff));
+    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_session_bob_long_term_key_id.bytes, vsc_buffer_bytes(buff),
+            test_ratchet_session_bob_long_term_key_id.len);
+
+    vscr_ratchet_message_destroy(&msg1);
+    vsc_buffer_destroy(&buff);
+}
+
+void
+test__methods__fixed_regular_msg__should_return_correct_values(void) {
+    vscr_ratchet_message_t *msg1 = vscr_ratchet_message_new();
+
+    msg1->message_pb.has_regular_message = true;
+    msg1->message_pb.version = 5;
+    msg1->message_pb.regular_message.version = 11;
+    msg1->message_pb.regular_message.counter = 17;
+
+    memcpy(msg1->message_pb.regular_message.public_key, test_ratchet_session_alice_ephemeral_public_key.bytes,
+            test_ratchet_session_alice_ephemeral_public_key.len);
+    msg1->message_pb.regular_message.cipher_text.arg = vsc_buffer_new_with_data(test_ratchet_session_plain_text1);
+
+    TEST_ASSERT_EQUAL(vscr_msg_type_REGULAR, vscr_ratchet_message_get_type(msg1));
+    TEST_ASSERT_EQUAL(0, vscr_ratchet_message_get_one_time_public_key(msg1).len);
+    TEST_ASSERT_EQUAL(0, vscr_ratchet_message_get_long_term_public_key(msg1).len);
+
+    vscr_ratchet_message_destroy(&msg1);
+}
+
 // --------------------------------------------------------------------------
 // Entrypoint.
 // --------------------------------------------------------------------------
@@ -134,7 +350,12 @@ int
 main(void) {
     UNITY_BEGIN();
 
-    RUN_TEST(test__serialize_deserialize__fixed_fields__should_be_equal);
+    RUN_TEST(test__serialize_deserialize__fixed_regular_msg__should_be_equal);
+    RUN_TEST(test__serialize_deserialize__fixed_prekey_msg__should_be_equal);
+    RUN_TEST(test__serialize_deserialize__fixed_prekey_msg_no_one_time__should_be_equal);
+    RUN_TEST(test__methods__fixed_prekey_msg__should_return_correct_values);
+    RUN_TEST(test__methods__fixed_prekey_msg_no_one_time__should_return_correct_values);
+    RUN_TEST(test__methods__fixed_regular_msg__should_return_correct_values);
 
     return UNITY_END();
 }

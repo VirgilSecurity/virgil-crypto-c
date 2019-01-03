@@ -269,15 +269,18 @@ vscr_ratchet_message_cleanup_ctx(vscr_ratchet_message_t *ratchet_message) {
     }
 }
 
+//
+//  Returns message type.
+//
 VSCR_PUBLIC vscr_msg_type_t
 vscr_ratchet_message_get_type(vscr_ratchet_message_t *ratchet_message) {
 
     VSCR_ASSERT_PTR(ratchet_message);
 
     if (ratchet_message->message_pb.has_prekey_message) {
-        return vscr_ratchet_message_RATCHET_MESSAGE_TYPE_PREKEY;
+        return vscr_msg_type_PREKEY;
     } else if (ratchet_message->message_pb.has_regular_message) {
-        return vscr_ratchet_message_RATCHET_MESSAGE_TYPE_REGULAR;
+        return vscr_msg_type_REGULAR;
     } else {
         VSCR_ASSERT(false);
     }
@@ -285,29 +288,44 @@ vscr_ratchet_message_get_type(vscr_ratchet_message_t *ratchet_message) {
     return 0;
 }
 
+//
+//  Returns long-term public key, if message is prekey message.
+//
 VSCR_PUBLIC vsc_data_t
 vscr_ratchet_message_get_long_term_public_key(vscr_ratchet_message_t *ratchet_message) {
 
     VSCR_ASSERT_PTR(ratchet_message);
-    VSCR_ASSERT(ratchet_message->message_pb.has_prekey_message);
+
+    if (!ratchet_message->message_pb.has_prekey_message)
+        return vsc_data_empty();
 
     return vsc_data(ratchet_message->message_pb.prekey_message.receiver_long_term_key,
             sizeof(ratchet_message->message_pb.prekey_message.receiver_long_term_key));
 }
 
+//
+//  Computes long-term public key id. Can be used to identify key in key storage.
+//  Do not use this method if long-term public key is empty.
+//
 VSCR_PUBLIC void
 vscr_ratchet_message_compute_long_term_public_key_id(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(ratchet_message);
+    VSCR_ASSERT(ratchet_message->message_pb.has_prekey_message);
 
     vscr_ratchet_message_compute_key_id(vscr_ratchet_message_get_long_term_public_key(ratchet_message), buffer);
 }
 
+//
+//  Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
+//
 VSCR_PUBLIC vsc_data_t
 vscr_ratchet_message_get_one_time_public_key(vscr_ratchet_message_t *ratchet_message) {
 
     VSCR_ASSERT_PTR(ratchet_message);
-    VSCR_ASSERT(ratchet_message->message_pb.has_prekey_message);
+
+    if (!ratchet_message->message_pb.has_prekey_message)
+        return vsc_data_empty();
 
     if (!ratchet_message->message_pb.prekey_message.has_receiver_one_time_key)
         return vsc_data_empty();
@@ -316,11 +334,16 @@ vscr_ratchet_message_get_one_time_public_key(vscr_ratchet_message_t *ratchet_mes
             sizeof(ratchet_message->message_pb.prekey_message.receiver_one_time_key));
 }
 
+//
+//  Computes one-term public key id. Can be used to identify key in key storage.
+//  Do not use this method if long-term public key is empty.
+//
 VSCR_PUBLIC void
 vscr_ratchet_message_compute_one_time_public_key_id(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(ratchet_message);
     VSCR_ASSERT(ratchet_message->message_pb.has_prekey_message);
+    VSCR_ASSERT(ratchet_message->message_pb.prekey_message.has_receiver_one_time_key);
 
     if (!ratchet_message->message_pb.prekey_message.has_receiver_one_time_key)
         return;
@@ -328,6 +351,9 @@ vscr_ratchet_message_compute_one_time_public_key_id(vscr_ratchet_message_t *ratc
     vscr_ratchet_message_compute_key_id(vscr_ratchet_message_get_one_time_public_key(ratchet_message), buffer);
 }
 
+//
+//  Buffer len to serialize this class.
+//
 VSCR_PUBLIC size_t
 vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *ratchet_message) {
 
@@ -347,6 +373,9 @@ vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *ratchet_message) {
     return 0;
 }
 
+//
+//  Serializes instance.
+//
 VSCR_PUBLIC void
 vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *output) {
 
@@ -363,6 +392,9 @@ vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message, vsc_buff
     vsc_buffer_inc_used(output, ostream.bytes_written);
 }
 
+//
+//  Deserializes instance.
+//
 VSCR_PUBLIC vscr_ratchet_message_t *
 vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
 

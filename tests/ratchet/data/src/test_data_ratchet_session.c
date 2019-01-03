@@ -66,6 +66,34 @@ const byte test_ratchet_session_alice_identity_public_key_BYTES[] = {
         0x72, 0x53, 0xF3, 0x39, 0x49, 0xC1, 0x98, 0x77,
 };
 
+const byte test_ratchet_session_alice_ephemeral_private_key_BYTES[] = {
+        0x57, 0x7C, 0x66, 0x08, 0x1A, 0xD2, 0x17, 0x8C,
+        0x03, 0x9C, 0xD0, 0x98, 0x26, 0xEF, 0x23, 0x64,
+        0x7C, 0xC7, 0x71, 0xAC, 0x53, 0xF3, 0x9F, 0xF2,
+        0x1E, 0xA8, 0xD4, 0xF7, 0x6F, 0x1D, 0x0B, 0x4C,
+};
+
+const byte test_ratchet_session_alice_ephemeral_public_key_BYTES[] = {
+        0x93, 0xF7, 0x9D, 0x0E, 0xEA, 0x03, 0x87, 0x27,
+        0xC0, 0xBB, 0xFD, 0x02, 0xCC, 0x9D, 0xCC, 0xF4,
+        0x70, 0x33, 0x6B, 0xB4, 0xA9, 0x77, 0xF7, 0xA9,
+        0xFC, 0x57, 0x1F, 0xEF, 0xE7, 0xEF, 0xA2, 0x3E,
+};
+
+const byte test_ratchet_session_alice_ratchet_private_key_BYTES[] = {
+        0xA7, 0xD0, 0x77, 0x1B, 0x5C, 0xC3, 0xF9, 0xB3,
+        0xAB, 0xD0, 0x0F, 0x48, 0x20, 0xB0, 0xDC, 0xCA,
+        0xBB, 0xCF, 0xA0, 0x77, 0xE6, 0x2B, 0x8D, 0xCC,
+        0x7A, 0x0D, 0x70, 0xA3, 0x61, 0x02, 0xCC, 0x7C,
+};
+
+const byte test_ratchet_session_alice_ratchet_public_key_BYTES[] = {
+        0x35, 0xE5, 0x8D, 0xD8, 0x81, 0xE9, 0x59, 0x2F,
+        0x51, 0x56, 0x05, 0xB9, 0xA8, 0xD5, 0x62, 0x12,
+        0x59, 0xA9, 0xF2, 0xF6, 0x20, 0x94, 0xC3, 0x94,
+        0x93, 0x1F, 0x96, 0x3B, 0xF8, 0xF2, 0x5E, 0x76,
+};
+
 const byte test_ratchet_session_bob_identity_private_key_BYTES[] = {
         0x1f, 0xf1, 0x32, 0x35, 0xb0, 0xbe, 0x13, 0xa9,
         0x91, 0xcd, 0xa7, 0xd4, 0x0f, 0x8b, 0x56, 0xb5,
@@ -94,6 +122,10 @@ const byte test_ratchet_session_bob_long_term_public_key_BYTES[] = {
         0xCB, 0x15, 0xDA, 0xAE, 0x27, 0xC4, 0x1B, 0x08,
 };
 
+const byte test_ratchet_session_bob_long_term_key_id_BYTES[] = {
+        0xb7, 0x7c, 0xf2, 0x59, 0x90, 0xef, 0xa1, 0xa1,
+};
+
 const byte test_ratchet_session_bob_one_time_private_key_BYTES[] = {
         0xf3, 0xd9, 0x47, 0x7c, 0x91, 0x27, 0x2c, 0xa0,
         0x0f, 0x9f, 0x9a, 0x5c, 0x07, 0x02, 0x05, 0xc1,
@@ -108,12 +140,32 @@ const byte test_ratchet_session_bob_one_time_public_key_BYTES[] = {
         0x35, 0x38, 0x4F, 0xEE, 0xE1, 0x47, 0xC0, 0x1D,
 };
 
+const byte test_ratchet_session_bob_one_time_key_id_BYTES[] = {
+        0x40, 0x7b, 0x5b, 0x5d, 0x68, 0x66, 0x39, 0x23,
+};
+
 const vsc_data_t test_ratchet_session_alice_identity_private_key = {
         test_ratchet_session_alice_identity_private_key_BYTES, sizeof(test_ratchet_session_alice_identity_private_key_BYTES)
 };
 
 const vsc_data_t test_ratchet_session_alice_identity_public_key = {
         test_ratchet_session_alice_identity_public_key_BYTES, sizeof(test_ratchet_session_alice_identity_public_key_BYTES)
+};
+
+const vsc_data_t test_ratchet_session_alice_ephemeral_private_key = {
+        test_ratchet_session_alice_ephemeral_private_key_BYTES, sizeof(test_ratchet_session_alice_ephemeral_private_key_BYTES)
+};
+
+const vsc_data_t test_ratchet_session_alice_ephemeral_public_key = {
+        test_ratchet_session_alice_ephemeral_public_key_BYTES, sizeof(test_ratchet_session_alice_ephemeral_public_key_BYTES)
+};
+
+const vsc_data_t test_ratchet_session_alice_ratchet_private_key = {
+        test_ratchet_session_alice_ratchet_private_key_BYTES, sizeof(test_ratchet_session_alice_ratchet_private_key_BYTES)
+};
+
+const vsc_data_t test_ratchet_session_alice_ratchet_public_key = {
+        test_ratchet_session_alice_ratchet_public_key_BYTES, sizeof(test_ratchet_session_alice_ratchet_public_key_BYTES)
 };
 
 const vsc_data_t test_ratchet_session_bob_identity_private_key = {
@@ -132,10 +184,18 @@ const vsc_data_t test_ratchet_session_bob_long_term_public_key = {
         test_ratchet_session_bob_long_term_public_key_BYTES, sizeof(test_ratchet_session_bob_long_term_public_key_BYTES)
 };
 
+const vsc_data_t test_ratchet_session_bob_long_term_key_id = {
+        test_ratchet_session_bob_long_term_key_id_BYTES, sizeof(test_ratchet_session_bob_long_term_key_id_BYTES)
+};
+
 const vsc_data_t test_ratchet_session_bob_one_time_private_key = {
         test_ratchet_session_bob_one_time_private_key_BYTES, sizeof(test_ratchet_session_bob_one_time_private_key_BYTES)
 };
 
 const vsc_data_t test_ratchet_session_bob_one_time_public_key = {
         test_ratchet_session_bob_one_time_public_key_BYTES, sizeof(test_ratchet_session_bob_one_time_public_key_BYTES)
+};
+
+const vsc_data_t test_ratchet_session_bob_one_time_key_id = {
+        test_ratchet_session_bob_one_time_key_id_BYTES, sizeof(test_ratchet_session_bob_one_time_key_id_BYTES)
 };

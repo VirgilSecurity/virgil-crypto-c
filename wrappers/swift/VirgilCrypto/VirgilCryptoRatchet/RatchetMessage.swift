@@ -68,18 +68,22 @@ import VirgilCryptoFoundation
         vscr_ratchet_message_delete(self.c_ctx)
     }
 
+    /// Returns message type.
     @objc public func getType() -> MsgType {
         let proxyResult = vscr_ratchet_message_get_type(self.c_ctx)
 
         return MsgType.init(fromC: proxyResult)
     }
 
+    /// Returns long-term public key, if message is prekey message.
     @objc public func getLongTermPublicKey() -> Data {
         let proxyResult = vscr_ratchet_message_get_long_term_public_key(self.c_ctx)
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
+    /// Computes long-term public key id. Can be used to identify key in key storage.
+    /// Do not use this method if long-term public key is empty.
     @objc public func computeLongTermPublicKeyId(buffer: Data) -> Data {
         let bufferCount = self.ClassRatchetCommonConstantRatchetKeyIdLength
         var buffer = Data(count: bufferCount)
@@ -105,12 +109,15 @@ import VirgilCryptoFoundation
         return buffer
     }
 
+    /// Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
     @objc public func getOneTimePublicKey() -> Data {
         let proxyResult = vscr_ratchet_message_get_one_time_public_key(self.c_ctx)
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
+    /// Computes one-term public key id. Can be used to identify key in key storage.
+    /// Do not use this method if long-term public key is empty.
     @objc public func computeOneTimePublicKeyId(buffer: Data) -> Data {
         let bufferCount = self.ClassRatchetCommonConstantRatchetKeyIdLength
         var buffer = Data(count: bufferCount)
@@ -136,12 +143,14 @@ import VirgilCryptoFoundation
         return buffer
     }
 
+    /// Buffer len to serialize this class.
     @objc public func serializeLen() -> Int {
         let proxyResult = vscr_ratchet_message_serialize_len(self.c_ctx)
 
         return proxyResult
     }
 
+    /// Serializes instance.
     @objc public func serialize() -> Data {
         let outputCount = self.serializeLen()
         var output = Data(count: outputCount)
@@ -160,6 +169,7 @@ import VirgilCryptoFoundation
         return output
     }
 
+    /// Deserializes instance.
     @objc public static func deserialize(input: Data, errCtx: ErrorCtx) -> RatchetMessage {
         let proxyResult = input.withUnsafeBytes({ (inputPointer: UnsafePointer<byte>) in
             return vscr_ratchet_message_deserialize(vsc_data(inputPointer, input.count), errCtx.c_ctx)

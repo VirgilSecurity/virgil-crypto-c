@@ -38,10 +38,10 @@ import VSCRatchet
 
 @objc(VSCRMsgType) public enum MsgType: Int {
 
-    /// Regular message
+    /// Regular message. This message is all the time except case described in prekey message section.
     case regular = 0
 
-    /// Prekey message
+    /// Prekey message. This message is sent to initiate conversation, till first response is received.
     case prekey = 1
 
     /// Create enumeration value from the correspond C enumeration value.
