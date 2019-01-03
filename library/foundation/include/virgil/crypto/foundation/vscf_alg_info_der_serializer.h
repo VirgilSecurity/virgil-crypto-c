@@ -47,25 +47,20 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'sha256' implementation.
+//  This module contains 'alg info der serializer' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_SHA256_H_INCLUDED
-#define VSCF_SHA256_H_INCLUDED
+#ifndef VSCF_ALG_INFO_DER_SERIALIZER_H_INCLUDED
+#define VSCF_ALG_INFO_DER_SERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_hash_info.h"
-#include "vscf_hash.h"
-#include "vscf_hash_alg.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_buffer.h>
 #endif
 
@@ -85,131 +80,77 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Public integral constants.
-//
-enum {
-    //
-    //  Length of the digest (hashing output) in bytes.
-    //
-    vscf_sha256_DIGEST_LEN = 32,
-    //
-    //  Block length of the digest function in bytes.
-    //
-    vscf_sha256_BLOCK_LEN = 64
-};
-
-//
 //  Handles implementation details.
 //
-typedef struct vscf_sha256_t vscf_sha256_t;
+typedef struct vscf_alg_info_der_serializer_t vscf_alg_info_der_serializer_t;
 
 //
-//  Return size of 'vscf_sha256_t' type.
+//  Return size of 'vscf_alg_info_der_serializer_t' type.
 //
 VSCF_PUBLIC size_t
-vscf_sha256_impl_size(void);
+vscf_alg_info_der_serializer_impl_size(void);
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_sha256_impl(vscf_sha256_t *sha256);
+vscf_alg_info_der_serializer_impl(vscf_alg_info_der_serializer_t *alg_info_der_serializer);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_sha256_init(vscf_sha256_t *sha256);
+vscf_alg_info_der_serializer_init(vscf_alg_info_der_serializer_t *alg_info_der_serializer);
 
 //
 //  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_sha256_init()'.
+//  This is a reverse action of the function 'vscf_alg_info_der_serializer_init()'.
 //
 VSCF_PUBLIC void
-vscf_sha256_cleanup(vscf_sha256_t *sha256);
+vscf_alg_info_der_serializer_cleanup(vscf_alg_info_der_serializer_t *alg_info_der_serializer);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_sha256_t *
-vscf_sha256_new(void);
+VSCF_PUBLIC vscf_alg_info_der_serializer_t *
+vscf_alg_info_der_serializer_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha256_new()'.
+//  This is a reverse action of the function 'vscf_alg_info_der_serializer_new()'.
 //
 VSCF_PUBLIC void
-vscf_sha256_delete(vscf_sha256_t *sha256);
+vscf_alg_info_der_serializer_delete(vscf_alg_info_der_serializer_t *alg_info_der_serializer);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha256_new()'.
+//  This is a reverse action of the function 'vscf_alg_info_der_serializer_new()'.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_sha256_destroy(vscf_sha256_t **sha256_ref);
+vscf_alg_info_der_serializer_destroy(vscf_alg_info_der_serializer_t **alg_info_der_serializer_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_sha256_t *
-vscf_sha256_shallow_copy(vscf_sha256_t *sha256);
+VSCF_PUBLIC vscf_alg_info_der_serializer_t *
+vscf_alg_info_der_serializer_shallow_copy(vscf_alg_info_der_serializer_t *alg_info_der_serializer);
 
 //
-//  Returns instance of the implemented interface 'hash info'.
+//  Return buffer size enough to hold serialized algorithm
 //
-VSCF_PUBLIC const vscf_hash_info_api_t *
-vscf_sha256_hash_info_api(void);
+VSCF_PUBLIC size_t
+vscf_alg_info_der_serializer_serialize_len(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
+        const vscf_impl_t *alg_info);
 
 //
-//  Returns instance of the implemented interface 'hash'.
-//
-VSCF_PUBLIC const vscf_hash_api_t *
-vscf_sha256_hash_api(void);
-
-//
-//  Return implemented hash algorithm type.
-//
-VSCF_PUBLIC vscf_hash_alg_t
-vscf_sha256_alg(void);
-
-//
-//  Calculate hash over given data.
+//  Serialize algorithm info to buffer class
 //
 VSCF_PUBLIC void
-vscf_sha256_hash(vsc_data_t data, vsc_buffer_t *digest);
-
-//
-//  Start a new hashing.
-//
-VSCF_PUBLIC void
-vscf_sha256_start(vscf_sha256_t *sha256);
-
-//
-//  Add given data to the hash.
-//
-VSCF_PUBLIC void
-vscf_sha256_update(vscf_sha256_t *sha256, vsc_data_t data);
-
-//
-//  Accompilsh hashing and return it's result (a message digest).
-//
-VSCF_PUBLIC void
-vscf_sha256_finish(vscf_sha256_t *sha256, vsc_buffer_t *digest);
-
-//
-//  Produce algorithm information structure
-//
-VSCF_PUBLIC const vscf_impl_t *
-vscf_sha256_produce_alg_info(vscf_sha256_t *sha256);
-
-//
-//  Consume algorithm information structure
-//
-VSCF_PUBLIC void
-vscf_sha256_consume_alg_info(vscf_sha256_t *sha256, const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialize(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
+        const vscf_impl_t *alg_info, vsc_buffer_t *out);
 
 
 // --------------------------------------------------------------------------
@@ -225,5 +166,5 @@ vscf_sha256_consume_alg_info(vscf_sha256_t *sha256, const vscf_impl_t *alg_info)
 
 
 //  @footer
-#endif // VSCF_SHA256_H_INCLUDED
+#endif // VSCF_ALG_INFO_DER_SERIALIZER_H_INCLUDED
 //  @end

@@ -40,6 +40,7 @@
 
         <interface name="hash"/>
         <interface name="hash stream"/>
+        <interface name="alg info compatible"/>
     </implementation>
 
 

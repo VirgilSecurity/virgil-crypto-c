@@ -53,6 +53,8 @@
 
         <interface name="kdf"/>
 
+        <interface name="alg info compatible"/>
+
         <dependency name="hash" interface="hash stream"/>
     </implementation>
 

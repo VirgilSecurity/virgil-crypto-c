@@ -47,26 +47,22 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'sha256' implementation.
+//  Interface 'alg info deserializer' API.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_SHA256_H_INCLUDED
-#define VSCF_SHA256_H_INCLUDED
+#ifndef VSCF_ALG_INFO_DESERIALIZER_API_H_INCLUDED
+#define VSCF_ALG_INFO_DESERIALIZER_API_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_hash_info.h"
-#include "vscf_hash.h"
-#include "vscf_hash_alg.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
-#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
-#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -85,131 +81,24 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Public integral constants.
+//  Callback. Algorithm deserialization algorithm from data
 //
-enum {
+typedef const vscf_impl_t * (*vscf_alg_info_deserializer_api_deserialize_fn)(vscf_impl_t *impl, vsc_data_t data);
+
+//
+//  Contains API requirements of the interface 'alg info deserializer'.
+//
+struct vscf_alg_info_deserializer_api_t {
     //
-    //  Length of the digest (hashing output) in bytes.
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'alg_info_deserializer' MUST be equal to the 'vscf_api_tag_ALG_INFO_DESERIALIZER'.
     //
-    vscf_sha256_DIGEST_LEN = 32,
+    vscf_api_tag_t api_tag;
     //
-    //  Block length of the digest function in bytes.
+    //  Algorithm deserialization algorithm from data
     //
-    vscf_sha256_BLOCK_LEN = 64
+    vscf_alg_info_deserializer_api_deserialize_fn deserialize_cb;
 };
-
-//
-//  Handles implementation details.
-//
-typedef struct vscf_sha256_t vscf_sha256_t;
-
-//
-//  Return size of 'vscf_sha256_t' type.
-//
-VSCF_PUBLIC size_t
-vscf_sha256_impl_size(void);
-
-//
-//  Cast to the 'vscf_impl_t' type.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_sha256_impl(vscf_sha256_t *sha256);
-
-//
-//  Perform initialization of preallocated implementation context.
-//
-VSCF_PUBLIC void
-vscf_sha256_init(vscf_sha256_t *sha256);
-
-//
-//  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_sha256_init()'.
-//
-VSCF_PUBLIC void
-vscf_sha256_cleanup(vscf_sha256_t *sha256);
-
-//
-//  Allocate implementation context and perform it's initialization.
-//  Postcondition: check memory allocation result.
-//
-VSCF_PUBLIC vscf_sha256_t *
-vscf_sha256_new(void);
-
-//
-//  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha256_new()'.
-//
-VSCF_PUBLIC void
-vscf_sha256_delete(vscf_sha256_t *sha256);
-
-//
-//  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_sha256_new()'.
-//  Given reference is nullified.
-//
-VSCF_PUBLIC void
-vscf_sha256_destroy(vscf_sha256_t **sha256_ref);
-
-//
-//  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
-//
-VSCF_PUBLIC vscf_sha256_t *
-vscf_sha256_shallow_copy(vscf_sha256_t *sha256);
-
-//
-//  Returns instance of the implemented interface 'hash info'.
-//
-VSCF_PUBLIC const vscf_hash_info_api_t *
-vscf_sha256_hash_info_api(void);
-
-//
-//  Returns instance of the implemented interface 'hash'.
-//
-VSCF_PUBLIC const vscf_hash_api_t *
-vscf_sha256_hash_api(void);
-
-//
-//  Return implemented hash algorithm type.
-//
-VSCF_PUBLIC vscf_hash_alg_t
-vscf_sha256_alg(void);
-
-//
-//  Calculate hash over given data.
-//
-VSCF_PUBLIC void
-vscf_sha256_hash(vsc_data_t data, vsc_buffer_t *digest);
-
-//
-//  Start a new hashing.
-//
-VSCF_PUBLIC void
-vscf_sha256_start(vscf_sha256_t *sha256);
-
-//
-//  Add given data to the hash.
-//
-VSCF_PUBLIC void
-vscf_sha256_update(vscf_sha256_t *sha256, vsc_data_t data);
-
-//
-//  Accompilsh hashing and return it's result (a message digest).
-//
-VSCF_PUBLIC void
-vscf_sha256_finish(vscf_sha256_t *sha256, vsc_buffer_t *digest);
-
-//
-//  Produce algorithm information structure
-//
-VSCF_PUBLIC const vscf_impl_t *
-vscf_sha256_produce_alg_info(vscf_sha256_t *sha256);
-
-//
-//  Consume algorithm information structure
-//
-VSCF_PUBLIC void
-vscf_sha256_consume_alg_info(vscf_sha256_t *sha256, const vscf_impl_t *alg_info);
 
 
 // --------------------------------------------------------------------------
@@ -225,5 +114,5 @@ vscf_sha256_consume_alg_info(vscf_sha256_t *sha256, const vscf_impl_t *alg_info)
 
 
 //  @footer
-#endif // VSCF_SHA256_H_INCLUDED
+#endif // VSCF_ALG_INFO_DESERIALIZER_API_H_INCLUDED
 //  @end

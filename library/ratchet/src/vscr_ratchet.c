@@ -613,9 +613,9 @@ vscr_ratchet_encrypt_len(vscr_ratchet_t *ratchet, size_t plain_text_len) {
     //       public_key OCTET_STRING,
     //       cipher_text OCTET_STRING }
 
-    size_t top_sequence_len = 1 + 3        /* SEQUENCE */
-                              + 1 + 1 + 5  /* INTEGER */
-                              + 1 + 1 + 5  /* INTEGER */
+    size_t top_sequence_len = 1 + 3 /* SEQUENCE */
+                              + 1 + 1 + 5 /* INTEGER */
+                              + 1 + 1 + 5 /* INTEGER */
                               + 1 + 1 + 32 /* public_key */
                               + 1 + 3 +
                               vscr_ratchet_cipher_encrypt_len(ratchet->cipher, plain_text_len); /* cipher_text */
@@ -809,8 +809,8 @@ vscr_ratchet_find_skipped_message_key(vscr_ratchet_t *ratchet, const RegularMess
 }
 
 static void
-vscr_ratchet_erase_skipped_message_key(
-        vscr_ratchet_t *ratchet, vscr_ratchet_skipped_message_key_t *skipped_message_key) {
+vscr_ratchet_erase_skipped_message_key(vscr_ratchet_t *ratchet,
+        vscr_ratchet_skipped_message_key_t *skipped_message_key) {
 
     VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(skipped_message_key);
@@ -909,11 +909,11 @@ vscr_ratchet_serialize_len(vscr_ratchet_t *ratchet) {
     //       skipped message keys OCTET_STRING,
     //       root key OCTET_STRING }
 
-    size_t top_sequence_len = 1 + 3         /* SEQUENCE */
-                              + 1 + 1 + 5   /* INTEGER */
-                              + 1 + 1 + 32  /* KEY */
-                              + 1 + 1 + 32  /* KEY */
-                              + 1 + 1 + 32  /* KEY */
+    size_t top_sequence_len = 1 + 3 /* SEQUENCE */
+                              + 1 + 1 + 5 /* INTEGER */
+                              + 1 + 1 + 32 /* KEY */
+                              + 1 + 1 + 32 /* KEY */
+                              + 1 + 1 + 32 /* KEY */
                               + 1 + 1 + 32; /* KEY */
 
     return top_sequence_len;

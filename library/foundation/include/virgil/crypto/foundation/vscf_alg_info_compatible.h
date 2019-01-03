@@ -47,14 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Provide produce and consume methods for implemented algorithms
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_API_H_INCLUDED
-#define VSCF_API_H_INCLUDED
+#ifndef VSCF_ALG_INFO_COMPATIBLE_H_INCLUDED
+#define VSCF_ALG_INFO_COMPATIBLE_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_api.h"
 
 // clang-format on
 //  @end
@@ -72,52 +73,39 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Contains API requirements of the interface 'alg info compatible'.
 //
-enum vscf_api_tag_t {
-    vscf_api_tag_BEGIN = 0,
-    vscf_api_tag_ALG_INFO,
-    vscf_api_tag_ALG_INFO_COMPATIBLE,
-    vscf_api_tag_ALG_INFO_DESERIALIZER,
-    vscf_api_tag_ALG_INFO_SERIALIZER,
-    vscf_api_tag_ASN1_READER,
-    vscf_api_tag_ASN1_WRITER,
-    vscf_api_tag_AUTH_DECRYPT,
-    vscf_api_tag_AUTH_ENCRYPT,
-    vscf_api_tag_CIPHER,
-    vscf_api_tag_CIPHER_AUTH,
-    vscf_api_tag_CIPHER_AUTH_INFO,
-    vscf_api_tag_CIPHER_INFO,
-    vscf_api_tag_COMPUTE_SHARED_KEY,
-    vscf_api_tag_DECRYPT,
-    vscf_api_tag_DEFAULTS,
-    vscf_api_tag_ENCRYPT,
-    vscf_api_tag_ENTROPY_SOURCE,
-    vscf_api_tag_GENERATE_KEY,
-    vscf_api_tag_HASH,
-    vscf_api_tag_HASH_INFO,
-    vscf_api_tag_HASH_STREAM,
-    vscf_api_tag_KDF,
-    vscf_api_tag_KEY,
-    vscf_api_tag_KEY_DESERIALIZER,
-    vscf_api_tag_KEY_SERIALIZER,
-    vscf_api_tag_MAC,
-    vscf_api_tag_MAC_INFO,
-    vscf_api_tag_MAC_STREAM,
-    vscf_api_tag_PRIVATE_KEY,
-    vscf_api_tag_PUBLIC_KEY,
-    vscf_api_tag_RANDOM,
-    vscf_api_tag_SALTED_KDF,
-    vscf_api_tag_SIGN,
-    vscf_api_tag_VERIFY,
-    vscf_api_tag_END
-};
-typedef enum vscf_api_tag_t vscf_api_tag_t;
+typedef struct vscf_alg_info_compatible_api_t vscf_alg_info_compatible_api_t;
 
 //
-//  Generic type for any 'API' object.
+//  Produce algorithm information structure
 //
-typedef struct vscf_api_t vscf_api_t;
+VSCF_PUBLIC const vscf_impl_t *
+vscf_alg_info_compatible_produce_alg_info(vscf_impl_t *impl);
+
+//
+//  Consume algorithm information structure
+//
+VSCF_PUBLIC void
+vscf_alg_info_compatible_consume_alg_info(vscf_impl_t *impl, const vscf_impl_t *alg_info);
+
+//
+//  Return alg info compatible API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_alg_info_compatible_api_t *
+vscf_alg_info_compatible_api(const vscf_impl_t *impl);
+
+//
+//  Check if given object implements interface 'alg info compatible'.
+//
+VSCF_PUBLIC bool
+vscf_alg_info_compatible_is_implemented(const vscf_impl_t *impl);
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_alg_info_compatible_api_tag(const vscf_alg_info_compatible_api_t *alg_info_compatible_api);
 
 
 // --------------------------------------------------------------------------
@@ -133,5 +121,5 @@ typedef struct vscf_api_t vscf_api_t;
 
 
 //  @footer
-#endif // VSCF_API_H_INCLUDED
+#endif // VSCF_ALG_INFO_COMPATIBLE_H_INCLUDED
 //  @end
