@@ -1,4 +1,4 @@
-<implementor name="alg info serializer">
+<implementor name="alg info der serializer" is_default="1">
     Implementation of serialization algorithm information
     <implementation name="alg info der serializer">
         Provide implementation of der serializer of algorithm information

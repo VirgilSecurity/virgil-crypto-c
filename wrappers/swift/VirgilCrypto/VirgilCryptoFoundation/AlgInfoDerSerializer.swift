@@ -37,15 +37,15 @@ import Foundation
 import VSCFoundation
 import VirgilCryptoCommon
 
-/// Virgil Security implementation of the KDF1 (ISO-18033-2) algorithm.
-@objc(VSCFKdf1) public class Kdf1: NSObject, Kdf, AlgInfoCompatible {
+/// Provide implementation of der serializer of algorithm information
+@objc(VSCFAlgInfoDerSerializer) public class AlgInfoDerSerializer: NSObject, AlgInfoSerializer {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
     /// Create underlying C context.
     public override init() {
-        self.c_ctx = vscf_kdf1_new()
+        self.c_ctx = vscf_alg_info_der_serializer_new()
         super.init()
     }
 
@@ -59,50 +59,38 @@ import VirgilCryptoCommon
     /// Acquire retained C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscf_kdf1_shallow_copy(c_ctx)
+        self.c_ctx = vscf_alg_info_der_serializer_shallow_copy(c_ctx)
         super.init()
     }
 
     /// Release underlying C context.
     deinit {
-        vscf_kdf1_delete(self.c_ctx)
+        vscf_alg_info_der_serializer_delete(self.c_ctx)
     }
 
-    @objc public func setHash(hash: HashStream) {
-        vscf_kdf1_release_hash(self.c_ctx)
-        vscf_kdf1_use_hash(self.c_ctx, hash.c_ctx)
+    /// Return buffer size enough to hold serialized algorithm
+    @objc public func serializeLen(algInfo: AlgInfo) -> Int {
+        let proxyResult = vscf_alg_info_der_serializer_serialize_len(self.c_ctx, algInfo.c_ctx)
+
+        return proxyResult
     }
 
-    /// Derive key of the requested length from the given data.
-    @objc public func derive(data: Data, keyLen: Int) -> Data {
-        let keyCount = keyLen
-        var key = Data(count: keyCount)
-        var keyBuf = vsc_buffer_new()
+    /// Serialize algorithm info to buffer class
+    @objc public func serialize(algInfo: AlgInfo) -> Data {
+        let outCount = self.serializeLen(algInfo: algInfo)
+        var out = Data(count: outCount)
+        var outBuf = vsc_buffer_new()
         defer {
-            vsc_buffer_delete(keyBuf)
+            vsc_buffer_delete(outBuf)
         }
 
-        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
-            key.withUnsafeMutableBytes({ (keyPointer: UnsafeMutablePointer<byte>) -> Void in
-                vsc_buffer_init(keyBuf)
-                vsc_buffer_use(keyBuf, keyPointer, keyCount)
-                vscf_kdf1_derive(self.c_ctx, vsc_data(dataPointer, data.count), keyLen, keyBuf)
-            })
+        out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> Void in
+            vsc_buffer_init(outBuf)
+            vsc_buffer_use(outBuf, outPointer, outCount)
+            vscf_alg_info_der_serializer_serialize(self.c_ctx, algInfo.c_ctx, outBuf)
         })
-        key.count = vsc_buffer_len(keyBuf)
+        out.count = vsc_buffer_len(outBuf)
 
-        return key
-    }
-
-    /// Produce algorithm information structure
-    @objc public func produceAlgInfo() -> AlgInfo {
-        let proxyResult = vscf_kdf1_produce_alg_info(self.c_ctx)
-
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
-    }
-
-    /// Consume algorithm information structure
-    @objc public func consumeAlgInfo(algInfo: AlgInfo) {
-        vscf_kdf1_consume_alg_info(self.c_ctx, algInfo.c_ctx)
+        return out
     }
 }

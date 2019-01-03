@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'sha256' implementation.
+//  This module contains 'alg info der deserializer' implementation.
 // --------------------------------------------------------------------------
 
 
@@ -50,11 +50,11 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_sha256.h"
+#include "vscf_alg_info_der_deserializer.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_sha256_defs.h"
-#include "vscf_sha256_internal.h"
+#include "vscf_alg_info_der_deserializer_defs.h"
+#include "vscf_alg_info_der_deserializer_internal.h"
 
 // clang-format on
 //  @end
@@ -75,111 +75,14 @@
 
 
 //
-//  Provides initialization of the implementation specific context.
-//  Note, this method is called automatically when method vscf_sha256_init() is called.
-//  Note, that context is already zeroed.
-//
-VSCF_PRIVATE void
-vscf_sha256_init_ctx(vscf_sha256_t *sha256) {
-
-    VSCF_ASSERT_PTR(sha256);
-
-    mbedtls_sha256_init(&sha256->hash_ctx);
-}
-
-//
-//  Release resources of the implementation specific context.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-VSCF_PRIVATE void
-vscf_sha256_cleanup_ctx(vscf_sha256_t *sha256) {
-
-    VSCF_ASSERT_PTR(sha256);
-
-    mbedtls_sha256_free(&sha256->hash_ctx);
-}
-
-//
-//  Return implemented hash algorithm type.
-//
-VSCF_PUBLIC vscf_hash_alg_t
-vscf_sha256_alg(void) {
-
-    return vscf_hash_alg_SHA256;
-}
-
-//
-//  Calculate hash over given data.
-//
-VSCF_PUBLIC void
-vscf_sha256_hash(vsc_data_t data, vsc_buffer_t *digest) {
-
-    VSCF_ASSERT(vsc_data_is_valid(data));
-    VSCF_ASSERT(vsc_buffer_is_valid(digest));
-    VSCF_ASSERT(vsc_buffer_unused_len(digest) >= vscf_sha256_DIGEST_LEN);
-
-    const int is224 = 0;
-    mbedtls_sha256(data.bytes, data.len, vsc_buffer_unused_bytes(digest), is224);
-    vsc_buffer_inc_used(digest, vscf_sha256_DIGEST_LEN);
-}
-
-//
-//  Start a new hashing.
-//
-VSCF_PUBLIC void
-vscf_sha256_start(vscf_sha256_t *sha256) {
-
-    VSCF_ASSERT_PTR(sha256);
-
-    const int is224 = 0;
-    mbedtls_sha256_starts(&sha256->hash_ctx, is224);
-}
-
-//
-//  Add given data to the hash.
-//
-VSCF_PUBLIC void
-vscf_sha256_update(vscf_sha256_t *sha256, vsc_data_t data) {
-
-    VSCF_ASSERT_PTR(sha256);
-    VSCF_ASSERT(vsc_data_is_valid(data));
-
-    mbedtls_sha256_update(&sha256->hash_ctx, data.bytes, data.len);
-}
-
-//
-//  Accompilsh hashing and return it's result (a message digest).
-//
-VSCF_PUBLIC void
-vscf_sha256_finish(vscf_sha256_t *sha256, vsc_buffer_t *digest) {
-
-    VSCF_ASSERT_PTR(sha256);
-    VSCF_ASSERT(vsc_buffer_is_valid(digest));
-    VSCF_ASSERT(vsc_buffer_unused_len(digest) >= vscf_sha256_DIGEST_LEN);
-
-    mbedtls_sha256_finish(&sha256->hash_ctx, vsc_buffer_unused_bytes(digest));
-    vsc_buffer_inc_used(digest, vscf_sha256_DIGEST_LEN);
-}
-
-//
-//  Produce algorithm information structure
+//  Algorithm deserialization algorithm from data
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_sha256_produce_alg_info(vscf_sha256_t *sha256) {
+vscf_alg_info_der_deserializer_deserialize(
+        vscf_alg_info_der_deserializer_t *alg_info_der_deserializer, vsc_data_t data) {
 
     //  TODO: This is STUB. Implement me.
-    VSCF_ASSERT_PTR(sha256);
+    VSCF_ASSERT_PTR(alg_info_der_deserializer);
+    VSCF_ASSERT_PTR(data.bytes);
     return NULL;
-}
-
-//
-//  Consume algorithm information structure
-//
-VSCF_PUBLIC void
-vscf_sha256_consume_alg_info(vscf_sha256_t *sha256, const vscf_impl_t *alg_info) {
-
-    //  TODO: This is STUB. Implement me.
-    VSCF_ASSERT_PTR(sha256);
-    VSCF_ASSERT_PTR(alg_info);
 }

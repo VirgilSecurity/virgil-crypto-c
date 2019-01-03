@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Provide algorithm deserialization
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,25 +50,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_API_H_INCLUDED
-#define VSCF_API_H_INCLUDED
-
-#include "vscf_library.h"
+#include "vscf_alg_info_deserializer.h"
+#include "vscf_assert.h"
+#include "vscf_alg_info_deserializer_api.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -72,66 +65,55 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Algorithm deserialization algorithm from data
 //
-enum vscf_api_tag_t {
-    vscf_api_tag_BEGIN = 0,
-    vscf_api_tag_ALG_INFO,
-    vscf_api_tag_ALG_INFO_COMPATIBLE,
-    vscf_api_tag_ALG_INFO_DESERIALIZER,
-    vscf_api_tag_ALG_INFO_SERIALIZER,
-    vscf_api_tag_ASN1_READER,
-    vscf_api_tag_ASN1_WRITER,
-    vscf_api_tag_AUTH_DECRYPT,
-    vscf_api_tag_AUTH_ENCRYPT,
-    vscf_api_tag_CIPHER,
-    vscf_api_tag_CIPHER_AUTH,
-    vscf_api_tag_CIPHER_AUTH_INFO,
-    vscf_api_tag_CIPHER_INFO,
-    vscf_api_tag_COMPUTE_SHARED_KEY,
-    vscf_api_tag_DECRYPT,
-    vscf_api_tag_DEFAULTS,
-    vscf_api_tag_ENCRYPT,
-    vscf_api_tag_ENTROPY_SOURCE,
-    vscf_api_tag_GENERATE_KEY,
-    vscf_api_tag_HASH,
-    vscf_api_tag_HASH_INFO,
-    vscf_api_tag_HASH_STREAM,
-    vscf_api_tag_KDF,
-    vscf_api_tag_KEY,
-    vscf_api_tag_KEY_DESERIALIZER,
-    vscf_api_tag_KEY_SERIALIZER,
-    vscf_api_tag_MAC,
-    vscf_api_tag_MAC_INFO,
-    vscf_api_tag_MAC_STREAM,
-    vscf_api_tag_PRIVATE_KEY,
-    vscf_api_tag_PUBLIC_KEY,
-    vscf_api_tag_RANDOM,
-    vscf_api_tag_SALTED_KDF,
-    vscf_api_tag_SIGN,
-    vscf_api_tag_VERIFY,
-    vscf_api_tag_END
-};
-typedef enum vscf_api_tag_t vscf_api_tag_t;
+VSCF_PUBLIC const vscf_impl_t *
+vscf_alg_info_deserializer_deserialize(vscf_impl_t *impl, vsc_data_t data) {
+
+    const vscf_alg_info_deserializer_api_t *alg_info_deserializer_api = vscf_alg_info_deserializer_api(impl);
+    VSCF_ASSERT_PTR (alg_info_deserializer_api);
+
+    VSCF_ASSERT_PTR (alg_info_deserializer_api->deserialize_cb);
+    return alg_info_deserializer_api->deserialize_cb (impl, data);
+}
 
 //
-//  Generic type for any 'API' object.
+//  Return alg info deserializer API, or NULL if it is not implemented.
 //
-typedef struct vscf_api_t vscf_api_t;
+VSCF_PUBLIC const vscf_alg_info_deserializer_api_t *
+vscf_alg_info_deserializer_api(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_ALG_INFO_DESERIALIZER);
+    return (const vscf_alg_info_deserializer_api_t *) api;
+}
+
+//
+//  Check if given object implements interface 'alg info deserializer'.
+//
+VSCF_PUBLIC bool
+vscf_alg_info_deserializer_is_implemented(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    return vscf_impl_api(impl, vscf_api_tag_ALG_INFO_DESERIALIZER) != NULL;
+}
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_alg_info_deserializer_api_tag(const vscf_alg_info_deserializer_api_t *alg_info_deserializer_api) {
+
+    VSCF_ASSERT_PTR (alg_info_deserializer_api);
+
+    return alg_info_deserializer_api->api_tag;
+}
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_API_H_INCLUDED
 //  @end

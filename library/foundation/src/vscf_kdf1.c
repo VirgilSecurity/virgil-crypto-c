@@ -124,3 +124,25 @@ vscf_kdf1_derive(vscf_kdf1_t *kdf1, vsc_data_t data, size_t key_len, vsc_buffer_
         }
     }
 }
+
+//
+//  Produce algorithm information structure
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_kdf1_produce_alg_info(vscf_kdf1_t *kdf1) {
+
+    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(kdf1);
+    return NULL;
+}
+
+//
+//  Consume algorithm information structure
+//
+VSCF_PUBLIC void
+vscf_kdf1_consume_alg_info(vscf_kdf1_t *kdf1, const vscf_impl_t *alg_info) {
+
+    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(kdf1);
+    VSCF_ASSERT_PTR(alg_info);
+}
