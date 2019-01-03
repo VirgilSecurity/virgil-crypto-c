@@ -378,6 +378,7 @@ function cmake_generate_definitions (source, license)
 
             target_compile_definitions($(c_features.cmake_target:)
                     PUBLIC
+                        $<BUILD_INTERFACE:$(c_features.internal_build:)>
         ")
 
         for c_features.c_feature
@@ -387,7 +388,6 @@ function cmake_generate_definitions (source, license)
         cmake_insert ("\
             PRIVATE
                 $<$<BOOL:${BUILD_SHARED_LIBS}>:$(c_features.build_shared_libs:)>
-                $<BUILD_INTERFACE:$(c_features.internal_build:)>
             )
         ", 2)
     endfor
