@@ -79,14 +79,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Public integral constants.
-//
-enum {
-    vscr_ratchet_message_RATCHET_MESSAGE_TYPE_PREKEY = 0,
-    vscr_ratchet_message_RATCHET_MESSAGE_TYPE_REGULAR = 1
-};
-
-//
 //  Handle 'ratchet message' context.
 //
 typedef struct vscr_ratchet_message_t vscr_ratchet_message_t;
@@ -135,27 +127,53 @@ vscr_ratchet_message_destroy(vscr_ratchet_message_t **ratchet_message_ref);
 VSCR_PUBLIC vscr_ratchet_message_t *
 vscr_ratchet_message_shallow_copy(vscr_ratchet_message_t *ratchet_message);
 
+//
+//  Returns message type.
+//
 VSCR_PUBLIC vscr_msg_type_t
 vscr_ratchet_message_get_type(vscr_ratchet_message_t *ratchet_message);
 
+//
+//  Returns long-term public key, if message is prekey message.
+//
 VSCR_PUBLIC vsc_data_t
 vscr_ratchet_message_get_long_term_public_key(vscr_ratchet_message_t *ratchet_message);
 
+//
+//  Computes long-term public key id. Can be used to identify key in key storage.
+//  Do not use this method if long-term public key is empty.
+//
 VSCR_PUBLIC void
 vscr_ratchet_message_compute_long_term_public_key_id(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *buffer);
 
+//
+//  Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
+//
 VSCR_PUBLIC vsc_data_t
 vscr_ratchet_message_get_one_time_public_key(vscr_ratchet_message_t *ratchet_message);
 
+//
+//  Computes one-term public key id. Can be used to identify key in key storage.
+//  Do not use this method if long-term public key is empty.
+//
 VSCR_PUBLIC void
 vscr_ratchet_message_compute_one_time_public_key_id(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *buffer);
 
+//
+//  Buffer len to serialize this class.
+//
 VSCR_PUBLIC size_t
 vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *ratchet_message);
 
+//
+//  Serializes instance.
+//
 VSCR_PUBLIC void
 vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *output);
 
+//
+//  Deserializes instance.
+//
 VSCR_PUBLIC vscr_ratchet_message_t *
 vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx);
 

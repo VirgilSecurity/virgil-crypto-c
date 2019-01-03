@@ -64,11 +64,11 @@ extern "C" {
 
 enum vscr_msg_type_t {
     //
-    //  Regular message
+    //  Regular message. This message is all the time except case described in prekey message section.
     //
     vscr_msg_type_REGULAR = 0,
     //
-    //  Prekey message
+    //  Prekey message. This message is sent to initiate conversation, till first response is received.
     //
     vscr_msg_type_PREKEY = 1
 };

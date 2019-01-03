@@ -1,9 +1,9 @@
 <enum name="msg type" definition="public">
     <constant name="regular" value="0">
-        Regular message
+        Regular message. This message is all the time except case described in prekey message section.
     </constant>
 
     <constant name="prekey" value="1">
-        Prekey message
+        Prekey message. This message is sent to initiate conversation, till first response is received.
     </constant>
 </enum>

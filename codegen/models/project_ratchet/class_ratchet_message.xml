@@ -8,48 +8,73 @@
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 
-    <constant name="ratchet message type prekey" value="0"/>
-    <constant name="ratchet message type regular" value="1"/>
-
     <property name="message pb" class="Message" library="nanopb" access="readwrite" is_reference="0"/>
 
     <method name="get type">
+        Returns message type.
+
         <return enum="msg type"/>
     </method>
 
-    <method name="get long term public key">
+    <method name="get long-term public key">
+        Returns long-term public key, if message is prekey message.
+
         <return class="data"/>
     </method>
 
-    <method name="compute long term public key id">
+    <method name="compute long-term public key id">
+        Computes long-term public key id. Can be used to identify key in key storage.
+        Do not use this method if long-term public key is empty. 
+
         <argument name="buffer" class="buffer" access="readwrite">
+            Buffer for result. Capacity should be >= .(class_ratchet_common_constant_ratchet_key_id_length).
+
             <length constant=".(class_ratchet_common_constant_ratchet_key_id_length)"/>
         </argument>
     </method>
 
-    <method name="get one time public key">
+    <method name="get one-time public key">
+        Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
+
         <return class="data"/>
     </method>
 
-    <method name="compute one time public key id">
+    <method name="compute one-time public key id">
+        Computes one-term public key id. Can be used to identify key in key storage.
+        Do not use this method if long-term public key is empty.
+        
         <argument name="buffer" class="buffer" access="readwrite">
+            Buffer for result. Capacity should be >= .(class_ratchet_common_constant_ratchet_key_id_length).
+
             <length constant=".(class_ratchet_common_constant_ratchet_key_id_length)"/>
         </argument>
     </method>
 
     <method name="serialize len">
+        Buffer len to serialize this class.
+
         <return type="size"/>
     </method>
 
     <method name="serialize">
+        Serializes instance.
+
         <argument name="output" class="buffer">
+            Buffer for result. Capacity should be >= serialize len.
+
             <length method="serialize len"/>
         </argument>
     </method>
 
     <method name="deserialize" is_static="1">
-        <argument name="input" class="data"/>
-        <argument name="err ctx" class="error ctx" access="readwrite"/>
+        Deserializes instance.
+
+        <argument name="input" class="data">
+            Data with serialized instance.
+        </argument>
+        <argument name="err ctx" class="error ctx" access="readwrite">
+            Error context.
+        </argument>
 
         <return class="self" access="disown"/>
     </method>
