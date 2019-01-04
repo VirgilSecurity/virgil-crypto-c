@@ -39,4 +39,19 @@ import VirgilCryptoCommon
 import VirgilCryptoFoundation
 
 @objc(VSCRRatchetCommon) public class RatchetCommon: NSObject {
+
+    static let ratchetRegularMessageVersion = 1;
+    static let ratchetProtocolVersion = 1;
+    static let ratchetMessageVersion = 1;
+    static let ratchetSharedKeyLength = 32;
+    static let ratchetKeyLength = 32;
+    static let ratchetKeyIdLength = 8;
+    static let maxSkippedMessages = 40;
+    static let maxReceiversChains = 5;
+    static let maxMessageGap = 2000;
+    static let maxPlainTextLen = 30000;
+    static let maxCipherTextLen = 32768;
+    static let maxRegularMessageLen = 32818;
+    static let maxPrekeyMessageLen = 32964;
+    static let maxMessageLen = 32964;
 }
