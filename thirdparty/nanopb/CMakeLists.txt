@@ -42,47 +42,6 @@ if(NOT PB_LIBRARY)
     return()
 endif()
 
-set(NANOPB_COMPILE_DEFINITIONS "")
-
-if(PB_ENABLE_MALLOC)
-    list(APPEND NANOPB_COMPILE_DEFINITIONS PB_ENABLE_MALLOC)
-endif()
-
-if(PB_NO_PACKED_STRUCTS)
-    list(APPEND NANOPB_COMPILE_DEFINITIONS PB_NO_PACKED_STRUCTS)
-endif()
-
-if(PB_MAX_REQUIRED_FIELDS)
-    list(APPEND NANOPB_COMPILE_DEFINITIONS PB_MAX_REQUIRED_FIELDS)
-endif()
-
-if(PB_FIELD_16BIT)
-    list(APPEND NANOPB_COMPILE_DEFINITIONS PB_FIELD_16BIT)
-endif()
-
-if(PB_FIELD_32BIT)
-    list(APPEND NANOPB_COMPILE_DEFINITIONS PB_FIELD_32BIT)
-endif()
-
-if(PB_NO_ERRMSG)
-    list(APPEND NANOPB_COMPILE_DEFINITIONS PB_NO_ERRMSG)
-endif()
-
-if(PB_BUFFER_ONLY)
-    list(APPEND NANOPB_COMPILE_DEFINITIONS PB_BUFFER_ONLY)
-endif()
-
-if(PB_OLD_CALLBACK_STYLE)
-    list(APPEND NANOPB_COMPILE_DEFINITIONS PB_OLD_CALLBACK_STYLE)
-endif()
-
-set(NANOPB_COMPILE_DEFINITIONS_STR "")
-list(LENGTH NANOPB_COMPILE_DEFINITIONS NANOPB_COMPILE_DEFINITIONS_LEN)
-if(NANOPB_COMPILE_DEFINITIONS_LEN GREATER 0)
-    string(REPLACE ";" " " NANOPB_COMPILE_DEFINITIONS_STR "${NANOPB_COMPILE_DEFINITIONS}")
-    set(NANOPB_COMPILE_DEFINITIONS_STR "-D${NANOPB_COMPILE_DEFINITIONS_STR}")
-endif()
-
 
 # ---------------------------------------------------------------------------
 #   Build Options
@@ -111,7 +70,7 @@ include(ExternalProject)
 if(TARGET protoc)
     set(PROTOC_EXE protoc)
 
-elseif(COMMAND find_host_package)
+elseif(COMMAND find_host_program)
     find_host_program(PROTOC_EXE NAMES protoc${CMAKE_EXECUTABLE_SUFFIX})
 
 else()
@@ -163,7 +122,18 @@ ExternalProject_Add(protobuf-nanopb-ext
             "-Dnanopb_BUILD_RUNTIME=ON"
             "-Dnanopb_BUILD_GENERATOR=OFF"
             "-Dnanopb_MSVC_STATIC_RUNTIME=ON"
-            "-DCMAKE_C_FLAGS=\"${NANOPB_COMPILE_DEFINITIONS_STR}\""
+        PATCH_COMMAND
+            ${CMAKE_COMMAND}
+                -DPB_H_FILE="${CMAKE_CURRENT_BINARY_DIR}/protobuf-nanopb-ext-prefix/src/protobuf-nanopb-ext/pb.h"
+                -DPB_ENABLE_MALLOC=${PB_ENABLE_MALLOC}
+                -DPB_NO_PACKED_STRUCTS=${PB_NO_PACKED_STRUCTS}
+                -DPB_MAX_REQUIRED_FIELDS=${PB_MAX_REQUIRED_FIELDS}
+                -DPB_FIELD_16BIT=${PB_FIELD_16BIT}
+                -DPB_FIELD_32BIT=${PB_FIELD_32BIT}
+                -DPB_NO_ERRMSG=${PB_NO_ERRMSG}
+                -DPB_BUFFER_ONLY=${PB_BUFFER_ONLY}
+                -DPB_OLD_CALLBACK_STYLE=${PB_OLD_CALLBACK_STYLE}
+                -P "${CMAKE_CURRENT_LIST_DIR}/patch_pb.h.cmake"
         BUILD_BYPRODUCTS
             "${NANOPB_INSTALL_LOCATION}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopb${CMAKE_STATIC_LIBRARY_SUFFIX}"
             "${NANOPB_INSTALL_LOCATION}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopbd${CMAKE_STATIC_LIBRARY_SUFFIX}"
@@ -235,8 +205,6 @@ set_target_properties(protobuf-nanopb
             "${NANOPB_INSTALL_LOCATION}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopbd${CMAKE_STATIC_LIBRARY_SUFFIX}"
         INTERFACE_INCLUDE_DIRECTORIES
             "${NANOPB_INSTALL_LOCATION}/include"
-        INTERFACE_COMPILE_DEFINITIONS
-            "${NANOPB_COMPILE_DEFINITIONS}"
         )
 
 # ---------------------------------------------------------------------------

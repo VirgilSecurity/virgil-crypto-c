@@ -1,4 +1,4 @@
-<class name="simple swu" context="private" scope="internal">
+<class name="simple swu" context="internal" scope="internal">
 
     <require class="phe common" scope="public"/>
     <require impl="sha512" project="foundation" scope="private"/>

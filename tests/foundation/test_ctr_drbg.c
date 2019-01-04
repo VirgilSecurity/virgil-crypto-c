@@ -81,6 +81,28 @@ test__ctr_drbg_random__zero_entropy_and_len_128__returns__random_set_1(void) {
     vscf_ctr_drbg_destroy(&random);
 }
 
+void
+test__ctr_drbg_random__zero_entropy_and_len_32_and_capacity_64__writes_32_bytes_only(void) {
+    vscf_fake_random_t *entropy = vscf_fake_random_new();
+    vscf_fake_random_setup_source_byte(entropy, 0x00);
+
+    vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
+    vscf_ctr_drbg_take_entropy_source(random, vscf_fake_random_impl(entropy));
+
+    size_t len = 32;
+    size_t capacity = 64;
+    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(capacity);
+    vsc_buffer_erase(buffer);
+
+    vscf_ctr_drbg_random(random, len, buffer);
+
+    vsc_data_t buffer_left = vsc_data_slice_beg(vsc_data(vsc_buffer_bytes(buffer), capacity), 32, 32);
+    TEST_ASSERT_TRUE_MESSAGE(vsc_data_is_zero(buffer_left), "Writes more then requested");
+
+    vsc_buffer_destroy(&buffer);
+    vscf_ctr_drbg_destroy(&random);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -93,6 +115,7 @@ main(void) {
 
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__ctr_drbg_random__zero_entropy_and_len_128__returns__random_set_1);
+    RUN_TEST(test__ctr_drbg_random__zero_entropy_and_len_32_and_capacity_64__writes_32_bytes_only);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
