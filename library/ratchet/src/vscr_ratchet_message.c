@@ -63,9 +63,7 @@ buffer_decode_callback(pb_istream_t *stream, const pb_field_t *field, void **arg
     VSCR_UNUSED(field);
     VSCR_UNUSED(arg);
 
-    *arg = vsc_buffer_new_with_capacity(stream->bytes_left);
-    memcpy(vsc_buffer_unused_bytes(*arg), stream->state, stream->bytes_left);
-    vsc_buffer_inc_used(*arg, stream->bytes_left);
+    *arg = vsc_buffer_new_with_data(vsc_data(stream->state, stream->bytes_left));
     stream->bytes_left = 0;
 
     return true;
