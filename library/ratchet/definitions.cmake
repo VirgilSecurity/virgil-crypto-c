@@ -51,6 +51,7 @@ endif()
 
 target_compile_definitions(ratchet
         PUBLIC
+            $<BUILD_INTERFACE:VSCR_INTERNAL_BUILD>
             "VSCR_LIBRARY=$<BOOL:${VSCR_LIBRARY}>"
             "VSCR_RATCHET_COMMON=$<BOOL:${VSCR_RATCHET_COMMON}>"
             "VSCR_ERROR_CTX=$<BOOL:${VSCR_ERROR_CTX}>"
@@ -67,5 +68,4 @@ target_compile_definitions(ratchet
             "VSCR_RATCHET_SESSION=$<BOOL:${VSCR_RATCHET_SESSION}>"
         PRIVATE
             $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCR_BUILD_SHARED_LIBS>
-            $<BUILD_INTERFACE:VSCR_INTERNAL_BUILD>
         )

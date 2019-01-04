@@ -112,8 +112,12 @@
             Shortcut for the char array.
         </restrict>
 
-        <restrict value="error">
-            Type for error codes.
+        <restrict value="char">
+            Type for a character.
+        </restrict>
+
+        <restrict value="varargs">
+            Type for variadic arguments.
         </restrict>
     </attr>
 

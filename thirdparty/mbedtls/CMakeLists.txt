@@ -49,9 +49,18 @@ endif()
 #
 include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 
+set(MBEDTLS_THREADING_PTHREAD OFF)
+set(MBEDTLS_THREADING_SRWLOCK OFF)
+if(MBEDTLS_THREADING_C)
+    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        set(MBEDTLS_THREADING_SRWLOCK ON)
+    else()
+        set(MBEDTLS_THREADING_PTHREAD ON)
+    endif()
+endif()
+
 
 set(MBEDTLS_ALT_INCLUDE_DIR "" CACHE PATH "Directory with alternative MbedTLS algorithm implementations.")
-
 if(EXISTS "${MBEDTLS_ALT_INCLUDE_DIR}")
     file(GLOB MBEDTLS_ALT_INCLUDE_FILES "${MBEDTLS_ALT_INCLUDE_DIR}/*_alt.h")
 else()
@@ -75,9 +84,9 @@ configure_file(
 include(ExternalProject)
 ExternalProject_Add(mbedtls-ext
         GIT_REPOSITORY
-            https://github.com/ARMmbed/mbedtls
+            https://github.com/VirgilSecurity/mbedtls
         GIT_TAG
-            mbedtls-2.14.0
+            virgil-mbedtls-2.14.0-patched
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
