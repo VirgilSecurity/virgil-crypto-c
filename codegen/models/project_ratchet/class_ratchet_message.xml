@@ -25,9 +25,9 @@
 
     <method name="compute long-term public key id">
         Computes long-term public key id. Can be used to identify key in key storage.
-        Do not use this method if long-term public key is empty. 
+        Do not use this method if long-term public key is empty.
 
-        <argument name="buffer" class="buffer" access="readwrite">
+        <argument name="buffer" class="buffer">
             Buffer for result. Capacity should be >= .(class_ratchet_common_constant_ratchet_key_id_length).
 
             <length constant=".(class_ratchet_common_constant_ratchet_key_id_length)"/>
@@ -43,8 +43,8 @@
     <method name="compute one-time public key id">
         Computes one-term public key id. Can be used to identify key in key storage.
         Do not use this method if long-term public key is empty.
-        
-        <argument name="buffer" class="buffer" access="readwrite">
+
+        <argument name="buffer" class="buffer">
             Buffer for result. Capacity should be >= .(class_ratchet_common_constant_ratchet_key_id_length).
 
             <length constant=".(class_ratchet_common_constant_ratchet_key_id_length)"/>
@@ -82,7 +82,7 @@
 
     <method name="compute key id" declaration="private" is_static="1">
         <argument name="key" class="data"/>
-        <argument name="buffer" class="buffer" access="readwrite"/>
+        <argument name="buffer" class="buffer"/>
     </method>
 
     <method name="set pb encode callback" declaration="private">
