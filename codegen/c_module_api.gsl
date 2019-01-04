@@ -73,7 +73,7 @@ function _N24_add_enum_tag (meta, destination)
         . = "Enumerates all possible interfaces within crypto library."
 
         .name = my.names.enum_tag
-        .of_class = my.names.class_api
+        .name_prefix = my.names.class_api
         .definition = "public"
 
         new constant
@@ -105,7 +105,7 @@ function c_module_api_create (meta, destination)
         "
 
         .name = my.names.module_api
-        .of_class = my.names.class_api
+        .name_prefix = my.names.class_api
 
         new require
             .module = my.names.module_library

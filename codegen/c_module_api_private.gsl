@@ -82,6 +82,7 @@ function c_module_api_private_create (meta, destination)
         . = "Interface Private API."
 
         .name = my.names.module_api_private
+        .name_prefix = my.names.class_api
         .of_class = my.names.class_api
         .scope = "private"
 

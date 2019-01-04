@@ -1,11 +1,11 @@
-<module name="platform" of_class="global" has_cmakedefine="1">
+<module name="platform" name_prefix="global" has_cmakedefine="1">
     This file contains platform specific information that is gathered during compilation.
 
     <macros name="apple framework">
         Defines whether or not library was built as Apple Framework.
 
         <code>
-            #cmakedefine01 .(c_global_macros_apple_framework)
+            #cmakedefine01 .(c_module_platform_macros_apple_framework)
         </code>
     </macros>
 </module>

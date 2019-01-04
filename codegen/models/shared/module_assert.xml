@@ -100,14 +100,14 @@
     </method>
 
 
-    <macros name="file path or name" of_class="global">
+    <macros name="file path or name" name_prefix="global">
         Contains file path or file name.
 
         <code lang="c">
             #if defined (__FILENAME__)
-            #   define .(c_global_macros_file_path_or_name) __FILENAME__
+            #   define .(c_class_assert_macros_file_path_or_name) __FILENAME__
             #else
-            #   define .(c_global_macros_file_path_or_name) __FILE__
+            #   define .(c_class_assert_macros_file_path_or_name) __FILE__
             #endif
         </code>
     </macros>
@@ -120,7 +120,7 @@
             #define .(c_class_assert_macros_internal) (X)
                 do {
                     if (!(X)) {
-                        .(c_class_assert_method_trigger) (#X, .(c_global_macros_file_path_or_name), __LINE__);
+                        .(c_class_assert_method_trigger) (#X, .(c_class_assert_macros_file_path_or_name), __LINE__);
                     }
                 } while (false)
         </code>
@@ -171,7 +171,7 @@
                 do {
                     if (!(X)) {
                         .(c_class_assert_method_trigger) (#X" != NULL", \
-                                .(c_global_macros_file_path_or_name), __LINE__);
+                                .(c_class_assert_macros_file_path_or_name), __LINE__);
                     }
                 } while (false)
         </code>
@@ -187,7 +187,7 @@
                 do {
                     if (!(X)) {
                         .(c_class_assert_method_trigger) ("No memory", \
-                                .(c_global_macros_file_path_or_name), __LINE__);
+                                .(c_class_assert_macros_file_path_or_name), __LINE__);
                     }
                 } while (false)
         </code>

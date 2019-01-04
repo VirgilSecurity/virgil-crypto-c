@@ -1293,7 +1293,7 @@ function php_create_class_destructor (php_class, class, wrapper, meta)
     my.self_ctx = "self.c_ctx"
 
     if string_in (my.class.context, "public") & string_in (my.class.lifecycle, "none")
-        my.dtor_invocation = ".(c_global_method_dealloc)($(my.self_ctx:))"
+        my.dtor_invocation = ".(c_class_memory_method_dealloc)($(my.self_ctx:))"
     else
         my.dtor_invocation = "$(class_derive_c_destructor (my.class))($(my.self_ctx:))"
     endif
@@ -1316,7 +1316,7 @@ function php_create_class_default_constructor (php_class, class, wrapper, meta)
 
     if string_in (my.class.context, "public") & string_in (my.class.lifecycle, "none")
         my.ctx_size_invocation = "$(class_derive_class_c_method_ctx_size (my.class))()"
-        my.ctor_invocation = ".(c_global_method_alloc)($(my.ctx_size_invocation:))!" + \
+        my.ctor_invocation = ".(c_class_memory_method_alloc)($(my.ctx_size_invocation:))!" + \
                 ".bindMemory(to: $(class_derive_c_type(my.class)).self, capacity:1)"
     else
         my.ctor_invocation = "$(class_derive_c_defalut_constructor (my.class))()"

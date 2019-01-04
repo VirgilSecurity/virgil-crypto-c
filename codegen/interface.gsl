@@ -123,7 +123,7 @@ function interface_resolve (interface, project)
     my.interface.scope ?= "public"
     my.interface.visibility ?= "public"
     my.interface.uid = make_id ("interface", interface.name)
-    my.interface.c_prefix ?= my.project.prefix
+    my.interface.c_namespace ?= my.project.prefix
 
     for my.interface.constant
         interface_resolve_constant (constant, my.interface)

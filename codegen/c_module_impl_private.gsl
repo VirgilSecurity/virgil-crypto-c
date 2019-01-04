@@ -205,6 +205,7 @@ function c_module_impl_private_create (meta, destination)
         "
 
         .name = my.names.module_impl_private
+        .name_prefix = my.names.class_impl
         .of_class = my.names.class_impl
         .scope = "private"
 

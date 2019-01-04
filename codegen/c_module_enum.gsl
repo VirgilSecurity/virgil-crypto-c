@@ -54,9 +54,10 @@ function c_module_enum_create_module (enum, destination, meta)
     new module to my.destination
         . = my.enum.?
         .name = my.enum.name
-        .of_class ?= my.enum.name
-        .c_prefix = my.enum.c_prefix
+        .name_prefix = my.enum.name
+        .c_namespace = my.enum.c_namespace
         .scope = my.enum.scope
+        .uid = ""
 
         component_clean_copy (my.enum, module)
     endnew

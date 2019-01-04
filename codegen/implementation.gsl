@@ -284,8 +284,8 @@ function implementation_resolve (implementation, parent, project)
 
     my.implementation.scope ?= "public"
     my.implementation.visibility ?= "public"
-    my.implementation.c_prefix ?= my.project.prefix
-    my.implementation.uid = make_id ("implelemntation", my.implementation.name)
+    my.implementation.c_namespace ?= my.project.prefix
+    my.implementation.uid = make_id ("class", my.implementation.name)
 
     for my.implementation.c_include
         implementation_resolve_c_include (c_include, my.implementation)

@@ -57,9 +57,9 @@
 </entity>
 
 
-<entity name="c_prefix" abstract="1">
-    <attr name="c_prefix">
-        Prefix that is used for C name resolution.
+<entity name="c_namespace" abstract="1">
+    <attr name="c_namespace">
+        Namespace prefix that is used for C name resolution.
     </attr>
 </entity>
 
@@ -73,8 +73,8 @@
     </attr>
 
     <inherit entity="uid"/>
-    <inherit entity="of_class"/>
-    <inherit entity="c_prefix"/>
+    <inherit entity="name_prefix"/>
+    <inherit entity="c_namespace"/>
 </entity>
 
 

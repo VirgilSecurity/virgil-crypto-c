@@ -106,7 +106,7 @@ function _L23_add_interface_api_type (interface, declaration, definition, destin
     new struct to my.destination
         . = "Contains API requirements of the interface '$(my.interface.name:)'."
         .name = my.names.interface_struct_api
-        .of_class = my.names.interface_class_api
+        .name_prefix = my.names.interface_class_api
 
         .declaration = my.declaration
         .definition = my.definition
@@ -446,7 +446,7 @@ function c_module_interface_create_module_public (interface, destination, meta)
     new module to my.destination
         . = my.interface. ?
         .name = my.names.interface_module
-        .of_class = my.names.interface_class
+        .name_prefix = my.names.interface_class
         .interface = my.interface.name
         .feature = my.interface.name
 
@@ -505,6 +505,7 @@ function c_module_interface_create_module_api (interface, destination, meta)
     new module to my.destination
         . = "Interface '$(my.interface.name:)' API."
         .name = my.names.interface_module_api
+        .name_prefix = my.names.interface_class_api
         .of_class = my.names.interface_class_api
         .scope = "private"
         .feature = my.interface.name

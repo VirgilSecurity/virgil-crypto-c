@@ -57,9 +57,10 @@ function c_module_platform_create (project, destination, meta)
 
     new module to my.destination
         . = "This file contains platform specific information that is known during compilation."
-        .of_class = "global"
+        .c_scope = "global"
         .has_cmakedefine = "1"
         .name = my.names.module_platform
+        .name_prefix = "global"
 
         for my.project.require where defined (require.project) & string_equal (require.feature, "library")
             new macroses to module
@@ -73,10 +74,10 @@ function c_module_platform_create (project, destination, meta)
 
                 new code to macroses
                     . = "\
-                        #if !defined(.(c_global_macros_internal_build))
-                        #cmakedefine01 .(c_global_macros_$(make_id (my.name)))
+                        #if !defined(.(c_class_library_macros_internal_build))
+                        #cmakedefine01 .(c_class_platform_macros_$(make_id (my.name)))
                         #else
-                        #define .(c_global_macros_$(make_id (my.name))) 0
+                        #define .(c_class_platform_macros_$(make_id (my.name))) 0
                         #endif
                     "
                 endnew

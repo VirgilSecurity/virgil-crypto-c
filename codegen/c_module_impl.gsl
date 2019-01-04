@@ -240,7 +240,7 @@ function c_module_impl_create (meta, destination)
         It is also enumerate all available implementations within crypto libary.
         "
         .name = my.names.module_impl
-        .of_class = my.names.class_impl
+        .name_prefix = my.names.class_impl
 
         new require
             .module = my.names.module_library

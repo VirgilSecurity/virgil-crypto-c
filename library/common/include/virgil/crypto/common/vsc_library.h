@@ -118,7 +118,7 @@ extern "C" {
 #       else
 #           define VSC_PUBLIC __declspec(dllexport)
 #       endif
-#   elsif !defined(c_global_macros_internal_build)
+#   elsif !defined(VSC_INTERNAL_BUILD)
 #       ifdef __GNUC__
 #           define VSC_PUBLIC __attribute__ ((dllimport))
 #       else

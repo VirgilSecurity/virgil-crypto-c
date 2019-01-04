@@ -60,8 +60,8 @@ function class_dump (class)
 
     my.class_info = ""
     my.class_info += " name=\"$(my.class.name)\"" ? ""
-    my.class_info += " of_class=\"$(my.class.of_class)\"" ? ""
-    my.class_info += " c_prefix=\"$(my.class.c_prefix)\"" ? ""
+    my.class_info += " name_prefix=\"$(my.class.name_prefix)\"" ? ""
+    my.class_info += " c_namespace=\"$(my.class.c_namespace)\"" ? ""
     my.class_info += " context=\"$(my.class.context)\"" ? ""
     my.class_info += " lifecycle=\"$(my.class.lifecycle)\"" ? ""
     my.class_dump = "<$(name (my.class))$(my.class_info)/>"
@@ -123,27 +123,27 @@ function class_resolve_attr_lifecycle (class, project)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve attribute: class.of_class.
+#   Resolve attribute: class.name_prefix.
 # ---------------------------------------------------------------------------
-function class_resolve_attr_of_class (class, project)
+function class_resolve_attr_name_prefix (class, project)
     check_arguments (my, "class, project", my)
 
-    my.class.of_class ?= my.class.name
+    my.class.name_prefix ?= my.class.name
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve attribute: class.c_prefix.
+#   Resolve attribute: class.c_namespace.
 # ---------------------------------------------------------------------------
-function class_resolve_attr_c_prefix (class, project)
+function class_resolve_attr_c_namespace (class, project)
     check_arguments (my, "class, project", my)
 
-    my.class.c_prefix ?= my.project.prefix
+    my.class.c_namespace ?= my.project.prefix
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve attribute: class.uid.
+#   Resolve attribute: class.id.
 # ---------------------------------------------------------------------------
-function class_resolve_attr_uid (class, project)
+function class_resolve_attr_id (class, project)
     check_arguments (my, "class, project", my)
 
     my.class.uid = make_id ("class", my.class.name)
@@ -220,8 +220,8 @@ function class_resolve (class, project)
     class_resolve_attr_context (my.class, my.project)
     class_resolve_attr_is_value_type (my.class, my.project)
     class_resolve_attr_lifecycle (my.class, my.project)
-    class_resolve_attr_c_prefix (my.class, my.project)
-    class_resolve_attr_uid (my.class, my.project)
+    class_resolve_attr_c_namespace (my.class, my.project)
+    class_resolve_attr_id (my.class, my.project)
 
     for my.class.constructor
         class_resolve_constructor (constructor, my.class)

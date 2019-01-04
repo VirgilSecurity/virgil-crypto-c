@@ -117,11 +117,11 @@
 </entity>
 
 
-<entity name="of_class">
+<entity name="name_prefix">
 
-    <attr name="of_class">
-        Defines class name that a component belongs to.
-        This attributes is used for inner components name resolution.
+    <attr name="name_prefix">
+        Defines C scope prefix.
+        This attributes is used for C name resolution.
     </attr>
 </entity>
 

@@ -204,7 +204,7 @@ function projects_api_build_type_resolution_map (projects_api, lang_name)
 
             #   Process headers.
             my.is_external_project = (project.name = my.projects_api.active_project) ?? "0" ? "1"
-            my.public_prefix = my.is_external_project ?? project.namespace_dir ?
+            my.public_namespace = my.is_external_project ?? project.namespace_dir ?
             my.private_prefix = my.is_external_project ?? cat_path (project.namespace_dir, "private") ?
 
             for lang.header
@@ -213,7 +213,7 @@ function projects_api_build_type_resolution_map (projects_api, lang_name)
                 endif
 
                 if header.scope = "public"
-                    my.header_file = cat_path (my.public_prefix, header.file)
+                    my.header_file = cat_path (my.public_namespace, header.file)
 
                 elsif header.scope = "private"
                     my.header_file = cat_path (my.private_prefix, header.file)

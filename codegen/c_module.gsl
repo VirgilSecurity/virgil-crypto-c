@@ -135,7 +135,7 @@ function c_module_create (source, destination, project)
 
     for my.source.module
         component_require_attr_name (module, my)
-        component_require_attr_of_class (module, my)
+        component_require_attr_name_prefix (module, my)
 
         echo_trace ("Creating <c_module/> from \
                 <$(name (module)) name = \"$(module.name:)\"/>", my)
@@ -144,7 +144,7 @@ function c_module_create (source, destination, project)
             . = c_format_comment (module.) ?
             .lang = "C"
             .id = module.name
-            .name = c_format_name (module.c_prefix, module.name)
+            .name = c_format_name (module.c_namespace, module.name)
             .class = c_format_name (module.class)
             .scope = module.scope
             .has_cmakedefine = module.has_cmakedefine
@@ -293,7 +293,7 @@ function c_module_add_system_include_from_header (c_module, header, is_public_in
     my.c_include = my.c_module->c_include(file = my.header.system) ?
 
     if ! defined (my.c_include)
-        my.condition_uid = make_id ("c global macros import project", my.header.project, "from framework")
+        my.condition_uid = make_id ("c_class_platform_macros_import_project", my.header.project, "from framework")
         my.condition = projects_api_find_resolved_name (my.projects_api, my.condition_uid)
 
         new c_include to my.c_module
@@ -319,7 +319,7 @@ function c_module_add_framework_include_from_header (c_module, header, is_public
     my.c_include = my.c_module->c_include(file = my.header.framework) ?
 
     if ! defined (my.c_include)
-        my.condition_uid = make_id ("c global macros import project", my.header.project, "from framework")
+        my.condition_uid = make_id ("c_class_platform_macros_import_project", my.header.project, "from framework")
         my.condition = projects_api_find_resolved_name (my.projects_api, my.condition_uid)
 
         new c_include to my.c_module

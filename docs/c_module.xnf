@@ -84,7 +84,7 @@
         </attr>
 
         <inherit entity="scope"/>
-        <inherit entity="of_class"/>
+        <inherit entity="name_prefix"/>
 
         <allow entity="c_include"/>
         <allow entity="c_alias"/>

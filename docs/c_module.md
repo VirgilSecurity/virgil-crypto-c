@@ -8,7 +8,7 @@ required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
     <c_module output_source_file once_guard id name header_file source_file output_header_file
-         [of_class] [scope] [has_cmakedefine]>
+         [name_prefix] [scope] [has_cmakedefine]>
        <c_include file [feature] [scope] [is_system]/>
        <c_alias type name [declaration]/>
        <c_enum [feature] [uid] [full_uid] [definition] [declaration] [visibility] [name]>
@@ -72,7 +72,7 @@ Base model for C language code generation.
         header_file = "..."
         source_file = "..."
         output_header_file = "..."
-      [ of_class = "..." ]
+      [ name_prefix = "..." ]
       [ scope = "public | private | internal"  ("public") ]
       [ has_cmakedefine = "0 | 1"  ("0") ]
         >
@@ -89,9 +89,9 @@ Base model for C language code generation.
 
 The c_module item can have these attributes:
 
-of_class:
+name_prefix:
     Defines class name that a component belongs to. This attributes is used
-    for inner components name resolution. The of_class attribute is optional.
+    for inner components name resolution. The name_prefix attribute is optional.
 
 scope:
     Defines component visibility within scope. This attribute must not be

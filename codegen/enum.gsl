@@ -60,7 +60,7 @@ function enum_resolve (enum, project)
 
     assert_attribute (my.enum, "name", my)
 
-    my.enum.c_prefix ?= my.project.prefix
+    my.enum.c_namespace ?= my.project.prefix
     component_resolve_attr_scope (my.enum)
     component_resolve_enum (my.enum, my.project)
 endfunction

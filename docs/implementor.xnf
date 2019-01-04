@@ -76,7 +76,7 @@
         <inherit entity="scope"/>
         <inherit entity="visibility"/>
         <inherit entity="uid"/>
-        <inherit entity="c_prefix"/>
+        <inherit entity="c_namespace"/>
 
         <allow entity="context" occurs="0/1"/>
         <allow entity="interface" occurs="1+"/>

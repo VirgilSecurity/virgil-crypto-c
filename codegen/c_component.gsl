@@ -73,16 +73,16 @@ endfunction
 #       {enum, api/tag,} - returns "class_api_enum_tag"
 #       {struct, codes,} - returns "global_struct_codes"
 # ---------------------------------------------------------------------------
-function c_component_derive_instance_type_uid (type_id, type_value, of_class)
+function c_component_derive_instance_type_uid (type_id, type_value, name_prefix)
     check_arguments (my, "type_id, type_value", my)
 
     if regexp.match ("([^\/]+)\/(.+)", my.type_value, my.group1, my.group2)
-        my.of_class = my.group1
+        my.name_prefix = my.group1
         my.type_value = my.group2
     endif
 
-    if defined (my.of_class)
-        return make_id ("class", my.of_class, my.type_id, my.type_value)
+    if defined (my.name_prefix)
+        return make_id ("class", my.name_prefix, my.type_id, my.type_value)
 
     else
         return make_id ("global", my.type_id, my.type_value)
@@ -96,9 +96,9 @@ function c_derive_constant_name (constant)
     check_argument (my, "constant", my)
 
     component_require_lineage (my.constant, my)
-    component_require_attr_c_prefix (my.constant, my)
+    component_require_attr_c_namespace (my.constant, my)
 
-    return c_format_constant_name (my.constant.c_prefix, component_derive_name_prefix (my.constant), my.constant.name)
+    return c_format_constant_name (my.constant.c_namespace, component_derive_name_prefix (my.constant), my.constant.name)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -108,10 +108,10 @@ function c_derive_variable_name (variable)
     check_argument (my, "variable", my)
 
     component_require_lineage (my.variable, my)
-    component_require_attr_c_prefix (my.variable, my)
+    component_require_attr_c_namespace (my.variable, my)
 
     if my.variable.declaration = "public" | my.variable.definition = "external"
-        return c_format_name (my.variable.c_prefix, component_derive_full_name (my.variable))
+        return c_format_name (my.variable.c_namespace, component_derive_full_name (my.variable))
     else
         return c_format_name (my.variable.name)
     endif
@@ -124,9 +124,9 @@ function c_derive_enum_name (enum)
     check_argument (my, "enum", my)
 
     component_require_lineage (my.enum, my)
-    component_require_attr_c_prefix (my.enum, my)
+    component_require_attr_c_namespace (my.enum, my)
 
-    return c_format_name (my.enum.c_prefix, component_derive_full_name (my.enum), "t")
+    return c_format_name (my.enum.c_namespace, component_derive_full_name (my.enum), "t")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -136,9 +136,9 @@ function c_derive_method_name (method)
     check_argument (my, "method", my)
 
     component_require_lineage (my.method, my)
-    component_require_attr_c_prefix (my.method, my)
+    component_require_attr_c_namespace (my.method, my)
 
-    return c_format_name (my.method.c_prefix, component_derive_full_name (my.method))
+    return c_format_name (my.method.c_namespace, component_derive_full_name (my.method))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -148,9 +148,9 @@ function c_derive_struct_name (struct)
     check_argument (my, "struct", my)
 
     component_require_lineage (my.struct, my)
-    component_require_attr_c_prefix (my.struct, my)
+    component_require_attr_c_namespace (my.struct, my)
 
-    return c_format_name (my.struct.c_prefix, component_derive_full_name (my.struct), "t")
+    return c_format_name (my.struct.c_namespace, component_derive_full_name (my.struct), "t")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -182,9 +182,9 @@ function c_derive_macros_name (macros)
     check_argument (my, "macros", my)
 
     component_require_lineage (my.macros, my)
-    component_require_attr_c_prefix (my.macros, my)
+    component_require_attr_c_namespace (my.macros, my)
 
-    return c_format_macros_name (my.macros.c_prefix, component_derive_full_name (my.macros))
+    return c_format_macros_name (my.macros.c_namespace, component_derive_full_name (my.macros))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -194,9 +194,9 @@ function c_derive_callback_name (callback)
     check_argument (my, "callback", my)
 
     component_require_lineage (my.callback, my)
-    component_require_attr_c_prefix (my.callback, my)
+    component_require_attr_c_namespace (my.callback, my)
 
-    return c_format_name (my.callback.c_prefix, component_derive_full_name (my.callback), "fn")
+    return c_format_name (my.callback.c_namespace, component_derive_full_name (my.callback), "fn")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -466,9 +466,9 @@ function c_component_map_attr_feature (c_component, component)
         return
     endif
 
-    component_require_attr_c_prefix (my.component, my)
+    component_require_attr_c_namespace (my.component, my)
 
-    my.c_component.feature = c_format_macros_name (my.component.c_prefix, my.component.feature)
+    my.c_component.feature = c_format_macros_name (my.component.c_namespace, my.component.feature)
 endfunction
 
 
@@ -755,9 +755,9 @@ function c_component_create_modifiers (component, destination)
             .value = "static"
 
         elsif my.component.visibility = "public"
-            .value = ".(c_global_macros_public)"
+            .value = ".(c_class_library_macros_public)"
         else
-            .value = ".(c_global_macros_private)"
+            .value = ".(c_class_library_macros_private)"
         endif
     endnew
 endfunction

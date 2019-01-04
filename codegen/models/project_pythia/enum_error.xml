@@ -1,7 +1,7 @@
 <enum name="error" definition="public">
     Defines the library error codes.
 
-    <constant name="success" of_class="global" value="0">
+    <constant name="success" name_prefix="global" value="0">
         No errors was occurred.
     </constant>
 

@@ -30,13 +30,13 @@
     </macros>
 
 
-    <method name="global init" of_class="global" is_static="1">
+    <method name="global init" name_prefix="global" is_static="1">
         Performs global initialization of the pythia library.
         Must be called once for entire application at startup.
     </method>
 
 
-    <method name="global cleanup" of_class="global" is_static="1">
+    <method name="global cleanup" name_prefix="global" is_static="1">
         Performs global cleanup of the pythia library.
         Must be called once for entire application before exit.
     </method>

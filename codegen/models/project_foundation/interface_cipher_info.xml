@@ -1,4 +1,4 @@
-<interface name="cipher info" of_class="cipher">
+<interface name="cipher info" name_prefix="cipher">
     Provides compile time knownledge about algorithm.
 
     <constant name="nonce len" type="size" value="0">

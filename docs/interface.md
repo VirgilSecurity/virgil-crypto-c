@@ -7,9 +7,9 @@ This summary shows the hierarchy of elements you can use, with the
 required and optional attributes for each element.  The XML entity and
 attribute names are case-sensitive and we use only lower-case names.
 
-    <interface [c_prefix] [uid] [full_uid] [visibility] [scope]>
-       <constant name [c_prefix] [of_class] [uid] [full_uid] [feature] [definition] [value]/>
-       <method name [definition] [visibility] [c_prefix] [of_class] [uid] [full_uid] [feature]
+    <interface [c_namespace] [uid] [full_uid] [visibility] [scope]>
+       <constant name [c_namespace] [name_prefix] [uid] [full_uid] [feature] [definition] [value]/>
+       <method name [definition] [visibility] [c_namespace] [name_prefix] [uid] [full_uid] [feature]
             [declaration] [is_static]>
           <return is_reference [project] [access] [type] [class] [enum] [callback] [interface]
                [api] [impl] [size] [library] [require_definition]>
@@ -24,7 +24,7 @@ attribute names are case-sensitive and we use only lower-case names.
           </argument>
           <variable name is_reference [access] [type] [project] [enum] [callback] [interface] [api]
                [impl] [size] [library] [require_definition] [definition] [declaration]
-               [visibility] [c_prefix] [of_class] [uid] [full_uid] [feature]
+               [visibility] [c_namespace] [name_prefix] [uid] [full_uid] [feature]
                [class]>
              <value is_reference value [library] [type] [class] [enum] [callback] [interface] [api]
                   [impl] [size] [project] [require_definition] [access]>
@@ -58,7 +58,7 @@ The 'interface' item
 Defines C class interface as a set of constants and methods.
 
     <interface
-      [ c_prefix = "..." ]
+      [ c_namespace = "..." ]
       [ uid = "..." ]
       [ full_uid = "..." ]
       [ visibility = "public | private"  ("public") ]
@@ -71,8 +71,8 @@ Defines C class interface as a set of constants and methods.
 
 The interface item can have these attributes:
 
-c_prefix:
-    Prefix that is used for C name resolution. The c_prefix attribute is
+c_namespace:
+    Prefix that is used for C name resolution. The c_namespace attribute is
     optional.
 
 uid:
@@ -112,8 +112,8 @@ Groups common attributes for the component. Defines integral constant.
 
     <constant
         name = "..."
-      [ c_prefix = "..." ]
-      [ of_class = "..." ]
+      [ c_namespace = "..." ]
+      [ name_prefix = "..." ]
       [ uid = "..." ]
       [ full_uid = "..." ]
       [ feature = "..." ]
@@ -133,13 +133,13 @@ public: Component definition is visible for outside world.
 private: Component definition is hidden in a correspond source file.
 external: Component definition is located somewhere.
 
-c_prefix:
-    Prefix that is used for C name resolution. The c_prefix attribute is
+c_namespace:
+    Prefix that is used for C name resolution. The c_namespace attribute is
     optional.
 
-of_class:
+name_prefix:
     Defines class name that a component belongs to. This attributes is used
-    for inner components name resolution. The of_class attribute is optional.
+    for inner components name resolution. The name_prefix attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
@@ -171,8 +171,8 @@ and optionally implementation.
         name = "..."
       [ definition = "public | private | external"  ("private") ]
       [ visibility = "public | private"  ("public") ]
-      [ c_prefix = "..." ]
-      [ of_class = "..." ]
+      [ c_namespace = "..." ]
+      [ name_prefix = "..." ]
       [ uid = "..." ]
       [ full_uid = "..." ]
       [ feature = "..." ]
@@ -216,13 +216,13 @@ Value: Meaning:
 public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
 
-c_prefix:
-    Prefix that is used for C name resolution. The c_prefix attribute is
+c_namespace:
+    Prefix that is used for C name resolution. The c_namespace attribute is
     optional.
 
-of_class:
+name_prefix:
     Defines class name that a component belongs to. This attributes is used
-    for inner components name resolution. The of_class attribute is optional.
+    for inner components name resolution. The name_prefix attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies
@@ -624,8 +624,8 @@ attributes for the component. Defines global variable.
       [ definition = "public | private | external"  ("private") ]
       [ declaration = "public | private | external"  ("public") ]
       [ visibility = "public | private"  ("public") ]
-      [ c_prefix = "..." ]
-      [ of_class = "..." ]
+      [ c_namespace = "..." ]
+      [ name_prefix = "..." ]
       [ uid = "..." ]
       [ full_uid = "..." ]
       [ feature = "..." ]
@@ -770,13 +770,13 @@ Value: Meaning:
 public: Symbols of the types and methods are visible in a binary file.
 private: Symbols of the types and methods are hidden in a binary file.
 
-c_prefix:
-    Prefix that is used for C name resolution. The c_prefix attribute is
+c_namespace:
+    Prefix that is used for C name resolution. The c_namespace attribute is
     optional.
 
-of_class:
+name_prefix:
     Defines class name that a component belongs to. This attributes is used
-    for inner components name resolution. The of_class attribute is optional.
+    for inner components name resolution. The name_prefix attribute is optional.
 
 uid:
     Unique component identifier represents name that uniquely identifies

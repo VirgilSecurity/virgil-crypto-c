@@ -1,4 +1,4 @@
-<module name="library" of_class="global">
+<module name="library" name_prefix="global">
     This module contains:
         - library version;
         - portable API visibility attributes;
@@ -18,37 +18,38 @@
         //  Portable representation of the byte.
     </c_alias>
 
-    <macros name="major" of_class="version">
+    <macros name="version major" name_prefix="global">
         <code lang="c">
-            #define .(c_class_version_macros_major) .(project_version_major)
+            #define .(c_class_library_macros_version_major) .(project_version_major)
         </code>
     </macros>
 
-    <macros name="minor" of_class="version">
+    <macros name="version minor" name_prefix="global">
         <code lang="c">
-            #define .(c_class_version_macros_minor) .(project_version_minor)
+            #define .(c_class_library_macros_version_minor) .(project_version_minor)
         </code>
     </macros>
 
-    <macros name="patch" of_class="version">
+    <macros name="version patch" name_prefix="global">
         <code lang="c">
-            #define .(c_class_version_macros_patch) .(project_version_patch)
+            #define .(c_class_library_macros_version_patch) .(project_version_patch)
         </code>
     </macros>
 
-    <macros name="make" is_method="1" of_class="version">
+    <macros name="version make" is_method="1" name_prefix="global">
         <code lang="c">
-            #define .(c_class_version_macros_make) (major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
+            #define .(c_class_library_macros_version_make) \
+                    (major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
         </code>
     </macros>
 
-    <macros name="version" of_class="version">
+    <macros name="version" name_prefix="global">
         <code lang="c">
-            #define .(c_class_version_macros_version)
-                    .(c_class_version_macros_make) (
-                            .(c_class_version_macros_major),
-                            .(c_class_version_macros_minor),
-                            .(c_class_version_macros_patch))
+            #define .(c_class_library_macros_version)
+                    .(c_class_library_macros_version_make) (
+                            .(c_class_library_macros_version_major),
+                            .(c_class_library_macros_version_minor),
+                            .(c_class_library_macros_version_patch))
         </code>
     </macros>
 
@@ -59,28 +60,28 @@
         <macros name="internal build"/>
         <code lang="c">
             #if defined(_WIN32) || defined(__CYGWIN__)
-            #   ifdef .(c_global_macros_build_shared_libs)
+            #   ifdef .(c_class_library_macros_build_shared_libs)
             #       ifdef __GNUC__
-            #           define .(c_global_macros_public) __attribute__ ((dllexport))
+            #           define .(c_class_library_macros_public) __attribute__ ((dllexport))
             #       else
-            #           define .(c_global_macros_public) __declspec(dllexport)
+            #           define .(c_class_library_macros_public) __declspec(dllexport)
             #       endif
-            #   elsif !defined(c_global_macros_internal_build)
+            #   elsif !defined(.(c_class_library_macros_internal_build))
             #       ifdef __GNUC__
-            #           define .(c_global_macros_public) __attribute__ ((dllimport))
+            #           define .(c_class_library_macros_public) __attribute__ ((dllimport))
             #       else
-            #           define .(c_global_macros_public) __declspec(dllimport)
+            #           define .(c_class_library_macros_public) __declspec(dllimport)
             #       endif
             #   else
-            #       define .(c_global_macros_public)
+            #       define .(c_class_library_macros_public)
             #   endif
-            #   define .(c_global_macros_private)
+            #   define .(c_class_library_macros_private)
             #else
             #   if (defined(__GNUC__) &amp;&amp; __GNUC__ >= 4) || defined(__INTEL_COMPILER)
-            #       define .(c_global_macros_public)  __attribute__ ((visibility ("default")))
-            #       define .(c_global_macros_private) __attribute__ ((visibility ("hidden")))
+            #       define .(c_class_library_macros_public)  __attribute__ ((visibility ("default")))
+            #       define .(c_class_library_macros_private) __attribute__ ((visibility ("hidden")))
             #   else
-            #       define .(c_global_macros_private)
+            #       define .(c_class_library_macros_private)
             #   endif
             #endif
         </code>
@@ -90,7 +91,7 @@
         Custom implementation of the number ceil algorithm.
 
         <code>
-            #define .(c_global_macros_ceil) (x,y) (0 == (x) ? 0 : 1 + (((x) - 1) / (y)))
+            #define .(c_class_library_macros_ceil) (x,y) (0 == (x) ? 0 : 1 + (((x) - 1) / (y)))
         </code>
     </macros>
 
@@ -98,7 +99,7 @@
         Mark argument or function return value as "unused".
 
         <code>
-            #define .(c_global_macros_unused) (x) (void)(x)
+            #define .(c_class_library_macros_unused) (x) (void)(x)
         </code>
     </macros>
 

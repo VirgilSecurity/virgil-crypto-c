@@ -125,7 +125,7 @@ function context_append_project (context, project)
     assert_attribute (my.project, "framework", my)
 
     new uid to my.context
-        .uid = "c_global_macros_build_interface"
+        .uid = "c_class_library_macros_build_interface"
         .ref = "$(my.project.prefix:c,UPPER)_BUILD_INTERFACE"
     endnew
 

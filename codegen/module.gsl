@@ -121,10 +121,10 @@ function module_resolve_header (module)
     endif
 
     assert_attribute (my.module->header, "name", my)
-    assert_attribute (my.module, "c_prefix", my)
+    assert_attribute (my.module, "c_namespace", my)
 
     scope my.module->header
-        .c_prefix ?= my.module.c_prefix
+        .c_namespace ?= my.module.c_namespace
         .uid = make_id ("header", 0.name)
         .scope = my.module.scope ?
     endscope
@@ -142,9 +142,9 @@ function module_resolve (module, project)
 
     assert_attribute (my.module, "name", my)
 
-    my.module.of_class ?= my.module.name
-    my.module.c_prefix ?= my.project.prefix
-    my.module.uid = make_id (name (my.module), my.module.name)
+    my.module.name_prefix ?= my.module.name
+    my.module.c_namespace ?= my.project.prefix
+    my.module.uid ?= make_id ("class", my.module.of_class ? my.module.name)
     my.module.has_cmakedefine ?= "0"
 
     component_resolve_attr_scope (my.module)

@@ -46,7 +46,7 @@
         <inherit entity="scope"/>
         <inherit entity="visibility"/>
         <inherit entity="uid"/>
-        <inherit entity="c_prefix"/>
+        <inherit entity="c_namespace"/>
 
         <allow entity="constant" occurs="0+"/>
         <allow entity="method" occurs="0+"/>

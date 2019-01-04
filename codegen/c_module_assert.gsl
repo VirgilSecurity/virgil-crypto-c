@@ -124,7 +124,7 @@ function c_module_assert_extend (module, project, projects_api)
                     #define $(my.unhandled_macros_ref)(error)
                         do {
                             .(c_class_assert_macros_assert)((error) != $(my.message_getter.success));
-                            $(my.method_ref)((int)(error), .(c_global_macros_file_path_or_name), __LINE__);
+                            $(my.method_ref)((int)(error), .(c_class_assert_macros_file_path_or_name), __LINE__);
                         } while (0)
                 "
             endnew

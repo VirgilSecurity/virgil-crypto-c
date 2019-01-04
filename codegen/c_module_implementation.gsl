@@ -492,7 +492,7 @@ function _Z19_add_method_init (impl, declaration, definition, destination, meta)
             my.impl_begin = "\
                 .(c_class_assert_macros_ptr)($(my.arg_impl));
 
-                .(c_global_method_zeroize)($(my.arg_impl), sizeof($(my.type_impl)));
+                .(c_class_memory_method_zeroize)($(my.arg_impl), sizeof($(my.type_impl)));
 
                 $(my.arg_impl)->$(my.names.c_property_info:) = &$(my.refs.c_implementation_variable_info);
                 $(my.arg_impl)->$(my.names.c_property_ref_counter:) = 1;
@@ -568,7 +568,7 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
             endif
 
             my.impl_zeroize = "\
-                .(c_global_method_zeroize)($(my.arg_impl), sizeof($(my.type_impl)));
+                .(c_class_memory_method_zeroize)($(my.arg_impl), sizeof($(my.type_impl)));
             "
 
             my.method_body = ""
@@ -607,7 +607,7 @@ function _Z19_add_method_new (impl, declaration, definition, destination, meta)
             my.arg_impl = my.names.c_implementation_argument_impl
 
             . = "\
-            $(my.type_impl) *$(my.arg_impl:) = ($(my.type_impl) *) .(c_global_method_alloc)(sizeof ($(my.type_impl)));
+            $(my.type_impl) *$(my.arg_impl:) = ($(my.type_impl) *) .(c_class_memory_method_alloc)(sizeof ($(my.type_impl)));
             .(c_class_assert_macros_alloc)($(my.arg_impl:));
 
             $(my.refs.c_implementation_method_init)($(my.arg_impl:));
@@ -644,7 +644,7 @@ function _Z19_add_method_delete (impl, declaration, definition, destination, met
             $(my.refs.c_implementation_method_cleanup)($(my.arg_impl));
 
             if ($(my.arg_impl) && ($(my.arg_impl)->$(my.names.c_property_ref_counter:) == 0)) {
-                .(c_global_method_dealloc)($(my.arg_impl));
+                .(c_class_memory_method_dealloc)($(my.arg_impl));
             }
             "
         endnew
@@ -988,7 +988,7 @@ function c_module_implementation_create_module_public (impl, destination, meta)
         "
 
         .name = my.names.implementation_module
-        .of_class = my.names.implementation_class
+        .name_prefix = my.names.implementation_class
         .feature = my.impl.name
 
         _Z19_add_includes_for_module_public (my.impl, module, my.meta)
@@ -1037,6 +1037,7 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
         "
 
         .name = my.names.implementation_module_defs
+        .name_prefix = my.names.implementation_class
         .of_class = my.names.implementation_class
         .scope = "private"
         .feature = my.impl.name
@@ -1081,6 +1082,7 @@ function c_module_implementation_create_module_internal (impl, source, destinati
         "
 
         .name = my.names.implementation_module_internal
+        .name_prefix = my.names.implementation_class
         .of_class = my.names.implementation_class
         .scope = "internal"
         .feature = my.impl.name

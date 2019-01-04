@@ -66,7 +66,7 @@ function component_dump (component)
     my.component_info += " library=\"$(my.component.library)\"" ? ""
     my.component_info += " project=\"$(my.component.project)\"" ? ""
     my.component_info += " lang=\"$(my.component.lang)\"" ? ""
-    my.component_info += " of_class=\"$(my.component.of_class)\"" ? ""
+    my.component_info += " name_prefix=\"$(my.component.name_prefix)\"" ? ""
     my.component_info += " visibility=\"$(my.component.visibility)\"" ? ""
     my.component_info += " scope=\"$(my.component.scope)\"" ? ""
     my.component_info += " declaration=\"$(my.component.declaration)\"" ? ""
@@ -177,21 +177,21 @@ function component_require_attr_name (component, caller)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Check required attribute: c_prefix.
+#   Check required attribute: c_namespace.
 # ---------------------------------------------------------------------------
-function component_require_attr_c_prefix (component, caller)
+function component_require_attr_c_namespace (component, caller)
     check_argument (my, "component", my)
 
-    assert_attribute (my.component, "c_prefix", my.caller ? my)
+    assert_attribute (my.component, "c_namespace", my.caller ? my)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Check required attribute: of_class.
+#   Check required attribute: name_prefix.
 # ---------------------------------------------------------------------------
-function component_require_attr_of_class (component, caller)
+function component_require_attr_name_prefix (component, caller)
     check_argument (my, "component", my)
 
-    assert_attribute (my.component, "of_class", my.caller ? my)
+    assert_attribute (my.component, "name_prefix", my.caller ? my)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -376,7 +376,7 @@ endfunction
 function component_in_global_scope (component)
     check_argument (my, "component", my)
 
-    return (my.component.of_class ? my.component->lineage.of_class ? "") = "global"
+    return (my.component.name_prefix ? my.component->lineage.name_prefix ? "") = "global"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -385,9 +385,9 @@ endfunction
 function component_in_class_scope (component)
     check_argument (my, "component", my)
 
-    my.of_class = my.component.of_class ? my.component->lineage.of_class ?
+    my.name_prefix = my.component.name_prefix ? my.component->lineage.name_prefix ?
 
-    return defined (my.of_class) & my.of_class <> "global" & my.of_class <> ""
+    return defined (my.name_prefix) & my.name_prefix <> "global" & my.name_prefix <> ""
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -415,7 +415,7 @@ function component_derive_uid (component)
 
     #   Define uid scope: class or global
     if component_in_class_scope (my.component)
-        my.uid_scope = make_id ("class", my.component.of_class ? my.component->lineage.of_class)
+        my.uid_scope = make_id ("class", my.component.name_prefix ? my.component->lineage.name_prefix)
 
     elsif component_in_global_scope (my.component)
         my.uid_scope = "global"
@@ -476,22 +476,22 @@ function component_derive_name_prefix (component)
     check_argument (my, "component", my)
 
     component_require_attr_name (my.component, my)
-    component_require_attr_of_class (my.component, my)
+    component_require_attr_name_prefix (my.component, my)
     component_require_lineage (my.component, my)
 
     my.ancestors = ""
-    for my.component->lineage.ancestor where ! string_in (id, "project, module") & name <> of_class
+    for my.component->lineage.ancestor where ! string_in (id, "project, module") & name <> name_prefix
         my.ancestors = cat (my.ancestors, ancestor.name)
     endfor
 
     if component_in_global_scope (my.component)
         return ""
 
-    elsif string_equal (my.component.of_class, my.component.name)
+    elsif string_equal (my.component.name_prefix, my.component.name)
         return cat (my.ancestors)
 
     else
-        return cat (my.component.of_class, my.ancestors)
+        return cat (my.component.name_prefix, my.ancestors)
     endif
 endfunction
 
@@ -562,19 +562,19 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Resolve attribute: class.
 # ---------------------------------------------------------------------------
-function component_resolve_attr_of_class (component, parent)
+function component_resolve_attr_name_prefix (component, parent)
     check_arguments (my, "component, parent", my)
 
-    my.component.of_class ?= my.parent.of_class ?
+    my.component.name_prefix ?= my.parent.name_prefix ?
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Resolve attribute: c_prefix.
+#   Resolve attribute: c_namespace.
 # ---------------------------------------------------------------------------
-function component_resolve_attr_c_prefix (component, parent)
+function component_resolve_attr_c_namespace (component, parent)
     check_argument (my, "component", my)
 
-    my.component.c_prefix ?= my.parent.c_prefix
+    my.component.c_namespace ?= my.parent.c_namespace
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -582,9 +582,8 @@ endfunction
 # ---------------------------------------------------------------------------
 function component_resolve_attr_uid (component, parent)
     check_argument (my, "component", my)
-    assert_item (my.component, "lineage", my)
 
-    my.component.uid = component_derive_uid (my.component)
+    my.component.uid = make_id (my.parent.uid ?, name (my.component), my.component.name)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1042,7 +1041,7 @@ function component_add_lineage (component, parent)
         endnew
     endif
 
-    my.component->lineage.of_class = my.parent.of_class ?
+    my.component->lineage.name_prefix = my.parent.name_prefix ?
 
     #   Add parent as ancestor
     new ancestor to my.component->lineage
@@ -1214,8 +1213,8 @@ endfunction
 function component_resolve_component (component, parent)
     check_arguments (my, "component, parent", my)
 
-    component_resolve_attr_of_class (my.component, my.parent)
-    component_resolve_attr_c_prefix (my.component, my.parent)
+    component_resolve_attr_name_prefix (my.component, my.parent)
+    component_resolve_attr_c_namespace (my.component, my.parent)
     component_resolve_attr_uid (my.component, my.parent)
     component_resolve_attr_feature (my.component, my.parent)
 endfunction
@@ -1442,10 +1441,10 @@ function component_resolve_macroses (macroses, parent)
     component_require_code (my.macroses, my)
 
     component_resolve_attr_definition (my.macroses, my.parent)
-    component_resolve_attr_of_class (my.macroses, my.parent)
+    component_resolve_attr_name_prefix (my.macroses, my.parent)
 
     for my.macroses.macros
-        component_resolve_attr_of_class (macros, my.macroses)
+        component_resolve_attr_name_prefix (macros, my.macroses)
         component_resolve_macros (macros, my.parent)
     endfor
 

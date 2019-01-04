@@ -57,14 +57,14 @@ function _X13_add_context_struct (class, declaration, definition, destination, m
     new struct to my.destination
         . = "Handle '$(my.class.name:)' context."
         .name = my.class.name
-        .of_class = my.class.of_class ?
+        .name_prefix = my.class.name_prefix ?
         .declaration = my.declaration
         .definition = my.definition
 
         if my.class.lifecycle <> "none" & my.class.context <> "none"
             new property to struct
                 .name = my.names.class_property_self_dealloc
-                .callback = ".(global_callback_dealloc)"
+                .callback = ".(class_library_callback_dealloc)"
                 .="\
                 Function do deallocate self context.
                 "
@@ -188,7 +188,7 @@ function _X13_add_method_init (class, destination, meta)
             . = "\
                 .(c_class_assert_macros_ptr)($(my.arg_ctx));
 
-                .(c_global_method_zeroize)($(my.arg_ctx), sizeof($(my.type_ctx)));
+                .(c_class_memory_method_zeroize)($(my.arg_ctx), sizeof($(my.type_ctx)));
 
                 $(my.arg_ctx)->$(my.names.c_property_ref_counter:) = 1;
 
@@ -246,7 +246,7 @@ function _X13_add_method_cleanup (class, destination, meta)
             endfor
 
             my.impl_cleanup_end = "\
-                    .(c_global_method_zeroize)($(my.arg_ctx), sizeof($(my.type_ctx)));
+                    .(c_class_memory_method_zeroize)($(my.arg_ctx), sizeof($(my.type_ctx)));
                 }
             "
 
@@ -355,12 +355,12 @@ function _X13_add_method_new (class, destination, meta)
             my.arg_ctx = my.names.c_class_argument_ctx
 
             . = "\
-            $(my.type_ctx) *$(my.arg_ctx:) = ($(my.type_ctx) *) .(c_global_method_alloc)(sizeof ($(my.type_ctx)));
+            $(my.type_ctx) *$(my.arg_ctx:) = ($(my.type_ctx) *) .(c_class_memory_method_alloc)(sizeof ($(my.type_ctx)));
             .(c_class_assert_macros_alloc)($(my.arg_ctx:));
 
             $(my.refs.c_class_method_init)($(my.arg_ctx:));
 
-            $(my.arg_ctx:)->$(my.refs.c_class_property_self_dealloc) = .(c_global_method_dealloc);
+            $(my.arg_ctx:)->$(my.refs.c_class_property_self_dealloc) = .(c_class_memory_method_dealloc);
 
             return $(my.arg_ctx:);
             "
@@ -449,7 +449,8 @@ function _X13_add_method_delete (class, destination, meta)
                 return;
             }
 
-            .(c_global_callback_dealloc) self_dealloc_cb = $(my.arg_ctx:)->$(my.refs.c_class_property_self_dealloc);
+            .(c_class_library_callback_dealloc) self_dealloc_cb = \
+                    $(my.arg_ctx:)->$(my.refs.c_class_property_self_dealloc);
 
             $(my.refs.c_class_method_cleanup)($(my.arg_ctx));
 
@@ -592,9 +593,10 @@ function c_module_class_create_module_public (class, destination, meta)
         . = my.class.?
         .name = my.names.class_module
         .feature = my.class.name
-        .of_class = my.class.name
-        .c_prefix = my.class.c_prefix
+        .name_prefix = my.class.name
+        .c_namespace = my.class.c_namespace
         .scope = my.class.scope ?
+        .uid = my.class.uid
 
         new require to module
             .module = my.names.module_library
@@ -702,6 +704,7 @@ function c_module_class_create_module_defs (class, destination, meta)
         .name = my.names.class_module_defs
         .scope = "private"
         .feature = my.class.name
+        .name_prefix = my.class.name
         .of_class = my.class.name
         . = "
         Class '$(my.class.name:)' types definition.

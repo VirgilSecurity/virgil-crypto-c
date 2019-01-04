@@ -98,7 +98,7 @@
 
 
         <inherit entity="scope"/>
-        <inherit entity="c_prefix"/>
+        <inherit entity="c_namespace"/>
         <inherit entity="uid"/>
         <inherit entity="visibility"/>
 

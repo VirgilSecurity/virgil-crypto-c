@@ -107,12 +107,12 @@ endfunction
 function class_derive_c_method (class, method)
     check_arguments (my, "class, method", my)
 
-    if string_equal (my.method.of_class, "global") | string_equal (my.class.of_class, "global")
+    if string_equal (my.method.name_prefix, "global") | string_equal (my.class.name_prefix, "global")
         return make_ref_c (make_id ("global method", my.method.name))
 
     else
-        my.of_class = my.method.of_class ? my.class.of_class ? my.class.name
-        return make_ref_c (make_id ("class", my.of_class, "method", my.method.name))
+        my.name_prefix = my.method.name_prefix ? my.class.name_prefix ? my.class.name
+        return make_ref_c (make_id ("class", my.name_prefix, "method", my.method.name))
     endif
 endfunction
 
@@ -122,8 +122,8 @@ endfunction
 function class_derive_c_constructor (class, constructor)
     check_arguments (my, "class, constructor", my)
 
-    my.of_class = my.class.of_class ? my.class.name
-    return make_ref_c (make_id ("class", my.of_class, "method", "new", my.constructor.name ?))
+    my.name_prefix = my.class.name_prefix ? my.class.name
+    return make_ref_c (make_id ("class", my.name_prefix, "method", "new", my.constructor.name ?))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -132,8 +132,8 @@ endfunction
 function class_derive_c_method_shallow_copy (class)
     check_arguments (my, "class", my)
 
-    my.of_class = my.class.of_class ? my.class.name
-    return make_ref_c (make_id ("class", my.of_class, "method", "shallow copy"))
+    my.name_prefix = my.class.name_prefix ? my.class.name
+    return make_ref_c (make_id ("class", my.name_prefix, "method", "shallow copy"))
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -143,16 +143,16 @@ endfunction
 function class_derive_class_c_method_ctx_size (class)
     check_arguments (my, "class", my)
 
-    my.of_class = my.class.of_class ? my.class.name
+    my.name_prefix = my.class.name_prefix ? my.class.name
 
     if item_in (my.class, "class")
-        return make_ref_c (make_id ("class", my.of_class, "method", "ctx size"))
+        return make_ref_c (make_id ("class", my.name_prefix, "method", "ctx size"))
 
     elsif item_in (my.class, "implementation")
-        return make_ref_c (make_id ("class", my.of_class, "method", "impl size"))
+        return make_ref_c (make_id ("class", my.name_prefix, "method", "impl size"))
 
     else
-        return make_ref_c (make_id ("class", my.of_class, "method", "size"))
+        return make_ref_c (make_id ("class", my.name_prefix, "method", "size"))
     endif
 endfunction
 
@@ -1661,7 +1661,7 @@ function swift_create_class_default_constructor (swift_class, class, wrapper, me
 
     if string_in (my.class.context, "public") & string_in (my.class.lifecycle, "none")
         my.ctx_size_invocation = "$(class_derive_class_c_method_ctx_size (my.class))()"
-        my.ctor_invocation = ".(c_global_method_alloc)($(my.ctx_size_invocation:))!" + \
+        my.ctor_invocation = ".(c_class_memory_method_alloc)($(my.ctx_size_invocation:))!" + \
                 ".bindMemory(to: $(class_derive_c_type(my.class)).self, capacity:1)"
     else
         my.ctor_invocation = "$(class_derive_c_defalut_constructor (my.class))()"
@@ -1768,7 +1768,7 @@ function swift_create_class_destructor (swift_class, class, wrapper, meta)
     my.self_ctx = "self.c_ctx"
 
     if string_in (my.class.context, "public") & string_in (my.class.lifecycle, "none")
-        my.dtor_invocation = ".(c_global_method_dealloc)($(my.self_ctx:))"
+        my.dtor_invocation = ".(c_class_memory_method_dealloc)($(my.self_ctx:))"
     else
         my.dtor_invocation = "$(class_derive_c_destructor (my.class))($(my.self_ctx:))"
     endif

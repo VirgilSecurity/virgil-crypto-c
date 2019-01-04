@@ -1,4 +1,4 @@
-<module name="memory" of_class="global">
+<module name="memory" name_prefix="global">
     Provides configurable memory management model.
 
     <require module="library" scope="public"/>
@@ -9,8 +9,8 @@
         Compile-time configuration of the default alloc function.
 
         <code>
-            #ifndef .(c_global_macros_alloc_default)
-            #   define  .(c_global_macros_alloc_default) (size) calloc (1, (size))
+            #ifndef .(c_class_memory_macros_alloc_default)
+            #   define  .(c_class_memory_macros_alloc_default) (size) calloc (1, (size))
             #endif
         </code>
     </macros>
@@ -20,36 +20,36 @@
         Compile-time configuration of the default dealloc function.
 
         <code>
-            #ifndef .(c_global_macros_dealloc_default)
-            #   define  .(c_global_macros_dealloc_default) (mem) free ((mem))
+            #ifndef .(c_class_memory_macros_dealloc_default)
+            #   define  .(c_class_memory_macros_dealloc_default) (mem) free ((mem))
             #endif
         </code>
     </macros>
 
 
     <variable name="inner alloc"
-              callback=".(global_callback_alloc)"
-              of_class="memory"
+              callback=".(class_library_callback_alloc)"
+              name_prefix="memory"
               declaration="private"
               definition="private"
               access="readwrite">
 
         Current allocation function.
 
-        <value value=".(c_global_method_default_alloc)"/>
+        <value value=".(c_class_memory_method_default_alloc)"/>
     </variable>
 
 
     <variable name="inner dealloc"
-              callback=".(global_callback_dealloc)"
-              of_class="memory"
+              callback=".(c_class_library_callback_dealloc)"
+              name_prefix="memory"
               declaration="private"
               definition="private"
               access="readwrite">
 
         Current de-allocation function.
 
-        <value value=".(c_global_method_default_dealloc)"/>
+        <value value=".(c_class_memory_method_default_dealloc)"/>
     </variable>
 
 
@@ -61,7 +61,7 @@
         <return class="any" access="disown"/>
 
         <code>
-            return .(c_global_macros_alloc_default) (.(_argument_size));
+            return .(c_class_memory_macros_alloc_default) (.(_argument_size));
         </code>
     </method>
 
@@ -72,7 +72,7 @@
         <argument name="mem" class="any" access="writeonly"/>
 
         <code>
-            .(c_global_macros_dealloc_default) (.(_argument_mem));
+            .(c_class_memory_macros_dealloc_default) (.(_argument_mem));
         </code>
     </method>
 
@@ -105,8 +105,8 @@
     <method name="set_allocators">
         Change current used memory functions in the runtime.
 
-        <argument name="alloc" callback=".(global_callback_alloc)"/>
-        <argument name="dealloc" callback=".(global_callback_dealloc)"/>
+        <argument name="alloc" callback=".(c_class_library_callback_alloc)"/>
+        <argument name="dealloc" callback=".(c_class_library_callback_dealloc)"/>
 
         <code>
             .(c_class_assert_macros_ptr) (.(_argument_alloc));
@@ -121,7 +121,7 @@
     <method name="zeroize">
         Zeroize memory.
         Note, this function can be reduced by compiler during optimization step.
-        For sensitive data erasing use .(c_global_method_erase) ().
+        For sensitive data erasing use .(c_class_memory_method_erase) ().
 
         <argument name="mem" class="any" access="writeonly"/>
         <argument name="size" type="size"/>

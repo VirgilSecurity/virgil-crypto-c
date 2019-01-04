@@ -2,7 +2,7 @@
     Encapsulates fixed byte array with variable effective data length.
 
 
-    <property name="bytes_dealloc" callback=".(global_callback_dealloc)">
+    <property name="bytes_dealloc" callback=".(class_library_callback_dealloc)">
         Function do deallocate underlying byte array.
     </property>
 
@@ -90,7 +90,7 @@
 
         <argument name="bytes" type="byte" access="readwrite" is_reference="1"/>
         <argument name="bytes len" type="size"/>
-        <argument name="dealloc" callback=".(global_callback_dealloc)"/>
+        <argument name="dealloc" callback=".(class_library_callback_dealloc)"/>
     </method>
 
 
