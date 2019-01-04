@@ -3,6 +3,7 @@
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common" scope="context"/>
     <require module="ratchet message defs" scope="private"/>
+    <require module="buffer defs" scope="private" project="common"/>
 
     <require impl="ctr drbg" project="foundation" scope="private"/>
 

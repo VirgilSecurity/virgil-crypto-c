@@ -50,6 +50,7 @@
 
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 // clang-format on
 //  @end
@@ -303,19 +304,23 @@ vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *ratchet_cipher, vsc_data
     vscf_hkdf_t *hkdf = vscf_hkdf_new();
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
 
-    vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(vscf_aes256_gcm_KEY_LEN + vscf_aes256_gcm_NONCE_LEN);
-    vsc_buffer_make_secure(derived_secret);
+    byte derived_secret[vscf_aes256_gcm_KEY_LEN + vscf_aes256_gcm_NONCE_LEN];
+
+    vsc_buffer_t buffer;
+    vsc_buffer_init(&buffer);
+    vsc_buffer_use(&buffer, derived_secret, sizeof(derived_secret));
+
     vscf_hkdf_derive(hkdf, key, vsc_data_empty(), vsc_data(ratchet_kdf_cipher_info, sizeof(ratchet_kdf_cipher_info)),
-            derived_secret, vsc_buffer_capacity(derived_secret));
+            &buffer, sizeof(derived_secret));
 
     vscf_hkdf_destroy(&hkdf);
 
-    vscf_aes256_gcm_set_key(ratchet_cipher->aes256_gcm,
-            vsc_data_slice_beg(vsc_buffer_data(derived_secret), 0, vscf_aes256_gcm_KEY_LEN));
-    vscf_aes256_gcm_set_nonce(ratchet_cipher->aes256_gcm,
-            vsc_data_slice_beg(vsc_buffer_data(derived_secret), vscf_aes256_gcm_KEY_LEN, vscf_aes256_gcm_NONCE_LEN));
+    vscf_aes256_gcm_set_key(ratchet_cipher->aes256_gcm, vsc_data(derived_secret, vscf_aes256_gcm_KEY_LEN));
+    vscf_aes256_gcm_set_nonce(
+            ratchet_cipher->aes256_gcm, vsc_data(derived_secret + vscf_aes256_gcm_KEY_LEN, vscf_aes256_gcm_NONCE_LEN));
 
-    vsc_buffer_destroy(&derived_secret);
+    vsc_buffer_delete(&buffer);
+    vscr_zeroize(derived_secret, sizeof(derived_secret));
 }
 
 VSCR_PUBLIC vscr_error_t

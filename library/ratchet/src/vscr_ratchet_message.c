@@ -50,6 +50,7 @@
 #include "vscr_ratchet_message_defs.h"
 
 #include <virgil/crypto/foundation/vscf_sha512.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 
@@ -429,14 +430,19 @@ vscr_ratchet_message_compute_key_id(vsc_data_t key, vsc_buffer_t *buffer) {
 
     vscf_sha512_t *sha512 = vscf_sha512_new();
 
-    vsc_buffer_t *buf = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
+    byte hash[vscf_sha512_DIGEST_LEN];
 
-    vscf_sha512_hash(key, buf);
+    vsc_buffer_t buf;
+    vsc_buffer_init(&buf);
+    vsc_buffer_use(&buf, hash, sizeof(hash));
 
-    memcpy(vsc_buffer_unused_bytes(buffer), vsc_buffer_bytes(buf), vscr_ratchet_common_RATCHET_KEY_ID_LENGTH);
+    vscf_sha512_hash(key, &buf);
+    vsc_buffer_delete(&buf);
+
+    memcpy(vsc_buffer_unused_bytes(buffer), hash, vscr_ratchet_common_RATCHET_KEY_ID_LENGTH);
     vsc_buffer_inc_used(buffer, vscr_ratchet_common_RATCHET_KEY_ID_LENGTH);
 
-    vsc_buffer_destroy(&buf);
+    vscr_zeroize(hash, sizeof(hash));
     vscf_sha512_destroy(&sha512);
 }
 

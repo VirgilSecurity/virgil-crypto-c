@@ -2,6 +2,7 @@
 
     <require impl="sha512" project="foundation" scope="private"/>
     <require impl="hkdf" project="foundation" scope="private"/>
+    <require module="buffer defs" scope="private" project="common"/>
 
     <dependency name="aes256 gcm" impl="aes256 gcm" project="foundation"/>
 

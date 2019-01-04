@@ -52,6 +52,7 @@
 #include "vscr_ratchet.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <RatchetSession.pb.h>
 #include <RatchetMessage.pb.h>
@@ -338,70 +339,69 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_
 
     vscr_error_t status = vscr_SUCCESS;
 
-    vsc_buffer_t *ephemeral_private_key = vsc_buffer_new_with_capacity(vscr_ratchet_common_RATCHET_KEY_LENGTH);
-    vsc_buffer_make_secure(ephemeral_private_key);
+    byte ephemeral_private_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte ratchet_private_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
 
-    vsc_buffer_t *ratchet_private_key = vsc_buffer_new_with_capacity(vscr_ratchet_common_RATCHET_KEY_LENGTH);
-    vsc_buffer_make_secure(ratchet_private_key);
+    vsc_buffer_t ephemeral_private_key_buf;
+    vsc_buffer_init(&ephemeral_private_key_buf);
+    vsc_buffer_use(&ephemeral_private_key_buf, ephemeral_private_key, sizeof(ephemeral_private_key));
 
     vscf_error_t f_status =
-            vscf_random(ratchet_session->rng, vscr_ratchet_common_RATCHET_KEY_LENGTH, ephemeral_private_key);
+            vscf_random(ratchet_session->rng, vscr_ratchet_common_RATCHET_KEY_LENGTH, &ephemeral_private_key_buf);
+    vsc_buffer_delete(&ephemeral_private_key_buf);
 
     if (f_status != vscf_SUCCESS) {
         status = vscr_error_RNG_FAILED;
         goto rng_err;
     }
 
-    f_status = vscf_random(ratchet_session->rng, vscr_ratchet_common_RATCHET_KEY_LENGTH, ratchet_private_key);
+    vsc_buffer_t ratchet_private_key_buf;
+    vsc_buffer_init(&ratchet_private_key_buf);
+    vsc_buffer_use(&ratchet_private_key_buf, ratchet_private_key, sizeof(ratchet_private_key));
+
+    f_status = vscf_random(ratchet_session->rng, vscr_ratchet_common_RATCHET_KEY_LENGTH, &ratchet_private_key_buf);
+    vsc_buffer_delete(&ratchet_private_key_buf);
+
     if (f_status != vscf_SUCCESS) {
         status = vscr_error_RNG_FAILED;
         goto rng_err;
     }
 
-    vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_count * ED25519_DH_LEN);
-    vsc_buffer_make_secure(shared_secret);
+    byte shared_secret[4 * ED25519_DH_LEN];
 
     int curve_status = 0;
-    curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), receiver_long_term_public_key.bytes,
-            sender_identity_private_key.bytes);
+    curve_status = curve25519_key_exchange(
+            shared_secret, receiver_long_term_public_key.bytes, sender_identity_private_key.bytes);
 
     if (curve_status != 0) {
         status = vscr_error_CURVE25519_ERROR;
         goto curve_err;
     }
 
-    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
-
-    curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), receiver_identity_public_key.bytes,
-            vsc_buffer_bytes(ephemeral_private_key));
+    curve_status = curve25519_key_exchange(
+            shared_secret + ED25519_DH_LEN, receiver_identity_public_key.bytes, ephemeral_private_key);
 
     if (curve_status != 0) {
         status = vscr_error_CURVE25519_ERROR;
         goto curve_err;
     }
 
-    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
-
-    curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), receiver_long_term_public_key.bytes,
-            vsc_buffer_bytes(ephemeral_private_key));
+    curve_status = curve25519_key_exchange(
+            shared_secret + 2 * ED25519_DH_LEN, receiver_long_term_public_key.bytes, ephemeral_private_key);
 
     if (curve_status != 0) {
         status = vscr_error_CURVE25519_ERROR;
         goto curve_err;
     }
-
-    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
     if (receiver_one_time_public_key.len != 0) {
-        curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret),
-                receiver_one_time_public_key.bytes, vsc_buffer_bytes(ephemeral_private_key));
+        curve_status = curve25519_key_exchange(
+                shared_secret + 3 * ED25519_DH_LEN, receiver_one_time_public_key.bytes, ephemeral_private_key);
 
         if (curve_status != 0) {
             status = vscr_error_CURVE25519_ERROR;
             goto curve_err;
         }
-
-        vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
         memcpy(ratchet_session->receiver_one_time_public_key, receiver_one_time_public_key.bytes,
                 receiver_one_time_public_key.len);
@@ -415,8 +415,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_
         goto curve_err;
     }
 
-    curve_status = curve25519_get_pubkey(
-            ratchet_session->sender_ephemeral_public_key, vsc_buffer_bytes(ephemeral_private_key));
+    curve_status = curve25519_get_pubkey(ratchet_session->sender_ephemeral_public_key, ephemeral_private_key);
 
     if (curve_status != 0) {
         status = vscr_error_CURVE25519_ERROR;
@@ -426,17 +425,18 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_
     memcpy(ratchet_session->receiver_long_term_public_key, receiver_long_term_public_key.bytes,
             receiver_long_term_public_key.len);
 
-    status = vscr_ratchet_initiate(
-            ratchet_session->ratchet, vsc_buffer_data(shared_secret), vsc_buffer_data(ratchet_private_key));
+    status = vscr_ratchet_initiate(ratchet_session->ratchet,
+            vsc_data(shared_secret, shared_secret_count * ED25519_DH_LEN),
+            vsc_data(ratchet_private_key, sizeof(ratchet_private_key)));
 
     ratchet_session->is_initiator = true;
 
 curve_err:
-    vsc_buffer_destroy(&shared_secret);
+    vscr_zeroize(shared_secret, sizeof(shared_secret));
 
 rng_err:
-    vsc_buffer_destroy(&ephemeral_private_key);
-    vsc_buffer_destroy(&ratchet_private_key);
+    vscr_zeroize(ephemeral_private_key, sizeof(ephemeral_private_key));
+    vscr_zeroize(ratchet_private_key, sizeof(ratchet_private_key));
 
     return status;
 }
@@ -466,20 +466,17 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
 
     int curve_status = 0;
 
-    vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_count * ED25519_DH_LEN);
-    vsc_buffer_make_secure(shared_secret);
+    byte shared_secret[4 * ED25519_DH_LEN];
 
-    curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), sender_identity_public_key.bytes,
-            receiver_long_term_private_key.bytes);
+    curve_status = curve25519_key_exchange(
+            shared_secret, sender_identity_public_key.bytes, receiver_long_term_private_key.bytes);
 
     if (curve_status != 0) {
         status = vscr_error_CURVE25519_ERROR;
         goto curve_err;
     }
 
-    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
-
-    curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret),
+    curve_status = curve25519_key_exchange(shared_secret + ED25519_DH_LEN,
             message->message_pb.prekey_message.sender_ephemeral_key, receiver_identity_private_key.bytes);
 
     if (curve_status != 0) {
@@ -487,9 +484,7 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
         goto curve_err;
     }
 
-    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
-
-    curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret),
+    curve_status = curve25519_key_exchange(shared_secret + 2 * ED25519_DH_LEN,
             message->message_pb.prekey_message.sender_ephemeral_key, receiver_long_term_private_key.bytes);
 
     if (curve_status != 0) {
@@ -497,18 +492,14 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
         goto curve_err;
     }
 
-    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
-
     if (receiver_one_time_private_key.len != 0) {
-        curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret),
+        curve_status = curve25519_key_exchange(shared_secret + 3 * ED25519_DH_LEN,
                 message->message_pb.prekey_message.sender_ephemeral_key, receiver_one_time_private_key.bytes);
 
         if (curve_status != 0) {
             status = vscr_error_CURVE25519_ERROR;
             goto curve_err;
         }
-
-        vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
         curve_status = curve25519_get_pubkey(
                 ratchet_session->receiver_one_time_public_key, receiver_one_time_private_key.bytes);
@@ -532,13 +523,14 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
         goto curve_err;
     }
 
-    status = vscr_ratchet_respond(ratchet_session->ratchet, vsc_buffer_data(shared_secret),
+    status = vscr_ratchet_respond(ratchet_session->ratchet,
+            vsc_data(shared_secret, shared_secret_count * ED25519_DH_LEN),
             &message->message_pb.prekey_message.regular_message);
 
     ratchet_session->is_initiator = false;
 
 curve_err:
-    vsc_buffer_destroy(&shared_secret);
+    vscr_zeroize(shared_secret, sizeof(shared_secret));
 
     return status;
 }
