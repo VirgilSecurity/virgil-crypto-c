@@ -4,6 +4,7 @@
     <require impl="hmac" project="foundation" scope="private"/>
     <require impl="hkdf" project="foundation" scope="private"/>
     <require impl="ctr drbg" project="foundation" scope="private"/>
+    <require module="buffer defs" scope="private" project="common"/>
 
     <require class="ratchet common" scope="context"/>
     <require class="ratchet chain key" scope="private"/>
