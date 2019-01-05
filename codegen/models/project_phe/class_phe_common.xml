@@ -20,7 +20,14 @@
     <constant name="phe public key length" value="65">
         PHE public key length
     </constant>
-    <constant name="phe hash len" definition="public" value="32">
+    <constant name="phe hash len" value="32">
         PHE hash length
+    </constant>
+    <constant name="phe max encrypt len" value="1024 * 1024 - 64">
+        Maximum data size to encrypt
+    </constant>
+    <constant name="phe max decrypt len" value="1024 * 1024">
+        Maximum data size to decrypt
+        FIXME
     </constant>
 </class>

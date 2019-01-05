@@ -60,6 +60,7 @@ target_compile_definitions(phe
             "VSCE_PHE_HASH=$<BOOL:${VSCE_PHE_HASH}>"
             "VSCE_PHE_SERVER=$<BOOL:${VSCE_PHE_SERVER}>"
             "VSCE_PHE_CLIENT=$<BOOL:${VSCE_PHE_CLIENT}>"
+            "VSCE_PHE_CIPHER=$<BOOL:${VSCE_PHE_CIPHER}>"
         PRIVATE
             $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCE_BUILD_SHARED_LIBS>
         )

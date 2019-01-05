@@ -99,7 +99,16 @@ enum {
     //
     //  PHE hash length
     //
-    vsce_phe_common_PHE_HASH_LEN = 32
+    vsce_phe_common_PHE_HASH_LEN = 32,
+    //
+    //  Maximum data size to encrypt
+    //
+    vsce_phe_common_PHE_MAX_ENCRYPT_LEN = 1024 * 1024 - 64,
+    //
+    //  Maximum data size to decrypt
+    //  FIXME
+    //
+    vsce_phe_common_PHE_MAX_DECRYPT_LEN = 1024 * 1024
 };
 
 
