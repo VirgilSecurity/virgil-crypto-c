@@ -65,4 +65,5 @@
     <class name="phe hash"/>
     <class name="phe server"/>
     <class name="phe client"/>
+    <class name="phe cipher"/>
 </project>
