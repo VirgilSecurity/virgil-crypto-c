@@ -48,7 +48,7 @@
 #include <virgil/crypto/foundation/vscf_fake_random.h>
 
 // --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
+//  Should have it to prevent linkage errors in MSVC.
 // --------------------------------------------------------------------------
 // clang-format off
 void setUp(void) { }
