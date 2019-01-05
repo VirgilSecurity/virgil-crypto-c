@@ -53,6 +53,7 @@ option(VSCE_SIMPLE_SWU "Enable class 'simple swu'." ON)
 option(VSCE_PHE_HASH "Enable class 'phe hash'." ON)
 option(VSCE_PHE_SERVER "Enable class 'phe server'." ON)
 option(VSCE_PHE_CLIENT "Enable class 'phe client'." ON)
+option(VSCE_PHE_CIPHER "Enable class 'phe cipher'." ON)
 mark_as_advanced(
         VSCE_LIBRARY
         VSCE_MULTI_THREAD
@@ -62,6 +63,7 @@ mark_as_advanced(
         VSCE_PHE_HASH
         VSCE_PHE_SERVER
         VSCE_PHE_CLIENT
+        VSCE_PHE_CIPHER
         )
 
 if(VSCE_SIMPLE_SWU AND NOT VSCE_PHE_COMMON)
@@ -95,6 +97,15 @@ if(VSCE_PHE_CLIENT AND NOT VSCE_PHE_COMMON)
     message("-- error --")
     message("--")
     message("Feature VSCE_PHE_CLIENT depends on the feature:")
+    message("     VSCE_PHE_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_PHE_CIPHER AND NOT VSCE_PHE_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_PHE_CIPHER depends on the feature:")
     message("     VSCE_PHE_COMMON - which is disabled.")
     message("--")
     message(FATAL_ERROR)
