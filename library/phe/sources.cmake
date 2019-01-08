@@ -122,6 +122,8 @@ target_sources(phe
             "${CMAKE_CURRENT_LIST_DIR}/src/vsce_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vsce_library.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vsce_memory.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vsce_const.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vsce_const.c"
             "$<$<BOOL:${VSCE_ERROR_CTX}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_error_ctx.c>"
             "$<$<BOOL:${VSCE_PHE_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_cipher.c>"
             "$<$<BOOL:${VSCE_PHE_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_client.c>"
