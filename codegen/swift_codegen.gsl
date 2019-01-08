@@ -284,6 +284,18 @@ function swift_insert_protocol_method (swift_method)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Insert statement: class.constant
+# ---------------------------------------------------------------------------
+function swift_insert_class_constant (swift_constant)
+    check_arguments (my, "swift_constant", my)
+
+    swift_insert_description (my.swift_constant, 1)
+    swift_insert_code ("\
+        static let $(my.swift_constant.name:) = $(my.swift_constant.value:);
+    ", 1)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Insert statement: class.property
 # ---------------------------------------------------------------------------
 function swift_insert_class_property (swift_property)
@@ -421,6 +433,11 @@ function swift_insert_class (swift_class)
         @objc($(my.swift_class.objc_name:)) $(my.swift_class.visibility:) \
                 class $(my.swift_class.name:)$(my.swift_inheritance_list?:) {
     ")
+
+    for my.swift_class.swift_constant
+        newline_if (first ())
+        swift_insert_class_constant (swift_constant)
+    endfor
 
     for my.swift_class.swift_property
         newline ()

@@ -51,6 +51,7 @@ endif()
 
 target_compile_definitions(foundation
         PUBLIC
+            $<BUILD_INTERFACE:VSCF_INTERNAL_BUILD>
             "VSCF_LIBRARY=$<BOOL:${VSCF_LIBRARY}>"
             "VSCF_MULTI_THREAD=$<BOOL:${VSCF_MULTI_THREAD}>"
             "VSCF_DEFAULTS=$<BOOL:${VSCF_DEFAULTS}>"
@@ -123,5 +124,4 @@ target_compile_definitions(foundation
             "VSCF_ENDIANNESS=$<BOOL:${VSCF_ENDIANNESS}>"
         PRIVATE
             $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCF_BUILD_SHARED_LIBS>
-            $<BUILD_INTERFACE:VSCF_INTERNAL_BUILD>
         )

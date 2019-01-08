@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2018 Virgil Security Inc.
 //
 //  All rights reserved.
@@ -33,63 +31,16 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-// --------------------------------------------------------------------------
-// clang-format off
 
+#ifndef VIRGIL_CRYPTO_TEST_DATA_PHE_CIPHER_H
+#define VIRGIL_CRYPTO_TEST_DATA_PHE_CIPHER_H
 
-//  @warning
-// --------------------------------------------------------------------------
-//  This file is partially generated.
-//  Generated blocks are enclosed between tags [@<tag>, @end].
-//  User's code can be added between tags [@end, @<tag>].
-// --------------------------------------------------------------------------
+#include "vsc_data.h"
 
+extern const vsc_data_t test_phe_cipher_rnd;
+extern const vsc_data_t test_phe_cipher_account_key;
+extern const vsc_data_t test_phe_cipher_plain_text;
+extern const vsc_data_t test_phe_cipher_cipher_text;
+extern const size_t test_phe_cipher_cipher_text_capacity;
 
-//  @description
-// --------------------------------------------------------------------------
-//  This file contains platform specific information that is known during compilation.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_PLATFORM_H_INCLUDED
-#define VSCF_PLATFORM_H_INCLUDED
-
-// clang-format on
-//  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-//  @generated
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated section start.
-// --------------------------------------------------------------------------
-
-//
-//  Defines namespace include prefix for project 'common'.
-//
-#if !defined(VSCF_INTERNAL_BUILD)
-#cmakedefine01 VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#else
-#define VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK 0
-#endif
-
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_PLATFORM_H_INCLUDED
-//  @end
+#endif //VIRGIL_CRYPTO_TEST_DATA_PHE_CIPHER_H
