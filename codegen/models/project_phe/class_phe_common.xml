@@ -28,6 +28,5 @@
     </constant>
     <constant name="phe max decrypt len" value="1024 * 1024">
         Maximum data size to decrypt
-        FIXME
     </constant>
 </class>

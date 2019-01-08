@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Internal constants for PHE library.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,18 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCE_PHE_COMMON_H_INCLUDED
-#define VSCE_PHE_COMMON_H_INCLUDED
-
-#include "vsce_library.h"
+#include "vsce_const.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -64,50 +62,76 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Public integral constants.
-//
-enum {
-    //
-    //  PHE elliptic curve point binary length
-    //
-    vsce_phe_common_PHE_POINT_LENGTH = 65,
-    //
-    //  PHE max password length
-    //
-    vsce_phe_common_PHE_MAX_PASSWORD_LENGTH = 128,
-    //
-    //  PHE server identifier length
-    //
-    vsce_phe_common_PHE_SERVER_IDENTIFIER_LENGTH = 32,
-    //
-    //  PHE client identifier length
-    //
-    vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH = 32,
-    //
-    //  PHE account key length
-    //
-    vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH = 32,
-    //
-    //  PHE private key length
-    //
-    vsce_phe_common_PHE_PRIVATE_KEY_LENGTH = 32,
-    //
-    //  PHE public key length
-    //
-    vsce_phe_common_PHE_PUBLIC_KEY_LENGTH = 65,
-    //
-    //  PHE hash length
-    //
-    vsce_phe_common_PHE_HASH_LEN = 32,
-    //
-    //  Maximum data size to encrypt
-    //
-    vsce_phe_common_PHE_MAX_ENCRYPT_LEN = 1024 * 1024 - 64,
-    //
-    //  Maximum data size to decrypt
-    //
-    vsce_phe_common_PHE_MAX_DECRYPT_LEN = 1024 * 1024
+#define COMMON_PREFIX 0x56, 0x52, 0x47, 0x4c, 0x50, 0x48, 0x45
+
+VSCE_PUBLIC const byte k_dhc0[8] = {
+    COMMON_PREFIX,
+    0x31
+};
+
+VSCE_PUBLIC const byte k_dhc1[8] = {
+    COMMON_PREFIX,
+    0x32
+};
+
+VSCE_PUBLIC const byte k_dhs0[8] = {
+    COMMON_PREFIX,
+    0x33
+};
+
+VSCE_PUBLIC const byte k_dhs1[8] = {
+    COMMON_PREFIX,
+    0x34
+};
+
+static const byte k_proof_ok_bytes[] = {
+    COMMON_PREFIX,
+    0x35
+};
+
+static const byte k_proof_error_bytes[] = {
+    COMMON_PREFIX,
+    0x36
+};
+
+static const byte k_encrypt_bytes[] = {
+    COMMON_PREFIX,
+    0x37
+};
+
+static const byte k_kdf_info_z_bytes[] = {
+    COMMON_PREFIX,
+    0x38
+};
+
+static const byte k_kdf_info_client_key_bytes[] = {
+    COMMON_PREFIX,
+    0x39
+};
+
+VSCE_PUBLIC const vsc_data_t k_proof_ok = {
+    k_proof_ok_bytes,
+    sizeof(k_proof_ok_bytes)
+};
+
+VSCE_PUBLIC const vsc_data_t k_proof_error = {
+    k_proof_error_bytes,
+    sizeof(k_proof_error_bytes)
+};
+
+VSCE_PUBLIC const vsc_data_t k_encrypt = {
+    k_encrypt_bytes,
+    sizeof(k_encrypt_bytes)
+};
+
+VSCE_PUBLIC const vsc_data_t k_kdf_info_z = {
+    k_kdf_info_z_bytes,
+    sizeof(k_kdf_info_z_bytes)
+};
+
+VSCE_PUBLIC const vsc_data_t k_kdf_info_client_key = {
+    k_kdf_info_client_key_bytes,
+    sizeof(k_kdf_info_client_key_bytes)
 };
 
 
@@ -115,14 +139,4 @@ enum {
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCE_PHE_COMMON_H_INCLUDED
 //  @end
