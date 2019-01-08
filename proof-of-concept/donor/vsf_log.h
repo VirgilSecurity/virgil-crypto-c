@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -50,7 +50,7 @@ printf(FORMAT, ##__VA_ARGS__)
 
 #define VSF_LOG_INFO(FORMAT, ...) \
 printf(FORMAT, ##__VA_ARGS__)
-	
+
 #define VSF_LOG_PRINT(FORMAT, ...) \
 printf(FORMAT, ##__VA_ARGS__)
 
