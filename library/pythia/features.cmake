@@ -1,6 +1,6 @@
 #   @license
 #   -------------------------------------------------------------------------
-#   Copyright (C) 2015-2018 Virgil Security Inc.
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
