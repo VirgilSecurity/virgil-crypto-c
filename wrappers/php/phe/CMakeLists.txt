@@ -85,7 +85,7 @@ if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTAB
     add_test(
             NAME test_phe_php
             COMMAND "${PHP_EXECUTABLE}" -d "extension=$<TARGET_FILE:phe_php>" -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
-                    --include-path "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_LIST_DIR}/tests/PHEClientTest.php"
+                    --include-path "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_LIST_DIR}/tests"
             )
 endif()
 
