@@ -1822,6 +1822,24 @@ function swift_create_method_from_dependency (dependency, impl, destination, wra
     endnew
 endfunction
 
+
+# ---------------------------------------------------------------------------
+#   Create class <swift_constant/> from the entity <constant/>
+# ---------------------------------------------------------------------------
+function swift_create_class_constant (constant, swift_class, wrapper, meta)
+    check_arguments (my, "constant, swift_class, wrapper, meta", my)
+
+    assert_attribute (my.constant, "name", my)
+    assert_attribute (my.constant, "value", my)
+
+    new swift_constant to my.swift_class
+        . = swift_format_description (my.constant) ?
+        .name = swift_derive_constant_name (my.constant, my.wrapper)
+        .value = my.constant.value
+    endnew
+endfunction
+
+
 # ===========================================================================
 #   Create modules.
 # ===========================================================================
@@ -2048,6 +2066,10 @@ function swift_create_class_module (class, destination, wrapper, meta)
                     endfor
                 endif
             endif
+
+            for my.class.constant
+                swift_create_class_constant (constant, swift_class, my.wrapper, my.meta)
+            endfor
 
             for my.class.dependency
                 swift_create_method_from_dependency (dependency, my.class, swift_class, my.wrapper, my.meta)

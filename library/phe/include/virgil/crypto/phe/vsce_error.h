@@ -90,7 +90,11 @@ enum vsce_error_t {
     //
     //  Invalid private key
     //
-    vsce_error_INVALID_PRIVATE_KEY
+    vsce_error_INVALID_PRIVATE_KEY,
+    //
+    //  AES error occurred
+    //
+    vsce_error_AES_ERROR
 };
 typedef enum vsce_error_t vsce_error_t;
 

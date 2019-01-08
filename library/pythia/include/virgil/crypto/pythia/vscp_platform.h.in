@@ -71,7 +71,7 @@ extern "C" {
 //
 //  Defines namespace include prefix for project 'common'.
 //
-#if !defined(VSCP_BUILD_INTERFACE)
+#if !defined(VSCP_INTERNAL_BUILD)
 #cmakedefine01 VSCP_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #else
 #define VSCP_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK 0
