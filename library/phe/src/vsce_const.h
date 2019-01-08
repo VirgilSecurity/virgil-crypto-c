@@ -44,14 +44,14 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCE_PHE_COMMON_H_INCLUDED
-#define VSCE_PHE_COMMON_H_INCLUDED
-
-#include "vsce_library.h"
+#ifndef VSCE_CONST_H_INCLUDED
+#define VSCE_CONST_H_INCLUDED
 
 // clang-format on
 //  @end
 
+
+#include <virgil/crypto/common/vsc_data.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -64,52 +64,15 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Public integral constants.
-//
-enum {
-    //
-    //  PHE elliptic curve point binary length
-    //
-    vsce_phe_common_PHE_POINT_LENGTH = 65,
-    //
-    //  PHE max password length
-    //
-    vsce_phe_common_PHE_MAX_PASSWORD_LENGTH = 128,
-    //
-    //  PHE server identifier length
-    //
-    vsce_phe_common_PHE_SERVER_IDENTIFIER_LENGTH = 32,
-    //
-    //  PHE client identifier length
-    //
-    vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH = 32,
-    //
-    //  PHE account key length
-    //
-    vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH = 32,
-    //
-    //  PHE private key length
-    //
-    vsce_phe_common_PHE_PRIVATE_KEY_LENGTH = 32,
-    //
-    //  PHE public key length
-    //
-    vsce_phe_common_PHE_PUBLIC_KEY_LENGTH = 65,
-    //
-    //  PHE hash length
-    //
-    vsce_phe_common_PHE_HASH_LEN = 32,
-    //
-    //  Maximum data size to encrypt
-    //
-    vsce_phe_common_PHE_MAX_ENCRYPT_LEN = 1024 * 1024 - 64,
-    //
-    //  Maximum data size to decrypt
-    //
-    vsce_phe_common_PHE_MAX_DECRYPT_LEN = 1024 * 1024
-};
-
+extern const byte k_dhc0[8];
+extern const byte k_dhc1[8];
+extern const byte k_dhs0[8];
+extern const byte k_dhs1[8];
+extern const vsc_data_t k_proof_ok;
+extern const vsc_data_t k_proof_error;
+extern const vsc_data_t k_encrypt;
+extern const vsc_data_t k_kdf_info_z;
+extern const vsc_data_t k_kdf_info_client_key;
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -124,5 +87,5 @@ enum {
 
 
 //  @footer
-#endif // VSCE_PHE_COMMON_H_INCLUDED
+#endif // VSCE_CONST_H_INCLUDED
 //  @end

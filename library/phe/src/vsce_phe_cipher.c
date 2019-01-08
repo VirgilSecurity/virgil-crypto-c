@@ -69,11 +69,9 @@
 // clang-format on
 //  @end
 
+#include "vsce_const.h"
 
 enum { vsce_phe_cipher_SALT_LEN = 32, vsce_phe_cipher_KEY_LEN = 32, vsce_phe_cipher_NONCE_LEN = 12 };
-
-static const uint8_t phe_kdf_cipher_info[] = {"VIRGIL_PHE_KDF_CIPHER_INFO"};
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -379,9 +377,8 @@ vsce_phe_cipher_encrypt(
     vsc_buffer_init(&derived_secret_buf);
     vsc_buffer_use(&derived_secret_buf, derived_secret, sizeof(derived_secret));
 
-    vscf_hkdf_derive(hkdf, account_key, vsc_buffer_data(&salt_buf),
-            vsc_data(phe_kdf_cipher_info, sizeof(phe_kdf_cipher_info) - 1), &derived_secret_buf,
-            sizeof(derived_secret));
+    vscf_hkdf_derive(
+            hkdf, account_key, vsc_buffer_data(&salt_buf), k_encrypt, &derived_secret_buf, sizeof(derived_secret));
     vscf_hkdf_destroy(&hkdf);
 
     vscf_aes256_gcm_t *aes256_gcm = vscf_aes256_gcm_new();
@@ -435,9 +432,8 @@ vsce_phe_cipher_decrypt(
     vsc_buffer_init(&derived_secret_buf);
     vsc_buffer_use(&derived_secret_buf, derived_secret, sizeof(derived_secret));
 
-    vscf_hkdf_derive(hkdf, account_key, vsc_data_slice_beg(cipher_text, 0, vsce_phe_cipher_SALT_LEN),
-            vsc_data(phe_kdf_cipher_info, sizeof(phe_kdf_cipher_info) - 1), &derived_secret_buf,
-            sizeof(derived_secret));
+    vscf_hkdf_derive(hkdf, account_key, vsc_data_slice_beg(cipher_text, 0, vsce_phe_cipher_SALT_LEN), k_encrypt,
+            &derived_secret_buf, sizeof(derived_secret));
     vscf_hkdf_destroy(&hkdf);
 
     vscf_aes256_gcm_t *aes256_gcm = vscf_aes256_gcm_new();
