@@ -54,6 +54,7 @@
 #include "vsce_phe_cipher.h"
 #include "vsce_memory.h"
 #include "vsce_assert.h"
+#include "vsce_const.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
@@ -69,15 +70,21 @@
 // clang-format on
 //  @end
 
-#include "vsce_const.h"
-
-enum { vsce_phe_cipher_SALT_LEN = 32, vsce_phe_cipher_KEY_LEN = 32, vsce_phe_cipher_NONCE_LEN = 12 };
 
 //  @generated
 // --------------------------------------------------------------------------
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Private integral constants.
+//
+enum {
+    vsce_phe_cipher_SALT_LEN = 32,
+    vsce_phe_cipher_KEY_LEN = 32,
+    vsce_phe_cipher_NONCE_LEN = 12
+};
 
 //
 //  Handle 'phe cipher' context.

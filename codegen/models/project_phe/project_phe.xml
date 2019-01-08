@@ -57,6 +57,8 @@
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
 
+    <module name="const"/>
+
     <enum name="error"/>
 
     <class name="error"/>

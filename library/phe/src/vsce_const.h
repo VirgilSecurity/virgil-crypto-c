@@ -44,8 +44,16 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Internal constants for PHE library.
+// --------------------------------------------------------------------------
+
 #ifndef VSCE_CONST_H_INCLUDED
 #define VSCE_CONST_H_INCLUDED
+
+#include "vsce_library.h"
 
 // clang-format on
 //  @end
@@ -64,15 +72,24 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-extern const byte k_dhc0[8];
-extern const byte k_dhc1[8];
-extern const byte k_dhs0[8];
-extern const byte k_dhs1[8];
-extern const vsc_data_t k_proof_ok;
-extern const vsc_data_t k_proof_error;
-extern const vsc_data_t k_encrypt;
-extern const vsc_data_t k_kdf_info_z;
-extern const vsc_data_t k_kdf_info_client_key;
+VSCE_PUBLIC extern const byte k_dhc0[8];
+
+VSCE_PUBLIC extern const byte k_dhc1[8];
+
+VSCE_PUBLIC extern const byte k_dhs0[8];
+
+VSCE_PUBLIC extern const byte k_dhs1[8];
+
+VSCE_PUBLIC extern const vsc_data_t k_proof_ok;
+
+VSCE_PUBLIC extern const vsc_data_t k_proof_error;
+
+VSCE_PUBLIC extern const vsc_data_t k_encrypt;
+
+VSCE_PUBLIC extern const vsc_data_t k_kdf_info_z;
+
+VSCE_PUBLIC extern const vsc_data_t k_kdf_info_client_key;
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -1,0 +1,100 @@
+<module name="const" scope="internal" of_class="global">
+    Internal constants for PHE library.
+
+    <require module="library"/>
+
+    <macros name="COMMON_PREFIX" definition="private" c_prefix="">
+        <code>
+            #define COMMON_PREFIX 0x56, 0x52, 0x47, 0x4c, 0x50, 0x48, 0x45
+        </code>
+    </macros>
+
+    <variable name="k dhc0" type="byte" c_prefix="">
+        <array length="fixed" length_constant="8"/>
+        <value value="COMMON_PREFIX"/>
+        <value value="0x31"/>
+    </variable>
+
+    <variable name="k dhc1" type="byte" c_prefix="">
+        <array length="fixed" length_constant="8"/>
+        <value value="COMMON_PREFIX"/>
+        <value value="0x32"/>
+    </variable>
+
+    <variable name="k dhs0" type="byte" c_prefix="">
+        <array length="fixed" length_constant="8"/>
+        <value value="COMMON_PREFIX"/>
+        <value value="0x33"/>
+    </variable>
+
+    <variable name="k dhs1" type="byte" c_prefix="">
+        <array length="fixed" length_constant="8"/>
+        <value value="COMMON_PREFIX"/>
+        <value value="0x34"/>
+    </variable>
+
+    <variable name="k proof ok bytes" type="byte" c_prefix="" declaration="private">
+        <array length="derived"/>
+        <value value="COMMON_PREFIX"/>
+        <value value="0x35"/>
+    </variable>
+
+    <variable name="k proof error bytes" type="byte" c_prefix="" declaration="private">
+        <array length="derived"/>
+        <value value="COMMON_PREFIX"/>
+        <value value="0x36"/>
+    </variable>
+
+    <variable name="k encrypt bytes" type="byte" c_prefix="" declaration="private">
+        <array length="derived"/>
+        <value value="COMMON_PREFIX"/>
+        <value value="0x37"/>
+    </variable>
+
+    <variable name="k kdf info z bytes" type="byte" c_prefix="" declaration="private">
+        <array length="derived"/>
+        <value value="COMMON_PREFIX"/>
+        <value value="0x38"/>
+    </variable>
+
+    <variable name="k kdf info client key bytes" type="byte" c_prefix="" declaration="private">
+        <array length="derived"/>
+        <value value="COMMON_PREFIX"/>
+        <value value="0x39"/>
+    </variable>
+
+    <variable name="k proof ok" class="data" c_prefix="">
+        <value value="k_proof_ok_bytes" type="byte">
+            <array length="derived"/>
+        </value>
+        <value value="sizeof(k_proof_ok_bytes)" type="size"/>
+    </variable>
+
+    <variable name="k proof error" class="data" c_prefix="">
+        <value value="k_proof_error_bytes" type="byte">
+            <array length="derived"/>
+        </value>
+        <value value="sizeof(k_proof_error_bytes)" type="size"/>
+    </variable>
+
+    <variable name="k encrypt" class="data" c_prefix="">
+        <value value="k_encrypt_bytes" type="byte">
+            <array length="derived"/>
+        </value>
+        <value value="sizeof(k_encrypt_bytes)" type="size"/>
+    </variable>
+
+    <variable name="k kdf info z" class="data" c_prefix="">
+        <value value="k_kdf_info_z_bytes" type="byte">
+            <array length="derived"/>
+        </value>
+        <value value="sizeof(k_kdf_info_z_bytes)" type="size"/>
+    </variable>
+
+    <variable name="k kdf info client key" class="data" c_prefix="">
+        <value value="k_kdf_info_client_key_bytes" type="byte">
+            <array length="derived"/>
+        </value>
+        <value value="sizeof(k_kdf_info_client_key_bytes)" type="size"/>
+    </variable>
+</module>
