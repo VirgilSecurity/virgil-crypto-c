@@ -36,63 +36,107 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Internal constants for PHE library.
+// --------------------------------------------------------------------------
+
+
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
+
 #include "vsce_const.h"
+
+// clang-format on
+//  @end
+
+
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
 
 #define COMMON_PREFIX 0x56, 0x52, 0x47, 0x4c, 0x50, 0x48, 0x45
 
-const byte k_dhc0[] = {
-        COMMON_PREFIX, 0x31
+VSCE_PUBLIC const byte k_dhc0[8] = {
+    COMMON_PREFIX,
+    0x31
 };
 
-const byte k_dhc1[] = {
-        COMMON_PREFIX, 0x32
+VSCE_PUBLIC const byte k_dhc1[8] = {
+    COMMON_PREFIX,
+    0x32
 };
 
-const byte k_dhs0[] = {
-        COMMON_PREFIX, 0x33
+VSCE_PUBLIC const byte k_dhs0[8] = {
+    COMMON_PREFIX,
+    0x33
 };
 
-const byte k_dhs1[] = {
-        COMMON_PREFIX, 0x34
+VSCE_PUBLIC const byte k_dhs1[8] = {
+    COMMON_PREFIX,
+    0x34
 };
 
-static const byte k_proof_ok_BYTES[] = {
-        COMMON_PREFIX, 0x35
+static const byte k_proof_ok_bytes[] = {
+    COMMON_PREFIX,
+    0x35
 };
 
-static const byte k_proof_error_BYTES[] = {
-        COMMON_PREFIX, 0x36
+static const byte k_proof_error_bytes[] = {
+    COMMON_PREFIX,
+    0x36
 };
 
-static const byte k_encrypt_BYTES[] = {
-        COMMON_PREFIX, 0x37
-
+static const byte k_encrypt_bytes[] = {
+    COMMON_PREFIX,
+    0x37
 };
 
-static const byte k_kdf_info_z_BYTES[] = {
-        COMMON_PREFIX, 0x38
+static const byte k_kdf_info_z_bytes[] = {
+    COMMON_PREFIX,
+    0x38
 };
 
-static const byte k_kdf_info_client_key_BYTES[] = {
-        COMMON_PREFIX, 0x39
+static const byte k_kdf_info_client_key_bytes[] = {
+    COMMON_PREFIX,
+    0x39
 };
 
-const vsc_data_t k_proof_ok = {
-        k_proof_ok_BYTES, sizeof(k_proof_ok_BYTES)
+VSCE_PUBLIC const vsc_data_t k_proof_ok = {
+    k_proof_ok_bytes,
+    sizeof(k_proof_ok_bytes)
 };
 
-const vsc_data_t k_proof_error = {
-        k_proof_error_BYTES, sizeof(k_proof_error_BYTES)
+VSCE_PUBLIC const vsc_data_t k_proof_error = {
+    k_proof_error_bytes,
+    sizeof(k_proof_error_bytes)
 };
 
-const vsc_data_t k_encrypt = {
-        k_encrypt_BYTES, sizeof(k_encrypt_BYTES)
+VSCE_PUBLIC const vsc_data_t k_encrypt = {
+    k_encrypt_bytes,
+    sizeof(k_encrypt_bytes)
 };
 
-const vsc_data_t k_kdf_info_z = {
-        k_kdf_info_z_BYTES, sizeof(k_kdf_info_z_BYTES)
+VSCE_PUBLIC const vsc_data_t k_kdf_info_z = {
+    k_kdf_info_z_bytes,
+    sizeof(k_kdf_info_z_bytes)
 };
 
-const vsc_data_t k_kdf_info_client_key = {
-        k_kdf_info_client_key_BYTES, sizeof(k_kdf_info_client_key_BYTES)
+VSCE_PUBLIC const vsc_data_t k_kdf_info_client_key = {
+    k_kdf_info_client_key_bytes,
+    sizeof(k_kdf_info_client_key_bytes)
 };
+
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
