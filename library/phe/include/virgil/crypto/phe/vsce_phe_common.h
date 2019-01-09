@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -99,7 +99,15 @@ enum {
     //
     //  PHE hash length
     //
-    vsce_phe_common_PHE_HASH_LEN = 32
+    vsce_phe_common_PHE_HASH_LEN = 32,
+    //
+    //  Maximum data size to encrypt
+    //
+    vsce_phe_common_PHE_MAX_ENCRYPT_LEN = 1024 * 1024 - 64,
+    //
+    //  Maximum data size to decrypt
+    //
+    vsce_phe_common_PHE_MAX_DECRYPT_LEN = 1024 * 1024
 };
 
 

@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -192,10 +192,15 @@ const vsc_data_t test_ratchet_session_bob_one_time_private_key = {
         test_ratchet_session_bob_one_time_private_key_BYTES, sizeof(test_ratchet_session_bob_one_time_private_key_BYTES)
 };
 
+<<<<<<< HEAD
 const vsc_data_t test_ratchet_session_bob_one_time_public_key = {
         test_ratchet_session_bob_one_time_public_key_BYTES, sizeof(test_ratchet_session_bob_one_time_public_key_BYTES)
 };
 
 const vsc_data_t test_ratchet_session_bob_one_time_key_id = {
         test_ratchet_session_bob_one_time_key_id_BYTES, sizeof(test_ratchet_session_bob_one_time_key_id_BYTES)
+=======
+const vsc_data_t test_ratchet_session_bob_onetime_private_key = {
+        test_ratchet_session_bob_onetime_private_key_BYTES, sizeof(test_ratchet_session_bob_onetime_private_key_BYTES)
+>>>>>>> origin/develop
 };

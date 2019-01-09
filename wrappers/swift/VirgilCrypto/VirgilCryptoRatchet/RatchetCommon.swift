@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2018 Virgil Security Inc.
+/// Copyright (C) 2015-2019 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -44,6 +44,7 @@ import VirgilCryptoFoundation
     static let ratchetProtocolVersion = 1;
     static let ratchetMessageVersion = 1;
     static let ratchetSharedKeyLength = 32;
+<<<<<<< HEAD
     static let ratchetKeyLength = 32;
     static let maxSkippedMessages = 40;
     static let maxReceiversChains = 5;
@@ -53,4 +54,9 @@ import VirgilCryptoFoundation
     static let maxRegularMessageLen = 32818;
     static let maxPrekeyMessageLen = 32964;
     static let maxMessageLen = 32964;
+=======
+    static let maxSkippedMessages = 40;
+    static let maxReceiversChains = 5;
+    static let maxMessageGap = 2000;
+>>>>>>> origin/develop
 }

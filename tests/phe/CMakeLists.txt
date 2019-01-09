@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2018 Virgil Security Inc.
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -55,3 +55,4 @@ _add_test (test_phe_hash)
 _add_test (test_phe)
 _add_test (test_phe_server)
 _add_test (test_phe_client)
+_add_test (test_phe_cipher)

@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2018 Virgil Security Inc.
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -42,11 +42,13 @@ target_sources(test_data_phe
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_simple_swu.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_phe_hash.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_phe_server_client.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_phe_cipher.h"
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_simple_swu.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_phe_hash.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_phe_server_client.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_phe_cipher.c"
         )
 
 target_include_directories(test_data_phe
