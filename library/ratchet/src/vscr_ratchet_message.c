@@ -106,9 +106,6 @@ static void
 vscr_ratchet_message_cleanup_ctx(vscr_ratchet_message_t *ratchet_message);
 
 static void
-vscr_ratchet_message_compute_key_id(vsc_data_t key, vsc_buffer_t *buffer);
-
-static void
 vscr_ratchet_message_set_pb_encode_callback(vscr_ratchet_message_t *ratchet_message);
 
 static void
@@ -303,19 +300,6 @@ vscr_ratchet_message_get_long_term_public_key(vscr_ratchet_message_t *ratchet_me
 }
 
 //
-//  Computes long-term public key id. Can be used to identify key in key storage.
-//  Do not use this method if long-term public key is empty.
-//
-VSCR_PUBLIC void
-vscr_ratchet_message_compute_long_term_public_key_id(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *buffer) {
-
-    VSCR_ASSERT_PTR(ratchet_message);
-    VSCR_ASSERT(ratchet_message->message_pb.has_prekey_message);
-
-    vscr_ratchet_message_compute_key_id(vscr_ratchet_message_get_long_term_public_key(ratchet_message), buffer);
-}
-
-//
 //  Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
 //
 VSCR_PUBLIC vsc_data_t
@@ -331,23 +315,6 @@ vscr_ratchet_message_get_one_time_public_key(vscr_ratchet_message_t *ratchet_mes
 
     return vsc_data(ratchet_message->message_pb.prekey_message.receiver_one_time_key,
             sizeof(ratchet_message->message_pb.prekey_message.receiver_one_time_key));
-}
-
-//
-//  Computes one-term public key id. Can be used to identify key in key storage.
-//  Do not use this method if long-term public key is empty.
-//
-VSCR_PUBLIC void
-vscr_ratchet_message_compute_one_time_public_key_id(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *buffer) {
-
-    VSCR_ASSERT_PTR(ratchet_message);
-    VSCR_ASSERT(ratchet_message->message_pb.has_prekey_message);
-    VSCR_ASSERT(ratchet_message->message_pb.prekey_message.has_receiver_one_time_key);
-
-    if (!ratchet_message->message_pb.prekey_message.has_receiver_one_time_key)
-        return;
-
-    vscr_ratchet_message_compute_key_id(vscr_ratchet_message_get_one_time_public_key(ratchet_message), buffer);
 }
 
 //
@@ -421,29 +388,6 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
     }
 
     return message;
-}
-
-static void
-vscr_ratchet_message_compute_key_id(vsc_data_t key, vsc_buffer_t *buffer) {
-
-    VSCR_ASSERT(vsc_buffer_unused_len(buffer) >= vscr_ratchet_common_RATCHET_KEY_ID_LENGTH);
-
-    vscf_sha512_t *sha512 = vscf_sha512_new();
-
-    byte hash[vscf_sha512_DIGEST_LEN];
-
-    vsc_buffer_t buf;
-    vsc_buffer_init(&buf);
-    vsc_buffer_use(&buf, hash, sizeof(hash));
-
-    vscf_sha512_hash(key, &buf);
-    vsc_buffer_delete(&buf);
-
-    memcpy(vsc_buffer_unused_bytes(buffer), hash, vscr_ratchet_common_RATCHET_KEY_ID_LENGTH);
-    vsc_buffer_inc_used(buffer, vscr_ratchet_common_RATCHET_KEY_ID_LENGTH);
-
-    vscr_zeroize(hash, sizeof(hash));
-    vscf_sha512_destroy(&sha512);
 }
 
 static void

@@ -45,7 +45,6 @@ import VirgilCryptoFoundation
     static let ratchetMessageVersion = 1;
     static let ratchetSharedKeyLength = 32;
     static let ratchetKeyLength = 32;
-    static let ratchetKeyIdLength = 8;
     static let maxSkippedMessages = 40;
     static let maxReceiversChains = 5;
     static let maxMessageGap = 2000;

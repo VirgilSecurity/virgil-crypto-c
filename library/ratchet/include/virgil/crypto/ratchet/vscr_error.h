@@ -84,17 +84,13 @@ enum vscr_error_t {
     //
     vscr_error_AES_ERROR = 4,
     //
-    //  Wrong message format
-    //
-    vscr_error_WRONG_MESSAGE_FORMAT = 5,
-    //
     //  RNG failed
     //
-    vscr_error_RNG_FAILED = 6,
+    vscr_error_RNG_FAILED = 5,
     //
     //  curve25519 error
     //
-    vscr_error_CURVE25519_ERROR = 7
+    vscr_error_CURVE25519_ERROR = 6
 };
 typedef enum vscr_error_t vscr_error_t;
 

@@ -50,14 +50,11 @@ import VSCRatchet
     /// AES error
     case aesError = 4
 
-    /// Wrong message format
-    case wrongMessageFormat = 5
-
     /// RNG failed
-    case rngFailed = 6
+    case rngFailed = 5
 
     /// curve25519 error
-    case curve25519Error = 7
+    case curve25519Error = 6
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC error: vscr_error_t) {

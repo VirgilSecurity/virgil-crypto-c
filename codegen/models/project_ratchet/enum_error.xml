@@ -19,15 +19,11 @@
         AES error
     </constant>
 
-    <constant name="wrong message format" value="5">
-        Wrong message format
-    </constant>
-
-    <constant name="rng failed" value="6">
+    <constant name="rng failed" value="5">
         RNG failed
     </constant>
 
-    <constant name="curve25519 error" value="7">
+    <constant name="curve25519 error" value="6">
         curve25519 error
     </constant>
 </enum>
