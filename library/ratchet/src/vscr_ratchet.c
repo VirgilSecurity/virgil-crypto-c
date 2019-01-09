@@ -962,10 +962,10 @@ vscr_ratchet_serialize(vscr_ratchet_t *ratchet, Ratchet *ratchet_pb) {
     VSCR_ASSERT_PTR(ratchet_pb);
 
     if (ratchet->sender_chain) {
-        ratchet_pb->which_sender_chain = Ratchet_sender_chain_value_tag;
-        vscr_ratchet_sender_chain_serialize(ratchet->sender_chain, &ratchet_pb->sender_chain.sender_chain_value);
+        ratchet_pb->has_sender_chain = true;
+        vscr_ratchet_sender_chain_serialize(ratchet->sender_chain, &ratchet_pb->sender_chain);
     } else {
-        ratchet_pb->which_sender_chain = Ratchet_empty_tag;
+        ratchet_pb->has_sender_chain = false;
     }
 
     memcpy(ratchet_pb->root_key, ratchet->root_key, sizeof(ratchet->root_key));
@@ -1000,9 +1000,9 @@ vscr_ratchet_deserialize(Ratchet *ratchet_pb, vscr_ratchet_t *ratchet) {
     VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(ratchet_pb);
 
-    if (ratchet_pb->which_sender_chain == Ratchet_sender_chain_value_tag) {
+    if (ratchet_pb->has_sender_chain) {
         ratchet->sender_chain = vscr_ratchet_sender_chain_new();
-        vscr_ratchet_sender_chain_deserialize(&ratchet_pb->sender_chain.sender_chain_value, ratchet->sender_chain);
+        vscr_ratchet_sender_chain_deserialize(&ratchet_pb->sender_chain, ratchet->sender_chain);
     }
 
     memcpy(ratchet->root_key, ratchet_pb->root_key, sizeof(ratchet->root_key));

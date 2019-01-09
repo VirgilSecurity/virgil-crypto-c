@@ -84,6 +84,7 @@ initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *sessio
             vscr_ratchet_session_encrypt(session_alice, test_ratchet_session_plain_text1, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
     TEST_ASSERT_EQUAL(vscr_msg_type_PREKEY, vscr_ratchet_message_get_type(ratchet_message));
+    TEST_ASSERT((vscr_ratchet_message_get_one_time_public_key(ratchet_message).len == 0) == !enable_one_time);
 
     TEST_ASSERT_EQUAL_INT(vscr_SUCCESS,
             vscr_ratchet_session_respond(session_bob, test_ratchet_session_alice_identity_public_key,

@@ -99,6 +99,8 @@ struct vscr_ratchet_session_t {
 
     byte receiver_long_term_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
 
+    bool receiver_has_one_time_public_key;
+
     byte receiver_one_time_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
 };
 
@@ -403,8 +405,11 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_
             goto curve_err;
         }
 
+        ratchet_session->receiver_has_one_time_public_key = true;
         memcpy(ratchet_session->receiver_one_time_public_key, receiver_one_time_public_key.bytes,
                 receiver_one_time_public_key.len);
+    } else {
+        ratchet_session->receiver_has_one_time_public_key = false;
     }
 
     curve_status =
@@ -501,6 +506,7 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
             goto curve_err;
         }
 
+        ratchet_session->receiver_has_one_time_public_key = true;
         curve_status = curve25519_get_pubkey(
                 ratchet_session->receiver_one_time_public_key, receiver_one_time_private_key.bytes);
 
@@ -508,6 +514,8 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
             status = vscr_error_CURVE25519_ERROR;
             goto curve_err;
         }
+    } else {
+        ratchet_session->receiver_has_one_time_public_key = false;
     }
 
     memcpy(ratchet_session->sender_identity_public_key, sender_identity_public_key.bytes,
@@ -567,8 +575,13 @@ vscr_ratchet_session_encrypt(
         memcpy(prekey_message->receiver_long_term_key, ratchet_session->receiver_long_term_public_key,
                 sizeof(ratchet_session->receiver_long_term_public_key));
 
-        memcpy(prekey_message->receiver_one_time_key, ratchet_session->receiver_one_time_public_key,
-                sizeof(ratchet_session->receiver_one_time_public_key));
+        if (ratchet_session->receiver_has_one_time_public_key) {
+            prekey_message->has_receiver_one_time_key = true;
+            memcpy(prekey_message->receiver_one_time_key, ratchet_session->receiver_one_time_public_key,
+                    sizeof(ratchet_session->receiver_one_time_public_key));
+        } else {
+            prekey_message->has_receiver_one_time_key = false;
+        }
     }
 
     regular_message->cipher_text.arg =
@@ -657,8 +670,14 @@ vscr_ratchet_session_serialize(vscr_ratchet_session_t *ratchet_session, vsc_buff
             sizeof(ratchet_session->sender_ephemeral_public_key));
     memcpy(session_pb.receiver_long_term_key, ratchet_session->receiver_long_term_public_key,
             sizeof(ratchet_session->receiver_long_term_public_key));
-    memcpy(session_pb.receiver_one_time_key, ratchet_session->receiver_one_time_public_key,
-            sizeof(ratchet_session->receiver_one_time_public_key));
+
+    if (ratchet_session->receiver_has_one_time_public_key) {
+        session_pb.has_receiver_one_time_key = true;
+        memcpy(session_pb.receiver_one_time_key, ratchet_session->receiver_one_time_public_key,
+                sizeof(ratchet_session->receiver_one_time_public_key));
+    } else {
+        session_pb.has_receiver_one_time_key = false;
+    }
 
     vscr_ratchet_serialize(ratchet_session->ratchet, &session_pb.ratchet);
 
@@ -703,8 +722,14 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
             sizeof(session_pb.sender_ephemeral_key));
     memcpy(session->receiver_long_term_public_key, session_pb.receiver_long_term_key,
             sizeof(session_pb.receiver_long_term_key));
-    memcpy(session->receiver_one_time_public_key, session_pb.receiver_one_time_key,
-            sizeof(session_pb.receiver_one_time_key));
+
+    if (session_pb.has_receiver_one_time_key) {
+        session->receiver_has_one_time_public_key = true;
+        memcpy(session->receiver_one_time_public_key, session_pb.receiver_one_time_key,
+                sizeof(session_pb.receiver_one_time_key));
+    } else {
+        session->receiver_has_one_time_public_key = false;
+    }
 
     vscr_ratchet_deserialize(&session_pb.ratchet, session->ratchet);
 

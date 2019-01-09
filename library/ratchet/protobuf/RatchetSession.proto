@@ -1,50 +1,47 @@
-syntax = "proto3";
+syntax = "proto2";
 
 message Empty {
 }
 
 message ChainKey {
-	uint32 index = 1;
-	bytes key = 2;
+	required uint32 index = 1;
+	required bytes key = 2;
 }
 
 message MessageKey {
-	uint32 index = 1;
-	bytes key = 2;
+	required uint32 index = 1;
+	required bytes key = 2;
 }
 
 message SenderChain {
-	bytes private_key = 1;
-	bytes public_key = 2;
-	ChainKey chain_key = 3;
+	required bytes private_key = 1;
+	required bytes public_key = 2;
+	required ChainKey chain_key = 3;
 }
 
 message ReceiverChain {
-	bytes public_key = 1;
-	ChainKey chain_key = 2;
+	required bytes public_key = 1;
+	required ChainKey chain_key = 2;
 }
 
 message SkippedMessageKey {
-	bytes public_key = 1;
-	MessageKey message_key = 2;
+	required bytes public_key = 1;
+	required MessageKey message_key = 2;
 }
 
 message Ratchet {
-	oneof sender_chain {
-		SenderChain sender_chain_value = 1;
-		Empty empty = 2;
-	}
-	bytes root_key = 3;
-	repeated ReceiverChain receiver_chains = 4;
-	repeated SkippedMessageKey skipped_message_keys = 5;
+	optional SenderChain sender_chain = 1;
+	required bytes root_key = 2;
+	repeated ReceiverChain receiver_chains = 3;
+	repeated SkippedMessageKey skipped_message_keys = 4;
 }
 
 message Session {
-	bool received_first_response = 1;
-	bool is_initiator = 2;
-	bytes sender_identity_key = 3;
-	bytes sender_ephemeral_key = 4;
-	bytes receiver_long_term_key = 5;
-	bytes receiver_one_time_key = 6;
-	Ratchet ratchet = 7;
+	required bool received_first_response = 1;
+	required bool is_initiator = 2;
+	required bytes sender_identity_key = 3;
+	required bytes sender_ephemeral_key = 4;
+	required bytes receiver_long_term_key = 5;
+	optional bytes receiver_one_time_key = 6;
+	required Ratchet ratchet = 7;
 }
