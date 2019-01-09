@@ -122,10 +122,6 @@ const byte test_ratchet_session_bob_long_term_public_key_BYTES[] = {
         0xCB, 0x15, 0xDA, 0xAE, 0x27, 0xC4, 0x1B, 0x08,
 };
 
-const byte test_ratchet_session_bob_long_term_key_id_BYTES[] = {
-        0xb7, 0x7c, 0xf2, 0x59, 0x90, 0xef, 0xa1, 0xa1,
-};
-
 const byte test_ratchet_session_bob_one_time_private_key_BYTES[] = {
         0xf3, 0xd9, 0x47, 0x7c, 0x91, 0x27, 0x2c, 0xa0,
         0x0f, 0x9f, 0x9a, 0x5c, 0x07, 0x02, 0x05, 0xc1,
@@ -138,10 +134,6 @@ const byte test_ratchet_session_bob_one_time_public_key_BYTES[] = {
         0xA4, 0x14, 0x59, 0x06, 0x99, 0x80, 0x81, 0xD1,
         0x77, 0x67, 0x82, 0xC5, 0x41, 0x4E, 0xAE, 0x34,
         0x35, 0x38, 0x4F, 0xEE, 0xE1, 0x47, 0xC0, 0x1D,
-};
-
-const byte test_ratchet_session_bob_one_time_key_id_BYTES[] = {
-        0x40, 0x7b, 0x5b, 0x5d, 0x68, 0x66, 0x39, 0x23,
 };
 
 const vsc_data_t test_ratchet_session_alice_identity_private_key = {
@@ -184,23 +176,14 @@ const vsc_data_t test_ratchet_session_bob_long_term_public_key = {
         test_ratchet_session_bob_long_term_public_key_BYTES, sizeof(test_ratchet_session_bob_long_term_public_key_BYTES)
 };
 
-const vsc_data_t test_ratchet_session_bob_long_term_key_id = {
-        test_ratchet_session_bob_long_term_key_id_BYTES, sizeof(test_ratchet_session_bob_long_term_key_id_BYTES)
-};
-
 const vsc_data_t test_ratchet_session_bob_one_time_private_key = {
         test_ratchet_session_bob_one_time_private_key_BYTES, sizeof(test_ratchet_session_bob_one_time_private_key_BYTES)
 };
 
-<<<<<<< HEAD
 const vsc_data_t test_ratchet_session_bob_one_time_public_key = {
         test_ratchet_session_bob_one_time_public_key_BYTES, sizeof(test_ratchet_session_bob_one_time_public_key_BYTES)
 };
 
-const vsc_data_t test_ratchet_session_bob_one_time_key_id = {
-        test_ratchet_session_bob_one_time_key_id_BYTES, sizeof(test_ratchet_session_bob_one_time_key_id_BYTES)
-=======
 const vsc_data_t test_ratchet_session_bob_onetime_private_key = {
-        test_ratchet_session_bob_onetime_private_key_BYTES, sizeof(test_ratchet_session_bob_onetime_private_key_BYTES)
->>>>>>> origin/develop
+        test_ratchet_session_bob_one_time_private_key_BYTES, sizeof(test_ratchet_session_bob_one_time_private_key_BYTES)
 };
