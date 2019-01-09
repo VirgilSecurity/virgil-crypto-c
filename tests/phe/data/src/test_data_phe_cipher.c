@@ -32,7 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#import "test_data_phe_cipher.h"
+#include "test_data_phe_cipher.h"
 
 const byte test_phe_cipher_rnd_BYTES[] = {
         0x2b, 0x1a, 0x49, 0xe2, 0x6c, 0xcc, 0x33, 0xfe,
