@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -89,7 +89,7 @@ extern "C" {
 
 #define VSC_VERSION_MAJOR 0
 
-#define VSC_VERSION_MINOR 1
+#define VSC_VERSION_MINOR 2
 
 #define VSC_VERSION_PATCH 0
 

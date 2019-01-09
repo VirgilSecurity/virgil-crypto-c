@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2018 Virgil Security Inc.
+/// Copyright (C) 2015-2019 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -39,6 +39,9 @@ import VirgilCryptoCommon
 import VirgilCryptoFoundation
 
 @objc(VSCRRatchetSession) public class RatchetSession: NSObject {
+
+    /// FIXME
+    static let maxRatchetLength = 1024 * 1024;
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer

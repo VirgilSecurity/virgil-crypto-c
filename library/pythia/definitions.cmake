@@ -1,6 +1,6 @@
 #   @license
 #   -------------------------------------------------------------------------
-#   Copyright (C) 2015-2018 Virgil Security Inc.
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -51,10 +51,10 @@ endif()
 
 target_compile_definitions(pythia_wrap
         PUBLIC
+            $<BUILD_INTERFACE:VSCP_INTERNAL_BUILD>
             "VSCP_LIBRARY=$<BOOL:${VSCP_LIBRARY}>"
             "VSCP_MULTI_THREAD=$<BOOL:${VSCP_MULTI_THREAD}>"
             "VSCP_PYTHIA=$<BOOL:${VSCP_PYTHIA}>"
         PRIVATE
             $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCP_BUILD_SHARED_LIBS>
-            $<BUILD_INTERFACE:VSCP_INTERNAL_BUILD>
         )
