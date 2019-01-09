@@ -1,6 +1,6 @@
 #   @license
 #   -------------------------------------------------------------------------
-#   Copyright (C) 2015-2018 Virgil Security Inc.
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -51,6 +51,7 @@ endif()
 
 target_compile_definitions(ratchet
         PUBLIC
+            $<BUILD_INTERFACE:VSCR_INTERNAL_BUILD>
             "VSCR_LIBRARY=$<BOOL:${VSCR_LIBRARY}>"
             "VSCR_RATCHET_RNG=$<BOOL:${VSCR_RATCHET_RNG}>"
             "VSCR_VIRGIL_RATCHET_FAKE_RNG=$<BOOL:${VSCR_VIRGIL_RATCHET_FAKE_RNG}>"
@@ -68,5 +69,4 @@ target_compile_definitions(ratchet
             "VSCR_RATCHET_SESSION=$<BOOL:${VSCR_RATCHET_SESSION}>"
         PRIVATE
             $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCR_BUILD_SHARED_LIBS>
-            $<BUILD_INTERFACE:VSCR_INTERNAL_BUILD>
         )

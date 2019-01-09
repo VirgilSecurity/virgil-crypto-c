@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -40,6 +40,7 @@
 #include "vsce_assert.h"
 #include "vsce_phe_client.h"
 #include "vsce_phe_server.h"
+#include "vsce_phe_cipher.h"
 #include "vsce_phe_common.h"
 
 #include <php.h>
@@ -50,11 +51,12 @@
 // --------------------------------------------------------------------------
 //  Constants
 // --------------------------------------------------------------------------
-const char VSCE_PHE_PHP_VERSION[] = "0.1.0";
+const char VSCE_PHE_PHP_VERSION[] = "0.2.0";
 const char VSCE_PHE_PHP_EXTNAME[] = "vsce_phe_php";
 
 const char VSCE_PHE_CLIENT_PHP_RES_NAME[] = "vsce_phe_client_t";
 const char VSCE_PHE_SERVER_PHP_RES_NAME[] = "vsce_phe_server_t";
+const char VSCE_PHE_CIPHER_PHP_RES_NAME[] = "vsce_phe_cipher_t";
 
 
 // --------------------------------------------------------------------------
@@ -62,6 +64,7 @@ const char VSCE_PHE_SERVER_PHP_RES_NAME[] = "vsce_phe_server_t";
 // --------------------------------------------------------------------------
 int le_vsce_phe_client;
 int le_vsce_phe_server;
+int le_vsce_phe_cipher;
 
 
 // --------------------------------------------------------------------------
@@ -1222,6 +1225,251 @@ success:
     vsc_buffer_destroy(&enrollment_response);
 }
 
+//
+//  Wrap method: vsce_phe_cipher_new
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_phe_cipher_new_php /*name*/,
+        0 /*return_reference*/,
+        0 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vsce_phe_cipher_new_php) {
+    vsce_phe_cipher_t *phe_cipher = vsce_phe_cipher_new();
+    zend_resource *phe_cipher_res = zend_register_resource(phe_cipher, le_vsce_phe_cipher);
+    RETVAL_RES(phe_cipher_res);
+}
+
+//
+//  Wrap method: vsce_phe_cipher_delete_php
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_phe_cipher_delete_php /*name*/,
+        0 /*_unused*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+    ZEND_ARG_INFO(0, c_ctx)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vsce_phe_cipher_delete_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Fetch for type checking and then release
+    //
+    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CIPHER_PHP_RES_NAME, le_vsce_phe_cipher);
+    VSCE_ASSERT_PTR(phe_cipher);
+    zend_list_delete(Z_RES_P(in_cctx));
+    RETURN_TRUE;
+}
+
+//
+//  Wrap method: vsce_phe_cipher_setup_defaults
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_phe_cipher_setup_defaults_php /*name*/,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+
+    ZEND_ARG_INFO(0, c_ctx)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vsce_phe_cipher_setup_defaults_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Proxy call
+    //
+    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CIPHER_PHP_RES_NAME, le_vsce_phe_cipher);
+    VSCE_ASSERT_PTR(phe_cipher);
+
+    vsce_phe_cipher_setup_defaults(phe_cipher);
+
+    RETURN_TRUE;
+}
+
+//
+//  Wrap method: vsce_phe_cipher_encrypt
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_phe_cipher_encrypt_php /*name*/,
+        0 /*return_reference*/,
+        3 /*required_num_args*/,
+        IS_STRING /*type*/,
+        0 /*allow_null*/)
+
+    ZEND_ARG_INFO(0, c_ctx)
+    ZEND_ARG_TYPE_INFO(0, plain_text, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, account_key, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vsce_phe_cipher_encrypt_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+    char *in_plain_text = NULL;
+    size_t in_plain_text_len = 0;
+    char *in_account_key = NULL;
+    size_t in_account_key_len = 0;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 3, 3)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+        Z_PARAM_STRING_EX(in_plain_text, in_plain_text_len, 1 /*check_null*/, 0 /*deref and separate*/)
+        Z_PARAM_STRING_EX(in_account_key, in_account_key_len, 1 /*check_null*/, 0 /*deref and separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Proxy call
+    //
+    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CIPHER_PHP_RES_NAME, le_vsce_phe_cipher);
+    VSCE_ASSERT_PTR(phe_cipher);
+
+    vsc_data_t plain_text = vsc_data((const byte*)in_plain_text, in_plain_text_len);
+    vsc_data_t account_key = vsc_data((const byte*)in_account_key, in_account_key_len);
+
+    //  Allocate output buffer for output 'cipher_text'
+    zend_string *out_cipher_text = zend_string_alloc(vsce_phe_cipher_encrypt_len(phe_cipher, in_plain_text_len), 0);
+    vsc_buffer_t *cipher_text = vsc_buffer_new();
+    vsc_buffer_use(cipher_text, (byte *)ZSTR_VAL(out_cipher_text), ZSTR_LEN(out_cipher_text));
+
+    vsce_error_t status = vsce_phe_cipher_encrypt(phe_cipher, plain_text, account_key, cipher_text);
+
+    //
+    //  Handle error
+    //
+    if(status != vsce_SUCCESS) {
+        zend_throw_exception(NULL, "PHE Cipher error", status);
+        goto fail;
+    }
+
+    //
+    //  Correct string length to the actual
+    //
+    ZSTR_LEN(out_cipher_text) = vsc_buffer_len(cipher_text);
+
+    //
+    //  Write returned result
+    //
+    RETVAL_STR(out_cipher_text);
+
+    goto success;
+
+fail:
+    zend_string_free(out_cipher_text);
+success:
+    vsc_buffer_destroy(&cipher_text);
+}
+
+//
+//  Wrap method: vsce_phe_cipher_decrypt
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_phe_cipher_decrypt_php /*name*/,
+        0 /*return_reference*/,
+        3 /*required_num_args*/,
+        IS_STRING /*type*/,
+        0 /*allow_null*/)
+
+    ZEND_ARG_INFO(0, c_ctx)
+    ZEND_ARG_TYPE_INFO(0, cipher_text, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, account_key, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+
+PHP_FUNCTION(vsce_phe_cipher_decrypt_php) {
+    //
+    //  Declare input arguments
+    //
+    zval *in_cctx = NULL;
+    char *in_cipher_text = NULL;
+    size_t in_cipher_text_len = 0;
+    char *in_account_key = NULL;
+    size_t in_account_key_len = 0;
+
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 3, 3)
+        Z_PARAM_RESOURCE_EX(in_cctx, 1, 0)
+        Z_PARAM_STRING_EX(in_cipher_text, in_cipher_text_len, 1 /*check_null*/, 0 /*deref and separate*/)
+        Z_PARAM_STRING_EX(in_account_key, in_account_key_len, 1 /*check_null*/, 0 /*deref and separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    //  Proxy call
+    //
+    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_cctx, VSCE_PHE_CIPHER_PHP_RES_NAME, le_vsce_phe_cipher);
+    VSCE_ASSERT_PTR(phe_cipher);
+
+    vsc_data_t cipher_text = vsc_data((const byte*)in_cipher_text, in_cipher_text_len);
+    vsc_data_t account_key = vsc_data((const byte*)in_account_key, in_account_key_len);
+
+    //  Allocate output buffer for output 'plain_text'
+    zend_string *out_plain_text = zend_string_alloc(vsce_phe_cipher_decrypt_len(phe_cipher, in_cipher_text_len), 0);
+    vsc_buffer_t *plain_text = vsc_buffer_new();
+    vsc_buffer_use(plain_text, (byte *)ZSTR_VAL(out_plain_text), ZSTR_LEN(out_plain_text));
+
+    vsce_error_t status = vsce_phe_cipher_decrypt(phe_cipher, cipher_text, account_key, plain_text);
+
+    //
+    //  Handle error
+    //
+    if(status != vsce_SUCCESS) {
+        zend_throw_exception(NULL, "PHE Cipher error", status);
+        goto fail;
+    }
+
+    //
+    //  Correct string length to the actual
+    //
+    ZSTR_LEN(out_plain_text) = vsc_buffer_len(plain_text);
+
+    //
+    //  Write returned result
+    //
+    RETVAL_STR(out_plain_text);
+
+    goto success;
+
+fail:
+    zend_string_free(out_plain_text);
+success:
+    vsc_buffer_destroy(&plain_text);
+}
+
 // --------------------------------------------------------------------------
 //  Define all function entries
 // --------------------------------------------------------------------------
@@ -1246,6 +1494,11 @@ static zend_function_entry vsce_phe_php_functions[] = {
     PHP_FE(vsce_phe_server_generate_server_key_pair_php, arginfo_vsce_phe_server_generate_server_key_pair_php)
     PHP_FE(vsce_phe_server_verify_password_php, arginfo_vsce_phe_server_verify_password_php)
     PHP_FE(vsce_phe_server_get_enrollment_php, arginfo_vsce_phe_server_get_enrollment_php)
+    PHP_FE(vsce_phe_cipher_new_php, arginfo_vsce_phe_cipher_new_php)
+    PHP_FE(vsce_phe_cipher_delete_php, arginfo_vsce_phe_cipher_delete_php)
+    PHP_FE(vsce_phe_cipher_setup_defaults_php, arginfo_vsce_phe_cipher_setup_defaults_php)
+    PHP_FE(vsce_phe_cipher_encrypt_php, arginfo_vsce_phe_cipher_encrypt_php)
+    PHP_FE(vsce_phe_cipher_decrypt_php, arginfo_vsce_phe_cipher_decrypt_php)
     PHP_FE_END
 };
 
@@ -1284,6 +1537,10 @@ static void vsce_phe_server_dtor_php(zend_resource *rsrc) {
    vsce_phe_server_delete((vsce_phe_server_t *)rsrc->ptr);
 }
 
+static void vsce_phe_cipher_dtor_php(zend_resource *rsrc) {
+   vsce_phe_cipher_delete((vsce_phe_cipher_t *)rsrc->ptr);
+}
+
 PHP_MINIT_FUNCTION(vsce_phe_php) {
 
     le_vsce_phe_client = zend_register_list_destructors_ex(
@@ -1291,6 +1548,9 @@ PHP_MINIT_FUNCTION(vsce_phe_php) {
 
    le_vsce_phe_server = zend_register_list_destructors_ex(
             vsce_phe_server_dtor_php, NULL, VSCE_PHE_SERVER_PHP_RES_NAME, module_number);
+
+   le_vsce_phe_cipher = zend_register_list_destructors_ex(
+            vsce_phe_cipher_dtor_php, NULL, VSCE_PHE_CIPHER_PHP_RES_NAME, module_number);
 
     return SUCCESS;
 }

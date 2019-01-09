@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2018 Virgil Security Inc.
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto VERSION 0.1.0 LANGUAGES C)
+project(virgil_crypto VERSION 0.2.0 LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
@@ -199,7 +199,7 @@ endif()
 #   Integration tests
 # ---------------------------------------------------------------------------
 if(ENABLE_TESTING)
-    enable_testing()
+    include(CTest)
 endif()
 
 if(VIRGIL_C_TESTING AND NOT CMAKE_CROSSCOMPILING)

@@ -19,7 +19,7 @@ The library is available for different platforms and contains wrappers for other
 
 Virgil Security Crypto C library is decomposed to small libraries with specific purposes, so a developer can freely choose a subset of them.
 
-### Library: foundation
+### Library: Foundation
 
 This library contains basic cryptographic algorithms and can be used as building blocks for complex solutions.
 

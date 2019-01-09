@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -199,7 +199,7 @@ vscf_ctr_drbg_random(vscf_ctr_drbg_t *ctr_drbg, size_t data_len, vsc_buffer_t *d
     VSCF_ASSERT_PTR(data);
     VSCF_ASSERT(vsc_buffer_unused_len(data) >= data_len);
 
-    int status = mbedtls_ctr_drbg_random(&ctr_drbg->ctx, vsc_buffer_unused_bytes(data), vsc_buffer_unused_len(data));
+    int status = mbedtls_ctr_drbg_random(&ctr_drbg->ctx, vsc_buffer_unused_bytes(data), data_len);
     switch (status) {
     case 0:
         vsc_buffer_inc_used(data, data_len);

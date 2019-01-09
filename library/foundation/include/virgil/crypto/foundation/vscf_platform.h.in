@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -71,7 +71,7 @@ extern "C" {
 //
 //  Defines namespace include prefix for project 'common'.
 //
-#if !defined(VSCF_BUILD_INTERFACE)
+#if !defined(VSCF_INTERNAL_BUILD)
 #cmakedefine01 VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #else
 #define VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK 0

@@ -1,5 +1,5 @@
 #!/bin/bash
-#   Copyright (C) 2015-2018 Virgil Security Inc.
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -135,6 +135,7 @@ show_info "Go to the build directory and cleanup."
 CMAKE_ARGS=""
 CMAKE_ARGS+=" -DCMAKE_INSTALL_PREFIX='${INSTALL_DIR}'"
 CMAKE_ARGS+=" -DBUILD_SHARED_LIBS=YES"
+CMAKE_ARGS+=" -DVIRGIL_LIB_RATCHET=YES"
 CMAKE_ARGS+=" -DVIRGIL_INSTALL_HDRS=NO"
 CMAKE_ARGS+=" -DVIRGIL_INSTALL_CMAKE=NO"
 CMAKE_ARGS+=" -DVIRGIL_INSTALL_DEPS_HDRS=NO"

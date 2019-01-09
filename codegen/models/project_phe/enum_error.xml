@@ -26,4 +26,8 @@
     <constant name="Invalid private key">
         Invalid private key
     </constant>
+
+    <constant name="AES error">
+        AES error occurred
+    </constant>
 </enum>

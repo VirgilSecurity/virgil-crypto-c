@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2018 Virgil Security Inc.
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -69,8 +69,8 @@ include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 # Internal configuration
 #
 if(CMAKE_CROSSCOMPILING AND APPLE)
-    set(VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK YES CACHE INTERNAL "")
-    set(VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK YES CACHE INTERNAL "")
+    set(VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK YES CACHE INTERNAL "")
+    set(VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK YES CACHE INTERNAL "")
 endif()
 
 #
