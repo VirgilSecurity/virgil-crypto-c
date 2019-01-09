@@ -258,22 +258,7 @@ test__methods__fixed_prekey_msg__should_return_correct_values(void) {
     TEST_ASSERT_EQUAL_MEMORY(test_ratchet_session_bob_one_time_public_key.bytes,
             vscr_ratchet_message_get_one_time_public_key(msg1).bytes, test_ratchet_session_bob_one_time_public_key.len);
 
-    vsc_buffer_t *buff = vsc_buffer_new_with_capacity(vscr_ratchet_common_RATCHET_KEY_ID_LENGTH);
-    vscr_ratchet_message_compute_long_term_public_key_id(msg1, buff);
-
-    TEST_ASSERT_EQUAL(test_ratchet_session_bob_long_term_key_id.len, vsc_buffer_len(buff));
-    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_session_bob_long_term_key_id.bytes, vsc_buffer_bytes(buff),
-            test_ratchet_session_bob_long_term_key_id.len);
-
-    vsc_buffer_reset(buff);
-    vscr_ratchet_message_compute_one_time_public_key_id(msg1, buff);
-
-    TEST_ASSERT_EQUAL(test_ratchet_session_bob_one_time_key_id.len, vsc_buffer_len(buff));
-    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_session_bob_one_time_key_id.bytes, vsc_buffer_bytes(buff),
-            test_ratchet_session_bob_one_time_key_id.len);
-
     vscr_ratchet_message_destroy(&msg1);
-    vsc_buffer_destroy(&buff);
 }
 
 void
@@ -312,15 +297,7 @@ test__methods__fixed_prekey_msg_no_one_time__should_return_correct_values(void) 
 
     TEST_ASSERT_EQUAL(0, vscr_ratchet_message_get_one_time_public_key(msg1).len);
 
-    vsc_buffer_t *buff = vsc_buffer_new_with_capacity(vscr_ratchet_common_RATCHET_KEY_ID_LENGTH);
-    vscr_ratchet_message_compute_long_term_public_key_id(msg1, buff);
-
-    TEST_ASSERT_EQUAL(test_ratchet_session_bob_long_term_key_id.len, vsc_buffer_len(buff));
-    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_session_bob_long_term_key_id.bytes, vsc_buffer_bytes(buff),
-            test_ratchet_session_bob_long_term_key_id.len);
-
     vscr_ratchet_message_destroy(&msg1);
-    vsc_buffer_destroy(&buff);
 }
 
 void
