@@ -89,7 +89,7 @@ extern "C" {
 
 #define VSCE_VERSION_MAJOR 0
 
-#define VSCE_VERSION_MINOR 2
+#define VSCE_VERSION_MINOR 3
 
 #define VSCE_VERSION_PATCH 0
 

@@ -89,7 +89,7 @@ extern "C" {
 
 #define VSCR_VERSION_MAJOR 0
 
-#define VSCR_VERSION_MINOR 2
+#define VSCR_VERSION_MINOR 3
 
 #define VSCR_VERSION_PATCH 0
 
