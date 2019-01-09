@@ -2,6 +2,7 @@
 
     <require header="stdarg.h" scope="private" is_system="1"/>
 
+    <require module="const" scope="private"/>
     <require class="phe common" scope="public"/>
     <require impl="hkdf" project="foundation" scope="private"/>
     <require header="mbedtls/ecp.h" scope="public"/>

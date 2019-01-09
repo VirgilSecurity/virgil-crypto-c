@@ -1,5 +1,5 @@
 .template 0
-#   Copyright (C) 2015-2018 Virgil Security Inc.
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -513,7 +513,6 @@ function _Z19_add_method_init (impl, declaration, definition, destination, meta)
     endnew
 endfunction
 
-
 # ---------------------------------------------------------------------------
 function _Z19_add_method_cleanup (impl, declaration, definition, destination, meta)
     check_arguments (my, "impl, declaration, definition, destination, meta", my)
@@ -582,7 +581,6 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
     endnew
 endfunction
 
-
 # ---------------------------------------------------------------------------
 function _Z19_add_method_new (impl, declaration, definition, destination, meta)
     check_arguments (my, "impl, declaration, definition, destination, meta", my)
@@ -611,6 +609,46 @@ function _Z19_add_method_new (impl, declaration, definition, destination, meta)
             .(c_class_assert_macros_alloc)($(my.arg_impl:));
 
             $(my.refs.c_implementation_method_init)($(my.arg_impl:));
+
+            return $(my.arg_impl:);
+            "
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+function _Z19_add_constructor (constructor, destination, meta)
+    check_arguments (my, "constructor, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        .name = cat (my.names.method_new, my.constructor.name)
+
+        . = my.constructor. ? "\
+        Allocate implementation context and perform it's initialization.
+        Postcondition: check memory allocation result.
+        "
+
+        _Z19_add_return_impl (method, my.meta)
+
+        for my.constructor.argument
+            component_clean_copy (argument, method)
+        endfor
+
+        for my.constructor.return
+            component_clean_copy (return, method)
+        endfor
+
+        new code to method
+            my.type_impl = my.refs.c_implementation_struct_impl
+            my.arg_impl = my.names.c_implementation_argument_impl
+
+            .type = "stub"
+
+            . = "\
+            $(my.type_impl) *$(my.arg_impl:) = $(my.refs.c_implementation_method_new);
 
             return $(my.arg_impl:);
             "
@@ -950,6 +988,28 @@ function _Z19_add_macroses (impl, destination, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Add overloaded constructors.
+# ---------------------------------------------------------------------------
+function _Z19_add_constructors (impl, destination, meta)
+    check_arguments (my, "impl, destination, meta", my)
+
+    for my.impl.constructor
+        _Z19_add_constructors (constructor, my.destination, my.meta)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add overloaded constructors.
+# ---------------------------------------------------------------------------
+function _Z19_add_constructors (impl, destination, meta)
+    check_arguments (my, "impl, destination, meta", my)
+
+    for my.impl.constructor
+        _Z19_add_constructor (constructor, my.destination, my.meta)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Add functions that are defined in the implementation itself.
 # ---------------------------------------------------------------------------
 function _Z19_add_methods (impl, destination, meta)
@@ -1003,6 +1063,7 @@ function c_module_implementation_create_module_public (impl, destination, meta)
                 _Z19_add_ctx_lifecycle_methods (my.impl, "external", "private", module, my.meta)
             endif
 
+            _Z19_add_constructors(my.impl, module, my.meta)
             _Z19_add_lifecycle_methods (my.impl, "public", "external", module, my.meta)
             c_dependency_add_lifecycle_methods (my.impl, "public", "external", module, my.meta)
             c_dependency_add_observer_methods (my.impl, "external", "private", module, my.meta)
