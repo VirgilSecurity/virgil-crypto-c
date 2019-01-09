@@ -33,6 +33,7 @@
     <property name="receiver long term public key" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
     </property>
+    <property name="receiver has one time public key" type="boolean" access="readwrite"/>
     <property name="receiver one time public key" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
     </property>
