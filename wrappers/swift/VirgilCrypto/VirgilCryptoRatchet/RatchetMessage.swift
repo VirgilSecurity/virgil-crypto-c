@@ -82,51 +82,11 @@ import VirgilCryptoFoundation
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
-    /// Computes long-term public key id. Can be used to identify key in key storage.
-    /// Do not use this method if long-term public key is empty.
-    @objc public func computeLongTermPublicKeyId() -> Data {
-        let bufferCount = RatchetCommon.ratchetKeyIdLength
-        var buffer = Data(count: bufferCount)
-        var bufferBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(bufferBuf)
-        }
-
-        buffer.withUnsafeMutableBytes({ (bufferPointer: UnsafeMutablePointer<byte>) -> Void in
-            vsc_buffer_init(bufferBuf)
-            vsc_buffer_use(bufferBuf, bufferPointer, bufferCount)
-            vscr_ratchet_message_compute_long_term_public_key_id(self.c_ctx, bufferBuf)
-        })
-        buffer.count = vsc_buffer_len(bufferBuf)
-
-        return buffer
-    }
-
     /// Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
     @objc public func getOneTimePublicKey() -> Data {
         let proxyResult = vscr_ratchet_message_get_one_time_public_key(self.c_ctx)
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
-    }
-
-    /// Computes one-term public key id. Can be used to identify key in key storage.
-    /// Do not use this method if long-term public key is empty.
-    @objc public func computeOneTimePublicKeyId() -> Data {
-        let bufferCount = RatchetCommon.ratchetKeyIdLength
-        var buffer = Data(count: bufferCount)
-        var bufferBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(bufferBuf)
-        }
-
-        buffer.withUnsafeMutableBytes({ (bufferPointer: UnsafeMutablePointer<byte>) -> Void in
-            vsc_buffer_init(bufferBuf)
-            vsc_buffer_use(bufferBuf, bufferPointer, bufferCount)
-            vscr_ratchet_message_compute_one_time_public_key_id(self.c_ctx, bufferBuf)
-        })
-        buffer.count = vsc_buffer_len(bufferBuf)
-
-        return buffer
     }
 
     /// Buffer len to serialize this class.

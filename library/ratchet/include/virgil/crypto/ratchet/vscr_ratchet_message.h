@@ -140,24 +140,10 @@ VSCR_PUBLIC vsc_data_t
 vscr_ratchet_message_get_long_term_public_key(vscr_ratchet_message_t *ratchet_message);
 
 //
-//  Computes long-term public key id. Can be used to identify key in key storage.
-//  Do not use this method if long-term public key is empty.
-//
-VSCR_PUBLIC void
-vscr_ratchet_message_compute_long_term_public_key_id(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *buffer);
-
-//
 //  Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
 //
 VSCR_PUBLIC vsc_data_t
 vscr_ratchet_message_get_one_time_public_key(vscr_ratchet_message_t *ratchet_message);
-
-//
-//  Computes one-term public key id. Can be used to identify key in key storage.
-//  Do not use this method if long-term public key is empty.
-//
-VSCR_PUBLIC void
-vscr_ratchet_message_compute_one_time_public_key_id(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *buffer);
 
 //
 //  Buffer len to serialize this class.
