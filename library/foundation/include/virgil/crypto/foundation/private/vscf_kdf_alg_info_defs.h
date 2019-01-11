@@ -47,19 +47,28 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'alg info der deserializer' implementation.
+//  Types of the 'kdf alg info' implementation.
 //  This types SHOULD NOT be used directly.
 //  The only purpose of including this module is to place implementation
 //  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ALG_INFO_DER_DESERIALIZER_DEFS_H_INCLUDED
-#define VSCF_ALG_INFO_DER_DESERIALIZER_DEFS_H_INCLUDED
+#ifndef VSCF_KDF_ALG_INFO_DEFS_H_INCLUDED
+#define VSCF_KDF_ALG_INFO_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
-#include "vscf_alg_info_der_deserializer.h"
-#include "vscf_impl.h"
+#include "vscf_kdf_alg_info.h"
+#include "vscf_alg_id.h"
+#include "vscf_simple_alg_info.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -79,7 +88,7 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-struct vscf_alg_info_der_deserializer_t {
+struct vscf_kdf_alg_info_t {
     //
     //  Compile-time known information about this implementation.
     //
@@ -89,9 +98,21 @@ struct vscf_alg_info_der_deserializer_t {
     //
     size_t refcnt;
     //
-    //  Dependency to the interface 'asn1 reader'.
+    //  Implementation specific context.
     //
-    vscf_impl_t *asn1_reader;
+    vscf_alg_id_t alg_id;
+    //
+    //  Implementation specific context.
+    //
+    vscf_simple_alg_info_t *hash_alg_info;
+    //
+    //  Implementation specific context.
+    //
+    vsc_buffer_t *salt;
+    //
+    //  Implementation specific context.
+    //
+    size_t iteration_count;
 };
 
 
@@ -108,5 +129,5 @@ struct vscf_alg_info_der_deserializer_t {
 
 
 //  @footer
-#endif // VSCF_ALG_INFO_DER_DESERIALIZER_DEFS_H_INCLUDED
+#endif // VSCF_KDF_ALG_INFO_DEFS_H_INCLUDED
 //  @end

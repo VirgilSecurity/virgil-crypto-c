@@ -88,7 +88,7 @@ typedef struct vscf_alg_info_deserializer_api_t vscf_alg_info_deserializer_api_t
 //
 //  Algorithm deserialization algorithm from data
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_alg_info_deserializer_deserialize(vscf_impl_t *impl, vsc_data_t data);
 
 //

@@ -53,6 +53,15 @@
 #include "vscf_alg_info_der_serializer.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_oid.h"
+#include "vscf_asn1wr.h"
+#include "vscf_asn1_tag.h"
+#include "vscf_alg_id.h"
+#include "vscf_alg_info.h"
+#include "vscf_simple_alg_info.h"
+#include "vscf_kdf_alg_info.h"
+#include "vscf_alg_info_compatible.h"
+#include "vscf_asn1_writer.h"
 #include "vscf_alg_info_der_serializer_defs.h"
 #include "vscf_alg_info_der_serializer_internal.h"
 
@@ -75,16 +84,31 @@
 
 
 //
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *alg_info_der_serializer) {
+
+    VSCF_ASSERT_PTR(alg_info_der_serializer);
+
+    if (NULL == alg_info_der_serializer->asn1_writer) {
+        vscf_alg_info_der_serializer_take_asn1_writer(alg_info_der_serializer, vscf_asn1wr_impl(vscf_asn1wr_new()));
+    }
+
+    return vscf_SUCCESS;
+}
+
+//
 //  Return buffer size enough to hold serialized algorithm
 //
 VSCF_PUBLIC size_t
 vscf_alg_info_der_serializer_serialize_len(
-        vscf_alg_info_der_serializer_t *alg_info_der_serializer, const vscf_impl_t *alg_info) {
+        vscf_alg_info_der_serializer_t *alg_info_der_serializer, vscf_impl_t *alg_info) {
 
-    //  TODO: This is STUB. Implement me.
     VSCF_ASSERT_PTR(alg_info_der_serializer);
     VSCF_ASSERT_PTR(alg_info);
-    return 0;
+
+    return 34;
 }
 
 //
@@ -92,10 +116,32 @@ vscf_alg_info_der_serializer_serialize_len(
 //
 VSCF_PUBLIC void
 vscf_alg_info_der_serializer_serialize(
-        vscf_alg_info_der_serializer_t *alg_info_der_serializer, const vscf_impl_t *alg_info, vsc_buffer_t *out) {
+        vscf_alg_info_der_serializer_t *alg_info_der_serializer, vscf_impl_t *alg_info, vsc_buffer_t *out) {
 
     //  TODO: This is STUB. Implement me.
     VSCF_ASSERT_PTR(alg_info_der_serializer);
     VSCF_ASSERT_PTR(alg_info);
     VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >=
+                vscf_alg_info_der_serializer_serialize_len(alg_info_der_serializer, alg_info));
+
+    VSCF_ASSERT_PTR(alg_info_der_serializer->asn1_writer);
+
+    vscf_impl_t *asn1_writer = alg_info_der_serializer->asn1_writer;
+
+    vscf_asn1_writer_reset(asn1_writer, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
+
+    //
+    //  Write algorithm
+    //
+
+    VSCF_ASSERT(0 < vscf_asn1_writer_write_oid(asn1_writer, vscf_oid_from_alg_id(vscf_alg_info_alg_id(alg_info))));
+
+    //
+    //  Finalize
+    //
+    VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
+
+    vsc_buffer_inc_used(out, vscf_asn1_writer_finish(asn1_writer));
 }

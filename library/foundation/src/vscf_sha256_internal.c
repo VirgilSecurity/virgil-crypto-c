@@ -160,11 +160,7 @@ static const vscf_alg_info_compatible_api_t alg_info_compatible_api = {
     //
     //  Produce algorithm information structure
     //
-    (vscf_alg_info_compatible_api_produce_alg_info_fn)vscf_sha256_produce_alg_info,
-    //
-    //  Consume algorithm information structure
-    //
-    (vscf_alg_info_compatible_api_consume_alg_info_fn)vscf_sha256_consume_alg_info
+    (vscf_alg_info_compatible_api_produce_alg_info_fn)vscf_sha256_produce_alg_info
 };
 
 //

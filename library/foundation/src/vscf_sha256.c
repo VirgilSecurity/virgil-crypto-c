@@ -53,6 +53,9 @@
 #include "vscf_sha256.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_alg_id.h"
+#include "vscf_simple_alg_info.h"
+#include "vscf_kdf_alg_info.h"
 #include "vscf_sha256_defs.h"
 #include "vscf_sha256_internal.h"
 
@@ -165,21 +168,9 @@ vscf_sha256_finish(vscf_sha256_t *sha256, vsc_buffer_t *digest) {
 //
 //  Produce algorithm information structure
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_sha256_produce_alg_info(vscf_sha256_t *sha256) {
 
-    //  TODO: This is STUB. Implement me.
     VSCF_ASSERT_PTR(sha256);
-    return NULL;
-}
-
-//
-//  Consume algorithm information structure
-//
-VSCF_PUBLIC void
-vscf_sha256_consume_alg_info(vscf_sha256_t *sha256, const vscf_impl_t *alg_info) {
-
-    //  TODO: This is STUB. Implement me.
-    VSCF_ASSERT_PTR(sha256);
-    VSCF_ASSERT_PTR(alg_info);
+    return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_set_alg_id(vscf_alg_id_SHA256));
 }

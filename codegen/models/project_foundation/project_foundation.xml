@@ -123,6 +123,7 @@
 
     <implementor name="alg info der serializer"/>
     <implementor name="alg info der deserializer"/>
+    <implementor name="simple alg info"/>
 
     <module name="mbedtls bridge random"/>
     <module name="mbedtls bridge entropy"/>

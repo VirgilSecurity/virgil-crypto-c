@@ -55,6 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
+#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -139,18 +140,45 @@ VSCF_PUBLIC vscf_alg_info_der_serializer_t *
 vscf_alg_info_der_serializer_shallow_copy(vscf_alg_info_der_serializer_t *alg_info_der_serializer);
 
 //
+//  Setup dependency to the interface 'asn1 writer' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_serializer_use_asn1_writer(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
+        vscf_impl_t *asn1_writer);
+
+//
+//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_serializer_take_asn1_writer(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
+        vscf_impl_t *asn1_writer);
+
+//
+//  Release dependency to the interface 'asn1 writer'.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_serializer_release_asn1_writer(vscf_alg_info_der_serializer_t *alg_info_der_serializer);
+
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *alg_info_der_serializer);
+
+//
 //  Return buffer size enough to hold serialized algorithm
 //
 VSCF_PUBLIC size_t
 vscf_alg_info_der_serializer_serialize_len(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
-        const vscf_impl_t *alg_info);
+        vscf_impl_t *alg_info);
 
 //
 //  Serialize algorithm info to buffer class
 //
 VSCF_PUBLIC void
-vscf_alg_info_der_serializer_serialize(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
-        const vscf_impl_t *alg_info, vsc_buffer_t *out);
+vscf_alg_info_der_serializer_serialize(vscf_alg_info_der_serializer_t *alg_info_der_serializer, vscf_impl_t *alg_info,
+        vsc_buffer_t *out);
 
 
 // --------------------------------------------------------------------------

@@ -100,9 +100,4 @@ import VirgilCryptoCommon
 
         return AlgInfoProxy.init(c_ctx: proxyResult!)
     }
-
-    /// Consume algorithm information structure
-    @objc public func consumeAlgInfo(algInfo: AlgInfo) {
-        vscf_kdf1_consume_alg_info(self.c_ctx, algInfo.c_ctx)
-    }
 }

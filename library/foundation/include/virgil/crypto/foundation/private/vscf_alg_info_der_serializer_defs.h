@@ -59,6 +59,7 @@
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_alg_info_der_serializer.h"
+#include "vscf_impl.h"
 
 // clang-format on
 //  @end
@@ -87,6 +88,10 @@ struct vscf_alg_info_der_serializer_t {
     //  Reference counter.
     //
     size_t refcnt;
+    //
+    //  Dependency to the interface 'asn1 writer'.
+    //
+    vscf_impl_t *asn1_writer;
 };
 
 

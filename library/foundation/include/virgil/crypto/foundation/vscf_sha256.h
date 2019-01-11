@@ -202,14 +202,8 @@ vscf_sha256_finish(vscf_sha256_t *sha256, vsc_buffer_t *digest);
 //
 //  Produce algorithm information structure
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_sha256_produce_alg_info(vscf_sha256_t *sha256);
-
-//
-//  Consume algorithm information structure
-//
-VSCF_PUBLIC void
-vscf_sha256_consume_alg_info(vscf_sha256_t *sha256, const vscf_impl_t *alg_info);
 
 
 // --------------------------------------------------------------------------

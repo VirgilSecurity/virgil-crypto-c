@@ -47,19 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'alg info der deserializer' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
+//  This module contains 'simple alg info' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ALG_INFO_DER_DESERIALIZER_DEFS_H_INCLUDED
-#define VSCF_ALG_INFO_DER_DESERIALIZER_DEFS_H_INCLUDED
+#ifndef VSCF_SIMPLE_ALG_INFO_H_INCLUDED
+#define VSCF_SIMPLE_ALG_INFO_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_alg_info_der_deserializer.h"
 #include "vscf_impl.h"
+#include "vscf_alg_id.h"
 
 // clang-format on
 //  @end
@@ -79,20 +75,85 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-struct vscf_alg_info_der_deserializer_t {
-    //
-    //  Compile-time known information about this implementation.
-    //
-    const vscf_impl_info_t *info;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'asn1 reader'.
-    //
-    vscf_impl_t *asn1_reader;
-};
+typedef struct vscf_simple_alg_info_t vscf_simple_alg_info_t;
+
+//
+//  Return size of 'vscf_simple_alg_info_t' type.
+//
+VSCF_PUBLIC size_t
+vscf_simple_alg_info_impl_size(void);
+
+//
+//  Cast to the 'vscf_impl_t' type.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_simple_alg_info_impl(vscf_simple_alg_info_t *simple_alg_info);
+
+//
+//  Set algorithm identificator
+//
+VSCF_PUBLIC vscf_simple_alg_info_t *
+vscf_simple_alg_info_new_set_alg_id(vscf_alg_id_t alg_id);
+
+//
+//  Perform initialization of preallocated implementation context.
+//
+VSCF_PUBLIC void
+vscf_simple_alg_info_init(vscf_simple_alg_info_t *simple_alg_info);
+
+//
+//  Cleanup implementation context and release dependencies.
+//  This is a reverse action of the function 'vscf_simple_alg_info_init()'.
+//
+VSCF_PUBLIC void
+vscf_simple_alg_info_cleanup(vscf_simple_alg_info_t *simple_alg_info);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
+//
+VSCF_PUBLIC vscf_simple_alg_info_t *
+vscf_simple_alg_info_new(void);
+
+//
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_simple_alg_info_new()'.
+//
+VSCF_PUBLIC void
+vscf_simple_alg_info_delete(vscf_simple_alg_info_t *simple_alg_info);
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_simple_alg_info_new()'.
+//  Given reference is nullified.
+//
+VSCF_PUBLIC void
+vscf_simple_alg_info_destroy(vscf_simple_alg_info_t **simple_alg_info_ref);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_simple_alg_info_t *
+vscf_simple_alg_info_shallow_copy(vscf_simple_alg_info_t *simple_alg_info);
+
+//
+//  Provide algorithm identificator
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_simple_alg_info_alg_id(vscf_simple_alg_info_t *simple_alg_info);
+
+//
+//  Set algorithm identificator
+//
+VSCF_PUBLIC void
+vscf_simple_alg_info_set_alg_id(vscf_simple_alg_info_t *simple_alg_info, vscf_alg_id_t alg_id);
+
+//
+//  Get KDF1 hash algorithm identifier
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_simple_alg_info_get_hash_alg_id(vscf_simple_alg_info_t *simple_alg_info);
 
 
 // --------------------------------------------------------------------------
@@ -108,5 +169,5 @@ struct vscf_alg_info_der_deserializer_t {
 
 
 //  @footer
-#endif // VSCF_ALG_INFO_DER_DESERIALIZER_DEFS_H_INCLUDED
+#endif // VSCF_SIMPLE_ALG_INFO_H_INCLUDED
 //  @end

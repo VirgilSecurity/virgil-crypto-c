@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains 'simple alg info' implementation.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,30 +50,14 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Types of the 'alg info der deserializer' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_ALG_INFO_DER_DESERIALIZER_DEFS_H_INCLUDED
-#define VSCF_ALG_INFO_DER_DESERIALIZER_DEFS_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_alg_info_der_deserializer.h"
-#include "vscf_impl.h"
+#include "vscf_simple_alg_info.h"
+#include "vscf_assert.h"
+#include "vscf_memory.h"
+#include "vscf_simple_alg_info_defs.h"
+#include "vscf_simple_alg_info_internal.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -75,24 +65,6 @@ extern "C" {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Handles implementation details.
-//
-struct vscf_alg_info_der_deserializer_t {
-    //
-    //  Compile-time known information about this implementation.
-    //
-    const vscf_impl_info_t *info;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'asn1 reader'.
-    //
-    vscf_impl_t *asn1_reader;
-};
 
 
 // --------------------------------------------------------------------------
@@ -102,11 +74,70 @@ struct vscf_alg_info_der_deserializer_t {
 //  @end
 
 
-#ifdef __cplusplus
+//
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_simple_alg_info_init() is called.
+//  Note, that context is already zeroed.
+//
+VSCF_PRIVATE void
+vscf_simple_alg_info_init_ctx(vscf_simple_alg_info_t *simple_alg_info) {
+
+    VSCF_ASSERT_PTR(simple_alg_info);
+    simple_alg_info->alg_id = vscf_alg_id_NONE;
 }
-#endif
 
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_simple_alg_info_cleanup_ctx(vscf_simple_alg_info_t *simple_alg_info) {
 
-//  @footer
-#endif // VSCF_ALG_INFO_DER_DESERIALIZER_DEFS_H_INCLUDED
-//  @end
+    VSCF_ASSERT_PTR(simple_alg_info);
+    simple_alg_info->alg_id = vscf_alg_id_NONE;
+}
+
+//
+//  Set algorithm identificator
+//
+VSCF_PUBLIC vscf_simple_alg_info_t *
+vscf_simple_alg_info_new_set_alg_id(vscf_alg_id_t alg_id) {
+
+    vscf_simple_alg_info_t *simple_alg_info = vscf_simple_alg_info_new();
+
+    simple_alg_info->alg_id = alg_id;
+
+    return simple_alg_info;
+}
+
+//
+//  Provide algorithm identificator
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_simple_alg_info_alg_id(vscf_simple_alg_info_t *simple_alg_info) {
+
+    VSCF_ASSERT_PTR(simple_alg_info);
+    return simple_alg_info->alg_id;
+}
+
+//
+//  Set algorithm identificator
+//
+VSCF_PUBLIC void
+vscf_simple_alg_info_set_alg_id(vscf_simple_alg_info_t *simple_alg_info, vscf_alg_id_t alg_id) {
+
+    VSCF_ASSERT_PTR(simple_alg_info);
+
+    simple_alg_info->alg_id = alg_id;
+}
+
+//
+//  Get KDF1 hash algorithm identifier
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_simple_alg_info_get_hash_alg_id(vscf_simple_alg_info_t *simple_alg_info) {
+
+    VSCF_ASSERT_PTR(simple_alg_info);
+    return vscf_alg_id_NONE;
+}
