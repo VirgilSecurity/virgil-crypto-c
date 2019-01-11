@@ -42,9 +42,6 @@ import VirgilCryptoCommon
 
     /// Produce algorithm information structure
     @objc func produceAlgInfo() -> AlgInfo
-
-    /// Consume algorithm information structure
-    @objc func consumeAlgInfo(algInfo: AlgInfo)
 }
 
 /// Implement interface methods
@@ -69,10 +66,5 @@ import VirgilCryptoCommon
         let proxyResult = vscf_alg_info_compatible_produce_alg_info(self.c_ctx)
 
         return AlgInfoProxy.init(c_ctx: proxyResult!)
-    }
-
-    /// Consume algorithm information structure
-    @objc public func consumeAlgInfo(algInfo: AlgInfo) {
-        vscf_alg_info_compatible_consume_alg_info(self.c_ctx, algInfo.c_ctx)
     }
 }

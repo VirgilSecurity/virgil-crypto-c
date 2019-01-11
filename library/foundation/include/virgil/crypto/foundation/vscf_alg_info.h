@@ -85,6 +85,18 @@ VSCF_PUBLIC vscf_alg_id_t
 vscf_alg_info_alg_id(vscf_impl_t *impl);
 
 //
+//  Set algorithm identificator
+//
+VSCF_PUBLIC void
+vscf_alg_info_set_alg_id(vscf_impl_t *impl, vscf_alg_id_t alg_id);
+
+//
+//  Get KDF1 hash algorithm identifier
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_alg_info_get_hash_alg_id(vscf_impl_t *impl);
+
+//
 //  Return alg info API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_alg_info_api_t *

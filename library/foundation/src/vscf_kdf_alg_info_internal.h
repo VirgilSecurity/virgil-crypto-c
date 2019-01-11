@@ -47,19 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'alg info der deserializer' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ALG_INFO_DER_DESERIALIZER_DEFS_H_INCLUDED
-#define VSCF_ALG_INFO_DER_DESERIALIZER_DEFS_H_INCLUDED
+#ifndef VSCF_KDF_ALG_INFO_INTERNAL_H_INCLUDED
+#define VSCF_KDF_ALG_INFO_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_alg_info_der_deserializer.h"
-#include "vscf_impl.h"
+#include "vscf_kdf_alg_info.h"
 
 // clang-format on
 //  @end
@@ -77,22 +73,20 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_kdf_alg_info_init() is called.
+//  Note, that context is already zeroed.
 //
-struct vscf_alg_info_der_deserializer_t {
-    //
-    //  Compile-time known information about this implementation.
-    //
-    const vscf_impl_info_t *info;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'asn1 reader'.
-    //
-    vscf_impl_t *asn1_reader;
-};
+VSCF_PRIVATE void
+vscf_kdf_alg_info_init_ctx(vscf_kdf_alg_info_t *kdf_alg_info);
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_kdf_alg_info_cleanup_ctx(vscf_kdf_alg_info_t *kdf_alg_info);
 
 
 // --------------------------------------------------------------------------
@@ -108,5 +102,5 @@ struct vscf_alg_info_der_deserializer_t {
 
 
 //  @footer
-#endif // VSCF_ALG_INFO_DER_DESERIALIZER_DEFS_H_INCLUDED
+#endif // VSCF_KDF_ALG_INFO_INTERNAL_H_INCLUDED
 //  @end

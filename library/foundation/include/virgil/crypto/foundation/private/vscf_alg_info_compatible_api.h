@@ -75,12 +75,7 @@ extern "C" {
 //
 //  Callback. Produce algorithm information structure
 //
-typedef const vscf_impl_t * (*vscf_alg_info_compatible_api_produce_alg_info_fn)(vscf_impl_t *impl);
-
-//
-//  Callback. Consume algorithm information structure
-//
-typedef void (*vscf_alg_info_compatible_api_consume_alg_info_fn)(vscf_impl_t *impl, const vscf_impl_t *alg_info);
+typedef vscf_impl_t * (*vscf_alg_info_compatible_api_produce_alg_info_fn)(vscf_impl_t *impl);
 
 //
 //  Contains API requirements of the interface 'alg info compatible'.
@@ -95,10 +90,6 @@ struct vscf_alg_info_compatible_api_t {
     //  Produce algorithm information structure
     //
     vscf_alg_info_compatible_api_produce_alg_info_fn produce_alg_info_cb;
-    //
-    //  Consume algorithm information structure
-    //
-    vscf_alg_info_compatible_api_consume_alg_info_fn consume_alg_info_cb;
 };
 
 

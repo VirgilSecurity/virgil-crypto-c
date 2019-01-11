@@ -55,6 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
+#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -139,9 +140,36 @@ VSCF_PUBLIC vscf_alg_info_der_deserializer_t *
 vscf_alg_info_der_deserializer_shallow_copy(vscf_alg_info_der_deserializer_t *alg_info_der_deserializer);
 
 //
+//  Setup dependency to the interface 'asn1 reader' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_use_asn1_reader(vscf_alg_info_der_deserializer_t *alg_info_der_deserializer,
+        vscf_impl_t *asn1_reader);
+
+//
+//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_take_asn1_reader(vscf_alg_info_der_deserializer_t *alg_info_der_deserializer,
+        vscf_impl_t *asn1_reader);
+
+//
+//  Release dependency to the interface 'asn1 reader'.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_release_asn1_reader(vscf_alg_info_der_deserializer_t *alg_info_der_deserializer);
+
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_alg_info_der_deserializer_setup_defaults(vscf_alg_info_der_deserializer_t *alg_info_der_deserializer);
+
+//
 //  Algorithm deserialization algorithm from data
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_alg_info_der_deserializer_deserialize(vscf_alg_info_der_deserializer_t *alg_info_der_deserializer,
         vsc_data_t data);
 

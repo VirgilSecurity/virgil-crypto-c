@@ -3,6 +3,6 @@
     <method name="deserialize">
         Algorithm deserialization algorithm from data
         <argument name="data" class="data"/>
-        <return interface="alg info"/>
+        <return interface="alg info" access="disown"/>
     </method>
 </interface>

@@ -27,6 +27,12 @@
 
         <require library="mbedtls" feature="SHA256 C"/>
 
+        <require enum="alg id"/>
+
+        <require impl="simple alg info"/>
+
+        <require impl="kdf alg info"/>
+
         <context>
             <require header="mbedtls/sha256.h"/>
             <property name="hash ctx" class="mbedtls_sha256_context" library="mbedtls"

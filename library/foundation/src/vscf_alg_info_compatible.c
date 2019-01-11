@@ -67,7 +67,7 @@
 //
 //  Produce algorithm information structure
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_alg_info_compatible_produce_alg_info(vscf_impl_t *impl) {
 
     const vscf_alg_info_compatible_api_t *alg_info_compatible_api = vscf_alg_info_compatible_api(impl);
@@ -75,19 +75,6 @@ vscf_alg_info_compatible_produce_alg_info(vscf_impl_t *impl) {
 
     VSCF_ASSERT_PTR (alg_info_compatible_api->produce_alg_info_cb);
     return alg_info_compatible_api->produce_alg_info_cb (impl);
-}
-
-//
-//  Consume algorithm information structure
-//
-VSCF_PUBLIC void
-vscf_alg_info_compatible_consume_alg_info(vscf_impl_t *impl, const vscf_impl_t *alg_info) {
-
-    const vscf_alg_info_compatible_api_t *alg_info_compatible_api = vscf_alg_info_compatible_api(impl);
-    VSCF_ASSERT_PTR (alg_info_compatible_api);
-
-    VSCF_ASSERT_PTR (alg_info_compatible_api->consume_alg_info_cb);
-    alg_info_compatible_api->consume_alg_info_cb (impl, alg_info);
 }
 
 //

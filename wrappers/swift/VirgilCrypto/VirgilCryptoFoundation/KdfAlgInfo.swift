@@ -37,15 +37,15 @@ import Foundation
 import VSCFoundation
 import VirgilCryptoCommon
 
-/// Provide implementation of der deserializer of algorithm information
-@objc(VSCFAlgInfoDerDeserializer) public class AlgInfoDerDeserializer: NSObject, Defaults, AlgInfoDeserializer {
+/// Provide KDF algorithm information implementation
+@objc(VSCFKdfAlgInfo) public class KdfAlgInfo: NSObject, AlgInfo {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
     /// Create underlying C context.
     public override init() {
-        self.c_ctx = vscf_alg_info_der_deserializer_new()
+        self.c_ctx = vscf_kdf_alg_info_new()
         super.init()
     }
 
@@ -59,33 +59,45 @@ import VirgilCryptoCommon
     /// Acquire retained C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscf_alg_info_der_deserializer_shallow_copy(c_ctx)
+        self.c_ctx = vscf_kdf_alg_info_shallow_copy(c_ctx)
         super.init()
+    }
+
+    /// Set algorithm identificator
+    public init(algId: AlgId) {
+        let proxyResult = vscf_kdf_alg_info_new_set_alg_id(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)))
+
+        self.c_ctx = proxyResult
+    }
+
+    /// Set algorithm identificator
+    public init(algId: AlgId, hashAlgInfo: SimpleAlgInfo) {
+        let proxyResult = vscf_kdf_alg_info_new_set_alg_id_and_hash_id(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), hashAlgInfo.c_ctx)
+
+        self.c_ctx = proxyResult
     }
 
     /// Release underlying C context.
     deinit {
-        vscf_alg_info_der_deserializer_delete(self.c_ctx)
+        vscf_kdf_alg_info_delete(self.c_ctx)
     }
 
-    @objc public func setAsn1Reader(asn1Reader: Asn1Reader) {
-        vscf_alg_info_der_deserializer_release_asn1_reader(self.c_ctx)
-        vscf_alg_info_der_deserializer_use_asn1_reader(self.c_ctx, asn1Reader.c_ctx)
+    /// Provide algorithm identificator
+    @objc public func algId() -> AlgId {
+        let proxyResult = vscf_kdf_alg_info_alg_id(self.c_ctx)
+
+        return AlgId.init(fromC: proxyResult)
     }
 
-    /// Setup predefined values to the uninitialized class dependencies.
-    @objc public func setupDefaults() throws {
-        let proxyResult = vscf_alg_info_der_deserializer_setup_defaults(self.c_ctx)
-
-        try FoundationError.handleError(fromC: proxyResult)
+    /// Set algorithm identificator
+    @objc public func setAlgId(algId: AlgId) {
+        vscf_kdf_alg_info_set_alg_id(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(algId.rawValue)))
     }
 
-    /// Algorithm deserialization algorithm from data
-    @objc public func deserialize(data: Data) -> AlgInfo {
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
-            return vscf_alg_info_der_deserializer_deserialize(self.c_ctx, vsc_data(dataPointer, data.count))
-        })
+    /// Get KDF1 hash algorithm identifier
+    @objc public func getHashAlgId() -> AlgId {
+        let proxyResult = vscf_kdf_alg_info_get_hash_alg_id(self.c_ctx)
 
-        return AlgInfoProxy.init(c_ctx: proxyResult!)
+        return AlgId.init(fromC: proxyResult)
     }
 }

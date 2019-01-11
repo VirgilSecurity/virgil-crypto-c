@@ -37,49 +37,60 @@ import Foundation
 import VSCFoundation
 import VirgilCryptoCommon
 
-/// Provide conversion logic between OID and algorithm tags.
-@objc(VSCFOid) public class Oid: NSObject {
+/// Provide simple algorithm information (hash) implementation
+@objc(VSCFSimpleAlgInfo) public class SimpleAlgInfo: NSObject, AlgInfo {
 
-    /// Return OID for given key algorithm.
-    @objc public static func fromKeyAlg(keyAlg: KeyAlg) -> Data {
-        let proxyResult = vscf_oid_from_key_alg(vscf_key_alg_t(rawValue: UInt32(keyAlg.rawValue)))
+    /// Handle underlying C context.
+    @objc public let c_ctx: OpaquePointer
 
-        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    /// Create underlying C context.
+    public override init() {
+        self.c_ctx = vscf_simple_alg_info_new()
+        super.init()
     }
 
-    /// Return OID for given algorithm identifier
-    @objc public static func fromAlgId(algId: AlgId) -> Data {
-        let proxyResult = vscf_oid_from_alg_id(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)))
-
-        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    /// Acquire C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    public init(take c_ctx: OpaquePointer) {
+        self.c_ctx = c_ctx
+        super.init()
     }
 
-    /// Return key algorithm for given OID.
-    @objc public static func toKeyAlg(oid: Data) -> KeyAlg {
-        let proxyResult = oid.withUnsafeBytes({ (oidPointer: UnsafePointer<byte>) -> vscf_key_alg_t in
-            return vscf_oid_to_key_alg(vsc_data(oidPointer, oid.count))
-        })
-
-        return KeyAlg.init(fromC: proxyResult)
+    /// Acquire retained C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    public init(use c_ctx: OpaquePointer) {
+        self.c_ctx = vscf_simple_alg_info_shallow_copy(c_ctx)
+        super.init()
     }
 
-    /// Return algorithm identifier for given OID.
-    @objc public static func toAlgId(oid: Data) -> AlgId {
-        let proxyResult = oid.withUnsafeBytes({ (oidPointer: UnsafePointer<byte>) -> vscf_alg_id_t in
-            return vscf_oid_to_alg_id(vsc_data(oidPointer, oid.count))
-        })
+    /// Set algorithm identificator
+    public init(algId: AlgId) {
+        let proxyResult = vscf_simple_alg_info_new_set_alg_id(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)))
+
+        self.c_ctx = proxyResult
+    }
+
+    /// Release underlying C context.
+    deinit {
+        vscf_simple_alg_info_delete(self.c_ctx)
+    }
+
+    /// Provide algorithm identificator
+    @objc public func algId() -> AlgId {
+        let proxyResult = vscf_simple_alg_info_alg_id(self.c_ctx)
 
         return AlgId.init(fromC: proxyResult)
     }
 
-    /// Return true if given OIDs are equal.
-    @objc public static func equal(lhs: Data, rhs: Data) -> Bool {
-        let proxyResult = lhs.withUnsafeBytes({ (lhsPointer: UnsafePointer<byte>) -> Bool in
-            rhs.withUnsafeBytes({ (rhsPointer: UnsafePointer<byte>) -> Bool in
-                return vscf_oid_equal(vsc_data(lhsPointer, lhs.count), vsc_data(rhsPointer, rhs.count))
-            })
-        })
+    /// Set algorithm identificator
+    @objc public func setAlgId(algId: AlgId) {
+        vscf_simple_alg_info_set_alg_id(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(algId.rawValue)))
+    }
 
-        return proxyResult
+    /// Get KDF1 hash algorithm identifier
+    @objc public func getHashAlgId() -> AlgId {
+        let proxyResult = vscf_simple_alg_info_get_hash_alg_id(self.c_ctx)
+
+        return AlgId.init(fromC: proxyResult)
     }
 }

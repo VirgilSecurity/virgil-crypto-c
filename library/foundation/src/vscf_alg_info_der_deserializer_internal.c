@@ -55,8 +55,11 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_alg_info_der_deserializer_defs.h"
+#include "vscf_defaults.h"
+#include "vscf_defaults_api.h"
 #include "vscf_alg_info_deserializer.h"
 #include "vscf_alg_info_deserializer_api.h"
+#include "vscf_asn1_reader.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -72,6 +75,21 @@
 
 static const vscf_api_t *
 vscf_alg_info_der_deserializer_find_api(vscf_api_tag_t api_tag);
+
+//
+//  Configuration of the interface API 'defaults api'.
+//
+static const vscf_defaults_api_t defaults_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'defaults' MUST be equal to the 'vscf_api_tag_DEFAULTS'.
+    //
+    vscf_api_tag_DEFAULTS,
+    //
+    //  Setup predefined values to the uninitialized class dependencies.
+    //
+    (vscf_defaults_api_setup_defaults_fn)vscf_alg_info_der_deserializer_setup_defaults
+};
 
 //
 //  Configuration of the interface API 'alg info deserializer api'.
@@ -139,6 +157,8 @@ vscf_alg_info_der_deserializer_cleanup(vscf_alg_info_der_deserializer_t *alg_inf
     if (--alg_info_der_deserializer->refcnt > 0) {
         return;
     }
+
+    vscf_alg_info_der_deserializer_release_asn1_reader(alg_info_der_deserializer);
 
     vscf_zeroize(alg_info_der_deserializer, sizeof(vscf_alg_info_der_deserializer_t));
 }
@@ -218,12 +238,58 @@ vscf_alg_info_der_deserializer_impl(vscf_alg_info_der_deserializer_t *alg_info_d
     return (vscf_impl_t *)(alg_info_der_deserializer);
 }
 
+//
+//  Setup dependency to the interface 'asn1 reader' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_use_asn1_reader(vscf_alg_info_der_deserializer_t *alg_info_der_deserializer,
+        vscf_impl_t *asn1_reader) {
+
+    VSCF_ASSERT_PTR(alg_info_der_deserializer);
+    VSCF_ASSERT_PTR(asn1_reader);
+    VSCF_ASSERT_PTR(alg_info_der_deserializer->asn1_reader == NULL);
+
+    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
+
+    alg_info_der_deserializer->asn1_reader = vscf_impl_shallow_copy(asn1_reader);
+}
+
+//
+//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_take_asn1_reader(vscf_alg_info_der_deserializer_t *alg_info_der_deserializer,
+        vscf_impl_t *asn1_reader) {
+
+    VSCF_ASSERT_PTR(alg_info_der_deserializer);
+    VSCF_ASSERT_PTR(asn1_reader);
+    VSCF_ASSERT_PTR(alg_info_der_deserializer->asn1_reader == NULL);
+
+    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
+
+    alg_info_der_deserializer->asn1_reader = asn1_reader;
+}
+
+//
+//  Release dependency to the interface 'asn1 reader'.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_release_asn1_reader(vscf_alg_info_der_deserializer_t *alg_info_der_deserializer) {
+
+    VSCF_ASSERT_PTR(alg_info_der_deserializer);
+
+    vscf_impl_destroy(&alg_info_der_deserializer->asn1_reader);
+}
+
 static const vscf_api_t *
 vscf_alg_info_der_deserializer_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG_INFO_DESERIALIZER:
             return (const vscf_api_t *) &alg_info_deserializer_api;
+        case vscf_api_tag_DEFAULTS:
+            return (const vscf_api_t *) &defaults_api;
         default:
             return NULL;
     }

@@ -80,14 +80,8 @@ typedef struct vscf_alg_info_compatible_api_t vscf_alg_info_compatible_api_t;
 //
 //  Produce algorithm information structure
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_alg_info_compatible_produce_alg_info(vscf_impl_t *impl);
-
-//
-//  Consume algorithm information structure
-//
-VSCF_PUBLIC void
-vscf_alg_info_compatible_consume_alg_info(vscf_impl_t *impl, const vscf_impl_t *alg_info);
 
 //
 //  Return alg info compatible API, or NULL if it is not implemented.

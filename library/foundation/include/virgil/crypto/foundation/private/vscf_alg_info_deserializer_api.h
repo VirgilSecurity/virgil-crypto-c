@@ -83,7 +83,7 @@ extern "C" {
 //
 //  Callback. Algorithm deserialization algorithm from data
 //
-typedef const vscf_impl_t * (*vscf_alg_info_deserializer_api_deserialize_fn)(vscf_impl_t *impl, vsc_data_t data);
+typedef vscf_impl_t * (*vscf_alg_info_deserializer_api_deserialize_fn)(vscf_impl_t *impl, vsc_data_t data);
 
 //
 //  Contains API requirements of the interface 'alg info deserializer'.

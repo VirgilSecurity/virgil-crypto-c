@@ -4,4 +4,15 @@
         Provide algorithm identificator
         <return enum="alg id"/>
     </method>
+
+    <method name="set alg id">
+        Set algorithm identificator
+        <argument name="alg id" enum="alg id"/>
+    </method>
+
+    <method name="get hash alg id">
+        Get KDF1 hash algorithm identifier
+        <return enum="alg id"/>
+    </method>
+
 </interface>

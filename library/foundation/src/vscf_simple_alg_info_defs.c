@@ -37,6 +37,15 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'simple alg info' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,30 +53,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Types of the 'alg info der deserializer' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_ALG_INFO_DER_DESERIALIZER_DEFS_H_INCLUDED
-#define VSCF_ALG_INFO_DER_DESERIALIZER_DEFS_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_alg_info_der_deserializer.h"
-#include "vscf_impl.h"
+#include "vscf_simple_alg_info_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -76,37 +65,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handles implementation details.
-//
-struct vscf_alg_info_der_deserializer_t {
-    //
-    //  Compile-time known information about this implementation.
-    //
-    const vscf_impl_info_t *info;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the interface 'asn1 reader'.
-    //
-    vscf_impl_t *asn1_reader;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_ALG_INFO_DER_DESERIALIZER_DEFS_H_INCLUDED
 //  @end
