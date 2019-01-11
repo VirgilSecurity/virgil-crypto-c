@@ -75,7 +75,7 @@ class vsce_phe_client_t(Structure):
 # C structure wrapper
 class vsc_data_t(Structure):
     _fields_ = [
-        ("bytes", c_byte),
+        ("bytes", POINTER(c_byte)),
         ("len", c_size_t)
     ]
 
