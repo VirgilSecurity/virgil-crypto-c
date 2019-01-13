@@ -78,8 +78,8 @@
 //  Interface for ratchet rng
 //
 VSCR_PUBLIC void
-vscr_virgil_ratchet_fake_rng_generate_random_data(vscr_virgil_ratchet_fake_rng_t *virgil_ratchet_fake_rng, size_t size,
-        vsc_buffer_t *random) {
+vscr_virgil_ratchet_fake_rng_generate_random_data(
+        vscr_virgil_ratchet_fake_rng_t *virgil_ratchet_fake_rng, size_t size, vsc_buffer_t *random) {
 
     VSCR_UNUSED(virgil_ratchet_fake_rng);
     VSCR_ASSERT(vsc_buffer_unused_len(random) >= size);

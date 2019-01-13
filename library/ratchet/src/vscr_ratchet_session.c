@@ -490,16 +490,16 @@ vscr_ratchet_session_encrypt_len(vscr_ratchet_session_t *ratchet_session, size_t
 
     VSCR_ASSERT_PTR(ratchet_session);
 
-    size_t top_sequence_len = 1 + 3 /* SEQUENCE */
+    size_t top_sequence_len = 1 + 3       /* SEQUENCE */
                               + 1 + 1 + 5 /* VERSION */
                               + 1 + 3 +
                               vscr_ratchet_encrypt_len(ratchet_session->ratchet, plain_text_len); /* message */
 
     if (!ratchet_session->received_first_response) {
-        top_sequence_len += 1 + 1 + 5 /* version */
-                            + 1 + 1 + 32 /* sender_identity_key */
-                            + 1 + 1 + 32 /* sender_ephemeral_key */
-                            + 1 + 1 + 32 /* receiver_long_term_key */
+        top_sequence_len += 1 + 1 + 5     /* version */
+                            + 1 + 1 + 32  /* sender_identity_key */
+                            + 1 + 1 + 32  /* sender_ephemeral_key */
+                            + 1 + 1 + 32  /* receiver_long_term_key */
                             + 1 + 1 + 32; /* receiver_one_time_public_key */
     }
 
@@ -507,8 +507,8 @@ vscr_ratchet_session_encrypt_len(vscr_ratchet_session_t *ratchet_session, size_t
 }
 
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_encrypt(vscr_ratchet_session_t *ratchet_session, vsc_data_t plain_text,
-        vsc_buffer_t *cipher_text) {
+vscr_ratchet_session_encrypt(
+        vscr_ratchet_session_t *ratchet_session, vsc_data_t plain_text, vsc_buffer_t *cipher_text) {
 
     VSCR_ASSERT_PTR(ratchet_session);
     VSCR_ASSERT(
@@ -640,12 +640,12 @@ vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *ratchet_session) {
     //       receiver onetime public key OCTET_STRING,
     //       ratchet OCTET_STRING }
 
-    size_t top_sequence_len = 1 + 3 /* SEQUENCE */
-                              + 1 + 1 + 5 /* INTEGER */
-                              + 1 + 1 + 32 /* KEY */
-                              + 1 + 1 + 32 /* KEY */
-                              + 1 + 1 + 32 /* KEY */
-                              + 1 + 1 + 32 /* KEY */
+    size_t top_sequence_len = 1 + 3                                                           /* SEQUENCE */
+                              + 1 + 1 + 5                                                     /* INTEGER */
+                              + 1 + 1 + 32                                                    /* KEY */
+                              + 1 + 1 + 32                                                    /* KEY */
+                              + 1 + 1 + 32                                                    /* KEY */
+                              + 1 + 1 + 32                                                    /* KEY */
                               + 1 + 3 + vscr_ratchet_serialize_len(ratchet_session->ratchet); /* message */
 
 
