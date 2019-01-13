@@ -8,7 +8,7 @@
             <property name="alg id" enum="alg id"/>
         </context>
 
-        <constructor name="set alg id" visibility="public">
+        <constructor name="with alg id">
             Set algorithm identificator
             <argument name="alg id" enum="alg id"/>
         </constructor>
@@ -26,15 +26,15 @@
             <property name="iteration count" type="size"/>
         </context>
 
-        <constructor name="set alg id" visibility="public">
+        <constructor name="with alg id">
             Set algorithm identificator
             <argument name="alg id" enum="alg id"/>
         </constructor>
 
-        <constructor name="set alg id and hash id" visibility="public">
+        <constructor name="with members">
             Set algorithm identificator
             <argument name="alg id" enum="alg id"/>
-            <argument name="hash alg info" impl="simple alg info" access="readwrite"/>
+            <argument name="hash alg info" impl="simple alg info"/>
         </constructor>
 
     </implementation>

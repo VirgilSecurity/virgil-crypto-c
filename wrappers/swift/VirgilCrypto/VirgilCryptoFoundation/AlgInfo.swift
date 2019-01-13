@@ -42,12 +42,6 @@ import VirgilCryptoCommon
 
     /// Provide algorithm identificator
     @objc func algId() -> AlgId
-
-    /// Set algorithm identificator
-    @objc func setAlgId(algId: AlgId)
-
-    /// Get KDF1 hash algorithm identifier
-    @objc func getHashAlgId() -> AlgId
 }
 
 /// Implement interface methods
@@ -70,18 +64,6 @@ import VirgilCryptoCommon
     /// Provide algorithm identificator
     @objc public func algId() -> AlgId {
         let proxyResult = vscf_alg_info_alg_id(self.c_ctx)
-
-        return AlgId.init(fromC: proxyResult)
-    }
-
-    /// Set algorithm identificator
-    @objc public func setAlgId(algId: AlgId) {
-        vscf_alg_info_set_alg_id(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(algId.rawValue)))
-    }
-
-    /// Get KDF1 hash algorithm identifier
-    @objc public func getHashAlgId() -> AlgId {
-        let proxyResult = vscf_alg_info_get_hash_alg_id(self.c_ctx)
 
         return AlgId.init(fromC: proxyResult)
     }

@@ -3,13 +3,13 @@
 
     <method name="serialize len">
         Return buffer size enough to hold serialized algorithm
-        <argument name="alg info" interface="alg info" access="readwrite"/>
+        <argument name="alg info" interface="alg info"/>
         <return type="size"/>
     </method>
 
     <method name="serialize">
         Serialize algorithm info to buffer class
-        <argument name="alg info" interface="alg info" access="readwrite"/>
+        <argument name="alg info" interface="alg info"/>
         <argument name="out" class="buffer">
             <length method="serialize len">
                 <proxy argument="alg info" to="alg info"/>

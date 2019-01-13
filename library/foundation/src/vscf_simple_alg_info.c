@@ -102,7 +102,9 @@ vscf_simple_alg_info_cleanup_ctx(vscf_simple_alg_info_t *simple_alg_info) {
 //  Set algorithm identificator
 //
 VSCF_PUBLIC vscf_simple_alg_info_t *
-vscf_simple_alg_info_new_set_alg_id(vscf_alg_id_t alg_id) {
+vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_t alg_id) {
+
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
     vscf_simple_alg_info_t *simple_alg_info = vscf_simple_alg_info_new();
 
@@ -119,25 +121,4 @@ vscf_simple_alg_info_alg_id(vscf_simple_alg_info_t *simple_alg_info) {
 
     VSCF_ASSERT_PTR(simple_alg_info);
     return simple_alg_info->alg_id;
-}
-
-//
-//  Set algorithm identificator
-//
-VSCF_PUBLIC void
-vscf_simple_alg_info_set_alg_id(vscf_simple_alg_info_t *simple_alg_info, vscf_alg_id_t alg_id) {
-
-    VSCF_ASSERT_PTR(simple_alg_info);
-
-    simple_alg_info->alg_id = alg_id;
-}
-
-//
-//  Get KDF1 hash algorithm identifier
-//
-VSCF_PUBLIC vscf_alg_id_t
-vscf_simple_alg_info_get_hash_alg_id(vscf_simple_alg_info_t *simple_alg_info) {
-
-    VSCF_ASSERT_PTR(simple_alg_info);
-    return vscf_alg_id_NONE;
 }

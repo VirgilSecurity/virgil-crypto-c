@@ -85,15 +85,7 @@ static const vscf_alg_info_api_t alg_info_api = {
     //
     //  Provide algorithm identificator
     //
-    (vscf_alg_info_api_alg_id_fn)vscf_kdf_alg_info_alg_id,
-    //
-    //  Set algorithm identificator
-    //
-    (vscf_alg_info_api_set_alg_id_fn)vscf_kdf_alg_info_set_alg_id,
-    //
-    //  Get KDF1 hash algorithm identifier
-    //
-    (vscf_alg_info_api_get_hash_alg_id_fn)vscf_kdf_alg_info_get_hash_alg_id
+    (vscf_alg_info_api_alg_id_fn)vscf_kdf_alg_info_alg_id
 };
 
 //

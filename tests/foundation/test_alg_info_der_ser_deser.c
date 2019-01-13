@@ -44,7 +44,9 @@
 
 #include "vscf_alg_info.h"
 
-#include "vscf_simple_alg_info.h"
+#include "vscf_kdf_alg_info_defs.h"
+
+#include "vscf_kdf_alg_info.h"
 
 #include "vscf_kdf_alg_info.h"
 
@@ -76,7 +78,8 @@ test__deserialize_alg_info__kdf1_DER(void) {
             alg_info_der_deserializer, test_alg_info_KDF1_DER_DESERIALIZER);
 
     TEST_ASSERT_EQUAL(vscf_kdf_alg_info_alg_id(kdf_alg), test_alg_info_DER_KDF1_VALID_OUTPUT);
-    TEST_ASSERT_EQUAL(vscf_kdf_alg_info_get_hash_alg_id(kdf_alg), test_alg_info_DER_SHA256_VALID_OUTPUT);
+    vscf_simple_alg_info_t *hash_alg = kdf_alg->hash_alg_info;
+    TEST_ASSERT_EQUAL(vscf_simple_alg_info_alg_id(hash_alg), test_alg_info_DER_SHA256_VALID_OUTPUT);
     vscf_kdf_alg_info_delete(kdf_alg);
     vscf_alg_info_der_deserializer_delete(alg_info_der_deserializer);
 }
@@ -85,18 +88,10 @@ void
 test__serialize_alg_info__sha256_DER(void) {
     vscf_alg_info_der_serializer_t *alg_info_der_serializer = vscf_alg_info_der_serializer_new();
     vscf_alg_info_der_serializer_setup_defaults(alg_info_der_serializer);
-    vscf_simple_alg_info_t *simple_alg = vscf_simple_alg_info_new_set_alg_id(vscf_alg_id_SHA256);
+    vscf_simple_alg_info_t *simple_alg = vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256);
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(
             vscf_alg_info_der_serializer_serialize_len(alg_info_der_serializer, vscf_simple_alg_info_impl(simple_alg)));
     vscf_alg_info_der_serializer_serialize(alg_info_der_serializer, vscf_simple_alg_info_impl(simple_alg), out);
-
-    byte *b = vsc_buffer_bytes(out);
-    size_t len = vsc_buffer_len(out);
-
-    for (size_t i = 0; i < len; i++) {
-        printf("0x%2.2X, ", b[i]);
-    }
-    puts("\n");
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_SHA256_DER_DESERIALIZER, out);
     vsc_buffer_delete(out);

@@ -139,8 +139,8 @@ vscf_kdf1_produce_alg_info(vscf_kdf1_t *kdf1) {
     const vscf_hash_stream_api_t *hash_stream_api = vscf_hash_stream_api(kdf1->hash);
     const vscf_hash_info_api_t *hash_info_api = vscf_hash_stream_hash_info_api(hash_stream_api);
     vscf_alg_id_t alg_id = (vscf_alg_id_t)vscf_hash_info_alg(hash_info_api);
-    vscf_simple_alg_info_t *hash_alg_info = vscf_simple_alg_info_new_set_alg_id(alg_id);
+    vscf_simple_alg_info_t *hash_alg_info = vscf_simple_alg_info_new_with_alg_id(alg_id);
     alg_id = vscf_alg_id_KDF1;
-    vscf_kdf_alg_info_t *kdf_alg_info = vscf_kdf_alg_info_new_set_alg_id_and_hash_id(alg_id, hash_alg_info);
+    vscf_kdf_alg_info_t *kdf_alg_info = vscf_kdf_alg_info_new_with_members(alg_id, hash_alg_info);
     return vscf_kdf_alg_info_impl(kdf_alg_info);
 }
