@@ -76,17 +76,7 @@ extern "C" {
 //
 //  Callback. Provide algorithm identificator
 //
-typedef vscf_alg_id_t (*vscf_alg_info_api_alg_id_fn)(vscf_impl_t *impl);
-
-//
-//  Callback. Set algorithm identificator
-//
-typedef void (*vscf_alg_info_api_set_alg_id_fn)(vscf_impl_t *impl, vscf_alg_id_t alg_id);
-
-//
-//  Callback. Get KDF1 hash algorithm identifier
-//
-typedef vscf_alg_id_t (*vscf_alg_info_api_get_hash_alg_id_fn)(vscf_impl_t *impl);
+typedef vscf_alg_id_t (*vscf_alg_info_api_alg_id_fn)(const vscf_impl_t *impl);
 
 //
 //  Contains API requirements of the interface 'alg info'.
@@ -101,14 +91,6 @@ struct vscf_alg_info_api_t {
     //  Provide algorithm identificator
     //
     vscf_alg_info_api_alg_id_fn alg_id_cb;
-    //
-    //  Set algorithm identificator
-    //
-    vscf_alg_info_api_set_alg_id_fn set_alg_id_cb;
-    //
-    //  Get KDF1 hash algorithm identifier
-    //
-    vscf_alg_info_api_get_hash_alg_id_fn get_hash_alg_id_cb;
 };
 
 

@@ -93,7 +93,7 @@ vscf_simple_alg_info_impl(vscf_simple_alg_info_t *simple_alg_info);
 //  Set algorithm identificator
 //
 VSCF_PUBLIC vscf_simple_alg_info_t *
-vscf_simple_alg_info_new_set_alg_id(vscf_alg_id_t alg_id);
+vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_t alg_id);
 
 //
 //  Perform initialization of preallocated implementation context.
@@ -142,18 +142,6 @@ vscf_simple_alg_info_shallow_copy(vscf_simple_alg_info_t *simple_alg_info);
 //
 VSCF_PUBLIC vscf_alg_id_t
 vscf_simple_alg_info_alg_id(vscf_simple_alg_info_t *simple_alg_info);
-
-//
-//  Set algorithm identificator
-//
-VSCF_PUBLIC void
-vscf_simple_alg_info_set_alg_id(vscf_simple_alg_info_t *simple_alg_info, vscf_alg_id_t alg_id);
-
-//
-//  Get KDF1 hash algorithm identifier
-//
-VSCF_PUBLIC vscf_alg_id_t
-vscf_simple_alg_info_get_hash_alg_id(vscf_simple_alg_info_t *simple_alg_info);
 
 
 // --------------------------------------------------------------------------

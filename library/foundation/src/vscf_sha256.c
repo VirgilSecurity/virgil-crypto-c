@@ -172,5 +172,5 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_sha256_produce_alg_info(vscf_sha256_t *sha256) {
 
     VSCF_ASSERT_PTR(sha256);
-    return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_set_alg_id(vscf_alg_id_SHA256));
+    return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256));
 }

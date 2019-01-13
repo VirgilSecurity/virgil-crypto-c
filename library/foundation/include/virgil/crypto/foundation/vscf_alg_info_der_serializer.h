@@ -171,14 +171,14 @@ vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *alg_
 //
 VSCF_PUBLIC size_t
 vscf_alg_info_der_serializer_serialize_len(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
-        vscf_impl_t *alg_info);
+        const vscf_impl_t *alg_info);
 
 //
 //  Serialize algorithm info to buffer class
 //
 VSCF_PUBLIC void
-vscf_alg_info_der_serializer_serialize(vscf_alg_info_der_serializer_t *alg_info_der_serializer, vscf_impl_t *alg_info,
-        vsc_buffer_t *out);
+vscf_alg_info_der_serializer_serialize(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
+        const vscf_impl_t *alg_info, vsc_buffer_t *out);
 
 
 // --------------------------------------------------------------------------

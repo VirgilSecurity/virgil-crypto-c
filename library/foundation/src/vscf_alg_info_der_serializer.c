@@ -103,7 +103,7 @@ vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *alg_
 //
 VSCF_PUBLIC size_t
 vscf_alg_info_der_serializer_serialize_len(
-        vscf_alg_info_der_serializer_t *alg_info_der_serializer, vscf_impl_t *alg_info) {
+        vscf_alg_info_der_serializer_t *alg_info_der_serializer, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(alg_info_der_serializer);
     VSCF_ASSERT_PTR(alg_info);
@@ -116,7 +116,7 @@ vscf_alg_info_der_serializer_serialize_len(
 //
 VSCF_PUBLIC void
 vscf_alg_info_der_serializer_serialize(
-        vscf_alg_info_der_serializer_t *alg_info_der_serializer, vscf_impl_t *alg_info, vsc_buffer_t *out) {
+        vscf_alg_info_der_serializer_t *alg_info_der_serializer, const vscf_impl_t *alg_info, vsc_buffer_t *out) {
 
     //  TODO: This is STUB. Implement me.
     VSCF_ASSERT_PTR(alg_info_der_serializer);

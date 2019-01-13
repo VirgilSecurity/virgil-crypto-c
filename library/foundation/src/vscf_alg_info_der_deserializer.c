@@ -68,6 +68,7 @@
 // clang-format on
 //  @end
 
+
 //  @generated
 // --------------------------------------------------------------------------
 // clang-format off
@@ -119,13 +120,13 @@ vscf_alg_info_der_deserializer_deserialize(
     vscf_alg_id_t alg_id = vscf_oid_to_alg_id(alg_oid);
 
     if (alg_id == vscf_alg_id_SHA256) {
-        vscf_simple_alg_info_t *simple_alg = vscf_simple_alg_info_new_set_alg_id(vscf_alg_id_SHA256);
+        vscf_simple_alg_info_t *simple_alg = vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256);
         return vscf_simple_alg_info_impl(simple_alg);
     }
 
     if (alg_id == vscf_alg_id_KDF1) {
-        vscf_simple_alg_info_t *simple_alg = vscf_simple_alg_info_new_set_alg_id(vscf_alg_id_SHA256);
-        vscf_kdf_alg_info_t *kdf_alg = vscf_kdf_alg_info_new_set_alg_id_and_hash_id(vscf_alg_id_KDF1, simple_alg);
+        vscf_simple_alg_info_t *simple_alg = vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256);
+        vscf_kdf_alg_info_t *kdf_alg = vscf_kdf_alg_info_new_with_members(vscf_alg_id_KDF1, simple_alg);
         return vscf_kdf_alg_info_impl(kdf_alg);
     }
 
