@@ -123,28 +123,9 @@ vscf_aes256_gcm_encrypt(vscf_aes256_gcm_t *aes256_gcm, vsc_data_t data, vsc_buff
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT_OPT(vsc_buffer_unused_len(out) >= vscf_aes256_gcm_encrypted_len(aes256_gcm, data.len));
 
-
-    VSCF_ASSERT_OPT(0 == mbedtls_cipher_setkey(&aes256_gcm->cipher_ctx, aes256_gcm->key, vscf_aes256_gcm_KEY_BITLEN,
-                                 MBEDTLS_ENCRYPT));
-
-    VSCF_ASSERT_OPT(0 == mbedtls_cipher_update_ad(&aes256_gcm->cipher_ctx, NULL, 0));
-
-    VSCF_ASSERT_OPT(0 == mbedtls_cipher_reset(&aes256_gcm->cipher_ctx));
-
-    size_t first_block_len = 0;
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= data.len + vscf_aes256_gcm_BLOCK_LEN);
-    VSCF_ASSERT_OPT(0 == mbedtls_cipher_update(&aes256_gcm->cipher_ctx, data.bytes, data.len,
-                                 vsc_buffer_unused_bytes(out), &first_block_len));
-    vsc_buffer_inc_used(out, first_block_len);
-
-    size_t last_block_len = 0;
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_aes256_gcm_BLOCK_LEN);
-    VSCF_ASSERT_OPT(0 == mbedtls_cipher_finish(&aes256_gcm->cipher_ctx, vsc_buffer_unused_bytes(out), &last_block_len));
-    vsc_buffer_inc_used(out, last_block_len);
-
-    VSCF_ASSERT_OPT(0 == mbedtls_cipher_write_tag(
-                                 &aes256_gcm->cipher_ctx, vsc_buffer_unused_bytes(out), vscf_aes256_gcm_AUTH_TAG_LEN));
-    vsc_buffer_inc_used(out, vscf_aes256_gcm_AUTH_TAG_LEN);
+    vscf_aes256_gcm_start_encryption(aes256_gcm);
+    vscf_aes256_gcm_update(aes256_gcm, data, out);
+    vscf_aes256_gcm_finish(aes256_gcm, out);
 
     return vscf_SUCCESS;
 }
@@ -173,33 +154,9 @@ vscf_aes256_gcm_decrypt(vscf_aes256_gcm_t *aes256_gcm, vsc_data_t data, vsc_buff
     VSCF_ASSERT_OPT(data.len >= vscf_aes256_gcm_AUTH_TAG_LEN);
     VSCF_ASSERT_OPT(vsc_buffer_unused_len(out) >= vscf_aes256_gcm_decrypted_len(aes256_gcm, data.len));
 
-
-    vsc_data_t enc = vsc_data_slice_beg(data, 0, data.len - vscf_aes256_gcm_AUTH_TAG_LEN);
-    vsc_data_t tag = vsc_data_slice_end(data, 0, vscf_aes256_gcm_AUTH_TAG_LEN);
-
-    VSCF_ASSERT_OPT(0 == mbedtls_cipher_setkey(&aes256_gcm->cipher_ctx, aes256_gcm->key, vscf_aes256_gcm_KEY_BITLEN,
-                                 MBEDTLS_DECRYPT));
-
-    VSCF_ASSERT_OPT(0 == mbedtls_cipher_update_ad(&aes256_gcm->cipher_ctx, NULL, 0));
-
-    VSCF_ASSERT_OPT(0 == mbedtls_cipher_reset(&aes256_gcm->cipher_ctx));
-
-    size_t first_block_len = 0;
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= enc.len + vscf_aes256_gcm_BLOCK_LEN);
-    VSCF_ASSERT_OPT(0 == mbedtls_cipher_update(&aes256_gcm->cipher_ctx, enc.bytes, enc.len,
-                                 vsc_buffer_unused_bytes(out), &first_block_len));
-    vsc_buffer_inc_used(out, first_block_len);
-
-    size_t last_block_len = 0;
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_aes256_gcm_BLOCK_LEN);
-    VSCF_ASSERT_OPT(0 == mbedtls_cipher_finish(&aes256_gcm->cipher_ctx, vsc_buffer_unused_bytes(out), &last_block_len));
-    vsc_buffer_inc_used(out, last_block_len);
-
-    if (0 != mbedtls_cipher_check_tag(&aes256_gcm->cipher_ctx, tag.bytes, tag.len)) {
-        return vscf_error_AUTH_FAILED;
-    }
-
-    return vscf_SUCCESS;
+    vscf_aes256_gcm_start_decryption(aes256_gcm);
+    vscf_aes256_gcm_update(aes256_gcm, data, out);
+    return vscf_aes256_gcm_finish(aes256_gcm, out);
 }
 
 //
@@ -236,6 +193,147 @@ vscf_aes256_gcm_set_key(vscf_aes256_gcm_t *aes256_gcm, vsc_data_t key) {
     VSCF_ASSERT_OPT(vscf_aes256_gcm_KEY_LEN == key.len);
 
     memcpy(aes256_gcm->key, key.bytes, key.len);
+}
+
+//
+//  Start sequential encryption.
+//
+VSCF_PUBLIC void
+vscf_aes256_gcm_start_encryption(vscf_aes256_gcm_t *aes256_gcm) {
+
+    VSCF_ASSERT_PTR(aes256_gcm);
+    VSCF_ASSERT(!vsc_data_is_zero(vsc_data(aes256_gcm->key, vscf_aes256_gcm_KEY_LEN)));
+
+    aes256_gcm->do_decrypt = false;
+
+    int status = mbedtls_cipher_setkey(
+            &aes256_gcm->cipher_ctx, aes256_gcm->key, vscf_aes256_gcm_KEY_BITLEN, MBEDTLS_ENCRYPT);
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+
+    status = mbedtls_cipher_update_ad(&aes256_gcm->cipher_ctx, NULL, 0);
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+
+    status = mbedtls_cipher_reset(&aes256_gcm->cipher_ctx);
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+}
+
+//
+//  Start sequential decryption.
+//
+VSCF_PUBLIC void
+vscf_aes256_gcm_start_decryption(vscf_aes256_gcm_t *aes256_gcm) {
+
+    VSCF_ASSERT_PTR(aes256_gcm);
+    VSCF_ASSERT(!vsc_data_is_zero(vsc_data(aes256_gcm->key, vscf_aes256_gcm_KEY_LEN)));
+
+    aes256_gcm->do_decrypt = true;
+
+    int status = mbedtls_cipher_setkey(
+            &aes256_gcm->cipher_ctx, aes256_gcm->key, vscf_aes256_gcm_KEY_BITLEN, MBEDTLS_DECRYPT);
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+
+    status = mbedtls_cipher_update_ad(&aes256_gcm->cipher_ctx, NULL, 0);
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+
+    status = mbedtls_cipher_reset(&aes256_gcm->cipher_ctx);
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+}
+
+//
+//  Process encryption or decryption of the given data chunk.
+//
+VSCF_PUBLIC void
+vscf_aes256_gcm_update(vscf_aes256_gcm_t *aes256_gcm, vsc_data_t data, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(aes256_gcm);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+
+    vsc_data_t filtered_data = data;
+
+    //
+    //  Filter auth tag from the input stream.
+    //
+    if (aes256_gcm->do_decrypt) {
+        if (data.len >= vscf_aes256_gcm_AUTH_TAG_LEN) {
+            filtered_data = vsc_data_slice_beg(data, 0, data.len - vscf_aes256_gcm_AUTH_TAG_LEN);
+            vsc_data_t tag = vsc_data_slice_end(data, 0, vscf_aes256_gcm_AUTH_TAG_LEN);
+            memcpy(aes256_gcm->auth_tag, tag.bytes, tag.len);
+
+        } else {
+            filtered_data = vsc_data_empty();
+            byte *auth_tag_dst = aes256_gcm->auth_tag + vscf_aes256_gcm_AUTH_TAG_LEN - data.len;
+            memmove(aes256_gcm->auth_tag, auth_tag_dst, data.len);
+            memcpy(auth_tag_dst, data.bytes, data.len);
+        }
+    }
+
+    //
+    //  Process.
+    //
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_aes256_gcm_out_len(aes256_gcm, filtered_data.len));
+
+    size_t block_len = 0;
+
+    int status = mbedtls_cipher_update(
+            &aes256_gcm->cipher_ctx, filtered_data.bytes, filtered_data.len, vsc_buffer_unused_bytes(out), &block_len);
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+
+    vsc_buffer_inc_used(out, block_len);
+}
+
+//
+//  Return buffer length required to hold an output of the methods
+//  "update" or "finish".
+//  Pass zero length to define buffer length of the method "finish".
+//
+VSCF_PUBLIC size_t
+vscf_aes256_gcm_out_len(vscf_aes256_gcm_t *aes256_gcm, size_t data_len) {
+
+    VSCF_ASSERT_PTR(aes256_gcm);
+
+    if (data_len > 0) {
+        return data_len + vscf_aes256_gcm_BLOCK_LEN;
+
+    } else if (aes256_gcm->do_decrypt) {
+        return vscf_aes256_gcm_BLOCK_LEN;
+
+    } else {
+        return vscf_aes256_gcm_BLOCK_LEN + vscf_aes256_gcm_AUTH_TAG_LEN;
+    }
+}
+
+//
+//  Accomplish encryption or decryption process.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_aes256_gcm_finish(vscf_aes256_gcm_t *aes256_gcm, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(aes256_gcm);
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_aes256_gcm_out_len(aes256_gcm, 0));
+
+
+    size_t last_block_len = 0;
+    int status = mbedtls_cipher_finish(&aes256_gcm->cipher_ctx, vsc_buffer_unused_bytes(out), &last_block_len);
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+    vsc_buffer_inc_used(out, last_block_len);
+
+    if (aes256_gcm->do_decrypt) {
+        int valid_tag_status =
+                mbedtls_cipher_check_tag(&aes256_gcm->cipher_ctx, aes256_gcm->auth_tag, vscf_aes256_gcm_AUTH_TAG_LEN);
+        if (0 != valid_tag_status) {
+            return vscf_error_AUTH_FAILED;
+        }
+    } else {
+        int status = mbedtls_cipher_write_tag(
+                &aes256_gcm->cipher_ctx, vsc_buffer_unused_bytes(out), vscf_aes256_gcm_AUTH_TAG_LEN);
+        VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+        vsc_buffer_inc_used(out, vscf_aes256_gcm_AUTH_TAG_LEN);
+    }
+
+    return vscf_SUCCESS;
 }
 
 //
