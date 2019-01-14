@@ -899,6 +899,11 @@ function class_derive_buffer_length_getter (class, method, argument)
             if string_in (proxy.cast, "data_length")
                 my.proxy_args += ".count"
             endif
+
+        elsif defined (proxy.constant)
+
+            my.proxy_args += swift_derive_argument_name_str (proxy.[to])
+            my.proxy_args += ": " + swift_lang_ref (proxy.constant)
         else
             echo_debug_item (my.argument, my)
             echo_fatal ("Buffer length argument can be proxied. Undefined type.", my)
