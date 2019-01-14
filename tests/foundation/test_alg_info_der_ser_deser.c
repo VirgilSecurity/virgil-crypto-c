@@ -99,6 +99,22 @@ test__serialize_alg_info__sha256_DER(void) {
     vscf_alg_info_der_serializer_delete(alg_info_der_serializer);
 }
 
+void
+test__serialize_alg_info__kdf1_DER(void) {
+    vscf_alg_info_der_serializer_t *alg_info_der_serializer = vscf_alg_info_der_serializer_new();
+    vscf_alg_info_der_serializer_setup_defaults(alg_info_der_serializer);
+    vscf_simple_alg_info_t *simple_alg = vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256);
+    vscf_kdf_alg_info_t *kdf_alg = vscf_kdf_alg_info_new_with_members(vscf_alg_id_KDF1, simple_alg);
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(
+            vscf_alg_info_der_serializer_serialize_len(alg_info_der_serializer, vscf_kdf_alg_info_impl(kdf_alg)));
+    vscf_alg_info_der_serializer_serialize(alg_info_der_serializer, vscf_simple_alg_info_impl(kdf_alg), out);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_KDF1_DER_DESERIALIZER, out);
+    vsc_buffer_delete(out);
+    vscf_simple_alg_info_delete(simple_alg);
+    vscf_kdf_alg_info_delete(kdf_alg);
+    vscf_alg_info_der_serializer_delete(alg_info_der_serializer);
+}
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -113,6 +129,7 @@ main(void) {
     RUN_TEST(test__deserialize_alg_info__sha256_DER);
     RUN_TEST(test__deserialize_alg_info__kdf1_DER);
     RUN_TEST(test__serialize_alg_info__sha256_DER);
+    RUN_TEST(test__serialize_alg_info__kdf1_DER);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
