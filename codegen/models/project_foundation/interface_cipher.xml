@@ -16,4 +16,44 @@
 
         <argument name="key" class="data"/>
     </method>
+
+    <method name="start encryption">
+        Start sequential encryption.
+    </method>
+
+    <method name="start decryption">
+        Start sequential decryption.
+    </method>
+
+    <method name="update">
+        Process encryption or decryption of the given data chunk.
+
+        <argument name="data" class="data"/>
+        <argument name="out" class="buffer">
+            <length method="out len">
+                <proxy argument="data" to="data len" cast="data_length"/>
+            </length>
+        </argument>
+    </method>
+
+    <method name="out len">
+        Return buffer length required to hold an output of the methods
+        "update" or "finish".
+        Pass zero length to define buffer length of the method "finish".
+
+        <argument name="data len" type="size"/>
+        <return type="size"/>
+    </method>
+
+    <method name="finish">
+        Accomplish encryption or decryption process.
+
+        <argument name="out" class="buffer">
+            <length method="out len">
+                <proxy constant="0" to="data len"/>
+            </length>
+        </argument>
+
+        <return enum="error"/>
+    </method>
 </interface>

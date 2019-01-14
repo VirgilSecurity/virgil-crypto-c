@@ -225,6 +225,38 @@ VSCF_PUBLIC void
 vscf_aes256_gcm_set_key(vscf_aes256_gcm_t *aes256_gcm, vsc_data_t key);
 
 //
+//  Start sequential encryption.
+//
+VSCF_PUBLIC void
+vscf_aes256_gcm_start_encryption(vscf_aes256_gcm_t *aes256_gcm);
+
+//
+//  Start sequential decryption.
+//
+VSCF_PUBLIC void
+vscf_aes256_gcm_start_decryption(vscf_aes256_gcm_t *aes256_gcm);
+
+//
+//  Process encryption or decryption of the given data chunk.
+//
+VSCF_PUBLIC void
+vscf_aes256_gcm_update(vscf_aes256_gcm_t *aes256_gcm, vsc_data_t data, vsc_buffer_t *out);
+
+//
+//  Return buffer length required to hold an output of the methods
+//  "update" or "finish".
+//  Pass zero length to define buffer length of the method "finish".
+//
+VSCF_PUBLIC size_t
+vscf_aes256_gcm_out_len(vscf_aes256_gcm_t *aes256_gcm, size_t data_len);
+
+//
+//  Accomplish encryption or decryption process.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_aes256_gcm_finish(vscf_aes256_gcm_t *aes256_gcm, vsc_buffer_t *out);
+
+//
 //  Encrypt given data.
 //  If 'tag' is not give, then it will written to the 'enc'.
 //
