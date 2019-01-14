@@ -1,4 +1,6 @@
+import os
 from ctypes import c_int, CDLL, Structure, c_byte, c_size_t, POINTER
+from ctypes.util import find_library
 from enum import IntEnum
 
 
@@ -84,8 +86,9 @@ class vsc_data_t(Structure):
 class Phe(object):
     def __init__(self):
         self.constants = PHEConstants
-        self.__c_lib = CDLL("libvsc_phe.dylib")
-        self.__c_common_lib = CDLL("libvsc_common.dylib")
+        self.__c_common_lib = CDLL(find_library("libvsc_common.dylib"))
+        self.__c_foundation_lib = CDLL(find_library("libvsc_foundation.dylib"))
+        self.__c_lib = CDLL(find_library("libvsc_phe.dylib"))
 
     def vsc_buffer_new(self):
         # vsc_buffer_new C function wrapper
