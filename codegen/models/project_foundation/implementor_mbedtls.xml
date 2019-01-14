@@ -105,6 +105,12 @@
             <property name="nonce" type="byte" access="readwrite">
                 <array length="fixed" length_constant=".(class_aes256_gcm_constant_nonce_len)"/>
             </property>
+
+            <property name="do decrypt" type="boolean"/>
+
+            <property name="auth tag" type="byte" access="readwrite">
+                <array length="fixed" length_constant=".(class_aes256_gcm_constant_auth_tag_len)"/>
+            </property>
         </context>
 
         <interface name="encrypt"/>

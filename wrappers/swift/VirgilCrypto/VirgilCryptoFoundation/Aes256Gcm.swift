@@ -159,6 +159,67 @@ import VirgilCryptoCommon
         })
     }
 
+    /// Start sequential encryption.
+    @objc public func startEncryption() {
+        vscf_aes256_gcm_start_encryption(self.c_ctx)
+    }
+
+    /// Start sequential decryption.
+    @objc public func startDecryption() {
+        vscf_aes256_gcm_start_decryption(self.c_ctx)
+    }
+
+    /// Process encryption or decryption of the given data chunk.
+    @objc public func update(data: Data) -> Data {
+        let outCount = self.outLen(dataLen: data.count)
+        var out = Data(count: outCount)
+        var outBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(outBuf)
+        }
+
+        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
+            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> Void in
+                vsc_buffer_init(outBuf)
+                vsc_buffer_use(outBuf, outPointer, outCount)
+                vscf_aes256_gcm_update(self.c_ctx, vsc_data(dataPointer, data.count), outBuf)
+            })
+        })
+        out.count = vsc_buffer_len(outBuf)
+
+        return out
+    }
+
+    /// Return buffer length required to hold an output of the methods
+    /// "update" or "finish".
+    /// Pass zero length to define buffer length of the method "finish".
+    @objc public func outLen(dataLen: Int) -> Int {
+        let proxyResult = vscf_aes256_gcm_out_len(self.c_ctx, dataLen)
+
+        return proxyResult
+    }
+
+    /// Accomplish encryption or decryption process.
+    @objc public func finish() throws -> Data {
+        let outCount = self.outLen(dataLen: 0)
+        var out = Data(count: outCount)
+        var outBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(outBuf)
+        }
+
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutablePointer<byte>) -> vscf_error_t in
+            vsc_buffer_init(outBuf)
+            vsc_buffer_use(outBuf, outPointer, outCount)
+            return vscf_aes256_gcm_finish(self.c_ctx, outBuf)
+        })
+        out.count = vsc_buffer_len(outBuf)
+
+        try FoundationError.handleError(fromC: proxyResult)
+
+        return out
+    }
+
     /// Encrypt given data.
     /// If 'tag' is not give, then it will written to the 'enc'.
     @objc public func authEncrypt(data: Data, authData: Data) throws -> AuthEncryptAuthEncryptResult {
