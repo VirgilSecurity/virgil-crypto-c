@@ -165,6 +165,12 @@ vscf_kdf1_release_hash(vscf_kdf1_t *kdf1);
 VSCF_PUBLIC void
 vscf_kdf1_derive(vscf_kdf1_t *kdf1, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
 
+//
+//  Produce algorithm information structure
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_kdf1_produce_alg_info(vscf_kdf1_t *kdf1);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

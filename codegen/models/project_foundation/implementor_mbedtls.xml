@@ -27,6 +27,12 @@
 
         <require library="mbedtls" feature="SHA256 C"/>
 
+        <require enum="alg id"/>
+
+        <require impl="simple alg info"/>
+
+        <require impl="kdf alg info"/>
+
         <context>
             <require header="mbedtls/sha256.h"/>
             <property name="hash ctx" class="mbedtls_sha256_context" library="mbedtls"
@@ -40,6 +46,7 @@
 
         <interface name="hash"/>
         <interface name="hash stream"/>
+        <interface name="alg info compatible"/>
     </implementation>
 
 
@@ -104,6 +111,12 @@
 
             <property name="nonce" type="byte" access="readwrite">
                 <array length="fixed" length_constant=".(class_aes256_gcm_constant_nonce_len)"/>
+            </property>
+
+            <property name="do decrypt" type="boolean"/>
+
+            <property name="auth tag" type="byte" access="readwrite">
+                <array length="fixed" length_constant=".(class_aes256_gcm_constant_auth_tag_len)"/>
             </property>
         </context>
 

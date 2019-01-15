@@ -101,6 +101,14 @@ struct vscf_aes256_gcm_t {
     //  Implementation specific context.
     //
     byte nonce[vscf_aes256_gcm_NONCE_LEN];
+    //
+    //  Implementation specific context.
+    //
+    bool do_decrypt;
+    //
+    //  Implementation specific context.
+    //
+    byte auth_tag[vscf_aes256_gcm_AUTH_TAG_LEN];
 };
 
 
