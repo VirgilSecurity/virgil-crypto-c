@@ -1747,10 +1747,10 @@ function swift_create_class_constructor (class, constructor, destination, wrappe
         #   Wrap proxy call
         my.proxy_args = swift_format_c_proxy_args (my.class, my.constructor)
         my.proxy_call = "$(class_derive_c_constructor (my.class, my.constructor))($(my.proxy_args:))"
-        my.proxy_return_type = swift_derive_class_context_type (my.class)
+        my.proxy_return_type = swift_derive_class_context_type (my.class) + "?"
         my.proxy_invocation = swift_wrap_c_proxy_call (swift_constructor, my.proxy_call, my.proxy_return_type)
 
-        my.context_assignment = format_left ("self.c_ctx = proxyResult")
+        my.context_assignment = format_left ("self.c_ctx = proxyResult!")
 
         new swift_code to swift_constructor
             my.method_body = ""

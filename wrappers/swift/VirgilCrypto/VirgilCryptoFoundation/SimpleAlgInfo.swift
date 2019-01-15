@@ -67,7 +67,7 @@ import VirgilCryptoCommon
     public init(algId: AlgId) {
         let proxyResult = vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)))
 
-        self.c_ctx = proxyResult
+        self.c_ctx = proxyResult!
     }
 
     /// Release underlying C context.
