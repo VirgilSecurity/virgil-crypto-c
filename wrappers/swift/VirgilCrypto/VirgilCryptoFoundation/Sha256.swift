@@ -38,7 +38,7 @@ import VSCFoundation
 import VirgilCryptoCommon
 
 /// This is MbedTLS implementation of SHA256.
-@objc(VSCFSha256) public class Sha256: NSObject, HashInfo, Hash, HashStream {
+@objc(VSCFSha256) public class Sha256: NSObject, HashInfo, Hash, HashStream, AlgInfoCompatible {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -131,5 +131,12 @@ import VirgilCryptoCommon
         digest.count = vsc_buffer_len(digestBuf)
 
         return digest
+    }
+
+    /// Produce algorithm information structure
+    @objc public func produceAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_sha256_produce_alg_info(self.c_ctx)
+
+        return AlgInfoProxy.init(c_ctx: proxyResult!)
     }
 }

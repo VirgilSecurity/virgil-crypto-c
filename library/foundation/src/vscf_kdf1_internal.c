@@ -57,6 +57,8 @@
 #include "vscf_kdf1_defs.h"
 #include "vscf_kdf.h"
 #include "vscf_kdf_api.h"
+#include "vscf_alg_info_compatible.h"
+#include "vscf_alg_info_compatible_api.h"
 #include "vscf_hash_stream.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
@@ -87,6 +89,21 @@ static const vscf_kdf_api_t kdf_api = {
     //  Derive key of the requested length from the given data.
     //
     (vscf_kdf_api_derive_fn)vscf_kdf1_derive
+};
+
+//
+//  Configuration of the interface API 'alg info compatible api'.
+//
+static const vscf_alg_info_compatible_api_t alg_info_compatible_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'alg_info_compatible' MUST be equal to the 'vscf_api_tag_ALG_INFO_COMPATIBLE'.
+    //
+    vscf_api_tag_ALG_INFO_COMPATIBLE,
+    //
+    //  Produce algorithm information structure
+    //
+    (vscf_alg_info_compatible_api_produce_alg_info_fn)vscf_kdf1_produce_alg_info
 };
 
 //
@@ -267,6 +284,8 @@ static const vscf_api_t *
 vscf_kdf1_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
+        case vscf_api_tag_ALG_INFO_COMPATIBLE:
+            return (const vscf_api_t *) &alg_info_compatible_api;
         case vscf_api_tag_KDF:
             return (const vscf_api_t *) &kdf_api;
         default:

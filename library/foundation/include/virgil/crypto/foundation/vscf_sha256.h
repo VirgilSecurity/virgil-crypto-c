@@ -199,6 +199,12 @@ vscf_sha256_update(vscf_sha256_t *sha256, vsc_data_t data);
 VSCF_PUBLIC void
 vscf_sha256_finish(vscf_sha256_t *sha256, vsc_buffer_t *digest);
 
+//
+//  Produce algorithm information structure
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_sha256_produce_alg_info(vscf_sha256_t *sha256);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

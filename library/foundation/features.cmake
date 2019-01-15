@@ -77,6 +77,10 @@ option(VSCF_KEY_SERIALIZER "Enable interface 'key serializer'." ON)
 option(VSCF_KEY_DESERIALIZER "Enable interface 'key deserializer'." ON)
 option(VSCF_ASN1_READER "Enable interface 'asn1 reader'." ON)
 option(VSCF_ASN1_WRITER "Enable interface 'asn1 writer'." ON)
+option(VSCF_ALG_INFO "Enable interface 'alg info'." ON)
+option(VSCF_ALG_INFO_COMPATIBLE "Enable interface 'alg info compatible'." ON)
+option(VSCF_ALG_INFO_SERIALIZER "Enable interface 'alg info serializer'." ON)
+option(VSCF_ALG_INFO_DESERIALIZER "Enable interface 'alg info deserializer'." ON)
 option(VSCF_SHA224 "Enable implementation 'sha224'." ON)
 option(VSCF_SHA256 "Enable implementation 'sha256'." ON)
 option(VSCF_SHA384 "Enable implementation 'sha384'." ON)
@@ -99,6 +103,10 @@ option(VSCF_PKCS8_SERIALIZER "Enable implementation 'pkcs8 serializer'." ON)
 option(VSCF_PKCS8_DESERIALIZER "Enable implementation 'pkcs8 deserializer'." ON)
 option(VSCF_ED25519_PUBLIC_KEY "Enable implementation 'ed25519 public key'." ON)
 option(VSCF_ED25519_PRIVATE_KEY "Enable implementation 'ed25519 private key'." ON)
+option(VSCF_ALG_INFO_DER_SERIALIZER "Enable implementation 'alg info der serializer'." ON)
+option(VSCF_ALG_INFO_DER_DESERIALIZER "Enable implementation 'alg info der deserializer'." ON)
+option(VSCF_SIMPLE_ALG_INFO "Enable implementation 'simple alg info'." ON)
+option(VSCF_KDF_ALG_INFO "Enable implementation 'kdf alg info'." ON)
 option(VSCF_ERROR_CTX "Enable class 'error ctx'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER "Enable class 'mbedtls bignum asn1 writer'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_READER "Enable class 'mbedtls bignum asn1 reader'." ON)
@@ -142,6 +150,10 @@ mark_as_advanced(
         VSCF_KEY_DESERIALIZER
         VSCF_ASN1_READER
         VSCF_ASN1_WRITER
+        VSCF_ALG_INFO
+        VSCF_ALG_INFO_COMPATIBLE
+        VSCF_ALG_INFO_SERIALIZER
+        VSCF_ALG_INFO_DESERIALIZER
         VSCF_SHA224
         VSCF_SHA256
         VSCF_SHA384
@@ -164,6 +176,10 @@ mark_as_advanced(
         VSCF_PKCS8_DESERIALIZER
         VSCF_ED25519_PUBLIC_KEY
         VSCF_ED25519_PRIVATE_KEY
+        VSCF_ALG_INFO_DER_SERIALIZER
+        VSCF_ALG_INFO_DER_DESERIALIZER
+        VSCF_SIMPLE_ALG_INFO
+        VSCF_KDF_ALG_INFO
         VSCF_ERROR_CTX
         VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
         VSCF_MBEDTLS_BIGNUM_ASN1_READER
@@ -581,6 +597,15 @@ if(VSCF_HKDF AND NOT VSCF_HASH_STREAM)
     message(FATAL_ERROR)
 endif()
 
+if(VSCF_KDF1 AND NOT VSCF_HASH_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_KDF1 depends on the feature:")
+    message("     VSCF_HASH_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCF_KDF1 AND NOT VSCF_HASH_STREAM)
     message("-- error --")
     message("--")
@@ -874,6 +899,96 @@ if(VSCF_ED25519_PRIVATE_KEY AND NOT VSCF_RANDOM)
     message("--")
     message("Feature VSCF_ED25519_PRIVATE_KEY depends on the feature:")
     message("     VSCF_RANDOM - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ALG_INFO_DER_SERIALIZER AND NOT VSCF_OID)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ALG_INFO_DER_SERIALIZER depends on the feature:")
+    message("     VSCF_OID - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ALG_INFO_DER_SERIALIZER AND NOT VSCF_ASN1WR)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ALG_INFO_DER_SERIALIZER depends on the feature:")
+    message("     VSCF_ASN1WR - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ALG_INFO_DER_SERIALIZER AND NOT VSCF_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ALG_INFO_DER_SERIALIZER depends on the feature:")
+    message("     VSCF_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ALG_INFO_DER_SERIALIZER AND NOT VSCF_ALG_INFO_COMPATIBLE)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ALG_INFO_DER_SERIALIZER depends on the feature:")
+    message("     VSCF_ALG_INFO_COMPATIBLE - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ALG_INFO_DER_SERIALIZER AND NOT VSCF_ASN1_WRITER)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ALG_INFO_DER_SERIALIZER depends on the feature:")
+    message("     VSCF_ASN1_WRITER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ALG_INFO_DER_DESERIALIZER AND NOT VSCF_OID)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ALG_INFO_DER_DESERIALIZER depends on the feature:")
+    message("     VSCF_OID - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ALG_INFO_DER_DESERIALIZER AND NOT VSCF_ASN1RD)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ALG_INFO_DER_DESERIALIZER depends on the feature:")
+    message("     VSCF_ASN1RD - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ALG_INFO_DER_DESERIALIZER AND NOT VSCF_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ALG_INFO_DER_DESERIALIZER depends on the feature:")
+    message("     VSCF_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ALG_INFO_DER_DESERIALIZER AND NOT VSCF_ALG_INFO_COMPATIBLE)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ALG_INFO_DER_DESERIALIZER depends on the feature:")
+    message("     VSCF_ALG_INFO_COMPATIBLE - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ALG_INFO_DER_DESERIALIZER AND NOT VSCF_ASN1_READER)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ALG_INFO_DER_DESERIALIZER depends on the feature:")
+    message("     VSCF_ASN1_READER - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

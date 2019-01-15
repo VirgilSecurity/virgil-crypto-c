@@ -47,6 +47,13 @@ import VirgilCryptoCommon
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
+    /// Return OID for given algorithm identifier
+    @objc public static func fromAlgId(algId: AlgId) -> Data {
+        let proxyResult = vscf_oid_from_alg_id(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)))
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
+
     /// Return key algorithm for given OID.
     @objc public static func toKeyAlg(oid: Data) -> KeyAlg {
         let proxyResult = oid.withUnsafeBytes({ (oidPointer: UnsafePointer<byte>) -> vscf_key_alg_t in
@@ -54,6 +61,15 @@ import VirgilCryptoCommon
         })
 
         return KeyAlg.init(fromC: proxyResult)
+    }
+
+    /// Return algorithm identifier for given OID.
+    @objc public static func toAlgId(oid: Data) -> AlgId {
+        let proxyResult = oid.withUnsafeBytes({ (oidPointer: UnsafePointer<byte>) -> vscf_alg_id_t in
+            return vscf_oid_to_alg_id(vsc_data(oidPointer, oid.count))
+        })
+
+        return AlgId.init(fromC: proxyResult)
     }
 
     /// Return true if given OIDs are equal.
