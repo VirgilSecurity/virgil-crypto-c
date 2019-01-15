@@ -44,17 +44,22 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_RECEIVER_CHAIN_H_INCLUDED
-#define VSCR_RATCHET_RECEIVER_CHAIN_H_INCLUDED
+#ifndef VSCR_RATCHET_MESSAGE_H_INCLUDED
+#define VSCR_RATCHET_MESSAGE_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_chain_key.h"
+#include "vscr_ratchet_common.h"
+#include "vscr_error_ctx.h"
+#include "vscr_ratchet_message.h"
+#include "vscr_msg_type.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_buffer.h>
 #endif
 
@@ -74,67 +79,89 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet receiver chain' context.
+//  Handle 'ratchet message' context.
 //
-typedef struct vscr_ratchet_receiver_chain_t vscr_ratchet_receiver_chain_t;
-struct vscr_ratchet_receiver_chain_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    vsc_buffer_t *public_key;
-
-    vscr_ratchet_chain_key_t chain_key;
-};
+typedef struct vscr_ratchet_message_t vscr_ratchet_message_t;
 
 //
-//  Return size of 'vscr_ratchet_receiver_chain_t'.
+//  Return size of 'vscr_ratchet_message_t'.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_receiver_chain_ctx_size(void);
+vscr_ratchet_message_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_receiver_chain_init(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain);
+vscr_ratchet_message_init(vscr_ratchet_message_t *ratchet_message);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_receiver_chain_cleanup(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain);
+vscr_ratchet_message_cleanup(vscr_ratchet_message_t *ratchet_message);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_receiver_chain_t *
-vscr_ratchet_receiver_chain_new(void);
+VSCR_PUBLIC vscr_ratchet_message_t *
+vscr_ratchet_message_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_receiver_chain_delete(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain);
+vscr_ratchet_message_delete(vscr_ratchet_message_t *ratchet_message);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_receiver_chain_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_message_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_receiver_chain_destroy(vscr_ratchet_receiver_chain_t **ratchet_receiver_chain_ref);
+vscr_ratchet_message_destroy(vscr_ratchet_message_t **ratchet_message_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_receiver_chain_t *
-vscr_ratchet_receiver_chain_shallow_copy(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain);
+VSCR_PUBLIC vscr_ratchet_message_t *
+vscr_ratchet_message_shallow_copy(vscr_ratchet_message_t *ratchet_message);
+
+//
+//  Returns message type.
+//
+VSCR_PUBLIC vscr_msg_type_t
+vscr_ratchet_message_get_type(vscr_ratchet_message_t *ratchet_message);
+
+//
+//  Returns long-term public key, if message is prekey message.
+//
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_message_get_long_term_public_key(vscr_ratchet_message_t *ratchet_message);
+
+//
+//  Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
+//
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_message_get_one_time_public_key(vscr_ratchet_message_t *ratchet_message);
+
+//
+//  Buffer len to serialize this class.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *ratchet_message);
+
+//
+//  Serializes instance.
+//
+VSCR_PUBLIC void
+vscr_ratchet_message_serialize(vscr_ratchet_message_t *ratchet_message, vsc_buffer_t *output);
+
+//
+//  Deserializes instance.
+//
+VSCR_PUBLIC vscr_ratchet_message_t *
+vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx);
 
 
 // --------------------------------------------------------------------------
@@ -150,5 +177,5 @@ vscr_ratchet_receiver_chain_shallow_copy(vscr_ratchet_receiver_chain_t *ratchet_
 
 
 //  @footer
-#endif // VSCR_RATCHET_RECEIVER_CHAIN_H_INCLUDED
+#endif // VSCR_RATCHET_MESSAGE_H_INCLUDED
 //  @end

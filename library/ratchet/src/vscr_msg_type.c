@@ -44,20 +44,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_CHAIN_KEY_H_INCLUDED
-#define VSCR_RATCHET_CHAIN_KEY_H_INCLUDED
-
-#include "vscr_library.h"
-#include "vscr_ratchet_common.h"
-#include "vscr_ratchet_chain_key.h"
+#include "vscr_msg_type.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -66,85 +56,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'ratchet chain key' context.
-//
-typedef struct vscr_ratchet_chain_key_t vscr_ratchet_chain_key_t;
-struct vscr_ratchet_chain_key_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    uint32_t index;
-
-    byte key[vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH];
-};
-
-//
-//  Return size of 'vscr_ratchet_chain_key_t'.
-//
-VSCR_PUBLIC size_t
-vscr_ratchet_chain_key_ctx_size(void);
-
-//
-//  Perform initialization of pre-allocated context.
-//
-VSCR_PUBLIC void
-vscr_ratchet_chain_key_init(vscr_ratchet_chain_key_t *ratchet_chain_key);
-
-//
-//  Release all inner resources including class dependencies.
-//
-VSCR_PUBLIC void
-vscr_ratchet_chain_key_cleanup(vscr_ratchet_chain_key_t *ratchet_chain_key);
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCR_PUBLIC vscr_ratchet_chain_key_t *
-vscr_ratchet_chain_key_new(void);
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
-//
-VSCR_PUBLIC void
-vscr_ratchet_chain_key_delete(vscr_ratchet_chain_key_t *ratchet_chain_key);
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_chain_key_new ()'.
-//
-VSCR_PUBLIC void
-vscr_ratchet_chain_key_destroy(vscr_ratchet_chain_key_t **ratchet_chain_key_ref);
-
-//
-//  Copy given class context by increasing reference counter.
-//
-VSCR_PUBLIC vscr_ratchet_chain_key_t *
-vscr_ratchet_chain_key_shallow_copy(vscr_ratchet_chain_key_t *ratchet_chain_key);
-
-VSCR_PUBLIC void
-vscr_ratchet_chain_key_clone(const vscr_ratchet_chain_key_t *ratchet_chain_key, vscr_ratchet_chain_key_t *dst);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCR_RATCHET_CHAIN_KEY_H_INCLUDED
 //  @end

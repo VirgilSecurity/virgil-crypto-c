@@ -35,55 +35,17 @@
 
 import Foundation
 import VSCRatchet
-import VirgilCryptoCommon
-import VirgilCryptoFoundation
 
-@objc(VSCRVirgilRatchetFakeRng) public class VirgilRatchetFakeRng: NSObject, RatchetRng {
+@objc(VSCRMsgType) public enum MsgType: Int {
 
-    /// Handle underlying C context.
-    @objc public let c_ctx: OpaquePointer
+    /// Regular message. This message is all the time except case described in prekey message section.
+    case regular = 0
 
-    /// Create underlying C context.
-    public override init() {
-        self.c_ctx = vscr_virgil_ratchet_fake_rng_new()
-        super.init()
-    }
+    /// Prekey message. This message is sent to initiate conversation, till first response is received.
+    case prekey = 1
 
-    /// Acquire C context.
-    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    public init(take c_ctx: OpaquePointer) {
-        self.c_ctx = c_ctx
-        super.init()
-    }
-
-    /// Acquire retained C context.
-    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscr_virgil_ratchet_fake_rng_shallow_copy(c_ctx)
-        super.init()
-    }
-
-    /// Release underlying C context.
-    deinit {
-        vscr_virgil_ratchet_fake_rng_delete(self.c_ctx)
-    }
-
-    /// Interface for ratchet rng
-    @objc public func generateRandomData(size: Int) -> Data {
-        let randomCount = size
-        var random = Data(count: randomCount)
-        var randomBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(randomBuf)
-        }
-
-        random.withUnsafeMutableBytes({ (randomPointer: UnsafeMutablePointer<byte>) -> Void in
-            vsc_buffer_init(randomBuf)
-            vsc_buffer_use(randomBuf, randomPointer, randomCount)
-            vscr_virgil_ratchet_fake_rng_generate_random_data(self.c_ctx, size, randomBuf)
-        })
-        random.count = vsc_buffer_len(randomBuf)
-
-        return random
+    /// Create enumeration value from the correspond C enumeration value.
+    internal init(fromC msgType: vscr_msg_type_t) {
+        self.init(rawValue: Int(msgType.rawValue))!
     }
 }
