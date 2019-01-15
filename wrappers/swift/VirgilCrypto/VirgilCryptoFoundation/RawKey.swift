@@ -66,11 +66,11 @@ import VirgilCryptoCommon
     /// Creates raw key defined with algorithm and data.
     /// Note, data is copied.
     public init(alg: KeyAlg, rawKeyData: Data) {
-        let proxyResult = rawKeyData.withUnsafeBytes({ (rawKeyDataPointer: UnsafePointer<byte>) -> OpaquePointer in
+        let proxyResult = rawKeyData.withUnsafeBytes({ (rawKeyDataPointer: UnsafePointer<byte>) -> OpaquePointer? in
             return vscf_raw_key_new_with_data(vscf_key_alg_t(rawValue: UInt32(alg.rawValue)), vsc_data(rawKeyDataPointer, rawKeyData.count))
         })
 
-        self.c_ctx = proxyResult
+        self.c_ctx = proxyResult!
     }
 
     /// Release underlying C context.
