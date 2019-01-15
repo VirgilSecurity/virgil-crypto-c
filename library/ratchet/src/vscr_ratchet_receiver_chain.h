@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Interface Private API.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,10 +44,25 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscr_api_private.h"
+#ifndef VSCR_RATCHET_RECEIVER_CHAIN_H_INCLUDED
+#define VSCR_RATCHET_RECEIVER_CHAIN_H_INCLUDED
+
+#include "vscr_library.h"
+#include "vscr_ratchet_common.h"
+#include "vscr_ratchet_receiver_chain.h"
+#include "vscr_ratchet_chain_key.h"
+
+#include <RatchetSession.pb.h>
+#include <pb_decode.h>
+#include <pb_encode.h>
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -62,9 +71,90 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handle 'ratchet receiver chain' context.
+//
+typedef struct vscr_ratchet_receiver_chain_t vscr_ratchet_receiver_chain_t;
+struct vscr_ratchet_receiver_chain_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscr_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+
+    byte public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+
+    vscr_ratchet_chain_key_t chain_key;
+};
+
+//
+//  Return size of 'vscr_ratchet_receiver_chain_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_receiver_chain_ctx_size(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCR_PUBLIC void
+vscr_ratchet_receiver_chain_init(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCR_PUBLIC void
+vscr_ratchet_receiver_chain_cleanup(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCR_PUBLIC vscr_ratchet_receiver_chain_t *
+vscr_ratchet_receiver_chain_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if context was allocated by the caller.
+//
+VSCR_PUBLIC void
+vscr_ratchet_receiver_chain_delete(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscr_ratchet_receiver_chain_new ()'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_receiver_chain_destroy(vscr_ratchet_receiver_chain_t **ratchet_receiver_chain_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCR_PUBLIC vscr_ratchet_receiver_chain_t *
+vscr_ratchet_receiver_chain_shallow_copy(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain);
+
+VSCR_PUBLIC void
+vscr_ratchet_receiver_chain_serialize(vscr_ratchet_receiver_chain_t *ratchet_receiver_chain,
+        ReceiverChain *receiver_chain_pb);
+
+VSCR_PUBLIC void
+vscr_ratchet_receiver_chain_deserialize(const ReceiverChain *receiver_chain_pb,
+        vscr_ratchet_receiver_chain_t *receiver_chain);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCR_RATCHET_RECEIVER_CHAIN_H_INCLUDED
 //  @end

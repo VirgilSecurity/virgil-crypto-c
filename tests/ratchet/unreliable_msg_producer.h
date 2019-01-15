@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
@@ -33,58 +31,43 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-// --------------------------------------------------------------------------
-// clang-format off
 
+#ifndef VIRGIL_CRYPTO_UNRELIABLE_MSG_PRODUCER_H
+#define VIRGIL_CRYPTO_UNRELIABLE_MSG_PRODUCER_H
 
-//  @warning
-// --------------------------------------------------------------------------
-//  This file is partially generated.
-//  Generated blocks are enclosed between tags [@<tag>, @end].
-//  User's code can be added between tags [@end, @<tag>].
-// --------------------------------------------------------------------------
+#include <virgil/crypto/ratchet/vscr_ratchet_session.h>
+#include <virgil/crypto/ratchet/vscr_ratchet_message.h>
+#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 
+typedef struct out_of_order_msg {
+    vscr_ratchet_message_t *cipher_text;
+    vsc_buffer_t *plain_text;
+    size_t index;
+} out_of_order_msg_t;
 
-//  @description
-// --------------------------------------------------------------------------
-//  This module contains logic for interface/implementation architecture.
-//  Do not use this module in any part of the code.
-// --------------------------------------------------------------------------
+typedef struct out_of_order_msg_node out_of_order_msg_node_t;
 
-#ifndef VSCR_VIRGIL_RATCHET_FAKE_RNG_INTERNAL_H_INCLUDED
-#define VSCR_VIRGIL_RATCHET_FAKE_RNG_INTERNAL_H_INCLUDED
+struct out_of_order_msg_node {
+    out_of_order_msg_t *msg;
+    out_of_order_msg_node_t *next;
+};
 
-#include "vscr_library.h"
-#include "vscr_virgil_ratchet_fake_rng.h"
+typedef struct unreliable_msg_producer {
+    vscf_ctr_drbg_t *rng;
+    vscr_ratchet_session_t *session;
+    out_of_order_msg_node_t *skipped_msgs_list;
+    size_t produced_count;
+    float lost_rate;
+    float out_of_order_rate;
+} unreliable_msg_producer_t;
 
-// clang-format on
-//  @end
+void
+init_producer(
+        unreliable_msg_producer_t *producer, vscr_ratchet_session_t *session, float lost_rate, float out_of_order_rate);
 
+void
+deinit_producer(unreliable_msg_producer_t *producer);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+    void produce_msg(unreliable_msg_producer_t * producer, vsc_buffer_t * *plain_text, vscr_ratchet_message_t * *msg);
 
-
-//  @generated
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated section start.
-// --------------------------------------------------------------------------
-
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCR_VIRGIL_RATCHET_FAKE_RNG_INTERNAL_H_INCLUDED
-//  @end
+#endif // VIRGIL_CRYPTO_UNRELIABLE_MSG_PRODUCER_H

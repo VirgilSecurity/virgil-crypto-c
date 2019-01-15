@@ -1,6 +1,16 @@
-<class name="ratchet session" context="private">
+<class name="ratchet session" context="internal">
 
     <require class="ratchet common" scope="public"/>
+    <require class="ratchet common" scope="context"/>
+    <require module="ratchet message defs" scope="private"/>
+    <require module="buffer defs" scope="private" project="common"/>
+
+    <require impl="ctr drbg" project="foundation" scope="private"/>
+
+    <require header="RatchetSession.pb.h" scope="private"/>
+    <require header="RatchetMessage.pb.h" scope="private"/>
+    <require header="pb_decode.h" scope="private"/>
+    <require header="pb_encode.h" scope="private"/>
 
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
 
@@ -8,70 +18,63 @@
         FIXME
     </constant>
 
-    <dependency name="rng" interface="ratchet rng"/>
-    <dependency class="ratchet" name="ratchet"/>
+    <dependency name="rng" interface="random" project="foundation"/>
 
+    <property name="is initiator" type="boolean"/>
+    <property class="ratchet" name="ratchet"/>
     <property name="received first response" type="boolean"/>
-    <property name="sender identity public key" class="buffer" access="readwrite"/>
-    <property name="sender ephemeral public key" class="buffer" access="readwrite"/>
-    <property name="receiver longterm public key" class="buffer" access="readwrite"/>
-    <property name="receiver onetime public key" class="buffer" access="readwrite"/>
 
-    <constructor name="with members">
-        <argument name="received first response" type="boolean"/>
-        <argument name="sender identity public key" class="buffer" access="readwrite"/>
-        <argument name="sender ephemeral public key" class="buffer" access="readwrite"/>
-        <argument name="receiver longterm public key" class="buffer" access="readwrite"/>
-        <argument name="receiver onetime public key" class="buffer" access="readwrite"/>
-        <argument name="ratchet" class="ratchet" access="disown"/>
-    </constructor>
+    <property name="sender identity public key" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+    </property>
+    <property name="sender ephemeral public key" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+    </property>
+    <property name="receiver long term public key" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+    </property>
+    <property name="receiver has one time public key" type="boolean" access="readwrite"/>
+    <property name="receiver one time public key" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+    </property>
+
+    <method name="setup defaults">
+    </method>
 
     <method name="initiate">
         <argument name="sender identity private key" class="data"/>
         <argument name="receiver identity public key" class="data"/>
-        <argument name="receiver long term public key" class="buffer" access="retain"/>
-        <argument name="receiver one time public key" class="buffer" access="retain"/>
+        <argument name="receiver long term public key" class="data"/>
+        <argument name="receiver one time public key" class="data"/>
 
         <return enum="error"/>
     </method>
 
     <method name="respond">
-        <argument name="sender identity public key" class="buffer" access="retain"/>
-        <argument name="sender ephemeral public key" class="buffer" access="retain"/>
-        <argument name="ratchet public key" class="buffer" access="retain"/>
-        <argument name="receiver identity private key" class="buffer" access="retain"/>
-        <argument name="receiver long term private key" class="buffer" access="retain"/>
-        <argument name="receiver one time private key" class="buffer" access="retain"/>
-        <argument name="message" class="RegularMessage" library="nanopb" access="readonly"/>
+        <argument name="sender identity public key" class="data"/>
+        <argument name="receiver identity private key" class="data"/>
+        <argument name="receiver long term private key" class="data"/>
+        <argument name="receiver one time private key" class="data"/>
+        <argument name="message" class="ratchet message"/>
 
         <return enum="error"/>
-    </method>
-
-    <method name="encrypt len">
-        <argument name="plain text len" type="size"/>
-
-        <return type="size"/>
     </method>
 
     <method name="encrypt">
         <argument name="plain text" class="data"/>
-        <argument name="cipher text" class="buffer">
-            <length method="encrypt len">
-                <proxy argument="plain text" to="plain text len" cast="data_length"/>
-            </length>
-        </argument>
+        <argument name="err ctx" class="error ctx" access="readwrite"/>
 
-        <return enum="error"/>
+        <return class="ratchet message" access="disown"/>
     </method>
 
     <method name="decrypt len">
-        <argument name="message" class="Message" library="nanopb" access="readonly"/>
+        <argument name="message" class="ratchet message"/>
 
         <return type="size"/>
     </method>
 
     <method name="decrypt">
-        <argument name="message" class="Message" library="nanopb" access="readwrite"/>
+        <argument name="message" class="ratchet message"/>
         <argument name="plain text" class="buffer">
             <length method="decrypt len">
                 <proxy argument="message" to="message"/>
@@ -89,8 +92,6 @@
         <argument name="output" class="buffer">
             <length method="serialize len"/>
         </argument>
-
-        <return enum="error"/>
     </method>
 
     <method name="deserialize" is_static="1">

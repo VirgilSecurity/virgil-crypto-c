@@ -87,20 +87,6 @@ extern "C" {
 //  Handle 'ratchet cipher' context.
 //
 typedef struct vscr_ratchet_cipher_t vscr_ratchet_cipher_t;
-struct vscr_ratchet_cipher_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Dependency to the implementation 'aes256 gcm'.
-    //
-    vscf_aes256_gcm_t *aes256_gcm;
-};
 
 //
 //  Return size of 'vscr_ratchet_cipher_t'.

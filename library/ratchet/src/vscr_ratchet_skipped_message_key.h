@@ -44,11 +44,17 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_MESSAGE_KEY_H_INCLUDED
-#define VSCR_RATCHET_MESSAGE_KEY_H_INCLUDED
+#ifndef VSCR_RATCHET_SKIPPED_MESSAGE_KEY_H_INCLUDED
+#define VSCR_RATCHET_SKIPPED_MESSAGE_KEY_H_INCLUDED
 
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
+#include "vscr_ratchet_skipped_message_key.h"
+#include "vscr_ratchet_message_key.h"
+
+#include <RatchetSession.pb.h>
+#include <pb_decode.h>
+#include <pb_encode.h>
 
 // clang-format on
 //  @end
@@ -66,10 +72,10 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet message key' context.
+//  Handle 'ratchet skipped message key' context.
 //
-typedef struct vscr_ratchet_message_key_t vscr_ratchet_message_key_t;
-struct vscr_ratchet_message_key_t {
+typedef struct vscr_ratchet_skipped_message_key_t vscr_ratchet_skipped_message_key_t;
+struct vscr_ratchet_skipped_message_key_t {
     //
     //  Function do deallocate self context.
     //
@@ -79,54 +85,62 @@ struct vscr_ratchet_message_key_t {
     //
     size_t refcnt;
 
-    uint32_t index;
+    byte public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
 
-    byte key[vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH];
+    vscr_ratchet_message_key_t *message_key;
 };
 
 //
-//  Return size of 'vscr_ratchet_message_key_t'.
+//  Return size of 'vscr_ratchet_skipped_message_key_t'.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_message_key_ctx_size(void);
+vscr_ratchet_skipped_message_key_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_key_init(vscr_ratchet_message_key_t *ratchet_message_key);
+vscr_ratchet_skipped_message_key_init(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_key_cleanup(vscr_ratchet_message_key_t *ratchet_message_key);
+vscr_ratchet_skipped_message_key_cleanup(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_message_key_t *
-vscr_ratchet_message_key_new(void);
+VSCR_PUBLIC vscr_ratchet_skipped_message_key_t *
+vscr_ratchet_skipped_message_key_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_key_delete(vscr_ratchet_message_key_t *ratchet_message_key);
+vscr_ratchet_skipped_message_key_delete(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_message_key_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_skipped_message_key_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_key_destroy(vscr_ratchet_message_key_t **ratchet_message_key_ref);
+vscr_ratchet_skipped_message_key_destroy(vscr_ratchet_skipped_message_key_t **ratchet_skipped_message_key_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_message_key_t *
-vscr_ratchet_message_key_shallow_copy(vscr_ratchet_message_key_t *ratchet_message_key);
+VSCR_PUBLIC vscr_ratchet_skipped_message_key_t *
+vscr_ratchet_skipped_message_key_shallow_copy(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key);
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_message_key_serialize(vscr_ratchet_skipped_message_key_t *ratchet_skipped_message_key,
+        SkippedMessageKey *skipped_message_key_pb);
+
+VSCR_PUBLIC void
+vscr_ratchet_skipped_message_key_deserialize(const SkippedMessageKey *skipped_message_key_pb,
+        vscr_ratchet_skipped_message_key_t *skipped_message_key);
 
 
 // --------------------------------------------------------------------------
@@ -142,5 +156,5 @@ vscr_ratchet_message_key_shallow_copy(vscr_ratchet_message_key_t *ratchet_messag
 
 
 //  @footer
-#endif // VSCR_RATCHET_MESSAGE_KEY_H_INCLUDED
+#endif // VSCR_RATCHET_SKIPPED_MESSAGE_KEY_H_INCLUDED
 //  @end

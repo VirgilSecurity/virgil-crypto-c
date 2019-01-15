@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'ratchet rng' API.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,10 +44,16 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscr_ratchet_rng_api.h"
+#ifndef VSCR_MSG_TYPE_H_INCLUDED
+#define VSCR_MSG_TYPE_H_INCLUDED
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -62,9 +62,31 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+enum vscr_msg_type_t {
+    //
+    //  Regular message. This message is all the time except case described in prekey message section.
+    //
+    vscr_msg_type_REGULAR = 0,
+    //
+    //  Prekey message. This message is sent to initiate conversation, till first response is received.
+    //
+    vscr_msg_type_PREKEY = 1
+};
+typedef enum vscr_msg_type_t vscr_msg_type_t;
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCR_MSG_TYPE_H_INCLUDED
 //  @end

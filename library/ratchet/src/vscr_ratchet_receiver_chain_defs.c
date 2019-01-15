@@ -1,3 +1,5 @@
+//  @license
+// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
@@ -31,29 +33,38 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-
-#ifndef VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_SESSION_H
-#define VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_SESSION_H
-
-#include "vsc_data.h"
-
-extern const vsc_data_t test_ratchet_session_plain_text1;
-extern const vsc_data_t test_ratchet_session_plain_text2;
-extern const vsc_data_t test_ratchet_session_plain_text3;
-extern const vsc_data_t test_ratchet_session_alice_identity_private_key;
-extern const vsc_data_t test_ratchet_session_alice_identity_public_key;
-extern const vsc_data_t test_ratchet_session_alice_ephemeral_private_key;
-extern const vsc_data_t test_ratchet_session_alice_ephemeral_public_key;
-extern const vsc_data_t test_ratchet_session_alice_ratchet_private_key;
-extern const vsc_data_t test_ratchet_session_alice_ratchet_public_key;
-extern const vsc_data_t test_ratchet_session_bob_identity_private_key;
-extern const vsc_data_t test_ratchet_session_bob_identity_public_key;
-extern const vsc_data_t test_ratchet_session_bob_long_term_private_key;
-extern const vsc_data_t test_ratchet_session_bob_long_term_public_key;
-extern const vsc_data_t test_ratchet_session_bob_long_term_key_id;
-extern const vsc_data_t test_ratchet_session_bob_one_time_private_key;
-extern const vsc_data_t test_ratchet_session_bob_one_time_public_key;
-extern const vsc_data_t test_ratchet_session_bob_one_time_key_id;
+// --------------------------------------------------------------------------
+// clang-format off
 
 
-#endif //VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_SESSION_H
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'ratchet receiver chain' types definition.
+// --------------------------------------------------------------------------
+
+
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
+
+#include "vscr_ratchet_receiver_chain_defs.h"
+
+// clang-format on
+//  @end
+
+
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
+
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end

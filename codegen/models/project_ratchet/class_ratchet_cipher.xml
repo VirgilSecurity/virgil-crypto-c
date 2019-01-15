@@ -1,7 +1,8 @@
-<class name="ratchet cipher" context="public">
+<class name="ratchet cipher" context="internal" scope="private">
 
-    <require impl="sha256" project="foundation" scope="private"/>
+    <require impl="sha512" project="foundation" scope="private"/>
     <require impl="hkdf" project="foundation" scope="private"/>
+    <require module="buffer defs" scope="private" project="common"/>
 
     <dependency name="aes256 gcm" impl="aes256 gcm" project="foundation"/>
 
@@ -15,6 +16,10 @@
         <argument name="cipher text len" type="size"/>
 
         <return type="size"/>
+    </method>
+
+    <method name="setup cipher" declaration="private">
+        <argument name="key" class="data"/>
     </method>
 
     <method name="encrypt">
