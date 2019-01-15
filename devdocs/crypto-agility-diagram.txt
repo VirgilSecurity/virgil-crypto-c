@@ -1,0 +1,68 @@
+@startuml
+
+enum AlgId {
+    none
+    sha224
+    sha256
+    sha384
+    sha512
+    kdf1
+    kdf2
+}
+'
+interface AlgInfo {
+    algId(): AlgId
+}
+
+class SimpleAlgInfo
+
+class KdfAlgInfo {
+    + hashAlgInfo : SimpleAlgInfo
+    + salt : Byte[]
+    + iterationCount : Integer
+}
+
+interface AlgInfoCompatible {
+    produceAlgInfo() : AlgInfo
+    consumeAlgInfo() : AlgInfo
+}
+
+interface AlgInfoSerializer {
+    serialize(: AlgInfo) : Byte[]
+}
+
+interface AlgInfoDeserializer {
+    deserialize(: Byte[]) : AlgInfo
+}
+
+class AlgInfoDerSerializer
+class AlgInfoDerDeserializer
+
+
+AlgInfo .left.> AlgId : <<use>>
+SimpleAlgInfo .up.|> AlgInfo
+KdfAlgInfo .up.|> AlgInfo
+AlgInfoCompatible .left.> AlgInfo : <<produce/consume>>
+
+AlgInfoDerSerializer .down.|> AlgInfoSerializer
+AlgInfoDerDeserializer .down.|> AlgInfoDeserializer
+AlgInfoSerializer .down.> AlgInfo : <<produce/consume>>
+AlgInfoDeserializer .down.> AlgInfo : <<produce/consume>>
+
+class sha256
+class kdf1
+
+sha256 -up-|> AlgInfoCompatible
+kdf1  -up-|> AlgInfoCompatible
+
+note bottom of sha256
+    <<produce/consume>>
+    SimpleAlgInfo
+end note
+
+note bottom of kdf1
+    <<produce/consume>>
+    KdfAlgInfo
+end note
+
+@enduml

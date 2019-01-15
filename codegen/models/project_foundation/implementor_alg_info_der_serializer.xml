@@ -1,0 +1,20 @@
+<implementor name="alg info der serializer" is_default="1">
+    Implementation of serialization algorithm information
+    <implementation name="alg info der serializer">
+        Provide implementation of der serializer of algorithm information
+
+        <interface name="defaults"/>
+        <interface name="alg info serializer"/>
+
+        <require class="oid"/>
+        <require class="asn1wr"/>
+        <require enum="asn1 tag"/>
+        <require enum="alg id"/>
+        <require interface="alg info"/>
+        <require impl="simple alg info"/>
+        <require impl="kdf alg info"/>
+        <require interface="alg info compatible"/>
+
+        <dependency name="asn1 writer" interface="asn1 writer"/>
+    </implementation>
+</implementor>

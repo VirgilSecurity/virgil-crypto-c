@@ -1,0 +1,10 @@
+<enum name="alg id" definition="public">
+    Define implemented algorithm identificator.
+    <constant name="none"/>
+    <constant name="sha224"/>
+    <constant name="sha256"/>
+    <constant name="sha384"/>
+    <constant name="sha512"/>
+    <constant name="kdf1"/>
+    <constant name="kdf2"/>
+</enum>
