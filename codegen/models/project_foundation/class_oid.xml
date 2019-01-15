@@ -10,6 +10,14 @@
         <return class="data"/>
     </method>
 
+    <method name="from alg id">
+        Return OID for given algorithm identifier
+
+        <argument name="alg id" enum="alg id"/>
+
+        <return class="data"/>
+    </method>
+
 
     <method name="to key alg">
         Return key algorithm for given OID.
@@ -17,6 +25,14 @@
         <argument name="oid" class="data"/>
 
         <return enum="key alg"/>
+    </method>
+
+    <method name="to alg id">
+        Return algorithm identifier for given OID.
+
+        <argument name="oid" class="data"/>
+
+        <return enum="alg id"/>
     </method>
 
 

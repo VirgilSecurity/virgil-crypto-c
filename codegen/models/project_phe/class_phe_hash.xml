@@ -5,13 +5,13 @@
     <require module="const" scope="private"/>
     <require class="phe common" scope="public"/>
     <require impl="hkdf" project="foundation" scope="private"/>
+    <require impl="sha512" project="foundation" scope="private"/>
     <require header="mbedtls/ecp.h" scope="public"/>
     <require header="mbedtls/bignum.h" scope="context"/>
 
     <require module="buffer defs" scope="private" project="common"/>
 
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
-    <dependency name="sha512" impl="sha512" project="foundation"/>
     <dependency name="simple swu" class="simple swu"/>
 
     <method name="derive account key" declaration="public">

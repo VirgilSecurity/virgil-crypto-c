@@ -1,0 +1,8 @@
+<interface name="alg info deserializer">
+    Provide algorithm deserialization
+    <method name="deserialize">
+        Algorithm deserialization algorithm from data
+        <argument name="data" class="data"/>
+        <return interface="alg info" access="disown"/>
+    </method>
+</interface>

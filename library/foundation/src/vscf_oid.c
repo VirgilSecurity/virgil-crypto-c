@@ -61,6 +61,12 @@
 static const byte oid_rsa_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01};
 static const vsc_data_t oid_rsa = {oid_rsa_bytes, sizeof(oid_rsa_bytes)};
 
+static const byte oid_sha256_bytes[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01};
+static const vsc_data_t oid_sha256 = {oid_sha256_bytes, sizeof(oid_sha256_bytes)};
+
+static const byte oid_kdf1_bytes[] = {0x28, 0x81, 0x8C, 0x71, 0x02, 0x05, 0x01};
+static const vsc_data_t oid_kdf1 = {oid_kdf1_bytes, sizeof(oid_kdf1_bytes)};
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -95,6 +101,26 @@ vscf_oid_from_key_alg(vscf_key_alg_t key_alg) {
 }
 
 //
+//  Return OID for given algorithm identifier
+//
+VSCF_PUBLIC vsc_data_t
+vscf_oid_from_alg_id(vscf_alg_id_t alg_id) {
+
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
+
+    switch (alg_id) {
+    case vscf_alg_id_SHA256:
+        return oid_sha256;
+    case vscf_alg_id_KDF1:
+        return oid_kdf1;
+
+    default:
+        VSCF_ASSERT(0 && "Unhanded algorithm identifier");
+        return vsc_data_empty();
+    }
+}
+
+//
 //  Return key algorithm for given OID.
 //
 VSCF_PUBLIC vscf_key_alg_t
@@ -107,6 +133,25 @@ vscf_oid_to_key_alg(vsc_data_t oid) {
     }
 
     return vscf_key_alg_NONE;
+}
+
+//
+//  Return algorithm identifier for given OID.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_oid_to_alg_id(vsc_data_t oid) {
+
+    VSCF_ASSERT(vsc_data_is_valid(oid));
+
+    if (vscf_oid_equal(oid, oid_sha256)) {
+        return vscf_alg_id_SHA256;
+    }
+
+    if (vscf_oid_equal(oid, oid_kdf1)) {
+        return vscf_alg_id_KDF1;
+    }
+
+    return vscf_alg_id_NONE;
 }
 
 //
