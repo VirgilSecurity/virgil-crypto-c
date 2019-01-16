@@ -145,7 +145,7 @@ VSCF_PUBLIC vscf_kdf_alg_info_t *
 vscf_kdf_alg_info_shallow_copy(vscf_kdf_alg_info_t *kdf_alg_info);
 
 //
-//  Provide algorithm identificator
+//  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
 vscf_kdf_alg_info_alg_id(vscf_kdf_alg_info_t *kdf_alg_info);

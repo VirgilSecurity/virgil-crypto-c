@@ -126,7 +126,7 @@ vscf_kdf_alg_info_new_with_members(vscf_alg_id_t alg_id, const vscf_simple_alg_i
 }
 
 //
-//  Provide algorithm identificator
+//  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
 vscf_kdf_alg_info_alg_id(vscf_kdf_alg_info_t *kdf_alg_info) {

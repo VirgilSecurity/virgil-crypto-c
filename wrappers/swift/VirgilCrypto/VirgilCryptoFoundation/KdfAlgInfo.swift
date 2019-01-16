@@ -82,7 +82,7 @@ import VirgilCryptoCommon
         vscf_kdf_alg_info_delete(self.c_ctx)
     }
 
-    /// Provide algorithm identificator
+    /// Provide algorithm identificator.
     @objc public func algId() -> AlgId {
         let proxyResult = vscf_kdf_alg_info_alg_id(self.c_ctx)
 

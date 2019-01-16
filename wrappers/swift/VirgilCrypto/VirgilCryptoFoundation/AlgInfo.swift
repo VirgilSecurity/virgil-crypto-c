@@ -40,7 +40,7 @@ import VirgilCryptoCommon
 /// Provide details about implemented algorithms.
 @objc(VSCFAlgInfo) public protocol AlgInfo : CContext {
 
-    /// Provide algorithm identificator
+    /// Provide algorithm identificator.
     @objc func algId() -> AlgId
 }
 
@@ -61,7 +61,7 @@ import VirgilCryptoCommon
         vscf_impl_delete(self.c_ctx)
     }
 
-    /// Provide algorithm identificator
+    /// Provide algorithm identificator.
     @objc public func algId() -> AlgId {
         let proxyResult = vscf_alg_info_alg_id(self.c_ctx)
 

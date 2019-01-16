@@ -1,0 +1,92 @@
+<implementor name="alg info der" is_default="1">
+    Implementation of deserialization algorithm information
+
+    <implementation name="alg info der serializer">
+        Provide DER serializer of algorithm information.
+
+        <interface name="defaults"/>
+        <interface name="alg info serializer"/>
+
+        <require class="asn1wr"/>
+        <require interface="alg info"/>
+        <require impl="simple alg info der serializer"/>
+        <require impl="kdf alg info der serializer"/>
+
+        <dependency name="asn1 writer" interface="asn1 writer"/>
+    </implementation>
+
+
+    <implementation name="alg info der deserializer">
+        Provide DER deserializer of algorithm information.
+
+        <interface name="defaults"/>
+        <interface name="alg info deserializer"/>
+
+        <require class="asn1rd"/>
+        <require interface="alg info"/>
+        <require impl="simple alg info der deserializer"/>
+        <require impl="kdf alg info der deserializer"/>
+
+        <dependency name="asn1 reader" interface="asn1 reader"/>
+    </implementation>
+
+
+    <implementation name="simple alg info der serializer">
+        Serialize class "simple alg info".
+
+        <interface name="defaults"/>
+        <interface name="alg info serializer"/>
+
+        <require class="oid"/>
+        <require class="asn1wr"/>
+        <require enum="asn1 tag"/>
+        <require impl="simple alg info"/>
+
+        <dependency name="asn1 writer" interface="asn1 writer"/>
+    </implementation>
+
+
+    <implementation name="simple alg info der deserializer">
+        Deserialize class "simple alg info".
+
+        <interface name="defaults"/>
+        <interface name="alg info deserializer"/>
+
+        <require class="oid"/>
+        <require class="asn1wr"/>
+        <require enum="asn1 tag"/>
+        <require impl="simple alg info"/>
+
+        <dependency name="asn1 reader" interface="asn1 reader"/>
+    </implementation>
+
+
+    <implementation name="kdf alg info der serializer">
+        Serialize class "simple alg info".
+
+        <interface name="defaults"/>
+        <interface name="alg info serializer"/>
+
+        <require class="oid"/>
+        <require class="asn1wr"/>
+        <require enum="asn1 tag"/>
+        <require impl="kdf alg info"/>
+
+        <dependency name="asn1 writer" interface="asn1 writer"/>
+    </implementation>
+
+
+    <implementation name="kdf alg info der deserializer">
+        Deserialize class "simple alg info".
+
+        <interface name="defaults"/>
+        <interface name="alg info deserializer"/>
+
+        <require class="oid"/>
+        <require class="asn1wr"/>
+        <require enum="asn1 tag"/>
+        <require impl="kdf alg info"/>
+
+        <dependency name="asn1 reader" interface="asn1 reader"/>
+    </implementation>
+</implementor>

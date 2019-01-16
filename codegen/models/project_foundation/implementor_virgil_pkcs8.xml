@@ -13,6 +13,7 @@
         <require class="oid"/>
         <require class="asn1wr"/>
         <require enum="asn1 tag"/>
+        <require interface="alg"/>
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
     </implementation>
@@ -29,6 +30,7 @@
         <require class="oid"/>
         <require class="asn1rd"/>
         <require enum="asn1 tag"/>
+        <require interface="alg"/>
 
         <dependency name="asn1 reader" interface="asn1 reader"/>
     </implementation>

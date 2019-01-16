@@ -78,7 +78,10 @@ enum vscf_alg_id_t {
     vscf_alg_id_SHA384,
     vscf_alg_id_SHA512,
     vscf_alg_id_KDF1,
-    vscf_alg_id_KDF2
+    vscf_alg_id_KDF2,
+    vscf_alg_id_RSA,
+    vscf_alg_id_ED25519,
+    vscf_alg_id_X25519
 };
 typedef enum vscf_alg_id_t vscf_alg_id_t;
 

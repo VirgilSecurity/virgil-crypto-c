@@ -35,18 +35,57 @@
 
 import Foundation
 import VSCFoundation
+import VirgilCryptoCommon
 
-/// Defines enumeration of possible asymmetric key algorithms.
-@objc(VSCFKeyAlg) public enum KeyAlg: Int {
+/// Provide interface to persist algorithm information and it parameters
+/// and then restore the algorithm from it.
+@objc(VSCFAlg) public protocol Alg : CContext {
 
-    case none = 0
+    /// Provide algorithm identificator.
+    @objc func algId() -> AlgId
 
-    case rsa
+    /// Produce object with algorithm information and configuration parameters.
+    @objc func produceAlgInfo() -> AlgInfo
 
-    case ed25519
+    /// Restore algorithm configuration from the given object.
+    @objc func restoreAlgInfo(algInfo: AlgInfo) throws
+}
 
-    /// Create enumeration value from the correspond C enumeration value.
-    internal init(fromC keyAlg: vscf_key_alg_t) {
-        self.init(rawValue: Int(keyAlg.rawValue))!
+/// Implement interface methods
+@objc(VSCFAlgProxy) internal class AlgProxy: NSObject, Alg {
+
+    /// Handle underlying C context.
+    @objc public let c_ctx: OpaquePointer
+
+    /// Take C context that implements this interface
+    public init(c_ctx: OpaquePointer) {
+        self.c_ctx = c_ctx
+        super.init()
+    }
+
+    /// Release underlying C context.
+    deinit {
+        vscf_impl_delete(self.c_ctx)
+    }
+
+    /// Provide algorithm identificator.
+    @objc public func algId() -> AlgId {
+        let proxyResult = vscf_alg_alg_id(self.c_ctx)
+
+        return AlgId.init(fromC: proxyResult)
+    }
+
+    /// Produce object with algorithm information and configuration parameters.
+    @objc public func produceAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_alg_produce_alg_info(self.c_ctx)
+
+        return AlgInfoProxy.init(c_ctx: proxyResult!)
+    }
+
+    /// Restore algorithm configuration from the given object.
+    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
+        let proxyResult = vscf_alg_restore_alg_info(self.c_ctx, algInfo.c_ctx)
+
+        try FoundationError.handleError(fromC: proxyResult)
     }
 }

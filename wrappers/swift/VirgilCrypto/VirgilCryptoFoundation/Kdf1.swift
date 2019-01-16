@@ -38,7 +38,7 @@ import VSCFoundation
 import VirgilCryptoCommon
 
 /// Virgil Security implementation of the KDF1 (ISO-18033-2) algorithm.
-@objc(VSCFKdf1) public class Kdf1: NSObject, Kdf, AlgInfoCompatible {
+@objc(VSCFKdf1) public class Kdf1: NSObject, Kdf, Alg {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -94,10 +94,24 @@ import VirgilCryptoCommon
         return key
     }
 
-    /// Produce algorithm information structure
+    /// Provide algorithm identificator.
+    @objc public func algId() -> AlgId {
+        let proxyResult = vscf_kdf1_alg_id(self.c_ctx)
+
+        return AlgId.init(fromC: proxyResult)
+    }
+
+    /// Produce object with algorithm information and configuration parameters.
     @objc public func produceAlgInfo() -> AlgInfo {
         let proxyResult = vscf_kdf1_produce_alg_info(self.c_ctx)
 
         return AlgInfoProxy.init(c_ctx: proxyResult!)
+    }
+
+    /// Restore algorithm configuration from the given object.
+    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
+        let proxyResult = vscf_kdf1_restore_alg_info(self.c_ctx, algInfo.c_ctx)
+
+        try FoundationError.handleError(fromC: proxyResult)
     }
 }

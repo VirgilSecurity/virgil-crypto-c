@@ -38,7 +38,7 @@ import VSCFoundation
 import VirgilCryptoCommon
 
 /// This is implementation of ED25519 public key
-@objc(VSCFEd25519PublicKey) public class Ed25519PublicKey: NSObject, Key, Verify, PublicKey {
+@objc(VSCFEd25519PublicKey) public class Ed25519PublicKey: NSObject, Alg, Key, Verify, PublicKey {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -74,11 +74,25 @@ import VirgilCryptoCommon
         vscf_ed25519_public_key_delete(self.c_ctx)
     }
 
-    /// Return implemented asymmetric key algorithm type.
-    @objc public func alg() -> KeyAlg {
-        let proxyResult = vscf_ed25519_public_key_alg(self.c_ctx)
+    /// Provide algorithm identificator.
+    @objc public func algId() -> AlgId {
+        let proxyResult = vscf_ed25519_public_key_alg_id(self.c_ctx)
 
-        return KeyAlg.init(fromC: proxyResult)
+        return AlgId.init(fromC: proxyResult)
+    }
+
+    /// Produce object with algorithm information and configuration parameters.
+    @objc public func produceAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_ed25519_public_key_produce_alg_info(self.c_ctx)
+
+        return AlgInfoProxy.init(c_ctx: proxyResult!)
+    }
+
+    /// Restore algorithm configuration from the given object.
+    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
+        let proxyResult = vscf_ed25519_public_key_restore_alg_info(self.c_ctx, algInfo.c_ctx)
+
+        try FoundationError.handleError(fromC: proxyResult)
     }
 
     /// Length of the key in bytes.

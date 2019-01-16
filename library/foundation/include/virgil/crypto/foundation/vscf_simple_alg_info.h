@@ -138,7 +138,7 @@ VSCF_PUBLIC vscf_simple_alg_info_t *
 vscf_simple_alg_info_shallow_copy(vscf_simple_alg_info_t *simple_alg_info);
 
 //
-//  Provide algorithm identificator
+//  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
 vscf_simple_alg_info_alg_id(vscf_simple_alg_info_t *simple_alg_info);

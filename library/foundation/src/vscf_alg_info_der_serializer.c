@@ -53,14 +53,10 @@
 #include "vscf_alg_info_der_serializer.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_oid.h"
 #include "vscf_asn1wr.h"
-#include "vscf_asn1_tag.h"
-#include "vscf_alg_id.h"
 #include "vscf_alg_info.h"
-#include "vscf_simple_alg_info.h"
-#include "vscf_kdf_alg_info.h"
-#include "vscf_alg_info_compatible.h"
+#include "vscf_simple_alg_info_der_serializer.h"
+#include "vscf_kdf_alg_info_der_serializer.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_alg_info_der_serializer_defs.h"
 #include "vscf_alg_info_der_serializer_internal.h"
@@ -108,7 +104,7 @@ vscf_alg_info_der_serializer_serialize_len(
     VSCF_ASSERT_PTR(alg_info_der_serializer);
     VSCF_ASSERT_PTR(alg_info);
 
-    return 34;
+    return 128;
 }
 
 //
@@ -118,7 +114,6 @@ VSCF_PUBLIC void
 vscf_alg_info_der_serializer_serialize(
         vscf_alg_info_der_serializer_t *alg_info_der_serializer, const vscf_impl_t *alg_info, vsc_buffer_t *out) {
 
-    //  TODO: This is STUB. Implement me.
     VSCF_ASSERT_PTR(alg_info_der_serializer);
     VSCF_ASSERT_PTR(alg_info);
     VSCF_ASSERT_PTR(out);
@@ -128,20 +123,38 @@ vscf_alg_info_der_serializer_serialize(
 
     VSCF_ASSERT_PTR(alg_info_der_serializer->asn1_writer);
 
-    vscf_impl_t *asn1_writer = alg_info_der_serializer->asn1_writer;
-
-    vscf_asn1_writer_reset(asn1_writer, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
-
     //
-    //  Write algorithm
+    //  Route serialization.
     //
+    vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
-    VSCF_ASSERT(0 < vscf_asn1_writer_write_oid(asn1_writer, vscf_oid_from_alg_id(vscf_alg_info_alg_id(alg_info))));
+    vscf_simple_alg_info_der_serializer_t *simple_alg_info_serializer = NULL;
+    vscf_kdf_alg_info_der_serializer_t *kdf_alg_info_serializer = NULL;
 
-    //
-    //  Finalize
-    //
-    VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
-
-    vsc_buffer_inc_used(out, vscf_asn1_writer_finish(asn1_writer));
+    switch (alg_id) {
+    case vscf_alg_id_SHA224:
+    case vscf_alg_id_SHA256:
+    case vscf_alg_id_SHA384:
+    case vscf_alg_id_SHA512:
+    case vscf_alg_id_RSA:
+    case vscf_alg_id_ED25519:
+    case vscf_alg_id_X25519:
+        simple_alg_info_serializer = vscf_simple_alg_info_der_serializer_new();
+        vscf_simple_alg_info_der_serializer_use_asn1_writer(
+                simple_alg_info_serializer, alg_info_der_serializer->asn1_writer);
+        vscf_simple_alg_info_der_serializer_serialize(simple_alg_info_serializer, alg_info, out);
+        vscf_simple_alg_info_der_serializer_destroy(&simple_alg_info_serializer);
+        break;
+    case vscf_alg_id_KDF1:
+    case vscf_alg_id_KDF2:
+        kdf_alg_info_serializer = vscf_kdf_alg_info_der_serializer_new();
+        vscf_kdf_alg_info_der_serializer_use_asn1_writer(kdf_alg_info_serializer, alg_info_der_serializer->asn1_writer);
+        vscf_kdf_alg_info_der_serializer_serialize(kdf_alg_info_serializer, alg_info, out);
+        vscf_kdf_alg_info_der_serializer_destroy(&kdf_alg_info_serializer);
+        break;
+    case vscf_alg_id_NONE:
+        VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
+        break;
+    }
 }

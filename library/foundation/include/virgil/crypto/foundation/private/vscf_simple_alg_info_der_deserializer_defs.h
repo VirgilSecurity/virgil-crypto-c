@@ -47,14 +47,18 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Interface 'alg info compatible' API.
+//  Types of the 'simple alg info der deserializer' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ALG_INFO_COMPATIBLE_API_H_INCLUDED
-#define VSCF_ALG_INFO_COMPATIBLE_API_H_INCLUDED
+#ifndef VSCF_SIMPLE_ALG_INFO_DER_DESERIALIZER_DEFS_H_INCLUDED
+#define VSCF_SIMPLE_ALG_INFO_DER_DESERIALIZER_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_api.h"
+#include "vscf_impl_private.h"
+#include "vscf_simple_alg_info_der_deserializer.h"
 #include "vscf_impl.h"
 
 // clang-format on
@@ -73,23 +77,21 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Produce algorithm information structure
+//  Handles implementation details.
 //
-typedef vscf_impl_t * (*vscf_alg_info_compatible_api_produce_alg_info_fn)(vscf_impl_t *impl);
-
-//
-//  Contains API requirements of the interface 'alg info compatible'.
-//
-struct vscf_alg_info_compatible_api_t {
+struct vscf_simple_alg_info_der_deserializer_t {
     //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg_info_compatible' MUST be equal to the 'vscf_api_tag_ALG_INFO_COMPATIBLE'.
+    //  Compile-time known information about this implementation.
     //
-    vscf_api_tag_t api_tag;
+    const vscf_impl_info_t *info;
     //
-    //  Produce algorithm information structure
+    //  Reference counter.
     //
-    vscf_alg_info_compatible_api_produce_alg_info_fn produce_alg_info_cb;
+    size_t refcnt;
+    //
+    //  Dependency to the interface 'asn1 reader'.
+    //
+    vscf_impl_t *asn1_reader;
 };
 
 
@@ -106,5 +108,5 @@ struct vscf_alg_info_compatible_api_t {
 
 
 //  @footer
-#endif // VSCF_ALG_INFO_COMPATIBLE_API_H_INCLUDED
+#endif // VSCF_SIMPLE_ALG_INFO_DER_DESERIALIZER_DEFS_H_INCLUDED
 //  @end

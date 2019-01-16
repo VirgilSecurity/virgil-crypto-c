@@ -53,14 +53,10 @@
 #include "vscf_alg_info_der_deserializer.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_oid.h"
 #include "vscf_asn1rd.h"
-#include "vscf_asn1_tag.h"
-#include "vscf_alg_id.h"
 #include "vscf_alg_info.h"
-#include "vscf_simple_alg_info.h"
-#include "vscf_kdf_alg_info.h"
-#include "vscf_alg_info_compatible.h"
+#include "vscf_simple_alg_info_der_deserializer.h"
+#include "vscf_kdf_alg_info_der_deserializer.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_alg_info_der_deserializer_defs.h"
 #include "vscf_alg_info_der_deserializer_internal.h"
@@ -109,26 +105,26 @@ vscf_alg_info_der_deserializer_deserialize(
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(alg_info_der_deserializer->asn1_reader);
 
-    vscf_impl_t *asn1_reader = alg_info_der_deserializer->asn1_reader;
+    // vscf_impl_t *asn1_reader = alg_info_der_deserializer->asn1_reader;
 
-    vscf_asn1_reader_reset(asn1_reader, data);
+    // vscf_asn1_reader_reset(asn1_reader, data);
 
-    vsc_data_t alg_oid = vscf_asn1_reader_read_oid(asn1_reader);
+    // vsc_data_t alg_oid = vscf_asn1_reader_read_oid(asn1_reader);
 
-    vscf_asn1_reader_read_null(asn1_reader);
+    // vscf_asn1_reader_read_null(asn1_reader);
 
-    vscf_alg_id_t alg_id = vscf_oid_to_alg_id(alg_oid);
+    // vscf_alg_id_t alg_id = vscf_oid_to_alg_id(alg_oid);
 
-    if (alg_id == vscf_alg_id_SHA256) {
-        vscf_simple_alg_info_t *simple_alg = vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256);
-        return vscf_simple_alg_info_impl(simple_alg);
-    }
+    // if (alg_id == vscf_alg_id_SHA256) {
+    //     vscf_simple_alg_info_t *simple_alg = vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256);
+    //     return vscf_simple_alg_info_impl(simple_alg);
+    // }
 
-    if (alg_id == vscf_alg_id_KDF1) {
-        vscf_simple_alg_info_t *simple_alg = vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256);
-        vscf_kdf_alg_info_t *kdf_alg = vscf_kdf_alg_info_new_with_members(vscf_alg_id_KDF1, simple_alg);
-        return vscf_kdf_alg_info_impl(kdf_alg);
-    }
+    // if (alg_id == vscf_alg_id_KDF1) {
+    //     vscf_simple_alg_info_t *simple_alg = vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256);
+    //     vscf_kdf_alg_info_t *kdf_alg = vscf_kdf_alg_info_new_with_members(vscf_alg_id_KDF1, simple_alg);
+    //     return vscf_kdf_alg_info_impl(kdf_alg);
+    // }
 
     return NULL;
 }

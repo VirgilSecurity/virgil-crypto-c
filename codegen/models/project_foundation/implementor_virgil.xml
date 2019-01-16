@@ -53,7 +53,7 @@
 
         <interface name="kdf"/>
 
-        <interface name="alg info compatible"/>
+        <interface name="alg"/>
 
         <require enum="alg id"/>
 

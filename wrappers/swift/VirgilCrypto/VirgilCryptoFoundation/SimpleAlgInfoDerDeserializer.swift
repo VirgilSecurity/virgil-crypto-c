@@ -37,33 +37,54 @@ import Foundation
 import VSCFoundation
 import VirgilCryptoCommon
 
-/// Provide produce and consume methods for implemented algorithms
-@objc(VSCFAlgInfoCompatible) public protocol AlgInfoCompatible : CContext {
-
-    /// Produce algorithm information structure
-    @objc func produceAlgInfo() -> AlgInfo
-}
-
-/// Implement interface methods
-@objc(VSCFAlgInfoCompatibleProxy) internal class AlgInfoCompatibleProxy: NSObject, AlgInfoCompatible {
+/// Deserialize class "simple alg info".
+@objc(VSCFSimpleAlgInfoDerDeserializer) public class SimpleAlgInfoDerDeserializer: NSObject, Defaults, AlgInfoDeserializer {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
-    /// Take C context that implements this interface
-    public init(c_ctx: OpaquePointer) {
+    /// Create underlying C context.
+    public override init() {
+        self.c_ctx = vscf_simple_alg_info_der_deserializer_new()
+        super.init()
+    }
+
+    /// Acquire C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    public init(take c_ctx: OpaquePointer) {
         self.c_ctx = c_ctx
+        super.init()
+    }
+
+    /// Acquire retained C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    public init(use c_ctx: OpaquePointer) {
+        self.c_ctx = vscf_simple_alg_info_der_deserializer_shallow_copy(c_ctx)
         super.init()
     }
 
     /// Release underlying C context.
     deinit {
-        vscf_impl_delete(self.c_ctx)
+        vscf_simple_alg_info_der_deserializer_delete(self.c_ctx)
     }
 
-    /// Produce algorithm information structure
-    @objc public func produceAlgInfo() -> AlgInfo {
-        let proxyResult = vscf_alg_info_compatible_produce_alg_info(self.c_ctx)
+    @objc public func setAsn1Reader(asn1Reader: Asn1Reader) {
+        vscf_simple_alg_info_der_deserializer_release_asn1_reader(self.c_ctx)
+        vscf_simple_alg_info_der_deserializer_use_asn1_reader(self.c_ctx, asn1Reader.c_ctx)
+    }
+
+    /// Setup predefined values to the uninitialized class dependencies.
+    @objc public func setupDefaults() throws {
+        let proxyResult = vscf_simple_alg_info_der_deserializer_setup_defaults(self.c_ctx)
+
+        try FoundationError.handleError(fromC: proxyResult)
+    }
+
+    /// Algorithm deserialization algorithm from data
+    @objc public func deserialize(data: Data) -> AlgInfo {
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
+            return vscf_simple_alg_info_der_deserializer_deserialize(self.c_ctx, vsc_data(dataPointer, data.count))
+        })
 
         return AlgInfoProxy.init(c_ctx: proxyResult!)
     }

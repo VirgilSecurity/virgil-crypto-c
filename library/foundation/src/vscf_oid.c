@@ -89,30 +89,6 @@ static const vsc_data_t oid_kdf1 = {oid_kdf1_bytes, sizeof(oid_kdf1_bytes)};
 
 
 //
-//  Return OID for given key algorithm.
-//
-VSCF_PUBLIC vsc_data_t
-vscf_oid_from_key_alg(vscf_key_alg_t key_alg) {
-
-    VSCF_ASSERT(key_alg != vscf_key_alg_NONE);
-
-    switch (key_alg) {
-    case vscf_key_alg_RSA:
-        return oid_rsa;
-
-    case vscf_key_alg_ED25519:
-        return oid_ed25519;
-
-    case vscf_key_alg_X25519:
-        return oid_x25519;
-
-    default:
-        VSCF_ASSERT(0 && "Unhanded key algorithm");
-        return vsc_data_empty();
-    }
-}
-
-//
 //  Return OID for given algorithm identifier
 //
 VSCF_PUBLIC vsc_data_t
@@ -121,8 +97,18 @@ vscf_oid_from_alg_id(vscf_alg_id_t alg_id) {
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
     switch (alg_id) {
+    case vscf_alg_id_RSA:
+        return oid_rsa;
+
+    case vscf_alg_id_ED25519:
+        return oid_ed25519;
+
+    case vscf_alg_id_X25519:
+        return oid_x25519;
+
     case vscf_alg_id_SHA256:
         return oid_sha256;
+
     case vscf_alg_id_KDF1:
         return oid_kdf1;
 
@@ -133,35 +119,24 @@ vscf_oid_from_alg_id(vscf_alg_id_t alg_id) {
 }
 
 //
-//  Return key algorithm for given OID.
-//
-VSCF_PUBLIC vscf_key_alg_t
-vscf_oid_to_key_alg(vsc_data_t oid) {
-
-    VSCF_ASSERT(vsc_data_is_valid(oid));
-
-    if (vscf_oid_equal(oid, oid_rsa)) {
-        return vscf_key_alg_RSA;
-    }
-
-    if (vscf_oid_equal(oid, oid_ed25519)) {
-        return vscf_key_alg_ED25519;
-    }
-
-    if (vscf_oid_equal(oid, oid_x25519)) {
-        return vscf_key_alg_X25519;
-    }
-
-    return vscf_key_alg_NONE;
-}
-
-//
 //  Return algorithm identifier for given OID.
 //
 VSCF_PUBLIC vscf_alg_id_t
 vscf_oid_to_alg_id(vsc_data_t oid) {
 
     VSCF_ASSERT(vsc_data_is_valid(oid));
+
+    if (vscf_oid_equal(oid, oid_rsa)) {
+        return vscf_alg_id_RSA;
+    }
+
+    if (vscf_oid_equal(oid, oid_ed25519)) {
+        return vscf_alg_id_ED25519;
+    }
+
+    if (vscf_oid_equal(oid, oid_x25519)) {
+        return vscf_alg_id_X25519;
+    }
 
     if (vscf_oid_equal(oid, oid_sha256)) {
         return vscf_alg_id_SHA256;
