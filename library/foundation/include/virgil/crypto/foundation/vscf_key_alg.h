@@ -74,7 +74,8 @@ extern "C" {
 enum vscf_key_alg_t {
     vscf_key_alg_NONE = 0,
     vscf_key_alg_RSA,
-    vscf_key_alg_ED25519
+    vscf_key_alg_ED25519,
+    vscf_key_alg_X25519
 };
 typedef enum vscf_key_alg_t vscf_key_alg_t;
 
