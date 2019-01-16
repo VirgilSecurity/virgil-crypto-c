@@ -61,6 +61,12 @@
 static const byte oid_rsa_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01};
 static const vsc_data_t oid_rsa = {oid_rsa_bytes, sizeof(oid_rsa_bytes)};
 
+static const byte oid_ed25519_bytes[] = {0x2B, 0x65, 0x70};
+static const vsc_data_t oid_ed25519 = {oid_ed25519_bytes, sizeof(oid_ed25519_bytes)};
+
+static const byte oid_x25519_bytes[] = {0x2B, 0x65, 0x6E};
+static const vsc_data_t oid_x25519 = {oid_x25519_bytes, sizeof(oid_x25519_bytes)};
+
 static const byte oid_sha256_bytes[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01};
 static const vsc_data_t oid_sha256 = {oid_sha256_bytes, sizeof(oid_sha256_bytes)};
 
@@ -93,6 +99,12 @@ vscf_oid_from_key_alg(vscf_key_alg_t key_alg) {
     switch (key_alg) {
     case vscf_key_alg_RSA:
         return oid_rsa;
+
+    case vscf_key_alg_ED25519:
+        return oid_ed25519;
+
+    case vscf_key_alg_X25519:
+        return oid_x25519;
 
     default:
         VSCF_ASSERT(0 && "Unhanded key algorithm");
@@ -130,6 +142,14 @@ vscf_oid_to_key_alg(vsc_data_t oid) {
 
     if (vscf_oid_equal(oid, oid_rsa)) {
         return vscf_key_alg_RSA;
+    }
+
+    if (vscf_oid_equal(oid, oid_ed25519)) {
+        return vscf_key_alg_ED25519;
+    }
+
+    if (vscf_oid_equal(oid, oid_x25519)) {
+        return vscf_key_alg_X25519;
     }
 
     return vscf_key_alg_NONE;

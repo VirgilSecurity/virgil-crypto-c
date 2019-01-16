@@ -164,7 +164,6 @@ vscf_pkcs8_der_serializer_serialize_public_key(
     //  Write algorithm
     //
     size_t algorithm_count = 0;
-    algorithm_count += vscf_asn1_writer_write_null(asn1_writer);
     algorithm_count += vscf_asn1_writer_write_oid(asn1_writer, vscf_oid_from_key_alg(vscf_key_alg(public_key)));
     algorithm_count += vscf_asn1_writer_write_sequence(asn1_writer, algorithm_count);
     total_count += algorithm_count;
@@ -258,7 +257,6 @@ vscf_pkcs8_der_serializer_serialize_private_key(
     //  Write algorithm
     //
     size_t algorithm_count = 0;
-    algorithm_count += vscf_asn1_writer_write_null(asn1_writer);
     algorithm_count += vscf_asn1_writer_write_oid(asn1_writer, vscf_oid_from_key_alg(vscf_key_alg(private_key)));
     algorithm_count += vscf_asn1_writer_write_sequence(asn1_writer, algorithm_count);
     total_count += algorithm_count;

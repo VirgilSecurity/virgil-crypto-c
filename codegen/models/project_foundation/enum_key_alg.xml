@@ -4,4 +4,5 @@
     <constant name="none" value="0"/>
     <constant name="rsa"/>
     <constant name="ed25519"/>
+    <constant name="x25519"/>
 </enum>
