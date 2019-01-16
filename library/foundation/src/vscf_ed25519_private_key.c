@@ -55,6 +55,8 @@
 #include "vscf_memory.h"
 #include "vscf_ed25519_public_key_defs.h"
 #include "vscf_endianness.h"
+#include "vscf_alg_info.h"
+#include "vscf_simple_alg_info.h"
 #include "vscf_random.h"
 #include "vscf_ed25519_private_key_defs.h"
 #include "vscf_ed25519_private_key_internal.h"
@@ -101,13 +103,37 @@ vscf_ed25519_private_key_cleanup_ctx(vscf_ed25519_private_key_t *ed25519_private
 }
 
 //
-//  Return implemented asymmetric key algorithm type.
+//  Provide algorithm identificator.
 //
-VSCF_PUBLIC vscf_key_alg_t
-vscf_ed25519_private_key_alg(vscf_ed25519_private_key_t *ed25519_private_key) {
+VSCF_PUBLIC vscf_alg_id_t
+vscf_ed25519_private_key_alg_id(vscf_ed25519_private_key_t *ed25519_private_key) {
 
     VSCF_ASSERT_PTR(ed25519_private_key);
-    return vscf_key_alg_ED25519;
+    return vscf_alg_id_ED25519;
+}
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_ed25519_private_key_produce_alg_info(vscf_ed25519_private_key_t *ed25519_private_key) {
+
+    VSCF_ASSERT_PTR(ed25519_private_key);
+    return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ED25519));
+}
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_ed25519_private_key_restore_alg_info(
+        vscf_ed25519_private_key_t *ed25519_private_key, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_ED25519);
+
+    return vscf_SUCCESS;
 }
 
 //

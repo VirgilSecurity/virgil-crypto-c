@@ -39,7 +39,10 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Defines enumeration of possible asymmetric key algorithms.
+//  Types of the 'simple alg info der serializer' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
 
@@ -50,7 +53,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_key_alg.h"
+#include "vscf_simple_alg_info_der_serializer_defs.h"
 
 // clang-format on
 //  @end

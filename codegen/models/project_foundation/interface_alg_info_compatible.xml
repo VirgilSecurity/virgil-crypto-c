@@ -1,9 +1,0 @@
-<interface name="alg info compatible">
-    Provide produce and consume methods for implemented algorithms
-
-    <method name="produce alg info">
-        Produce algorithm information structure
-        <return interface="alg info" access="disown"/>
-    </method>
-
-</interface>

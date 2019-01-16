@@ -58,6 +58,8 @@
 #include "vscf_mbedtls_bignum_asn1_reader.h"
 #include "vscf_mbedtls_bridge_random.h"
 #include "vscf_mbedtls_md.h"
+#include "vscf_alg_info.h"
+#include "vscf_simple_alg_info.h"
 #include "vscf_random.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_asn1_writer.h"
@@ -109,13 +111,36 @@ vscf_rsa_public_key_cleanup_ctx(vscf_rsa_public_key_t *rsa_public_key) {
 }
 
 //
-//  Return implemented asymmetric key algorithm type.
+//  Provide algorithm identificator.
 //
-VSCF_PUBLIC vscf_key_alg_t
-vscf_rsa_public_key_alg(vscf_rsa_public_key_t *rsa_public_key) {
+VSCF_PUBLIC vscf_alg_id_t
+vscf_rsa_public_key_alg_id(vscf_rsa_public_key_t *rsa_public_key) {
 
     VSCF_ASSERT_PTR(rsa_public_key);
-    return vscf_key_alg_RSA;
+    return vscf_alg_id_RSA;
+}
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_rsa_public_key_produce_alg_info(vscf_rsa_public_key_t *rsa_public_key) {
+
+    VSCF_ASSERT_PTR(rsa_public_key);
+    return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_RSA));
+}
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_rsa_public_key_restore_alg_info(vscf_rsa_public_key_t *rsa_public_key, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(rsa_public_key);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_RSA);
+
+    return vscf_SUCCESS;
 }
 
 //

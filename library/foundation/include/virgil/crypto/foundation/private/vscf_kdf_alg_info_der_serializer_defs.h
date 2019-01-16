@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Provide produce and consume methods for implemented algorithms
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,12 +44,30 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_alg_info_compatible.h"
-#include "vscf_assert.h"
-#include "vscf_alg_info_compatible_api.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'kdf alg info der serializer' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_KDF_ALG_INFO_DER_SERIALIZER_DEFS_H_INCLUDED
+#define VSCF_KDF_ALG_INFO_DER_SERIALIZER_DEFS_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_impl_private.h"
+#include "vscf_kdf_alg_info_der_serializer.h"
+#include "vscf_impl.h"
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -65,55 +77,36 @@
 // --------------------------------------------------------------------------
 
 //
-//  Produce algorithm information structure
+//  Handles implementation details.
 //
-VSCF_PUBLIC vscf_impl_t *
-vscf_alg_info_compatible_produce_alg_info(vscf_impl_t *impl) {
-
-    const vscf_alg_info_compatible_api_t *alg_info_compatible_api = vscf_alg_info_compatible_api(impl);
-    VSCF_ASSERT_PTR (alg_info_compatible_api);
-
-    VSCF_ASSERT_PTR (alg_info_compatible_api->produce_alg_info_cb);
-    return alg_info_compatible_api->produce_alg_info_cb (impl);
-}
-
-//
-//  Return alg info compatible API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_alg_info_compatible_api_t *
-vscf_alg_info_compatible_api(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_ALG_INFO_COMPATIBLE);
-    return (const vscf_alg_info_compatible_api_t *) api;
-}
-
-//
-//  Check if given object implements interface 'alg info compatible'.
-//
-VSCF_PUBLIC bool
-vscf_alg_info_compatible_is_implemented(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    return vscf_impl_api(impl, vscf_api_tag_ALG_INFO_COMPATIBLE) != NULL;
-}
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_alg_info_compatible_api_tag(const vscf_alg_info_compatible_api_t *alg_info_compatible_api) {
-
-    VSCF_ASSERT_PTR (alg_info_compatible_api);
-
-    return alg_info_compatible_api->api_tag;
-}
+struct vscf_kdf_alg_info_der_serializer_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Dependency to the interface 'asn1 writer'.
+    //
+    vscf_impl_t *asn1_writer;
+};
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_KDF_ALG_INFO_DER_SERIALIZER_DEFS_H_INCLUDED
 //  @end

@@ -47,11 +47,18 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Defines enumeration of possible asymmetric key algorithms.
+//  Provide interface to persist algorithm information and it parameters
+//  and then restore the algorithm from it.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_KEY_ALG_H_INCLUDED
-#define VSCF_KEY_ALG_H_INCLUDED
+#ifndef VSCF_ALG_H_INCLUDED
+#define VSCF_ALG_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_alg_id.h"
+#include "vscf_error.h"
+#include "vscf_api.h"
 
 // clang-format on
 //  @end
@@ -69,15 +76,45 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Defines enumeration of possible asymmetric key algorithms.
+//  Contains API requirements of the interface 'alg'.
 //
-enum vscf_key_alg_t {
-    vscf_key_alg_NONE = 0,
-    vscf_key_alg_RSA,
-    vscf_key_alg_ED25519,
-    vscf_key_alg_X25519
-};
-typedef enum vscf_key_alg_t vscf_key_alg_t;
+typedef struct vscf_alg_api_t vscf_alg_api_t;
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_alg_alg_id(const vscf_impl_t *impl);
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_produce_alg_info(const vscf_impl_t *impl);
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_alg_restore_alg_info(vscf_impl_t *impl, const vscf_impl_t *alg_info);
+
+//
+//  Return alg API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_alg_api_t *
+vscf_alg_api(const vscf_impl_t *impl);
+
+//
+//  Check if given object implements interface 'alg'.
+//
+VSCF_PUBLIC bool
+vscf_alg_is_implemented(const vscf_impl_t *impl);
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_alg_api_tag(const vscf_alg_api_t *alg_api);
 
 
 // --------------------------------------------------------------------------
@@ -93,5 +130,5 @@ typedef enum vscf_key_alg_t vscf_key_alg_t;
 
 
 //  @footer
-#endif // VSCF_KEY_ALG_H_INCLUDED
+#endif // VSCF_ALG_H_INCLUDED
 //  @end

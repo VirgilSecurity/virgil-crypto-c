@@ -40,27 +40,11 @@ import VirgilCryptoCommon
 /// Provide conversion logic between OID and algorithm tags.
 @objc(VSCFOid) public class Oid: NSObject {
 
-    /// Return OID for given key algorithm.
-    @objc public static func fromKeyAlg(keyAlg: KeyAlg) -> Data {
-        let proxyResult = vscf_oid_from_key_alg(vscf_key_alg_t(rawValue: UInt32(keyAlg.rawValue)))
-
-        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
-    }
-
     /// Return OID for given algorithm identifier
     @objc public static func fromAlgId(algId: AlgId) -> Data {
         let proxyResult = vscf_oid_from_alg_id(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)))
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
-    }
-
-    /// Return key algorithm for given OID.
-    @objc public static func toKeyAlg(oid: Data) -> KeyAlg {
-        let proxyResult = oid.withUnsafeBytes({ (oidPointer: UnsafePointer<byte>) -> vscf_key_alg_t in
-            return vscf_oid_to_key_alg(vsc_data(oidPointer, oid.count))
-        })
-
-        return KeyAlg.init(fromC: proxyResult)
     }
 
     /// Return algorithm identifier for given OID.

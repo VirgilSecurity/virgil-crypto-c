@@ -1,7 +1,9 @@
 <implementor name="alg info" is_default="1">
-    Provide implementation of algorithm information for algorithm agility
+    Provide implementation of algorithm information for algorithm agility.
+
     <implementation name="simple alg info">
         Provide simple algorithm information (hash) implementation
+
         <interface name="alg info"/>
 
         <context>
@@ -12,8 +14,8 @@
             Set algorithm identificator
             <argument name="alg id" enum="alg id"/>
         </constructor>
-
     </implementation>
+
 
     <implementation name="kdf alg info">
         Provide KDF algorithm information implementation
@@ -28,14 +30,15 @@
 
         <constructor name="with alg id">
             Set algorithm identificator
+
             <argument name="alg id" enum="alg id"/>
         </constructor>
 
         <constructor name="with members">
             Set algorithm identificator
+
             <argument name="alg id" enum="alg id"/>
             <argument name="hash alg info" impl="simple alg info"/>
         </constructor>
-
     </implementation>
 </implementor>

@@ -54,7 +54,7 @@
 #define VSCF_RAW_KEY_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_key_alg.h"
+#include "vscf_alg_id.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -115,13 +115,13 @@ vscf_raw_key_new(void);
 //  Note, data is copied.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_raw_key_new_with_data(vscf_key_alg_t alg, vsc_data_t raw_key_data);
+vscf_raw_key_new_with_data(vscf_alg_id_t alg_id, vsc_data_t raw_key_data);
 
 //
 //  Creates raw key defined with algorithm and buffer.
 //
 VSCF_PRIVATE vscf_raw_key_t *
-vscf_raw_key_new_with_buffer(vscf_key_alg_t alg, vsc_buffer_t *buffer);
+vscf_raw_key_new_with_buffer(vscf_alg_id_t alg_id, vsc_buffer_t *buffer);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -146,8 +146,8 @@ vscf_raw_key_shallow_copy(vscf_raw_key_t *raw_key);
 //
 //  Returns asymmetric algorithm type that raw key belongs to.
 //
-VSCF_PUBLIC vscf_key_alg_t
-vscf_raw_key_alg(vscf_raw_key_t *raw_key);
+VSCF_PUBLIC vscf_alg_id_t
+vscf_raw_key_alg_id(vscf_raw_key_t *raw_key);
 
 //
 //  Return raw key data.

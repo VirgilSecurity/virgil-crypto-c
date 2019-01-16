@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Interface 'alg' API.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,26 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Provide produce and consume methods for implemented algorithms
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_ALG_INFO_COMPATIBLE_H_INCLUDED
-#define VSCF_ALG_INFO_COMPATIBLE_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_api.h"
+#include "vscf_alg_api.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -72,48 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Contains API requirements of the interface 'alg info compatible'.
-//
-typedef struct vscf_alg_info_compatible_api_t vscf_alg_info_compatible_api_t;
-
-//
-//  Produce algorithm information structure
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_alg_info_compatible_produce_alg_info(vscf_impl_t *impl);
-
-//
-//  Return alg info compatible API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_alg_info_compatible_api_t *
-vscf_alg_info_compatible_api(const vscf_impl_t *impl);
-
-//
-//  Check if given object implements interface 'alg info compatible'.
-//
-VSCF_PUBLIC bool
-vscf_alg_info_compatible_is_implemented(const vscf_impl_t *impl);
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_alg_info_compatible_api_tag(const vscf_alg_info_compatible_api_t *alg_info_compatible_api);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_ALG_INFO_COMPATIBLE_H_INCLUDED
 //  @end
