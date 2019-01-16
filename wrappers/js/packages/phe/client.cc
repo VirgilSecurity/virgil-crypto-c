@@ -7,9 +7,13 @@ void Client::Init(v8::Local<v8::Object> exports) {
   v8::Local<v8::FunctionTemplate> function_template = Nan::New<v8::FunctionTemplate>(New);
   function_template->SetClassName(Nan::New("Client").ToLocalChecked());
   function_template->InstanceTemplate()->SetInternalFieldCount(1);
+  Nan::SetPrototypeMethod(function_template, "setKeys", SetKeys);
+  Nan::SetPrototypeMethod(function_template, "generateClientPrivateKey", GenerateClientPrivateKey);
   Nan::SetPrototypeMethod(function_template, "enrollAccount", EnrollAccount);
-  Nan::SetPrototypeMethod(function_template, "passwordVerifyRequest", PasswordVerifyRequest);
-  Nan::SetPrototypeMethod(function_template, "verifyServerResponse", VerifyServerResponse);
+  Nan::SetPrototypeMethod(function_template, "createVerifyPasswordRequest", CreateVerifyPasswordRequest);
+  Nan::SetPrototypeMethod(function_template, "checkResponseAndDecrypt", CheckResponseAndDecrypt);
+  Nan::SetPrototypeMethod(function_template, "rotateKeys", RotateKeys);
+  Nan::SetPrototypeMethod(function_template, "updateEnrollmentRecord", UpdateEnrollmentRecord);
   constructor.Reset(function_template->GetFunction());
   exports->Set(Nan::New<v8::String>("Client").ToLocalChecked(), function_template->GetFunction());
 }
@@ -25,36 +29,66 @@ void Client::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   }
 }
 
-void Client::EnrollAccount(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+void Client::SetKeys(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Value> client_private_key_node_buffer = info[0];
   v8::Local<v8::Value> server_public_key_node_buffer = info[1];
-  v8::Local<v8::Value> enrollment_response_node_buffer = info[2];
-  v8::Local<v8::Value> password_node_buffer = info[3];
   if (
-    info.Length() != 4 ||
+    info.Length() != 2 ||
     !client_private_key_node_buffer->IsObject() ||
-    !server_public_key_node_buffer->IsObject() ||
+    !server_public_key_node_buffer->IsObject()
+  ) {
+    Nan::ThrowTypeError("Invalid arguments");
+    return;
+  }
+  Client* client = ObjectWrap::Unwrap<Client>(info.Holder());
+  vsc_data_t client_private_key = utils::NodeBufferToVirgilData(client_private_key_node_buffer);
+  vsc_data_t server_public_key = utils::NodeBufferToVirgilData(server_public_key_node_buffer);
+  vsce_error_t error = vsce_phe_client_set_keys(
+    client->phe_client,
+    client_private_key,
+    server_public_key
+  );
+  if (error != vsce_error_t::vsce_SUCCESS) {
+    Nan::ThrowError("'vsce_phe_client_set_keys' failed");
+    return;
+  }
+}
+
+void Client::GenerateClientPrivateKey(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  Client* client = ObjectWrap::Unwrap<Client>(info.Holder());
+  vsc_buffer_t* client_private_key = vsc_buffer_new_with_capacity(
+    vsce_phe_common_PHE_PRIVATE_KEY_LENGTH
+  );
+  vsce_error_t error = vsce_phe_client_generate_client_private_key(
+    client->phe_client,
+    client_private_key
+  );
+  if (error != vsce_error_t::vsce_SUCCESS) {
+    Nan::ThrowError("'vsce_phe_client_generate_client_private_key' failed");
+    return;
+  }
+  info.GetReturnValue().Set(utils::VirgilBufferToNodeBuffer(client_private_key).ToLocalChecked());
+}
+
+void Client::EnrollAccount(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  v8::Local<v8::Value> enrollment_response_node_buffer = info[0];
+  v8::Local<v8::Value> password_node_buffer = info[1];
+  if (
+    info.Length() != 2 ||
     !enrollment_response_node_buffer->IsObject() ||
     !password_node_buffer->IsObject()
   ) {
     Nan::ThrowTypeError("Invalid arguments");
     return;
   }
-  vsc_data_t client_private_key = utils::NodeBufferToVirgilData(client_private_key_node_buffer);
-  vsc_data_t server_public_key = utils::NodeBufferToVirgilData(server_public_key_node_buffer);
+  Client* client = ObjectWrap::Unwrap<Client>(info.Holder());
   vsc_data_t enrollment_response = utils::NodeBufferToVirgilData(enrollment_response_node_buffer);
   vsc_data_t password = utils::NodeBufferToVirgilData(password_node_buffer);
-  vsce_phe_client_t* phe_client = vsce_phe_client_new();
-  vsce_error_t error = vsce_phe_client_set_keys(phe_client, client_private_key, server_public_key);
-  if (error != vsce_error_t::vsce_SUCCESS) {
-    Nan::ThrowError("'vsce_phe_client_set_keys' failed");
-    return;
-  }
-  size_t enrollment_record_len = vsce_phe_client_enrollment_record_len(phe_client);
+  size_t enrollment_record_len = vsce_phe_client_enrollment_record_len(client->phe_client);
   vsc_buffer_t* enrollment_record = vsc_buffer_new_with_capacity(enrollment_record_len);
   vsc_buffer_t* account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
-  error = vsce_phe_client_enroll_account(
-    phe_client,
+  vsce_error_t error = vsce_phe_client_enroll_account(
+    client->phe_client,
     enrollment_response,
     password,
     enrollment_record,
@@ -64,50 +98,40 @@ void Client::EnrollAccount(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     Nan::ThrowError("'vsce_phe_client_enroll_account' failed");
     return;
   }
-  vsce_phe_client_destroy(&phe_client);
   v8::Local<v8::Object> result = Nan::New<v8::Object>();
   result->Set(
     Nan::New<v8::String>("enrollmentRecord").ToLocalChecked(),
-    utils::GetNodeBuffer(enrollment_record).ToLocalChecked()
+    utils::VirgilBufferToNodeBuffer(enrollment_record).ToLocalChecked()
   );
   result->Set(
     Nan::New<v8::String>("accountKey").ToLocalChecked(),
-    utils::GetNodeBuffer(account_key).ToLocalChecked()
+    utils::VirgilBufferToNodeBuffer(account_key).ToLocalChecked()
   );
   info.GetReturnValue().Set(result);
 }
 
-void Client::PasswordVerifyRequest(const Nan::FunctionCallbackInfo<v8::Value>& info) {
-  v8::Local<v8::Value> client_private_key_node_buffer = info[0];
-  v8::Local<v8::Value> server_public_key_node_buffer = info[1];
-  v8::Local<v8::Value> enrollment_record_node_buffer = info[2];
-  v8::Local<v8::Value> password_node_buffer = info[3];
+void Client::CreateVerifyPasswordRequest(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  v8::Local<v8::Value> enrollment_record_node_buffer = info[0];
+  v8::Local<v8::Value> password_node_buffer = info[1];
   if (
-    info.Length() != 4 ||
-    !client_private_key_node_buffer->IsObject() ||
-    !server_public_key_node_buffer->IsObject() ||
+    info.Length() != 2 ||
     !enrollment_record_node_buffer->IsObject() ||
     !password_node_buffer->IsObject()
   ) {
     Nan::ThrowTypeError("Invalid arguments");
     return;
   }
-  vsc_data_t client_private_key = utils::NodeBufferToVirgilData(client_private_key_node_buffer);
-  vsc_data_t server_public_key = utils::NodeBufferToVirgilData(server_public_key_node_buffer);
+  Client* client = ObjectWrap::Unwrap<Client>(info.Holder());
   vsc_data_t enrollment_record = utils::NodeBufferToVirgilData(enrollment_record_node_buffer);
   vsc_data_t password = utils::NodeBufferToVirgilData(password_node_buffer);
-  vsce_phe_client_t* phe_client = vsce_phe_client_new();
-  vsce_error_t error = vsce_phe_client_set_keys(phe_client, client_private_key, server_public_key);
-  if (error != vsce_error_t::vsce_SUCCESS) {
-    Nan::ThrowError("'vsce_phe_client_set_keys' failed");
-    return;
-  }
-  size_t verify_password_request_len = vsce_phe_client_verify_password_request_len(phe_client);
+  size_t verify_password_request_len = vsce_phe_client_verify_password_request_len(
+    client->phe_client
+  );
   vsc_buffer_t* verify_password_request = vsc_buffer_new_with_capacity(
     verify_password_request_len
   );
-  error = vsce_phe_client_create_verify_password_request(
-    phe_client,
+  vsce_error_t error = vsce_phe_client_create_verify_password_request(
+    client->phe_client,
     password,
     enrollment_record,
     verify_password_request
@@ -116,20 +140,17 @@ void Client::PasswordVerifyRequest(const Nan::FunctionCallbackInfo<v8::Value>& i
     Nan::ThrowError("'vsce_phe_client_create_verify_password_request' failed");
     return;
   }
-  vsce_phe_client_destroy(&phe_client);
-  info.GetReturnValue().Set(utils::GetNodeBuffer(verify_password_request).ToLocalChecked());
+  info.GetReturnValue().Set(
+    utils::VirgilBufferToNodeBuffer(verify_password_request).ToLocalChecked()
+  );
 }
 
-void Client::VerifyServerResponse(const Nan::FunctionCallbackInfo<v8::Value>& info) {
-  v8::Local<v8::Value> client_private_key_node_buffer = info[0];
-  v8::Local<v8::Value> server_public_key_node_buffer = info[1];
-  v8::Local<v8::Value> password_node_buffer = info[2];
-  v8::Local<v8::Value> enrollment_record_node_buffer = info[3];
-  v8::Local<v8::Value> verify_password_response_node_buffer = info[4];
+void Client::CheckResponseAndDecrypt(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  v8::Local<v8::Value> password_node_buffer = info[0];
+  v8::Local<v8::Value> enrollment_record_node_buffer = info[1];
+  v8::Local<v8::Value> verify_password_response_node_buffer = info[2];
   if (
-    info.Length() != 5 ||
-    !client_private_key_node_buffer->IsObject() ||
-    !server_public_key_node_buffer->IsObject() ||
+    info.Length() != 3 ||
     !password_node_buffer->IsObject() ||
     !enrollment_record_node_buffer->IsObject() ||
     !verify_password_response_node_buffer->IsObject()
@@ -137,22 +158,15 @@ void Client::VerifyServerResponse(const Nan::FunctionCallbackInfo<v8::Value>& in
     Nan::ThrowTypeError("Invalid arguments");
     return;
   }
-  vsc_data_t client_private_key = utils::NodeBufferToVirgilData(client_private_key_node_buffer);
-  vsc_data_t server_public_key = utils::NodeBufferToVirgilData(server_public_key_node_buffer);
+  Client* client = ObjectWrap::Unwrap<Client>(info.Holder());
   vsc_data_t password = utils::NodeBufferToVirgilData(password_node_buffer);
   vsc_data_t enrollment_record = utils::NodeBufferToVirgilData(enrollment_record_node_buffer);
   vsc_data_t verify_password_response = utils::NodeBufferToVirgilData(
     verify_password_response_node_buffer
   );
-  vsce_phe_client_t* phe_client = vsce_phe_client_new();
-  vsce_error_t error = vsce_phe_client_set_keys(phe_client, client_private_key, server_public_key);
-  if (error != vsce_error_t::vsce_SUCCESS) {
-    Nan::ThrowError("'vsce_phe_client_set_keys' failed");
-    return;
-  }
   vsc_buffer_t* account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
-  error = vsce_phe_client_check_response_and_decrypt(
-    phe_client,
+  vsce_error_t error = vsce_phe_client_check_response_and_decrypt(
+    client->phe_client,
     password,
     enrollment_record,
     verify_password_response,
@@ -162,6 +176,80 @@ void Client::VerifyServerResponse(const Nan::FunctionCallbackInfo<v8::Value>& in
     Nan::ThrowError("'vsce_phe_client_check_response_and_decrypt' failed");
     return;
   }
+  info.GetReturnValue().Set(utils::VirgilBufferToNodeBuffer(account_key).ToLocalChecked());
+}
+
+void Client::RotateKeys(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  v8::Local<v8::Value> update_token_node_buffer = info[0];
+  if (info.Length() != 1 || !update_token_node_buffer->IsObject()) {
+    Nan::ThrowTypeError("Invalid arguments");
+    return;
+  }
+  Client* client = ObjectWrap::Unwrap<Client>(info.Holder());
+  vsc_data_t update_token = utils::NodeBufferToVirgilData(update_token_node_buffer);
+  vsc_buffer_t* new_client_private_key = vsc_buffer_new_with_capacity(
+    vsce_phe_common_PHE_PRIVATE_KEY_LENGTH
+  );
+  vsc_buffer_t* new_server_public_key = vsc_buffer_new_with_capacity(
+    vsce_phe_common_PHE_PUBLIC_KEY_LENGTH
+  );
+  vsce_error_t error = vsce_phe_client_rotate_keys(
+    client->phe_client,
+    update_token,
+    new_client_private_key,
+    new_server_public_key
+  );
+  if (error != vsce_error_t::vsce_SUCCESS) {
+    Nan::ThrowError("'vsce_phe_client_rotate_keys' failed");
+    return;
+  }
+  v8::Local<v8::Object> result = Nan::New<v8::Object>();
+  result->Set(
+    Nan::New<v8::String>("newClientPrivateKey").ToLocalChecked(),
+    utils::VirgilBufferToNodeBuffer(new_client_private_key).ToLocalChecked()
+  );
+  result->Set(
+    Nan::New<v8::String>("newServerPublicKey").ToLocalChecked(),
+    utils::VirgilBufferToNodeBuffer(new_server_public_key).ToLocalChecked()
+  );
+  info.GetReturnValue().Set(result);
+}
+
+void Client::UpdateEnrollmentRecord(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  v8::Local<v8::Value> enrollment_record_node_buffer = info[0];
+  v8::Local<v8::Value> update_token_node_buffer = info[1];
+  if (
+    info.Length() != 2 ||
+    !enrollment_record_node_buffer->IsObject() ||
+    !update_token_node_buffer->IsObject()
+  ) {
+    Nan::ThrowTypeError("Invalid arguments");
+    return;
+  }
+  Client* client = ObjectWrap::Unwrap<Client>(info.Holder());
+  vsc_data_t enrollment_record = utils::NodeBufferToVirgilData(enrollment_record_node_buffer);
+  vsc_data_t update_token = utils::NodeBufferToVirgilData(update_token_node_buffer);
+  size_t enrollment_record_len = vsce_phe_client_enrollment_record_len(client->phe_client);
+  vsc_buffer_t* new_enrollment_record = vsc_buffer_new_with_capacity(enrollment_record_len);
+  vsce_error_t error = vsce_phe_client_update_enrollment_record(
+    client->phe_client,
+    enrollment_record,
+    update_token,
+    new_enrollment_record
+  );
+  if (error != vsce_error_t::vsce_SUCCESS) {
+    Nan::ThrowError("'vsce_phe_client_update_enrollment_record' failed");
+    return;
+  }
+  info.GetReturnValue().Set(
+    utils::VirgilBufferToNodeBuffer(new_enrollment_record).ToLocalChecked()
+  );
+}
+
+Client::Client() {
+  phe_client = vsce_phe_client_new();
+}
+
+Client::~Client() {
   vsce_phe_client_destroy(&phe_client);
-  info.GetReturnValue().Set(utils::GetNodeBuffer(account_key).ToLocalChecked());
 }

@@ -1,6 +1,6 @@
 #include "utils.h"
 
-Nan::MaybeLocal<v8::Object> utils::GetNodeBuffer(vsc_buffer_t* buffer) {
+Nan::MaybeLocal<v8::Object> utils::VirgilBufferToNodeBuffer(vsc_buffer_t* buffer) {
   size_t capacity = vsc_buffer_capacity(buffer);
   char* data = new char[capacity];
   std::memcpy(data, vsc_buffer_bytes(buffer), capacity);
