@@ -95,6 +95,7 @@ void Client::EnrollAccount(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     Nan::ThrowError("'vsce_phe_client_enroll_account' failed");
     return;
   }
+  Nan::EscapableHandleScope scope;
   v8::Local<v8::Object> result = Nan::New<v8::Object>();
   result->Set(
     Nan::New<v8::String>("enrollmentRecord").ToLocalChecked(),
@@ -104,7 +105,7 @@ void Client::EnrollAccount(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     Nan::New<v8::String>("accountKey").ToLocalChecked(),
     utils::VirgilBufferToNodeBuffer(account_key).ToLocalChecked()
   );
-  info.GetReturnValue().Set(result);
+  info.GetReturnValue().Set(scope.Escape(result));
 }
 
 void Client::CreateVerifyPasswordRequest(const Nan::FunctionCallbackInfo<v8::Value>& info) {
@@ -200,6 +201,7 @@ void Client::RotateKeys(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     Nan::ThrowError("'vsce_phe_client_rotate_keys' failed");
     return;
   }
+  Nan::EscapableHandleScope scope;
   v8::Local<v8::Object> result = Nan::New<v8::Object>();
   result->Set(
     Nan::New<v8::String>("newClientPrivateKey").ToLocalChecked(),
@@ -209,7 +211,7 @@ void Client::RotateKeys(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     Nan::New<v8::String>("newServerPublicKey").ToLocalChecked(),
     utils::VirgilBufferToNodeBuffer(new_server_public_key).ToLocalChecked()
   );
-  info.GetReturnValue().Set(result);
+  info.GetReturnValue().Set(scope.Escape(result));
 }
 
 void Client::UpdateEnrollmentRecord(const Nan::FunctionCallbackInfo<v8::Value>& info) {

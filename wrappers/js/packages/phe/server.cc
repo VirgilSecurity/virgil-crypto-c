@@ -40,6 +40,7 @@ void Server::GenerateServerKeyPair(const Nan::FunctionCallbackInfo<v8::Value>& i
     Nan::ThrowError("'vsce_phe_server_generate_server_key_pair' failed");
     return;
   }
+  Nan::EscapableHandleScope scope;
   v8::Local<v8::Object> result = Nan::New<v8::Object>();
   result->Set(
     Nan::New<v8::String>("serverPrivateKey").ToLocalChecked(),
@@ -49,7 +50,7 @@ void Server::GenerateServerKeyPair(const Nan::FunctionCallbackInfo<v8::Value>& i
     Nan::New<v8::String>("serverPublicKey").ToLocalChecked(),
     utils::VirgilBufferToNodeBuffer(server_public_key).ToLocalChecked()
   );
-  info.GetReturnValue().Set(result);
+  info.GetReturnValue().Set(scope.Escape(result));
 }
 
 void Server::GetEnrollment(const Nan::FunctionCallbackInfo<v8::Value>& info) {
@@ -149,6 +150,7 @@ void Server::RotateKeys(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     Nan::ThrowError("'vsce_phe_server_rotate_keys' failed");
     return;
   }
+  Nan::EscapableHandleScope scope;
   v8::Local<v8::Object> result = Nan::New<v8::Object>();
   result->Set(
     Nan::New<v8::String>("newServerPrivateKey").ToLocalChecked(),
@@ -162,7 +164,7 @@ void Server::RotateKeys(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     Nan::New<v8::String>("updateToken").ToLocalChecked(),
     utils::VirgilBufferToNodeBuffer(update_token).ToLocalChecked()
   );
-  info.GetReturnValue().Set(result);
+  info.GetReturnValue().Set(scope.Escape(result));
 }
 
 Nan::Persistent<v8::Function> Server::constructor;
