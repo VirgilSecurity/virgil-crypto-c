@@ -1,7 +1,7 @@
 import unittest
 
-from phe import Client
-from phe import Server
+from virgil_crypto.phe import Client
+from virgil_crypto.phe import Server
 
 
 class ServerTest(unittest.TestCase):
