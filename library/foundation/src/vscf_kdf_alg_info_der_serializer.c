@@ -56,6 +56,7 @@
 #include "vscf_oid.h"
 #include "vscf_asn1wr.h"
 #include "vscf_asn1_tag.h"
+#include "vscf_alg_info.h"
 #include "vscf_kdf_alg_info.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_kdf_alg_info_der_serializer_defs.h"
@@ -91,7 +92,7 @@ vscf_kdf_alg_info_der_serializer_setup_defaults(vscf_kdf_alg_info_der_serializer
 }
 
 //
-//  Return buffer size enough to hold serialized algorithm
+//  Return buffer size enough to hold serialized algorithm.
 //
 VSCF_PUBLIC size_t
 vscf_kdf_alg_info_der_serializer_serialize_len(
@@ -104,7 +105,7 @@ vscf_kdf_alg_info_der_serializer_serialize_len(
 }
 
 //
-//  Serialize algorithm info to buffer class
+//  Serialize algorithm info to buffer class.
 //
 VSCF_PUBLIC void
 vscf_kdf_alg_info_der_serializer_serialize(vscf_kdf_alg_info_der_serializer_t *kdf_alg_info_der_serializer,

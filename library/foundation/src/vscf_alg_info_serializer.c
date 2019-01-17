@@ -65,7 +65,7 @@
 // --------------------------------------------------------------------------
 
 //
-//  Return buffer size enough to hold serialized algorithm
+//  Return buffer size enough to hold serialized algorithm.
 //
 VSCF_PUBLIC size_t
 vscf_alg_info_serializer_serialize_len(vscf_impl_t *impl, const vscf_impl_t *alg_info) {
@@ -78,7 +78,7 @@ vscf_alg_info_serializer_serialize_len(vscf_impl_t *impl, const vscf_impl_t *alg
 }
 
 //
-//  Serialize algorithm info to buffer class
+//  Serialize algorithm info to buffer class.
 //
 VSCF_PUBLIC void
 vscf_alg_info_serializer_serialize(vscf_impl_t *impl, const vscf_impl_t *alg_info, vsc_buffer_t *out) {
