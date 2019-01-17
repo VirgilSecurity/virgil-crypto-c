@@ -1,7 +1,5 @@
 #include "server.h"
 
-Nan::Persistent<v8::Function> Server::constructor;
-
 void Server::Init(v8::Local<v8::Object> exports) {
   Nan::HandleScope scope;
   v8::Local<v8::FunctionTemplate> function_template = Nan::New<v8::FunctionTemplate>(New);
@@ -21,8 +19,7 @@ void Server::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     server->Wrap(info.This());
     info.GetReturnValue().Set(info.This());
   } else {
-    v8::Local<v8::Function> cons = Nan::New<v8::Function>(constructor);
-    info.GetReturnValue().Set(Nan::NewInstance(cons).ToLocalChecked());
+    Nan::ThrowTypeError("Class constructor cannot be invoked without 'new'");
   }
 }
 
@@ -167,6 +164,8 @@ void Server::RotateKeys(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   );
   info.GetReturnValue().Set(result);
 }
+
+Nan::Persistent<v8::Function> Server::constructor;
 
 Server::Server() {
   phe_server = vsce_phe_server_new();

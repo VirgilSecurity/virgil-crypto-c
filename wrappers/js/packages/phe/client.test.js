@@ -11,6 +11,11 @@ describe('Client', () => {
     server = new Server();
   });
 
+  it("should throw if invoked without 'new'", () => {
+    const error = () => Client();
+    expect(error).toThrow();
+  });
+
   describe('setKeys', () => {
     it('should work', () => {
       const clientPrivateKey = client.generateClientPrivateKey();

@@ -1,7 +1,5 @@
 #include "client.h"
 
-Nan::Persistent<v8::Function> Client::constructor;
-
 void Client::Init(v8::Local<v8::Object> exports) {
   Nan::HandleScope scope;
   v8::Local<v8::FunctionTemplate> function_template = Nan::New<v8::FunctionTemplate>(New);
@@ -24,8 +22,7 @@ void Client::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     client->Wrap(info.This());
     info.GetReturnValue().Set(info.This());
   } else {
-    v8::Local<v8::Function> cons = Nan::New<v8::Function>(constructor);
-    info.GetReturnValue().Set(Nan::NewInstance(cons).ToLocalChecked());
+    Nan::ThrowTypeError("Class constructor cannot be invoked without 'new'");
   }
 }
 
@@ -245,6 +242,8 @@ void Client::UpdateEnrollmentRecord(const Nan::FunctionCallbackInfo<v8::Value>& 
     utils::VirgilBufferToNodeBuffer(new_enrollment_record).ToLocalChecked()
   );
 }
+
+Nan::Persistent<v8::Function> Client::constructor;
 
 Client::Client() {
   phe_client = vsce_phe_client_new();

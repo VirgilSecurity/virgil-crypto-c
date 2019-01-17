@@ -9,6 +9,11 @@ describe('Server', () => {
     server = new Server();
   });
 
+  it("should throw if invoked without 'new'", () => {
+    const error = () => Server();
+    expect(error).toThrow();
+  });
+
   describe('generateServerKeyPair', () => {
     it('should return server private key and server public key', () => {
       const result = server.generateServerKeyPair();
