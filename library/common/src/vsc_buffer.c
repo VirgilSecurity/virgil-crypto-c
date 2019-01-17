@@ -206,7 +206,8 @@ vsc_buffer_shallow_copy(vsc_buffer_t *buffer) {
 static void
 vsc_buffer_init_ctx(vsc_buffer_t *buffer) {
 
-    VSC_UNUSED(buffer);
+    VSC_ASSERT_PTR(buffer);
+    buffer->is_reverse = false;
 }
 
 //
@@ -276,6 +277,16 @@ vsc_buffer_is_empty(const vsc_buffer_t *buffer) {
 }
 
 //
+//  Returns true if buffer written data is located at the buffer ending.
+//
+VSC_PUBLIC bool
+vsc_buffer_is_reverse(const vsc_buffer_t *buffer) {
+
+    VSC_ASSERT_PTR(buffer);
+    return buffer->is_reverse;
+}
+
+//
 //  Return true if buffers are equal.
 //
 VSC_PUBLIC bool
@@ -290,7 +301,7 @@ vsc_buffer_equal(const vsc_buffer_t *buffer, const vsc_buffer_t *rhs) {
         return false;
     }
 
-    bool is_equal = memcmp(buffer->bytes, rhs->bytes, rhs->len) == 0;
+    bool is_equal = vsc_data_equal(vsc_buffer_data(buffer), vsc_buffer_data(rhs));
     return is_equal;
 }
 
@@ -371,6 +382,35 @@ vsc_buffer_make_secure(vsc_buffer_t *buffer) {
 }
 
 //
+//  Change the way buffer content is interpreted.
+//
+//  If true - assume that written data is located at the buffer ending.
+//  If false - assume that written data is located at the buffer beginning.
+//
+//  Note, that buffer is not empty and if new mode differs then data
+//  will be moved to the appropriate place.
+//
+VSC_PUBLIC void
+vsc_buffer_switch_reverse_mode(vsc_buffer_t *buffer, bool is_reverse) {
+
+    VSC_ASSERT_PTR(buffer);
+
+    if (buffer->is_reverse == is_reverse) {
+        return;
+    }
+
+    if (buffer->is_reverse) {
+        // Was reverse, so data from the end should be moved to the begin.
+        memmove(buffer->bytes, buffer->bytes + buffer->capacity - buffer->len, buffer->len);
+    } else {
+        // Was straight, so data from the begin should be moved to the end.
+        memmove(buffer->bytes + buffer->capacity - buffer->len, buffer->bytes, buffer->len);
+    }
+
+    buffer->is_reverse = is_reverse;
+}
+
+//
 //  Returns true if buffer full.
 //
 VSC_PUBLIC bool
@@ -414,7 +454,11 @@ vsc_buffer_data(const vsc_buffer_t *buffer) {
     VSC_ASSERT_PTR(buffer);
     VSC_ASSERT(vsc_buffer_is_valid(buffer));
 
-    return vsc_data(buffer->bytes, buffer->len);
+    if (buffer->is_reverse) {
+        return vsc_data(buffer->bytes + buffer->capacity - buffer->len, buffer->len);
+    } else {
+        return vsc_data(buffer->bytes, buffer->len);
+    }
 }
 
 //
@@ -474,7 +518,11 @@ vsc_buffer_unused_bytes(vsc_buffer_t *buffer) {
     VSC_ASSERT_PTR(buffer);
     VSC_ASSERT(vsc_buffer_is_valid(buffer));
 
-    return buffer->bytes + buffer->len;
+    if (buffer->is_reverse) {
+        return buffer->bytes;
+    } else {
+        return buffer->bytes + buffer->len;
+    }
 }
 
 //
@@ -516,7 +564,11 @@ vsc_buffer_write_str(vsc_buffer_t *buffer, const char *str) {
 
     size_t write_len = str_len > vsc_buffer_unused_len(buffer) ? vsc_buffer_unused_len(buffer) : str_len;
 
-    memcpy(vsc_buffer_unused_bytes(buffer), (const byte *)str, write_len);
+    if (buffer->is_reverse) {
+        memcpy(vsc_buffer_unused_bytes(buffer) - write_len + 1, (const byte *)str, write_len);
+    } else {
+        memcpy(vsc_buffer_unused_bytes(buffer), (const byte *)str, write_len);
+    }
 
     buffer->len += write_len;
 }
@@ -534,7 +586,11 @@ vsc_buffer_write_data(vsc_buffer_t *buffer, vsc_data_t data) {
 
     size_t write_len = data.len > vsc_buffer_unused_len(buffer) ? vsc_buffer_unused_len(buffer) : data.len;
 
-    memcpy(vsc_buffer_unused_bytes(buffer), data.bytes, write_len);
+    if (buffer->is_reverse) {
+        memcpy(vsc_buffer_unused_bytes(buffer) - write_len + 1, data.bytes, write_len);
+    } else {
+        memcpy(vsc_buffer_unused_bytes(buffer), data.bytes, write_len);
+    }
 
     buffer->len += write_len;
 }
@@ -550,6 +606,7 @@ vsc_buffer_reset(vsc_buffer_t *buffer) {
     VSC_ASSERT(vsc_buffer_is_valid(buffer));
 
     buffer->len = 0;
+    buffer->is_reverse = false;
 }
 
 //
