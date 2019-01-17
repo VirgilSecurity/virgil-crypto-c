@@ -56,6 +56,7 @@
 #include "vscf_oid.h"
 #include "vscf_asn1wr.h"
 #include "vscf_asn1_tag.h"
+#include "vscf_alg_info.h"
 #include "vscf_kdf_alg_info.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_kdf_alg_info_der_deserializer_defs.h"

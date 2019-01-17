@@ -32,12 +32,25 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include "vsc_data.h"
+#include "test_data_alg_info_der.h"
 
-extern const vsc_data_t test_alg_info_SHA256_DER_DESERIALIZER;
 
-extern const vsc_data_t test_alg_info_KDF1_DER_DESERIALIZER;
+const byte test_alg_info_SHA256_DER_BYTES[] = {
+    0x30, 0x0B, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+    0x65, 0x03, 0x04, 0x02, 0x01
+};
 
-extern const int test_alg_info_DER_SHA256_VALID_OUTPUT;
+const vsc_data_t test_alg_info_SHA256_DER = {
+    test_alg_info_SHA256_DER_BYTES, sizeof(test_alg_info_SHA256_DER_BYTES)
+};
 
-extern const int test_alg_info_DER_KDF1_VALID_OUTPUT;
+
+const byte test_alg_info_KDF1_SHA256_DER_BYTES[] = {
+    0x30, 0x16, 0x06, 0x07, 0x28, 0x81, 0x8C, 0x71,
+    0x02, 0x05, 0x01, 0x30, 0x0B, 0x06, 0x09, 0x60,
+    0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01
+};
+
+const vsc_data_t test_alg_info_KDF1_SHA256_DER = {
+    test_alg_info_KDF1_SHA256_DER_BYTES, sizeof(test_alg_info_KDF1_SHA256_DER_BYTES)
+};
