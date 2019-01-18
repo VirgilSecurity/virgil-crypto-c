@@ -93,6 +93,11 @@ typedef void (*vscf_asn1_writer_api_reset_fn)(vscf_impl_t *impl, byte *out, size
 typedef size_t (*vscf_asn1_writer_api_finish_fn)(vscf_impl_t *impl);
 
 //
+//  Callback. Returns how many bytes were already written to the ASN.1 structure.
+//
+typedef size_t (*vscf_asn1_writer_api_written_len_fn)(const vscf_impl_t *impl);
+
+//
 //  Callback. Return last error.
 //
 typedef vscf_error_t (*vscf_asn1_writer_api_error_fn)(vscf_impl_t *impl);
@@ -248,6 +253,10 @@ struct vscf_asn1_writer_api_t {
     //  Returns written size in bytes.
     //
     vscf_asn1_writer_api_finish_fn finish_cb;
+    //
+    //  Returns how many bytes were already written to the ASN.1 structure.
+    //
+    vscf_asn1_writer_api_written_len_fn written_len_cb;
     //
     //  Return last error.
     //

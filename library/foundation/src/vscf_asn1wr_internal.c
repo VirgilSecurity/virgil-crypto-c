@@ -92,6 +92,10 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     //
     (vscf_asn1_writer_api_finish_fn)vscf_asn1wr_finish,
     //
+    //  Returns how many bytes were already written to the ASN.1 structure.
+    //
+    (vscf_asn1_writer_api_written_len_fn)vscf_asn1wr_written_len,
+    //
     //  Return last error.
     //
     (vscf_asn1_writer_api_error_fn)vscf_asn1wr_error,
