@@ -81,6 +81,13 @@ import VirgilCryptoCommon
         return proxyResult
     }
 
+    /// Returns how many bytes were already written to the ASN.1 structure.
+    @objc public func writtenLen() -> Int {
+        let proxyResult = vscf_asn1wr_written_len(self.c_ctx)
+
+        return proxyResult
+    }
+
     /// Return last error.
     @objc public func error() throws {
         let proxyResult = vscf_asn1wr_error(self.c_ctx)
