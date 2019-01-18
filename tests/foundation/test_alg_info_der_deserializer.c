@@ -39,12 +39,12 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCF_SIMPLE_ALG_INFO_DER_DESERIALIZER
+#define TEST_DEPENDENCIES_AVAILABLE VSCF_ALG_INFO_DER_DESERIALIZER
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_alg_info.h"
 #include "vscf_simple_alg_info.h"
-#include "vscf_simple_alg_info_der_deserializer.h"
+#include "vscf_alg_info_der_deserializer.h"
 
 #include "test_data_alg_info_der.h"
 
@@ -62,17 +62,16 @@ int suiteTearDown(int num_failures) { return num_failures; }
 
 void
 test__deserialize__sha256__returns_valid_alg_info(void) {
-    vscf_simple_alg_info_der_deserializer_t *deserializer = vscf_simple_alg_info_der_deserializer_new();
-    vscf_simple_alg_info_der_deserializer_setup_defaults(deserializer);
+    vscf_alg_info_der_deserializer_t *deserializer = vscf_alg_info_der_deserializer_new();
+    vscf_alg_info_der_deserializer_setup_defaults(deserializer);
 
-    vscf_impl_t *sha256_info =
-            vscf_simple_alg_info_der_deserializer_deserialize(deserializer, test_alg_info_SHA256_DER, NULL);
+    vscf_impl_t *sha256_info = vscf_alg_info_der_deserializer_deserialize(deserializer, test_alg_info_SHA256_DER, NULL);
 
     TEST_ASSERT_NOT_NULL(sha256_info);
     TEST_ASSERT_EQUAL(vscf_alg_id_SHA256, vscf_alg_info_alg_id(sha256_info));
 
     vscf_impl_destroy(&sha256_info);
-    vscf_simple_alg_info_der_deserializer_destroy(&deserializer);
+    vscf_alg_info_der_deserializer_destroy(&deserializer);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
@@ -85,9 +84,9 @@ int
 main(void) {
     UNITY_BEGIN();
 
+#if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__deserialize__sha256__returns_valid_alg_info);
 
-#if TEST_DEPENDENCIES_AVAILABLE
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

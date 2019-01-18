@@ -8,11 +8,62 @@
         <interface name="alg info serializer"/>
 
         <require class="asn1wr"/>
+        <require class="oid"/>
+        <require enum="asn1 tag"/>
+        <require impl="kdf alg info"/>
+        <require impl="simple alg info"/>
         <require interface="alg info"/>
-        <require impl="simple alg info der serializer"/>
-        <require impl="kdf alg info der serializer"/>
+        <require interface="alg info"/>
+        <require interface="alg info"/>
+        <require module="kdf alg info defs"/>
+        <require module="simple alg info defs"/>
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
+
+        <method name="serialized simple alg info len">
+            Return buffer size enough to hold serialized class "simple alg info".
+
+            <argument name="simple alg info" impl="simple alg info"/>
+
+            <return type="size"/>
+        </method>
+
+
+        <method name="serialize simple alg info">
+            Serialize class "simple alg info".
+
+            <argument name="simple alg info" impl="simple alg info"/>
+            <argument name="out" class="buffer">
+                <length method="serialized simple alg info len">
+                    <proxy argument="simple alg info" to="simple alg info"/>
+                </length>
+            </argument>
+
+            <return type="size"/>
+        </method>
+
+
+        <method name="serialized kdf alg info len">
+            Return buffer size enough to hold serialized class "kdf alg info".
+
+            <argument name="kdf alg info" impl="kdf alg info"/>
+
+            <return type="size"/>
+        </method>
+
+
+        <method name="serialize kdf alg info">
+            Serialize class "kdf alg info".
+
+            <argument name="kdf alg info" impl="kdf alg info"/>
+            <argument name="out" class="buffer">
+                <length method="serialized kdf alg info len">
+                    <proxy argument="kdf alg info" to="kdf alg info"/>
+                </length>
+            </argument>
+
+            <return type="size"/>
+        </method>
     </implementation>
 
 
@@ -23,74 +74,33 @@
         <interface name="alg info deserializer"/>
 
         <require class="asn1rd"/>
-        <require interface="alg info"/>
-        <require impl="simple alg info der deserializer"/>
-        <require impl="kdf alg info der deserializer"/>
-
-        <dependency name="asn1 reader" interface="asn1 reader"/>
-    </implementation>
-
-
-    <implementation name="simple alg info der serializer">
-        Serialize class "simple alg info".
-
-        <interface name="defaults"/>
-        <interface name="alg info serializer"/>
-
         <require class="oid"/>
-        <require class="asn1wr"/>
         <require enum="asn1 tag"/>
-        <require interface="alg info"/>
-        <require impl="simple alg info"/>
-
-        <dependency name="asn1 writer" interface="asn1 writer"/>
-    </implementation>
-
-
-    <implementation name="simple alg info der deserializer">
-        Deserialize class "simple alg info".
-
-        <interface name="defaults"/>
-        <interface name="alg info deserializer"/>
-
-        <require class="oid"/>
-        <require class="asn1rd"/>
-        <require enum="asn1 tag"/>
-        <require interface="alg info"/>
-        <require impl="simple alg info"/>
-
-        <dependency name="asn1 reader" interface="asn1 reader"/>
-    </implementation>
-
-
-    <implementation name="kdf alg info der serializer">
-        Serialize class "simple alg info".
-
-        <interface name="defaults"/>
-        <interface name="alg info serializer"/>
-
-        <require class="oid"/>
-        <require class="asn1wr"/>
-        <require enum="asn1 tag"/>
-        <require interface="alg info"/>
         <require impl="kdf alg info"/>
-
-        <dependency name="asn1 writer" interface="asn1 writer"/>
-    </implementation>
-
-
-    <implementation name="kdf alg info der deserializer">
-        Deserialize class "simple alg info".
-
-        <interface name="defaults"/>
-        <interface name="alg info deserializer"/>
-
-        <require class="oid"/>
-        <require class="asn1rd"/>
-        <require enum="asn1 tag"/>
+        <require impl="simple alg info"/>
         <require interface="alg info"/>
-        <require impl="kdf alg info"/>
+        <require module="kdf alg info defs"/>
+        <require module="simple alg info defs"/>
 
         <dependency name="asn1 reader" interface="asn1 reader"/>
+
+        <method name="deserialize simple alg info">
+            Restore class "simple alg info" from the binary data.
+
+            <argument name="data" class="data"/>
+            <argument name="error" class="error ctx" access="readwrite"/>
+
+            <return class="simple alg info" access="disown"/>
+        </method>
+
+
+        <method name="deserialize kdf alg info">
+            Restore class "kdf alg info" from the binary data.
+
+            <argument name="data" class="data"/>
+            <argument name="error" class="error ctx" access="readwrite"/>
+
+            <return class="kdf alg info" access="disown"/>
+        </method>
     </implementation>
 </implementor>

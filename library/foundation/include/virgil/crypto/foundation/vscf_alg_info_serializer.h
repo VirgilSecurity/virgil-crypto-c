@@ -89,7 +89,7 @@ typedef struct vscf_alg_info_serializer_api_t vscf_alg_info_serializer_api_t;
 //  Return buffer size enough to hold serialized algorithm.
 //
 VSCF_PUBLIC size_t
-vscf_alg_info_serializer_serialize_len(vscf_impl_t *impl, const vscf_impl_t *alg_info);
+vscf_alg_info_serializer_serialized_len(vscf_impl_t *impl, const vscf_impl_t *alg_info);
 
 //
 //  Serialize algorithm info to buffer class.

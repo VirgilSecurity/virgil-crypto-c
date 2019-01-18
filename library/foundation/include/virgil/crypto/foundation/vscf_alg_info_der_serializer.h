@@ -170,7 +170,7 @@ vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *alg_
 //  Return buffer size enough to hold serialized algorithm.
 //
 VSCF_PUBLIC size_t
-vscf_alg_info_der_serializer_serialize_len(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
+vscf_alg_info_der_serializer_serialized_len(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
         const vscf_impl_t *alg_info);
 
 //
