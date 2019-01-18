@@ -54,7 +54,7 @@
         <interface name="alg info deserializer"/>
 
         <require class="oid"/>
-        <require class="asn1wr"/>
+        <require class="asn1rd"/>
         <require enum="asn1 tag"/>
         <require interface="alg info"/>
         <require impl="simple alg info"/>
@@ -86,7 +86,7 @@
         <interface name="alg info deserializer"/>
 
         <require class="oid"/>
-        <require class="asn1wr"/>
+        <require class="asn1rd"/>
         <require enum="asn1 tag"/>
         <require interface="alg info"/>
         <require impl="kdf alg info"/>

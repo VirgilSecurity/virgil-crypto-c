@@ -101,7 +101,7 @@ static const vscf_alg_info_deserializer_api_t alg_info_deserializer_api = {
     //
     vscf_api_tag_ALG_INFO_DESERIALIZER,
     //
-    //  Algorithm deserialization algorithm from data
+    //  Deserialize algorithm from the data.
     //
     (vscf_alg_info_deserializer_api_deserialize_fn)vscf_kdf_alg_info_der_deserializer_deserialize
 };

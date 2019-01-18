@@ -54,6 +54,7 @@
 #define VSCF_SIMPLE_ALG_INFO_DER_DESERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_error_ctx.h"
 #include "vscf_impl.h"
 #include "vscf_error.h"
 
@@ -173,11 +174,12 @@ vscf_simple_alg_info_der_deserializer_setup_defaults(
         vscf_simple_alg_info_der_deserializer_t *simple_alg_info_der_deserializer);
 
 //
-//  Algorithm deserialization algorithm from data
+//  Deserialize algorithm from the data.
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_simple_alg_info_der_deserializer_deserialize(
-        vscf_simple_alg_info_der_deserializer_t *simple_alg_info_der_deserializer, vsc_data_t data);
+        vscf_simple_alg_info_der_deserializer_t *simple_alg_info_der_deserializer, vsc_data_t data,
+        vscf_error_ctx_t *error);
 
 
 // --------------------------------------------------------------------------

@@ -95,15 +95,16 @@ vscf_alg_info_der_deserializer_setup_defaults(vscf_alg_info_der_deserializer_t *
 }
 
 //
-//  Algorithm deserialization algorithm from data
+//  Deserialize algorithm from the data.
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_alg_info_der_deserializer_deserialize(
-        vscf_alg_info_der_deserializer_t *alg_info_der_deserializer, vsc_data_t data) {
+        vscf_alg_info_der_deserializer_t *alg_info_der_deserializer, vsc_data_t data, vscf_error_ctx_t *error) {
 
     VSCF_ASSERT_PTR(alg_info_der_deserializer);
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(alg_info_der_deserializer->asn1_reader);
+    VSCF_UNUSED(error);
 
     // vscf_impl_t *asn1_reader = alg_info_der_deserializer->asn1_reader;
 

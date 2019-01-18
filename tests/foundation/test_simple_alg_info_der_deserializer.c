@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
@@ -33,75 +31,66 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-// --------------------------------------------------------------------------
-// clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  This module contains 'kdf alg info der deserializer' implementation.
-// --------------------------------------------------------------------------
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
+#include "unity.h"
+#include "test_utils.h"
 
 
-//  @warning
-// --------------------------------------------------------------------------
-//  This file is partially generated.
-//  Generated blocks are enclosed between tags [@<tag>, @end].
-//  User's code can be added between tags [@end, @<tag>].
-// --------------------------------------------------------------------------
+#define TEST_DEPENDENCIES_AVAILABLE VSCF_SIMPLE_ALG_INFO_DER_DESERIALIZER
+#if TEST_DEPENDENCIES_AVAILABLE
 
-#include "vscf_kdf_alg_info_der_deserializer.h"
-#include "vscf_assert.h"
-#include "vscf_memory.h"
-#include "vscf_oid.h"
-#include "vscf_asn1rd.h"
-#include "vscf_asn1_tag.h"
 #include "vscf_alg_info.h"
-#include "vscf_kdf_alg_info.h"
-#include "vscf_asn1_reader.h"
-#include "vscf_kdf_alg_info_der_deserializer_defs.h"
-#include "vscf_kdf_alg_info_der_deserializer_internal.h"
+#include "vscf_simple_alg_info.h"
+#include "vscf_simple_alg_info_der_deserializer.h"
 
-// clang-format on
-//  @end
+#include "test_data_alg_info_der.h"
 
 
-//  @generated
+// --------------------------------------------------------------------------
+//  Should have it to prevent linkage erros in MSVC.
 // --------------------------------------------------------------------------
 // clang-format off
-//  Generated section start.
-// --------------------------------------------------------------------------
-
-
-// --------------------------------------------------------------------------
-//  Generated section end.
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
 // clang-format on
-// --------------------------------------------------------------------------
-//  @end
 
 
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_kdf_alg_info_der_deserializer_setup_defaults(vscf_kdf_alg_info_der_deserializer_t *kdf_alg_info_der_deserializer) {
+void
+test__deserialize__sha256__returns_valid_alg_info(void) {
+    vscf_simple_alg_info_der_deserializer_t *deserializer = vscf_simple_alg_info_der_deserializer_new();
+    vscf_simple_alg_info_der_deserializer_setup_defaults(deserializer);
 
-    //  TODO: This is STUB. Implement me.
-    VSCF_ASSERT_PTR(kdf_alg_info_der_deserializer);
-    return vscf_SUCCESS;
+    vscf_impl_t *sha256_info =
+            vscf_simple_alg_info_der_deserializer_deserialize(deserializer, test_alg_info_SHA256_DER, NULL);
+
+    TEST_ASSERT_NOT_NULL(sha256_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_SHA256, vscf_alg_info_alg_id(sha256_info));
+
+    vscf_impl_destroy(&sha256_info);
+    vscf_simple_alg_info_der_deserializer_destroy(&deserializer);
 }
 
-//
-//  Deserialize algorithm from the data.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_kdf_alg_info_der_deserializer_deserialize(
-        vscf_kdf_alg_info_der_deserializer_t *kdf_alg_info_der_deserializer, vsc_data_t data, vscf_error_ctx_t *error) {
+#endif // TEST_DEPENDENCIES_AVAILABLE
 
-    //  TODO: This is STUB. Implement me.
-    VSCF_ASSERT_PTR(kdf_alg_info_der_deserializer);
-    VSCF_ASSERT(vsc_data_is_valid(data));
-    VSCF_UNUSED(error);
 
-    return NULL;
+// --------------------------------------------------------------------------
+// Entrypoint.
+// --------------------------------------------------------------------------
+int
+main(void) {
+    UNITY_BEGIN();
+
+    RUN_TEST(test__deserialize__sha256__returns_valid_alg_info);
+
+#if TEST_DEPENDENCIES_AVAILABLE
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+#endif
+
+    return UNITY_END();
 }
