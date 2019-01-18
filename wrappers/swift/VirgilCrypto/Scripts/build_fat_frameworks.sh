@@ -100,13 +100,27 @@ function make_fat_framework {
         FRAMEWORKS_BIN+=" "
     done
 
-    # Copy first framework to the output and remove it's binary
+    # Copy first framework to the output and remove it's binary and *.swiftmodule
     rsync --recursive --links "$(echo "${FRAMEWORKS}" | awk '{print $1}')/" "${OUTPUT_FRAMEWORK}"
     OUTPUT_FRAMEWORK_BIN=$(find "${OUTPUT_FRAMEWORK}" -type f -perm +111 -name "${FRAMEWORK_NAME}")
+    OUTPUT_FRAMEWORK_SWIFTMODULE_DIR="${OUTPUT_FRAMEWORK}/Modules/${FRAMEWORK_NAME}.swiftmodule"
     rm "${OUTPUT_FRAMEWORK_BIN}"
+
+    if [ -d "${OUTPUT_FRAMEWORK_SWIFTMODULE_DIR}/" ]; then
+        rm -fr -- "${OUTPUT_FRAMEWORK_SWIFTMODULE_DIR}"
+    fi
 
     # Merge found framework binaries to the output framework
     lipo -create ${FRAMEWORKS_BIN} -o ${OUTPUT_FRAMEWORK_BIN}
+
+    # Copy *.swiftmodule/*
+    for framework in ${FRAMEWORKS}; do
+        SWIFTMODULE_DIR="${framework}/Modules/${FRAMEWORK_NAME}.swiftmodule"
+
+        if [ -d "${SWIFTMODULE_DIR}/" ]; then
+            rsync --recursive --links "${SWIFTMODULE_DIR}/" "${OUTPUT_FRAMEWORK_SWIFTMODULE_DIR}/"
+        fi
+    done
 }
 
 
