@@ -54,7 +54,7 @@
 #include "vscf_assert.h"
 #include "vscf_memory.h"
 #include "vscf_oid.h"
-#include "vscf_asn1wr.h"
+#include "vscf_asn1rd.h"
 #include "vscf_asn1_tag.h"
 #include "vscf_alg_info.h"
 #include "vscf_simple_alg_info.h"
@@ -87,21 +87,51 @@ VSCF_PUBLIC vscf_error_t
 vscf_simple_alg_info_der_deserializer_setup_defaults(
         vscf_simple_alg_info_der_deserializer_t *simple_alg_info_der_deserializer) {
 
-    //  TODO: This is STUB. Implement me.
     VSCF_ASSERT_PTR(simple_alg_info_der_deserializer);
+
+    if (NULL == simple_alg_info_der_deserializer->asn1_reader) {
+        vscf_simple_alg_info_der_deserializer_take_asn1_reader(
+                simple_alg_info_der_deserializer, vscf_asn1rd_impl(vscf_asn1rd_new()));
+    }
+
     return vscf_SUCCESS;
 }
 
 //
-//  Algorithm deserialization algorithm from data
+//  Deserialize algorithm from the data.
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_simple_alg_info_der_deserializer_deserialize(
-        vscf_simple_alg_info_der_deserializer_t *simple_alg_info_der_deserializer, vsc_data_t data) {
+        vscf_simple_alg_info_der_deserializer_t *simple_alg_info_der_deserializer, vsc_data_t data,
+        vscf_error_ctx_t *error) {
 
-    //  TODO: This is STUB. Implement me.
+    //  AlgorithmIdentifier ::= SEQUENCE {
+    //          algorithm OBJECT IDENTIFIER,
+    //          parameters ANY DEFINED BY algorithm OPTIONAL
+    //  }
+
     VSCF_ASSERT_PTR(simple_alg_info_der_deserializer);
     VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT_PTR(simple_alg_info_der_deserializer->asn1_reader);
+
+    vscf_impl_t *asn1_reader = simple_alg_info_der_deserializer->asn1_reader;
+    vscf_asn1_reader_reset(asn1_reader, data);
+
+    vscf_asn1_reader_read_sequence(asn1_reader);
+    vsc_data_t alg_oid = vscf_asn1_reader_read_oid(asn1_reader);
+
+    if (vscf_asn1_reader_get_tag(asn1_reader) == vscf_asn1_tag_NULL) {
+        vscf_asn1_reader_read_null(asn1_reader);
+    }
+
+    vscf_error_t status = vscf_asn1_reader_error(asn1_reader);
+
+    if (vscf_SUCCESS == status) {
+        vscf_alg_id_t alg_id = vscf_oid_to_alg_id(alg_oid);
+        return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(alg_id));
+    } else {
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, status);
+    }
 
     return NULL;
 }

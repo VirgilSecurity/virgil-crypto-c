@@ -122,6 +122,11 @@ VSCF_PUBLIC void
 vscf_simple_alg_info_der_serializer_serialize(vscf_simple_alg_info_der_serializer_t *simple_alg_info_der_serializer,
         const vscf_impl_t *alg_info, vsc_buffer_t *out) {
 
+    //  AlgorithmIdentifier ::= SEQUENCE {
+    //          algorithm OBJECT IDENTIFIER,
+    //          parameters ANY DEFINED BY algorithm OPTIONAL
+    //  }
+
     VSCF_ASSERT_PTR(simple_alg_info_der_serializer);
     VSCF_ASSERT_PTR(alg_info);
     VSCF_ASSERT_PTR(out);

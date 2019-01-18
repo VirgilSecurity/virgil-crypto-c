@@ -54,6 +54,7 @@
 #define VSCF_KDF_ALG_INFO_DER_DESERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_error_ctx.h"
 #include "vscf_impl.h"
 #include "vscf_error.h"
 
@@ -168,11 +169,11 @@ VSCF_PUBLIC vscf_error_t
 vscf_kdf_alg_info_der_deserializer_setup_defaults(vscf_kdf_alg_info_der_deserializer_t *kdf_alg_info_der_deserializer);
 
 //
-//  Algorithm deserialization algorithm from data
+//  Deserialize algorithm from the data.
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_kdf_alg_info_der_deserializer_deserialize(vscf_kdf_alg_info_der_deserializer_t *kdf_alg_info_der_deserializer,
-        vsc_data_t data);
+        vsc_data_t data, vscf_error_ctx_t *error);
 
 
 // --------------------------------------------------------------------------
