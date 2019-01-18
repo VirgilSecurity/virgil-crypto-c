@@ -139,5 +139,9 @@ vscf_simple_alg_info_der_serializer_serialize(vscf_simple_alg_info_der_serialize
     vscf_asn1_writer_write_sequence(asn1_writer, len);
     VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
 
-    vsc_buffer_inc_used(out, vscf_asn1_writer_finish(asn1_writer));
+    vsc_buffer_inc_used(out, vscf_asn1_writer_written_len(asn1_writer));
+
+    if (!vsc_buffer_is_reverse(out)) {
+        vscf_asn1_writer_finish(asn1_writer);
+    }
 }
