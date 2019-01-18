@@ -1,5 +1,5 @@
-const { Transform } = require('stream');
 const { Sha256: Sha256Binding } = require('bindings')('foundation');
+const { Transform } = require('readable-stream');
 
 class Sha256 extends Transform {
   constructor() {
