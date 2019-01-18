@@ -68,6 +68,7 @@ test__serialize__sha256__returns_sha256_der(void) {
 
     vsc_buffer_t *out =
             vsc_buffer_new_with_capacity(vscf_simple_alg_info_der_serializer_serialize_len(serializer, sha256_info));
+    vsc_buffer_switch_reverse_mode(out, true);
 
     vscf_simple_alg_info_der_serializer_serialize(serializer, sha256_info, out);
 
