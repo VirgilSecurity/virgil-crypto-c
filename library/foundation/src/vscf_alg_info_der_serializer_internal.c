@@ -103,7 +103,7 @@ static const vscf_alg_info_serializer_api_t alg_info_serializer_api = {
     //
     //  Return buffer size enough to hold serialized algorithm.
     //
-    (vscf_alg_info_serializer_api_serialize_len_fn)vscf_alg_info_der_serializer_serialize_len,
+    (vscf_alg_info_serializer_api_serialized_len_fn)vscf_alg_info_der_serializer_serialized_len,
     //
     //  Serialize algorithm info to buffer class.
     //

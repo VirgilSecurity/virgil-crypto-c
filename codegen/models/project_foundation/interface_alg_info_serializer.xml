@@ -1,7 +1,7 @@
 <interface name="alg info serializer">
     Provide serialization of algorithm
 
-    <method name="serialize len">
+    <method name="serialized len">
         Return buffer size enough to hold serialized algorithm.
 
         <argument name="alg info" interface="alg info"/>
@@ -14,7 +14,7 @@
 
         <argument name="alg info" interface="alg info"/>
         <argument name="out" class="buffer">
-            <length method="serialize len">
+            <length method="serialized len">
                 <proxy argument="alg info" to="alg info"/>
             </length>
         </argument>

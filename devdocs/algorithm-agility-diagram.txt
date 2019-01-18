@@ -38,10 +38,6 @@ interface AlgInfoDeserializer {
 
 class AlgInfoDerSerializer
 class AlgInfoDerDeserializer
-class SimpleAlgInfoDerSerializer
-class SimpleAlgInfoDerDeserializer
-class KdfAlgInfoDerSerializer
-class KdfAlgInfoDerDeserializer
 
 
 AlgInfo .left.> AlgId : <<use>>
@@ -51,10 +47,6 @@ Alg .left.> AlgInfo : <<produce/consume>>
 
 AlgInfoDerSerializer .down.|> AlgInfoSerializer
 AlgInfoDerDeserializer .down.|> AlgInfoDeserializer
-SimpleAlgInfoDerSerializer .down.|> AlgInfoSerializer
-SimpleAlgInfoDerDeserializer .down.|> AlgInfoDeserializer
-KdfAlgInfoDerSerializer .down.|> AlgInfoSerializer
-KdfAlgInfoDerDeserializer .down.|> AlgInfoDeserializer
 AlgInfoSerializer .down.> AlgInfo : <<produce/consume>>
 AlgInfoDeserializer .down.> AlgInfo : <<produce/consume>>
 

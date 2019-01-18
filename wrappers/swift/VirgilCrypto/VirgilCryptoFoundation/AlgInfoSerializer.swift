@@ -41,7 +41,7 @@ import VirgilCryptoCommon
 @objc(VSCFAlgInfoSerializer) public protocol AlgInfoSerializer : CContext {
 
     /// Return buffer size enough to hold serialized algorithm.
-    @objc func serializeLen(algInfo: AlgInfo) -> Int
+    @objc func serializedLen(algInfo: AlgInfo) -> Int
 
     /// Serialize algorithm info to buffer class.
     @objc func serialize(algInfo: AlgInfo) -> Data
@@ -65,15 +65,15 @@ import VirgilCryptoCommon
     }
 
     /// Return buffer size enough to hold serialized algorithm.
-    @objc public func serializeLen(algInfo: AlgInfo) -> Int {
-        let proxyResult = vscf_alg_info_serializer_serialize_len(self.c_ctx, algInfo.c_ctx)
+    @objc public func serializedLen(algInfo: AlgInfo) -> Int {
+        let proxyResult = vscf_alg_info_serializer_serialized_len(self.c_ctx, algInfo.c_ctx)
 
         return proxyResult
     }
 
     /// Serialize algorithm info to buffer class.
     @objc public func serialize(algInfo: AlgInfo) -> Data {
-        let outCount = self.serializeLen(algInfo: algInfo)
+        let outCount = self.serializedLen(algInfo: algInfo)
         var out = Data(count: outCount)
         var outBuf = vsc_buffer_new()
         defer {

@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
@@ -33,41 +31,70 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
+#include "unity.h"
+#include "test_utils.h"
+
+
+#define TEST_DEPENDENCIES_AVAILABLE VSCF_ALG_INFO_DER_SERIALIZER
+#if TEST_DEPENDENCIES_AVAILABLE
+
+#include "vscf_simple_alg_info.h"
+#include "vscf_alg_info_der_serializer.h"
+
+#include "test_data_alg_info_der.h"
+
+
+// --------------------------------------------------------------------------
+//  Should have it to prevent linkage erros in MSVC.
 // --------------------------------------------------------------------------
 // clang-format off
-
-
-//  @description
-// --------------------------------------------------------------------------
-//  Types of the 'simple alg info der serializer' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
-// --------------------------------------------------------------------------
-
-
-//  @warning
-// --------------------------------------------------------------------------
-//  This file is partially generated.
-//  Generated blocks are enclosed between tags [@<tag>, @end].
-//  User's code can be added between tags [@end, @<tag>].
-// --------------------------------------------------------------------------
-
-#include "vscf_simple_alg_info_der_serializer_defs.h"
-
+void setUp(void) { }
+void tearDown(void) { }
+void suiteSetUp(void) { }
+int suiteTearDown(int num_failures) { return num_failures; }
 // clang-format on
-//  @end
 
 
-//  @generated
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated section start.
-// --------------------------------------------------------------------------
+void
+test__serialize__sha256__returns_sha256_der(void) {
+    vscf_alg_info_der_serializer_t *serializer = vscf_alg_info_der_serializer_new();
+    vscf_alg_info_der_serializer_setup_defaults(serializer);
+
+    vscf_impl_t *sha256_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256));
+
+    vsc_buffer_t *out =
+            vsc_buffer_new_with_capacity(vscf_alg_info_der_serializer_serialized_len(serializer, sha256_info));
+    vsc_buffer_switch_reverse_mode(out, true);
+
+    vscf_alg_info_der_serializer_serialize(serializer, sha256_info, out);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_SHA256_DER, out);
+
+    vscf_impl_destroy(&sha256_info);
+    vscf_alg_info_der_serializer_destroy(&serializer);
+    vsc_buffer_destroy(&out);
+}
+
+#endif // TEST_DEPENDENCIES_AVAILABLE
 
 
 // --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
+// Entrypoint.
 // --------------------------------------------------------------------------
-//  @end
+int
+main(void) {
+    UNITY_BEGIN();
+
+    RUN_TEST(test__serialize__sha256__returns_sha256_der);
+
+#if TEST_DEPENDENCIES_AVAILABLE
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+#endif
+
+    return UNITY_END();
+}

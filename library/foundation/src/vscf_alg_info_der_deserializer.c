@@ -54,9 +54,13 @@
 #include "vscf_assert.h"
 #include "vscf_memory.h"
 #include "vscf_asn1rd.h"
+#include "vscf_oid.h"
+#include "vscf_asn1_tag.h"
+#include "vscf_kdf_alg_info.h"
+#include "vscf_simple_alg_info.h"
 #include "vscf_alg_info.h"
-#include "vscf_simple_alg_info_der_deserializer.h"
-#include "vscf_kdf_alg_info_der_deserializer.h"
+#include "vscf_kdf_alg_info_defs.h"
+#include "vscf_simple_alg_info_defs.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_alg_info_der_deserializer_defs.h"
 #include "vscf_alg_info_der_deserializer_internal.h"
@@ -71,6 +75,20 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Restore class "simple alg info" from the binary data.
+//
+static vscf_simple_alg_info_t *
+vscf_alg_info_der_deserializer_deserialize_simple_alg_info(vscf_alg_info_der_deserializer_t *alg_info_der_deserializer,
+        vsc_data_t data, vscf_error_ctx_t *error);
+
+//
+//  Restore class "kdf alg info" from the binary data.
+//
+static vscf_kdf_alg_info_t *
+vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(vscf_alg_info_der_deserializer_t *alg_info_der_deserializer,
+        vsc_data_t data, vscf_error_ctx_t *error);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -78,6 +96,59 @@
 // --------------------------------------------------------------------------
 //  @end
 
+
+//
+//  Restore class "simple alg info" from the binary data.
+//
+static vscf_simple_alg_info_t *
+vscf_alg_info_der_deserializer_deserialize_simple_alg_info(
+        vscf_alg_info_der_deserializer_t *alg_info_der_deserializer, vsc_data_t data, vscf_error_ctx_t *error) {
+
+    //  AlgorithmIdentifier ::= SEQUENCE {
+    //          algorithm OBJECT IDENTIFIER,
+    //          parameters ANY DEFINED BY algorithm OPTIONAL
+    //  }
+
+    VSCF_ASSERT_PTR(alg_info_der_deserializer);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT_PTR(alg_info_der_deserializer->asn1_reader);
+
+    vscf_impl_t *asn1_reader = alg_info_der_deserializer->asn1_reader;
+    vscf_asn1_reader_reset(asn1_reader, data);
+
+    vscf_asn1_reader_read_sequence(asn1_reader);
+    vsc_data_t alg_oid = vscf_asn1_reader_read_oid(asn1_reader);
+
+    if (vscf_asn1_reader_get_tag(asn1_reader) == vscf_asn1_tag_NULL) {
+        vscf_asn1_reader_read_null(asn1_reader);
+    }
+
+    vscf_error_t status = vscf_asn1_reader_error(asn1_reader);
+
+    if (vscf_SUCCESS == status) {
+        vscf_alg_id_t alg_id = vscf_oid_to_alg_id(alg_oid);
+        return vscf_simple_alg_info_new_with_alg_id(alg_id);
+    } else {
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, status);
+    }
+
+    return NULL;
+}
+
+//
+//  Restore class "kdf alg info" from the binary data.
+//
+static vscf_kdf_alg_info_t *
+vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(
+        vscf_alg_info_der_deserializer_t *alg_info_der_deserializer, vsc_data_t data, vscf_error_ctx_t *error) {
+
+    //  TODO: Implement me.
+    VSCF_ASSERT_PTR(alg_info_der_deserializer);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_UNUSED(error);
+
+    return NULL;
+}
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
@@ -106,26 +177,46 @@ vscf_alg_info_der_deserializer_deserialize(
     VSCF_ASSERT_PTR(alg_info_der_deserializer->asn1_reader);
     VSCF_UNUSED(error);
 
-    // vscf_impl_t *asn1_reader = alg_info_der_deserializer->asn1_reader;
+    //
+    //  Define algorithm identifier.
+    //
+    vscf_impl_t *asn1_reader = alg_info_der_deserializer->asn1_reader;
+    vscf_asn1_reader_reset(asn1_reader, data);
+    vscf_asn1_reader_read_sequence(asn1_reader);
+    vsc_data_t alg_oid = vscf_asn1_reader_read_oid(asn1_reader);
 
-    // vscf_asn1_reader_reset(asn1_reader, data);
+    vscf_error_t asn1_status = vscf_asn1_reader_error(asn1_reader);
+    if (asn1_status != vscf_SUCCESS) {
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, asn1_status);
+        return NULL;
+    }
 
-    // vsc_data_t alg_oid = vscf_asn1_reader_read_oid(asn1_reader);
+    vscf_alg_id_t alg_id = vscf_oid_to_alg_id(alg_oid);
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
-    // vscf_asn1_reader_read_null(asn1_reader);
+    //
+    //  Proxy further deserialization for specific algorithm.
+    //
+    switch (alg_id) {
+    case vscf_alg_id_SHA224:
+    case vscf_alg_id_SHA256:
+    case vscf_alg_id_SHA384:
+    case vscf_alg_id_SHA512:
+    case vscf_alg_id_RSA:
+    case vscf_alg_id_ED25519:
+    case vscf_alg_id_X25519:
+        return vscf_simple_alg_info_impl(
+                vscf_alg_info_der_deserializer_deserialize_simple_alg_info(alg_info_der_deserializer, data, error));
 
-    // vscf_alg_id_t alg_id = vscf_oid_to_alg_id(alg_oid);
+    case vscf_alg_id_KDF1:
+    case vscf_alg_id_KDF2:
+        return vscf_kdf_alg_info_impl(
+                vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(alg_info_der_deserializer, data, error));
 
-    // if (alg_id == vscf_alg_id_SHA256) {
-    //     vscf_simple_alg_info_t *simple_alg = vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256);
-    //     return vscf_simple_alg_info_impl(simple_alg);
-    // }
-
-    // if (alg_id == vscf_alg_id_KDF1) {
-    //     vscf_simple_alg_info_t *simple_alg = vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256);
-    //     vscf_kdf_alg_info_t *kdf_alg = vscf_kdf_alg_info_new_with_members(vscf_alg_id_KDF1, simple_alg);
-    //     return vscf_kdf_alg_info_impl(kdf_alg);
-    // }
+    case vscf_alg_id_NONE:
+        VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
+        break;
+    }
 
     return NULL;
 }
