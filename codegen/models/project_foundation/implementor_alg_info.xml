@@ -38,7 +38,7 @@
             Set algorithm identificator
 
             <argument name="alg id" enum="alg id"/>
-            <argument name="hash alg info" impl="simple alg info"/>
+            <argument name="hash alg info" impl="simple alg info" access="retain"/>
         </constructor>
     </implementation>
 </implementor>

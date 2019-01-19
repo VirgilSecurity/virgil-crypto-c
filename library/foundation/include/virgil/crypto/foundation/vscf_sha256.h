@@ -205,13 +205,13 @@ vscf_sha256_finish(vscf_sha256_t *sha256, vsc_buffer_t *digest);
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_sha256_alg_id(vscf_sha256_t *sha256);
+vscf_sha256_alg_id(const vscf_sha256_t *sha256);
 
 //
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_sha256_produce_alg_info(vscf_sha256_t *sha256);
+vscf_sha256_produce_alg_info(const vscf_sha256_t *sha256);
 
 //
 //  Restore algorithm configuration from the given object.
