@@ -62,14 +62,6 @@
 #include "vscf_alg_id.h"
 #include "vscf_simple_alg_info.h"
 
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#endif
-
 // clang-format on
 //  @end
 
@@ -105,14 +97,6 @@ struct vscf_kdf_alg_info_t {
     //  Implementation specific context.
     //
     vscf_simple_alg_info_t *hash_alg_info;
-    //
-    //  Implementation specific context.
-    //
-    vsc_buffer_t *salt;
-    //
-    //  Implementation specific context.
-    //
-    size_t iteration_count;
 };
 
 

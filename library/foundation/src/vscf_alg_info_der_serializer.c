@@ -225,11 +225,11 @@ vscf_alg_info_der_serializer_serialize_kdf_alg_info(vscf_alg_info_der_serializer
     VSCF_ASSERT(vsc_buffer_unused_len(out) >=
                 vscf_alg_info_der_serializer_serialized_kdf_alg_info_len(alg_info_der_serializer, kdf_alg_info));
 
-    //  Write PARAMS HashFunction.
+    //  Write HashFunction.
     size_t params_len = vscf_alg_info_der_serializer_serialize_simple_alg_info(
             alg_info_der_serializer, kdf_alg_info->hash_alg_info, out);
 
-    //  Write KDF algorithm identifier.
+    //  Write KeyDerivationFunction.
     vscf_impl_t *asn1_writer = alg_info_der_serializer->asn1_writer;
     vscf_asn1_writer_reset(asn1_writer, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 

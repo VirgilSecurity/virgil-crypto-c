@@ -142,12 +142,60 @@ static vscf_kdf_alg_info_t *
 vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(
         vscf_alg_info_der_deserializer_t *alg_info_der_deserializer, vsc_data_t data, vscf_error_ctx_t *error) {
 
-    //  TODO: Implement me.
+    //  -- From ISO/IEC 18033-2 --
+    //  KeyDerivationFunction ::= AlgorithmIdentifier {{ KDFAlgorithms }}
+    //  KDFAlgorithms ALGORITHM ::= {
+    //          { OID id-kdf-kdf1 PARMS HashFunction } |
+    //          { OID id-kdf-kdf2 PARMS HashFunction } ,
+    //          ... -- Expect additional algorithms --
+    //  }
+    //
+    //  HashFunction ::= AlgorithmIdentifier {{ HashAlgorithms }}
+    //  HashAlgorithms ALGORITHM ::= {
+    //          -- nist identifiers
+    //          { OID id-sha1 } |
+    //          { OID id-sha256 } |
+    //          { OID id-sha384 } |
+    //          { OID id-sha512 } ,
+    //          ... -- Expect additional algorithms --
+    //  }
+
     VSCF_ASSERT_PTR(alg_info_der_deserializer);
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_UNUSED(error);
 
-    return NULL;
+    VSCF_ASSERT_PTR(alg_info_der_deserializer->asn1_reader);
+
+    vscf_impl_t *asn1_reader = alg_info_der_deserializer->asn1_reader;
+    vscf_asn1_reader_reset(asn1_reader, data);
+
+    //  Read KeyDerivationFunction.
+    vscf_asn1_reader_read_sequence(asn1_reader);
+    vsc_data_t kdf_oid = vscf_asn1_reader_read_oid(asn1_reader);
+
+    //  Read HashFunction.
+    vscf_asn1_reader_read_sequence(asn1_reader);
+    vsc_data_t hash_oid = vscf_asn1_reader_read_oid(asn1_reader);
+
+    vscf_error_t status = vscf_asn1_reader_error(asn1_reader);
+    if (status != vscf_SUCCESS) {
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, status);
+        return NULL;
+    }
+
+    vscf_alg_id_t kdf_id = vscf_oid_to_alg_id(kdf_oid);
+    VSCF_ASSERT(kdf_id != vscf_alg_id_NONE);
+
+    vscf_alg_id_t hash_id = vscf_oid_to_alg_id(hash_oid);
+    VSCF_ASSERT(hash_id != vscf_alg_id_NONE);
+
+    vscf_simple_alg_info_t *hash_info = vscf_simple_alg_info_new_with_alg_id(hash_id);
+
+    vscf_kdf_alg_info_t *kdf_info = vscf_kdf_alg_info_new_with_members(kdf_id, hash_info);
+
+    vscf_simple_alg_info_destroy(&hash_info);
+
+    return kdf_info;
 }
 
 //
