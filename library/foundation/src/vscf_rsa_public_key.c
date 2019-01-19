@@ -114,7 +114,7 @@ vscf_rsa_public_key_cleanup_ctx(vscf_rsa_public_key_t *rsa_public_key) {
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_rsa_public_key_alg_id(vscf_rsa_public_key_t *rsa_public_key) {
+vscf_rsa_public_key_alg_id(const vscf_rsa_public_key_t *rsa_public_key) {
 
     VSCF_ASSERT_PTR(rsa_public_key);
     return vscf_alg_id_RSA;
@@ -124,7 +124,7 @@ vscf_rsa_public_key_alg_id(vscf_rsa_public_key_t *rsa_public_key) {
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_rsa_public_key_produce_alg_info(vscf_rsa_public_key_t *rsa_public_key) {
+vscf_rsa_public_key_produce_alg_info(const vscf_rsa_public_key_t *rsa_public_key) {
 
     VSCF_ASSERT_PTR(rsa_public_key);
     return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_RSA));
@@ -147,7 +147,7 @@ vscf_rsa_public_key_restore_alg_info(vscf_rsa_public_key_t *rsa_public_key, cons
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_public_key_key_len(vscf_rsa_public_key_t *rsa_public_key) {
+vscf_rsa_public_key_key_len(const vscf_rsa_public_key_t *rsa_public_key) {
 
     VSCF_ASSERT_PTR(rsa_public_key);
 
@@ -158,7 +158,7 @@ vscf_rsa_public_key_key_len(vscf_rsa_public_key_t *rsa_public_key) {
 //  Length of the key in bits.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_public_key_key_bitlen(vscf_rsa_public_key_t *rsa_public_key) {
+vscf_rsa_public_key_key_bitlen(const vscf_rsa_public_key_t *rsa_public_key) {
 
     VSCF_ASSERT_PTR(rsa_public_key);
 
@@ -259,7 +259,7 @@ vscf_rsa_public_key_verify(vscf_rsa_public_key_t *rsa_public_key, vsc_data_t dat
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_rsa_public_key_export_public_key(vscf_rsa_public_key_t *rsa_public_key, vsc_buffer_t *out) {
+vscf_rsa_public_key_export_public_key(const vscf_rsa_public_key_t *rsa_public_key, vsc_buffer_t *out) {
 
     // RSAPublicKey ::= SEQUENCE {
     //     modulus INTEGER, -- n
@@ -274,7 +274,7 @@ vscf_rsa_public_key_export_public_key(vscf_rsa_public_key_t *rsa_public_key, vsc
     VSCF_ASSERT(mbedtls_rsa_check_pubkey(&rsa_public_key->rsa_ctx) == 0);
 
     vscf_impl_t *asn1wr = rsa_public_key->asn1wr;
-    mbedtls_rsa_context *rsa = &rsa_public_key->rsa_ctx;
+    const mbedtls_rsa_context *rsa = &rsa_public_key->rsa_ctx;
 
     vscf_error_ctx_t error;
     vscf_error_ctx_reset(&error);
@@ -300,7 +300,7 @@ vscf_rsa_public_key_export_public_key(vscf_rsa_public_key_t *rsa_public_key, vsc
 //  Return length in bytes required to hold exported public key.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_public_key_exported_public_key_len(vscf_rsa_public_key_t *rsa_public_key) {
+vscf_rsa_public_key_exported_public_key_len(const vscf_rsa_public_key_t *rsa_public_key) {
 
     VSCF_ASSERT_PTR(rsa_public_key);
 

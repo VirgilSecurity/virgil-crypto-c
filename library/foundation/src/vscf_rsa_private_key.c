@@ -135,7 +135,7 @@ vscf_rsa_private_key_set_keygen_params(vscf_rsa_private_key_t *rsa_private_key, 
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_rsa_private_key_alg_id(vscf_rsa_private_key_t *rsa_private_key) {
+vscf_rsa_private_key_alg_id(const vscf_rsa_private_key_t *rsa_private_key) {
 
     VSCF_ASSERT_PTR(rsa_private_key);
     return vscf_alg_id_RSA;
@@ -145,7 +145,7 @@ vscf_rsa_private_key_alg_id(vscf_rsa_private_key_t *rsa_private_key) {
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_rsa_private_key_produce_alg_info(vscf_rsa_private_key_t *rsa_private_key) {
+vscf_rsa_private_key_produce_alg_info(const vscf_rsa_private_key_t *rsa_private_key) {
 
     VSCF_ASSERT_PTR(rsa_private_key);
     return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_RSA));
@@ -168,7 +168,7 @@ vscf_rsa_private_key_restore_alg_info(vscf_rsa_private_key_t *rsa_private_key, c
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_private_key_key_len(vscf_rsa_private_key_t *rsa_private_key) {
+vscf_rsa_private_key_key_len(const vscf_rsa_private_key_t *rsa_private_key) {
 
     VSCF_ASSERT_PTR(rsa_private_key);
 
@@ -179,7 +179,7 @@ vscf_rsa_private_key_key_len(vscf_rsa_private_key_t *rsa_private_key) {
 //  Length of the key in bits.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_private_key_key_bitlen(vscf_rsa_private_key_t *rsa_private_key) {
+vscf_rsa_private_key_key_bitlen(const vscf_rsa_private_key_t *rsa_private_key) {
 
     VSCF_ASSERT_PTR(rsa_private_key);
 
@@ -321,7 +321,7 @@ vscf_rsa_private_key_signature_len(vscf_rsa_private_key_t *rsa_private_key) {
 //  Extract public part of the key.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_rsa_private_key_extract_public_key(vscf_rsa_private_key_t *rsa_private_key) {
+vscf_rsa_private_key_extract_public_key(const vscf_rsa_private_key_t *rsa_private_key) {
 
     VSCF_ASSERT_PTR(rsa_private_key);
     VSCF_ASSERT(mbedtls_rsa_check_pubkey(&rsa_private_key->rsa_ctx) == 0);
@@ -331,7 +331,7 @@ vscf_rsa_private_key_extract_public_key(vscf_rsa_private_key_t *rsa_private_key)
     VSCF_ASSERT_ALLOC(rsa_public_key != NULL);
 
     mbedtls_rsa_context *rsa_public = &rsa_public_key->rsa_ctx;
-    mbedtls_rsa_context *rsa_private = &rsa_private_key->rsa_ctx;
+    const mbedtls_rsa_context *rsa_private = &rsa_private_key->rsa_ctx;
 
     int copy_n_ret = mbedtls_mpi_copy(&rsa_public->N, &rsa_private->N);
     int copy_e_ret = mbedtls_mpi_copy(&rsa_public->E, &rsa_private->E);
@@ -372,7 +372,7 @@ vscf_rsa_private_key_extract_public_key(vscf_rsa_private_key_t *rsa_private_key)
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_rsa_private_key_export_private_key(vscf_rsa_private_key_t *rsa_private_key, vsc_buffer_t *out) {
+vscf_rsa_private_key_export_private_key(const vscf_rsa_private_key_t *rsa_private_key, vsc_buffer_t *out) {
 
     //  RSAPrivateKey ::= SEQUENCE {
     //       version Version,
@@ -392,7 +392,7 @@ vscf_rsa_private_key_export_private_key(vscf_rsa_private_key_t *rsa_private_key,
     VSCF_ASSERT(mbedtls_rsa_check_privkey(&rsa_private_key->rsa_ctx) == 0);
 
     vscf_impl_t *asn1wr = rsa_private_key->asn1wr;
-    mbedtls_rsa_context *rsa = &rsa_private_key->rsa_ctx;
+    const mbedtls_rsa_context *rsa = &rsa_private_key->rsa_ctx;
 
 
     vscf_error_ctx_t error;
@@ -447,7 +447,7 @@ vscf_rsa_private_key_export_private_key(vscf_rsa_private_key_t *rsa_private_key,
 //  Return length in bytes required to hold exported private key.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_private_key_exported_private_key_len(vscf_rsa_private_key_t *rsa_private_key) {
+vscf_rsa_private_key_exported_private_key_len(const vscf_rsa_private_key_t *rsa_private_key) {
 
     VSCF_UNUSED(rsa_private_key);
 

@@ -132,7 +132,7 @@ vscf_kdf1_derive(vscf_kdf1_t *kdf1, vsc_data_t data, size_t key_len, vsc_buffer_
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_kdf1_alg_id(vscf_kdf1_t *kdf1) {
+vscf_kdf1_alg_id(const vscf_kdf1_t *kdf1) {
 
     VSCF_ASSERT_PTR(kdf1);
     return vscf_alg_id_KDF1;
@@ -142,7 +142,7 @@ vscf_kdf1_alg_id(vscf_kdf1_t *kdf1) {
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_kdf1_produce_alg_info(vscf_kdf1_t *kdf1) {
+vscf_kdf1_produce_alg_info(const vscf_kdf1_t *kdf1) {
 
     VSCF_ASSERT_PTR(kdf1);
     const vscf_hash_stream_api_t *hash_stream_api = vscf_hash_stream_api(kdf1->hash);
