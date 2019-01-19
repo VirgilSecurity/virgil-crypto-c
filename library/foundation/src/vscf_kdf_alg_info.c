@@ -101,21 +101,6 @@ vscf_kdf_alg_info_cleanup_ctx(vscf_kdf_alg_info_t *kdf_alg_info) {
 //  Set algorithm identificator
 //
 VSCF_PUBLIC vscf_kdf_alg_info_t *
-vscf_kdf_alg_info_new_with_alg_id(vscf_alg_id_t alg_id) {
-
-    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
-
-    vscf_kdf_alg_info_t *kdf_alg_info = vscf_kdf_alg_info_new();
-
-    kdf_alg_info->alg_id = alg_id;
-
-    return kdf_alg_info;
-}
-
-//
-//  Set algorithm identificator
-//
-VSCF_PUBLIC vscf_kdf_alg_info_t *
 vscf_kdf_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_simple_alg_info_t *hash_alg_info) {
 
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);

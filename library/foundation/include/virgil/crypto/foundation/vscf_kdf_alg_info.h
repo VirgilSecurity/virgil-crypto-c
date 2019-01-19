@@ -94,12 +94,6 @@ vscf_kdf_alg_info_impl(vscf_kdf_alg_info_t *kdf_alg_info);
 //  Set algorithm identificator
 //
 VSCF_PUBLIC vscf_kdf_alg_info_t *
-vscf_kdf_alg_info_new_with_alg_id(vscf_alg_id_t alg_id);
-
-//
-//  Set algorithm identificator
-//
-VSCF_PUBLIC vscf_kdf_alg_info_t *
 vscf_kdf_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_simple_alg_info_t *hash_alg_info);
 
 //

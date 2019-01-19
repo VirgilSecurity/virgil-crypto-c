@@ -28,12 +28,6 @@
             <property name="iteration count" type="size"/>
         </context>
 
-        <constructor name="with alg id">
-            Set algorithm identificator
-
-            <argument name="alg id" enum="alg id"/>
-        </constructor>
-
         <constructor name="with members">
             Set algorithm identificator
 
