@@ -63,7 +63,7 @@ import VirgilCryptoCommon
         super.init()
     }
 
-    /// Set algorithm identificator
+    /// Create algorithm info with identificator.
     public init(algId: AlgId) {
         let proxyResult = vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)))
 

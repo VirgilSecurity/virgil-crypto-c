@@ -11,28 +11,35 @@
         </context>
 
         <constructor name="with alg id">
-            Set algorithm identificator
+            Create algorithm info with identificator.
+
             <argument name="alg id" enum="alg id"/>
         </constructor>
     </implementation>
 
 
     <implementation name="kdf alg info">
-        Provide KDF algorithm information implementation
+        Provide KDF algorithm information implementation.
+
         <interface name="alg info"/>
 
         <context>
             <property name="alg id" enum="alg id"/>
             <property name="hash alg info" impl="simple alg info"/>
-            <property name="salt" class="buffer"/>
-            <property name="iteration count" type="size"/>
         </context>
 
+
         <constructor name="with members">
-            Set algorithm identificator
+            Create KDF algorithm info with identificator and HASH algorithm info.
 
             <argument name="alg id" enum="alg id"/>
             <argument name="hash alg info" impl="simple alg info" access="retain"/>
         </constructor>
+
+        <method name="hash alg info" is_const="1" declaration="public">
+            Return hash algorithm information.
+
+            <return impl="simple alg info"/>
+        </method>
     </implementation>
 </implementor>

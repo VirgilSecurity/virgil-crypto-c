@@ -43,8 +43,9 @@
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_alg_info.h"
-#include "vscf_simple_alg_info.h"
 #include "vscf_alg_info_der_deserializer.h"
+#include "vscf_kdf_alg_info.h"
+#include "vscf_simple_alg_info.h"
 
 #include "test_data_alg_info_der.h"
 
@@ -61,7 +62,7 @@ int suiteTearDown(int num_failures) { return num_failures; }
 
 
 void
-test__deserialize__sha256__returns_valid_alg_info(void) {
+test__deserialize__sha256__returns_valid_simple_info(void) {
     vscf_alg_info_der_deserializer_t *deserializer = vscf_alg_info_der_deserializer_new();
     vscf_alg_info_der_deserializer_setup_defaults(deserializer);
 
@@ -71,6 +72,23 @@ test__deserialize__sha256__returns_valid_alg_info(void) {
     TEST_ASSERT_EQUAL(vscf_alg_id_SHA256, vscf_alg_info_alg_id(sha256_info));
 
     vscf_impl_destroy(&sha256_info);
+    vscf_alg_info_der_deserializer_destroy(&deserializer);
+}
+
+void
+test__deserialize__kdf1_sha256__returns_valid_kdf_alg_info(void) {
+    vscf_alg_info_der_deserializer_t *deserializer = vscf_alg_info_der_deserializer_new();
+    vscf_alg_info_der_deserializer_setup_defaults(deserializer);
+
+    vscf_kdf_alg_info_t *kdf_info = (vscf_kdf_alg_info_t *)vscf_alg_info_der_deserializer_deserialize(
+            deserializer, test_alg_info_KDF1_SHA256_DER, NULL);
+
+
+    TEST_ASSERT_NOT_NULL(kdf_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_KDF1, vscf_kdf_alg_info_alg_id(kdf_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_SHA256, vscf_simple_alg_info_alg_id(vscf_kdf_alg_info_hash_alg_info(kdf_info)));
+
+    vscf_kdf_alg_info_destroy(&kdf_info);
     vscf_alg_info_der_deserializer_destroy(&deserializer);
 }
 
@@ -85,7 +103,8 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__deserialize__sha256__returns_valid_alg_info);
+    RUN_TEST(test__deserialize__sha256__returns_valid_simple_info);
+    RUN_TEST(test__deserialize__kdf1_sha256__returns_valid_kdf_alg_info);
 
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
