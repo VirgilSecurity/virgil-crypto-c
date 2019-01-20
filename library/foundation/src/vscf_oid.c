@@ -82,6 +82,9 @@ static const vsc_data_t oid_sha512 = {oid_sha512_bytes, sizeof(oid_sha512_bytes)
 static const byte oid_kdf1_bytes[] = {0x28, 0x81, 0x8C, 0x71, 0x02, 0x05, 0x01};
 static const vsc_data_t oid_kdf1 = {oid_kdf1_bytes, sizeof(oid_kdf1_bytes)};
 
+static const byte oid_kdf2_bytes[] = {0x28, 0x81, 0x8C, 0x71, 0x02, 0x05, 0x02};
+static const vsc_data_t oid_kdf2 = {oid_kdf2_bytes, sizeof(oid_kdf2_bytes)};
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -130,6 +133,9 @@ vscf_oid_from_alg_id(vscf_alg_id_t alg_id) {
     case vscf_alg_id_KDF1:
         return oid_kdf1;
 
+    case vscf_alg_id_KDF2:
+        return oid_kdf2;
+
     default:
         VSCF_ASSERT(0 && "Unhanded algorithm identifier");
         return vsc_data_empty();
@@ -174,6 +180,10 @@ vscf_oid_to_alg_id(vsc_data_t oid) {
 
     if (vscf_oid_equal(oid, oid_kdf1)) {
         return vscf_alg_id_KDF1;
+    }
+
+    if (vscf_oid_equal(oid, oid_kdf2)) {
+        return vscf_alg_id_KDF2;
     }
 
     return vscf_alg_id_NONE;
