@@ -2,11 +2,11 @@
 
 void Kdf1::Init(v8::Local<v8::Object> exports) {
   Nan::HandleScope scope;
-  v8::Local<v8::FunctionTemplate> function_template = Nan::New<v8::FunctionTemplate>(New);
+  v8::Local<v8::FunctionTemplate> function_template = Nan::New<v8::FunctionTemplate>(Kdf1::New);
   function_template->SetClassName(Nan::New("Kdf1").ToLocalChecked());
   function_template->InstanceTemplate()->SetInternalFieldCount(1);
-  Nan::SetPrototypeMethod(function_template, "useHash", UseHash);
-  Nan::SetPrototypeMethod(function_template, "derive", Derive);
+  Nan::SetPrototypeMethod(function_template, "useHash", Kdf1::UseHash);
+  Nan::SetPrototypeMethod(function_template, "derive", Kdf1::Derive);
   constructor.Reset(function_template->GetFunction());
   exports->Set(Nan::New<v8::String>("Kdf1").ToLocalChecked(), function_template->GetFunction());
 }

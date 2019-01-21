@@ -2,13 +2,13 @@
 
 void Sha256::Init(v8::Local<v8::Object> exports) {
   Nan::HandleScope scope;
-  v8::Local<v8::FunctionTemplate> function_template = Nan::New<v8::FunctionTemplate>(New);
+  v8::Local<v8::FunctionTemplate> function_template = Nan::New<v8::FunctionTemplate>(Sha256::New);
   function_template->SetClassName(Nan::New("Sha256").ToLocalChecked());
   function_template->InstanceTemplate()->SetInternalFieldCount(1);
-  Nan::SetPrototypeMethod(function_template, "hash", Hash);
-  Nan::SetPrototypeMethod(function_template, "start", Start);
-  Nan::SetPrototypeMethod(function_template, "update", Update);
-  Nan::SetPrototypeMethod(function_template, "finish", Finish);
+  Nan::SetPrototypeMethod(function_template, "hash", Sha256::Hash);
+  Nan::SetPrototypeMethod(function_template, "start", Sha256::Start);
+  Nan::SetPrototypeMethod(function_template, "update", Sha256::Update);
+  Nan::SetPrototypeMethod(function_template, "finish", Sha256::Finish);
   constructor.Reset(function_template->GetFunction());
   exports->Set(Nan::New<v8::String>("Sha256").ToLocalChecked(), function_template->GetFunction());
 }
