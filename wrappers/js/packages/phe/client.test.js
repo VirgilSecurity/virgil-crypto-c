@@ -1,6 +1,7 @@
 /* eslint-env jest */
 
-const { Client, Server } = require('./');
+const { PRIVATE_KEY_LENGTH, PUBLIC_KEY_LENGTH, ACCOUNT_KEY_LENGTH } = require('./constants');
+const { Client, Server } = require('./index');
 
 describe('Client', () => {
   let client;
@@ -29,6 +30,7 @@ describe('Client', () => {
     it('should return client private key', () => {
       const clientPrivateKey = client.generateClientPrivateKey();
       expect(Buffer.isBuffer(clientPrivateKey)).toBeTruthy();
+      expect(clientPrivateKey).toHaveLength(PRIVATE_KEY_LENGTH);
     });
   });
 
@@ -79,6 +81,7 @@ describe('Client', () => {
         verifyPasswordResponse,
       );
       expect(Buffer.isBuffer(accountKey)).toBeTruthy();
+      expect(accountKey).toHaveLength(ACCOUNT_KEY_LENGTH);
     });
   });
 
@@ -91,7 +94,9 @@ describe('Client', () => {
       const result = client.rotateKeys(updateToken);
       expect(Object.keys(result)).toHaveLength(2);
       expect(Buffer.isBuffer(result.newClientPrivateKey)).toBeTruthy();
+      expect(result.newClientPrivateKey).toHaveLength(PRIVATE_KEY_LENGTH);
       expect(Buffer.isBuffer(result.newServerPublicKey)).toBeTruthy();
+      expect(result.newServerPublicKey).toHaveLength(PUBLIC_KEY_LENGTH);
     });
   });
 

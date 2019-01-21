@@ -1,0 +1,5 @@
+module.exports = {
+  PRIVATE_KEY_LENGTH: 32,
+  PUBLIC_KEY_LENGTH: 65,
+  ACCOUNT_KEY_LENGTH: 32,
+};

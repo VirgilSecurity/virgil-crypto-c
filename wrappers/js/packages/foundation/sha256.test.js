@@ -12,19 +12,28 @@ describe('Sha256', () => {
   it('should implement a Transform stream', done => {
     sha256.on('readable', () => {
       const digest = sha256.read();
-      expect(Buffer.isBuffer(digest)).toBeTruthy();
+      const correctDigest = Buffer.from(
+        '3a6eb0790f39ac87c94f3856b2dd2c5d110e6811602261a9a923d3bb23adc8b7',
+        'hex',
+      );
+      expect(digest).toEqual(correctDigest);
       done();
     });
-    sha256.write(Buffer.from('first'));
-    sha256.write(Buffer.from('second'));
-    sha256.write(Buffer.from('third'));
+    sha256.write(Buffer.from('d'));
+    sha256.write(Buffer.from('a'));
+    sha256.write(Buffer.from('t'));
+    sha256.write(Buffer.from('a'));
     sha256.end();
   });
 
   describe('hash', () => {
     it('should return digest', () => {
       const digest = sha256.hash(Buffer.from('data'));
-      expect(Buffer.isBuffer(digest)).toBeTruthy();
+      const correctDigest = Buffer.from(
+        '3a6eb0790f39ac87c94f3856b2dd2c5d110e6811602261a9a923d3bb23adc8b7',
+        'hex',
+      );
+      expect(digest).toEqual(correctDigest);
     });
   });
 });

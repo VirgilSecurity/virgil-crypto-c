@@ -24,7 +24,8 @@ describe('Kdf1', () => {
       const data = Buffer.from('data');
       const keyLength = 3;
       const key = kdf1.derive(data, keyLength);
-      expect(Buffer.isBuffer(key)).toBeTruthy();
+      const correctKey = Buffer.from('b5c729', 'hex');
+      expect(key).toEqual(correctKey);
     });
   });
 });
