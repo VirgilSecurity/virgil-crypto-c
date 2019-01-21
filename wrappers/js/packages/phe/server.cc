@@ -2,13 +2,17 @@
 
 void Server::Init(v8::Local<v8::Object> exports) {
   Nan::HandleScope scope;
-  v8::Local<v8::FunctionTemplate> function_template = Nan::New<v8::FunctionTemplate>(New);
+  v8::Local<v8::FunctionTemplate> function_template = Nan::New<v8::FunctionTemplate>(Server::New);
   function_template->SetClassName(Nan::New("Server").ToLocalChecked());
   function_template->InstanceTemplate()->SetInternalFieldCount(1);
-  Nan::SetPrototypeMethod(function_template, "generateServerKeyPair", GenerateServerKeyPair);
-  Nan::SetPrototypeMethod(function_template, "getEnrollment", GetEnrollment);
-  Nan::SetPrototypeMethod(function_template, "verifyPassword", VerifyPassword);
-  Nan::SetPrototypeMethod(function_template, "rotateKeys", RotateKeys);
+  Nan::SetPrototypeMethod(
+    function_template,
+    "generateServerKeyPair",
+    Server::GenerateServerKeyPair
+  );
+  Nan::SetPrototypeMethod(function_template, "getEnrollment", Server::GetEnrollment);
+  Nan::SetPrototypeMethod(function_template, "verifyPassword", Server::VerifyPassword);
+  Nan::SetPrototypeMethod(function_template, "rotateKeys", Server::RotateKeys);
   constructor.Reset(function_template->GetFunction());
   exports->Set(Nan::New<v8::String>("Server").ToLocalChecked(), function_template->GetFunction());
 }
@@ -24,7 +28,7 @@ void Server::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
 }
 
 void Server::GenerateServerKeyPair(const Nan::FunctionCallbackInfo<v8::Value>& info) {
-  Server* server = ObjectWrap::Unwrap<Server>(info.Holder());
+  Server* server = Nan::ObjectWrap::Unwrap<Server>(info.Holder());
   vsc_buffer_t* server_private_key = vsc_buffer_new_with_capacity(
     vsce_phe_common_PHE_PRIVATE_KEY_LENGTH
   );
@@ -64,7 +68,7 @@ void Server::GetEnrollment(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     Nan::ThrowTypeError("Invalid arguments");
     return;
   }
-  Server* server = ObjectWrap::Unwrap<Server>(info.Holder());
+  Server* server = Nan::ObjectWrap::Unwrap<Server>(info.Holder());
   vsc_data_t server_private_key = utils::NodeBufferToVirgilData(server_private_key_node_buffer);
   vsc_data_t server_public_key = utils::NodeBufferToVirgilData(server_public_key_node_buffer);
   size_t enrollment_response_len = vsce_phe_server_enrollment_response_len(server->phe_server);
@@ -95,7 +99,7 @@ void Server::VerifyPassword(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     Nan::ThrowTypeError("Invalid arguments");
     return;
   }
-  Server* server = ObjectWrap::Unwrap<Server>(info.Holder());
+  Server* server = Nan::ObjectWrap::Unwrap<Server>(info.Holder());
   vsc_data_t server_private_key = utils::NodeBufferToVirgilData(server_private_key_node_buffer);
   vsc_data_t server_public_key = utils::NodeBufferToVirgilData(server_public_key_node_buffer);
   vsc_data_t verify_password_request = utils::NodeBufferToVirgilData(
@@ -129,7 +133,7 @@ void Server::RotateKeys(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     Nan::ThrowTypeError("Invalid arguments");
     return;
   }
-  Server* server = ObjectWrap::Unwrap<Server>(info.Holder());
+  Server* server = Nan::ObjectWrap::Unwrap<Server>(info.Holder());
   vsc_data_t server_private_key = utils::NodeBufferToVirgilData(server_private_key_node_buffer);
   vsc_buffer_t* new_server_private_key = vsc_buffer_new_with_capacity(
     vsce_phe_common_PHE_PRIVATE_KEY_LENGTH

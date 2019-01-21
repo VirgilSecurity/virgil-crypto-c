@@ -2,16 +2,32 @@
 
 void Client::Init(v8::Local<v8::Object> exports) {
   Nan::HandleScope scope;
-  v8::Local<v8::FunctionTemplate> function_template = Nan::New<v8::FunctionTemplate>(New);
+  v8::Local<v8::FunctionTemplate> function_template = Nan::New<v8::FunctionTemplate>(Client::New);
   function_template->SetClassName(Nan::New("Client").ToLocalChecked());
   function_template->InstanceTemplate()->SetInternalFieldCount(1);
-  Nan::SetPrototypeMethod(function_template, "setKeys", SetKeys);
-  Nan::SetPrototypeMethod(function_template, "generateClientPrivateKey", GenerateClientPrivateKey);
-  Nan::SetPrototypeMethod(function_template, "enrollAccount", EnrollAccount);
-  Nan::SetPrototypeMethod(function_template, "createVerifyPasswordRequest", CreateVerifyPasswordRequest);
-  Nan::SetPrototypeMethod(function_template, "checkResponseAndDecrypt", CheckResponseAndDecrypt);
-  Nan::SetPrototypeMethod(function_template, "rotateKeys", RotateKeys);
-  Nan::SetPrototypeMethod(function_template, "updateEnrollmentRecord", UpdateEnrollmentRecord);
+  Nan::SetPrototypeMethod(function_template, "setKeys", Client::SetKeys);
+  Nan::SetPrototypeMethod(
+    function_template,
+    "generateClientPrivateKey",
+    Client::GenerateClientPrivateKey
+  );
+  Nan::SetPrototypeMethod(function_template, "enrollAccount", Client::EnrollAccount);
+  Nan::SetPrototypeMethod(
+    function_template,
+    "createVerifyPasswordRequest",
+    Client::CreateVerifyPasswordRequest
+  );
+  Nan::SetPrototypeMethod(
+    function_template,
+    "checkResponseAndDecrypt",
+    Client::CheckResponseAndDecrypt
+  );
+  Nan::SetPrototypeMethod(function_template, "rotateKeys", Client::RotateKeys);
+  Nan::SetPrototypeMethod(
+    function_template,
+    "updateEnrollmentRecord",
+    Client::UpdateEnrollmentRecord
+  );
   constructor.Reset(function_template->GetFunction());
   exports->Set(Nan::New<v8::String>("Client").ToLocalChecked(), function_template->GetFunction());
 }
@@ -37,7 +53,7 @@ void Client::SetKeys(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     Nan::ThrowTypeError("Invalid arguments");
     return;
   }
-  Client* client = ObjectWrap::Unwrap<Client>(info.Holder());
+  Client* client = Nan::ObjectWrap::Unwrap<Client>(info.Holder());
   vsc_data_t client_private_key = utils::NodeBufferToVirgilData(client_private_key_node_buffer);
   vsc_data_t server_public_key = utils::NodeBufferToVirgilData(server_public_key_node_buffer);
   vsce_error_t error = vsce_phe_client_set_keys(
@@ -52,7 +68,7 @@ void Client::SetKeys(const Nan::FunctionCallbackInfo<v8::Value>& info) {
 }
 
 void Client::GenerateClientPrivateKey(const Nan::FunctionCallbackInfo<v8::Value>& info) {
-  Client* client = ObjectWrap::Unwrap<Client>(info.Holder());
+  Client* client = Nan::ObjectWrap::Unwrap<Client>(info.Holder());
   vsc_buffer_t* client_private_key = vsc_buffer_new_with_capacity(
     vsce_phe_common_PHE_PRIVATE_KEY_LENGTH
   );
@@ -78,7 +94,7 @@ void Client::EnrollAccount(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     Nan::ThrowTypeError("Invalid arguments");
     return;
   }
-  Client* client = ObjectWrap::Unwrap<Client>(info.Holder());
+  Client* client = Nan::ObjectWrap::Unwrap<Client>(info.Holder());
   vsc_data_t enrollment_response = utils::NodeBufferToVirgilData(enrollment_response_node_buffer);
   vsc_data_t password = utils::NodeBufferToVirgilData(password_node_buffer);
   size_t enrollment_record_len = vsce_phe_client_enrollment_record_len(client->phe_client);
@@ -119,7 +135,7 @@ void Client::CreateVerifyPasswordRequest(const Nan::FunctionCallbackInfo<v8::Val
     Nan::ThrowTypeError("Invalid arguments");
     return;
   }
-  Client* client = ObjectWrap::Unwrap<Client>(info.Holder());
+  Client* client = Nan::ObjectWrap::Unwrap<Client>(info.Holder());
   vsc_data_t enrollment_record = utils::NodeBufferToVirgilData(enrollment_record_node_buffer);
   vsc_data_t password = utils::NodeBufferToVirgilData(password_node_buffer);
   size_t verify_password_request_len = vsce_phe_client_verify_password_request_len(
@@ -156,7 +172,7 @@ void Client::CheckResponseAndDecrypt(const Nan::FunctionCallbackInfo<v8::Value>&
     Nan::ThrowTypeError("Invalid arguments");
     return;
   }
-  Client* client = ObjectWrap::Unwrap<Client>(info.Holder());
+  Client* client = Nan::ObjectWrap::Unwrap<Client>(info.Holder());
   vsc_data_t password = utils::NodeBufferToVirgilData(password_node_buffer);
   vsc_data_t enrollment_record = utils::NodeBufferToVirgilData(enrollment_record_node_buffer);
   vsc_data_t verify_password_response = utils::NodeBufferToVirgilData(
@@ -183,7 +199,7 @@ void Client::RotateKeys(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     Nan::ThrowTypeError("Invalid arguments");
     return;
   }
-  Client* client = ObjectWrap::Unwrap<Client>(info.Holder());
+  Client* client = Nan::ObjectWrap::Unwrap<Client>(info.Holder());
   vsc_data_t update_token = utils::NodeBufferToVirgilData(update_token_node_buffer);
   vsc_buffer_t* new_client_private_key = vsc_buffer_new_with_capacity(
     vsce_phe_common_PHE_PRIVATE_KEY_LENGTH
@@ -225,7 +241,7 @@ void Client::UpdateEnrollmentRecord(const Nan::FunctionCallbackInfo<v8::Value>& 
     Nan::ThrowTypeError("Invalid arguments");
     return;
   }
-  Client* client = ObjectWrap::Unwrap<Client>(info.Holder());
+  Client* client = Nan::ObjectWrap::Unwrap<Client>(info.Holder());
   vsc_data_t enrollment_record = utils::NodeBufferToVirgilData(enrollment_record_node_buffer);
   vsc_data_t update_token = utils::NodeBufferToVirgilData(update_token_node_buffer);
   size_t enrollment_record_len = vsce_phe_client_enrollment_record_len(client->phe_client);

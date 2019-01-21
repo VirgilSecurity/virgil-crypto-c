@@ -4,6 +4,8 @@
             "target_name": "phe",
             "sources": [
                 "phe.cc",
+                "cipher.cc",
+                "cipher.h",
                 "client.cc",
                 "client.h",
                 "server.cc",

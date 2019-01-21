@@ -7,6 +7,12 @@ declare module '@virgilsecurity/phe' {
   type VerifyPasswordRequest = Buffer;
   type VerifyPasswordResponse = Buffer;
   type UpdateToken = Buffer;
+  type CipherText = Buffer;
+
+  class Cipher {
+    encrypt(plainText: Buffer, accountKey: AccountKey): CipherText;
+    decrypt(cipherText: CipherText, accountKey: AccountKey): void;
+  }
 
   class Client {
     setKeys(clientPrivateKey: PrivateKey, serverPublicKey: PublicKey): void;
