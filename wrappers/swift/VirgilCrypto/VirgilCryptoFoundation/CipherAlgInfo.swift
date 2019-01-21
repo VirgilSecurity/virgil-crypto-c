@@ -37,15 +37,15 @@ import Foundation
 import VSCFoundation
 import VirgilCryptoCommon
 
-/// Handle KDF algorithm information.
-@objc(VSCFKdfAlgInfo) public class KdfAlgInfo: NSObject, AlgInfo {
+/// Handle symmetric cipher algorithm information.
+@objc(VSCFCipherAlgInfo) public class CipherAlgInfo: NSObject, AlgInfo {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
     /// Create underlying C context.
     public override init() {
-        self.c_ctx = vscf_kdf_alg_info_new()
+        self.c_ctx = vscf_cipher_alg_info_new()
         super.init()
     }
 
@@ -59,32 +59,34 @@ import VirgilCryptoCommon
     /// Acquire retained C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscf_kdf_alg_info_shallow_copy(c_ctx)
+        self.c_ctx = vscf_cipher_alg_info_shallow_copy(c_ctx)
         super.init()
     }
 
-    /// Create KDF algorithm info with identificator and HASH algorithm info.
-    public init(algId: AlgId, hashAlgInfo: SimpleAlgInfo) {
-        let proxyResult = vscf_kdf_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), hashAlgInfo.c_ctx)
+    /// Create symmetric cipher algorithm info with identificator and input vector.
+    public init(algId: AlgId, nonce: Data) {
+        let proxyResult = nonce.withUnsafeBytes({ (noncePointer: UnsafePointer<byte>) -> OpaquePointer? in
+            return vscf_cipher_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), vsc_data(noncePointer, nonce.count))
+        })
 
         self.c_ctx = proxyResult!
     }
 
     /// Release underlying C context.
     deinit {
-        vscf_kdf_alg_info_delete(self.c_ctx)
+        vscf_cipher_alg_info_delete(self.c_ctx)
     }
 
-    /// Return hash algorithm information.
-    @objc public func hashAlgInfo() -> SimpleAlgInfo {
-        let proxyResult = vscf_kdf_alg_info_hash_alg_info(self.c_ctx)
+    /// Return IV.
+    @objc public func nonce() -> Data {
+        let proxyResult = vscf_cipher_alg_info_nonce(self.c_ctx)
 
-        return SimpleAlgInfo.init(use: proxyResult!)
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
     /// Provide algorithm identificator.
     @objc public func algId() -> AlgId {
-        let proxyResult = vscf_kdf_alg_info_alg_id(self.c_ctx)
+        let proxyResult = vscf_cipher_alg_info_alg_id(self.c_ctx)
 
         return AlgId.init(fromC: proxyResult)
     }

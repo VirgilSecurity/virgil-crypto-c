@@ -10,4 +10,5 @@
     <constant name="rsa"/>
     <constant name="ed25519"/>
     <constant name="x25519"/>
+    <constant name="aes256 gcm"/>
 </enum>

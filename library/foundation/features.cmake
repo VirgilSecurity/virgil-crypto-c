@@ -105,6 +105,7 @@ option(VSCF_ED25519_PUBLIC_KEY "Enable implementation 'ed25519 public key'." ON)
 option(VSCF_ED25519_PRIVATE_KEY "Enable implementation 'ed25519 private key'." ON)
 option(VSCF_SIMPLE_ALG_INFO "Enable implementation 'simple alg info'." ON)
 option(VSCF_KDF_ALG_INFO "Enable implementation 'kdf alg info'." ON)
+option(VSCF_CIPHER_ALG_INFO "Enable implementation 'cipher alg info'." ON)
 option(VSCF_ALG_INFO_DER_SERIALIZER "Enable implementation 'alg info der serializer'." ON)
 option(VSCF_ALG_INFO_DER_DESERIALIZER "Enable implementation 'alg info der deserializer'." ON)
 option(VSCF_ERROR_CTX "Enable class 'error ctx'." ON)
@@ -178,6 +179,7 @@ mark_as_advanced(
         VSCF_ED25519_PRIVATE_KEY
         VSCF_SIMPLE_ALG_INFO
         VSCF_KDF_ALG_INFO
+        VSCF_CIPHER_ALG_INFO
         VSCF_ALG_INFO_DER_SERIALIZER
         VSCF_ALG_INFO_DER_DESERIALIZER
         VSCF_ERROR_CTX
@@ -1025,24 +1027,6 @@ if(VSCF_ALG_INFO_DER_SERIALIZER AND NOT VSCF_OID)
     message("--")
     message("Feature VSCF_ALG_INFO_DER_SERIALIZER depends on the feature:")
     message("     VSCF_OID - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_ALG_INFO_DER_SERIALIZER AND NOT VSCF_ALG_INFO)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_ALG_INFO_DER_SERIALIZER depends on the feature:")
-    message("     VSCF_ALG_INFO - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_ALG_INFO_DER_SERIALIZER AND NOT VSCF_ALG_INFO)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_ALG_INFO_DER_SERIALIZER depends on the feature:")
-    message("     VSCF_ALG_INFO - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

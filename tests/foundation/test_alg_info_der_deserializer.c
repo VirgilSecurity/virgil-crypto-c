@@ -46,6 +46,7 @@
 #include "vscf_alg_info_der_deserializer.h"
 #include "vscf_kdf_alg_info.h"
 #include "vscf_simple_alg_info.h"
+#include "vscf_cipher_alg_info.h"
 
 #include "test_data_alg_info_der.h"
 
@@ -92,6 +93,23 @@ test__deserialize__kdf1_sha256__returns_valid_kdf_alg_info(void) {
     vscf_alg_info_der_deserializer_destroy(&deserializer);
 }
 
+void
+test__deserialize__aes256_gcm__returns_valid_cipher_alg_info(void) {
+    vscf_alg_info_der_deserializer_t *deserializer = vscf_alg_info_der_deserializer_new();
+    vscf_alg_info_der_deserializer_setup_defaults(deserializer);
+
+    vscf_cipher_alg_info_t *cipher_info = (vscf_cipher_alg_info_t *)vscf_alg_info_der_deserializer_deserialize(
+            deserializer, test_alg_info_AES256_GCM_DER, NULL);
+
+
+    TEST_ASSERT_NOT_NULL(cipher_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_AES256_GCM, vscf_cipher_alg_info_alg_id(cipher_info));
+    TEST_ASSERT_EQUAL_DATA(test_alg_info_AES256_GCM_NONCE, vscf_cipher_alg_info_nonce(cipher_info));
+
+    vscf_cipher_alg_info_destroy(&cipher_info);
+    vscf_alg_info_der_deserializer_destroy(&deserializer);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -105,6 +123,7 @@ main(void) {
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__deserialize__sha256__returns_valid_simple_info);
     RUN_TEST(test__deserialize__kdf1_sha256__returns_valid_kdf_alg_info);
+    RUN_TEST(test__deserialize__aes256_gcm__returns_valid_cipher_alg_info);
 
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
