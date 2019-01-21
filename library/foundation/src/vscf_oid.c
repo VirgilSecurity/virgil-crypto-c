@@ -85,6 +85,9 @@ static const vsc_data_t oid_kdf1 = {oid_kdf1_bytes, sizeof(oid_kdf1_bytes)};
 static const byte oid_kdf2_bytes[] = {0x28, 0x81, 0x8C, 0x71, 0x02, 0x05, 0x02};
 static const vsc_data_t oid_kdf2 = {oid_kdf2_bytes, sizeof(oid_kdf2_bytes)};
 
+static const byte oid_aes256_gcm2_bytes[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x2E};
+static const vsc_data_t oid_aes256_gcm2 = {oid_aes256_gcm2_bytes, sizeof(oid_aes256_gcm2_bytes)};
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -136,6 +139,9 @@ vscf_oid_from_alg_id(vscf_alg_id_t alg_id) {
     case vscf_alg_id_KDF2:
         return oid_kdf2;
 
+    case vscf_alg_id_AES256_GCM:
+        return oid_aes256_gcm2;
+
     default:
         VSCF_ASSERT(0 && "Unhanded algorithm identifier");
         return vsc_data_empty();
@@ -184,6 +190,10 @@ vscf_oid_to_alg_id(vsc_data_t oid) {
 
     if (vscf_oid_equal(oid, oid_kdf2)) {
         return vscf_alg_id_KDF2;
+    }
+
+    if (vscf_oid_equal(oid, oid_aes256_gcm2)) {
+        return vscf_alg_id_AES256_GCM;
     }
 
     return vscf_alg_id_NONE;

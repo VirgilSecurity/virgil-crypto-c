@@ -56,11 +56,10 @@
 #include "vscf_asn1rd.h"
 #include "vscf_oid.h"
 #include "vscf_asn1_tag.h"
+#include "vscf_cipher_alg_info.h"
 #include "vscf_kdf_alg_info.h"
 #include "vscf_simple_alg_info.h"
 #include "vscf_alg_info.h"
-#include "vscf_kdf_alg_info_defs.h"
-#include "vscf_simple_alg_info_defs.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_alg_info_der_deserializer_defs.h"
 #include "vscf_alg_info_der_deserializer_internal.h"
@@ -87,6 +86,13 @@ vscf_alg_info_der_deserializer_deserialize_simple_alg_info(vscf_alg_info_der_des
 //
 static vscf_kdf_alg_info_t *
 vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(vscf_alg_info_der_deserializer_t *alg_info_der_deserializer,
+        vsc_data_t data, vscf_error_ctx_t *error);
+
+//
+//  Restore class "cipher alg info" from the binary data.
+//
+static vscf_cipher_alg_info_t *
+vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(vscf_alg_info_der_deserializer_t *alg_info_der_deserializer,
         vsc_data_t data, vscf_error_ctx_t *error);
 
 
@@ -199,6 +205,43 @@ vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(
 }
 
 //
+//  Restore class "cipher alg info" from the binary data.
+//
+static vscf_cipher_alg_info_t *
+vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(
+        vscf_alg_info_der_deserializer_t *alg_info_der_deserializer, vsc_data_t data, vscf_error_ctx_t *error) {
+
+    //  SymmetricAlgorithms ALGORITHM ::= {
+    //          { OID id-aes256-GCM PARMS NONCE } ,
+    //          ... -- Expect additional algorithms --
+    //  }
+    //
+    //  NONCE ::= OCTET STRING
+
+    VSCF_ASSERT_PTR(alg_info_der_deserializer);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT_PTR(alg_info_der_deserializer->asn1_reader);
+
+    vscf_impl_t *asn1_reader = alg_info_der_deserializer->asn1_reader;
+    vscf_asn1_reader_reset(asn1_reader, data);
+
+    vscf_asn1_reader_read_sequence(asn1_reader);
+    vsc_data_t cipher_oid = vscf_asn1_reader_read_oid(asn1_reader);
+    vsc_data_t cipher_nonce = vscf_asn1_reader_read_octet_str(asn1_reader);
+
+    vscf_error_t status = vscf_asn1_reader_error(asn1_reader);
+
+    if (vscf_SUCCESS == status) {
+        vscf_alg_id_t alg_id = vscf_oid_to_alg_id(cipher_oid);
+        return vscf_cipher_alg_info_new_with_members(alg_id, cipher_nonce);
+    } else {
+        VSCF_ERROR_CTX_SAFE_UPDATE(error, status);
+    }
+
+    return NULL;
+}
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t
@@ -260,6 +303,10 @@ vscf_alg_info_der_deserializer_deserialize(
     case vscf_alg_id_KDF2:
         return vscf_kdf_alg_info_impl(
                 vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(alg_info_der_deserializer, data, error));
+
+    case vscf_alg_id_AES256_GCM:
+        return vscf_cipher_alg_info_impl(
+                vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(alg_info_der_deserializer, data, error));
 
     case vscf_alg_id_NONE:
         VSCF_ASSERT(alg_id != vscf_alg_id_NONE);

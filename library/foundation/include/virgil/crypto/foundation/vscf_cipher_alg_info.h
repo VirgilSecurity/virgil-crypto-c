@@ -47,11 +47,23 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Define implemented algorithm identificator.
+//  This module contains 'cipher alg info' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ALG_ID_H_INCLUDED
-#define VSCF_ALG_ID_H_INCLUDED
+#ifndef VSCF_CIPHER_ALG_INFO_H_INCLUDED
+#define VSCF_CIPHER_ALG_INFO_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_alg_id.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
@@ -69,22 +81,81 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Define implemented algorithm identificator.
+//  Handles implementation details.
 //
-enum vscf_alg_id_t {
-    vscf_alg_id_NONE,
-    vscf_alg_id_SHA224,
-    vscf_alg_id_SHA256,
-    vscf_alg_id_SHA384,
-    vscf_alg_id_SHA512,
-    vscf_alg_id_KDF1,
-    vscf_alg_id_KDF2,
-    vscf_alg_id_RSA,
-    vscf_alg_id_ED25519,
-    vscf_alg_id_X25519,
-    vscf_alg_id_AES256_GCM
-};
-typedef enum vscf_alg_id_t vscf_alg_id_t;
+typedef struct vscf_cipher_alg_info_t vscf_cipher_alg_info_t;
+
+//
+//  Return size of 'vscf_cipher_alg_info_t' type.
+//
+VSCF_PUBLIC size_t
+vscf_cipher_alg_info_impl_size(void);
+
+//
+//  Cast to the 'vscf_impl_t' type.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_cipher_alg_info_impl(vscf_cipher_alg_info_t *cipher_alg_info);
+
+//
+//  Create symmetric cipher algorithm info with identificator and input vector.
+//
+VSCF_PUBLIC vscf_cipher_alg_info_t *
+vscf_cipher_alg_info_new_with_members(vscf_alg_id_t alg_id, vsc_data_t nonce);
+
+//
+//  Perform initialization of preallocated implementation context.
+//
+VSCF_PUBLIC void
+vscf_cipher_alg_info_init(vscf_cipher_alg_info_t *cipher_alg_info);
+
+//
+//  Cleanup implementation context and release dependencies.
+//  This is a reverse action of the function 'vscf_cipher_alg_info_init()'.
+//
+VSCF_PUBLIC void
+vscf_cipher_alg_info_cleanup(vscf_cipher_alg_info_t *cipher_alg_info);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
+//
+VSCF_PUBLIC vscf_cipher_alg_info_t *
+vscf_cipher_alg_info_new(void);
+
+//
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_cipher_alg_info_new()'.
+//
+VSCF_PUBLIC void
+vscf_cipher_alg_info_delete(vscf_cipher_alg_info_t *cipher_alg_info);
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_cipher_alg_info_new()'.
+//  Given reference is nullified.
+//
+VSCF_PUBLIC void
+vscf_cipher_alg_info_destroy(vscf_cipher_alg_info_t **cipher_alg_info_ref);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_cipher_alg_info_t *
+vscf_cipher_alg_info_shallow_copy(vscf_cipher_alg_info_t *cipher_alg_info);
+
+//
+//  Return IV.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_cipher_alg_info_nonce(const vscf_cipher_alg_info_t *cipher_alg_info);
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_cipher_alg_info_alg_id(const vscf_cipher_alg_info_t *cipher_alg_info);
 
 
 // --------------------------------------------------------------------------
@@ -100,5 +171,5 @@ typedef enum vscf_alg_id_t vscf_alg_id_t;
 
 
 //  @footer
-#endif // VSCF_ALG_ID_H_INCLUDED
+#endif // VSCF_CIPHER_ALG_INFO_H_INCLUDED
 //  @end

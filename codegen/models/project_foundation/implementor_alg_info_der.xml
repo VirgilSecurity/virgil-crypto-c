@@ -10,13 +10,10 @@
         <require class="asn1wr"/>
         <require class="oid"/>
         <require enum="asn1 tag"/>
+        <require impl="cipher alg info"/>
         <require impl="kdf alg info"/>
         <require impl="simple alg info"/>
         <require interface="alg info"/>
-        <require interface="alg info"/>
-        <require interface="alg info"/>
-        <require module="kdf alg info defs"/>
-        <require module="simple alg info defs"/>
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
 
@@ -64,6 +61,29 @@
 
             <return type="size"/>
         </method>
+
+
+        <method name="serialized cipher alg info len">
+            Return buffer size enough to hold serialized class "cipher alg info".
+
+            <argument name="cipher alg info" impl="cipher alg info"/>
+
+            <return type="size"/>
+        </method>
+
+
+        <method name="serialize cipher alg info">
+            Serialize class "cipher alg info".
+
+            <argument name="cipher alg info" impl="cipher alg info"/>
+            <argument name="out" class="buffer">
+                <length method="serialized cipher alg info len">
+                    <proxy argument="cipher alg info" to="cipher alg info"/>
+                </length>
+            </argument>
+
+            <return type="size"/>
+        </method>
     </implementation>
 
 
@@ -76,11 +96,10 @@
         <require class="asn1rd"/>
         <require class="oid"/>
         <require enum="asn1 tag"/>
+        <require impl="cipher alg info"/>
         <require impl="kdf alg info"/>
         <require impl="simple alg info"/>
         <require interface="alg info"/>
-        <require module="kdf alg info defs"/>
-        <require module="simple alg info defs"/>
 
         <dependency name="asn1 reader" interface="asn1 reader"/>
 
@@ -101,6 +120,16 @@
             <argument name="error" class="error ctx" access="readwrite"/>
 
             <return class="kdf alg info" access="disown"/>
+        </method>
+
+
+        <method name="deserialize cipher alg info">
+            Restore class "cipher alg info" from the binary data.
+
+            <argument name="data" class="data"/>
+            <argument name="error" class="error ctx" access="readwrite"/>
+
+            <return class="cipher alg info" access="disown"/>
         </method>
     </implementation>
 </implementor>

@@ -45,6 +45,7 @@
 #include "vscf_alg_info_der_serializer.h"
 #include "vscf_kdf_alg_info.h"
 #include "vscf_simple_alg_info.h"
+#include "vscf_cipher_alg_info.h"
 
 #include "test_data_alg_info_der.h"
 
@@ -101,6 +102,26 @@ test__serialize__kdf1_sha256__returns_valid_der(void) {
     vsc_buffer_destroy(&out);
 }
 
+void
+test__serialize__aes256_gcm__returns_valid_der(void) {
+    vscf_alg_info_der_serializer_t *serializer = vscf_alg_info_der_serializer_new();
+    vscf_alg_info_der_serializer_setup_defaults(serializer);
+
+    vscf_impl_t *cipher_info = vscf_cipher_alg_info_impl(
+            vscf_cipher_alg_info_new_with_members(vscf_alg_id_AES256_GCM, test_alg_info_AES256_GCM_NONCE));
+
+    vsc_buffer_t *out =
+            vsc_buffer_new_with_capacity(vscf_alg_info_der_serializer_serialized_len(serializer, cipher_info));
+
+    vscf_alg_info_der_serializer_serialize(serializer, cipher_info, out);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_AES256_GCM_DER, out);
+
+    vscf_impl_destroy(&cipher_info);
+    vscf_alg_info_der_serializer_destroy(&serializer);
+    vsc_buffer_destroy(&out);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -113,6 +134,7 @@ main(void) {
 
     RUN_TEST(test__serialize__sha256__returns_valid_der);
     RUN_TEST(test__serialize__kdf1_sha256__returns_valid_der);
+    RUN_TEST(test__serialize__aes256_gcm__returns_valid_der);
 
 #if TEST_DEPENDENCIES_AVAILABLE
 #else

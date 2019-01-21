@@ -54,3 +54,25 @@ const byte test_alg_info_KDF1_SHA256_DER_BYTES[] = {
 const vsc_data_t test_alg_info_KDF1_SHA256_DER = {
     test_alg_info_KDF1_SHA256_DER_BYTES, sizeof(test_alg_info_KDF1_SHA256_DER_BYTES)
 };
+
+
+const byte test_alg_info_AES256_GCM_DER_BYTES[] = {
+    0x30, 0x19, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+    0x65, 0x03, 0x04, 0x01, 0x2E, 0x04, 0x0C, 0xC3,
+    0x75, 0x6D, 0xC3, 0x22, 0x3C, 0x47, 0x57, 0x35,
+    0x05, 0xBF, 0x59
+};
+
+const vsc_data_t test_alg_info_AES256_GCM_DER = {
+    test_alg_info_AES256_GCM_DER_BYTES, sizeof(test_alg_info_AES256_GCM_DER_BYTES)
+};
+
+
+const byte test_alg_info_AES256_GCM_NONCE_BYTES[] = {
+    0xC3, 0x75, 0x6D, 0xC3, 0x22, 0x3C, 0x47, 0x57,
+    0x35, 0x05, 0xBF, 0x59
+};
+
+const vsc_data_t test_alg_info_AES256_GCM_NONCE = {
+    test_alg_info_AES256_GCM_NONCE_BYTES, sizeof(test_alg_info_AES256_GCM_NONCE_BYTES)
+};
