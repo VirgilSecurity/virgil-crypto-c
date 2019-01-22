@@ -102,6 +102,12 @@ VSCF_PUBLIC size_t
 vscf_asn1_writer_finish(vscf_impl_t *impl);
 
 //
+//  Returns how many bytes were already written to the ASN.1 structure.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_writer_written_len(const vscf_impl_t *impl);
+
+//
 //  Return last error.
 //
 VSCF_PUBLIC vscf_error_t

@@ -1,4 +1,6 @@
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  @license
+// --------------------------------------------------------------------------
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -31,17 +33,41 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+// --------------------------------------------------------------------------
+// clang-format off
 
-#include "test_data_alg_info_ser_deser.h"
 
-const byte test_alg_info_SHA256_DER_DESERIALIZER_BYTES[] = {0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01};
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'cipher alg info' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
 
-const vsc_data_t test_alg_info_SHA256_DER_DESERIALIZER = {test_alg_info_SHA256_DER_DESERIALIZER_BYTES, sizeof(test_alg_info_SHA256_DER_DESERIALIZER_BYTES)};
 
-const int test_alg_info_DER_SHA256_VALID_OUTPUT = 2;
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
 
-const byte test_alg_info_KDF1_DER_DESERIALIZER_BYTES[] = {0x06, 0x07, 0x28, 0x81, 0x8C, 0x71, 0x02, 0x05, 0x01};
+#include "vscf_cipher_alg_info_defs.h"
 
-const vsc_data_t test_alg_info_KDF1_DER_DESERIALIZER = {test_alg_info_KDF1_DER_DESERIALIZER_BYTES, sizeof(test_alg_info_KDF1_DER_DESERIALIZER_BYTES)};
+// clang-format on
+//  @end
 
-const int test_alg_info_DER_KDF1_VALID_OUTPUT = 5;
+
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
+
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end

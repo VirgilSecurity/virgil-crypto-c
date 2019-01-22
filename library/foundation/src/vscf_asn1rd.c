@@ -215,6 +215,11 @@ VSCF_PUBLIC int
 vscf_asn1rd_get_tag(vscf_asn1rd_t *asn1rd) {
 
     VSCF_ASSERT_PTR(asn1rd);
+    VSCF_ASSERT(asn1rd->error != vscf_error_UNINITIALIZED);
+
+    if (asn1rd->error != vscf_SUCCESS) {
+        return 0;
+    }
 
     return *asn1rd->curr;
 }

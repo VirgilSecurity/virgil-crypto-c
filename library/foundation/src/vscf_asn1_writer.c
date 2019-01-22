@@ -94,6 +94,19 @@ vscf_asn1_writer_finish(vscf_impl_t *impl) {
 }
 
 //
+//  Returns how many bytes were already written to the ASN.1 structure.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_writer_written_len(const vscf_impl_t *impl) {
+
+    const vscf_asn1_writer_api_t *asn1_writer_api = vscf_asn1_writer_api(impl);
+    VSCF_ASSERT_PTR (asn1_writer_api);
+
+    VSCF_ASSERT_PTR (asn1_writer_api->written_len_cb);
+    return asn1_writer_api->written_len_cb (impl);
+}
+
+//
 //  Return last error.
 //
 VSCF_PUBLIC vscf_error_t

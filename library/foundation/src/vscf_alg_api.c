@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Provide produce and consume methods for implemented algorithms
+//  Interface 'alg' API.
 // --------------------------------------------------------------------------
 
 
@@ -50,9 +50,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_alg_info_compatible.h"
-#include "vscf_assert.h"
-#include "vscf_alg_info_compatible_api.h"
+#include "vscf_alg_api.h"
 
 // clang-format on
 //  @end
@@ -63,53 +61,6 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Produce algorithm information structure
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_alg_info_compatible_produce_alg_info(vscf_impl_t *impl) {
-
-    const vscf_alg_info_compatible_api_t *alg_info_compatible_api = vscf_alg_info_compatible_api(impl);
-    VSCF_ASSERT_PTR (alg_info_compatible_api);
-
-    VSCF_ASSERT_PTR (alg_info_compatible_api->produce_alg_info_cb);
-    return alg_info_compatible_api->produce_alg_info_cb (impl);
-}
-
-//
-//  Return alg info compatible API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_alg_info_compatible_api_t *
-vscf_alg_info_compatible_api(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_ALG_INFO_COMPATIBLE);
-    return (const vscf_alg_info_compatible_api_t *) api;
-}
-
-//
-//  Check if given object implements interface 'alg info compatible'.
-//
-VSCF_PUBLIC bool
-vscf_alg_info_compatible_is_implemented(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    return vscf_impl_api(impl, vscf_api_tag_ALG_INFO_COMPATIBLE) != NULL;
-}
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_alg_info_compatible_api_tag(const vscf_alg_info_compatible_api_t *alg_info_compatible_api) {
-
-    VSCF_ASSERT_PTR (alg_info_compatible_api);
-
-    return alg_info_compatible_api->api_tag;
-}
 
 
 // --------------------------------------------------------------------------

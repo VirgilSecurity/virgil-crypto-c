@@ -226,14 +226,14 @@ vscf_raw_key_cleanup_ctx(vscf_raw_key_t *raw_key) {
 //  Note, data is copied.
 //
 VSCF_PUBLIC vscf_raw_key_t *
-vscf_raw_key_new_with_data(vscf_key_alg_t alg, vsc_data_t raw_key_data) {
+vscf_raw_key_new_with_data(vscf_alg_id_t alg_id, vsc_data_t raw_key_data) {
 
-    VSCF_ASSERT(alg != vscf_key_alg_NONE);
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
     VSCF_ASSERT(vsc_data_is_valid(raw_key_data));
 
     vscf_raw_key_t *raw_key = vscf_raw_key_new();
 
-    raw_key->alg = alg;
+    raw_key->alg_id = alg_id;
     raw_key->bytes = vsc_buffer_new_with_data(raw_key_data);
 
     vsc_buffer_make_secure(raw_key->bytes);
@@ -245,15 +245,15 @@ vscf_raw_key_new_with_data(vscf_key_alg_t alg, vsc_data_t raw_key_data) {
 //  Creates raw key defined with algorithm and buffer.
 //
 VSCF_PRIVATE vscf_raw_key_t *
-vscf_raw_key_new_with_buffer(vscf_key_alg_t alg, vsc_buffer_t *buffer) {
+vscf_raw_key_new_with_buffer(vscf_alg_id_t alg_id, vsc_buffer_t *buffer) {
 
-    VSCF_ASSERT(alg != vscf_key_alg_NONE);
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
     VSCF_ASSERT_PTR(buffer);
     VSCF_ASSERT(vsc_buffer_is_valid(buffer));
 
     vscf_raw_key_t *raw_key = vscf_raw_key_new();
 
-    raw_key->alg = alg;
+    raw_key->alg_id = alg_id;
     raw_key->bytes = vsc_buffer_shallow_copy(buffer);
 
     vsc_buffer_make_secure(raw_key->bytes);
@@ -264,12 +264,11 @@ vscf_raw_key_new_with_buffer(vscf_key_alg_t alg, vsc_buffer_t *buffer) {
 //
 //  Returns asymmetric algorithm type that raw key belongs to.
 //
-VSCF_PUBLIC vscf_key_alg_t
-vscf_raw_key_alg(vscf_raw_key_t *raw_key) {
+VSCF_PUBLIC vscf_alg_id_t
+vscf_raw_key_alg_id(vscf_raw_key_t *raw_key) {
 
     VSCF_ASSERT_PTR(raw_key);
-
-    return raw_key->alg;
+    return raw_key->alg_id;
 }
 
 //
@@ -279,7 +278,7 @@ VSCF_PUBLIC vsc_data_t
 vscf_raw_key_data(vscf_raw_key_t *raw_key) {
 
     VSCF_ASSERT_PTR(raw_key);
-    VSCF_ASSERT(raw_key->alg != vscf_key_alg_NONE);
+    VSCF_ASSERT(raw_key->alg_id != vscf_alg_id_NONE);
     VSCF_ASSERT(raw_key->bytes != NULL);
     VSCF_ASSERT(vsc_buffer_is_valid(raw_key->bytes));
 

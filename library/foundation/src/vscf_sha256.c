@@ -53,8 +53,8 @@
 #include "vscf_sha256.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_alg_id.h"
 #include "vscf_simple_alg_info.h"
+#include "vscf_alg_info.h"
 #include "vscf_kdf_alg_info.h"
 #include "vscf_sha256_defs.h"
 #include "vscf_sha256_internal.h"
@@ -166,11 +166,34 @@ vscf_sha256_finish(vscf_sha256_t *sha256, vsc_buffer_t *digest) {
 }
 
 //
-//  Produce algorithm information structure
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_sha256_alg_id(const vscf_sha256_t *sha256) {
+
+    VSCF_ASSERT_PTR(sha256);
+    return vscf_alg_id_SHA256;
+}
+
+//
+//  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_sha256_produce_alg_info(vscf_sha256_t *sha256) {
+vscf_sha256_produce_alg_info(const vscf_sha256_t *sha256) {
 
     VSCF_ASSERT_PTR(sha256);
     return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256));
+}
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_sha256_restore_alg_info(vscf_sha256_t *sha256, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(sha256);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_SHA256);
+
+    return vscf_SUCCESS;
 }

@@ -95,41 +95,44 @@ VSCF_PRIVATE void
 vscf_kdf_alg_info_cleanup_ctx(vscf_kdf_alg_info_t *kdf_alg_info) {
 
     VSCF_ASSERT_PTR(kdf_alg_info);
+    kdf_alg_info->alg_id = vscf_alg_id_NONE;
+    vscf_simple_alg_info_destroy(&kdf_alg_info->hash_alg_info);
 }
 
 //
-//  Set algorithm identificator
+//  Create KDF algorithm info with identificator and HASH algorithm info.
 //
 VSCF_PUBLIC vscf_kdf_alg_info_t *
-vscf_kdf_alg_info_new_with_alg_id(vscf_alg_id_t alg_id) {
+vscf_kdf_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_simple_alg_info_t *hash_alg_info) {
+
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
+    VSCF_ASSERT_PTR(hash_alg_info);
 
     vscf_kdf_alg_info_t *kdf_alg_info = vscf_kdf_alg_info_new();
 
     kdf_alg_info->alg_id = alg_id;
 
-    return kdf_alg_info;
-}
-
-//
-//  Set algorithm identificator
-//
-VSCF_PUBLIC vscf_kdf_alg_info_t *
-vscf_kdf_alg_info_new_with_members(vscf_alg_id_t alg_id, const vscf_simple_alg_info_t *hash_alg_info) {
-
-    vscf_kdf_alg_info_t *kdf_alg_info = vscf_kdf_alg_info_new();
-
-    kdf_alg_info->alg_id = alg_id;
-
-    kdf_alg_info->hash_alg_info = (vscf_simple_alg_info_t *)hash_alg_info;
+    kdf_alg_info->hash_alg_info = vscf_simple_alg_info_shallow_copy(hash_alg_info);
 
     return kdf_alg_info;
 }
 
 //
-//  Provide algorithm identificator
+//  Return hash algorithm information.
+//
+VSCF_PUBLIC const vscf_simple_alg_info_t *
+vscf_kdf_alg_info_hash_alg_info(const vscf_kdf_alg_info_t *kdf_alg_info) {
+
+    VSCF_ASSERT_PTR(kdf_alg_info);
+    VSCF_ASSERT_PTR(kdf_alg_info->hash_alg_info);
+    return kdf_alg_info->hash_alg_info;
+}
+
+//
+//  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_kdf_alg_info_alg_id(vscf_kdf_alg_info_t *kdf_alg_info) {
+vscf_kdf_alg_info_alg_id(const vscf_kdf_alg_info_t *kdf_alg_info) {
 
     VSCF_ASSERT_PTR(kdf_alg_info);
     return kdf_alg_info->alg_id;

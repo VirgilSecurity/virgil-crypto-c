@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains 'cipher alg info' implementation.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,22 +50,14 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Defines enumeration of possible asymmetric key algorithms.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_KEY_ALG_H_INCLUDED
-#define VSCF_KEY_ALG_H_INCLUDED
+#include "vscf_cipher_alg_info.h"
+#include "vscf_assert.h"
+#include "vscf_memory.h"
+#include "vscf_cipher_alg_info_defs.h"
+#include "vscf_cipher_alg_info_internal.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -67,17 +65,6 @@ extern "C" {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Defines enumeration of possible asymmetric key algorithms.
-//
-enum vscf_key_alg_t {
-    vscf_key_alg_NONE = 0,
-    vscf_key_alg_RSA,
-    vscf_key_alg_ED25519,
-    vscf_key_alg_X25519
-};
-typedef enum vscf_key_alg_t vscf_key_alg_t;
 
 
 // --------------------------------------------------------------------------
@@ -87,11 +74,66 @@ typedef enum vscf_key_alg_t vscf_key_alg_t;
 //  @end
 
 
-#ifdef __cplusplus
+//
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_cipher_alg_info_init() is called.
+//  Note, that context is already zeroed.
+//
+VSCF_PRIVATE void
+vscf_cipher_alg_info_init_ctx(vscf_cipher_alg_info_t *cipher_alg_info) {
+
+    VSCF_ASSERT_PTR(cipher_alg_info);
 }
-#endif
 
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_cipher_alg_info_cleanup_ctx(vscf_cipher_alg_info_t *cipher_alg_info) {
 
-//  @footer
-#endif // VSCF_KEY_ALG_H_INCLUDED
-//  @end
+    VSCF_ASSERT_PTR(cipher_alg_info);
+    vsc_buffer_destroy(&cipher_alg_info->nonce);
+}
+
+//
+//  Create symmetric cipher algorithm info with identificator and input vector.
+//
+VSCF_PUBLIC vscf_cipher_alg_info_t *
+vscf_cipher_alg_info_new_with_members(vscf_alg_id_t alg_id, vsc_data_t nonce) {
+
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
+    VSCF_ASSERT(vsc_data_is_valid(nonce));
+    VSCF_ASSERT(nonce.len > 0);
+
+    vscf_cipher_alg_info_t *cipher_alg_info = vscf_cipher_alg_info_new();
+
+    cipher_alg_info->alg_id = alg_id;
+    cipher_alg_info->nonce = vsc_buffer_new_with_data(nonce);
+
+    return cipher_alg_info;
+}
+
+//
+//  Return IV.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_cipher_alg_info_nonce(const vscf_cipher_alg_info_t *cipher_alg_info) {
+
+    VSCF_ASSERT_PTR(cipher_alg_info);
+    VSCF_ASSERT_PTR(cipher_alg_info->nonce);
+
+    return vsc_buffer_data(cipher_alg_info->nonce);
+}
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_cipher_alg_info_alg_id(const vscf_cipher_alg_info_t *cipher_alg_info) {
+
+    VSCF_ASSERT_PTR(cipher_alg_info);
+
+    return cipher_alg_info->alg_id;
+}

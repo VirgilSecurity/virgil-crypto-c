@@ -1,0 +1,27 @@
+<interface name="alg">
+    Provide interface to persist algorithm information and it parameters
+    and then restore the algorithm from it.
+
+
+    <method name="alg id" is_const="1">
+        Provide algorithm identificator.
+
+        <return enum="alg id"/>
+    </method>
+
+
+    <method name="produce alg info" is_const="1">
+        Produce object with algorithm information and configuration parameters.
+
+        <return interface="alg info" access="disown"/>
+    </method>
+
+
+    <method name="restore alg info">
+        Restore algorithm configuration from the given object.
+
+        <argument name="alg info" interface="alg info" access="readonly"/>
+
+        <return enum="error"/>
+    </method>
+</interface>
