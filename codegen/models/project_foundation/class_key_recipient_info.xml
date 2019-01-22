@@ -1,0 +1,7 @@
+<class name="key recipient info">
+    Handle information about recipient that is defined by a Public Key.
+
+    <property name="recipient id" class="buffer"/>
+    <property name="key encryption algorithm" interface="alg info"/>
+    <property name="encrypted key" class="buffer"/>
+</class>

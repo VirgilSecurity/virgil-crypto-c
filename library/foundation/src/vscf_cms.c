@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains 'cms' implementation.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,25 +50,18 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_API_H_INCLUDED
-#define VSCF_API_H_INCLUDED
-
-#include "vscf_library.h"
+#include "vscf_cms.h"
+#include "vscf_assert.h"
+#include "vscf_memory.h"
+#include "vscf_asn1rd.h"
+#include "vscf_asn1wr.h"
+#include "vscf_asn1_reader.h"
+#include "vscf_asn1_writer.h"
+#include "vscf_cms_defs.h"
+#include "vscf_cms_internal.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -70,55 +69,6 @@ extern "C" {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Enumerates all possible interfaces within crypto library.
-//
-enum vscf_api_tag_t {
-    vscf_api_tag_BEGIN = 0,
-    vscf_api_tag_ALG,
-    vscf_api_tag_ALG_INFO,
-    vscf_api_tag_ALG_INFO_DESERIALIZER,
-    vscf_api_tag_ALG_INFO_SERIALIZER,
-    vscf_api_tag_ASN1_READER,
-    vscf_api_tag_ASN1_WRITER,
-    vscf_api_tag_AUTH_DECRYPT,
-    vscf_api_tag_AUTH_ENCRYPT,
-    vscf_api_tag_CIPHER,
-    vscf_api_tag_CIPHER_AUTH,
-    vscf_api_tag_CIPHER_AUTH_INFO,
-    vscf_api_tag_CIPHER_INFO,
-    vscf_api_tag_COMPUTE_SHARED_KEY,
-    vscf_api_tag_DECRYPT,
-    vscf_api_tag_DEFAULTS,
-    vscf_api_tag_ENCRYPT,
-    vscf_api_tag_ENTROPY_SOURCE,
-    vscf_api_tag_GENERATE_KEY,
-    vscf_api_tag_HASH,
-    vscf_api_tag_HASH_INFO,
-    vscf_api_tag_HASH_STREAM,
-    vscf_api_tag_KDF,
-    vscf_api_tag_KEY,
-    vscf_api_tag_KEY_DESERIALIZER,
-    vscf_api_tag_KEY_SERIALIZER,
-    vscf_api_tag_MAC,
-    vscf_api_tag_MAC_INFO,
-    vscf_api_tag_MAC_STREAM,
-    vscf_api_tag_MESSAGE_INFO_SERIALIZER,
-    vscf_api_tag_PRIVATE_KEY,
-    vscf_api_tag_PUBLIC_KEY,
-    vscf_api_tag_RANDOM,
-    vscf_api_tag_SALTED_KDF,
-    vscf_api_tag_SIGN,
-    vscf_api_tag_VERIFY,
-    vscf_api_tag_END
-};
-typedef enum vscf_api_tag_t vscf_api_tag_t;
-
-//
-//  Generic type for any 'API' object.
-//
-typedef struct vscf_api_t vscf_api_t;
 
 
 // --------------------------------------------------------------------------
@@ -128,11 +78,63 @@ typedef struct vscf_api_t vscf_api_t;
 //  @end
 
 
-#ifdef __cplusplus
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_cms_setup_defaults(vscf_cms_t *cms) {
+
+    VSCF_ASSERT_PTR(cms);
+
+    if (NULL == cms->asn1_reader) {
+        cms->asn1_reader = vscf_asn1rd_impl(vscf_asn1rd_new());
+    }
+
+    if (NULL == cms->asn1_writer) {
+        cms->asn1_writer = vscf_asn1wr_impl(vscf_asn1wr_new());
+    }
+
+    return vscf_SUCCESS;
 }
-#endif
 
+//
+//  Return buffer size enough to hold serialized message info.
+//
+VSCF_PUBLIC size_t
+vscf_cms_serialized_len(vscf_cms_t *cms) {
 
-//  @footer
-#endif // VSCF_API_H_INCLUDED
-//  @end
+    VSCF_ASSERT_PTR(cms);
+
+    //  TODO: This is STUB. Implement me.
+
+    return 0;
+}
+
+//
+//  Serialize class "message info".
+//
+VSCF_PUBLIC void
+vscf_cms_serialize(vscf_cms_t *cms, const vscf_message_info_t *message_info, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(cms);
+    VSCF_ASSERT_PTR(message_info);
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT_PTR(vsc_buffer_is_valid(out));
+
+    //  TODO: This is STUB. Implement me.
+}
+
+//
+//  Deserialize class "message info".
+//
+VSCF_PUBLIC const vscf_message_info_t *
+vscf_cms_deserialize(vscf_cms_t *cms, vsc_data_t data, const vscf_error_ctx_t *error) {
+
+    VSCF_ASSERT_PTR(cms);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_UNUSED(error);
+
+    //  TODO: This is STUB. Implement me.
+
+    return NULL;
+}
