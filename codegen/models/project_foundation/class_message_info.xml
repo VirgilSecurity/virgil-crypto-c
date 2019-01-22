@@ -1,0 +1,22 @@
+<class name="message info">
+    Handle information about an encrypted message and algorithms
+    that was used for encryption.
+
+    <property name="key recipients" class="key recipient info list"/>
+    <property name="password recipients" class="password recipient info list"/>
+    <property name="data encryption alg info" interface="alg info"/>
+
+
+    <method name="add key recipient">
+        Add recipient that is defined by Public Key.
+
+        <argument name="key recipient" class="key recipient info" access="retain"/>
+    </method>
+
+
+    <method name="add password recipient">
+        Add recipient that is defined by password.
+
+        <argument name="password recipient" class="password recipient info" access="retain"/>
+    </method>
+</class>

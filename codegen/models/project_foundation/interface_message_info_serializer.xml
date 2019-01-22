@@ -1,0 +1,31 @@
+<interface name="message info serializer">
+    Provide interface for "message info" class serialization.
+
+    <method name="serialized len">
+        Return buffer size enough to hold serialized message info.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="serialize">
+        Serialize class "message info".
+
+        <argument name="message info" class="message info"/>
+        <argument name="out" class="buffer">
+            <length method="serialized len">
+                <proxy argument="message info" to="message info"/>
+            </length>
+        </argument>
+    </method>
+
+
+    <method name="deserialize">
+        Deserialize class "message info".
+
+        <argument name="data" class="data"/>
+        <argument name="error" class="error ctx"/>
+
+        <return class="message info"/>
+    </method>
+</interface>

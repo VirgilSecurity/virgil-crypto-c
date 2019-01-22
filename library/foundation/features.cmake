@@ -81,6 +81,7 @@ option(VSCF_ALG "Enable interface 'alg'." ON)
 option(VSCF_ALG_INFO "Enable interface 'alg info'." ON)
 option(VSCF_ALG_INFO_SERIALIZER "Enable interface 'alg info serializer'." ON)
 option(VSCF_ALG_INFO_DESERIALIZER "Enable interface 'alg info deserializer'." ON)
+option(VSCF_MESSAGE_INFO_SERIALIZER "Enable interface 'message info serializer'." ON)
 option(VSCF_SHA224 "Enable implementation 'sha224'." ON)
 option(VSCF_SHA256 "Enable implementation 'sha256'." ON)
 option(VSCF_SHA384 "Enable implementation 'sha384'." ON)
@@ -108,6 +109,7 @@ option(VSCF_KDF_ALG_INFO "Enable implementation 'kdf alg info'." ON)
 option(VSCF_CIPHER_ALG_INFO "Enable implementation 'cipher alg info'." ON)
 option(VSCF_ALG_INFO_DER_SERIALIZER "Enable implementation 'alg info der serializer'." ON)
 option(VSCF_ALG_INFO_DER_DESERIALIZER "Enable implementation 'alg info der deserializer'." ON)
+option(VSCF_CMS "Enable implementation 'cms'." ON)
 option(VSCF_ERROR_CTX "Enable class 'error ctx'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER "Enable class 'mbedtls bignum asn1 writer'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_READER "Enable class 'mbedtls bignum asn1 reader'." ON)
@@ -118,6 +120,11 @@ option(VSCF_BASE64 "Enable class 'base64'." ON)
 option(VSCF_PEM "Enable class 'pem'." ON)
 option(VSCF_PEM_TITLE "Enable class 'pem title'." ON)
 option(VSCF_ENDIANNESS "Enable class 'endianness'." ON)
+option(VSCF_MESSAGE_INFO "Enable class 'message info'." ON)
+option(VSCF_KEY_RECIPIENT_INFO "Enable class 'key recipient info'." ON)
+option(VSCF_KEY_RECIPIENT_INFO_LIST "Enable class 'key recipient info list'." ON)
+option(VSCF_PASSWORD_RECIPIENT_INFO "Enable class 'password recipient info'." ON)
+option(VSCF_PASSWORD_RECIPIENT_INFO_LIST "Enable class 'password recipient info list'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_MULTI_THREAD
@@ -155,6 +162,7 @@ mark_as_advanced(
         VSCF_ALG_INFO
         VSCF_ALG_INFO_SERIALIZER
         VSCF_ALG_INFO_DESERIALIZER
+        VSCF_MESSAGE_INFO_SERIALIZER
         VSCF_SHA224
         VSCF_SHA256
         VSCF_SHA384
@@ -182,6 +190,7 @@ mark_as_advanced(
         VSCF_CIPHER_ALG_INFO
         VSCF_ALG_INFO_DER_SERIALIZER
         VSCF_ALG_INFO_DER_DESERIALIZER
+        VSCF_CMS
         VSCF_ERROR_CTX
         VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
         VSCF_MBEDTLS_BIGNUM_ASN1_READER
@@ -192,6 +201,11 @@ mark_as_advanced(
         VSCF_PEM
         VSCF_PEM_TITLE
         VSCF_ENDIANNESS
+        VSCF_MESSAGE_INFO
+        VSCF_KEY_RECIPIENT_INFO
+        VSCF_KEY_RECIPIENT_INFO_LIST
+        VSCF_PASSWORD_RECIPIENT_INFO
+        VSCF_PASSWORD_RECIPIENT_INFO_LIST
         )
 
 if(VSCF_MULTI_THREAD AND NOT MBEDTLS_THREADING_C)
@@ -1081,6 +1095,42 @@ if(VSCF_ALG_INFO_DER_DESERIALIZER AND NOT VSCF_ASN1_READER)
     message("--")
     message("Feature VSCF_ALG_INFO_DER_DESERIALIZER depends on the feature:")
     message("     VSCF_ASN1_READER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_CMS AND NOT VSCF_ASN1RD)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_CMS depends on the feature:")
+    message("     VSCF_ASN1RD - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_CMS AND NOT VSCF_ASN1WR)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_CMS depends on the feature:")
+    message("     VSCF_ASN1WR - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_CMS AND NOT VSCF_ASN1_READER)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_CMS depends on the feature:")
+    message("     VSCF_ASN1_READER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_CMS AND NOT VSCF_ASN1_WRITER)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_CMS depends on the feature:")
+    message("     VSCF_ASN1_WRITER - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

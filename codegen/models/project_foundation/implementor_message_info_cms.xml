@@ -1,0 +1,16 @@
+<implementor name="virgil message info cms" is_default="1">
+    Contain CMS implementation of the class "message info" serialization.
+
+    <implementation name="cms">
+        CMS based implementation of the class "message info" serialization.
+
+        <interface name="defaults"/>
+        <interface name="message info serializer"/>
+
+        <require class="asn1rd"/>
+        <require class="asn1wr"/>
+
+        <dependency name="asn1 reader" interface="asn1 reader"/>
+        <dependency name="asn1 writer" interface="asn1 writer"/>
+    </implementation>
+</implementor>

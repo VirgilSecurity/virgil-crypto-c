@@ -225,6 +225,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_message_info_serializer.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_private_key.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -281,6 +286,11 @@ set_property(
 
 set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_cipher_alg_info.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_cms.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -400,7 +410,32 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_recipient_info.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_recipient_info_list.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_message_info.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_oid.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_password_recipient_info.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_password_recipient_info_list.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -503,6 +538,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_MAC_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_mac_info_api.h>"
             "$<$<BOOL:${VSCF_MAC_STREAM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_mac_stream.h>"
             "$<$<BOOL:${VSCF_MAC_STREAM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_mac_stream_api.h>"
+            "$<$<BOOL:${VSCF_MESSAGE_INFO_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_message_info_serializer.h>"
+            "$<$<BOOL:${VSCF_MESSAGE_INFO_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_message_info_serializer_api.h>"
             "$<$<BOOL:${VSCF_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_private_key.h>"
             "$<$<BOOL:${VSCF_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_private_key_api.h>"
             "$<$<BOOL:${VSCF_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_public_key.h>"
@@ -533,6 +570,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_CIPHER_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_cipher_alg_info.h>"
             "$<$<BOOL:${VSCF_CIPHER_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher_alg_info_internal.h>"
             "$<$<BOOL:${VSCF_CIPHER_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_cipher_alg_info_defs.h>"
+            "$<$<BOOL:${VSCF_CMS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_cms.h>"
+            "$<$<BOOL:${VSCF_CMS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_cms_internal.h>"
+            "$<$<BOOL:${VSCF_CMS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_cms_defs.h>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ctr_drbg.h>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg_internal.h>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_ctr_drbg_defs.h>"
@@ -599,10 +639,20 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_BASE64}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_base64.h>"
             "$<$<BOOL:${VSCF_ENDIANNESS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_endianness.h>"
             "$<$<BOOL:${VSCF_ERROR_CTX}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error_ctx.h>"
+            "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_recipient_info.h>"
+            "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_recipient_info_defs.h>"
+            "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_recipient_info_list.h>"
+            "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_recipient_info_list_defs.h>"
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_READER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_reader.h>"
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_WRITER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_writer.h>"
             "$<$<BOOL:${VSCF_MBEDTLS_MD}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_md.h>"
+            "$<$<BOOL:${VSCF_MESSAGE_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_message_info.h>"
+            "$<$<BOOL:${VSCF_MESSAGE_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_message_info_defs.h>"
             "$<$<BOOL:${VSCF_OID}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_oid.h>"
+            "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_password_recipient_info.h>"
+            "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_password_recipient_info_defs.h>"
+            "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_password_recipient_info_list.h>"
+            "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_password_recipient_info_list_defs.h>"
             "$<$<BOOL:${VSCF_PEM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_pem.h>"
             "$<$<BOOL:${VSCF_PEM_TITLE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pem_title.h>"
             "$<$<BOOL:${VSCF_RAW_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_raw_key.h>"
@@ -678,6 +728,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_MAC_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mac_info_api.c>"
             "$<$<BOOL:${VSCF_MAC_STREAM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mac_stream.c>"
             "$<$<BOOL:${VSCF_MAC_STREAM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mac_stream_api.c>"
+            "$<$<BOOL:${VSCF_MESSAGE_INFO_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_serializer.c>"
+            "$<$<BOOL:${VSCF_MESSAGE_INFO_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_serializer_api.c>"
             "$<$<BOOL:${VSCF_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_private_key.c>"
             "$<$<BOOL:${VSCF_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_private_key_api.c>"
             "$<$<BOOL:${VSCF_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_public_key.c>"
@@ -708,6 +760,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_CIPHER_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher_alg_info.c>"
             "$<$<BOOL:${VSCF_CIPHER_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher_alg_info_internal.c>"
             "$<$<BOOL:${VSCF_CIPHER_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher_alg_info_defs.c>"
+            "$<$<BOOL:${VSCF_CMS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_cms.c>"
+            "$<$<BOOL:${VSCF_CMS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_cms_internal.c>"
+            "$<$<BOOL:${VSCF_CMS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_cms_defs.c>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg.c>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg_internal.c>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg_defs.c>"
@@ -774,10 +829,20 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_BASE64}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_base64.c>"
             "$<$<BOOL:${VSCF_ENDIANNESS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_endianness.c>"
             "$<$<BOOL:${VSCF_ERROR_CTX}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_error_ctx.c>"
+            "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_recipient_info.c>"
+            "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_recipient_info_defs.c>"
+            "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_recipient_info_list.c>"
+            "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_recipient_info_list_defs.c>"
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_READER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_reader.c>"
             "$<$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_WRITER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_bignum_asn1_writer.c>"
             "$<$<BOOL:${VSCF_MBEDTLS_MD}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_mbedtls_md.c>"
+            "$<$<BOOL:${VSCF_MESSAGE_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info.c>"
+            "$<$<BOOL:${VSCF_MESSAGE_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_defs.c>"
             "$<$<BOOL:${VSCF_OID}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_oid.c>"
+            "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_password_recipient_info.c>"
+            "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_password_recipient_info_defs.c>"
+            "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_password_recipient_info_list.c>"
+            "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_password_recipient_info_list_defs.c>"
             "$<$<BOOL:${VSCF_PEM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pem.c>"
             "$<$<BOOL:${VSCF_PEM_TITLE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pem_title.c>"
             "$<$<BOOL:${VSCF_RAW_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_raw_key.c>"

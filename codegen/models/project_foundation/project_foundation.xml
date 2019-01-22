@@ -101,6 +101,7 @@
     <interface name="alg info"/>
     <interface name="alg info serializer"/>
     <interface name="alg info deserializer"/>
+    <interface name="message info serializer"/>
 
     <class name="error"/>
     <class name="mbedtls bignum asn1 writer"/>
@@ -112,6 +113,11 @@
     <class name="pem"/>
     <class name="pem title"/>
     <class name="endianness"/>
+    <class name="message info"/>
+    <class name="key recipient info"/>
+    <class name="key recipient info list"/>
+    <class name="password recipient info"/>
+    <class name="password recipient info list"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>
@@ -122,6 +128,7 @@
 
     <implementor name="alg info"/>
     <implementor name="alg info der"/>
+    <implementor name="message info cms"/>
 
     <module name="mbedtls bridge random"/>
     <module name="mbedtls bridge entropy"/>

@@ -47,12 +47,11 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Handles a list of "" class objects.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_API_H_INCLUDED
-#define VSCF_API_H_INCLUDED
+#ifndef VSCF_KEY_RECIPIENT_INFO_LIST_H_INCLUDED
+#define VSCF_KEY_RECIPIENT_INFO_LIST_H_INCLUDED
 
 #include "vscf_library.h"
 
@@ -72,53 +71,53 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Handle 'key recipient info list' context.
 //
-enum vscf_api_tag_t {
-    vscf_api_tag_BEGIN = 0,
-    vscf_api_tag_ALG,
-    vscf_api_tag_ALG_INFO,
-    vscf_api_tag_ALG_INFO_DESERIALIZER,
-    vscf_api_tag_ALG_INFO_SERIALIZER,
-    vscf_api_tag_ASN1_READER,
-    vscf_api_tag_ASN1_WRITER,
-    vscf_api_tag_AUTH_DECRYPT,
-    vscf_api_tag_AUTH_ENCRYPT,
-    vscf_api_tag_CIPHER,
-    vscf_api_tag_CIPHER_AUTH,
-    vscf_api_tag_CIPHER_AUTH_INFO,
-    vscf_api_tag_CIPHER_INFO,
-    vscf_api_tag_COMPUTE_SHARED_KEY,
-    vscf_api_tag_DECRYPT,
-    vscf_api_tag_DEFAULTS,
-    vscf_api_tag_ENCRYPT,
-    vscf_api_tag_ENTROPY_SOURCE,
-    vscf_api_tag_GENERATE_KEY,
-    vscf_api_tag_HASH,
-    vscf_api_tag_HASH_INFO,
-    vscf_api_tag_HASH_STREAM,
-    vscf_api_tag_KDF,
-    vscf_api_tag_KEY,
-    vscf_api_tag_KEY_DESERIALIZER,
-    vscf_api_tag_KEY_SERIALIZER,
-    vscf_api_tag_MAC,
-    vscf_api_tag_MAC_INFO,
-    vscf_api_tag_MAC_STREAM,
-    vscf_api_tag_MESSAGE_INFO_SERIALIZER,
-    vscf_api_tag_PRIVATE_KEY,
-    vscf_api_tag_PUBLIC_KEY,
-    vscf_api_tag_RANDOM,
-    vscf_api_tag_SALTED_KDF,
-    vscf_api_tag_SIGN,
-    vscf_api_tag_VERIFY,
-    vscf_api_tag_END
-};
-typedef enum vscf_api_tag_t vscf_api_tag_t;
+typedef struct vscf_key_recipient_info_list_t vscf_key_recipient_info_list_t;
 
 //
-//  Generic type for any 'API' object.
+//  Return size of 'vscf_key_recipient_info_list_t'.
 //
-typedef struct vscf_api_t vscf_api_t;
+VSCF_PUBLIC size_t
+vscf_key_recipient_info_list_ctx_size(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCF_PUBLIC void
+vscf_key_recipient_info_list_init(vscf_key_recipient_info_list_t *key_recipient_info_list);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCF_PUBLIC void
+vscf_key_recipient_info_list_cleanup(vscf_key_recipient_info_list_t *key_recipient_info_list);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCF_PUBLIC vscf_key_recipient_info_list_t *
+vscf_key_recipient_info_list_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if context was allocated by the caller.
+//
+VSCF_PUBLIC void
+vscf_key_recipient_info_list_delete(vscf_key_recipient_info_list_t *key_recipient_info_list);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscf_key_recipient_info_list_new ()'.
+//
+VSCF_PUBLIC void
+vscf_key_recipient_info_list_destroy(vscf_key_recipient_info_list_t **key_recipient_info_list_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCF_PUBLIC vscf_key_recipient_info_list_t *
+vscf_key_recipient_info_list_shallow_copy(vscf_key_recipient_info_list_t *key_recipient_info_list);
 
 
 // --------------------------------------------------------------------------
@@ -134,5 +133,5 @@ typedef struct vscf_api_t vscf_api_t;
 
 
 //  @footer
-#endif // VSCF_API_H_INCLUDED
+#endif // VSCF_KEY_RECIPIENT_INFO_LIST_H_INCLUDED
 //  @end

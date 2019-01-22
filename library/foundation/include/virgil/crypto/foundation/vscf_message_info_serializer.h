@@ -47,14 +47,27 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Provide interface for "message info" class serialization.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_API_H_INCLUDED
-#define VSCF_API_H_INCLUDED
+#ifndef VSCF_MESSAGE_INFO_SERIALIZER_H_INCLUDED
+#define VSCF_MESSAGE_INFO_SERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_message_info.h"
+#include "vscf_error_ctx.h"
+#include "vscf_api.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
@@ -72,53 +85,45 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Contains API requirements of the interface 'message info serializer'.
 //
-enum vscf_api_tag_t {
-    vscf_api_tag_BEGIN = 0,
-    vscf_api_tag_ALG,
-    vscf_api_tag_ALG_INFO,
-    vscf_api_tag_ALG_INFO_DESERIALIZER,
-    vscf_api_tag_ALG_INFO_SERIALIZER,
-    vscf_api_tag_ASN1_READER,
-    vscf_api_tag_ASN1_WRITER,
-    vscf_api_tag_AUTH_DECRYPT,
-    vscf_api_tag_AUTH_ENCRYPT,
-    vscf_api_tag_CIPHER,
-    vscf_api_tag_CIPHER_AUTH,
-    vscf_api_tag_CIPHER_AUTH_INFO,
-    vscf_api_tag_CIPHER_INFO,
-    vscf_api_tag_COMPUTE_SHARED_KEY,
-    vscf_api_tag_DECRYPT,
-    vscf_api_tag_DEFAULTS,
-    vscf_api_tag_ENCRYPT,
-    vscf_api_tag_ENTROPY_SOURCE,
-    vscf_api_tag_GENERATE_KEY,
-    vscf_api_tag_HASH,
-    vscf_api_tag_HASH_INFO,
-    vscf_api_tag_HASH_STREAM,
-    vscf_api_tag_KDF,
-    vscf_api_tag_KEY,
-    vscf_api_tag_KEY_DESERIALIZER,
-    vscf_api_tag_KEY_SERIALIZER,
-    vscf_api_tag_MAC,
-    vscf_api_tag_MAC_INFO,
-    vscf_api_tag_MAC_STREAM,
-    vscf_api_tag_MESSAGE_INFO_SERIALIZER,
-    vscf_api_tag_PRIVATE_KEY,
-    vscf_api_tag_PUBLIC_KEY,
-    vscf_api_tag_RANDOM,
-    vscf_api_tag_SALTED_KDF,
-    vscf_api_tag_SIGN,
-    vscf_api_tag_VERIFY,
-    vscf_api_tag_END
-};
-typedef enum vscf_api_tag_t vscf_api_tag_t;
+typedef struct vscf_message_info_serializer_api_t vscf_message_info_serializer_api_t;
 
 //
-//  Generic type for any 'API' object.
+//  Return buffer size enough to hold serialized message info.
 //
-typedef struct vscf_api_t vscf_api_t;
+VSCF_PUBLIC size_t
+vscf_message_info_serializer_serialized_len(vscf_impl_t *impl);
+
+//
+//  Serialize class "message info".
+//
+VSCF_PUBLIC void
+vscf_message_info_serializer_serialize(vscf_impl_t *impl, const vscf_message_info_t *message_info, vsc_buffer_t *out);
+
+//
+//  Deserialize class "message info".
+//
+VSCF_PUBLIC const vscf_message_info_t *
+vscf_message_info_serializer_deserialize(vscf_impl_t *impl, vsc_data_t data, const vscf_error_ctx_t *error);
+
+//
+//  Return message info serializer API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_message_info_serializer_api_t *
+vscf_message_info_serializer_api(const vscf_impl_t *impl);
+
+//
+//  Check if given object implements interface 'message info serializer'.
+//
+VSCF_PUBLIC bool
+vscf_message_info_serializer_is_implemented(const vscf_impl_t *impl);
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_message_info_serializer_api_tag(const vscf_message_info_serializer_api_t *message_info_serializer_api);
 
 
 // --------------------------------------------------------------------------
@@ -134,5 +139,5 @@ typedef struct vscf_api_t vscf_api_t;
 
 
 //  @footer
-#endif // VSCF_API_H_INCLUDED
+#endif // VSCF_MESSAGE_INFO_SERIALIZER_H_INCLUDED
 //  @end
