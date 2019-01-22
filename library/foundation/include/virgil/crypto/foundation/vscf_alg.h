@@ -47,14 +47,17 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Provide produce and consume methods for implemented algorithms
+//  Provide interface to persist algorithm information and it parameters
+//  and then restore the algorithm from it.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ALG_INFO_COMPATIBLE_H_INCLUDED
-#define VSCF_ALG_INFO_COMPATIBLE_H_INCLUDED
+#ifndef VSCF_ALG_H_INCLUDED
+#define VSCF_ALG_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
+#include "vscf_alg_id.h"
+#include "vscf_error.h"
 #include "vscf_api.h"
 
 // clang-format on
@@ -73,33 +76,45 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Contains API requirements of the interface 'alg info compatible'.
+//  Contains API requirements of the interface 'alg'.
 //
-typedef struct vscf_alg_info_compatible_api_t vscf_alg_info_compatible_api_t;
+typedef struct vscf_alg_api_t vscf_alg_api_t;
 
 //
-//  Produce algorithm information structure
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_alg_alg_id(const vscf_impl_t *impl);
+
+//
+//  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_info_compatible_produce_alg_info(vscf_impl_t *impl);
+vscf_alg_produce_alg_info(const vscf_impl_t *impl);
 
 //
-//  Return alg info compatible API, or NULL if it is not implemented.
+//  Restore algorithm configuration from the given object.
 //
-VSCF_PUBLIC const vscf_alg_info_compatible_api_t *
-vscf_alg_info_compatible_api(const vscf_impl_t *impl);
+VSCF_PUBLIC vscf_error_t
+vscf_alg_restore_alg_info(vscf_impl_t *impl, const vscf_impl_t *alg_info);
 
 //
-//  Check if given object implements interface 'alg info compatible'.
+//  Return alg API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_alg_api_t *
+vscf_alg_api(const vscf_impl_t *impl);
+
+//
+//  Check if given object implements interface 'alg'.
 //
 VSCF_PUBLIC bool
-vscf_alg_info_compatible_is_implemented(const vscf_impl_t *impl);
+vscf_alg_is_implemented(const vscf_impl_t *impl);
 
 //
 //  Returns interface unique identifier.
 //
 VSCF_PUBLIC vscf_api_tag_t
-vscf_alg_info_compatible_api_tag(const vscf_alg_info_compatible_api_t *alg_info_compatible_api);
+vscf_alg_api_tag(const vscf_alg_api_t *alg_api);
 
 
 // --------------------------------------------------------------------------
@@ -115,5 +130,5 @@ vscf_alg_info_compatible_api_tag(const vscf_alg_info_compatible_api_t *alg_info_
 
 
 //  @footer
-#endif // VSCF_ALG_INFO_COMPATIBLE_H_INCLUDED
+#endif // VSCF_ALG_H_INCLUDED
 //  @end

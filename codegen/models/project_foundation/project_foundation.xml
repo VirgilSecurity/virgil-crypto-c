@@ -61,7 +61,6 @@
 
     <enum name="error"/>
     <enum name="asn1 tag"/>
-    <enum name="key alg"/>
     <enum name="hash alg"/>
     <enum name="alg id"/>
 
@@ -98,8 +97,8 @@
     <interface name="asn1 reader"/>
     <interface name="asn1 writer"/>
 
+    <interface name="alg"/>
     <interface name="alg info"/>
-    <interface name="alg info compatible"/>
     <interface name="alg info serializer"/>
     <interface name="alg info deserializer"/>
 
@@ -121,9 +120,8 @@
     <implementor name="virgil pkcs8"/>
     <implementor name="ed25519"/>
 
-    <implementor name="alg info der serializer"/>
-    <implementor name="alg info der deserializer"/>
-    <implementor name="simple alg info"/>
+    <implementor name="alg info"/>
+    <implementor name="alg info der"/>
 
     <module name="mbedtls bridge random"/>
     <module name="mbedtls bridge entropy"/>

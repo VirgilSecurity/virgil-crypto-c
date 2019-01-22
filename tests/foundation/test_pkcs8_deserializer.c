@@ -95,7 +95,7 @@ test__deserialize_public_key__rsa2048_pem__equals_to_rsa_2048_public_key_pkcs1(v
     vscf_raw_key_t *raw_public_key =
             vscf_pkcs8_deserializer_deserialize_public_key(pkcs8, test_rsa_2048_PUBLIC_KEY_PKCS8_PEM, &error);
 
-    TEST_ASSERT_EQUAL(vscf_raw_key_alg(raw_public_key), vscf_key_alg_RSA);
+    TEST_ASSERT_EQUAL(vscf_raw_key_alg_id(raw_public_key), vscf_alg_id_RSA);
 
     TEST_ASSERT_EQUAL_DATA(test_rsa_2048_PUBLIC_KEY_PKCS1, vscf_raw_key_data(raw_public_key));
 
@@ -142,7 +142,7 @@ test__deserialize_private_key__rsa2048_pem__equals_to_rsa_2048_private_key_pkcs1
     vscf_raw_key_t *raw_private_key =
             vscf_pkcs8_deserializer_deserialize_private_key(pkcs8, test_rsa_2048_PRIVATE_KEY_PKCS8_PEM, &error);
 
-    TEST_ASSERT_EQUAL(vscf_raw_key_alg(raw_private_key), vscf_key_alg_RSA);
+    TEST_ASSERT_EQUAL(vscf_raw_key_alg_id(raw_private_key), vscf_alg_id_RSA);
 
     TEST_ASSERT_EQUAL_DATA(test_rsa_2048_PRIVATE_KEY_PKCS1, vscf_raw_key_data(raw_private_key));
 
@@ -189,7 +189,7 @@ test__deserialize_public_key__rsa2048_der__equals_to_rsa_2048_public_key_pkcs1(v
     vscf_raw_key_t *raw_public_key =
             vscf_pkcs8_deserializer_deserialize_public_key(pkcs8, test_rsa_2048_PUBLIC_KEY_PKCS8_DER, &error);
 
-    TEST_ASSERT_EQUAL(vscf_raw_key_alg(raw_public_key), vscf_key_alg_RSA);
+    TEST_ASSERT_EQUAL(vscf_raw_key_alg_id(raw_public_key), vscf_alg_id_RSA);
 
     TEST_ASSERT_EQUAL_DATA(test_rsa_2048_PUBLIC_KEY_PKCS1, vscf_raw_key_data(raw_public_key));
 
@@ -236,7 +236,7 @@ test__deserialize_private_key__rsa2048_der__equals_to_rsa_2048_private_key_pkcs1
     vscf_raw_key_t *raw_private_key =
             vscf_pkcs8_deserializer_deserialize_private_key(pkcs8, test_rsa_2048_PRIVATE_KEY_PKCS8_DER, &error);
 
-    TEST_ASSERT_EQUAL(vscf_raw_key_alg(raw_private_key), vscf_key_alg_RSA);
+    TEST_ASSERT_EQUAL(vscf_raw_key_alg_id(raw_private_key), vscf_alg_id_RSA);
 
     TEST_ASSERT_EQUAL_DATA(test_rsa_2048_PRIVATE_KEY_PKCS1, vscf_raw_key_data(raw_private_key));
 

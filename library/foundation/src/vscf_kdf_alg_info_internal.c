@@ -83,7 +83,7 @@ static const vscf_alg_info_api_t alg_info_api = {
     //
     vscf_api_tag_ALG_INFO,
     //
-    //  Provide algorithm identificator
+    //  Provide algorithm identificator.
     //
     (vscf_alg_info_api_alg_id_fn)vscf_kdf_alg_info_alg_id
 };

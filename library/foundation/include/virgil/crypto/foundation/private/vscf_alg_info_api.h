@@ -74,7 +74,7 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Provide algorithm identificator
+//  Callback. Provide algorithm identificator.
 //
 typedef vscf_alg_id_t (*vscf_alg_info_api_alg_id_fn)(const vscf_impl_t *impl);
 
@@ -88,7 +88,7 @@ struct vscf_alg_info_api_t {
     //
     vscf_api_tag_t api_tag;
     //
-    //  Provide algorithm identificator
+    //  Provide algorithm identificator.
     //
     vscf_alg_info_api_alg_id_fn alg_id_cb;
 };
