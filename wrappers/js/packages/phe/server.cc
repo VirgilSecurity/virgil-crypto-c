@@ -63,18 +63,20 @@ void Server::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
 
 void Server::GenerateServerKeyPair(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   Server* server = Nan::ObjectWrap::Unwrap<Server>(info.Holder());
-  vsc_buffer_t* server_private_key = vsc_buffer_new_with_capacity(
+  utils::BufferWithBytes server_private_key = utils::CreateBufferWithBytes(
     vsce_phe_common_PHE_PRIVATE_KEY_LENGTH
   );
-  vsc_buffer_t* server_public_key = vsc_buffer_new_with_capacity(
+  utils::BufferWithBytes server_public_key = utils::CreateBufferWithBytes(
     vsce_phe_common_PHE_PUBLIC_KEY_LENGTH
   );
   vsce_error_t error = vsce_phe_server_generate_server_key_pair(
     server->phe_server,
-    server_private_key,
-    server_public_key
+    server_private_key.buffer,
+    server_public_key.buffer
   );
   if (error != vsce_error_t::vsce_SUCCESS) {
+    utils::CleanupBufferWithBytes(server_private_key);
+    utils::CleanupBufferWithBytes(server_public_key);
     Nan::ThrowError("'vsce_phe_server_generate_server_key_pair' failed");
     return;
   }
@@ -82,12 +84,14 @@ void Server::GenerateServerKeyPair(const Nan::FunctionCallbackInfo<v8::Value>& i
   v8::Local<v8::Object> result = Nan::New<v8::Object>();
   result->Set(
     Nan::New<v8::String>("serverPrivateKey").ToLocalChecked(),
-    utils::VirgilBufferToNodeBuffer(server_private_key).ToLocalChecked()
+    utils::BufferWithBytesToNodeBuffer(server_private_key).ToLocalChecked()
   );
+  vsc_buffer_destroy(&server_private_key.buffer);
   result->Set(
     Nan::New<v8::String>("serverPublicKey").ToLocalChecked(),
-    utils::VirgilBufferToNodeBuffer(server_public_key).ToLocalChecked()
+    utils::BufferWithBytesToNodeBuffer(server_public_key).ToLocalChecked()
   );
+  vsc_buffer_destroy(&server_public_key.buffer);
   info.GetReturnValue().Set(scope.Escape(result));
 }
 
@@ -106,18 +110,24 @@ void Server::GetEnrollment(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   vsc_data_t server_private_key = utils::NodeBufferToVirgilData(server_private_key_node_buffer);
   vsc_data_t server_public_key = utils::NodeBufferToVirgilData(server_public_key_node_buffer);
   size_t enrollment_response_len = vsce_phe_server_enrollment_response_len(server->phe_server);
-  vsc_buffer_t* enrollment_response = vsc_buffer_new_with_capacity(enrollment_response_len);
+  utils::BufferWithBytes enrollment_response = utils::CreateBufferWithBytes(
+    enrollment_response_len
+  );
   vsce_error_t error = vsce_phe_server_get_enrollment(
     server->phe_server,
     server_private_key,
     server_public_key,
-    enrollment_response
+    enrollment_response.buffer
   );
   if (error != vsce_error_t::vsce_SUCCESS) {
+    utils::CleanupBufferWithBytes(enrollment_response);
     Nan::ThrowError("'vsce_phe_server_get_enrollment' failed");
     return;
   }
-  info.GetReturnValue().Set(utils::VirgilBufferToNodeBuffer(enrollment_response).ToLocalChecked());
+  info
+    .GetReturnValue()
+    .Set(utils::BufferWithBytesToNodeBuffer(enrollment_response).ToLocalChecked());
+  vsc_buffer_destroy(&enrollment_response.buffer);
 }
 
 void Server::VerifyPassword(const Nan::FunctionCallbackInfo<v8::Value>& info) {
@@ -142,7 +152,7 @@ void Server::VerifyPassword(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   size_t verify_password_response_len = vsce_phe_server_verify_password_response_len(
     server->phe_server
   );
-  vsc_buffer_t* verify_password_response = vsc_buffer_new_with_capacity(
+  utils::BufferWithBytes verify_password_response = utils::CreateBufferWithBytes(
     verify_password_response_len
   );
   vsce_error_t error = vsce_phe_server_verify_password(
@@ -150,15 +160,17 @@ void Server::VerifyPassword(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     server_private_key,
     server_public_key,
     verify_password_request,
-    verify_password_response
+    verify_password_response.buffer
   );
   if (error != vsce_error_t::vsce_SUCCESS) {
+    utils::CleanupBufferWithBytes(verify_password_response);
     Nan::ThrowError("'vsce_phe_server_verify_password' failed");
     return;
   }
-  info.GetReturnValue().Set(
-    utils::VirgilBufferToNodeBuffer(verify_password_response).ToLocalChecked()
-  );
+  info
+    .GetReturnValue()
+    .Set(utils::BufferWithBytesToNodeBuffer(verify_password_response).ToLocalChecked());
+  vsc_buffer_destroy(&verify_password_response.buffer);
 }
 
 void Server::RotateKeys(const Nan::FunctionCallbackInfo<v8::Value>& info) {
@@ -169,22 +181,25 @@ void Server::RotateKeys(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   }
   Server* server = Nan::ObjectWrap::Unwrap<Server>(info.Holder());
   vsc_data_t server_private_key = utils::NodeBufferToVirgilData(server_private_key_node_buffer);
-  vsc_buffer_t* new_server_private_key = vsc_buffer_new_with_capacity(
+  utils::BufferWithBytes new_server_private_key = utils::CreateBufferWithBytes(
     vsce_phe_common_PHE_PRIVATE_KEY_LENGTH
   );
-  vsc_buffer_t* new_server_public_key = vsc_buffer_new_with_capacity(
+  utils::BufferWithBytes new_server_public_key = utils::CreateBufferWithBytes(
     vsce_phe_common_PHE_PUBLIC_KEY_LENGTH
   );
   size_t update_token_len = vsce_phe_server_update_token_len(server->phe_server);
-  vsc_buffer_t* update_token = vsc_buffer_new_with_capacity(update_token_len);
+  utils::BufferWithBytes update_token = utils::CreateBufferWithBytes(update_token_len);
   vsce_error_t error = vsce_phe_server_rotate_keys(
     server->phe_server,
     server_private_key,
-    new_server_private_key,
-    new_server_public_key,
-    update_token
+    new_server_private_key.buffer,
+    new_server_public_key.buffer,
+    update_token.buffer
   );
   if (error != vsce_error_t::vsce_SUCCESS) {
+    utils::CleanupBufferWithBytes(new_server_private_key);
+    utils::CleanupBufferWithBytes(new_server_public_key);
+    utils::CleanupBufferWithBytes(update_token);
     Nan::ThrowError("'vsce_phe_server_rotate_keys' failed");
     return;
   }
@@ -192,16 +207,19 @@ void Server::RotateKeys(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> result = Nan::New<v8::Object>();
   result->Set(
     Nan::New<v8::String>("newServerPrivateKey").ToLocalChecked(),
-    utils::VirgilBufferToNodeBuffer(new_server_private_key).ToLocalChecked()
+    utils::BufferWithBytesToNodeBuffer(new_server_private_key).ToLocalChecked()
   );
+  vsc_buffer_destroy(&new_server_private_key.buffer);
   result->Set(
     Nan::New<v8::String>("newServerPublicKey").ToLocalChecked(),
-    utils::VirgilBufferToNodeBuffer(new_server_public_key).ToLocalChecked()
+    utils::BufferWithBytesToNodeBuffer(new_server_public_key).ToLocalChecked()
   );
+  vsc_buffer_destroy(&new_server_public_key.buffer);
   result->Set(
     Nan::New<v8::String>("updateToken").ToLocalChecked(),
-    utils::VirgilBufferToNodeBuffer(update_token).ToLocalChecked()
+    utils::BufferWithBytesToNodeBuffer(update_token).ToLocalChecked()
   );
+  vsc_buffer_destroy(&update_token.buffer);
   info.GetReturnValue().Set(scope.Escape(result));
 }
 

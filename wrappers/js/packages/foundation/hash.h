@@ -40,7 +40,7 @@
 
 class Hash : public Nan::ObjectWrap {
 public:
-  virtual vscf_impl_t* GetImplementation();
+  virtual vscf_impl_t* GetImplementation() = 0;
 };
 
 #endif

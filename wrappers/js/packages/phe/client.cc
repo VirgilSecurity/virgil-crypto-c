@@ -103,18 +103,22 @@ void Client::SetKeys(const Nan::FunctionCallbackInfo<v8::Value>& info) {
 
 void Client::GenerateClientPrivateKey(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   Client* client = Nan::ObjectWrap::Unwrap<Client>(info.Holder());
-  vsc_buffer_t* client_private_key = vsc_buffer_new_with_capacity(
+  utils::BufferWithBytes client_private_key = utils::CreateBufferWithBytes(
     vsce_phe_common_PHE_PRIVATE_KEY_LENGTH
   );
   vsce_error_t error = vsce_phe_client_generate_client_private_key(
     client->phe_client,
-    client_private_key
+    client_private_key.buffer
   );
   if (error != vsce_error_t::vsce_SUCCESS) {
+    utils::CleanupBufferWithBytes(client_private_key);
     Nan::ThrowError("'vsce_phe_client_generate_client_private_key' failed");
     return;
   }
-  info.GetReturnValue().Set(utils::VirgilBufferToNodeBuffer(client_private_key).ToLocalChecked());
+  info
+    .GetReturnValue()
+    .Set(utils::BufferWithBytesToNodeBuffer(client_private_key).ToLocalChecked());
+  vsc_buffer_destroy(&client_private_key.buffer);
 }
 
 void Client::EnrollAccount(const Nan::FunctionCallbackInfo<v8::Value>& info) {
@@ -132,16 +136,22 @@ void Client::EnrollAccount(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   vsc_data_t enrollment_response = utils::NodeBufferToVirgilData(enrollment_response_node_buffer);
   vsc_data_t password = utils::NodeBufferToVirgilData(password_node_buffer);
   size_t enrollment_record_len = vsce_phe_client_enrollment_record_len(client->phe_client);
-  vsc_buffer_t* enrollment_record = vsc_buffer_new_with_capacity(enrollment_record_len);
-  vsc_buffer_t* account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
+  utils::BufferWithBytes enrollment_record = utils::CreateBufferWithBytes(
+    enrollment_record_len
+  );
+  utils::BufferWithBytes account_key = utils::CreateBufferWithBytes(
+    vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH
+  );
   vsce_error_t error = vsce_phe_client_enroll_account(
     client->phe_client,
     enrollment_response,
     password,
-    enrollment_record,
-    account_key
+    enrollment_record.buffer,
+    account_key.buffer
   );
   if (error != vsce_error_t::vsce_SUCCESS) {
+    utils::CleanupBufferWithBytes(enrollment_record);
+    utils::CleanupBufferWithBytes(account_key);
     Nan::ThrowError("'vsce_phe_client_enroll_account' failed");
     return;
   }
@@ -149,12 +159,14 @@ void Client::EnrollAccount(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> result = Nan::New<v8::Object>();
   result->Set(
     Nan::New<v8::String>("enrollmentRecord").ToLocalChecked(),
-    utils::VirgilBufferToNodeBuffer(enrollment_record).ToLocalChecked()
+    utils::BufferWithBytesToNodeBuffer(enrollment_record).ToLocalChecked()
   );
+  vsc_buffer_destroy(&enrollment_record.buffer);
   result->Set(
     Nan::New<v8::String>("accountKey").ToLocalChecked(),
-    utils::VirgilBufferToNodeBuffer(account_key).ToLocalChecked()
+    utils::BufferWithBytesToNodeBuffer(account_key).ToLocalChecked()
   );
+  vsc_buffer_destroy(&account_key.buffer);
   info.GetReturnValue().Set(scope.Escape(result));
 }
 
@@ -175,22 +187,24 @@ void Client::CreateVerifyPasswordRequest(const Nan::FunctionCallbackInfo<v8::Val
   size_t verify_password_request_len = vsce_phe_client_verify_password_request_len(
     client->phe_client
   );
-  vsc_buffer_t* verify_password_request = vsc_buffer_new_with_capacity(
+  utils::BufferWithBytes verify_password_request = utils::CreateBufferWithBytes(
     verify_password_request_len
   );
   vsce_error_t error = vsce_phe_client_create_verify_password_request(
     client->phe_client,
     password,
     enrollment_record,
-    verify_password_request
+    verify_password_request.buffer
   );
   if (error != vsce_error_t::vsce_SUCCESS) {
+    utils::CleanupBufferWithBytes(verify_password_request);
     Nan::ThrowError("'vsce_phe_client_create_verify_password_request' failed");
     return;
   }
-  info.GetReturnValue().Set(
-    utils::VirgilBufferToNodeBuffer(verify_password_request).ToLocalChecked()
-  );
+  info
+    .GetReturnValue()
+    .Set(utils::BufferWithBytesToNodeBuffer(verify_password_request).ToLocalChecked());
+  vsc_buffer_destroy(&verify_password_request.buffer);
 }
 
 void Client::CheckResponseAndDecrypt(const Nan::FunctionCallbackInfo<v8::Value>& info) {
@@ -212,19 +226,23 @@ void Client::CheckResponseAndDecrypt(const Nan::FunctionCallbackInfo<v8::Value>&
   vsc_data_t verify_password_response = utils::NodeBufferToVirgilData(
     verify_password_response_node_buffer
   );
-  vsc_buffer_t* account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
+  utils::BufferWithBytes account_key = utils::CreateBufferWithBytes(
+    vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH
+  );
   vsce_error_t error = vsce_phe_client_check_response_and_decrypt(
     client->phe_client,
     password,
     enrollment_record,
     verify_password_response,
-    account_key
+    account_key.buffer
   );
   if (error != vsce_error_t::vsce_SUCCESS) {
+    utils::CleanupBufferWithBytes(account_key);
     Nan::ThrowError("'vsce_phe_client_check_response_and_decrypt' failed");
     return;
   }
-  info.GetReturnValue().Set(utils::VirgilBufferToNodeBuffer(account_key).ToLocalChecked());
+  info.GetReturnValue().Set(utils::BufferWithBytesToNodeBuffer(account_key).ToLocalChecked());
+  vsc_buffer_destroy(&account_key.buffer);
 }
 
 void Client::RotateKeys(const Nan::FunctionCallbackInfo<v8::Value>& info) {
@@ -235,19 +253,21 @@ void Client::RotateKeys(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   }
   Client* client = Nan::ObjectWrap::Unwrap<Client>(info.Holder());
   vsc_data_t update_token = utils::NodeBufferToVirgilData(update_token_node_buffer);
-  vsc_buffer_t* new_client_private_key = vsc_buffer_new_with_capacity(
+  utils::BufferWithBytes new_client_private_key = utils::CreateBufferWithBytes(
     vsce_phe_common_PHE_PRIVATE_KEY_LENGTH
   );
-  vsc_buffer_t* new_server_public_key = vsc_buffer_new_with_capacity(
+  utils::BufferWithBytes new_server_public_key = utils::CreateBufferWithBytes(
     vsce_phe_common_PHE_PUBLIC_KEY_LENGTH
   );
   vsce_error_t error = vsce_phe_client_rotate_keys(
     client->phe_client,
     update_token,
-    new_client_private_key,
-    new_server_public_key
+    new_client_private_key.buffer,
+    new_server_public_key.buffer
   );
   if (error != vsce_error_t::vsce_SUCCESS) {
+    utils::CleanupBufferWithBytes(new_client_private_key);
+    utils::CleanupBufferWithBytes(new_server_public_key);
     Nan::ThrowError("'vsce_phe_client_rotate_keys' failed");
     return;
   }
@@ -255,12 +275,14 @@ void Client::RotateKeys(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> result = Nan::New<v8::Object>();
   result->Set(
     Nan::New<v8::String>("newClientPrivateKey").ToLocalChecked(),
-    utils::VirgilBufferToNodeBuffer(new_client_private_key).ToLocalChecked()
+    utils::BufferWithBytesToNodeBuffer(new_client_private_key).ToLocalChecked()
   );
+  vsc_buffer_destroy(&new_client_private_key.buffer);
   result->Set(
     Nan::New<v8::String>("newServerPublicKey").ToLocalChecked(),
-    utils::VirgilBufferToNodeBuffer(new_server_public_key).ToLocalChecked()
+    utils::BufferWithBytesToNodeBuffer(new_server_public_key).ToLocalChecked()
   );
+  vsc_buffer_destroy(&new_server_public_key.buffer);
   info.GetReturnValue().Set(scope.Escape(result));
 }
 
@@ -279,20 +301,24 @@ void Client::UpdateEnrollmentRecord(const Nan::FunctionCallbackInfo<v8::Value>& 
   vsc_data_t enrollment_record = utils::NodeBufferToVirgilData(enrollment_record_node_buffer);
   vsc_data_t update_token = utils::NodeBufferToVirgilData(update_token_node_buffer);
   size_t enrollment_record_len = vsce_phe_client_enrollment_record_len(client->phe_client);
-  vsc_buffer_t* new_enrollment_record = vsc_buffer_new_with_capacity(enrollment_record_len);
+  utils::BufferWithBytes new_enrollment_record = utils::CreateBufferWithBytes(
+    enrollment_record_len
+  );
   vsce_error_t error = vsce_phe_client_update_enrollment_record(
     client->phe_client,
     enrollment_record,
     update_token,
-    new_enrollment_record
+    new_enrollment_record.buffer
   );
   if (error != vsce_error_t::vsce_SUCCESS) {
+    utils::CleanupBufferWithBytes(new_enrollment_record);
     Nan::ThrowError("'vsce_phe_client_update_enrollment_record' failed");
     return;
   }
-  info.GetReturnValue().Set(
-    utils::VirgilBufferToNodeBuffer(new_enrollment_record).ToLocalChecked()
-  );
+  info
+    .GetReturnValue()
+    .Set(utils::BufferWithBytesToNodeBuffer(new_enrollment_record).ToLocalChecked());
+  vsc_buffer_destroy(&new_enrollment_record.buffer);
 }
 
 Nan::Persistent<v8::Function> Client::constructor;

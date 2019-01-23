@@ -34,11 +34,17 @@
 
 #include "utils.h"
 
-Nan::MaybeLocal<v8::Object> utils::VirgilBufferToNodeBuffer(vsc_buffer_t* buffer) {
-  size_t buffer_len = vsc_buffer_len(buffer);
-  char* data = new char[buffer_len];
-  std::memcpy(data, vsc_buffer_bytes(buffer), buffer_len);
-  return Nan::NewBuffer(data, buffer_len);
+utils::BufferWithBytes utils::CreateBufferWithBytes(size_t size) {
+  byte* bytes = new byte[size];
+  vsc_buffer_t* buffer = vsc_buffer_new();
+  vsc_buffer_use(buffer, bytes, size);
+  return { buffer, bytes };
+}
+
+Nan::MaybeLocal<v8::Object> utils::BufferWithBytesToNodeBuffer(
+  utils::BufferWithBytes buffer_with_bytes
+) {
+  return Nan::NewBuffer((char*)buffer_with_bytes.bytes, vsc_buffer_len(buffer_with_bytes.buffer));
 }
 
 vsc_data_t utils::NodeBufferToVirgilData(v8::Local<v8::Value> value) {

@@ -68,9 +68,10 @@ void Sha256::Hash(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     return;
   }
   vsc_data_t data = utils::NodeBufferToVirgilData(data_node_buffer);
-  vsc_buffer_t* digest = vsc_buffer_new_with_capacity(vscf_sha256_DIGEST_LEN);
-  vscf_sha256_hash(data, digest);
-  info.GetReturnValue().Set(utils::VirgilBufferToNodeBuffer(digest).ToLocalChecked());
+  utils::BufferWithBytes digest = utils::CreateBufferWithBytes(vscf_sha256_DIGEST_LEN);
+  vscf_sha256_hash(data, digest.buffer);
+  info.GetReturnValue().Set(utils::BufferWithBytesToNodeBuffer(digest).ToLocalChecked());
+  vsc_buffer_destroy(&digest.buffer);
 }
 
 void Sha256::Start(const Nan::FunctionCallbackInfo<v8::Value>& info) {
@@ -91,9 +92,10 @@ void Sha256::Update(const Nan::FunctionCallbackInfo<v8::Value>& info) {
 
 void Sha256::Finish(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   Sha256* sha256 = ObjectWrap::Unwrap<Sha256>(info.Holder());
-  vsc_buffer_t* digest = vsc_buffer_new_with_capacity(vscf_sha256_DIGEST_LEN);
-  vscf_sha256_finish(sha256->sha256, digest);
-  info.GetReturnValue().Set(utils::VirgilBufferToNodeBuffer(digest).ToLocalChecked());
+  utils::BufferWithBytes digest = utils::CreateBufferWithBytes(vscf_sha256_DIGEST_LEN);
+  vscf_sha256_finish(sha256->sha256, digest.buffer);
+  info.GetReturnValue().Set(utils::BufferWithBytesToNodeBuffer(digest).ToLocalChecked());
+  vsc_buffer_destroy(&digest.buffer);
 }
 
 Nan::Persistent<v8::Function> Sha256::constructor;

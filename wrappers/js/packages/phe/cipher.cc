@@ -70,18 +70,20 @@ void Cipher::Encrypt(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   vsc_data_t plain_text = utils::NodeBufferToVirgilData(plain_text_node_buffer);
   vsc_data_t account_key = utils::NodeBufferToVirgilData(account_key_node_buffer);
   size_t encrypt_len = vsce_phe_cipher_encrypt_len(cipher->phe_cipher, plain_text.len);
-  vsc_buffer_t* cipher_text = vsc_buffer_new_with_capacity(encrypt_len);
+  utils::BufferWithBytes cipher_text = utils::CreateBufferWithBytes(encrypt_len);
   vsce_error_t error = vsce_phe_cipher_encrypt(
     cipher->phe_cipher,
     plain_text,
     account_key,
-    cipher_text
+    cipher_text.buffer
   );
   if (error != vsce_error_t::vsce_SUCCESS) {
+    utils::CleanupBufferWithBytes(cipher_text);
     Nan::ThrowError("'vsce_phe_cipher_encrypt' failed");
     return;
   }
-  info.GetReturnValue().Set(utils::VirgilBufferToNodeBuffer(cipher_text).ToLocalChecked());
+  info.GetReturnValue().Set(utils::BufferWithBytesToNodeBuffer(cipher_text).ToLocalChecked());
+  vsc_buffer_destroy(&cipher_text.buffer);
 }
 
 void Cipher::Decrypt(const Nan::FunctionCallbackInfo<v8::Value>& info) {
@@ -99,18 +101,20 @@ void Cipher::Decrypt(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   vsc_data_t cipher_text = utils::NodeBufferToVirgilData(cipher_text_node_buffer);
   vsc_data_t account_key = utils::NodeBufferToVirgilData(account_key_node_buffer);
   size_t decrypt_len = vsce_phe_cipher_decrypt_len(cipher->phe_cipher, cipher_text.len);
-  vsc_buffer_t* plain_text = vsc_buffer_new_with_capacity(decrypt_len);
+  utils::BufferWithBytes plain_text = utils::CreateBufferWithBytes(decrypt_len);
   vsce_error_t error = vsce_phe_cipher_decrypt(
     cipher->phe_cipher,
     cipher_text,
     account_key,
-    plain_text
+    plain_text.buffer
   );
   if (error != vsce_error_t::vsce_SUCCESS) {
+    utils::CleanupBufferWithBytes(plain_text);
     Nan::ThrowError("'vsce_phe_cipher_decrypt' failed");
     return;
   }
-  info.GetReturnValue().Set(utils::VirgilBufferToNodeBuffer(plain_text).ToLocalChecked());
+  info.GetReturnValue().Set(utils::BufferWithBytesToNodeBuffer(plain_text).ToLocalChecked());
+  vsc_buffer_destroy(&plain_text.buffer);
 }
 
 Nan::Persistent<v8::Function> Cipher::constructor;

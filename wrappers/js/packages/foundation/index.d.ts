@@ -36,13 +36,13 @@ declare module '@virgilsecurity/foundation' {
   import { Transform } from 'stream';
 
   interface Kdf {
-    useHash(hash: Hash): void;
+    setHash(hash: Hash): void;
     derive(data: Buffer, keyLength: Number): Buffer;
   }
 
   class Kdf1 implements Kdf {
     constructor(hash: Hash);
-    useHash(hash: Hash): void;
+    setHash(hash: Hash): void;
     derive(data: Buffer, keyLength: Number): Buffer;
   }
 

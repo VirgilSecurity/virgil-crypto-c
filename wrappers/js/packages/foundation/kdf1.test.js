@@ -45,10 +45,10 @@ describe('Kdf1', () => {
     kdf1 = new Kdf1(sha256);
   });
 
-  describe('useHash', () => {
+  describe('setHash', () => {
     it('should work', () => {
       const sha256 = new Sha256();
-      const result = kdf1.useHash(sha256);
+      const result = kdf1.setHash(sha256);
       expect(result).toBeUndefined();
     });
   });

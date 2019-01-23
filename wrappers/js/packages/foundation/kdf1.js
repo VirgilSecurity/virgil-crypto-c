@@ -39,8 +39,8 @@ class Kdf1 {
     this.binding = new Kdf1Binding(hash.binding);
   }
 
-  useHash(hash) {
-    this.binding.useHash(hash.binding);
+  setHash(hash) {
+    this.binding.setHash(hash.binding);
   }
 
   derive(data, keyLength) {

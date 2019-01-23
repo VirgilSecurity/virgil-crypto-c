@@ -40,7 +40,13 @@
 #include <virgil/crypto/common/vsc_data.h>
 
 namespace utils {
-  Nan::MaybeLocal<v8::Object> VirgilBufferToNodeBuffer(vsc_buffer_t* buffer);
+  struct BufferWithBytes {
+    vsc_buffer_t* buffer;
+    byte* bytes;
+  };
+
+  BufferWithBytes CreateBufferWithBytes(size_t size);
+  Nan::MaybeLocal<v8::Object> BufferWithBytesToNodeBuffer(BufferWithBytes buffer_with_bytes);
   vsc_data_t NodeBufferToVirgilData(v8::Local<v8::Value> value);
 }
 
