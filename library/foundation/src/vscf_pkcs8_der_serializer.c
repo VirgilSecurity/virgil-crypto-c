@@ -165,7 +165,13 @@ vscf_pkcs8_der_serializer_serialize_public_key(
     //  Write algorithm
     //
     size_t algorithm_count = 0;
-    algorithm_count += vscf_asn1_writer_write_oid(asn1_writer, vscf_oid_from_alg_id(vscf_alg_alg_id(public_key)));
+
+    vscf_alg_id_t public_key_alg_id = vscf_alg_alg_id(public_key);
+    if (vscf_alg_id_RSA == public_key_alg_id) {
+        algorithm_count += vscf_asn1_writer_write_null(asn1_writer);
+    }
+
+    algorithm_count += vscf_asn1_writer_write_oid(asn1_writer, vscf_oid_from_alg_id(public_key_alg_id));
     algorithm_count += vscf_asn1_writer_write_sequence(asn1_writer, algorithm_count);
     total_count += algorithm_count;
 
@@ -258,7 +264,13 @@ vscf_pkcs8_der_serializer_serialize_private_key(
     //  Write algorithm
     //
     size_t algorithm_count = 0;
-    algorithm_count += vscf_asn1_writer_write_oid(asn1_writer, vscf_oid_from_alg_id(vscf_alg_alg_id(private_key)));
+
+    vscf_alg_id_t private_key_alg_id = vscf_alg_alg_id(private_key);
+    if (vscf_alg_id_RSA == private_key_alg_id) {
+        algorithm_count += vscf_asn1_writer_write_null(asn1_writer);
+    }
+
+    algorithm_count += vscf_asn1_writer_write_oid(asn1_writer, vscf_oid_from_alg_id(private_key_alg_id));
     algorithm_count += vscf_asn1_writer_write_sequence(asn1_writer, algorithm_count);
     total_count += algorithm_count;
 
