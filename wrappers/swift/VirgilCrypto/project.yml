@@ -13,30 +13,32 @@ options:
 
 targets:
   VirgilCryptoCommon:
-    prebuildScripts:
-      - path: Scripts/build_c_frameworks.sh
-        name: CFrameworks
     type: framework
     platform: [iOS, tvOS, macOS]
+    info:
+      path: VirgilCryptoCommon/Info.plist
+      properties:
+        CFBundleShortVersionString: 0.1.0
     scheme:
       testTargets:
         - VirgilCryptoCommon-Tests_$platform
     sources:
       - VirgilCryptoCommon
     dependencies:
-      - framework: Binaries/$platform/VSCCommon.framework
+      - carthage: VSCCommon
 
   VirgilCryptoCommon_watchOS:
-    prebuildScripts:
-      - path: Scripts/build_c_frameworks.sh
-        name: CFrameworks
     type: framework
     platform: [watchOS]
+    info:
+      path: VirgilCryptoCommon/Info.plist
+      properties:
+        CFBundleShortVersionString: 0.1.0
     platformSuffix: ""
     sources:
       - VirgilCryptoCommon
     dependencies:
-      - framework: Binaries/$platform/VSCCommon.framework
+      - carthage: VSCCommon
     settings:
       PRODUCT_NAME: VirgilCryptoCommon
 
@@ -51,11 +53,12 @@ targets:
 
 
   VirgilCryptoFoundation:
-    prebuildScripts:
-      - path: Scripts/build_c_frameworks.sh
-        name: CFrameworks
     type: framework
     platform: [iOS, tvOS, macOS]
+    info:
+      path: VirgilCryptoFoundation/Info.plist
+      properties:
+        CFBundleShortVersionString: 0.1.0
     scheme:
       testTargets:
         - VirgilCryptoFoundation-Tests_$platform
@@ -63,20 +66,21 @@ targets:
       - VirgilCryptoFoundation
     dependencies:
       - target: VirgilCryptoCommon_$platform
-      - framework: Binaries/$platform/VSCFoundation.framework
+      - carthage: VSCFoundation
 
   VirgilCryptoFoundation_watchOS:
-    prebuildScripts:
-      - path: Scripts/build_c_frameworks.sh
-        name: CFrameworks
     type: framework
     platform: [watchOS]
+    info:
+      path: VirgilCryptoFoundation/Info.plist
+      properties:
+        CFBundleShortVersionString: 0.1.0
     platformSuffix: ""
     sources:
       - VirgilCryptoFoundation
     dependencies:
       - target: VirgilCryptoCommon_$platform
-      - framework: Binaries/$platform/VSCFoundation.framework
+      - carthage: VSCFoundation
     settings:
       PRODUCT_NAME: VirgilCryptoFoundation
 
@@ -91,11 +95,12 @@ targets:
 
 
   VirgilCryptoPythia:
-    prebuildScripts:
-      - path: Scripts/build_c_frameworks.sh
-        name: CFrameworks
     type: framework
     platform: [iOS, tvOS, macOS]
+    info:
+      path: VirgilCryptoPythia/Info.plist
+      properties:
+        CFBundleShortVersionString: 0.1.0
     scheme:
       testTargets:
         - VirgilCryptoPythia-Tests_$platform
@@ -103,20 +108,21 @@ targets:
       - VirgilCryptoPythia
     dependencies:
       - target: VirgilCryptoCommon_$platform
-      - framework: Binaries/$platform/VSCPythia.framework
+      - carthage: VSCPythia
 
   VirgilCryptoPythia_watchOS:
-    prebuildScripts:
-      - path: Scripts/build_c_frameworks.sh
-        name: CFrameworks
     type: framework
     platform: [watchOS]
+    info:
+      path: VirgilCryptoPythia/Info.plist
+      properties:
+        CFBundleShortVersionString: 0.1.0
     platformSuffix: ""
     sources:
       - VirgilCryptoPythia
     dependencies:
       - target: VirgilCryptoCommon_$platform
-      - framework: Binaries/$platform/VSCPythia.framework
+      - carthage: VSCPythia
     settings:
       PRODUCT_NAME: VirgilCryptoPythia
 
@@ -129,13 +135,13 @@ targets:
     dependencies:
       - target: VirgilCryptoPythia_$platform
 
-
   VirgilCryptoRatchet:
-    prebuildScripts:
-      - path: Scripts/build_c_frameworks.sh
-        name: CFrameworks
     type: framework
     platform: [iOS, tvOS, macOS]
+    info:
+      path: VirgilCryptoRatchet/Info.plist
+      properties:
+        CFBundleShortVersionString: 0.1.0
     scheme:
       testTargets:
         - VirgilCryptoRatchet-Tests_$platform
@@ -144,21 +150,22 @@ targets:
     dependencies:
       - target: VirgilCryptoCommon_$platform
       - target: VirgilCryptoFoundation_$platform
-      - framework: Binaries/$platform/VSCRatchet.framework
+      - carthage: VSCRatchet
 
   VirgilCryptoRatchet_watchOS:
-    prebuildScripts:
-      - path: Scripts/build_c_frameworks.sh
-        name: CFrameworks
     type: framework
     platform: [watchOS]
+    info:
+      path: VirgilCryptoRatchet/Info.plist
+      properties:
+        CFBundleShortVersionString: 0.1.0
     platformSuffix: ""
     sources:
       - VirgilCryptoRatchet
     dependencies:
       - target: VirgilCryptoCommon_$platform
       - target: VirgilCryptoFoundation_$platform
-      - framework: Binaries/$platform/VSCRatchet.framework
+      - carthage: VSCRatchet
     settings:
       PRODUCT_NAME: VirgilCryptoRatchet
 
@@ -172,17 +179,12 @@ targets:
       - target: VirgilCryptoRatchet_$platform
 
 aggregateTargets:
-  Clean_Binaries:
-    buildScripts:
-      - script: rm -fr "${PROJECT_DIR}/Binaries"
-
   Build_iOS:
     targets:
       - VirgilCryptoCommon_iOS
       - VirgilCryptoFoundation_iOS
       - VirgilCryptoPythia_iOS
       - VirgilCryptoRatchet_iOS
-    parallelizeBuild: false
 
   Build_watchOS:
     targets:
@@ -190,7 +192,6 @@ aggregateTargets:
       - VirgilCryptoFoundation_watchOS
       - VirgilCryptoPythia_watchOS
       - VirgilCryptoRatchet_watchOS
-    parallelizeBuild: false
 
   Build_tvOS:
     targets:
@@ -198,7 +199,6 @@ aggregateTargets:
       - VirgilCryptoFoundation_tvOS
       - VirgilCryptoPythia_tvOS
       - VirgilCryptoRatchet_tvOS
-    parallelizeBuild: false
 
   Build_macOS:
     targets:
@@ -206,7 +206,6 @@ aggregateTargets:
       - VirgilCryptoFoundation_macOS
       - VirgilCryptoPythia_macOS
       - VirgilCryptoRatchet_macOS
-    parallelizeBuild: false
 
   Build_All:
     targets:
@@ -214,6 +213,3 @@ aggregateTargets:
       - Build_watchOS
       - Build_tvOS
       - Build_macOS
-    buildScripts:
-      - path: Scripts/build_fat_frameworks.sh
-    parallelizeBuild: false
