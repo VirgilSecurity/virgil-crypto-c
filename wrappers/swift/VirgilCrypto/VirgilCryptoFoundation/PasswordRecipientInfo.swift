@@ -63,6 +63,15 @@ import VirgilCryptoCommon
         super.init()
     }
 
+    /// Create object and define all properties.
+    public init(keyDerivationAlgorithm: AlgInfo, keyEncryptionAlgorithm: AlgInfo, encryptedKey: Data) {
+        let proxyResult = encryptedKey.withUnsafeBytes({ (encryptedKeyPointer: UnsafePointer<byte>) -> OpaquePointer? in
+            return vscf_password_recipient_info_new_with_members(&keyDerivationAlgorithm.c_ctx, &keyEncryptionAlgorithm.c_ctx, vsc_data(encryptedKeyPointer, encryptedKey.count))
+        })
+
+        self.c_ctx = proxyResult!
+    }
+
     /// Release underlying C context.
     deinit {
         vscf_password_recipient_info_delete(self.c_ctx)

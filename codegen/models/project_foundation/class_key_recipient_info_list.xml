@@ -1,3 +1,14 @@
-<class name="key recipient info list" context="private">
-    Handles a list of "" class objects.
+<class name="key recipient info list">
+    Handles a list of "key recipient info" class objects.
+
+    <property name="item" class="key recipient info"/>
+    <property name="next" class="key recipient info list"/>
+    <property name="prev" class="key recipient info list"/>
+
+    <method name="add">
+        Add new item to the list.
+        Note, ownership is transfered.
+
+        <argument name="key recipient info" class="key recipient info" access="disown"/>
+    </method>
 </class>

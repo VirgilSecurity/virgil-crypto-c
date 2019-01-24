@@ -209,7 +209,8 @@ vscf_message_info_init_ctx(vscf_message_info_t *message_info) {
 
     VSCF_ASSERT_PTR(message_info);
 
-    //  TODO: Perform additional context initialization.
+    message_info->key_recipients = vscf_key_recipient_info_list_new();
+    message_info->password_recipients = vscf_password_recipient_info_list_new();
 }
 
 //
@@ -222,7 +223,8 @@ vscf_message_info_cleanup_ctx(vscf_message_info_t *message_info) {
 
     VSCF_ASSERT_PTR(message_info);
 
-    //  TODO: Release all inner resources.
+    vscf_key_recipient_info_list_destroy(&message_info->key_recipients);
+    vscf_password_recipient_info_list_destroy(&message_info->password_recipients);
 }
 
 //
@@ -234,6 +236,9 @@ vscf_message_info_add_key_recipient(vscf_message_info_t *message_info, vscf_key_
     VSCF_ASSERT_PTR(message_info);
     VSCF_ASSERT_PTR(key_recipient_ref);
     VSCF_ASSERT_PTR(*key_recipient_ref);
+    VSCF_ASSERT_PTR(message_info->key_recipients);
+
+    vscf_key_recipient_info_list_add(message_info->key_recipients, key_recipient_ref);
 }
 
 //
@@ -246,6 +251,10 @@ vscf_message_info_add_password_recipient(
     VSCF_ASSERT_PTR(message_info);
     VSCF_ASSERT_PTR(password_recipient_ref);
     VSCF_ASSERT_PTR(*password_recipient_ref);
+
+    VSCF_ASSERT_PTR(message_info->password_recipients);
+
+    vscf_password_recipient_info_list_add(message_info->password_recipients, password_recipient_ref);
 }
 
 //
@@ -258,4 +267,13 @@ vscf_message_info_set_data_encryption_alg_info(
     VSCF_ASSERT_PTR(message_info);
     VSCF_ASSERT_PTR(data_encryption_alg_info_ref);
     VSCF_ASSERT_PTR(*data_encryption_alg_info_ref);
+
+    vscf_impl_t *data_encryption_alg_info = *data_encryption_alg_info_ref;
+    *data_encryption_alg_info_ref = NULL;
+
+    if (message_info->data_encryption_alg_info) {
+        vscf_impl_destroy(&message_info->data_encryption_alg_info);
+    }
+
+    message_info->data_encryption_alg_info = data_encryption_alg_info;
 }

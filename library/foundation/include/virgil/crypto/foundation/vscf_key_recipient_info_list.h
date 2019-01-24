@@ -47,13 +47,14 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Handles a list of "" class objects.
+//  Handles a list of "key recipient info" class objects.
 // --------------------------------------------------------------------------
 
 #ifndef VSCF_KEY_RECIPIENT_INFO_LIST_H_INCLUDED
 #define VSCF_KEY_RECIPIENT_INFO_LIST_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_key_recipient_info.h"
 
 // clang-format on
 //  @end
@@ -118,6 +119,14 @@ vscf_key_recipient_info_list_destroy(vscf_key_recipient_info_list_t **key_recipi
 //
 VSCF_PUBLIC vscf_key_recipient_info_list_t *
 vscf_key_recipient_info_list_shallow_copy(vscf_key_recipient_info_list_t *key_recipient_info_list);
+
+//
+//  Add new item to the list.
+//  Note, ownership is transfered.
+//
+VSCF_PUBLIC void
+vscf_key_recipient_info_list_add(vscf_key_recipient_info_list_t *key_recipient_info_list,
+        vscf_key_recipient_info_t **key_recipient_info_ref);
 
 
 // --------------------------------------------------------------------------

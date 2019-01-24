@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Handle list of the "password recipient info" class objects.
+//  Handles a list of "password recipient info" class objects.
 // --------------------------------------------------------------------------
 
 
@@ -207,8 +207,6 @@ static void
 vscf_password_recipient_info_list_init_ctx(vscf_password_recipient_info_list_t *password_recipient_info_list) {
 
     VSCF_ASSERT_PTR(password_recipient_info_list);
-
-    //  TODO: Perform additional context initialization.
 }
 
 //
@@ -221,5 +219,30 @@ vscf_password_recipient_info_list_cleanup_ctx(vscf_password_recipient_info_list_
 
     VSCF_ASSERT_PTR(password_recipient_info_list);
 
-    //  TODO: Release all inner resources.
+    vscf_password_recipient_info_destroy(&password_recipient_info_list->item);
+    vscf_password_recipient_info_list_destroy(&password_recipient_info_list->next);
+}
+
+//
+//  Add new item to the list.
+//  Note, ownership is transfered.
+//
+VSCF_PUBLIC void
+vscf_password_recipient_info_list_add(vscf_password_recipient_info_list_t *password_recipient_info_list,
+        vscf_password_recipient_info_t **password_recipient_info_ref) {
+
+    VSCF_ASSERT_PTR(password_recipient_info_list);
+    VSCF_ASSERT_PTR(password_recipient_info_ref);
+    VSCF_ASSERT_PTR(*password_recipient_info_ref);
+
+    if (NULL == password_recipient_info_list->item) {
+        password_recipient_info_list->item = *password_recipient_info_ref;
+        *password_recipient_info_ref = NULL;
+    } else {
+        if (NULL == password_recipient_info_list->next) {
+            password_recipient_info_list->next = vscf_password_recipient_info_list_new();
+            password_recipient_info_list->next->prev = password_recipient_info_list;
+        }
+        vscf_password_recipient_info_list_add(password_recipient_info_list->next, password_recipient_info_ref);
+    }
 }

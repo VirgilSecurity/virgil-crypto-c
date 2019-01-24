@@ -54,6 +54,8 @@
 #define VSCF_KEY_RECIPIENT_INFO_LIST_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_key_recipient_info.h"
+#include "vscf_key_recipient_info_list.h"
 
 // clang-format on
 //  @end
@@ -82,6 +84,12 @@ struct vscf_key_recipient_info_list_t {
     //  Reference counter.
     //
     size_t refcnt;
+
+    vscf_key_recipient_info_t *item;
+
+    vscf_key_recipient_info_list_t *next;
+
+    vscf_key_recipient_info_list_t *prev;
 };
 
 
