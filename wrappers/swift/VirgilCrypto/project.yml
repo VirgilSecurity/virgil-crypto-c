@@ -15,10 +15,12 @@ targets:
   VirgilCryptoCommon:
     type: framework
     platform: [iOS, tvOS, macOS]
+    scheme: {}
     info:
       path: VirgilCryptoCommon/Info.plist
       properties:
         CFBundleShortVersionString: 0.1.0
+        CFBundleIdentitifer: com.virgilsecurity.VirgilCryptoCommon
     scheme:
       testTargets:
         - VirgilCryptoCommon-Tests_$platform
@@ -26,20 +28,25 @@ targets:
       - VirgilCryptoCommon
     dependencies:
       - carthage: VSCCommon
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.virgilsecurity.VirgilCryptoCommon
 
   VirgilCryptoCommon_watchOS:
     type: framework
     platform: [watchOS]
+    scheme: {}
     info:
       path: VirgilCryptoCommon/Info.plist
       properties:
         CFBundleShortVersionString: 0.1.0
+        CFBundleIdentitifer: com.virgilsecurity.VirgilCryptoCommon
     platformSuffix: ""
     sources:
       - VirgilCryptoCommon
     dependencies:
       - carthage: VSCCommon
     settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.virgilsecurity.VirgilCryptoCommon
       PRODUCT_NAME: VirgilCryptoCommon
 
   VirgilCryptoCommon-Tests:
@@ -51,38 +58,42 @@ targets:
     dependencies:
       - target: VirgilCryptoCommon_$platform
 
-
   VirgilCryptoFoundation:
     type: framework
     platform: [iOS, tvOS, macOS]
+    scheme: {}
     info:
       path: VirgilCryptoFoundation/Info.plist
       properties:
         CFBundleShortVersionString: 0.1.0
+        CFBundleIdentitifer: com.virgilsecurity.VirgilCryptoFoundation
     scheme:
       testTargets:
         - VirgilCryptoFoundation-Tests_$platform
     sources:
       - VirgilCryptoFoundation
     dependencies:
-      - target: VirgilCryptoCommon_$platform
       - carthage: VSCFoundation
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.virgilsecurity.VirgilCryptoFoundation
 
   VirgilCryptoFoundation_watchOS:
     type: framework
     platform: [watchOS]
+    scheme: {}
     info:
       path: VirgilCryptoFoundation/Info.plist
       properties:
         CFBundleShortVersionString: 0.1.0
+        CFBundleIdentitifer: com.virgilsecurity.VirgilCryptoFoundation
     platformSuffix: ""
     sources:
       - VirgilCryptoFoundation
     dependencies:
-      - target: VirgilCryptoCommon_$platform
       - carthage: VSCFoundation
     settings:
       PRODUCT_NAME: VirgilCryptoFoundation
+      PRODUCT_BUNDLE_IDENTIFIER: com.virgilsecurity.VirgilCryptoFoundation
 
   VirgilCryptoFoundation-Tests:
     type: bundle.unit-test
@@ -92,39 +103,44 @@ targets:
       - VirgilCryptoFoundationTests
     dependencies:
       - target: VirgilCryptoFoundation_$platform
-
+      - carthage: VSCCommon
 
   VirgilCryptoPythia:
     type: framework
     platform: [iOS, tvOS, macOS]
+    scheme: {}
     info:
       path: VirgilCryptoPythia/Info.plist
       properties:
         CFBundleShortVersionString: 0.1.0
+        CFBundleIdentitifer: com.virgilsecurity.VirgilCryptoPythia
     scheme:
       testTargets:
         - VirgilCryptoPythia-Tests_$platform
     sources:
       - VirgilCryptoPythia
     dependencies:
-      - target: VirgilCryptoCommon_$platform
       - carthage: VSCPythia
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.virgilsecurity.VirgilCryptoPythia
 
   VirgilCryptoPythia_watchOS:
     type: framework
     platform: [watchOS]
+    scheme: {}
     info:
       path: VirgilCryptoPythia/Info.plist
       properties:
         CFBundleShortVersionString: 0.1.0
+        CFBundleIdentitifer: com.virgilsecurity.VirgilCryptoPythia
     platformSuffix: ""
     sources:
       - VirgilCryptoPythia
     dependencies:
-      - target: VirgilCryptoCommon_$platform
       - carthage: VSCPythia
     settings:
       PRODUCT_NAME: VirgilCryptoPythia
+      PRODUCT_BUNDLE_IDENTIFIER: com.virgilsecurity.VirgilCryptoPythia
 
   VirgilCryptoPythia-Tests:
     type: bundle.unit-test
@@ -134,40 +150,46 @@ targets:
       - VirgilCryptoPythiaTests
     dependencies:
       - target: VirgilCryptoPythia_$platform
+      - carthage: VSCCommon
 
   VirgilCryptoRatchet:
     type: framework
     platform: [iOS, tvOS, macOS]
+    scheme: {}
     info:
       path: VirgilCryptoRatchet/Info.plist
       properties:
         CFBundleShortVersionString: 0.1.0
+        CFBundleIdentitifer: com.virgilsecurity.VirgilCryptoRatchet
     scheme:
       testTargets:
         - VirgilCryptoRatchet-Tests_$platform
     sources:
       - VirgilCryptoRatchet
     dependencies:
-      - target: VirgilCryptoCommon_$platform
       - target: VirgilCryptoFoundation_$platform
       - carthage: VSCRatchet
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.virgilsecurity.VirgilCryptoRatchet
 
   VirgilCryptoRatchet_watchOS:
     type: framework
     platform: [watchOS]
+    scheme: {}
     info:
       path: VirgilCryptoRatchet/Info.plist
       properties:
         CFBundleShortVersionString: 0.1.0
+        CFBundleIdentitifer: com.virgilsecurity.VirgilCryptoRatchet
     platformSuffix: ""
     sources:
       - VirgilCryptoRatchet
     dependencies:
-      - target: VirgilCryptoCommon_$platform
       - target: VirgilCryptoFoundation_$platform
       - carthage: VSCRatchet
     settings:
       PRODUCT_NAME: VirgilCryptoRatchet
+      PRODUCT_BUNDLE_IDENTIFIER: com.virgilsecurity.VirgilCryptoRatchet
 
   VirgilCryptoRatchet-Tests:
     type: bundle.unit-test
@@ -177,6 +199,7 @@ targets:
       - VirgilCryptoRatchetTests
     dependencies:
       - target: VirgilCryptoRatchet_$platform
+      - carthage: VSCCommon
 
 aggregateTargets:
   Build_iOS:
