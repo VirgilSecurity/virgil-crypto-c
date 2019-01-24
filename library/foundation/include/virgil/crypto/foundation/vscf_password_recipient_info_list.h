@@ -47,13 +47,14 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Handle list of the "password recipient info" class objects.
+//  Handles a list of "password recipient info" class objects.
 // --------------------------------------------------------------------------
 
 #ifndef VSCF_PASSWORD_RECIPIENT_INFO_LIST_H_INCLUDED
 #define VSCF_PASSWORD_RECIPIENT_INFO_LIST_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_password_recipient_info.h"
 
 // clang-format on
 //  @end
@@ -118,6 +119,14 @@ vscf_password_recipient_info_list_destroy(vscf_password_recipient_info_list_t **
 //
 VSCF_PUBLIC vscf_password_recipient_info_list_t *
 vscf_password_recipient_info_list_shallow_copy(vscf_password_recipient_info_list_t *password_recipient_info_list);
+
+//
+//  Add new item to the list.
+//  Note, ownership is transfered.
+//
+VSCF_PUBLIC void
+vscf_password_recipient_info_list_add(vscf_password_recipient_info_list_t *password_recipient_info_list,
+        vscf_password_recipient_info_t **password_recipient_info_ref);
 
 
 // --------------------------------------------------------------------------

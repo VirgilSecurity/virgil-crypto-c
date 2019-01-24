@@ -77,7 +77,7 @@ test__serialize__one_rsa2048_key_recipient__returns_valid_cms(void) {
 
     vscf_message_info_t *message_info = vscf_message_info_new();
     vscf_message_info_add_key_recipient(message_info, &key_recipient);
-    vscf_message_info_set_data_encryption_alg_info(message_info, data_encryption_alg_info);
+    vscf_message_info_set_data_encryption_alg_info(message_info, &data_encryption_alg_info);
 
     vscf_cms_t *cms = vscf_cms_new();
     vscf_cms_setup_defaults(cms);

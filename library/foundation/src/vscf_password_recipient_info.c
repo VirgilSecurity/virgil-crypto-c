@@ -207,8 +207,6 @@ static void
 vscf_password_recipient_info_init_ctx(vscf_password_recipient_info_t *password_recipient_info) {
 
     VSCF_ASSERT_PTR(password_recipient_info);
-
-    //  TODO: Perform additional context initialization.
 }
 
 //
@@ -221,5 +219,36 @@ vscf_password_recipient_info_cleanup_ctx(vscf_password_recipient_info_t *passwor
 
     VSCF_ASSERT_PTR(password_recipient_info);
 
-    //  TODO: Release all inner resources.
+    vscf_impl_destroy(&password_recipient_info->key_derivation_algorithm);
+    vscf_impl_destroy(&password_recipient_info->key_encryption_algorithm);
+    vsc_buffer_destroy(&password_recipient_info->encrypted_key);
+}
+
+//
+//  Create object and define all properties.
+//
+VSCF_PUBLIC vscf_password_recipient_info_t *
+vscf_password_recipient_info_new_with_members(vscf_impl_t **key_derivation_algorithm_ref,
+        vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key) {
+
+    VSCF_ASSERT_PTR(key_derivation_algorithm_ref);
+    VSCF_ASSERT_PTR(*key_derivation_algorithm_ref);
+    VSCF_ASSERT_PTR(key_encryption_algorithm_ref);
+    VSCF_ASSERT_PTR(*key_encryption_algorithm_ref);
+    VSCF_ASSERT(vsc_data_is_valid(encrypted_key));
+    VSCF_ASSERT(encrypted_key.len > 0);
+
+    vscf_impl_t *key_derivation_algorithm = *key_derivation_algorithm_ref;
+    *key_derivation_algorithm_ref = NULL;
+
+    vscf_impl_t *key_encryption_algorithm = *key_encryption_algorithm_ref;
+    *key_encryption_algorithm_ref = NULL;
+
+    vscf_password_recipient_info_t *password_recipient_info = vscf_password_recipient_info_new();
+
+    password_recipient_info->key_derivation_algorithm = key_derivation_algorithm;
+    password_recipient_info->key_encryption_algorithm = key_encryption_algorithm;
+    password_recipient_info->encrypted_key = vsc_buffer_new_with_data(encrypted_key);
+
+    return password_recipient_info;
 }

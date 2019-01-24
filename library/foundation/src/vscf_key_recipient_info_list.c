@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Handles a list of "" class objects.
+//  Handles a list of "key recipient info" class objects.
 // --------------------------------------------------------------------------
 
 
@@ -207,8 +207,6 @@ static void
 vscf_key_recipient_info_list_init_ctx(vscf_key_recipient_info_list_t *key_recipient_info_list) {
 
     VSCF_ASSERT_PTR(key_recipient_info_list);
-
-    //  TODO: Perform additional context initialization.
 }
 
 //
@@ -221,5 +219,30 @@ vscf_key_recipient_info_list_cleanup_ctx(vscf_key_recipient_info_list_t *key_rec
 
     VSCF_ASSERT_PTR(key_recipient_info_list);
 
-    //  TODO: Release all inner resources.
+    vscf_key_recipient_info_destroy(&key_recipient_info_list->item);
+    vscf_key_recipient_info_list_destroy(&key_recipient_info_list->next);
+}
+
+//
+//  Add new item to the list.
+//  Note, ownership is transfered.
+//
+VSCF_PUBLIC void
+vscf_key_recipient_info_list_add(
+        vscf_key_recipient_info_list_t *key_recipient_info_list, vscf_key_recipient_info_t **key_recipient_info_ref) {
+
+    VSCF_ASSERT_PTR(key_recipient_info_list);
+    VSCF_ASSERT_PTR(key_recipient_info_ref);
+    VSCF_ASSERT_PTR(*key_recipient_info_ref);
+
+    if (NULL == key_recipient_info_list->item) {
+        key_recipient_info_list->item = *key_recipient_info_ref;
+        *key_recipient_info_ref = NULL;
+    } else {
+        if (NULL == key_recipient_info_list->next) {
+            key_recipient_info_list->next = vscf_key_recipient_info_list_new();
+            key_recipient_info_list->next->prev = key_recipient_info_list;
+        }
+        vscf_key_recipient_info_list_add(key_recipient_info_list->next, key_recipient_info_ref);
+    }
 }

@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 import VirgilCryptoCommon
 
-/// Handle list of the "password recipient info" class objects.
+/// Handles a list of "password recipient info" class objects.
 @objc(VSCFPasswordRecipientInfoList) public class PasswordRecipientInfoList: NSObject {
 
     /// Handle underlying C context.
@@ -66,5 +66,11 @@ import VirgilCryptoCommon
     /// Release underlying C context.
     deinit {
         vscf_password_recipient_info_list_delete(self.c_ctx)
+    }
+
+    /// Add new item to the list.
+    /// Note, ownership is transfered.
+    @objc public func add(passwordRecipientInfo: PasswordRecipientInfo) {
+        vscf_password_recipient_info_list_add(self.c_ctx, &passwordRecipientInfo.c_ctx)
     }
 }

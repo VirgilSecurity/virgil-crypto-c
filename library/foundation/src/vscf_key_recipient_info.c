@@ -207,8 +207,6 @@ static void
 vscf_key_recipient_info_init_ctx(vscf_key_recipient_info_t *key_recipient_info) {
 
     VSCF_ASSERT_PTR(key_recipient_info);
-
-    //  TODO: Perform additional context initialization.
 }
 
 //
@@ -221,7 +219,9 @@ vscf_key_recipient_info_cleanup_ctx(vscf_key_recipient_info_t *key_recipient_inf
 
     VSCF_ASSERT_PTR(key_recipient_info);
 
-    //  TODO: Release all inner resources.
+    vsc_buffer_destroy(&key_recipient_info->recipient_id);
+    vscf_impl_destroy(&key_recipient_info->key_encryption_algorithm);
+    vsc_buffer_destroy(&key_recipient_info->encrypted_key);
 }
 
 //
