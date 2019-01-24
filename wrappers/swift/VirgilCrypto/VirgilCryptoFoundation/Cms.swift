@@ -86,8 +86,8 @@ import VirgilCryptoCommon
     }
 
     /// Return buffer size enough to hold serialized message info.
-    @objc public func serializedLen() -> Int {
-        let proxyResult = vscf_cms_serialized_len(self.c_ctx)
+    @objc public func serializedLen(messageInfo: MessageInfo) -> Int {
+        let proxyResult = vscf_cms_serialized_len(self.c_ctx, messageInfo.c_ctx)
 
         return proxyResult
     }

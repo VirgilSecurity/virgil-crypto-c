@@ -54,6 +54,15 @@
 #define VSCF_KEY_RECIPIENT_INFO_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_impl.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#endif
 
 // clang-format on
 //  @end
@@ -98,6 +107,13 @@ vscf_key_recipient_info_cleanup(vscf_key_recipient_info_t *key_recipient_info);
 //
 VSCF_PUBLIC vscf_key_recipient_info_t *
 vscf_key_recipient_info_new(void);
+
+//
+//  Create object and define all properties.
+//
+VSCF_PUBLIC vscf_key_recipient_info_t *
+vscf_key_recipient_info_new_with_members(vsc_data_t recipient_id, vscf_impl_t **key_encryption_algorithm_ref,
+        vsc_data_t encrypted_key);
 
 //
 //  Release all inner resources and deallocate context if needed.

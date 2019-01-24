@@ -223,3 +223,25 @@ vscf_key_recipient_info_cleanup_ctx(vscf_key_recipient_info_t *key_recipient_inf
 
     //  TODO: Release all inner resources.
 }
+
+//
+//  Create object and define all properties.
+//
+VSCF_PUBLIC vscf_key_recipient_info_t *
+vscf_key_recipient_info_new_with_members(
+        vsc_data_t recipient_id, vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key) {
+
+    VSCF_ASSERT_PTR(key_encryption_algorithm_ref);
+    VSCF_ASSERT_PTR(*key_encryption_algorithm_ref);
+
+    vscf_impl_t *key_encryption_algorithm = *key_encryption_algorithm_ref;
+    *key_encryption_algorithm_ref = NULL;
+
+    vscf_key_recipient_info_t *key_recipient_info = vscf_key_recipient_info_new();
+
+    key_recipient_info->recipient_id = vsc_buffer_new_with_data(recipient_id);
+    key_recipient_info->key_encryption_algorithm = key_encryption_algorithm;
+    key_recipient_info->encrypted_key = vsc_buffer_new_with_data(encrypted_key);
+
+    return key_recipient_info;
+}

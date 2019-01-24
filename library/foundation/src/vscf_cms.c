@@ -101,9 +101,10 @@ vscf_cms_setup_defaults(vscf_cms_t *cms) {
 //  Return buffer size enough to hold serialized message info.
 //
 VSCF_PUBLIC size_t
-vscf_cms_serialized_len(vscf_cms_t *cms) {
+vscf_cms_serialized_len(vscf_cms_t *cms, const vscf_message_info_t *message_info) {
 
     VSCF_ASSERT_PTR(cms);
+    VSCF_ASSERT_PTR(message_info);
 
     //  TODO: This is STUB. Implement me.
 

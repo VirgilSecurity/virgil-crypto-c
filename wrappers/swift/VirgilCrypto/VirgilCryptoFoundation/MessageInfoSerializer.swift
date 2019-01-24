@@ -41,7 +41,7 @@ import VirgilCryptoCommon
 @objc(VSCFMessageInfoSerializer) public protocol MessageInfoSerializer : CContext {
 
     /// Return buffer size enough to hold serialized message info.
-    @objc func serializedLen() -> Int
+    @objc func serializedLen(messageInfo: MessageInfo) -> Int
 
     /// Serialize class "message info".
     @objc func serialize(messageInfo: MessageInfo) -> Data
@@ -68,8 +68,8 @@ import VirgilCryptoCommon
     }
 
     /// Return buffer size enough to hold serialized message info.
-    @objc public func serializedLen() -> Int {
-        let proxyResult = vscf_message_info_serializer_serialized_len(self.c_ctx)
+    @objc public func serializedLen(messageInfo: MessageInfo) -> Int {
+        let proxyResult = vscf_message_info_serializer_serialized_len(self.c_ctx, messageInfo.c_ctx)
 
         return proxyResult
     }
