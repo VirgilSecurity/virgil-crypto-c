@@ -68,13 +68,13 @@
 //  Return buffer size enough to hold serialized message info.
 //
 VSCF_PUBLIC size_t
-vscf_message_info_serializer_serialized_len(vscf_impl_t *impl) {
+vscf_message_info_serializer_serialized_len(vscf_impl_t *impl, const vscf_message_info_t *message_info) {
 
     const vscf_message_info_serializer_api_t *message_info_serializer_api = vscf_message_info_serializer_api(impl);
     VSCF_ASSERT_PTR (message_info_serializer_api);
 
     VSCF_ASSERT_PTR (message_info_serializer_api->serialized_len_cb);
-    return message_info_serializer_api->serialized_len_cb (impl);
+    return message_info_serializer_api->serialized_len_cb (impl, message_info);
 }
 
 //

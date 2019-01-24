@@ -93,7 +93,7 @@ typedef struct vscf_message_info_serializer_api_t vscf_message_info_serializer_a
 //  Return buffer size enough to hold serialized message info.
 //
 VSCF_PUBLIC size_t
-vscf_message_info_serializer_serialized_len(vscf_impl_t *impl);
+vscf_message_info_serializer_serialized_len(vscf_impl_t *impl, const vscf_message_info_t *message_info);
 
 //
 //  Serialize class "message info".

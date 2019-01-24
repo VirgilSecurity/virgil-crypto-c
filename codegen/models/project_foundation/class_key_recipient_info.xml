@@ -4,4 +4,12 @@
     <property name="recipient id" class="buffer"/>
     <property name="key encryption algorithm" interface="alg info"/>
     <property name="encrypted key" class="buffer"/>
+
+    <constructor name="with members">
+        Create object and define all properties.
+
+        <argument name="recipient id" class="data"/>
+        <argument name="key encryption algorithm" interface="alg info" access="disown"/>
+        <argument name="encrypted key" class="data"/>
+    </constructor>
 </class>

@@ -57,6 +57,7 @@
 #include "vscf_library.h"
 #include "vscf_key_recipient_info.h"
 #include "vscf_password_recipient_info.h"
+#include "vscf_impl.h"
 
 // clang-format on
 //  @end
@@ -126,14 +127,21 @@ vscf_message_info_shallow_copy(vscf_message_info_t *message_info);
 //  Add recipient that is defined by Public Key.
 //
 VSCF_PUBLIC void
-vscf_message_info_add_key_recipient(vscf_message_info_t *message_info, vscf_key_recipient_info_t *key_recipient);
+vscf_message_info_add_key_recipient(vscf_message_info_t *message_info, vscf_key_recipient_info_t **key_recipient_ref);
 
 //
 //  Add recipient that is defined by password.
 //
 VSCF_PUBLIC void
 vscf_message_info_add_password_recipient(vscf_message_info_t *message_info,
-        vscf_password_recipient_info_t *password_recipient);
+        vscf_password_recipient_info_t **password_recipient_ref);
+
+//
+//  Set information about algorithm that was used for data encryption.
+//
+VSCF_PUBLIC void
+vscf_message_info_set_data_encryption_alg_info(vscf_message_info_t *message_info,
+        vscf_impl_t **data_encryption_alg_info_ref);
 
 
 // --------------------------------------------------------------------------

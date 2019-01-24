@@ -4,6 +4,8 @@
     <method name="serialized len">
         Return buffer size enough to hold serialized message info.
 
+        <argument name="message info" class="message info"/>
+
         <return type="size"/>
     </method>
 

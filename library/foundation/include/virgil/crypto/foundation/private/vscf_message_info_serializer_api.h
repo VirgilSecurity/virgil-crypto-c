@@ -87,7 +87,8 @@ extern "C" {
 //
 //  Callback. Return buffer size enough to hold serialized message info.
 //
-typedef size_t (*vscf_message_info_serializer_api_serialized_len_fn)(vscf_impl_t *impl);
+typedef size_t (*vscf_message_info_serializer_api_serialized_len_fn)(vscf_impl_t *impl,
+        const vscf_message_info_t *message_info);
 
 //
 //  Callback. Serialize class "message info".
