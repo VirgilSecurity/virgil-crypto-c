@@ -56,7 +56,9 @@ class Server(object):
         pub_key = Data(public_key)
         req = Data(request)
 
-        verify_password_response = Buffer(self._lib_vsce_phe_server.vsce_phe_server_verify_password_response_len(self.server))
+        verify_password_response = Buffer(
+            self._lib_vsce_phe_server.vsce_phe_server_verify_password_response_len(self.server)
+        )
 
         err = self._lib_vsce_phe_server.vsce_phe_server_verify_password(
             self.server,

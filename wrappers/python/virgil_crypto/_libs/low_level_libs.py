@@ -1,28 +1,11 @@
+import os
 from ctypes import CDLL
-from ctypes.util import find_library
 
 
 class LowLevelLibs(object):
 
     def __init__(self):
-        self._common = None
-        self._foundation = None
-        self._phe = None
-
-    @property
-    def common(self):
-        if self._common is None:
-            self._common = CDLL(find_library("libvsc_common.dylib"))
-        return self._common
-
-    @property
-    def foundation(self):
-        if self._foundation is None:
-            self._foundation = CDLL(find_library("libvsc_foundation.dylib"))
-        return self._foundation
-
-    @property
-    def phe(self):
-        if self._phe is None:
-            self._phe = CDLL(find_library("libvsc_phe.dylib"))
-        return self._phe
+        self.__lib_path = os.path.dirname(os.path.realpath(__file__))
+        self.common = CDLL(os.path.join(self.__lib_path, "libvsc_common.dylib"))
+        self.foundation = CDLL(os.path.join(self.__lib_path, "libvsc_foundation.dylib"))
+        self.phe = CDLL(os.path.join(self.__lib_path, "libvsc_phe.dylib"))

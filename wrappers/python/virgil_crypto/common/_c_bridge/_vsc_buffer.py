@@ -1,4 +1,4 @@
-from ctypes import Structure, POINTER, c_size_t, c_byte, c_bool
+from ctypes import Structure, POINTER, c_size_t, c_byte, c_bool, c_char_p
 from ._vsc_data import vsc_data_t
 
 from virgil_crypto._libs import LowLevelLibs
@@ -120,6 +120,12 @@ class VscBuffer(object):
         vsc_buffer_dec_used.argtypes = [POINTER(vsc_buffer_t), c_size_t]
         vsc_buffer_dec_used.restype = None
         return vsc_buffer_dec_used(buffer, len_)
+
+    def vsc_buffer_write_data(self, buffer, data):
+        vsc_buffer_write_data = self._lib.vsc_buffer_write_data
+        vsc_buffer_write_data.argtypes = [POINTER(vsc_buffer_t), vsc_data_t]
+        vsc_buffer_write_data.restype = None
+        return vsc_buffer_write_data(buffer, data)
 
     def vsc_buffer_reset(self, buffer):
         vsc_buffer_reset = self._lib.vsc_buffer_reset
