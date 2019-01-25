@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  This module contains 'cms' implementation.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,18 +44,26 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_cms.h"
-#include "vscf_assert.h"
-#include "vscf_memory.h"
-#include "vscf_asn1rd.h"
-#include "vscf_asn1wr.h"
-#include "vscf_asn1_reader.h"
-#include "vscf_asn1_writer.h"
-#include "vscf_cms_defs.h"
-#include "vscf_cms_internal.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_MESSAGE_INFO_DER_SERIALIZER_INTERNAL_H_INCLUDED
+#define VSCF_MESSAGE_INFO_DER_SERIALIZER_INTERNAL_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_message_info_der_serializer.h"
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -78,64 +80,11 @@
 //  @end
 
 
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_cms_setup_defaults(vscf_cms_t *cms) {
-
-    VSCF_ASSERT_PTR(cms);
-
-    if (NULL == cms->asn1_reader) {
-        cms->asn1_reader = vscf_asn1rd_impl(vscf_asn1rd_new());
-    }
-
-    if (NULL == cms->asn1_writer) {
-        cms->asn1_writer = vscf_asn1wr_impl(vscf_asn1wr_new());
-    }
-
-    return vscf_SUCCESS;
+#ifdef __cplusplus
 }
+#endif
 
-//
-//  Return buffer size enough to hold serialized message info.
-//
-VSCF_PUBLIC size_t
-vscf_cms_serialized_len(vscf_cms_t *cms, const vscf_message_info_t *message_info) {
 
-    VSCF_ASSERT_PTR(cms);
-    VSCF_ASSERT_PTR(message_info);
-
-    //  TODO: This is STUB. Implement me.
-
-    return 0;
-}
-
-//
-//  Serialize class "message info".
-//
-VSCF_PUBLIC void
-vscf_cms_serialize(vscf_cms_t *cms, const vscf_message_info_t *message_info, vsc_buffer_t *out) {
-
-    VSCF_ASSERT_PTR(cms);
-    VSCF_ASSERT_PTR(message_info);
-    VSCF_ASSERT_PTR(out);
-    VSCF_ASSERT_PTR(vsc_buffer_is_valid(out));
-
-    //  TODO: This is STUB. Implement me.
-}
-
-//
-//  Deserialize class "message info".
-//
-VSCF_PUBLIC const vscf_message_info_t *
-vscf_cms_deserialize(vscf_cms_t *cms, vsc_data_t data, const vscf_error_ctx_t *error) {
-
-    VSCF_ASSERT_PTR(cms);
-    VSCF_ASSERT(vsc_data_is_valid(data));
-    VSCF_UNUSED(error);
-
-    //  TODO: This is STUB. Implement me.
-
-    return NULL;
-}
+//  @footer
+#endif // VSCF_MESSAGE_INFO_DER_SERIALIZER_INTERNAL_H_INCLUDED
+//  @end

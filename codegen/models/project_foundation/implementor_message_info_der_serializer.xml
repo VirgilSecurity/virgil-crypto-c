@@ -1,7 +1,7 @@
 <implementor name="virgil message info cms" is_default="1">
     Contain CMS implementation of the class "message info" serialization.
 
-    <implementation name="cms">
+    <implementation name="message info der serializer">
         CMS based implementation of the class "message info" serialization.
 
         <interface name="defaults"/>

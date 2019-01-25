@@ -109,7 +109,7 @@ option(VSCF_KDF_ALG_INFO "Enable implementation 'kdf alg info'." ON)
 option(VSCF_CIPHER_ALG_INFO "Enable implementation 'cipher alg info'." ON)
 option(VSCF_ALG_INFO_DER_SERIALIZER "Enable implementation 'alg info der serializer'." ON)
 option(VSCF_ALG_INFO_DER_DESERIALIZER "Enable implementation 'alg info der deserializer'." ON)
-option(VSCF_CMS "Enable implementation 'cms'." ON)
+option(VSCF_MESSAGE_INFO_DER_SERIALIZER "Enable implementation 'message info der serializer'." ON)
 option(VSCF_ERROR_CTX "Enable class 'error ctx'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER "Enable class 'mbedtls bignum asn1 writer'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_READER "Enable class 'mbedtls bignum asn1 reader'." ON)
@@ -190,7 +190,7 @@ mark_as_advanced(
         VSCF_CIPHER_ALG_INFO
         VSCF_ALG_INFO_DER_SERIALIZER
         VSCF_ALG_INFO_DER_DESERIALIZER
-        VSCF_CMS
+        VSCF_MESSAGE_INFO_DER_SERIALIZER
         VSCF_ERROR_CTX
         VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
         VSCF_MBEDTLS_BIGNUM_ASN1_READER
@@ -1099,37 +1099,37 @@ if(VSCF_ALG_INFO_DER_DESERIALIZER AND NOT VSCF_ASN1_READER)
     message(FATAL_ERROR)
 endif()
 
-if(VSCF_CMS AND NOT VSCF_ASN1RD)
+if(VSCF_MESSAGE_INFO_DER_SERIALIZER AND NOT VSCF_ASN1RD)
     message("-- error --")
     message("--")
-    message("Feature VSCF_CMS depends on the feature:")
+    message("Feature VSCF_MESSAGE_INFO_DER_SERIALIZER depends on the feature:")
     message("     VSCF_ASN1RD - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
 
-if(VSCF_CMS AND NOT VSCF_ASN1WR)
+if(VSCF_MESSAGE_INFO_DER_SERIALIZER AND NOT VSCF_ASN1WR)
     message("-- error --")
     message("--")
-    message("Feature VSCF_CMS depends on the feature:")
+    message("Feature VSCF_MESSAGE_INFO_DER_SERIALIZER depends on the feature:")
     message("     VSCF_ASN1WR - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
 
-if(VSCF_CMS AND NOT VSCF_ASN1_READER)
+if(VSCF_MESSAGE_INFO_DER_SERIALIZER AND NOT VSCF_ASN1_READER)
     message("-- error --")
     message("--")
-    message("Feature VSCF_CMS depends on the feature:")
+    message("Feature VSCF_MESSAGE_INFO_DER_SERIALIZER depends on the feature:")
     message("     VSCF_ASN1_READER - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
 
-if(VSCF_CMS AND NOT VSCF_ASN1_WRITER)
+if(VSCF_MESSAGE_INFO_DER_SERIALIZER AND NOT VSCF_ASN1_WRITER)
     message("-- error --")
     message("--")
-    message("Feature VSCF_CMS depends on the feature:")
+    message("Feature VSCF_MESSAGE_INFO_DER_SERIALIZER depends on the feature:")
     message("     VSCF_ASN1_WRITER - which is disabled.")
     message("--")
     message(FATAL_ERROR)
