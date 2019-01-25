@@ -47,11 +47,11 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'cms' implementation.
+//  This module contains 'message info der serializer' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_CMS_H_INCLUDED
-#define VSCF_CMS_H_INCLUDED
+#ifndef VSCF_MESSAGE_INFO_DER_SERIALIZER_H_INCLUDED
+#define VSCF_MESSAGE_INFO_DER_SERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_message_info.h"
@@ -87,123 +87,130 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_cms_t vscf_cms_t;
+typedef struct vscf_message_info_der_serializer_t vscf_message_info_der_serializer_t;
 
 //
-//  Return size of 'vscf_cms_t' type.
+//  Return size of 'vscf_message_info_der_serializer_t' type.
 //
 VSCF_PUBLIC size_t
-vscf_cms_impl_size(void);
+vscf_message_info_der_serializer_impl_size(void);
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_cms_impl(vscf_cms_t *cms);
+vscf_message_info_der_serializer_impl(vscf_message_info_der_serializer_t *message_info_der_serializer);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_cms_init(vscf_cms_t *cms);
+vscf_message_info_der_serializer_init(vscf_message_info_der_serializer_t *message_info_der_serializer);
 
 //
 //  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_cms_init()'.
+//  This is a reverse action of the function 'vscf_message_info_der_serializer_init()'.
 //
 VSCF_PUBLIC void
-vscf_cms_cleanup(vscf_cms_t *cms);
+vscf_message_info_der_serializer_cleanup(vscf_message_info_der_serializer_t *message_info_der_serializer);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_cms_t *
-vscf_cms_new(void);
+VSCF_PUBLIC vscf_message_info_der_serializer_t *
+vscf_message_info_der_serializer_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_cms_new()'.
+//  This is a reverse action of the function 'vscf_message_info_der_serializer_new()'.
 //
 VSCF_PUBLIC void
-vscf_cms_delete(vscf_cms_t *cms);
+vscf_message_info_der_serializer_delete(vscf_message_info_der_serializer_t *message_info_der_serializer);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_cms_new()'.
+//  This is a reverse action of the function 'vscf_message_info_der_serializer_new()'.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_cms_destroy(vscf_cms_t **cms_ref);
+vscf_message_info_der_serializer_destroy(vscf_message_info_der_serializer_t **message_info_der_serializer_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_cms_t *
-vscf_cms_shallow_copy(vscf_cms_t *cms);
+VSCF_PUBLIC vscf_message_info_der_serializer_t *
+vscf_message_info_der_serializer_shallow_copy(vscf_message_info_der_serializer_t *message_info_der_serializer);
 
 //
 //  Setup dependency to the interface 'asn1 reader' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_cms_use_asn1_reader(vscf_cms_t *cms, vscf_impl_t *asn1_reader);
+vscf_message_info_der_serializer_use_asn1_reader(vscf_message_info_der_serializer_t *message_info_der_serializer,
+        vscf_impl_t *asn1_reader);
 
 //
 //  Setup dependency to the interface 'asn1 reader' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_cms_take_asn1_reader(vscf_cms_t *cms, vscf_impl_t *asn1_reader);
+vscf_message_info_der_serializer_take_asn1_reader(vscf_message_info_der_serializer_t *message_info_der_serializer,
+        vscf_impl_t *asn1_reader);
 
 //
 //  Release dependency to the interface 'asn1 reader'.
 //
 VSCF_PUBLIC void
-vscf_cms_release_asn1_reader(vscf_cms_t *cms);
+vscf_message_info_der_serializer_release_asn1_reader(vscf_message_info_der_serializer_t *message_info_der_serializer);
 
 //
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_cms_use_asn1_writer(vscf_cms_t *cms, vscf_impl_t *asn1_writer);
+vscf_message_info_der_serializer_use_asn1_writer(vscf_message_info_der_serializer_t *message_info_der_serializer,
+        vscf_impl_t *asn1_writer);
 
 //
 //  Setup dependency to the interface 'asn1 writer' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_cms_take_asn1_writer(vscf_cms_t *cms, vscf_impl_t *asn1_writer);
+vscf_message_info_der_serializer_take_asn1_writer(vscf_message_info_der_serializer_t *message_info_der_serializer,
+        vscf_impl_t *asn1_writer);
 
 //
 //  Release dependency to the interface 'asn1 writer'.
 //
 VSCF_PUBLIC void
-vscf_cms_release_asn1_writer(vscf_cms_t *cms);
+vscf_message_info_der_serializer_release_asn1_writer(vscf_message_info_der_serializer_t *message_info_der_serializer);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_cms_setup_defaults(vscf_cms_t *cms);
+vscf_message_info_der_serializer_setup_defaults(vscf_message_info_der_serializer_t *message_info_der_serializer);
 
 //
 //  Return buffer size enough to hold serialized message info.
 //
 VSCF_PUBLIC size_t
-vscf_cms_serialized_len(vscf_cms_t *cms, const vscf_message_info_t *message_info);
+vscf_message_info_der_serializer_serialized_len(vscf_message_info_der_serializer_t *message_info_der_serializer,
+        const vscf_message_info_t *message_info);
 
 //
 //  Serialize class "message info".
 //
 VSCF_PUBLIC void
-vscf_cms_serialize(vscf_cms_t *cms, const vscf_message_info_t *message_info, vsc_buffer_t *out);
+vscf_message_info_der_serializer_serialize(vscf_message_info_der_serializer_t *message_info_der_serializer,
+        const vscf_message_info_t *message_info, vsc_buffer_t *out);
 
 //
 //  Deserialize class "message info".
 //
 VSCF_PUBLIC const vscf_message_info_t *
-vscf_cms_deserialize(vscf_cms_t *cms, vsc_data_t data, const vscf_error_ctx_t *error);
+vscf_message_info_der_serializer_deserialize(vscf_message_info_der_serializer_t *message_info_der_serializer,
+        vsc_data_t data, const vscf_error_ctx_t *error);
 
 
 // --------------------------------------------------------------------------
@@ -219,5 +226,5 @@ vscf_cms_deserialize(vscf_cms_t *cms, vsc_data_t data, const vscf_error_ctx_t *e
 
 
 //  @footer
-#endif // VSCF_CMS_H_INCLUDED
+#endif // VSCF_MESSAGE_INFO_DER_SERIALIZER_H_INCLUDED
 //  @end

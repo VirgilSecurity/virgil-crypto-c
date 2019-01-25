@@ -128,7 +128,7 @@
 
     <implementor name="alg info"/>
     <implementor name="alg info der"/>
-    <implementor name="message info cms"/>
+    <implementor name="message info der serializer"/>
 
     <module name="mbedtls bridge random"/>
     <module name="mbedtls bridge entropy"/>

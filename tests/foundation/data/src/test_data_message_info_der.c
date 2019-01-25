@@ -32,7 +32,7 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include "test_data_message_info_cms.h"
+#include "test_data_message_info_der.h"
 
 static const byte ONE_RSA2048_KEY_RECIPIENT_SERIALIZED_BYTES[] = {
     0x30, 0x82, 0x01, 0x87, 0x02, 0x01, 0x00, 0x30,

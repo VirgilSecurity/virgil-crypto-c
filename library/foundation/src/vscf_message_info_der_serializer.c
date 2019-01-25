@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains 'message info der serializer' implementation.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,26 +50,18 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  This module contains logic for interface/implementation architecture.
-//  Do not use this module in any part of the code.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_CMS_INTERNAL_H_INCLUDED
-#define VSCF_CMS_INTERNAL_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_cms.h"
+#include "vscf_message_info_der_serializer.h"
+#include "vscf_assert.h"
+#include "vscf_memory.h"
+#include "vscf_asn1rd.h"
+#include "vscf_asn1wr.h"
+#include "vscf_asn1_reader.h"
+#include "vscf_asn1_writer.h"
+#include "vscf_message_info_der_serializer_defs.h"
+#include "vscf_message_info_der_serializer_internal.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -80,11 +78,67 @@ extern "C" {
 //  @end
 
 
-#ifdef __cplusplus
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_message_info_der_serializer_setup_defaults(vscf_message_info_der_serializer_t *message_info_der_serializer) {
+
+    VSCF_ASSERT_PTR(message_info_der_serializer);
+
+    if (NULL == message_info_der_serializer->asn1_reader) {
+        message_info_der_serializer->asn1_reader = vscf_asn1rd_impl(vscf_asn1rd_new());
+    }
+
+    if (NULL == message_info_der_serializer->asn1_writer) {
+        message_info_der_serializer->asn1_writer = vscf_asn1wr_impl(vscf_asn1wr_new());
+    }
+
+    return vscf_SUCCESS;
 }
-#endif
 
+//
+//  Return buffer size enough to hold serialized message info.
+//
+VSCF_PUBLIC size_t
+vscf_message_info_der_serializer_serialized_len(
+        vscf_message_info_der_serializer_t *message_info_der_serializer, const vscf_message_info_t *message_info) {
 
-//  @footer
-#endif // VSCF_CMS_INTERNAL_H_INCLUDED
-//  @end
+    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(message_info);
+
+    //  TODO: This is STUB. Implement me.
+
+    return 1024;
+}
+
+//
+//  Serialize class "message info".
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_serialize(vscf_message_info_der_serializer_t *message_info_der_serializer,
+        const vscf_message_info_t *message_info, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT_PTR(message_info);
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT_PTR(vsc_buffer_is_valid(out));
+
+    //  TODO: This is STUB. Implement me.
+}
+
+//
+//  Deserialize class "message info".
+//
+VSCF_PUBLIC const vscf_message_info_t *
+vscf_message_info_der_serializer_deserialize(vscf_message_info_der_serializer_t *message_info_der_serializer,
+        vsc_data_t data, const vscf_error_ctx_t *error) {
+
+    VSCF_ASSERT_PTR(message_info_der_serializer);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_UNUSED(error);
+
+    //  TODO: This is STUB. Implement me.
+
+    return NULL;
+}

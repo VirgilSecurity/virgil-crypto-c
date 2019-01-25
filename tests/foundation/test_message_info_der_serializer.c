@@ -39,15 +39,16 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE (VSCF_MESSAGE_INFO && VSCF_CMS && VSCF_SIMPLE_ALG_INFO && VSCF_CIPHER_ALG_INFO)
+#define TEST_DEPENDENCIES_AVAILABLE                                                                                    \
+    (VSCF_MESSAGE_INFO && VSCF_MESSAGE_INFO_DER_SERIALIZER && VSCF_SIMPLE_ALG_INFO && VSCF_CIPHER_ALG_INFO)
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include "vscf_cms.h"
 #include "vscf_message_info.h"
+#include "vscf_message_info_der_serializer.h"
 #include "vscf_cipher_alg_info.h"
 #include "vscf_simple_alg_info.h"
 
-#include "test_data_message_info_cms.h"
+#include "test_data_message_info_der.h"
 
 
 // --------------------------------------------------------------------------
@@ -79,16 +80,17 @@ test__serialize__one_rsa2048_key_recipient__returns_valid_cms(void) {
     vscf_message_info_add_key_recipient(message_info, &key_recipient);
     vscf_message_info_set_data_encryption_alg_info(message_info, &data_encryption_alg_info);
 
-    vscf_cms_t *cms = vscf_cms_new();
-    vscf_cms_setup_defaults(cms);
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
 
-    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_cms_serialized_len(cms, message_info));
-    vscf_cms_serialize(cms, message_info, out);
+    vsc_buffer_t *out =
+            vsc_buffer_new_with_capacity(vscf_message_info_der_serializer_serialized_len(serializer, message_info));
+    vscf_message_info_der_serializer_serialize(serializer, message_info, out);
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_message_info_cms_ONE_RSA2048_KEY_RECIPIENT.serialized, out);
 
     vsc_buffer_destroy(&out);
-    vscf_cms_destroy(&cms);
+    vscf_message_info_der_serializer_destroy(&serializer);
     vscf_message_info_destroy(&message_info);
 }
 

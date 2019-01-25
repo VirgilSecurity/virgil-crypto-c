@@ -37,15 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Types of the 'cms' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -53,10 +44,30 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_cms_defs.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'message info der serializer' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_MESSAGE_INFO_DER_SERIALIZER_DEFS_H_INCLUDED
+#define VSCF_MESSAGE_INFO_DER_SERIALIZER_DEFS_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_impl_private.h"
+#include "vscf_message_info_der_serializer.h"
+#include "vscf_impl.h"
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -65,9 +76,41 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handles implementation details.
+//
+struct vscf_message_info_der_serializer_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Dependency to the interface 'asn1 reader'.
+    //
+    vscf_impl_t *asn1_reader;
+    //
+    //  Dependency to the interface 'asn1 writer'.
+    //
+    vscf_impl_t *asn1_writer;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_MESSAGE_INFO_DER_SERIALIZER_DEFS_H_INCLUDED
 //  @end
