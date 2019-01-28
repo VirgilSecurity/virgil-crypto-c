@@ -286,15 +286,15 @@ function _Z19_add_includes_for_module_internal (impl, destination, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
-function _Z19_add_argument_impl (destination, meta, access)
-    check_arguments (my, "destination, meta", my)
+function _Z19_add_argument_impl (impl, method, meta, access)
+    check_arguments (my, "impl, method, meta", my)
 
-    my.access ?= "readwrite"
+    my.access ?= my.method.is_const ?? "readonly" ? "readwrite"
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
 
-    my.argument = item_prepend_new ("argument", my.destination)
+    my.argument = item_prepend_new ("argument", my.method)
 
     scope my.argument
         .name = my.names.implementation_argument_impl
@@ -448,7 +448,7 @@ function _Z19_add_method_impl_type_cast (impl, declaration, definition, destinat
         .declaration = my.declaration
         .definition = my.definition
 
-        _Z19_add_argument_impl (method, my.meta)
+        _Z19_add_argument_impl (my.impl, method, my.meta)
 
         new return
             .class = ".(c_class_impl_struct_impl)"
@@ -483,7 +483,7 @@ function _Z19_add_method_init (impl, declaration, definition, destination, meta)
         .declaration = my.declaration
         .definition = my.definition
 
-        _Z19_add_argument_impl (method, my.meta)
+        _Z19_add_argument_impl (my.impl, method, my.meta)
 
         new code to method
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
@@ -531,7 +531,7 @@ function _Z19_add_method_cleanup (impl, declaration, definition, destination, me
         This is a reverse action of the function '$(my.refs.c_implementation_method_init)()'.
         "
 
-        _Z19_add_argument_impl (method, my.meta)
+        _Z19_add_argument_impl (my.impl, method, my.meta)
 
         new code to method
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
@@ -648,7 +648,9 @@ function _Z19_add_constructor (constructor, destination, meta)
             .type = "stub"
 
             . = "\
-            $(my.type_impl) *$(my.arg_impl:) = $(my.refs.c_implementation_method_new);
+            $(my.type_impl) *$(my.arg_impl:) = $(my.refs.c_implementation_method_new)();
+
+            //   TODO: Perform initialization.
 
             return $(my.arg_impl:);
             "
@@ -673,7 +675,7 @@ function _Z19_add_method_delete (impl, declaration, definition, destination, met
         This is a reverse action of the function '$(my.refs.c_implementation_method_new)()'.
         "
 
-        _Z19_add_argument_impl (method, my.meta)
+        _Z19_add_argument_impl (my.impl, method, my.meta)
 
         new code
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
@@ -707,7 +709,7 @@ function _Z19_add_method_destroy (impl, declaration, definition, destination, me
         Given reference is nullified.
         "
 
-        _Z19_add_argument_impl (method, my.meta, "disown")
+        _Z19_add_argument_impl (my.impl, method, my.meta, "disown")
 
         new code
             my.arg_impl_ref = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
@@ -743,7 +745,7 @@ function _Z19_add_method_shallow_copy (impl, declaration, definition, destinatio
         If deep copy is required interface 'clonable' can be used.
         "
 
-        _Z19_add_argument_impl (method, my.meta)
+        _Z19_add_argument_impl (my.impl, method, my.meta)
         _Z19_add_return_impl (method, my.meta)
 
         new code to method
@@ -839,7 +841,7 @@ function _Z19_add_method_init_ctx (impl, declaration, definition, destination, m
         .definition = my.definition
         .visibility = "private"
 
-        _Z19_add_argument_impl (method, my.meta)
+        _Z19_add_argument_impl (my.impl, method, my.meta)
     endnew
 endfunction
 
@@ -861,7 +863,7 @@ function _Z19_add_method_cleanup_ctx (impl, declaration, definition, destination
         .definition = my.definition
         .visibility = "private"
 
-        _Z19_add_argument_impl (method, my.meta)
+        _Z19_add_argument_impl (my.impl, method, my.meta)
     endnew
 endfunction
 
@@ -891,7 +893,7 @@ endfunction
 function _Z19_define_interface_non_static_method (method, impl, meta)
     check_arguments (my, "method, impl, meta", my)
 
-    _Z19_add_argument_impl (my.method, my.meta)
+    _Z19_add_argument_impl (my.impl, my.method, my.meta)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1019,7 +1021,7 @@ function _Z19_add_methods (impl, destination, meta)
         my.copied_method = component_clean_copy (method, my.destination)
 
         if ! my.copied_method.is_static
-            _Z19_add_argument_impl (my.copied_method, my.meta)
+            _Z19_add_argument_impl (my.impl, my.copied_method, my.meta)
         endif
     endfor
 endfunction

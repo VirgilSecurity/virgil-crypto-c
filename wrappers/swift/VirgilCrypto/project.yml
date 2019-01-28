@@ -214,3 +214,6 @@ aggregateTargets:
       - Build_watchOS
       - Build_tvOS
       - Build_macOS
+    buildScripts:
+      - path: Scripts/build_fat_frameworks.sh
+    parallelizeBuild: false

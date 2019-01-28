@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto VERSION 0.2.0 LANGUAGES C)
+project(virgil_crypto VERSION 0.3.0 LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
@@ -56,7 +56,7 @@ include("cmake/protobuf.cmake")
 # ---------------------------------------------------------------------------
 #   Version options
 # ---------------------------------------------------------------------------
-set(VIRGIL_CRYPTO_VERSION_LABEL "" CACHE STRING "Version label, i.e. beta, rc1.")
+set(VIRGIL_CRYPTO_VERSION_LABEL "dev" CACHE STRING "Version label, i.e. beta, rc1.")
 
 file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" "${virgil_crypto_VERSION}")
 
@@ -92,7 +92,7 @@ option(VIRGIL_LIB_COMMON "Build 'common' library" ON)
 option(VIRGIL_LIB_FOUNDATION "Build 'foundation' library" ON)
 option(VIRGIL_LIB_PYTHIA "Build 'pythia' library" ON)
 option(VIRGIL_LIB_ED25519 "Build 'ed25519' library" ON)
-option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" OFF)
+option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" ON)
 option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
 
 #

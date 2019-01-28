@@ -899,6 +899,11 @@ function class_derive_buffer_length_getter (class, method, argument)
             if string_in (proxy.cast, "data_length")
                 my.proxy_args += ".count"
             endif
+
+        elsif defined (proxy.constant)
+
+            my.proxy_args += swift_derive_argument_name_str (proxy.[to])
+            my.proxy_args += ": " + swift_lang_ref (proxy.constant)
         else
             echo_debug_item (my.argument, my)
             echo_fatal ("Buffer length argument can be proxied. Undefined type.", my)
@@ -1742,10 +1747,10 @@ function swift_create_class_constructor (class, constructor, destination, wrappe
         #   Wrap proxy call
         my.proxy_args = swift_format_c_proxy_args (my.class, my.constructor)
         my.proxy_call = "$(class_derive_c_constructor (my.class, my.constructor))($(my.proxy_args:))"
-        my.proxy_return_type = swift_derive_class_context_type (my.class)
+        my.proxy_return_type = swift_derive_class_context_type (my.class) + "?"
         my.proxy_invocation = swift_wrap_c_proxy_call (swift_constructor, my.proxy_call, my.proxy_return_type)
 
-        my.context_assignment = format_left ("self.c_ctx = proxyResult")
+        my.context_assignment = format_left ("self.c_ctx = proxyResult!")
 
         new swift_code to swift_constructor
             my.method_body = ""

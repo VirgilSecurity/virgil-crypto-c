@@ -46,10 +46,9 @@
 include_guard()
 
 option(VSCR_LIBRARY "Enable build of the 'ratchet' library" ON)
-option(VSCR_RATCHET_RNG "Enable interface 'ratchet rng'." ON)
-option(VSCR_VIRGIL_RATCHET_FAKE_RNG "Enable implementation 'virgil ratchet fake rng'." ON)
 option(VSCR_RATCHET_COMMON "Enable class 'ratchet common'." ON)
 option(VSCR_ERROR_CTX "Enable class 'error ctx'." ON)
+option(VSCR_RATCHET_MESSAGE "Enable class 'ratchet message'." ON)
 option(VSCR_RATCHET_CIPHER "Enable class 'ratchet cipher'." ON)
 option(VSCR_RATCHET_CHAIN_KEY "Enable class 'ratchet chain key'." ON)
 option(VSCR_RATCHET_MESSAGE_KEY "Enable class 'ratchet message key'." ON)
@@ -62,10 +61,9 @@ option(VSCR_RATCHET "Enable class 'ratchet'." ON)
 option(VSCR_RATCHET_SESSION "Enable class 'ratchet session'." ON)
 mark_as_advanced(
         VSCR_LIBRARY
-        VSCR_RATCHET_RNG
-        VSCR_VIRGIL_RATCHET_FAKE_RNG
         VSCR_RATCHET_COMMON
         VSCR_ERROR_CTX
+        VSCR_RATCHET_MESSAGE
         VSCR_RATCHET_CIPHER
         VSCR_RATCHET_CHAIN_KEY
         VSCR_RATCHET_MESSAGE_KEY
@@ -77,6 +75,15 @@ mark_as_advanced(
         VSCR_RATCHET
         VSCR_RATCHET_SESSION
         )
+
+if(VSCR_RATCHET_MESSAGE AND NOT VSCR_RATCHET_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_MESSAGE depends on the feature:")
+    message("     VSCR_RATCHET_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
 
 if(VSCR_RATCHET_CHAIN_KEY AND NOT VSCR_RATCHET_COMMON)
     message("-- error --")
@@ -96,11 +103,29 @@ if(VSCR_RATCHET_MESSAGE_KEY AND NOT VSCR_RATCHET_COMMON)
     message(FATAL_ERROR)
 endif()
 
+if(VSCR_RATCHET_RECEIVER_CHAIN AND NOT VSCR_RATCHET_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_RECEIVER_CHAIN depends on the feature:")
+    message("     VSCR_RATCHET_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCR_RATCHET_RECEIVER_CHAIN_LIST_NODE AND NOT VSCR_RATCHET_RECEIVER_CHAIN)
     message("-- error --")
     message("--")
     message("Feature VSCR_RATCHET_RECEIVER_CHAIN_LIST_NODE depends on the feature:")
     message("     VSCR_RATCHET_RECEIVER_CHAIN - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET_SKIPPED_MESSAGE_KEY AND NOT VSCR_RATCHET_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_SKIPPED_MESSAGE_KEY depends on the feature:")
+    message("     VSCR_RATCHET_COMMON - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -114,6 +139,15 @@ if(VSCR_RATCHET_SKIPPED_MESSAGE_KEY_LIST_NODE AND NOT VSCR_RATCHET_SKIPPED_MESSA
     message(FATAL_ERROR)
 endif()
 
+if(VSCR_RATCHET_SENDER_CHAIN AND NOT VSCR_RATCHET_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_SENDER_CHAIN depends on the feature:")
+    message("     VSCR_RATCHET_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCR_RATCHET AND NOT VSCR_RATCHET_COMMON)
     message("-- error --")
     message("--")
@@ -123,20 +157,20 @@ if(VSCR_RATCHET AND NOT VSCR_RATCHET_COMMON)
     message(FATAL_ERROR)
 endif()
 
-if(VSCR_RATCHET AND NOT VSCR_RATCHET_MESSAGE_KEY)
-    message("-- error --")
-    message("--")
-    message("Feature VSCR_RATCHET depends on the feature:")
-    message("     VSCR_RATCHET_MESSAGE_KEY - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
 if(VSCR_RATCHET AND NOT VSCR_RATCHET_CHAIN_KEY)
     message("-- error --")
     message("--")
     message("Feature VSCR_RATCHET depends on the feature:")
     message("     VSCR_RATCHET_CHAIN_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET_SESSION AND NOT VSCR_RATCHET_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_SESSION depends on the feature:")
+    message("     VSCR_RATCHET_COMMON - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

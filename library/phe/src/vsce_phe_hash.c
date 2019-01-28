@@ -52,6 +52,7 @@
 #include <mbedtls/bignum.h>
 #include <stdarg.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>
+#include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 // clang-format on
@@ -76,10 +77,6 @@ struct vsce_phe_hash_t {
     //  Reference counter.
     //
     size_t refcnt;
-    //
-    //  Dependency to the implementation 'sha512'.
-    //
-    vscf_sha512_t *sha512;
     //
     //  Dependency to the class 'simple swu'.
     //
@@ -151,7 +148,6 @@ vsce_phe_hash_cleanup(vsce_phe_hash_t *phe_hash) {
     if (--phe_hash->refcnt == 0) {
         vsce_phe_hash_cleanup_ctx(phe_hash);
 
-        vsce_phe_hash_release_sha512(phe_hash);
         vsce_phe_hash_release_simple_swu(phe_hash);
 
         vsce_zeroize(phe_hash, sizeof(vsce_phe_hash_t));
@@ -223,44 +219,6 @@ vsce_phe_hash_shallow_copy(vsce_phe_hash_t *phe_hash) {
 }
 
 //
-//  Setup dependency to the implementation 'sha512' with shared ownership.
-//
-VSCE_PUBLIC void
-vsce_phe_hash_use_sha512(vsce_phe_hash_t *phe_hash, vscf_sha512_t *sha512) {
-
-    VSCE_ASSERT_PTR(phe_hash);
-    VSCE_ASSERT_PTR(sha512);
-    VSCE_ASSERT_PTR(phe_hash->sha512 == NULL);
-
-    phe_hash->sha512 = vscf_sha512_shallow_copy(sha512);
-}
-
-//
-//  Setup dependency to the implementation 'sha512' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCE_PUBLIC void
-vsce_phe_hash_take_sha512(vsce_phe_hash_t *phe_hash, vscf_sha512_t *sha512) {
-
-    VSCE_ASSERT_PTR(phe_hash);
-    VSCE_ASSERT_PTR(sha512);
-    VSCE_ASSERT_PTR(phe_hash->sha512 == NULL);
-
-    phe_hash->sha512 = sha512;
-}
-
-//
-//  Release dependency to the implementation 'sha512'.
-//
-VSCE_PUBLIC void
-vsce_phe_hash_release_sha512(vsce_phe_hash_t *phe_hash) {
-
-    VSCE_ASSERT_PTR(phe_hash);
-
-    vscf_sha512_destroy(&phe_hash->sha512);
-}
-
-//
 //  Setup dependency to the class 'simple swu' with shared ownership.
 //
 VSCE_PUBLIC void
@@ -317,7 +275,6 @@ vsce_phe_hash_init_ctx(vsce_phe_hash_t *phe_hash) {
     VSCE_ASSERT_PTR(phe_hash);
 
     vsce_phe_hash_take_simple_swu(phe_hash, vsce_simple_swu_new());
-    vsce_phe_hash_take_sha512(phe_hash, vscf_sha512_new());
 
     mbedtls_ecp_group_init(&phe_hash->group);
 
@@ -361,7 +318,7 @@ vsce_phe_hash_derive_account_key(vsce_phe_hash_t *phe_hash, const mbedtls_ecp_po
 
     vscf_hkdf_t *hkdf = vscf_hkdf_new();
 
-    vscf_hkdf_use_hash(hkdf, vscf_sha512_impl(phe_hash->sha512));
+    vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
 
     vscf_hkdf_derive(hkdf, vsc_buffer_data(&M_buf), vsc_data_empty(), k_kdf_info_client_key, account_key,
             vsc_buffer_capacity(account_key));
@@ -554,7 +511,7 @@ vsce_phe_hash_derive_z(vsce_phe_hash_t *phe_hash, vsc_data_t buffer, bool succes
 
     vscf_sha512_hash(buffer, &key);
 
-    vscf_hkdf_use_hash(hkdf, vscf_sha512_impl(phe_hash->sha512));
+    vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
 
     byte z_buffer[vsce_phe_common_PHE_HASH_LEN];
 

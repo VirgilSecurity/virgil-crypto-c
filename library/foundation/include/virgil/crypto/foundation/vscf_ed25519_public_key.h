@@ -55,7 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_key_alg.h"
+#include "vscf_alg_id.h"
 #include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -157,22 +157,34 @@ VSCF_PUBLIC vscf_ed25519_public_key_t *
 vscf_ed25519_public_key_shallow_copy(vscf_ed25519_public_key_t *ed25519_public_key);
 
 //
-//  Return implemented asymmetric key algorithm type.
+//  Provide algorithm identificator.
 //
-VSCF_PUBLIC vscf_key_alg_t
-vscf_ed25519_public_key_alg(vscf_ed25519_public_key_t *ed25519_public_key);
+VSCF_PUBLIC vscf_alg_id_t
+vscf_ed25519_public_key_alg_id(const vscf_ed25519_public_key_t *ed25519_public_key);
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_ed25519_public_key_produce_alg_info(const vscf_ed25519_public_key_t *ed25519_public_key);
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_ed25519_public_key_restore_alg_info(vscf_ed25519_public_key_t *ed25519_public_key, const vscf_impl_t *alg_info);
 
 //
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_public_key_key_len(vscf_ed25519_public_key_t *ed25519_public_key);
+vscf_ed25519_public_key_key_len(const vscf_ed25519_public_key_t *ed25519_public_key);
 
 //
 //  Length of the key in bits.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_public_key_key_bitlen(vscf_ed25519_public_key_t *ed25519_public_key);
+vscf_ed25519_public_key_key_bitlen(const vscf_ed25519_public_key_t *ed25519_public_key);
 
 //
 //  Verify data with given public key and signature.
@@ -188,13 +200,13 @@ vscf_ed25519_public_key_verify(vscf_ed25519_public_key_t *ed25519_public_key, vs
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ed25519_public_key_export_public_key(vscf_ed25519_public_key_t *ed25519_public_key, vsc_buffer_t *out);
+vscf_ed25519_public_key_export_public_key(const vscf_ed25519_public_key_t *ed25519_public_key, vsc_buffer_t *out);
 
 //
 //  Return length in bytes required to hold exported public key.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_public_key_exported_public_key_len(vscf_ed25519_public_key_t *ed25519_public_key);
+vscf_ed25519_public_key_exported_public_key_len(const vscf_ed25519_public_key_t *ed25519_public_key);
 
 //
 //  Import public key from the binary format.

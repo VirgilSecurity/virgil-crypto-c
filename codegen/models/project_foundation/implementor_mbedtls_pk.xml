@@ -11,6 +11,8 @@
         <require class="mbedtls bignum asn1 reader"/>
         <require module="mbedtls bridge random"/>
         <require class="mbedtls md"/>
+        <require interface="alg info"/>
+        <require class="simple alg info"/>
 
         <context>
             <require header="mbedtls/rsa.h"/>
@@ -22,6 +24,7 @@
         <dependency name="asn1rd" interface="asn1 reader"/>
         <dependency name="asn1wr" interface="asn1 writer"/>
 
+        <interface name="alg"/>
         <interface name="key"/>
         <interface name="encrypt"/>
         <interface name="verify"/>
@@ -43,6 +46,8 @@
         <require module="mbedtls bridge random"/>
         <require class="mbedtls md"/>
         <require module="rsa public key defs"/>
+        <require interface="alg info"/>
+        <require class="simple alg info"/>
 
         <require header="mbedtls/bignum.h"/>
 
@@ -65,6 +70,7 @@
             <argument name="exponent" type="size"/>
         </method>
 
+        <interface name="alg"/>
         <interface name="key"/>
         <interface name="generate key"/>
         <interface name="decrypt"/>

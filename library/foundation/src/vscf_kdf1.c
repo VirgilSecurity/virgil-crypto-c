@@ -53,6 +53,9 @@
 #include "vscf_kdf1.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_simple_alg_info.h"
+#include "vscf_kdf_alg_info.h"
+#include "vscf_hash_info.h"
 #include "vscf_hash_stream.h"
 #include "vscf_kdf1_defs.h"
 #include "vscf_kdf1_internal.h"
@@ -123,4 +126,42 @@ vscf_kdf1_derive(vscf_kdf1_t *kdf1, vsc_data_t data, size_t key_len, vsc_buffer_
             vsc_buffer_destroy(&digest);
         }
     }
+}
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_kdf1_alg_id(const vscf_kdf1_t *kdf1) {
+
+    VSCF_ASSERT_PTR(kdf1);
+    return vscf_alg_id_KDF1;
+}
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_kdf1_produce_alg_info(const vscf_kdf1_t *kdf1) {
+
+    VSCF_ASSERT_PTR(kdf1);
+    const vscf_hash_stream_api_t *hash_stream_api = vscf_hash_stream_api(kdf1->hash);
+    const vscf_hash_info_api_t *hash_info_api = vscf_hash_stream_hash_info_api(hash_stream_api);
+    vscf_alg_id_t alg_id = (vscf_alg_id_t)vscf_hash_info_alg(hash_info_api);
+    vscf_simple_alg_info_t *hash_alg_info = vscf_simple_alg_info_new_with_alg_id(alg_id);
+    alg_id = vscf_alg_id_KDF1;
+    vscf_kdf_alg_info_t *kdf_alg_info = vscf_kdf_alg_info_new_with_members(alg_id, hash_alg_info);
+    return vscf_kdf_alg_info_impl(kdf_alg_info);
+}
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_kdf1_restore_alg_info(vscf_kdf1_t *kdf1, const vscf_impl_t *alg_info) {
+
+    //  TODO: This is STUB. Implement me.
+    VSCF_ASSERT_PTR(kdf1);
+    VSCF_ASSERT_PTR(alg_info);
+    return vscf_error_BAD_ARGUMENTS;
 }

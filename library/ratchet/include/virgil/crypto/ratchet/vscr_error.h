@@ -68,37 +68,29 @@ enum vscr_error_t {
     //
     vscr_SUCCESS = 0,
     //
-    //  Error during protobuf serialization
-    //
-    vscr_PROTOBUF_ENCODE_ERROR = 1,
-    //
     //  Error during protobuf deserialization
     //
-    vscr_PROTOBUF_DECODE_ERROR = 2,
+    vscr_error_PROTOBUF_DECODE_ERROR = 1,
     //
     //  Message version doesn't match
     //
-    vscr_MESSAGE_VERSION_DOESN_T_MATCH = 3,
+    vscr_error_MESSAGE_VERSION_DOESN_T_MATCH = 2,
     //
     //  Bad message
     //
-    vscr_BAD_MESSAGE = 4,
+    vscr_error_BAD_MESSAGE = 3,
     //
     //  AES error
     //
-    vscr_AES_ERROR = 5,
+    vscr_error_AES_ERROR = 4,
     //
-    //  Wrong message format
+    //  RNG failed
     //
-    vscr_WRONG_MESSAGE_FORMAT = 6,
-    //
-    //  Invalid arguments
-    //
-    vscr_INVALID_ARGUMENTS = 7,
+    vscr_error_RNG_FAILED = 5,
     //
     //  curve25519 error
     //
-    vscr_CURVE25519_ERROR = 8
+    vscr_error_CURVE25519_ERROR = 6
 };
 typedef enum vscr_error_t vscr_error_t;
 
