@@ -41,8 +41,5 @@ class Buffer(object):
     def get_data(self):
         return self._lib_vsc_buffer.vsc_buffer_data(self.c_buffer)
 
-    def get_capacity(self):
-        pass
-
     def write_data(self, data):
         self._lib_vsc_buffer.vsc_buffer_write_data(self.c_buffer, data)
