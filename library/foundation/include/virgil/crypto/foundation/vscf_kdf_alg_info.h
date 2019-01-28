@@ -91,16 +91,10 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_kdf_alg_info_impl(vscf_kdf_alg_info_t *kdf_alg_info);
 
 //
-//  Set algorithm identificator
+//  Create KDF algorithm info with identificator and HASH algorithm info.
 //
 VSCF_PUBLIC vscf_kdf_alg_info_t *
-vscf_kdf_alg_info_new_with_alg_id(vscf_alg_id_t alg_id);
-
-//
-//  Set algorithm identificator
-//
-VSCF_PUBLIC vscf_kdf_alg_info_t *
-vscf_kdf_alg_info_new_with_members(vscf_alg_id_t alg_id, const vscf_simple_alg_info_t *hash_alg_info);
+vscf_kdf_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_simple_alg_info_t *hash_alg_info);
 
 //
 //  Perform initialization of preallocated implementation context.
@@ -145,10 +139,16 @@ VSCF_PUBLIC vscf_kdf_alg_info_t *
 vscf_kdf_alg_info_shallow_copy(vscf_kdf_alg_info_t *kdf_alg_info);
 
 //
-//  Provide algorithm identificator
+//  Return hash algorithm information.
+//
+VSCF_PUBLIC const vscf_simple_alg_info_t *
+vscf_kdf_alg_info_hash_alg_info(const vscf_kdf_alg_info_t *kdf_alg_info);
+
+//
+//  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_kdf_alg_info_alg_id(vscf_kdf_alg_info_t *kdf_alg_info);
+vscf_kdf_alg_info_alg_id(const vscf_kdf_alg_info_t *kdf_alg_info);
 
 
 // --------------------------------------------------------------------------

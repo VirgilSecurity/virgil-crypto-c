@@ -85,12 +85,12 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_info.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_info_compatible.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_info.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -280,6 +280,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_cipher_alg_info.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ctr_drbg.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -420,11 +425,6 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_alg.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_hash_alg.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -447,10 +447,10 @@ target_sources(foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_api_private.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_impl.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_impl_private.h"
+            "$<$<BOOL:${VSCF_ALG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg.h>"
+            "$<$<BOOL:${VSCF_ALG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_alg_api.h>"
             "$<$<BOOL:${VSCF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_info.h>"
             "$<$<BOOL:${VSCF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_alg_info_api.h>"
-            "$<$<BOOL:${VSCF_ALG_INFO_COMPATIBLE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_info_compatible.h>"
-            "$<$<BOOL:${VSCF_ALG_INFO_COMPATIBLE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_alg_info_compatible_api.h>"
             "$<$<BOOL:${VSCF_ALG_INFO_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_info_deserializer.h>"
             "$<$<BOOL:${VSCF_ALG_INFO_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_alg_info_deserializer_api.h>"
             "$<$<BOOL:${VSCF_ALG_INFO_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_info_serializer.h>"
@@ -530,6 +530,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_ASN1WR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_asn1wr.h>"
             "$<$<BOOL:${VSCF_ASN1WR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1wr_internal.h>"
             "$<$<BOOL:${VSCF_ASN1WR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_asn1wr_defs.h>"
+            "$<$<BOOL:${VSCF_CIPHER_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_cipher_alg_info.h>"
+            "$<$<BOOL:${VSCF_CIPHER_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher_alg_info_internal.h>"
+            "$<$<BOOL:${VSCF_CIPHER_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_cipher_alg_info_defs.h>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ctr_drbg.h>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg_internal.h>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_ctr_drbg_defs.h>"
@@ -606,7 +609,6 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_RAW_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_raw_key_defs.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_asn1_tag.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_alg.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_hash_alg.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_id.h"
 
@@ -620,10 +622,10 @@ target_sources(foundation
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_api_private.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_impl.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_impl_private.c"
+            "$<$<BOOL:${VSCF_ALG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg.c>"
+            "$<$<BOOL:${VSCF_ALG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg_api.c>"
             "$<$<BOOL:${VSCF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg_info.c>"
             "$<$<BOOL:${VSCF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg_info_api.c>"
-            "$<$<BOOL:${VSCF_ALG_INFO_COMPATIBLE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg_info_compatible.c>"
-            "$<$<BOOL:${VSCF_ALG_INFO_COMPATIBLE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg_info_compatible_api.c>"
             "$<$<BOOL:${VSCF_ALG_INFO_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg_info_deserializer.c>"
             "$<$<BOOL:${VSCF_ALG_INFO_DESERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg_info_deserializer_api.c>"
             "$<$<BOOL:${VSCF_ALG_INFO_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg_info_serializer.c>"
@@ -703,6 +705,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_ASN1WR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1wr.c>"
             "$<$<BOOL:${VSCF_ASN1WR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1wr_internal.c>"
             "$<$<BOOL:${VSCF_ASN1WR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1wr_defs.c>"
+            "$<$<BOOL:${VSCF_CIPHER_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher_alg_info.c>"
+            "$<$<BOOL:${VSCF_CIPHER_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher_alg_info_internal.c>"
+            "$<$<BOOL:${VSCF_CIPHER_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_cipher_alg_info_defs.c>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg.c>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg_internal.c>"
             "$<$<BOOL:${VSCF_CTR_DRBG}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ctr_drbg_defs.c>"
@@ -779,7 +784,6 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_RAW_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_raw_key_defs.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_error.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_asn1_tag.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_alg.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_alg.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg_id.c"
         )

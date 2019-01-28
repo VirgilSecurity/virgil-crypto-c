@@ -54,7 +54,6 @@
 #define VSCF_OID_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_key_alg.h"
 #include "vscf_alg_id.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -81,22 +80,10 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Return OID for given key algorithm.
-//
-VSCF_PUBLIC vsc_data_t
-vscf_oid_from_key_alg(vscf_key_alg_t key_alg);
-
-//
 //  Return OID for given algorithm identifier
 //
 VSCF_PUBLIC vsc_data_t
 vscf_oid_from_alg_id(vscf_alg_id_t alg_id);
-
-//
-//  Return key algorithm for given OID.
-//
-VSCF_PUBLIC vscf_key_alg_t
-vscf_oid_to_key_alg(vsc_data_t oid);
 
 //
 //  Return algorithm identifier for given OID.

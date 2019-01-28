@@ -34,10 +34,7 @@
 
 #include "vsc_data.h"
 
-extern const vsc_data_t test_alg_info_SHA256_DER_DESERIALIZER;
-
-extern const vsc_data_t test_alg_info_KDF1_DER_DESERIALIZER;
-
-extern const int test_alg_info_DER_SHA256_VALID_OUTPUT;
-
-extern const int test_alg_info_DER_KDF1_VALID_OUTPUT;
+extern const vsc_data_t test_alg_info_SHA256_DER;
+extern const vsc_data_t test_alg_info_KDF1_SHA256_DER;
+extern const vsc_data_t test_alg_info_AES256_GCM_DER;
+extern const vsc_data_t test_alg_info_AES256_GCM_NONCE;

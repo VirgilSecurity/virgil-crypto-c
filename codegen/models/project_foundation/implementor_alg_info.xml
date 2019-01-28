@@ -1,0 +1,71 @@
+<implementor name="alg info" is_default="1">
+    Provide implementation of algorithm information for algorithm agility.
+
+    <implementation name="simple alg info">
+        Handle simple algorithm information (just id).
+
+        <interface name="alg info"/>
+
+        <context>
+            <property name="alg id" enum="alg id"/>
+        </context>
+
+        <constructor name="with alg id">
+            Create algorithm info with identificator.
+
+            <argument name="alg id" enum="alg id"/>
+        </constructor>
+    </implementation>
+
+
+    <implementation name="kdf alg info">
+        Handle KDF algorithm information.
+
+        <interface name="alg info"/>
+
+        <context>
+            <property name="alg id" enum="alg id"/>
+            <property name="hash alg info" impl="simple alg info"/>
+        </context>
+
+
+        <constructor name="with members">
+            Create KDF algorithm info with identificator and HASH algorithm info.
+
+            <argument name="alg id" enum="alg id"/>
+            <argument name="hash alg info" impl="simple alg info" access="retain"/>
+        </constructor>
+
+        <method name="hash alg info" is_const="1" declaration="public">
+            Return hash algorithm information.
+
+            <return impl="simple alg info"/>
+        </method>
+    </implementation>
+
+
+    <implementation name="cipher alg info">
+        Handle symmetric cipher algorithm information.
+
+        <interface name="alg info"/>
+
+        <context>
+            <property name="alg id" enum="alg id"/>
+            <property name="nonce" class="buffer"/>
+        </context>
+
+
+        <constructor name="with members">
+            Create symmetric cipher algorithm info with identificator and input vector.
+
+            <argument name="alg id" enum="alg id"/>
+            <argument name="nonce" class="data"/>
+        </constructor>
+
+        <method name="nonce" is_const="1" declaration="public">
+            Return IV.
+
+            <return class="data"/>
+        </method>
+    </implementation>
+</implementor>

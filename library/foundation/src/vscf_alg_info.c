@@ -65,7 +65,7 @@
 // --------------------------------------------------------------------------
 
 //
-//  Provide algorithm identificator
+//  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
 vscf_alg_info_alg_id(const vscf_impl_t *impl) {

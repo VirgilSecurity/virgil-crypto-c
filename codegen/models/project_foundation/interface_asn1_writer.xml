@@ -24,6 +24,13 @@
     </method>
 
 
+    <method name="written len" is_const="1">
+        Returns how many bytes were already written to the ASN.1 structure.
+
+        <return type="size"/>
+    </method>
+
+
     <method name="error">
         Return last error.
 
