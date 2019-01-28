@@ -140,6 +140,12 @@ VSC_PUBLIC bool
 vsc_buffer_is_empty(const vsc_buffer_t *buffer);
 
 //
+//  Returns true if buffer written data is located at the buffer ending.
+//
+VSC_PUBLIC bool
+vsc_buffer_is_reverse(const vsc_buffer_t *buffer);
+
+//
 //  Return true if buffers are equal.
 //
 VSC_PUBLIC bool
@@ -178,6 +184,18 @@ vsc_buffer_take(vsc_buffer_t *buffer, byte *bytes, size_t bytes_len, vsc_dealloc
 //
 VSC_PUBLIC void
 vsc_buffer_make_secure(vsc_buffer_t *buffer);
+
+//
+//  Change the way buffer content is interpreted.
+//
+//  If true - assume that written data is located at the buffer ending.
+//  If false - assume that written data is located at the buffer beginning.
+//
+//  Note, that buffer is not empty and if new mode differs then data
+//  will be moved to the appropriate place.
+//
+VSC_PUBLIC void
+vsc_buffer_switch_reverse_mode(vsc_buffer_t *buffer, bool is_reverse);
 
 //
 //  Returns true if buffer full.

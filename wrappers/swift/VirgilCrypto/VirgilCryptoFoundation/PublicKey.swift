@@ -89,11 +89,25 @@ import VirgilCryptoCommon
         vscf_impl_delete(self.c_ctx)
     }
 
-    /// Return implemented asymmetric key algorithm type.
-    @objc public func alg() -> KeyAlg {
-        let proxyResult = vscf_key_alg(self.c_ctx)
+    /// Provide algorithm identificator.
+    @objc public func algId() -> AlgId {
+        let proxyResult = vscf_alg_alg_id(self.c_ctx)
 
-        return KeyAlg.init(fromC: proxyResult)
+        return AlgId.init(fromC: proxyResult)
+    }
+
+    /// Produce object with algorithm information and configuration parameters.
+    @objc public func produceAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_alg_produce_alg_info(self.c_ctx)
+
+        return AlgInfoProxy.init(c_ctx: proxyResult!)
+    }
+
+    /// Restore algorithm configuration from the given object.
+    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
+        let proxyResult = vscf_alg_restore_alg_info(self.c_ctx, algInfo.c_ctx)
+
+        try FoundationError.handleError(fromC: proxyResult)
     }
 
     /// Length of the key in bytes.

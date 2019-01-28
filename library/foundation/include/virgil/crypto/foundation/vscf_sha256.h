@@ -54,10 +54,12 @@
 #define VSCF_SHA256_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_alg_id.h"
 #include "vscf_impl.h"
 #include "vscf_hash_info.h"
 #include "vscf_hash.h"
 #include "vscf_hash_alg.h"
+#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -198,6 +200,24 @@ vscf_sha256_update(vscf_sha256_t *sha256, vsc_data_t data);
 //
 VSCF_PUBLIC void
 vscf_sha256_finish(vscf_sha256_t *sha256, vsc_buffer_t *digest);
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_sha256_alg_id(const vscf_sha256_t *sha256);
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_sha256_produce_alg_info(const vscf_sha256_t *sha256);
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_sha256_restore_alg_info(vscf_sha256_t *sha256, const vscf_impl_t *alg_info);
 
 
 // --------------------------------------------------------------------------

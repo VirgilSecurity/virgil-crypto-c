@@ -40,18 +40,18 @@
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include "vscr_ratchet_defs.h"
-#include "vscr_ratchet_rng.h"
 #include "vscr_ratchet_session.h"
-#include "vscr_ratchet_session_defs.h"
-#include "vscr_virgil_ratchet_fake_rng_defs.h"
 
 #include "test_data_ratchet_session.h"
-#include "test_data_ratchet_prekey_message.h"
-#include "test_data_ratchet.h"
+#include "unreliable_msg_producer.h"
 
 #include <ed25519/ed25519.h>
-#include <Message.pb.h>
+#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
+#include <virgil/crypto/ratchet/private/vscr_ratchet_message_defs.h>
+#include <virgil/crypto/ratchet/vscr_memory.h>
+#include <vscr_ratchet_chain_key.h>
+#include <vscr_ratchet_receiver_chain_list_node.h>
+#include <vscr_ratchet_skipped_message_key_list_node.h>
 
 // --------------------------------------------------------------------------
 //  Should have it to prevent linkage erros in MSVC.
@@ -68,232 +68,117 @@ int suiteTearDown(int num_failures) { return num_failures; }
 //  Test functions.
 // --------------------------------------------------------------------------
 static void
-initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *session_bob, Message *ratchet_message) {
-    vscr_ratchet_session_take_rng(session_alice, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
-    vscr_ratchet_session_take_rng(session_bob, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
-
-    vscr_ratchet_t *ratchet_alice = vscr_ratchet_new();
-    vscr_ratchet_t *ratchet_bob = vscr_ratchet_new();
-
-    vscr_ratchet_session_take_ratchet(session_alice, ratchet_alice);
-    vscr_ratchet_session_take_ratchet(session_bob, ratchet_bob);
-
-    vscr_ratchet_cipher_t *ratchet_cipher = vscr_ratchet_cipher_new();
-    vscr_ratchet_use_cipher(ratchet_alice, ratchet_cipher);
-    vscr_ratchet_use_cipher(ratchet_bob, ratchet_cipher);
-    vscr_ratchet_cipher_destroy(&ratchet_cipher);
-
-    vscr_ratchet_take_rng(ratchet_alice, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
-    vscr_ratchet_take_rng(ratchet_bob, vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new()));
-
-    vsc_buffer_t *alice_identity_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
-    TEST_ASSERT_EQUAL_INT(0, curve25519_get_pubkey(vsc_buffer_unused_bytes(alice_identity_public_key),
-                                     test_ratchet_session_alice_identity_private_key.bytes));
-    vsc_buffer_inc_used(alice_identity_public_key, ED25519_KEY_LEN);
-
-    vsc_buffer_t *bob_identity_private_key =
-            vsc_buffer_new_with_capacity(test_ratchet_session_bob_identity_private_key.len);
-    memcpy(vsc_buffer_unused_bytes(bob_identity_private_key), test_ratchet_session_bob_identity_private_key.bytes,
-            test_ratchet_session_bob_identity_private_key.len);
-    vsc_buffer_inc_used(bob_identity_private_key, ED25519_KEY_LEN);
-
-    vsc_buffer_t *bob_identity_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
-    TEST_ASSERT_EQUAL_INT(0, curve25519_get_pubkey(vsc_buffer_unused_bytes(bob_identity_public_key),
-                                     vsc_buffer_bytes(bob_identity_private_key)));
-    vsc_buffer_inc_used(bob_identity_public_key, ED25519_KEY_LEN);
-
-    vsc_buffer_t *bob_longterm_private_key =
-            vsc_buffer_new_with_capacity(test_ratchet_session_bob_longterm_private_key.len);
-    memcpy(vsc_buffer_unused_bytes(bob_longterm_private_key), test_ratchet_session_bob_longterm_private_key.bytes,
-            test_ratchet_session_bob_longterm_private_key.len);
-    vsc_buffer_inc_used(bob_longterm_private_key, ED25519_KEY_LEN);
-
-    vsc_buffer_t *bob_longterm_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
-    TEST_ASSERT_EQUAL_INT(0, curve25519_get_pubkey(vsc_buffer_unused_bytes(bob_longterm_public_key),
-                                     vsc_buffer_bytes(bob_longterm_private_key)));
-    vsc_buffer_inc_used(bob_longterm_public_key, ED25519_KEY_LEN);
-
-    vsc_buffer_t *bob_onetime_private_key =
-            vsc_buffer_new_with_capacity(test_ratchet_session_bob_onetime_private_key.len);
-    memcpy(vsc_buffer_unused_bytes(bob_onetime_private_key), test_ratchet_session_bob_onetime_private_key.bytes,
-            test_ratchet_session_bob_onetime_private_key.len);
-    vsc_buffer_inc_used(bob_onetime_private_key, ED25519_KEY_LEN);
-
-    vsc_buffer_t *bob_onetime_public_key = vsc_buffer_new_with_capacity(ED25519_KEY_LEN);
-    TEST_ASSERT_EQUAL_INT(0, curve25519_get_pubkey(vsc_buffer_unused_bytes(bob_onetime_public_key),
-                                     vsc_buffer_bytes(bob_onetime_private_key)));
-    vsc_buffer_inc_used(bob_onetime_public_key, ED25519_KEY_LEN);
+initialize(vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *session_bob, bool enable_one_time) {
+    vscr_ratchet_session_setup_defaults(session_alice);
+    vscr_ratchet_session_setup_defaults(session_bob);
 
     TEST_ASSERT_EQUAL_INT(vscr_SUCCESS,
             vscr_ratchet_session_initiate(session_alice, test_ratchet_session_alice_identity_private_key,
-                    vsc_buffer_data(bob_identity_public_key), bob_longterm_public_key, bob_onetime_public_key));
-
-    size_t len1 = vscr_ratchet_session_encrypt_len(session_alice, test_ratchet_plain_text1.len);
-    vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(len1);
-
-    vscr_error_t result = vscr_ratchet_session_encrypt(session_alice, test_ratchet_plain_text1, cipher_text);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
+                    test_ratchet_session_bob_identity_public_key, test_ratchet_session_bob_long_term_public_key,
+                    enable_one_time ? test_ratchet_session_bob_one_time_public_key : vsc_data_empty()));
 
     vscr_error_ctx_t error_ctx;
     vscr_error_ctx_reset(&error_ctx);
 
-    bool status = true;
-    pb_istream_t istream = pb_istream_from_buffer(vsc_buffer_data(cipher_text).bytes, vsc_buffer_data(cipher_text).len);
-
-    status = pb_decode(&istream, Message_fields, ratchet_message);
-    TEST_ASSERT_EQUAL(true, status);
-
-    PrekeyMessage prekey_message = ratchet_message->message.prekey_message;
-    RegularMessage regular_message = ratchet_message->message.prekey_message.regular_message;
-
-    vsc_buffer_t *sender_ephemeral_key = vsc_buffer_new_with_data(
-            vsc_data(prekey_message.sender_ephemeral_key, sizeof(prekey_message.sender_ephemeral_key)));
-    vsc_buffer_t *public_key =
-            vsc_buffer_new_with_data(vsc_data(regular_message.public_key, sizeof(regular_message.public_key)));
+    vscr_ratchet_message_t *ratchet_message =
+            vscr_ratchet_session_encrypt(session_alice, test_ratchet_session_plain_text1, &error_ctx);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+    TEST_ASSERT_EQUAL(vscr_msg_type_PREKEY, vscr_ratchet_message_get_type(ratchet_message));
+    TEST_ASSERT((vscr_ratchet_message_get_one_time_public_key(ratchet_message).len == 0) == !enable_one_time);
 
     TEST_ASSERT_EQUAL_INT(vscr_SUCCESS,
-            vscr_ratchet_session_respond(session_bob, alice_identity_public_key, sender_ephemeral_key, public_key,
-                    bob_identity_private_key, bob_longterm_private_key, bob_onetime_private_key, &regular_message));
+            vscr_ratchet_session_respond(session_bob, test_ratchet_session_alice_identity_public_key,
+                    test_ratchet_session_bob_identity_private_key, test_ratchet_session_bob_long_term_private_key,
+                    enable_one_time ? test_ratchet_session_bob_one_time_private_key : vsc_data_empty(),
+                    ratchet_message));
 
-    vsc_buffer_destroy(&alice_identity_public_key);
-    vsc_buffer_destroy(&bob_identity_private_key);
-    vsc_buffer_destroy(&bob_identity_public_key);
-    vsc_buffer_destroy(&bob_longterm_private_key);
-    vsc_buffer_destroy(&bob_longterm_public_key);
-    vsc_buffer_destroy(&bob_onetime_private_key);
-    vsc_buffer_destroy(&bob_onetime_public_key);
+    size_t len2 = vscr_ratchet_session_decrypt_len(session_bob, ratchet_message);
+    vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(len2);
+
+    vscr_error_t result = vscr_ratchet_session_decrypt(session_bob, ratchet_message, plain_text);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
+
+    TEST_ASSERT_EQUAL_INT(test_ratchet_session_plain_text1.len, vsc_buffer_len(plain_text));
+    TEST_ASSERT_EQUAL_MEMORY(
+            test_ratchet_session_plain_text1.bytes, vsc_buffer_bytes(plain_text), test_ratchet_session_plain_text1.len);
+
+    vscr_ratchet_message_destroy(&ratchet_message);
+    vsc_buffer_destroy(&plain_text);
 }
 
 void
-test__1(void) {
+test__encrypt_decrypt__fixed_plain_text__decrypted_should_match(void) {
     vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
     vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
 
-    Message ratchet_message = Message_init_zero;
-
-    initialize(session_alice, session_bob, &ratchet_message);
-
-    size_t len2 = vscr_ratchet_session_decrypt_len(session_bob, &ratchet_message);
-    vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(len2);
-
-    vscr_error_t result = vscr_ratchet_session_decrypt(session_bob, &ratchet_message, plain_text);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
-
-    TEST_ASSERT_EQUAL_INT(test_ratchet_plain_text1.len, vsc_buffer_len(plain_text));
-    TEST_ASSERT_EQUAL_MEMORY(
-            test_ratchet_plain_text1.bytes, vsc_buffer_bytes(plain_text), test_ratchet_plain_text1.len);
-
-    vsc_buffer_destroy(&plain_text);
+    initialize(session_alice, session_bob, true);
 
     vscr_ratchet_session_destroy(&session_alice);
     vscr_ratchet_session_destroy(&session_bob);
 }
 
 void
-test__2(void) {
+test__encrypt_decrypt_back_and_forth__fixed_plain_text__decrypted_should_match(void) {
     vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
     vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
-    Message ratchet_message = Message_init_zero;
 
-    initialize(session_alice, session_bob, &ratchet_message);
-
-    size_t len1 = vscr_ratchet_session_encrypt_len(session_alice, test_ratchet_plain_text1.len);
-    vsc_buffer_t *cipher_text1 = vsc_buffer_new_with_capacity(len1);
-
-    vscr_error_t result = vscr_ratchet_session_encrypt(session_alice, test_ratchet_plain_text1, cipher_text1);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
+    initialize(session_alice, session_bob, true);
 
     vscr_error_ctx_t error_ctx;
     vscr_error_ctx_reset(&error_ctx);
 
-    Message ratchet_message1 = Message_init_zero;
-    bool status = true;
-    pb_istream_t istream1 =
-            pb_istream_from_buffer(vsc_buffer_data(cipher_text1).bytes, vsc_buffer_data(cipher_text1).len);
+    vscr_ratchet_message_t *ratchet_message =
+            vscr_ratchet_session_encrypt(session_alice, test_ratchet_session_plain_text2, &error_ctx);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+    TEST_ASSERT_EQUAL(vscr_msg_type_PREKEY, vscr_ratchet_message_get_type(ratchet_message));
 
-    status = pb_decode(&istream1, Message_fields, &ratchet_message1);
-    TEST_ASSERT_EQUAL(true, status);
+    size_t len2 = vscr_ratchet_session_decrypt_len(session_bob, ratchet_message);
+    vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(len2);
 
-    size_t len2 = vscr_ratchet_session_decrypt_len(session_bob, &ratchet_message1);
-    vsc_buffer_t *plain_text1 = vsc_buffer_new_with_capacity(len2);
-
-    result = vscr_ratchet_session_decrypt(session_bob, &ratchet_message1, plain_text1);
+    vscr_error_t result = vscr_ratchet_session_decrypt(session_bob, ratchet_message, plain_text);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
-    TEST_ASSERT_EQUAL_INT(test_ratchet_plain_text1.len, vsc_buffer_len(plain_text1));
+    TEST_ASSERT_EQUAL_INT(test_ratchet_session_plain_text2.len, vsc_buffer_len(plain_text));
     TEST_ASSERT_EQUAL_MEMORY(
-            test_ratchet_plain_text1.bytes, vsc_buffer_bytes(plain_text1), test_ratchet_plain_text1.len);
+            test_ratchet_session_plain_text2.bytes, vsc_buffer_bytes(plain_text), test_ratchet_session_plain_text2.len);
 
-    size_t len3 = vscr_ratchet_session_encrypt_len(session_bob, test_ratchet_plain_text2.len);
-    vsc_buffer_t *cipher_text2 = vsc_buffer_new_with_capacity(len3);
-
-    result = vscr_ratchet_session_encrypt(session_bob, test_ratchet_plain_text2, cipher_text2);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
-
-    vscr_error_ctx_reset(&error_ctx);
-
-    Message ratchet_message2 = Message_init_zero;
-    status = true;
-    pb_istream_t istream2 =
-            pb_istream_from_buffer(vsc_buffer_data(cipher_text2).bytes, vsc_buffer_data(cipher_text2).len);
-
-    status = pb_decode(&istream2, Message_fields, &ratchet_message2);
-    TEST_ASSERT_EQUAL(true, status);
-
-    size_t len4 = vscr_ratchet_session_decrypt_len(session_alice, &ratchet_message2);
-    vsc_buffer_t *plain_text2 = vsc_buffer_new_with_capacity(len4);
-
-    result = vscr_ratchet_session_decrypt(session_alice, &ratchet_message2, plain_text2);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
-
-    TEST_ASSERT_EQUAL_INT(test_ratchet_plain_text2.len, vsc_buffer_len(plain_text2));
-    TEST_ASSERT_EQUAL_MEMORY(
-            test_ratchet_plain_text2.bytes, vsc_buffer_bytes(plain_text2), test_ratchet_plain_text2.len);
-
-    vsc_buffer_destroy(&cipher_text1);
-    vsc_buffer_destroy(&plain_text1);
-    vsc_buffer_destroy(&cipher_text2);
-    vsc_buffer_destroy(&plain_text2);
-
+    vsc_buffer_destroy(&plain_text);
     vscr_ratchet_session_destroy(&session_alice);
     vscr_ratchet_session_destroy(&session_bob);
+    vscr_ratchet_message_destroy(&ratchet_message);
 }
 
 void
-test__3(void) {
+test__encrypt_decrypt__100_plain_texts_random_order__decrypted_should_match(void) {
     vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
     vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
 
-    Message ratchet_message = Message_init_zero;
+    initialize(session_alice, session_bob, true);
 
-    initialize(session_alice, session_bob, &ratchet_message);
-
-    // FIXME
-    vscr_impl_t *rng = vscr_virgil_ratchet_fake_rng_impl(vscr_virgil_ratchet_fake_rng_new());
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    vscf_ctr_drbg_setup_defaults(rng);
 
     for (int i = 0; i < 100; i++) {
         byte rnd_plain_text_len;
         vsc_buffer_t *fake_buffer1 = vsc_buffer_new();
         vsc_buffer_use(fake_buffer1, &rnd_plain_text_len, sizeof(rnd_plain_text_len));
-        vscr_ratchet_rng_generate_random_data(rng, sizeof(rnd_plain_text_len), fake_buffer1);
+        vscf_ctr_drbg_random(rng, sizeof(rnd_plain_text_len), fake_buffer1);
 
+        // Prevent rnd_plain_text_len == 0
         if (rnd_plain_text_len == 0)
-            rnd_plain_text_len = 10;
+            rnd_plain_text_len = 1;
 
         byte dice_rnd;
         vsc_buffer_t *fake_buffer2 = vsc_buffer_new();
         vsc_buffer_use(fake_buffer2, &dice_rnd, sizeof(dice_rnd));
-        vscr_ratchet_rng_generate_random_data(rng, sizeof(dice_rnd), fake_buffer2);
+        vscf_ctr_drbg_random(rng, sizeof(dice_rnd), fake_buffer2);
         bool dice = dice_rnd % 2 == 0;
-
-        if (i == 0)
-            dice = true;
 
         vsc_buffer_destroy(&fake_buffer1);
         vsc_buffer_destroy(&fake_buffer2);
 
         vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(rnd_plain_text_len);
-        vscr_ratchet_rng_generate_random_data(rng, vsc_buffer_capacity(plain_text), plain_text);
+        vscf_ctr_drbg_random(rng, vsc_buffer_capacity(plain_text), plain_text);
 
         vscr_ratchet_session_t *sender, *receiver;
 
@@ -306,112 +191,213 @@ test__3(void) {
             receiver = session_alice;
         }
 
-        size_t cipher_text_len = vscr_ratchet_session_encrypt_len(sender, vsc_buffer_len(plain_text));
-        vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(cipher_text_len);
-
-        vscr_error_t result = vscr_ratchet_session_encrypt(sender, vsc_buffer_data(plain_text), cipher_text);
-        TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
-
         vscr_error_ctx_t error_ctx;
         vscr_error_ctx_reset(&error_ctx);
 
-        Message ratchet_message = Message_init_zero;
-        bool status = true;
-        pb_istream_t istream =
-                pb_istream_from_buffer(vsc_buffer_data(cipher_text).bytes, vsc_buffer_data(cipher_text).len);
+        vscr_ratchet_message_t *ratchet_message =
+                vscr_ratchet_session_encrypt(sender, vsc_buffer_data(plain_text), &error_ctx);
+        TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
 
-        status = pb_decode(&istream, Message_fields, &ratchet_message);
-        TEST_ASSERT_EQUAL(true, status);
-
-        size_t plain_text_len = vscr_ratchet_session_decrypt_len(receiver, &ratchet_message);
+        size_t plain_text_len = vscr_ratchet_session_decrypt_len(receiver, ratchet_message);
         vsc_buffer_t *decrypted = vsc_buffer_new_with_capacity(plain_text_len);
-        result = vscr_ratchet_session_decrypt(receiver, &ratchet_message, decrypted);
+        vscr_error_t result = vscr_ratchet_session_decrypt(receiver, ratchet_message, decrypted);
         TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
         TEST_ASSERT_EQUAL_INT(vsc_buffer_len(plain_text), vsc_buffer_len(decrypted));
         TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(plain_text), vsc_buffer_bytes(decrypted), vsc_buffer_len(plain_text));
 
         vsc_buffer_destroy(&plain_text);
-        vsc_buffer_destroy(&cipher_text);
         vsc_buffer_destroy(&decrypted);
+        vscr_ratchet_message_destroy(&ratchet_message);
     }
 
-    vscr_impl_destroy(&rng);
+    vscf_ctr_drbg_destroy(&rng);
 
     vscr_ratchet_session_destroy(&session_alice);
     vscr_ratchet_session_destroy(&session_bob);
 }
 
 void
-test__constructor__create_object__object_has_correct_values(void) {
-    bool received_first_response = true;
-    vsc_buffer_t *sender_identity_key = vsc_buffer_new_with_data(test_ratchet_prekey_message_sender_identity_key);
-    vsc_buffer_t *sender_ephemeral_key = vsc_buffer_new_with_data(test_ratchet_prekey_message_sender_ephemeral_key);
-    vsc_buffer_t *receiver_longterm_key = vsc_buffer_new_with_data(test_ratchet_prekey_message_receiver_longterm_key);
-    vsc_buffer_t *receiver_onetime_key = vsc_buffer_new_with_data(test_ratchet_prekey_message_receiver_onetime_key);
+test__encrypt_decrypt__100_plain_texts_random_order_no_one_time__decrypted_should_match(void) {
+    vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
+    vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
 
-    vscr_ratchet_t *ratchet = vscr_ratchet_new();
+    initialize(session_alice, session_bob, false);
 
-    vscr_ratchet_session_t *ratchet_session = vscr_ratchet_session_new_with_members(received_first_response,
-            sender_identity_key, sender_ephemeral_key, receiver_longterm_key, receiver_onetime_key,
-            &ratchet); // FIXME
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    vscf_ctr_drbg_setup_defaults(rng);
 
-    TEST_ASSERT_EQUAL(ratchet_session->received_first_response, received_first_response);
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(sender_identity_key),
-            vsc_buffer_bytes(ratchet_session->sender_identity_public_key),
-            vsc_buffer_len(ratchet_session->sender_identity_public_key));
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(sender_ephemeral_key),
-            vsc_buffer_bytes(ratchet_session->sender_ephemeral_public_key),
-            vsc_buffer_len(ratchet_session->sender_ephemeral_public_key));
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(receiver_longterm_key),
-            vsc_buffer_bytes(ratchet_session->receiver_longterm_public_key),
-            vsc_buffer_len(ratchet_session->receiver_longterm_public_key));
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(receiver_onetime_key),
-            vsc_buffer_bytes(ratchet_session->receiver_onetime_public_key),
-            vsc_buffer_len(ratchet_session->receiver_onetime_public_key));
+    for (int i = 0; i < 100; i++) {
+        byte rnd_plain_text_len;
+        vsc_buffer_t *fake_buffer1 = vsc_buffer_new();
+        vsc_buffer_use(fake_buffer1, &rnd_plain_text_len, sizeof(rnd_plain_text_len));
+        vscf_ctr_drbg_random(rng, sizeof(rnd_plain_text_len), fake_buffer1);
 
-    // FIXME: check ratchet
+        // Prevent rnd_plain_text_len == 0
+        if (rnd_plain_text_len == 0)
+            rnd_plain_text_len = 1;
+
+        byte dice_rnd;
+        vsc_buffer_t *fake_buffer2 = vsc_buffer_new();
+        vsc_buffer_use(fake_buffer2, &dice_rnd, sizeof(dice_rnd));
+        vscf_ctr_drbg_random(rng, sizeof(dice_rnd), fake_buffer2);
+        bool dice = dice_rnd % 2 == 0;
+
+        vsc_buffer_destroy(&fake_buffer1);
+        vsc_buffer_destroy(&fake_buffer2);
+
+        vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(rnd_plain_text_len);
+        vscf_ctr_drbg_random(rng, vsc_buffer_capacity(plain_text), plain_text);
+
+        vscr_ratchet_session_t *sender, *receiver;
+
+        // Alice sends msg
+        if (dice) {
+            sender = session_alice;
+            receiver = session_bob;
+        } else {
+            sender = session_bob;
+            receiver = session_alice;
+        }
+
+        vscr_error_ctx_t error_ctx;
+        vscr_error_ctx_reset(&error_ctx);
+
+        vscr_ratchet_message_t *ratchet_message =
+                vscr_ratchet_session_encrypt(sender, vsc_buffer_data(plain_text), &error_ctx);
+        TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+
+        size_t plain_text_len = vscr_ratchet_session_decrypt_len(receiver, ratchet_message);
+        vsc_buffer_t *decrypted = vsc_buffer_new_with_capacity(plain_text_len);
+        vscr_error_t result = vscr_ratchet_session_decrypt(receiver, ratchet_message, decrypted);
+        TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
+
+        TEST_ASSERT_EQUAL_INT(vsc_buffer_len(plain_text), vsc_buffer_len(decrypted));
+        TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(plain_text), vsc_buffer_bytes(decrypted), vsc_buffer_len(plain_text));
+
+        vsc_buffer_destroy(&plain_text);
+        vsc_buffer_destroy(&decrypted);
+        vscr_ratchet_message_destroy(&ratchet_message);
+    }
+
+    vscf_ctr_drbg_destroy(&rng);
+
+    vscr_ratchet_session_destroy(&session_alice);
+    vscr_ratchet_session_destroy(&session_bob);
 }
 
 void
-test__serialization__serialize_deserialize__objects_are_equal(void) {
-    bool received_first_response = true;
-    vsc_buffer_t *sender_identity_key = vsc_buffer_new_with_data(test_ratchet_prekey_message_sender_identity_key);
-    vsc_buffer_t *sender_ephemeral_key = vsc_buffer_new_with_data(test_ratchet_prekey_message_sender_ephemeral_key);
-    vsc_buffer_t *receiver_longterm_key = vsc_buffer_new_with_data(test_ratchet_prekey_message_receiver_longterm_key);
-    vsc_buffer_t *receiver_onetime_key = vsc_buffer_new_with_data(test_ratchet_prekey_message_receiver_onetime_key);
+test__encrypt_decrypt__1_out_of_order_msg__decrypted_should_match(void) {
+    vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
+    vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
 
-    vscr_ratchet_t *ratchet = vscr_ratchet_new();
+    initialize(session_alice, session_bob, true);
 
-    vscr_ratchet_session_t *ratchet_session = vscr_ratchet_session_new_with_members(received_first_response,
-            sender_identity_key, sender_ephemeral_key, receiver_longterm_key, receiver_onetime_key,
-            &ratchet); // FIXME
-    size_t len = vscr_ratchet_session_serialize_len(ratchet_session);
-    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(len);
+    vscr_error_ctx_t error_ctx;
+    vscr_error_ctx_reset(&error_ctx);
 
-    vscr_error_t result = vscr_ratchet_session_serialize(ratchet_session, buffer);
+    vscr_ratchet_message_t *ratchet_message1 =
+            vscr_ratchet_session_encrypt(session_alice, test_ratchet_session_plain_text2, &error_ctx);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+    TEST_ASSERT_EQUAL(vscr_msg_type_PREKEY, vscr_ratchet_message_get_type(ratchet_message1));
+
+    vscr_ratchet_message_t *ratchet_message2 =
+            vscr_ratchet_session_encrypt(session_alice, test_ratchet_session_plain_text3, &error_ctx);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+    TEST_ASSERT_EQUAL(vscr_msg_type_PREKEY, vscr_ratchet_message_get_type(ratchet_message2));
+
+    size_t len3 = vscr_ratchet_session_decrypt_len(session_bob, ratchet_message2);
+    vsc_buffer_t *plain_text2 = vsc_buffer_new_with_capacity(len3);
+
+    vscr_error_t result = vscr_ratchet_session_decrypt(session_bob, ratchet_message2, plain_text2);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
 
-    vscr_error_ctx_t *err_ctx = NULL;
-    vscr_ratchet_session_t *deserialized_ratchet_session =
-            vscr_ratchet_session_deserialize(vsc_buffer_data(buffer), err_ctx);
-    TEST_ASSERT_EQUAL(vscr_SUCCESS, err_ctx->error);
+    TEST_ASSERT_EQUAL_INT(test_ratchet_session_plain_text3.len, vsc_buffer_len(plain_text2));
+    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_session_plain_text3.bytes, vsc_buffer_bytes(plain_text2),
+            test_ratchet_session_plain_text3.len);
 
-    TEST_ASSERT_EQUAL(ratchet_session->received_first_response, deserialized_ratchet_session->received_first_response);
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(deserialized_ratchet_session->sender_identity_public_key),
-            vsc_buffer_bytes(ratchet_session->sender_identity_public_key),
-            vsc_buffer_len(ratchet_session->sender_identity_public_key));
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(deserialized_ratchet_session->sender_ephemeral_public_key),
-            vsc_buffer_bytes(ratchet_session->sender_ephemeral_public_key),
-            vsc_buffer_len(ratchet_session->sender_ephemeral_public_key));
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(deserialized_ratchet_session->receiver_longterm_public_key),
-            vsc_buffer_bytes(ratchet_session->receiver_longterm_public_key),
-            vsc_buffer_len(ratchet_session->receiver_longterm_public_key));
-    TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(deserialized_ratchet_session->receiver_onetime_public_key),
-            vsc_buffer_bytes(ratchet_session->receiver_onetime_public_key),
-            vsc_buffer_len(ratchet_session->receiver_onetime_public_key));
+    size_t len4 = vscr_ratchet_session_decrypt_len(session_bob, ratchet_message1);
+    vsc_buffer_t *plain_text1 = vsc_buffer_new_with_capacity(len4);
 
-    // FIXME: check ratchet
+    result = vscr_ratchet_session_decrypt(session_bob, ratchet_message1, plain_text1);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
+
+    TEST_ASSERT_EQUAL_INT(test_ratchet_session_plain_text2.len, vsc_buffer_len(plain_text1));
+    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_session_plain_text2.bytes, vsc_buffer_bytes(plain_text1),
+            test_ratchet_session_plain_text2.len);
+
+
+    vsc_buffer_destroy(&plain_text1);
+    vsc_buffer_destroy(&plain_text2);
+    vscr_ratchet_session_destroy(&session_alice);
+    vscr_ratchet_session_destroy(&session_bob);
+    vscr_ratchet_message_destroy(&ratchet_message1);
+    vscr_ratchet_message_destroy(&ratchet_message2);
+}
+
+void
+test__encrypt_decrypt__randomly_skipped_messages__decrypt_should_succeed(void) {
+    vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
+    vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
+
+    unreliable_msg_producer_t producer_alice, producer_bob;
+    init_producer(&producer_alice, session_alice, 0.2, 0.3);
+    init_producer(&producer_bob, session_bob, 0.2, 0.3);
+
+    initialize(session_alice, session_bob, true);
+
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    vscf_ctr_drbg_setup_defaults(rng);
+
+    for (int i = 0; i < 100; i++) {
+        byte dice_rnd;
+        vsc_buffer_t *fake_buffer = vsc_buffer_new();
+        vsc_buffer_use(fake_buffer, &dice_rnd, sizeof(dice_rnd));
+        vscf_ctr_drbg_random(rng, sizeof(dice_rnd), fake_buffer);
+        bool dice = dice_rnd % 2 == 0;
+
+        vsc_buffer_destroy(&fake_buffer);
+
+        vscr_ratchet_session_t *receiver;
+        unreliable_msg_producer_t *producer;
+
+        // Alice sends msg
+        if (dice) {
+            receiver = session_bob;
+            producer = &producer_alice;
+        } else {
+            receiver = session_alice;
+            producer = &producer_bob;
+        }
+
+        vscr_ratchet_message_t *ratchet_message;
+        vsc_buffer_t *plain_text;
+
+        produce_msg(producer, &plain_text, &ratchet_message);
+
+        vscr_error_ctx_t error_ctx;
+        vscr_error_ctx_reset(&error_ctx);
+
+        size_t plain_text_len = vscr_ratchet_session_decrypt_len(receiver, ratchet_message);
+        vsc_buffer_t *decrypted = vsc_buffer_new_with_capacity(plain_text_len);
+        vscr_error_t result = vscr_ratchet_session_decrypt(receiver, ratchet_message, decrypted);
+        TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
+
+        TEST_ASSERT_EQUAL_INT(vsc_buffer_len(plain_text), vsc_buffer_len(decrypted));
+        TEST_ASSERT_EQUAL_MEMORY(vsc_buffer_bytes(plain_text), vsc_buffer_bytes(decrypted), vsc_buffer_len(plain_text));
+        vsc_buffer_destroy(&decrypted);
+
+        vsc_buffer_destroy(&plain_text);
+        vscr_ratchet_message_destroy(&ratchet_message);
+    }
+
+    vscf_ctr_drbg_destroy(&rng);
+
+    vscr_ratchet_session_destroy(&session_alice);
+    vscr_ratchet_session_destroy(&session_bob);
+
+    deinit_producer(&producer_alice);
+    deinit_producer(&producer_bob);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
@@ -425,15 +411,12 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__1);
-    RUN_TEST(test__2);
-    RUN_TEST(test__3);
-
-    RUN_TEST(test__constructor__create_object__object_has_correct_values);
-
-    // FIXME
-    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
-    // RUN_TEST(test__serialization__serialize_deserialize__objects_are_equal);
+    RUN_TEST(test__encrypt_decrypt__fixed_plain_text__decrypted_should_match);
+    RUN_TEST(test__encrypt_decrypt_back_and_forth__fixed_plain_text__decrypted_should_match);
+    RUN_TEST(test__encrypt_decrypt__100_plain_texts_random_order__decrypted_should_match);
+    RUN_TEST(test__encrypt_decrypt__100_plain_texts_random_order_no_one_time__decrypted_should_match);
+    RUN_TEST(test__encrypt_decrypt__1_out_of_order_msg__decrypted_should_match);
+    RUN_TEST(test__encrypt_decrypt__randomly_skipped_messages__decrypt_should_succeed);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

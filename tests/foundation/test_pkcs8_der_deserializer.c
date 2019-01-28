@@ -42,8 +42,10 @@
 #define TEST_DEPENDENCIES_AVAILABLE VSCF_PKCS8_DER_DESERIALIZER &&VSCF_ASN1RD
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include "test_data_rsa.h"
 #include "vscf_pkcs8_der_deserializer.h"
+
+#include "test_data_rsa.h"
+#include "test_data_ed25519.h"
 
 
 // --------------------------------------------------------------------------
@@ -91,7 +93,7 @@ test__deserialize_public_key__rsa2048__equals_to_rsa_2048_public_key_pkcs1_der(v
     vscf_raw_key_t *raw_public_key =
             vscf_pkcs8_der_deserializer_deserialize_public_key(pkcs8, test_rsa_2048_PUBLIC_KEY_PKCS8_DER, &error);
 
-    TEST_ASSERT_EQUAL(vscf_raw_key_alg(raw_public_key), vscf_key_alg_RSA);
+    TEST_ASSERT_EQUAL(vscf_raw_key_alg_id(raw_public_key), vscf_alg_id_RSA);
 
     TEST_ASSERT_EQUAL_DATA(test_rsa_2048_PUBLIC_KEY_PKCS1, vscf_raw_key_data(raw_public_key));
 
@@ -134,7 +136,7 @@ test__deserialize_private_key__rsa2048__equals_to_rsa_2048_private_key_pkcs1_der
     vscf_raw_key_t *raw_private_key =
             vscf_pkcs8_der_deserializer_deserialize_private_key(pkcs8, test_rsa_2048_PRIVATE_KEY_PKCS8_DER, &error);
 
-    TEST_ASSERT_EQUAL(vscf_raw_key_alg(raw_private_key), vscf_key_alg_RSA);
+    TEST_ASSERT_EQUAL(vscf_raw_key_alg_id(raw_private_key), vscf_alg_id_RSA);
 
     TEST_ASSERT_EQUAL_DATA(test_rsa_2048_PRIVATE_KEY_PKCS1, vscf_raw_key_data(raw_private_key));
 
@@ -142,6 +144,94 @@ test__deserialize_private_key__rsa2048__equals_to_rsa_2048_private_key_pkcs1_der
     vscf_pkcs8_der_deserializer_destroy(&pkcs8);
 #else
     TEST_IGNORE_MESSAGE("VSCF_RSA_PRIVATE_KEY is disabled");
+#endif
+}
+
+// --------------------------------------------------------------------------
+// PKCS#8 ed25519 keys.
+// --------------------------------------------------------------------------
+void
+test__deserialize_public_key__ed25519__no_errors(void) {
+#if VSCF_ED25519_PUBLIC_KEY
+    vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
+    vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
+
+    vscf_error_ctx_t error_ctx;
+    vscf_raw_key_t *raw_public_key =
+            vscf_pkcs8_der_deserializer_deserialize_public_key(pkcs8, test_ed25519_PUBLIC_KEY_PKCS8_DER, &error_ctx);
+
+    TEST_ASSERT_EQUAL(vscf_SUCCESS, error_ctx.error);
+    TEST_ASSERT_NOT_NULL(raw_public_key);
+
+    vscf_raw_key_destroy(&raw_public_key);
+    vscf_pkcs8_der_deserializer_destroy(&pkcs8);
+#else
+    TEST_IGNORE_MESSAGE("VSCF_ED25519_PUBLIC_KEY is disabled");
+#endif
+}
+
+
+void
+test__deserialize_public_key__ed25519__equals_to_ed25519_public_key(void) {
+#if VSCF_ED25519_PUBLIC_KEY
+    vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
+    vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
+
+    vscf_error_ctx_t error;
+    vscf_raw_key_t *raw_public_key =
+            vscf_pkcs8_der_deserializer_deserialize_public_key(pkcs8, test_ed25519_PUBLIC_KEY_PKCS8_DER, &error);
+
+    TEST_ASSERT_EQUAL(vscf_raw_key_alg_id(raw_public_key), vscf_alg_id_ED25519);
+
+    TEST_ASSERT_EQUAL_DATA(test_ed25519_PUBLIC_KEY, vscf_raw_key_data(raw_public_key));
+
+    vscf_raw_key_destroy(&raw_public_key);
+    vscf_pkcs8_der_deserializer_destroy(&pkcs8);
+#else
+    TEST_IGNORE_MESSAGE("VSCF_ED25519_PUBLIC_KEY is disabled");
+#endif
+}
+
+
+void
+test__deserialize_private_key__ed25519__no_errors(void) {
+#if VSCF_ED25519_PRIVATE_KEY
+    vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
+    vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
+
+    vscf_error_ctx_t error_ctx;
+    vscf_raw_key_t *raw_private_key =
+            vscf_pkcs8_der_deserializer_deserialize_private_key(pkcs8, test_ed25519_PRIVATE_KEY_PKCS8_DER, &error_ctx);
+
+    TEST_ASSERT_EQUAL(vscf_SUCCESS, error_ctx.error);
+    TEST_ASSERT_NOT_NULL(raw_private_key);
+
+    vscf_raw_key_destroy(&raw_private_key);
+    vscf_pkcs8_der_deserializer_destroy(&pkcs8);
+#else
+    TEST_IGNORE_MESSAGE("VSCF_ED25519_PRIVATE_KEY is disabled");
+#endif
+}
+
+
+void
+test__deserialize_private_key__ed25519__equals_to_ed25519_private_key(void) {
+#if VSCF_ED25519_PRIVATE_KEY
+    vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
+    vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
+
+    vscf_error_ctx_t error;
+    vscf_raw_key_t *raw_private_key =
+            vscf_pkcs8_der_deserializer_deserialize_private_key(pkcs8, test_ed25519_PRIVATE_KEY_PKCS8_DER, &error);
+
+    TEST_ASSERT_EQUAL(vscf_raw_key_alg_id(raw_private_key), vscf_alg_id_ED25519);
+
+    TEST_ASSERT_EQUAL_DATA(test_ed25519_PRIVATE_KEY, vscf_raw_key_data(raw_private_key));
+
+    vscf_raw_key_destroy(&raw_private_key);
+    vscf_pkcs8_der_deserializer_destroy(&pkcs8);
+#else
+    TEST_IGNORE_MESSAGE("VSCF_ED25519_PRIVATE_KEY is disabled");
 #endif
 }
 
@@ -161,6 +251,11 @@ main(void) {
     RUN_TEST(test__deserialize_public_key__rsa2048__equals_to_rsa_2048_public_key_pkcs1_der);
     RUN_TEST(test__deserialize_private_key__rsa2048__no_errors);
     RUN_TEST(test__deserialize_private_key__rsa2048__equals_to_rsa_2048_private_key_pkcs1_der);
+
+    RUN_TEST(test__deserialize_public_key__ed25519__no_errors);
+    RUN_TEST(test__deserialize_public_key__ed25519__equals_to_ed25519_public_key);
+    RUN_TEST(test__deserialize_private_key__ed25519__no_errors);
+    RUN_TEST(test__deserialize_private_key__ed25519__equals_to_ed25519_private_key);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

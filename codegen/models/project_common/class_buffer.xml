@@ -33,8 +33,21 @@
     </property>
 
 
+    <property name="is reverse" type="boolean">
+        Defines that buffer is in the revese mode.
+        This means that written data is located from the buffer ending.
+    </property>
+
+
     <method name="is empty" is_const="1">
         Returns true if buffer has no data written.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="is reverse" is_const="1">
+        Returns true if buffer written data is located at the buffer ending.
 
         <return type="boolean"/>
     </method>
@@ -55,11 +68,13 @@
         <argument name="capacity" type="size"/>
     </constructor>
 
+
     <constructor name="with data">
         Create buffer with copied bytes from given data.
 
         <argument name="data" class="data"/>
     </constructor>
+
 
     <method name="alloc">
         Allocates inner buffer with a given capacity.
@@ -97,6 +112,19 @@
     <method name="make secure">
         Tell buffer that it holds sensitive that must be erased
         in a secure manner during destruction.
+    </method>
+
+
+    <method name="switch reverse mode">
+        Change the way buffer content is interpreted.
+
+        If true - assume that written data is located at the buffer ending.
+        If false - assume that written data is located at the buffer beginning.
+
+        Note, that buffer is not empty and if new mode differs then data
+        will be moved to the appropriate place.
+
+        <argument name="is reverse" type="boolean"/>
     </method>
 
 

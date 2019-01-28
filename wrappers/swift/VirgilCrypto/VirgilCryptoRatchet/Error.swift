@@ -38,29 +38,23 @@ import VSCRatchet
 
 @objc(VSCRRatchetError) public enum RatchetError: Int, Error {
 
-    /// Error during protobuf serialization
-    case protobufEncodeError = 1
-
     /// Error during protobuf deserialization
-    case protobufDecodeError = 2
+    case protobufDecodeError = 1
 
     /// Message version doesn't match
-    case messageVersionDoesnTMatch = 3
+    case messageVersionDoesnTMatch = 2
 
     /// Bad message
-    case badMessage = 4
+    case badMessage = 3
 
     /// AES error
-    case aesError = 5
+    case aesError = 4
 
-    /// Wrong message format
-    case wrongMessageFormat = 6
-
-    /// Invalid arguments
-    case invalidArguments = 7
+    /// RNG failed
+    case rngFailed = 5
 
     /// curve25519 error
-    case curve25519Error = 8
+    case curve25519Error = 6
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC error: vscr_error_t) {

@@ -48,8 +48,9 @@
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 
-#include <virgil/crypto/foundation/vscf_sha256.h>
+#include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 // clang-format on
 //  @end
@@ -57,36 +58,30 @@
 
 static const uint8_t ratchet_kdf_cipher_info[] = {"VIRGIL_RATCHET_KDF_CIPHER_INFO"};
 
-static void
-vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *ratchet_cipher, vsc_data_t key) {
-
-    VSCR_ASSERT_PTR(ratchet_cipher);
-    VSCR_ASSERT_PTR(ratchet_cipher->aes256_gcm);
-
-    vscf_hkdf_t *hkdf = vscf_hkdf_new();
-    vscf_hkdf_take_hash(hkdf, vscf_sha256_impl(vscf_sha256_new()));
-
-    vsc_buffer_t *derived_secret = vsc_buffer_new_with_capacity(vscf_aes256_gcm_KEY_LEN + vscf_aes256_gcm_NONCE_LEN);
-    vsc_buffer_make_secure(derived_secret);
-    vscf_hkdf_derive(hkdf, key, vsc_data_empty(), vsc_data(ratchet_kdf_cipher_info, sizeof(ratchet_kdf_cipher_info)),
-            derived_secret, vsc_buffer_capacity(derived_secret));
-
-    vscf_hkdf_destroy(&hkdf);
-
-    vscf_aes256_gcm_set_key(ratchet_cipher->aes256_gcm,
-            vsc_data_slice_beg(vsc_buffer_data(derived_secret), 0, vscf_aes256_gcm_KEY_LEN));
-    vscf_aes256_gcm_set_nonce(ratchet_cipher->aes256_gcm,
-            vsc_data_slice_beg(vsc_buffer_data(derived_secret), vscf_aes256_gcm_KEY_LEN, vscf_aes256_gcm_NONCE_LEN));
-
-    vsc_buffer_destroy(&derived_secret);
-}
-
 
 //  @generated
 // --------------------------------------------------------------------------
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Handle 'ratchet cipher' context.
+//
+struct vscr_ratchet_cipher_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscr_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Dependency to the implementation 'aes256 gcm'.
+    //
+    vscf_aes256_gcm_t *aes256_gcm;
+};
 
 //
 //  Perform context specific initialization.
@@ -103,6 +98,9 @@ vscr_ratchet_cipher_init_ctx(vscr_ratchet_cipher_t *ratchet_cipher);
 //
 static void
 vscr_ratchet_cipher_cleanup_ctx(vscr_ratchet_cipher_t *ratchet_cipher);
+
+static void
+vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *ratchet_cipher, vsc_data_t key);
 
 //
 //  Return size of 'vscr_ratchet_cipher_t'.
@@ -297,6 +295,34 @@ vscr_ratchet_cipher_decrypt_len(vscr_ratchet_cipher_t *ratchet_cipher, size_t ci
     return vscf_aes256_gcm_decrypted_len(ratchet_cipher->aes256_gcm, cipher_text_len);
 }
 
+static void
+vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *ratchet_cipher, vsc_data_t key) {
+
+    VSCR_ASSERT_PTR(ratchet_cipher);
+    VSCR_ASSERT_PTR(ratchet_cipher->aes256_gcm);
+
+    vscf_hkdf_t *hkdf = vscf_hkdf_new();
+    vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
+
+    byte derived_secret[vscf_aes256_gcm_KEY_LEN + vscf_aes256_gcm_NONCE_LEN];
+
+    vsc_buffer_t buffer;
+    vsc_buffer_init(&buffer);
+    vsc_buffer_use(&buffer, derived_secret, sizeof(derived_secret));
+
+    vscf_hkdf_derive(hkdf, key, vsc_data_empty(), vsc_data(ratchet_kdf_cipher_info, sizeof(ratchet_kdf_cipher_info)),
+            &buffer, sizeof(derived_secret));
+
+    vscf_hkdf_destroy(&hkdf);
+
+    vscf_aes256_gcm_set_key(ratchet_cipher->aes256_gcm, vsc_data(derived_secret, vscf_aes256_gcm_KEY_LEN));
+    vscf_aes256_gcm_set_nonce(
+            ratchet_cipher->aes256_gcm, vsc_data(derived_secret + vscf_aes256_gcm_KEY_LEN, vscf_aes256_gcm_NONCE_LEN));
+
+    vsc_buffer_delete(&buffer);
+    vscr_zeroize(derived_secret, sizeof(derived_secret));
+}
+
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_cipher_encrypt(
         vscr_ratchet_cipher_t *ratchet_cipher, vsc_data_t key, vsc_data_t plain_text, vsc_buffer_t *buffer) {
@@ -310,7 +336,7 @@ vscr_ratchet_cipher_encrypt(
     vscf_error_t result = vscf_aes256_gcm_encrypt(ratchet_cipher->aes256_gcm, plain_text, buffer);
 
     if (result != vscf_SUCCESS) {
-        return vscr_AES_ERROR;
+        return vscr_error_AES_ERROR;
     }
 
     return vscr_SUCCESS;
@@ -329,7 +355,7 @@ vscr_ratchet_cipher_decrypt(
     vscf_error_t result = vscf_aes256_gcm_decrypt(ratchet_cipher->aes256_gcm, cipher_text, buffer);
 
     if (result != vscf_SUCCESS) {
-        return vscr_AES_ERROR;
+        return vscr_error_AES_ERROR;
     }
 
     return vscr_SUCCESS;

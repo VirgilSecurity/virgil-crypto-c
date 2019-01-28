@@ -1,0 +1,9 @@
+<interface name="alg info">
+    Provide details about implemented algorithms.
+
+    <method name="alg id" is_const="1">
+        Provide algorithm identificator.
+
+        <return enum="alg id"/>
+    </method>
+</interface>

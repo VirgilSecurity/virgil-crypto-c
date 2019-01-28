@@ -61,6 +61,8 @@
 #include "vscf_hash_api.h"
 #include "vscf_hash_stream.h"
 #include "vscf_hash_stream_api.h"
+#include "vscf_alg.h"
+#include "vscf_alg_api.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -144,6 +146,29 @@ static const vscf_hash_stream_api_t hash_stream_api = {
     //  Accompilsh hashing and return it's result (a message digest).
     //
     (vscf_hash_stream_api_finish_fn)vscf_sha256_finish
+};
+
+//
+//  Configuration of the interface API 'alg api'.
+//
+static const vscf_alg_api_t alg_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
+    //
+    vscf_api_tag_ALG,
+    //
+    //  Provide algorithm identificator.
+    //
+    (vscf_alg_api_alg_id_fn)vscf_sha256_alg_id,
+    //
+    //  Produce object with algorithm information and configuration parameters.
+    //
+    (vscf_alg_api_produce_alg_info_fn)vscf_sha256_produce_alg_info,
+    //
+    //  Restore algorithm configuration from the given object.
+    //
+    (vscf_alg_api_restore_alg_info_fn)vscf_sha256_restore_alg_info
 };
 
 //
@@ -302,6 +327,8 @@ static const vscf_api_t *
 vscf_sha256_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
+        case vscf_api_tag_ALG:
+            return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_HASH:
             return (const vscf_api_t *) &hash_api;
         case vscf_api_tag_HASH_INFO:

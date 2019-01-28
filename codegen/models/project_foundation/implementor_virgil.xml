@@ -53,6 +53,16 @@
 
         <interface name="kdf"/>
 
+        <interface name="alg"/>
+
+        <require enum="alg id"/>
+
+        <require impl="simple alg info"/>
+
+        <require impl="kdf alg info"/>
+
+        <require interface="hash info"/>
+
         <dependency name="hash" interface="hash stream"/>
     </implementation>
 
