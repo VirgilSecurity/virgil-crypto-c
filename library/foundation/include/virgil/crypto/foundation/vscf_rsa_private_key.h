@@ -56,7 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_hash.h"
-#include "vscf_key_alg.h"
+#include "vscf_alg_id.h"
 #include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -233,22 +233,34 @@ VSCF_PUBLIC void
 vscf_rsa_private_key_set_keygen_params(vscf_rsa_private_key_t *rsa_private_key, size_t bitlen, size_t exponent);
 
 //
-//  Return implemented asymmetric key algorithm type.
+//  Provide algorithm identificator.
 //
-VSCF_PUBLIC vscf_key_alg_t
-vscf_rsa_private_key_alg(vscf_rsa_private_key_t *rsa_private_key);
+VSCF_PUBLIC vscf_alg_id_t
+vscf_rsa_private_key_alg_id(const vscf_rsa_private_key_t *rsa_private_key);
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_rsa_private_key_produce_alg_info(const vscf_rsa_private_key_t *rsa_private_key);
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_rsa_private_key_restore_alg_info(vscf_rsa_private_key_t *rsa_private_key, const vscf_impl_t *alg_info);
 
 //
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_private_key_key_len(vscf_rsa_private_key_t *rsa_private_key);
+vscf_rsa_private_key_key_len(const vscf_rsa_private_key_t *rsa_private_key);
 
 //
 //  Length of the key in bits.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_private_key_key_bitlen(vscf_rsa_private_key_t *rsa_private_key);
+vscf_rsa_private_key_key_bitlen(const vscf_rsa_private_key_t *rsa_private_key);
 
 //
 //  Generate new private or secret key.
@@ -285,7 +297,7 @@ vscf_rsa_private_key_signature_len(vscf_rsa_private_key_t *rsa_private_key);
 //  Extract public part of the key.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_rsa_private_key_extract_public_key(vscf_rsa_private_key_t *rsa_private_key);
+vscf_rsa_private_key_extract_public_key(const vscf_rsa_private_key_t *rsa_private_key);
 
 //
 //  Export private key in the binary format.
@@ -295,13 +307,13 @@ vscf_rsa_private_key_extract_public_key(vscf_rsa_private_key_t *rsa_private_key)
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_rsa_private_key_export_private_key(vscf_rsa_private_key_t *rsa_private_key, vsc_buffer_t *out);
+vscf_rsa_private_key_export_private_key(const vscf_rsa_private_key_t *rsa_private_key, vsc_buffer_t *out);
 
 //
 //  Return length in bytes required to hold exported private key.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_private_key_exported_private_key_len(vscf_rsa_private_key_t *rsa_private_key);
+vscf_rsa_private_key_exported_private_key_len(const vscf_rsa_private_key_t *rsa_private_key);
 
 //
 //  Import private key from the binary format.

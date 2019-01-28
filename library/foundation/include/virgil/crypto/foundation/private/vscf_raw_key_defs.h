@@ -54,7 +54,7 @@
 #define VSCF_RAW_KEY_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_key_alg.h"
+#include "vscf_alg_id.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -92,7 +92,7 @@ struct vscf_raw_key_t {
     //
     size_t refcnt;
 
-    vscf_key_alg_t alg;
+    vscf_alg_id_t alg_id;
 
     vsc_buffer_t *bytes;
 };

@@ -76,8 +76,8 @@ extern "C" {
 //
 enum vscf_api_tag_t {
     vscf_api_tag_BEGIN = 0,
+    vscf_api_tag_ALG,
     vscf_api_tag_ALG_INFO,
-    vscf_api_tag_ALG_INFO_COMPATIBLE,
     vscf_api_tag_ALG_INFO_DESERIALIZER,
     vscf_api_tag_ALG_INFO_SERIALIZER,
     vscf_api_tag_ASN1_READER,

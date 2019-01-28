@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 import VirgilCryptoCommon
 
-/// Provide KDF algorithm information implementation
+/// Handle KDF algorithm information.
 @objc(VSCFKdfAlgInfo) public class KdfAlgInfo: NSObject, AlgInfo {
 
     /// Handle underlying C context.
@@ -63,14 +63,7 @@ import VirgilCryptoCommon
         super.init()
     }
 
-    /// Set algorithm identificator
-    public init(algId: AlgId) {
-        let proxyResult = vscf_kdf_alg_info_new_with_alg_id(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)))
-
-        self.c_ctx = proxyResult!
-    }
-
-    /// Set algorithm identificator
+    /// Create KDF algorithm info with identificator and HASH algorithm info.
     public init(algId: AlgId, hashAlgInfo: SimpleAlgInfo) {
         let proxyResult = vscf_kdf_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), hashAlgInfo.c_ctx)
 
@@ -82,7 +75,14 @@ import VirgilCryptoCommon
         vscf_kdf_alg_info_delete(self.c_ctx)
     }
 
-    /// Provide algorithm identificator
+    /// Return hash algorithm information.
+    @objc public func hashAlgInfo() -> SimpleAlgInfo {
+        let proxyResult = vscf_kdf_alg_info_hash_alg_info(self.c_ctx)
+
+        return SimpleAlgInfo.init(use: proxyResult!)
+    }
+
+    /// Provide algorithm identificator.
     @objc public func algId() -> AlgId {
         let proxyResult = vscf_kdf_alg_info_alg_id(self.c_ctx)
 

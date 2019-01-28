@@ -7,4 +7,8 @@
     <constant name="sha512"/>
     <constant name="kdf1"/>
     <constant name="kdf2"/>
+    <constant name="rsa"/>
+    <constant name="ed25519"/>
+    <constant name="x25519"/>
+    <constant name="aes256 gcm"/>
 </enum>

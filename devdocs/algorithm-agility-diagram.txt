@@ -22,9 +22,10 @@ class KdfAlgInfo {
     + iterationCount : Integer
 }
 
-interface AlgInfoCompatible {
+interface Alg {
+    algId(): AlgId
     produceAlgInfo() : AlgInfo
-    consumeAlgInfo() : AlgInfo
+    restoreAlgInfo(: AlgInfo)
 }
 
 interface AlgInfoSerializer {
@@ -42,7 +43,7 @@ class AlgInfoDerDeserializer
 AlgInfo .left.> AlgId : <<use>>
 SimpleAlgInfo .up.|> AlgInfo
 KdfAlgInfo .up.|> AlgInfo
-AlgInfoCompatible .left.> AlgInfo : <<produce/consume>>
+Alg .left.> AlgInfo : <<produce/consume>>
 
 AlgInfoDerSerializer .down.|> AlgInfoSerializer
 AlgInfoDerDeserializer .down.|> AlgInfoDeserializer
@@ -52,8 +53,8 @@ AlgInfoDeserializer .down.> AlgInfo : <<produce/consume>>
 class sha256
 class kdf1
 
-sha256 -up-|> AlgInfoCompatible
-kdf1  -up-|> AlgInfoCompatible
+sha256 -up-|> Alg
+kdf1  -up-|> Alg
 
 note bottom of sha256
     <<produce/consume>>

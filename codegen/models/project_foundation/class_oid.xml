@@ -1,15 +1,6 @@
 <class name="oid" context="none">
     Provide conversion logic between OID and algorithm tags.
 
-
-    <method name="from key alg">
-        Return OID for given key algorithm.
-
-        <argument name="key alg" enum="key alg"/>
-
-        <return class="data"/>
-    </method>
-
     <method name="from alg id">
         Return OID for given algorithm identifier
 
@@ -18,14 +9,6 @@
         <return class="data"/>
     </method>
 
-
-    <method name="to key alg">
-        Return key algorithm for given OID.
-
-        <argument name="oid" class="data"/>
-
-        <return enum="key alg"/>
-    </method>
 
     <method name="to alg id">
         Return algorithm identifier for given OID.
