@@ -29,3 +29,5 @@ gcc*
 obj/
 bin/
 .vs/
+
+Carthage
