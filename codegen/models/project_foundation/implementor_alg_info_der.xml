@@ -17,6 +17,17 @@
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
 
+
+        <method name="is alg require null params" is_static="1">
+            Return true if algorithm identifier requires that optinal
+            parameter will be NULL.
+
+            <argument name="alg id" enum="alg id"/>
+
+            <return type="boolean"/>
+        </method>
+
+
         <method name="serialized simple alg info len">
             Return buffer size enough to hold serialized class "simple alg info".
 
