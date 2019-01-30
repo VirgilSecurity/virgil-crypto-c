@@ -88,6 +88,12 @@ static const vsc_data_t oid_kdf2 = {oid_kdf2_bytes, sizeof(oid_kdf2_bytes)};
 static const byte oid_aes256_gcm2_bytes[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x2E};
 static const vsc_data_t oid_aes256_gcm2 = {oid_aes256_gcm2_bytes, sizeof(oid_aes256_gcm2_bytes)};
 
+static const byte oid_cms_data_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x07, 0x01};
+static const vsc_data_t oid_cms_data = {oid_cms_data_bytes, sizeof(oid_cms_data_bytes)};
+
+static const byte oid_cms_data_enveloped_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x07, 0x03};
+static const vsc_data_t oid_cms_enveloped_data = {oid_cms_data_enveloped_bytes, sizeof(oid_cms_data_enveloped_bytes)};
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -104,7 +110,7 @@ static const vsc_data_t oid_aes256_gcm2 = {oid_aes256_gcm2_bytes, sizeof(oid_aes
 
 
 //
-//  Return OID for given algorithm identifier
+//  Return OID for given algorithm identifier.
 //
 VSCF_PUBLIC vsc_data_t
 vscf_oid_from_alg_id(vscf_alg_id_t alg_id) {
@@ -197,6 +203,44 @@ vscf_oid_to_alg_id(vsc_data_t oid) {
     }
 
     return vscf_alg_id_NONE;
+}
+
+//
+//  Return OID for a given identifier.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_oid_from_id(vscf_oid_id_t oid_id) {
+
+    switch (oid_id) {
+    case vscf_oid_id_CMS_DATA:
+        return oid_cms_data;
+
+    case vscf_oid_id_CMS_ENVELOPED_DATA:
+        return oid_cms_enveloped_data;
+
+    default:
+        VSCF_ASSERT(0 && "Unhanded oid identifier");
+        return vsc_data_empty();
+    }
+}
+
+//
+//  Return identifier for a given OID.
+//
+VSCF_PUBLIC vscf_oid_id_t
+vscf_oid_to_id(vsc_data_t oid) {
+
+    VSCF_ASSERT(vsc_data_is_valid(oid));
+
+    if (vscf_oid_equal(oid, oid_cms_data)) {
+        return vscf_oid_id_CMS_DATA;
+    }
+
+    if (vscf_oid_equal(oid, oid_cms_enveloped_data)) {
+        return vscf_oid_id_CMS_ENVELOPED_DATA;
+    }
+
+    return vscf_oid_id_NONE;
 }
 
 //

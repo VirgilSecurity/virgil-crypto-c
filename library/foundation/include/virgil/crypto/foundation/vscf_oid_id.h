@@ -44,26 +44,8 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Provide conversion logic between OID and algorithm tags.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_OID_H_INCLUDED
-#define VSCF_OID_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_alg_id.h"
-#include "vscf_oid_id.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#endif
+#ifndef VSCF_OID_ID_H_INCLUDED
+#define VSCF_OID_ID_H_INCLUDED
 
 // clang-format on
 //  @end
@@ -80,41 +62,12 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Return OID for given algorithm identifier.
-//
-VSCF_PUBLIC vsc_data_t
-vscf_oid_from_alg_id(vscf_alg_id_t alg_id);
-
-//
-//  Return algorithm identifier for given OID.
-//
-VSCF_PUBLIC vscf_alg_id_t
-vscf_oid_to_alg_id(vsc_data_t oid);
-
-//
-//  Return OID for a given identifier.
-//
-VSCF_PUBLIC vsc_data_t
-vscf_oid_from_id(vscf_oid_id_t oid_id);
-
-//
-//  Return identifier for a given OID.
-//
-VSCF_PUBLIC vscf_oid_id_t
-vscf_oid_to_id(vsc_data_t oid);
-
-//
-//  Return true if given OIDs are equal.
-//
-VSCF_PUBLIC bool
-vscf_oid_equal(vsc_data_t lhs, vsc_data_t rhs);
-
-//
-//  Return string representation of the given OID.
-//
-VSCF_PRIVATE void
-vscf_oid_to_string(vsc_data_t oid, char str[64]);
+enum vscf_oid_id_t {
+    vscf_oid_id_NONE,
+    vscf_oid_id_CMS_DATA,
+    vscf_oid_id_CMS_ENVELOPED_DATA
+};
+typedef enum vscf_oid_id_t vscf_oid_id_t;
 
 
 // --------------------------------------------------------------------------
@@ -130,5 +83,5 @@ vscf_oid_to_string(vsc_data_t oid, char str[64]);
 
 
 //  @footer
-#endif // VSCF_OID_H_INCLUDED
+#endif // VSCF_OID_ID_H_INCLUDED
 //  @end
