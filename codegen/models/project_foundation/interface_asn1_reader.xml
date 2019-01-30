@@ -43,6 +43,17 @@
     </method>
 
 
+    <method name="read context tag">
+        Read ASN.1 type: context-specific TAG.
+        Return element length.
+        Return 0 if current position do not points to the requested tag.
+
+        <argument name="tag" type="integer"/>
+
+        <return type="size"/>
+    </method>
+
+
     <method name="read int">
         Read ASN.1 type: INTEGER.
 

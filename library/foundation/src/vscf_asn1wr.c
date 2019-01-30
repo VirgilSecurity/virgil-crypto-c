@@ -190,6 +190,19 @@ vscf_asn1wr_reset(vscf_asn1wr_t *asn1wr, byte *out, size_t out_len) {
 }
 
 //
+//  Release a target buffer.
+//
+VSCF_PUBLIC void
+vscf_asn1wr_release(vscf_asn1wr_t *asn1wr) {
+
+    VSCF_ASSERT_PTR(asn1wr);
+
+    asn1wr->start = NULL;
+    asn1wr->curr = NULL;
+    asn1wr->error = vscf_error_UNINITIALIZED;
+}
+
+//
 //  Move written data to the buffer beginning and forbid further operations.
 //  Returns written size in bytes.
 //
@@ -211,6 +224,32 @@ vscf_asn1wr_finish(vscf_asn1wr_t *asn1wr) {
 }
 
 //
+//  Returns pointer to the inner buffer.
+//
+VSCF_PUBLIC byte *
+vscf_asn1wr_bytes(vscf_asn1wr_t *asn1wr) {
+
+    VSCF_ASSERT_PTR(asn1wr);
+    VSCF_ASSERT(asn1wr->error != vscf_error_UNINITIALIZED);
+
+    return asn1wr->start;
+}
+
+//
+//  Returns total inner buffer length.
+//
+VSCF_PUBLIC size_t
+vscf_asn1wr_len(const vscf_asn1wr_t *asn1wr) {
+
+    VSCF_ASSERT_PTR(asn1wr);
+    VSCF_ASSERT(asn1wr->error != vscf_error_UNINITIALIZED);
+
+    size_t len = (size_t)(asn1wr->end - asn1wr->start);
+
+    return len;
+}
+
+//
 //  Returns how many bytes were already written to the ASN.1 structure.
 //
 VSCF_PUBLIC size_t
@@ -220,6 +259,20 @@ vscf_asn1wr_written_len(const vscf_asn1wr_t *asn1wr) {
     VSCF_ASSERT(asn1wr->error == vscf_SUCCESS);
 
     size_t len = (size_t)(asn1wr->end - asn1wr->curr);
+    return len;
+}
+
+//
+//  Returns how many bytes are available for writing.
+//
+VSCF_PUBLIC size_t
+vscf_asn1wr_unwritten_len(const vscf_asn1wr_t *asn1wr) {
+
+    VSCF_ASSERT_PTR(asn1wr);
+    VSCF_ASSERT(asn1wr->error == vscf_SUCCESS);
+
+    size_t len = vscf_asn1wr_len(asn1wr) - vscf_asn1wr_written_len(asn1wr);
+
     return len;
 }
 
@@ -275,6 +328,32 @@ vscf_asn1wr_write_tag(vscf_asn1wr_t *asn1wr, int tag) {
     }
 
     return (size_t)ret;
+}
+
+//
+//  Write context-specific ASN.1 tag.
+//  Return count of written bytes.
+//
+VSCF_PUBLIC size_t
+vscf_asn1wr_write_context_tag(vscf_asn1wr_t *asn1wr, int tag, size_t len) {
+
+    VSCF_ASSERT_PTR(asn1wr);
+
+    VSCF_ASSERT(tag <= 0x1E);
+
+    if (asn1wr->error != vscf_SUCCESS) {
+        return 0;
+    }
+
+    size_t total_len = 0;
+    total_len += vscf_asn1wr_write_len(asn1wr, len);
+    total_len += vscf_asn1wr_write_tag(asn1wr, MBEDTLS_ASN1_CONTEXT_SPECIFIC | MBEDTLS_ASN1_CONSTRUCTED | tag);
+
+    if (asn1wr->error != vscf_SUCCESS) {
+        return 0;
+    }
+
+    return total_len;
 }
 
 //

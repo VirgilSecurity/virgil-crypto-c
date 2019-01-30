@@ -146,6 +146,12 @@ VSCF_PUBLIC void
 vscf_asn1wr_reset(vscf_asn1wr_t *asn1wr, byte *out, size_t out_len);
 
 //
+//  Release a target buffer.
+//
+VSCF_PUBLIC void
+vscf_asn1wr_release(vscf_asn1wr_t *asn1wr);
+
+//
 //  Move written data to the buffer beginning and forbid further operations.
 //  Returns written size in bytes.
 //
@@ -153,10 +159,28 @@ VSCF_PUBLIC size_t
 vscf_asn1wr_finish(vscf_asn1wr_t *asn1wr);
 
 //
+//  Returns pointer to the inner buffer.
+//
+VSCF_PUBLIC byte *
+vscf_asn1wr_bytes(vscf_asn1wr_t *asn1wr);
+
+//
+//  Returns total inner buffer length.
+//
+VSCF_PUBLIC size_t
+vscf_asn1wr_len(const vscf_asn1wr_t *asn1wr);
+
+//
 //  Returns how many bytes were already written to the ASN.1 structure.
 //
 VSCF_PUBLIC size_t
 vscf_asn1wr_written_len(const vscf_asn1wr_t *asn1wr);
+
+//
+//  Returns how many bytes are available for writing.
+//
+VSCF_PUBLIC size_t
+vscf_asn1wr_unwritten_len(const vscf_asn1wr_t *asn1wr);
 
 //
 //  Return last error.
@@ -177,6 +201,13 @@ vscf_asn1wr_reserve(vscf_asn1wr_t *asn1wr, size_t len);
 //
 VSCF_PUBLIC size_t
 vscf_asn1wr_write_tag(vscf_asn1wr_t *asn1wr, int tag);
+
+//
+//  Write context-specific ASN.1 tag.
+//  Return count of written bytes.
+//
+VSCF_PUBLIC size_t
+vscf_asn1wr_write_context_tag(vscf_asn1wr_t *asn1wr, int tag, size_t len);
 
 //
 //  Write length of the following data.
