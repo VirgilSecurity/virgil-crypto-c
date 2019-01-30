@@ -78,13 +78,13 @@ enum {
 //  Extracts fixed-length pseudorandom key from keying material.
 //
 static void
-vscf_hkdf_extract(vscf_hkdf_t *hkdf, vsc_data_t data, vsc_data_t salt, vsc_buffer_t *pr_key);
+vscf_hkdf_extract(vscf_hkdf_t *hkdf, vsc_data_t data, vsc_buffer_t *pr_key);
 
 //
 //  Expands the pseudorandom key to the desired length.
 //
 static void
-vscf_hkdf_expand(vscf_hkdf_t *hkdf, vsc_buffer_t *pr_key, vsc_data_t info, vsc_buffer_t *key, size_t key_len);
+vscf_hkdf_expand(vscf_hkdf_t *hkdf, vsc_buffer_t *pr_key, vsc_buffer_t *key, size_t key_len);
 
 
 // --------------------------------------------------------------------------
@@ -124,9 +124,19 @@ vscf_hkdf_cleanup_ctx(vscf_hkdf_t *hkdf) {
 //  Extracts fixed-length pseudorandom key from keying material.
 //
 static void
-vscf_hkdf_extract(vscf_hkdf_t *hkdf, vsc_data_t data, vsc_data_t salt, vsc_buffer_t *pr_key) {
+vscf_hkdf_extract(vscf_hkdf_t *hkdf, vsc_data_t data, vsc_buffer_t *pr_key) {
 
-    vscf_hmac_start(&hkdf->hmac, salt);
+    VSCF_ASSERT_PTR(hkdf);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT_PTR(pr_key);
+    VSCF_ASSERT(vsc_buffer_is_valid(pr_key));
+
+    if (hkdf->salt) {
+        VSCF_ASSERT(vsc_buffer_is_valid(hkdf->salt));
+        vscf_hmac_start(&hkdf->hmac, vsc_buffer_data(hkdf->salt));
+    } else {
+        vscf_hmac_start(&hkdf->hmac, vsc_data_empty());
+    }
     vscf_hmac_update(&hkdf->hmac, data);
     vscf_hmac_finish(&hkdf->hmac, pr_key);
 }
@@ -135,7 +145,13 @@ vscf_hkdf_extract(vscf_hkdf_t *hkdf, vsc_data_t data, vsc_data_t salt, vsc_buffe
 //  Expands the pseudorandom key to the desired length.
 //
 static void
-vscf_hkdf_expand(vscf_hkdf_t *hkdf, vsc_buffer_t *pr_key, vsc_data_t info, vsc_buffer_t *key, size_t key_len) {
+vscf_hkdf_expand(vscf_hkdf_t *hkdf, vsc_buffer_t *pr_key, vsc_buffer_t *key, size_t key_len) {
+
+    VSCF_ASSERT_PTR(hkdf);
+    VSCF_ASSERT_PTR(pr_key);
+    VSCF_ASSERT(vsc_buffer_is_valid(pr_key));
+    VSCF_ASSERT_PTR(key);
+    VSCF_ASSERT(vsc_buffer_is_valid(key));
 
     unsigned char counter = 0x00;
     size_t hmac_len = vscf_hmac_digest_len(&hkdf->hmac);
@@ -147,7 +163,9 @@ vscf_hkdf_expand(vscf_hkdf_t *hkdf, vsc_buffer_t *pr_key, vsc_data_t info, vsc_b
         size_t need = key_len - ((counter - 1) * hmac_len);
         vscf_hmac_reset(&hkdf->hmac);
         vscf_hmac_update(&hkdf->hmac, previous_mac);
-        vscf_hmac_update(&hkdf->hmac, info);
+        if (hkdf->context_info != NULL) {
+            vscf_hmac_update(&hkdf->hmac, vsc_buffer_data(hkdf->context_info));
+        }
         vscf_hmac_update(&hkdf->hmac, vsc_data(&counter, 1));
 
         if (need >= hmac_len) {
@@ -163,17 +181,14 @@ vscf_hkdf_expand(vscf_hkdf_t *hkdf, vsc_buffer_t *pr_key, vsc_data_t info, vsc_b
 }
 
 //
-//  Derive key of the requested length from the given data, salt and info.
+//  Derive key of the requested length from the given data.
 //
 VSCF_PUBLIC void
-vscf_hkdf_derive(
-        vscf_hkdf_t *hkdf, vsc_data_t data, vsc_data_t salt, vsc_data_t info, vsc_buffer_t *key, size_t key_len) {
+vscf_hkdf_derive(vscf_hkdf_t *hkdf, vsc_data_t data, size_t key_len, vsc_buffer_t *key) {
 
     VSCF_ASSERT_PTR(hkdf);
     VSCF_ASSERT_PTR(hkdf->hash);
     VSCF_ASSERT(vsc_data_is_valid(data));
-    VSCF_ASSERT(vsc_data_is_valid(salt));
-    VSCF_ASSERT(vsc_data_is_valid(info));
     VSCF_ASSERT_PTR(key);
     VSCF_ASSERT(key_len > 0);
     VSCF_ASSERT(vsc_buffer_unused_len(key) >= key_len);
@@ -186,8 +201,41 @@ vscf_hkdf_derive(
 
     vsc_buffer_t *pr_key = vsc_buffer_new_with_capacity(pr_key_len);
 
-    vscf_hkdf_extract(hkdf, data, salt, pr_key);
-    vscf_hkdf_expand(hkdf, pr_key, info, key, key_len);
+    vscf_hkdf_extract(hkdf, data, pr_key);
+    vscf_hkdf_expand(hkdf, pr_key, key, key_len);
 
     vsc_buffer_destroy(&pr_key);
+}
+
+//
+//  Prepare algorithm to derive new key.
+//
+VSCF_PUBLIC void
+vscf_hkdf_reset(vscf_hkdf_t *hkdf, vsc_data_t salt, size_t iteration_count) {
+
+    VSCF_ASSERT_PTR(hkdf);
+    VSCF_ASSERT(vsc_data_is_valid(salt));
+    VSCF_UNUSED(iteration_count);
+
+    vsc_buffer_destroy(&hkdf->salt);
+    if (!vsc_data_is_empty(salt)) {
+        hkdf->salt = vsc_buffer_new_with_data(salt);
+    }
+}
+
+//
+//  Setup application specific information (optional).
+//  Can be empty.
+//
+VSCF_PUBLIC void
+vscf_hkdf_set_info(vscf_hkdf_t *hkdf, vsc_data_t info) {
+
+    VSCF_ASSERT_PTR(hkdf);
+    VSCF_ASSERT(vsc_data_is_valid(info));
+
+    vsc_buffer_destroy(&hkdf->context_info);
+
+    if (!vsc_data_is_empty(info)) {
+        hkdf->context_info = vsc_buffer_new_with_data(info);
+    }
 }

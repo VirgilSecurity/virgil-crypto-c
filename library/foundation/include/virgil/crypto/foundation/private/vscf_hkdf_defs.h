@@ -63,6 +63,14 @@
 #include "vscf_hmac.h"
 #include "vscf_hmac_defs.h"
 
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
+
 // clang-format on
 //  @end
 
@@ -94,6 +102,14 @@ struct vscf_hkdf_t {
     //  Dependency to the interface 'hash stream'.
     //
     vscf_impl_t *hash;
+    //
+    //  Implementation specific context.
+    //
+    vsc_buffer_t *salt;
+    //
+    //  Implementation specific context.
+    //
+    vsc_buffer_t *context_info;
     //
     //  Implementation specific context.
     //
