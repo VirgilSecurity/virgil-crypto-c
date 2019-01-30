@@ -160,11 +160,23 @@ VSCF_PUBLIC void
 vscf_hkdf_release_hash(vscf_hkdf_t *hkdf);
 
 //
-//  Derive key of the requested length from the given data, salt and info.
+//  Derive key of the requested length from the given data.
 //
 VSCF_PUBLIC void
-vscf_hkdf_derive(vscf_hkdf_t *hkdf, vsc_data_t data, vsc_data_t salt, vsc_data_t info, vsc_buffer_t *key,
-        size_t key_len);
+vscf_hkdf_derive(vscf_hkdf_t *hkdf, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
+
+//
+//  Prepare algorithm to derive new key.
+//
+VSCF_PUBLIC void
+vscf_hkdf_reset(vscf_hkdf_t *hkdf, vsc_data_t salt, size_t iteration_count);
+
+//
+//  Setup application specific information (optional).
+//  Can be empty.
+//
+VSCF_PUBLIC void
+vscf_hkdf_set_info(vscf_hkdf_t *hkdf, vsc_data_t info);
 
 
 // --------------------------------------------------------------------------

@@ -19,29 +19,30 @@
     <implementation name="hkdf">
         Virgil Security implementation of the HKDF (RFC 6234) algorithm.
 
+        <interface name="kdf"/>
         <interface name="salted kdf"/>
 
         <dependency name="hash" interface="hash stream"/>
 
         <context>
+            <property name="salt" class="buffer"/>
+            <property name="context info" class="buffer"/>
             <property name="hmac" impl="hmac" access="readwrite" is_reference="0" require_definition="public"/>
         </context>
 
         <constant name="hash counter max" value="255"/>
 
-        <method name="extract" context="impl">
+        <method name="extract">
             Extracts fixed-length pseudorandom key from keying material.
 
             <argument name="data" class="data"/>
-            <argument name="salt" class="data"/>
             <argument name="pr key" class="buffer"/>
         </method>
 
-        <method name="expand" context="impl">
+        <method name="expand">
             Expands the pseudorandom key to the desired length.
 
             <argument name="pr key" class="buffer"/>
-            <argument name="info" class="data"/>
             <argument name="key" class="buffer"/>
             <argument name="key len" type="size"/>
         </method>

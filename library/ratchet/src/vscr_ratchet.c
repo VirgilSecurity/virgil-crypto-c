@@ -433,8 +433,9 @@ vscr_ratchet_create_chain_key(const vscr_ratchet_t *ratchet, vsc_data_t private_
     vsc_buffer_init(&buffer);
     vsc_buffer_use(&buffer, derived_secret, sizeof(derived_secret));
 
-    vscf_hkdf_derive(hkdf, vsc_data(secret, sizeof(secret)), vsc_data(ratchet->root_key, sizeof(ratchet->root_key)),
-            vsc_data(ratchet_kdf_ratchet_info, sizeof(ratchet_kdf_ratchet_info) - 1), &buffer, sizeof(derived_secret));
+    vscf_hkdf_reset(hkdf, vsc_data(ratchet->root_key, sizeof(ratchet->root_key)), 0);
+    vscf_hkdf_set_info(hkdf, vsc_data(ratchet_kdf_ratchet_info, sizeof(ratchet_kdf_ratchet_info) - 1));
+    vscf_hkdf_derive(hkdf, vsc_data(secret, sizeof(secret)), sizeof(derived_secret), &buffer);
 
     memcpy(new_root_key, derived_secret, vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
 
@@ -597,8 +598,9 @@ vscr_ratchet_respond(vscr_ratchet_t *ratchet, vsc_data_t shared_secret, const Re
     vsc_buffer_init(&buffer);
     vsc_buffer_use(&buffer, derived_secret, sizeof(derived_secret));
 
-    vscf_hkdf_derive(hkdf, shared_secret, vsc_data_empty(),
-            vsc_data(ratchet_kdf_root_info, sizeof(ratchet_kdf_root_info) - 1), &buffer, sizeof(derived_secret));
+    vscf_hkdf_set_info(hkdf, vsc_data(ratchet_kdf_root_info, sizeof(ratchet_kdf_root_info) - 1));
+
+    vscf_hkdf_derive(hkdf, shared_secret, sizeof(derived_secret), &buffer);
     vscf_hkdf_destroy(&hkdf);
 
     memcpy(ratchet->root_key, derived_secret, vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);
@@ -644,8 +646,8 @@ vscr_ratchet_initiate(vscr_ratchet_t *ratchet, vsc_data_t shared_secret, vsc_dat
     vsc_buffer_init(&buffer);
     vsc_buffer_use(&buffer, derived_secret, sizeof(derived_secret));
 
-    vscf_hkdf_derive(hkdf, shared_secret, vsc_data_empty(),
-            vsc_data(ratchet_kdf_root_info, sizeof(ratchet_kdf_root_info) - 1), &buffer, sizeof(derived_secret));
+    vscf_hkdf_set_info(hkdf, vsc_data(ratchet_kdf_root_info, sizeof(ratchet_kdf_root_info) - 1));
+    vscf_hkdf_derive(hkdf, shared_secret, sizeof(derived_secret), &buffer);
     vscf_hkdf_destroy(&hkdf);
 
     memcpy(ratchet->root_key, derived_secret, vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH);

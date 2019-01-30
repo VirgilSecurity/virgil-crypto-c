@@ -55,6 +55,8 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_hkdf_defs.h"
+#include "vscf_kdf.h"
+#include "vscf_kdf_api.h"
 #include "vscf_salted_kdf.h"
 #include "vscf_salted_kdf_api.h"
 #include "vscf_hash_stream.h"
@@ -75,6 +77,21 @@ static const vscf_api_t *
 vscf_hkdf_find_api(vscf_api_tag_t api_tag);
 
 //
+//  Configuration of the interface API 'kdf api'.
+//
+static const vscf_kdf_api_t kdf_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'kdf' MUST be equal to the 'vscf_api_tag_KDF'.
+    //
+    vscf_api_tag_KDF,
+    //
+    //  Derive key of the requested length from the given data.
+    //
+    (vscf_kdf_api_derive_fn)vscf_hkdf_derive
+};
+
+//
 //  Configuration of the interface API 'salted kdf api'.
 //
 static const vscf_salted_kdf_api_t salted_kdf_api = {
@@ -84,9 +101,18 @@ static const vscf_salted_kdf_api_t salted_kdf_api = {
     //
     vscf_api_tag_SALTED_KDF,
     //
-    //  Derive key of the requested length from the given data, salt and info.
+    //  Link to the inherited interface API 'kdf'.
     //
-    (vscf_salted_kdf_api_derive_fn)vscf_hkdf_derive
+    &kdf_api,
+    //
+    //  Prepare algorithm to derive new key.
+    //
+    (vscf_salted_kdf_api_reset_fn)vscf_hkdf_reset,
+    //
+    //  Setup application specific information (optional).
+    //  Can be empty.
+    //
+    (vscf_salted_kdf_api_set_info_fn)vscf_hkdf_set_info
 };
 
 //
@@ -271,6 +297,8 @@ static const vscf_api_t *
 vscf_hkdf_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
+        case vscf_api_tag_KDF:
+            return (const vscf_api_t *) &kdf_api;
         case vscf_api_tag_SALTED_KDF:
             return (const vscf_api_t *) &salted_kdf_api;
         default:
