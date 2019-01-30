@@ -118,6 +118,8 @@ vscf_hkdf_cleanup_ctx(vscf_hkdf_t *hkdf) {
     VSCF_ASSERT_PTR(hkdf);
 
     vscf_hmac_cleanup(&hkdf->hmac);
+    vsc_buffer_destroy(&hkdf->salt);
+    vsc_buffer_destroy(&hkdf->context_info);
 }
 
 //
