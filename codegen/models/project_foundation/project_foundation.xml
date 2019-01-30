@@ -63,6 +63,7 @@
     <enum name="asn1 tag"/>
     <enum name="hash alg"/>
     <enum name="alg id"/>
+    <enum name="oid id"/>
 
     <interface name="defaults" from="shared"/>
     <interface name="cipher"/>

@@ -73,4 +73,46 @@ import VirgilCryptoCommon
     @objc public func add(passwordRecipientInfo: PasswordRecipientInfo) {
         vscf_password_recipient_info_list_add(self.c_ctx, &passwordRecipientInfo.c_ctx)
     }
+
+    /// Return true if given list has item.
+    @objc public func hasItem() -> Bool {
+        let proxyResult = vscf_password_recipient_info_list_has_item(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return list item.
+    @objc public func item() -> PasswordRecipientInfo {
+        let proxyResult = vscf_password_recipient_info_list_item(self.c_ctx)
+
+        return PasswordRecipientInfo.init(use: proxyResult!)
+    }
+
+    /// Return true if list has next item.
+    @objc public func hasNext() -> Bool {
+        let proxyResult = vscf_password_recipient_info_list_has_next(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return next list node if exists, or NULL otherwise.
+    @objc public func next() -> PasswordRecipientInfoList {
+        let proxyResult = vscf_password_recipient_info_list_next(self.c_ctx)
+
+        return PasswordRecipientInfoList.init(take: proxyResult!)
+    }
+
+    /// Return true if list has previous item.
+    @objc public func hasPrev() -> Bool {
+        let proxyResult = vscf_password_recipient_info_list_has_prev(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return previous list node if exists, or NULL otherwise.
+    @objc public func prev() -> PasswordRecipientInfoList {
+        let proxyResult = vscf_password_recipient_info_list_prev(self.c_ctx)
+
+        return PasswordRecipientInfoList.init(take: proxyResult!)
+    }
 }

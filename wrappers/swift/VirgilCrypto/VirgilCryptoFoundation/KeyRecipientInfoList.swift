@@ -73,4 +73,46 @@ import VirgilCryptoCommon
     @objc public func add(keyRecipientInfo: KeyRecipientInfo) {
         vscf_key_recipient_info_list_add(self.c_ctx, &keyRecipientInfo.c_ctx)
     }
+
+    /// Return true if given list has item.
+    @objc public func hasItem() -> Bool {
+        let proxyResult = vscf_key_recipient_info_list_has_item(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return list item.
+    @objc public func item() -> KeyRecipientInfo {
+        let proxyResult = vscf_key_recipient_info_list_item(self.c_ctx)
+
+        return KeyRecipientInfo.init(use: proxyResult!)
+    }
+
+    /// Return true if list has next item.
+    @objc public func hasNext() -> Bool {
+        let proxyResult = vscf_key_recipient_info_list_has_next(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return next list node if exists, or NULL otherwise.
+    @objc public func next() -> KeyRecipientInfoList {
+        let proxyResult = vscf_key_recipient_info_list_next(self.c_ctx)
+
+        return KeyRecipientInfoList.init(take: proxyResult!)
+    }
+
+    /// Return true if list has previous item.
+    @objc public func hasPrev() -> Bool {
+        let proxyResult = vscf_key_recipient_info_list_has_prev(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return previous list node if exists, or NULL otherwise.
+    @objc public func prev() -> KeyRecipientInfoList {
+        let proxyResult = vscf_key_recipient_info_list_prev(self.c_ctx)
+
+        return KeyRecipientInfoList.init(take: proxyResult!)
+    }
 }

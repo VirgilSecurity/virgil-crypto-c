@@ -12,4 +12,26 @@
         <argument name="key encryption algorithm" interface="alg info" access="disown"/>
         <argument name="encrypted key" class="data"/>
     </constructor>
+
+
+    <method name="recipient id" is_const="1">
+        Return recipient identifier.
+
+        <return name="recipient id" class="data"/>
+    </method>
+
+
+    <method name="key encryption algorithm" is_const="1">
+        Return algorithm information that was used for encryption
+        a data encryption key.
+
+        <return name="key encryption algorithm" interface="alg info"/>
+    </method>
+
+
+    <method name="encrypted key" class="data" is_const="1">
+        Return an encrypted data encryption key.
+
+        <return name="encrypted key" class="data"/>
+    </method>
 </class>

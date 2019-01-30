@@ -277,3 +277,39 @@ vscf_message_info_set_data_encryption_alg_info(
 
     message_info->data_encryption_alg_info = data_encryption_alg_info;
 }
+
+//
+//  Return information about algorithm that was used for the data encryption.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_message_info_data_encryption_alg_info(const vscf_message_info_t *message_info) {
+
+    VSCF_ASSERT_PTR(message_info);
+    VSCF_ASSERT_PTR(message_info->data_encryption_alg_info);
+
+    return message_info->data_encryption_alg_info;
+}
+
+//
+//  Return list with a "key recipient info" elements.
+//
+VSCF_PUBLIC const vscf_key_recipient_info_list_t *
+vscf_message_info_key_recipient_info_list(const vscf_message_info_t *message_info) {
+
+    VSCF_ASSERT_PTR(message_info);
+    VSCF_ASSERT_PTR(message_info->key_recipients);
+
+    return message_info->key_recipients;
+}
+
+//
+//  Return list with a "password recipient info" elements.
+//
+VSCF_PUBLIC const vscf_password_recipient_info_list_t *
+vscf_message_info_password_recipient_info_list(const vscf_message_info_t *message_info) {
+
+    VSCF_ASSERT_PTR(message_info);
+    VSCF_ASSERT_PTR(message_info->password_recipients);
+
+    return message_info->password_recipients;
+}

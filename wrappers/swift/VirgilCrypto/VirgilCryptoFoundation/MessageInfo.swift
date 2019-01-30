@@ -83,4 +83,25 @@ import VirgilCryptoCommon
     @objc public func setDataEncryptionAlgInfo(dataEncryptionAlgInfo: AlgInfo) {
         vscf_message_info_set_data_encryption_alg_info(self.c_ctx, &dataEncryptionAlgInfo.c_ctx)
     }
+
+    /// Return information about algorithm that was used for the data encryption.
+    @objc public func dataEncryptionAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_message_info_data_encryption_alg_info(self.c_ctx)
+
+        return AlgInfoProxy.init(c_ctx: proxyResult!)
+    }
+
+    /// Return list with a "key recipient info" elements.
+    @objc public func keyRecipientInfoList() -> KeyRecipientInfoList {
+        let proxyResult = vscf_message_info_key_recipient_info_list(self.c_ctx)
+
+        return KeyRecipientInfoList.init(use: proxyResult!)
+    }
+
+    /// Return list with a "password recipient info" elements.
+    @objc public func passwordRecipientInfoList() -> PasswordRecipientInfoList {
+        let proxyResult = vscf_message_info_password_recipient_info_list(self.c_ctx)
+
+        return PasswordRecipientInfoList.init(use: proxyResult!)
+    }
 }

@@ -55,6 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_key_recipient_info.h"
+#include "vscf_key_recipient_info_list.h"
 
 // clang-format on
 //  @end
@@ -127,6 +128,42 @@ vscf_key_recipient_info_list_shallow_copy(vscf_key_recipient_info_list_t *key_re
 VSCF_PUBLIC void
 vscf_key_recipient_info_list_add(vscf_key_recipient_info_list_t *key_recipient_info_list,
         vscf_key_recipient_info_t **key_recipient_info_ref);
+
+//
+//  Return true if given list has item.
+//
+VSCF_PUBLIC bool
+vscf_key_recipient_info_list_has_item(const vscf_key_recipient_info_list_t *key_recipient_info_list);
+
+//
+//  Return list item.
+//
+VSCF_PUBLIC const vscf_key_recipient_info_t *
+vscf_key_recipient_info_list_item(const vscf_key_recipient_info_list_t *key_recipient_info_list);
+
+//
+//  Return true if list has next item.
+//
+VSCF_PUBLIC bool
+vscf_key_recipient_info_list_has_next(const vscf_key_recipient_info_list_t *key_recipient_info_list);
+
+//
+//  Return next list node if exists, or NULL otherwise.
+//
+VSCF_PUBLIC vscf_key_recipient_info_list_t *
+vscf_key_recipient_info_list_next(const vscf_key_recipient_info_list_t *key_recipient_info_list);
+
+//
+//  Return true if list has previous item.
+//
+VSCF_PUBLIC bool
+vscf_key_recipient_info_list_has_prev(const vscf_key_recipient_info_list_t *key_recipient_info_list);
+
+//
+//  Return previous list node if exists, or NULL otherwise.
+//
+VSCF_PUBLIC vscf_key_recipient_info_list_t *
+vscf_key_recipient_info_list_prev(const vscf_key_recipient_info_list_t *key_recipient_info_list);
 
 
 // --------------------------------------------------------------------------

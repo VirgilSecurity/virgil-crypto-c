@@ -245,3 +245,40 @@ vscf_key_recipient_info_new_with_members(
 
     return key_recipient_info;
 }
+
+//
+//  Return recipient identifier.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_key_recipient_info_recipient_id(const vscf_key_recipient_info_t *key_recipient_info) {
+
+    VSCF_ASSERT_PTR(key_recipient_info);
+    VSCF_ASSERT(vsc_buffer_is_valid(key_recipient_info->recipient_id));
+
+    return vsc_buffer_data(key_recipient_info->recipient_id);
+}
+
+//
+//  Return algorithm information that was used for encryption
+//  a data encryption key.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_key_recipient_info_key_encryption_algorithm(const vscf_key_recipient_info_t *key_recipient_info) {
+
+    VSCF_ASSERT_PTR(key_recipient_info);
+    VSCF_ASSERT_PTR(key_recipient_info->key_encryption_algorithm);
+
+    return key_recipient_info->key_encryption_algorithm;
+}
+
+//
+//  Return an encrypted data encryption key.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_key_recipient_info_encrypted_key(const vscf_key_recipient_info_t *key_recipient_info) {
+
+    VSCF_ASSERT_PTR(key_recipient_info);
+    VSCF_ASSERT(vsc_buffer_is_valid(key_recipient_info->encrypted_key));
+
+    return vsc_buffer_data(key_recipient_info->encrypted_key);
+}

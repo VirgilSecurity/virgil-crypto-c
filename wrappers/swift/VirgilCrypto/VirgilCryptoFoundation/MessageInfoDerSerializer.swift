@@ -68,14 +68,16 @@ import VirgilCryptoCommon
         vscf_message_info_der_serializer_delete(self.c_ctx)
     }
 
-    @objc public func setAsn1Reader(asn1Reader: Asn1Reader) {
+    @objc public func setAsn1Reader(asn1Reader: Asn1Reader) throws {
         vscf_message_info_der_serializer_release_asn1_reader(self.c_ctx)
-        vscf_message_info_der_serializer_use_asn1_reader(self.c_ctx, asn1Reader.c_ctx)
+        let proxyResult = vscf_message_info_der_serializer_use_asn1_reader(self.c_ctx, asn1Reader.c_ctx)
+        try FoundationError.handleError(fromC: proxyResult)
     }
 
-    @objc public func setAsn1Writer(asn1Writer: Asn1Writer) {
+    @objc public func setAsn1Writer(asn1Writer: Asn1Writer) throws {
         vscf_message_info_der_serializer_release_asn1_writer(self.c_ctx)
-        vscf_message_info_der_serializer_use_asn1_writer(self.c_ctx, asn1Writer.c_ctx)
+        let proxyResult = vscf_message_info_der_serializer_use_asn1_writer(self.c_ctx, asn1Writer.c_ctx)
+        try FoundationError.handleError(fromC: proxyResult)
     }
 
     /// Setup predefined values to the uninitialized class dependencies.

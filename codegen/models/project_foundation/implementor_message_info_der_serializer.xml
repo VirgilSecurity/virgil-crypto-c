@@ -9,8 +9,108 @@
 
         <require class="asn1rd"/>
         <require class="asn1wr"/>
+        <require class="alg info der serializer"/>
+        <require class="alg info der deserializer"/>
+        <require class="oid"/>
 
-        <dependency name="asn1 reader" interface="asn1 reader"/>
-        <dependency name="asn1 writer" interface="asn1 writer"/>
+        <require module="buffer defs" project="common"/>
+
+        <dependency name="asn1 reader" interface="asn1 reader" has_observers="1"/>
+        <dependency name="asn1 writer" interface="asn1 writer" has_observers="1"/>
+
+        <context>
+            <property name="alg info serializer" class="alg info der serializer"/>
+            <property name="alg info deserializer" class="alg info der deserializer"/>
+        </context>
+
+        <method name="serialized custom params len" is_const="1">
+            <argument name="message info" class="message info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize custom params">
+            <argument name="message info" class="message info"/>
+
+            <return type="size"/>
+        </method>
+
+
+        <method name="serialized key recipient info len" is_const="1">
+            <argument name="key recipient info" class="key recipient info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize key recipient info">
+            <argument name="key recipient info" class="key recipient info"/>
+
+            <return type="size"/>
+        </method>
+
+
+        <method name="serialized password recipient info len" is_const="1">
+            <argument name="password recipient info" class="password recipient info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize password recipient info">
+            <argument name="password recipient info" class="password recipient info"/>
+
+            <return type="size"/>
+        </method>
+
+
+        <method name="serialized recipient infos len" is_const="1">
+            <argument name="message info" class="message info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize recipient infos">
+            <argument name="message info" class="message info"/>
+
+            <return type="size"/>
+        </method>
+
+
+        <method name="serialized encrypted content info len" is_const="1">
+            <argument name="message info" class="message info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize encrypted content info">
+            <argument name="message info" class="message info"/>
+
+            <return type="size"/>
+        </method>
+
+
+        <method name="serialized enveloped data len" is_const="1">
+            <argument name="message info" class="message info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize enveloped data">
+            <argument name="message info" class="message info"/>
+
+            <return type="size"/>
+        </method>
+
+
+        <method name="serialized cms content info len" is_const="1">
+            <argument name="message info" class="message info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize cms content info ">
+            <argument name="message info" class="message info"/>
+
+            <return type="size"/>
+        </method>
     </implementation>
 </implementor>

@@ -246,3 +246,70 @@ vscf_key_recipient_info_list_add(
         vscf_key_recipient_info_list_add(key_recipient_info_list->next, key_recipient_info_ref);
     }
 }
+
+//
+//  Return true if given list has item.
+//
+VSCF_PUBLIC bool
+vscf_key_recipient_info_list_has_item(const vscf_key_recipient_info_list_t *key_recipient_info_list) {
+
+    VSCF_ASSERT_PTR(key_recipient_info_list);
+
+    return key_recipient_info_list->item != NULL;
+}
+
+//
+//  Return list item.
+//
+VSCF_PUBLIC const vscf_key_recipient_info_t *
+vscf_key_recipient_info_list_item(const vscf_key_recipient_info_list_t *key_recipient_info_list) {
+
+    VSCF_ASSERT_PTR(key_recipient_info_list);
+    VSCF_ASSERT_PTR(key_recipient_info_list->item);
+
+    return key_recipient_info_list->item;
+}
+
+//
+//  Return true if list has next item.
+//
+VSCF_PUBLIC bool
+vscf_key_recipient_info_list_has_next(const vscf_key_recipient_info_list_t *key_recipient_info_list) {
+
+    VSCF_ASSERT_PTR(key_recipient_info_list);
+
+    return key_recipient_info_list->next != NULL;
+}
+
+//
+//  Return next list node if exists, or NULL otherwise.
+//
+VSCF_PUBLIC vscf_key_recipient_info_list_t *
+vscf_key_recipient_info_list_next(const vscf_key_recipient_info_list_t *key_recipient_info_list) {
+
+    VSCF_ASSERT_PTR(key_recipient_info_list);
+
+    return key_recipient_info_list->next;
+}
+
+//
+//  Return true if list has previous item.
+//
+VSCF_PUBLIC bool
+vscf_key_recipient_info_list_has_prev(const vscf_key_recipient_info_list_t *key_recipient_info_list) {
+
+    VSCF_ASSERT_PTR(key_recipient_info_list);
+
+    return key_recipient_info_list->prev != NULL;
+}
+
+//
+//  Return previous list node if exists, or NULL otherwise.
+//
+VSCF_PUBLIC vscf_key_recipient_info_list_t *
+vscf_key_recipient_info_list_prev(const vscf_key_recipient_info_list_t *key_recipient_info_list) {
+
+    VSCF_ASSERT_PTR(key_recipient_info_list);
+
+    return key_recipient_info_list->prev;
+}
