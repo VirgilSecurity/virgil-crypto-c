@@ -63,6 +63,7 @@
 #include "vscf_asn1_writer.h"
 #include "vscf_alg_info_der_serializer_defs.h"
 #include "vscf_alg_info_der_serializer_internal.h"
+#include "vscf_alg_id.h"
 
 // clang-format on
 //  @end
@@ -73,6 +74,13 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Return true if algorithm identifier requires that optinal
+//  parameter will be NULL.
+//
+static bool
+vscf_alg_info_der_serializer_is_alg_require_null_params(vscf_alg_id_t alg_id);
 
 //
 //  Return buffer size enough to hold serialized class "simple alg info".
@@ -125,6 +133,24 @@ vscf_alg_info_der_serializer_serialize_cipher_alg_info(vscf_alg_info_der_seriali
 
 
 //
+//  Return true if algorithm identifier requires that optinal
+//  parameter will be NULL.
+//
+static bool
+vscf_alg_info_der_serializer_is_alg_require_null_params(vscf_alg_id_t alg_id) {
+
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
+
+    switch (alg_id) {
+    case vscf_alg_id_RSA:
+        return true;
+
+    default:
+        return false;
+    }
+}
+
+//
 //  Return buffer size enough to hold serialized class "simple alg info".
 //
 static size_t
@@ -167,8 +193,12 @@ vscf_alg_info_der_serializer_serialize_simple_alg_info(vscf_alg_info_der_seriali
     vscf_impl_t *asn1_writer = alg_info_der_serializer->asn1_writer;
     vscf_asn1_writer_reset(asn1_writer, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 
-    vsc_data_t oid = vscf_oid_from_alg_id(vscf_simple_alg_info_alg_id(simple_alg_info));
+    vscf_alg_id_t alg_id = vscf_simple_alg_info_alg_id(simple_alg_info);
+    vsc_data_t oid = vscf_oid_from_alg_id(alg_id);
     size_t hash_len = 0;
+    if (vscf_alg_info_der_serializer_is_alg_require_null_params(alg_id)) {
+        hash_len += vscf_asn1_writer_write_null(asn1_writer);
+    }
     hash_len += vscf_asn1_writer_write_oid(asn1_writer, oid);
     hash_len += vscf_asn1_writer_write_sequence(asn1_writer, hash_len);
     VSCF_ASSERT(vscf_asn1_writer_error(asn1_writer) == vscf_SUCCESS);
