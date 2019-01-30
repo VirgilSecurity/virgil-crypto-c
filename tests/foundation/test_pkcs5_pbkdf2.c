@@ -121,9 +121,7 @@ test__derive__hmac_sha256_vector_3__returns_valid_key(void) {
 
 void
 test__derive__hmac_sha256_vector_4__returns_valid_key(void) {
-    TEST_IGNORE_MESSAGE("Heavy test.");
-    return;
-
+#if ENABLE_HEAVY_TESTS
     vscf_sha256_t *hash = vscf_sha256_new();
     vscf_hmac_t *hmac = vscf_hmac_new();
     vscf_hmac_take_hash(hmac, vscf_sha256_impl(hash));
@@ -140,6 +138,9 @@ test__derive__hmac_sha256_vector_4__returns_valid_key(void) {
 
     vscf_pkcs5_pbkdf2_destroy(&pbkdf2);
     vsc_buffer_destroy(&key);
+#else
+    TEST_IGNORE_MESSAGE("Heavy tests are disabled.");
+#endif
 }
 
 void

@@ -80,6 +80,7 @@ option(BUILD_SHARED_LIBS "On/Off build shared libraries." OFF)
 # Test
 #
 option(ENABLE_TESTING "On/Off integration tests." ON)
+option(ENABLE_HEAVY_TESTS "On/Off execution of heavy tests." OFF)
 option(ENABLE_PROFILING "On/Off GProf compilation options." OFF)
 
 option(VIRGIL_C_TESTING "On/Off C library integration tests." ON)
