@@ -1,0 +1,5 @@
+<enum name="oid id" definition="public">
+    <constant name="none"/>
+    <constant name="cms data"/>
+    <constant name="cms enveloped data"/>
+</enum>
