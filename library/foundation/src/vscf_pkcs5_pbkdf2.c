@@ -97,6 +97,7 @@ VSCF_PRIVATE void
 vscf_pkcs5_pbkdf2_cleanup_ctx(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
 
     VSCF_ASSERT_PTR(pkcs5_pbkdf2);
+    vsc_buffer_destroy(&pkcs5_pbkdf2->salt);
 }
 
 //
