@@ -57,6 +57,8 @@
 #include "vscf_library.h"
 #include "vscf_key_recipient_info.h"
 #include "vscf_password_recipient_info.h"
+#include "vscf_key_recipient_info_list.h"
+#include "vscf_password_recipient_info_list.h"
 #include "vscf_impl.h"
 
 // clang-format on
@@ -142,6 +144,24 @@ vscf_message_info_add_password_recipient(vscf_message_info_t *message_info,
 VSCF_PUBLIC void
 vscf_message_info_set_data_encryption_alg_info(vscf_message_info_t *message_info,
         vscf_impl_t **data_encryption_alg_info_ref);
+
+//
+//  Return information about algorithm that was used for the data encryption.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_message_info_data_encryption_alg_info(const vscf_message_info_t *message_info);
+
+//
+//  Return list with a "key recipient info" elements.
+//
+VSCF_PUBLIC const vscf_key_recipient_info_list_t *
+vscf_message_info_key_recipient_info_list(const vscf_message_info_t *message_info);
+
+//
+//  Return list with a "password recipient info" elements.
+//
+VSCF_PUBLIC const vscf_password_recipient_info_list_t *
+vscf_message_info_password_recipient_info_list(const vscf_message_info_t *message_info);
 
 
 // --------------------------------------------------------------------------

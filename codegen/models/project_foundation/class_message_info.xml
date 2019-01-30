@@ -26,4 +26,25 @@
 
         <argument name="data encryption alg info" interface="alg info" access="disown"/>
     </method>
+
+
+    <method name="data encryption alg info" is_const="1">
+        Return information about algorithm that was used for the data encryption.
+
+        <return interface="alg info"/>
+    </method>
+
+
+    <method name="key recipient info list" is_const="1">
+        Return list with a "key recipient info" elements.
+
+        <return class="key recipient info list"/>
+    </method>
+
+
+    <method name="password recipient info list" is_const="1">
+        Return list with a "password recipient info" elements.
+
+        <return class="password recipient info list"/>
+    </method>
 </class>

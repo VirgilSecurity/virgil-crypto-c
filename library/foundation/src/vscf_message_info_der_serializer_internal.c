@@ -62,6 +62,7 @@
 #include "vscf_asn1_reader.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_impl.h"
+#include "vscf_error.h"
 #include "vscf_api.h"
 
 // clang-format on
@@ -73,6 +74,34 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  This method is called when interface 'asn1 reader' was setup.
+//
+VSCF_PRIVATE vscf_error_t
+vscf_message_info_der_serializer_did_setup_asn1_reader(
+        vscf_message_info_der_serializer_t *message_info_der_serializer);
+
+//
+//  This method is called when interface 'asn1 reader' was released.
+//
+VSCF_PRIVATE void
+vscf_message_info_der_serializer_did_release_asn1_reader(
+        vscf_message_info_der_serializer_t *message_info_der_serializer);
+
+//
+//  This method is called when interface 'asn1 writer' was setup.
+//
+VSCF_PRIVATE vscf_error_t
+vscf_message_info_der_serializer_did_setup_asn1_writer(
+        vscf_message_info_der_serializer_t *message_info_der_serializer);
+
+//
+//  This method is called when interface 'asn1 writer' was released.
+//
+VSCF_PRIVATE void
+vscf_message_info_der_serializer_did_release_asn1_writer(
+        vscf_message_info_der_serializer_t *message_info_der_serializer);
 
 static const vscf_api_t *
 vscf_message_info_der_serializer_find_api(vscf_api_tag_t api_tag);
@@ -146,6 +175,8 @@ vscf_message_info_der_serializer_init(vscf_message_info_der_serializer_t *messag
 
     message_info_der_serializer->info = &info;
     message_info_der_serializer->refcnt = 1;
+
+    vscf_message_info_der_serializer_init_ctx(message_info_der_serializer);
 }
 
 //
@@ -169,6 +200,8 @@ vscf_message_info_der_serializer_cleanup(vscf_message_info_der_serializer_t *mes
 
     vscf_message_info_der_serializer_release_asn1_reader(message_info_der_serializer);
     vscf_message_info_der_serializer_release_asn1_writer(message_info_der_serializer);
+
+    vscf_message_info_der_serializer_cleanup_ctx(message_info_der_serializer);
 
     vscf_zeroize(message_info_der_serializer, sizeof(vscf_message_info_der_serializer_t));
 }
@@ -251,7 +284,7 @@ vscf_message_info_der_serializer_impl(vscf_message_info_der_serializer_t *messag
 //
 //  Setup dependency to the interface 'asn1 reader' with shared ownership.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_error_t
 vscf_message_info_der_serializer_use_asn1_reader(vscf_message_info_der_serializer_t *message_info_der_serializer,
         vscf_impl_t *asn1_reader) {
 
@@ -262,13 +295,15 @@ vscf_message_info_der_serializer_use_asn1_reader(vscf_message_info_der_serialize
     VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
 
     message_info_der_serializer->asn1_reader = vscf_impl_shallow_copy(asn1_reader);
+
+    return vscf_message_info_der_serializer_did_setup_asn1_reader(message_info_der_serializer);
 }
 
 //
 //  Setup dependency to the interface 'asn1 reader' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_error_t
 vscf_message_info_der_serializer_take_asn1_reader(vscf_message_info_der_serializer_t *message_info_der_serializer,
         vscf_impl_t *asn1_reader) {
 
@@ -279,6 +314,8 @@ vscf_message_info_der_serializer_take_asn1_reader(vscf_message_info_der_serializ
     VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
 
     message_info_der_serializer->asn1_reader = asn1_reader;
+
+    return vscf_message_info_der_serializer_did_setup_asn1_reader(message_info_der_serializer);
 }
 
 //
@@ -290,12 +327,14 @@ vscf_message_info_der_serializer_release_asn1_reader(vscf_message_info_der_seria
     VSCF_ASSERT_PTR(message_info_der_serializer);
 
     vscf_impl_destroy(&message_info_der_serializer->asn1_reader);
+
+    vscf_message_info_der_serializer_did_release_asn1_reader(message_info_der_serializer);
 }
 
 //
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_error_t
 vscf_message_info_der_serializer_use_asn1_writer(vscf_message_info_der_serializer_t *message_info_der_serializer,
         vscf_impl_t *asn1_writer) {
 
@@ -306,13 +345,15 @@ vscf_message_info_der_serializer_use_asn1_writer(vscf_message_info_der_serialize
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
 
     message_info_der_serializer->asn1_writer = vscf_impl_shallow_copy(asn1_writer);
+
+    return vscf_message_info_der_serializer_did_setup_asn1_writer(message_info_der_serializer);
 }
 
 //
 //  Setup dependency to the interface 'asn1 writer' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_error_t
 vscf_message_info_der_serializer_take_asn1_writer(vscf_message_info_der_serializer_t *message_info_der_serializer,
         vscf_impl_t *asn1_writer) {
 
@@ -323,6 +364,8 @@ vscf_message_info_der_serializer_take_asn1_writer(vscf_message_info_der_serializ
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
 
     message_info_der_serializer->asn1_writer = asn1_writer;
+
+    return vscf_message_info_der_serializer_did_setup_asn1_writer(message_info_der_serializer);
 }
 
 //
@@ -334,6 +377,8 @@ vscf_message_info_der_serializer_release_asn1_writer(vscf_message_info_der_seria
     VSCF_ASSERT_PTR(message_info_der_serializer);
 
     vscf_impl_destroy(&message_info_der_serializer->asn1_writer);
+
+    vscf_message_info_der_serializer_did_release_asn1_writer(message_info_der_serializer);
 }
 
 static const vscf_api_t *

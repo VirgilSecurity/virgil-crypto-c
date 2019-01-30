@@ -78,4 +78,26 @@ import VirgilCryptoCommon
     deinit {
         vscf_key_recipient_info_delete(self.c_ctx)
     }
+
+    /// Return recipient identifier.
+    @objc public func recipientId() -> Data {
+        let proxyResult = vscf_key_recipient_info_recipient_id(self.c_ctx)
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
+
+    /// Return algorithm information that was used for encryption
+    /// a data encryption key.
+    @objc public func keyEncryptionAlgorithm() -> AlgInfo {
+        let proxyResult = vscf_key_recipient_info_key_encryption_algorithm(self.c_ctx)
+
+        return AlgInfoProxy.init(c_ctx: proxyResult!)
+    }
+
+    /// Return an encrypted data encryption key.
+    @objc public func encryptedKey() -> Data {
+        let proxyResult = vscf_key_recipient_info_encrypted_key(self.c_ctx)
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
 }

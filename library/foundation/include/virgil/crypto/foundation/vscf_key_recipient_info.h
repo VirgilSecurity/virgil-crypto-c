@@ -135,6 +135,25 @@ vscf_key_recipient_info_destroy(vscf_key_recipient_info_t **key_recipient_info_r
 VSCF_PUBLIC vscf_key_recipient_info_t *
 vscf_key_recipient_info_shallow_copy(vscf_key_recipient_info_t *key_recipient_info);
 
+//
+//  Return recipient identifier.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_key_recipient_info_recipient_id(const vscf_key_recipient_info_t *key_recipient_info);
+
+//
+//  Return algorithm information that was used for encryption
+//  a data encryption key.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_key_recipient_info_key_encryption_algorithm(const vscf_key_recipient_info_t *key_recipient_info);
+
+//
+//  Return an encrypted data encryption key.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_key_recipient_info_encrypted_key(const vscf_key_recipient_info_t *key_recipient_info);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

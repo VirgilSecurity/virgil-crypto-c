@@ -60,6 +60,8 @@
 #include "vscf_impl_private.h"
 #include "vscf_message_info_der_serializer.h"
 #include "vscf_impl.h"
+#include "vscf_alg_info_der_serializer.h"
+#include "vscf_alg_info_der_deserializer.h"
 
 // clang-format on
 //  @end
@@ -96,6 +98,14 @@ struct vscf_message_info_der_serializer_t {
     //  Dependency to the interface 'asn1 writer'.
     //
     vscf_impl_t *asn1_writer;
+    //
+    //  Implementation specific context.
+    //
+    vscf_alg_info_der_serializer_t *alg_info_serializer;
+    //
+    //  Implementation specific context.
+    //
+    vscf_alg_info_der_deserializer_t *alg_info_deserializer;
 };
 
 
