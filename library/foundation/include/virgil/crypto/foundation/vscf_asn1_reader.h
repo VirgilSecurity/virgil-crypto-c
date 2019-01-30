@@ -120,6 +120,14 @@ VSCF_PUBLIC size_t
 vscf_asn1_reader_read_tag(vscf_impl_t *impl, int tag);
 
 //
+//  Read ASN.1 type: context-specific TAG.
+//  Return element length.
+//  Return 0 if current position do not points to the requested tag.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_reader_read_context_tag(vscf_impl_t *impl, int tag);
+
+//
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC int

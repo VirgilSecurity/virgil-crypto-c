@@ -104,6 +104,15 @@ import VirgilCryptoCommon
         return proxyResult
     }
 
+    /// Read ASN.1 type: context-specific TAG.
+    /// Return element length.
+    /// Return 0 if current position do not points to the requested tag.
+    @objc public func readContextTag(tag: Int32) -> Int {
+        let proxyResult = vscf_asn1rd_read_context_tag(self.c_ctx, tag)
+
+        return proxyResult
+    }
+
     /// Read ASN.1 type: INTEGER.
     @objc public func readInt() -> Int32 {
         let proxyResult = vscf_asn1rd_read_int(self.c_ctx)

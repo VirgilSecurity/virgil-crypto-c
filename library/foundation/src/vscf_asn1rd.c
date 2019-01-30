@@ -281,6 +281,31 @@ vscf_asn1rd_read_tag(vscf_asn1rd_t *asn1rd, int tag) {
 }
 
 //
+//  Read ASN.1 type: context-specific TAG.
+//  Return element length.
+//  Return 0 if current position do not points to the requested tag.
+//
+VSCF_PUBLIC size_t
+vscf_asn1rd_read_context_tag(vscf_asn1rd_t *asn1rd, int tag) {
+
+    VSCF_ASSERT_PTR(asn1rd);
+
+    VSCF_ASSERT(asn1rd->error != vscf_error_UNINITIALIZED);
+
+    if (asn1rd->error != vscf_SUCCESS) {
+        return 0;
+    }
+
+    int expected_tag = MBEDTLS_ASN1_CONTEXT_SPECIFIC | MBEDTLS_ASN1_CONSTRUCTED | tag;
+    int read_tag = vscf_asn1rd_get_tag(asn1rd);
+    if (expected_tag == read_tag) {
+        return vscf_asn1rd_read_tag(asn1rd, expected_tag);
+    }
+
+    return 0;
+}
+
+//
 //  Read ASN.1 type: INTEGER.
 //
 VSCF_PUBLIC int

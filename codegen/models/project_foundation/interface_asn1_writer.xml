@@ -16,6 +16,11 @@
     </method>
 
 
+    <method name="release">
+        Release a target buffer.
+    </method>
+
+
     <method name="finish">
         Move written data to the buffer beginning and forbid further operations.
         Returns written size in bytes.
@@ -24,8 +29,29 @@
     </method>
 
 
+    <method name="bytes">
+        Returns pointer to the inner buffer.
+
+        <return type="byte" access="readwrite" is_reference="1"/>
+    </method>
+
+
+    <method name="len" is_const="1">
+        Returns total inner buffer length.
+
+        <return type="size"/>
+    </method>
+
+
     <method name="written len" is_const="1">
         Returns how many bytes were already written to the ASN.1 structure.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="unwritten len" is_const="1">
+        Returns how many bytes are available for writing.
 
         <return type="size"/>
     </method>
@@ -53,6 +79,17 @@
         Return count of written bytes.
 
         <argument name="tag" type="integer"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="write context tag">
+        Write context-specific ASN.1 tag.
+        Return count of written bytes.
+
+        <argument name="tag" type="integer"/>
+        <argument name="len" type="size"/>
 
         <return type="size"/>
     </method>
