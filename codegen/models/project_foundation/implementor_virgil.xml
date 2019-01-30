@@ -107,4 +107,22 @@
         </method>
     </implementation>
 
+
+    <implementation name="pkcs5 pbkdf2">
+        Virgil Security implementation of the PBKDF2 (RFC 8018) algorithm.
+
+        <interface name="defaults"/>
+        <interface name="kdf"/>
+        <interface name="salted kdf"/>
+
+        <require impl="hmac"/>
+        <require impl="sha384"/>
+
+        <dependency name="hmac" interface="mac stream"/>
+
+        <context>
+            <property name="salt" class="buffer"/>
+            <property name="iteration count" type="size"/>
+        </context>
+    </implementation>
 </implementor>
