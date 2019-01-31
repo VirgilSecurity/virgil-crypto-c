@@ -670,10 +670,9 @@ vscr_ratchet_session_encrypt(
     ratchet_message->message_pb.version = vscr_ratchet_common_RATCHET_MESSAGE_VERSION;
     RegularMessage *regular_message;
 
-    if (ratchet_session->received_first_response) {
+    if (ratchet_session->received_first_response || !ratchet_session->is_initiator) {
         ratchet_message->message_pb.has_regular_message = true;
         regular_message = &ratchet_message->message_pb.regular_message;
-
     } else {
         ratchet_message->message_pb.has_prekey_message = true;
         PrekeyMessage *prekey_message = &ratchet_message->message_pb.prekey_message;
@@ -747,6 +746,8 @@ vscr_ratchet_session_decrypt(
     if (message->message_pb.has_regular_message) {
         regular_message = &message->message_pb.regular_message;
     } else if (message->message_pb.has_prekey_message) {
+        VSCR_ASSERT(!ratchet_session->is_initiator);
+
         regular_message = &message->message_pb.prekey_message.regular_message;
     }
 

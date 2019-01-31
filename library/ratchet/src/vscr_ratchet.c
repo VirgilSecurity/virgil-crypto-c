@@ -51,10 +51,10 @@
 #include "vscr_ratchet_chain_key.h"
 #include "vscr_ratchet_message_defs.h"
 #include "vscr_ratchet_message_key.h"
+#include "vscr_ratchet_receiver_chain_list_node.h"
 #include "vscr_ratchet_receiver_chain.h"
 #include "vscr_ratchet_skipped_message_key.h"
 #include "vscr_ratchet_sender_chain.h"
-#include "vscr_ratchet_receiver_chain_list_node.h"
 #include "vscr_ratchet_skipped_message_key_list_node.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
@@ -103,6 +103,8 @@ struct vscr_ratchet_t {
 
     vscr_ratchet_sender_chain_t *sender_chain;
 
+    uint32_t prev_sender_chain_count;
+
     vscr_ratchet_receiver_chain_list_node_t *receiver_chains;
 
     vscr_ratchet_skipped_message_key_list_node_t *skipped_message_keys;
@@ -143,18 +145,21 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *ratchet, const vscr_ratc
 static vscr_error_t
 vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *ratchet, const RegularMessage *message, vsc_buffer_t *buffer);
 
-static vscr_ratchet_receiver_chain_t *
+static vscr_ratchet_receiver_chain_list_node_t *
 vscr_ratchet_find_receiver_chain(vscr_ratchet_t *ratchet, const RegularMessage *message);
+
+static vscr_ratchet_receiver_chain_list_node_t *
+vscr_ratchet_add_receiver_chain(vscr_ratchet_t *ratchet, vscr_ratchet_receiver_chain_t *receiver_chain);
+
+static void
+vscr_ratchet_delete_next_receiver_chain(vscr_ratchet_receiver_chain_list_node_t *node);
 
 static vscr_ratchet_skipped_message_key_t *
 vscr_ratchet_find_skipped_message_key(vscr_ratchet_t *ratchet, const RegularMessage *message);
 
 static void
-vscr_ratchet_erase_skipped_message_key(vscr_ratchet_t *ratchet,
+vscr_ratchet_delete_skipped_message_key(vscr_ratchet_t *ratchet,
         vscr_ratchet_skipped_message_key_t *skipped_message_key);
-
-static void
-vscr_ratchet_add_receiver_chain(vscr_ratchet_t *ratchet, vscr_ratchet_receiver_chain_t *receiver_chain);
 
 static void
 vscr_ratchet_add_skipped_message_key(vscr_ratchet_t *ratchet, vscr_ratchet_skipped_message_key_t *skipped_message_key);
@@ -732,6 +737,7 @@ vscr_ratchet_encrypt(vscr_ratchet_t *ratchet, vsc_data_t plain_text, RegularMess
 
     regular_message->version = vscr_ratchet_common_RATCHET_REGULAR_MESSAGE_VERSION;
     regular_message->counter = message_key->index;
+    regular_message->prev_chain_count = ratchet->prev_sender_chain_count;
 
     memcpy(regular_message->public_key, ratchet->sender_chain->public_key, sizeof(ratchet->sender_chain->public_key));
 
@@ -761,28 +767,33 @@ vscr_ratchet_decrypt(vscr_ratchet_t *ratchet, const RegularMessage *regular_mess
 
     vscr_error_t result;
 
-    vscr_ratchet_receiver_chain_t *receiver_chain = vscr_ratchet_find_receiver_chain(ratchet, regular_message);
+    vscr_ratchet_receiver_chain_list_node_t *receiver_chain_node =
+            vscr_ratchet_find_receiver_chain(ratchet, regular_message);
+    vscr_ratchet_receiver_chain_t *receiver_chain = receiver_chain_node ? receiver_chain_node->value : NULL;
 
-    if (!receiver_chain) {
-        result = vscr_ratchet_decrypt_for_new_chain(ratchet, regular_message, plain_text);
-    } else if (receiver_chain->chain_key.index > regular_message->counter) {
+    if (!receiver_chain || receiver_chain->chain_key.index > regular_message->counter) {
         vscr_ratchet_skipped_message_key_t *skipped_message_key =
                 vscr_ratchet_find_skipped_message_key(ratchet, regular_message);
 
         if (!skipped_message_key) {
-
-            return vscr_error_BAD_MESSAGE;
+            if (receiver_chain) {
+                return vscr_error_BAD_MESSAGE;
+            }
         } else {
             result = vscr_ratchet_cipher_decrypt(ratchet->cipher,
                     vsc_data(skipped_message_key->message_key->key, sizeof(skipped_message_key->message_key->key)),
                     vsc_buffer_data(regular_message->cipher_text.arg), plain_text);
 
             if (result == vscr_SUCCESS) {
-                vscr_ratchet_erase_skipped_message_key(ratchet, skipped_message_key);
+                vscr_ratchet_delete_skipped_message_key(ratchet, skipped_message_key);
             }
 
             return result;
         }
+    }
+
+    if (!receiver_chain) {
+        result = vscr_ratchet_decrypt_for_new_chain(ratchet, regular_message, plain_text);
     } else {
         result = vscr_ratchet_decrypt_for_existing_chain(
                 ratchet, &receiver_chain->chain_key, regular_message, plain_text);
@@ -808,8 +819,9 @@ vscr_ratchet_decrypt(vscr_ratchet_t *ratchet, const RegularMessage *regular_mess
             return result;
         }
 
-        vscr_ratchet_add_receiver_chain(ratchet, new_receiver_chain);
+        receiver_chain_node = vscr_ratchet_add_receiver_chain(ratchet, new_receiver_chain);
 
+        ratchet->prev_sender_chain_count = ratchet->sender_chain->chain_key.index;
         vscr_ratchet_sender_chain_destroy(&ratchet->sender_chain);
         receiver_chain = new_receiver_chain;
         vscr_ratchet_receiver_chain_destroy(&new_receiver_chain);
@@ -826,10 +838,17 @@ vscr_ratchet_decrypt(vscr_ratchet_t *ratchet, const RegularMessage *regular_mess
 
     vscr_ratchet_advance_chain_key(&receiver_chain->chain_key);
 
+    if (receiver_chain_node && receiver_chain_node->next) {
+        if (regular_message->prev_chain_count != 0 &&
+                receiver_chain_node->next->value->chain_key.index == regular_message->prev_chain_count) {
+            vscr_ratchet_delete_next_receiver_chain(receiver_chain_node);
+        }
+    }
+
     return result;
 }
 
-static vscr_ratchet_receiver_chain_t *
+static vscr_ratchet_receiver_chain_list_node_t *
 vscr_ratchet_find_receiver_chain(vscr_ratchet_t *ratchet, const RegularMessage *message) {
 
     VSCR_ASSERT_PTR(ratchet);
@@ -838,12 +857,55 @@ vscr_ratchet_find_receiver_chain(vscr_ratchet_t *ratchet, const RegularMessage *
 
     while (chain_list_node) {
         if (!memcmp(message->public_key, chain_list_node->value->public_key, vscr_ratchet_common_RATCHET_KEY_LENGTH)) {
-            return chain_list_node->value;
+            return chain_list_node;
         }
         chain_list_node = chain_list_node->next;
     }
 
     return NULL;
+}
+
+static vscr_ratchet_receiver_chain_list_node_t *
+vscr_ratchet_add_receiver_chain(vscr_ratchet_t *ratchet, vscr_ratchet_receiver_chain_t *receiver_chain) {
+
+    VSCR_ASSERT_PTR(ratchet);
+    VSCR_ASSERT_PTR(receiver_chain);
+
+    vscr_ratchet_receiver_chain_list_node_t *receiver_chain_list_node = vscr_ratchet_receiver_chain_list_node_new();
+    receiver_chain_list_node->value = vscr_ratchet_receiver_chain_shallow_copy(receiver_chain);
+    receiver_chain_list_node->next = ratchet->receiver_chains;
+    ratchet->receiver_chains = receiver_chain_list_node;
+
+    if (!ratchet->receiver_chains->next) {
+        return receiver_chain_list_node;
+    }
+
+    size_t chains_count = 2;
+    while (receiver_chain_list_node->next->next) {
+        chains_count += 1;
+        receiver_chain_list_node = receiver_chain_list_node->next;
+    }
+
+    VSCR_ASSERT(chains_count <= vscr_ratchet_common_MAX_RECEIVERS_CHAINS);
+
+    if (chains_count == vscr_ratchet_common_MAX_RECEIVERS_CHAINS) {
+        vscr_ratchet_receiver_chain_list_node_destroy(&receiver_chain_list_node->next);
+    }
+
+    return receiver_chain_list_node;
+}
+
+static void
+vscr_ratchet_delete_next_receiver_chain(vscr_ratchet_receiver_chain_list_node_t *node) {
+
+    VSCR_ASSERT(node);
+    VSCR_ASSERT(node->next);
+
+    vscr_ratchet_receiver_chain_list_node_t *to_delete = node->next;
+    node->next = node->next->next;
+
+    to_delete->next = NULL;
+    vscr_ratchet_receiver_chain_list_node_destroy(&to_delete);
 }
 
 static vscr_ratchet_skipped_message_key_t *
@@ -866,7 +928,7 @@ vscr_ratchet_find_skipped_message_key(vscr_ratchet_t *ratchet, const RegularMess
 }
 
 static void
-vscr_ratchet_erase_skipped_message_key(
+vscr_ratchet_delete_skipped_message_key(
         vscr_ratchet_t *ratchet, vscr_ratchet_skipped_message_key_t *skipped_message_key) {
 
     VSCR_ASSERT_PTR(ratchet);
@@ -895,34 +957,6 @@ vscr_ratchet_erase_skipped_message_key(
 
     // Element not found
     VSCR_ASSERT(false);
-}
-
-static void
-vscr_ratchet_add_receiver_chain(vscr_ratchet_t *ratchet, vscr_ratchet_receiver_chain_t *receiver_chain) {
-
-    VSCR_ASSERT_PTR(ratchet);
-    VSCR_ASSERT_PTR(receiver_chain);
-
-    vscr_ratchet_receiver_chain_list_node_t *receiver_chain_list_node = vscr_ratchet_receiver_chain_list_node_new();
-    receiver_chain_list_node->value = vscr_ratchet_receiver_chain_shallow_copy(receiver_chain);
-    receiver_chain_list_node->next = ratchet->receiver_chains;
-    ratchet->receiver_chains = receiver_chain_list_node;
-
-    if (!ratchet->receiver_chains->next) {
-        return;
-    }
-
-    size_t chains_count = 2;
-    while (receiver_chain_list_node->next->next) {
-        chains_count += 1;
-        receiver_chain_list_node = receiver_chain_list_node->next;
-    }
-
-    VSCR_ASSERT(chains_count <= vscr_ratchet_common_MAX_RECEIVERS_CHAINS);
-
-    if (chains_count == vscr_ratchet_common_MAX_RECEIVERS_CHAINS) {
-        vscr_ratchet_receiver_chain_list_node_destroy(&receiver_chain_list_node->next);
-    }
 }
 
 static void
@@ -968,6 +1002,7 @@ vscr_ratchet_serialize(vscr_ratchet_t *ratchet, Ratchet *ratchet_pb) {
         ratchet_pb->has_sender_chain = false;
     }
 
+    ratchet_pb->prev_sender_chain_count = ratchet->prev_sender_chain_count;
     memcpy(ratchet_pb->root_key, ratchet->root_key, sizeof(ratchet->root_key));
 
     vscr_ratchet_receiver_chain_list_node_t *receiver_chain = ratchet->receiver_chains;
@@ -1004,6 +1039,8 @@ vscr_ratchet_deserialize(Ratchet *ratchet_pb, vscr_ratchet_t *ratchet) {
         ratchet->sender_chain = vscr_ratchet_sender_chain_new();
         vscr_ratchet_sender_chain_deserialize(&ratchet_pb->sender_chain, ratchet->sender_chain);
     }
+
+    ratchet->prev_sender_chain_count = ratchet_pb->prev_sender_chain_count;
 
     memcpy(ratchet->root_key, ratchet_pb->root_key, sizeof(ratchet->root_key));
 
