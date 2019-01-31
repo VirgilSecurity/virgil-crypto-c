@@ -101,8 +101,7 @@ test__ed25519_private_key_extract_public_key__from_imported_PRIVATE_KEY__when_ex
     vscf_ed25519_private_key_t *private_key = vscf_ed25519_private_key_new();
 
     //  Import private key
-    // vscf_error_t result = vscf_ed25519_private_key_import_private_key(private_key, test_ed25519_PRIVATE_KEY);
-    vscf_error_t result = vscf_ed25519_private_key_import_private_key(private_key, test_ed25519_PRIVATE_KEY_REVERSE);
+    vscf_error_t result = vscf_ed25519_private_key_import_private_key(private_key, test_ed25519_PRIVATE_KEY);
     VSCF_ASSERT(result == vscf_SUCCESS);
 
     //  Extract public key
@@ -132,7 +131,7 @@ test__ed25519_private_key_sign__with_imported_PRIVATE_KEY_and_MESSAGE__equals_ME
     vscf_ed25519_private_key_t *private_key = vscf_ed25519_private_key_new();
 
     //  Import private key
-    vscf_error_t result = vscf_ed25519_private_key_import_private_key(private_key, test_ed25519_PRIVATE_KEY_REVERSE);
+    vscf_error_t result = vscf_ed25519_private_key_import_private_key(private_key, test_ed25519_PRIVATE_KEY);
     VSCF_ASSERT(result == vscf_SUCCESS);
 
     //  Sign

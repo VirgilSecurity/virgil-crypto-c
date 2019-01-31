@@ -2,7 +2,6 @@
 
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common hidden" scope="context"/>
-    <require class="endianness" scope="private" project="foundation"/>
     <require impl="pkcs8 der serializer" scope="private" project="foundation"/>
     <require impl="pkcs8 der deserializer" scope="private" project="foundation"/>
     <require module="ratchet message defs" scope="private"/>

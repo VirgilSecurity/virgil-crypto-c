@@ -41,7 +41,6 @@
 #include <virgil/crypto/ratchet/vscr_error_ctx.h>
 #include <vscf_pkcs8_der_deserializer_internal.h>
 #include <virgil/crypto/ratchet/vscr_ratchet_common.h>
-#include <virgil/crypto/foundation/private/vscf_endianness.h>
 #include <test_data_ratchet_session.h>
 #include <ed25519/ed25519.h>
 
