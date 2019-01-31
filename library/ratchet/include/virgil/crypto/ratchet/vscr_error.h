@@ -70,7 +70,7 @@ enum vscr_error_t {
     //
     //  Error during protobuf deserialization
     //
-    vscr_error_PROTOBUF_DECODE_ERROR = 1,
+    vscr_error_PROTOBUF_DECODE = 1,
     //
     //  Message version doesn't match
     //
@@ -82,7 +82,7 @@ enum vscr_error_t {
     //
     //  AES error
     //
-    vscr_error_AES_ERROR = 4,
+    vscr_error_AES = 4,
     //
     //  RNG failed
     //
@@ -90,7 +90,19 @@ enum vscr_error_t {
     //
     //  curve25519 error
     //
-    vscr_error_CURVE25519_ERROR = 6
+    vscr_error_CURVE25519 = 6,
+    //
+    //  key deserialization error
+    //
+    vscr_error_KEY_DESERIALIZATION = 7,
+    //
+    //  invalid key type
+    //
+    vscr_error_INVALID_KEY_TYPE = 8,
+    //
+    //  identity key doesnt match
+    //
+    vscr_error_IDENTITY_KEY_DOESNT_MATCH = 9
 };
 typedef enum vscr_error_t vscr_error_t;
 
