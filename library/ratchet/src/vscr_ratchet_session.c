@@ -878,9 +878,7 @@ vscr_ratchet_session_get_raw_public_key(
         goto err;
     }
 
-    result = vsc_buffer_new_with_capacity(vscr_ratchet_common_RATCHET_KEY_LENGTH);
-
-    vscf_endianness_reverse_memcpy(vscf_raw_key_data(raw_key), result);
+    result = vsc_buffer_new_with_data(vscf_raw_key_data(raw_key));
 
 err:
     vscf_raw_key_destroy(&raw_key);
@@ -913,10 +911,8 @@ vscr_ratchet_session_get_raw_private_key(
         goto err;
     }
 
-    result = vsc_buffer_new_with_capacity(vscr_ratchet_common_RATCHET_KEY_LENGTH);
-
-    vscf_endianness_reverse_memcpy(
-            vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_RATCHET_KEY_LENGTH), result);
+    result = vsc_buffer_new_with_data(
+            vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_RATCHET_KEY_LENGTH));
 
 err:
     vscf_raw_key_destroy(&raw_key);

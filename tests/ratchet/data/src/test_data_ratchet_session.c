@@ -70,6 +70,13 @@ const byte test_ratchet_session_alice_identity_public_key_BYTES[] = {
         0xb0, 0xc6, 0x63, 0x64,
 };
 
+const byte test_ratchet_session_alice_identity_public_key_raw_BYTES[] = {
+        0xbb, 0x38, 0x44, 0x22, 0x3b, 0x3a, 0x58, 0xf9,
+        0x8c, 0x4d, 0xe7, 0xad, 0x56, 0xd1, 0xc0, 0x66,
+        0xe4, 0x03, 0x92, 0x5f, 0x5a, 0xa8, 0xcf, 0xdb,
+        0xde, 0x38, 0xae, 0x0f, 0xb0, 0xc6, 0x63, 0x64,
+};
+
 const byte test_ratchet_session_alice_ephemeral_private_key_BYTES[] = {
         0x30, 0x2e, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06,
         0x03, 0x2b, 0x65, 0x6e, 0x04, 0x22, 0x04, 0x20,
@@ -88,6 +95,13 @@ const byte test_ratchet_session_alice_ephemeral_public_key_BYTES[] = {
         0x7e, 0x04, 0x1d, 0x6f
 };
 
+const byte test_ratchet_session_alice_ephemeral_public_key_raw_BYTES[] = {
+        0x24, 0xdb, 0x7a, 0x41, 0x24, 0xe2, 0xd4, 0x6a,
+        0x2e, 0xcf, 0xa3, 0x24, 0x27, 0xde, 0x8f, 0xe5,
+        0xa7, 0x28, 0x80, 0xa3, 0x35, 0x65, 0x14, 0x6a,
+        0x38, 0x1b, 0xcb, 0xf2, 0x7e, 0x04, 0x1d, 0x6f
+};
+
 const byte test_ratchet_session_alice_ratchet_private_key_BYTES[] = {
         0x30, 0x2e, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06,
         0x03, 0x2b, 0x65, 0x6e, 0x04, 0x22, 0x04, 0x20,
@@ -104,6 +118,13 @@ const byte test_ratchet_session_alice_ratchet_public_key_BYTES[] = {
         0x83, 0x0e, 0xd8, 0xd8, 0x28, 0xfc, 0x27, 0xef,
         0xff, 0x40, 0x07, 0xf8, 0x92, 0x6a, 0xc5, 0x70,
         0xcb, 0x51, 0xc7, 0x1d
+};
+
+const byte test_ratchet_session_alice_ratchet_public_key_raw_BYTES[] = {
+        0x47, 0xfc, 0xb7, 0x75, 0x5f, 0xb2, 0x0c, 0x5c,
+        0xf9, 0x20, 0x1a, 0x45, 0x83, 0x0e, 0xd8, 0xd8,
+        0x28, 0xfc, 0x27, 0xef, 0xff, 0x40, 0x07, 0xf8,
+        0x92, 0x6a, 0xc5, 0x70, 0xcb, 0x51, 0xc7, 0x1d
 };
 
 const byte test_ratchet_session_bob_identity_private_key_BYTES[] = {
@@ -142,6 +163,13 @@ const byte test_ratchet_session_bob_long_term_public_key_BYTES[] = {
         0xc1, 0x40, 0x6a, 0x06
 };
 
+const byte test_ratchet_session_bob_long_term_public_key_raw_BYTES[] = {
+        0xd0, 0x49, 0xbc, 0x93, 0xf0, 0x89, 0x5e, 0x4c,
+        0xe6, 0xa6, 0x70, 0x06, 0xd2, 0x79, 0xf5, 0x59,
+        0x6c, 0x35, 0x50, 0x66, 0x54, 0x1d, 0x7f, 0x4b,
+        0x3e, 0xf6, 0x3e, 0xcd, 0xc1, 0x40, 0x6a, 0x06
+};
+
 const byte test_ratchet_session_bob_one_time_private_key_BYTES[] = {
         0x30, 0x2e, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06,
         0x03, 0x2b, 0x65, 0x6e, 0x04, 0x22, 0x04, 0x20,
@@ -160,6 +188,13 @@ const byte test_ratchet_session_bob_one_time_public_key_BYTES[] = {
         0x5f, 0xc6, 0x9f, 0x27
 };
 
+const byte test_ratchet_session_bob_one_time_public_key_raw_BYTES[] = {
+        0x23, 0x63, 0x0a, 0xec, 0x1f, 0xde, 0xf8, 0x9c,
+        0x8b, 0x3a, 0x2e, 0x17, 0xf9, 0x44, 0x42, 0xd7,
+        0x39, 0x0d, 0x8e, 0xc5, 0x3e, 0x48, 0xd5, 0x0d,
+        0xdb, 0x07, 0x3b, 0xf3, 0x5f, 0xc6, 0x9f, 0x27
+};
+
 const vsc_data_t test_ratchet_session_alice_identity_private_key = {
         test_ratchet_session_alice_identity_private_key_BYTES, sizeof(test_ratchet_session_alice_identity_private_key_BYTES)
 };
@@ -168,12 +203,20 @@ const vsc_data_t test_ratchet_session_alice_identity_public_key = {
         test_ratchet_session_alice_identity_public_key_BYTES, sizeof(test_ratchet_session_alice_identity_public_key_BYTES)
 };
 
+const vsc_data_t test_ratchet_session_alice_identity_public_key_raw = {
+        test_ratchet_session_alice_identity_public_key_raw_BYTES, sizeof(test_ratchet_session_alice_identity_public_key_raw_BYTES)
+};
+
 const vsc_data_t test_ratchet_session_alice_ephemeral_private_key = {
         test_ratchet_session_alice_ephemeral_private_key_BYTES, sizeof(test_ratchet_session_alice_ephemeral_private_key_BYTES)
 };
 
 const vsc_data_t test_ratchet_session_alice_ephemeral_public_key = {
         test_ratchet_session_alice_ephemeral_public_key_BYTES, sizeof(test_ratchet_session_alice_ephemeral_public_key_BYTES)
+};
+
+const vsc_data_t test_ratchet_session_alice_ephemeral_public_key_raw = {
+        test_ratchet_session_alice_ephemeral_public_key_raw_BYTES, sizeof(test_ratchet_session_alice_ephemeral_public_key_raw_BYTES)
 };
 
 const vsc_data_t test_ratchet_session_alice_ratchet_private_key = {
@@ -188,6 +231,10 @@ const vsc_data_t test_ratchet_session_bob_identity_private_key = {
         test_ratchet_session_bob_identity_private_key_BYTES, sizeof(test_ratchet_session_bob_identity_private_key_BYTES)
 };
 
+const vsc_data_t test_ratchet_session_alice_ratchet_public_key_raw = {
+        test_ratchet_session_alice_ratchet_public_key_raw_BYTES, sizeof(test_ratchet_session_alice_ratchet_public_key_raw_BYTES)
+};
+
 const vsc_data_t test_ratchet_session_bob_identity_public_key = {
         test_ratchet_session_bob_identity_public_key_BYTES, sizeof(test_ratchet_session_bob_identity_public_key_BYTES)
 };
@@ -200,12 +247,20 @@ const vsc_data_t test_ratchet_session_bob_long_term_public_key = {
         test_ratchet_session_bob_long_term_public_key_BYTES, sizeof(test_ratchet_session_bob_long_term_public_key_BYTES)
 };
 
+const vsc_data_t test_ratchet_session_bob_long_term_public_key_raw = {
+        test_ratchet_session_bob_long_term_public_key_raw_BYTES, sizeof(test_ratchet_session_bob_long_term_public_key_raw_BYTES)
+};
+
 const vsc_data_t test_ratchet_session_bob_one_time_private_key = {
         test_ratchet_session_bob_one_time_private_key_BYTES, sizeof(test_ratchet_session_bob_one_time_private_key_BYTES)
 };
 
 const vsc_data_t test_ratchet_session_bob_one_time_public_key = {
         test_ratchet_session_bob_one_time_public_key_BYTES, sizeof(test_ratchet_session_bob_one_time_public_key_BYTES)
+};
+
+const vsc_data_t test_ratchet_session_bob_one_time_public_key_raw = {
+        test_ratchet_session_bob_one_time_public_key_raw_BYTES, sizeof(test_ratchet_session_bob_one_time_public_key_raw_BYTES)
 };
 
 const vsc_data_t test_ratchet_session_bob_onetime_private_key = {

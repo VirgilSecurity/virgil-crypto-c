@@ -52,6 +52,7 @@
 #include <vscr_ratchet_chain_key.h>
 #include <vscr_ratchet_receiver_chain_list_node.h>
 #include <vscr_ratchet_skipped_message_key_list_node.h>
+#include <virgil/crypto/foundation/private/vscf_pkcs8_der_deserializer_defs.h>
 
 // --------------------------------------------------------------------------
 //  Should have it to prevent linkage errors in MSVC.
@@ -120,6 +121,8 @@ typedef struct ratchet_session {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *rng;
+
+    vscf_pkcs8_der_deserializer_t *pkcs8;
 
     bool is_initiator;
 
