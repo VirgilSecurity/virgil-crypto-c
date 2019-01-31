@@ -68,18 +68,8 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
-    vscr_ratchet_common_RATCHET_REGULAR_MESSAGE_VERSION = 1,
-    vscr_ratchet_common_RATCHET_PROTOCOL_VERSION = 1,
-    vscr_ratchet_common_RATCHET_MESSAGE_VERSION = 1,
-    vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH = 32,
-    vscr_ratchet_common_RATCHET_KEY_LENGTH = 32,
-    vscr_ratchet_common_MAX_SKIPPED_MESSAGES = 40,
-    vscr_ratchet_common_MAX_RECEIVERS_CHAINS = 5,
-    vscr_ratchet_common_MAX_MESSAGE_GAP = 2000,
     vscr_ratchet_common_MAX_PLAIN_TEXT_LEN = 30000,
     vscr_ratchet_common_MAX_CIPHER_TEXT_LEN = 32768,
-    vscr_ratchet_common_MAX_REGULAR_MESSAGE_LEN = 32818,
-    vscr_ratchet_common_MAX_PREKEY_MESSAGE_LEN = 32964,
     vscr_ratchet_common_MAX_MESSAGE_LEN = 32964
 };
 

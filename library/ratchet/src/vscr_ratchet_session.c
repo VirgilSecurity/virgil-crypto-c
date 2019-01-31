@@ -47,7 +47,7 @@
 #include "vscr_ratchet_session.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-#include "vscr_ratchet_common.h"
+#include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_message_defs.h"
 #include "vscr_ratchet.h"
 
@@ -102,15 +102,15 @@ struct vscr_ratchet_session_t {
 
     bool received_first_response;
 
-    byte sender_identity_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte sender_identity_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
-    byte sender_ephemeral_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte sender_ephemeral_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
-    byte receiver_long_term_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte receiver_long_term_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
     bool receiver_has_one_time_public_key;
 
-    byte receiver_one_time_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte receiver_one_time_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 };
 
 //
@@ -397,15 +397,15 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_
         shared_secret_count = 4;
     }
 
-    byte ephemeral_private_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
-    byte ratchet_private_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte ephemeral_private_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+    byte ratchet_private_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
     vsc_buffer_t ephemeral_private_key_buf;
     vsc_buffer_init(&ephemeral_private_key_buf);
     vsc_buffer_use(&ephemeral_private_key_buf, ephemeral_private_key, sizeof(ephemeral_private_key));
 
-    vscf_error_t f_status =
-            vscf_random(ratchet_session->rng, vscr_ratchet_common_RATCHET_KEY_LENGTH, &ephemeral_private_key_buf);
+    vscf_error_t f_status = vscf_random(
+            ratchet_session->rng, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH, &ephemeral_private_key_buf);
     vsc_buffer_delete(&ephemeral_private_key_buf);
 
     if (f_status != vscf_SUCCESS) {
@@ -417,7 +417,8 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_
     vsc_buffer_init(&ratchet_private_key_buf);
     vsc_buffer_use(&ratchet_private_key_buf, ratchet_private_key, sizeof(ratchet_private_key));
 
-    f_status = vscf_random(ratchet_session->rng, vscr_ratchet_common_RATCHET_KEY_LENGTH, &ratchet_private_key_buf);
+    f_status =
+            vscf_random(ratchet_session->rng, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH, &ratchet_private_key_buf);
     vsc_buffer_delete(&ratchet_private_key_buf);
 
     if (f_status != vscf_SUCCESS) {
@@ -675,7 +676,7 @@ vscr_ratchet_session_encrypt(
     VSCR_ASSERT(ratchet_session->is_initiator || ratchet_session->received_first_response);
 
     vscr_ratchet_message_t *ratchet_message = vscr_ratchet_message_new();
-    ratchet_message->message_pb.version = vscr_ratchet_common_RATCHET_MESSAGE_VERSION;
+    ratchet_message->message_pb.version = vscr_ratchet_common_hidden_RATCHET_MESSAGE_VERSION;
     RegularMessage *regular_message;
 
     if (ratchet_session->received_first_response || !ratchet_session->is_initiator) {
@@ -686,7 +687,7 @@ vscr_ratchet_session_encrypt(
         PrekeyMessage *prekey_message = &ratchet_message->message_pb.prekey_message;
         regular_message = &prekey_message->regular_message;
 
-        prekey_message->version = vscr_ratchet_common_RATCHET_PROTOCOL_VERSION;
+        prekey_message->version = vscr_ratchet_common_hidden_RATCHET_PROTOCOL_VERSION;
 
         memcpy(prekey_message->sender_identity_key, ratchet_session->sender_identity_public_key,
                 sizeof(ratchet_session->sender_identity_public_key));
@@ -884,7 +885,7 @@ vscr_ratchet_session_get_raw_public_key(
         goto err;
     }
 
-    if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_RATCHET_KEY_LENGTH ||
+    if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH ||
             vscf_raw_key_alg_id(raw_key) != vscf_alg_id_X25519) {
         VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_INVALID_KEY_TYPE);
 
@@ -917,7 +918,7 @@ vscr_ratchet_session_get_raw_private_key(
         goto err;
     }
 
-    if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_RATCHET_KEY_LENGTH + 2 ||
+    if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH + 2 ||
             vscf_raw_key_alg_id(raw_key) != vscf_alg_id_X25519) {
         VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_INVALID_KEY_TYPE);
 
@@ -925,7 +926,7 @@ vscr_ratchet_session_get_raw_private_key(
     }
 
     result = vsc_buffer_new_with_data(
-            vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_RATCHET_KEY_LENGTH));
+            vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH));
 
 err:
     vscf_raw_key_destroy(&raw_key);

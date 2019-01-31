@@ -48,7 +48,7 @@
 #define VSCR_RATCHET_SKIPPED_MESSAGE_KEY_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_common.h"
+#include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_skipped_message_key.h"
 #include "vscr_ratchet_message_key.h"
 
@@ -85,7 +85,7 @@ struct vscr_ratchet_skipped_message_key_t {
     //
     size_t refcnt;
 
-    byte public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
     vscr_ratchet_message_key_t *message_key;
 };

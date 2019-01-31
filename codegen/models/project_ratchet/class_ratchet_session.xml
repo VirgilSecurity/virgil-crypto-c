@@ -1,7 +1,7 @@
 <class name="ratchet session" context="internal">
 
     <require class="ratchet common" scope="public"/>
-    <require class="ratchet common" scope="context"/>
+    <require class="ratchet common hidden" scope="context"/>
     <require class="endianness" scope="private" project="foundation"/>
     <require impl="pkcs8 der serializer" scope="private" project="foundation"/>
     <require impl="pkcs8 der deserializer" scope="private" project="foundation"/>
@@ -29,17 +29,17 @@
     <property name="received first response" type="boolean"/>
 
     <property name="sender identity public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
     </property>
     <property name="sender ephemeral public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
     </property>
     <property name="receiver long term public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
     </property>
     <property name="receiver has one time public key" type="boolean" access="readwrite"/>
     <property name="receiver one time public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
     </property>
 
     <method name="setup defaults">
