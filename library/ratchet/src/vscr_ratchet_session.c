@@ -348,6 +348,9 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_
         vsc_data_t receiver_one_time_public_key) {
 
     VSCR_ASSERT_PTR(ratchet_session);
+    VSCR_ASSERT_PTR(ratchet_session->rng);
+    VSCR_ASSERT_PTR(ratchet_session->ratchet);
+    VSCR_ASSERT_PTR(ratchet_session->pkcs8);
 
     vscr_error_t status = vscr_SUCCESS;
 
@@ -516,7 +519,10 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
         vsc_data_t receiver_identity_private_key, vsc_data_t receiver_long_term_private_key,
         vsc_data_t receiver_one_time_private_key, const vscr_ratchet_message_t *message) {
 
-    VSCR_ASSERT_PTR(ratchet_session);
+    VSCR_ASSERT_PTR(ratchet_session->rng);
+    VSCR_ASSERT_PTR(ratchet_session->ratchet);
+    VSCR_ASSERT_PTR(ratchet_session->pkcs8);
+
     VSCR_ASSERT(message->message_pb.has_prekey_message);
 
     vscr_error_t status = vscr_SUCCESS;
@@ -662,7 +668,9 @@ VSCR_PUBLIC vscr_ratchet_message_t *
 vscr_ratchet_session_encrypt(
         vscr_ratchet_session_t *ratchet_session, vsc_data_t plain_text, vscr_error_ctx_t *err_ctx) {
 
-    VSCR_ASSERT_PTR(ratchet_session);
+    VSCR_ASSERT_PTR(ratchet_session->rng);
+    VSCR_ASSERT_PTR(ratchet_session->ratchet);
+
     VSCR_ASSERT(plain_text.len <= vscr_ratchet_common_MAX_PLAIN_TEXT_LEN);
     VSCR_ASSERT(ratchet_session->is_initiator || ratchet_session->received_first_response);
 
@@ -737,7 +745,9 @@ VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_decrypt(
         vscr_ratchet_session_t *ratchet_session, const vscr_ratchet_message_t *message, vsc_buffer_t *plain_text) {
 
-    VSCR_ASSERT_PTR(ratchet_session);
+    VSCR_ASSERT_PTR(ratchet_session->rng);
+    VSCR_ASSERT_PTR(ratchet_session->ratchet);
+
     VSCR_ASSERT_PTR(message);
     VSCR_ASSERT_PTR(plain_text);
 
@@ -746,7 +756,9 @@ vscr_ratchet_session_decrypt(
     if (message->message_pb.has_regular_message) {
         regular_message = &message->message_pb.regular_message;
     } else if (message->message_pb.has_prekey_message) {
-        VSCR_ASSERT(!ratchet_session->is_initiator);
+        if (ratchet_session->is_initiator) {
+            return vscr_error_BAD_MESSAGE;
+        }
 
         regular_message = &message->message_pb.prekey_message.regular_message;
     }
