@@ -1,4 +1,0 @@
-# VirgilCrypto
-#
-# Ignore binaries that can be build from C project.
-Binaries/
