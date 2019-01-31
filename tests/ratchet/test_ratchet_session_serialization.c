@@ -74,9 +74,9 @@ typedef struct ratchet_sender_chain {
     //
     size_t refcnt;
 
-    byte private_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte private_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
-    byte public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
     vscr_ratchet_chain_key_t chain_key;
 } ratchet_sender_chain_t;
@@ -107,7 +107,7 @@ typedef struct ratchet {
 
     vscr_ratchet_skipped_message_key_list_node_t *skipped_message_keys;
 
-    byte root_key[vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH];
+    byte root_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
 } ratchet_t;
 
 typedef struct ratchet_session {
@@ -132,13 +132,13 @@ typedef struct ratchet_session {
 
     bool received_first_response;
 
-    byte sender_identity_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte sender_identity_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
-    byte sender_ephemeral_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte sender_ephemeral_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
-    byte receiver_long_term_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte receiver_long_term_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
-    byte receiver_one_time_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte receiver_one_time_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 } ratchet_session_t;
 
 // --------------------------------------------------------------------------

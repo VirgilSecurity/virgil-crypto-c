@@ -48,7 +48,6 @@
 #define VSCR_RATCHET_MESSAGE_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_common.h"
 #include "vscr_error_ctx.h"
 #include "vscr_ratchet_message.h"
 #include "vscr_msg_type.h"

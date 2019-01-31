@@ -48,7 +48,7 @@
 #define VSCR_RATCHET_SENDER_CHAIN_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_common.h"
+#include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_sender_chain.h"
 #include "vscr_ratchet_chain_key.h"
 
@@ -85,9 +85,9 @@ struct vscr_ratchet_sender_chain_t {
     //
     size_t refcnt;
 
-    byte private_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte private_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
-    byte public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
     vscr_ratchet_chain_key_t chain_key;
 };

@@ -44,16 +44,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_CHAIN_KEY_H_INCLUDED
-#define VSCR_RATCHET_CHAIN_KEY_H_INCLUDED
+#ifndef VSCR_RATCHET_COMMON_HIDDEN_H_INCLUDED
+#define VSCR_RATCHET_COMMON_HIDDEN_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_common_hidden.h"
-#include "vscr_ratchet_chain_key.h"
-
-#include <RatchetSession.pb.h>
-#include <pb_decode.h>
-#include <pb_encode.h>
 
 // clang-format on
 //  @end
@@ -71,76 +65,20 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet chain key' context.
+//  Public integral constants.
 //
-typedef struct vscr_ratchet_chain_key_t vscr_ratchet_chain_key_t;
-struct vscr_ratchet_chain_key_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-
-    uint32_t index;
-
-    byte key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
+enum {
+    vscr_ratchet_common_hidden_RATCHET_REGULAR_MESSAGE_VERSION = 1,
+    vscr_ratchet_common_hidden_RATCHET_PROTOCOL_VERSION = 1,
+    vscr_ratchet_common_hidden_RATCHET_MESSAGE_VERSION = 1,
+    vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH = 32,
+    vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH = 32,
+    vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES = 40,
+    vscr_ratchet_common_hidden_MAX_RECEIVERS_CHAINS = 5,
+    vscr_ratchet_common_hidden_MAX_MESSAGE_GAP = 2000,
+    vscr_ratchet_common_hidden_MAX_REGULAR_MESSAGE_LEN = 32818,
+    vscr_ratchet_common_hidden_MAX_PREKEY_MESSAGE_LEN = 32964
 };
-
-//
-//  Return size of 'vscr_ratchet_chain_key_t'.
-//
-VSCR_PUBLIC size_t
-vscr_ratchet_chain_key_ctx_size(void);
-
-//
-//  Perform initialization of pre-allocated context.
-//
-VSCR_PUBLIC void
-vscr_ratchet_chain_key_init(vscr_ratchet_chain_key_t *ratchet_chain_key);
-
-//
-//  Release all inner resources including class dependencies.
-//
-VSCR_PUBLIC void
-vscr_ratchet_chain_key_cleanup(vscr_ratchet_chain_key_t *ratchet_chain_key);
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCR_PUBLIC vscr_ratchet_chain_key_t *
-vscr_ratchet_chain_key_new(void);
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
-//
-VSCR_PUBLIC void
-vscr_ratchet_chain_key_delete(vscr_ratchet_chain_key_t *ratchet_chain_key);
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_chain_key_new ()'.
-//
-VSCR_PUBLIC void
-vscr_ratchet_chain_key_destroy(vscr_ratchet_chain_key_t **ratchet_chain_key_ref);
-
-//
-//  Copy given class context by increasing reference counter.
-//
-VSCR_PUBLIC vscr_ratchet_chain_key_t *
-vscr_ratchet_chain_key_shallow_copy(vscr_ratchet_chain_key_t *ratchet_chain_key);
-
-VSCR_PUBLIC void
-vscr_ratchet_chain_key_clone(const vscr_ratchet_chain_key_t *ratchet_chain_key, vscr_ratchet_chain_key_t *dst);
-
-VSCR_PUBLIC void
-vscr_ratchet_chain_key_serialize(vscr_ratchet_chain_key_t *ratchet_chain_key, ChainKey *chain_key_pb);
-
-VSCR_PUBLIC void
-vscr_ratchet_chain_key_deserialize(const ChainKey *chain_key_pb, vscr_ratchet_chain_key_t *chain_key);
 
 
 // --------------------------------------------------------------------------
@@ -156,5 +94,5 @@ vscr_ratchet_chain_key_deserialize(const ChainKey *chain_key_pb, vscr_ratchet_ch
 
 
 //  @footer
-#endif // VSCR_RATCHET_CHAIN_KEY_H_INCLUDED
+#endif // VSCR_RATCHET_COMMON_HIDDEN_H_INCLUDED
 //  @end
