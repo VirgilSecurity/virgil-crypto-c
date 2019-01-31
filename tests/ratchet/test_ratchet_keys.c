@@ -64,8 +64,7 @@ vscr_ratchet_session_get_raw_public_key(vsc_data_t data, vscr_error_ctx_t *err_c
         goto err;
     }
 
-    if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH ||
-            vscf_raw_key_alg_id(raw_key) != vscf_alg_id_X25519) {
+    if (vscf_raw_key_data(raw_key).len != 32 || vscf_raw_key_alg_id(raw_key) != vscf_alg_id_X25519) {
         VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_INVALID_KEY_TYPE);
 
         goto err;
@@ -100,15 +99,13 @@ vscr_ratchet_session_get_raw_private_key(vsc_data_t data, vscr_error_ctx_t *err_
         goto err;
     }
 
-    if (vscf_raw_key_data(raw_key).len != vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH + 2 ||
-            vscf_raw_key_alg_id(raw_key) != vscf_alg_id_X25519) {
+    if (vscf_raw_key_data(raw_key).len != 32 + 2 || vscf_raw_key_alg_id(raw_key) != vscf_alg_id_X25519) {
         VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_INVALID_KEY_TYPE);
 
         goto err;
     }
 
-    result = vsc_buffer_new_with_data(
-            vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH));
+    result = vsc_buffer_new_with_data(vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, 32));
 
 err:
     vscf_raw_key_destroy(&raw_key);
