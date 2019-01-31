@@ -101,6 +101,8 @@ typedef struct ratchet {
 
     ratchet_sender_chain_t *sender_chain;
 
+    uint32_t prev_sender_chain_count;
+
     vscr_ratchet_receiver_chain_list_node_t *receiver_chains;
 
     vscr_ratchet_skipped_message_key_list_node_t *skipped_message_keys;
@@ -190,6 +192,7 @@ ratchet_cmp(ratchet_t *ratchet1, ratchet_t *ratchet2) {
 
     return memcmp(ratchet1->root_key, ratchet2->root_key, sizeof(ratchet1->root_key)) == 0 &&
            ratchet_sender_chain_cmp(ratchet1->sender_chain, ratchet2->sender_chain) &&
+           ratchet1->prev_sender_chain_count == ratchet2->prev_sender_chain_count &&
            ratchet_receiver_chain_cmp(ratchet1->receiver_chains, ratchet2->receiver_chains) &&
            ratchet_skipped_msg_cmp(ratchet1->skipped_message_keys, ratchet2->skipped_message_keys);
 }
