@@ -101,6 +101,12 @@ import VSCFoundation
     /// Exchange key return zero.
     case sharedKeyExchangeFailed = -216
 
+    /// Ed25519 public key is corrupted.
+    case badEd25519PublicKey = -217
+
+    /// Ed25519 private key is corrupted.
+    case badEd25519PrivateKey = -218
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC error: vscf_error_t) {
         self.init(rawValue: Int(error.rawValue))!

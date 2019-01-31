@@ -52,7 +52,6 @@
 #include "vscr_ratchet.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
-#include <virgil/crypto/foundation/private/vscf_endianness.h>
 #include <virgil/crypto/foundation/vscf_pkcs8_der_serializer.h>
 #include <virgil/crypto/foundation/vscf_pkcs8_der_deserializer.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
