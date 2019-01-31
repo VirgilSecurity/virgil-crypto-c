@@ -420,7 +420,7 @@ vscr_ratchet_create_chain_key(const vscr_ratchet_t *ratchet, vsc_data_t private_
 
     int curve_status = curve25519_key_exchange(secret, public_key.bytes, private_key.bytes);
     if (curve_status != 0) {
-        status = vscr_error_CURVE25519_ERROR;
+        status = vscr_error_CURVE25519;
         goto c_err;
     }
 
@@ -661,7 +661,7 @@ vscr_ratchet_initiate(vscr_ratchet_t *ratchet, vsc_data_t shared_secret, vsc_dat
     int curve_status = curve25519_get_pubkey(sender_chain->public_key, ratchet_private_key.bytes);
     if (curve_status != 0) {
         vscr_ratchet_sender_chain_destroy(&ratchet->sender_chain);
-        status = vscr_error_CURVE25519_ERROR;
+        status = vscr_error_CURVE25519;
     }
 
     vscr_zeroize(derived_secret, sizeof(derived_secret));
@@ -705,7 +705,7 @@ vscr_ratchet_encrypt(vscr_ratchet_t *ratchet, vsc_data_t plain_text, RegularMess
         int curve_status = curve25519_get_pubkey(sender_chain->public_key, sender_chain->private_key);
 
         if (curve_status != 0) {
-            return vscr_error_CURVE25519_ERROR;
+            return vscr_error_CURVE25519;
         }
 
         result = vscr_ratchet_create_chain_key(ratchet,
