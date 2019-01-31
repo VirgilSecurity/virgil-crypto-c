@@ -288,3 +288,21 @@ build_ios "${BUILD_DIR}/iOS" "${IOS_DESTINATION_DIR}"
 build_tvos "${BUILD_DIR}/tvOS" "${TVOS_DESTINATION_DIR}"
 build_watchos "${BUILD_DIR}/watchOS" "${WATCHOS_DESTINATION_DIR}"
 build_macosx "${BUILD_DIR}/macOS" "${MACOS_DESTINATION_DIR}"
+
+PREPARE_RELEASE="YES"
+
+if [ $PREPARE_RELEASE == "YES" ]; then
+    rm -rf "${ROOT_DIR}/Carthage"
+    mkdir -p "${ROOT_DIR}/Carthage"
+    cp -p -R "${IOS_DESTINATION_DIR}" "${ROOT_DIR}/Carthage"
+    cp -p -R "${TVOS_DESTINATION_DIR}" "${ROOT_DIR}/Carthage"
+    cp -p -R "${WATCHOS_DESTINATION_DIR}" "${ROOT_DIR}/Carthage"
+    cp -p -R "${MACOS_DESTINATION_DIR}" "${ROOT_DIR}/Carthage"
+
+    cp -p -R "${ROOT_DIR}/LICENSE" "${ROOT_DIR}/Carthage"
+
+    pushd "${ROOT_DIR}"
+        rm -f VSCCrypto.framework.zip
+        zip -r VSCCrypto.framework.zip "Carthage"
+    popd
+fi
