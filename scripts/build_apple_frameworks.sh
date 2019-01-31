@@ -36,13 +36,17 @@
 # Abort if something went wrong
 set -e
 
+# Color constants
+COLOR_RED='\033[0;31m'
+COLOR_GREEN='\033[0;32m'
+COLOR_RESET='\033[0m'
+
 function show_info {
-    echo -e "[INFO ] $@"
+    echo -e "${COLOR_GREEN}[INFO] $@${COLOR_RESET}"
 }
 
 function show_error {
-    echo -e "[ERROR] $@" >&2
-    echo "Aborting."
+    echo -e "${COLOR_RED}[ERROR] $@${COLOR_RESET}"
     exit 1
 }
 
@@ -112,28 +116,30 @@ function make_fat_framework {
 
 command -v cmake >/dev/null 2>&1 || show_error "Required utility CMake is not found."
 
-ROOT_DIR=$(abspath "${PROJECT_DIR}/../../..")
+
+SCRIPT_DIR=$(dirname "$(abspath "${BASH_SOURCE[0]}")")
+ROOT_DIR=$(abspath "${SCRIPT_DIR}/..")
 SRC_DIR="${ROOT_DIR}"
-INSTALL_DIR="${BUILD_DIR}/VSCFrameworks/${PLATFORM_NAME}/install"
-BUILD_DIR="${BUILD_DIR}/VSCFrameworks/${PLATFORM_NAME}/build"
-PREBUILT_DIR="${PROJECT_DIR}/Binaries"
-IOS_PREBUILT_DIR="${PREBUILT_DIR}/iOS"
-MACOS_PREBUILT_DIR="${PREBUILT_DIR}/macOS"
-TVOS_PREBUILT_DIR="${PREBUILT_DIR}/tvOS"
-WATCHOS_PREBUILT_DIR="${PREBUILT_DIR}/watchOS"
+BUILD_DIR="${ROOT_DIR}/build_apple"
+if [ -d "$1" ]; then
+    DESTINATION_DIR="$1"
+else
+    DESTINATION_DIR="${BUILD_DIR}/VSCFrameworks"
+fi
+IOS_DESTINATION_DIR="${DESTINATION_DIR}/iOS"
+MACOS_DESTINATION_DIR="${DESTINATION_DIR}/macOS"
+TVOS_DESTINATION_DIR="${DESTINATION_DIR}/tvOS"
+WATCHOS_DESTINATION_DIR="${DESTINATION_DIR}/watchOS"
 
-mkdir -p "${INSTALL_DIR}"
+rm -fr "${BUILD_DIR}"
 mkdir -p "${BUILD_DIR}"
-mkdir -p "${PREBUILT_DIR}"
-mkdir -p "${IOS_PREBUILT_DIR}"
-mkdir -p "${MACOS_PREBUILT_DIR}"
-mkdir -p "${TVOS_PREBUILT_DIR}"
-mkdir -p "${WATCHOS_PREBUILT_DIR}"
-
-show_info "Go to the build directory and cleanup."
+mkdir -p "${DESTINATION_DIR}"
+mkdir -p "${IOS_DESTINATION_DIR}"
+mkdir -p "${MACOS_DESTINATION_DIR}"
+mkdir -p "${TVOS_DESTINATION_DIR}"
+mkdir -p "${WATCHOS_DESTINATION_DIR}"
 
 CMAKE_ARGS=""
-CMAKE_ARGS+=" -DCMAKE_INSTALL_PREFIX='${INSTALL_DIR}'"
 CMAKE_ARGS+=" -DBUILD_SHARED_LIBS=YES"
 CMAKE_ARGS+=" -DPB_NO_PACKED_STRUCTS=YES"
 CMAKE_ARGS+=" -DVIRGIL_LIB_RATCHET=YES"
@@ -144,44 +150,30 @@ CMAKE_ARGS+=" -DVIRGIL_INSTALL_DEPS_LIBS=NO"
 CMAKE_ARGS+=" -DVIRGIL_INSTALL_DEPS_CMAKE=NO"
 CMAKE_ARGS+=" -DCMAKE_TOOLCHAIN_FILE='${ROOT_DIR}/cmake/apple.cmake'"
 
-function cleanup_build_dirs {
-    if [ -d "${INSTALL_DIR}" ]; then
-        rm -fr "${INSTALL_DIR}" && mkdir -p "${INSTALL_DIR}"
-    fi
-
-    if [ -d "${BUILD_DIR}" ]; then
-        rm -fr "${BUILD_DIR}" && mkdir -p "${BUILD_DIR}"
-    fi
-}
 
 function build_ios {
     show_info "Build C Frameworks for iOS..."
 
-    if [ -d "${IOS_PREBUILT_DIR}/VSCCommon.framework" ] && \
-            [ -d "${IOS_PREBUILT_DIR}/VSCFoundation.framework" ] && \
-            [ -d "${IOS_PREBUILT_DIR}/VSCPythia.framework" ] && \
-            [ -d "${IOS_PREBUILT_DIR}/VSCRatchet.framework" ]; then
+    local BUILD_DIR=$1
+    local FRAMEWORKS_DIR=$2
+    local INSTALL_DIR="${BUILD_DIR}/install"
 
-        show_info "Requested binaries is found in the '${IOS_PREBUILT_DIR}' folder."
-        return 0
-    fi
+    rm -fr "${BUILD_DIR}"
+    mkdir -p "${BUILD_DIR}"
 
-    cleanup_build_dirs
-    cd "${BUILD_DIR}"
-
-    rm -fr -- *
-    cmake ${CMAKE_ARGS} -DAPPLE_PLATFORM=IOS \
-                        -DIOS_DEPLOYMENT_TARGET=${IPHONEOS_DEPLOYMENT_TARGET} \
+    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
+                        -DAPPLE_PLATFORM=IOS \
                         -DVSCP_MULTI_THREAD=ON \
-                        -DCMAKE_INSTALL_LIBDIR=lib/dev "${SRC_DIR}"
-    make -j8 install
+                        -DCMAKE_INSTALL_LIBDIR=lib/dev \
+                        -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
+    cmake --build "${BUILD_DIR}/dev" --target install -- -j8
 
-    rm -fr -- *
-    cmake ${CMAKE_ARGS} -DAPPLE_PLATFORM=IOS_SIM \
-                        -DIOS_DEPLOYMENT_TARGET=${IPHONEOS_DEPLOYMENT_TARGET} \
+    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
+                        -DAPPLE_PLATFORM=IOS_SIM \
                         -DVSCP_MULTI_THREAD=OFF \
-                        -DCMAKE_INSTALL_LIBDIR=lib/sim "${SRC_DIR}"
-    make -j8 install
+                        -DCMAKE_INSTALL_LIBDIR=lib/sim \
+                        -H"${SRC_DIR}" -B"${BUILD_DIR}/sim"
+    cmake --build "${BUILD_DIR}/sim" --target install -- -j8
 
     make_fat_framework VSCCommon "${INSTALL_DIR}" "${INSTALL_DIR}"
     make_fat_framework VSCFoundation "${INSTALL_DIR}" "${INSTALL_DIR}"
@@ -189,36 +181,34 @@ function build_ios {
     make_fat_framework VSCRatchet "${INSTALL_DIR}" "${INSTALL_DIR}"
 
     rm -fr -- "${INSTALL_DIR}/lib"
-    cp -fa "${INSTALL_DIR}/." "${IOS_PREBUILT_DIR}/"
+    cp -fa "${INSTALL_DIR}/." "${FRAMEWORKS_DIR}/"
+
+    show_info "Installed iOS C Frameworks to ${FRAMEWORKS_DIR}"
 }
 
 function build_tvos {
     show_info "Build C Frameworks for tvOS..."
 
-    if [ -d "${TVOS_PREBUILT_DIR}/VSCCommon.framework" ] && \
-            [ -d "${TVOS_PREBUILT_DIR}/VSCFoundation.framework" ] && \
-            [ -d "${TVOS_PREBUILT_DIR}/VSCPythia.framework" ] && \
-            [ -d "${TVOS_PREBUILT_DIR}/VSCRatchet.framework" ]; then
+    local BUILD_DIR=$1
+    local FRAMEWORKS_DIR=$2
+    local INSTALL_DIR="${BUILD_DIR}/install"
 
-        show_info "Requested binaries is found in the '${TVOS_PREBUILT_DIR}' folder."
-        return 0
-    fi
+    rm -fr "${BUILD_DIR}"
+    mkdir -p "${BUILD_DIR}"
 
-    cleanup_build_dirs
-    cd "${BUILD_DIR}"
-
-    rm -fr -- *
-    cmake ${CMAKE_ARGS} -DAPPLE_PLATFORM=TVOS \
-                        -DTVOS_DEPLOYMENT_TARGET=${TVOS_DEPLOYMENT_TARGET} \
+    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
+                        -DAPPLE_PLATFORM=TVOS \
                         -DVSCP_MULTI_THREAD=ON \
-                        -DCMAKE_INSTALL_LIBDIR=lib/dev "${SRC_DIR}"
-    make -j8 install
+                        -DCMAKE_INSTALL_LIBDIR=lib/dev \
+                        -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
+    cmake --build "${BUILD_DIR}/dev" --target install -- -j8
 
-    rm -fr -- *
-    cmake ${CMAKE_ARGS} -DAPPLE_PLATFORM=TVOS_SIM \
+    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
+                        -DAPPLE_PLATFORM=TVOS_SIM \
                         -DVSCP_MULTI_THREAD=ON \
-                        -DCMAKE_INSTALL_LIBDIR=lib/sim "${SRC_DIR}"
-    make -j8 install
+                        -DCMAKE_INSTALL_LIBDIR=lib/sim \
+                        -H"${SRC_DIR}" -B"${BUILD_DIR}/sim"
+    cmake --build "${BUILD_DIR}/sim" --target install -- -j8
 
     make_fat_framework VSCCommon "${INSTALL_DIR}" "${INSTALL_DIR}"
     make_fat_framework VSCFoundation "${INSTALL_DIR}" "${INSTALL_DIR}"
@@ -226,36 +216,34 @@ function build_tvos {
     make_fat_framework VSCRatchet "${INSTALL_DIR}" "${INSTALL_DIR}"
 
     rm -fr -- "${INSTALL_DIR}/lib"
-    cp -fa "${INSTALL_DIR}/." "${TVOS_PREBUILT_DIR}/"
+    cp -fa "${INSTALL_DIR}/." "${FRAMEWORKS_DIR}/"
+
+    show_info "Installed tvOS C Frameworks to ${FRAMEWORKS_DIR}"
 }
 
 function build_watchos {
     show_info "Build C Frameworks for watchOS..."
 
-    if [ -d "${WATCHOS_PREBUILT_DIR}/VSCCommon.framework" ] && \
-            [ -d "${WATCHOS_PREBUILT_DIR}/VSCFoundation.framework" ] && \
-            [ -d "${WATCHOS_PREBUILT_DIR}/VSCPythia.framework" ] && \
-            [ -d "${WATCHOS_PREBUILT_DIR}/VSCRatchet.framework" ]; then
+    local BUILD_DIR=$1
+    local FRAMEWORKS_DIR=$2
+    local INSTALL_DIR="${BUILD_DIR}/install"
 
-        show_info "Requested binaries is found in the '${WATCHOS_PREBUILT_DIR}' folder."
-        return 0
-    fi
+    rm -fr "${BUILD_DIR}"
+    mkdir -p "${BUILD_DIR}"
 
-    cleanup_build_dirs
-    cd "${BUILD_DIR}"
-
-    rm -fr -- *
-    cmake ${CMAKE_ARGS} -DAPPLE_PLATFORM=WATCHOS \
-                        -DWATCHOS_DEPLOYMENT_TARGET=${WATCHOS_DEPLOYMENT_TARGET} \
+    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
+                        -DAPPLE_PLATFORM=WATCHOS \
                         -DVSCP_MULTI_THREAD=ON \
-                        -DCMAKE_INSTALL_LIBDIR=lib/dev "${SRC_DIR}"
-    make -j8 install
+                        -DCMAKE_INSTALL_LIBDIR=lib/dev \
+                        -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
+    cmake --build "${BUILD_DIR}/dev" --target install -- -j8
 
-    rm -fr -- *
-    cmake ${CMAKE_ARGS} -DAPPLE_PLATFORM=WATCHOS_SIM \
+    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
+                        -DAPPLE_PLATFORM=WATCHOS_SIM \
                         -DVSCP_MULTI_THREAD=OFF \
-                        -DCMAKE_INSTALL_LIBDIR=lib/sim "${SRC_DIR}"
-    make -j8 install
+                        -DCMAKE_INSTALL_LIBDIR=lib/sim \
+                        -H"${SRC_DIR}" -B"${BUILD_DIR}/sim"
+    cmake --build "${BUILD_DIR}/sim" --target install -- -j8
 
     make_fat_framework VSCCommon "${INSTALL_DIR}" "${INSTALL_DIR}"
     make_fat_framework VSCFoundation "${INSTALL_DIR}" "${INSTALL_DIR}"
@@ -263,30 +251,27 @@ function build_watchos {
     make_fat_framework VSCRatchet "${INSTALL_DIR}" "${INSTALL_DIR}"
 
     rm -fr -- "${INSTALL_DIR}/lib"
-    cp -fa "${INSTALL_DIR}/." "${WATCHOS_PREBUILT_DIR}/"
+    cp -fa "${INSTALL_DIR}/." "${FRAMEWORKS_DIR}/"
+
+    show_info "Installed watchOS C Frameworks for to ${FRAMEWORKS_DIR}"
 }
 
 function build_macosx {
     show_info "Build C Frameworks for macOS..."
 
-    if [ -d "${MACOS_PREBUILT_DIR}/VSCCommon.framework" ] && \
-            [ -d "${MACOS_PREBUILT_DIR}/VSCFoundation.framework" ] && \
-            [ -d "${MACOS_PREBUILT_DIR}/VSCPythia.framework" ] && \
-            [ -d "${MACOS_PREBUILT_DIR}/VSCRatchet.framework" ]; then
+    local BUILD_DIR=$1
+    local FRAMEWORKS_DIR=$2
+    local INSTALL_DIR="${BUILD_DIR}/install"
 
-        show_info "Requested binaries is found in the '${MACOS_PREBUILT_DIR}' folder."
-        return 0
-    fi
+    rm -fr "${BUILD_DIR}"
+    mkdir -p "${BUILD_DIR}"
 
-    cleanup_build_dirs
-    cd "${BUILD_DIR}"
-
-    rm -fr -- *
-    cmake ${CMAKE_ARGS} -DAPPLE_PLATFORM=MACOS \
-                        -DMACOS_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET} \
+    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
+                        -DAPPLE_PLATFORM=MACOS \
                         -DVSCP_MULTI_THREAD=ON \
-                        -DCMAKE_INSTALL_LIBDIR=lib/dev "${SRC_DIR}"
-    make -j8 install
+                        -DCMAKE_INSTALL_LIBDIR=lib/dev \
+                        -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
+    cmake --build "${BUILD_DIR}/dev" --target install -- -j8
 
     make_fat_framework VSCCommon "${INSTALL_DIR}" "${INSTALL_DIR}"
     make_fat_framework VSCFoundation "${INSTALL_DIR}" "${INSTALL_DIR}"
@@ -294,32 +279,30 @@ function build_macosx {
     make_fat_framework VSCRatchet "${INSTALL_DIR}" "${INSTALL_DIR}"
 
     rm -fr -- "${INSTALL_DIR}/lib"
-    cp -fa "${INSTALL_DIR}/." "${MACOS_PREBUILT_DIR}/"
+    cp -fa "${INSTALL_DIR}/." "${FRAMEWORKS_DIR}/"
+
+    show_info "Installed macOS C Frameworks to ${FRAMEWORKS_DIR}"
 }
 
-case "${PLATFORM_NAME}" in
-    "iphoneos")
-    build_ios
-    ;;
-    "iphonesimulator")
-    build_ios
-    ;;
-    "appletvos")
-    build_tvos
-    ;;
-    "appletvsimulator")
-    build_tvos
-    ;;
-    "watchos")
-    build_watchos
-    ;;
-    "watchsimulator")
-    build_watchos
-    ;;
-    "macosx")
-    build_macosx
-    ;;
-    *)
-    show_error "Unsupported platform: ${PLATFORM_NAME}"
-    ;;
-esac
+build_ios "${BUILD_DIR}/iOS" "${IOS_DESTINATION_DIR}"
+build_tvos "${BUILD_DIR}/tvOS" "${TVOS_DESTINATION_DIR}"
+build_watchos "${BUILD_DIR}/watchOS" "${WATCHOS_DESTINATION_DIR}"
+build_macosx "${BUILD_DIR}/macOS" "${MACOS_DESTINATION_DIR}"
+
+PREPARE_RELEASE="YES"
+
+if [ $PREPARE_RELEASE == "YES" ]; then
+    rm -rf "${ROOT_DIR}/Carthage"
+    mkdir -p "${ROOT_DIR}/Carthage"
+    cp -p -R "${IOS_DESTINATION_DIR}" "${ROOT_DIR}/Carthage"
+    cp -p -R "${TVOS_DESTINATION_DIR}" "${ROOT_DIR}/Carthage"
+    cp -p -R "${WATCHOS_DESTINATION_DIR}" "${ROOT_DIR}/Carthage"
+    cp -p -R "${MACOS_DESTINATION_DIR}" "${ROOT_DIR}/Carthage"
+
+    cp -p -R "${ROOT_DIR}/LICENSE" "${ROOT_DIR}/Carthage"
+
+    pushd "${ROOT_DIR}"
+        rm -f VSCCrypto.framework.zip
+        zip -r VSCCrypto.framework.zip "Carthage"
+    popd
+fi
