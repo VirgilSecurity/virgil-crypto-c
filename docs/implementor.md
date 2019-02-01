@@ -399,7 +399,7 @@ require_definition:
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
-public: Instance type definition is used within private scope.
+public: Instance type definition is used within public scope.
 private: Instance type definition is used within private scope.
 
 name:
