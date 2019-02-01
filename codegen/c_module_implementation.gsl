@@ -365,6 +365,11 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
                 my.property. ?= "Implementation specific context."
             endfor
         endfor
+
+        for my.impl.property
+            my.property = component_clean_copy (property, struct)
+            my.property. ?= "Implementation specific context."
+        endfor
     endnew
 
     if my.definition <> "external"
