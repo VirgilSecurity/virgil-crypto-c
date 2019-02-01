@@ -121,4 +121,23 @@
             <property name="iteration count" type="size"/>
         </context>
     </implementation>
+
+
+    <implementation name="pkcs5 pbes2">
+        Virgil Security implementation of the PBES2 (RFC 8018) algorithm.
+
+        <interface name="encrypt"/>
+        <interface name="decrypt"/>
+
+        <dependency name="pbkdf2" impl="pkcs5 pbkdf2"/>
+        <dependency name="cipher" interface="cipher"/>
+
+        <property name="password" class="buffer"/>
+
+        <method name="reset" declaration="public">
+            Configure cipher with a new password.
+
+            <argument name="pwd" class="data"/>
+        </method>
+    </implementation>
 </implementor>

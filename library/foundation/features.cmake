@@ -99,6 +99,7 @@ option(VSCF_KDF1 "Enable implementation 'kdf1'." ON)
 option(VSCF_KDF2 "Enable implementation 'kdf2'." ON)
 option(VSCF_FAKE_RANDOM "Enable implementation 'fake random'." ON)
 option(VSCF_PKCS5_PBKDF2 "Enable implementation 'pkcs5 pbkdf2'." ON)
+option(VSCF_PKCS5_PBES2 "Enable implementation 'pkcs5 pbes2'." ON)
 option(VSCF_PKCS8_DER_SERIALIZER "Enable implementation 'pkcs8 der serializer'." ON)
 option(VSCF_PKCS8_DER_DESERIALIZER "Enable implementation 'pkcs8 der deserializer'." ON)
 option(VSCF_PKCS8_SERIALIZER "Enable implementation 'pkcs8 serializer'." ON)
@@ -181,6 +182,7 @@ mark_as_advanced(
         VSCF_KDF2
         VSCF_FAKE_RANDOM
         VSCF_PKCS5_PBKDF2
+        VSCF_PKCS5_PBES2
         VSCF_PKCS8_DER_SERIALIZER
         VSCF_PKCS8_DER_DESERIALIZER
         VSCF_PKCS8_SERIALIZER
