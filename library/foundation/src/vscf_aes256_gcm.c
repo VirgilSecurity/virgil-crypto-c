@@ -284,7 +284,7 @@ vscf_aes256_gcm_update(vscf_aes256_gcm_t *aes256_gcm, vsc_data_t data, vsc_buffe
 
 //
 //  Return buffer length required to hold an output of the methods
-//  "update" or "finish".
+//  "update" or "finish" in an current mode.
 //  Pass zero length to define buffer length of the method "finish".
 //
 VSCF_PUBLIC size_t
@@ -292,15 +292,41 @@ vscf_aes256_gcm_out_len(vscf_aes256_gcm_t *aes256_gcm, size_t data_len) {
 
     VSCF_ASSERT_PTR(aes256_gcm);
 
+    if (aes256_gcm->do_decrypt) {
+        return vscf_aes256_gcm_decrypted_out_len(aes256_gcm, data_len);
+    } else {
+        return vscf_aes256_gcm_encrypted_out_len(aes256_gcm, data_len);
+    }
+}
+
+//
+//  Return buffer length required to hold an output of the methods
+//  "update" or "finish" in an encryption mode.
+//  Pass zero length to define buffer length of the method "finish".
+//
+VSCF_PUBLIC size_t
+vscf_aes256_gcm_encrypted_out_len(vscf_aes256_gcm_t *aes256_gcm, size_t data_len) {
+
+    VSCF_ASSERT_PTR(aes256_gcm);
+
     if (data_len > 0) {
         return data_len + vscf_aes256_gcm_BLOCK_LEN;
-
-    } else if (aes256_gcm->do_decrypt) {
-        return vscf_aes256_gcm_BLOCK_LEN;
-
     } else {
         return vscf_aes256_gcm_BLOCK_LEN + vscf_aes256_gcm_AUTH_TAG_LEN;
     }
+}
+
+//
+//  Return buffer length required to hold an output of the methods
+//  "update" or "finish" in an decryption mode.
+//  Pass zero length to define buffer length of the method "finish".
+//
+VSCF_PUBLIC size_t
+vscf_aes256_gcm_decrypted_out_len(vscf_aes256_gcm_t *aes256_gcm, size_t data_len) {
+
+    VSCF_ASSERT_PTR(aes256_gcm);
+
+    return data_len + vscf_aes256_gcm_BLOCK_LEN;
 }
 
 //

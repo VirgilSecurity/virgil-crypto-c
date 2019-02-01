@@ -195,10 +195,22 @@ static const vscf_cipher_api_t cipher_api = {
     (vscf_cipher_api_update_fn)vscf_aes256_gcm_update,
     //
     //  Return buffer length required to hold an output of the methods
-    //  "update" or "finish".
+    //  "update" or "finish" in an current mode.
     //  Pass zero length to define buffer length of the method "finish".
     //
     (vscf_cipher_api_out_len_fn)vscf_aes256_gcm_out_len,
+    //
+    //  Return buffer length required to hold an output of the methods
+    //  "update" or "finish" in an encryption mode.
+    //  Pass zero length to define buffer length of the method "finish".
+    //
+    (vscf_cipher_api_encrypted_out_len_fn)vscf_aes256_gcm_encrypted_out_len,
+    //
+    //  Return buffer length required to hold an output of the methods
+    //  "update" or "finish" in an decryption mode.
+    //  Pass zero length to define buffer length of the method "finish".
+    //
+    (vscf_cipher_api_decrypted_out_len_fn)vscf_aes256_gcm_decrypted_out_len,
     //
     //  Accomplish encryption or decryption process.
     //

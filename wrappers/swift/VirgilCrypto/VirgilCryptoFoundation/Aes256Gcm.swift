@@ -191,10 +191,28 @@ import VirgilCryptoCommon
     }
 
     /// Return buffer length required to hold an output of the methods
-    /// "update" or "finish".
+    /// "update" or "finish" in an current mode.
     /// Pass zero length to define buffer length of the method "finish".
     @objc public func outLen(dataLen: Int) -> Int {
         let proxyResult = vscf_aes256_gcm_out_len(self.c_ctx, dataLen)
+
+        return proxyResult
+    }
+
+    /// Return buffer length required to hold an output of the methods
+    /// "update" or "finish" in an encryption mode.
+    /// Pass zero length to define buffer length of the method "finish".
+    @objc public func encryptedOutLen(dataLen: Int) -> Int {
+        let proxyResult = vscf_aes256_gcm_encrypted_out_len(self.c_ctx, dataLen)
+
+        return proxyResult
+    }
+
+    /// Return buffer length required to hold an output of the methods
+    /// "update" or "finish" in an decryption mode.
+    /// Pass zero length to define buffer length of the method "finish".
+    @objc public func decryptedOutLen(dataLen: Int) -> Int {
+        let proxyResult = vscf_aes256_gcm_decrypted_out_len(self.c_ctx, dataLen)
 
         return proxyResult
     }
