@@ -51,9 +51,10 @@
 #include "vscr_ratchet_common.h"
 #include "vscr_error_ctx.h"
 
+#include <virgil/crypto/common/vsc_buffer.h>
+
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
-#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK

@@ -64,9 +64,8 @@ test__key_format__fixed_curve_keypair__should_match(void) {
     TEST_ASSERT_EQUAL(
             0, curve25519_get_pubkey(sender_identity_public_key, vsc_buffer_bytes(sender_identity_private_key_raw)));
 
-    TEST_ASSERT_EQUAL(ED25519_KEY_LEN, vsc_buffer_len(sender_identity_public_key_raw));
-    TEST_ASSERT_EQUAL_MEMORY(
-            sender_identity_public_key, vsc_buffer_bytes(sender_identity_public_key_raw), ED25519_KEY_LEN);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(
+            vsc_data(sender_identity_public_key, ED25519_KEY_LEN), sender_identity_public_key_raw);
 
     vsc_buffer_destroy(&sender_identity_private_key_raw);
     vsc_buffer_destroy(&sender_identity_public_key_raw);
@@ -92,11 +91,10 @@ test__key_format__fixed_ed_keypair__should_match(void) {
     byte sender_identity_public_key[ED25519_KEY_LEN];
 
     TEST_ASSERT_EQUAL(
-            0, ed25519_get_pubkey(sender_identity_public_key, vsc_buffer_bytes(sender_identity_private_key_raw)));
+            0, curve25519_get_pubkey(sender_identity_public_key, vsc_buffer_bytes(sender_identity_private_key_raw)));
 
-    TEST_ASSERT_EQUAL(ED25519_KEY_LEN, vsc_buffer_len(sender_identity_public_key_raw));
-    TEST_ASSERT_EQUAL_MEMORY(
-            sender_identity_public_key, vsc_buffer_bytes(sender_identity_public_key_raw), ED25519_KEY_LEN);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(
+            vsc_data(sender_identity_public_key, ED25519_KEY_LEN), sender_identity_public_key_raw);
 
     vsc_buffer_destroy(&sender_identity_private_key_raw);
     vsc_buffer_destroy(&sender_identity_public_key_raw);
