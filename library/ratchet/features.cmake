@@ -48,6 +48,7 @@ include_guard()
 option(VSCR_LIBRARY "Enable build of the 'ratchet' library" ON)
 option(VSCR_RATCHET_COMMON "Enable class 'ratchet common'." ON)
 option(VSCR_RATCHET_COMMON_HIDDEN "Enable class 'ratchet common hidden'." ON)
+option(VSCR_RATCHET_KEY_EXTRACTOR "Enable class 'ratchet key extractor'." ON)
 option(VSCR_ERROR_CTX "Enable class 'error ctx'." ON)
 option(VSCR_RATCHET_MESSAGE "Enable class 'ratchet message'." ON)
 option(VSCR_RATCHET_CIPHER "Enable class 'ratchet cipher'." ON)
@@ -64,6 +65,7 @@ mark_as_advanced(
         VSCR_LIBRARY
         VSCR_RATCHET_COMMON
         VSCR_RATCHET_COMMON_HIDDEN
+        VSCR_RATCHET_KEY_EXTRACTOR
         VSCR_ERROR_CTX
         VSCR_RATCHET_MESSAGE
         VSCR_RATCHET_CIPHER
@@ -77,6 +79,33 @@ mark_as_advanced(
         VSCR_RATCHET
         VSCR_RATCHET_SESSION
         )
+
+if(VSCR_RATCHET_KEY_EXTRACTOR AND NOT VSCR_RATCHET_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_KEY_EXTRACTOR depends on the feature:")
+    message("     VSCR_RATCHET_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET_KEY_EXTRACTOR AND NOT VSCR_RATCHET_COMMON_HIDDEN)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_KEY_EXTRACTOR depends on the feature:")
+    message("     VSCR_RATCHET_COMMON_HIDDEN - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCR_RATCHET_KEY_EXTRACTOR AND NOT VSCF_PKCS8_DER_DESERIALIZER)
+    message("-- error --")
+    message("--")
+    message("Feature VSCR_RATCHET_KEY_EXTRACTOR depends on the feature:")
+    message("     VSCF_PKCS8_DER_DESERIALIZER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
 
 if(VSCR_RATCHET_MESSAGE AND NOT VSCR_RATCHET_COMMON_HIDDEN)
     message("-- error --")
@@ -254,24 +283,6 @@ if(VSCR_RATCHET_SESSION AND NOT VSCR_RATCHET_COMMON_HIDDEN)
     message("--")
     message("Feature VSCR_RATCHET_SESSION depends on the feature:")
     message("     VSCR_RATCHET_COMMON_HIDDEN - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCR_RATCHET_SESSION AND NOT VSCF_PKCS8_DER_SERIALIZER)
-    message("-- error --")
-    message("--")
-    message("Feature VSCR_RATCHET_SESSION depends on the feature:")
-    message("     VSCF_PKCS8_DER_SERIALIZER - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCR_RATCHET_SESSION AND NOT VSCF_PKCS8_DER_DESERIALIZER)
-    message("-- error --")
-    message("--")
-    message("Feature VSCR_RATCHET_SESSION depends on the feature:")
-    message("     VSCF_PKCS8_DER_DESERIALIZER - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

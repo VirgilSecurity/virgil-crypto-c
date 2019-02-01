@@ -39,97 +39,27 @@
 
 #include <virgil/crypto/common/vsc_buffer.h>
 #include <virgil/crypto/ratchet/vscr_error_ctx.h>
-#include <vscf_pkcs8_der_deserializer_internal.h>
 #include <virgil/crypto/ratchet/vscr_ratchet_common.h>
 #include <test_data_ratchet_session.h>
 #include <ed25519/ed25519.h>
-
-static vsc_buffer_t *
-vscr_ratchet_session_get_raw_public_key(vsc_data_t data, vscr_error_ctx_t *err_ctx) {
-
-    vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
-    vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
-
-    vscf_error_ctx_t error_ctx;
-    vscf_error_ctx_reset(&error_ctx);
-
-    vsc_buffer_t *result = NULL;
-
-    vscf_raw_key_t *raw_key = vscf_pkcs8_der_deserializer_deserialize_public_key(pkcs8, data, &error_ctx);
-
-    if (error_ctx.error != vscf_SUCCESS) {
-        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_KEY_DESERIALIZATION);
-
-        goto err;
-    }
-
-    if (vscf_raw_key_data(raw_key).len != 32 || vscf_raw_key_alg_id(raw_key) != vscf_alg_id_X25519) {
-        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_INVALID_KEY_TYPE);
-
-        goto err;
-    }
-
-    result = vsc_buffer_new_with_data(vscf_raw_key_data(raw_key));
-
-err:
-    vscf_raw_key_destroy(&raw_key);
-
-    vscf_pkcs8_der_deserializer_destroy(&pkcs8);
-
-    return result;
-}
-
-static vsc_buffer_t *
-vscr_ratchet_session_get_raw_private_key(vsc_data_t data, vscr_error_ctx_t *err_ctx) {
-
-    vscf_pkcs8_der_deserializer_t *pkcs8 = vscf_pkcs8_der_deserializer_new();
-    vscf_pkcs8_der_deserializer_setup_defaults(pkcs8);
-
-    vscf_error_ctx_t error_ctx;
-    vscf_error_ctx_reset(&error_ctx);
-
-    vsc_buffer_t *result = NULL;
-
-    vscf_raw_key_t *raw_key = vscf_pkcs8_der_deserializer_deserialize_private_key(pkcs8, data, &error_ctx);
-
-    if (error_ctx.error != vscf_SUCCESS) {
-        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_KEY_DESERIALIZATION);
-
-        goto err;
-    }
-
-    if (vscf_raw_key_data(raw_key).len != 32 + 2 || vscf_raw_key_alg_id(raw_key) != vscf_alg_id_X25519) {
-        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_INVALID_KEY_TYPE);
-
-        goto err;
-    }
-
-    result = vsc_buffer_new_with_data(vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, 32));
-
-err:
-    vscf_raw_key_destroy(&raw_key);
-
-    vscf_pkcs8_der_deserializer_destroy(&pkcs8);
-
-    return result;
-}
+#include <virgil/crypto/ratchet/private/vscr_ratchet_key_extractor.h>
 
 void
-test__key_format__fixed_keypair__should_match(void) {
+test__key_format__fixed_curve_keypair__should_match(void) {
     vscr_error_ctx_t error_ctx;
     vscr_error_ctx_reset(&error_ctx);
 
-    vsc_buffer_t *sender_identity_private_key_raw =
-            vscr_ratchet_session_get_raw_private_key(test_ratchet_session_alice_identity_private_key, &error_ctx);
+    vscr_ratchet_key_extractor_t *extractor = vscr_ratchet_key_extractor_new();
+
+    vsc_buffer_t *sender_identity_private_key_raw = vscr_ratchet_key_extractor_extract_ratchet_private_key(
+            extractor, test_ratchet_session_alice_identity_private_key, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
 
-    vsc_buffer_t *sender_identity_public_key_raw =
-            vscr_ratchet_session_get_raw_public_key(test_ratchet_session_alice_identity_public_key, &error_ctx);
+    vsc_buffer_t *sender_identity_public_key_raw = vscr_ratchet_key_extractor_extract_ratchet_public_key(
+            extractor, test_ratchet_session_alice_identity_public_key, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
-
 
     byte sender_identity_public_key[ED25519_KEY_LEN];
-
 
     TEST_ASSERT_EQUAL(
             0, curve25519_get_pubkey(sender_identity_public_key, vsc_buffer_bytes(sender_identity_private_key_raw)));
@@ -140,6 +70,38 @@ test__key_format__fixed_keypair__should_match(void) {
 
     vsc_buffer_destroy(&sender_identity_private_key_raw);
     vsc_buffer_destroy(&sender_identity_public_key_raw);
+
+    vscr_ratchet_key_extractor_destroy(&extractor);
+}
+
+void
+test__key_format__fixed_ed_keypair__should_match(void) {
+    vscr_error_ctx_t error_ctx;
+    vscr_error_ctx_reset(&error_ctx);
+
+    vscr_ratchet_key_extractor_t *extractor = vscr_ratchet_key_extractor_new();
+
+    vsc_buffer_t *sender_identity_private_key_raw =
+            vscr_ratchet_key_extractor_extract_ratchet_private_key(extractor, test_ratchet_ed_private_key, &error_ctx);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+
+    vsc_buffer_t *sender_identity_public_key_raw =
+            vscr_ratchet_key_extractor_extract_ratchet_public_key(extractor, test_ratchet_ed_public_key, &error_ctx);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+
+    byte sender_identity_public_key[ED25519_KEY_LEN];
+
+    TEST_ASSERT_EQUAL(
+            0, ed25519_get_pubkey(sender_identity_public_key, vsc_buffer_bytes(sender_identity_private_key_raw)));
+
+    TEST_ASSERT_EQUAL(ED25519_KEY_LEN, vsc_buffer_len(sender_identity_public_key_raw));
+    TEST_ASSERT_EQUAL_MEMORY(
+            sender_identity_public_key, vsc_buffer_bytes(sender_identity_public_key_raw), ED25519_KEY_LEN);
+
+    vsc_buffer_destroy(&sender_identity_private_key_raw);
+    vsc_buffer_destroy(&sender_identity_public_key_raw);
+
+    vscr_ratchet_key_extractor_destroy(&extractor);
 }
 
 // --------------------------------------------------------------------------
@@ -149,7 +111,8 @@ int
 main(void) {
     UNITY_BEGIN();
 
-    RUN_TEST(test__key_format__fixed_keypair__should_match);
+    RUN_TEST(test__key_format__fixed_curve_keypair__should_match);
+    RUN_TEST(test__key_format__fixed_ed_keypair__should_match);
 
     return UNITY_END();
 }

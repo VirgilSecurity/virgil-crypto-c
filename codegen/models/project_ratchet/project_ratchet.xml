@@ -57,6 +57,7 @@
 
     <class name="ratchet common"/>
     <class name="ratchet common hidden"/>
+    <class name="ratchet key extractor"/>
     <class name="error"/>
     <class name="ratchet message"/>
     <class name="ratchet cipher"/>
