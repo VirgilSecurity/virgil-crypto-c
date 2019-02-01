@@ -48,8 +48,8 @@
 #define VSCE_PHE_HASH_H_INCLUDED
 
 #include "vsce_library.h"
-#include "vsce_phe_common.h"
 #include "vsce_simple_swu.h"
+#include "vsce_phe_common.h"
 
 #include <mbedtls/ecp.h>
 
