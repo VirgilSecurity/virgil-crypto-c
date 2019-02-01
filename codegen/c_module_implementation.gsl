@@ -275,14 +275,7 @@ function _Z19_add_includes_for_module_internal (impl, destination, meta)
         endnew
     endfor
 
-    for my.impl.dependency
-        my.entity_names = meta_entity_names (my.meta, dependency.type_name)
-
-        new require to my.destination
-            .module = my.entity_names.interface_module
-            .scope = "private"
-        endnew
-    endfor
+    c_dependency_add_requirements(my.impl, my.destination)
 endfunction
 
 # ---------------------------------------------------------------------------
