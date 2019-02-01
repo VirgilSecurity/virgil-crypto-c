@@ -50,7 +50,6 @@
 #include "vscr_ratchet_common_hidden.h"
 
 #include <virgil/crypto/foundation/vscf_pkcs8_der_deserializer.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <ed25519/ed25519.h>
 
 #if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -338,8 +337,8 @@ vscr_ratchet_key_extractor_extract_ratchet_private_key(
 
         result = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH);
 
-        int curve25519_status =
-                ed25519_key_to_curve25519(vsc_buffer_unused_bytes(result), vscf_raw_key_data(raw_key).bytes);
+        int curve25519_status = ed25519_key_to_curve25519(vsc_buffer_unused_bytes(result),
+                vsc_data_slice_beg(vscf_raw_key_data(raw_key), 2, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH).bytes);
 
         if (curve25519_status != 0) {
             VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_CURVE25519);
