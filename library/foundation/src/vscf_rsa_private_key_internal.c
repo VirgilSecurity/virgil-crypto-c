@@ -67,11 +67,11 @@
 #include "vscf_sign_api.h"
 #include "vscf_private_key.h"
 #include "vscf_private_key_api.h"
-#include "vscf_hash.h"
 #include "vscf_random.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_impl.h"
+#include "vscf_hash.h"
 #include "vscf_api.h"
 
 // clang-format on
