@@ -58,6 +58,7 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_alg_info_der.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_message_info_der.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_pkcs5_pbkdf2.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_pkcs5_pbes2.h"
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_aes256_gcm.c"
@@ -79,6 +80,7 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_alg_info_der.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_message_info_der.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_pkcs5_pbkdf2.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_pkcs5_pbes2.c"
         )
 
 target_include_directories(test_data_foundation
