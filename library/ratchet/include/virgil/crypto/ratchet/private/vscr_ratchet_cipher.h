@@ -50,13 +50,11 @@
 #include "vscr_library.h"
 #include "vscr_error.h"
 
+#include <virgil/crypto/foundation/vscf_aes256_gcm.h>
+
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_aes256_gcm.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
