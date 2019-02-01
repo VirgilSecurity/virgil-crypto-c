@@ -2,8 +2,6 @@
 
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common hidden" scope="context"/>
-    <require impl="pkcs8 der serializer" scope="private" project="foundation"/>
-    <require impl="pkcs8 der deserializer" scope="private" project="foundation"/>
     <require module="ratchet message defs" scope="private"/>
     <require module="buffer defs" scope="private" project="common"/>
 
@@ -21,7 +19,7 @@
     </constant>
 
     <dependency name="rng" interface="random" project="foundation"/>
-    <property name="pkcs8" impl="pkcs8 der deserializer" project="foundation"/>
+    <property name="key extractor" class="ratchet key extractor"/>
 
     <property name="is initiator" type="boolean"/>
     <property class="ratchet" name="ratchet"/>
@@ -102,19 +100,5 @@
         <argument name="err ctx" class="error ctx" access="readwrite"/>
 
         <return class="self" access="disown"/>
-    </method>
-
-    <method name="get raw public key" declaration="private">
-        <argument name="data" class="data"/>
-        <argument name="err ctx" class="error ctx" access="readwrite"/>
-
-        <return class="buffer"/>
-    </method>
-
-    <method name="get raw private key" declaration="private">
-        <argument name="data" class="data"/>
-        <argument name="err ctx" class="error ctx" access="readwrite"/>
-
-        <return class="buffer"/>
     </method>
 </class>
