@@ -80,10 +80,8 @@
     <implementation name="fake random">
         Random number generator that is used for test purposes only.
 
-
         <interface name="random"/>
         <interface name="entropy source"/>
-
 
         <context>
             <property name="data source" class="data" access="readwrite"/>
@@ -91,13 +89,11 @@
             <property name="pos" type="size"/>
         </context>
 
-
         <method name="setup source byte" declaration="public">
             Configure random number generator to generate sequence filled with given byte.
 
             <argument name="byte source" type="byte"/>
         </method>
-
 
         <method name="setup source data" declaration="public">
             Configure random number generator to generate random sequence from given data.
