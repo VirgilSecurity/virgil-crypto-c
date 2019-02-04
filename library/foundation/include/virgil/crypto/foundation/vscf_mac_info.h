@@ -75,31 +75,31 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'mac info'.
 //
-typedef struct vscf_mac_info_api_t vscf_mac_info_api_t;
+typedef struct vscf_mac_api_t vscf_mac_api_t;
 
 //
 //  Size of the digest (mac output) in bytes.
 //
 VSCF_PUBLIC size_t
-vscf_mac_info_digest_len(vscf_impl_t *impl);
+vscf_mac_digest_len(vscf_impl_t *impl);
 
 //
 //  Return mac info API, or NULL if it is not implemented.
 //
-VSCF_PUBLIC const vscf_mac_info_api_t *
-vscf_mac_info_api(const vscf_impl_t *impl);
+VSCF_PUBLIC const vscf_mac_api_t *
+vscf_mac_api(const vscf_impl_t *impl);
 
 //
 //  Check if given object implements interface 'mac info'.
 //
 VSCF_PUBLIC bool
-vscf_mac_info_is_implemented(const vscf_impl_t *impl);
+vscf_mac_is_implemented(const vscf_impl_t *impl);
 
 //
 //  Returns interface unique identifier.
 //
 VSCF_PUBLIC vscf_api_tag_t
-vscf_mac_info_api_tag(const vscf_mac_info_api_t *mac_info_api);
+vscf_mac_api_tag(const vscf_mac_api_t *mac_info_api);
 
 
 // --------------------------------------------------------------------------

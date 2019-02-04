@@ -61,7 +61,7 @@
 #include "vscf_kdf_api.h"
 #include "vscf_salted_kdf.h"
 #include "vscf_salted_kdf_api.h"
-#include "vscf_mac_stream.h"
+#include "vscf_mac.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -269,7 +269,7 @@ vscf_pkcs5_pbkdf2_impl(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
 }
 
 //
-//  Setup dependency to the interface 'mac stream' with shared ownership.
+//  Setup dependency to the interface 'mac' with shared ownership.
 //
 VSCF_PUBLIC void
 vscf_pkcs5_pbkdf2_use_hmac(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vscf_impl_t *hmac) {
@@ -278,13 +278,13 @@ vscf_pkcs5_pbkdf2_use_hmac(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vscf_impl_t *hmac)
     VSCF_ASSERT_PTR(hmac);
     VSCF_ASSERT_PTR(pkcs5_pbkdf2->hmac == NULL);
 
-    VSCF_ASSERT(vscf_mac_stream_is_implemented(hmac));
+    VSCF_ASSERT(vscf_mac_is_implemented(hmac));
 
     pkcs5_pbkdf2->hmac = vscf_impl_shallow_copy(hmac);
 }
 
 //
-//  Setup dependency to the interface 'mac stream' and transfer ownership.
+//  Setup dependency to the interface 'mac' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
@@ -294,13 +294,13 @@ vscf_pkcs5_pbkdf2_take_hmac(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vscf_impl_t *hmac
     VSCF_ASSERT_PTR(hmac);
     VSCF_ASSERT_PTR(pkcs5_pbkdf2->hmac == NULL);
 
-    VSCF_ASSERT(vscf_mac_stream_is_implemented(hmac));
+    VSCF_ASSERT(vscf_mac_is_implemented(hmac));
 
     pkcs5_pbkdf2->hmac = hmac;
 }
 
 //
-//  Release dependency to the interface 'mac stream'.
+//  Release dependency to the interface 'mac'.
 //
 VSCF_PUBLIC void
 vscf_pkcs5_pbkdf2_release_hmac(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {

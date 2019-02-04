@@ -97,7 +97,7 @@ struct vscf_pkcs5_pbkdf2_t {
     //
     size_t refcnt;
     //
-    //  Dependency to the interface 'mac stream'.
+    //  Dependency to the interface 'mac'.
     //
     vscf_impl_t *hmac;
     //

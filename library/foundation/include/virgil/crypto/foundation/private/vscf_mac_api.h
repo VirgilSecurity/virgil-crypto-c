@@ -56,7 +56,6 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_mac_info.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -84,9 +83,35 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Callback. Size of the digest (mac output) in bytes.
+//
+typedef size_t (*vscf_mac_api_digest_len_fn)(vscf_impl_t *impl);
+
+//
 //  Callback. Calculate MAC over given data.
 //
 typedef void (*vscf_mac_api_mac_fn)(vscf_impl_t *impl, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac);
+
+//
+//  Callback. Start a new MAC.
+//
+typedef void (*vscf_mac_api_start_fn)(vscf_impl_t *impl, vsc_data_t key);
+
+//
+//  Callback. Add given data to the MAC.
+//
+typedef void (*vscf_mac_api_update_fn)(vscf_impl_t *impl, vsc_data_t data);
+
+//
+//  Callback. Accomplish MAC and return it's result (a message digest).
+//
+typedef void (*vscf_mac_api_finish_fn)(vscf_impl_t *impl, vsc_buffer_t *mac);
+
+//
+//  Callback. Prepare to authenticate a new message with the same key
+//          as the previous MAC operation.
+//
+typedef void (*vscf_mac_api_reset_fn)(vscf_impl_t *impl);
 
 //
 //  Contains API requirements of the interface 'mac'.
@@ -98,13 +123,30 @@ struct vscf_mac_api_t {
     //
     vscf_api_tag_t api_tag;
     //
-    //  Link to the inherited interface API 'mac info'.
+    //  Size of the digest (mac output) in bytes.
     //
-    const vscf_mac_info_api_t *mac_info_api;
+    vscf_mac_api_digest_len_fn digest_len_cb;
     //
     //  Calculate MAC over given data.
     //
     vscf_mac_api_mac_fn mac_cb;
+    //
+    //  Start a new MAC.
+    //
+    vscf_mac_api_start_fn start_cb;
+    //
+    //  Add given data to the MAC.
+    //
+    vscf_mac_api_update_fn update_cb;
+    //
+    //  Accomplish MAC and return it's result (a message digest).
+    //
+    vscf_mac_api_finish_fn finish_cb;
+    //
+    //  Prepare to authenticate a new message with the same key
+    //  as the previous MAC operation.
+    //
+    vscf_mac_api_reset_fn reset_cb;
 };
 
 

@@ -29,8 +29,6 @@ framework module VSCFoundation {
     header "vscf_key_deserializer.h"
     header "vscf_key_serializer.h"
     header "vscf_mac.h"
-    header "vscf_mac_info.h"
-    header "vscf_mac_stream.h"
     header "vscf_message_info_serializer.h"
     header "vscf_private_key.h"
     header "vscf_public_key.h"

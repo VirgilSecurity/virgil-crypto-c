@@ -66,8 +66,6 @@ target_compile_definitions(foundation
             "VSCF_SALTED_KDF=$<BOOL:${VSCF_SALTED_KDF}>"
             "VSCF_HASH=$<BOOL:${VSCF_HASH}>"
             "VSCF_MAC=$<BOOL:${VSCF_MAC}>"
-            "VSCF_MAC_INFO=$<BOOL:${VSCF_MAC_INFO}>"
-            "VSCF_MAC_STREAM=$<BOOL:${VSCF_MAC_STREAM}>"
             "VSCF_KDF=$<BOOL:${VSCF_KDF}>"
             "VSCF_RANDOM=$<BOOL:${VSCF_RANDOM}>"
             "VSCF_ENTROPY_SOURCE=$<BOOL:${VSCF_ENTROPY_SOURCE}>"
