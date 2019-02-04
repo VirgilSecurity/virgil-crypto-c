@@ -10,10 +10,11 @@
         <require class="asn1wr"/>
         <require class="oid"/>
         <require enum="asn1 tag"/>
+        <require interface="alg info"/>
         <require impl="cipher alg info"/>
         <require impl="hash based alg info"/>
         <require impl="simple alg info"/>
-        <require interface="alg info"/>
+        <require impl="salted kdf alg info"/>
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
 
@@ -43,7 +44,7 @@
             <argument name="alg info" interface="alg info"/>
             <argument name="out" class="buffer">
                 <length method="serialized simple alg info len">
-                    <proxy argument="simple alg info" to="simple alg info"/>
+                    <proxy argument="alg info" to="alg info"/>
                 </length>
             </argument>
 
@@ -66,7 +67,7 @@
             <argument name="alg info" interface="alg info"/>
             <argument name="out" class="buffer">
                 <length method="serialized kdf alg info len">
-                    <proxy argument="hash based alg info" to="hash based alg info"/>
+                    <proxy argument="alg info" to="alg info"/>
                 </length>
             </argument>
 
@@ -89,7 +90,7 @@
             <argument name="alg info" interface="alg info"/>
             <argument name="out" class="buffer">
                 <length method="serialized hkdf alg info len">
-                    <proxy argument="hash based alg info" to="hash based alg info"/>
+                    <proxy argument="alg info" to="alg info"/>
                 </length>
             </argument>
 
@@ -112,7 +113,7 @@
             <argument name="alg info" interface="alg info"/>
             <argument name="out" class="buffer">
                 <length method="serialized hmac alg info len">
-                    <proxy argument="hash based alg info" to="hash based alg info"/>
+                    <proxy argument="alg info" to="alg info"/>
                 </length>
             </argument>
 
@@ -137,7 +138,43 @@
             <argument name="alg info" interface="alg info"/>
             <argument name="out" class="buffer">
                 <length method="serialized cipher alg info len">
-                    <proxy argument="cipher alg info" to="cipher alg info"/>
+                    <proxy argument="alg info" to="alg info"/>
+                </length>
+            </argument>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialized pbkdf2 alg info len">
+            Return buffer size enough to hold ASN.1 structure
+            "PBKDF2Algorithm" from the RFC 8018.
+
+            <argument name="alg info" interface="alg info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize pbkdf2 alg info">
+            Serialize class "salted kdf alg info" to the ASN.1 structure
+            "PBKDF2Algorithm" from the RFC 8018.
+
+            <argument name="alg info" interface="alg info"/>
+            <argument name="out" class="buffer">
+                <length method="serialized pbkdf2 alg info len">
+                    <proxy argument="alg info" to="alg info"/>
+                </length>
+            </argument>
+
+            <return type="size"/>
+        </method>
+
+        <method name="route serialize">
+            Route serialization to specific method depends on the alg id.
+
+            <argument name="alg info" interface="alg info"/>
+            <argument name="out" class="buffer">
+                <length method="serialized len">
+                    <proxy argument="alg info" to="alg info"/>
                 </length>
             </argument>
 

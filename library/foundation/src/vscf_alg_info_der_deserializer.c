@@ -515,7 +515,7 @@ vscf_alg_info_der_deserializer_deserialize(
     case vscf_alg_id_PKCS5_PBKDF2:
     case vscf_alg_id_PKCS5_PBES2:
     case vscf_alg_id_NONE:
-        VSCF_ASSERT(0 && "Unhendled alg id.");
+        VSCF_ASSERT(0 && "Unhandled alg id.");
         break;
     }
 
