@@ -365,6 +365,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_salted_kdf_alg_info.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_sha224.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -609,6 +614,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_RSA_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_rsa_public_key.h>"
             "$<$<BOOL:${VSCF_RSA_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_rsa_public_key_internal.h>"
             "$<$<BOOL:${VSCF_RSA_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_rsa_public_key_defs.h>"
+            "$<$<BOOL:${VSCF_SALTED_KDF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_salted_kdf_alg_info.h>"
+            "$<$<BOOL:${VSCF_SALTED_KDF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_salted_kdf_alg_info_internal.h>"
+            "$<$<BOOL:${VSCF_SALTED_KDF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_salted_kdf_alg_info_defs.h>"
             "$<$<BOOL:${VSCF_SHA224}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_sha224.h>"
             "$<$<BOOL:${VSCF_SHA224}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224_internal.h>"
             "$<$<BOOL:${VSCF_SHA224}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_sha224_defs.h>"
@@ -798,6 +806,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_RSA_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_rsa_public_key.c>"
             "$<$<BOOL:${VSCF_RSA_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_rsa_public_key_internal.c>"
             "$<$<BOOL:${VSCF_RSA_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_rsa_public_key_defs.c>"
+            "$<$<BOOL:${VSCF_SALTED_KDF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_salted_kdf_alg_info.c>"
+            "$<$<BOOL:${VSCF_SALTED_KDF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_salted_kdf_alg_info_internal.c>"
+            "$<$<BOOL:${VSCF_SALTED_KDF_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_salted_kdf_alg_info_defs.c>"
             "$<$<BOOL:${VSCF_SHA224}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224.c>"
             "$<$<BOOL:${VSCF_SHA224}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224_internal.c>"
             "$<$<BOOL:${VSCF_SHA224}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_sha224_defs.c>"

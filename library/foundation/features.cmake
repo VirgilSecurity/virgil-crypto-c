@@ -105,6 +105,7 @@ option(VSCF_ED25519_PRIVATE_KEY "Enable implementation 'ed25519 private key'." O
 option(VSCF_SIMPLE_ALG_INFO "Enable implementation 'simple alg info'." ON)
 option(VSCF_HASH_BASED_ALG_INFO "Enable implementation 'hash based alg info'." ON)
 option(VSCF_CIPHER_ALG_INFO "Enable implementation 'cipher alg info'." ON)
+option(VSCF_SALTED_KDF_ALG_INFO "Enable implementation 'salted kdf alg info'." ON)
 option(VSCF_ALG_INFO_DER_SERIALIZER "Enable implementation 'alg info der serializer'." ON)
 option(VSCF_ALG_INFO_DER_DESERIALIZER "Enable implementation 'alg info der deserializer'." ON)
 option(VSCF_MESSAGE_INFO_DER_SERIALIZER "Enable implementation 'message info der serializer'." ON)
@@ -185,6 +186,7 @@ mark_as_advanced(
         VSCF_SIMPLE_ALG_INFO
         VSCF_HASH_BASED_ALG_INFO
         VSCF_CIPHER_ALG_INFO
+        VSCF_SALTED_KDF_ALG_INFO
         VSCF_ALG_INFO_DER_SERIALIZER
         VSCF_ALG_INFO_DER_DESERIALIZER
         VSCF_MESSAGE_INFO_DER_SERIALIZER
@@ -773,6 +775,33 @@ if(VSCF_KDF2 AND NOT VSCF_HASH_BASED_ALG_INFO)
     message(FATAL_ERROR)
 endif()
 
+if(VSCF_PKCS5_PBKDF2 AND NOT VSCF_ALG)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PKCS5_PBKDF2 depends on the feature:")
+    message("     VSCF_ALG - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PKCS5_PBKDF2 AND NOT VSCF_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PKCS5_PBKDF2 depends on the feature:")
+    message("     VSCF_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PKCS5_PBKDF2 AND NOT VSCF_ALG_FACTORY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PKCS5_PBKDF2 depends on the feature:")
+    message("     VSCF_ALG_FACTORY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCF_PKCS5_PBKDF2 AND NOT VSCF_HMAC)
     message("-- error --")
     message("--")
@@ -791,11 +820,11 @@ if(VSCF_PKCS5_PBKDF2 AND NOT VSCF_SHA384)
     message(FATAL_ERROR)
 endif()
 
-if(VSCF_PKCS5_PBKDF2 AND NOT VSCF_ALG_FACTORY)
+if(VSCF_PKCS5_PBKDF2 AND NOT VSCF_SALTED_KDF_ALG_INFO)
     message("-- error --")
     message("--")
     message("Feature VSCF_PKCS5_PBKDF2 depends on the feature:")
-    message("     VSCF_ALG_FACTORY - which is disabled.")
+    message("     VSCF_SALTED_KDF_ALG_INFO - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

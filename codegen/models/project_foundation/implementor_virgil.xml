@@ -116,12 +116,16 @@
         Virgil Security implementation of the PBKDF2 (RFC 8018) algorithm.
 
         <interface name="defaults"/>
+        <interface name="alg"/>
         <interface name="kdf"/>
         <interface name="salted kdf"/>
 
+        <require interface="alg"/>
+        <require interface="alg info"/>
+        <require class="alg factory"/>
         <require impl="hmac"/>
         <require impl="sha384"/>
-        <require class="alg factory"/>
+        <require impl="salted kdf alg info"/>
 
         <dependency name="hmac" interface="mac"/>
 

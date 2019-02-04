@@ -144,8 +144,7 @@ vscf_hmac_restore_alg_info(vscf_hmac_t *hmac, const vscf_impl_t *alg_info) {
 
     const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
 
-    vscf_impl_t *hash =
-            vscf_alg_factory_create_hash_stream_alg(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info));
+    vscf_impl_t *hash = vscf_alg_factory_create_hash_alg(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info));
     vscf_hmac_release_hash(hmac);
     vscf_hmac_take_hash(hmac, hash);
 
