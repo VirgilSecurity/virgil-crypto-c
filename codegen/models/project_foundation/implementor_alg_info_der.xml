@@ -15,6 +15,7 @@
         <require impl="hash based alg info"/>
         <require impl="simple alg info"/>
         <require impl="salted kdf alg info"/>
+        <require module="buffer defs" project="common"/>
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
 
@@ -42,11 +43,6 @@
             AlgorithmIdentifier with no parameters.
 
             <argument name="alg info" interface="alg info"/>
-            <argument name="out" class="buffer">
-                <length method="serialized simple alg info len">
-                    <proxy argument="alg info" to="alg info"/>
-                </length>
-            </argument>
 
             <return type="size"/>
         </method>
@@ -65,11 +61,6 @@
             "KeyDerivationFunction" from the ISO/IEC 18033-2.
 
             <argument name="alg info" interface="alg info"/>
-            <argument name="out" class="buffer">
-                <length method="serialized kdf alg info len">
-                    <proxy argument="alg info" to="alg info"/>
-                </length>
-            </argument>
 
             <return type="size"/>
         </method>
@@ -88,11 +79,6 @@
             "KeyDevAlgs" from the https://tools.ietf.org/html/draft-housley-hkdf-oids-00.
 
             <argument name="alg info" interface="alg info"/>
-            <argument name="out" class="buffer">
-                <length method="serialized hkdf alg info len">
-                    <proxy argument="alg info" to="alg info"/>
-                </length>
-            </argument>
 
             <return type="size"/>
         </method>
@@ -111,11 +97,6 @@
             "DigestAlgorithm" from the RFC 4231.
 
             <argument name="alg info" interface="alg info"/>
-            <argument name="out" class="buffer">
-                <length method="serialized hmac alg info len">
-                    <proxy argument="alg info" to="alg info"/>
-                </length>
-            </argument>
 
             <return type="size"/>
         </method>
@@ -136,11 +117,6 @@
             "AlgorithmIdentifier" with AES parameters defined in the RFC 5084.
 
             <argument name="alg info" interface="alg info"/>
-            <argument name="out" class="buffer">
-                <length method="serialized cipher alg info len">
-                    <proxy argument="alg info" to="alg info"/>
-                </length>
-            </argument>
 
             <return type="size"/>
         </method>
@@ -159,11 +135,6 @@
             "PBKDF2Algorithm" from the RFC 8018.
 
             <argument name="alg info" interface="alg info"/>
-            <argument name="out" class="buffer">
-                <length method="serialized pbkdf2 alg info len">
-                    <proxy argument="alg info" to="alg info"/>
-                </length>
-            </argument>
 
             <return type="size"/>
         </method>
@@ -172,11 +143,6 @@
             Route serialization to specific method depends on the alg id.
 
             <argument name="alg info" interface="alg info"/>
-            <argument name="out" class="buffer">
-                <length method="serialized len">
-                    <proxy argument="alg info" to="alg info"/>
-                </length>
-            </argument>
 
             <return type="size"/>
         </method>
