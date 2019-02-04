@@ -162,6 +162,7 @@ test__encrypt_decrypt_back_and_forth__fixed_plain_text__decrypted_should_match(v
     vscr_ratchet_session_destroy(&session_alice);
     vscr_ratchet_session_destroy(&session_bob);
     vscr_ratchet_message_destroy(&ratchet_message);
+    vscr_ratchet_message_destroy(&ratchet_message2);
 }
 
 void
