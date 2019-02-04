@@ -51,22 +51,48 @@
     </method>
 
     <method name="initiate">
-        <argument name="sender identity private key" class="data"/>
-        <argument name="receiver identity public key" class="data"/>
-        <argument name="receiver long term public key" class="data"/>
-        <argument name="receiver one time public key" class="data"/>
+        Initiates session
 
-        <return enum="error"/>
+        <argument name="sender identity private key" class="data">
+            Sender identity private key
+        </argument>
+        <argument name="receiver identity public key" class="data">
+            Receiver identity public key
+        </argument>
+        <argument name="receiver long term public key" class="data">
+            Receiver long-term public key
+        </argument>
+        <argument name="receiver one time public key" class="data">
+            Receiver one-time public key (optional)
+        </argument>
+
+        <return enum="error">
+            Error
+        </return>
     </method>
 
     <method name="respond">
-        <argument name="sender identity public key" class="data"/>
-        <argument name="receiver identity private key" class="data"/>
-        <argument name="receiver long term private key" class="data"/>
-        <argument name="receiver one time private key" class="data"/>
-        <argument name="message" class="ratchet message"/>
+        Responds to session initiation
 
-        <return enum="error"/>
+        <argument name="sender identity public key" class="data">
+            Sender identity public key
+        </argument>
+        <argument name="receiver identity private key" class="data">
+            Receiver identity private key
+        </argument>
+        <argument name="receiver long term private key" class="data">
+            Receiver long-term private key
+        </argument>
+        <argument name="receiver one time private key" class="data">
+            Receiver one-time private key (optional)
+        </argument>
+        <argument name="message" class="ratchet message">
+            Message received from initiator
+        </argument>
+
+        <return enum="error">
+            Error
+        </return>
     </method>
 
     <method name="is initiator">

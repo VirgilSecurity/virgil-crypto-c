@@ -44,12 +44,19 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Utils class for working with keys formats
+// --------------------------------------------------------------------------
+
 #ifndef VSCR_RATCHET_KEY_EXTRACTOR_H_INCLUDED
 #define VSCR_RATCHET_KEY_EXTRACTOR_H_INCLUDED
 
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
 #include "vscr_error_ctx.h"
+#include "vscr_error.h"
 
 #include <virgil/crypto/common/vsc_buffer.h>
 
@@ -125,6 +132,13 @@ vscr_ratchet_key_extractor_destroy(vscr_ratchet_key_extractor_t **ratchet_key_ex
 //
 VSCR_PUBLIC vscr_ratchet_key_extractor_t *
 vscr_ratchet_key_extractor_shallow_copy(vscr_ratchet_key_extractor_t *ratchet_key_extractor);
+
+//
+//  Computes 8 bytes key pair id from public key
+//
+VSCR_PUBLIC vscr_error_t
+vscr_ratchet_key_extractor_compute_public_key_id(vscr_ratchet_key_extractor_t *ratchet_key_extractor,
+        vsc_data_t public_key, vsc_buffer_t *key_id);
 
 VSCR_PUBLIC vsc_buffer_t *
 vscr_ratchet_key_extractor_extract_ratchet_public_key(vscr_ratchet_key_extractor_t *ratchet_key_extractor,

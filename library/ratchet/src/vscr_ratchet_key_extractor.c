@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Utils class for working with keys formats
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,7 +56,9 @@
 #include "vscr_ratchet_common_hidden.h"
 
 #include <virgil/crypto/foundation/vscf_pkcs8_der_deserializer.h>
+#include <virgil/crypto/foundation/vscf_sha512.h>
 #include <ed25519/ed25519.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 #if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <VSCFoundation/vscf_pkcs8_der_deserializer.h>
@@ -240,6 +248,48 @@ vscr_ratchet_key_extractor_cleanup_ctx(vscr_ratchet_key_extractor_t *ratchet_key
     VSCR_ASSERT_PTR(ratchet_key_extractor);
 
     vscf_pkcs8_der_deserializer_destroy(&ratchet_key_extractor->pkcs8);
+}
+
+//
+//  Computes 8 bytes key pair id from public key
+//
+VSCR_PUBLIC vscr_error_t
+vscr_ratchet_key_extractor_compute_public_key_id(
+        vscr_ratchet_key_extractor_t *ratchet_key_extractor, vsc_data_t public_key, vsc_buffer_t *key_id) {
+
+    if (public_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH) {
+        byte digest[vscf_sha512_DIGEST_LEN];
+
+        vsc_buffer_t digest_buf;
+        vsc_buffer_init(&digest_buf);
+        vsc_buffer_use(&digest_buf, digest, sizeof(digest));
+
+        vscf_sha512_hash(public_key, &digest_buf);
+
+        vsc_buffer_delete(&digest_buf);
+
+        memcpy(vsc_buffer_unused_bytes(key_id), digest, vscr_ratchet_common_KEY_ID_LEN);
+        vsc_buffer_inc_used(key_id, vscr_ratchet_common_KEY_ID_LEN);
+
+        return vscr_SUCCESS;
+    }
+
+    vscr_error_ctx_t error_ctx;
+    vscr_error_ctx_reset(&error_ctx);
+
+    vsc_buffer_t *raw_public_key =
+            vscr_ratchet_key_extractor_extract_ratchet_public_key(ratchet_key_extractor, public_key, &error_ctx);
+
+    if (error_ctx.error != vscr_SUCCESS) {
+        return error_ctx.error;
+    }
+
+    vscr_error_t result = vscr_ratchet_key_extractor_compute_public_key_id(
+            ratchet_key_extractor, vsc_buffer_data(raw_public_key), key_id);
+
+    vsc_buffer_destroy(&raw_public_key);
+
+    return result;
 }
 
 VSCR_PUBLIC vsc_buffer_t *

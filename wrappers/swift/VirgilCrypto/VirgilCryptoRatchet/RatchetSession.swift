@@ -86,6 +86,7 @@ import VirgilCryptoFoundation
         vscr_ratchet_session_setup_defaults(self.c_ctx)
     }
 
+    /// Initiates session
     @objc public func initiate(senderIdentityPrivateKey: Data, receiverIdentityPublicKey: Data, receiverLongTermPublicKey: Data, receiverOneTimePublicKey: Data) throws {
         let proxyResult = senderIdentityPrivateKey.withUnsafeBytes({ (senderIdentityPrivateKeyPointer: UnsafePointer<byte>) -> vscr_error_t in
             receiverIdentityPublicKey.withUnsafeBytes({ (receiverIdentityPublicKeyPointer: UnsafePointer<byte>) -> vscr_error_t in
@@ -100,6 +101,7 @@ import VirgilCryptoFoundation
         try RatchetError.handleError(fromC: proxyResult)
     }
 
+    /// Responds to session initiation
     @objc public func respond(senderIdentityPublicKey: Data, receiverIdentityPrivateKey: Data, receiverLongTermPrivateKey: Data, receiverOneTimePrivateKey: Data, message: RatchetMessage) throws {
         let proxyResult = senderIdentityPublicKey.withUnsafeBytes({ (senderIdentityPublicKeyPointer: UnsafePointer<byte>) -> vscr_error_t in
             receiverIdentityPrivateKey.withUnsafeBytes({ (receiverIdentityPrivateKeyPointer: UnsafePointer<byte>) -> vscr_error_t in

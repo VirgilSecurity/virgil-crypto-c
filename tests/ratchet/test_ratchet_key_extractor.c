@@ -42,7 +42,7 @@
 #include <virgil/crypto/ratchet/vscr_ratchet_common.h>
 #include <test_data_ratchet_session.h>
 #include <ed25519/ed25519.h>
-#include <virgil/crypto/ratchet/private/vscr_ratchet_key_extractor.h>
+#include <virgil/crypto/ratchet/vscr_ratchet_key_extractor.h>
 
 void
 test__key_format__fixed_curve_keypair__should_match(void) {
@@ -102,6 +102,34 @@ test__key_format__fixed_ed_keypair__should_match(void) {
     vscr_ratchet_key_extractor_destroy(&extractor);
 }
 
+void
+test__key_id__raw_key__should_match(void) {
+    vscr_ratchet_key_extractor_t *extractor = vscr_ratchet_key_extractor_new();
+
+    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vscr_ratchet_common_KEY_ID_LEN);
+
+    vscr_ratchet_key_extractor_compute_public_key_id(extractor, test_ratchet_ed_public_key2_raw, buffer);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ratchet_ed_public_key2_id, buffer);
+
+    vsc_buffer_destroy(&buffer);
+    vscr_ratchet_key_extractor_destroy(&extractor);
+}
+
+void
+test__key_id__key__should_match(void) {
+    vscr_ratchet_key_extractor_t *extractor = vscr_ratchet_key_extractor_new();
+
+    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vscr_ratchet_common_KEY_ID_LEN);
+
+    vscr_ratchet_key_extractor_compute_public_key_id(extractor, test_ratchet_ed_public_key2, buffer);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ratchet_ed_public_key2_id, buffer);
+
+    vsc_buffer_destroy(&buffer);
+    vscr_ratchet_key_extractor_destroy(&extractor);
+}
+
 // --------------------------------------------------------------------------
 // Entrypoint.
 // --------------------------------------------------------------------------
@@ -111,6 +139,8 @@ main(void) {
 
     RUN_TEST(test__key_format__fixed_curve_keypair__should_match);
     RUN_TEST(test__key_format__fixed_ed_keypair__should_match);
+    RUN_TEST(test__key_id__raw_key__should_match);
+    RUN_TEST(test__key_id__key__should_match);
 
     return UNITY_END();
 }

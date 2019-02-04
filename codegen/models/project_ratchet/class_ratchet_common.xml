@@ -12,4 +12,8 @@
     <constant name="max message len" value="32964">
         Max message length
     </constant>
+
+    <constant name="key id len" value="8">
+        Key pair id length
+    </constant>
 </class>

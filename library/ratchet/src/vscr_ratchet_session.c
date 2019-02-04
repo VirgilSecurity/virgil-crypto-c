@@ -338,6 +338,9 @@ vscr_ratchet_session_setup_defaults(vscr_ratchet_session_t *ratchet_session) {
     vscr_ratchet_setup_defaults(ratchet_session->ratchet);
 }
 
+//
+//  Initiates session
+//
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_t sender_identity_private_key,
         vsc_data_t receiver_identity_public_key, vsc_data_t receiver_long_term_public_key,
@@ -511,6 +514,9 @@ key_err1:
     return status;
 }
 
+//
+//  Responds to session initiation
+//
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t sender_identity_public_key,
         vsc_data_t receiver_identity_private_key, vsc_data_t receiver_long_term_private_key,
