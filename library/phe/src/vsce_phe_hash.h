@@ -54,21 +54,13 @@
 #include <mbedtls/ecp.h>
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_sha512.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_data.h>
-#endif
-
-#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_sha512.h>
 #endif
 
 // clang-format on
@@ -134,25 +126,6 @@ vsce_phe_hash_destroy(vsce_phe_hash_t **phe_hash_ref);
 //
 VSCE_PUBLIC vsce_phe_hash_t *
 vsce_phe_hash_shallow_copy(vsce_phe_hash_t *phe_hash);
-
-//
-//  Setup dependency to the implementation 'sha512' with shared ownership.
-//
-VSCE_PUBLIC void
-vsce_phe_hash_use_sha512(vsce_phe_hash_t *phe_hash, vscf_sha512_t *sha512);
-
-//
-//  Setup dependency to the implementation 'sha512' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCE_PUBLIC void
-vsce_phe_hash_take_sha512(vsce_phe_hash_t *phe_hash, vscf_sha512_t *sha512);
-
-//
-//  Release dependency to the implementation 'sha512'.
-//
-VSCE_PUBLIC void
-vsce_phe_hash_release_sha512(vsce_phe_hash_t *phe_hash);
 
 //
 //  Setup dependency to the class 'simple swu' with shared ownership.

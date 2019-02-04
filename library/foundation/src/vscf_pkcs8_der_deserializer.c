@@ -58,6 +58,7 @@
 #include "vscf_oid.h"
 #include "vscf_asn1rd.h"
 #include "vscf_asn1_tag.h"
+#include "vscf_alg.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_pkcs8_der_deserializer_defs.h"
 #include "vscf_pkcs8_der_deserializer_internal.h"
@@ -128,7 +129,10 @@ vscf_pkcs8_der_deserializer_deserialize_public_key(
     //
     vscf_asn1_reader_read_sequence(asn1_reader);
     vsc_data_t key_oid = vscf_asn1_reader_read_oid(asn1_reader);
-    vscf_asn1_reader_read_null(asn1_reader);
+
+    if (vscf_asn1_reader_get_tag(asn1_reader) == vscf_asn1_tag_NULL) {
+        vscf_asn1_reader_read_null(asn1_reader);
+    }
 
     //
     //  Read subjectPublicKey
@@ -143,9 +147,9 @@ vscf_pkcs8_der_deserializer_deserialize_public_key(
         return NULL;
     }
 
-    vscf_key_alg_t key_alg = vscf_oid_to_key_alg(key_oid);
+    vscf_alg_id_t alg_id = vscf_oid_to_alg_id(key_oid);
 
-    return vscf_raw_key_new_with_data(key_alg, public_key_bits);
+    return vscf_raw_key_new_with_data(alg_id, public_key_bits);
 }
 
 //
@@ -188,7 +192,10 @@ vscf_pkcs8_der_deserializer_deserialize_private_key(
     //
     vscf_asn1_reader_read_sequence(asn1_reader);
     vsc_data_t key_oid = vscf_asn1_reader_read_oid(asn1_reader);
-    vscf_asn1_reader_read_null(asn1_reader);
+
+    if (vscf_asn1_reader_get_tag(asn1_reader) == vscf_asn1_tag_NULL) {
+        vscf_asn1_reader_read_null(asn1_reader);
+    }
 
     //
     //  Read privateKey
@@ -203,7 +210,7 @@ vscf_pkcs8_der_deserializer_deserialize_private_key(
         return NULL;
     }
 
-    vscf_key_alg_t key_alg = vscf_oid_to_key_alg(key_oid);
+    vscf_alg_id_t alg_id = vscf_oid_to_alg_id(key_oid);
 
-    return vscf_raw_key_new_with_data(key_alg, private_key_bits);
+    return vscf_raw_key_new_with_data(alg_id, private_key_bits);
 }

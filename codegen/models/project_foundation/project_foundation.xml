@@ -61,8 +61,8 @@
 
     <enum name="error"/>
     <enum name="asn1 tag"/>
-    <enum name="key alg"/>
     <enum name="hash alg"/>
+    <enum name="alg id"/>
 
     <interface name="defaults" from="shared"/>
     <interface name="cipher"/>
@@ -97,6 +97,11 @@
     <interface name="asn1 reader"/>
     <interface name="asn1 writer"/>
 
+    <interface name="alg"/>
+    <interface name="alg info"/>
+    <interface name="alg info serializer"/>
+    <interface name="alg info deserializer"/>
+
     <class name="error"/>
     <class name="mbedtls bignum asn1 writer"/>
     <class name="mbedtls bignum asn1 reader"/>
@@ -114,6 +119,9 @@
     <implementor name="virgil"/>
     <implementor name="virgil pkcs8"/>
     <implementor name="ed25519"/>
+
+    <implementor name="alg info"/>
+    <implementor name="alg info der"/>
 
     <module name="mbedtls bridge random"/>
     <module name="mbedtls bridge entropy"/>

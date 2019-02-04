@@ -1,7 +1,28 @@
-<class name="ratchet sender chain" context="public">
+<class name="ratchet sender chain" context="public" scope="internal">
 
-    <property name="private key" class="buffer" access="readwrite"/>
-    <property name="public key" class="buffer" access="readwrite"/>
+    <require header="RatchetSession.pb.h" scope="public"/>
+    <require header="pb_decode.h" scope="public"/>
+    <require header="pb_encode.h" scope="public"/>
+
+    <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
+
+    <require class="ratchet common" scope="context"/>
+
+    <property name="private key" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+    </property>
+    <property name="public key" type="byte" access="readwrite">
+        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+    </property>
     <property name="chain key" class="ratchet chain key" access="readwrite" is_reference="0"/>
+
+    <method name="serialize">
+        <argument name="sender chain pb" class="SenderChain" library="nanopb" access="readwrite"/>
+    </method>
+
+    <method name="deserialize" is_static="1">
+        <argument name="sender chain pb" class="SenderChain" library="nanopb"/>
+        <argument name="sender chain" class="self" access="readwrite"/>
+    </method>
 
 </class>

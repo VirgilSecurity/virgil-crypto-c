@@ -45,10 +45,6 @@
         Lead Maintainer: Virgil Security Inc. &lt;support@virgilsecurity.com&gt;
     </license>
 
-    <interface name="ratchet rng"/>
-
-    <implementor name="virgil ratchet"/>
-
     <require project="common" feature="library"/>
     <require project="foundation" feature="library"/>
 
@@ -57,9 +53,11 @@
     <module name="memory" from="shared"/>
 
     <enum name="error"/>
+    <enum name="msg type"/>
 
     <class name="ratchet common"/>
     <class name="error"/>
+    <class name="ratchet message"/>
     <class name="ratchet cipher"/>
     <class name="ratchet chain key"/>
     <class name="ratchet message key"/>

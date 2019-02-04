@@ -180,7 +180,29 @@ static const vscf_cipher_api_t cipher_api = {
     //
     //  Set cipher encryption / decryption key.
     //
-    (vscf_cipher_api_set_key_fn)vscf_aes256_gcm_set_key
+    (vscf_cipher_api_set_key_fn)vscf_aes256_gcm_set_key,
+    //
+    //  Start sequential encryption.
+    //
+    (vscf_cipher_api_start_encryption_fn)vscf_aes256_gcm_start_encryption,
+    //
+    //  Start sequential decryption.
+    //
+    (vscf_cipher_api_start_decryption_fn)vscf_aes256_gcm_start_decryption,
+    //
+    //  Process encryption or decryption of the given data chunk.
+    //
+    (vscf_cipher_api_update_fn)vscf_aes256_gcm_update,
+    //
+    //  Return buffer length required to hold an output of the methods
+    //  "update" or "finish".
+    //  Pass zero length to define buffer length of the method "finish".
+    //
+    (vscf_cipher_api_out_len_fn)vscf_aes256_gcm_out_len,
+    //
+    //  Accomplish encryption or decryption process.
+    //
+    (vscf_cipher_api_finish_fn)vscf_aes256_gcm_finish
 };
 
 //

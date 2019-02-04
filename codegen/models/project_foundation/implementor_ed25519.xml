@@ -1,55 +1,63 @@
 <implementor name="ed25519 pk" is_default="1">
     Provide implementation based on the library ed25519
+
     <implementation name="ed25519 public key">
-      This is implementation of ED25519 public key
-      <require library="ed25519" feature="library"/>
-      <require class="endianness"/>
+        This is implementation of ED25519 public key
 
-      <context>
-        <require header="ed25519/ed25519.h"/>
-        <property name="public_key" type="byte" library="ed25519" access="readwrite">
-          <array length="fixed" length_constant="ED25519_KEY_LEN"/>
-        </property>
-        <property name="signature" type="byte" library="ed25519" access="readwrite">
-          <array length="fixed" length_constant="ED25519_KEY_LEN"/>
-        </property>
-      </context>
+        <require library="ed25519" feature="library" />
+        <require class="endianness" />
+        <require interface="alg info"/>
+        <require class="simple alg info"/>
 
-      <interface name="key"/>
-      <interface name="verify"/>
-      <interface name="public key">
-          <constant name="can import public key" value="true"/>
-          <constant name="can export public key" value="true"/>
-      </interface>
+        <context>
+            <require header="ed25519/ed25519.h" />
+            <property name="public_key" type="byte" library="ed25519" access="readwrite">
+                <array length="fixed" length_constant="ED25519_KEY_LEN" />
+            </property>
+            <property name="signature" type="byte" library="ed25519" access="readwrite">
+                <array length="fixed" length_constant="ED25519_KEY_LEN" />
+            </property>
+        </context>
 
+        <interface name="alg"/>
+        <interface name="key" />
+        <interface name="verify" />
+        <interface name="public key">
+            <constant name="can import public key" value="true" />
+            <constant name="can export public key" value="true" />
+        </interface>
     </implementation>
 
+
     <implementation name="ed25519 private key">
-      This is implementation of ED25519 private key
-      <require library="ed25519" feature="library"/>
-      <require module="ed25519 public key defs"/>
-      <require class="endianness"/>
+        This is implementation of ED25519 private key
 
-      <context>
-        <require header="ed25519/ed25519.h"/>
-        <property name="secret_key" type="byte" library="ed25519" access="readwrite">
-          <array length="fixed" length_constant="ED25519_KEY_LEN"/>
-        </property>
-        <property name="signature" type="byte" library="ed25519" access="readwrite">
-          <array length="fixed" length_constant="ED25519_SIG_LEN"/>
-        </property>
-      </context>
+        <require library="ed25519" feature="library" />
+        <require module="ed25519 public key defs" />
+        <require class="endianness" />
+        <require interface="alg info"/>
+        <require class="simple alg info"/>
 
-      <dependency name="random" interface="random"/>
+        <context>
+            <require header="ed25519/ed25519.h" />
+            <property name="secret_key" type="byte" library="ed25519" access="readwrite">
+                <array length="fixed" length_constant="ED25519_KEY_LEN" />
+            </property>
+            <property name="signature" type="byte" library="ed25519" access="readwrite">
+                <array length="fixed" length_constant="ED25519_SIG_LEN" />
+            </property>
+        </context>
 
-      <interface name="key"/>
-      <interface name="generate key"/>
-      <interface name="sign"/>
-      <interface name="private key">
-          <constant name="can import private key" value="true"/>
-          <constant name="can export private key" value="true"/>
-      </interface>
-      <interface name="compute shared key"/>
+        <dependency name="random" interface="random" />
 
+        <interface name="alg"/>
+        <interface name="key" />
+        <interface name="generate key" />
+        <interface name="sign" />
+        <interface name="private key">
+            <constant name="can import private key" value="true" />
+            <constant name="can export private key" value="true" />
+        </interface>
+        <interface name="compute shared key" />
     </implementation>
 </implementor>
