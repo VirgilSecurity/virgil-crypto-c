@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class for ratchet session between 2 participants
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -90,9 +96,9 @@ struct vscr_ratchet_session_t {
 
     vscr_ratchet_key_extractor_t *key_extractor;
 
-    bool is_initiator;
-
     vscr_ratchet_t *ratchet;
+
+    bool is_initiator;
 
     bool received_first_response;
 
@@ -313,6 +319,12 @@ vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *ratchet_session) {
     vscr_ratchet_key_extractor_destroy(&ratchet_session->key_extractor);
 }
 
+//
+//  Setups default dependencies:
+//      - RNG: CTR DRBG
+//      - Key serialization: DER PKCS8
+//      - Symmetric cipher: AES256-GCM
+//
 VSCR_PUBLIC void
 vscr_ratchet_session_setup_defaults(vscr_ratchet_session_t *ratchet_session) {
 
@@ -649,6 +661,36 @@ key_err1:
     return status;
 }
 
+//
+//  Returns flag that indicates is this session was initiated or responded
+//
+VSCR_PUBLIC bool
+vscr_ratchet_session_is_initiator(vscr_ratchet_session_t *ratchet_session) {
+
+    return ratchet_session->is_initiator;
+}
+
+//
+//  Returns true if at least 1 response was successfully decrypted, false - otherwise
+//
+VSCR_PUBLIC bool
+vscr_ratchet_session_received_first_response(vscr_ratchet_session_t *ratchet_session) {
+
+    return ratchet_session->received_first_response;
+}
+
+//
+//  Returns true if receiver had one time public key
+//
+VSCR_PUBLIC bool
+vscr_ratchet_session_receiver_has_one_time_public_key(vscr_ratchet_session_t *ratchet_session) {
+
+    return ratchet_session->receiver_has_one_time_public_key;
+}
+
+//
+//  Encrypts data
+//
 VSCR_PUBLIC vscr_ratchet_message_t *
 vscr_ratchet_session_encrypt(
         vscr_ratchet_session_t *ratchet_session, vsc_data_t plain_text, vscr_error_ctx_t *err_ctx) {
@@ -707,6 +749,9 @@ vscr_ratchet_session_encrypt(
     return ratchet_message;
 }
 
+//
+//  Calculates size of buffer sufficient to store decrypted message
+//
 VSCR_PUBLIC size_t
 vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session, const vscr_ratchet_message_t *message) {
 
@@ -726,6 +771,9 @@ vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session, const 
     return vscr_ratchet_decrypt_len(ratchet_session->ratchet, cipher_text_len);
 }
 
+//
+//  Decrypts message
+//
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_decrypt(
         vscr_ratchet_session_t *ratchet_session, const vscr_ratchet_message_t *message, vsc_buffer_t *plain_text) {
@@ -758,6 +806,9 @@ vscr_ratchet_session_decrypt(
     return result;
 }
 
+//
+//  Calculates size of buffer sufficient to store session
+//
 VSCR_PUBLIC size_t
 vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *ratchet_session) {
 
@@ -766,6 +817,9 @@ vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *ratchet_session) {
     return Session_size;
 }
 
+//
+//  Serializes session to buffer
+//
 VSCR_PUBLIC void
 vscr_ratchet_session_serialize(vscr_ratchet_session_t *ratchet_session, vsc_buffer_t *output) {
 
@@ -802,6 +856,10 @@ vscr_ratchet_session_serialize(vscr_ratchet_session_t *ratchet_session, vsc_buff
     vscr_zeroize(&session_pb, sizeof(Session));
 }
 
+//
+//  Deserializes session from buffer.
+//  NOTE: Deserialized session needs dependencies to be set. Check setup defaults
+//
 VSCR_PUBLIC vscr_ratchet_session_t *
 vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
 

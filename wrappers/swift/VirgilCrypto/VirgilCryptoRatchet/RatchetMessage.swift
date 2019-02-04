@@ -38,6 +38,7 @@ import VSCRatchet
 import VirgilCryptoCommon
 import VirgilCryptoFoundation
 
+/// Class represents ratchet message
 @objc(VSCRRatchetMessage) public class RatchetMessage: NSObject {
 
     /// Handle underlying C context.

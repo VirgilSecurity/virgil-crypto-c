@@ -1,5 +1,15 @@
 <class name="ratchet common" context="none">
-    <constant name="max plain text len" value="30000"/>
-    <constant name="max cipher text len" value="32768"/>
-    <constant name="max message len" value="32964"/>
+    Class with public constants
+
+    <constant name="max plain text len" value="30000">
+        Max plain text length allowed to be encrypted
+    </constant>
+
+    <constant name="max cipher text len" value="32768">
+        Max cipher text length allowed to be decrypted
+    </constant>
+
+    <constant name="max message len" value="32964">
+        Max message length
+    </constant>
 </class>

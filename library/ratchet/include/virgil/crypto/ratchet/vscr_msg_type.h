@@ -44,6 +44,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Represents message type
+// --------------------------------------------------------------------------
+
 #ifndef VSCR_MSG_TYPE_H_INCLUDED
 #define VSCR_MSG_TYPE_H_INCLUDED
 
@@ -62,13 +68,16 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Represents message type
+//
 enum vscr_msg_type_t {
     //
-    //  Regular message. This message is all the time except case described in prekey message section.
+    //  Regular message. This message is used all the time except case described in prekey message section.
     //
     vscr_msg_type_REGULAR = 0,
     //
-    //  Prekey message. This message is sent to initiate conversation, till first response is received.
+    //  Prekey message. This message is sent by initiator till first response is received.
     //
     vscr_msg_type_PREKEY = 1
 };

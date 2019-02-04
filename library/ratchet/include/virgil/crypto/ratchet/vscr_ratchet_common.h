@@ -44,6 +44,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class with public constants
+// --------------------------------------------------------------------------
+
 #ifndef VSCR_RATCHET_COMMON_H_INCLUDED
 #define VSCR_RATCHET_COMMON_H_INCLUDED
 
@@ -68,8 +74,17 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
+    //
+    //  Max plain text length allowed to be encrypted
+    //
     vscr_ratchet_common_MAX_PLAIN_TEXT_LEN = 30000,
+    //
+    //  Max cipher text length allowed to be decrypted
+    //
     vscr_ratchet_common_MAX_CIPHER_TEXT_LEN = 32768,
+    //
+    //  Max message length
+    //
     vscr_ratchet_common_MAX_MESSAGE_LEN = 32964
 };
 
