@@ -58,12 +58,17 @@
 #include "vscf_sha256.h"
 #include "vscf_sha384.h"
 #include "vscf_sha512.h"
+#include "vscf_kdf1.h"
+#include "vscf_kdf2.h"
 #include "vscf_hmac.h"
 #include "vscf_hkdf.h"
-#include "vscf_pkcs5_pbkdf2.h"
 #include "vscf_aes256_gcm.h"
 #include "vscf_hash_based_alg_info.h"
 #include "vscf_cipher_alg_info.h"
+#include "vscf_salted_kdf_alg_info.h"
+#include "vscf_pbe_alg_info.h"
+#include "vscf_pkcs5_pbkdf2.h"
+#include "vscf_pkcs5_pbes2.h"
 
 // clang-format on
 //  @end
@@ -92,6 +97,7 @@ vscf_alg_factory_create_hash_alg(const vscf_impl_t *alg_info) {
     VSCF_ASSERT_PTR(alg_info);
 
     const vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
     switch (alg_id) {
     case vscf_alg_id_SHA224:
@@ -121,6 +127,7 @@ vscf_alg_factory_create_mac_alg(const vscf_impl_t *alg_info) {
     VSCF_ASSERT_PTR(alg_info);
 
     const vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
     if (alg_id == vscf_alg_id_HMAC) {
         const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
@@ -137,7 +144,50 @@ vscf_alg_factory_create_mac_alg(const vscf_impl_t *alg_info) {
 }
 
 //
-//  Create algorithm that implements "mac stream" interface.
+//  Create algorithm that implements "kdf" interface.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_kdf_alg(const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(alg_info);
+
+    const vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
+
+    if (alg_id == vscf_alg_id_KDF1) {
+        const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
+
+        vscf_kdf1_t *kdf1 = vscf_kdf1_new();
+        vscf_impl_t *hash =
+                vscf_alg_factory_create_hash_alg(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info));
+
+        vscf_kdf1_take_hash(kdf1, hash);
+
+        return vscf_kdf1_impl(kdf1);
+    }
+
+    if (alg_id == vscf_alg_id_KDF2) {
+        const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
+
+        vscf_kdf1_t *kdf2 = vscf_kdf1_new();
+        vscf_impl_t *hash =
+                vscf_alg_factory_create_hash_alg(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info));
+
+        vscf_kdf1_take_hash(kdf2, hash);
+
+        return vscf_kdf1_impl(kdf2);
+    }
+
+    if (alg_id == vscf_alg_id_HKDF || alg_id == vscf_alg_id_PKCS5_PBKDF2) {
+        return vscf_alg_factory_create_salted_kdf_alg(alg_info);
+    }
+
+    VSCF_ASSERT(0 && "Can not create 'kdf' algorithm from the given alg id.");
+    return NULL;
+}
+
+//
+//  Create algorithm that implements "salted kdf" interface.
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_alg_factory_create_salted_kdf_alg(const vscf_impl_t *alg_info) {
@@ -145,6 +195,7 @@ vscf_alg_factory_create_salted_kdf_alg(const vscf_impl_t *alg_info) {
     VSCF_ASSERT_PTR(alg_info);
 
     const vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
     if (alg_id == vscf_alg_id_HKDF) {
         const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
@@ -154,6 +205,20 @@ vscf_alg_factory_create_salted_kdf_alg(const vscf_impl_t *alg_info) {
                 hkdf, vscf_alg_factory_create_hash_alg(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info)));
 
         return vscf_hkdf_impl(hkdf);
+    }
+
+    if (alg_id == vscf_alg_id_PKCS5_PBKDF2) {
+        const vscf_salted_kdf_alg_info_t *salted_kdf_alg_info = (const vscf_salted_kdf_alg_info_t *)alg_info;
+
+        vscf_pkcs5_pbkdf2_t *pbkdf2 = vscf_pkcs5_pbkdf2_new();
+        vscf_impl_t *mac = vscf_alg_factory_create_mac_alg(vscf_salted_kdf_alg_info_hash_alg_info(salted_kdf_alg_info));
+        vsc_data_t salt = vscf_salted_kdf_alg_info_salt(salted_kdf_alg_info);
+        size_t iteration_count = vscf_salted_kdf_alg_info_iteration_count(salted_kdf_alg_info);
+
+        vscf_pkcs5_pbkdf2_take_hmac(pbkdf2, mac);
+        vscf_pkcs5_pbkdf2_reset(pbkdf2, salt, iteration_count);
+
+        return vscf_pkcs5_pbkdf2_impl(pbkdf2);
     }
 
     VSCF_ASSERT(0 && "Can not create 'salted kdf' algorithm from the given alg id.");
@@ -169,6 +234,7 @@ vscf_alg_factory_create_cipher_alg(const vscf_impl_t *alg_info) {
     VSCF_ASSERT_PTR(alg_info);
 
     const vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
     if (alg_id == vscf_alg_id_AES256_GCM) {
         const vscf_cipher_alg_info_t *cipher_alg_info = (const vscf_cipher_alg_info_t *)alg_info;
