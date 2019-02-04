@@ -254,7 +254,7 @@ if(CLOC_EXECUTABLE)
                 "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia"
                 "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia/private"
                 "${CMAKE_CURRENT_LIST_DIR}/library/pythia/src"
-            COMMENT "Calculate lines of the 'pythia' library..."
+            COMMENT "Calculate lines of the 'ratchet' library..."
             )
 
     add_custom_target(cloc)
