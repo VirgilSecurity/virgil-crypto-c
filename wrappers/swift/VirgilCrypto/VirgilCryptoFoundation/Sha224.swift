@@ -38,7 +38,7 @@ import VSCFoundation
 import VirgilCryptoCommon
 
 /// This is MbedTLS implementation of SHA224.
-@objc(VSCFSha224) public class Sha224: NSObject, HashInfo, Hash, HashStream {
+@objc(VSCFSha224) public class Sha224: NSObject, Alg, HashInfo, Hash, HashStream {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -74,11 +74,25 @@ import VirgilCryptoCommon
         vscf_sha224_delete(self.c_ctx)
     }
 
-    /// Return implemented hash algorithm type.
-    @objc public func alg() -> HashAlg {
-        let proxyResult = vscf_sha224_alg()
+    /// Provide algorithm identificator.
+    @objc public func algId() -> AlgId {
+        let proxyResult = vscf_sha224_alg_id(self.c_ctx)
 
-        return HashAlg.init(fromC: proxyResult)
+        return AlgId.init(fromC: proxyResult)
+    }
+
+    /// Produce object with algorithm information and configuration parameters.
+    @objc public func produceAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_sha224_produce_alg_info(self.c_ctx)
+
+        return AlgInfoProxy.init(c_ctx: proxyResult!)
+    }
+
+    /// Restore algorithm configuration from the given object.
+    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
+        let proxyResult = vscf_sha224_restore_alg_info(self.c_ctx, algInfo.c_ctx)
+
+        try FoundationError.handleError(fromC: proxyResult)
     }
 
     /// Calculate hash over given data.

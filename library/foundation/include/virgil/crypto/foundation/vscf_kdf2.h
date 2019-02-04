@@ -55,6 +55,8 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
+#include "vscf_alg_id.h"
+#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -158,6 +160,24 @@ vscf_kdf2_take_hash(vscf_kdf2_t *kdf2, vscf_impl_t *hash);
 //
 VSCF_PUBLIC void
 vscf_kdf2_release_hash(vscf_kdf2_t *kdf2);
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_kdf2_alg_id(const vscf_kdf2_t *kdf2);
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_kdf2_produce_alg_info(const vscf_kdf2_t *kdf2);
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_kdf2_restore_alg_info(vscf_kdf2_t *kdf2, const vscf_impl_t *alg_info);
 
 //
 //  Derive key of the requested length from the given data.

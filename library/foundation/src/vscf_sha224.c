@@ -53,6 +53,8 @@
 #include "vscf_sha224.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_alg_info.h"
+#include "vscf_simple_alg_info.h"
 #include "vscf_sha224_defs.h"
 #include "vscf_sha224_internal.h"
 
@@ -101,12 +103,38 @@ vscf_sha224_cleanup_ctx(vscf_sha224_t *sha224) {
 }
 
 //
-//  Return implemented hash algorithm type.
+//  Provide algorithm identificator.
 //
-VSCF_PUBLIC vscf_hash_alg_t
-vscf_sha224_alg(void) {
+VSCF_PUBLIC vscf_alg_id_t
+vscf_sha224_alg_id(const vscf_sha224_t *sha224) {
 
-    return vscf_hash_alg_SHA224;
+    VSCF_ASSERT_PTR(sha224);
+
+    return vscf_alg_id_SHA224;
+}
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_sha224_produce_alg_info(const vscf_sha224_t *sha224) {
+
+    VSCF_ASSERT_PTR(sha224);
+
+    return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA224));
+}
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_sha224_restore_alg_info(vscf_sha224_t *sha224, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(sha224);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_SHA224);
+
+    return vscf_SUCCESS;
 }
 
 //

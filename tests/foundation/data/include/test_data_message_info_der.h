@@ -61,6 +61,7 @@ typedef struct {
 
 
 extern const test_one_key_recipient_cms_t test_message_info_cms_ONE_RSA2048_KEY_RECIPIENT;
+extern const test_one_key_recipient_cms_t test_message_info_cms_V2_ONE_RSA2048_KEY_RECIPIENT;
 // extern const test_one_key_recipient_cms_t test_message_info_cms_ONE_ED25519_KEY_RECIPIENT;
 // extern const test_one_password_recipient_cms_t test_message_info_cms_ONE_PASSWORD_RECIPIENT;
 // extern const test_multiple_recipients_cms_t test_message_info_cms_MULTIPLE_RECIPIENTS;

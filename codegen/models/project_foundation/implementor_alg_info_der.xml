@@ -11,7 +11,7 @@
         <require class="oid"/>
         <require enum="asn1 tag"/>
         <require impl="cipher alg info"/>
-        <require impl="kdf alg info"/>
+        <require impl="hash based alg info"/>
         <require impl="simple alg info"/>
         <require interface="alg info"/>
 
@@ -19,7 +19,7 @@
 
 
         <method name="is alg require null params" is_static="1">
-            Return true if algorithm identifier requires that optinal
+            Return true if algorithm identifier requires that optional
             parameter will be NULL.
 
             <argument name="alg id" enum="alg id"/>
@@ -27,20 +27,20 @@
             <return type="boolean"/>
         </method>
 
-
         <method name="serialized simple alg info len">
-            Return buffer size enough to hold serialized class "simple alg info".
+            Return buffer size enough to hold ASN.1 structure
+            AlgorithmIdentifier with no parameters.
 
-            <argument name="simple alg info" impl="simple alg info"/>
+            <argument name="alg info" interface="alg info"/>
 
             <return type="size"/>
         </method>
 
-
         <method name="serialize simple alg info">
-            Serialize class "simple alg info".
+            Serialize class "simple alg info" to the ASN.1 structure
+            AlgorithmIdentifier with no parameters.
 
-            <argument name="simple alg info" impl="simple alg info"/>
+            <argument name="alg info" interface="alg info"/>
             <argument name="out" class="buffer">
                 <length method="serialized simple alg info len">
                     <proxy argument="simple alg info" to="simple alg info"/>
@@ -50,43 +50,91 @@
             <return type="size"/>
         </method>
 
-
         <method name="serialized kdf alg info len">
-            Return buffer size enough to hold serialized class "kdf alg info".
+            Return buffer size enough to hold ASN.1 structure
+            "KeyDerivationFunction" from the ISO/IEC 18033-2.
 
-            <argument name="kdf alg info" impl="kdf alg info"/>
+            <argument name="alg info" interface="alg info"/>
 
             <return type="size"/>
         </method>
 
-
         <method name="serialize kdf alg info">
-            Serialize class "kdf alg info".
+            Serialize class "hash based alg info" to the ASN.1 structure
+            "KeyDerivationFunction" from the ISO/IEC 18033-2.
 
-            <argument name="kdf alg info" impl="kdf alg info"/>
+            <argument name="alg info" interface="alg info"/>
             <argument name="out" class="buffer">
                 <length method="serialized kdf alg info len">
-                    <proxy argument="kdf alg info" to="kdf alg info"/>
+                    <proxy argument="hash based alg info" to="hash based alg info"/>
                 </length>
             </argument>
 
             <return type="size"/>
         </method>
 
+        <method name="serialized hkdf alg info len">
+            Return buffer size enough to hold ASN.1 structure
+            "KeyDevAlgs" from the https://tools.ietf.org/html/draft-housley-hkdf-oids-00.
 
-        <method name="serialized cipher alg info len">
-            Return buffer size enough to hold serialized class "cipher alg info".
-
-            <argument name="cipher alg info" impl="cipher alg info"/>
+            <argument name="alg info" interface="alg info"/>
 
             <return type="size"/>
         </method>
 
+        <method name="serialize hkdf alg info">
+            Serialize class "hash based alg info" to the ASN.1 structure
+            "KeyDevAlgs" from the https://tools.ietf.org/html/draft-housley-hkdf-oids-00.
+
+            <argument name="alg info" interface="alg info"/>
+            <argument name="out" class="buffer">
+                <length method="serialized hkdf alg info len">
+                    <proxy argument="hash based alg info" to="hash based alg info"/>
+                </length>
+            </argument>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialized hmac alg info len">
+            Return buffer size enough to hold ASN.1 structure
+            "DigestAlgorithm" from the RFC 4231.
+
+            <argument name="alg info" interface="alg info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize hmac alg info">
+            Serialize class "hash based alg info" to the ASN.1 structure
+            "DigestAlgorithm" from the RFC 4231.
+
+            <argument name="alg info" interface="alg info"/>
+            <argument name="out" class="buffer">
+                <length method="serialized hmac alg info len">
+                    <proxy argument="hash based alg info" to="hash based alg info"/>
+                </length>
+            </argument>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialized cipher alg info len">
+            Return buffer size enough to hold ASN.1 structure
+            "AlgorithmIdentifier" with AES parameters:
+                - defined in the RFC 3565;
+                - defined in the RFC 5084.
+
+            <argument name="alg info" interface="alg info"/>
+
+            <return type="size"/>
+        </method>
 
         <method name="serialize cipher alg info">
-            Serialize class "cipher alg info".
+            Serialize class "cipher alg info" to the ASN.1 structure
+            "AlgorithmIdentifier" with AES parameters defined in the RFC 5084.
 
-            <argument name="cipher alg info" impl="cipher alg info"/>
+            <argument name="alg info" interface="alg info"/>
             <argument name="out" class="buffer">
                 <length method="serialized cipher alg info len">
                     <proxy argument="cipher alg info" to="cipher alg info"/>
@@ -96,7 +144,6 @@
             <return type="size"/>
         </method>
     </implementation>
-
 
     <implementation name="alg info der deserializer">
         Provide DER deserializer of algorithm information.
@@ -108,39 +155,58 @@
         <require class="oid"/>
         <require enum="asn1 tag"/>
         <require impl="cipher alg info"/>
-        <require impl="kdf alg info"/>
+        <require impl="hash based alg info"/>
         <require impl="simple alg info"/>
         <require interface="alg info"/>
 
         <dependency name="asn1 reader" interface="asn1 reader"/>
 
         <method name="deserialize simple alg info">
-            Restore class "simple alg info" from the binary data.
+            Parse ASN.1 structure "AlgorithmIdentifier" with optional NULL parameter.
 
             <argument name="data" class="data"/>
             <argument name="error" class="error ctx" access="readwrite"/>
 
-            <return class="simple alg info" access="disown"/>
+            <return interface="alg info" access="disown"/>
         </method>
-
 
         <method name="deserialize kdf alg info">
-            Restore class "kdf alg info" from the binary data.
+            Parse ASN.1 structure "KeyDerivationFunction" from the ISO/IEC 18033-2.
 
             <argument name="data" class="data"/>
             <argument name="error" class="error ctx" access="readwrite"/>
 
-            <return class="kdf alg info" access="disown"/>
+            <return interface="alg info" access="disown"/>
         </method>
 
-
-        <method name="deserialize cipher alg info">
-            Restore class "cipher alg info" from the binary data.
+        <method name="deserialize hkdf alg info">
+            Parse ASN.1 structure "KeyDevAlgs" from the
+            https://tools.ietf.org/html/draft-housley-hkdf-oids-00.
 
             <argument name="data" class="data"/>
             <argument name="error" class="error ctx" access="readwrite"/>
 
-            <return class="cipher alg info" access="disown"/>
+            <return interface="alg info" access="disown"/>
+        </method>
+
+        <method name="deserialize hmac alg info">
+            Parse ASN.1 structure "DigestAlgorithm" from the RFC 4231.
+
+            <argument name="data" class="data"/>
+            <argument name="error" class="error ctx" access="readwrite"/>
+
+            <return interface="alg info" access="disown"/>
+        </method>
+
+        <method name="deserialize cipher alg info">
+            Parse ASN.1 structure "AlgorithmIdentifier" with AES parameters:
+                - defined in the RFC 3565;
+                - defined in the RFC 5084.
+
+            <argument name="data" class="data"/>
+            <argument name="error" class="error ctx" access="readwrite"/>
+
+            <return interface="alg info" access="disown"/>
         </method>
     </implementation>
 </implementor>

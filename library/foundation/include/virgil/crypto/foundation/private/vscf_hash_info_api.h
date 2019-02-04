@@ -56,7 +56,6 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_hash_alg.h"
 
 // clang-format on
 //  @end
@@ -74,11 +73,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Return implemented hash algorithm type.
-//
-typedef vscf_hash_alg_t (*vscf_hash_info_api_alg_fn)(void);
-
-//
 //  Contains API requirements of the interface 'hash info'.
 //
 struct vscf_hash_info_api_t {
@@ -87,10 +81,6 @@ struct vscf_hash_info_api_t {
     //  For interface 'hash_info' MUST be equal to the 'vscf_api_tag_HASH_INFO'.
     //
     vscf_api_tag_t api_tag;
-    //
-    //  Return implemented hash algorithm type.
-    //
-    vscf_hash_info_api_alg_fn alg_cb;
     //
     //  Length of the digest (hashing output) in bytes.
     //

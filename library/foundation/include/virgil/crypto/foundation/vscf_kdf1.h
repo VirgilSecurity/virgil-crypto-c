@@ -54,8 +54,8 @@
 #define VSCF_KDF1_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_alg_id.h"
 #include "vscf_impl.h"
+#include "vscf_alg_id.h"
 #include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -162,12 +162,6 @@ VSCF_PUBLIC void
 vscf_kdf1_release_hash(vscf_kdf1_t *kdf1);
 
 //
-//  Derive key of the requested length from the given data.
-//
-VSCF_PUBLIC void
-vscf_kdf1_derive(vscf_kdf1_t *kdf1, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
-
-//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -184,6 +178,12 @@ vscf_kdf1_produce_alg_info(const vscf_kdf1_t *kdf1);
 //
 VSCF_PUBLIC vscf_error_t
 vscf_kdf1_restore_alg_info(vscf_kdf1_t *kdf1, const vscf_impl_t *alg_info);
+
+//
+//  Derive key of the requested length from the given data.
+//
+VSCF_PUBLIC void
+vscf_kdf1_derive(vscf_kdf1_t *kdf1, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
 
 
 // --------------------------------------------------------------------------

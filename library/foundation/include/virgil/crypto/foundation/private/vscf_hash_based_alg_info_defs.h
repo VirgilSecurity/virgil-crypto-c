@@ -37,15 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Types of the 'kdf alg info' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -53,10 +44,31 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_kdf_alg_info_defs.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'hash based alg info' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_HASH_BASED_ALG_INFO_DEFS_H_INCLUDED
+#define VSCF_HASH_BASED_ALG_INFO_DEFS_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_impl_private.h"
+#include "vscf_hash_based_alg_info.h"
+#include "vscf_alg_id.h"
+#include "vscf_impl.h"
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -65,9 +77,41 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handles implementation details.
+//
+struct vscf_hash_based_alg_info_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+    //
+    //  Implementation specific context.
+    //
+    vscf_alg_id_t alg_id;
+    //
+    //  Implementation specific context.
+    //
+    vscf_impl_t *hash_alg_info;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_HASH_BASED_ALG_INFO_DEFS_H_INCLUDED
 //  @end

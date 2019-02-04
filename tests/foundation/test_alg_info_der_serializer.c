@@ -43,7 +43,7 @@
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_alg_info_der_serializer.h"
-#include "vscf_kdf_alg_info.h"
+#include "vscf_hash_based_alg_info.h"
 #include "vscf_simple_alg_info.h"
 #include "vscf_cipher_alg_info.h"
 
@@ -86,8 +86,9 @@ test__serialize__kdf1_sha256__returns_valid_der(void) {
     vscf_alg_info_der_serializer_t *serializer = vscf_alg_info_der_serializer_new();
     vscf_alg_info_der_serializer_setup_defaults(serializer);
 
-    vscf_simple_alg_info_t *hash_info = vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256);
-    vscf_impl_t *kdf_info = vscf_kdf_alg_info_impl(vscf_kdf_alg_info_new_with_members(vscf_alg_id_KDF1, hash_info));
+    vscf_impl_t *hash_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256));
+    vscf_impl_t *kdf_info =
+            vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_new_with_members(vscf_alg_id_KDF1, hash_info));
 
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_alg_info_der_serializer_serialized_len(serializer, kdf_info));
     vsc_buffer_switch_reverse_mode(out, true);
@@ -96,7 +97,7 @@ test__serialize__kdf1_sha256__returns_valid_der(void) {
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_KDF1_SHA256_DER, out);
 
-    vscf_simple_alg_info_destroy(&hash_info);
+    vscf_impl_destroy(&hash_info);
     vscf_impl_destroy(&kdf_info);
     vscf_alg_info_der_serializer_destroy(&serializer);
     vsc_buffer_destroy(&out);

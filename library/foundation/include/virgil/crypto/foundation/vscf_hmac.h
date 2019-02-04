@@ -55,6 +55,8 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
+#include "vscf_alg_id.h"
+#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -158,6 +160,24 @@ vscf_hmac_take_hash(vscf_hmac_t *hmac, vscf_impl_t *hash);
 //
 VSCF_PUBLIC void
 vscf_hmac_release_hash(vscf_hmac_t *hmac);
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_hmac_alg_id(const vscf_hmac_t *hmac);
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_hmac_produce_alg_info(const vscf_hmac_t *hmac);
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_hmac_restore_alg_info(vscf_hmac_t *hmac, const vscf_impl_t *alg_info);
 
 //
 //  Size of the digest (mac output) in bytes.

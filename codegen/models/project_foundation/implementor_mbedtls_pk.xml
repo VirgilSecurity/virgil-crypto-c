@@ -11,15 +11,14 @@
         <require class="mbedtls bignum asn1 reader"/>
         <require module="mbedtls bridge random"/>
         <require class="mbedtls md"/>
+        <require interface="alg"/>
         <require interface="alg info"/>
         <require class="simple alg info"/>
 
-        <context>
-            <require header="mbedtls/rsa.h"/>
-            <property name="rsa ctx" class="mbedtls_rsa_context" library="mbedtls" access="readwrite" is_reference="0"/>
-        </context>
+        <require header="mbedtls/rsa.h" scope="context"/>
+        <property name="rsa ctx" class="mbedtls_rsa_context" library="mbedtls" is_reference="0"/>
 
-        <dependency name="hash" api="hash" access="readonly"/>
+        <dependency name="hash" interface="hash"/>
         <dependency name="random" interface="random"/>
         <dependency name="asn1rd" interface="asn1 reader"/>
         <dependency name="asn1wr" interface="asn1 writer"/>
@@ -46,19 +45,18 @@
         <require module="mbedtls bridge random"/>
         <require class="mbedtls md"/>
         <require module="rsa public key defs"/>
+        <require interface="alg"/>
         <require interface="alg info"/>
         <require class="simple alg info"/>
 
         <require header="mbedtls/bignum.h"/>
+        <require header="mbedtls/rsa.h" scope="context"/>
 
-        <context>
-            <require header="mbedtls/rsa.h"/>
-            <property name="rsa ctx" class="mbedtls_rsa_context" library="mbedtls" access="readwrite" is_reference="0"/>
-            <property name="gen bitlen" type="size"/>
-            <property name="gen exponent" type="size"/>
-        </context>
+        <property name="rsa ctx" class="mbedtls_rsa_context" library="mbedtls" is_reference="0"/>
+        <property name="gen bitlen" type="size"/>
+        <property name="gen exponent" type="size"/>
 
-        <dependency name="hash" api="hash" access="readonly"/>
+        <dependency name="hash" interface="hash"/>
         <dependency name="random" interface="random"/>
         <dependency name="asn1rd" interface="asn1 reader"/>
         <dependency name="asn1wr" interface="asn1 writer"/>

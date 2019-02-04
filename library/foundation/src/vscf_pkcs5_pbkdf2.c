@@ -55,6 +55,7 @@
 #include "vscf_memory.h"
 #include "vscf_hmac.h"
 #include "vscf_sha384.h"
+#include "vscf_alg_factory.h"
 #include "vscf_mac_stream.h"
 #include "vscf_pkcs5_pbkdf2_defs.h"
 #include "vscf_pkcs5_pbkdf2_internal.h"

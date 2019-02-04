@@ -44,8 +44,17 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_HASH_ALG_H_INCLUDED
-#define VSCF_HASH_ALG_H_INCLUDED
+
+//  @description
+// --------------------------------------------------------------------------
+//  Create algorithms based on the given information.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_ALG_FACTORY_H_INCLUDED
+#define VSCF_ALG_FACTORY_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
 
 // clang-format on
 //  @end
@@ -62,14 +71,29 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-enum vscf_hash_alg_t {
-    vscf_hash_alg_NONE,
-    vscf_hash_alg_SHA224,
-    vscf_hash_alg_SHA256,
-    vscf_hash_alg_SHA384,
-    vscf_hash_alg_SHA512
-};
-typedef enum vscf_hash_alg_t vscf_hash_alg_t;
+//
+//  Create algorithm that implements "hash stream" interface.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_hash_stream_alg(const vscf_impl_t *alg_info);
+
+//
+//  Create algorithm that implements "mac stream" interface.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_mac_stream_alg(const vscf_impl_t *alg_info);
+
+//
+//  Create algorithm that implements "mac stream" interface.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_salted_kdf_alg(const vscf_impl_t *alg_info);
+
+//
+//  Create algorithm that implements "cipher" interface.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_cipher_alg(const vscf_impl_t *alg_info);
 
 
 // --------------------------------------------------------------------------
@@ -85,5 +109,5 @@ typedef enum vscf_hash_alg_t vscf_hash_alg_t;
 
 
 //  @footer
-#endif // VSCF_HASH_ALG_H_INCLUDED
+#endif // VSCF_ALG_FACTORY_H_INCLUDED
 //  @end

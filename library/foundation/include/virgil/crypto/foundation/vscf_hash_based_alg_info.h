@@ -47,20 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'kdf alg info' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
+//  This module contains 'hash based alg info' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_KDF_ALG_INFO_DEFS_H_INCLUDED
-#define VSCF_KDF_ALG_INFO_DEFS_H_INCLUDED
+#ifndef VSCF_HASH_BASED_ALG_INFO_H_INCLUDED
+#define VSCF_HASH_BASED_ALG_INFO_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_kdf_alg_info.h"
+#include "vscf_impl.h"
 #include "vscf_alg_id.h"
-#include "vscf_simple_alg_info.h"
 
 // clang-format on
 //  @end
@@ -80,24 +75,79 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-struct vscf_kdf_alg_info_t {
-    //
-    //  Compile-time known information about this implementation.
-    //
-    const vscf_impl_info_t *info;
-    //
-    //  Reference counter.
-    //
-    size_t refcnt;
-    //
-    //  Implementation specific context.
-    //
-    vscf_alg_id_t alg_id;
-    //
-    //  Implementation specific context.
-    //
-    vscf_simple_alg_info_t *hash_alg_info;
-};
+typedef struct vscf_hash_based_alg_info_t vscf_hash_based_alg_info_t;
+
+//
+//  Return size of 'vscf_hash_based_alg_info_t' type.
+//
+VSCF_PUBLIC size_t
+vscf_hash_based_alg_info_impl_size(void);
+
+//
+//  Cast to the 'vscf_impl_t' type.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_t *hash_based_alg_info);
+
+//
+//  Create algorithm info with identificator and HASH algorithm info.
+//
+VSCF_PUBLIC vscf_hash_based_alg_info_t *
+vscf_hash_based_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t *hash_alg_info);
+
+//
+//  Perform initialization of preallocated implementation context.
+//
+VSCF_PUBLIC void
+vscf_hash_based_alg_info_init(vscf_hash_based_alg_info_t *hash_based_alg_info);
+
+//
+//  Cleanup implementation context and release dependencies.
+//  This is a reverse action of the function 'vscf_hash_based_alg_info_init()'.
+//
+VSCF_PUBLIC void
+vscf_hash_based_alg_info_cleanup(vscf_hash_based_alg_info_t *hash_based_alg_info);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
+//
+VSCF_PUBLIC vscf_hash_based_alg_info_t *
+vscf_hash_based_alg_info_new(void);
+
+//
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_hash_based_alg_info_new()'.
+//
+VSCF_PUBLIC void
+vscf_hash_based_alg_info_delete(vscf_hash_based_alg_info_t *hash_based_alg_info);
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_hash_based_alg_info_new()'.
+//  Given reference is nullified.
+//
+VSCF_PUBLIC void
+vscf_hash_based_alg_info_destroy(vscf_hash_based_alg_info_t **hash_based_alg_info_ref);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  If deep copy is required interface 'clonable' can be used.
+//
+VSCF_PUBLIC vscf_hash_based_alg_info_t *
+vscf_hash_based_alg_info_shallow_copy(vscf_hash_based_alg_info_t *hash_based_alg_info);
+
+//
+//  Return hash algorithm information.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_hash_based_alg_info_hash_alg_info(const vscf_hash_based_alg_info_t *hash_based_alg_info);
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_hash_based_alg_info_alg_id(const vscf_hash_based_alg_info_t *hash_based_alg_info);
 
 
 // --------------------------------------------------------------------------
@@ -113,5 +163,5 @@ struct vscf_kdf_alg_info_t {
 
 
 //  @footer
-#endif // VSCF_KDF_ALG_INFO_DEFS_H_INCLUDED
+#endif // VSCF_HASH_BASED_ALG_INFO_H_INCLUDED
 //  @end

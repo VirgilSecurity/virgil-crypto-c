@@ -55,10 +55,10 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_kdf1_defs.h"
-#include "vscf_kdf.h"
-#include "vscf_kdf_api.h"
 #include "vscf_alg.h"
 #include "vscf_alg_api.h"
+#include "vscf_kdf.h"
+#include "vscf_kdf_api.h"
 #include "vscf_hash_stream.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
@@ -75,21 +75,6 @@
 
 static const vscf_api_t *
 vscf_kdf1_find_api(vscf_api_tag_t api_tag);
-
-//
-//  Configuration of the interface API 'kdf api'.
-//
-static const vscf_kdf_api_t kdf_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'kdf' MUST be equal to the 'vscf_api_tag_KDF'.
-    //
-    vscf_api_tag_KDF,
-    //
-    //  Derive key of the requested length from the given data.
-    //
-    (vscf_kdf_api_derive_fn)vscf_kdf1_derive
-};
 
 //
 //  Configuration of the interface API 'alg api'.
@@ -112,6 +97,21 @@ static const vscf_alg_api_t alg_api = {
     //  Restore algorithm configuration from the given object.
     //
     (vscf_alg_api_restore_alg_info_fn)vscf_kdf1_restore_alg_info
+};
+
+//
+//  Configuration of the interface API 'kdf api'.
+//
+static const vscf_kdf_api_t kdf_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'kdf' MUST be equal to the 'vscf_api_tag_KDF'.
+    //
+    vscf_api_tag_KDF,
+    //
+    //  Derive key of the requested length from the given data.
+    //
+    (vscf_kdf_api_derive_fn)vscf_kdf1_derive
 };
 
 //

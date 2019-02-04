@@ -23,6 +23,10 @@
         Buffer capacity is not enaugh to hold result.
     </constant>
 
+    <constant name="unsupported algorithm" value="-200">
+        Unsupported algorithm.
+    </constant>
+
     <constant name="auth failed" value="-201">
         Authentication failed during decryption.
     </constant>
@@ -82,7 +86,7 @@
     <constant name="bad pem" value="-215">
         PEM data is corrupted.
     </constant>
-    
+
     <constant name="shared key exchange failed" value="-216">
         Exchange key return zero.
     </constant>

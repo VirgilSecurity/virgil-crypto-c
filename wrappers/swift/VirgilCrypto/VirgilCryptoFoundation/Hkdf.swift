@@ -38,7 +38,7 @@ import VSCFoundation
 import VirgilCryptoCommon
 
 /// Virgil Security implementation of the HKDF (RFC 6234) algorithm.
-@objc(VSCFHkdf) public class Hkdf: NSObject, Kdf, SaltedKdf {
+@objc(VSCFHkdf) public class Hkdf: NSObject, Alg, Kdf, SaltedKdf {
 
     @objc public let hashCounterMax: Int = 255
 
@@ -73,6 +73,27 @@ import VirgilCryptoCommon
     @objc public func setHash(hash: HashStream) {
         vscf_hkdf_release_hash(self.c_ctx)
         vscf_hkdf_use_hash(self.c_ctx, hash.c_ctx)
+    }
+
+    /// Provide algorithm identificator.
+    @objc public func algId() -> AlgId {
+        let proxyResult = vscf_hkdf_alg_id(self.c_ctx)
+
+        return AlgId.init(fromC: proxyResult)
+    }
+
+    /// Produce object with algorithm information and configuration parameters.
+    @objc public func produceAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_hkdf_produce_alg_info(self.c_ctx)
+
+        return AlgInfoProxy.init(c_ctx: proxyResult!)
+    }
+
+    /// Restore algorithm configuration from the given object.
+    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
+        let proxyResult = vscf_hkdf_restore_alg_info(self.c_ctx, algInfo.c_ctx)
+
+        try FoundationError.handleError(fromC: proxyResult)
     }
 
     /// Derive key of the requested length from the given data.

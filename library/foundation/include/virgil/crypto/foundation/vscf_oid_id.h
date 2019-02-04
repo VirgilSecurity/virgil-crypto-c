@@ -65,7 +65,14 @@ extern "C" {
 enum vscf_oid_id_t {
     vscf_oid_id_NONE,
     vscf_oid_id_CMS_DATA,
-    vscf_oid_id_CMS_ENVELOPED_DATA
+    vscf_oid_id_CMS_ENVELOPED_DATA,
+    vscf_oid_id_HKDF_WITH_SHA256,
+    vscf_oid_id_HKDF_WITH_SHA384,
+    vscf_oid_id_HKDF_WITH_SHA512,
+    vscf_oid_id_HMAC_WITH_SHA224,
+    vscf_oid_id_HMAC_WITH_SHA256,
+    vscf_oid_id_HMAC_WITH_SHA384,
+    vscf_oid_id_HMAC_WITH_SHA512
 };
 typedef enum vscf_oid_id_t vscf_oid_id_t;
 

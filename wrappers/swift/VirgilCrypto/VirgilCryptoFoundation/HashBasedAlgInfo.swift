@@ -37,15 +37,15 @@ import Foundation
 import VSCFoundation
 import VirgilCryptoCommon
 
-/// Handle KDF algorithm information.
-@objc(VSCFKdfAlgInfo) public class KdfAlgInfo: NSObject, AlgInfo {
+/// Handle hashed based algorithm information, i.e. HKDF, HMAC, etc.
+@objc(VSCFHashBasedAlgInfo) public class HashBasedAlgInfo: NSObject, AlgInfo {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
     /// Create underlying C context.
     public override init() {
-        self.c_ctx = vscf_kdf_alg_info_new()
+        self.c_ctx = vscf_hash_based_alg_info_new()
         super.init()
     }
 
@@ -59,32 +59,32 @@ import VirgilCryptoCommon
     /// Acquire retained C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscf_kdf_alg_info_shallow_copy(c_ctx)
+        self.c_ctx = vscf_hash_based_alg_info_shallow_copy(c_ctx)
         super.init()
     }
 
-    /// Create KDF algorithm info with identificator and HASH algorithm info.
-    public init(algId: AlgId, hashAlgInfo: SimpleAlgInfo) {
-        let proxyResult = vscf_kdf_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), hashAlgInfo.c_ctx)
+    /// Create algorithm info with identificator and HASH algorithm info.
+    public init(algId: AlgId, hashAlgInfo: AlgInfo) {
+        let proxyResult = vscf_hash_based_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), hashAlgInfo.c_ctx)
 
         self.c_ctx = proxyResult!
     }
 
     /// Release underlying C context.
     deinit {
-        vscf_kdf_alg_info_delete(self.c_ctx)
+        vscf_hash_based_alg_info_delete(self.c_ctx)
     }
 
     /// Return hash algorithm information.
-    @objc public func hashAlgInfo() -> SimpleAlgInfo {
-        let proxyResult = vscf_kdf_alg_info_hash_alg_info(self.c_ctx)
+    @objc public func hashAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_hash_based_alg_info_hash_alg_info(self.c_ctx)
 
-        return SimpleAlgInfo.init(use: proxyResult!)
+        return AlgInfoProxy.init(c_ctx: proxyResult!)
     }
 
     /// Provide algorithm identificator.
     @objc public func algId() -> AlgId {
-        let proxyResult = vscf_kdf_alg_info_alg_id(self.c_ctx)
+        let proxyResult = vscf_hash_based_alg_info_alg_id(self.c_ctx)
 
         return AlgId.init(fromC: proxyResult)
     }

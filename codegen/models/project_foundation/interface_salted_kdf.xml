@@ -4,14 +4,12 @@
 
     <inherit interface="kdf"/>
 
-
     <method name="reset">
         Prepare algorithm to derive new key.
 
         <argument name="salt" class="data"/>
         <argument name="iteration count" type="size"/>
     </method>
-
 
     <method name="set info">
         Setup application specific information (optional).

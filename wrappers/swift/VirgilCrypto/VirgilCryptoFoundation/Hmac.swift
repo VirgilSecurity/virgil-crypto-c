@@ -38,7 +38,7 @@ import VSCFoundation
 import VirgilCryptoCommon
 
 /// Virgil Security implementation of HMAC algorithm (RFC 2104) (FIPS PUB 198-1).
-@objc(VSCFHmac) public class Hmac: NSObject, MacInfo, Mac, MacStream {
+@objc(VSCFHmac) public class Hmac: NSObject, Alg, MacInfo, Mac, MacStream {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -71,6 +71,27 @@ import VirgilCryptoCommon
     @objc public func setHash(hash: HashStream) {
         vscf_hmac_release_hash(self.c_ctx)
         vscf_hmac_use_hash(self.c_ctx, hash.c_ctx)
+    }
+
+    /// Provide algorithm identificator.
+    @objc public func algId() -> AlgId {
+        let proxyResult = vscf_hmac_alg_id(self.c_ctx)
+
+        return AlgId.init(fromC: proxyResult)
+    }
+
+    /// Produce object with algorithm information and configuration parameters.
+    @objc public func produceAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_hmac_produce_alg_info(self.c_ctx)
+
+        return AlgInfoProxy.init(c_ctx: proxyResult!)
+    }
+
+    /// Restore algorithm configuration from the given object.
+    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
+        let proxyResult = vscf_hmac_restore_alg_info(self.c_ctx, algInfo.c_ctx)
+
+        try FoundationError.handleError(fromC: proxyResult)
     }
 
     /// Size of the digest (mac output) in bytes.

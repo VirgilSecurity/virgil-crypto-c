@@ -61,7 +61,6 @@
 
     <enum name="error"/>
     <enum name="asn1 tag"/>
-    <enum name="hash alg"/>
     <enum name="alg id"/>
     <enum name="oid id"/>
 
@@ -119,6 +118,7 @@
     <class name="key recipient info list"/>
     <class name="password recipient info"/>
     <class name="password recipient info list"/>
+    <class name="alg factory"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>

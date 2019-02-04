@@ -55,7 +55,6 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_hash.h"
 #include "vscf_alg_id.h"
 #include "vscf_error.h"
 
@@ -158,13 +157,20 @@ VSCF_PUBLIC vscf_rsa_private_key_t *
 vscf_rsa_private_key_shallow_copy(vscf_rsa_private_key_t *rsa_private_key);
 
 //
-//  Setup dependency to the interface api 'hash' with shared ownership.
+//  Setup dependency to the interface 'hash' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_use_hash(vscf_rsa_private_key_t *rsa_private_key, const vscf_hash_api_t *hash);
+vscf_rsa_private_key_use_hash(vscf_rsa_private_key_t *rsa_private_key, vscf_impl_t *hash);
 
 //
-//  Release dependency to the interface api 'hash'.
+//  Setup dependency to the interface 'hash' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_rsa_private_key_take_hash(vscf_rsa_private_key_t *rsa_private_key, vscf_impl_t *hash);
+
+//
+//  Release dependency to the interface 'hash'.
 //
 VSCF_PUBLIC void
 vscf_rsa_private_key_release_hash(vscf_rsa_private_key_t *rsa_private_key);
