@@ -43,6 +43,7 @@
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_sha512.h"
+#include "vscf_hash.h"
 #include "vscf_assert.h"
 
 #include "test_data_sha512.h"
@@ -92,11 +93,11 @@ void
 test__hash_api__always__returns_not_null(void) {
     vscf_impl_t *sha512_impl = vscf_sha512_impl(vscf_sha512_new());
 
-    const vscf_api_t *hash_api = vscf_hash_api(sha512_impl);
+    const vscf_hash_api_t *hash_api = vscf_hash_api(sha512_impl);
 
     TEST_ASSERT_NOT_NULL(hash_api);
 
-    vscf_sha512_destroy(&sha512_impl);
+    vscf_impl_destroy(&sha512_impl);
 }
 
 void
