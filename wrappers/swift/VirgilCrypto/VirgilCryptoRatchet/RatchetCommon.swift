@@ -47,4 +47,6 @@ import VirgilCryptoFoundation
     static let maxCipherTextLen = 32768;
     /// Max message length
     static let maxMessageLen = 32964;
+    /// Key pair id length
+    static let keyIdLen = 8;
 }

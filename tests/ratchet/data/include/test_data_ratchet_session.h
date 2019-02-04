@@ -61,6 +61,9 @@ extern const vsc_data_t test_ratchet_session_bob_one_time_public_key_raw;
 extern const vsc_data_t test_ratchet_session_bob_one_time_key_id;
 extern const vsc_data_t test_ratchet_ed_public_key;
 extern const vsc_data_t test_ratchet_ed_private_key;
+extern const vsc_data_t test_ratchet_ed_public_key2;
+extern const vsc_data_t test_ratchet_ed_public_key2_id;
+extern const vsc_data_t test_ratchet_ed_public_key2_raw;
 
 
 #endif //VIRGIL_CRYPTO_C_TOP_TEST_DATA_RATCHET_SESSION_H
