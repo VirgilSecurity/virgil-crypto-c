@@ -15,6 +15,7 @@
         <require impl="hash based alg info"/>
         <require impl="simple alg info"/>
         <require impl="salted kdf alg info"/>
+        <require impl="pbe alg info"/>
         <require module="buffer defs" project="common"/>
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
@@ -133,6 +134,24 @@
         <method name="serialize pbkdf2 alg info">
             Serialize class "salted kdf alg info" to the ASN.1 structure
             "PBKDF2Algorithm" from the RFC 8018.
+
+            <argument name="alg info" interface="alg info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialized pbes2 alg info len">
+            Return buffer size enough to hold ASN.1 structure
+            "PBESF2Algorithm" from the RFC 8018.
+
+            <argument name="alg info" interface="alg info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize pbes2 alg info">
+            Serialize class "salted kdf alg info" to the ASN.1 structure
+            "PBES2Algorithm" from the RFC 8018.
 
             <argument name="alg info" interface="alg info"/>
 

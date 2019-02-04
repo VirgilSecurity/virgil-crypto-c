@@ -325,6 +325,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_pbe_alg_info.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_pkcs5_pbes2.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -590,6 +595,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_MESSAGE_INFO_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_message_info_der_serializer.h>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_der_serializer_internal.h>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_message_info_der_serializer_defs.h>"
+            "$<$<BOOL:${VSCF_PBE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_pbe_alg_info.h>"
+            "$<$<BOOL:${VSCF_PBE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pbe_alg_info_internal.h>"
+            "$<$<BOOL:${VSCF_PBE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_pbe_alg_info_defs.h>"
             "$<$<BOOL:${VSCF_PKCS5_PBES2}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_pkcs5_pbes2.h>"
             "$<$<BOOL:${VSCF_PKCS5_PBES2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs5_pbes2_internal.h>"
             "$<$<BOOL:${VSCF_PKCS5_PBES2}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_pkcs5_pbes2_defs.h>"
@@ -782,6 +790,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_MESSAGE_INFO_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_der_serializer.c>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_der_serializer_internal.c>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_DER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_der_serializer_defs.c>"
+            "$<$<BOOL:${VSCF_PBE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pbe_alg_info.c>"
+            "$<$<BOOL:${VSCF_PBE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pbe_alg_info_internal.c>"
+            "$<$<BOOL:${VSCF_PBE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pbe_alg_info_defs.c>"
             "$<$<BOOL:${VSCF_PKCS5_PBES2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs5_pbes2.c>"
             "$<$<BOOL:${VSCF_PKCS5_PBES2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs5_pbes2_internal.c>"
             "$<$<BOOL:${VSCF_PKCS5_PBES2}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs5_pbes2_defs.c>"

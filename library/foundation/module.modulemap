@@ -53,6 +53,7 @@ framework module VSCFoundation {
     header "vscf_kdf1.h"
     header "vscf_kdf2.h"
     header "vscf_message_info_der_serializer.h"
+    header "vscf_pbe_alg_info.h"
     header "vscf_pkcs5_pbes2.h"
     header "vscf_pkcs5_pbkdf2.h"
     header "vscf_pkcs8_der_deserializer.h"
