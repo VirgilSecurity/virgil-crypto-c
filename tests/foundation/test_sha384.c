@@ -43,6 +43,7 @@
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_sha384.h"
+#include "vscf_hash.h"
 #include "vscf_assert.h"
 
 #include "test_data_sha384.h"
@@ -92,11 +93,11 @@ void
 test__hash_api__always__returns_not_null(void) {
     vscf_impl_t *sha384_impl = vscf_sha384_impl(vscf_sha384_new());
 
-    const vscf_api_t *hash_api = vscf_hash_api(sha384_impl);
+    const vscf_hash_api_t *hash_api = vscf_hash_api(sha384_impl);
 
     TEST_ASSERT_NOT_NULL(hash_api);
 
-    vscf_sha384_destroy(&sha384_impl);
+    vscf_impl_destroy(&sha384_impl);
 }
 
 void
