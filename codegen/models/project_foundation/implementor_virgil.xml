@@ -5,9 +5,7 @@
         Virgil Security implementation of HMAC algorithm (RFC 2104) (FIPS PUB 198-1).
 
         <interface name="alg"/>
-        <interface name="mac info"/>
         <interface name="mac"/>
-        <interface name="mac stream"/>
 
         <require interface="alg"/>
         <require interface="alg info"/>
@@ -125,7 +123,7 @@
         <require impl="sha384"/>
         <require class="alg factory"/>
 
-        <dependency name="hmac" interface="mac stream"/>
+        <dependency name="hmac" interface="mac"/>
 
         <context>
             <property name="salt" class="buffer"/>

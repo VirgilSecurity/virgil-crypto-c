@@ -56,7 +56,7 @@
 #include "vscf_hmac.h"
 #include "vscf_sha384.h"
 #include "vscf_alg_factory.h"
-#include "vscf_mac_stream.h"
+#include "vscf_mac.h"
 #include "vscf_pkcs5_pbkdf2_defs.h"
 #include "vscf_pkcs5_pbkdf2_internal.h"
 
@@ -133,7 +133,7 @@ vscf_pkcs5_pbkdf2_derive(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vsc_data_t data, siz
     VSCF_ASSERT_PTR(pkcs5_pbkdf2->hmac);
 
     size_t key_len_left = key_len;
-    size_t hash_len = vscf_mac_info_digest_len(pkcs5_pbkdf2->hmac);
+    size_t hash_len = vscf_mac_digest_len(pkcs5_pbkdf2->hmac);
     size_t hash_count = VSCF_CEIL(key_len, hash_len);
     byte counter_string[4] = {0x0};
 
@@ -155,12 +155,12 @@ vscf_pkcs5_pbkdf2_derive(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vsc_data_t data, siz
         //  Calculate U_1, that will be accumulator.
         //
         vsc_buffer_reset(u_1);
-        vscf_mac_stream_start(pkcs5_pbkdf2->hmac, data);
+        vscf_mac_start(pkcs5_pbkdf2->hmac, data);
         if (pkcs5_pbkdf2->salt) {
-            vscf_mac_stream_update(pkcs5_pbkdf2->hmac, vsc_buffer_data(pkcs5_pbkdf2->salt));
+            vscf_mac_update(pkcs5_pbkdf2->hmac, vsc_buffer_data(pkcs5_pbkdf2->salt));
         }
-        vscf_mac_stream_update(pkcs5_pbkdf2->hmac, vsc_data(counter_string, 4));
-        vscf_mac_stream_finish(pkcs5_pbkdf2->hmac, u_1);
+        vscf_mac_update(pkcs5_pbkdf2->hmac, vsc_data(counter_string, 4));
+        vscf_mac_finish(pkcs5_pbkdf2->hmac, u_1);
         vsc_data_t u_1_data = vsc_buffer_data(u_1);
         byte *u_1_bytes = vsc_buffer_begin(u_1);
 
@@ -171,10 +171,10 @@ vscf_pkcs5_pbkdf2_derive(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vsc_data_t data, siz
         vsc_buffer_write_data(u_2, u_1_data);
         for (size_t iteration = 1; iteration < pkcs5_pbkdf2->iteration_count; ++iteration) {
             vsc_data_t u_2_data = vsc_buffer_data(u_2);
-            vscf_mac_stream_start(pkcs5_pbkdf2->hmac, data);
-            vscf_mac_stream_update(pkcs5_pbkdf2->hmac, u_2_data);
+            vscf_mac_start(pkcs5_pbkdf2->hmac, data);
+            vscf_mac_update(pkcs5_pbkdf2->hmac, u_2_data);
             vsc_buffer_reset(u_2);
-            vscf_mac_stream_finish(pkcs5_pbkdf2->hmac, u_2);
+            vscf_mac_finish(pkcs5_pbkdf2->hmac, u_2);
 
             //
             //  Calculate U_1 xor U_2.

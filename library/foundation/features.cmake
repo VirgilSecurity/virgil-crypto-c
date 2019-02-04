@@ -59,8 +59,6 @@ option(VSCF_ENCRYPT "Enable interface 'encrypt'." ON)
 option(VSCF_SALTED_KDF "Enable interface 'salted kdf'." ON)
 option(VSCF_HASH "Enable interface 'hash'." ON)
 option(VSCF_MAC "Enable interface 'mac'." ON)
-option(VSCF_MAC_INFO "Enable interface 'mac info'." ON)
-option(VSCF_MAC_STREAM "Enable interface 'mac stream'." ON)
 option(VSCF_KDF "Enable interface 'kdf'." ON)
 option(VSCF_RANDOM "Enable interface 'random'." ON)
 option(VSCF_ENTROPY_SOURCE "Enable interface 'entropy source'." ON)
@@ -141,8 +139,6 @@ mark_as_advanced(
         VSCF_SALTED_KDF
         VSCF_HASH
         VSCF_MAC
-        VSCF_MAC_INFO
-        VSCF_MAC_STREAM
         VSCF_KDF
         VSCF_RANDOM
         VSCF_ENTROPY_SOURCE
@@ -287,24 +283,6 @@ if(VSCF_SALTED_KDF AND NOT VSCF_KDF)
     message("--")
     message("Feature VSCF_SALTED_KDF depends on the feature:")
     message("     VSCF_KDF - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_MAC AND NOT VSCF_MAC_INFO)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_MAC depends on the feature:")
-    message("     VSCF_MAC_INFO - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_MAC_STREAM AND NOT VSCF_MAC_INFO)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_MAC_STREAM depends on the feature:")
-    message("     VSCF_MAC_INFO - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

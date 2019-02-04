@@ -38,7 +38,7 @@ import VSCFoundation
 import VirgilCryptoCommon
 
 /// Virgil Security implementation of HMAC algorithm (RFC 2104) (FIPS PUB 198-1).
-@objc(VSCFHmac) public class Hmac: NSObject, Alg, MacInfo, Mac, MacStream {
+@objc(VSCFHmac) public class Hmac: NSObject, Alg, Mac {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer

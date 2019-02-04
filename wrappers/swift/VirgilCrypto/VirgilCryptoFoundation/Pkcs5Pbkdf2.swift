@@ -68,7 +68,7 @@ import VirgilCryptoCommon
         vscf_pkcs5_pbkdf2_delete(self.c_ctx)
     }
 
-    @objc public func setHmac(hmac: MacStream) {
+    @objc public func setHmac(hmac: Mac) {
         vscf_pkcs5_pbkdf2_release_hmac(self.c_ctx)
         vscf_pkcs5_pbkdf2_use_hmac(self.c_ctx, hmac.c_ctx)
     }

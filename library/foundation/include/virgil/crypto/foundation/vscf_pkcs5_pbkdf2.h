@@ -142,20 +142,20 @@ VSCF_PUBLIC vscf_pkcs5_pbkdf2_t *
 vscf_pkcs5_pbkdf2_shallow_copy(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
 
 //
-//  Setup dependency to the interface 'mac stream' with shared ownership.
+//  Setup dependency to the interface 'mac' with shared ownership.
 //
 VSCF_PUBLIC void
 vscf_pkcs5_pbkdf2_use_hmac(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vscf_impl_t *hmac);
 
 //
-//  Setup dependency to the interface 'mac stream' and transfer ownership.
+//  Setup dependency to the interface 'mac' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
 vscf_pkcs5_pbkdf2_take_hmac(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vscf_impl_t *hmac);
 
 //
-//  Release dependency to the interface 'mac stream'.
+//  Release dependency to the interface 'mac'.
 //
 VSCF_PUBLIC void
 vscf_pkcs5_pbkdf2_release_hmac(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
