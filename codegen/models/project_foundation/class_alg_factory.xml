@@ -18,7 +18,7 @@
 
         <argument name="alg info" interface="alg info"/>
 
-        <return interface="hash stream" access="disown"/>
+        <return interface="hash" access="disown"/>
     </method>
 
     <method name="create mac stream alg" is_static="1">

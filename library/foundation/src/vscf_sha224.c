@@ -147,9 +147,12 @@ vscf_sha224_hash(vsc_data_t data, vsc_buffer_t *digest) {
     VSCF_ASSERT(vsc_buffer_is_valid(digest));
     VSCF_ASSERT(vsc_buffer_unused_len(digest) >= vscf_sha224_DIGEST_LEN);
 
-    const int is224 = 1;
-    mbedtls_sha256(data.bytes, data.len, vsc_buffer_unused_bytes(digest), is224);
-    vsc_buffer_inc_used(digest, vscf_sha224_DIGEST_LEN);
+    vscf_sha224_t sha224;
+    vscf_sha224_init(&sha224);
+    vscf_sha224_start(&sha224);
+    vscf_sha224_update(&sha224, data);
+    vscf_sha224_finish(&sha224, digest);
+    vscf_sha224_cleanup(&sha224);
 }
 
 //

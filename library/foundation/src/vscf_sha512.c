@@ -147,9 +147,12 @@ vscf_sha512_hash(vsc_data_t data, vsc_buffer_t *digest) {
     VSCF_ASSERT(vsc_buffer_is_valid(digest));
     VSCF_ASSERT(vsc_buffer_unused_len(digest) >= vscf_sha512_DIGEST_LEN);
 
-    const int is384 = 0;
-    mbedtls_sha512(data.bytes, data.len, vsc_buffer_unused_bytes(digest), is384);
-    vsc_buffer_inc_used(digest, vscf_sha512_DIGEST_LEN);
+    vscf_sha512_t sha512;
+    vscf_sha512_init(&sha512);
+    vscf_sha512_start(&sha512);
+    vscf_sha512_update(&sha512, data);
+    vscf_sha512_finish(&sha512, digest);
+    vscf_sha512_cleanup(&sha512);
 }
 
 //

@@ -14,7 +14,7 @@
         <require class="alg factory"/>
         <require impl="hash based alg info"/>
 
-        <dependency name="hash" interface="hash stream"/>
+        <dependency name="hash" interface="hash"/>
 
         <property name="ipad" class="buffer" access="readwrite"/>
     </implementation>
@@ -32,7 +32,7 @@
         <require class="alg factory"/>
         <require impl="hash based alg info"/>
 
-        <dependency name="hash" interface="hash stream"/>
+        <dependency name="hash" interface="hash"/>
 
         <property name="salt" class="buffer"/>
         <property name="context info" class="buffer"/>
@@ -68,7 +68,7 @@
         <require class="alg factory"/>
         <require impl="hash based alg info"/>
 
-        <dependency name="hash" interface="hash stream"/>
+        <dependency name="hash" interface="hash"/>
     </implementation>
 
 
@@ -83,7 +83,7 @@
         <require class="alg factory"/>
         <require impl="hash based alg info"/>
 
-        <dependency name="hash" interface="hash stream"/>
+        <dependency name="hash" interface="hash"/>
     </implementation>
 
 

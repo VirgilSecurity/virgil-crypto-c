@@ -86,30 +86,27 @@ test__impl__null_arg__call_assert(void) {
 
 
 // --------------------------------------------------------------------------
-// Test implementation of the interface 'hash info'.
-// --------------------------------------------------------------------------
-void
-test__hash_info_api__always__returns_not_null(void) {
-    const vscf_hash_info_api_t *hash_info_api = vscf_sha224_hash_info_api();
-
-    TEST_ASSERT_NOT_NULL(hash_info_api);
-}
-
-
-void
-test__sha224_DIGEST_LEN__always__equals_28(void) {
-    TEST_ASSERT_EQUAL(28, vscf_sha224_DIGEST_LEN);
-}
-
-
-// --------------------------------------------------------------------------
 // Test implementation of the interface 'hash'.
 // --------------------------------------------------------------------------
 void
 test__hash_api__always__returns_not_null(void) {
-    const vscf_hash_api_t *hash_api = vscf_sha224_hash_api();
+    vscf_impl_t *sha224_impl = vscf_sha224_impl(vscf_sha224_new());
+
+    const vscf_api_t *hash_api = vscf_hash_api(sha224_impl);
 
     TEST_ASSERT_NOT_NULL(hash_api);
+
+    vscf_sha224_destroy(&sha224_impl);
+}
+
+void
+test__digest_len__always__equals_28(void) {
+    TEST_ASSERT_EQUAL(28, vscf_sha224_DIGEST_LEN);
+}
+
+void
+test__block_len__always__equals_64(void) {
+    TEST_ASSERT_EQUAL(64, vscf_sha224_BLOCK_LEN);
 }
 
 void
@@ -219,8 +216,8 @@ main(void) {
     RUN_TEST(test__impl__valid_arg__returns_not_null);
     RUN_TEST(test__impl__null_arg__call_assert);
 
-    RUN_TEST(test__hash_info_api__always__returns_not_null);
-    RUN_TEST(test__sha224_DIGEST_LEN__always__equals_28);
+    RUN_TEST(test__digest_len__always__equals_28);
+    RUN_TEST(test__block_len__always__equals_64);
 
     RUN_TEST(test__hash_api__always__returns_not_null);
     RUN_TEST(test__hash__vector_1__success);

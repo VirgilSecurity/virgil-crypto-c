@@ -57,7 +57,7 @@
 #include "vscf_alg_info.h"
 #include "vscf_alg_factory.h"
 #include "vscf_hash_based_alg_info.h"
-#include "vscf_hash_stream.h"
+#include "vscf_hash.h"
 #include "vscf_hkdf_defs.h"
 #include "vscf_hkdf_internal.h"
 

@@ -68,7 +68,7 @@ import VirgilCryptoCommon
         vscf_hmac_delete(self.c_ctx)
     }
 
-    @objc public func setHash(hash: HashStream) {
+    @objc public func setHash(hash: Hash) {
         vscf_hmac_release_hash(self.c_ctx)
         vscf_hmac_use_hash(self.c_ctx, hash.c_ctx)
     }

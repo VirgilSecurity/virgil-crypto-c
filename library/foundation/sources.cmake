@@ -180,16 +180,6 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_hash_info.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_hash_stream.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_kdf.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -530,10 +520,6 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_GENERATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_generate_key_api.h>"
             "$<$<BOOL:${VSCF_HASH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_hash.h>"
             "$<$<BOOL:${VSCF_HASH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_hash_api.h>"
-            "$<$<BOOL:${VSCF_HASH_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_hash_info.h>"
-            "$<$<BOOL:${VSCF_HASH_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_hash_info_api.h>"
-            "$<$<BOOL:${VSCF_HASH_STREAM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_hash_stream.h>"
-            "$<$<BOOL:${VSCF_HASH_STREAM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_hash_stream_api.h>"
             "$<$<BOOL:${VSCF_KDF}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_kdf.h>"
             "$<$<BOOL:${VSCF_KDF}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_kdf_api.h>"
             "$<$<BOOL:${VSCF_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key.h>"
@@ -727,10 +713,6 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_GENERATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_generate_key_api.c>"
             "$<$<BOOL:${VSCF_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash.c>"
             "$<$<BOOL:${VSCF_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_api.c>"
-            "$<$<BOOL:${VSCF_HASH_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_info.c>"
-            "$<$<BOOL:${VSCF_HASH_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_info_api.c>"
-            "$<$<BOOL:${VSCF_HASH_STREAM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_stream.c>"
-            "$<$<BOOL:${VSCF_HASH_STREAM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_stream_api.c>"
             "$<$<BOOL:${VSCF_KDF}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf.c>"
             "$<$<BOOL:${VSCF_KDF}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kdf_api.c>"
             "$<$<BOOL:${VSCF_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key.c>"

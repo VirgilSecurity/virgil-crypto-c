@@ -38,7 +38,7 @@ import VSCFoundation
 import VirgilCryptoCommon
 
 /// This is MbedTLS implementation of SHA384.
-@objc(VSCFSha384) public class Sha384: NSObject, Alg, HashInfo, Hash, HashStream {
+@objc(VSCFSha384) public class Sha384: NSObject, Alg, Hash {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer

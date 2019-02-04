@@ -143,20 +143,20 @@ VSCF_PUBLIC vscf_kdf2_t *
 vscf_kdf2_shallow_copy(vscf_kdf2_t *kdf2);
 
 //
-//  Setup dependency to the interface 'hash stream' with shared ownership.
+//  Setup dependency to the interface 'hash' with shared ownership.
 //
 VSCF_PUBLIC void
 vscf_kdf2_use_hash(vscf_kdf2_t *kdf2, vscf_impl_t *hash);
 
 //
-//  Setup dependency to the interface 'hash stream' and transfer ownership.
+//  Setup dependency to the interface 'hash' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
 vscf_kdf2_take_hash(vscf_kdf2_t *kdf2, vscf_impl_t *hash);
 
 //
-//  Release dependency to the interface 'hash stream'.
+//  Release dependency to the interface 'hash'.
 //
 VSCF_PUBLIC void
 vscf_kdf2_release_hash(vscf_kdf2_t *kdf2);

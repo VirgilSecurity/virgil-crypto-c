@@ -57,12 +57,8 @@
 #include "vscf_sha512_defs.h"
 #include "vscf_alg.h"
 #include "vscf_alg_api.h"
-#include "vscf_hash_info.h"
-#include "vscf_hash_info_api.h"
 #include "vscf_hash.h"
 #include "vscf_hash_api.h"
-#include "vscf_hash_stream.h"
-#include "vscf_hash_stream_api.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -103,25 +99,6 @@ static const vscf_alg_api_t alg_api = {
 };
 
 //
-//  Configuration of the interface API 'hash info api'.
-//
-static const vscf_hash_info_api_t hash_info_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'hash_info' MUST be equal to the 'vscf_api_tag_HASH_INFO'.
-    //
-    vscf_api_tag_HASH_INFO,
-    //
-    //  Length of the digest (hashing output) in bytes.
-    //
-    vscf_sha512_DIGEST_LEN,
-    //
-    //  Block length of the digest function in bytes.
-    //
-    vscf_sha512_BLOCK_LEN
-};
-
-//
 //  Configuration of the interface API 'hash api'.
 //
 static const vscf_hash_api_t hash_api = {
@@ -131,40 +108,29 @@ static const vscf_hash_api_t hash_api = {
     //
     vscf_api_tag_HASH,
     //
-    //  Link to the inherited interface API 'hash info'.
-    //
-    &hash_info_api,
-    //
     //  Calculate hash over given data.
     //
-    (vscf_hash_api_hash_fn)vscf_sha512_hash
-};
-
-//
-//  Configuration of the interface API 'hash stream api'.
-//
-static const vscf_hash_stream_api_t hash_stream_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'hash_stream' MUST be equal to the 'vscf_api_tag_HASH_STREAM'.
-    //
-    vscf_api_tag_HASH_STREAM,
-    //
-    //  Link to the inherited interface API 'hash info'.
-    //
-    &hash_info_api,
+    (vscf_hash_api_hash_fn)vscf_sha512_hash,
     //
     //  Start a new hashing.
     //
-    (vscf_hash_stream_api_start_fn)vscf_sha512_start,
+    (vscf_hash_api_start_fn)vscf_sha512_start,
     //
     //  Add given data to the hash.
     //
-    (vscf_hash_stream_api_update_fn)vscf_sha512_update,
+    (vscf_hash_api_update_fn)vscf_sha512_update,
     //
     //  Accompilsh hashing and return it's result (a message digest).
     //
-    (vscf_hash_stream_api_finish_fn)vscf_sha512_finish
+    (vscf_hash_api_finish_fn)vscf_sha512_finish,
+    //
+    //  Length of the digest (hashing output) in bytes.
+    //
+    vscf_sha512_DIGEST_LEN,
+    //
+    //  Block length of the digest function in bytes.
+    //
+    vscf_sha512_BLOCK_LEN
 };
 
 //
@@ -283,24 +249,6 @@ vscf_sha512_shallow_copy(vscf_sha512_t *sha512) {
 }
 
 //
-//  Returns instance of the implemented interface 'hash info'.
-//
-VSCF_PUBLIC const vscf_hash_info_api_t *
-vscf_sha512_hash_info_api(void) {
-
-    return &hash_info_api;
-}
-
-//
-//  Returns instance of the implemented interface 'hash'.
-//
-VSCF_PUBLIC const vscf_hash_api_t *
-vscf_sha512_hash_api(void) {
-
-    return &hash_api;
-}
-
-//
 //  Return size of 'vscf_sha512_t' type.
 //
 VSCF_PUBLIC size_t
@@ -327,10 +275,6 @@ vscf_sha512_find_api(vscf_api_tag_t api_tag) {
             return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_HASH:
             return (const vscf_api_t *) &hash_api;
-        case vscf_api_tag_HASH_INFO:
-            return (const vscf_api_t *) &hash_info_api;
-        case vscf_api_tag_HASH_STREAM:
-            return (const vscf_api_t *) &hash_stream_api;
         default:
             return NULL;
     }
