@@ -6,12 +6,17 @@
     <require impl="sha256"/>
     <require impl="sha384"/>
     <require impl="sha512"/>
+    <require impl="kdf1"/>
+    <require impl="kdf2"/>
     <require impl="hmac"/>
     <require impl="hkdf"/>
-    <require impl="pkcs5 pbkdf2"/>
     <require impl="aes256 gcm"/>
     <require impl="hash based alg info"/>
     <require impl="cipher alg info"/>
+    <require impl="salted kdf alg info"/>
+    <require impl="pbe alg info"/>
+    <require impl="pkcs5 pbkdf2"/>
+    <require impl="pkcs5 pbes2"/>
 
     <method name="create hash alg" is_static="1">
         Create algorithm that implements "hash stream" interface.
@@ -29,8 +34,16 @@
         <return interface="mac" access="disown"/>
     </method>
 
+    <method name="create kdf alg" is_static="1">
+        Create algorithm that implements "kdf" interface.
+
+        <argument name="alg info" interface="alg info"/>
+
+        <return interface="kdf" access="disown"/>
+    </method>
+
     <method name="create salted kdf alg" is_static="1">
-        Create algorithm that implements "mac stream" interface.
+        Create algorithm that implements "salted kdf" interface.
 
         <argument name="alg info" interface="alg info"/>
 

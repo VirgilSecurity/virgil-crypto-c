@@ -84,7 +84,13 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_alg_factory_create_mac_alg(const vscf_impl_t *alg_info);
 
 //
-//  Create algorithm that implements "mac stream" interface.
+//  Create algorithm that implements "kdf" interface.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_kdf_alg(const vscf_impl_t *alg_info);
+
+//
+//  Create algorithm that implements "salted kdf" interface.
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_alg_factory_create_salted_kdf_alg(const vscf_impl_t *alg_info);
