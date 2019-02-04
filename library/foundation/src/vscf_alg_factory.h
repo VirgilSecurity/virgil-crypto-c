@@ -75,13 +75,13 @@ extern "C" {
 //  Create algorithm that implements "hash stream" interface.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_hash_stream_alg(const vscf_impl_t *alg_info);
+vscf_alg_factory_create_hash_alg(const vscf_impl_t *alg_info);
 
 //
 //  Create algorithm that implements "mac stream" interface.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_mac_stream_alg(const vscf_impl_t *alg_info);
+vscf_alg_factory_create_mac_alg(const vscf_impl_t *alg_info);
 
 //
 //  Create algorithm that implements "mac stream" interface.
