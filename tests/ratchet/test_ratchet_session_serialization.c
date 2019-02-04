@@ -110,6 +110,19 @@ typedef struct ratchet {
     byte root_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
 } ratchet_t;
 
+typedef struct ratchet_key_extractor {
+    //
+    //  Function do deallocate self context.
+    //
+    vscr_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+
+    vscf_pkcs8_der_deserializer_t *pkcs8;
+} ratchet_key_extractor_t;
+
 typedef struct ratchet_session {
     //
     //  Function do deallocate self context.
@@ -124,11 +137,11 @@ typedef struct ratchet_session {
     //
     vscf_impl_t *rng;
 
-    vscf_pkcs8_der_deserializer_t *pkcs8;
-
-    bool is_initiator;
+    ratchet_key_extractor_t *key_extractor;
 
     ratchet_t *ratchet;
+
+    bool is_initiator;
 
     bool received_first_response;
 
@@ -137,6 +150,8 @@ typedef struct ratchet_session {
     byte sender_ephemeral_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
     byte receiver_long_term_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
+
+    bool receiver_has_one_time_public_key;
 
     byte receiver_one_time_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 } ratchet_session_t;
