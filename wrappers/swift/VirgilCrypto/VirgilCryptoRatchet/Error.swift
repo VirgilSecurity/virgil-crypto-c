@@ -36,6 +36,7 @@
 import Foundation
 import VSCRatchet
 
+/// Error codes
 @objc(VSCRRatchetError) public enum RatchetError: Int, Error {
 
     /// Error during protobuf deserialization
@@ -53,16 +54,16 @@ import VSCRatchet
     /// RNG failed
     case rngFailed = 5
 
-    /// curve25519 error
+    /// Curve25519 error
     case curve25519 = 6
 
-    /// key deserialization error
+    /// Key deserialization error
     case keyDeserialization = 7
 
-    /// invalid key type
+    /// Invalid key type
     case invalidKeyType = 8
 
-    /// identity key doesnt match
+    /// Identity key doesn't match
     case identityKeyDoesntMatch = 9
 
     /// Create enumeration value from the correspond C enumeration value.
