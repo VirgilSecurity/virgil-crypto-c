@@ -94,6 +94,12 @@ static const vsc_data_t oid_cms_data = {oid_cms_data_bytes, sizeof(oid_cms_data_
 static const byte oid_cms_data_enveloped_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x07, 0x03};
 static const vsc_data_t oid_cms_enveloped_data = {oid_cms_data_enveloped_bytes, sizeof(oid_cms_data_enveloped_bytes)};
 
+static const byte oid_pkcs5_pbkdf2_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x05, 0x0C};
+static const vsc_data_t oid_pkcs5_pbkdf2 = {oid_pkcs5_pbkdf2_bytes, sizeof(oid_pkcs5_pbkdf2_bytes)};
+
+static const byte oid_pkcs5_pbes2_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x05, 0x0D};
+static const vsc_data_t oid_pkcs5_pbes2 = {oid_pkcs5_pbes2_bytes, sizeof(oid_pkcs5_pbes2_bytes)};
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -148,6 +154,12 @@ vscf_oid_from_alg_id(vscf_alg_id_t alg_id) {
     case vscf_alg_id_AES256_GCM:
         return oid_aes256_gcm2;
 
+    case vscf_alg_id_PKCS5_PBKDF2:
+        return oid_pkcs5_pbkdf2;
+
+    case vscf_alg_id_PKCS5_PBES2:
+        return oid_pkcs5_pbes2;
+
     default:
         VSCF_ASSERT(0 && "Unhanded algorithm identifier");
         return vsc_data_empty();
@@ -200,6 +212,14 @@ vscf_oid_to_alg_id(vsc_data_t oid) {
 
     if (vscf_oid_equal(oid, oid_aes256_gcm2)) {
         return vscf_alg_id_AES256_GCM;
+    }
+
+    if (vscf_oid_equal(oid, oid_pkcs5_pbkdf2)) {
+        return vscf_alg_id_PKCS5_PBKDF2;
+    }
+
+    if (vscf_oid_equal(oid, oid_pkcs5_pbes2)) {
+        return vscf_alg_id_PKCS5_PBES2;
     }
 
     return vscf_alg_id_NONE;

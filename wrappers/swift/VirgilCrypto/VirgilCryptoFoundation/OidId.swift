@@ -44,6 +44,20 @@ import VSCFoundation
 
     case cmsEnvelopedData
 
+    case hkdfWithSha256
+
+    case hkdfWithSha384
+
+    case hkdfWithSha512
+
+    case hmacWithSha224
+
+    case hmacWithSha256
+
+    case hmacWithSha384
+
+    case hmacWithSha512
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC oidId: vscf_oid_id_t) {
         self.init(rawValue: Int(oidId.rawValue))!

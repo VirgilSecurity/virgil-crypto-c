@@ -4,31 +4,39 @@
     <implementation name="hmac">
         Virgil Security implementation of HMAC algorithm (RFC 2104) (FIPS PUB 198-1).
 
-        <dependency name="hash" interface="hash stream"/>
-
-        <context>
-            <property name="ipad" class="buffer" access="readwrite"/>
-        </context>
-
+        <interface name="alg"/>
         <interface name="mac info"/>
         <interface name="mac"/>
         <interface name="mac stream"/>
+
+        <require interface="alg"/>
+        <require interface="alg info"/>
+        <require class="alg factory"/>
+        <require impl="hash based alg info"/>
+
+        <dependency name="hash" interface="hash stream"/>
+
+        <property name="ipad" class="buffer" access="readwrite"/>
     </implementation>
 
 
     <implementation name="hkdf">
         Virgil Security implementation of the HKDF (RFC 6234) algorithm.
 
+        <interface name="alg"/>
         <interface name="kdf"/>
         <interface name="salted kdf"/>
 
+        <require interface="alg"/>
+        <require interface="alg info"/>
+        <require class="alg factory"/>
+        <require impl="hash based alg info"/>
+
         <dependency name="hash" interface="hash stream"/>
 
-        <context>
-            <property name="salt" class="buffer"/>
-            <property name="context info" class="buffer"/>
-            <property name="hmac" impl="hmac" access="readwrite" is_reference="0" require_definition="public"/>
-        </context>
+        <property name="salt" class="buffer"/>
+        <property name="context info" class="buffer"/>
+        <property name="hmac" impl="hmac" access="readwrite" is_reference="0" require_definition="public"/>
 
         <constant name="hash counter max" value="255"/>
 
@@ -52,17 +60,13 @@
     <implementation name="kdf1">
         Virgil Security implementation of the KDF1 (ISO-18033-2) algorithm.
 
+        <interface name="alg"/>
         <interface name="kdf"/>
 
-        <interface name="alg"/>
-
-        <require enum="alg id"/>
-
-        <require impl="simple alg info"/>
-
-        <require impl="kdf alg info"/>
-
-        <require interface="hash info"/>
+        <require interface="alg"/>
+        <require interface="alg info"/>
+        <require class="alg factory"/>
+        <require impl="hash based alg info"/>
 
         <dependency name="hash" interface="hash stream"/>
     </implementation>
@@ -71,7 +75,13 @@
     <implementation name="kdf2">
         Virgil Security implementation of the KDF2 (ISO-18033-2) algorithm.
 
+        <interface name="alg"/>
         <interface name="kdf"/>
+
+        <require interface="alg"/>
+        <require interface="alg info"/>
+        <require class="alg factory"/>
+        <require impl="hash based alg info"/>
 
         <dependency name="hash" interface="hash stream"/>
     </implementation>
@@ -113,6 +123,7 @@
 
         <require impl="hmac"/>
         <require impl="sha384"/>
+        <require class="alg factory"/>
 
         <dependency name="hmac" interface="mac stream"/>
 

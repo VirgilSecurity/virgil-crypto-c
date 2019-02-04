@@ -11,4 +11,8 @@
     <constant name="ed25519"/>
     <constant name="x25519"/>
     <constant name="aes256 gcm"/>
+    <constant name="hmac"/>
+    <constant name="hkdf"/>
+    <constant name="pkcs5 pbkdf2"/>
+    <constant name="pkcs5 pbes2"/>
 </enum>

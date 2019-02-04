@@ -37,6 +37,15 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'hash based alg info' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,7 +53,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_hash_alg.h"
+#include "vscf_hash_based_alg_info_defs.h"
 
 // clang-format on
 //  @end

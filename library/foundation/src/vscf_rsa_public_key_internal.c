@@ -65,11 +65,11 @@
 #include "vscf_verify_api.h"
 #include "vscf_public_key.h"
 #include "vscf_public_key_api.h"
+#include "vscf_hash.h"
 #include "vscf_random.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_impl.h"
-#include "vscf_hash.h"
 #include "vscf_api.h"
 
 // clang-format on
@@ -348,27 +348,45 @@ vscf_rsa_public_key_impl(vscf_rsa_public_key_t *rsa_public_key) {
 }
 
 //
-//  Setup dependency to the interface api 'hash' with shared ownership.
+//  Setup dependency to the interface 'hash' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_rsa_public_key_use_hash(vscf_rsa_public_key_t *rsa_public_key, const vscf_hash_api_t *hash) {
+vscf_rsa_public_key_use_hash(vscf_rsa_public_key_t *rsa_public_key, vscf_impl_t *hash) {
 
     VSCF_ASSERT_PTR(rsa_public_key);
     VSCF_ASSERT_PTR(hash);
     VSCF_ASSERT_PTR(rsa_public_key->hash == NULL);
 
+    VSCF_ASSERT(vscf_hash_is_implemented(hash));
+
+    rsa_public_key->hash = vscf_impl_shallow_copy(hash);
+}
+
+//
+//  Setup dependency to the interface 'hash' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_rsa_public_key_take_hash(vscf_rsa_public_key_t *rsa_public_key, vscf_impl_t *hash) {
+
+    VSCF_ASSERT_PTR(rsa_public_key);
+    VSCF_ASSERT_PTR(hash);
+    VSCF_ASSERT_PTR(rsa_public_key->hash == NULL);
+
+    VSCF_ASSERT(vscf_hash_is_implemented(hash));
+
     rsa_public_key->hash = hash;
 }
 
 //
-//  Release dependency to the interface api 'hash'.
+//  Release dependency to the interface 'hash'.
 //
 VSCF_PUBLIC void
 vscf_rsa_public_key_release_hash(vscf_rsa_public_key_t *rsa_public_key) {
 
     VSCF_ASSERT_PTR(rsa_public_key);
 
-    rsa_public_key->hash = NULL;
+    vscf_impl_destroy(&rsa_public_key->hash);
 }
 
 //

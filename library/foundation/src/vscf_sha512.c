@@ -53,6 +53,8 @@
 #include "vscf_sha512.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_alg_info.h"
+#include "vscf_simple_alg_info.h"
 #include "vscf_sha512_defs.h"
 #include "vscf_sha512_internal.h"
 
@@ -101,12 +103,38 @@ vscf_sha512_cleanup_ctx(vscf_sha512_t *sha512) {
 }
 
 //
-//  Return implemented hash algorithm type.
+//  Provide algorithm identificator.
 //
-VSCF_PUBLIC vscf_hash_alg_t
-vscf_sha512_alg(void) {
+VSCF_PUBLIC vscf_alg_id_t
+vscf_sha512_alg_id(const vscf_sha512_t *sha512) {
 
-    return vscf_hash_alg_SHA512;
+    VSCF_ASSERT_PTR(sha512);
+
+    return vscf_alg_id_SHA512;
+}
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_sha512_produce_alg_info(const vscf_sha512_t *sha512) {
+
+    VSCF_ASSERT_PTR(sha512);
+
+    return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA512));
+}
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_sha512_restore_alg_info(vscf_sha512_t *sha512, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(sha512);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_SHA512);
+
+    return vscf_SUCCESS;
 }
 
 //

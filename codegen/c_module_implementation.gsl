@@ -57,7 +57,7 @@ gsl from "c_module_interface.gsl"
 function _Z19_has_underlying_context (impl)
     check_argument (my, "impl", my)
 
-    return count (my.impl.context) <> 0
+    return count (my.impl.context) <> 0 | count (my.impl.property) <> 0
 endfunction
 
 # ---------------------------------------------------------------------------

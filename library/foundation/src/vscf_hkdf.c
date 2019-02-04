@@ -53,6 +53,10 @@
 #include "vscf_hkdf.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_alg.h"
+#include "vscf_alg_info.h"
+#include "vscf_alg_factory.h"
+#include "vscf_hash_based_alg_info.h"
 #include "vscf_hash_stream.h"
 #include "vscf_hkdf_defs.h"
 #include "vscf_hkdf_internal.h"
@@ -180,6 +184,55 @@ vscf_hkdf_expand(vscf_hkdf_t *hkdf, vsc_buffer_t *pr_key, vsc_buffer_t *key, siz
             vsc_buffer_inc_used(key, need);
         }
     } while (counter * hmac_len < key_len);
+}
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_hkdf_alg_id(const vscf_hkdf_t *hkdf) {
+
+    VSCF_ASSERT_PTR(hkdf);
+
+    return vscf_alg_id_HKDF;
+}
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_hkdf_produce_alg_info(const vscf_hkdf_t *hkdf) {
+
+    VSCF_ASSERT_PTR(hkdf);
+    VSCF_ASSERT_PTR(hkdf->hash);
+
+    vscf_impl_t *hash_alg_info = vscf_alg_produce_alg_info(hkdf->hash);
+    vscf_impl_t *hkdf_alg_info =
+            vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_new_with_members(vscf_alg_id_HKDF, hash_alg_info));
+
+    vscf_impl_destroy(&hash_alg_info);
+
+    return hkdf_alg_info;
+}
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_hkdf_restore_alg_info(vscf_hkdf_t *hkdf, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(hkdf);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_HKDF);
+
+    const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
+
+    vscf_impl_t *hash =
+            vscf_alg_factory_create_hash_stream_alg(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info));
+    vscf_hkdf_release_hash(hkdf);
+    vscf_hkdf_take_hash(hkdf, hash);
+
+    return vscf_SUCCESS;
 }
 
 //

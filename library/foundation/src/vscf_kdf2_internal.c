@@ -55,6 +55,8 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_kdf2_defs.h"
+#include "vscf_alg.h"
+#include "vscf_alg_api.h"
 #include "vscf_kdf.h"
 #include "vscf_kdf_api.h"
 #include "vscf_hash_stream.h"
@@ -73,6 +75,29 @@
 
 static const vscf_api_t *
 vscf_kdf2_find_api(vscf_api_tag_t api_tag);
+
+//
+//  Configuration of the interface API 'alg api'.
+//
+static const vscf_alg_api_t alg_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
+    //
+    vscf_api_tag_ALG,
+    //
+    //  Provide algorithm identificator.
+    //
+    (vscf_alg_api_alg_id_fn)vscf_kdf2_alg_id,
+    //
+    //  Produce object with algorithm information and configuration parameters.
+    //
+    (vscf_alg_api_produce_alg_info_fn)vscf_kdf2_produce_alg_info,
+    //
+    //  Restore algorithm configuration from the given object.
+    //
+    (vscf_alg_api_restore_alg_info_fn)vscf_kdf2_restore_alg_info
+};
 
 //
 //  Configuration of the interface API 'kdf api'.
@@ -267,6 +292,8 @@ static const vscf_api_t *
 vscf_kdf2_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
+        case vscf_api_tag_ALG:
+            return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_KDF:
             return (const vscf_api_t *) &kdf_api;
         default:

@@ -47,16 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'kdf alg info' implementation.
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_KDF_ALG_INFO_H_INCLUDED
-#define VSCF_KDF_ALG_INFO_H_INCLUDED
+#ifndef VSCF_HASH_BASED_ALG_INFO_INTERNAL_H_INCLUDED
+#define VSCF_HASH_BASED_ALG_INFO_INTERNAL_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_alg_id.h"
-#include "vscf_simple_alg_info.h"
+#include "vscf_hash_based_alg_info.h"
 
 // clang-format on
 //  @end
@@ -74,81 +73,20 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_hash_based_alg_info_init() is called.
+//  Note, that context is already zeroed.
 //
-typedef struct vscf_kdf_alg_info_t vscf_kdf_alg_info_t;
+VSCF_PRIVATE void
+vscf_hash_based_alg_info_init_ctx(vscf_hash_based_alg_info_t *hash_based_alg_info);
 
 //
-//  Return size of 'vscf_kdf_alg_info_t' type.
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
 //
-VSCF_PUBLIC size_t
-vscf_kdf_alg_info_impl_size(void);
-
-//
-//  Cast to the 'vscf_impl_t' type.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_kdf_alg_info_impl(vscf_kdf_alg_info_t *kdf_alg_info);
-
-//
-//  Create KDF algorithm info with identificator and HASH algorithm info.
-//
-VSCF_PUBLIC vscf_kdf_alg_info_t *
-vscf_kdf_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_simple_alg_info_t *hash_alg_info);
-
-//
-//  Perform initialization of preallocated implementation context.
-//
-VSCF_PUBLIC void
-vscf_kdf_alg_info_init(vscf_kdf_alg_info_t *kdf_alg_info);
-
-//
-//  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_kdf_alg_info_init()'.
-//
-VSCF_PUBLIC void
-vscf_kdf_alg_info_cleanup(vscf_kdf_alg_info_t *kdf_alg_info);
-
-//
-//  Allocate implementation context and perform it's initialization.
-//  Postcondition: check memory allocation result.
-//
-VSCF_PUBLIC vscf_kdf_alg_info_t *
-vscf_kdf_alg_info_new(void);
-
-//
-//  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_kdf_alg_info_new()'.
-//
-VSCF_PUBLIC void
-vscf_kdf_alg_info_delete(vscf_kdf_alg_info_t *kdf_alg_info);
-
-//
-//  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_kdf_alg_info_new()'.
-//  Given reference is nullified.
-//
-VSCF_PUBLIC void
-vscf_kdf_alg_info_destroy(vscf_kdf_alg_info_t **kdf_alg_info_ref);
-
-//
-//  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
-//
-VSCF_PUBLIC vscf_kdf_alg_info_t *
-vscf_kdf_alg_info_shallow_copy(vscf_kdf_alg_info_t *kdf_alg_info);
-
-//
-//  Return hash algorithm information.
-//
-VSCF_PUBLIC const vscf_simple_alg_info_t *
-vscf_kdf_alg_info_hash_alg_info(const vscf_kdf_alg_info_t *kdf_alg_info);
-
-//
-//  Provide algorithm identificator.
-//
-VSCF_PUBLIC vscf_alg_id_t
-vscf_kdf_alg_info_alg_id(const vscf_kdf_alg_info_t *kdf_alg_info);
+VSCF_PRIVATE void
+vscf_hash_based_alg_info_cleanup_ctx(vscf_hash_based_alg_info_t *hash_based_alg_info);
 
 
 // --------------------------------------------------------------------------
@@ -164,5 +102,5 @@ vscf_kdf_alg_info_alg_id(const vscf_kdf_alg_info_t *kdf_alg_info);
 
 
 //  @footer
-#endif // VSCF_KDF_ALG_INFO_H_INCLUDED
+#endif // VSCF_HASH_BASED_ALG_INFO_INTERNAL_H_INCLUDED
 //  @end

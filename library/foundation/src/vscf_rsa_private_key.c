@@ -59,8 +59,10 @@
 #include "vscf_mbedtls_bridge_random.h"
 #include "vscf_mbedtls_md.h"
 #include "vscf_rsa_public_key_defs.h"
+#include "vscf_alg.h"
 #include "vscf_alg_info.h"
 #include "vscf_simple_alg_info.h"
+#include "vscf_hash.h"
 #include "vscf_random.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_asn1_writer.h"
@@ -223,8 +225,7 @@ vscf_rsa_private_key_decrypt(vscf_rsa_private_key_t *rsa_private_key, vsc_data_t
         return vscf_error_BAD_ENCRYPTED_DATA;
     }
 
-    mbedtls_md_type_t md_alg =
-            vscf_mbedtls_md_from_hash_alg(vscf_hash_info_alg(vscf_hash_hash_info_api(rsa_private_key->hash)));
+    mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(vscf_alg_alg_id(rsa_private_key->hash));
     mbedtls_rsa_set_padding(&rsa_private_key->rsa_ctx, MBEDTLS_RSA_PKCS_V21, md_alg);
 
     size_t out_len = 0;
@@ -272,16 +273,15 @@ vscf_rsa_private_key_sign(vscf_rsa_private_key_t *rsa_private_key, vsc_data_t da
     VSCF_ASSERT(mbedtls_rsa_check_privkey(&rsa_private_key->rsa_ctx) == 0);
 
     //  Hash
-    size_t data_hash_len = vscf_hash_info_digest_len(vscf_hash_hash_info_api(rsa_private_key->hash));
+    size_t data_hash_len = vscf_hash_info_digest_len(vscf_hash_hash_info_api(vscf_hash_api(rsa_private_key->hash)));
     vsc_buffer_t *data_hash_buf = vsc_buffer_new_with_capacity(data_hash_len);
     VSCF_ASSERT(data_hash_len <= UINT_MAX);
 
-    vscf_hash(rsa_private_key->hash, data, data_hash_buf);
+    vscf_hash(vscf_hash_api(rsa_private_key->hash), data, data_hash_buf);
 
     //  Sign
     mbedtls_rsa_context *rsa = &rsa_private_key->rsa_ctx;
-    mbedtls_md_type_t md_alg =
-            vscf_mbedtls_md_from_hash_alg(vscf_hash_info_alg(vscf_hash_hash_info_api(rsa_private_key->hash)));
+    mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(vscf_alg_alg_id(rsa_private_key->hash));
 
     mbedtls_rsa_set_padding(&rsa_private_key->rsa_ctx, MBEDTLS_RSA_PKCS_V21, md_alg);
 

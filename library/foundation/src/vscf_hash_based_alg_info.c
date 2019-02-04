@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains 'hash based alg info' implementation.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,26 +50,14 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  This module contains logic for interface/implementation architecture.
-//  Do not use this module in any part of the code.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_KDF_ALG_INFO_INTERNAL_H_INCLUDED
-#define VSCF_KDF_ALG_INFO_INTERNAL_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_kdf_alg_info.h"
+#include "vscf_hash_based_alg_info.h"
+#include "vscf_assert.h"
+#include "vscf_memory.h"
+#include "vscf_hash_based_alg_info_defs.h"
+#include "vscf_hash_based_alg_info_internal.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -71,22 +65,6 @@ extern "C" {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Provides initialization of the implementation specific context.
-//  Note, this method is called automatically when method vscf_kdf_alg_info_init() is called.
-//  Note, that context is already zeroed.
-//
-VSCF_PRIVATE void
-vscf_kdf_alg_info_init_ctx(vscf_kdf_alg_info_t *kdf_alg_info);
-
-//
-//  Release resources of the implementation specific context.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-VSCF_PRIVATE void
-vscf_kdf_alg_info_cleanup_ctx(vscf_kdf_alg_info_t *kdf_alg_info);
 
 
 // --------------------------------------------------------------------------
@@ -96,11 +74,66 @@ vscf_kdf_alg_info_cleanup_ctx(vscf_kdf_alg_info_t *kdf_alg_info);
 //  @end
 
 
-#ifdef __cplusplus
+//
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_hash_based_alg_info_init() is called.
+//  Note, that context is already zeroed.
+//
+VSCF_PRIVATE void
+vscf_hash_based_alg_info_init_ctx(vscf_hash_based_alg_info_t *hash_based_alg_info) {
+
+    VSCF_ASSERT_PTR(hash_based_alg_info);
+    hash_based_alg_info->alg_id = vscf_alg_id_NONE;
 }
-#endif
 
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_hash_based_alg_info_cleanup_ctx(vscf_hash_based_alg_info_t *hash_based_alg_info) {
 
-//  @footer
-#endif // VSCF_KDF_ALG_INFO_INTERNAL_H_INCLUDED
-//  @end
+    VSCF_ASSERT_PTR(hash_based_alg_info);
+    hash_based_alg_info->alg_id = vscf_alg_id_NONE;
+    vscf_impl_destroy(&hash_based_alg_info->hash_alg_info);
+}
+
+//
+//  Create algorithm info with identificator and HASH algorithm info.
+//
+VSCF_PUBLIC vscf_hash_based_alg_info_t *
+vscf_hash_based_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t *hash_alg_info) {
+
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
+    VSCF_ASSERT_PTR(hash_alg_info);
+
+    vscf_hash_based_alg_info_t *hash_based_alg_info = vscf_hash_based_alg_info_new();
+
+    hash_based_alg_info->alg_id = alg_id;
+
+    hash_based_alg_info->hash_alg_info = vscf_impl_shallow_copy(hash_alg_info);
+
+    return hash_based_alg_info;
+}
+
+//
+//  Return hash algorithm information.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_hash_based_alg_info_hash_alg_info(const vscf_hash_based_alg_info_t *hash_based_alg_info) {
+
+    VSCF_ASSERT_PTR(hash_based_alg_info);
+    VSCF_ASSERT_PTR(hash_based_alg_info->hash_alg_info);
+    return hash_based_alg_info->hash_alg_info;
+}
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_hash_based_alg_info_alg_id(const vscf_hash_based_alg_info_t *hash_based_alg_info) {
+
+    VSCF_ASSERT_PTR(hash_based_alg_info);
+    return hash_based_alg_info->alg_id;
+}

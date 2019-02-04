@@ -57,7 +57,7 @@
 #include "vscf_oid.h"
 #include "vscf_asn1_tag.h"
 #include "vscf_cipher_alg_info.h"
-#include "vscf_kdf_alg_info.h"
+#include "vscf_hash_based_alg_info.h"
 #include "vscf_simple_alg_info.h"
 #include "vscf_alg_info.h"
 #include "vscf_asn1_writer.h"
@@ -76,53 +76,93 @@
 // --------------------------------------------------------------------------
 
 //
-//  Return true if algorithm identifier requires that optinal
+//  Return true if algorithm identifier requires that optional
 //  parameter will be NULL.
 //
 static bool
 vscf_alg_info_der_serializer_is_alg_require_null_params(vscf_alg_id_t alg_id);
 
 //
-//  Return buffer size enough to hold serialized class "simple alg info".
+//  Return buffer size enough to hold ASN.1 structure
+//  AlgorithmIdentifier with no parameters.
 //
 static size_t
 vscf_alg_info_der_serializer_serialized_simple_alg_info_len(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
-        const vscf_simple_alg_info_t *simple_alg_info);
+        const vscf_impl_t *alg_info);
 
 //
-//  Serialize class "simple alg info".
+//  Serialize class "simple alg info" to the ASN.1 structure
+//  AlgorithmIdentifier with no parameters.
 //
 static size_t
 vscf_alg_info_der_serializer_serialize_simple_alg_info(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
-        const vscf_simple_alg_info_t *simple_alg_info, vsc_buffer_t *out);
+        const vscf_impl_t *alg_info, vsc_buffer_t *out);
 
 //
-//  Return buffer size enough to hold serialized class "kdf alg info".
+//  Return buffer size enough to hold ASN.1 structure
+//  "KeyDerivationFunction" from the ISO/IEC 18033-2.
 //
 static size_t
 vscf_alg_info_der_serializer_serialized_kdf_alg_info_len(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
-        const vscf_kdf_alg_info_t *kdf_alg_info);
+        const vscf_impl_t *alg_info);
 
 //
-//  Serialize class "kdf alg info".
+//  Serialize class "hash based alg info" to the ASN.1 structure
+//  "KeyDerivationFunction" from the ISO/IEC 18033-2.
 //
 static size_t
 vscf_alg_info_der_serializer_serialize_kdf_alg_info(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
-        const vscf_kdf_alg_info_t *kdf_alg_info, vsc_buffer_t *out);
+        const vscf_impl_t *alg_info, vsc_buffer_t *out);
 
 //
-//  Return buffer size enough to hold serialized class "cipher alg info".
+//  Return buffer size enough to hold ASN.1 structure
+//  "KeyDevAlgs" from the https://tools.ietf.org/html/draft-housley-hkdf-oids-00.
+//
+static size_t
+vscf_alg_info_der_serializer_serialized_hkdf_alg_info_len(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
+        const vscf_impl_t *alg_info);
+
+//
+//  Serialize class "hash based alg info" to the ASN.1 structure
+//  "KeyDevAlgs" from the https://tools.ietf.org/html/draft-housley-hkdf-oids-00.
+//
+static size_t
+vscf_alg_info_der_serializer_serialize_hkdf_alg_info(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
+        const vscf_impl_t *alg_info, vsc_buffer_t *out);
+
+//
+//  Return buffer size enough to hold ASN.1 structure
+//  "DigestAlgorithm" from the RFC 4231.
+//
+static size_t
+vscf_alg_info_der_serializer_serialized_hmac_alg_info_len(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
+        const vscf_impl_t *alg_info);
+
+//
+//  Serialize class "hash based alg info" to the ASN.1 structure
+//  "DigestAlgorithm" from the RFC 4231.
+//
+static size_t
+vscf_alg_info_der_serializer_serialize_hmac_alg_info(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
+        const vscf_impl_t *alg_info, vsc_buffer_t *out);
+
+//
+//  Return buffer size enough to hold ASN.1 structure
+//  "AlgorithmIdentifier" with AES parameters:
+//      - defined in the RFC 3565;
+//      - defined in the RFC 5084.
 //
 static size_t
 vscf_alg_info_der_serializer_serialized_cipher_alg_info_len(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
-        const vscf_cipher_alg_info_t *cipher_alg_info);
+        const vscf_impl_t *alg_info);
 
 //
-//  Serialize class "cipher alg info".
+//  Serialize class "cipher alg info" to the ASN.1 structure
+//  "AlgorithmIdentifier" with AES parameters defined in the RFC 5084.
 //
 static size_t
 vscf_alg_info_der_serializer_serialize_cipher_alg_info(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
-        const vscf_cipher_alg_info_t *cipher_alg_info, vsc_buffer_t *out);
+        const vscf_impl_t *alg_info, vsc_buffer_t *out);
 
 
 // --------------------------------------------------------------------------
@@ -133,7 +173,7 @@ vscf_alg_info_der_serializer_serialize_cipher_alg_info(vscf_alg_info_der_seriali
 
 
 //
-//  Return true if algorithm identifier requires that optinal
+//  Return true if algorithm identifier requires that optional
 //  parameter will be NULL.
 //
 static bool
@@ -151,14 +191,15 @@ vscf_alg_info_der_serializer_is_alg_require_null_params(vscf_alg_id_t alg_id) {
 }
 
 //
-//  Return buffer size enough to hold serialized class "simple alg info".
+//  Return buffer size enough to hold ASN.1 structure
+//  AlgorithmIdentifier with no parameters.
 //
 static size_t
 vscf_alg_info_der_serializer_serialized_simple_alg_info_len(
-        vscf_alg_info_der_serializer_t *alg_info_der_serializer, const vscf_simple_alg_info_t *simple_alg_info) {
+        vscf_alg_info_der_serializer_t *alg_info_der_serializer, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(alg_info_der_serializer);
-    VSCF_ASSERT_PTR(simple_alg_info);
+    VSCF_ASSERT_PTR(alg_info);
 
     size_t len = 1 + 1 +      //  AlgorithmIdentifier ::= SEQUENCE {
                  1 + 1 + 32 + //          algorithm OBJECT IDENTIFIER,
@@ -169,11 +210,12 @@ vscf_alg_info_der_serializer_serialized_simple_alg_info_len(
 }
 
 //
-//  Serialize class "simple alg info".
+//  Serialize class "simple alg info" to the ASN.1 structure
+//  AlgorithmIdentifier with no parameters.
 //
 static size_t
-vscf_alg_info_der_serializer_serialize_simple_alg_info(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
-        const vscf_simple_alg_info_t *simple_alg_info, vsc_buffer_t *out) {
+vscf_alg_info_der_serializer_serialize_simple_alg_info(
+        vscf_alg_info_der_serializer_t *alg_info_der_serializer, const vscf_impl_t *alg_info, vsc_buffer_t *out) {
 
     //  AlgorithmIdentifier ::= SEQUENCE {
     //          algorithm OBJECT IDENTIFIER,
@@ -181,18 +223,19 @@ vscf_alg_info_der_serializer_serialize_simple_alg_info(vscf_alg_info_der_seriali
     //  }
 
     VSCF_ASSERT_PTR(alg_info_der_serializer);
-    VSCF_ASSERT_PTR(simple_alg_info);
+    VSCF_ASSERT_PTR(alg_info);
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_is_reverse(out));
     VSCF_ASSERT_PTR(alg_info_der_serializer->asn1_writer);
 
     VSCF_ASSERT(vsc_buffer_unused_len(out) >=
-                vscf_alg_info_der_serializer_serialized_simple_alg_info_len(alg_info_der_serializer, simple_alg_info));
+                vscf_alg_info_der_serializer_serialized_simple_alg_info_len(alg_info_der_serializer, alg_info));
 
     vscf_impl_t *asn1_writer = alg_info_der_serializer->asn1_writer;
     vscf_asn1_writer_reset(asn1_writer, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 
+    const vscf_simple_alg_info_t *simple_alg_info = (const vscf_simple_alg_info_t *)alg_info;
     vscf_alg_id_t alg_id = vscf_simple_alg_info_alg_id(simple_alg_info);
     vsc_data_t oid = vscf_oid_from_alg_id(alg_id);
     size_t hash_len = 0;
@@ -209,17 +252,19 @@ vscf_alg_info_der_serializer_serialize_simple_alg_info(vscf_alg_info_der_seriali
 }
 
 //
-//  Return buffer size enough to hold serialized class "kdf alg info".
+//  Return buffer size enough to hold ASN.1 structure
+//  "KeyDerivationFunction" from the ISO/IEC 18033-2.
 //
 static size_t
 vscf_alg_info_der_serializer_serialized_kdf_alg_info_len(
-        vscf_alg_info_der_serializer_t *alg_info_der_serializer, const vscf_kdf_alg_info_t *kdf_alg_info) {
+        vscf_alg_info_der_serializer_t *alg_info_der_serializer, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(alg_info_der_serializer);
-    VSCF_ASSERT_PTR(kdf_alg_info);
+    VSCF_ASSERT_PTR(alg_info);
 
+    const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
     size_t params_len = vscf_alg_info_der_serializer_serialized_simple_alg_info_len(
-            alg_info_der_serializer, vscf_kdf_alg_info_hash_alg_info(kdf_alg_info));
+            alg_info_der_serializer, vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info));
 
     size_t len =                     //  -- From ISO/IEC 18033-2 --
             1 + 1 +                  //  KDFAlgorithms ALGORITHM ::= {
@@ -231,11 +276,12 @@ vscf_alg_info_der_serializer_serialized_kdf_alg_info_len(
 }
 
 //
-//  Serialize class "kdf alg info".
+//  Serialize class "hash based alg info" to the ASN.1 structure
+//  "KeyDerivationFunction" from the ISO/IEC 18033-2.
 //
 static size_t
-vscf_alg_info_der_serializer_serialize_kdf_alg_info(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
-        const vscf_kdf_alg_info_t *kdf_alg_info, vsc_buffer_t *out) {
+vscf_alg_info_der_serializer_serialize_kdf_alg_info(
+        vscf_alg_info_der_serializer_t *alg_info_der_serializer, const vscf_impl_t *alg_info, vsc_buffer_t *out) {
 
     //  -- From ISO/IEC 18033-2 --
     //  KeyDerivationFunction ::= AlgorithmIdentifier {{ KDFAlgorithms }}
@@ -256,24 +302,26 @@ vscf_alg_info_der_serializer_serialize_kdf_alg_info(vscf_alg_info_der_serializer
     //  }
 
     VSCF_ASSERT_PTR(alg_info_der_serializer);
-    VSCF_ASSERT_PTR(kdf_alg_info);
+    VSCF_ASSERT_PTR(alg_info);
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_is_reverse(out));
     VSCF_ASSERT_PTR(alg_info_der_serializer->asn1_writer);
 
     VSCF_ASSERT(vsc_buffer_unused_len(out) >=
-                vscf_alg_info_der_serializer_serialized_kdf_alg_info_len(alg_info_der_serializer, kdf_alg_info));
+                vscf_alg_info_der_serializer_serialized_kdf_alg_info_len(alg_info_der_serializer, alg_info));
+
+    const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
 
     //  Write HashFunction.
     size_t params_len = vscf_alg_info_der_serializer_serialize_simple_alg_info(
-            alg_info_der_serializer, vscf_kdf_alg_info_hash_alg_info(kdf_alg_info), out);
+            alg_info_der_serializer, vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info), out);
 
     //  Write KeyDerivationFunction.
     vscf_impl_t *asn1_writer = alg_info_der_serializer->asn1_writer;
     vscf_asn1_writer_reset(asn1_writer, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 
-    vsc_data_t kdf_oid = vscf_oid_from_alg_id(vscf_kdf_alg_info_alg_id(kdf_alg_info));
+    vsc_data_t kdf_oid = vscf_oid_from_alg_id(vscf_hash_based_alg_info_alg_id(hash_based_alg_info));
     size_t kdf_len = 0;
     kdf_len += vscf_asn1_writer_write_oid(asn1_writer, kdf_oid);
     kdf_len += vscf_asn1_writer_write_sequence(asn1_writer, kdf_len + params_len);
@@ -285,14 +333,147 @@ vscf_alg_info_der_serializer_serialize_kdf_alg_info(vscf_alg_info_der_serializer
 }
 
 //
-//  Return buffer size enough to hold serialized class "cipher alg info".
+//  Return buffer size enough to hold ASN.1 structure
+//  "KeyDevAlgs" from the https://tools.ietf.org/html/draft-housley-hkdf-oids-00.
+//
+static size_t
+vscf_alg_info_der_serializer_serialized_hkdf_alg_info_len(
+        vscf_alg_info_der_serializer_t *alg_info_der_serializer, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(alg_info_der_serializer);
+    VSCF_ASSERT_PTR(alg_info);
+
+    size_t len = 1 + 1 + 16; //  KdfAlgorithm KEY-DERIVATION ::= { OID PARAMS ARE absent }
+    return len;
+}
+
+//
+//  Serialize class "hash based alg info" to the ASN.1 structure
+//  "KeyDevAlgs" from the https://tools.ietf.org/html/draft-housley-hkdf-oids-00.
+//
+static size_t
+vscf_alg_info_der_serializer_serialize_hkdf_alg_info(
+        vscf_alg_info_der_serializer_t *alg_info_der_serializer, const vscf_impl_t *alg_info, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(alg_info_der_serializer);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_is_reverse(out));
+    VSCF_ASSERT_PTR(alg_info_der_serializer->asn1_writer);
+
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >=
+                vscf_alg_info_der_serializer_serialized_hkdf_alg_info_len(alg_info_der_serializer, alg_info));
+
+    const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
+
+    vscf_alg_id_t hash_alg_id = vscf_alg_info_alg_id(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info));
+    vscf_oid_id_t hkdf_oid_id = vscf_oid_id_NONE;
+
+    switch (hash_alg_id) {
+    case vscf_alg_id_SHA256:
+        hkdf_oid_id = vscf_oid_id_HKDF_WITH_SHA256;
+        break;
+
+    case vscf_alg_id_SHA384:
+        hkdf_oid_id = vscf_oid_id_HKDF_WITH_SHA384;
+        break;
+
+    case vscf_alg_id_SHA512:
+        hkdf_oid_id = vscf_oid_id_HKDF_WITH_SHA512;
+        break;
+
+    default:
+        VSCF_ASSERT("Unexpected algorithm id.");
+        break;
+    }
+
+    size_t hkdf_len = 0;
+    hkdf_len += vscf_asn1_writer_write_oid(alg_info_der_serializer->asn1_writer, vscf_oid_from_id(hkdf_oid_id));
+    hkdf_len += vscf_asn1_writer_write_sequence(alg_info_der_serializer->asn1_writer, hkdf_len);
+
+    return hkdf_len;
+}
+
+//
+//  Return buffer size enough to hold ASN.1 structure
+//  "DigestAlgorithm" from the RFC 4231.
+//
+static size_t
+vscf_alg_info_der_serializer_serialized_hmac_alg_info_len(
+        vscf_alg_info_der_serializer_t *alg_info_der_serializer, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(alg_info_der_serializer);
+    VSCF_ASSERT_PTR(alg_info);
+
+    size_t len = 1 + 1 + 16; //  DigestAlgorithm ALGORITHM ::= { OID PARAMS absent }
+    return len;
+}
+
+//
+//  Serialize class "hash based alg info" to the ASN.1 structure
+//  "DigestAlgorithm" from the RFC 4231.
+//
+static size_t
+vscf_alg_info_der_serializer_serialize_hmac_alg_info(
+        vscf_alg_info_der_serializer_t *alg_info_der_serializer, const vscf_impl_t *alg_info, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(alg_info_der_serializer);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_is_reverse(out));
+    VSCF_ASSERT_PTR(alg_info_der_serializer->asn1_writer);
+
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >=
+                vscf_alg_info_der_serializer_serialized_hmac_alg_info_len(alg_info_der_serializer, alg_info));
+
+    const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
+
+    vscf_alg_id_t hash_alg_id = vscf_alg_info_alg_id(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info));
+    vscf_oid_id_t hmac_oid_id = vscf_oid_id_NONE;
+
+    switch (hash_alg_id) {
+    case vscf_alg_id_SHA224:
+        hmac_oid_id = vscf_oid_id_HMAC_WITH_SHA224;
+        break;
+
+    case vscf_alg_id_SHA256:
+        hmac_oid_id = vscf_oid_id_HMAC_WITH_SHA256;
+        break;
+
+    case vscf_alg_id_SHA384:
+        hmac_oid_id = vscf_oid_id_HMAC_WITH_SHA384;
+        break;
+
+    case vscf_alg_id_SHA512:
+        hmac_oid_id = vscf_oid_id_HMAC_WITH_SHA512;
+        break;
+
+    default:
+        VSCF_ASSERT("Unexpected algorithm id.");
+        break;
+    }
+
+    size_t hmac_len = 0;
+    hmac_len += vscf_asn1_writer_write_oid(alg_info_der_serializer->asn1_writer, vscf_oid_from_id(hmac_oid_id));
+    hmac_len += vscf_asn1_writer_write_sequence(alg_info_der_serializer->asn1_writer, hmac_len);
+
+    return hmac_len;
+}
+
+//
+//  Return buffer size enough to hold ASN.1 structure
+//  "AlgorithmIdentifier" with AES parameters:
+//      - defined in the RFC 3565;
+//      - defined in the RFC 5084.
 //
 static size_t
 vscf_alg_info_der_serializer_serialized_cipher_alg_info_len(
-        vscf_alg_info_der_serializer_t *alg_info_der_serializer, const vscf_cipher_alg_info_t *cipher_alg_info) {
+        vscf_alg_info_der_serializer_t *alg_info_der_serializer, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(alg_info_der_serializer);
-    VSCF_ASSERT_PTR(cipher_alg_info);
+    VSCF_ASSERT_PTR(alg_info);
 
     size_t len =         //
             1 + 1 +      //  SymmetricAlgorithms ALGORITHM ::= {
@@ -305,38 +486,58 @@ vscf_alg_info_der_serializer_serialized_cipher_alg_info_len(
 }
 
 //
-//  Serialize class "cipher alg info".
+//  Serialize class "cipher alg info" to the ASN.1 structure
+//  "AlgorithmIdentifier" with AES parameters defined in the RFC 5084.
 //
 static size_t
-vscf_alg_info_der_serializer_serialize_cipher_alg_info(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
-        const vscf_cipher_alg_info_t *cipher_alg_info, vsc_buffer_t *out) {
+vscf_alg_info_der_serializer_serialize_cipher_alg_info(
+        vscf_alg_info_der_serializer_t *alg_info_der_serializer, const vscf_impl_t *alg_info, vsc_buffer_t *out) {
 
     //  SymmetricAlgorithms ALGORITHM ::= {
-    //          { OID id-aes256-GCM PARMS NONCE } ,
+    //          { OID id-aes256-GCM parameters GCMParameters } ,
     //          ... -- Expect additional algorithms --
     //  }
     //
-    //  NONCE ::= OCTET STRING
+    //  GCMParameters ::= SEQUENCE {
+    //          aes-nonce OCTET STRING, -- recommended size is 12 octets
+    //          aes-ICVlen AES-GCM-ICVlen DEFAULT 12 }
+    //
+    //  AES-GCM-ICVlen ::= INTEGER (12 | 13 | 14 | 15 | 16)
 
     VSCF_ASSERT_PTR(alg_info_der_serializer);
-    VSCF_ASSERT_PTR(cipher_alg_info);
+    VSCF_ASSERT_PTR(alg_info);
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_is_reverse(out));
     VSCF_ASSERT_PTR(alg_info_der_serializer->asn1_writer);
 
     VSCF_ASSERT(vsc_buffer_unused_len(out) >=
-                vscf_alg_info_der_serializer_serialized_cipher_alg_info_len(alg_info_der_serializer, cipher_alg_info));
+                vscf_alg_info_der_serializer_serialized_cipher_alg_info_len(alg_info_der_serializer, alg_info));
 
     vscf_impl_t *asn1_writer = alg_info_der_serializer->asn1_writer;
     vscf_asn1_writer_reset(asn1_writer, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 
-    //  Write NONCE.
+    const vscf_cipher_alg_info_t *cipher_alg_info = (const vscf_cipher_alg_info_t *)alg_info;
+
     size_t len = 0;
-    len += vscf_asn1_writer_write_octet_str(asn1_writer, vscf_cipher_alg_info_nonce(cipher_alg_info));
+    vscf_alg_id_t alg_id = vscf_cipher_alg_info_alg_id(cipher_alg_info);
+
+    switch (alg_id) {
+    case vscf_alg_id_AES256_GCM:
+        //  Write GCMParameters.
+        len += vscf_asn1_writer_write_int(asn1_writer, vscf_cipher_alg_info_nonce(cipher_alg_info).len);
+        len += vscf_asn1_writer_write_octet_str(asn1_writer, vscf_cipher_alg_info_nonce(cipher_alg_info));
+        len += vscf_asn1_writer_write_sequence(asn1_writer, len);
+        break;
+
+    default:
+        //  Write NONCE only.
+        len += vscf_asn1_writer_write_octet_str(asn1_writer, vscf_cipher_alg_info_nonce(cipher_alg_info));
+        break;
+    }
 
     //  Write OID.
-    vsc_data_t cipher_oid = vscf_oid_from_alg_id(vscf_cipher_alg_info_alg_id(cipher_alg_info));
+    vsc_data_t cipher_oid = vscf_oid_from_alg_id(alg_id);
     len += vscf_asn1_writer_write_oid(asn1_writer, cipher_oid);
 
     //  Write AlgorithmIdentifier SEQUENCE.
@@ -387,20 +588,25 @@ vscf_alg_info_der_serializer_serialized_len(
     case vscf_alg_id_RSA:
     case vscf_alg_id_ED25519:
     case vscf_alg_id_X25519:
-        return vscf_alg_info_der_serializer_serialized_simple_alg_info_len(
-                alg_info_der_serializer, (const vscf_simple_alg_info_t *)alg_info);
+        return vscf_alg_info_der_serializer_serialized_simple_alg_info_len(alg_info_der_serializer, alg_info);
 
     case vscf_alg_id_KDF1:
     case vscf_alg_id_KDF2:
-        return vscf_alg_info_der_serializer_serialized_kdf_alg_info_len(
-                alg_info_der_serializer, (const vscf_kdf_alg_info_t *)alg_info);
+        return vscf_alg_info_der_serializer_serialized_kdf_alg_info_len(alg_info_der_serializer, alg_info);
+
+    case vscf_alg_id_HKDF:
+        return vscf_alg_info_der_serializer_serialized_hkdf_alg_info_len(alg_info_der_serializer, alg_info);
+
+    case vscf_alg_id_HMAC:
+        return vscf_alg_info_der_serializer_serialized_hmac_alg_info_len(alg_info_der_serializer, alg_info);
 
     case vscf_alg_id_AES256_GCM:
-        return vscf_alg_info_der_serializer_serialized_cipher_alg_info_len(
-                alg_info_der_serializer, (const vscf_cipher_alg_info_t *)alg_info);
+        return vscf_alg_info_der_serializer_serialized_cipher_alg_info_len(alg_info_der_serializer, alg_info);
 
+    case vscf_alg_id_PKCS5_PBKDF2:
+    case vscf_alg_id_PKCS5_PBES2:
     case vscf_alg_id_NONE:
-        VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
+        VSCF_ASSERT(0 && "Unhendled alg id.");
         break;
     }
 
@@ -441,23 +647,30 @@ vscf_alg_info_der_serializer_serialize(
     case vscf_alg_id_RSA:
     case vscf_alg_id_ED25519:
     case vscf_alg_id_X25519:
-        vscf_alg_info_der_serializer_serialize_simple_alg_info(
-                alg_info_der_serializer, (const vscf_simple_alg_info_t *)alg_info, der_out);
+        vscf_alg_info_der_serializer_serialize_simple_alg_info(alg_info_der_serializer, alg_info, der_out);
         break;
 
     case vscf_alg_id_KDF1:
     case vscf_alg_id_KDF2:
-        vscf_alg_info_der_serializer_serialize_kdf_alg_info(
-                alg_info_der_serializer, (const vscf_kdf_alg_info_t *)alg_info, der_out);
+        vscf_alg_info_der_serializer_serialize_kdf_alg_info(alg_info_der_serializer, alg_info, der_out);
+        break;
+
+    case vscf_alg_id_HKDF:
+        vscf_alg_info_der_serializer_serialize_hkdf_alg_info(alg_info_der_serializer, alg_info, der_out);
+        break;
+
+    case vscf_alg_id_HMAC:
+        vscf_alg_info_der_serializer_serialize_hmac_alg_info(alg_info_der_serializer, alg_info, der_out);
         break;
 
     case vscf_alg_id_AES256_GCM:
-        vscf_alg_info_der_serializer_serialize_cipher_alg_info(
-                alg_info_der_serializer, (const vscf_cipher_alg_info_t *)alg_info, der_out);
+        vscf_alg_info_der_serializer_serialize_cipher_alg_info(alg_info_der_serializer, alg_info, der_out);
         break;
 
+    case vscf_alg_id_PKCS5_PBKDF2:
+    case vscf_alg_id_PKCS5_PBES2:
     case vscf_alg_id_NONE:
-        VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
+        VSCF_ASSERT(0 && "Unhendled alg id.");
         break;
     }
 

@@ -76,6 +76,30 @@
 
 
 //
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_pkcs5_pbes2_init() is called.
+//  Note, that context is already zeroed.
+//
+VSCF_PRIVATE void
+vscf_pkcs5_pbes2_init_ctx(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
+
+    VSCF_ASSERT_PTR(pkcs5_pbes2);
+}
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_pkcs5_pbes2_cleanup_ctx(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
+
+    VSCF_ASSERT_PTR(pkcs5_pbes2);
+
+    vsc_buffer_destroy(&pkcs5_pbes2->password);
+}
+
+//
 //  Configure cipher with a new password.
 //
 VSCF_PUBLIC void

@@ -1,92 +1,84 @@
 <implementor name="mbedtls" is_default="1">
     Provide implementation based on the library ARM mbedTLS.
 
+
     <implementation name="sha224">
         This is MbedTLS implementation of SHA224.
 
-        <require library="mbedtls" feature="SHA256 C"/>
-
-        <context>
-            <require header="mbedtls/sha256.h"/>
-            <property name="hash ctx" class="mbedtls_sha256_context" library="mbedtls"
-                    access="readwrite" is_reference="0"/>
-        </context>
-
+        <interface name="alg"/>
         <interface name="hash info">
             <constant name="digest len" value="28"/>
             <constant name="block len" value="64"/>
         </interface>
-
         <interface name="hash"/>
         <interface name="hash stream"/>
+
+        <require library="mbedtls" feature="SHA256 C"/>
+        <require header="mbedtls/sha256.h" scope="context"/>
+        <require interface="alg info"/>
+        <require impl="simple alg info"/>
+
+        <property name="hash ctx" class="mbedtls_sha256_context" library="mbedtls" is_reference="0"/>
     </implementation>
 
 
     <implementation name="sha256">
         This is MbedTLS implementation of SHA256.
 
-        <require library="mbedtls" feature="SHA256 C"/>
-        <require enum="alg id"/>
-        <require impl="simple alg info"/>
-        <require interface="alg info"/>
-        <require impl="kdf alg info"/>
-
-        <context>
-            <require header="mbedtls/sha256.h"/>
-            <property name="hash ctx" class="mbedtls_sha256_context" library="mbedtls"
-                    access="readwrite" is_reference="0"/>
-        </context>
-
+        <interface name="alg"/>
         <interface name="hash info">
             <constant name="digest len" value="32"/>
             <constant name="block len" value="64"/>
         </interface>
-
         <interface name="hash"/>
         <interface name="hash stream"/>
-        <interface name="alg"/>
+
+        <require library="mbedtls" feature="SHA256 C"/>
+        <require header="mbedtls/sha256.h" scope="context"/>
+        <require interface="alg info"/>
+        <require impl="simple alg info"/>
+
+        <property name="hash ctx" class="mbedtls_sha256_context" library="mbedtls" is_reference="0"/>
     </implementation>
 
 
     <implementation name="sha384">
         This is MbedTLS implementation of SHA384.
 
-        <require library="mbedtls" feature="SHA512 C"/>
-
-        <context>
-            <require header="mbedtls/sha512.h"/>
-            <property name="hash ctx" class="mbedtls_sha512_context" library="mbedtls"
-                    access="readwrite" is_reference="0"/>
-        </context>
-
+        <interface name="alg"/>
         <interface name="hash info">
             <constant name="digest len" value="48"/>
             <constant name="block len" value="128"/>
         </interface>
-
         <interface name="hash"/>
         <interface name="hash stream"/>
+
+        <require library="mbedtls" feature="SHA512 C"/>
+        <require header="mbedtls/sha512.h" scope="context"/>
+        <require interface="alg info"/>
+        <require impl="simple alg info"/>
+
+        <property name="hash ctx" class="mbedtls_sha512_context" library="mbedtls" is_reference="0"/>
     </implementation>
 
 
     <implementation name="sha512">
         This is MbedTLS implementation of SHA512.
 
-        <require library="mbedtls" feature="SHA512 C"/>
-
-        <context>
-            <require header="mbedtls/sha512.h"/>
-            <property name="hash ctx" class="mbedtls_sha512_context" library="mbedtls"
-                    access="readwrite" is_reference="0"/>
-        </context>
-
+        <interface name="alg"/>
         <interface name="hash info">
             <constant name="digest len" value="64"/>
             <constant name="block len" value="128"/>
         </interface>
-
         <interface name="hash"/>
         <interface name="hash stream"/>
+
+        <require library="mbedtls" feature="SHA512 C"/>
+        <require header="mbedtls/sha512.h" scope="context"/>
+        <require interface="alg info"/>
+        <require impl="simple alg info"/>
+
+        <property name="hash ctx" class="mbedtls_sha512_context" library="mbedtls" is_reference="0"/>
     </implementation>
 
 
@@ -95,67 +87,56 @@
         Note, this implementation contains dynamic memory allocations,
         this should be improved in the future releases.
 
-        <require library="mbedtls" feature="CIPHER C"/>
-
-        <context name="aes256 gcm">
-            <require header="mbedtls/cipher.h"/>
-
-            <property name="cipher ctx" class="mbedtls_cipher_context_t" library="mbedtls"
-                    access="readwrite" is_reference="0"/>
-
-            <property name="key" type="byte" access="readwrite">
-                <array length="fixed" length_constant=".(class_aes256_gcm_constant_key_len)"/>
-            </property>
-
-            <property name="nonce" type="byte" access="readwrite">
-                <array length="fixed" length_constant=".(class_aes256_gcm_constant_nonce_len)"/>
-            </property>
-
-            <property name="do decrypt" type="boolean"/>
-
-            <property name="auth tag" type="byte" access="readwrite">
-                <array length="fixed" length_constant=".(class_aes256_gcm_constant_auth_tag_len)"/>
-            </property>
-        </context>
-
         <interface name="encrypt"/>
-
         <interface name="decrypt"/>
-
         <interface name="cipher info">
             <constant name="nonce len" value="12"/>
             <constant name="key len" value="32"/>
             <constant name="key bitlen" value="256"/>
             <constant name="block len" value="16"/>
         </interface>
-
         <interface name="cipher"/>
-
         <interface name="cipher auth info">
             <constant name="auth tag len" value="16"/>
         </interface>
-
         <interface name="auth encrypt"/>
         <interface name="auth decrypt"/>
         <interface name="cipher auth"/>
+
+        <require library="mbedtls" feature="CIPHER C"/>
+        <require header="mbedtls/cipher.h" scope="context"/>
+
+        <property name="cipher ctx" class="mbedtls_cipher_context_t" library="mbedtls" is_reference="0"/>
+
+        <property name="key" type="byte">
+            <array length="fixed" length_constant=".(class_aes256_gcm_constant_key_len)"/>
+        </property>
+
+        <property name="nonce" type="byte">
+            <array length="fixed" length_constant=".(class_aes256_gcm_constant_nonce_len)"/>
+        </property>
+
+        <property name="do decrypt" type="boolean"/>
+
+        <property name="auth tag" type="byte">
+            <array length="fixed" length_constant=".(class_aes256_gcm_constant_auth_tag_len)"/>
+        </property>
     </implementation>
 
 
     <implementation name="asn1rd">
         This is MbedTLS implementation of ASN.1 reader.
 
+        <interface name="asn1 reader"/>
+
         <require library="mbedtls" feature="ASN1 PARSE C"/>
         <require enum="asn1 tag"/>
         <require header="mbedtls/asn1.h"/>
         <require module="buffer defs" project="common"/>
 
-        <context>
-            <property name="curr" type="byte" access="readwrite" is_reference="1"/>
-            <property name="end" type="byte" access="readonly" is_reference="1"/>
-            <property name="error" enum="error"/>
-        </context>
-
-        <interface name="asn1 reader"/>
+        <property name="curr" type="byte" access="readwrite" is_reference="1"/>
+        <property name="end" type="byte" access="readonly" is_reference="1"/>
+        <property name="error" enum="error"/>
 
         <method name="mbedtls has error">
             If given mbedtls code is equal to zero, then setup correspond error
@@ -170,6 +151,7 @@
             Read raw data of specific tag the from the buffer.
 
             <argument name="tag" type="integer"/>
+
             <return class="data"/>
         </method>
     </implementation>
@@ -178,19 +160,17 @@
     <implementation name="asn1wr">
         This is MbedTLS implementation of ASN.1 writer.
 
+        <interface name="asn1 writer"/>
+
         <require library="mbedtls" feature="ASN1 WRITE C"/>
         <require enum="asn1 tag"/>
         <require header="mbedtls/asn1.h"/>
         <require header="mbedtls/asn1write.h"/>
 
-        <context>
-            <property name="start" type="byte" access="readwrite" is_reference="1"/>
-            <property name="end" type="byte" access="readonly" is_reference="1"/>
-            <property name="curr" type="byte" access="readwrite" is_reference="1"/>
-            <property name="error" enum="error"/>
-        </context>
-
-        <interface name="asn1 writer"/>
+        <property name="start" type="byte" is_reference="1"/>
+        <property name="end" type="byte" access="readonly" is_reference="1"/>
+        <property name="curr" type="byte" is_reference="1"/>
+        <property name="error" enum="error"/>
 
         <method name="mbedtls has error">
             If given mbedtls code is equal to zero, then setup correspond error

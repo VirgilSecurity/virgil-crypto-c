@@ -65,18 +65,6 @@
 // --------------------------------------------------------------------------
 
 //
-//  Return implemented hash algorithm type.
-//
-VSCF_PUBLIC vscf_hash_alg_t
-vscf_hash_info_alg(const vscf_hash_info_api_t *hash_info_api) {
-
-    VSCF_ASSERT_PTR (hash_info_api);
-
-    VSCF_ASSERT_PTR (hash_info_api->alg_cb);
-    return hash_info_api->alg_cb ();
-}
-
-//
 //  Returns constant 'digest len'.
 //
 VSCF_PUBLIC size_t

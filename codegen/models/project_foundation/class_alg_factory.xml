@@ -1,0 +1,47 @@
+<class name="alg factory" context="none" scope="internal">
+    Create algorithms based on the given information.
+
+    <require interface="alg info"/>
+    <require impl="sha224"/>
+    <require impl="sha256"/>
+    <require impl="sha384"/>
+    <require impl="sha512"/>
+    <require impl="hmac"/>
+    <require impl="hkdf"/>
+    <require impl="pkcs5 pbkdf2"/>
+    <require impl="aes256 gcm"/>
+    <require impl="hash based alg info"/>
+    <require impl="cipher alg info"/>
+
+    <method name="create hash stream alg" is_static="1">
+        Create algorithm that implements "hash stream" interface.
+
+        <argument name="alg info" interface="alg info"/>
+
+        <return interface="hash stream" access="disown"/>
+    </method>
+
+    <method name="create mac stream alg" is_static="1">
+        Create algorithm that implements "mac stream" interface.
+
+        <argument name="alg info" interface="alg info"/>
+
+        <return interface="mac stream" access="disown"/>
+    </method>
+
+    <method name="create salted kdf alg" is_static="1">
+        Create algorithm that implements "mac stream" interface.
+
+        <argument name="alg info" interface="alg info"/>
+
+        <return interface="salted kdf" access="disown"/>
+    </method>
+
+    <method name="create cipher alg" is_static="1">
+        Create algorithm that implements "cipher" interface.
+
+        <argument name="alg info" interface="alg info"/>
+
+        <return interface="cipher" access="disown"/>
+    </method>
+</class>

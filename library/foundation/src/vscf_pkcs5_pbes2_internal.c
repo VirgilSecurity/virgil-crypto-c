@@ -146,6 +146,8 @@ vscf_pkcs5_pbes2_init(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
 
     pkcs5_pbes2->info = &info;
     pkcs5_pbes2->refcnt = 1;
+
+    vscf_pkcs5_pbes2_init_ctx(pkcs5_pbes2);
 }
 
 //
@@ -169,6 +171,8 @@ vscf_pkcs5_pbes2_cleanup(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
 
     vscf_pkcs5_pbes2_release_pbkdf2(pkcs5_pbes2);
     vscf_pkcs5_pbes2_release_cipher(pkcs5_pbes2);
+
+    vscf_pkcs5_pbes2_cleanup_ctx(pkcs5_pbes2);
 
     vscf_zeroize(pkcs5_pbes2, sizeof(vscf_pkcs5_pbes2_t));
 }
