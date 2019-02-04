@@ -209,7 +209,7 @@ vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(
     const vscf_alg_id_t alg_id = vscf_oid_to_alg_id(alg_oid);
     const vscf_alg_id_t hash_id = vscf_oid_to_alg_id(hash_oid);
 
-    if ((alg_id == vscf_oid_id_NONE) || (hash_id == vscf_alg_id_NONE)) {
+    if ((alg_id == vscf_alg_id_NONE) || (hash_id == vscf_alg_id_NONE)) {
         VSCF_ERROR_CTX_SAFE_UPDATE(error, vscf_error_UNSUPPORTED_ALGORITHM);
         return NULL;
     }
