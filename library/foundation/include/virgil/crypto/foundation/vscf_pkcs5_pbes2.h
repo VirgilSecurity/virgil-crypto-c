@@ -54,8 +54,8 @@
 #define VSCF_PKCS5_PBES2_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_pkcs5_pbkdf2.h"
 #include "vscf_impl.h"
+#include "vscf_alg_id.h"
 #include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -143,23 +143,23 @@ VSCF_PUBLIC vscf_pkcs5_pbes2_t *
 vscf_pkcs5_pbes2_shallow_copy(vscf_pkcs5_pbes2_t *pkcs5_pbes2);
 
 //
-//  Setup dependency to the implementation 'pkcs5 pbkdf2' with shared ownership.
+//  Setup dependency to the interface 'salted kdf' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_use_pbkdf2(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vscf_pkcs5_pbkdf2_t *pbkdf2);
+vscf_pkcs5_pbes2_use_kdf(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vscf_impl_t *kdf);
 
 //
-//  Setup dependency to the implementation 'pkcs5 pbkdf2' and transfer ownership.
+//  Setup dependency to the interface 'salted kdf' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_take_pbkdf2(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vscf_pkcs5_pbkdf2_t *pbkdf2);
+vscf_pkcs5_pbes2_take_kdf(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vscf_impl_t *kdf);
 
 //
-//  Release dependency to the implementation 'pkcs5 pbkdf2'.
+//  Release dependency to the interface 'salted kdf'.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_release_pbkdf2(vscf_pkcs5_pbes2_t *pkcs5_pbes2);
+vscf_pkcs5_pbes2_release_kdf(vscf_pkcs5_pbes2_t *pkcs5_pbes2);
 
 //
 //  Setup dependency to the interface 'cipher' with shared ownership.
@@ -185,6 +185,24 @@ vscf_pkcs5_pbes2_release_cipher(vscf_pkcs5_pbes2_t *pkcs5_pbes2);
 //
 VSCF_PUBLIC void
 vscf_pkcs5_pbes2_reset(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vsc_data_t pwd);
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_pkcs5_pbes2_alg_id(const vscf_pkcs5_pbes2_t *pkcs5_pbes2);
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_pkcs5_pbes2_produce_alg_info(const vscf_pkcs5_pbes2_t *pkcs5_pbes2);
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_pkcs5_pbes2_restore_alg_info(vscf_pkcs5_pbes2_t *pkcs5_pbes2, const vscf_impl_t *alg_info);
 
 //
 //  Encrypt given data.

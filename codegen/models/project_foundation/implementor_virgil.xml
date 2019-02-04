@@ -129,20 +129,26 @@
 
         <dependency name="hmac" interface="mac"/>
 
-        <context>
-            <property name="salt" class="buffer"/>
-            <property name="iteration count" type="size"/>
-        </context>
+        <property name="salt" class="buffer"/>
+        <property name="iteration count" type="size"/>
     </implementation>
 
 
     <implementation name="pkcs5 pbes2">
         Virgil Security implementation of the PBES2 (RFC 8018) algorithm.
 
+        <interface name="alg"/>
         <interface name="encrypt"/>
         <interface name="decrypt"/>
 
-        <dependency name="pbkdf2" impl="pkcs5 pbkdf2"/>
+        <require interface="alg"/>
+        <require interface="alg info"/>
+        <require class="alg factory"/>
+        <require impl="pkcs5 pbkdf2"/>
+        <require impl="aes256 gcm"/>
+        <require impl="pbe alg info"/>
+
+        <dependency name="kdf" interface="salted kdf"/>
         <dependency name="cipher" interface="cipher"/>
 
         <property name="password" class="buffer"/>

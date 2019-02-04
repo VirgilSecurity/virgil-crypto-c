@@ -59,7 +59,6 @@
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_pkcs5_pbes2.h"
-#include "vscf_pkcs5_pbkdf2.h"
 #include "vscf_impl.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -98,9 +97,9 @@ struct vscf_pkcs5_pbes2_t {
     //
     size_t refcnt;
     //
-    //  Dependency to the implementation 'pkcs5 pbkdf2'.
+    //  Dependency to the interface 'salted kdf'.
     //
-    vscf_pkcs5_pbkdf2_t *pbkdf2;
+    vscf_impl_t *kdf;
     //
     //  Dependency to the interface 'cipher'.
     //

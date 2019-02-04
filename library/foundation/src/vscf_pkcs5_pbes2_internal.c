@@ -55,12 +55,14 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_pkcs5_pbes2_defs.h"
+#include "vscf_alg.h"
+#include "vscf_alg_api.h"
 #include "vscf_encrypt.h"
 #include "vscf_encrypt_api.h"
 #include "vscf_decrypt.h"
 #include "vscf_decrypt_api.h"
+#include "vscf_salted_kdf.h"
 #include "vscf_cipher.h"
-#include "vscf_pkcs5_pbkdf2.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -76,6 +78,29 @@
 
 static const vscf_api_t *
 vscf_pkcs5_pbes2_find_api(vscf_api_tag_t api_tag);
+
+//
+//  Configuration of the interface API 'alg api'.
+//
+static const vscf_alg_api_t alg_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
+    //
+    vscf_api_tag_ALG,
+    //
+    //  Provide algorithm identificator.
+    //
+    (vscf_alg_api_alg_id_fn)vscf_pkcs5_pbes2_alg_id,
+    //
+    //  Produce object with algorithm information and configuration parameters.
+    //
+    (vscf_alg_api_produce_alg_info_fn)vscf_pkcs5_pbes2_produce_alg_info,
+    //
+    //  Restore algorithm configuration from the given object.
+    //
+    (vscf_alg_api_restore_alg_info_fn)vscf_pkcs5_pbes2_restore_alg_info
+};
 
 //
 //  Configuration of the interface API 'encrypt api'.
@@ -169,7 +194,7 @@ vscf_pkcs5_pbes2_cleanup(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
         return;
     }
 
-    vscf_pkcs5_pbes2_release_pbkdf2(pkcs5_pbes2);
+    vscf_pkcs5_pbes2_release_kdf(pkcs5_pbes2);
     vscf_pkcs5_pbes2_release_cipher(pkcs5_pbes2);
 
     vscf_pkcs5_pbes2_cleanup_ctx(pkcs5_pbes2);
@@ -253,41 +278,45 @@ vscf_pkcs5_pbes2_impl(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
 }
 
 //
-//  Setup dependency to the implementation 'pkcs5 pbkdf2' with shared ownership.
+//  Setup dependency to the interface 'salted kdf' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_use_pbkdf2(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vscf_pkcs5_pbkdf2_t *pbkdf2) {
+vscf_pkcs5_pbes2_use_kdf(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vscf_impl_t *kdf) {
 
     VSCF_ASSERT_PTR(pkcs5_pbes2);
-    VSCF_ASSERT_PTR(pbkdf2);
-    VSCF_ASSERT_PTR(pkcs5_pbes2->pbkdf2 == NULL);
+    VSCF_ASSERT_PTR(kdf);
+    VSCF_ASSERT_PTR(pkcs5_pbes2->kdf == NULL);
 
-    pkcs5_pbes2->pbkdf2 = vscf_pkcs5_pbkdf2_shallow_copy(pbkdf2);
+    VSCF_ASSERT(vscf_salted_kdf_is_implemented(kdf));
+
+    pkcs5_pbes2->kdf = vscf_impl_shallow_copy(kdf);
 }
 
 //
-//  Setup dependency to the implementation 'pkcs5 pbkdf2' and transfer ownership.
+//  Setup dependency to the interface 'salted kdf' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_take_pbkdf2(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vscf_pkcs5_pbkdf2_t *pbkdf2) {
+vscf_pkcs5_pbes2_take_kdf(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vscf_impl_t *kdf) {
 
     VSCF_ASSERT_PTR(pkcs5_pbes2);
-    VSCF_ASSERT_PTR(pbkdf2);
-    VSCF_ASSERT_PTR(pkcs5_pbes2->pbkdf2 == NULL);
+    VSCF_ASSERT_PTR(kdf);
+    VSCF_ASSERT_PTR(pkcs5_pbes2->kdf == NULL);
 
-    pkcs5_pbes2->pbkdf2 = pbkdf2;
+    VSCF_ASSERT(vscf_salted_kdf_is_implemented(kdf));
+
+    pkcs5_pbes2->kdf = kdf;
 }
 
 //
-//  Release dependency to the implementation 'pkcs5 pbkdf2'.
+//  Release dependency to the interface 'salted kdf'.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_release_pbkdf2(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
+vscf_pkcs5_pbes2_release_kdf(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
 
     VSCF_ASSERT_PTR(pkcs5_pbes2);
 
-    vscf_pkcs5_pbkdf2_destroy(&pkcs5_pbes2->pbkdf2);
+    vscf_impl_destroy(&pkcs5_pbes2->kdf);
 }
 
 //
@@ -336,6 +365,8 @@ static const vscf_api_t *
 vscf_pkcs5_pbes2_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
+        case vscf_api_tag_ALG:
+            return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_DECRYPT:
             return (const vscf_api_t *) &decrypt_api;
         case vscf_api_tag_ENCRYPT:
