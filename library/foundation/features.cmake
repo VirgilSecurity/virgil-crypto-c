@@ -58,8 +58,6 @@ option(VSCF_DECRYPT "Enable interface 'decrypt'." ON)
 option(VSCF_ENCRYPT "Enable interface 'encrypt'." ON)
 option(VSCF_SALTED_KDF "Enable interface 'salted kdf'." ON)
 option(VSCF_HASH "Enable interface 'hash'." ON)
-option(VSCF_HASH_INFO "Enable interface 'hash info'." ON)
-option(VSCF_HASH_STREAM "Enable interface 'hash stream'." ON)
 option(VSCF_MAC "Enable interface 'mac'." ON)
 option(VSCF_MAC_INFO "Enable interface 'mac info'." ON)
 option(VSCF_MAC_STREAM "Enable interface 'mac stream'." ON)
@@ -142,8 +140,6 @@ mark_as_advanced(
         VSCF_ENCRYPT
         VSCF_SALTED_KDF
         VSCF_HASH
-        VSCF_HASH_INFO
-        VSCF_HASH_STREAM
         VSCF_MAC
         VSCF_MAC_INFO
         VSCF_MAC_STREAM
@@ -291,24 +287,6 @@ if(VSCF_SALTED_KDF AND NOT VSCF_KDF)
     message("--")
     message("Feature VSCF_SALTED_KDF depends on the feature:")
     message("     VSCF_KDF - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_HASH AND NOT VSCF_HASH_INFO)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_HASH depends on the feature:")
-    message("     VSCF_HASH_INFO - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_HASH_STREAM AND NOT VSCF_HASH_INFO)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_HASH_STREAM depends on the feature:")
-    message("     VSCF_HASH_INFO - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

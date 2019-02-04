@@ -24,8 +24,6 @@ framework module VSCFoundation {
     header "vscf_entropy_source.h"
     header "vscf_generate_key.h"
     header "vscf_hash.h"
-    header "vscf_hash_info.h"
-    header "vscf_hash_stream.h"
     header "vscf_kdf.h"
     header "vscf_key.h"
     header "vscf_key_deserializer.h"

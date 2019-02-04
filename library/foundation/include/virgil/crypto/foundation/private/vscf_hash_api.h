@@ -56,7 +56,6 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_hash_info.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -89,6 +88,21 @@ extern "C" {
 typedef void (*vscf_hash_api_hash_fn)(vsc_data_t data, vsc_buffer_t *digest);
 
 //
+//  Callback. Start a new hashing.
+//
+typedef void (*vscf_hash_api_start_fn)(vscf_impl_t *impl);
+
+//
+//  Callback. Add given data to the hash.
+//
+typedef void (*vscf_hash_api_update_fn)(vscf_impl_t *impl, vsc_data_t data);
+
+//
+//  Callback. Accompilsh hashing and return it's result (a message digest).
+//
+typedef void (*vscf_hash_api_finish_fn)(vscf_impl_t *impl, vsc_buffer_t *digest);
+
+//
 //  Contains API requirements of the interface 'hash'.
 //
 struct vscf_hash_api_t {
@@ -98,13 +112,29 @@ struct vscf_hash_api_t {
     //
     vscf_api_tag_t api_tag;
     //
-    //  Link to the inherited interface API 'hash info'.
-    //
-    const vscf_hash_info_api_t *hash_info_api;
-    //
     //  Calculate hash over given data.
     //
     vscf_hash_api_hash_fn hash_cb;
+    //
+    //  Start a new hashing.
+    //
+    vscf_hash_api_start_fn start_cb;
+    //
+    //  Add given data to the hash.
+    //
+    vscf_hash_api_update_fn update_cb;
+    //
+    //  Accompilsh hashing and return it's result (a message digest).
+    //
+    vscf_hash_api_finish_fn finish_cb;
+    //
+    //  Length of the digest (hashing output) in bytes.
+    //
+    size_t digest_len;
+    //
+    //  Block length of the digest function in bytes.
+    //
+    size_t block_len;
 };
 
 

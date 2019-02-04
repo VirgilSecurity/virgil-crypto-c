@@ -38,7 +38,7 @@ import VSCFoundation
 import VirgilCryptoCommon
 
 /// This is MbedTLS implementation of SHA224.
-@objc(VSCFSha224) public class Sha224: NSObject, Alg, HashInfo, Hash, HashStream {
+@objc(VSCFSha224) public class Sha224: NSObject, Alg, Hash {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer

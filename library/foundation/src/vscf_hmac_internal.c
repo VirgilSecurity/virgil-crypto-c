@@ -63,7 +63,7 @@
 #include "vscf_mac_api.h"
 #include "vscf_mac_stream.h"
 #include "vscf_mac_stream_api.h"
-#include "vscf_hash_stream.h"
+#include "vscf_hash.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -306,7 +306,7 @@ vscf_hmac_impl(vscf_hmac_t *hmac) {
 }
 
 //
-//  Setup dependency to the interface 'hash stream' with shared ownership.
+//  Setup dependency to the interface 'hash' with shared ownership.
 //
 VSCF_PUBLIC void
 vscf_hmac_use_hash(vscf_hmac_t *hmac, vscf_impl_t *hash) {
@@ -315,13 +315,13 @@ vscf_hmac_use_hash(vscf_hmac_t *hmac, vscf_impl_t *hash) {
     VSCF_ASSERT_PTR(hash);
     VSCF_ASSERT_PTR(hmac->hash == NULL);
 
-    VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
+    VSCF_ASSERT(vscf_hash_is_implemented(hash));
 
     hmac->hash = vscf_impl_shallow_copy(hash);
 }
 
 //
-//  Setup dependency to the interface 'hash stream' and transfer ownership.
+//  Setup dependency to the interface 'hash' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
@@ -331,13 +331,13 @@ vscf_hmac_take_hash(vscf_hmac_t *hmac, vscf_impl_t *hash) {
     VSCF_ASSERT_PTR(hash);
     VSCF_ASSERT_PTR(hmac->hash == NULL);
 
-    VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
+    VSCF_ASSERT(vscf_hash_is_implemented(hash));
 
     hmac->hash = hash;
 }
 
 //
-//  Release dependency to the interface 'hash stream'.
+//  Release dependency to the interface 'hash'.
 //
 VSCF_PUBLIC void
 vscf_hmac_release_hash(vscf_hmac_t *hmac) {

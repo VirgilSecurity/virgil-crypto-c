@@ -6,12 +6,10 @@
         This is MbedTLS implementation of SHA224.
 
         <interface name="alg"/>
-        <interface name="hash info">
+        <interface name="hash">
             <constant name="digest len" value="28"/>
             <constant name="block len" value="64"/>
         </interface>
-        <interface name="hash"/>
-        <interface name="hash stream"/>
 
         <require library="mbedtls" feature="SHA256 C"/>
         <require header="mbedtls/sha256.h" scope="context"/>
@@ -26,12 +24,10 @@
         This is MbedTLS implementation of SHA256.
 
         <interface name="alg"/>
-        <interface name="hash info">
+        <interface name="hash">
             <constant name="digest len" value="32"/>
             <constant name="block len" value="64"/>
         </interface>
-        <interface name="hash"/>
-        <interface name="hash stream"/>
 
         <require library="mbedtls" feature="SHA256 C"/>
         <require header="mbedtls/sha256.h" scope="context"/>
@@ -46,12 +42,10 @@
         This is MbedTLS implementation of SHA384.
 
         <interface name="alg"/>
-        <interface name="hash info">
+        <interface name="hash">
             <constant name="digest len" value="48"/>
             <constant name="block len" value="128"/>
         </interface>
-        <interface name="hash"/>
-        <interface name="hash stream"/>
 
         <require library="mbedtls" feature="SHA512 C"/>
         <require header="mbedtls/sha512.h" scope="context"/>
@@ -66,12 +60,10 @@
         This is MbedTLS implementation of SHA512.
 
         <interface name="alg"/>
-        <interface name="hash info">
+        <interface name="hash">
             <constant name="digest len" value="64"/>
             <constant name="block len" value="128"/>
         </interface>
-        <interface name="hash"/>
-        <interface name="hash stream"/>
 
         <require library="mbedtls" feature="SHA512 C"/>
         <require header="mbedtls/sha512.h" scope="context"/>

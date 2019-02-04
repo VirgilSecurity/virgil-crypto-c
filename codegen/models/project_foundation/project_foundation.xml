@@ -75,8 +75,6 @@
     <interface name="encrypt"/>
     <interface name="salted kdf"/>
     <interface name="hash"/>
-    <interface name="hash info"/>
-    <interface name="hash stream"/>
     <interface name="mac"/>
     <interface name="mac info"/>
     <interface name="mac stream"/>

@@ -95,8 +95,6 @@ enum vscf_api_tag_t {
     vscf_api_tag_ENTROPY_SOURCE,
     vscf_api_tag_GENERATE_KEY,
     vscf_api_tag_HASH,
-    vscf_api_tag_HASH_INFO,
-    vscf_api_tag_HASH_STREAM,
     vscf_api_tag_KDF,
     vscf_api_tag_KEY,
     vscf_api_tag_KEY_DESERIALIZER,

@@ -273,7 +273,7 @@ vscf_rsa_private_key_sign(vscf_rsa_private_key_t *rsa_private_key, vsc_data_t da
     VSCF_ASSERT(mbedtls_rsa_check_privkey(&rsa_private_key->rsa_ctx) == 0);
 
     //  Hash
-    size_t data_hash_len = vscf_hash_info_digest_len(vscf_hash_hash_info_api(vscf_hash_api(rsa_private_key->hash)));
+    size_t data_hash_len = vscf_hash_digest_len(vscf_hash_api(rsa_private_key->hash));
     vsc_buffer_t *data_hash_buf = vsc_buffer_new_with_capacity(data_hash_len);
     VSCF_ASSERT(data_hash_len <= UINT_MAX);
 

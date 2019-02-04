@@ -70,7 +70,7 @@ import VirgilCryptoCommon
         vscf_hkdf_delete(self.c_ctx)
     }
 
-    @objc public func setHash(hash: HashStream) {
+    @objc public func setHash(hash: Hash) {
         vscf_hkdf_release_hash(self.c_ctx)
         vscf_hkdf_use_hash(self.c_ctx, hash.c_ctx)
     }

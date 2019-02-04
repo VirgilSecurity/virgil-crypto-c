@@ -65,8 +65,6 @@ target_compile_definitions(foundation
             "VSCF_ENCRYPT=$<BOOL:${VSCF_ENCRYPT}>"
             "VSCF_SALTED_KDF=$<BOOL:${VSCF_SALTED_KDF}>"
             "VSCF_HASH=$<BOOL:${VSCF_HASH}>"
-            "VSCF_HASH_INFO=$<BOOL:${VSCF_HASH_INFO}>"
-            "VSCF_HASH_STREAM=$<BOOL:${VSCF_HASH_STREAM}>"
             "VSCF_MAC=$<BOOL:${VSCF_MAC}>"
             "VSCF_MAC_INFO=$<BOOL:${VSCF_MAC_INFO}>"
             "VSCF_MAC_STREAM=$<BOOL:${VSCF_MAC_STREAM}>"

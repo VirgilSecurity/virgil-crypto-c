@@ -55,8 +55,6 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_hash_info.h"
-#include "vscf_hash.h"
 #include "vscf_alg_id.h"
 #include "vscf_error.h"
 
@@ -157,18 +155,6 @@ vscf_sha224_destroy(vscf_sha224_t **sha224_ref);
 //
 VSCF_PUBLIC vscf_sha224_t *
 vscf_sha224_shallow_copy(vscf_sha224_t *sha224);
-
-//
-//  Returns instance of the implemented interface 'hash info'.
-//
-VSCF_PUBLIC const vscf_hash_info_api_t *
-vscf_sha224_hash_info_api(void);
-
-//
-//  Returns instance of the implemented interface 'hash'.
-//
-VSCF_PUBLIC const vscf_hash_api_t *
-vscf_sha224_hash_api(void);
 
 //
 //  Provide algorithm identificator.

@@ -57,7 +57,7 @@
 #include "vscf_alg_info.h"
 #include "vscf_alg_factory.h"
 #include "vscf_hash_based_alg_info.h"
-#include "vscf_hash_stream.h"
+#include "vscf_hash.h"
 #include "vscf_kdf1_defs.h"
 #include "vscf_kdf1_internal.h"
 
@@ -141,7 +141,7 @@ vscf_kdf1_derive(vscf_kdf1_t *kdf1, vsc_data_t data, size_t key_len, vsc_buffer_
 
 
     // Get HASH parameters
-    size_t digest_len = vscf_hash_info_digest_len(vscf_hash_info_api(kdf1->hash));
+    size_t digest_len = vscf_hash_digest_len(vscf_hash_api(kdf1->hash));
 
     // Get KDF parameters
     size_t counter_len = VSCF_CEIL(key_len, digest_len);
@@ -155,18 +155,18 @@ vscf_kdf1_derive(vscf_kdf1_t *kdf1, vsc_data_t data, size_t key_len, vsc_buffer_
         counter_string[2] = (unsigned char)((counter >> 8)) & 255;
         counter_string[3] = (unsigned char)(counter & 255);
 
-        vscf_hash_stream_start(kdf1->hash);
-        vscf_hash_stream_update(kdf1->hash, data);
-        vscf_hash_stream_update(kdf1->hash, vsc_data(counter_string, sizeof(counter_string)));
+        vscf_hash_start(kdf1->hash);
+        vscf_hash_update(kdf1->hash, data);
+        vscf_hash_update(kdf1->hash, vsc_data(counter_string, sizeof(counter_string)));
 
         if (digest_len <= key_left_len) {
-            vscf_hash_stream_finish(kdf1->hash, key);
+            vscf_hash_finish(kdf1->hash, key);
             key_left_len -= digest_len;
 
         } else {
             vsc_buffer_t *digest = vsc_buffer_new_with_capacity(digest_len);
 
-            vscf_hash_stream_finish(kdf1->hash, digest);
+            vscf_hash_finish(kdf1->hash, digest);
             memcpy(vsc_buffer_unused_bytes(key), vsc_buffer_bytes(digest), key_left_len);
             vsc_buffer_inc_used(key, key_left_len);
             key_left_len = 0;
