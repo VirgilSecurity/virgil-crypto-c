@@ -61,6 +61,7 @@ framework module VSCFoundation {
     header "vscf_pkcs8_serializer.h"
     header "vscf_rsa_private_key.h"
     header "vscf_rsa_public_key.h"
+    header "vscf_salted_kdf_alg_info.h"
     header "vscf_sha224.h"
     header "vscf_sha256.h"
     header "vscf_sha384.h"

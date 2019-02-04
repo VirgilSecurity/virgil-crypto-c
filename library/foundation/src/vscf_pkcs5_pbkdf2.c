@@ -53,9 +53,12 @@
 #include "vscf_pkcs5_pbkdf2.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_alg.h"
+#include "vscf_alg_info.h"
+#include "vscf_alg_factory.h"
 #include "vscf_hmac.h"
 #include "vscf_sha384.h"
-#include "vscf_alg_factory.h"
+#include "vscf_salted_kdf_alg_info.h"
 #include "vscf_mac.h"
 #include "vscf_pkcs5_pbkdf2_defs.h"
 #include "vscf_pkcs5_pbkdf2_internal.h"
@@ -115,6 +118,59 @@ vscf_pkcs5_pbkdf2_setup_defaults(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
         vscf_hmac_take_hash(hmac, hash);
         pkcs5_pbkdf2->hmac = vscf_hmac_impl(hmac);
     }
+
+    return vscf_SUCCESS;
+}
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_pkcs5_pbkdf2_alg_id(const vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
+
+    VSCF_ASSERT_PTR(pkcs5_pbkdf2);
+
+    return vscf_alg_id_PKCS5_PBKDF2;
+}
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_pkcs5_pbkdf2_produce_alg_info(const vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
+
+    VSCF_ASSERT_PTR(pkcs5_pbkdf2);
+    VSCF_ASSERT_PTR(pkcs5_pbkdf2->hmac);
+    VSCF_ASSERT_PTR(pkcs5_pbkdf2->salt);
+
+    vscf_impl_t *hmac_alg_info = vscf_alg_produce_alg_info(pkcs5_pbkdf2->hmac);
+    vscf_impl_t *pbkdf2_alg_info = vscf_salted_kdf_alg_info_impl(vscf_salted_kdf_alg_info_new_with_members(
+            vscf_alg_id_HKDF, hmac_alg_info, vsc_buffer_data(pkcs5_pbkdf2->salt), pkcs5_pbkdf2->iteration_count));
+
+    vscf_impl_destroy(&hmac_alg_info);
+
+    return pbkdf2_alg_info;
+}
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_pkcs5_pbkdf2_restore_alg_info(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(pkcs5_pbkdf2);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_PKCS5_PBKDF2);
+
+    const vscf_salted_kdf_alg_info_t *salted_kdf_alg_info = (const vscf_salted_kdf_alg_info_t *)alg_info;
+
+    vscf_impl_t *hmac = vscf_alg_factory_create_hash_alg(vscf_salted_kdf_alg_info_hash_alg_info(salted_kdf_alg_info));
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_HMAC);
+
+    vscf_pkcs5_pbkdf2_release_hmac(pkcs5_pbkdf2);
+    vscf_pkcs5_pbkdf2_take_hmac(pkcs5_pbkdf2, hmac);
+    vscf_pkcs5_pbkdf2_reset(pkcs5_pbkdf2, vscf_salted_kdf_alg_info_salt(salted_kdf_alg_info),
+            vscf_salted_kdf_alg_info_iteration_count(salted_kdf_alg_info));
 
     return vscf_SUCCESS;
 }

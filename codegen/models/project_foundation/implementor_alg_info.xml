@@ -60,4 +60,45 @@
             <return class="data"/>
         </method>
     </implementation>
+
+
+    <implementation name="salted kdf alg info">
+        Handle KDF algorithms that are configured with salt and iteration count.
+
+        <interface name="alg info"/>
+
+        <property name="alg id" enum="alg id"/>
+        <property name="hash alg info" interface="alg info"/>
+        <property name="salt" class="buffer"/>
+        <property name="iteration count" type="size"/>
+
+        <constructor name="with members">
+            Create algorithm info with identificator, HASH algorithm info,
+            salt and iteration count.
+
+            <argument name="alg id" enum="alg id"/>
+            <argument name="hash alg info" interface="alg info" access="retain"/>
+            <argument name="salt" class="data"/>
+            <argument name="iteration count" type="size"/>
+        </constructor>
+
+        <method name="hash alg info" is_const="1" declaration="public">
+            Return hash algorithm information.
+
+            <return interface="alg info"/>
+        </method>
+
+        <method name="salt" is_const="1" declaration="public">
+            Return KDF salt.
+
+            <return class="data"/>
+        </method>
+
+        <method name="iteration count" is_const="1" declaration="public">
+            Return KDF iteration count.
+            Note, can be 0 if KDF does not need the iteration count.
+
+            <return type="size"/>
+        </method>
+    </implementation>
 </implementor>

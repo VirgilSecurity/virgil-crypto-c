@@ -47,25 +47,22 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'pkcs5 pbkdf2' implementation.
+//  This module contains 'salted kdf alg info' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_PKCS5_PBKDF2_H_INCLUDED
-#define VSCF_PKCS5_PBKDF2_H_INCLUDED
+#ifndef VSCF_SALTED_KDF_ALG_INFO_H_INCLUDED
+#define VSCF_SALTED_KDF_ALG_INFO_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_error.h"
 #include "vscf_alg_id.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
-#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
-#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -86,123 +83,94 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_pkcs5_pbkdf2_t vscf_pkcs5_pbkdf2_t;
+typedef struct vscf_salted_kdf_alg_info_t vscf_salted_kdf_alg_info_t;
 
 //
-//  Return size of 'vscf_pkcs5_pbkdf2_t' type.
+//  Return size of 'vscf_salted_kdf_alg_info_t' type.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs5_pbkdf2_impl_size(void);
+vscf_salted_kdf_alg_info_impl_size(void);
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_pkcs5_pbkdf2_impl(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
+vscf_salted_kdf_alg_info_impl(vscf_salted_kdf_alg_info_t *salted_kdf_alg_info);
+
+//
+//  Create algorithm info with identificator, HASH algorithm info,
+//  salt and iteration count.
+//
+VSCF_PUBLIC vscf_salted_kdf_alg_info_t *
+vscf_salted_kdf_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t *hash_alg_info, vsc_data_t salt,
+        size_t iteration_count);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_init(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
+vscf_salted_kdf_alg_info_init(vscf_salted_kdf_alg_info_t *salted_kdf_alg_info);
 
 //
 //  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_pkcs5_pbkdf2_init()'.
+//  This is a reverse action of the function 'vscf_salted_kdf_alg_info_init()'.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_cleanup(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
+vscf_salted_kdf_alg_info_cleanup(vscf_salted_kdf_alg_info_t *salted_kdf_alg_info);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_pkcs5_pbkdf2_t *
-vscf_pkcs5_pbkdf2_new(void);
+VSCF_PUBLIC vscf_salted_kdf_alg_info_t *
+vscf_salted_kdf_alg_info_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_pkcs5_pbkdf2_new()'.
+//  This is a reverse action of the function 'vscf_salted_kdf_alg_info_new()'.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_delete(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
+vscf_salted_kdf_alg_info_delete(vscf_salted_kdf_alg_info_t *salted_kdf_alg_info);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_pkcs5_pbkdf2_new()'.
+//  This is a reverse action of the function 'vscf_salted_kdf_alg_info_new()'.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_destroy(vscf_pkcs5_pbkdf2_t **pkcs5_pbkdf2_ref);
+vscf_salted_kdf_alg_info_destroy(vscf_salted_kdf_alg_info_t **salted_kdf_alg_info_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
-VSCF_PUBLIC vscf_pkcs5_pbkdf2_t *
-vscf_pkcs5_pbkdf2_shallow_copy(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
+VSCF_PUBLIC vscf_salted_kdf_alg_info_t *
+vscf_salted_kdf_alg_info_shallow_copy(vscf_salted_kdf_alg_info_t *salted_kdf_alg_info);
 
 //
-//  Setup dependency to the interface 'mac' with shared ownership.
+//  Return hash algorithm information.
 //
-VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_use_hmac(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vscf_impl_t *hmac);
+VSCF_PUBLIC const vscf_impl_t *
+vscf_salted_kdf_alg_info_hash_alg_info(const vscf_salted_kdf_alg_info_t *salted_kdf_alg_info);
 
 //
-//  Setup dependency to the interface 'mac' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//  Return KDF salt.
 //
-VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_take_hmac(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vscf_impl_t *hmac);
+VSCF_PUBLIC vsc_data_t
+vscf_salted_kdf_alg_info_salt(const vscf_salted_kdf_alg_info_t *salted_kdf_alg_info);
 
 //
-//  Release dependency to the interface 'mac'.
+//  Return KDF iteration count.
+//  Note, can be 0 if KDF does not need the iteration count.
 //
-VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_release_hmac(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
-
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_pkcs5_pbkdf2_setup_defaults(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
+VSCF_PUBLIC size_t
+vscf_salted_kdf_alg_info_iteration_count(const vscf_salted_kdf_alg_info_t *salted_kdf_alg_info);
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_pkcs5_pbkdf2_alg_id(const vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
-
-//
-//  Produce object with algorithm information and configuration parameters.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_pkcs5_pbkdf2_produce_alg_info(const vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2);
-
-//
-//  Restore algorithm configuration from the given object.
-//
-VSCF_PUBLIC vscf_error_t
-vscf_pkcs5_pbkdf2_restore_alg_info(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, const vscf_impl_t *alg_info);
-
-//
-//  Derive key of the requested length from the given data.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_derive(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
-
-//
-//  Prepare algorithm to derive new key.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_reset(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vsc_data_t salt, size_t iteration_count);
-
-//
-//  Setup application specific information (optional).
-//  Can be empty.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_set_info(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vsc_data_t info);
+vscf_salted_kdf_alg_info_alg_id(const vscf_salted_kdf_alg_info_t *salted_kdf_alg_info);
 
 
 // --------------------------------------------------------------------------
@@ -218,5 +186,5 @@ vscf_pkcs5_pbkdf2_set_info(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vsc_data_t info);
 
 
 //  @footer
-#endif // VSCF_PKCS5_PBKDF2_H_INCLUDED
+#endif // VSCF_SALTED_KDF_ALG_INFO_H_INCLUDED
 //  @end
