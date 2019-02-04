@@ -144,8 +144,9 @@ vscf_pkcs5_pbkdf2_produce_alg_info(const vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
     VSCF_ASSERT_PTR(pkcs5_pbkdf2->salt);
 
     vscf_impl_t *hmac_alg_info = vscf_alg_produce_alg_info(pkcs5_pbkdf2->hmac);
-    vscf_impl_t *pbkdf2_alg_info = vscf_salted_kdf_alg_info_impl(vscf_salted_kdf_alg_info_new_with_members(
-            vscf_alg_id_HKDF, hmac_alg_info, vsc_buffer_data(pkcs5_pbkdf2->salt), pkcs5_pbkdf2->iteration_count));
+    vscf_impl_t *pbkdf2_alg_info =
+            vscf_salted_kdf_alg_info_impl(vscf_salted_kdf_alg_info_new_with_members(vscf_alg_id_PKCS5_PBKDF2,
+                    hmac_alg_info, vsc_buffer_data(pkcs5_pbkdf2->salt), pkcs5_pbkdf2->iteration_count));
 
     vscf_impl_destroy(&hmac_alg_info);
 

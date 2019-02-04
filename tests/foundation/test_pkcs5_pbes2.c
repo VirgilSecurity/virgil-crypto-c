@@ -77,7 +77,7 @@ test__encrypt__pbkdf2_with_hmac_sha256_and_aes256_gcm_with_valid_nonce__success(
     vscf_aes256_gcm_set_nonce(aes256, test_pkcs5_pbes2_CIPHER_NONCE);
 
     vscf_pkcs5_pbes2_t *pbes2 = vscf_pkcs5_pbes2_new();
-    vscf_pkcs5_pbes2_take_pbkdf2(pbes2, pbkdf2);
+    vscf_pkcs5_pbes2_take_kdf(pbes2, vscf_pkcs5_pbkdf2_impl(pbkdf2));
     vscf_pkcs5_pbes2_take_cipher(pbes2, vscf_aes256_gcm_impl(aes256));
     vscf_pkcs5_pbes2_reset(pbes2, test_pkcs5_pbes2_PASSWORD);
 
@@ -104,7 +104,7 @@ test__decrypt__pbkdf2_with_hmac_sha256_and_aes256_gcm_with_valid_nonce__success(
     vscf_aes256_gcm_set_nonce(aes256, test_pkcs5_pbes2_CIPHER_NONCE);
 
     vscf_pkcs5_pbes2_t *pbes2 = vscf_pkcs5_pbes2_new();
-    vscf_pkcs5_pbes2_take_pbkdf2(pbes2, pbkdf2);
+    vscf_pkcs5_pbes2_take_kdf(pbes2, vscf_pkcs5_pbkdf2_impl(pbkdf2));
     vscf_pkcs5_pbes2_take_cipher(pbes2, vscf_aes256_gcm_impl(aes256));
     vscf_pkcs5_pbes2_reset(pbes2, test_pkcs5_pbes2_PASSWORD);
 
