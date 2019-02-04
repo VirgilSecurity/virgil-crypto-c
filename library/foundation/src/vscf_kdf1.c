@@ -119,8 +119,7 @@ vscf_kdf1_restore_alg_info(vscf_kdf1_t *kdf1, const vscf_impl_t *alg_info) {
 
     const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
 
-    vscf_impl_t *hash =
-            vscf_alg_factory_create_hash_stream_alg(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info));
+    vscf_impl_t *hash = vscf_alg_factory_create_hash_alg(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info));
     vscf_kdf1_release_hash(kdf1);
     vscf_kdf1_take_hash(kdf1, hash);
 

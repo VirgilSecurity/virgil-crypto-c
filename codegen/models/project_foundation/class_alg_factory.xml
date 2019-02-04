@@ -13,7 +13,7 @@
     <require impl="hash based alg info"/>
     <require impl="cipher alg info"/>
 
-    <method name="create hash stream alg" is_static="1">
+    <method name="create hash alg" is_static="1">
         Create algorithm that implements "hash stream" interface.
 
         <argument name="alg info" interface="alg info"/>
@@ -21,7 +21,7 @@
         <return interface="hash" access="disown"/>
     </method>
 
-    <method name="create mac stream alg" is_static="1">
+    <method name="create mac alg" is_static="1">
         Create algorithm that implements "mac stream" interface.
 
         <argument name="alg info" interface="alg info"/>

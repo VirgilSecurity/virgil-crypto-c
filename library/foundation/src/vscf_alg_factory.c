@@ -87,7 +87,7 @@
 //  Create algorithm that implements "hash stream" interface.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_hash_stream_alg(const vscf_impl_t *alg_info) {
+vscf_alg_factory_create_hash_alg(const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(alg_info);
 
@@ -116,7 +116,7 @@ vscf_alg_factory_create_hash_stream_alg(const vscf_impl_t *alg_info) {
 //  Create algorithm that implements "mac stream" interface.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_factory_create_mac_stream_alg(const vscf_impl_t *alg_info) {
+vscf_alg_factory_create_mac_alg(const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(alg_info);
 
@@ -126,8 +126,8 @@ vscf_alg_factory_create_mac_stream_alg(const vscf_impl_t *alg_info) {
         const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
 
         vscf_hmac_t *hmac = vscf_hmac_new();
-        vscf_hmac_take_hash(hmac,
-                vscf_alg_factory_create_hash_stream_alg(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info)));
+        vscf_hmac_take_hash(
+                hmac, vscf_alg_factory_create_hash_alg(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info)));
 
         return vscf_hmac_impl(hmac);
     }
@@ -150,8 +150,8 @@ vscf_alg_factory_create_salted_kdf_alg(const vscf_impl_t *alg_info) {
         const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
 
         vscf_hkdf_t *hkdf = vscf_hkdf_new();
-        vscf_hkdf_take_hash(hkdf,
-                vscf_alg_factory_create_hash_stream_alg(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info)));
+        vscf_hkdf_take_hash(
+                hkdf, vscf_alg_factory_create_hash_alg(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info)));
 
         return vscf_hkdf_impl(hkdf);
     }
