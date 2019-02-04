@@ -709,6 +709,8 @@ vscf_alg_info_der_serializer_route_serialize(
         VSCF_ASSERT(0 && "Unhandled alg id.");
         return 0;
     }
+
+    return 0;
 }
 
 //
