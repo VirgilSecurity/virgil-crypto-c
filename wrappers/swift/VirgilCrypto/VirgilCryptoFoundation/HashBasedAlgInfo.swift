@@ -65,7 +65,7 @@ import VirgilCryptoCommon
 
     /// Create algorithm info with identificator and HASH algorithm info.
     public init(algId: AlgId, hashAlgInfo: AlgInfo) {
-        let proxyResult = vscf_hash_based_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), hashAlgInfo.c_ctx)
+        let proxyResult = vscf_hash_based_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), &hashAlgInfo.c_ctx)
 
         self.c_ctx = proxyResult!
     }

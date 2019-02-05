@@ -66,7 +66,7 @@ import VirgilCryptoCommon
     /// Create algorithm info with identificator, KDF algorithm info and
     /// cipher alg info.
     public init(algId: AlgId, kdfAlgInfo: AlgInfo, cipherAlgInfo: AlgInfo) {
-        let proxyResult = vscf_pbe_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), kdfAlgInfo.c_ctx, cipherAlgInfo.c_ctx)
+        let proxyResult = vscf_pbe_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), &kdfAlgInfo.c_ctx, &cipherAlgInfo.c_ctx)
 
         self.c_ctx = proxyResult!
     }

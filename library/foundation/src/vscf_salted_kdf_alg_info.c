@@ -108,16 +108,18 @@ vscf_salted_kdf_alg_info_cleanup_ctx(vscf_salted_kdf_alg_info_t *salted_kdf_alg_
 //
 VSCF_PUBLIC vscf_salted_kdf_alg_info_t *
 vscf_salted_kdf_alg_info_new_with_members(
-        vscf_alg_id_t alg_id, vscf_impl_t *hash_alg_info, vsc_data_t salt, size_t iteration_count) {
+        vscf_alg_id_t alg_id, vscf_impl_t **hash_alg_info_ref, vsc_data_t salt, size_t iteration_count) {
 
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
-    VSCF_ASSERT_PTR(hash_alg_info);
+    VSCF_ASSERT_PTR(hash_alg_info_ref);
+    VSCF_ASSERT_PTR(*hash_alg_info_ref);
     VSCF_ASSERT(vsc_data_is_valid(salt));
 
     vscf_salted_kdf_alg_info_t *salted_kdf_alg_info = vscf_salted_kdf_alg_info_new();
 
     salted_kdf_alg_info->alg_id = alg_id;
-    salted_kdf_alg_info->hash_alg_info = vscf_impl_shallow_copy(hash_alg_info);
+    salted_kdf_alg_info->hash_alg_info = *hash_alg_info_ref;
+    *hash_alg_info_ref = NULL;
     salted_kdf_alg_info->salt = vsc_buffer_new_with_data(salt);
     salted_kdf_alg_info->iteration_count = iteration_count;
 

@@ -144,10 +144,7 @@ vscf_pkcs5_pbes2_produce_alg_info(const vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
     vscf_impl_t *cipher_alg_info = vscf_alg_produce_alg_info(pkcs5_pbes2->cipher);
 
     vscf_impl_t *pbes2_alg_info = vscf_pbe_alg_info_impl(
-            vscf_pbe_alg_info_new_with_members(vscf_alg_id_PKCS5_PBES2, kdf_alg_info, cipher_alg_info));
-
-    vscf_impl_destroy(&kdf_alg_info);
-    vscf_impl_destroy(&cipher_alg_info);
+            vscf_pbe_alg_info_new_with_members(vscf_alg_id_PKCS5_PBES2, &kdf_alg_info, &cipher_alg_info));
 
     return pbes2_alg_info;
 }

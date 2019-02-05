@@ -208,9 +208,7 @@ vscf_hkdf_produce_alg_info(const vscf_hkdf_t *hkdf) {
 
     vscf_impl_t *hash_alg_info = vscf_alg_produce_alg_info(hkdf->hash);
     vscf_impl_t *hkdf_alg_info =
-            vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_new_with_members(vscf_alg_id_HKDF, hash_alg_info));
-
-    vscf_impl_destroy(&hash_alg_info);
+            vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_new_with_members(vscf_alg_id_HKDF, &hash_alg_info));
 
     return hkdf_alg_info;
 }
