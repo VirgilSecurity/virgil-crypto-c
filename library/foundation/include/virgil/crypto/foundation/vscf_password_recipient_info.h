@@ -112,8 +112,7 @@ vscf_password_recipient_info_new(void);
 //  Create object and define all properties.
 //
 VSCF_PUBLIC vscf_password_recipient_info_t *
-vscf_password_recipient_info_new_with_members(vscf_impl_t **key_derivation_algorithm_ref,
-        vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key);
+vscf_password_recipient_info_new_with_members(vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -134,6 +133,19 @@ vscf_password_recipient_info_destroy(vscf_password_recipient_info_t **password_r
 //
 VSCF_PUBLIC vscf_password_recipient_info_t *
 vscf_password_recipient_info_shallow_copy(vscf_password_recipient_info_t *password_recipient_info);
+
+//
+//  Return algorithm information that was used for encryption
+//  a data encryption key.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_password_recipient_info_key_encryption_algorithm(const vscf_password_recipient_info_t *password_recipient_info);
+
+//
+//  Return an encrypted data encryption key.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_password_recipient_info_encrypted_key(const vscf_password_recipient_info_t *password_recipient_info);
 
 
 // --------------------------------------------------------------------------

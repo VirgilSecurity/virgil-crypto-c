@@ -13,7 +13,7 @@
         Serialize algorithm info to buffer class.
 
         <argument name="alg info" interface="alg info"/>
-        <argument name="out" class="buffer">
+        <argument name="out" class="buffer" is_optional="1">
             <length method="serialized len">
                 <proxy argument="alg info" to="alg info"/>
             </length>

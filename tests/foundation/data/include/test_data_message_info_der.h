@@ -43,9 +43,11 @@ typedef struct {
 
 typedef struct {
     const vsc_data_t serialized;
-    const vsc_data_t key_derivation_alg_oid;
-    const vsc_data_t key_encryption_alg_oid;
+    const vsc_data_t kdf_salt;
+    const size_t kdf_iteration_count;
+    const vsc_data_t key_encryption_alg_nonce;
     const vsc_data_t data_encryption_alg_nonce;
+    const vsc_data_t encrypted_key;
 } test_one_password_recipient_cms_t;
 
 typedef struct {
@@ -63,5 +65,5 @@ typedef struct {
 extern const test_one_key_recipient_cms_t test_message_info_cms_ONE_RSA2048_KEY_RECIPIENT;
 extern const test_one_key_recipient_cms_t test_message_info_cms_V2_ONE_RSA2048_KEY_RECIPIENT;
 // extern const test_one_key_recipient_cms_t test_message_info_cms_ONE_ED25519_KEY_RECIPIENT;
-// extern const test_one_password_recipient_cms_t test_message_info_cms_ONE_PASSWORD_RECIPIENT;
+extern const test_one_password_recipient_cms_t test_message_info_cms_ONE_PASSWORD_RECIPIENT;
 // extern const test_multiple_recipients_cms_t test_message_info_cms_MULTIPLE_RECIPIENTS;

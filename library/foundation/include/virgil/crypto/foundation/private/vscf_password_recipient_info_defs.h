@@ -92,8 +92,6 @@ struct vscf_password_recipient_info_t {
     //
     size_t refcnt;
 
-    vscf_impl_t *key_derivation_algorithm;
-
     vscf_impl_t *key_encryption_algorithm;
 
     vsc_buffer_t *encrypted_key;

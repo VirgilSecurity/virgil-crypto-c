@@ -158,8 +158,10 @@
             <return type="size"/>
         </method>
 
-        <method name="route serialize">
-            Route serialization to specific method depends on the alg id.
+        <method name="serialize inplace" declaration="public">
+            Serialize by using internal ASN.1 writer.
+            Note, that caller code is responsible to reset ASN.1 writer with
+            an output buffer.
 
             <argument name="alg info" interface="alg info"/>
 

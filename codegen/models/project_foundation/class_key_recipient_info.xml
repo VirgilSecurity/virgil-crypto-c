@@ -17,7 +17,7 @@
     <method name="recipient id" is_const="1">
         Return recipient identifier.
 
-        <return name="recipient id" class="data"/>
+        <return class="data"/>
     </method>
 
 
@@ -25,13 +25,13 @@
         Return algorithm information that was used for encryption
         a data encryption key.
 
-        <return name="key encryption algorithm" interface="alg info"/>
+        <return interface="alg info"/>
     </method>
 
 
     <method name="encrypted key" class="data" is_const="1">
         Return an encrypted data encryption key.
 
-        <return name="encrypted key" class="data"/>
+        <return class="data"/>
     </method>
 </class>
