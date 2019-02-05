@@ -4,7 +4,6 @@
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common hidden" scope="context"/>
     <require impl="pkcs8 der deserializer" scope="private" project="foundation"/>
-    <require module="buffer" scope="private" project="common"/>
     <require impl="sha512" project="foundation" scope="private"/>
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
     <require module="buffer defs" scope="private" project="common"/>
