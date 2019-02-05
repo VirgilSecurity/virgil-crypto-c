@@ -125,9 +125,7 @@ vscf_hmac_produce_alg_info(const vscf_hmac_t *hmac) {
 
     vscf_impl_t *hash_alg_info = vscf_alg_produce_alg_info(hmac->hash);
     vscf_impl_t *hmac_alg_info =
-            vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_new_with_members(vscf_alg_id_HMAC, hash_alg_info));
-
-    vscf_impl_destroy(&hash_alg_info);
+            vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_new_with_members(vscf_alg_id_HMAC, &hash_alg_info));
 
     return hmac_alg_info;
 }

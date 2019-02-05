@@ -216,9 +216,7 @@ vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(
 
     vscf_impl_t *hash_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(hash_id));
     vscf_impl_t *hash_based_alg_info =
-            vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_new_with_members(alg_id, hash_alg_info));
-
-    vscf_impl_destroy(&hash_alg_info);
+            vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_new_with_members(alg_id, &hash_alg_info));
 
     return hash_based_alg_info;
 }
@@ -300,9 +298,7 @@ vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(
 
     vscf_impl_t *hash_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(hash_alg_id));
     vscf_impl_t *hash_based_alg_info =
-            vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_new_with_members(vscf_alg_id_HKDF, hash_alg_info));
-
-    vscf_impl_destroy(&hash_alg_info);
+            vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_new_with_members(vscf_alg_id_HKDF, &hash_alg_info));
 
     return hash_based_alg_info;
 }
@@ -371,9 +367,7 @@ vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(
 
     vscf_impl_t *hash_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(hash_alg_id));
     vscf_impl_t *hash_based_alg_info =
-            vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_new_with_members(vscf_alg_id_HMAC, hash_alg_info));
-
-    vscf_impl_destroy(&hash_alg_info);
+            vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_new_with_members(vscf_alg_id_HMAC, &hash_alg_info));
 
     return hash_based_alg_info;
 }

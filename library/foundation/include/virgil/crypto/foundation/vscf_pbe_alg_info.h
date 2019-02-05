@@ -94,7 +94,8 @@ vscf_pbe_alg_info_impl(vscf_pbe_alg_info_t *pbe_alg_info);
 //  cipher alg info.
 //
 VSCF_PUBLIC vscf_pbe_alg_info_t *
-vscf_pbe_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t *kdf_alg_info, vscf_impl_t *cipher_alg_info);
+vscf_pbe_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t **kdf_alg_info_ref,
+        vscf_impl_t **cipher_alg_info_ref);
 
 //
 //  Perform initialization of preallocated implementation context.

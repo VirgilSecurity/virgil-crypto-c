@@ -103,16 +103,18 @@ vscf_hash_based_alg_info_cleanup_ctx(vscf_hash_based_alg_info_t *hash_based_alg_
 //  Create algorithm info with identificator and HASH algorithm info.
 //
 VSCF_PUBLIC vscf_hash_based_alg_info_t *
-vscf_hash_based_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t *hash_alg_info) {
+vscf_hash_based_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t **hash_alg_info_ref) {
 
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
-    VSCF_ASSERT_PTR(hash_alg_info);
+    VSCF_ASSERT_PTR(hash_alg_info_ref);
+    VSCF_ASSERT_PTR(*hash_alg_info_ref);
 
     vscf_hash_based_alg_info_t *hash_based_alg_info = vscf_hash_based_alg_info_new();
 
     hash_based_alg_info->alg_id = alg_id;
 
-    hash_based_alg_info->hash_alg_info = vscf_impl_shallow_copy(hash_alg_info);
+    hash_based_alg_info->hash_alg_info = *hash_alg_info_ref;
+    *hash_alg_info_ref = NULL;
 
     return hash_based_alg_info;
 }

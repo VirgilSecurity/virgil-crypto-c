@@ -28,7 +28,7 @@
             Create algorithm info with identificator and HASH algorithm info.
 
             <argument name="alg id" enum="alg id"/>
-            <argument name="hash alg info" interface="alg info" access="retain"/>
+            <argument name="hash alg info" interface="alg info" access="disown"/>
         </constructor>
 
         <method name="hash alg info" is_const="1" declaration="public">
@@ -77,7 +77,7 @@
             salt and iteration count.
 
             <argument name="alg id" enum="alg id"/>
-            <argument name="hash alg info" interface="alg info" access="retain"/>
+            <argument name="hash alg info" interface="alg info" access="disown"/>
             <argument name="salt" class="data"/>
             <argument name="iteration count" type="size"/>
         </constructor>
@@ -117,8 +117,8 @@
             cipher alg info.
 
             <argument name="alg id" enum="alg id"/>
-            <argument name="kdf alg info" interface="alg info" access="retain"/>
-            <argument name="cipher alg info" interface="alg info" access="retain"/>
+            <argument name="kdf alg info" interface="alg info" access="disown"/>
+            <argument name="cipher alg info" interface="alg info" access="disown"/>
         </constructor>
 
         <method name="kdf alg info" is_const="1" declaration="public">

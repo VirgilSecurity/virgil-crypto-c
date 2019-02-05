@@ -107,17 +107,24 @@ vscf_pbe_alg_info_cleanup_ctx(vscf_pbe_alg_info_t *pbe_alg_info) {
 //  cipher alg info.
 //
 VSCF_PUBLIC vscf_pbe_alg_info_t *
-vscf_pbe_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t *kdf_alg_info, vscf_impl_t *cipher_alg_info) {
+vscf_pbe_alg_info_new_with_members(
+        vscf_alg_id_t alg_id, vscf_impl_t **kdf_alg_info_ref, vscf_impl_t **cipher_alg_info_ref) {
 
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
-    VSCF_ASSERT_PTR(kdf_alg_info);
-    VSCF_ASSERT_PTR(cipher_alg_info);
+    VSCF_ASSERT_PTR(kdf_alg_info_ref);
+    VSCF_ASSERT_PTR(*kdf_alg_info_ref);
+    VSCF_ASSERT_PTR(cipher_alg_info_ref);
+    VSCF_ASSERT_PTR(*cipher_alg_info_ref);
 
     vscf_pbe_alg_info_t *pbe_alg_info = vscf_pbe_alg_info_new();
 
     pbe_alg_info->alg_id = alg_id;
-    pbe_alg_info->kdf_alg_info = vscf_impl_shallow_copy(kdf_alg_info);
-    pbe_alg_info->cipher_alg_info = vscf_impl_shallow_copy(cipher_alg_info);
+
+    pbe_alg_info->kdf_alg_info = *kdf_alg_info_ref;
+    *kdf_alg_info_ref = NULL;
+
+    pbe_alg_info->cipher_alg_info = *cipher_alg_info_ref;
+    *cipher_alg_info_ref = NULL;
 
     return pbe_alg_info;
 }
