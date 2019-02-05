@@ -1,9 +1,11 @@
 <enum name="error" definition="public">
+    Error codes
+
     <constant name="success" of_class="global" value="0">
         No errors was occurred.
     </constant>
 
-    <constant name="protobuf decode error" value="1">
+    <constant name="protobuf decode" value="1">
         Error during protobuf deserialization
     </constant>
 
@@ -15,7 +17,7 @@
         Bad message
     </constant>
 
-    <constant name="aes error" value="4">
+    <constant name="aes" value="4">
         AES error
     </constant>
 
@@ -23,7 +25,19 @@
         RNG failed
     </constant>
 
-    <constant name="curve25519 error" value="6">
-        curve25519 error
+    <constant name="curve25519" value="6">
+        Curve25519 error
+    </constant>
+
+    <constant name="key deserialization" value="7">
+        Key deserialization error
+    </constant>
+
+    <constant name="invalid key type" value="8">
+        Invalid key type
+    </constant>
+
+    <constant name="identity key doesnt match" value="9">
+        Identity key doesn't match
     </constant>
 </enum>

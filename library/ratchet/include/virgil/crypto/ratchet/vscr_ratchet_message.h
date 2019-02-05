@@ -44,11 +44,16 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class represents ratchet message
+// --------------------------------------------------------------------------
+
 #ifndef VSCR_RATCHET_MESSAGE_H_INCLUDED
 #define VSCR_RATCHET_MESSAGE_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_common.h"
 #include "vscr_error_ctx.h"
 #include "vscr_ratchet_message.h"
 #include "vscr_msg_type.h"

@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class represents ratchet message
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -48,6 +54,8 @@
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 #include "vscr_ratchet_message_defs.h"
+#include "vscr_ratchet_common_hidden.h"
+#include "vscr_ratchet_common.h"
 
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
@@ -327,10 +335,10 @@ vscr_ratchet_message_serialize_len(vscr_ratchet_message_t *ratchet_message) {
     VSCR_ASSERT(ratchet_message->message_pb.has_prekey_message != ratchet_message->message_pb.has_regular_message);
 
     if (ratchet_message->message_pb.has_prekey_message) {
-        return vscr_ratchet_common_MAX_PREKEY_MESSAGE_LEN - vscr_ratchet_common_MAX_CIPHER_TEXT_LEN +
+        return vscr_ratchet_common_hidden_MAX_PREKEY_MESSAGE_LEN - vscr_ratchet_common_MAX_CIPHER_TEXT_LEN +
                vsc_buffer_len(ratchet_message->message_pb.prekey_message.regular_message.cipher_text.arg);
     } else if (ratchet_message->message_pb.has_regular_message) {
-        return vscr_ratchet_common_MAX_REGULAR_MESSAGE_LEN - vscr_ratchet_common_MAX_CIPHER_TEXT_LEN +
+        return vscr_ratchet_common_hidden_MAX_REGULAR_MESSAGE_LEN - vscr_ratchet_common_MAX_CIPHER_TEXT_LEN +
                vsc_buffer_len(ratchet_message->message_pb.regular_message.cipher_text.arg);
     }
 
@@ -367,7 +375,7 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
     VSCR_ASSERT(vsc_data_is_valid(input));
 
     if (input.len > vscr_ratchet_common_MAX_MESSAGE_LEN) {
-        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_PROTOBUF_DECODE_ERROR);
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_PROTOBUF_DECODE);
 
         return NULL;
     }
@@ -381,7 +389,7 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx) {
     bool status = pb_decode(&istream, Message_fields, &message->message_pb);
 
     if (!status || message->message_pb.has_prekey_message == message->message_pb.has_regular_message) {
-        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_PROTOBUF_DECODE_ERROR);
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_PROTOBUF_DECODE);
         vscr_ratchet_message_destroy(&message);
 
         return NULL;

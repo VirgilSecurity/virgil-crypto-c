@@ -52,9 +52,10 @@
 #include <vscr_ratchet_chain_key.h>
 #include <vscr_ratchet_receiver_chain_list_node.h>
 #include <vscr_ratchet_skipped_message_key_list_node.h>
+#include <virgil/crypto/foundation/private/vscf_pkcs8_der_deserializer_defs.h>
 
 // --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
+//  Should have it to prevent linkage errors in MSVC.
 // --------------------------------------------------------------------------
 // clang-format off
 void setUp(void) { }
@@ -73,9 +74,9 @@ typedef struct ratchet_sender_chain {
     //
     size_t refcnt;
 
-    byte private_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte private_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
-    byte public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
     vscr_ratchet_chain_key_t chain_key;
 } ratchet_sender_chain_t;
@@ -100,12 +101,27 @@ typedef struct ratchet {
 
     ratchet_sender_chain_t *sender_chain;
 
+    uint32_t prev_sender_chain_count;
+
     vscr_ratchet_receiver_chain_list_node_t *receiver_chains;
 
     vscr_ratchet_skipped_message_key_list_node_t *skipped_message_keys;
 
-    byte root_key[vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH];
+    byte root_key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
 } ratchet_t;
+
+typedef struct ratchet_key_extractor {
+    //
+    //  Function do deallocate self context.
+    //
+    vscr_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    size_t refcnt;
+
+    vscf_pkcs8_der_deserializer_t *pkcs8;
+} ratchet_key_extractor_t;
 
 typedef struct ratchet_session {
     //
@@ -121,19 +137,23 @@ typedef struct ratchet_session {
     //
     vscf_impl_t *rng;
 
-    bool is_initiator;
+    ratchet_key_extractor_t *key_extractor;
 
     ratchet_t *ratchet;
 
+    bool is_initiator;
+
     bool received_first_response;
 
-    byte sender_identity_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte sender_identity_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
-    byte sender_ephemeral_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte sender_ephemeral_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
-    byte receiver_long_term_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    byte receiver_long_term_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 
-    byte receiver_one_time_public_key[vscr_ratchet_common_RATCHET_KEY_LENGTH];
+    bool receiver_has_one_time_public_key;
+
+    byte receiver_one_time_public_key[vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH];
 } ratchet_session_t;
 
 // --------------------------------------------------------------------------
@@ -187,6 +207,7 @@ ratchet_cmp(ratchet_t *ratchet1, ratchet_t *ratchet2) {
 
     return memcmp(ratchet1->root_key, ratchet2->root_key, sizeof(ratchet1->root_key)) == 0 &&
            ratchet_sender_chain_cmp(ratchet1->sender_chain, ratchet2->sender_chain) &&
+           ratchet1->prev_sender_chain_count == ratchet2->prev_sender_chain_count &&
            ratchet_receiver_chain_cmp(ratchet1->receiver_chains, ratchet2->receiver_chains) &&
            ratchet_skipped_msg_cmp(ratchet1->skipped_message_keys, ratchet2->skipped_message_keys);
 }

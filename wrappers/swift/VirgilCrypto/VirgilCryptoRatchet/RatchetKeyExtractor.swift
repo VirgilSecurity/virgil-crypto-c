@@ -38,15 +38,15 @@ import VSCRatchet
 import VirgilCryptoCommon
 import VirgilCryptoFoundation
 
-/// Class represents ratchet message
-@objc(VSCRRatchetMessage) public class RatchetMessage: NSObject {
+/// Utils class for working with keys formats
+@objc(VSCRRatchetKeyExtractor) public class RatchetKeyExtractor: NSObject {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
     /// Create underlying C context.
     public override init() {
-        self.c_ctx = vscr_ratchet_message_new()
+        self.c_ctx = vscr_ratchet_key_extractor_new()
         super.init()
     }
 
@@ -60,68 +60,59 @@ import VirgilCryptoFoundation
     /// Acquire retained C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscr_ratchet_message_shallow_copy(c_ctx)
+        self.c_ctx = vscr_ratchet_key_extractor_shallow_copy(c_ctx)
         super.init()
     }
 
     /// Release underlying C context.
     deinit {
-        vscr_ratchet_message_delete(self.c_ctx)
+        vscr_ratchet_key_extractor_delete(self.c_ctx)
     }
 
-    /// Returns message type.
-    @objc public func getType() -> MsgType {
-        let proxyResult = vscr_ratchet_message_get_type(self.c_ctx)
-
-        return MsgType.init(fromC: proxyResult)
-    }
-
-    /// Returns long-term public key, if message is prekey message.
-    @objc public func getLongTermPublicKey() -> Data {
-        let proxyResult = vscr_ratchet_message_get_long_term_public_key(self.c_ctx)
-
-        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
-    }
-
-    /// Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
-    @objc public func getOneTimePublicKey() -> Data {
-        let proxyResult = vscr_ratchet_message_get_one_time_public_key(self.c_ctx)
-
-        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
-    }
-
-    /// Buffer len to serialize this class.
-    @objc public func serializeLen() -> Int {
-        let proxyResult = vscr_ratchet_message_serialize_len(self.c_ctx)
-
-        return proxyResult
-    }
-
-    /// Serializes instance.
-    @objc public func serialize() -> Data {
-        let outputCount = self.serializeLen()
-        var output = Data(count: outputCount)
-        var outputBuf = vsc_buffer_new()
+    /// Computes 8 bytes key pair id from public key
+    @objc public func computePublicKeyId(publicKey: Data) throws -> Data {
+        let keyIdCount = RatchetCommon.keyIdLen
+        var keyId = Data(count: keyIdCount)
+        var keyIdBuf = vsc_buffer_new()
         defer {
-            vsc_buffer_delete(outputBuf)
+            vsc_buffer_delete(keyIdBuf)
         }
 
-        output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutablePointer<byte>) -> Void in
-            vsc_buffer_init(outputBuf)
-            vsc_buffer_use(outputBuf, outputPointer, outputCount)
-            vscr_ratchet_message_serialize(self.c_ctx, outputBuf)
+        let proxyResult = publicKey.withUnsafeBytes({ (publicKeyPointer: UnsafePointer<byte>) -> vscr_error_t in
+            keyId.withUnsafeMutableBytes({ (keyIdPointer: UnsafeMutablePointer<byte>) -> vscr_error_t in
+                vsc_buffer_init(keyIdBuf)
+                vsc_buffer_use(keyIdBuf, keyIdPointer, keyIdCount)
+                return vscr_ratchet_key_extractor_compute_public_key_id(self.c_ctx, vsc_data(publicKeyPointer, publicKey.count), keyIdBuf)
+            })
         })
-        output.count = vsc_buffer_len(outputBuf)
+        keyId.count = vsc_buffer_len(keyIdBuf)
 
-        return output
+        try RatchetError.handleError(fromC: proxyResult)
+
+        return keyId
     }
 
-    /// Deserializes instance.
-    @objc public static func deserialize(input: Data, errCtx: ErrorCtx) -> RatchetMessage {
-        let proxyResult = input.withUnsafeBytes({ (inputPointer: UnsafePointer<byte>) in
-            return vscr_ratchet_message_deserialize(vsc_data(inputPointer, input.count), errCtx.c_ctx)
+    @objc public func extractRatchetPublicKey(data: Data, errCtx: ErrorCtx) -> Data {
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
+            return vscr_ratchet_key_extractor_extract_ratchet_public_key(self.c_ctx, vsc_data(dataPointer, data.count), errCtx.c_ctx)
         })
 
-        return RatchetMessage.init(take: proxyResult!)
+        defer {
+            vsc_buffer_delete(proxyResult)
+        }
+
+        return Data.init(bytes: vsc_buffer_bytes(proxyResult), count: vsc_buffer_len(proxyResult))
+    }
+
+    @objc public func extractRatchetPrivateKey(data: Data, errCtx: ErrorCtx) -> Data {
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
+            return vscr_ratchet_key_extractor_extract_ratchet_private_key(self.c_ctx, vsc_data(dataPointer, data.count), errCtx.c_ctx)
+        })
+
+        defer {
+            vsc_buffer_delete(proxyResult)
+        }
+
+        return Data.init(bytes: vsc_buffer_bytes(proxyResult), count: vsc_buffer_len(proxyResult))
     }
 }

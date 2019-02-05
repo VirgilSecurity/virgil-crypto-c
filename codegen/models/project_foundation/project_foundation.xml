@@ -111,7 +111,6 @@
     <class name="base64"/>
     <class name="pem"/>
     <class name="pem title"/>
-    <class name="endianness"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>

@@ -124,7 +124,6 @@ target_compile_definitions(foundation
             "VSCF_BASE64=$<BOOL:${VSCF_BASE64}>"
             "VSCF_PEM=$<BOOL:${VSCF_PEM}>"
             "VSCF_PEM_TITLE=$<BOOL:${VSCF_PEM_TITLE}>"
-            "VSCF_ENDIANNESS=$<BOOL:${VSCF_ENDIANNESS}>"
         PRIVATE
             $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCF_BUILD_SHARED_LIBS>
         )
