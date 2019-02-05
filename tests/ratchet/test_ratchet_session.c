@@ -54,7 +54,7 @@
 #include <vscr_ratchet_skipped_message_key_list_node.h>
 
 // --------------------------------------------------------------------------
-//  Should have it to prevent linkage erros in MSVC.
+//  Should have it to prevent linkage errors in MSVC.
 // --------------------------------------------------------------------------
 // clang-format off
 void setUp(void) { }
@@ -142,10 +142,27 @@ test__encrypt_decrypt_back_and_forth__fixed_plain_text__decrypted_should_match(v
     TEST_ASSERT_EQUAL_MEMORY(
             test_ratchet_session_plain_text2.bytes, vsc_buffer_bytes(plain_text), test_ratchet_session_plain_text2.len);
 
+    vscr_ratchet_message_t *ratchet_message2 =
+            vscr_ratchet_session_encrypt(session_bob, test_ratchet_session_plain_text3, &error_ctx);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
+    TEST_ASSERT_EQUAL(vscr_msg_type_REGULAR, vscr_ratchet_message_get_type(ratchet_message2));
+
+    size_t len3 = vscr_ratchet_session_decrypt_len(session_alice, ratchet_message2);
+    vsc_buffer_t *plain_text2 = vsc_buffer_new_with_capacity(len3);
+
+    result = vscr_ratchet_session_decrypt(session_alice, ratchet_message2, plain_text2);
+    TEST_ASSERT_EQUAL(vscr_SUCCESS, result);
+
+    TEST_ASSERT_EQUAL_INT(test_ratchet_session_plain_text3.len, vsc_buffer_len(plain_text2));
+    TEST_ASSERT_EQUAL_MEMORY(test_ratchet_session_plain_text3.bytes, vsc_buffer_bytes(plain_text2),
+            test_ratchet_session_plain_text3.len);
+
     vsc_buffer_destroy(&plain_text);
+    vsc_buffer_destroy(&plain_text2);
     vscr_ratchet_session_destroy(&session_alice);
     vscr_ratchet_session_destroy(&session_bob);
     vscr_ratchet_message_destroy(&ratchet_message);
+    vscr_ratchet_message_destroy(&ratchet_message2);
 }
 
 void
