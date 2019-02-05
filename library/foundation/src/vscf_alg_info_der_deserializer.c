@@ -510,6 +510,7 @@ vscf_alg_info_der_deserializer_deserialize(
         return vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(alg_info_der_deserializer, data, error);
 
     case vscf_alg_id_AES256_GCM:
+    case vscf_alg_id_AES256_CBC:
         return vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(alg_info_der_deserializer, data, error);
 
     case vscf_alg_id_PKCS5_PBKDF2:

@@ -161,6 +161,15 @@ VSCF_PUBLIC void
 vscf_alg_info_der_serializer_release_asn1_writer(vscf_alg_info_der_serializer_t *alg_info_der_serializer);
 
 //
+//  Serialize by using internal ASN.1 writer.
+//  Note, that caller code is responsible to reset ASN.1 writer with
+//  an output buffer.
+//
+VSCF_PUBLIC size_t
+vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
+        const vscf_impl_t *alg_info);
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t

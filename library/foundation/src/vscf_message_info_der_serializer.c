@@ -320,38 +320,11 @@ vscf_message_info_der_serializer_serialize_key_recipient_info(
             message_info_der_serializer->asn1_writer, vscf_key_recipient_info_encrypted_key(key_recipient_info));
 
     //
-    //  Store ASN.1 writer state.
-    //  It will be reconfigured by alg_info_der_serializer,
-    //  because it is a shared resource.
-    //
-    size_t out_len = vscf_asn1_writer_len(message_info_der_serializer->asn1_writer);
-    size_t out_unwritten_len = vscf_asn1_writer_unwritten_len(message_info_der_serializer->asn1_writer);
-    byte *out_bytes = vscf_asn1_writer_bytes(message_info_der_serializer->asn1_writer);
-
-    vsc_buffer_t key_encryption_algorithm;
-    vsc_buffer_init(&key_encryption_algorithm);
-    vsc_buffer_use(&key_encryption_algorithm, out_bytes, out_unwritten_len);
-    vsc_buffer_switch_reverse_mode(&key_encryption_algorithm, true);
-
-    //
     //  Write: keyEncryptionAlgorithm.
     //
     const vscf_impl_t *key_encryption_alg_info = vscf_key_recipient_info_key_encryption_algorithm(key_recipient_info);
-    vscf_alg_info_der_serializer_serialize(
-            message_info_der_serializer->alg_info_serializer, key_encryption_alg_info, &key_encryption_algorithm);
-
-    VSCF_ASSERT(out_unwritten_len >= key_encryption_algorithm.len);
-    out_unwritten_len -= key_encryption_algorithm.len;
-
-    //
-    //  Restore ASN.1 writer state.
-    //
-    VSCF_ASSERT(out_len > out_unwritten_len);
-    vscf_asn1_writer_reset(message_info_der_serializer->asn1_writer, out_bytes, out_len);
-    (void)vscf_asn1_writer_reserve(message_info_der_serializer->asn1_writer, out_len - out_unwritten_len);
-
-    key_recipient_info_len += vsc_buffer_len(&key_encryption_algorithm);
-    vsc_buffer_cleanup(&key_encryption_algorithm);
+    key_recipient_info_len += vscf_alg_info_der_serializer_serialize_inplace(
+            message_info_der_serializer->alg_info_serializer, key_encryption_alg_info);
 
     //
     //  Write: rid.
@@ -385,9 +358,13 @@ vscf_message_info_der_serializer_serialized_password_recipient_info_len(
     VSCF_ASSERT_PTR(message_info_der_serializer);
     VSCF_ASSERT_PTR(password_recipient_info);
 
-    //  TODO: This is STUB. Implement me.
+    size_t len = 1 + 2 +       //  PasswordRecipientInfo ::= SEQUENCE {
+                 1 + 1 + 1 +   //    version CMSVersion, -- Always set to 0
+                 0 +           //    keyDerivationAlgorithm [0] KeyDerivationAlgorithmIdentifier OPTIONAL, -- not used
+                 1 + 1 + 127 + //    keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
+                 1 + 1 + 32;   //    encryptedKey EncryptedKey }
 
-    return 0;
+    return len;
 }
 
 static size_t
@@ -395,12 +372,45 @@ vscf_message_info_der_serializer_serialize_password_recipient_info(
         vscf_message_info_der_serializer_t *message_info_der_serializer,
         const vscf_password_recipient_info_t *password_recipient_info) {
 
+    //  PasswordRecipientInfo ::= SEQUENCE {
+    //    version CMSVersion, -- Always set to 0
+    //    keyDerivationAlgorithm [0] KeyDerivationAlgorithmIdentifier
+    //                                 OPTIONAL, -- not used
+    //    keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
+    //    encryptedKey EncryptedKey }
+
+
     VSCF_ASSERT_PTR(message_info_der_serializer);
     VSCF_ASSERT_PTR(password_recipient_info);
 
-    //  TODO: This is STUB. Implement me.
+    size_t password_recipient_info_len = 0;
 
-    return 0;
+    //
+    //  Write: encryptedKey.
+    //
+    password_recipient_info_len += vscf_asn1_writer_write_octet_str(message_info_der_serializer->asn1_writer,
+            vscf_password_recipient_info_encrypted_key(password_recipient_info));
+
+    //
+    //  Write: keyEncryptionAlgorithm.
+    //
+    const vscf_impl_t *key_encryption_alg_info =
+            vscf_password_recipient_info_key_encryption_algorithm(password_recipient_info);
+    password_recipient_info_len += vscf_alg_info_der_serializer_serialize_inplace(
+            message_info_der_serializer->alg_info_serializer, key_encryption_alg_info);
+
+    //
+    //  Write: version {0}
+    //
+    password_recipient_info_len += vscf_asn1_writer_write_int(message_info_der_serializer->asn1_writer, 0);
+
+    //
+    //  Write: KeyTransRecipientInfo
+    //
+    password_recipient_info_len +=
+            vscf_asn1_writer_write_sequence(message_info_der_serializer->asn1_writer, password_recipient_info_len);
+
+    return password_recipient_info_len;
 }
 
 static size_t
@@ -537,39 +547,11 @@ vscf_message_info_der_serializer_serialize_encrypted_content_info(
     size_t encrypted_content_info_len = 0;
 
     //
-    //  Store ASN.1 writer state.
-    //  It will be reconfigured by alg_info_der_serializer,
-    //  because it is a shared resource.
-    //
-    size_t out_len = vscf_asn1_writer_len(message_info_der_serializer->asn1_writer);
-    size_t out_unwritten_len = vscf_asn1_writer_unwritten_len(message_info_der_serializer->asn1_writer);
-    byte *out_bytes = vscf_asn1_writer_bytes(message_info_der_serializer->asn1_writer);
-
-    vsc_buffer_t content_encryption_alg;
-    vsc_buffer_init(&content_encryption_alg);
-    vsc_buffer_use(&content_encryption_alg, out_bytes, out_unwritten_len);
-    vsc_buffer_switch_reverse_mode(&content_encryption_alg, true);
-
-    //
     //  Write: contentEncryptionAlgorithm.
     //
     const vscf_impl_t *content_encryption_alg_info = vscf_message_info_data_encryption_alg_info(message_info);
-    vscf_alg_info_der_serializer_serialize(
-            message_info_der_serializer->alg_info_serializer, content_encryption_alg_info, &content_encryption_alg);
-
-    VSCF_ASSERT(out_unwritten_len >= content_encryption_alg.len);
-    out_unwritten_len -= content_encryption_alg.len;
-
-    //
-    //  Restore ASN.1 writer state.
-    //
-    vsc_buffer_cleanup(&content_encryption_alg);
-    VSCF_ASSERT(out_len > out_unwritten_len);
-    size_t content_encryption_alg_len = out_len - out_unwritten_len;
-    vscf_asn1_writer_reset(message_info_der_serializer->asn1_writer, out_bytes, out_len);
-    (void)vscf_asn1_writer_reserve(message_info_der_serializer->asn1_writer, content_encryption_alg_len);
-
-    encrypted_content_info_len += content_encryption_alg_len;
+    encrypted_content_info_len += vscf_alg_info_der_serializer_serialize_inplace(
+            message_info_der_serializer->alg_info_serializer, content_encryption_alg_info);
 
     //
     //  Write: contentType.
@@ -582,7 +564,6 @@ vscf_message_info_der_serializer_serialize_encrypted_content_info(
     //
     encrypted_content_info_len +=
             vscf_asn1_writer_write_sequence(message_info_der_serializer->asn1_writer, encrypted_content_info_len);
-
 
     return encrypted_content_info_len;
 }

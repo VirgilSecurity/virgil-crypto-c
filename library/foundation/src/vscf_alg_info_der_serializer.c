@@ -200,13 +200,6 @@ static size_t
 vscf_alg_info_der_serializer_serialize_pbes2_alg_info(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
         const vscf_impl_t *alg_info);
 
-//
-//  Route serialization to specific method depends on the alg id.
-//
-static size_t
-vscf_alg_info_der_serializer_route_serialize(vscf_alg_info_der_serializer_t *alg_info_der_serializer,
-        const vscf_impl_t *alg_info);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -649,7 +642,7 @@ vscf_alg_info_der_serializer_serialize_pbkdf2_alg_info(
     switch (alg_id) {
     case vscf_alg_id_PKCS5_PBKDF2:
         //  Write PBKDF2-params.
-        len += vscf_alg_info_der_serializer_route_serialize(
+        len += vscf_alg_info_der_serializer_serialize_inplace(
                 alg_info_der_serializer, vscf_salted_kdf_alg_info_hash_alg_info(salted_kdf_alg_info));
 
         len += vscf_asn1_writer_write_int(asn1_writer, vscf_salted_kdf_alg_info_iteration_count(salted_kdf_alg_info));
@@ -733,10 +726,10 @@ vscf_alg_info_der_serializer_serialize_pbes2_alg_info(
     switch (alg_id) {
     case vscf_alg_id_PKCS5_PBES2:
         //  Write PBES2-params.
-        len += vscf_alg_info_der_serializer_route_serialize(
+        len += vscf_alg_info_der_serializer_serialize_inplace(
                 alg_info_der_serializer, vscf_pbe_alg_info_cipher_alg_info(pbe_alg_info));
 
-        len += vscf_alg_info_der_serializer_route_serialize(
+        len += vscf_alg_info_der_serializer_serialize_inplace(
                 alg_info_der_serializer, vscf_pbe_alg_info_kdf_alg_info(pbe_alg_info));
 
         len += vscf_asn1_writer_write_sequence(asn1_writer, len);
@@ -760,10 +753,12 @@ vscf_alg_info_der_serializer_serialize_pbes2_alg_info(
 }
 
 //
-//  Route serialization to specific method depends on the alg id.
+//  Serialize by using internal ASN.1 writer.
+//  Note, that caller code is responsible to reset ASN.1 writer with
+//  an output buffer.
 //
-static size_t
-vscf_alg_info_der_serializer_route_serialize(
+VSCF_PUBLIC size_t
+vscf_alg_info_der_serializer_serialize_inplace(
         vscf_alg_info_der_serializer_t *alg_info_der_serializer, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(alg_info_der_serializer);
@@ -799,6 +794,7 @@ vscf_alg_info_der_serializer_route_serialize(
         return vscf_alg_info_der_serializer_serialize_hmac_alg_info(alg_info_der_serializer, alg_info);
 
     case vscf_alg_id_AES256_GCM:
+    case vscf_alg_id_AES256_CBC:
         return vscf_alg_info_der_serializer_serialize_cipher_alg_info(alg_info_der_serializer, alg_info);
 
     case vscf_alg_id_PKCS5_PBKDF2:
@@ -867,6 +863,7 @@ vscf_alg_info_der_serializer_serialized_len(
         return vscf_alg_info_der_serializer_serialized_hmac_alg_info_len(alg_info_der_serializer, alg_info);
 
     case vscf_alg_id_AES256_GCM:
+    case vscf_alg_id_AES256_CBC:
         return vscf_alg_info_der_serializer_serialized_cipher_alg_info_len(alg_info_der_serializer, alg_info);
 
     case vscf_alg_id_PKCS5_PBKDF2:
@@ -915,9 +912,9 @@ vscf_alg_info_der_serializer_serialize(
             alg_info_der_serializer->asn1_writer, vsc_buffer_unused_bytes(&der_out), vsc_buffer_unused_len(&der_out));
 
     //
-    //  Route serialization.
+    //  Serialize.
     //
-    size_t der_out_len = vscf_alg_info_der_serializer_route_serialize(alg_info_der_serializer, alg_info);
+    size_t der_out_len = vscf_alg_info_der_serializer_serialize_inplace(alg_info_der_serializer, alg_info);
     vsc_buffer_inc_used(&der_out, der_out_len);
 
     //

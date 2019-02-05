@@ -219,7 +219,6 @@ vscf_password_recipient_info_cleanup_ctx(vscf_password_recipient_info_t *passwor
 
     VSCF_ASSERT_PTR(password_recipient_info);
 
-    vscf_impl_destroy(&password_recipient_info->key_derivation_algorithm);
     vscf_impl_destroy(&password_recipient_info->key_encryption_algorithm);
     vsc_buffer_destroy(&password_recipient_info->encrypted_key);
 }
@@ -228,27 +227,45 @@ vscf_password_recipient_info_cleanup_ctx(vscf_password_recipient_info_t *passwor
 //  Create object and define all properties.
 //
 VSCF_PUBLIC vscf_password_recipient_info_t *
-vscf_password_recipient_info_new_with_members(vscf_impl_t **key_derivation_algorithm_ref,
-        vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key) {
+vscf_password_recipient_info_new_with_members(vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key) {
 
-    VSCF_ASSERT_PTR(key_derivation_algorithm_ref);
-    VSCF_ASSERT_PTR(*key_derivation_algorithm_ref);
     VSCF_ASSERT_PTR(key_encryption_algorithm_ref);
     VSCF_ASSERT_PTR(*key_encryption_algorithm_ref);
     VSCF_ASSERT(vsc_data_is_valid(encrypted_key));
     VSCF_ASSERT(encrypted_key.len > 0);
-
-    vscf_impl_t *key_derivation_algorithm = *key_derivation_algorithm_ref;
-    *key_derivation_algorithm_ref = NULL;
 
     vscf_impl_t *key_encryption_algorithm = *key_encryption_algorithm_ref;
     *key_encryption_algorithm_ref = NULL;
 
     vscf_password_recipient_info_t *password_recipient_info = vscf_password_recipient_info_new();
 
-    password_recipient_info->key_derivation_algorithm = key_derivation_algorithm;
     password_recipient_info->key_encryption_algorithm = key_encryption_algorithm;
     password_recipient_info->encrypted_key = vsc_buffer_new_with_data(encrypted_key);
 
     return password_recipient_info;
+}
+
+//
+//  Return algorithm information that was used for encryption
+//  a data encryption key.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_password_recipient_info_key_encryption_algorithm(const vscf_password_recipient_info_t *password_recipient_info) {
+
+    VSCF_ASSERT_PTR(password_recipient_info);
+    VSCF_ASSERT_PTR(password_recipient_info->key_encryption_algorithm);
+
+    return password_recipient_info->key_encryption_algorithm;
+}
+
+//
+//  Return an encrypted data encryption key.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_password_recipient_info_encrypted_key(const vscf_password_recipient_info_t *password_recipient_info) {
+
+    VSCF_ASSERT_PTR(password_recipient_info);
+    VSCF_ASSERT_PTR(password_recipient_info->encrypted_key);
+
+    return vsc_buffer_data(password_recipient_info->encrypted_key);
 }

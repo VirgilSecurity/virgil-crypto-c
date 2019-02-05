@@ -64,9 +64,9 @@ import VirgilCryptoCommon
     }
 
     /// Create object and define all properties.
-    public init(keyDerivationAlgorithm: AlgInfo, keyEncryptionAlgorithm: AlgInfo, encryptedKey: Data) {
+    public init(keyEncryptionAlgorithm: AlgInfo, encryptedKey: Data) {
         let proxyResult = encryptedKey.withUnsafeBytes({ (encryptedKeyPointer: UnsafePointer<byte>) -> OpaquePointer? in
-            return vscf_password_recipient_info_new_with_members(&keyDerivationAlgorithm.c_ctx, &keyEncryptionAlgorithm.c_ctx, vsc_data(encryptedKeyPointer, encryptedKey.count))
+            return vscf_password_recipient_info_new_with_members(&keyEncryptionAlgorithm.c_ctx, vsc_data(encryptedKeyPointer, encryptedKey.count))
         })
 
         self.c_ctx = proxyResult!
@@ -75,5 +75,20 @@ import VirgilCryptoCommon
     /// Release underlying C context.
     deinit {
         vscf_password_recipient_info_delete(self.c_ctx)
+    }
+
+    /// Return algorithm information that was used for encryption
+    /// a data encryption key.
+    @objc public func keyEncryptionAlgorithm() -> AlgInfo {
+        let proxyResult = vscf_password_recipient_info_key_encryption_algorithm(self.c_ctx)
+
+        return AlgInfoProxy.init(c_ctx: proxyResult!)
+    }
+
+    /// Return an encrypted data encryption key.
+    @objc public func encryptedKey() -> Data {
+        let proxyResult = vscf_password_recipient_info_encrypted_key(self.c_ctx)
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 }
