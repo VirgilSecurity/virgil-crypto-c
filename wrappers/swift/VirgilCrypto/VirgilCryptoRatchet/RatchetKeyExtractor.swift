@@ -70,7 +70,7 @@ import VirgilCryptoFoundation
     }
 
     /// Computes 8 bytes key pair id from public key
-    @objc public func computePublicKeyId(publicKey: Data, keyId: Data) throws -> Data {
+    @objc public func computePublicKeyId(publicKey: Data) throws -> Data {
         let keyIdCount = RatchetCommon.keyIdLen
         var keyId = Data(count: keyIdCount)
         var keyIdBuf = vsc_buffer_new()
@@ -79,17 +79,10 @@ import VirgilCryptoFoundation
         }
 
         let proxyResult = publicKey.withUnsafeBytes({ (publicKeyPointer: UnsafePointer<byte>) -> vscr_error_t in
-            keyId.withUnsafeBytes({ (keyIdPointer: UnsafePointer<byte>) -> vscr_error_t in
-                keyId.withUnsafeMutableBytes({ (keyIdPointer: UnsafeMutablePointer<byte>) -> vscr_error_t in
-                    vsc_buffer_init(keyIdBuf)
-                    vsc_buffer_use(keyIdBuf, keyIdPointer, keyIdCount)
-
-                    var keyIdBuf = vsc_buffer_new_with_data(vsc_data(keyIdPointer, keyId.count))
-                    defer {
-                        vsc_buffer_delete(keyIdBuf)
-                    }
-                    return vscr_ratchet_key_extractor_compute_public_key_id(self.c_ctx, vsc_data(publicKeyPointer, publicKey.count), keyIdBuf)
-                })
+            keyId.withUnsafeMutableBytes({ (keyIdPointer: UnsafeMutablePointer<byte>) -> vscr_error_t in
+                vsc_buffer_init(keyIdBuf)
+                vsc_buffer_use(keyIdBuf, keyIdPointer, keyIdCount)
+                return vscr_ratchet_key_extractor_compute_public_key_id(self.c_ctx, vsc_data(publicKeyPointer, publicKey.count), keyIdBuf)
             })
         })
         keyId.count = vsc_buffer_len(keyIdBuf)
