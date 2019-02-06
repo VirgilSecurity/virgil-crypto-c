@@ -116,6 +116,40 @@
     </implementation>
 
 
+    <implementation name="aes256 cbc">
+        Implementation of the symmetric cipher AES-256 bit in a CBC mode.
+        Note, this implementation contains dynamic memory allocations,
+        this should be improved in the future releases.
+
+        <interface name="encrypt"/>
+        <interface name="decrypt"/>
+        <interface name="cipher info">
+            <constant name="nonce len" value="16"/>
+            <constant name="key len" value="32"/>
+            <constant name="key bitlen" value="256"/>
+            <constant name="block len" value="16"/>
+        </interface>
+        <interface name="cipher"/>
+
+        <require library="mbedtls" feature="CIPHER C"/>
+        <require library="mbedtls" feature="AES C"/>
+        <require library="mbedtls" feature="CIPHER MODE CBC"/>
+        <require header="mbedtls/cipher.h" scope="context"/>
+
+        <property name="cipher ctx" class="mbedtls_cipher_context_t" library="mbedtls" is_reference="0"/>
+
+        <property name="key" type="byte">
+            <array length="fixed" length_constant=".(class_aes256_cbc_constant_key_len)"/>
+        </property>
+
+        <property name="nonce" type="byte">
+            <array length="fixed" length_constant=".(class_aes256_cbc_constant_nonce_len)"/>
+        </property>
+
+        <property name="do decrypt" type="boolean"/>
+    </implementation>
+
+
     <implementation name="asn1rd">
         This is MbedTLS implementation of ASN.1 reader.
 

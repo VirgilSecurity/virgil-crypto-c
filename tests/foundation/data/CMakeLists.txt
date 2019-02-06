@@ -40,6 +40,7 @@ add_library(test_data_foundation "")
 target_sources(test_data_foundation
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_aes256_gcm.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_aes256_cbc.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_asn1.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_hkdf.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_hmac.h"
@@ -62,6 +63,7 @@ target_sources(test_data_foundation
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_aes256_gcm.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_aes256_cbc.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_asn1.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_hkdf.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_hmac.c"

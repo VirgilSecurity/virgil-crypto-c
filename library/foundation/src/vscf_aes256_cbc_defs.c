@@ -34,80 +34,40 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
-
-#ifndef MBEDTLS_CONFIG_H
-#define MBEDTLS_CONFIG_H
+// clang-format off
 
 
-//
-//  Common
-//
-#cmakedefine MBEDTLS_ERROR_C
-#cmakedefine MBEDTLS_PLATFORM_C
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'aes256 cbc' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
 
-//
-//  Required by library vsc::foundation
-//
-#cmakedefine MBEDTLS_SHA256_C
-#cmakedefine MBEDTLS_SHA512_C
-#cmakedefine MBEDTLS_CIPHER_C
-#cmakedefine MBEDTLS_AES_C
-#cmakedefine MBEDTLS_GCM_C
-#cmakedefine MBEDTLS_MD_C
-#cmakedefine MBEDTLS_BIGNUM_C
-#cmakedefine MBEDTLS_PKCS1_V21
-#cmakedefine MBEDTLS_OID_C
-#cmakedefine MBEDTLS_RSA_C
-#cmakedefine MBEDTLS_ASN1_PARSE_C
-#cmakedefine MBEDTLS_ASN1_WRITE_C
-#cmakedefine MBEDTLS_GENPRIME
-#cmakedefine MBEDTLS_PLATFORM_ENTROPY
-#cmakedefine MBEDTLS_TIMING_C
-#cmakedefine MBEDTLS_HAVEGE_C
-#cmakedefine MBEDTLS_BASE64_C
-#cmakedefine MBEDTLS_CIPHER_MODE_CBC
-#cmakedefine MBEDTLS_CIPHER_MODE_WITH_PADDING
-#cmakedefine MBEDTLS_CIPHER_PADDING_PKCS7
 
-#if !defined(MBEDTLS_PLATFORM_ENTROPY)
-#   define MBEDTLS_NO_PLATFORM_ENTROPY
-#endif
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
 
-#cmakedefine MBEDTLS_THREADING_C
-#cmakedefine MBEDTLS_THREADING_PTHREAD
-#cmakedefine MBEDTLS_THREADING_SRWLOCK
+#include "vscf_aes256_cbc_defs.h"
 
-//
-//  Required by library vsc::pythia
-//
-#cmakedefine MBEDTLS_CTR_DRBG_C
-#cmakedefine MBEDTLS_ENTROPY_C
+// clang-format on
+//  @end
 
-//
-//  Required by library vsc::phe
-//
-#cmakedefine MBEDTLS_ECP_C
-#cmakedefine MBEDTLS_ECP_DP_SECP256R1_ENABLED
 
-//
-//  Alternative implementations
-//
-#cmakedefine MBEDTLS_SHA256_ALT
-#cmakedefine MBEDTLS_SHA512_ALT
-#cmakedefine MBEDTLS_AES_ALT
-#cmakedefine MBEDTLS_GCM_ALT
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
 
-//
-//  Non configurable options
-//
-#define MBEDTLS_NO_DEFAULT_ENTROPY_SOURCES
 
-//
-// EC optimizations
-//
-#define MBEDTLS_ECP_NIST_OPTIM 1
-#define MBEDTLS_ECP_FIXED_POINT_OPTIM 1
-
-#include "check_config.h"
-
-#endif /* MBEDTLS_CONFIG_H */
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
