@@ -83,6 +83,7 @@ option(VSCF_SHA256 "Enable implementation 'sha256'." ON)
 option(VSCF_SHA384 "Enable implementation 'sha384'." ON)
 option(VSCF_SHA512 "Enable implementation 'sha512'." ON)
 option(VSCF_AES256_GCM "Enable implementation 'aes256 gcm'." ON)
+option(VSCF_AES256_CBC "Enable implementation 'aes256 cbc'." ON)
 option(VSCF_ASN1RD "Enable implementation 'asn1rd'." ON)
 option(VSCF_ASN1WR "Enable implementation 'asn1wr'." ON)
 option(VSCF_RSA_PUBLIC_KEY "Enable implementation 'rsa public key'." ON)
@@ -165,6 +166,7 @@ mark_as_advanced(
         VSCF_SHA384
         VSCF_SHA512
         VSCF_AES256_GCM
+        VSCF_AES256_CBC
         VSCF_ASN1RD
         VSCF_ASN1WR
         VSCF_RSA_PUBLIC_KEY
@@ -431,6 +433,33 @@ if(VSCF_AES256_GCM AND NOT MBEDTLS_CIPHER_C)
     message("--")
     message("Feature VSCF_AES256_GCM depends on the feature:")
     message("     MBEDTLS_CIPHER_C - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_AES256_CBC AND NOT MBEDTLS_CIPHER_C)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_AES256_CBC depends on the feature:")
+    message("     MBEDTLS_CIPHER_C - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_AES256_CBC AND NOT MBEDTLS_AES_C)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_AES256_CBC depends on the feature:")
+    message("     MBEDTLS_AES_C - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_AES256_CBC AND NOT MBEDTLS_CIPHER_MODE_CBC)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_AES256_CBC depends on the feature:")
+    message("     MBEDTLS_CIPHER_MODE_CBC - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
