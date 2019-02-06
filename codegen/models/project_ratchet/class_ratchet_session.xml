@@ -15,10 +15,6 @@
 
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
 
-    <constant name="max ratchet length" definition="public" value="1024 * 1024">
-        FIXME
-    </constant>
-
     <dependency name="rng" interface="random" project="foundation">
         Random used to generate keys
     </dependency>
