@@ -42,7 +42,7 @@ import VirgilCryptoFoundation
 @objc(VSCRRatchetSession) public class RatchetSession: NSObject {
 
     /// FIXME
-    public static let maxRatchetLength = 1024 * 1024;
+    @objc public static let maxRatchetLength = 1024 * 1024;
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
