@@ -39,14 +39,14 @@ import VirgilCryptoCommon
 import VirgilCryptoFoundation
 
 /// Utils class for working with keys formats
-@objc(VSCRRatchetKeyExtractor) public class RatchetKeyExtractor: NSObject {
+@objc(VSCRRatchetKeyUtils) public class RatchetKeyUtils: NSObject {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
     /// Create underlying C context.
     public override init() {
-        self.c_ctx = vscr_ratchet_key_extractor_new()
+        self.c_ctx = vscr_ratchet_key_utils_new()
         super.init()
     }
 
@@ -60,13 +60,13 @@ import VirgilCryptoFoundation
     /// Acquire retained C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscr_ratchet_key_extractor_shallow_copy(c_ctx)
+        self.c_ctx = vscr_ratchet_key_utils_shallow_copy(c_ctx)
         super.init()
     }
 
     /// Release underlying C context.
     deinit {
-        vscr_ratchet_key_extractor_delete(self.c_ctx)
+        vscr_ratchet_key_utils_delete(self.c_ctx)
     }
 
     /// Computes 8 bytes key pair id from public key
@@ -82,7 +82,7 @@ import VirgilCryptoFoundation
             keyId.withUnsafeMutableBytes({ (keyIdPointer: UnsafeMutablePointer<byte>) -> vscr_error_t in
                 vsc_buffer_init(keyIdBuf)
                 vsc_buffer_use(keyIdBuf, keyIdPointer, keyIdCount)
-                return vscr_ratchet_key_extractor_compute_public_key_id(self.c_ctx, vsc_data(publicKeyPointer, publicKey.count), keyIdBuf)
+                return vscr_ratchet_key_utils_compute_public_key_id(self.c_ctx, vsc_data(publicKeyPointer, publicKey.count), keyIdBuf)
             })
         })
         keyId.count = vsc_buffer_len(keyIdBuf)
@@ -94,7 +94,7 @@ import VirgilCryptoFoundation
 
     @objc public func extractRatchetPublicKey(data: Data, errCtx: ErrorCtx) -> Data {
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
-            return vscr_ratchet_key_extractor_extract_ratchet_public_key(self.c_ctx, vsc_data(dataPointer, data.count), errCtx.c_ctx)
+            return vscr_ratchet_key_utils_extract_ratchet_public_key(self.c_ctx, vsc_data(dataPointer, data.count), errCtx.c_ctx)
         })
 
         defer {
@@ -106,7 +106,7 @@ import VirgilCryptoFoundation
 
     @objc public func extractRatchetPrivateKey(data: Data, errCtx: ErrorCtx) -> Data {
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) in
-            return vscr_ratchet_key_extractor_extract_ratchet_private_key(self.c_ctx, vsc_data(dataPointer, data.count), errCtx.c_ctx)
+            return vscr_ratchet_key_utils_extract_ratchet_private_key(self.c_ctx, vsc_data(dataPointer, data.count), errCtx.c_ctx)
         })
 
         defer {
