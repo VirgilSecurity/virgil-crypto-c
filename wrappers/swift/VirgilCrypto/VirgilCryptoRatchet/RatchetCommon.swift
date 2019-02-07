@@ -42,11 +42,11 @@ import VirgilCryptoFoundation
 @objc(VSCRRatchetCommon) public class RatchetCommon: NSObject {
 
     /// Max plain text length allowed to be encrypted
-    static let maxPlainTextLen = 30000;
+    public static let maxPlainTextLen = 30000;
     /// Max cipher text length allowed to be decrypted
-    static let maxCipherTextLen = 32768;
+    public static let maxCipherTextLen = 32768;
     /// Max message length
-    static let maxMessageLen = 32964;
+    public static let maxMessageLen = 32964;
     /// Key pair id length
-    static let keyIdLen = 8;
+    public static let keyIdLen = 8;
 }

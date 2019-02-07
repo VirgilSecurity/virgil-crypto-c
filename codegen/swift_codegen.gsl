@@ -291,7 +291,7 @@ function swift_insert_class_constant (swift_constant)
 
     swift_insert_description (my.swift_constant, 1)
     swift_insert_code ("\
-        static let $(my.swift_constant.name:) = $(my.swift_constant.value:);
+        $(my.swift_constant.visibility:) static let $(my.swift_constant.name:) = $(my.swift_constant.value:);
     ", 1)
 endfunction
 
