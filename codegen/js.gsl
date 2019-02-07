@@ -1,0 +1,174 @@
+.template 0
+
+gsl from "common.gsl"
+gsl from "js_codegen.gsl"
+
+# --------------------------------------------------------------------------------------------------
+# JavaScript structures
+# --------------------------------------------------------------------------------------------------
+
+function js_create_argument_structure(js_method, source_argument)
+  new js_argument to my.js_method
+    js_argument.name = "$(my.source_argument.name:Camel)"
+  endnew
+endfunction
+
+function js_create_constructor_structure(js_class, source_constructor)
+  new js_static_method to my.js_class
+    js_static_method.name = "$(my.source_constructor.name:Camel)"
+    for my.source_constructor.argument as source_argument
+      js_create_argument_structure(js_static_method, source_argument)
+    endfor
+  endnew
+endfunction
+
+function js_create_method_structure(js_class, source_method)
+  new js_method to my.js_class
+    js_method.name = "$(my.source_method.name:Camel)"
+    js_method.binding_name = "$(js_binding_method_name(my.source_method))"
+    for my.source_method.argument as source_argument
+      if defined(source_argument.class) & source_argument.class = "buffer" & defined(source_argument.access) & source_argument.access = "writeonly"
+        new js_return to js_method
+          js_return.name = "$(source_argument.name:Camel)"
+        endnew
+      else
+        js_create_argument_structure(js_method, source_argument)
+      endif
+    endfor
+  endnew
+endfunction
+
+function js_create_js_class_structure(js_module, source)
+  new js_class to my.js_module
+    js_class.name = "$(my.source.name:Pascal)"
+    for my.source.constructor as source_constructor
+      js_create_constructor_structure(js_class, source_constructor)
+    endfor
+    for my.source.method as source_method where !(source_method.declaration = "private")
+      js_create_method_structure(js_class, source_method)
+    endfor
+  endnew
+endfunction
+
+# --------------------------------------------------------------------------------------------------
+# C++ structures
+# --------------------------------------------------------------------------------------------------
+
+function js_create_cpp_return_structure(cpp_method, source_argument)
+  new cpp_return to my.cpp_method
+    cpp_return.name = "$(my.source_argument.name:Camel)"
+    cpp_return.type = my.source_argument.class
+  endnew
+endfunction
+
+function js_create_cpp_argument_structure(cpp_method, source_argument)
+  new cpp_argument to my.cpp_method
+    if defined(my.source_argument.type)
+      cpp_argument.type = my.source_argument.type
+    elsif defined(my.source_argument.class)
+      cpp_argument.type = my.source_argument.class
+    elsif defined(my.source_argument.enum)
+      cpp_argument.type = my.source_argument.enum
+    else
+      echo_fatal("Unknown argument type", my)
+    endif
+  endnew
+endfunction
+
+function js_create_cpp_method_structure(cpp_class, source_method)
+  new cpp_method to my.cpp_class
+    cpp_method.name = "$(my.source_method.name:Pascal)"
+    cpp_method.binding_name = "$(js_binding_method_name(my.source_method))"
+    for my.source_method.argument as source_argument
+      if defined(source_argument.class) & source_argument.class = "buffer" & defined(source_argument.access) & source_argument.access = "writeonly"
+        js_create_cpp_return_structure(cpp_method, source_argument)
+      else
+        js_create_cpp_argument_structure(cpp_method, source_argument)
+      endif
+    endfor
+  endnew
+endfunction
+
+function js_create_cpp_class_structure(js_module, source)
+  new cpp_class to my.js_module
+    cpp_class.name = "$(my.source.name:Pascal)"
+    cpp_class.c_name = "$(my.source.name:c)"
+    for my.source.method as source_method where !(source_method.declaration = "private")
+      js_create_cpp_method_structure(cpp_class, source_method)
+    endfor
+  endnew
+endfunction
+
+# --------------------------------------------------------------------------------------------------
+# Callbacks
+# --------------------------------------------------------------------------------------------------
+
+function js_create_project_module(project, destination, wrapper)
+  echo_info("js_create_project_module", my)
+endfunction
+
+function js_create_c_context_module(source, destination, wrapper, meta)
+  echo_info("js_create_c_context_module", my)
+endfunction
+
+function js_create_interface_module(source, destination, wrapper, meta)
+  echo_info("js_create_interface_module", my)
+endfunction
+
+function js_create_implementation_module(source, destination, wrapper, meta)
+  echo_info("js_create_implementation_module", my)
+endfunction
+
+function js_create_class_module(source, destination, wrapper, meta)
+  echo_info("js_create_class_module", my)
+  if my.source.context = "internal"
+    new js_module to my.destination
+      js_module.js_source_file = "$(my.source.name:cobol).js"
+      js_module.js_source_file_path = cat_path(my.wrapper.project_source_dir, js_module.js_source_file)
+      js_create_js_class_structure(js_module, my.source)
+
+      js_module.cpp_header_file = "$(my.source.name:c).h"
+      js_module.cpp_header_file_path = cat_path(my.wrapper.project_source_dir, js_module.cpp_header_file)
+      js_module.cpp_header_guard = "$(my.source.name:c,upper)_H"
+      js_module.cpp_source_file = "$(my.source.name:c).cc"
+      js_module.cpp_source_file_path = cat_path(my.wrapper.project_source_dir, js_module.cpp_source_file)
+      js_create_cpp_class_structure(js_module, my.source)
+    endnew
+  endif
+endfunction
+
+function js_create_enum_module(source, destination, wrapper, meta)
+  echo_info("js_create_enum_module", my)
+endfunction
+
+function js_module_resolve(source, wrapper)
+  echo_info("js_module_resolve", my)
+endfunction
+
+function js_resolve(project, wrapper)
+  echo_info("js_resolve", my)
+
+  my.wrapper.name = my.project.name
+  my.wrapper.prefix = my.project.prefix
+  my.wrapper.namespace = my.project.namespace
+
+  my.wrapper.root_dir = cat_path("../wrappers/$(my.wrapper.lang:no)", "crypto")
+  my.wrapper.source_dir = cat_path(my.wrapper.root_dir, "src")
+  my.wrapper.project_source_dir = cat_path(my.wrapper.source_dir, my.wrapper.name)
+endfunction
+
+function js_generate_project(source, wrapper)
+  echo_info("js_generate_project", my)
+  if -1 = directory.create(my.wrapper.project_source_dir)
+    echo_fatal("Can't create directory '$(my.wrapper.project_source_dir)'", my)
+  endif
+endfunction
+
+function js_generate_sources(source, wrapper)
+  echo_info("js_generate_sources", my)
+  js_generate_cpp_header_files(my.source, my.wrapper)
+  js_generate_cpp_source_files(my.source, my.wrapper)
+  js_generate_js_source_files(my.source, my.wrapper)
+endfunction
+
+.endtemplate

@@ -1,0 +1,242 @@
+.template 0
+
+gsl from "common.gsl"
+
+# --------------------------------------------------------------------------------------------------
+# General
+# --------------------------------------------------------------------------------------------------
+
+function js_cpp_context_name(cpp_class, wrapper)
+  return "$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)"
+endfunction
+
+function js_cpp_context_type(cpp_class, wrapper)
+  return "$(js_cpp_context_name(my.cpp_class, my.wrapper))_t*"
+endfunction
+
+function js_cpp_context_constructor_name(cpp_class, wrapper)
+  return "$(js_cpp_context_name(my.cpp_class, my.wrapper))_new"
+endfunction
+
+function js_cpp_context_destructor_name(cpp_class, wrapper)
+  return "$(js_cpp_context_name(my.cpp_class, my.wrapper))_destroy"
+endfunction
+
+function js_binding_class_name(class)
+  return "$(my.class.name:no)Binding"
+endfunction
+
+function js_binding_reference()
+  return "this._binding"
+endfunction
+
+function js_binding_method_name(method)
+  return "$(my.method.name:Camel)"
+endfunction
+
+# --------------------------------------------------------------------------------------------------
+# C++ header
+# --------------------------------------------------------------------------------------------------
+
+function js_cpp_header_create_ifndef(identifier)
+  out("#ifndef $(my.identifier:no)")
+endfunction
+
+function js_cpp_header_create_define(identifier)
+  out("#define $(my.identifier:no)")
+endfunction
+
+function js_cpp_header_create_endif()
+  out("#endif")
+endfunction
+
+function js_cpp_header_create_public_access_specifier()
+  out("public:")
+endfunction
+
+function js_cpp_header_create_private_access_specifier()
+  out("private:")
+endfunction
+
+function js_cpp_header_create_init()
+  out("static void Init(v8::Local<v8::Object> exports);")
+endfunction
+
+function js_cpp_header_create_new()
+  out("static void New(const Nan::FunctionCallbackInfo<v8::Value>& info);")
+endfunction
+
+function js_cpp_header_create_method(cpp_method)
+  out("static void $(my.cpp_method.name:no)(const Nan::FunctionCallbackInfo<v8::Value>& info);")
+endfunction
+
+function js_cpp_header_create_constructor_and_destructor(cpp_class)
+  out("$(my.cpp_class.name:no)();")
+  out("~$(my.cpp_class.name:no)();")
+endfunction
+
+function js_cpp_header_create_properties(cpp_class, wrapper)
+  out("static Nan::Persistent<v8::Function> constructor;")
+  out("$(js_cpp_context_type(my.cpp_class, my.wrapper)) $(js_cpp_context_name(my.cpp_class, my.wrapper));")
+endfunction
+
+function js_cpp_header_create_class(cpp_class, wrapper)
+  out("class $(my.cpp_class.name:no) {")
+  js_cpp_header_create_public_access_specifier()
+  js_cpp_header_create_init()
+  js_cpp_header_create_private_access_specifier()
+  js_cpp_header_create_new()
+  for my.cpp_class.cpp_method
+    js_cpp_header_create_method(cpp_method)
+  endfor
+  js_cpp_header_create_constructor_and_destructor(my.cpp_class)
+  js_cpp_header_create_properties(my.cpp_class, my.wrapper)
+  out("};")
+endfunction
+
+# --------------------------------------------------------------------------------------------------
+# C++ source
+# --------------------------------------------------------------------------------------------------
+
+function js_cpp_create_module_include_header(js_module)
+  out("#include \"$(my.js_module.cpp_header_file:no)\"")
+endfunction
+
+function js_cpp_create_init(cpp_class)
+  out("void $(my.cpp_class.name:no)::Init(v8::Local<v8::Object> exports) {")
+  out("Nan::HandleScope scope;")
+  out("v8::Local<v8::FunctionTemplate> function_template = Nan::New<v8::FunctionTemplate>($(my.cpp_class.name:no)::New);")
+  out("function_template->SetClassName(Nan::New(\"$(js_binding_class_name(my.cpp_class))\").ToLocalChecked());")
+  out("function_template->InstanceTemplate()->SetInternalFieldCount(1);")
+  for my.cpp_class.cpp_method
+    out("Nan::SetPrototypeMethod(function_template, \"$(cpp_method.binding_name:no)\", $(my.cpp_class.name:no)::$(cpp_method.name:no));")
+  endfor
+  out("$(my.cpp_class.name:no)::constructor.Reset(function_template->GetFunction());")
+  out("exports->Set(Nan::New<v8::String>(\"$(js_binding_class_name(my.cpp_class))\").ToLocalChecked(), function_template->GetFunction());")
+  out("}")
+endfunction
+
+function js_cpp_create_method(cpp_class, cpp_method)
+  out("void $(my.cpp_class.name:no)::$(my.cpp_method.name:no)(const Nan::FunctionCallbackInfo<v8::Value>& info) {")
+  out("}")
+endfunction
+
+function js_cpp_create_constructor(cpp_class, wrapper)
+  out("$(my.cpp_class.name:no)::$(my.cpp_class.name:no) {")
+  out("$(js_cpp_context_name(my.cpp_class, my.wrapper)) = $(js_cpp_context_constructor_name(my.cpp_class, my.wrapper))();")
+  out("}")
+endfunction
+
+function js_cpp_create_destructor(cpp_class, wrapper)
+  out("$(my.cpp_class.name:no)::~$(my.cpp_class.name:no) {")
+  out("$(js_cpp_context_destructor_name(my.cpp_class, my.wrapper))(&$(js_cpp_context_name(my.cpp_class, my.wrapper)));")
+  out("}")
+endfunction
+
+function js_cpp_create_persistent_constructor(cpp_class)
+  out("Nan::Persistent<v8::Function> $(my.cpp_class.name:no)::constructor;")
+endfunction
+
+function js_cpp_create_class(cpp_class, wrapper)
+  js_cpp_create_init(my.cpp_class)
+  for my.cpp_class.cpp_method
+    js_cpp_create_method(my.cpp_class, cpp_method)
+  endfor
+  js_cpp_create_constructor(my.cpp_class, my.wrapper)
+  js_cpp_create_destructor(my.cpp_class, my.wrapper)
+  js_cpp_create_persistent_constructor(my.cpp_class)
+endfunction
+
+# --------------------------------------------------------------------------------------------------
+# JavaScript
+# --------------------------------------------------------------------------------------------------
+
+function js_format_method_arguments(method)
+  arguments = ""
+  for my.method.js_argument
+    arguments += js_argument.name
+    if !last()
+      arguments += ", "
+    endif
+  endfor
+  return arguments
+endfunction
+
+function js_create_require_binding(js_class, wrapper)
+  out("const { $(js_binding_class_name(my.js_class)) } = require('bindings')('$(my.wrapper.name)');")
+endfunction
+
+function js_create_constructor(js_class)
+  out("constructor() {")
+  out("$(js_binding_reference()) = new $(js_binding_class_name(my.js_class))();")
+  out("}")
+endfunction
+
+function js_create_static_method(js_static_method)
+  out("static $(my.js_static_method.name:no)($(js_format_method_arguments(my.js_static_method):no)) {")
+  out("}")
+endfunction
+
+function js_create_method(js_method)
+  out("$(my.js_method.name:no)($(js_format_method_arguments(my.js_method):no)) {")
+  out("return $(js_binding_reference()).$(js_method.binding_name:no)($(js_format_method_arguments(my.js_method)));")
+  out("}")
+endfunction
+
+function js_create_class(js_class, wrapper)
+  out("class $(my.js_class.name:no) {")
+  js_create_constructor(my.js_class)
+  for my.js_class.js_static_method
+    js_create_static_method(js_static_method)
+  endfor
+  for my.js_class.js_method
+    js_create_method(js_method)
+  endfor
+  out("}")
+endfunction
+
+function js_create_export_class(js_class)
+  out("module.exports.$(my.js_class.name:no) = $(my.js_class.name:no);")
+endfunction
+
+# --------------------------------------------------------------------------------------------------
+# Generate files
+# --------------------------------------------------------------------------------------------------
+
+function js_generate_cpp_header_files(source, wrapper)
+  for my.source.js_module
+    output js_module.cpp_header_file_path
+      js_cpp_header_create_ifndef(js_module.cpp_header_guard)
+      js_cpp_header_create_define(js_module.cpp_header_guard)
+      for js_module.cpp_class
+        js_cpp_header_create_class(cpp_class, my.wrapper)
+      endfor
+      js_cpp_header_create_endif()
+    close
+  endfor
+endfunction
+
+function js_generate_cpp_source_files(source, wrapper)
+  for my.source.js_module
+    output js_module.cpp_source_file_path
+      js_cpp_create_module_include_header(js_module)
+      for js_module.cpp_class
+        js_cpp_create_class(cpp_class, my.wrapper)
+      endfor
+    close
+  endfor
+endfunction
+
+function js_generate_js_source_files(source, wrapper)
+  for my.source.js_module
+    output js_module.js_source_file_path
+      for js_module.js_class
+        js_create_require_binding(js_class, my.wrapper)
+        js_create_class(js_class, my.wrapper)
+        js_create_export_class(js_class)
+      endfor
+    close
+  endfor
+endfunction
+
+.endtemplate

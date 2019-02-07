@@ -55,6 +55,7 @@
 gsl from "common.gsl"
 gsl from "swift.gsl"
 gsl from "php.gsl"
+gsl from "js.gsl"
 
 function wrapper_resolve (project, wrapper)
     check_arguments (my, "project, wrapper", my)
