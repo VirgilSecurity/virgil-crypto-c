@@ -1841,6 +1841,7 @@ function swift_create_class_constant (constant, swift_class, wrapper, meta)
         . = swift_format_description (my.constant) ?
         .name = swift_derive_constant_name (my.constant, my.wrapper)
         .value = my.constant.value
+        .visibility = "public"
     endnew
 endfunction
 
@@ -2072,7 +2073,7 @@ function swift_create_class_module (class, destination, wrapper, meta)
                 endif
             endif
 
-            for my.class.constant
+            for my.class.constant where constant.definition = "public"
                 swift_create_class_constant (constant, swift_class, my.wrapper, my.meta)
             endfor
 
