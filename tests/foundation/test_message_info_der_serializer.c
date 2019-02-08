@@ -181,6 +181,7 @@ test__deserialize__cms_with_one_rsa2048_key_recipient__returns_valid_key_recipie
     TEST_ASSERT_EQUAL_DATA(test_message_info_cms_ONE_RSA2048_KEY_RECIPIENT.data_encryption_alg_nonce, alg_nonce);
 
     vscf_message_info_destroy(&message_info);
+    vscf_message_info_der_serializer_destroy(&serializer);
 }
 
 void
