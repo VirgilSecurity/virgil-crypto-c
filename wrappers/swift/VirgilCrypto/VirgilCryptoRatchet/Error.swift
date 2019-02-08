@@ -84,6 +84,12 @@ import VSCRatchet
     /// Exceeded max plain text len
     case exceededMaxPlainTextLen = 15
 
+    /// Too many messages for sender chain
+    case tooManyMessagesForSenderChain = 16
+
+    /// Too many messages for receiver chain
+    case tooManyMessagesForReceiverChain = 17
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC error: vscr_error_t) {
         self.init(rawValue: Int(error.rawValue))!

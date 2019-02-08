@@ -135,7 +135,15 @@ enum vscr_error_t {
     //
     //  Exceeded max plain text len
     //
-    vscr_error_EXCEEDED_MAX_PLAIN_TEXT_LEN = 15
+    vscr_error_EXCEEDED_MAX_PLAIN_TEXT_LEN = 15,
+    //
+    //  Too many messages for sender chain
+    //
+    vscr_error_TOO_MANY_MESSAGES_FOR_SENDER_CHAIN = 16,
+    //
+    //  Too many messages for receiver chain
+    //
+    vscr_error_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN = 17
 };
 typedef enum vscr_error_t vscr_error_t;
 
