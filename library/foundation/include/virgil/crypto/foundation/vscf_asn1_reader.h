@@ -113,6 +113,12 @@ VSCF_PUBLIC size_t
 vscf_asn1_reader_get_len(vscf_impl_t *impl);
 
 //
+//  Get length of the current ASN.1 element with tag and length itself.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_reader_get_data_len(vscf_impl_t *impl);
+
+//
 //  Read ASN.1 type: TAG.
 //  Return element length.
 //

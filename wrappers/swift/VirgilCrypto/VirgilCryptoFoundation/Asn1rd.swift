@@ -96,6 +96,13 @@ import VirgilCryptoCommon
         return proxyResult
     }
 
+    /// Get length of the current ASN.1 element with tag and length itself.
+    @objc public func getDataLen() -> Int {
+        let proxyResult = vscf_asn1rd_get_data_len(self.c_ctx)
+
+        return proxyResult
+    }
+
     /// Read ASN.1 type: TAG.
     /// Return element length.
     @objc public func readTag(tag: Int32) -> Int {

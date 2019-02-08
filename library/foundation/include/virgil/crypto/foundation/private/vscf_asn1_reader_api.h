@@ -102,6 +102,11 @@ typedef int (*vscf_asn1_reader_api_get_tag_fn)(vscf_impl_t *impl);
 typedef size_t (*vscf_asn1_reader_api_get_len_fn)(vscf_impl_t *impl);
 
 //
+//  Callback. Get length of the current ASN.1 element with tag and length itself.
+//
+typedef size_t (*vscf_asn1_reader_api_get_data_len_fn)(vscf_impl_t *impl);
+
+//
 //  Callback. Read ASN.1 type: TAG.
 //          Return element length.
 //
@@ -236,6 +241,10 @@ struct vscf_asn1_reader_api_t {
     //  Get length of the current ASN.1 element.
     //
     vscf_asn1_reader_api_get_len_fn get_len_cb;
+    //
+    //  Get length of the current ASN.1 element with tag and length itself.
+    //
+    vscf_asn1_reader_api_get_data_len_fn get_data_len_cb;
     //
     //  Read ASN.1 type: TAG.
     //  Return element length.

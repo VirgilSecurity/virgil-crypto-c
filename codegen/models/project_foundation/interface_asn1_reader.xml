@@ -33,6 +33,13 @@
     </method>
 
 
+    <method name="get data len">
+        Get length of the current ASN.1 element with tag and length itself.
+
+        <return type="size"/>
+    </method>
+
+
     <method name="read tag">
         Read ASN.1 type: TAG.
         Return element length.
