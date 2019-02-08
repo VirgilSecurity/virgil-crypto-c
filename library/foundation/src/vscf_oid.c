@@ -244,6 +244,22 @@ vscf_oid_to_alg_id(vsc_data_t oid) {
         return vscf_alg_id_PKCS5_PBES2;
     }
 
+    if (vscf_oid_equal(oid, oid_hmac_with_sha224)) {
+        return vscf_alg_id_HMAC;
+    }
+
+    if (vscf_oid_equal(oid, oid_hmac_with_sha256)) {
+        return vscf_alg_id_HMAC;
+    }
+
+    if (vscf_oid_equal(oid, oid_hmac_with_sha384)) {
+        return vscf_alg_id_HMAC;
+    }
+
+    if (vscf_oid_equal(oid, oid_hmac_with_sha512)) {
+        return vscf_alg_id_HMAC;
+    }
+
     return vscf_alg_id_NONE;
 }
 
