@@ -104,8 +104,8 @@ vscf_message_info_serializer_serialize(vscf_impl_t *impl, const vscf_message_inf
 //
 //  Deserialize class "message info".
 //
-VSCF_PUBLIC const vscf_message_info_t *
-vscf_message_info_serializer_deserialize(vscf_impl_t *impl, vsc_data_t data, const vscf_error_ctx_t *error);
+VSCF_PUBLIC vscf_message_info_t *
+vscf_message_info_serializer_deserialize(vscf_impl_t *impl, vsc_data_t data, vscf_error_ctx_t *error);
 
 //
 //  Return message info serializer API, or NULL if it is not implemented.

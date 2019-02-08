@@ -645,7 +645,8 @@ vscf_alg_info_der_serializer_serialize_pbkdf2_alg_info(
         len += vscf_alg_info_der_serializer_serialize_inplace(
                 alg_info_der_serializer, vscf_salted_kdf_alg_info_hash_alg_info(salted_kdf_alg_info));
 
-        len += vscf_asn1_writer_write_int(asn1_writer, vscf_salted_kdf_alg_info_iteration_count(salted_kdf_alg_info));
+        len += vscf_asn1_writer_write_uint64(
+                asn1_writer, vscf_salted_kdf_alg_info_iteration_count(salted_kdf_alg_info));
         len += vscf_asn1_writer_write_octet_str(asn1_writer, vscf_salted_kdf_alg_info_salt(salted_kdf_alg_info));
         len += vscf_asn1_writer_write_sequence(asn1_writer, len);
         break;

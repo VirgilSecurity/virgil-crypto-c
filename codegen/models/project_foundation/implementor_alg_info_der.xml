@@ -181,6 +181,8 @@
         <require impl="cipher alg info"/>
         <require impl="hash based alg info"/>
         <require impl="simple alg info"/>
+        <require impl="salted kdf alg info"/>
+        <require impl="pbe alg info"/>
         <require interface="alg info"/>
 
         <dependency name="asn1 reader" interface="asn1 reader"/>
@@ -188,7 +190,7 @@
         <method name="deserialize simple alg info">
             Parse ASN.1 structure "AlgorithmIdentifier" with optional NULL parameter.
 
-            <argument name="data" class="data"/>
+            <argument name="alg oid" class="data"/>
             <argument name="error" class="error ctx" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>
@@ -197,7 +199,7 @@
         <method name="deserialize kdf alg info">
             Parse ASN.1 structure "KeyDerivationFunction" from the ISO/IEC 18033-2.
 
-            <argument name="data" class="data"/>
+            <argument name="alg oid" class="data"/>
             <argument name="error" class="error ctx" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>
@@ -207,7 +209,7 @@
             Parse ASN.1 structure "KeyDevAlgs" from the
             https://tools.ietf.org/html/draft-housley-hkdf-oids-00.
 
-            <argument name="data" class="data"/>
+            <argument name="alg oid" class="data"/>
             <argument name="error" class="error ctx" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>
@@ -216,7 +218,7 @@
         <method name="deserialize hmac alg info">
             Parse ASN.1 structure "DigestAlgorithm" from the RFC 4231.
 
-            <argument name="data" class="data"/>
+            <argument name="alg oid" class="data"/>
             <argument name="error" class="error ctx" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>
@@ -227,7 +229,37 @@
                 - defined in the RFC 3565;
                 - defined in the RFC 5084.
 
-            <argument name="data" class="data"/>
+            <argument name="alg oid" class="data"/>
+            <argument name="error" class="error ctx" access="readwrite"/>
+
+            <return interface="alg info" access="disown"/>
+        </method>
+
+        <method name="deserialize pbkdf2 alg info">
+            Parse ASN.1 structure "AlgorithmIdentifier" with PBKDF2 parameters
+            defined in the RFC 8018.
+
+            <argument name="alg oid" class="data"/>
+            <argument name="error" class="error ctx" access="readwrite"/>
+
+            <return interface="alg info" access="disown"/>
+        </method>
+
+        <method name="deserialize pbes2 alg info">
+            Parse ASN.1 structure "AlgorithmIdentifier" with PBES2 parameters
+            defined in the RFC 8018.
+
+            <argument name="alg oid" class="data"/>
+            <argument name="error" class="error ctx" access="readwrite"/>
+
+            <return interface="alg info" access="disown"/>
+        </method>
+
+        <method name="deserialize inplace" declaration="public">
+            Deserialize by using internal ASN.1 reader.
+            Note, that caller code is responsible to reset ASN.1 reader with
+            an input buffer.
+
             <argument name="error" class="error ctx" access="readwrite"/>
 
             <return interface="alg info" access="disown"/>
