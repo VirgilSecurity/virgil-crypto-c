@@ -55,10 +55,42 @@ endfunction
 # C++ structures
 # --------------------------------------------------------------------------------------------------
 
-function js_create_cpp_return_structure(cpp_method, source_argument)
+function js_create_cpp_length_type_constant(cpp_return, source_length)
+  my.cpp_return.length_type = "constant"
+  my.cpp_return.length_name = "$(my.cpp_return.c_name:no)_size"
+  my.cpp_return.length_constant = "$(my.source_length.constant:c,upper)"
+  my.cpp_return.length_class = "$(my.source_length.class:c)"
+endfunction
+
+function js_create_cpp_length_type_method(cpp_return, source_length)
+  my.cpp_return.length_type = "method"
+  my.cpp_return.length_name = "$(my.cpp_return.c_name:no)_size"
+  my.cpp_return.length_method = "$(my.source_length.method:c)"
+  for my.source_length.proxy
+    new cpp_proxy_argument to my.cpp_return
+      cpp_proxy_argument.c_name = "$(proxy.argument:c)"
+    endnew
+  endfor
+endfunction
+
+function js_create_cpp_length_type(cpp_return, source_length)
+  if defined(my.source_length.constant)
+    js_create_cpp_length_type_constant(my.cpp_return, my.source_length)
+  elsif defined(my.source_length.method)
+    js_create_cpp_length_type_method(my.cpp_return, my.source_length)
+  else
+    echo_fatal("Unknown length type", my)
+  endif
+endfunction
+
+function js_create_cpp_return_buffer_structure(cpp_method, source_argument)
   new cpp_return to my.cpp_method
     cpp_return.name = "$(my.source_argument.name:Camel)"
+    cpp_return.c_name = "$(my.source_argument.name:c)"
     cpp_return.type = my.source_argument.class
+    for my.source_argument.length
+      js_create_cpp_length_type(cpp_return, length)
+    endfor
   endnew
 endfunction
 
@@ -81,11 +113,11 @@ function js_create_cpp_method_structure(cpp_class, source_method)
   new cpp_method to my.cpp_class
     cpp_method.name = "$(my.source_method.name:Pascal)"
     cpp_method.binding_name = "$(js_binding_method_name(my.source_method))"
-    cpp_method.c_name = "$(my.source_method.name:c)"
+    cpp_method.c_name = "$(my.cpp_class.c_name)_$(my.source_method.name:c)"
     for my.source_method.argument as source_argument
       if defined(source_argument.class) & source_argument.class = "buffer" & \
         defined(source_argument.access) & source_argument.access = "writeonly"
-        js_create_cpp_return_structure(cpp_method, source_argument)
+        js_create_cpp_return_buffer_structure(cpp_method, source_argument)
       else
         js_create_cpp_argument_structure(cpp_method, source_argument)
       endif

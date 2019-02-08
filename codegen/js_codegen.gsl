@@ -26,6 +26,14 @@ function js_cpp_callback_info_name()
   return "info"
 endfunction
 
+function js_cpp_bytes_name(name)
+  return "$(my.name:no)_bytes"
+endfunction
+
+function js_cpp_buffer_name(name)
+  return "$(my.name:no)_buffer"
+endfunction
+
 function js_binding_class_name(class)
   return "$(my.class.name:no)Binding"
 endfunction
@@ -121,28 +129,71 @@ function js_cpp_create_init(cpp_class)
   out("}")
 endfunction
 
-function js_cpp_create_size_t(cpp_argument, index)
+function js_cpp_create_size_t_argument(cpp_argument, index)
   out("size_t $(my.cpp_argument.c_name:no) = Nan::To<uint32_t>($(js_cpp_callback_info_name())[$(my.index)]).FromJust();")
 endfunction
 
-function js_cpp_create_vsc_data_t(cpp_argument, index)
+function js_cpp_create_vsc_data_t_argument(cpp_argument, index)
   out("vsc_data_t $(my.cpp_argument.c_name:no) = vsc_data_from_str(node::Buffer::Data($(js_cpp_callback_info_name())[$(my.index)]), node::Buffer::Length($(js_cpp_callback_info_name())[$(my.index)]));")
 endfunction
 
 function js_cpp_create_method_argument(cpp_argument, index)
   if my.cpp_argument.type = "size"
-    js_cpp_create_size_t(my.cpp_argument, my.index)
+    js_cpp_create_size_t_argument(my.cpp_argument, my.index)
   elsif my.cpp_argument.type = "data"
-    js_cpp_create_vsc_data_t(my.cpp_argument, my.index)
+    js_cpp_create_vsc_data_t_argument(my.cpp_argument, my.index)
   else
     echo_fatal("Unknown 'cpp_argument.type'", my)
   endif
 endfunction
 
-function js_cpp_create_method(cpp_class, cpp_method)
+function js_cpp_format_cpp_proxy_arguments(cpp_return)
+  arguments = ""
+  for my.cpp_return.cpp_proxy_argument
+    arguments += cpp_proxy_argument.c_name
+    if !last()
+      arguments += ", "
+    endif
+  endfor
+  return arguments
+endfunction
+
+function js_cpp_create_buffer_size(cpp_return, cpp_class, wrapper)
+  if my.cpp_return.length_type = "constant"
+    out("size_t $(my.cpp_return.length_name:no) = $(my.wrapper.prefix:no)_$(my.cpp_return.length_class:no)_$(my.cpp_return.length_constant:no);")
+  elsif my.cpp_return.length_type = "method"
+    out("size_t $(my.cpp_return.length_name:no) = $(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.cpp_return.length_method:no)($(js_cpp_format_cpp_proxy_arguments(my.cpp_return)));")
+  else
+    echo_fatal("Unknown 'cpp_return.length_type'", my)
+  endif
+endfunction
+
+function js_cpp_create_buffer_with_bytes(cpp_return, cpp_class, wrapper)
+  js_cpp_create_buffer_size(my.cpp_return, my.cpp_class, my.wrapper)
+  out("byte* $(js_cpp_bytes_name(my.cpp_return.c_name)) = new byte[$(my.cpp_return.length_name:no)];")
+  out("vsc_buffer_t* $(js_cpp_buffer_name(my.cpp_return.c_name)) = vsc_buffer_new();")
+  out("vsc_buffer_use($(js_cpp_buffer_name(my.cpp_return.c_name)), $(js_cpp_bytes_name(my.cpp_return.c_name)), $(my.cpp_return.length_name:no));")
+endfunction
+
+function js_cpp_create_buffer_destroy(cpp_return)
+  out("vsc_buffer_destroy(&$(js_cpp_buffer_name(my.cpp_return.c_name)));")
+endfunction
+
+function js_cpp_create_buffer_cleanup(cpp_return)
+  js_cpp_create_buffer_destroy(my.cpp_return)
+  out("delete $(js_cpp_bytes_name(my.cpp_return.c_name));")
+endfunction
+
+function js_cpp_create_method(cpp_class, cpp_method, wrapper)
   out("void $(my.cpp_class.name:no)::$(my.cpp_method.name:no)(const Nan::FunctionCallbackInfo<v8::Value>& $(js_cpp_callback_info_name())) {")
   for my.cpp_method.cpp_argument
     js_cpp_create_method_argument(cpp_argument, index(cpp_argument) - 1)
+  endfor
+  for my.cpp_method.cpp_return where cpp_return.type = "buffer"
+    js_cpp_create_buffer_with_bytes(cpp_return, my.cpp_class, my.wrapper)
+  endfor
+  for my.cpp_method.cpp_return where cpp_return.type = "buffer"
+    js_cpp_create_buffer_cleanup(cpp_return)
   endfor
   out("}")
 endfunction
@@ -166,7 +217,7 @@ endfunction
 function js_cpp_create_class(cpp_class, wrapper)
   js_cpp_create_init(my.cpp_class)
   for my.cpp_class.cpp_method
-    js_cpp_create_method(my.cpp_class, cpp_method)
+    js_cpp_create_method(my.cpp_class, cpp_method, my.wrapper)
   endfor
   js_cpp_create_constructor(my.cpp_class, my.wrapper)
   js_cpp_create_destructor(my.cpp_class, my.wrapper)
