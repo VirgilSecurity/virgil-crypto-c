@@ -50,8 +50,8 @@
 //  Utils class for working with keys formats
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_KEY_EXTRACTOR_H_INCLUDED
-#define VSCR_RATCHET_KEY_EXTRACTOR_H_INCLUDED
+#ifndef VSCR_RATCHET_KEY_UTILS_H_INCLUDED
+#define VSCR_RATCHET_KEY_UTILS_H_INCLUDED
 
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
@@ -84,68 +84,68 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet key extractor' context.
+//  Handle 'ratchet key utils' context.
 //
-typedef struct vscr_ratchet_key_extractor_t vscr_ratchet_key_extractor_t;
+typedef struct vscr_ratchet_key_utils_t vscr_ratchet_key_utils_t;
 
 //
-//  Return size of 'vscr_ratchet_key_extractor_t'.
+//  Return size of 'vscr_ratchet_key_utils_t'.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_key_extractor_ctx_size(void);
+vscr_ratchet_key_utils_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_key_extractor_init(vscr_ratchet_key_extractor_t *ratchet_key_extractor);
+vscr_ratchet_key_utils_init(vscr_ratchet_key_utils_t *ratchet_key_utils);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_key_extractor_cleanup(vscr_ratchet_key_extractor_t *ratchet_key_extractor);
+vscr_ratchet_key_utils_cleanup(vscr_ratchet_key_utils_t *ratchet_key_utils);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_key_extractor_t *
-vscr_ratchet_key_extractor_new(void);
+VSCR_PUBLIC vscr_ratchet_key_utils_t *
+vscr_ratchet_key_utils_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_key_extractor_delete(vscr_ratchet_key_extractor_t *ratchet_key_extractor);
+vscr_ratchet_key_utils_delete(vscr_ratchet_key_utils_t *ratchet_key_utils);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_key_extractor_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_key_utils_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_key_extractor_destroy(vscr_ratchet_key_extractor_t **ratchet_key_extractor_ref);
+vscr_ratchet_key_utils_destroy(vscr_ratchet_key_utils_t **ratchet_key_utils_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_key_extractor_t *
-vscr_ratchet_key_extractor_shallow_copy(vscr_ratchet_key_extractor_t *ratchet_key_extractor);
+VSCR_PUBLIC vscr_ratchet_key_utils_t *
+vscr_ratchet_key_utils_shallow_copy(vscr_ratchet_key_utils_t *ratchet_key_utils);
 
 //
 //  Computes 8 bytes key pair id from public key
 //
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_key_extractor_compute_public_key_id(vscr_ratchet_key_extractor_t *ratchet_key_extractor,
-        vsc_data_t public_key, vsc_buffer_t *key_id);
+vscr_ratchet_key_utils_compute_public_key_id(vscr_ratchet_key_utils_t *ratchet_key_utils, vsc_data_t public_key,
+        vsc_buffer_t *key_id);
 
 VSCR_PUBLIC vsc_buffer_t *
-vscr_ratchet_key_extractor_extract_ratchet_public_key(vscr_ratchet_key_extractor_t *ratchet_key_extractor,
-        vsc_data_t data, vscr_error_ctx_t *err_ctx);
+vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *ratchet_key_utils, vsc_data_t data,
+        vscr_error_ctx_t *err_ctx);
 
 VSCR_PUBLIC vsc_buffer_t *
-vscr_ratchet_key_extractor_extract_ratchet_private_key(vscr_ratchet_key_extractor_t *ratchet_key_extractor,
-        vsc_data_t data, vscr_error_ctx_t *err_ctx);
+vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *ratchet_key_utils, vsc_data_t data,
+        vscr_error_ctx_t *err_ctx);
 
 
 // --------------------------------------------------------------------------
@@ -161,5 +161,5 @@ vscr_ratchet_key_extractor_extract_ratchet_private_key(vscr_ratchet_key_extracto
 
 
 //  @footer
-#endif // VSCR_RATCHET_KEY_EXTRACTOR_H_INCLUDED
+#endif // VSCR_RATCHET_KEY_UTILS_H_INCLUDED
 //  @end

@@ -41,9 +41,6 @@ import VirgilCryptoFoundation
 /// Class for ratchet session between 2 participants
 @objc(VSCRRatchetSession) public class RatchetSession: NSObject {
 
-    /// FIXME
-    @objc public static let maxRatchetLength = 1024 * 1024;
-
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 

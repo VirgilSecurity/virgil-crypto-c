@@ -94,16 +94,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Public integral constants.
-//
-enum {
-    //
-    //  FIXME
-    //
-    vscr_ratchet_session_MAX_RATCHET_LENGTH = 1024 * 1024
-};
-
-//
 //  Handle 'ratchet session' context.
 //
 typedef struct vscr_ratchet_session_t vscr_ratchet_session_t;
