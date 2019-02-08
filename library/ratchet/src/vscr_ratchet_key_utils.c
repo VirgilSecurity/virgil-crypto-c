@@ -50,7 +50,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscr_ratchet_key_extractor.h"
+#include "vscr_ratchet_key_utils.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 #include "vscr_ratchet_common_hidden.h"
@@ -75,9 +75,9 @@
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet key extractor' context.
+//  Handle 'ratchet key utils' context.
 //
-struct vscr_ratchet_key_extractor_t {
+struct vscr_ratchet_key_utils_t {
     //
     //  Function do deallocate self context.
     //
@@ -92,11 +92,11 @@ struct vscr_ratchet_key_extractor_t {
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_key_extractor_init() is called.
+//  Note, this method is called automatically when method vscr_ratchet_key_utils_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_key_extractor_init_ctx(vscr_ratchet_key_extractor_t *ratchet_key_extractor);
+vscr_ratchet_key_utils_init_ctx(vscr_ratchet_key_utils_t *ratchet_key_utils);
 
 //
 //  Release all inner resources.
@@ -104,67 +104,67 @@ vscr_ratchet_key_extractor_init_ctx(vscr_ratchet_key_extractor_t *ratchet_key_ex
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_key_extractor_cleanup_ctx(vscr_ratchet_key_extractor_t *ratchet_key_extractor);
+vscr_ratchet_key_utils_cleanup_ctx(vscr_ratchet_key_utils_t *ratchet_key_utils);
 
 //
-//  Return size of 'vscr_ratchet_key_extractor_t'.
+//  Return size of 'vscr_ratchet_key_utils_t'.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_key_extractor_ctx_size(void) {
+vscr_ratchet_key_utils_ctx_size(void) {
 
-    return sizeof(vscr_ratchet_key_extractor_t);
+    return sizeof(vscr_ratchet_key_utils_t);
 }
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_key_extractor_init(vscr_ratchet_key_extractor_t *ratchet_key_extractor) {
+vscr_ratchet_key_utils_init(vscr_ratchet_key_utils_t *ratchet_key_utils) {
 
-    VSCR_ASSERT_PTR(ratchet_key_extractor);
+    VSCR_ASSERT_PTR(ratchet_key_utils);
 
-    vscr_zeroize(ratchet_key_extractor, sizeof(vscr_ratchet_key_extractor_t));
+    vscr_zeroize(ratchet_key_utils, sizeof(vscr_ratchet_key_utils_t));
 
-    ratchet_key_extractor->refcnt = 1;
+    ratchet_key_utils->refcnt = 1;
 
-    vscr_ratchet_key_extractor_init_ctx(ratchet_key_extractor);
+    vscr_ratchet_key_utils_init_ctx(ratchet_key_utils);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_key_extractor_cleanup(vscr_ratchet_key_extractor_t *ratchet_key_extractor) {
+vscr_ratchet_key_utils_cleanup(vscr_ratchet_key_utils_t *ratchet_key_utils) {
 
-    if (ratchet_key_extractor == NULL) {
+    if (ratchet_key_utils == NULL) {
         return;
     }
 
-    if (ratchet_key_extractor->refcnt == 0) {
+    if (ratchet_key_utils->refcnt == 0) {
         return;
     }
 
-    if (--ratchet_key_extractor->refcnt == 0) {
-        vscr_ratchet_key_extractor_cleanup_ctx(ratchet_key_extractor);
+    if (--ratchet_key_utils->refcnt == 0) {
+        vscr_ratchet_key_utils_cleanup_ctx(ratchet_key_utils);
 
-        vscr_zeroize(ratchet_key_extractor, sizeof(vscr_ratchet_key_extractor_t));
+        vscr_zeroize(ratchet_key_utils, sizeof(vscr_ratchet_key_utils_t));
     }
 }
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_key_extractor_t *
-vscr_ratchet_key_extractor_new(void) {
+VSCR_PUBLIC vscr_ratchet_key_utils_t *
+vscr_ratchet_key_utils_new(void) {
 
-    vscr_ratchet_key_extractor_t *ratchet_key_extractor = (vscr_ratchet_key_extractor_t *) vscr_alloc(sizeof (vscr_ratchet_key_extractor_t));
-    VSCR_ASSERT_ALLOC(ratchet_key_extractor);
+    vscr_ratchet_key_utils_t *ratchet_key_utils = (vscr_ratchet_key_utils_t *) vscr_alloc(sizeof (vscr_ratchet_key_utils_t));
+    VSCR_ASSERT_ALLOC(ratchet_key_utils);
 
-    vscr_ratchet_key_extractor_init(ratchet_key_extractor);
+    vscr_ratchet_key_utils_init(ratchet_key_utils);
 
-    ratchet_key_extractor->self_dealloc_cb = vscr_dealloc;
+    ratchet_key_utils->self_dealloc_cb = vscr_dealloc;
 
-    return ratchet_key_extractor;
+    return ratchet_key_utils;
 }
 
 //
@@ -172,47 +172,47 @@ vscr_ratchet_key_extractor_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_key_extractor_delete(vscr_ratchet_key_extractor_t *ratchet_key_extractor) {
+vscr_ratchet_key_utils_delete(vscr_ratchet_key_utils_t *ratchet_key_utils) {
 
-    if (ratchet_key_extractor == NULL) {
+    if (ratchet_key_utils == NULL) {
         return;
     }
 
-    vscr_dealloc_fn self_dealloc_cb = ratchet_key_extractor->self_dealloc_cb;
+    vscr_dealloc_fn self_dealloc_cb = ratchet_key_utils->self_dealloc_cb;
 
-    vscr_ratchet_key_extractor_cleanup(ratchet_key_extractor);
+    vscr_ratchet_key_utils_cleanup(ratchet_key_utils);
 
-    if (ratchet_key_extractor->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(ratchet_key_extractor);
+    if (ratchet_key_utils->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(ratchet_key_utils);
     }
 }
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_key_extractor_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_key_utils_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_key_extractor_destroy(vscr_ratchet_key_extractor_t **ratchet_key_extractor_ref) {
+vscr_ratchet_key_utils_destroy(vscr_ratchet_key_utils_t **ratchet_key_utils_ref) {
 
-    VSCR_ASSERT_PTR(ratchet_key_extractor_ref);
+    VSCR_ASSERT_PTR(ratchet_key_utils_ref);
 
-    vscr_ratchet_key_extractor_t *ratchet_key_extractor = *ratchet_key_extractor_ref;
-    *ratchet_key_extractor_ref = NULL;
+    vscr_ratchet_key_utils_t *ratchet_key_utils = *ratchet_key_utils_ref;
+    *ratchet_key_utils_ref = NULL;
 
-    vscr_ratchet_key_extractor_delete(ratchet_key_extractor);
+    vscr_ratchet_key_utils_delete(ratchet_key_utils);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_key_extractor_t *
-vscr_ratchet_key_extractor_shallow_copy(vscr_ratchet_key_extractor_t *ratchet_key_extractor) {
+VSCR_PUBLIC vscr_ratchet_key_utils_t *
+vscr_ratchet_key_utils_shallow_copy(vscr_ratchet_key_utils_t *ratchet_key_utils) {
 
-    VSCR_ASSERT_PTR(ratchet_key_extractor);
+    VSCR_ASSERT_PTR(ratchet_key_utils);
 
-    ++ratchet_key_extractor->refcnt;
+    ++ratchet_key_utils->refcnt;
 
-    return ratchet_key_extractor;
+    return ratchet_key_utils;
 }
 
 
@@ -225,16 +225,16 @@ vscr_ratchet_key_extractor_shallow_copy(vscr_ratchet_key_extractor_t *ratchet_ke
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_key_extractor_init() is called.
+//  Note, this method is called automatically when method vscr_ratchet_key_utils_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_key_extractor_init_ctx(vscr_ratchet_key_extractor_t *ratchet_key_extractor) {
+vscr_ratchet_key_utils_init_ctx(vscr_ratchet_key_utils_t *ratchet_key_utils) {
 
-    VSCR_ASSERT_PTR(ratchet_key_extractor);
+    VSCR_ASSERT_PTR(ratchet_key_utils);
 
-    ratchet_key_extractor->pkcs8 = vscf_pkcs8_der_deserializer_new();
-    vscf_pkcs8_der_deserializer_setup_defaults(ratchet_key_extractor->pkcs8);
+    ratchet_key_utils->pkcs8 = vscf_pkcs8_der_deserializer_new();
+    vscf_pkcs8_der_deserializer_setup_defaults(ratchet_key_utils->pkcs8);
 }
 
 //
@@ -243,19 +243,19 @@ vscr_ratchet_key_extractor_init_ctx(vscr_ratchet_key_extractor_t *ratchet_key_ex
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_key_extractor_cleanup_ctx(vscr_ratchet_key_extractor_t *ratchet_key_extractor) {
+vscr_ratchet_key_utils_cleanup_ctx(vscr_ratchet_key_utils_t *ratchet_key_utils) {
 
-    VSCR_ASSERT_PTR(ratchet_key_extractor);
+    VSCR_ASSERT_PTR(ratchet_key_utils);
 
-    vscf_pkcs8_der_deserializer_destroy(&ratchet_key_extractor->pkcs8);
+    vscf_pkcs8_der_deserializer_destroy(&ratchet_key_utils->pkcs8);
 }
 
 //
 //  Computes 8 bytes key pair id from public key
 //
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_key_extractor_compute_public_key_id(
-        vscr_ratchet_key_extractor_t *ratchet_key_extractor, vsc_data_t public_key, vsc_buffer_t *key_id) {
+vscr_ratchet_key_utils_compute_public_key_id(
+        vscr_ratchet_key_utils_t *ratchet_key_utils, vsc_data_t public_key, vsc_buffer_t *key_id) {
 
     if (public_key.len == vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH) {
         byte digest[vscf_sha512_DIGEST_LEN];
@@ -278,14 +278,14 @@ vscr_ratchet_key_extractor_compute_public_key_id(
     vscr_error_ctx_reset(&error_ctx);
 
     vsc_buffer_t *raw_public_key =
-            vscr_ratchet_key_extractor_extract_ratchet_public_key(ratchet_key_extractor, public_key, &error_ctx);
+            vscr_ratchet_key_utils_extract_ratchet_public_key(ratchet_key_utils, public_key, &error_ctx);
 
     if (error_ctx.error != vscr_SUCCESS) {
         return error_ctx.error;
     }
 
-    vscr_error_t result = vscr_ratchet_key_extractor_compute_public_key_id(
-            ratchet_key_extractor, vsc_buffer_data(raw_public_key), key_id);
+    vscr_error_t result =
+            vscr_ratchet_key_utils_compute_public_key_id(ratchet_key_utils, vsc_buffer_data(raw_public_key), key_id);
 
     vsc_buffer_destroy(&raw_public_key);
 
@@ -293,8 +293,8 @@ vscr_ratchet_key_extractor_compute_public_key_id(
 }
 
 VSCR_PUBLIC vsc_buffer_t *
-vscr_ratchet_key_extractor_extract_ratchet_public_key(
-        vscr_ratchet_key_extractor_t *ratchet_key_extractor, vsc_data_t data, vscr_error_ctx_t *err_ctx) {
+vscr_ratchet_key_utils_extract_ratchet_public_key(
+        vscr_ratchet_key_utils_t *ratchet_key_utils, vsc_data_t data, vscr_error_ctx_t *err_ctx) {
 
     vscf_error_ctx_t error_ctx;
     vscf_error_ctx_reset(&error_ctx);
@@ -302,7 +302,7 @@ vscr_ratchet_key_extractor_extract_ratchet_public_key(
     vsc_buffer_t *result = NULL;
 
     vscf_raw_key_t *raw_key =
-            vscf_pkcs8_der_deserializer_deserialize_public_key(ratchet_key_extractor->pkcs8, data, &error_ctx);
+            vscf_pkcs8_der_deserializer_deserialize_public_key(ratchet_key_utils->pkcs8, data, &error_ctx);
 
     if (error_ctx.error != vscf_SUCCESS) {
         VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_KEY_DESERIALIZATION);
@@ -352,8 +352,8 @@ err:
 }
 
 VSCR_PUBLIC vsc_buffer_t *
-vscr_ratchet_key_extractor_extract_ratchet_private_key(
-        vscr_ratchet_key_extractor_t *ratchet_key_extractor, vsc_data_t data, vscr_error_ctx_t *err_ctx) {
+vscr_ratchet_key_utils_extract_ratchet_private_key(
+        vscr_ratchet_key_utils_t *ratchet_key_utils, vsc_data_t data, vscr_error_ctx_t *err_ctx) {
 
     vscf_error_ctx_t error_ctx;
     vscf_error_ctx_reset(&error_ctx);
@@ -361,7 +361,7 @@ vscr_ratchet_key_extractor_extract_ratchet_private_key(
     vsc_buffer_t *result = NULL;
 
     vscf_raw_key_t *raw_key =
-            vscf_pkcs8_der_deserializer_deserialize_private_key(ratchet_key_extractor->pkcs8, data, &error_ctx);
+            vscf_pkcs8_der_deserializer_deserialize_private_key(ratchet_key_utils->pkcs8, data, &error_ctx);
 
     if (error_ctx.error != vscf_SUCCESS) {
         VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_KEY_DESERIALIZATION);

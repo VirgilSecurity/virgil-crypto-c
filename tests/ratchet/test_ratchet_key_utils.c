@@ -42,21 +42,21 @@
 #include <virgil/crypto/ratchet/vscr_ratchet_common.h>
 #include <test_data_ratchet_session.h>
 #include <ed25519/ed25519.h>
-#include <virgil/crypto/ratchet/vscr_ratchet_key_extractor.h>
+#include <virgil/crypto/ratchet/vscr_ratchet_key_utils.h>
 
 void
 test__key_format__fixed_curve_keypair__should_match(void) {
     vscr_error_ctx_t error_ctx;
     vscr_error_ctx_reset(&error_ctx);
 
-    vscr_ratchet_key_extractor_t *extractor = vscr_ratchet_key_extractor_new();
+    vscr_ratchet_key_utils_t *key_utils = vscr_ratchet_key_utils_new();
 
-    vsc_buffer_t *sender_identity_private_key_raw = vscr_ratchet_key_extractor_extract_ratchet_private_key(
-            extractor, test_ratchet_session_alice_identity_private_key, &error_ctx);
+    vsc_buffer_t *sender_identity_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
+            key_utils, test_ratchet_session_alice_identity_private_key, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
 
-    vsc_buffer_t *sender_identity_public_key_raw = vscr_ratchet_key_extractor_extract_ratchet_public_key(
-            extractor, test_ratchet_session_alice_identity_public_key, &error_ctx);
+    vsc_buffer_t *sender_identity_public_key_raw = vscr_ratchet_key_utils_extract_ratchet_public_key(
+            key_utils, test_ratchet_session_alice_identity_public_key, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
 
     byte sender_identity_public_key[ED25519_KEY_LEN];
@@ -70,7 +70,7 @@ test__key_format__fixed_curve_keypair__should_match(void) {
     vsc_buffer_destroy(&sender_identity_private_key_raw);
     vsc_buffer_destroy(&sender_identity_public_key_raw);
 
-    vscr_ratchet_key_extractor_destroy(&extractor);
+    vscr_ratchet_key_utils_destroy(&key_utils);
 }
 
 void
@@ -78,14 +78,14 @@ test__key_format__fixed_ed_keypair__should_match(void) {
     vscr_error_ctx_t error_ctx;
     vscr_error_ctx_reset(&error_ctx);
 
-    vscr_ratchet_key_extractor_t *extractor = vscr_ratchet_key_extractor_new();
+    vscr_ratchet_key_utils_t *key_utils = vscr_ratchet_key_utils_new();
 
     vsc_buffer_t *sender_identity_private_key_raw =
-            vscr_ratchet_key_extractor_extract_ratchet_private_key(extractor, test_ratchet_ed_private_key, &error_ctx);
+            vscr_ratchet_key_utils_extract_ratchet_private_key(key_utils, test_ratchet_ed_private_key, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
 
     vsc_buffer_t *sender_identity_public_key_raw =
-            vscr_ratchet_key_extractor_extract_ratchet_public_key(extractor, test_ratchet_ed_public_key, &error_ctx);
+            vscr_ratchet_key_utils_extract_ratchet_public_key(key_utils, test_ratchet_ed_public_key, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_SUCCESS, error_ctx.error);
 
     byte sender_identity_public_key[ED25519_KEY_LEN];
@@ -99,35 +99,35 @@ test__key_format__fixed_ed_keypair__should_match(void) {
     vsc_buffer_destroy(&sender_identity_private_key_raw);
     vsc_buffer_destroy(&sender_identity_public_key_raw);
 
-    vscr_ratchet_key_extractor_destroy(&extractor);
+    vscr_ratchet_key_utils_destroy(&key_utils);
 }
 
 void
 test__key_id__raw_key__should_match(void) {
-    vscr_ratchet_key_extractor_t *extractor = vscr_ratchet_key_extractor_new();
+    vscr_ratchet_key_utils_t *key_utils = vscr_ratchet_key_utils_new();
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vscr_ratchet_common_KEY_ID_LEN);
 
-    vscr_ratchet_key_extractor_compute_public_key_id(extractor, test_ratchet_ed_public_key2_raw, buffer);
+    vscr_ratchet_key_utils_compute_public_key_id(key_utils, test_ratchet_ed_public_key2_raw, buffer);
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ratchet_ed_public_key2_id, buffer);
 
     vsc_buffer_destroy(&buffer);
-    vscr_ratchet_key_extractor_destroy(&extractor);
+    vscr_ratchet_key_utils_destroy(&key_utils);
 }
 
 void
 test__key_id__key__should_match(void) {
-    vscr_ratchet_key_extractor_t *extractor = vscr_ratchet_key_extractor_new();
+    vscr_ratchet_key_utils_t *key_utils = vscr_ratchet_key_utils_new();
 
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vscr_ratchet_common_KEY_ID_LEN);
 
-    vscr_ratchet_key_extractor_compute_public_key_id(extractor, test_ratchet_ed_public_key2, buffer);
+    vscr_ratchet_key_utils_compute_public_key_id(key_utils, test_ratchet_ed_public_key2, buffer);
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ratchet_ed_public_key2_id, buffer);
 
     vsc_buffer_destroy(&buffer);
-    vscr_ratchet_key_extractor_destroy(&extractor);
+    vscr_ratchet_key_utils_destroy(&key_utils);
 }
 
 // --------------------------------------------------------------------------

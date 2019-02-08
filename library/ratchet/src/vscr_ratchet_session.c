@@ -55,7 +55,7 @@
 #include "vscr_assert.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_message_defs.h"
-#include "vscr_ratchet_key_extractor.h"
+#include "vscr_ratchet_key_utils.h"
 #include "vscr_ratchet.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
@@ -94,7 +94,7 @@ struct vscr_ratchet_session_t {
     //
     vscf_impl_t *rng;
 
-    vscr_ratchet_key_extractor_t *key_extractor;
+    vscr_ratchet_key_utils_t *key_utils;
 
     vscr_ratchet_t *ratchet;
 
@@ -302,7 +302,7 @@ vscr_ratchet_session_init_ctx(vscr_ratchet_session_t *ratchet_session) {
     ratchet_session->received_first_response = false;
     ratchet_session->is_initiator = false;
     ratchet_session->ratchet = vscr_ratchet_new();
-    ratchet_session->key_extractor = vscr_ratchet_key_extractor_new();
+    ratchet_session->key_utils = vscr_ratchet_key_utils_new();
 }
 
 //
@@ -316,7 +316,7 @@ vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *ratchet_session) {
     VSCR_ASSERT_PTR(ratchet_session);
 
     vscr_ratchet_destroy(&ratchet_session->ratchet);
-    vscr_ratchet_key_extractor_destroy(&ratchet_session->key_extractor);
+    vscr_ratchet_key_utils_destroy(&ratchet_session->key_utils);
 }
 
 //
@@ -349,31 +349,31 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_
     VSCR_ASSERT_PTR(ratchet_session);
     VSCR_ASSERT_PTR(ratchet_session->rng);
     VSCR_ASSERT_PTR(ratchet_session->ratchet);
-    VSCR_ASSERT_PTR(ratchet_session->key_extractor);
+    VSCR_ASSERT_PTR(ratchet_session->key_utils);
 
     vscr_error_t status = vscr_SUCCESS;
 
     vscr_error_ctx_t error_ctx;
     vscr_error_ctx_reset(&error_ctx);
 
-    vsc_buffer_t *sender_identity_private_key_raw = vscr_ratchet_key_extractor_extract_ratchet_private_key(
-            ratchet_session->key_extractor, sender_identity_private_key, &error_ctx);
+    vsc_buffer_t *sender_identity_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
+            ratchet_session->key_utils, sender_identity_private_key, &error_ctx);
 
     if (error_ctx.error != vscr_SUCCESS) {
         status = error_ctx.error;
         goto key_err1;
     }
 
-    vsc_buffer_t *receiver_identity_public_key_raw = vscr_ratchet_key_extractor_extract_ratchet_public_key(
-            ratchet_session->key_extractor, receiver_identity_public_key, &error_ctx);
+    vsc_buffer_t *receiver_identity_public_key_raw = vscr_ratchet_key_utils_extract_ratchet_public_key(
+            ratchet_session->key_utils, receiver_identity_public_key, &error_ctx);
 
     if (error_ctx.error != vscr_SUCCESS) {
         status = error_ctx.error;
         goto key_err2;
     }
 
-    vsc_buffer_t *receiver_long_term_public_key_raw = vscr_ratchet_key_extractor_extract_ratchet_public_key(
-            ratchet_session->key_extractor, receiver_long_term_public_key, &error_ctx);
+    vsc_buffer_t *receiver_long_term_public_key_raw = vscr_ratchet_key_utils_extract_ratchet_public_key(
+            ratchet_session->key_utils, receiver_long_term_public_key, &error_ctx);
 
     if (error_ctx.error != vscr_SUCCESS) {
         status = error_ctx.error;
@@ -385,8 +385,8 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_
     vsc_buffer_t *receiver_one_time_public_key_raw = NULL;
 
     if (receiver_one_time_public_key.len != 0) {
-        receiver_one_time_public_key_raw = vscr_ratchet_key_extractor_extract_ratchet_public_key(
-                ratchet_session->key_extractor, receiver_one_time_public_key, &error_ctx);
+        receiver_one_time_public_key_raw = vscr_ratchet_key_utils_extract_ratchet_public_key(
+                ratchet_session->key_utils, receiver_one_time_public_key, &error_ctx);
 
         if (error_ctx.error != vscr_SUCCESS) {
             status = error_ctx.error;
@@ -524,17 +524,20 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
 
     VSCR_ASSERT_PTR(ratchet_session->rng);
     VSCR_ASSERT_PTR(ratchet_session->ratchet);
-    VSCR_ASSERT_PTR(ratchet_session->key_extractor);
-
-    VSCR_ASSERT(message->message_pb.has_prekey_message);
+    VSCR_ASSERT_PTR(ratchet_session->key_utils);
 
     vscr_error_t status = vscr_SUCCESS;
+
+    if (!message->message_pb.has_prekey_message) {
+        status = vscr_error_BAD_MESSAGE_TYPE;
+        goto msg_type_err;
+    }
 
     vscr_error_ctx_t error_ctx;
     vscr_error_ctx_reset(&error_ctx);
 
-    vsc_buffer_t *sender_identity_public_key_raw = vscr_ratchet_key_extractor_extract_ratchet_public_key(
-            ratchet_session->key_extractor, sender_identity_public_key, &error_ctx);
+    vsc_buffer_t *sender_identity_public_key_raw = vscr_ratchet_key_utils_extract_ratchet_public_key(
+            ratchet_session->key_utils, sender_identity_public_key, &error_ctx);
 
     if (error_ctx.error != vscr_SUCCESS) {
         status = error_ctx.error;
@@ -547,16 +550,16 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
         goto key_err1;
     }
 
-    vsc_buffer_t *receiver_identity_private_key_raw = vscr_ratchet_key_extractor_extract_ratchet_private_key(
-            ratchet_session->key_extractor, receiver_identity_private_key, &error_ctx);
+    vsc_buffer_t *receiver_identity_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
+            ratchet_session->key_utils, receiver_identity_private_key, &error_ctx);
 
     if (error_ctx.error != vscr_SUCCESS) {
         status = error_ctx.error;
         goto key_err2;
     }
 
-    vsc_buffer_t *receiver_long_term_private_key_raw = vscr_ratchet_key_extractor_extract_ratchet_private_key(
-            ratchet_session->key_extractor, receiver_long_term_private_key, &error_ctx);
+    vsc_buffer_t *receiver_long_term_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
+            ratchet_session->key_utils, receiver_long_term_private_key, &error_ctx);
 
     if (error_ctx.error != vscr_SUCCESS) {
         status = error_ctx.error;
@@ -567,8 +570,8 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
 
     size_t shared_secret_count = 3;
     if (receiver_one_time_private_key.len != 0) {
-        receiver_one_time_private_key_raw = vscr_ratchet_key_extractor_extract_ratchet_private_key(
-                ratchet_session->key_extractor, receiver_one_time_private_key, &error_ctx);
+        receiver_one_time_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
+                ratchet_session->key_utils, receiver_one_time_private_key, &error_ctx);
 
         if (error_ctx.error != vscr_SUCCESS) {
             status = error_ctx.error;
@@ -664,6 +667,7 @@ key_err2:
 key_err1:
     vsc_buffer_destroy(&sender_identity_public_key_raw);
 
+msg_type_err:
     return status;
 }
 
@@ -704,10 +708,19 @@ vscr_ratchet_session_encrypt(
     VSCR_ASSERT_PTR(ratchet_session->rng);
     VSCR_ASSERT_PTR(ratchet_session->ratchet);
 
-    VSCR_ASSERT(plain_text.len <= vscr_ratchet_common_MAX_PLAIN_TEXT_LEN);
-    VSCR_ASSERT(ratchet_session->is_initiator || ratchet_session->received_first_response);
+    vscr_ratchet_message_t *ratchet_message = NULL;
 
-    vscr_ratchet_message_t *ratchet_message = vscr_ratchet_message_new();
+    if (plain_text.len > vscr_ratchet_common_MAX_PLAIN_TEXT_LEN) {
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_EXCEEDED_MAX_PLAIN_TEXT_LEN);
+        goto err;
+    }
+
+    if (!ratchet_session->is_initiator && !ratchet_session->received_first_response) {
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_CAN_T_ENCRYPT_YET);
+        goto err;
+    }
+
+    ratchet_message = vscr_ratchet_message_new();
     ratchet_message->message_pb.version = vscr_ratchet_common_hidden_RATCHET_MESSAGE_VERSION;
     RegularMessage *regular_message;
 
@@ -752,6 +765,7 @@ vscr_ratchet_session_encrypt(
         return NULL;
     }
 
+err:
     return ratchet_message;
 }
 
@@ -796,7 +810,7 @@ vscr_ratchet_session_decrypt(
         regular_message = &message->message_pb.regular_message;
     } else if (message->message_pb.has_prekey_message) {
         if (ratchet_session->is_initiator) {
-            return vscr_error_BAD_MESSAGE;
+            return vscr_error_BAD_MESSAGE_TYPE;
         }
 
         regular_message = &message->message_pb.prekey_message.regular_message;
