@@ -526,9 +526,12 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
     VSCR_ASSERT_PTR(ratchet_session->ratchet);
     VSCR_ASSERT_PTR(ratchet_session->key_utils);
 
-    VSCR_ASSERT(message->message_pb.has_prekey_message);
-
     vscr_error_t status = vscr_SUCCESS;
+
+    if (!message->message_pb.has_prekey_message) {
+        status = vscr_error_BAD_MESSAGE_TYPE;
+        goto msg_type_err;
+    }
 
     vscr_error_ctx_t error_ctx;
     vscr_error_ctx_reset(&error_ctx);
@@ -664,6 +667,7 @@ key_err2:
 key_err1:
     vsc_buffer_destroy(&sender_identity_public_key_raw);
 
+msg_type_err:
     return status;
 }
 
@@ -704,10 +708,19 @@ vscr_ratchet_session_encrypt(
     VSCR_ASSERT_PTR(ratchet_session->rng);
     VSCR_ASSERT_PTR(ratchet_session->ratchet);
 
-    VSCR_ASSERT(plain_text.len <= vscr_ratchet_common_MAX_PLAIN_TEXT_LEN);
-    VSCR_ASSERT(ratchet_session->is_initiator || ratchet_session->received_first_response);
+    vscr_ratchet_message_t *ratchet_message = NULL;
 
-    vscr_ratchet_message_t *ratchet_message = vscr_ratchet_message_new();
+    if (plain_text.len > vscr_ratchet_common_MAX_PLAIN_TEXT_LEN) {
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_EXCEEDED_MAX_PLAIN_TEXT_LEN);
+        goto err;
+    }
+
+    if (!ratchet_session->is_initiator && !ratchet_session->received_first_response) {
+        VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_CAN_T_ENCRYPT_YET);
+        goto err;
+    }
+
+    ratchet_message = vscr_ratchet_message_new();
     ratchet_message->message_pb.version = vscr_ratchet_common_hidden_RATCHET_MESSAGE_VERSION;
     RegularMessage *regular_message;
 
@@ -752,6 +765,7 @@ vscr_ratchet_session_encrypt(
         return NULL;
     }
 
+err:
     return ratchet_message;
 }
 
@@ -796,7 +810,7 @@ vscr_ratchet_session_decrypt(
         regular_message = &message->message_pb.regular_message;
     } else if (message->message_pb.has_prekey_message) {
         if (ratchet_session->is_initiator) {
-            return vscr_error_BAD_MESSAGE;
+            return vscr_error_BAD_MESSAGE_TYPE;
         }
 
         regular_message = &message->message_pb.prekey_message.regular_message;

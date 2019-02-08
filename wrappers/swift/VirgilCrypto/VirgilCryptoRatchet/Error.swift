@@ -45,8 +45,8 @@ import VSCRatchet
     /// Message version doesn't match
     case messageVersionDoesnTMatch = 2
 
-    /// Bad message
-    case badMessage = 3
+    /// Bad message type
+    case badMessageType = 3
 
     /// AES error
     case aes = 4
@@ -65,6 +65,24 @@ import VSCRatchet
 
     /// Identity key doesn't match
     case identityKeyDoesntMatch = 9
+
+    /// Message already decrypted
+    case messageAlreadyDecrypted = 10
+
+    /// Too many lost messages
+    case tooManyLostMessages = 11
+
+    /// Sender chain missing
+    case senderChainMissing = 12
+
+    /// Skipped message missing
+    case skippedMessageMissing = 13
+
+    /// Can't encrypt yet
+    case canTEncryptYet = 14
+
+    /// Exceeded max plain text len
+    case exceededMaxPlainTextLen = 15
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC error: vscr_error_t) {

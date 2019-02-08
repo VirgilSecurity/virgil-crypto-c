@@ -85,9 +85,9 @@ enum vscr_error_t {
     //
     vscr_error_MESSAGE_VERSION_DOESN_T_MATCH = 2,
     //
-    //  Bad message
+    //  Bad message type
     //
-    vscr_error_BAD_MESSAGE = 3,
+    vscr_error_BAD_MESSAGE_TYPE = 3,
     //
     //  AES error
     //
@@ -111,7 +111,31 @@ enum vscr_error_t {
     //
     //  Identity key doesn't match
     //
-    vscr_error_IDENTITY_KEY_DOESNT_MATCH = 9
+    vscr_error_IDENTITY_KEY_DOESNT_MATCH = 9,
+    //
+    //  Message already decrypted
+    //
+    vscr_error_MESSAGE_ALREADY_DECRYPTED = 10,
+    //
+    //  Too many lost messages
+    //
+    vscr_error_TOO_MANY_LOST_MESSAGES = 11,
+    //
+    //  Sender chain missing
+    //
+    vscr_error_SENDER_CHAIN_MISSING = 12,
+    //
+    //  Skipped message missing
+    //
+    vscr_error_SKIPPED_MESSAGE_MISSING = 13,
+    //
+    //  Can't encrypt yet
+    //
+    vscr_error_CAN_T_ENCRYPT_YET = 14,
+    //
+    //  Exceeded max plain text len
+    //
+    vscr_error_EXCEEDED_MAX_PLAIN_TEXT_LEN = 15
 };
 typedef enum vscr_error_t vscr_error_t;
 
