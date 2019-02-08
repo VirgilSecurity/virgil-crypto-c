@@ -215,5 +215,42 @@
 
             <return type="size"/>
         </method>
+
+        <method name="get current element len" is_static="1">
+            Get length of the current ASN.1 element with tag and length itself.
+
+            <argument name="curr" type="byte" access="readwrite" is_reference="1"/>
+            <argument name="end" type="byte" access="readonly" is_reference="1"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="swap elements of set" is_static="1">
+            Swap positions of the given ASN.1 elements.
+            Note, "from" element must be behind "to" element.
+            Note, algorithm complexity is O^2.
+
+            <argument name="to_start" type="byte" access="readwrite" is_reference="1"/>
+            <argument name="to_len" type="size"/>
+            <argument name="from_start" type="byte" access="readwrite" is_reference="1"/>
+            <argument name="from_len" type="size"/>
+        </method>
+
+        <method name="second element of set is less" is_static="1">
+            Return true if second element is lexicographical less then first.
+
+            <argument name="first_start" type="byte" is_reference="1"/>
+            <argument name="first_len" type="size"/>
+            <argument name="second_start" type="byte" is_reference="1"/>
+            <argument name="second_len" type="size"/>
+
+            <return type="boolean"/>
+        </method>
+
+        <method name="sort elements of set">
+            Perform lexicographical sorting of the given elements of set.
+
+            <argument name="len" type="size"/>
+        </method>
     </implementation>
 </implementor>

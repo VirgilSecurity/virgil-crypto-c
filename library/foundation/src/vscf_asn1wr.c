@@ -83,6 +83,33 @@ vscf_asn1wr_mbedtls_has_error(vscf_asn1wr_t *asn1wr, int code);
 static size_t
 vscf_asn1wr_write_tag_data(vscf_asn1wr_t *asn1wr, vsc_data_t data, int tag);
 
+//
+//  Get length of the current ASN.1 element with tag and length itself.
+//
+static size_t
+vscf_asn1wr_get_current_element_len(byte *curr, const byte *end);
+
+//
+//  Swap positions of the given ASN.1 elements.
+//  Note, "from" element must be behind "to" element.
+//  Note, algorithm complexity is O^2.
+//
+static void
+vscf_asn1wr_swap_elements_of_set(byte *to_start, size_t to_len, byte *from_start, size_t from_len);
+
+//
+//  Return true if second element is lexicographical less then first.
+//
+static bool
+vscf_asn1wr_second_element_of_set_is_less(const byte *first_start, size_t first_len, const byte *second_start,
+        size_t second_len);
+
+//
+//  Perform lexicographical sorting of the given elements of set.
+//
+static void
+vscf_asn1wr_sort_elements_of_set(vscf_asn1wr_t *asn1wr, size_t len);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -171,6 +198,125 @@ vscf_asn1wr_write_tag_data(vscf_asn1wr_t *asn1wr, vsc_data_t data, int tag) {
     }
 
     return size;
+}
+
+//
+//  Get length of the current ASN.1 element with tag and length itself.
+//
+static size_t
+vscf_asn1wr_get_current_element_len(byte *curr, const byte *end) {
+
+    VSCF_ASSERT_PTR(curr);
+    VSCF_ASSERT_PTR(end);
+    VSCF_ASSERT(curr < end + 1);
+
+    byte *len_p = curr + 1;
+    size_t len = 0;
+
+    int status = mbedtls_asn1_get_len(&len_p, end, &len);
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+
+    return (size_t)(len_p - curr) + len;
+}
+
+//
+//  Swap positions of the given ASN.1 elements.
+//  Note, "from" element must be behind "to" element.
+//  Note, algorithm complexity is O^2.
+//
+static void
+vscf_asn1wr_swap_elements_of_set(byte *to_start, size_t to_len, byte *from_start, size_t from_len) {
+
+    VSCF_ASSERT_PTR(to_start);
+    VSCF_ASSERT(to_len > 1);
+    VSCF_ASSERT_PTR(from_start);
+    VSCF_ASSERT(from_len > 1);
+    VSCF_ASSERT(to_start < from_start);
+
+    for (const byte *from_end = from_start + from_len; from_start < from_end; ++from_start, ++to_start) {
+        byte temp = *from_start;
+
+        for (byte *curr = from_start; curr > to_start; --curr) {
+            *curr = *(curr - 1);
+        }
+
+        *to_start = temp;
+    }
+}
+
+//
+//  Return true if second element is lexicographical less then first.
+//
+static bool
+vscf_asn1wr_second_element_of_set_is_less(
+        const byte *first_start, size_t first_len, const byte *second_start, size_t second_len) {
+
+    VSCF_ASSERT_PTR(first_start);
+    VSCF_ASSERT_PTR(first_len > 1);
+    VSCF_ASSERT_PTR(second_start);
+    VSCF_ASSERT_PTR(second_len > 1);
+    VSCF_ASSERT(first_start < second_start);
+
+    size_t common_len = first_len < second_len ? first_len : second_len;
+
+    const int common_cmp_result = memcmp(first_start, second_start, common_len);
+    if (common_cmp_result < 0) {
+        return false;
+
+    } else if (common_cmp_result > 0) {
+        return true;
+
+    } else {
+        return first_len > second_len;
+    }
+}
+
+//
+//  Perform lexicographical sorting of the given elements of set.
+//
+static void
+vscf_asn1wr_sort_elements_of_set(vscf_asn1wr_t *asn1wr, size_t len) {
+
+    VSCF_ASSERT_PTR(asn1wr);
+    VSCF_ASSERT(len <= vscf_asn1wr_written_len(asn1wr));
+
+    const byte *end = asn1wr->curr + len;
+    byte *curr_start = asn1wr->curr;
+
+    while (curr_start < end) {
+        size_t curr_len = vscf_asn1wr_get_current_element_len(curr_start, end);
+
+        //
+        //  Find min.
+        //
+        byte *min_start = curr_start;
+        size_t min_len = curr_len;
+
+        byte *next_start = curr_start + curr_len;
+        while (next_start < end) {
+            size_t next_len = vscf_asn1wr_get_current_element_len(next_start, end);
+
+            if (vscf_asn1wr_second_element_of_set_is_less(min_start, min_len, next_start, next_len)) {
+                min_start = next_start;
+                min_len = next_len;
+            }
+
+            next_start += next_len;
+        }
+
+        //
+        //  Insert min to the current position.
+        //
+        if (curr_start != min_start) {
+            vscf_asn1wr_swap_elements_of_set(curr_start, curr_len, min_start, min_len);
+            curr_len = min_len;
+        }
+
+        //
+        //  Move forward.
+        //
+        curr_start += curr_len;
+    }
 }
 
 //
@@ -776,6 +922,11 @@ VSCF_PUBLIC size_t
 vscf_asn1wr_write_set(vscf_asn1wr_t *asn1wr, size_t len) {
 
     size_t result_len = 0;
+
+    //
+    //  ASN.1 SET elements must be sorted in lexicographical order.
+    //
+    vscf_asn1wr_sort_elements_of_set(asn1wr, len);
 
     result_len += vscf_asn1wr_write_len(asn1wr, len);
     result_len += vscf_asn1wr_write_tag(asn1wr, MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SET);
