@@ -694,13 +694,85 @@ test__asn1wr_write_set__argument_len_32__returns_encoded_set_with_len_32(void) {
 
     vscf_asn1wr_reset(asn1wr, vsc_buffer_unused_bytes(asn1), vsc_buffer_unused_len(asn1));
 
-    size_t len = vscf_asn1wr_write_set(asn1wr, 32);
+    byte zeros[30] = {0x00};
+
+    size_t len = 0;
+    len += vscf_asn1wr_write_octet_str(asn1wr, vsc_data(zeros, sizeof(zeros)));
+    len += vscf_asn1wr_write_set(asn1wr, len);
     size_t writtenBytes = vscf_asn1wr_finish(asn1wr);
     vsc_buffer_inc_used(asn1, writtenBytes);
 
-    TEST_ASSERT_EQUAL(test_asn1_encoded_SET_WITH_LEN_32.len, len);
-    TEST_ASSERT_EQUAL(test_asn1_encoded_SET_WITH_LEN_32.len, vsc_buffer_len(asn1));
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(test_asn1_encoded_SET_WITH_LEN_32.bytes, vsc_buffer_bytes(asn1), vsc_buffer_len(asn1));
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_asn1_encoded_SET_WITH_LEN_32, asn1);
+
+    vsc_buffer_destroy(&asn1);
+    vscf_asn1wr_destroy(&asn1wr);
+}
+
+void
+test__asn1wr_write_set__with_unordered_elements_3_2_1_0__returns_encoded_ordered_set(void) {
+    vscf_asn1wr_t *asn1wr = vscf_asn1wr_new();
+    VSCF_ASSERT_PTR(asn1wr);
+
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_ORDERED_SET.len);
+    vscf_asn1wr_reset(asn1wr, vsc_buffer_unused_bytes(asn1), vsc_buffer_unused_len(asn1));
+
+    size_t len = 0;
+    len += vscf_asn1wr_write_data(asn1wr, test_asn1_SET_ELEMENT_3);
+    len += vscf_asn1wr_write_data(asn1wr, test_asn1_SET_ELEMENT_2);
+    len += vscf_asn1wr_write_data(asn1wr, test_asn1_SET_ELEMENT_1);
+    len += vscf_asn1wr_write_data(asn1wr, test_asn1_SET_ELEMENT_0);
+    len += vscf_asn1wr_write_set(asn1wr, len);
+    vscf_asn1wr_finish(asn1wr);
+    vsc_buffer_inc_used(asn1, len);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_asn1_encoded_ORDERED_SET, asn1);
+
+    vsc_buffer_destroy(&asn1);
+    vscf_asn1wr_destroy(&asn1wr);
+}
+
+void
+test__asn1wr_write_set__with_unordered_elements_3_1_2_0__returns_encoded_ordered_set(void) {
+    vscf_asn1wr_t *asn1wr = vscf_asn1wr_new();
+    VSCF_ASSERT_PTR(asn1wr);
+
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_ORDERED_SET.len);
+    vscf_asn1wr_reset(asn1wr, vsc_buffer_unused_bytes(asn1), vsc_buffer_unused_len(asn1));
+
+    size_t len = 0;
+    len += vscf_asn1wr_write_data(asn1wr, test_asn1_SET_ELEMENT_3);
+    len += vscf_asn1wr_write_data(asn1wr, test_asn1_SET_ELEMENT_1);
+    len += vscf_asn1wr_write_data(asn1wr, test_asn1_SET_ELEMENT_2);
+    len += vscf_asn1wr_write_data(asn1wr, test_asn1_SET_ELEMENT_0);
+    len += vscf_asn1wr_write_set(asn1wr, len);
+    vscf_asn1wr_finish(asn1wr);
+    vsc_buffer_inc_used(asn1, len);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_asn1_encoded_ORDERED_SET, asn1);
+
+    vsc_buffer_destroy(&asn1);
+    vscf_asn1wr_destroy(&asn1wr);
+}
+
+
+void
+test__asn1wr_write_set__with_unordered_elements_1_0_3_2__returns_encoded_ordered_set(void) {
+    vscf_asn1wr_t *asn1wr = vscf_asn1wr_new();
+    VSCF_ASSERT_PTR(asn1wr);
+
+    vsc_buffer_t *asn1 = vsc_buffer_new_with_capacity(test_asn1_encoded_ORDERED_SET.len);
+    vscf_asn1wr_reset(asn1wr, vsc_buffer_unused_bytes(asn1), vsc_buffer_unused_len(asn1));
+
+    size_t len = 0;
+    len += vscf_asn1wr_write_data(asn1wr, test_asn1_SET_ELEMENT_1);
+    len += vscf_asn1wr_write_data(asn1wr, test_asn1_SET_ELEMENT_0);
+    len += vscf_asn1wr_write_data(asn1wr, test_asn1_SET_ELEMENT_3);
+    len += vscf_asn1wr_write_data(asn1wr, test_asn1_SET_ELEMENT_2);
+    len += vscf_asn1wr_write_set(asn1wr, len);
+    vscf_asn1wr_finish(asn1wr);
+    vsc_buffer_inc_used(asn1, len);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_asn1_encoded_ORDERED_SET, asn1);
 
     vsc_buffer_destroy(&asn1);
     vscf_asn1wr_destroy(&asn1wr);
@@ -774,6 +846,9 @@ main(void) {
 
     RUN_TEST(test__asn1wr_write_sequence__argument_len_32__returns_encoded_sequence_with_len_32);
     RUN_TEST(test__asn1wr_write_set__argument_len_32__returns_encoded_set_with_len_32);
+    RUN_TEST(test__asn1wr_write_set__with_unordered_elements_3_2_1_0__returns_encoded_ordered_set);
+    RUN_TEST(test__asn1wr_write_set__with_unordered_elements_3_1_2_0__returns_encoded_ordered_set);
+    RUN_TEST(test__asn1wr_write_set__with_unordered_elements_1_0_3_2__returns_encoded_ordered_set);
 
     RUN_TEST(test__asn1wr_error__write_to_small_buffer__returns_error_small_buffer);
 #else
