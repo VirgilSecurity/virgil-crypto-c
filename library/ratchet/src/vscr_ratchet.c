@@ -723,6 +723,11 @@ vscr_ratchet_encrypt(vscr_ratchet_t *ratchet, vsc_data_t plain_text, RegularMess
         }
     }
 
+    if (ratchet->sender_chain->chain_key.index == UINT32_MAX) {
+        result = vscr_error_TOO_MANY_MESSAGES_FOR_SENDER_CHAIN;
+        goto err1;
+    }
+
     vscr_ratchet_message_key_t *message_key = vscr_ratchet_create_message_key(&ratchet->sender_chain->chain_key);
 
     vscr_ratchet_advance_chain_key(&ratchet->sender_chain->chain_key);
@@ -731,7 +736,7 @@ vscr_ratchet_encrypt(vscr_ratchet_t *ratchet, vsc_data_t plain_text, RegularMess
             plain_text, regular_message->cipher_text.arg);
 
     if (result != vscr_SUCCESS) {
-        goto err;
+        goto err2;
     }
 
     regular_message->version = vscr_ratchet_common_hidden_RATCHET_REGULAR_MESSAGE_VERSION;
@@ -740,9 +745,10 @@ vscr_ratchet_encrypt(vscr_ratchet_t *ratchet, vsc_data_t plain_text, RegularMess
 
     memcpy(regular_message->public_key, ratchet->sender_chain->public_key, sizeof(ratchet->sender_chain->public_key));
 
-err:
+err2:
     vscr_ratchet_message_key_destroy(&message_key);
 
+err1:
     return result;
 }
 
@@ -835,6 +841,11 @@ vscr_ratchet_decrypt(vscr_ratchet_t *ratchet, const RegularMessage *regular_mess
         vscr_ratchet_skipped_message_key_destroy(&skipped_message_key);
     }
 
+    if (receiver_chain->chain_key.index == UINT32_MAX) {
+        result = vscr_error_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN;
+        goto err;
+    }
+
     vscr_ratchet_advance_chain_key(&receiver_chain->chain_key);
 
     if (receiver_chain_node && receiver_chain_node->next) {
@@ -844,6 +855,7 @@ vscr_ratchet_decrypt(vscr_ratchet_t *ratchet, const RegularMessage *regular_mess
         }
     }
 
+err:
     return result;
 }
 

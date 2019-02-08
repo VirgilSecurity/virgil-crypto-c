@@ -64,4 +64,12 @@
     <constant name="exceeded max plain text len" value="15">
         Exceeded max plain text len
     </constant>
+
+    <constant name="too many messages for sender chain" value="16">
+        Too many messages for sender chain
+    </constant>
+
+    <constant name="too many messages for receiver chain" value="17">
+        Too many messages for receiver chain
+    </constant>
 </enum>
