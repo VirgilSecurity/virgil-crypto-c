@@ -208,9 +208,9 @@ vscf_message_info_der_serializer_serialize(vscf_message_info_der_serializer_t *m
 //
 //  Deserialize class "message info".
 //
-VSCF_PUBLIC const vscf_message_info_t *
+VSCF_PUBLIC vscf_message_info_t *
 vscf_message_info_der_serializer_deserialize(vscf_message_info_der_serializer_t *message_info_der_serializer,
-        vsc_data_t data, const vscf_error_ctx_t *error);
+        vsc_data_t data, vscf_error_ctx_t *error);
 
 
 // --------------------------------------------------------------------------

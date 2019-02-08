@@ -7,6 +7,7 @@
         <interface name="defaults"/>
         <interface name="message info serializer"/>
 
+        <require enum="asn1 tag"/>
         <require class="asn1rd"/>
         <require class="asn1wr"/>
         <require class="alg info der serializer"/>
@@ -30,11 +31,25 @@
         </method>
 
         <method name="serialize custom params">
+            VirgilCustomParams ::= SET SIZE (1..MAX) OF KeyValue
+
+            KeyValue ::= SEQUENCE {
+                key Key,
+                val Value
+            }
+
+            Key ::= UTF8String
+
+            Value ::= CHOICE {
+                int [0] EXPLICIT INTEGER,
+                str [1] EXPLICIT UTF8String,
+                data [2] EXPLICIT OCTET STRING
+            }
+
             <argument name="message info" class="message info"/>
 
             <return type="size"/>
         </method>
-
 
         <method name="serialized key recipient info len" is_const="1">
             <argument name="key recipient info" class="key recipient info"/>
@@ -43,11 +58,24 @@
         </method>
 
         <method name="serialize key recipient info">
+            KeyTransRecipientInfo ::= SEQUENCE {
+                version CMSVersion, -- always set to 0 or 2
+                rid RecipientIdentifier,
+                keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
+                encryptedKey EncryptedKey }
+
+            RecipientIdentifier ::= CHOICE {
+                issuerAndSerialNumber IssuerAndSerialNumber,
+                subjectKeyIdentifier [0] SubjectKeyIdentifier }
+
+            SubjectKeyIdentifier ::= OCTET STRING
+
+            EncryptedKey ::= OCTET STRING
+
             <argument name="key recipient info" class="key recipient info"/>
 
             <return type="size"/>
         </method>
-
 
         <method name="serialized password recipient info len" is_const="1">
             <argument name="password recipient info" class="password recipient info"/>
@@ -56,11 +84,18 @@
         </method>
 
         <method name="serialize password recipient info">
+            PasswordRecipientInfo ::= SEQUENCE {
+                version CMSVersion, -- Always set to 0
+                keyDerivationAlgorithm [0] KeyDerivationAlgorithmIdentifier
+                                           OPTIONAL, -- not used
+                keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
+                encryptedKey EncryptedKey
+            }
+
             <argument name="password recipient info" class="password recipient info"/>
 
             <return type="size"/>
         </method>
-
 
         <method name="serialized recipient infos len" is_const="1">
             <argument name="message info" class="message info"/>
@@ -69,11 +104,20 @@
         </method>
 
         <method name="serialize recipient infos">
+            RecipientInfos ::= SET SIZE (1..MAX) OF RecipientInfo
+
+            RecipientInfo ::= CHOICE {
+                ktri KeyTransRecipientInfo,
+                kari [1] KeyAgreeRecipientInfo, -- not supported
+                kekri [2] KEKRecipientInfo, -- not supported
+                pwri [3] PasswordRecipientInfo,
+                ori [4] OtherRecipientInfo -- not supported
+            }
+
             <argument name="message info" class="message info"/>
 
             <return type="size"/>
         </method>
-
 
         <method name="serialized encrypted content info len" is_const="1">
             <argument name="message info" class="message info"/>
@@ -82,11 +126,20 @@
         </method>
 
         <method name="serialize encrypted content info">
+            EncryptedContentInfo ::= SEQUENCE {
+                contentType ContentType, -- always PKCS#7 'data' OID
+                contentEncryptionAlgorithm ContentEncryptionAlgorithmIdentifier,
+                encryptedContent [0] IMPLICIT EncryptedContent OPTIONAL -- not used
+            }
+
+            ContentType ::= OBJECT IDENTIFIER
+            ContentEncryptionAlgorithmIdentifier ::= AlgorithmIdentifier
+            EncryptedContent ::= OCTET STRING
+
             <argument name="message info" class="message info"/>
 
             <return type="size"/>
         </method>
-
 
         <method name="serialized enveloped data len" is_const="1">
             <argument name="message info" class="message info"/>
@@ -95,11 +148,20 @@
         </method>
 
         <method name="serialize enveloped data">
+            EnvelopedData ::= SEQUENCE {
+                version CMSVersion,
+                originatorInfo [0] IMPLICIT OriginatorInfo OPTIONAL, -- not used
+                recipientInfos RecipientInfos,
+                encryptedContentInfo EncryptedContentInfo,
+                unprotectedAttrs [1] IMPLICIT UnprotectedAttributes OPTIONAL -- not used
+            }
+
+            CMSVersion ::= INTEGER { v0(0), v1(1), v2(2), v3(3), v4(4), v5(5) }
+
             <argument name="message info" class="message info"/>
 
             <return type="size"/>
         </method>
-
 
         <method name="serialized cms content info len" is_const="1">
             <argument name="message info" class="message info"/>
@@ -108,9 +170,125 @@
         </method>
 
         <method name="serialize cms content info ">
+            ContentInfo ::= SEQUENCE {
+                contentType ContentType,
+                content [0] EXPLICIT ANY DEFINED BY contentType
+            }
+
+            ContentType ::= OBJECT IDENTIFIER
+
             <argument name="message info" class="message info"/>
 
             <return type="size"/>
+        </method>
+
+        <method name="deserialize custom params">
+            VirgilCustomParams ::= SET SIZE (1..MAX) OF KeyValue
+
+            KeyValue ::= SEQUENCE {
+                key Key,
+                val Value
+            }
+
+            Key ::= UTF8String
+
+            Value ::= CHOICE {
+                int [0] EXPLICIT INTEGER,
+                str [1] EXPLICIT UTF8String,
+                data [2] EXPLICIT OCTET STRING
+            }
+
+            <argument name="message info" class="message info" access="readwrite"/>
+            <argument name="error" class="error ctx" access="readwrite" />
+        </method>
+
+        <method name="deserialize key recipient info">
+            KeyTransRecipientInfo ::= SEQUENCE {
+                version CMSVersion, -- always set to 0 or 2
+                rid RecipientIdentifier,
+                keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
+                encryptedKey EncryptedKey }
+
+            RecipientIdentifier ::= CHOICE {
+                issuerAndSerialNumber IssuerAndSerialNumber,
+                subjectKeyIdentifier [0] SubjectKeyIdentifier }
+
+            SubjectKeyIdentifier ::= OCTET STRING
+
+            EncryptedKey ::= OCTET STRING
+
+            <argument name="message info" class="message info" access="readwrite"/>
+            <argument name="error" class="error ctx" access="readwrite" />
+        </method>
+
+        <method name="deserialize password recipient info">
+            PasswordRecipientInfo ::= SEQUENCE {
+                version CMSVersion, -- Always set to 0
+                keyDerivationAlgorithm [0] KeyDerivationAlgorithmIdentifier
+                                           OPTIONAL, -- not used
+                keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
+                encryptedKey EncryptedKey
+            }
+
+            <argument name="message info" class="message info" access="readwrite"/>
+            <argument name="error" class="error ctx" access="readwrite" />
+        </method>
+
+        <method name="deserialize recipient infos">
+            RecipientInfos ::= SET SIZE (1..MAX) OF RecipientInfo
+
+            RecipientInfo ::= CHOICE {
+                ktri KeyTransRecipientInfo,
+                kari [1] KeyAgreeRecipientInfo, -- not supported
+                kekri [2] KEKRecipientInfo, -- not supported
+                pwri [3] PasswordRecipientInfo,
+                ori [4] OtherRecipientInfo -- not supported
+            }
+
+            <argument name="message info" class="message info" access="readwrite"/>
+            <argument name="error" class="error ctx" access="readwrite" />
+        </method>
+
+        <method name="deserialize encrypted content info">
+            EncryptedContentInfo ::= SEQUENCE {
+                contentType ContentType, -- always PKCS#7 'data' OID
+                contentEncryptionAlgorithm ContentEncryptionAlgorithmIdentifier,
+                encryptedContent [0] IMPLICIT EncryptedContent OPTIONAL -- not used
+            }
+
+            ContentType ::= OBJECT IDENTIFIER
+            ContentEncryptionAlgorithmIdentifier ::= AlgorithmIdentifier
+            EncryptedContent ::= OCTET STRING
+
+            <argument name="message info" class="message info" access="readwrite"/>
+            <argument name="error" class="error ctx" access="readwrite" />
+        </method>
+
+        <method name="deserialize enveloped data">
+            EnvelopedData ::= SEQUENCE {
+                version CMSVersion,
+                originatorInfo [0] IMPLICIT OriginatorInfo OPTIONAL, -- not used
+                recipientInfos RecipientInfos,
+                encryptedContentInfo EncryptedContentInfo,
+                unprotectedAttrs [1] IMPLICIT UnprotectedAttributes OPTIONAL -- not used
+            }
+
+            CMSVersion ::= INTEGER { v0(0), v1(1), v2(2), v3(3), v4(4), v5(5) }
+
+            <argument name="message info" class="message info" access="readwrite"/>
+            <argument name="error" class="error ctx" access="readwrite" />
+        </method>
+
+        <method name="deserialize cms content info">
+            ContentInfo ::= SEQUENCE {
+                contentType ContentType,
+                content [0] EXPLICIT ANY DEFINED BY contentType
+            }
+
+            ContentType ::= OBJECT IDENTIFIER
+
+            <argument name="message info" class="message info" access="readwrite"/>
+            <argument name="error" class="error ctx" access="readwrite" />
         </method>
     </implementation>
 </implementor>

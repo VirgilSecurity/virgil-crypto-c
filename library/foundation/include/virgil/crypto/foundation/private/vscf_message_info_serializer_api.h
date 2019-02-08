@@ -99,8 +99,8 @@ typedef void (*vscf_message_info_serializer_api_serialize_fn)(vscf_impl_t *impl,
 //
 //  Callback. Deserialize class "message info".
 //
-typedef const vscf_message_info_t * (*vscf_message_info_serializer_api_deserialize_fn)(vscf_impl_t *impl,
-        vsc_data_t data, const vscf_error_ctx_t *error);
+typedef vscf_message_info_t * (*vscf_message_info_serializer_api_deserialize_fn)(vscf_impl_t *impl, vsc_data_t data,
+        vscf_error_ctx_t *error);
 
 //
 //  Contains API requirements of the interface 'message info serializer'.

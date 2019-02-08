@@ -99,6 +99,6 @@ import VirgilCryptoCommon
             return vscf_message_info_serializer_deserialize(self.c_ctx, vsc_data(dataPointer, data.count), error.c_ctx)
         })
 
-        return MessageInfo.init(use: proxyResult!)
+        return MessageInfo.init(take: proxyResult!)
     }
 }
