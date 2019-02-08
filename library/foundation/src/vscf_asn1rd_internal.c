@@ -99,6 +99,10 @@ static const vscf_asn1_reader_api_t asn1_reader_api = {
     //
     (vscf_asn1_reader_api_get_len_fn)vscf_asn1rd_get_len,
     //
+    //  Get length of the current ASN.1 element with tag and length itself.
+    //
+    (vscf_asn1_reader_api_get_data_len_fn)vscf_asn1rd_get_data_len,
+    //
     //  Read ASN.1 type: TAG.
     //  Return element length.
     //

@@ -54,6 +54,9 @@ import VirgilCryptoCommon
     /// Get length of the current ASN.1 element.
     @objc func getLen() -> Int
 
+    /// Get length of the current ASN.1 element with tag and length itself.
+    @objc func getDataLen() -> Int
+
     /// Read ASN.1 type: TAG.
     /// Return element length.
     @objc func readTag(tag: Int32) -> Int
@@ -164,6 +167,13 @@ import VirgilCryptoCommon
     /// Get length of the current ASN.1 element.
     @objc public func getLen() -> Int {
         let proxyResult = vscf_asn1_reader_get_len(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Get length of the current ASN.1 element with tag and length itself.
+    @objc public func getDataLen() -> Int {
+        let proxyResult = vscf_asn1_reader_get_data_len(self.c_ctx)
 
         return proxyResult
     }
