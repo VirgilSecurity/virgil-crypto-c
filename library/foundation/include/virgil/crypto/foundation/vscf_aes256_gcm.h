@@ -58,6 +58,7 @@
 #include "vscf_cipher_info.h"
 #include "vscf_cipher_auth_info.h"
 #include "vscf_cipher_auth.h"
+#include "vscf_alg_id.h"
 #include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -187,6 +188,24 @@ vscf_aes256_gcm_cipher_auth_info_api(void);
 //
 VSCF_PUBLIC const vscf_cipher_auth_api_t *
 vscf_aes256_gcm_cipher_auth_api(void);
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_aes256_gcm_alg_id(const vscf_aes256_gcm_t *aes256_gcm);
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_aes256_gcm_produce_alg_info(const vscf_aes256_gcm_t *aes256_gcm);
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_aes256_gcm_restore_alg_info(vscf_aes256_gcm_t *aes256_gcm, const vscf_impl_t *alg_info);
 
 //
 //  Encrypt given data.

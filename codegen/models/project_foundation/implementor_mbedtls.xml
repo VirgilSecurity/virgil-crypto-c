@@ -79,6 +79,7 @@
         Note, this implementation contains dynamic memory allocations,
         this should be improved in the future releases.
 
+        <interface name="alg"/>
         <interface name="encrypt"/>
         <interface name="decrypt"/>
         <interface name="cipher info">
@@ -97,6 +98,8 @@
 
         <require library="mbedtls" feature="CIPHER C"/>
         <require header="mbedtls/cipher.h" scope="context"/>
+        <require impl="alg info"/>
+        <require impl="cipher alg info"/>
 
         <property name="cipher ctx" class="mbedtls_cipher_context_t" library="mbedtls" is_reference="0"/>
 
@@ -121,6 +124,7 @@
         Note, this implementation contains dynamic memory allocations,
         this should be improved in the future releases.
 
+        <interface name="alg"/>
         <interface name="encrypt"/>
         <interface name="decrypt"/>
         <interface name="cipher info">
@@ -135,6 +139,8 @@
         <require library="mbedtls" feature="AES C"/>
         <require library="mbedtls" feature="CIPHER MODE CBC"/>
         <require header="mbedtls/cipher.h" scope="context"/>
+        <require impl="alg info"/>
+        <require impl="cipher alg info"/>
 
         <property name="cipher ctx" class="mbedtls_cipher_context_t" library="mbedtls" is_reference="0"/>
 

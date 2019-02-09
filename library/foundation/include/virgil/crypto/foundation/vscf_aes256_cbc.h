@@ -56,6 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_cipher_info.h"
+#include "vscf_alg_id.h"
 #include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -169,6 +170,24 @@ vscf_aes256_cbc_shallow_copy(vscf_aes256_cbc_t *aes256_cbc);
 //
 VSCF_PUBLIC const vscf_cipher_info_api_t *
 vscf_aes256_cbc_cipher_info_api(void);
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_aes256_cbc_alg_id(const vscf_aes256_cbc_t *aes256_cbc);
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_aes256_cbc_produce_alg_info(const vscf_aes256_cbc_t *aes256_cbc);
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_aes256_cbc_restore_alg_info(vscf_aes256_cbc_t *aes256_cbc, const vscf_impl_t *alg_info);
 
 //
 //  Encrypt given data.
