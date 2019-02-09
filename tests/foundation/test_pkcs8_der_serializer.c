@@ -234,7 +234,7 @@ test__serialized_private_key_len__ed25519__greater_then_48(void) {
 }
 
 void
-test__serialize_private_key__rsa2048__equals_to_ed25519_private_key_pkcs8_der(void) {
+test__serialize_private_key__ed25519__equals_to_ed25519_private_key_pkcs8_der(void) {
 #if VSCF_ED25519_PRIVATE_KEY
     vscf_pkcs8_der_serializer_t *pkcs8 = vscf_pkcs8_der_serializer_new();
     vscf_pkcs8_der_serializer_setup_defaults(pkcs8);
@@ -247,6 +247,8 @@ test__serialize_private_key__rsa2048__equals_to_ed25519_private_key_pkcs8_der(vo
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
 
     vscf_pkcs8_der_serializer_serialize_private_key(pkcs8, vscf_ed25519_private_key_impl(private_key), out);
+
+    print_buffer(out);
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_ed25519_PRIVATE_KEY_PKCS8_DER, out);
 
@@ -278,7 +280,7 @@ main(void) {
     RUN_TEST(test__serialized_public_key_len__ed25519__greater_then_44);
     RUN_TEST(test__serialize_public_key__ed25519__equals_to_ed25519_public_key_pkcs8_der);
     RUN_TEST(test__serialized_private_key_len__ed25519__greater_then_48);
-    RUN_TEST(test__serialize_private_key__rsa2048__equals_to_ed25519_private_key_pkcs8_der);
+    RUN_TEST(test__serialize_private_key__ed25519__equals_to_ed25519_private_key_pkcs8_der);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

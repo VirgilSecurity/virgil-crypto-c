@@ -161,7 +161,15 @@ enum vscf_error_t {
     //
     //  Exchange key return zero.
     //
-    vscf_error_SHARED_KEY_EXCHANGE_FAILED = -216
+    vscf_error_SHARED_KEY_EXCHANGE_FAILED = -216,
+    //
+    //  Ed25519 public key is corrupted.
+    //
+    vscf_error_BAD_ED25519_PUBLIC_KEY = -217,
+    //
+    //  Ed25519 private key is corrupted.
+    //
+    vscf_error_BAD_ED25519_PRIVATE_KEY = -218
 };
 typedef enum vscf_error_t vscf_error_t;
 

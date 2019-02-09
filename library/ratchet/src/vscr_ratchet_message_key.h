@@ -48,7 +48,7 @@
 #define VSCR_RATCHET_MESSAGE_KEY_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_common.h"
+#include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_message_key.h"
 
 #include <RatchetSession.pb.h>
@@ -86,7 +86,7 @@ struct vscr_ratchet_message_key_t {
 
     uint32_t index;
 
-    byte key[vscr_ratchet_common_RATCHET_SHARED_KEY_LENGTH];
+    byte key[vscr_ratchet_common_hidden_RATCHET_SHARED_KEY_LENGTH];
 };
 
 //

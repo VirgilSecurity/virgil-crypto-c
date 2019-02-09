@@ -127,7 +127,6 @@ target_compile_definitions(foundation
             "VSCF_BASE64=$<BOOL:${VSCF_BASE64}>"
             "VSCF_PEM=$<BOOL:${VSCF_PEM}>"
             "VSCF_PEM_TITLE=$<BOOL:${VSCF_PEM_TITLE}>"
-            "VSCF_ENDIANNESS=$<BOOL:${VSCF_ENDIANNESS}>"
             "VSCF_MESSAGE_INFO=$<BOOL:${VSCF_MESSAGE_INFO}>"
             "VSCF_KEY_RECIPIENT_INFO=$<BOOL:${VSCF_KEY_RECIPIENT_INFO}>"
             "VSCF_KEY_RECIPIENT_INFO_LIST=$<BOOL:${VSCF_KEY_RECIPIENT_INFO_LIST}>"

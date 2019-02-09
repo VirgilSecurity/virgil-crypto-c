@@ -38,10 +38,8 @@ import VSCRatchet
 import VirgilCryptoCommon
 import VirgilCryptoFoundation
 
+/// Class for ratchet session between 2 participants
 @objc(VSCRRatchetSession) public class RatchetSession: NSObject {
-
-    /// FIXME
-    static let maxRatchetLength = 1024 * 1024;
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -71,15 +69,21 @@ import VirgilCryptoFoundation
         vscr_ratchet_session_delete(self.c_ctx)
     }
 
+    /// Random used to generate keys
     @objc public func setRng(rng: Random) {
         vscr_ratchet_session_release_rng(self.c_ctx)
         vscr_ratchet_session_use_rng(self.c_ctx, rng.c_ctx)
     }
 
+    /// Setups default dependencies:
+    ///     - RNG: CTR DRBG
+    ///     - Key serialization: DER PKCS8
+    ///     - Symmetric cipher: AES256-GCM
     @objc public func setupDefaults() {
         vscr_ratchet_session_setup_defaults(self.c_ctx)
     }
 
+    /// Initiates session
     @objc public func initiate(senderIdentityPrivateKey: Data, receiverIdentityPublicKey: Data, receiverLongTermPublicKey: Data, receiverOneTimePublicKey: Data) throws {
         let proxyResult = senderIdentityPrivateKey.withUnsafeBytes({ (senderIdentityPrivateKeyPointer: UnsafePointer<byte>) -> vscr_error_t in
             receiverIdentityPublicKey.withUnsafeBytes({ (receiverIdentityPublicKeyPointer: UnsafePointer<byte>) -> vscr_error_t in
@@ -94,6 +98,7 @@ import VirgilCryptoFoundation
         try RatchetError.handleError(fromC: proxyResult)
     }
 
+    /// Responds to session initiation
     @objc public func respond(senderIdentityPublicKey: Data, receiverIdentityPrivateKey: Data, receiverLongTermPrivateKey: Data, receiverOneTimePrivateKey: Data, message: RatchetMessage) throws {
         let proxyResult = senderIdentityPublicKey.withUnsafeBytes({ (senderIdentityPublicKeyPointer: UnsafePointer<byte>) -> vscr_error_t in
             receiverIdentityPrivateKey.withUnsafeBytes({ (receiverIdentityPrivateKeyPointer: UnsafePointer<byte>) -> vscr_error_t in
@@ -108,6 +113,28 @@ import VirgilCryptoFoundation
         try RatchetError.handleError(fromC: proxyResult)
     }
 
+    /// Returns flag that indicates is this session was initiated or responded
+    @objc public func isInitiator() -> Bool {
+        let proxyResult = vscr_ratchet_session_is_initiator(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Returns true if at least 1 response was successfully decrypted, false - otherwise
+    @objc public func receivedFirstResponse() -> Bool {
+        let proxyResult = vscr_ratchet_session_received_first_response(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Returns true if receiver had one time public key
+    @objc public func receiverHasOneTimePublicKey() -> Bool {
+        let proxyResult = vscr_ratchet_session_receiver_has_one_time_public_key(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Encrypts data
     @objc public func encrypt(plainText: Data, errCtx: ErrorCtx) -> RatchetMessage {
         let proxyResult = plainText.withUnsafeBytes({ (plainTextPointer: UnsafePointer<byte>) in
             return vscr_ratchet_session_encrypt(self.c_ctx, vsc_data(plainTextPointer, plainText.count), errCtx.c_ctx)
@@ -116,12 +143,14 @@ import VirgilCryptoFoundation
         return RatchetMessage.init(take: proxyResult!)
     }
 
+    /// Calculates size of buffer sufficient to store decrypted message
     @objc public func decryptLen(message: RatchetMessage) -> Int {
         let proxyResult = vscr_ratchet_session_decrypt_len(self.c_ctx, message.c_ctx)
 
         return proxyResult
     }
 
+    /// Decrypts message
     @objc public func decrypt(message: RatchetMessage) throws -> Data {
         let plainTextCount = self.decryptLen(message: message)
         var plainText = Data(count: plainTextCount)
@@ -142,12 +171,14 @@ import VirgilCryptoFoundation
         return plainText
     }
 
+    /// Calculates size of buffer sufficient to store session
     @objc public func serializeLen() -> Int {
         let proxyResult = vscr_ratchet_session_serialize_len(self.c_ctx)
 
         return proxyResult
     }
 
+    /// Serializes session to buffer
     @objc public func serialize() -> Data {
         let outputCount = self.serializeLen()
         var output = Data(count: outputCount)
@@ -166,6 +197,8 @@ import VirgilCryptoFoundation
         return output
     }
 
+    /// Deserializes session from buffer.
+    /// NOTE: Deserialized session needs dependencies to be set. Check setup defaults
     @objc public static func deserialize(input: Data, errCtx: ErrorCtx) -> RatchetSession {
         let proxyResult = input.withUnsafeBytes({ (inputPointer: UnsafePointer<byte>) in
             return vscr_ratchet_session_deserialize(vsc_data(inputPointer, input.count), errCtx.c_ctx)

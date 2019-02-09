@@ -44,6 +44,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Error codes
+// --------------------------------------------------------------------------
+
 #ifndef VSCR_ERROR_H_INCLUDED
 #define VSCR_ERROR_H_INCLUDED
 
@@ -62,6 +68,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Error codes
+//
 enum vscr_error_t {
     //
     //  No errors was occurred.
@@ -70,27 +79,71 @@ enum vscr_error_t {
     //
     //  Error during protobuf deserialization
     //
-    vscr_error_PROTOBUF_DECODE_ERROR = 1,
+    vscr_error_PROTOBUF_DECODE = 1,
     //
     //  Message version doesn't match
     //
     vscr_error_MESSAGE_VERSION_DOESN_T_MATCH = 2,
     //
-    //  Bad message
+    //  Bad message type
     //
-    vscr_error_BAD_MESSAGE = 3,
+    vscr_error_BAD_MESSAGE_TYPE = 3,
     //
     //  AES error
     //
-    vscr_error_AES_ERROR = 4,
+    vscr_error_AES = 4,
     //
     //  RNG failed
     //
     vscr_error_RNG_FAILED = 5,
     //
-    //  curve25519 error
+    //  Curve25519 error
     //
-    vscr_error_CURVE25519_ERROR = 6
+    vscr_error_CURVE25519 = 6,
+    //
+    //  Key deserialization error
+    //
+    vscr_error_KEY_DESERIALIZATION = 7,
+    //
+    //  Invalid key type
+    //
+    vscr_error_INVALID_KEY_TYPE = 8,
+    //
+    //  Identity key doesn't match
+    //
+    vscr_error_IDENTITY_KEY_DOESNT_MATCH = 9,
+    //
+    //  Message already decrypted
+    //
+    vscr_error_MESSAGE_ALREADY_DECRYPTED = 10,
+    //
+    //  Too many lost messages
+    //
+    vscr_error_TOO_MANY_LOST_MESSAGES = 11,
+    //
+    //  Sender chain missing
+    //
+    vscr_error_SENDER_CHAIN_MISSING = 12,
+    //
+    //  Skipped message missing
+    //
+    vscr_error_SKIPPED_MESSAGE_MISSING = 13,
+    //
+    //  Can't encrypt yet
+    //
+    vscr_error_CAN_T_ENCRYPT_YET = 14,
+    //
+    //  Exceeded max plain text len
+    //
+    vscr_error_EXCEEDED_MAX_PLAIN_TEXT_LEN = 15,
+    //
+    //  Too many messages for sender chain
+    //
+    vscr_error_TOO_MANY_MESSAGES_FOR_SENDER_CHAIN = 16,
+    //
+    //  Too many messages for receiver chain
+    //
+    vscr_error_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN = 17
 };
 typedef enum vscr_error_t vscr_error_t;
 

@@ -90,4 +90,12 @@
     <constant name="shared key exchange failed" value="-216">
         Exchange key return zero.
     </constant>
+
+    <constant name="bad ed25519 public key" value="-217">
+        Ed25519 public key is corrupted.
+    </constant>
+
+    <constant name="bad ed25519 private key" value="-218">
+        Ed25519 private key is corrupted.
+    </constant>
 </enum>

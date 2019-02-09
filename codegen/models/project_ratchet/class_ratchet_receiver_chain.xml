@@ -6,10 +6,10 @@
 
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
 
-    <require class="ratchet common" scope="context"/>
+    <require class="ratchet common hidden" scope="context"/>
 
     <property name="public key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_ratchet_common_constant_ratchet_key_length)"/>
+        <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_ratchet_key_length)"/>
     </property>
     <property name="chain key" class="ratchet chain key" access="readwrite" is_reference="0"/>
 
