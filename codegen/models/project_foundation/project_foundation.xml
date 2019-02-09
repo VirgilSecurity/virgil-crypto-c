@@ -108,7 +108,6 @@
     <class name="base64"/>
     <class name="pem"/>
     <class name="pem title"/>
-    <class name="endianness"/>
     <class name="message info"/>
     <class name="key recipient info"/>
     <class name="key recipient info list"/>

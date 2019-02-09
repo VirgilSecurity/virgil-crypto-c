@@ -44,6 +44,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class for ratchet session between 2 participants
+// --------------------------------------------------------------------------
+
 #ifndef VSCR_RATCHET_SESSION_H_INCLUDED
 #define VSCR_RATCHET_SESSION_H_INCLUDED
 
@@ -86,16 +92,6 @@ extern "C" {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Public integral constants.
-//
-enum {
-    //
-    //  FIXME
-    //
-    vscr_ratchet_session_MAX_RATCHET_LENGTH = 1024 * 1024
-};
 
 //
 //  Handle 'ratchet session' context.
@@ -165,35 +161,84 @@ vscr_ratchet_session_take_rng(vscr_ratchet_session_t *ratchet_session, vscf_impl
 VSCR_PUBLIC void
 vscr_ratchet_session_release_rng(vscr_ratchet_session_t *ratchet_session);
 
+//
+//  Setups default dependencies:
+//      - RNG: CTR DRBG
+//      - Key serialization: DER PKCS8
+//      - Symmetric cipher: AES256-GCM
+//
 VSCR_PUBLIC void
 vscr_ratchet_session_setup_defaults(vscr_ratchet_session_t *ratchet_session);
 
+//
+//  Initiates session
+//
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_t sender_identity_private_key,
         vsc_data_t receiver_identity_public_key, vsc_data_t receiver_long_term_public_key,
         vsc_data_t receiver_one_time_public_key);
 
+//
+//  Responds to session initiation
+//
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t sender_identity_public_key,
         vsc_data_t receiver_identity_private_key, vsc_data_t receiver_long_term_private_key,
         vsc_data_t receiver_one_time_private_key, const vscr_ratchet_message_t *message);
 
+//
+//  Returns flag that indicates is this session was initiated or responded
+//
+VSCR_PUBLIC bool
+vscr_ratchet_session_is_initiator(vscr_ratchet_session_t *ratchet_session);
+
+//
+//  Returns true if at least 1 response was successfully decrypted, false - otherwise
+//
+VSCR_PUBLIC bool
+vscr_ratchet_session_received_first_response(vscr_ratchet_session_t *ratchet_session);
+
+//
+//  Returns true if receiver had one time public key
+//
+VSCR_PUBLIC bool
+vscr_ratchet_session_receiver_has_one_time_public_key(vscr_ratchet_session_t *ratchet_session);
+
+//
+//  Encrypts data
+//
 VSCR_PUBLIC vscr_ratchet_message_t *
 vscr_ratchet_session_encrypt(vscr_ratchet_session_t *ratchet_session, vsc_data_t plain_text, vscr_error_ctx_t *err_ctx);
 
+//
+//  Calculates size of buffer sufficient to store decrypted message
+//
 VSCR_PUBLIC size_t
 vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session, const vscr_ratchet_message_t *message);
 
+//
+//  Decrypts message
+//
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_decrypt(vscr_ratchet_session_t *ratchet_session, const vscr_ratchet_message_t *message,
         vsc_buffer_t *plain_text);
 
+//
+//  Calculates size of buffer sufficient to store session
+//
 VSCR_PUBLIC size_t
 vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *ratchet_session);
 
+//
+//  Serializes session to buffer
+//
 VSCR_PUBLIC void
 vscr_ratchet_session_serialize(vscr_ratchet_session_t *ratchet_session, vsc_buffer_t *output);
 
+//
+//  Deserializes session from buffer.
+//  NOTE: Deserialized session needs dependencies to be set. Check setup defaults
+//
 VSCR_PUBLIC vscr_ratchet_session_t *
 vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_ctx_t *err_ctx);
 

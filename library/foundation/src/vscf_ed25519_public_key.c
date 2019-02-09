@@ -53,9 +53,12 @@
 #include "vscf_ed25519_public_key.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_endianness.h"
-#include "vscf_alg_info.h"
 #include "vscf_simple_alg_info.h"
+#include "vscf_alg_info.h"
+#include "vscf_asn1rd.h"
+#include "vscf_asn1wr.h"
+#include "vscf_asn1rd_defs.h"
+#include "vscf_asn1wr_defs.h"
 #include "vscf_ed25519_public_key_defs.h"
 #include "vscf_ed25519_public_key_internal.h"
 
@@ -176,9 +179,12 @@ VSCF_PUBLIC vscf_error_t
 vscf_ed25519_public_key_export_public_key(const vscf_ed25519_public_key_t *ed25519_public_key, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(ed25519_public_key);
+    VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= ED25519_KEY_LEN);
-    vscf_endianness_reverse_memcpy(vsc_data(ed25519_public_key->public_key, ED25519_KEY_LEN), out);
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_ed25519_public_key_exported_public_key_len(ed25519_public_key));
+
+    vsc_buffer_write_data(out, vsc_data(ed25519_public_key->public_key, ED25519_KEY_LEN));
+
     return vscf_SUCCESS;
 }
 
@@ -189,6 +195,7 @@ VSCF_PUBLIC size_t
 vscf_ed25519_public_key_exported_public_key_len(const vscf_ed25519_public_key_t *ed25519_public_key) {
 
     VSCF_ASSERT_PTR(ed25519_public_key);
+
     return ED25519_KEY_LEN;
 }
 
@@ -203,11 +210,13 @@ VSCF_PUBLIC vscf_error_t
 vscf_ed25519_public_key_import_public_key(vscf_ed25519_public_key_t *ed25519_public_key, vsc_data_t data) {
 
     VSCF_ASSERT_PTR(ed25519_public_key);
-    VSCF_ASSERT_PTR(data.bytes);
-    VSCF_ASSERT(data.len == ED25519_KEY_LEN);
-    vsc_buffer_t *dst = vsc_buffer_new();
-    vsc_buffer_use(dst, ed25519_public_key->public_key, ED25519_KEY_LEN);
-    vscf_endianness_reverse_memcpy(data, dst);
-    vsc_buffer_destroy(&dst);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+
+    if (data.len != ED25519_KEY_LEN) {
+        return vscf_error_BAD_ED25519_PUBLIC_KEY;
+    }
+
+    memcpy(ed25519_public_key->public_key, data.bytes, ED25519_KEY_LEN);
+
     return vscf_SUCCESS;
 }

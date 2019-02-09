@@ -1,9 +1,11 @@
 <enum name="error" definition="public">
+    Error codes
+
     <constant name="success" of_class="global" value="0">
         No errors was occurred.
     </constant>
 
-    <constant name="protobuf decode error" value="1">
+    <constant name="protobuf decode" value="1">
         Error during protobuf deserialization
     </constant>
 
@@ -11,11 +13,11 @@
         Message version doesn't match
     </constant>
 
-    <constant name="bad message" value="3">
-        Bad message
+    <constant name="bad message type" value="3">
+        Bad message type
     </constant>
 
-    <constant name="aes error" value="4">
+    <constant name="aes" value="4">
         AES error
     </constant>
 
@@ -23,7 +25,51 @@
         RNG failed
     </constant>
 
-    <constant name="curve25519 error" value="6">
-        curve25519 error
+    <constant name="curve25519" value="6">
+        Curve25519 error
+    </constant>
+
+    <constant name="key deserialization" value="7">
+        Key deserialization error
+    </constant>
+
+    <constant name="invalid key type" value="8">
+        Invalid key type
+    </constant>
+
+    <constant name="identity key doesnt match" value="9">
+        Identity key doesn't match
+    </constant>
+
+    <constant name="message already decrypted" value="10">
+        Message already decrypted
+    </constant>
+
+    <constant name="too many lost messages" value="11">
+        Too many lost messages
+    </constant>
+
+    <constant name="sender chain missing" value="12">
+        Sender chain missing
+    </constant>
+
+    <constant name="skipped message missing" value="13">
+        Skipped message missing
+    </constant>
+
+    <constant name="can't encrypt yet" value="14">
+        Can't encrypt yet
+    </constant>
+
+    <constant name="exceeded max plain text len" value="15">
+        Exceeded max plain text len
+    </constant>
+
+    <constant name="too many messages for sender chain" value="16">
+        Too many messages for sender chain
+    </constant>
+
+    <constant name="too many messages for receiver chain" value="17">
+        Too many messages for receiver chain
     </constant>
 </enum>

@@ -336,7 +336,7 @@ vscr_ratchet_cipher_encrypt(
     vscf_error_t result = vscf_aes256_gcm_encrypt(ratchet_cipher->aes256_gcm, plain_text, buffer);
 
     if (result != vscf_SUCCESS) {
-        return vscr_error_AES_ERROR;
+        return vscr_error_AES;
     }
 
     return vscr_SUCCESS;
@@ -355,7 +355,7 @@ vscr_ratchet_cipher_decrypt(
     vscf_error_t result = vscf_aes256_gcm_decrypt(ratchet_cipher->aes256_gcm, cipher_text, buffer);
 
     if (result != vscf_SUCCESS) {
-        return vscr_error_AES_ERROR;
+        return vscr_error_AES;
     }
 
     return vscr_SUCCESS;
