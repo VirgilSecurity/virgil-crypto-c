@@ -40,7 +40,7 @@ import VirgilCryptoCommon
 /// Implementation of the symmetric cipher AES-256 bit in a CBC mode.
 /// Note, this implementation contains dynamic memory allocations,
 /// this should be improved in the future releases.
-@objc(VSCFAes256Cbc) public class Aes256Cbc: NSObject, Encrypt, Decrypt, CipherInfo, Cipher {
+@objc(VSCFAes256Cbc) public class Aes256Cbc: NSObject, Alg, Encrypt, Decrypt, CipherInfo, Cipher {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -80,6 +80,27 @@ import VirgilCryptoCommon
     /// Release underlying C context.
     deinit {
         vscf_aes256_cbc_delete(self.c_ctx)
+    }
+
+    /// Provide algorithm identificator.
+    @objc public func algId() -> AlgId {
+        let proxyResult = vscf_aes256_cbc_alg_id(self.c_ctx)
+
+        return AlgId.init(fromC: proxyResult)
+    }
+
+    /// Produce object with algorithm information and configuration parameters.
+    @objc public func produceAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_aes256_cbc_produce_alg_info(self.c_ctx)
+
+        return AlgInfoProxy.init(c_ctx: proxyResult!)
+    }
+
+    /// Restore algorithm configuration from the given object.
+    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
+        let proxyResult = vscf_aes256_cbc_restore_alg_info(self.c_ctx, algInfo.c_ctx)
+
+        try FoundationError.handleError(fromC: proxyResult)
     }
 
     /// Encrypt given data.

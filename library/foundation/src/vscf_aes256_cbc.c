@@ -53,6 +53,8 @@
 #include "vscf_aes256_cbc.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_alg_info.h"
+#include "vscf_cipher_alg_info.h"
 #include "vscf_aes256_cbc_defs.h"
 #include "vscf_aes256_cbc_internal.h"
 
@@ -113,6 +115,47 @@ vscf_aes256_cbc_cleanup_ctx(vscf_aes256_cbc_t *aes256_cbc) {
 
     vscf_erase(aes256_cbc->key, vscf_aes256_cbc_KEY_LEN);
     vscf_erase(aes256_cbc->nonce, vscf_aes256_cbc_NONCE_LEN);
+}
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_aes256_cbc_alg_id(const vscf_aes256_cbc_t *aes256_cbc) {
+
+    VSCF_ASSERT_PTR(aes256_cbc);
+
+    return vscf_alg_id_AES256_CBC;
+}
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_aes256_cbc_produce_alg_info(const vscf_aes256_cbc_t *aes256_cbc) {
+
+    VSCF_ASSERT_PTR(aes256_cbc);
+
+    vscf_cipher_alg_info_t *cipher_alg_info = vscf_cipher_alg_info_new_with_members(
+            vscf_alg_id_AES256_CBC, vsc_data(aes256_cbc->nonce, vscf_aes256_cbc_NONCE_LEN));
+
+    return vscf_cipher_alg_info_impl(cipher_alg_info);
+}
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_aes256_cbc_restore_alg_info(vscf_aes256_cbc_t *aes256_cbc, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(aes256_cbc);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_AES256_CBC);
+
+    const vscf_cipher_alg_info_t *cipher_alg_info = (const vscf_cipher_alg_info_t *)alg_info;
+    vscf_aes256_cbc_set_nonce(aes256_cbc, vscf_cipher_alg_info_nonce(cipher_alg_info));
+
+    return vscf_SUCCESS;
 }
 
 //
