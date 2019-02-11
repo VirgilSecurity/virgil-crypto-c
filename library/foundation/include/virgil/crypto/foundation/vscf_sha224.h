@@ -55,9 +55,8 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_hash_info.h"
-#include "vscf_hash.h"
-#include "vscf_hash_alg.h"
+#include "vscf_alg_id.h"
+#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -158,22 +157,22 @@ VSCF_PUBLIC vscf_sha224_t *
 vscf_sha224_shallow_copy(vscf_sha224_t *sha224);
 
 //
-//  Returns instance of the implemented interface 'hash info'.
+//  Provide algorithm identificator.
 //
-VSCF_PUBLIC const vscf_hash_info_api_t *
-vscf_sha224_hash_info_api(void);
+VSCF_PUBLIC vscf_alg_id_t
+vscf_sha224_alg_id(const vscf_sha224_t *sha224);
 
 //
-//  Returns instance of the implemented interface 'hash'.
+//  Produce object with algorithm information and configuration parameters.
 //
-VSCF_PUBLIC const vscf_hash_api_t *
-vscf_sha224_hash_api(void);
+VSCF_PUBLIC vscf_impl_t *
+vscf_sha224_produce_alg_info(const vscf_sha224_t *sha224);
 
 //
-//  Return implemented hash algorithm type.
+//  Restore algorithm configuration from the given object.
 //
-VSCF_PUBLIC vscf_hash_alg_t
-vscf_sha224_alg(void);
+VSCF_PUBLIC vscf_error_t
+vscf_sha224_restore_alg_info(vscf_sha224_t *sha224, const vscf_impl_t *alg_info);
 
 //
 //  Calculate hash over given data.

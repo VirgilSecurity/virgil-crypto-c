@@ -55,6 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_alg_id.h"
+#include "vscf_oid_id.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -80,7 +81,7 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Return OID for given algorithm identifier
+//  Return OID for given algorithm identifier.
 //
 VSCF_PUBLIC vsc_data_t
 vscf_oid_from_alg_id(vscf_alg_id_t alg_id);
@@ -90,6 +91,18 @@ vscf_oid_from_alg_id(vscf_alg_id_t alg_id);
 //
 VSCF_PUBLIC vscf_alg_id_t
 vscf_oid_to_alg_id(vsc_data_t oid);
+
+//
+//  Return OID for a given identifier.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_oid_from_id(vscf_oid_id_t oid_id);
+
+//
+//  Return identifier for a given OID.
+//
+VSCF_PUBLIC vscf_oid_id_t
+vscf_oid_to_id(vsc_data_t oid);
 
 //
 //  Return true if given OIDs are equal.

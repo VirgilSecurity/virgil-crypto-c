@@ -310,8 +310,8 @@ vscr_ratchet_cipher_setup_cipher(vscr_ratchet_cipher_t *ratchet_cipher, vsc_data
     vsc_buffer_init(&buffer);
     vsc_buffer_use(&buffer, derived_secret, sizeof(derived_secret));
 
-    vscf_hkdf_derive(hkdf, key, vsc_data_empty(), vsc_data(ratchet_kdf_cipher_info, sizeof(ratchet_kdf_cipher_info)),
-            &buffer, sizeof(derived_secret));
+    vscf_hkdf_set_info(hkdf, vsc_data(ratchet_kdf_cipher_info, sizeof(ratchet_kdf_cipher_info)));
+    vscf_hkdf_derive(hkdf, key, sizeof(derived_secret), &buffer);
 
     vscf_hkdf_destroy(&hkdf);
 

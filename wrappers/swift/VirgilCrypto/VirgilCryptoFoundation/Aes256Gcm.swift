@@ -40,7 +40,7 @@ import VirgilCryptoCommon
 /// Implementation of the symmetric cipher AES-256 bit in a GCM mode.
 /// Note, this implementation contains dynamic memory allocations,
 /// this should be improved in the future releases.
-@objc(VSCFAes256Gcm) public class Aes256Gcm: NSObject, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuthInfo, AuthEncrypt, AuthDecrypt, CipherAuth {
+@objc(VSCFAes256Gcm) public class Aes256Gcm: NSObject, Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuthInfo, AuthEncrypt, AuthDecrypt, CipherAuth {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -83,6 +83,27 @@ import VirgilCryptoCommon
     /// Release underlying C context.
     deinit {
         vscf_aes256_gcm_delete(self.c_ctx)
+    }
+
+    /// Provide algorithm identificator.
+    @objc public func algId() -> AlgId {
+        let proxyResult = vscf_aes256_gcm_alg_id(self.c_ctx)
+
+        return AlgId.init(fromC: proxyResult)
+    }
+
+    /// Produce object with algorithm information and configuration parameters.
+    @objc public func produceAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_aes256_gcm_produce_alg_info(self.c_ctx)
+
+        return AlgInfoProxy.init(c_ctx: proxyResult!)
+    }
+
+    /// Restore algorithm configuration from the given object.
+    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
+        let proxyResult = vscf_aes256_gcm_restore_alg_info(self.c_ctx, algInfo.c_ctx)
+
+        try FoundationError.handleError(fromC: proxyResult)
     }
 
     /// Encrypt given data.
@@ -191,10 +212,28 @@ import VirgilCryptoCommon
     }
 
     /// Return buffer length required to hold an output of the methods
-    /// "update" or "finish".
+    /// "update" or "finish" in an current mode.
     /// Pass zero length to define buffer length of the method "finish".
     @objc public func outLen(dataLen: Int) -> Int {
         let proxyResult = vscf_aes256_gcm_out_len(self.c_ctx, dataLen)
+
+        return proxyResult
+    }
+
+    /// Return buffer length required to hold an output of the methods
+    /// "update" or "finish" in an encryption mode.
+    /// Pass zero length to define buffer length of the method "finish".
+    @objc public func encryptedOutLen(dataLen: Int) -> Int {
+        let proxyResult = vscf_aes256_gcm_encrypted_out_len(self.c_ctx, dataLen)
+
+        return proxyResult
+    }
+
+    /// Return buffer length required to hold an output of the methods
+    /// "update" or "finish" in an decryption mode.
+    /// Pass zero length to define buffer length of the method "finish".
+    @objc public func decryptedOutLen(dataLen: Int) -> Int {
+        let proxyResult = vscf_aes256_gcm_decrypted_out_len(self.c_ctx, dataLen)
 
         return proxyResult
     }

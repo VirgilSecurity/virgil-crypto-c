@@ -95,6 +95,10 @@ enum vscf_error_t {
     //
     vscf_error_SMALL_BUFFER = -101,
     //
+    //  Unsupported algorithm.
+    //
+    vscf_error_UNSUPPORTED_ALGORITHM = -200,
+    //
     //  Authentication failed during decryption.
     //
     vscf_error_AUTH_FAILED = -201,

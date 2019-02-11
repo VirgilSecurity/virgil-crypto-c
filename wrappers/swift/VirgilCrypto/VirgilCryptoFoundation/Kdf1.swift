@@ -38,7 +38,7 @@ import VSCFoundation
 import VirgilCryptoCommon
 
 /// Virgil Security implementation of the KDF1 (ISO-18033-2) algorithm.
-@objc(VSCFKdf1) public class Kdf1: NSObject, Kdf, Alg {
+@objc(VSCFKdf1) public class Kdf1: NSObject, Alg, Kdf {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -68,30 +68,9 @@ import VirgilCryptoCommon
         vscf_kdf1_delete(self.c_ctx)
     }
 
-    @objc public func setHash(hash: HashStream) {
+    @objc public func setHash(hash: Hash) {
         vscf_kdf1_release_hash(self.c_ctx)
         vscf_kdf1_use_hash(self.c_ctx, hash.c_ctx)
-    }
-
-    /// Derive key of the requested length from the given data.
-    @objc public func derive(data: Data, keyLen: Int) -> Data {
-        let keyCount = keyLen
-        var key = Data(count: keyCount)
-        var keyBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(keyBuf)
-        }
-
-        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
-            key.withUnsafeMutableBytes({ (keyPointer: UnsafeMutablePointer<byte>) -> Void in
-                vsc_buffer_init(keyBuf)
-                vsc_buffer_use(keyBuf, keyPointer, keyCount)
-                vscf_kdf1_derive(self.c_ctx, vsc_data(dataPointer, data.count), keyLen, keyBuf)
-            })
-        })
-        key.count = vsc_buffer_len(keyBuf)
-
-        return key
     }
 
     /// Provide algorithm identificator.
@@ -113,5 +92,26 @@ import VirgilCryptoCommon
         let proxyResult = vscf_kdf1_restore_alg_info(self.c_ctx, algInfo.c_ctx)
 
         try FoundationError.handleError(fromC: proxyResult)
+    }
+
+    /// Derive key of the requested length from the given data.
+    @objc public func derive(data: Data, keyLen: Int) -> Data {
+        let keyCount = keyLen
+        var key = Data(count: keyCount)
+        var keyBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(keyBuf)
+        }
+
+        data.withUnsafeBytes({ (dataPointer: UnsafePointer<byte>) -> Void in
+            key.withUnsafeMutableBytes({ (keyPointer: UnsafeMutablePointer<byte>) -> Void in
+                vsc_buffer_init(keyBuf)
+                vsc_buffer_use(keyBuf, keyPointer, keyCount)
+                vscf_kdf1_derive(self.c_ctx, vsc_data(dataPointer, data.count), keyLen, keyBuf)
+            })
+        })
+        key.count = vsc_buffer_len(keyBuf)
+
+        return key
     }
 }

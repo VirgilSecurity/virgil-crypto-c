@@ -54,9 +54,17 @@ import VirgilCryptoCommon
     /// Get length of the current ASN.1 element.
     @objc func getLen() -> Int
 
+    /// Get length of the current ASN.1 element with tag and length itself.
+    @objc func getDataLen() -> Int
+
     /// Read ASN.1 type: TAG.
     /// Return element length.
     @objc func readTag(tag: Int32) -> Int
+
+    /// Read ASN.1 type: context-specific TAG.
+    /// Return element length.
+    /// Return 0 if current position do not points to the requested tag.
+    @objc func readContextTag(tag: Int32) -> Int
 
     /// Read ASN.1 type: INTEGER.
     @objc func readInt() -> Int32
@@ -163,10 +171,26 @@ import VirgilCryptoCommon
         return proxyResult
     }
 
+    /// Get length of the current ASN.1 element with tag and length itself.
+    @objc public func getDataLen() -> Int {
+        let proxyResult = vscf_asn1_reader_get_data_len(self.c_ctx)
+
+        return proxyResult
+    }
+
     /// Read ASN.1 type: TAG.
     /// Return element length.
     @objc public func readTag(tag: Int32) -> Int {
         let proxyResult = vscf_asn1_reader_read_tag(self.c_ctx, tag)
+
+        return proxyResult
+    }
+
+    /// Read ASN.1 type: context-specific TAG.
+    /// Return element length.
+    /// Return 0 if current position do not points to the requested tag.
+    @objc public func readContextTag(tag: Int32) -> Int {
+        let proxyResult = vscf_asn1_reader_read_context_tag(self.c_ctx, tag)
 
         return proxyResult
     }

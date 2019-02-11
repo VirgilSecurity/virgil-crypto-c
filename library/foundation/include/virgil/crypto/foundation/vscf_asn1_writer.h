@@ -95,6 +95,12 @@ VSCF_PUBLIC void
 vscf_asn1_writer_reset(vscf_impl_t *impl, byte *out, size_t out_len);
 
 //
+//  Release a target buffer.
+//
+VSCF_PUBLIC void
+vscf_asn1_writer_release(vscf_impl_t *impl);
+
+//
 //  Move written data to the buffer beginning and forbid further operations.
 //  Returns written size in bytes.
 //
@@ -102,10 +108,28 @@ VSCF_PUBLIC size_t
 vscf_asn1_writer_finish(vscf_impl_t *impl);
 
 //
+//  Returns pointer to the inner buffer.
+//
+VSCF_PUBLIC byte *
+vscf_asn1_writer_bytes(vscf_impl_t *impl);
+
+//
+//  Returns total inner buffer length.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_writer_len(const vscf_impl_t *impl);
+
+//
 //  Returns how many bytes were already written to the ASN.1 structure.
 //
 VSCF_PUBLIC size_t
 vscf_asn1_writer_written_len(const vscf_impl_t *impl);
+
+//
+//  Returns how many bytes are available for writing.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_writer_unwritten_len(const vscf_impl_t *impl);
 
 //
 //  Return last error.
@@ -126,6 +150,13 @@ vscf_asn1_writer_reserve(vscf_impl_t *impl, size_t len);
 //
 VSCF_PUBLIC size_t
 vscf_asn1_writer_write_tag(vscf_impl_t *impl, int tag);
+
+//
+//  Write context-specific ASN.1 tag.
+//  Return count of written bytes.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_writer_write_context_tag(vscf_impl_t *impl, int tag, size_t len);
 
 //
 //  Write length of the following data.

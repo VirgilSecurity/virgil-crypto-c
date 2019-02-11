@@ -61,8 +61,8 @@
 
     <enum name="error"/>
     <enum name="asn1 tag"/>
-    <enum name="hash alg"/>
     <enum name="alg id"/>
+    <enum name="oid id"/>
 
     <interface name="defaults" from="shared"/>
     <interface name="cipher"/>
@@ -75,11 +75,7 @@
     <interface name="encrypt"/>
     <interface name="salted kdf"/>
     <interface name="hash"/>
-    <interface name="hash info"/>
-    <interface name="hash stream"/>
     <interface name="mac"/>
-    <interface name="mac info"/>
-    <interface name="mac stream"/>
     <interface name="kdf"/>
     <interface name="random"/>
     <interface name="entropy source"/>
@@ -101,6 +97,7 @@
     <interface name="alg info"/>
     <interface name="alg info serializer"/>
     <interface name="alg info deserializer"/>
+    <interface name="message info serializer"/>
 
     <class name="error"/>
     <class name="mbedtls bignum asn1 writer"/>
@@ -111,6 +108,12 @@
     <class name="base64"/>
     <class name="pem"/>
     <class name="pem title"/>
+    <class name="message info"/>
+    <class name="key recipient info"/>
+    <class name="key recipient info list"/>
+    <class name="password recipient info"/>
+    <class name="password recipient info list"/>
+    <class name="alg factory"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>
@@ -121,6 +124,7 @@
 
     <implementor name="alg info"/>
     <implementor name="alg info der"/>
+    <implementor name="message info der serializer"/>
 
     <module name="mbedtls bridge random"/>
     <module name="mbedtls bridge entropy"/>

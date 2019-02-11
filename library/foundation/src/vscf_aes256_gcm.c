@@ -53,6 +53,8 @@
 #include "vscf_aes256_gcm.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_alg_info.h"
+#include "vscf_cipher_alg_info.h"
 #include "vscf_aes256_gcm_defs.h"
 #include "vscf_aes256_gcm_internal.h"
 
@@ -110,6 +112,47 @@ vscf_aes256_gcm_cleanup_ctx(vscf_aes256_gcm_t *aes256_gcm) {
 
     vscf_erase(aes256_gcm->key, vscf_aes256_gcm_KEY_LEN);
     vscf_erase(aes256_gcm->nonce, vscf_aes256_gcm_NONCE_LEN);
+}
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_aes256_gcm_alg_id(const vscf_aes256_gcm_t *aes256_gcm) {
+
+    VSCF_ASSERT_PTR(aes256_gcm);
+
+    return vscf_alg_id_AES256_GCM;
+}
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_aes256_gcm_produce_alg_info(const vscf_aes256_gcm_t *aes256_gcm) {
+
+    VSCF_ASSERT_PTR(aes256_gcm);
+
+    vscf_cipher_alg_info_t *cipher_alg_info = vscf_cipher_alg_info_new_with_members(
+            vscf_alg_id_AES256_GCM, vsc_data(aes256_gcm->nonce, vscf_aes256_gcm_NONCE_LEN));
+
+    return vscf_cipher_alg_info_impl(cipher_alg_info);
+}
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_aes256_gcm_restore_alg_info(vscf_aes256_gcm_t *aes256_gcm, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(aes256_gcm);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_AES256_GCM);
+
+    const vscf_cipher_alg_info_t *cipher_alg_info = (const vscf_cipher_alg_info_t *)alg_info;
+    vscf_aes256_gcm_set_nonce(aes256_gcm, vscf_cipher_alg_info_nonce(cipher_alg_info));
+
+    return vscf_SUCCESS;
 }
 
 //
@@ -284,7 +327,7 @@ vscf_aes256_gcm_update(vscf_aes256_gcm_t *aes256_gcm, vsc_data_t data, vsc_buffe
 
 //
 //  Return buffer length required to hold an output of the methods
-//  "update" or "finish".
+//  "update" or "finish" in an current mode.
 //  Pass zero length to define buffer length of the method "finish".
 //
 VSCF_PUBLIC size_t
@@ -292,15 +335,41 @@ vscf_aes256_gcm_out_len(vscf_aes256_gcm_t *aes256_gcm, size_t data_len) {
 
     VSCF_ASSERT_PTR(aes256_gcm);
 
+    if (aes256_gcm->do_decrypt) {
+        return vscf_aes256_gcm_decrypted_out_len(aes256_gcm, data_len);
+    } else {
+        return vscf_aes256_gcm_encrypted_out_len(aes256_gcm, data_len);
+    }
+}
+
+//
+//  Return buffer length required to hold an output of the methods
+//  "update" or "finish" in an encryption mode.
+//  Pass zero length to define buffer length of the method "finish".
+//
+VSCF_PUBLIC size_t
+vscf_aes256_gcm_encrypted_out_len(vscf_aes256_gcm_t *aes256_gcm, size_t data_len) {
+
+    VSCF_ASSERT_PTR(aes256_gcm);
+
     if (data_len > 0) {
         return data_len + vscf_aes256_gcm_BLOCK_LEN;
-
-    } else if (aes256_gcm->do_decrypt) {
-        return vscf_aes256_gcm_BLOCK_LEN;
-
     } else {
         return vscf_aes256_gcm_BLOCK_LEN + vscf_aes256_gcm_AUTH_TAG_LEN;
     }
+}
+
+//
+//  Return buffer length required to hold an output of the methods
+//  "update" or "finish" in an decryption mode.
+//  Pass zero length to define buffer length of the method "finish".
+//
+VSCF_PUBLIC size_t
+vscf_aes256_gcm_decrypted_out_len(vscf_aes256_gcm_t *aes256_gcm, size_t data_len) {
+
+    VSCF_ASSERT_PTR(aes256_gcm);
+
+    return data_len + vscf_aes256_gcm_BLOCK_LEN;
 }
 
 //

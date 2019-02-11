@@ -1,0 +1,56 @@
+<class name="key recipient info list">
+    Handles a list of "key recipient info" class objects.
+
+    <property name="item" class="key recipient info"/>
+    <property name="next" class="key recipient info list"/>
+    <property name="prev" class="key recipient info list"/>
+
+    <method name="add">
+        Add new item to the list.
+        Note, ownership is transfered.
+
+        <argument name="key recipient info" class="key recipient info" access="disown"/>
+    </method>
+
+
+    <method name="has item" is_const="1">
+        Return true if given list has item.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="item" is_const="1">
+        Return list item.
+
+        <return class="key recipient info"/>
+    </method>
+
+
+    <method name="has next" is_const="1">
+        Return true if list has next item.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="next" is_const="1">
+        Return next list node if exists, or NULL otherwise.
+
+        <return class="self"/>
+    </method>
+
+
+    <method name="has prev" is_const="1">
+        Return true if list has previous item.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="prev" is_const="1">
+        Return previous list node if exists, or NULL otherwise.
+
+        <return class="self"/>
+    </method>
+</class>

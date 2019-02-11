@@ -56,9 +56,19 @@ import VirgilCryptoCommon
     @objc func update(data: Data) -> Data
 
     /// Return buffer length required to hold an output of the methods
-    /// "update" or "finish".
+    /// "update" or "finish" in an current mode.
     /// Pass zero length to define buffer length of the method "finish".
     @objc func outLen(dataLen: Int) -> Int
+
+    /// Return buffer length required to hold an output of the methods
+    /// "update" or "finish" in an encryption mode.
+    /// Pass zero length to define buffer length of the method "finish".
+    @objc func encryptedOutLen(dataLen: Int) -> Int
+
+    /// Return buffer length required to hold an output of the methods
+    /// "update" or "finish" in an decryption mode.
+    /// Pass zero length to define buffer length of the method "finish".
+    @objc func decryptedOutLen(dataLen: Int) -> Int
 
     /// Accomplish encryption or decryption process.
     @objc func finish() throws -> Data
@@ -207,10 +217,28 @@ import VirgilCryptoCommon
     }
 
     /// Return buffer length required to hold an output of the methods
-    /// "update" or "finish".
+    /// "update" or "finish" in an current mode.
     /// Pass zero length to define buffer length of the method "finish".
     @objc public func outLen(dataLen: Int) -> Int {
         let proxyResult = vscf_cipher_out_len(self.c_ctx, dataLen)
+
+        return proxyResult
+    }
+
+    /// Return buffer length required to hold an output of the methods
+    /// "update" or "finish" in an encryption mode.
+    /// Pass zero length to define buffer length of the method "finish".
+    @objc public func encryptedOutLen(dataLen: Int) -> Int {
+        let proxyResult = vscf_cipher_encrypted_out_len(self.c_ctx, dataLen)
+
+        return proxyResult
+    }
+
+    /// Return buffer length required to hold an output of the methods
+    /// "update" or "finish" in an decryption mode.
+    /// Pass zero length to define buffer length of the method "finish".
+    @objc public func decryptedOutLen(dataLen: Int) -> Int {
+        let proxyResult = vscf_cipher_decrypted_out_len(self.c_ctx, dataLen)
 
         return proxyResult
     }

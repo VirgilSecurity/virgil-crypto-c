@@ -319,9 +319,8 @@ vsce_phe_hash_derive_account_key(vsce_phe_hash_t *phe_hash, const mbedtls_ecp_po
     vscf_hkdf_t *hkdf = vscf_hkdf_new();
 
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
-
-    vscf_hkdf_derive(hkdf, vsc_buffer_data(&M_buf), vsc_data_empty(), k_kdf_info_client_key, account_key,
-            vsc_buffer_capacity(account_key));
+    vscf_hkdf_set_info(hkdf, k_kdf_info_client_key);
+    vscf_hkdf_derive(hkdf, vsc_buffer_data(&M_buf), vsc_buffer_capacity(account_key), account_key);
 
     vsc_buffer_delete(&M_buf);
     vscf_hkdf_destroy(&hkdf);
@@ -526,7 +525,9 @@ vsce_phe_hash_derive_z(vsce_phe_hash_t *phe_hash, vsc_data_t buffer, bool succes
 
         vsc_data_t domain = success ? k_proof_ok : k_proof_error;
 
-        vscf_hkdf_derive(hkdf, vsc_buffer_data(&key), domain, k_kdf_info_z, &z_buff, vsc_buffer_capacity(&z_buff));
+        vscf_hkdf_reset(hkdf, domain, 0);
+        vscf_hkdf_set_info(hkdf, k_kdf_info_z);
+        vscf_hkdf_derive(hkdf, vsc_buffer_data(&key), vsc_buffer_capacity(&z_buff), &z_buff);
 
         mbedtls_status = mbedtls_mpi_read_binary(z, vsc_buffer_bytes(&z_buff), vsc_buffer_len(&z_buff));
         VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);

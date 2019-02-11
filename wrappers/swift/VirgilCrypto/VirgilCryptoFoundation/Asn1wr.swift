@@ -73,6 +73,11 @@ import VirgilCryptoCommon
         vscf_asn1wr_reset(self.c_ctx, out, outLen)
     }
 
+    /// Release a target buffer.
+    @objc public func release() {
+        vscf_asn1wr_release(self.c_ctx)
+    }
+
     /// Move written data to the buffer beginning and forbid further operations.
     /// Returns written size in bytes.
     @objc public func finish() -> Int {
@@ -81,9 +86,30 @@ import VirgilCryptoCommon
         return proxyResult
     }
 
+    /// Returns pointer to the inner buffer.
+    @objc public func bytes() -> UnsafeMutablePointer<UInt8> {
+        let proxyResult = vscf_asn1wr_bytes(self.c_ctx)
+
+        return proxyResult!
+    }
+
+    /// Returns total inner buffer length.
+    @objc public func len() -> Int {
+        let proxyResult = vscf_asn1wr_len(self.c_ctx)
+
+        return proxyResult
+    }
+
     /// Returns how many bytes were already written to the ASN.1 structure.
     @objc public func writtenLen() -> Int {
         let proxyResult = vscf_asn1wr_written_len(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Returns how many bytes are available for writing.
+    @objc public func unwrittenLen() -> Int {
+        let proxyResult = vscf_asn1wr_unwritten_len(self.c_ctx)
 
         return proxyResult
     }
@@ -107,6 +133,14 @@ import VirgilCryptoCommon
     /// Return count of written bytes.
     @objc public func writeTag(tag: Int32) -> Int {
         let proxyResult = vscf_asn1wr_write_tag(self.c_ctx, tag)
+
+        return proxyResult
+    }
+
+    /// Write context-specific ASN.1 tag.
+    /// Return count of written bytes.
+    @objc public func writeContextTag(tag: Int32, len: Int) -> Int {
+        let proxyResult = vscf_asn1wr_write_context_tag(self.c_ctx, tag, len)
 
         return proxyResult
     }

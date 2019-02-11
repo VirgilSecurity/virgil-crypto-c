@@ -1,0 +1,50 @@
+<class name="message info">
+    Handle information about an encrypted message and algorithms
+    that was used for encryption.
+
+    <property name="key recipients" class="key recipient info list"/>
+    <property name="password recipients" class="password recipient info list"/>
+    <property name="data encryption alg info" interface="alg info"/>
+
+
+    <method name="add key recipient">
+        Add recipient that is defined by Public Key.
+
+        <argument name="key recipient" class="key recipient info" access="disown"/>
+    </method>
+
+
+    <method name="add password recipient">
+        Add recipient that is defined by password.
+
+        <argument name="password recipient" class="password recipient info" access="disown"/>
+    </method>
+
+
+    <method name="set data encryption alg info">
+        Set information about algorithm that was used for data encryption.
+
+        <argument name="data encryption alg info" interface="alg info" access="disown"/>
+    </method>
+
+
+    <method name="data encryption alg info" is_const="1">
+        Return information about algorithm that was used for the data encryption.
+
+        <return interface="alg info"/>
+    </method>
+
+
+    <method name="key recipient info list" is_const="1">
+        Return list with a "key recipient info" elements.
+
+        <return class="key recipient info list"/>
+    </method>
+
+
+    <method name="password recipient info list" is_const="1">
+        Return list with a "password recipient info" elements.
+
+        <return class="password recipient info list"/>
+    </method>
+</class>

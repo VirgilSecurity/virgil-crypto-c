@@ -119,6 +119,19 @@ vscf_asn1_reader_get_len(vscf_impl_t *impl) {
 }
 
 //
+//  Get length of the current ASN.1 element with tag and length itself.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_reader_get_data_len(vscf_impl_t *impl) {
+
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
+    VSCF_ASSERT_PTR (asn1_reader_api);
+
+    VSCF_ASSERT_PTR (asn1_reader_api->get_data_len_cb);
+    return asn1_reader_api->get_data_len_cb (impl);
+}
+
+//
 //  Read ASN.1 type: TAG.
 //  Return element length.
 //
@@ -130,6 +143,21 @@ vscf_asn1_reader_read_tag(vscf_impl_t *impl, int tag) {
 
     VSCF_ASSERT_PTR (asn1_reader_api->read_tag_cb);
     return asn1_reader_api->read_tag_cb (impl, tag);
+}
+
+//
+//  Read ASN.1 type: context-specific TAG.
+//  Return element length.
+//  Return 0 if current position do not points to the requested tag.
+//
+VSCF_PUBLIC size_t
+vscf_asn1_reader_read_context_tag(vscf_impl_t *impl, int tag) {
+
+    const vscf_asn1_reader_api_t *asn1_reader_api = vscf_asn1_reader_api(impl);
+    VSCF_ASSERT_PTR (asn1_reader_api);
+
+    VSCF_ASSERT_PTR (asn1_reader_api->read_context_tag_cb);
+    return asn1_reader_api->read_context_tag_cb (impl, tag);
 }
 
 //
