@@ -94,6 +94,22 @@ function c_dependency_add_requirements (source, destination)
             .project = dependency.project ?
         endnew
     endfor
+
+    for my.source.dependency where defined(0.impl)
+        new require to my.destination
+            .impl = dependency.impl
+            .scope = "private"
+            .project = dependency.project ?
+        endnew
+    endfor
+
+    for my.source.dependency where defined(0.class)
+        new require to my.destination
+            .class = dependency.class
+            .scope = "private"
+            .project = dependency.project ?
+        endnew
+    endfor
 endfunction
 
 

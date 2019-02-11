@@ -53,6 +53,8 @@
 #include "vscf_sha384.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_alg_info.h"
+#include "vscf_simple_alg_info.h"
 #include "vscf_sha384_defs.h"
 #include "vscf_sha384_internal.h"
 
@@ -101,12 +103,38 @@ vscf_sha384_cleanup_ctx(vscf_sha384_t *sha384) {
 }
 
 //
-//  Return implemented hash algorithm type.
+//  Provide algorithm identificator.
 //
-VSCF_PUBLIC vscf_hash_alg_t
-vscf_sha384_alg(void) {
+VSCF_PUBLIC vscf_alg_id_t
+vscf_sha384_alg_id(const vscf_sha384_t *sha384) {
 
-    return vscf_hash_alg_SHA384;
+    VSCF_ASSERT_PTR(sha384);
+
+    return vscf_alg_id_SHA384;
+}
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_sha384_produce_alg_info(const vscf_sha384_t *sha384) {
+
+    VSCF_ASSERT_PTR(sha384);
+
+    return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA384));
+}
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_sha384_restore_alg_info(vscf_sha384_t *sha384, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(sha384);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_SHA384);
+
+    return vscf_SUCCESS;
 }
 
 //
@@ -119,9 +147,12 @@ vscf_sha384_hash(vsc_data_t data, vsc_buffer_t *digest) {
     VSCF_ASSERT(vsc_buffer_is_valid(digest));
     VSCF_ASSERT(vsc_buffer_unused_len(digest) >= vscf_sha384_DIGEST_LEN);
 
-    const int is384 = 1;
-    mbedtls_sha512(data.bytes, data.len, vsc_buffer_unused_bytes(digest), is384);
-    vsc_buffer_inc_used(digest, vscf_sha384_DIGEST_LEN);
+    vscf_sha384_t sha384;
+    vscf_sha384_init(&sha384);
+    vscf_sha384_start(&sha384);
+    vscf_sha384_update(&sha384, data);
+    vscf_sha384_finish(&sha384, digest);
+    vscf_sha384_cleanup(&sha384);
 }
 
 //

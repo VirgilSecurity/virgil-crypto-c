@@ -87,14 +87,30 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     //
     (vscf_asn1_writer_api_reset_fn)vscf_asn1wr_reset,
     //
+    //  Release a target buffer.
+    //
+    (vscf_asn1_writer_api_release_fn)vscf_asn1wr_release,
+    //
     //  Move written data to the buffer beginning and forbid further operations.
     //  Returns written size in bytes.
     //
     (vscf_asn1_writer_api_finish_fn)vscf_asn1wr_finish,
     //
+    //  Returns pointer to the inner buffer.
+    //
+    (vscf_asn1_writer_api_bytes_fn)vscf_asn1wr_bytes,
+    //
+    //  Returns total inner buffer length.
+    //
+    (vscf_asn1_writer_api_len_fn)vscf_asn1wr_len,
+    //
     //  Returns how many bytes were already written to the ASN.1 structure.
     //
     (vscf_asn1_writer_api_written_len_fn)vscf_asn1wr_written_len,
+    //
+    //  Returns how many bytes are available for writing.
+    //
+    (vscf_asn1_writer_api_unwritten_len_fn)vscf_asn1wr_unwritten_len,
     //
     //  Return last error.
     //
@@ -109,6 +125,11 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     //  Return count of written bytes.
     //
     (vscf_asn1_writer_api_write_tag_fn)vscf_asn1wr_write_tag,
+    //
+    //  Write context-specific ASN.1 tag.
+    //  Return count of written bytes.
+    //
+    (vscf_asn1_writer_api_write_context_tag_fn)vscf_asn1wr_write_context_tag,
     //
     //  Write length of the following data.
     //  Return count of written bytes.

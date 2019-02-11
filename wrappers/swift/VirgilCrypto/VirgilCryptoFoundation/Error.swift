@@ -53,6 +53,9 @@ import VSCFoundation
     /// Buffer capacity is not enaugh to hold result.
     case smallBuffer = -101
 
+    /// Unsupported algorithm.
+    case unsupportedAlgorithm = -200
+
     /// Authentication failed during decryption.
     case authFailed = -201
 

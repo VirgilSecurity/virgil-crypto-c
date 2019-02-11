@@ -48,8 +48,8 @@
 #define VSCR_RATCHET_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet.h"
 #include "vscr_ratchet_cipher.h"
+#include "vscr_ratchet.h"
 #include "vscr_error.h"
 
 #include <RatchetSession.pb.h>

@@ -50,7 +50,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_mac_stream_api.h"
+#include "vscf_mac_api.h"
 
 // clang-format on
 //  @end

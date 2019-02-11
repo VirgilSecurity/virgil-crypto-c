@@ -375,7 +375,7 @@ require_definition:
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
-public: Instance type definition is used within private scope.
+public: Instance type definition is used within public scope.
 private: Instance type definition is used within private scope.
 
 
@@ -594,7 +594,7 @@ require_definition:
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
-public: Instance type definition is used within private scope.
+public: Instance type definition is used within public scope.
 private: Instance type definition is used within private scope.
 
 name:
@@ -738,7 +738,7 @@ require_definition:
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
-public: Instance type definition is used within private scope.
+public: Instance type definition is used within public scope.
 private: Instance type definition is used within private scope.
 
 definition:
@@ -923,7 +923,7 @@ require_definition:
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
-public: Instance type definition is used within private scope.
+public: Instance type definition is used within public scope.
 private: Instance type definition is used within private scope.
 
 value:
@@ -1057,7 +1057,7 @@ require_definition:
     attribute is optional. It can take one of the following values:
 
 Value: Meaning:
-public: Instance type definition is used within private scope.
+public: Instance type definition is used within public scope.
 private: Instance type definition is used within private scope.
 
 

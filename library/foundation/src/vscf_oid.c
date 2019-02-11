@@ -85,8 +85,35 @@ static const vsc_data_t oid_kdf1 = {oid_kdf1_bytes, sizeof(oid_kdf1_bytes)};
 static const byte oid_kdf2_bytes[] = {0x28, 0x81, 0x8C, 0x71, 0x02, 0x05, 0x02};
 static const vsc_data_t oid_kdf2 = {oid_kdf2_bytes, sizeof(oid_kdf2_bytes)};
 
-static const byte oid_aes256_gcm2_bytes[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x2E};
-static const vsc_data_t oid_aes256_gcm2 = {oid_aes256_gcm2_bytes, sizeof(oid_aes256_gcm2_bytes)};
+static const byte oid_aes256_gcm_bytes[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x2E};
+static const vsc_data_t oid_aes256_gcm = {oid_aes256_gcm_bytes, sizeof(oid_aes256_gcm_bytes)};
+
+static const byte oid_aes256_cbc_bytes[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x01, 0x2A};
+static const vsc_data_t oid_aes256_cbc = {oid_aes256_cbc_bytes, sizeof(oid_aes256_cbc_bytes)};
+
+static const byte oid_cms_data_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x07, 0x01};
+static const vsc_data_t oid_cms_data = {oid_cms_data_bytes, sizeof(oid_cms_data_bytes)};
+
+static const byte oid_cms_data_enveloped_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x07, 0x03};
+static const vsc_data_t oid_cms_enveloped_data = {oid_cms_data_enveloped_bytes, sizeof(oid_cms_data_enveloped_bytes)};
+
+static const byte oid_pkcs5_pbkdf2_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x05, 0x0C};
+static const vsc_data_t oid_pkcs5_pbkdf2 = {oid_pkcs5_pbkdf2_bytes, sizeof(oid_pkcs5_pbkdf2_bytes)};
+
+static const byte oid_pkcs5_pbes2_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x05, 0x0D};
+static const vsc_data_t oid_pkcs5_pbes2 = {oid_pkcs5_pbes2_bytes, sizeof(oid_pkcs5_pbes2_bytes)};
+
+static const byte oid_hmac_with_sha224_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x02, 0x08};
+static const vsc_data_t oid_hmac_with_sha224 = {oid_hmac_with_sha224_bytes, sizeof(oid_hmac_with_sha224_bytes)};
+
+static const byte oid_hmac_with_sha256_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x02, 0x09};
+static const vsc_data_t oid_hmac_with_sha256 = {oid_hmac_with_sha256_bytes, sizeof(oid_hmac_with_sha256_bytes)};
+
+static const byte oid_hmac_with_sha384_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x02, 0x0A};
+static const vsc_data_t oid_hmac_with_sha384 = {oid_hmac_with_sha384_bytes, sizeof(oid_hmac_with_sha384_bytes)};
+
+static const byte oid_hmac_with_sha512_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x02, 0x0B};
+static const vsc_data_t oid_hmac_with_sha512 = {oid_hmac_with_sha512_bytes, sizeof(oid_hmac_with_sha512_bytes)};
 
 
 //  @generated
@@ -104,7 +131,7 @@ static const vsc_data_t oid_aes256_gcm2 = {oid_aes256_gcm2_bytes, sizeof(oid_aes
 
 
 //
-//  Return OID for given algorithm identifier
+//  Return OID for given algorithm identifier.
 //
 VSCF_PUBLIC vsc_data_t
 vscf_oid_from_alg_id(vscf_alg_id_t alg_id) {
@@ -140,7 +167,16 @@ vscf_oid_from_alg_id(vscf_alg_id_t alg_id) {
         return oid_kdf2;
 
     case vscf_alg_id_AES256_GCM:
-        return oid_aes256_gcm2;
+        return oid_aes256_gcm;
+
+    case vscf_alg_id_AES256_CBC:
+        return oid_aes256_cbc;
+
+    case vscf_alg_id_PKCS5_PBKDF2:
+        return oid_pkcs5_pbkdf2;
+
+    case vscf_alg_id_PKCS5_PBES2:
+        return oid_pkcs5_pbes2;
 
     default:
         VSCF_ASSERT(0 && "Unhanded algorithm identifier");
@@ -192,11 +228,105 @@ vscf_oid_to_alg_id(vsc_data_t oid) {
         return vscf_alg_id_KDF2;
     }
 
-    if (vscf_oid_equal(oid, oid_aes256_gcm2)) {
+    if (vscf_oid_equal(oid, oid_aes256_gcm)) {
         return vscf_alg_id_AES256_GCM;
     }
 
+    if (vscf_oid_equal(oid, oid_aes256_cbc)) {
+        return vscf_alg_id_AES256_CBC;
+    }
+
+    if (vscf_oid_equal(oid, oid_pkcs5_pbkdf2)) {
+        return vscf_alg_id_PKCS5_PBKDF2;
+    }
+
+    if (vscf_oid_equal(oid, oid_pkcs5_pbes2)) {
+        return vscf_alg_id_PKCS5_PBES2;
+    }
+
+    if (vscf_oid_equal(oid, oid_hmac_with_sha224)) {
+        return vscf_alg_id_HMAC;
+    }
+
+    if (vscf_oid_equal(oid, oid_hmac_with_sha256)) {
+        return vscf_alg_id_HMAC;
+    }
+
+    if (vscf_oid_equal(oid, oid_hmac_with_sha384)) {
+        return vscf_alg_id_HMAC;
+    }
+
+    if (vscf_oid_equal(oid, oid_hmac_with_sha512)) {
+        return vscf_alg_id_HMAC;
+    }
+
     return vscf_alg_id_NONE;
+}
+
+//
+//  Return OID for a given identifier.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_oid_from_id(vscf_oid_id_t oid_id) {
+
+    switch (oid_id) {
+    case vscf_oid_id_CMS_DATA:
+        return oid_cms_data;
+
+    case vscf_oid_id_CMS_ENVELOPED_DATA:
+        return oid_cms_enveloped_data;
+
+    case vscf_oid_id_HMAC_WITH_SHA224:
+        return oid_hmac_with_sha224;
+
+    case vscf_oid_id_HMAC_WITH_SHA256:
+        return oid_hmac_with_sha256;
+
+    case vscf_oid_id_HMAC_WITH_SHA384:
+        return oid_hmac_with_sha384;
+
+    case vscf_oid_id_HMAC_WITH_SHA512:
+        return oid_hmac_with_sha512;
+
+    default:
+        VSCF_ASSERT(0 && "Unhanded oid identifier");
+        return vsc_data_empty();
+    }
+}
+
+//
+//  Return identifier for a given OID.
+//
+VSCF_PUBLIC vscf_oid_id_t
+vscf_oid_to_id(vsc_data_t oid) {
+
+    VSCF_ASSERT(vsc_data_is_valid(oid));
+
+    if (vscf_oid_equal(oid, oid_cms_data)) {
+        return vscf_oid_id_CMS_DATA;
+    }
+
+    if (vscf_oid_equal(oid, oid_cms_enveloped_data)) {
+        return vscf_oid_id_CMS_ENVELOPED_DATA;
+    }
+
+    if (vscf_oid_equal(oid, oid_hmac_with_sha224)) {
+        return vscf_oid_id_HMAC_WITH_SHA224;
+    }
+
+    if (vscf_oid_equal(oid, oid_hmac_with_sha256)) {
+        return vscf_oid_id_HMAC_WITH_SHA256;
+    }
+
+    if (vscf_oid_equal(oid, oid_hmac_with_sha384)) {
+        return vscf_oid_id_HMAC_WITH_SHA384;
+    }
+
+    if (vscf_oid_equal(oid, oid_hmac_with_sha512)) {
+        return vscf_oid_id_HMAC_WITH_SHA512;
+    }
+
+    return vscf_oid_id_NONE;
 }
 
 //

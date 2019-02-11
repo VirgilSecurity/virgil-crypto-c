@@ -55,6 +55,8 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
+#include "vscf_alg_id.h"
+#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -141,30 +143,60 @@ VSCF_PUBLIC vscf_hkdf_t *
 vscf_hkdf_shallow_copy(vscf_hkdf_t *hkdf);
 
 //
-//  Setup dependency to the interface 'hash stream' with shared ownership.
+//  Setup dependency to the interface 'hash' with shared ownership.
 //
 VSCF_PUBLIC void
 vscf_hkdf_use_hash(vscf_hkdf_t *hkdf, vscf_impl_t *hash);
 
 //
-//  Setup dependency to the interface 'hash stream' and transfer ownership.
+//  Setup dependency to the interface 'hash' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
 vscf_hkdf_take_hash(vscf_hkdf_t *hkdf, vscf_impl_t *hash);
 
 //
-//  Release dependency to the interface 'hash stream'.
+//  Release dependency to the interface 'hash'.
 //
 VSCF_PUBLIC void
 vscf_hkdf_release_hash(vscf_hkdf_t *hkdf);
 
 //
-//  Derive key of the requested length from the given data, salt and info.
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_hkdf_alg_id(const vscf_hkdf_t *hkdf);
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_hkdf_produce_alg_info(const vscf_hkdf_t *hkdf);
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_error_t
+vscf_hkdf_restore_alg_info(vscf_hkdf_t *hkdf, const vscf_impl_t *alg_info);
+
+//
+//  Derive key of the requested length from the given data.
 //
 VSCF_PUBLIC void
-vscf_hkdf_derive(vscf_hkdf_t *hkdf, vsc_data_t data, vsc_data_t salt, vsc_data_t info, vsc_buffer_t *key,
-        size_t key_len);
+vscf_hkdf_derive(vscf_hkdf_t *hkdf, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
+
+//
+//  Prepare algorithm to derive new key.
+//
+VSCF_PUBLIC void
+vscf_hkdf_reset(vscf_hkdf_t *hkdf, vsc_data_t salt, size_t iteration_count);
+
+//
+//  Setup application specific information (optional).
+//  Can be empty.
+//
+VSCF_PUBLIC void
+vscf_hkdf_set_info(vscf_hkdf_t *hkdf, vsc_data_t info);
 
 
 // --------------------------------------------------------------------------

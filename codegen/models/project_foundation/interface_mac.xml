@@ -1,7 +1,11 @@
 <interface name="mac">
     Provides interface to the stateless MAC (message authentication code) algorithms.
 
-    <inherit interface="mac info"/>
+    <method name="digest len">
+        Size of the digest (mac output) in bytes.
+
+        <return type="size"/>
+    </method>
 
     <method name="mac">
         Calculate MAC over given data.
@@ -11,5 +15,33 @@
         <argument name="mac" class="buffer">
             <length method="digest len"/>
         </argument>
+    </method>
+
+    <method name="start">
+        Start a new MAC.
+
+        <argument name="key" class="data"/>
+    </method>
+
+
+    <method name="update">
+        Add given data to the MAC.
+
+        <argument name="data" class="data"/>
+    </method>
+
+
+    <method name="finish">
+        Accomplish MAC and return it's result (a message digest).
+
+        <argument name="mac" class="buffer">
+            <length method="digest len"/>
+        </argument>
+   </method>
+
+
+    <method name="reset">
+        Prepare to authenticate a new message with the same key
+        as the previous MAC operation.
     </method>
 </interface>

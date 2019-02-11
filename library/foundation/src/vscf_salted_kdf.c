@@ -66,17 +66,30 @@
 // --------------------------------------------------------------------------
 
 //
-//  Derive key of the requested length from the given data, salt and info.
+//  Prepare algorithm to derive new key.
 //
 VSCF_PUBLIC void
-vscf_salted_kdf_derive(vscf_impl_t *impl, vsc_data_t data, vsc_data_t salt, vsc_data_t info, vsc_buffer_t *key,
-        size_t key_len) {
+vscf_salted_kdf_reset(vscf_impl_t *impl, vsc_data_t salt, size_t iteration_count) {
 
     const vscf_salted_kdf_api_t *salted_kdf_api = vscf_salted_kdf_api(impl);
     VSCF_ASSERT_PTR (salted_kdf_api);
 
-    VSCF_ASSERT_PTR (salted_kdf_api->derive_cb);
-    salted_kdf_api->derive_cb (impl, data, salt, info, key, key_len);
+    VSCF_ASSERT_PTR (salted_kdf_api->reset_cb);
+    salted_kdf_api->reset_cb (impl, salt, iteration_count);
+}
+
+//
+//  Setup application specific information (optional).
+//  Can be empty.
+//
+VSCF_PUBLIC void
+vscf_salted_kdf_set_info(vscf_impl_t *impl, vsc_data_t info) {
+
+    const vscf_salted_kdf_api_t *salted_kdf_api = vscf_salted_kdf_api(impl);
+    VSCF_ASSERT_PTR (salted_kdf_api);
+
+    VSCF_ASSERT_PTR (salted_kdf_api->set_info_cb);
+    salted_kdf_api->set_info_cb (impl, info);
 }
 
 //
@@ -89,6 +102,17 @@ vscf_salted_kdf_api(const vscf_impl_t *impl) {
 
     const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_SALTED_KDF);
     return (const vscf_salted_kdf_api_t *) api;
+}
+
+//
+//  Return kdf API.
+//
+VSCF_PUBLIC const vscf_kdf_api_t *
+vscf_salted_kdf_kdf_api(const vscf_salted_kdf_api_t *salted_kdf_api) {
+
+    VSCF_ASSERT_PTR (salted_kdf_api);
+
+    return salted_kdf_api->kdf_api;
 }
 
 //

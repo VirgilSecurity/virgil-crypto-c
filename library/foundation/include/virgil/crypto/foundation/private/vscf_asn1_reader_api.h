@@ -102,10 +102,22 @@ typedef int (*vscf_asn1_reader_api_get_tag_fn)(vscf_impl_t *impl);
 typedef size_t (*vscf_asn1_reader_api_get_len_fn)(vscf_impl_t *impl);
 
 //
+//  Callback. Get length of the current ASN.1 element with tag and length itself.
+//
+typedef size_t (*vscf_asn1_reader_api_get_data_len_fn)(vscf_impl_t *impl);
+
+//
 //  Callback. Read ASN.1 type: TAG.
 //          Return element length.
 //
 typedef size_t (*vscf_asn1_reader_api_read_tag_fn)(vscf_impl_t *impl, int tag);
+
+//
+//  Callback. Read ASN.1 type: context-specific TAG.
+//          Return element length.
+//          Return 0 if current position do not points to the requested tag.
+//
+typedef size_t (*vscf_asn1_reader_api_read_context_tag_fn)(vscf_impl_t *impl, int tag);
 
 //
 //  Callback. Read ASN.1 type: INTEGER.
@@ -230,10 +242,20 @@ struct vscf_asn1_reader_api_t {
     //
     vscf_asn1_reader_api_get_len_fn get_len_cb;
     //
+    //  Get length of the current ASN.1 element with tag and length itself.
+    //
+    vscf_asn1_reader_api_get_data_len_fn get_data_len_cb;
+    //
     //  Read ASN.1 type: TAG.
     //  Return element length.
     //
     vscf_asn1_reader_api_read_tag_fn read_tag_cb;
+    //
+    //  Read ASN.1 type: context-specific TAG.
+    //  Return element length.
+    //  Return 0 if current position do not points to the requested tag.
+    //
+    vscf_asn1_reader_api_read_context_tag_fn read_context_tag_cb;
     //
     //  Read ASN.1 type: INTEGER.
     //

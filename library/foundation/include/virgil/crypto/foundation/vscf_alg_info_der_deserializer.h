@@ -162,6 +162,15 @@ VSCF_PUBLIC void
 vscf_alg_info_der_deserializer_release_asn1_reader(vscf_alg_info_der_deserializer_t *alg_info_der_deserializer);
 
 //
+//  Deserialize by using internal ASN.1 reader.
+//  Note, that caller code is responsible to reset ASN.1 reader with
+//  an input buffer.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserializer_t *alg_info_der_deserializer,
+        vscf_error_ctx_t *error);
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t

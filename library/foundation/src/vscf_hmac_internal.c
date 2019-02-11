@@ -55,13 +55,11 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_hmac_defs.h"
-#include "vscf_mac_info.h"
-#include "vscf_mac_info_api.h"
+#include "vscf_alg.h"
+#include "vscf_alg_api.h"
 #include "vscf_mac.h"
 #include "vscf_mac_api.h"
-#include "vscf_mac_stream.h"
-#include "vscf_mac_stream_api.h"
-#include "vscf_hash_stream.h"
+#include "vscf_hash.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -79,18 +77,26 @@ static const vscf_api_t *
 vscf_hmac_find_api(vscf_api_tag_t api_tag);
 
 //
-//  Configuration of the interface API 'mac info api'.
+//  Configuration of the interface API 'alg api'.
 //
-static const vscf_mac_info_api_t mac_info_api = {
+static const vscf_alg_api_t alg_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'mac_info' MUST be equal to the 'vscf_api_tag_MAC_INFO'.
+    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
     //
-    vscf_api_tag_MAC_INFO,
+    vscf_api_tag_ALG,
     //
-    //  Size of the digest (mac output) in bytes.
+    //  Provide algorithm identificator.
     //
-    (vscf_mac_info_api_digest_len_fn)vscf_hmac_digest_len
+    (vscf_alg_api_alg_id_fn)vscf_hmac_alg_id,
+    //
+    //  Produce object with algorithm information and configuration parameters.
+    //
+    (vscf_alg_api_produce_alg_info_fn)vscf_hmac_produce_alg_info,
+    //
+    //  Restore algorithm configuration from the given object.
+    //
+    (vscf_alg_api_restore_alg_info_fn)vscf_hmac_restore_alg_info
 };
 
 //
@@ -103,45 +109,30 @@ static const vscf_mac_api_t mac_api = {
     //
     vscf_api_tag_MAC,
     //
-    //  Link to the inherited interface API 'mac info'.
+    //  Size of the digest (mac output) in bytes.
     //
-    &mac_info_api,
+    (vscf_mac_api_digest_len_fn)vscf_hmac_digest_len,
     //
     //  Calculate MAC over given data.
     //
-    (vscf_mac_api_mac_fn)vscf_hmac_mac
-};
-
-//
-//  Configuration of the interface API 'mac stream api'.
-//
-static const vscf_mac_stream_api_t mac_stream_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'mac_stream' MUST be equal to the 'vscf_api_tag_MAC_STREAM'.
-    //
-    vscf_api_tag_MAC_STREAM,
-    //
-    //  Link to the inherited interface API 'mac info'.
-    //
-    &mac_info_api,
+    (vscf_mac_api_mac_fn)vscf_hmac_mac,
     //
     //  Start a new MAC.
     //
-    (vscf_mac_stream_api_start_fn)vscf_hmac_start,
+    (vscf_mac_api_start_fn)vscf_hmac_start,
     //
     //  Add given data to the MAC.
     //
-    (vscf_mac_stream_api_update_fn)vscf_hmac_update,
+    (vscf_mac_api_update_fn)vscf_hmac_update,
     //
     //  Accomplish MAC and return it's result (a message digest).
     //
-    (vscf_mac_stream_api_finish_fn)vscf_hmac_finish,
+    (vscf_mac_api_finish_fn)vscf_hmac_finish,
     //
     //  Prepare to authenticate a new message with the same key
     //  as the previous MAC operation.
     //
-    (vscf_mac_stream_api_reset_fn)vscf_hmac_reset
+    (vscf_mac_api_reset_fn)vscf_hmac_reset
 };
 
 //
@@ -281,7 +272,7 @@ vscf_hmac_impl(vscf_hmac_t *hmac) {
 }
 
 //
-//  Setup dependency to the interface 'hash stream' with shared ownership.
+//  Setup dependency to the interface 'hash' with shared ownership.
 //
 VSCF_PUBLIC void
 vscf_hmac_use_hash(vscf_hmac_t *hmac, vscf_impl_t *hash) {
@@ -290,13 +281,13 @@ vscf_hmac_use_hash(vscf_hmac_t *hmac, vscf_impl_t *hash) {
     VSCF_ASSERT_PTR(hash);
     VSCF_ASSERT_PTR(hmac->hash == NULL);
 
-    VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
+    VSCF_ASSERT(vscf_hash_is_implemented(hash));
 
     hmac->hash = vscf_impl_shallow_copy(hash);
 }
 
 //
-//  Setup dependency to the interface 'hash stream' and transfer ownership.
+//  Setup dependency to the interface 'hash' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
@@ -306,13 +297,13 @@ vscf_hmac_take_hash(vscf_hmac_t *hmac, vscf_impl_t *hash) {
     VSCF_ASSERT_PTR(hash);
     VSCF_ASSERT_PTR(hmac->hash == NULL);
 
-    VSCF_ASSERT(vscf_hash_stream_is_implemented(hash));
+    VSCF_ASSERT(vscf_hash_is_implemented(hash));
 
     hmac->hash = hash;
 }
 
 //
-//  Release dependency to the interface 'hash stream'.
+//  Release dependency to the interface 'hash'.
 //
 VSCF_PUBLIC void
 vscf_hmac_release_hash(vscf_hmac_t *hmac) {
@@ -326,12 +317,10 @@ static const vscf_api_t *
 vscf_hmac_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
+        case vscf_api_tag_ALG:
+            return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_MAC:
             return (const vscf_api_t *) &mac_api;
-        case vscf_api_tag_MAC_INFO:
-            return (const vscf_api_t *) &mac_info_api;
-        case vscf_api_tag_MAC_STREAM:
-            return (const vscf_api_t *) &mac_stream_api;
         default:
             return NULL;
     }

@@ -54,8 +54,8 @@
 #define VSCF_KDF1_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_alg_id.h"
 #include "vscf_impl.h"
+#include "vscf_alg_id.h"
 #include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -143,29 +143,23 @@ VSCF_PUBLIC vscf_kdf1_t *
 vscf_kdf1_shallow_copy(vscf_kdf1_t *kdf1);
 
 //
-//  Setup dependency to the interface 'hash stream' with shared ownership.
+//  Setup dependency to the interface 'hash' with shared ownership.
 //
 VSCF_PUBLIC void
 vscf_kdf1_use_hash(vscf_kdf1_t *kdf1, vscf_impl_t *hash);
 
 //
-//  Setup dependency to the interface 'hash stream' and transfer ownership.
+//  Setup dependency to the interface 'hash' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
 vscf_kdf1_take_hash(vscf_kdf1_t *kdf1, vscf_impl_t *hash);
 
 //
-//  Release dependency to the interface 'hash stream'.
+//  Release dependency to the interface 'hash'.
 //
 VSCF_PUBLIC void
 vscf_kdf1_release_hash(vscf_kdf1_t *kdf1);
-
-//
-//  Derive key of the requested length from the given data.
-//
-VSCF_PUBLIC void
-vscf_kdf1_derive(vscf_kdf1_t *kdf1, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
 
 //
 //  Provide algorithm identificator.
@@ -184,6 +178,12 @@ vscf_kdf1_produce_alg_info(const vscf_kdf1_t *kdf1);
 //
 VSCF_PUBLIC vscf_error_t
 vscf_kdf1_restore_alg_info(vscf_kdf1_t *kdf1, const vscf_impl_t *alg_info);
+
+//
+//  Derive key of the requested length from the given data.
+//
+VSCF_PUBLIC void
+vscf_kdf1_derive(vscf_kdf1_t *kdf1, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
 
 
 // --------------------------------------------------------------------------

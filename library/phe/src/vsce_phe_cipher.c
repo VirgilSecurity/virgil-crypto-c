@@ -384,8 +384,9 @@ vsce_phe_cipher_encrypt(
     vsc_buffer_init(&derived_secret_buf);
     vsc_buffer_use(&derived_secret_buf, derived_secret, sizeof(derived_secret));
 
-    vscf_hkdf_derive(
-            hkdf, account_key, vsc_buffer_data(&salt_buf), k_encrypt, &derived_secret_buf, sizeof(derived_secret));
+    vscf_hkdf_reset(hkdf, vsc_buffer_data(&salt_buf), 0);
+    vscf_hkdf_set_info(hkdf, k_encrypt);
+    vscf_hkdf_derive(hkdf, account_key, sizeof(derived_secret), &derived_secret_buf);
     vscf_hkdf_destroy(&hkdf);
 
     vscf_aes256_gcm_t *aes256_gcm = vscf_aes256_gcm_new();
@@ -439,8 +440,9 @@ vsce_phe_cipher_decrypt(
     vsc_buffer_init(&derived_secret_buf);
     vsc_buffer_use(&derived_secret_buf, derived_secret, sizeof(derived_secret));
 
-    vscf_hkdf_derive(hkdf, account_key, vsc_data_slice_beg(cipher_text, 0, vsce_phe_cipher_SALT_LEN), k_encrypt,
-            &derived_secret_buf, sizeof(derived_secret));
+    vscf_hkdf_reset(hkdf, vsc_data_slice_beg(cipher_text, 0, vsce_phe_cipher_SALT_LEN), 0);
+    vscf_hkdf_set_info(hkdf, k_encrypt);
+    vscf_hkdf_derive(hkdf, account_key, sizeof(derived_secret), &derived_secret_buf);
     vscf_hkdf_destroy(&hkdf);
 
     vscf_aes256_gcm_t *aes256_gcm = vscf_aes256_gcm_new();
