@@ -51,6 +51,10 @@ function js_cpp_argument_name(name)
   return "$(my.name:c)"
 endfunction
 
+function js_cpp_method_return_name()
+  return "method_return"
+endfunction
+
 function js_cpp_class_instance_name(cpp_class)
   return "$(my.cpp_class.c_name:no)"
 endfunction
@@ -73,6 +77,14 @@ endfunction
 
 function js_cpp_header_create_define(identifier)
   out("#define $(my.identifier:no)")
+endfunction
+
+function js_cpp_header_create_nan_include()
+  out("#include <nan.h>")
+endfunction
+
+function js_cpp_header_create_include(cpp_class, wrapper)
+  out("#include <$(string.replace(my.wrapper.namespace, " |/"))/$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no).h>")
 endfunction
 
 function js_cpp_header_create_endif()
@@ -116,7 +128,7 @@ function js_cpp_header_create_properties(cpp_class, wrapper)
 endfunction
 
 function js_cpp_header_create_class(cpp_class, wrapper)
-  out("class $(my.cpp_class.name:no) {")
+  out("class $(my.cpp_class.name:no) : public Nan::ObjectWrap {")
   js_cpp_header_create_public_access_specifier()
   js_cpp_header_create_init()
   js_cpp_header_create_private_access_specifier()
@@ -234,13 +246,25 @@ function js_cpp_create_cpp_js_returns(cpp_method, cpp_class, wrapper)
   endfor
 endfunction
 
+function js_cpp_create_method_call(cpp_method, cpp_class, wrapper)
+  my.assignment = ""
+  if defined(my.cpp_method->cpp_method_return)
+    if my.cpp_method->cpp_method_return.type = "error"
+      my.assignment = "$(my.wrapper.prefix:no)_error_t $(my.cpp_method->cpp_method_return.name:no) = "
+    else
+      my.assignment = "$(my.cpp_method->cpp_method_return.name:no) = "
+    endif
+  endif
+  out("$(my.assignment)$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.cpp_method.c_name:no)($(js_cpp_format_cpp_call_arguments_with_context(my.cpp_method, my.cpp_class, my.wrapper)));")
+endfunction
+
 function js_cpp_create_cpp_js_return_buffer_destroy(cpp_js_return)
   out("vsc_buffer_destroy(&$(my.cpp_js_return.name:no));")
 endfunction
 
 function js_cpp_create_cpp_js_return_buffer_cleanup(cpp_js_return)
   js_cpp_create_cpp_js_return_buffer_destroy(my.cpp_js_return)
-  out("delete $(js_cpp_bytes_name(my.cpp_js_return.name));")
+  out("delete[] $(js_cpp_bytes_name(my.cpp_js_return.name));")
 endfunction
 
 function js_cpp_create_method_cleanup(cpp_method)
@@ -285,6 +309,7 @@ function js_cpp_create_method(cpp_class, cpp_method, wrapper)
   js_cpp_create_unwrap_class(my.cpp_class)
   js_cpp_create_cpp_js_arguments(my.cpp_method)
   js_cpp_create_cpp_js_returns(my.cpp_method, my.cpp_class, my.wrapper)
+  js_cpp_create_method_call(my.cpp_method, my.cpp_class, my.wrapper)
   js_cpp_create_method_return(my.cpp_method)
   js_cpp_create_method_cleanup(my.cpp_method)
   out("}")
@@ -297,13 +322,13 @@ function js_cpp_create_methods(cpp_class, wrapper)
 endfunction
 
 function js_cpp_create_constructor(cpp_class, wrapper)
-  out("$(my.cpp_class.name:no)::$(my.cpp_class.name:no) {")
+  out("$(my.cpp_class.name:no)::$(my.cpp_class.name:no)() {")
   out("$(js_cpp_context_name(my.cpp_class, my.wrapper)) = $(js_cpp_context_constructor_name(my.cpp_class, my.wrapper))();")
   out("}")
 endfunction
 
 function js_cpp_create_destructor(cpp_class, wrapper)
-  out("$(my.cpp_class.name:no)::~$(my.cpp_class.name:no) {")
+  out("$(my.cpp_class.name:no)::~$(my.cpp_class.name:no)() {")
   out("$(js_cpp_context_destructor_name(my.cpp_class, my.wrapper))(&$(js_cpp_context_name(my.cpp_class, my.wrapper)));")
   out("}")
 endfunction
@@ -373,7 +398,9 @@ function js_generate_cpp_header_files(source, wrapper)
     output js_module.cpp_header_file_path
       js_cpp_header_create_ifndef(js_module.cpp_header_guard)
       js_cpp_header_create_define(js_module.cpp_header_guard)
+      js_cpp_header_create_nan_include()
       for js_module.cpp_class
+        js_cpp_header_create_include(cpp_class, my.wrapper)
         js_cpp_header_create_class(cpp_class, my.wrapper)
       endfor
       js_cpp_header_create_endif()
