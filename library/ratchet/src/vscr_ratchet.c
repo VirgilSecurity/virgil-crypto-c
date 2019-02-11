@@ -617,6 +617,10 @@ vscr_ratchet_respond(vscr_ratchet_t *self, vsc_data_t shared_secret, const Regul
 
     vscr_ratchet_add_receiver_chain(self, receiver_chain);
 
+    // TODO: Optimize. Prevent double decrypt for first message if possible
+    // At this moment decrypting message using symmetric authenticated encryption is the only way to check
+    // message authenticity. Further in decrypt method first message will be decrypted for the second time.
+
     vsc_buffer_t *msg_buffer =
             vsc_buffer_new_with_capacity(vscr_ratchet_decrypt_len(self, vsc_buffer_len(message->cipher_text.arg)));
     vsc_buffer_make_secure(msg_buffer);
@@ -812,7 +816,6 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const RegularMessage *regular_message
 
         memcpy(new_receiver_chain->public_key, regular_message->public_key, sizeof(regular_message->public_key));
 
-        // TODO: Optimize
         result = vscr_ratchet_create_chain_key(self,
                 vsc_data(self->sender_chain->private_key, sizeof(self->sender_chain->private_key)),
                 vsc_data(new_receiver_chain->public_key, sizeof(new_receiver_chain->public_key)), self->root_key,
