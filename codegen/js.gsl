@@ -4,7 +4,7 @@ gsl from "common.gsl"
 gsl from "js_codegen.gsl"
 
 # --------------------------------------------------------------------------------------------------
-# JavaScript structures
+# JavaScript - Structures
 # --------------------------------------------------------------------------------------------------
 
 function js_create_argument_structure(js_method, source_argument)
@@ -13,121 +13,143 @@ function js_create_argument_structure(js_method, source_argument)
   endnew
 endfunction
 
-function js_create_constructor_structure(js_class, source_constructor)
-  new js_static_method to my.js_class
-    js_static_method.name = "$(my.source_constructor.name:Camel)"
-    for my.source_constructor.argument as source_argument
-      js_create_argument_structure(js_static_method, source_argument)
+function js_create_method_structure(js_class, source_method)
+  new js_method to my.js_class
+    js_method.name = "$(my.source_method.name:Camel)"
+    js_method.binding_name = js_binding_method_name(my.source_method)
+    for my.source_method.argument where !js_cpp_argument_is_buffer(argument)
+      js_create_argument_structure(js_method, argument)
     endfor
   endnew
 endfunction
 
-function js_create_method_structure(js_class, source_method)
-  new js_method to my.js_class
-    js_method.name = "$(my.source_method.name:Camel)"
-    js_method.binding_name = "$(js_binding_method_name(my.source_method))"
-    for my.source_method.argument as source_argument
-      if defined(source_argument.class) & source_argument.class = "buffer" & \
-        defined(source_argument.access) & source_argument.access = "writeonly"
-        new js_return to js_method
-          js_return.name = "$(source_argument.name:Camel)"
-        endnew
-      else
-        js_create_argument_structure(js_method, source_argument)
-      endif
-    endfor
-  endnew
+function js_create_method_structures(js_class, source)
+  for my.source.method where !(method.declaration = "private")
+    js_create_method_structure(my.js_class, method)
+  endfor
 endfunction
 
 function js_create_js_class_structure(js_module, source)
   new js_class to my.js_module
     js_class.name = "$(my.source.name:Pascal)"
-    for my.source.constructor as source_constructor
-      js_create_constructor_structure(js_class, source_constructor)
-    endfor
-    for my.source.method as source_method where !(source_method.declaration = "private")
-      js_create_method_structure(js_class, source_method)
-    endfor
+    js_class.binding_name = js_binding_class_name(js_class)
+    js_create_method_structures(js_class, my.source)
   endnew
 endfunction
 
 # --------------------------------------------------------------------------------------------------
-# C++ structures
+# C++ - Strucutres
 # --------------------------------------------------------------------------------------------------
 
-function js_create_cpp_length_type_constant(cpp_return, source_length)
-  my.cpp_return.length_type = "constant"
-  my.cpp_return.length_name = "$(my.cpp_return.c_name:no)_size"
-  my.cpp_return.length_constant = "$(my.source_length.constant:c,upper)"
-  my.cpp_return.length_class = "$(my.source_length.class:c)"
+function js_create_cpp_call_argument(cpp_method, source_argument)
+  new cpp_call_argument to my.cpp_method
+    cpp_call_argument.name = js_cpp_argument_name(my.source_argument.name)
+  endnew
 endfunction
 
-function js_create_cpp_length_type_method(cpp_return, source_length)
-  my.cpp_return.length_type = "method"
-  my.cpp_return.length_name = "$(my.cpp_return.c_name:no)_size"
-  my.cpp_return.length_method = "$(my.source_length.method:c)"
-  for my.source_length.proxy
-    new cpp_proxy_argument to my.cpp_return
-      cpp_proxy_argument.c_name = "$(proxy.argument:c)"
-    endnew
+function js_create_cpp_call_arguments(cpp_method, source_method)
+  for my.source_method.argument
+    js_create_cpp_call_argument(my.cpp_method, argument)
   endfor
 endfunction
 
-function js_create_cpp_length_type(cpp_return, source_length)
-  if defined(my.source_length.constant)
-    js_create_cpp_length_type_constant(my.cpp_return, my.source_length)
-  elsif defined(my.source_length.method)
-    js_create_cpp_length_type_method(my.cpp_return, my.source_length)
-  else
-    echo_fatal("Unknown length type", my)
-  endif
+function js_create_cpp_js_argument(cpp_method, source_argument)
+  new cpp_js_argument to my.cpp_method
+    cpp_js_argument.name = js_cpp_argument_name(my.source_argument.name)
+    if defined(my.source_argument.type)
+      cpp_js_argument.type = my.source_argument.type
+    elsif defined(my.source_argument.class)
+      cpp_js_argument.type = my.source_argument.class
+    elsif defined(my.source_argument.enum)
+      cpp_js_argument.type = my.source_argument.enum
+    else
+      echo_fatal("Unable to resolve source argument type", my)
+    endif
+  endnew
 endfunction
 
-function js_create_cpp_return_buffer_structure(cpp_method, source_argument)
-  new cpp_return to my.cpp_method
-    cpp_return.name = "$(my.source_argument.name:Camel)"
-    cpp_return.c_name = "$(my.source_argument.name:c)"
-    cpp_return.type = my.source_argument.class
-    for my.source_argument.length
-      js_create_cpp_length_type(cpp_return, length)
+function js_create_cpp_js_arguments(cpp_method, source_method)
+  for my.source_method.argument where !js_cpp_argument_is_buffer(argument)
+    js_create_cpp_js_argument(my.cpp_method, argument)
+  endfor
+endfunction
+
+function js_create_cpp_size_constant(cpp_js_return, source_length)
+  new cpp_size to my.cpp_js_return
+    cpp_size.name = "$(my.cpp_js_return.name:no)_size"
+    cpp_size.type = "constant"
+    cpp_size.constant = "$(my.source_length.constant:c,upper)"
+    cpp_size.class = "$(my.source_length.class:c)"
+  endnew
+endfunction
+
+function js_create_cpp_call_argument_from_proxy(cpp_size, proxy)
+  new cpp_call_argument to my.cpp_size
+    cpp_call_argument.name = "$(proxy.argument:c)"
+  endnew
+endfunction
+
+function js_create_cpp_size_method(cpp_js_return, source_length)
+  new cpp_size to my.cpp_js_return
+    cpp_size.name = "$(my.cpp_js_return.name:no)_size"
+    cpp_size.type = "method"
+    cpp_size.method = "$(my.source_length.method:c)"
+    for my.source_length.proxy
+      js_create_cpp_call_argument_from_proxy(cpp_size, proxy)
     endfor
   endnew
 endfunction
 
-function js_create_cpp_argument_structure(cpp_method, source_argument)
-  new cpp_argument to my.cpp_method
-    cpp_argument.c_name = "$(source_argument.name:c)"
-    if defined(my.source_argument.type)
-      cpp_argument.type = my.source_argument.type
-    elsif defined(my.source_argument.class)
-      cpp_argument.type = my.source_argument.class
-    elsif defined(my.source_argument.enum)
-      cpp_argument.type = my.source_argument.enum
-    else
-      echo_fatal("Unknown argument type", my)
-    endif
+function js_create_cpp_size(cpp_js_return, source_length)
+  if defined(my.source_length.constant)
+    js_create_cpp_size_constant(my.cpp_js_return, my.source_length)
+  elsif defined(my.source_length.method)
+    js_create_cpp_size_method(my.cpp_js_return, my.source_length)
+  else
+    echo_fatal("Unknown source length type", my)
+  endif
+endfunction
+
+function js_create_cpp_js_return_for_argument(cpp_method, source_argument)
+  new cpp_js_return to my.cpp_method
+    cpp_js_return.name = js_cpp_argument_name(my.source_argument.name)
+    cpp_js_return.binding_name = "$(my.source_argument.name:Camel)"
+    cpp_js_return.type = "buffer"
+    js_create_cpp_size(cpp_js_return, my.source_argument->length)
   endnew
+endfunction
+
+function js_create_cpp_js_return(cpp_method, method_return)
+  new cpp_js_return to my.cpp_method
+    cpp_js_return.name = "method_return"
+    cpp_js_return.type = my.method_return.type
+  endnew
+endfunction
+
+function js_create_cpp_js_returns(cpp_method, source_method)
+  for my.source_method.argument where js_cpp_argument_is_buffer(argument)
+    js_create_cpp_js_return_for_argument(my.cpp_method, argument)
+  endfor
+  if defined(my.source_method->return) & defined(my.source_method->return.type)
+    js_create_cpp_js_return(my.cpp_method, my.source_method->return)
+  endif
 endfunction
 
 function js_create_cpp_method_structure(cpp_class, source_method)
   new cpp_method to my.cpp_class
     cpp_method.name = "$(my.source_method.name:Pascal)"
-    cpp_method.binding_name = "$(js_binding_method_name(my.source_method))"
-    cpp_method.c_name = "$(my.cpp_class.c_name)_$(my.source_method.name:c)"
-    for my.source_method.argument as source_argument
-      if defined(source_argument.class) & source_argument.class = "buffer" & \
-        defined(source_argument.access) & source_argument.access = "writeonly"
-        js_create_cpp_return_buffer_structure(cpp_method, source_argument)
-      else
-        js_create_cpp_argument_structure(cpp_method, source_argument)
-      endif
-    endfor
+    cpp_method.binding_name = js_binding_method_name(my.source_method)
+    cpp_method.c_name = "$(my.source_method.name:c)"
+    js_create_cpp_call_arguments(cpp_method, my.source_method)
+    js_create_cpp_js_arguments(cpp_method, my.source_method)
+    js_create_cpp_js_returns(cpp_method, my.source_method)
   endnew
 endfunction
 
 function js_create_cpp_class_structure(js_module, source)
   new cpp_class to my.js_module
     cpp_class.name = "$(my.source.name:Pascal)"
+    cpp_class.binding_name = js_binding_class_name(cpp_class)
     cpp_class.c_name = "$(my.source.name:c)"
     for my.source.method as source_method where !(source_method.declaration = "private")
       js_create_cpp_method_structure(cpp_class, source_method)
@@ -159,18 +181,17 @@ function js_create_class_module(source, destination, wrapper, meta)
   echo_info("js_create_class_module", my)
   if my.source.context = "internal"
     new js_module to my.destination
+      js_module.name = my.source.name
+
       js_module.js_source_file = "$(my.source.name:cobol).js"
-      js_module.js_source_file_path = cat_path(my.wrapper.project_source_dir, \
-        js_module.js_source_file)
+      js_module.js_source_file_path = cat_path(my.wrapper.project_source_dir, js_module.js_source_file)
       js_create_js_class_structure(js_module, my.source)
 
       js_module.cpp_header_file = "$(my.source.name:c).h"
-      js_module.cpp_header_file_path = cat_path(my.wrapper.project_source_dir, \
-        js_module.cpp_header_file)
+      js_module.cpp_header_file_path = cat_path(my.wrapper.project_source_dir, js_module.cpp_header_file)
       js_module.cpp_header_guard = "$(my.source.name:c,upper)_H"
       js_module.cpp_source_file = "$(my.source.name:c).cc"
-      js_module.cpp_source_file_path = cat_path(my.wrapper.project_source_dir, \
-        js_module.cpp_source_file)
+      js_module.cpp_source_file_path = cat_path(my.wrapper.project_source_dir, js_module.cpp_source_file)
       js_create_cpp_class_structure(js_module, my.source)
     endnew
   endif

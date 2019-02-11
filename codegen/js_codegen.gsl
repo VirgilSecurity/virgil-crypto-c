@@ -3,8 +3,29 @@
 gsl from "common.gsl"
 
 # --------------------------------------------------------------------------------------------------
-# General
+# JavaScript - General
 # --------------------------------------------------------------------------------------------------
+
+function js_binding_class_name(class)
+  return "$(my.class.name:no)Binding"
+endfunction
+
+function js_binding_reference()
+  return "this._binding"
+endfunction
+
+function js_binding_method_name(method)
+  return "$(my.method.name:Camel)"
+endfunction
+
+# --------------------------------------------------------------------------------------------------
+# C++ - General
+# --------------------------------------------------------------------------------------------------
+
+function js_cpp_argument_is_buffer(source_argument)
+  return defined(my.source_argument.class) & my.source_argument.class = "buffer" & \
+    defined(my.source_argument.access) & my.source_argument.access = "writeonly"
+endfunction
 
 function js_cpp_context_name(cpp_class, wrapper)
   return "$(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)"
@@ -26,28 +47,24 @@ function js_cpp_callback_info_name()
   return "info"
 endfunction
 
+function js_cpp_argument_name(name)
+  return "$(my.name:c)"
+endfunction
+
+function js_cpp_class_instance_name(cpp_class)
+  return "$(my.cpp_class.c_name:no)"
+endfunction
+
 function js_cpp_bytes_name(name)
   return "$(my.name:no)_bytes"
 endfunction
 
-function js_cpp_buffer_name(name)
-  return "$(my.name:no)_buffer"
-endfunction
-
-function js_binding_class_name(class)
-  return "$(my.class.name:no)Binding"
-endfunction
-
-function js_binding_reference()
-  return "this._binding"
-endfunction
-
-function js_binding_method_name(method)
-  return "$(my.method.name:Camel)"
+function js_cpp_size_name(name)
+  return "$(my.name:no)_size"
 endfunction
 
 # --------------------------------------------------------------------------------------------------
-# C++ header
+# C++ - Header
 # --------------------------------------------------------------------------------------------------
 
 function js_cpp_header_create_ifndef(identifier)
@@ -82,6 +99,12 @@ function js_cpp_header_create_method(cpp_method)
   out("static void $(my.cpp_method.name:no)(const Nan::FunctionCallbackInfo<v8::Value>& $(js_cpp_callback_info_name()));")
 endfunction
 
+function js_cpp_header_create_methods(cpp_class)
+  for my.cpp_class.cpp_method
+    js_cpp_header_create_method(cpp_method)
+  endfor
+endfunction
+
 function js_cpp_header_create_constructor_and_destructor(cpp_class)
   out("$(my.cpp_class.name:no)();")
   out("~$(my.cpp_class.name:no)();")
@@ -89,8 +112,7 @@ endfunction
 
 function js_cpp_header_create_properties(cpp_class, wrapper)
   out("static Nan::Persistent<v8::Function> constructor;")
-  out("$(js_cpp_context_type(my.cpp_class, my.wrapper)) $(js_cpp_context_name(my.cpp_class, \
-    my.wrapper));")
+  out("$(js_cpp_context_type(my.cpp_class, my.wrapper)) $(js_cpp_context_name(my.cpp_class, my.wrapper));")
 endfunction
 
 function js_cpp_header_create_class(cpp_class, wrapper)
@@ -99,17 +121,35 @@ function js_cpp_header_create_class(cpp_class, wrapper)
   js_cpp_header_create_init()
   js_cpp_header_create_private_access_specifier()
   js_cpp_header_create_new()
-  for my.cpp_class.cpp_method
-    js_cpp_header_create_method(cpp_method)
-  endfor
+  js_cpp_header_create_methods(my.cpp_class)
   js_cpp_header_create_constructor_and_destructor(my.cpp_class)
   js_cpp_header_create_properties(my.cpp_class, my.wrapper)
   out("};")
 endfunction
 
 # --------------------------------------------------------------------------------------------------
-# C++ source
+# C++ - Source
 # --------------------------------------------------------------------------------------------------
+
+function js_cpp_format_cpp_call_arguments(cpp_call_arguments_parent)
+  my.arguments = ""
+  for my.cpp_call_arguments_parent.cpp_call_argument
+    my.arguments += cpp_call_argument.name
+    if !last()
+      my.arguments += ", "
+    endif
+  endfor
+  return my.arguments
+endfunction
+
+function js_cpp_format_cpp_call_arguments_with_context(cpp_call_arguments_parent, cpp_class, wrapper)
+  my.arguments = "$(js_cpp_class_instance_name(my.cpp_class))->$(js_cpp_context_name(my.cpp_class, my.wrapper))"
+  if count(my.cpp_call_arguments_parent.cpp_call_argument) > 0
+    my.arguments += ", "
+    my.arguments += js_cpp_format_cpp_call_arguments(my.cpp_call_arguments_parent)
+  endif
+  return my.arguments
+endfunction
 
 function js_cpp_create_module_include_header(js_module)
   out("#include \"$(my.js_module.cpp_header_file:no)\"")
@@ -119,83 +159,141 @@ function js_cpp_create_init(cpp_class)
   out("void $(my.cpp_class.name:no)::Init(v8::Local<v8::Object> exports) {")
   out("Nan::HandleScope scope;")
   out("v8::Local<v8::FunctionTemplate> function_template = Nan::New<v8::FunctionTemplate>($(my.cpp_class.name:no)::New);")
-  out("function_template->SetClassName(Nan::New(\"$(js_binding_class_name(my.cpp_class))\").ToLocalChecked());")
+  out("function_template->SetClassName(Nan::New(\"$(my.cpp_class.binding_name:no)\").ToLocalChecked());")
   out("function_template->InstanceTemplate()->SetInternalFieldCount(1);")
   for my.cpp_class.cpp_method
     out("Nan::SetPrototypeMethod(function_template, \"$(cpp_method.binding_name:no)\", $(my.cpp_class.name:no)::$(cpp_method.name:no));")
   endfor
   out("$(my.cpp_class.name:no)::constructor.Reset(function_template->GetFunction());")
-  out("exports->Set(Nan::New<v8::String>(\"$(js_binding_class_name(my.cpp_class))\").ToLocalChecked(), function_template->GetFunction());")
+  out("exports->Set(Nan::New<v8::String>(\"$(my.cpp_class.binding_name:no)\").ToLocalChecked(), function_template->GetFunction());")
   out("}")
 endfunction
 
-function js_cpp_create_size_t_argument(cpp_argument, index)
-  out("size_t $(my.cpp_argument.c_name:no) = Nan::To<uint32_t>($(js_cpp_callback_info_name())[$(my.index)]).FromJust();")
+function js_cpp_create_unwrap_class(cpp_class)
+  out("$(my.cpp_class.name:no)* $(js_cpp_class_instance_name(my.cpp_class)) = Nan::ObjectWrap::Unwrap<$(my.cpp_class.name:no)>(info.Holder());")
 endfunction
 
-function js_cpp_create_vsc_data_t_argument(cpp_argument, index)
-  out("vsc_data_t $(my.cpp_argument.c_name:no) = vsc_data_from_str(node::Buffer::Data($(js_cpp_callback_info_name())[$(my.index)]), node::Buffer::Length($(js_cpp_callback_info_name())[$(my.index)]));")
+function js_cpp_create_cpp_js_size_t_argument(cpp_js_argument, index)
+  out("size_t $(my.cpp_js_argument.name:no) = Nan::To<uint32_t>($(js_cpp_callback_info_name())[$(my.index)]).FromJust();")
 endfunction
 
-function js_cpp_create_method_argument(cpp_argument, index)
-  if my.cpp_argument.type = "size"
-    js_cpp_create_size_t_argument(my.cpp_argument, my.index)
-  elsif my.cpp_argument.type = "data"
-    js_cpp_create_vsc_data_t_argument(my.cpp_argument, my.index)
+function js_cpp_create_cpp_js_vsc_data_t_argument(cpp_js_argument, index)
+  out("vsc_data_t $(my.cpp_js_argument.name:no) = vsc_data_from_str(node::Buffer::Data($(js_cpp_callback_info_name())[$(my.index)]), node::Buffer::Length($(js_cpp_callback_info_name())[$(my.index)]));")
+endfunction
+
+function js_cpp_create_cpp_js_argument(cpp_js_argument, index)
+  if my.cpp_js_argument.type = "size"
+    js_cpp_create_cpp_js_size_t_argument(my.cpp_js_argument, my.index)
+  elsif my.cpp_js_argument.type = "data"
+    js_cpp_create_cpp_js_vsc_data_t_argument(my.cpp_js_argument, my.index)
   else
-    echo_fatal("Unknown 'cpp_argument.type'", my)
+    echo_fatal("Unknown 'cpp_js_argument.type'", my)
   endif
 endfunction
 
-function js_cpp_format_cpp_proxy_arguments(cpp_return)
-  arguments = ""
-  for my.cpp_return.cpp_proxy_argument
-    arguments += cpp_proxy_argument.c_name
-    if !last()
-      arguments += ", "
-    endif
+function js_cpp_create_cpp_js_arguments(cpp_method)
+  for my.cpp_method.cpp_js_argument
+    js_cpp_create_cpp_js_argument(cpp_js_argument, index(cpp_js_argument) - 1)
   endfor
-  return arguments
 endfunction
 
-function js_cpp_create_buffer_size(cpp_return, cpp_class, wrapper)
-  if my.cpp_return.length_type = "constant"
-    out("size_t $(my.cpp_return.length_name:no) = $(my.wrapper.prefix:no)_$(my.cpp_return.length_class:no)_$(my.cpp_return.length_constant:no);")
-  elsif my.cpp_return.length_type = "method"
-    out("size_t $(my.cpp_return.length_name:no) = $(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.cpp_return.length_method:no)($(js_cpp_format_cpp_proxy_arguments(my.cpp_return)));")
+function js_cpp_create_cpp_size(cpp_size, cpp_class, wrapper)
+  if my.cpp_size.type = "constant"
+    out("size_t $(my.cpp_size.name:no) = $(my.wrapper.prefix:no)_$(my.cpp_size.class:no)_$(my.cpp_size.constant:no);")
+  elsif my.cpp_size.type = "method"
+    out("size_t $(my.cpp_size.name:no) = $(my.wrapper.prefix:no)_$(my.cpp_class.c_name:no)_$(my.cpp_size.method:no)($(js_cpp_format_cpp_call_arguments_with_context(my.cpp_size, my.cpp_class, my.wrapper)));")
   else
-    echo_fatal("Unknown 'cpp_return.length_type'", my)
+    echo_fatal("Unknown 'cpp_size.type'", my)
   endif
 endfunction
 
-function js_cpp_create_buffer_with_bytes(cpp_return, cpp_class, wrapper)
-  js_cpp_create_buffer_size(my.cpp_return, my.cpp_class, my.wrapper)
-  out("byte* $(js_cpp_bytes_name(my.cpp_return.c_name)) = new byte[$(my.cpp_return.length_name:no)];")
-  out("vsc_buffer_t* $(js_cpp_buffer_name(my.cpp_return.c_name)) = vsc_buffer_new();")
-  out("vsc_buffer_use($(js_cpp_buffer_name(my.cpp_return.c_name)), $(js_cpp_bytes_name(my.cpp_return.c_name)), $(my.cpp_return.length_name:no));")
+function js_cpp_create_cpp_js_return_buffer(cpp_js_return, cpp_class, wrapper)
+  js_cpp_create_cpp_size(my.cpp_js_return->cpp_size, my.cpp_class, my.wrapper)
+  out("byte* $(js_cpp_bytes_name(my.cpp_js_return.name)) = new byte[$(my.cpp_js_return->cpp_size.name)];")
+  out("vsc_buffer_t* $(my.cpp_js_return.name:no) = vsc_buffer_new();")
+  out("vsc_buffer_use($(my.cpp_js_return.name:no), $(js_cpp_bytes_name(my.cpp_js_return.name)), $(my.cpp_js_return->cpp_size.name));")
 endfunction
 
-function js_cpp_create_buffer_destroy(cpp_return)
-  out("vsc_buffer_destroy(&$(js_cpp_buffer_name(my.cpp_return.c_name)));")
+function js_cpp_create_cpp_js_return_size_t(cpp_js_return)
+  out("size_t $(my.cpp_js_return.name:no);")
 endfunction
 
-function js_cpp_create_buffer_cleanup(cpp_return)
-  js_cpp_create_buffer_destroy(my.cpp_return)
-  out("delete $(js_cpp_bytes_name(my.cpp_return.c_name));")
+function js_cpp_create_cpp_js_return(cpp_js_return, cpp_class, wrapper)
+  if my.cpp_js_return.type = "buffer"
+    js_cpp_create_cpp_js_return_buffer(my.cpp_js_return, my.cpp_class, my.wrapper)
+  elsif my.cpp_js_return.type = "size"
+    js_cpp_create_cpp_js_return_size_t(my.cpp_js_return)
+  else
+    echo_fatal("Unknown 'cpp_js_return.type'", my)
+  endif
+endfunction
+
+function js_cpp_create_cpp_js_returns(cpp_method, cpp_class, wrapper)
+  for my.cpp_method.cpp_js_return
+    js_cpp_create_cpp_js_return(cpp_js_return, my.cpp_class, my.wrapper)
+  endfor
+endfunction
+
+function js_cpp_create_cpp_js_return_buffer_destroy(cpp_js_return)
+  out("vsc_buffer_destroy(&$(my.cpp_js_return.name:no));")
+endfunction
+
+function js_cpp_create_cpp_js_return_buffer_cleanup(cpp_js_return)
+  js_cpp_create_cpp_js_return_buffer_destroy(my.cpp_js_return)
+  out("delete $(js_cpp_bytes_name(my.cpp_js_return.name));")
+endfunction
+
+function js_cpp_create_method_cleanup(cpp_method)
+  for my.cpp_method.cpp_js_return where cpp_js_return.type = "buffer"
+    js_cpp_create_cpp_js_return_buffer_cleanup(cpp_js_return)
+  endfor
+endfunction
+
+function js_cpp_create_method_return_value(cpp_js_return)
+  if my.cpp_js_return.type = "buffer"
+    return "Nan::NewBuffer((char*)$(js_cpp_bytes_name(my.cpp_js_return.name)), vsc_buffer_len($(my.cpp_js_return.name))).ToLocalChecked()"
+  elsif my.cpp_js_return.type = "size"
+    return "Nan::New<v8::Number>($(my.cpp_js_return.name:no))"
+  else
+    echo_fatal("Unknown 'cpp_js_return.type'", my)
+  endif
+endfunction
+
+function js_cpp_create_method_return_multiple(cpp_method)
+  out("Nan::EscapableHandleScope scope;")
+  out("v8::Local<v8::Object> result = Nan::New<v8::Object>();")
+  for my.cpp_method.cpp_js_return
+    out("result->Set(Nan::New<v8::String>(\"$(cpp_js_return.binding_name:no)\").ToLocalChecked(), $(js_cpp_create_method_return_value(cpp_js_return)));")
+  endfor
+  out("info.GetReturnValue().Set(scope.Escape(result));")
+endfunction
+
+function js_cpp_create_method_return_one(cpp_method)
+  out("info.GetReturnValue().Set($(js_cpp_create_method_return_value(my.cpp_method->cpp_js_return)));")
+endfunction
+
+function js_cpp_create_method_return(cpp_method)
+  if count(my.cpp_method.cpp_js_return) > 1
+    js_cpp_create_method_return_multiple(my.cpp_method)
+  elsif count(my.cpp_method.cpp_js_return) = 1
+    js_cpp_create_method_return_one(my.cpp_method)
+  endif
 endfunction
 
 function js_cpp_create_method(cpp_class, cpp_method, wrapper)
   out("void $(my.cpp_class.name:no)::$(my.cpp_method.name:no)(const Nan::FunctionCallbackInfo<v8::Value>& $(js_cpp_callback_info_name())) {")
-  for my.cpp_method.cpp_argument
-    js_cpp_create_method_argument(cpp_argument, index(cpp_argument) - 1)
-  endfor
-  for my.cpp_method.cpp_return where cpp_return.type = "buffer"
-    js_cpp_create_buffer_with_bytes(cpp_return, my.cpp_class, my.wrapper)
-  endfor
-  for my.cpp_method.cpp_return where cpp_return.type = "buffer"
-    js_cpp_create_buffer_cleanup(cpp_return)
-  endfor
+  js_cpp_create_unwrap_class(my.cpp_class)
+  js_cpp_create_cpp_js_arguments(my.cpp_method)
+  js_cpp_create_cpp_js_returns(my.cpp_method, my.cpp_class, my.wrapper)
+  js_cpp_create_method_return(my.cpp_method)
+  js_cpp_create_method_cleanup(my.cpp_method)
   out("}")
+endfunction
+
+function js_cpp_create_methods(cpp_class, wrapper)
+  for my.cpp_class.cpp_method
+    js_cpp_create_method(my.cpp_class, cpp_method, my.wrapper)
+  endfor
 endfunction
 
 function js_cpp_create_constructor(cpp_class, wrapper)
@@ -216,21 +314,19 @@ endfunction
 
 function js_cpp_create_class(cpp_class, wrapper)
   js_cpp_create_init(my.cpp_class)
-  for my.cpp_class.cpp_method
-    js_cpp_create_method(my.cpp_class, cpp_method, my.wrapper)
-  endfor
+  js_cpp_create_methods(my.cpp_class, my.wrapper)
   js_cpp_create_constructor(my.cpp_class, my.wrapper)
   js_cpp_create_destructor(my.cpp_class, my.wrapper)
   js_cpp_create_persistent_constructor(my.cpp_class)
 endfunction
 
 # --------------------------------------------------------------------------------------------------
-# JavaScript
+# JavaScript - Source
 # --------------------------------------------------------------------------------------------------
 
-function js_format_method_arguments(method)
+function js_format_arguments(js_arguments_parent)
   arguments = ""
-  for my.method.js_argument
+  for my.js_arguments_parent.js_argument
     arguments += js_argument.name
     if !last()
       arguments += ", "
@@ -240,32 +336,24 @@ function js_format_method_arguments(method)
 endfunction
 
 function js_create_require_binding(js_class, wrapper)
-  out("const { $(js_binding_class_name(my.js_class)) } = require('bindings')('$(my.wrapper.name)');")
+  out("const { $(my.js_class.binding_name:no) } = require('bindings')('$(my.wrapper.name)');")
 endfunction
 
 function js_create_constructor(js_class)
   out("constructor() {")
-  out("$(js_binding_reference()) = new $(js_binding_class_name(my.js_class))();")
-  out("}")
-endfunction
-
-function js_create_static_method(js_static_method)
-  out("static $(my.js_static_method.name:no)($(js_format_method_arguments(my.js_static_method):no)) {")
+  out("$(js_binding_reference()) = new $(my.js_class.binding_name:no)();")
   out("}")
 endfunction
 
 function js_create_method(js_method)
-  out("$(my.js_method.name:no)($(js_format_method_arguments(my.js_method):no)) {")
-  out("return $(js_binding_reference()).$(js_method.binding_name:no)($(js_format_method_arguments(my.js_method)));")
+  out("$(my.js_method.name:no)($(js_format_arguments(my.js_method):no)) {")
+  out("return $(js_binding_reference()).$(js_method.binding_name:no)($(js_format_arguments(my.js_method)));")
   out("}")
 endfunction
 
 function js_create_class(js_class, wrapper)
   out("class $(my.js_class.name:no) {")
   js_create_constructor(my.js_class)
-  for my.js_class.js_static_method
-    js_create_static_method(js_static_method)
-  endfor
   for my.js_class.js_method
     js_create_method(js_method)
   endfor
