@@ -83,9 +83,9 @@
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_kdf1_alg_id(const vscf_kdf1_t *kdf1) {
+vscf_kdf1_alg_id(const vscf_kdf1_t *self) {
 
-    VSCF_ASSERT_PTR(kdf1);
+    VSCF_ASSERT_PTR(self);
     return vscf_alg_id_KDF1;
 }
 
@@ -93,12 +93,12 @@ vscf_kdf1_alg_id(const vscf_kdf1_t *kdf1) {
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_kdf1_produce_alg_info(const vscf_kdf1_t *kdf1) {
+vscf_kdf1_produce_alg_info(const vscf_kdf1_t *self) {
 
-    VSCF_ASSERT_PTR(kdf1);
-    VSCF_ASSERT_PTR(kdf1->hash);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->hash);
 
-    vscf_impl_t *hash_alg_info = vscf_alg_produce_alg_info(kdf1->hash);
+    vscf_impl_t *hash_alg_info = vscf_alg_produce_alg_info(self->hash);
     vscf_impl_t *kdf1_alg_info =
             vscf_hash_based_alg_info_impl(vscf_hash_based_alg_info_new_with_members(vscf_alg_id_KDF1, &hash_alg_info));
 
@@ -109,17 +109,17 @@ vscf_kdf1_produce_alg_info(const vscf_kdf1_t *kdf1) {
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_kdf1_restore_alg_info(vscf_kdf1_t *kdf1, const vscf_impl_t *alg_info) {
+vscf_kdf1_restore_alg_info(vscf_kdf1_t *self, const vscf_impl_t *alg_info) {
 
-    VSCF_ASSERT_PTR(kdf1);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
     VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_HMAC);
 
     const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
 
     vscf_impl_t *hash = vscf_alg_factory_create_hash_alg(vscf_hash_based_alg_info_hash_alg_info(hash_based_alg_info));
-    vscf_kdf1_release_hash(kdf1);
-    vscf_kdf1_take_hash(kdf1, hash);
+    vscf_kdf1_release_hash(self);
+    vscf_kdf1_take_hash(self, hash);
 
     return vscf_SUCCESS;
 }
@@ -128,17 +128,17 @@ vscf_kdf1_restore_alg_info(vscf_kdf1_t *kdf1, const vscf_impl_t *alg_info) {
 //  Derive key of the requested length from the given data.
 //
 VSCF_PUBLIC void
-vscf_kdf1_derive(vscf_kdf1_t *kdf1, vsc_data_t data, size_t key_len, vsc_buffer_t *key) {
+vscf_kdf1_derive(vscf_kdf1_t *self, vsc_data_t data, size_t key_len, vsc_buffer_t *key) {
 
-    VSCF_ASSERT_PTR(kdf1);
-    VSCF_ASSERT_PTR(kdf1->hash);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->hash);
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT(vsc_buffer_is_valid(key));
     VSCF_ASSERT(vsc_buffer_unused_len(key) >= key_len);
 
 
     // Get HASH parameters
-    size_t digest_len = vscf_hash_digest_len(vscf_hash_api(kdf1->hash));
+    size_t digest_len = vscf_hash_digest_len(vscf_hash_api(self->hash));
 
     // Get KDF parameters
     size_t counter_len = VSCF_CEIL(key_len, digest_len);
@@ -152,18 +152,18 @@ vscf_kdf1_derive(vscf_kdf1_t *kdf1, vsc_data_t data, size_t key_len, vsc_buffer_
         counter_string[2] = (unsigned char)((counter >> 8)) & 255;
         counter_string[3] = (unsigned char)(counter & 255);
 
-        vscf_hash_start(kdf1->hash);
-        vscf_hash_update(kdf1->hash, data);
-        vscf_hash_update(kdf1->hash, vsc_data(counter_string, sizeof(counter_string)));
+        vscf_hash_start(self->hash);
+        vscf_hash_update(self->hash, data);
+        vscf_hash_update(self->hash, vsc_data(counter_string, sizeof(counter_string)));
 
         if (digest_len <= key_left_len) {
-            vscf_hash_finish(kdf1->hash, key);
+            vscf_hash_finish(self->hash, key);
             key_left_len -= digest_len;
 
         } else {
             vsc_buffer_t *digest = vsc_buffer_new_with_capacity(digest_len);
 
-            vscf_hash_finish(kdf1->hash, digest);
+            vscf_hash_finish(self->hash, digest);
             memcpy(vsc_buffer_unused_bytes(key), vsc_buffer_bytes(digest), key_left_len);
             vsc_buffer_inc_used(key, key_left_len);
             key_left_len = 0;

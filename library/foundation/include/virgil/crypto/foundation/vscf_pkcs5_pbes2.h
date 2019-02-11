@@ -98,20 +98,20 @@ vscf_pkcs5_pbes2_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_pkcs5_pbes2_impl(vscf_pkcs5_pbes2_t *pkcs5_pbes2);
+vscf_pkcs5_pbes2_impl(vscf_pkcs5_pbes2_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_init(vscf_pkcs5_pbes2_t *pkcs5_pbes2);
+vscf_pkcs5_pbes2_init(vscf_pkcs5_pbes2_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_pkcs5_pbes2_init()'.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_cleanup(vscf_pkcs5_pbes2_t *pkcs5_pbes2);
+vscf_pkcs5_pbes2_cleanup(vscf_pkcs5_pbes2_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -125,7 +125,7 @@ vscf_pkcs5_pbes2_new(void);
 //  This is a reverse action of the function 'vscf_pkcs5_pbes2_new()'.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_delete(vscf_pkcs5_pbes2_t *pkcs5_pbes2);
+vscf_pkcs5_pbes2_delete(vscf_pkcs5_pbes2_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -133,100 +133,100 @@ vscf_pkcs5_pbes2_delete(vscf_pkcs5_pbes2_t *pkcs5_pbes2);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_destroy(vscf_pkcs5_pbes2_t **pkcs5_pbes2_ref);
+vscf_pkcs5_pbes2_destroy(vscf_pkcs5_pbes2_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_pkcs5_pbes2_t *
-vscf_pkcs5_pbes2_shallow_copy(vscf_pkcs5_pbes2_t *pkcs5_pbes2);
+vscf_pkcs5_pbes2_shallow_copy(vscf_pkcs5_pbes2_t *self);
 
 //
 //  Setup dependency to the interface 'salted kdf' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_use_kdf(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vscf_impl_t *kdf);
+vscf_pkcs5_pbes2_use_kdf(vscf_pkcs5_pbes2_t *self, vscf_impl_t *kdf);
 
 //
 //  Setup dependency to the interface 'salted kdf' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_take_kdf(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vscf_impl_t *kdf);
+vscf_pkcs5_pbes2_take_kdf(vscf_pkcs5_pbes2_t *self, vscf_impl_t *kdf);
 
 //
 //  Release dependency to the interface 'salted kdf'.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_release_kdf(vscf_pkcs5_pbes2_t *pkcs5_pbes2);
+vscf_pkcs5_pbes2_release_kdf(vscf_pkcs5_pbes2_t *self);
 
 //
 //  Setup dependency to the interface 'cipher' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_use_cipher(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vscf_impl_t *cipher);
+vscf_pkcs5_pbes2_use_cipher(vscf_pkcs5_pbes2_t *self, vscf_impl_t *cipher);
 
 //
 //  Setup dependency to the interface 'cipher' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_take_cipher(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vscf_impl_t *cipher);
+vscf_pkcs5_pbes2_take_cipher(vscf_pkcs5_pbes2_t *self, vscf_impl_t *cipher);
 
 //
 //  Release dependency to the interface 'cipher'.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_release_cipher(vscf_pkcs5_pbes2_t *pkcs5_pbes2);
+vscf_pkcs5_pbes2_release_cipher(vscf_pkcs5_pbes2_t *self);
 
 //
 //  Configure cipher with a new password.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_reset(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vsc_data_t pwd);
+vscf_pkcs5_pbes2_reset(vscf_pkcs5_pbes2_t *self, vsc_data_t pwd);
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_pkcs5_pbes2_alg_id(const vscf_pkcs5_pbes2_t *pkcs5_pbes2);
+vscf_pkcs5_pbes2_alg_id(const vscf_pkcs5_pbes2_t *self);
 
 //
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_pkcs5_pbes2_produce_alg_info(const vscf_pkcs5_pbes2_t *pkcs5_pbes2);
+vscf_pkcs5_pbes2_produce_alg_info(const vscf_pkcs5_pbes2_t *self);
 
 //
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_pkcs5_pbes2_restore_alg_info(vscf_pkcs5_pbes2_t *pkcs5_pbes2, const vscf_impl_t *alg_info);
+vscf_pkcs5_pbes2_restore_alg_info(vscf_pkcs5_pbes2_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Encrypt given data.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_pkcs5_pbes2_encrypt(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vsc_data_t data, vsc_buffer_t *out);
+vscf_pkcs5_pbes2_encrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Calculate required buffer length to hold the encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs5_pbes2_encrypted_len(vscf_pkcs5_pbes2_t *pkcs5_pbes2, size_t data_len);
+vscf_pkcs5_pbes2_encrypted_len(vscf_pkcs5_pbes2_t *self, size_t data_len);
 
 //
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_pkcs5_pbes2_decrypt(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vsc_data_t data, vsc_buffer_t *out);
+vscf_pkcs5_pbes2_decrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Calculate required buffer length to hold the decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs5_pbes2_decrypted_len(vscf_pkcs5_pbes2_t *pkcs5_pbes2, size_t data_len);
+vscf_pkcs5_pbes2_decrypted_len(vscf_pkcs5_pbes2_t *self, size_t data_len);
 
 
 // --------------------------------------------------------------------------

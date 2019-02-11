@@ -71,7 +71,7 @@
 //  Note, that context is already zeroed.
 //
 static void
-vscf_password_recipient_info_init_ctx(vscf_password_recipient_info_t *password_recipient_info);
+vscf_password_recipient_info_init_ctx(vscf_password_recipient_info_t *self);
 
 //
 //  Release all inner resources.
@@ -79,7 +79,7 @@ vscf_password_recipient_info_init_ctx(vscf_password_recipient_info_t *password_r
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscf_password_recipient_info_cleanup_ctx(vscf_password_recipient_info_t *password_recipient_info);
+vscf_password_recipient_info_cleanup_ctx(vscf_password_recipient_info_t *self);
 
 //
 //  Return size of 'vscf_password_recipient_info_t'.
@@ -94,35 +94,35 @@ vscf_password_recipient_info_ctx_size(void) {
 //  Perform initialization of pre-allocated context.
 //
 VSCF_PUBLIC void
-vscf_password_recipient_info_init(vscf_password_recipient_info_t *password_recipient_info) {
+vscf_password_recipient_info_init(vscf_password_recipient_info_t *self) {
 
-    VSCF_ASSERT_PTR(password_recipient_info);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(password_recipient_info, sizeof(vscf_password_recipient_info_t));
+    vscf_zeroize(self, sizeof(vscf_password_recipient_info_t));
 
-    password_recipient_info->refcnt = 1;
+    self->refcnt = 1;
 
-    vscf_password_recipient_info_init_ctx(password_recipient_info);
+    vscf_password_recipient_info_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCF_PUBLIC void
-vscf_password_recipient_info_cleanup(vscf_password_recipient_info_t *password_recipient_info) {
+vscf_password_recipient_info_cleanup(vscf_password_recipient_info_t *self) {
 
-    if (password_recipient_info == NULL) {
+    if (self == NULL) {
         return;
     }
 
-    if (password_recipient_info->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--password_recipient_info->refcnt == 0) {
-        vscf_password_recipient_info_cleanup_ctx(password_recipient_info);
+    if (--self->refcnt == 0) {
+        vscf_password_recipient_info_cleanup_ctx(self);
 
-        vscf_zeroize(password_recipient_info, sizeof(vscf_password_recipient_info_t));
+        vscf_zeroize(self, sizeof(vscf_password_recipient_info_t));
     }
 }
 
@@ -132,14 +132,14 @@ vscf_password_recipient_info_cleanup(vscf_password_recipient_info_t *password_re
 VSCF_PUBLIC vscf_password_recipient_info_t *
 vscf_password_recipient_info_new(void) {
 
-    vscf_password_recipient_info_t *password_recipient_info = (vscf_password_recipient_info_t *) vscf_alloc(sizeof (vscf_password_recipient_info_t));
-    VSCF_ASSERT_ALLOC(password_recipient_info);
+    vscf_password_recipient_info_t *self = (vscf_password_recipient_info_t *) vscf_alloc(sizeof (vscf_password_recipient_info_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_password_recipient_info_init(password_recipient_info);
+    vscf_password_recipient_info_init(self);
 
-    password_recipient_info->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vscf_dealloc;
 
-    return password_recipient_info;
+    return self;
 }
 
 //
@@ -147,18 +147,18 @@ vscf_password_recipient_info_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCF_PUBLIC void
-vscf_password_recipient_info_delete(vscf_password_recipient_info_t *password_recipient_info) {
+vscf_password_recipient_info_delete(vscf_password_recipient_info_t *self) {
 
-    if (password_recipient_info == NULL) {
+    if (self == NULL) {
         return;
     }
 
-    vscf_dealloc_fn self_dealloc_cb = password_recipient_info->self_dealloc_cb;
+    vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscf_password_recipient_info_cleanup(password_recipient_info);
+    vscf_password_recipient_info_cleanup(self);
 
-    if (password_recipient_info->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(password_recipient_info);
+    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(self);
     }
 }
 
@@ -167,27 +167,27 @@ vscf_password_recipient_info_delete(vscf_password_recipient_info_t *password_rec
 //  This is a reverse action of the function 'vscf_password_recipient_info_new ()'.
 //
 VSCF_PUBLIC void
-vscf_password_recipient_info_destroy(vscf_password_recipient_info_t **password_recipient_info_ref) {
+vscf_password_recipient_info_destroy(vscf_password_recipient_info_t **self_ref) {
 
-    VSCF_ASSERT_PTR(password_recipient_info_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_password_recipient_info_t *password_recipient_info = *password_recipient_info_ref;
-    *password_recipient_info_ref = NULL;
+    vscf_password_recipient_info_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_password_recipient_info_delete(password_recipient_info);
+    vscf_password_recipient_info_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCF_PUBLIC vscf_password_recipient_info_t *
-vscf_password_recipient_info_shallow_copy(vscf_password_recipient_info_t *password_recipient_info) {
+vscf_password_recipient_info_shallow_copy(vscf_password_recipient_info_t *self) {
 
-    VSCF_ASSERT_PTR(password_recipient_info);
+    VSCF_ASSERT_PTR(self);
 
-    ++password_recipient_info->refcnt;
+    ++self->refcnt;
 
-    return password_recipient_info;
+    return self;
 }
 
 
@@ -204,9 +204,9 @@ vscf_password_recipient_info_shallow_copy(vscf_password_recipient_info_t *passwo
 //  Note, that context is already zeroed.
 //
 static void
-vscf_password_recipient_info_init_ctx(vscf_password_recipient_info_t *password_recipient_info) {
+vscf_password_recipient_info_init_ctx(vscf_password_recipient_info_t *self) {
 
-    VSCF_ASSERT_PTR(password_recipient_info);
+    VSCF_ASSERT_PTR(self);
 }
 
 //
@@ -215,12 +215,12 @@ vscf_password_recipient_info_init_ctx(vscf_password_recipient_info_t *password_r
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscf_password_recipient_info_cleanup_ctx(vscf_password_recipient_info_t *password_recipient_info) {
+vscf_password_recipient_info_cleanup_ctx(vscf_password_recipient_info_t *self) {
 
-    VSCF_ASSERT_PTR(password_recipient_info);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&password_recipient_info->key_encryption_algorithm);
-    vsc_buffer_destroy(&password_recipient_info->encrypted_key);
+    vscf_impl_destroy(&self->key_encryption_algorithm);
+    vsc_buffer_destroy(&self->encrypted_key);
 }
 
 //
@@ -237,12 +237,12 @@ vscf_password_recipient_info_new_with_members(vscf_impl_t **key_encryption_algor
     vscf_impl_t *key_encryption_algorithm = *key_encryption_algorithm_ref;
     *key_encryption_algorithm_ref = NULL;
 
-    vscf_password_recipient_info_t *password_recipient_info = vscf_password_recipient_info_new();
+    vscf_password_recipient_info_t *self = vscf_password_recipient_info_new();
 
-    password_recipient_info->key_encryption_algorithm = key_encryption_algorithm;
-    password_recipient_info->encrypted_key = vsc_buffer_new_with_data(encrypted_key);
+    self->key_encryption_algorithm = key_encryption_algorithm;
+    self->encrypted_key = vsc_buffer_new_with_data(encrypted_key);
 
-    return password_recipient_info;
+    return self;
 }
 
 //
@@ -250,22 +250,22 @@ vscf_password_recipient_info_new_with_members(vscf_impl_t **key_encryption_algor
 //  a data encryption key.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_password_recipient_info_key_encryption_algorithm(const vscf_password_recipient_info_t *password_recipient_info) {
+vscf_password_recipient_info_key_encryption_algorithm(const vscf_password_recipient_info_t *self) {
 
-    VSCF_ASSERT_PTR(password_recipient_info);
-    VSCF_ASSERT_PTR(password_recipient_info->key_encryption_algorithm);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->key_encryption_algorithm);
 
-    return password_recipient_info->key_encryption_algorithm;
+    return self->key_encryption_algorithm;
 }
 
 //
 //  Return an encrypted data encryption key.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_password_recipient_info_encrypted_key(const vscf_password_recipient_info_t *password_recipient_info) {
+vscf_password_recipient_info_encrypted_key(const vscf_password_recipient_info_t *self) {
 
-    VSCF_ASSERT_PTR(password_recipient_info);
-    VSCF_ASSERT_PTR(password_recipient_info->encrypted_key);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->encrypted_key);
 
-    return vsc_buffer_data(password_recipient_info->encrypted_key);
+    return vsc_buffer_data(self->encrypted_key);
 }

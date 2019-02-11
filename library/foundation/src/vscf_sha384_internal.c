@@ -156,16 +156,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_sha384_init(vscf_sha384_t *sha384) {
+vscf_sha384_init(vscf_sha384_t *self) {
 
-    VSCF_ASSERT_PTR(sha384);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(sha384, sizeof(vscf_sha384_t));
+    vscf_zeroize(self, sizeof(vscf_sha384_t));
 
-    sha384->info = &info;
-    sha384->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_sha384_init_ctx(sha384);
+    vscf_sha384_init_ctx(self);
 }
 
 //
@@ -173,23 +173,23 @@ vscf_sha384_init(vscf_sha384_t *sha384) {
 //  This is a reverse action of the function 'vscf_sha384_init()'.
 //
 VSCF_PUBLIC void
-vscf_sha384_cleanup(vscf_sha384_t *sha384) {
+vscf_sha384_cleanup(vscf_sha384_t *self) {
 
-    if (sha384 == NULL || sha384->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (sha384->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--sha384->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_sha384_cleanup_ctx(sha384);
+    vscf_sha384_cleanup_ctx(self);
 
-    vscf_zeroize(sha384, sizeof(vscf_sha384_t));
+    vscf_zeroize(self, sizeof(vscf_sha384_t));
 }
 
 //
@@ -199,12 +199,12 @@ vscf_sha384_cleanup(vscf_sha384_t *sha384) {
 VSCF_PUBLIC vscf_sha384_t *
 vscf_sha384_new(void) {
 
-    vscf_sha384_t *sha384 = (vscf_sha384_t *) vscf_alloc(sizeof (vscf_sha384_t));
-    VSCF_ASSERT_ALLOC(sha384);
+    vscf_sha384_t *self = (vscf_sha384_t *) vscf_alloc(sizeof (vscf_sha384_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_sha384_init(sha384);
+    vscf_sha384_init(self);
 
-    return sha384;
+    return self;
 }
 
 //
@@ -212,12 +212,12 @@ vscf_sha384_new(void) {
 //  This is a reverse action of the function 'vscf_sha384_new()'.
 //
 VSCF_PUBLIC void
-vscf_sha384_delete(vscf_sha384_t *sha384) {
+vscf_sha384_delete(vscf_sha384_t *self) {
 
-    vscf_sha384_cleanup(sha384);
+    vscf_sha384_cleanup(self);
 
-    if (sha384 && (sha384->refcnt == 0)) {
-        vscf_dealloc(sha384);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -227,14 +227,14 @@ vscf_sha384_delete(vscf_sha384_t *sha384) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_sha384_destroy(vscf_sha384_t **sha384_ref) {
+vscf_sha384_destroy(vscf_sha384_t **self_ref) {
 
-    VSCF_ASSERT_PTR(sha384_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_sha384_t *sha384 = *sha384_ref;
-    *sha384_ref = NULL;
+    vscf_sha384_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_sha384_delete(sha384);
+    vscf_sha384_delete(self);
 }
 
 //
@@ -242,10 +242,10 @@ vscf_sha384_destroy(vscf_sha384_t **sha384_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_sha384_t *
-vscf_sha384_shallow_copy(vscf_sha384_t *sha384) {
+vscf_sha384_shallow_copy(vscf_sha384_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_sha384_t *)vscf_impl_shallow_copy((vscf_impl_t *)sha384);
+    return (vscf_sha384_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -261,10 +261,10 @@ vscf_sha384_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_sha384_impl(vscf_sha384_t *sha384) {
+vscf_sha384_impl(vscf_sha384_t *self) {
 
-    VSCF_ASSERT_PTR(sha384);
-    return (vscf_impl_t *)(sha384);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 static const vscf_api_t *

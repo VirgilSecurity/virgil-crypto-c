@@ -156,16 +156,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_sha224_init(vscf_sha224_t *sha224) {
+vscf_sha224_init(vscf_sha224_t *self) {
 
-    VSCF_ASSERT_PTR(sha224);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(sha224, sizeof(vscf_sha224_t));
+    vscf_zeroize(self, sizeof(vscf_sha224_t));
 
-    sha224->info = &info;
-    sha224->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_sha224_init_ctx(sha224);
+    vscf_sha224_init_ctx(self);
 }
 
 //
@@ -173,23 +173,23 @@ vscf_sha224_init(vscf_sha224_t *sha224) {
 //  This is a reverse action of the function 'vscf_sha224_init()'.
 //
 VSCF_PUBLIC void
-vscf_sha224_cleanup(vscf_sha224_t *sha224) {
+vscf_sha224_cleanup(vscf_sha224_t *self) {
 
-    if (sha224 == NULL || sha224->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (sha224->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--sha224->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_sha224_cleanup_ctx(sha224);
+    vscf_sha224_cleanup_ctx(self);
 
-    vscf_zeroize(sha224, sizeof(vscf_sha224_t));
+    vscf_zeroize(self, sizeof(vscf_sha224_t));
 }
 
 //
@@ -199,12 +199,12 @@ vscf_sha224_cleanup(vscf_sha224_t *sha224) {
 VSCF_PUBLIC vscf_sha224_t *
 vscf_sha224_new(void) {
 
-    vscf_sha224_t *sha224 = (vscf_sha224_t *) vscf_alloc(sizeof (vscf_sha224_t));
-    VSCF_ASSERT_ALLOC(sha224);
+    vscf_sha224_t *self = (vscf_sha224_t *) vscf_alloc(sizeof (vscf_sha224_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_sha224_init(sha224);
+    vscf_sha224_init(self);
 
-    return sha224;
+    return self;
 }
 
 //
@@ -212,12 +212,12 @@ vscf_sha224_new(void) {
 //  This is a reverse action of the function 'vscf_sha224_new()'.
 //
 VSCF_PUBLIC void
-vscf_sha224_delete(vscf_sha224_t *sha224) {
+vscf_sha224_delete(vscf_sha224_t *self) {
 
-    vscf_sha224_cleanup(sha224);
+    vscf_sha224_cleanup(self);
 
-    if (sha224 && (sha224->refcnt == 0)) {
-        vscf_dealloc(sha224);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -227,14 +227,14 @@ vscf_sha224_delete(vscf_sha224_t *sha224) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_sha224_destroy(vscf_sha224_t **sha224_ref) {
+vscf_sha224_destroy(vscf_sha224_t **self_ref) {
 
-    VSCF_ASSERT_PTR(sha224_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_sha224_t *sha224 = *sha224_ref;
-    *sha224_ref = NULL;
+    vscf_sha224_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_sha224_delete(sha224);
+    vscf_sha224_delete(self);
 }
 
 //
@@ -242,10 +242,10 @@ vscf_sha224_destroy(vscf_sha224_t **sha224_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_sha224_t *
-vscf_sha224_shallow_copy(vscf_sha224_t *sha224) {
+vscf_sha224_shallow_copy(vscf_sha224_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_sha224_t *)vscf_impl_shallow_copy((vscf_impl_t *)sha224);
+    return (vscf_sha224_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -261,10 +261,10 @@ vscf_sha224_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_sha224_impl(vscf_sha224_t *sha224) {
+vscf_sha224_impl(vscf_sha224_t *self) {
 
-    VSCF_ASSERT_PTR(sha224);
-    return (vscf_impl_t *)(sha224);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 static const vscf_api_t *

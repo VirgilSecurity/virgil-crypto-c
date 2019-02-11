@@ -78,7 +78,7 @@ extern "C" {
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_ed25519_private_key_init_ctx(vscf_ed25519_private_key_t *ed25519_private_key);
+vscf_ed25519_private_key_init_ctx(vscf_ed25519_private_key_t *self);
 
 //
 //  Release resources of the implementation specific context.
@@ -86,7 +86,7 @@ vscf_ed25519_private_key_init_ctx(vscf_ed25519_private_key_t *ed25519_private_ke
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_ed25519_private_key_cleanup_ctx(vscf_ed25519_private_key_t *ed25519_private_key);
+vscf_ed25519_private_key_cleanup_ctx(vscf_ed25519_private_key_t *self);
 
 
 // --------------------------------------------------------------------------

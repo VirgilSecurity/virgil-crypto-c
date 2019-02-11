@@ -158,16 +158,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_hmac_init(vscf_hmac_t *hmac) {
+vscf_hmac_init(vscf_hmac_t *self) {
 
-    VSCF_ASSERT_PTR(hmac);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(hmac, sizeof(vscf_hmac_t));
+    vscf_zeroize(self, sizeof(vscf_hmac_t));
 
-    hmac->info = &info;
-    hmac->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_hmac_init_ctx(hmac);
+    vscf_hmac_init_ctx(self);
 }
 
 //
@@ -175,25 +175,25 @@ vscf_hmac_init(vscf_hmac_t *hmac) {
 //  This is a reverse action of the function 'vscf_hmac_init()'.
 //
 VSCF_PUBLIC void
-vscf_hmac_cleanup(vscf_hmac_t *hmac) {
+vscf_hmac_cleanup(vscf_hmac_t *self) {
 
-    if (hmac == NULL || hmac->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (hmac->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--hmac->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_hmac_release_hash(hmac);
+    vscf_hmac_release_hash(self);
 
-    vscf_hmac_cleanup_ctx(hmac);
+    vscf_hmac_cleanup_ctx(self);
 
-    vscf_zeroize(hmac, sizeof(vscf_hmac_t));
+    vscf_zeroize(self, sizeof(vscf_hmac_t));
 }
 
 //
@@ -203,12 +203,12 @@ vscf_hmac_cleanup(vscf_hmac_t *hmac) {
 VSCF_PUBLIC vscf_hmac_t *
 vscf_hmac_new(void) {
 
-    vscf_hmac_t *hmac = (vscf_hmac_t *) vscf_alloc(sizeof (vscf_hmac_t));
-    VSCF_ASSERT_ALLOC(hmac);
+    vscf_hmac_t *self = (vscf_hmac_t *) vscf_alloc(sizeof (vscf_hmac_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_hmac_init(hmac);
+    vscf_hmac_init(self);
 
-    return hmac;
+    return self;
 }
 
 //
@@ -216,12 +216,12 @@ vscf_hmac_new(void) {
 //  This is a reverse action of the function 'vscf_hmac_new()'.
 //
 VSCF_PUBLIC void
-vscf_hmac_delete(vscf_hmac_t *hmac) {
+vscf_hmac_delete(vscf_hmac_t *self) {
 
-    vscf_hmac_cleanup(hmac);
+    vscf_hmac_cleanup(self);
 
-    if (hmac && (hmac->refcnt == 0)) {
-        vscf_dealloc(hmac);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -231,14 +231,14 @@ vscf_hmac_delete(vscf_hmac_t *hmac) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_hmac_destroy(vscf_hmac_t **hmac_ref) {
+vscf_hmac_destroy(vscf_hmac_t **self_ref) {
 
-    VSCF_ASSERT_PTR(hmac_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_hmac_t *hmac = *hmac_ref;
-    *hmac_ref = NULL;
+    vscf_hmac_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_hmac_delete(hmac);
+    vscf_hmac_delete(self);
 }
 
 //
@@ -246,10 +246,10 @@ vscf_hmac_destroy(vscf_hmac_t **hmac_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_hmac_t *
-vscf_hmac_shallow_copy(vscf_hmac_t *hmac) {
+vscf_hmac_shallow_copy(vscf_hmac_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_hmac_t *)vscf_impl_shallow_copy((vscf_impl_t *)hmac);
+    return (vscf_hmac_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -265,25 +265,25 @@ vscf_hmac_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_hmac_impl(vscf_hmac_t *hmac) {
+vscf_hmac_impl(vscf_hmac_t *self) {
 
-    VSCF_ASSERT_PTR(hmac);
-    return (vscf_impl_t *)(hmac);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 //
 //  Setup dependency to the interface 'hash' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_hmac_use_hash(vscf_hmac_t *hmac, vscf_impl_t *hash) {
+vscf_hmac_use_hash(vscf_hmac_t *self, vscf_impl_t *hash) {
 
-    VSCF_ASSERT_PTR(hmac);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT_PTR(hmac->hash == NULL);
+    VSCF_ASSERT_PTR(self->hash == NULL);
 
     VSCF_ASSERT(vscf_hash_is_implemented(hash));
 
-    hmac->hash = vscf_impl_shallow_copy(hash);
+    self->hash = vscf_impl_shallow_copy(hash);
 }
 
 //
@@ -291,26 +291,26 @@ vscf_hmac_use_hash(vscf_hmac_t *hmac, vscf_impl_t *hash) {
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_hmac_take_hash(vscf_hmac_t *hmac, vscf_impl_t *hash) {
+vscf_hmac_take_hash(vscf_hmac_t *self, vscf_impl_t *hash) {
 
-    VSCF_ASSERT_PTR(hmac);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT_PTR(hmac->hash == NULL);
+    VSCF_ASSERT_PTR(self->hash == NULL);
 
     VSCF_ASSERT(vscf_hash_is_implemented(hash));
 
-    hmac->hash = hash;
+    self->hash = hash;
 }
 
 //
 //  Release dependency to the interface 'hash'.
 //
 VSCF_PUBLIC void
-vscf_hmac_release_hash(vscf_hmac_t *hmac) {
+vscf_hmac_release_hash(vscf_hmac_t *self) {
 
-    VSCF_ASSERT_PTR(hmac);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&hmac->hash);
+    vscf_impl_destroy(&self->hash);
 }
 
 static const vscf_api_t *

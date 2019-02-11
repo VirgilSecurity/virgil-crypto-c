@@ -82,11 +82,11 @@
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_sha256_init_ctx(vscf_sha256_t *sha256) {
+vscf_sha256_init_ctx(vscf_sha256_t *self) {
 
-    VSCF_ASSERT_PTR(sha256);
+    VSCF_ASSERT_PTR(self);
 
-    mbedtls_sha256_init(&sha256->hash_ctx);
+    mbedtls_sha256_init(&self->hash_ctx);
 }
 
 //
@@ -95,20 +95,20 @@ vscf_sha256_init_ctx(vscf_sha256_t *sha256) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_sha256_cleanup_ctx(vscf_sha256_t *sha256) {
+vscf_sha256_cleanup_ctx(vscf_sha256_t *self) {
 
-    VSCF_ASSERT_PTR(sha256);
+    VSCF_ASSERT_PTR(self);
 
-    mbedtls_sha256_free(&sha256->hash_ctx);
+    mbedtls_sha256_free(&self->hash_ctx);
 }
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_sha256_alg_id(const vscf_sha256_t *sha256) {
+vscf_sha256_alg_id(const vscf_sha256_t *self) {
 
-    VSCF_ASSERT_PTR(sha256);
+    VSCF_ASSERT_PTR(self);
     return vscf_alg_id_SHA256;
 }
 
@@ -116,9 +116,9 @@ vscf_sha256_alg_id(const vscf_sha256_t *sha256) {
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_sha256_produce_alg_info(const vscf_sha256_t *sha256) {
+vscf_sha256_produce_alg_info(const vscf_sha256_t *self) {
 
-    VSCF_ASSERT_PTR(sha256);
+    VSCF_ASSERT_PTR(self);
     return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256));
 }
 
@@ -126,9 +126,9 @@ vscf_sha256_produce_alg_info(const vscf_sha256_t *sha256) {
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_sha256_restore_alg_info(vscf_sha256_t *sha256, const vscf_impl_t *alg_info) {
+vscf_sha256_restore_alg_info(vscf_sha256_t *self, const vscf_impl_t *alg_info) {
 
-    VSCF_ASSERT_PTR(sha256);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
     VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_SHA256);
 
@@ -145,48 +145,48 @@ vscf_sha256_hash(vsc_data_t data, vsc_buffer_t *digest) {
     VSCF_ASSERT(vsc_buffer_is_valid(digest));
     VSCF_ASSERT(vsc_buffer_unused_len(digest) >= vscf_sha256_DIGEST_LEN);
 
-    vscf_sha256_t sha256;
-    vscf_sha256_init(&sha256);
-    vscf_sha256_start(&sha256);
-    vscf_sha256_update(&sha256, data);
-    vscf_sha256_finish(&sha256, digest);
-    vscf_sha256_cleanup(&sha256);
+    vscf_sha256_t self;
+    vscf_sha256_init(&self);
+    vscf_sha256_start(&self);
+    vscf_sha256_update(&self, data);
+    vscf_sha256_finish(&self, digest);
+    vscf_sha256_cleanup(&self);
 }
 
 //
 //  Start a new hashing.
 //
 VSCF_PUBLIC void
-vscf_sha256_start(vscf_sha256_t *sha256) {
+vscf_sha256_start(vscf_sha256_t *self) {
 
-    VSCF_ASSERT_PTR(sha256);
+    VSCF_ASSERT_PTR(self);
 
     const int is224 = 0;
-    mbedtls_sha256_starts(&sha256->hash_ctx, is224);
+    mbedtls_sha256_starts(&self->hash_ctx, is224);
 }
 
 //
 //  Add given data to the hash.
 //
 VSCF_PUBLIC void
-vscf_sha256_update(vscf_sha256_t *sha256, vsc_data_t data) {
+vscf_sha256_update(vscf_sha256_t *self, vsc_data_t data) {
 
-    VSCF_ASSERT_PTR(sha256);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(data));
 
-    mbedtls_sha256_update(&sha256->hash_ctx, data.bytes, data.len);
+    mbedtls_sha256_update(&self->hash_ctx, data.bytes, data.len);
 }
 
 //
 //  Accompilsh hashing and return it's result (a message digest).
 //
 VSCF_PUBLIC void
-vscf_sha256_finish(vscf_sha256_t *sha256, vsc_buffer_t *digest) {
+vscf_sha256_finish(vscf_sha256_t *self, vsc_buffer_t *digest) {
 
-    VSCF_ASSERT_PTR(sha256);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_buffer_is_valid(digest));
     VSCF_ASSERT(vsc_buffer_unused_len(digest) >= vscf_sha256_DIGEST_LEN);
 
-    mbedtls_sha256_finish(&sha256->hash_ctx, vsc_buffer_unused_bytes(digest));
+    mbedtls_sha256_finish(&self->hash_ctx, vsc_buffer_unused_bytes(digest));
     vsc_buffer_inc_used(digest, vscf_sha256_DIGEST_LEN);
 }

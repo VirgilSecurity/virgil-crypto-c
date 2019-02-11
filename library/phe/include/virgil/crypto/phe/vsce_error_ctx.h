@@ -104,19 +104,19 @@ vsce_error_ctx_ctx_size(void);
 //  Reset context to the "no error" state.
 //
 VSCE_PUBLIC void
-vsce_error_ctx_reset(vsce_error_ctx_t *error_ctx);
+vsce_error_ctx_reset(vsce_error_ctx_t *self);
 
 //
 //  Update context with given error.
 //
 VSCE_PRIVATE void
-vsce_error_ctx_update(vsce_error_ctx_t *error_ctx, vsce_error_t error);
+vsce_error_ctx_update(vsce_error_ctx_t *self, vsce_error_t error);
 
 //
 //  Reset context to the "no error" state.
 //
 VSCE_PUBLIC vsce_error_t
-vsce_error_ctx_error(const vsce_error_ctx_t *error_ctx);
+vsce_error_ctx_error(const vsce_error_ctx_t *self);
 
 
 // --------------------------------------------------------------------------

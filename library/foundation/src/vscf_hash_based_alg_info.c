@@ -80,10 +80,10 @@
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_hash_based_alg_info_init_ctx(vscf_hash_based_alg_info_t *hash_based_alg_info) {
+vscf_hash_based_alg_info_init_ctx(vscf_hash_based_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(hash_based_alg_info);
-    hash_based_alg_info->alg_id = vscf_alg_id_NONE;
+    VSCF_ASSERT_PTR(self);
+    self->alg_id = vscf_alg_id_NONE;
 }
 
 //
@@ -92,11 +92,11 @@ vscf_hash_based_alg_info_init_ctx(vscf_hash_based_alg_info_t *hash_based_alg_inf
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_hash_based_alg_info_cleanup_ctx(vscf_hash_based_alg_info_t *hash_based_alg_info) {
+vscf_hash_based_alg_info_cleanup_ctx(vscf_hash_based_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(hash_based_alg_info);
-    hash_based_alg_info->alg_id = vscf_alg_id_NONE;
-    vscf_impl_destroy(&hash_based_alg_info->hash_alg_info);
+    VSCF_ASSERT_PTR(self);
+    self->alg_id = vscf_alg_id_NONE;
+    vscf_impl_destroy(&self->hash_alg_info);
 }
 
 //
@@ -109,33 +109,33 @@ vscf_hash_based_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t **ha
     VSCF_ASSERT_PTR(hash_alg_info_ref);
     VSCF_ASSERT_PTR(*hash_alg_info_ref);
 
-    vscf_hash_based_alg_info_t *hash_based_alg_info = vscf_hash_based_alg_info_new();
+    vscf_hash_based_alg_info_t *self = vscf_hash_based_alg_info_new();
 
-    hash_based_alg_info->alg_id = alg_id;
+    self->alg_id = alg_id;
 
-    hash_based_alg_info->hash_alg_info = *hash_alg_info_ref;
+    self->hash_alg_info = *hash_alg_info_ref;
     *hash_alg_info_ref = NULL;
 
-    return hash_based_alg_info;
+    return self;
 }
 
 //
 //  Return hash algorithm information.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_hash_based_alg_info_hash_alg_info(const vscf_hash_based_alg_info_t *hash_based_alg_info) {
+vscf_hash_based_alg_info_hash_alg_info(const vscf_hash_based_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(hash_based_alg_info);
-    VSCF_ASSERT_PTR(hash_based_alg_info->hash_alg_info);
-    return hash_based_alg_info->hash_alg_info;
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->hash_alg_info);
+    return self->hash_alg_info;
 }
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_hash_based_alg_info_alg_id(const vscf_hash_based_alg_info_t *hash_based_alg_info) {
+vscf_hash_based_alg_info_alg_id(const vscf_hash_based_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(hash_based_alg_info);
-    return hash_based_alg_info->alg_id;
+    VSCF_ASSERT_PTR(self);
+    return self->alg_id;
 }

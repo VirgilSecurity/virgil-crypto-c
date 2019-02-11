@@ -71,7 +71,7 @@
 //  Note, that context is already zeroed.
 //
 static void
-vscf_key_recipient_info_list_init_ctx(vscf_key_recipient_info_list_t *key_recipient_info_list);
+vscf_key_recipient_info_list_init_ctx(vscf_key_recipient_info_list_t *self);
 
 //
 //  Release all inner resources.
@@ -79,7 +79,7 @@ vscf_key_recipient_info_list_init_ctx(vscf_key_recipient_info_list_t *key_recipi
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscf_key_recipient_info_list_cleanup_ctx(vscf_key_recipient_info_list_t *key_recipient_info_list);
+vscf_key_recipient_info_list_cleanup_ctx(vscf_key_recipient_info_list_t *self);
 
 //
 //  Return size of 'vscf_key_recipient_info_list_t'.
@@ -94,35 +94,35 @@ vscf_key_recipient_info_list_ctx_size(void) {
 //  Perform initialization of pre-allocated context.
 //
 VSCF_PUBLIC void
-vscf_key_recipient_info_list_init(vscf_key_recipient_info_list_t *key_recipient_info_list) {
+vscf_key_recipient_info_list_init(vscf_key_recipient_info_list_t *self) {
 
-    VSCF_ASSERT_PTR(key_recipient_info_list);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(key_recipient_info_list, sizeof(vscf_key_recipient_info_list_t));
+    vscf_zeroize(self, sizeof(vscf_key_recipient_info_list_t));
 
-    key_recipient_info_list->refcnt = 1;
+    self->refcnt = 1;
 
-    vscf_key_recipient_info_list_init_ctx(key_recipient_info_list);
+    vscf_key_recipient_info_list_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCF_PUBLIC void
-vscf_key_recipient_info_list_cleanup(vscf_key_recipient_info_list_t *key_recipient_info_list) {
+vscf_key_recipient_info_list_cleanup(vscf_key_recipient_info_list_t *self) {
 
-    if (key_recipient_info_list == NULL) {
+    if (self == NULL) {
         return;
     }
 
-    if (key_recipient_info_list->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--key_recipient_info_list->refcnt == 0) {
-        vscf_key_recipient_info_list_cleanup_ctx(key_recipient_info_list);
+    if (--self->refcnt == 0) {
+        vscf_key_recipient_info_list_cleanup_ctx(self);
 
-        vscf_zeroize(key_recipient_info_list, sizeof(vscf_key_recipient_info_list_t));
+        vscf_zeroize(self, sizeof(vscf_key_recipient_info_list_t));
     }
 }
 
@@ -132,14 +132,14 @@ vscf_key_recipient_info_list_cleanup(vscf_key_recipient_info_list_t *key_recipie
 VSCF_PUBLIC vscf_key_recipient_info_list_t *
 vscf_key_recipient_info_list_new(void) {
 
-    vscf_key_recipient_info_list_t *key_recipient_info_list = (vscf_key_recipient_info_list_t *) vscf_alloc(sizeof (vscf_key_recipient_info_list_t));
-    VSCF_ASSERT_ALLOC(key_recipient_info_list);
+    vscf_key_recipient_info_list_t *self = (vscf_key_recipient_info_list_t *) vscf_alloc(sizeof (vscf_key_recipient_info_list_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_key_recipient_info_list_init(key_recipient_info_list);
+    vscf_key_recipient_info_list_init(self);
 
-    key_recipient_info_list->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vscf_dealloc;
 
-    return key_recipient_info_list;
+    return self;
 }
 
 //
@@ -147,18 +147,18 @@ vscf_key_recipient_info_list_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCF_PUBLIC void
-vscf_key_recipient_info_list_delete(vscf_key_recipient_info_list_t *key_recipient_info_list) {
+vscf_key_recipient_info_list_delete(vscf_key_recipient_info_list_t *self) {
 
-    if (key_recipient_info_list == NULL) {
+    if (self == NULL) {
         return;
     }
 
-    vscf_dealloc_fn self_dealloc_cb = key_recipient_info_list->self_dealloc_cb;
+    vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscf_key_recipient_info_list_cleanup(key_recipient_info_list);
+    vscf_key_recipient_info_list_cleanup(self);
 
-    if (key_recipient_info_list->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(key_recipient_info_list);
+    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(self);
     }
 }
 
@@ -167,27 +167,27 @@ vscf_key_recipient_info_list_delete(vscf_key_recipient_info_list_t *key_recipien
 //  This is a reverse action of the function 'vscf_key_recipient_info_list_new ()'.
 //
 VSCF_PUBLIC void
-vscf_key_recipient_info_list_destroy(vscf_key_recipient_info_list_t **key_recipient_info_list_ref) {
+vscf_key_recipient_info_list_destroy(vscf_key_recipient_info_list_t **self_ref) {
 
-    VSCF_ASSERT_PTR(key_recipient_info_list_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_key_recipient_info_list_t *key_recipient_info_list = *key_recipient_info_list_ref;
-    *key_recipient_info_list_ref = NULL;
+    vscf_key_recipient_info_list_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_key_recipient_info_list_delete(key_recipient_info_list);
+    vscf_key_recipient_info_list_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCF_PUBLIC vscf_key_recipient_info_list_t *
-vscf_key_recipient_info_list_shallow_copy(vscf_key_recipient_info_list_t *key_recipient_info_list) {
+vscf_key_recipient_info_list_shallow_copy(vscf_key_recipient_info_list_t *self) {
 
-    VSCF_ASSERT_PTR(key_recipient_info_list);
+    VSCF_ASSERT_PTR(self);
 
-    ++key_recipient_info_list->refcnt;
+    ++self->refcnt;
 
-    return key_recipient_info_list;
+    return self;
 }
 
 
@@ -204,9 +204,9 @@ vscf_key_recipient_info_list_shallow_copy(vscf_key_recipient_info_list_t *key_re
 //  Note, that context is already zeroed.
 //
 static void
-vscf_key_recipient_info_list_init_ctx(vscf_key_recipient_info_list_t *key_recipient_info_list) {
+vscf_key_recipient_info_list_init_ctx(vscf_key_recipient_info_list_t *self) {
 
-    VSCF_ASSERT_PTR(key_recipient_info_list);
+    VSCF_ASSERT_PTR(self);
 }
 
 //
@@ -215,12 +215,12 @@ vscf_key_recipient_info_list_init_ctx(vscf_key_recipient_info_list_t *key_recipi
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscf_key_recipient_info_list_cleanup_ctx(vscf_key_recipient_info_list_t *key_recipient_info_list) {
+vscf_key_recipient_info_list_cleanup_ctx(vscf_key_recipient_info_list_t *self) {
 
-    VSCF_ASSERT_PTR(key_recipient_info_list);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_key_recipient_info_destroy(&key_recipient_info_list->item);
-    vscf_key_recipient_info_list_destroy(&key_recipient_info_list->next);
+    vscf_key_recipient_info_destroy(&self->item);
+    vscf_key_recipient_info_list_destroy(&self->next);
 }
 
 //
@@ -229,21 +229,21 @@ vscf_key_recipient_info_list_cleanup_ctx(vscf_key_recipient_info_list_t *key_rec
 //
 VSCF_PUBLIC void
 vscf_key_recipient_info_list_add(
-        vscf_key_recipient_info_list_t *key_recipient_info_list, vscf_key_recipient_info_t **key_recipient_info_ref) {
+        vscf_key_recipient_info_list_t *self, vscf_key_recipient_info_t **key_recipient_info_ref) {
 
-    VSCF_ASSERT_PTR(key_recipient_info_list);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(key_recipient_info_ref);
     VSCF_ASSERT_PTR(*key_recipient_info_ref);
 
-    if (NULL == key_recipient_info_list->item) {
-        key_recipient_info_list->item = *key_recipient_info_ref;
+    if (NULL == self->item) {
+        self->item = *key_recipient_info_ref;
         *key_recipient_info_ref = NULL;
     } else {
-        if (NULL == key_recipient_info_list->next) {
-            key_recipient_info_list->next = vscf_key_recipient_info_list_new();
-            key_recipient_info_list->next->prev = key_recipient_info_list;
+        if (NULL == self->next) {
+            self->next = vscf_key_recipient_info_list_new();
+            self->next->prev = self;
         }
-        vscf_key_recipient_info_list_add(key_recipient_info_list->next, key_recipient_info_ref);
+        vscf_key_recipient_info_list_add(self->next, key_recipient_info_ref);
     }
 }
 
@@ -251,65 +251,65 @@ vscf_key_recipient_info_list_add(
 //  Return true if given list has item.
 //
 VSCF_PUBLIC bool
-vscf_key_recipient_info_list_has_item(const vscf_key_recipient_info_list_t *key_recipient_info_list) {
+vscf_key_recipient_info_list_has_item(const vscf_key_recipient_info_list_t *self) {
 
-    VSCF_ASSERT_PTR(key_recipient_info_list);
+    VSCF_ASSERT_PTR(self);
 
-    return key_recipient_info_list->item != NULL;
+    return self->item != NULL;
 }
 
 //
 //  Return list item.
 //
 VSCF_PUBLIC const vscf_key_recipient_info_t *
-vscf_key_recipient_info_list_item(const vscf_key_recipient_info_list_t *key_recipient_info_list) {
+vscf_key_recipient_info_list_item(const vscf_key_recipient_info_list_t *self) {
 
-    VSCF_ASSERT_PTR(key_recipient_info_list);
-    VSCF_ASSERT_PTR(key_recipient_info_list->item);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->item);
 
-    return key_recipient_info_list->item;
+    return self->item;
 }
 
 //
 //  Return true if list has next item.
 //
 VSCF_PUBLIC bool
-vscf_key_recipient_info_list_has_next(const vscf_key_recipient_info_list_t *key_recipient_info_list) {
+vscf_key_recipient_info_list_has_next(const vscf_key_recipient_info_list_t *self) {
 
-    VSCF_ASSERT_PTR(key_recipient_info_list);
+    VSCF_ASSERT_PTR(self);
 
-    return key_recipient_info_list->next != NULL;
+    return self->next != NULL;
 }
 
 //
 //  Return next list node if exists, or NULL otherwise.
 //
 VSCF_PUBLIC vscf_key_recipient_info_list_t *
-vscf_key_recipient_info_list_next(const vscf_key_recipient_info_list_t *key_recipient_info_list) {
+vscf_key_recipient_info_list_next(const vscf_key_recipient_info_list_t *self) {
 
-    VSCF_ASSERT_PTR(key_recipient_info_list);
+    VSCF_ASSERT_PTR(self);
 
-    return key_recipient_info_list->next;
+    return self->next;
 }
 
 //
 //  Return true if list has previous item.
 //
 VSCF_PUBLIC bool
-vscf_key_recipient_info_list_has_prev(const vscf_key_recipient_info_list_t *key_recipient_info_list) {
+vscf_key_recipient_info_list_has_prev(const vscf_key_recipient_info_list_t *self) {
 
-    VSCF_ASSERT_PTR(key_recipient_info_list);
+    VSCF_ASSERT_PTR(self);
 
-    return key_recipient_info_list->prev != NULL;
+    return self->prev != NULL;
 }
 
 //
 //  Return previous list node if exists, or NULL otherwise.
 //
 VSCF_PUBLIC vscf_key_recipient_info_list_t *
-vscf_key_recipient_info_list_prev(const vscf_key_recipient_info_list_t *key_recipient_info_list) {
+vscf_key_recipient_info_list_prev(const vscf_key_recipient_info_list_t *self) {
 
-    VSCF_ASSERT_PTR(key_recipient_info_list);
+    VSCF_ASSERT_PTR(self);
 
-    return key_recipient_info_list->prev;
+    return self->prev;
 }

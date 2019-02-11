@@ -71,7 +71,7 @@
 //  Note, that context is already zeroed.
 //
 static void
-vsc_buffer_init_ctx(vsc_buffer_t *buffer);
+vsc_buffer_init_ctx(vsc_buffer_t *self);
 
 //
 //  Release all inner resources.
@@ -79,7 +79,7 @@ vsc_buffer_init_ctx(vsc_buffer_t *buffer);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vsc_buffer_cleanup_ctx(vsc_buffer_t *buffer);
+vsc_buffer_cleanup_ctx(vsc_buffer_t *self);
 
 //
 //  Return size of 'vsc_buffer_t'.
@@ -94,35 +94,35 @@ vsc_buffer_ctx_size(void) {
 //  Perform initialization of pre-allocated context.
 //
 VSC_PUBLIC void
-vsc_buffer_init(vsc_buffer_t *buffer) {
+vsc_buffer_init(vsc_buffer_t *self) {
 
-    VSC_ASSERT_PTR(buffer);
+    VSC_ASSERT_PTR(self);
 
-    vsc_zeroize(buffer, sizeof(vsc_buffer_t));
+    vsc_zeroize(self, sizeof(vsc_buffer_t));
 
-    buffer->refcnt = 1;
+    self->refcnt = 1;
 
-    vsc_buffer_init_ctx(buffer);
+    vsc_buffer_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSC_PUBLIC void
-vsc_buffer_cleanup(vsc_buffer_t *buffer) {
+vsc_buffer_cleanup(vsc_buffer_t *self) {
 
-    if (buffer == NULL) {
+    if (self == NULL) {
         return;
     }
 
-    if (buffer->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--buffer->refcnt == 0) {
-        vsc_buffer_cleanup_ctx(buffer);
+    if (--self->refcnt == 0) {
+        vsc_buffer_cleanup_ctx(self);
 
-        vsc_zeroize(buffer, sizeof(vsc_buffer_t));
+        vsc_zeroize(self, sizeof(vsc_buffer_t));
     }
 }
 
@@ -132,14 +132,14 @@ vsc_buffer_cleanup(vsc_buffer_t *buffer) {
 VSC_PUBLIC vsc_buffer_t *
 vsc_buffer_new(void) {
 
-    vsc_buffer_t *buffer = (vsc_buffer_t *) vsc_alloc(sizeof (vsc_buffer_t));
-    VSC_ASSERT_ALLOC(buffer);
+    vsc_buffer_t *self = (vsc_buffer_t *) vsc_alloc(sizeof (vsc_buffer_t));
+    VSC_ASSERT_ALLOC(self);
 
-    vsc_buffer_init(buffer);
+    vsc_buffer_init(self);
 
-    buffer->self_dealloc_cb = vsc_dealloc;
+    self->self_dealloc_cb = vsc_dealloc;
 
-    return buffer;
+    return self;
 }
 
 //
@@ -147,18 +147,18 @@ vsc_buffer_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSC_PUBLIC void
-vsc_buffer_delete(vsc_buffer_t *buffer) {
+vsc_buffer_delete(vsc_buffer_t *self) {
 
-    if (buffer == NULL) {
+    if (self == NULL) {
         return;
     }
 
-    vsc_dealloc_fn self_dealloc_cb = buffer->self_dealloc_cb;
+    vsc_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vsc_buffer_cleanup(buffer);
+    vsc_buffer_cleanup(self);
 
-    if (buffer->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(buffer);
+    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(self);
     }
 }
 
@@ -167,27 +167,27 @@ vsc_buffer_delete(vsc_buffer_t *buffer) {
 //  This is a reverse action of the function 'vsc_buffer_new ()'.
 //
 VSC_PUBLIC void
-vsc_buffer_destroy(vsc_buffer_t **buffer_ref) {
+vsc_buffer_destroy(vsc_buffer_t **self_ref) {
 
-    VSC_ASSERT_PTR(buffer_ref);
+    VSC_ASSERT_PTR(self_ref);
 
-    vsc_buffer_t *buffer = *buffer_ref;
-    *buffer_ref = NULL;
+    vsc_buffer_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vsc_buffer_delete(buffer);
+    vsc_buffer_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSC_PUBLIC vsc_buffer_t *
-vsc_buffer_shallow_copy(vsc_buffer_t *buffer) {
+vsc_buffer_shallow_copy(vsc_buffer_t *self) {
 
-    VSC_ASSERT_PTR(buffer);
+    VSC_ASSERT_PTR(self);
 
-    ++buffer->refcnt;
+    ++self->refcnt;
 
-    return buffer;
+    return self;
 }
 
 
@@ -204,10 +204,10 @@ vsc_buffer_shallow_copy(vsc_buffer_t *buffer) {
 //  Note, that context is already zeroed.
 //
 static void
-vsc_buffer_init_ctx(vsc_buffer_t *buffer) {
+vsc_buffer_init_ctx(vsc_buffer_t *self) {
 
-    VSC_ASSERT_PTR(buffer);
-    buffer->is_reverse = false;
+    VSC_ASSERT_PTR(self);
+    self->is_reverse = false;
 }
 
 //
@@ -216,16 +216,16 @@ vsc_buffer_init_ctx(vsc_buffer_t *buffer) {
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vsc_buffer_cleanup_ctx(vsc_buffer_t *buffer) {
+vsc_buffer_cleanup_ctx(vsc_buffer_t *self) {
 
-    VSC_ASSERT_PTR(buffer);
+    VSC_ASSERT_PTR(self);
 
-    if (buffer->is_secure && buffer->is_owner) {
-        vsc_buffer_erase(buffer);
+    if (self->is_secure && self->is_owner) {
+        vsc_buffer_erase(self);
     }
 
-    if (buffer->bytes != NULL && buffer->bytes_dealloc_cb != NULL) {
-        buffer->bytes_dealloc_cb(buffer->bytes);
+    if (self->bytes != NULL && self->bytes_dealloc_cb != NULL) {
+        self->bytes_dealloc_cb(self->bytes);
     }
 }
 
@@ -235,17 +235,17 @@ vsc_buffer_cleanup_ctx(vsc_buffer_t *buffer) {
 VSC_PUBLIC vsc_buffer_t *
 vsc_buffer_new_with_capacity(size_t capacity) {
 
-    vsc_buffer_t *buffer = (vsc_buffer_t *)vsc_alloc(sizeof(vsc_buffer_t) + capacity);
-    VSC_ASSERT_ALLOC(buffer);
+    vsc_buffer_t *self = (vsc_buffer_t *)vsc_alloc(sizeof(vsc_buffer_t) + capacity);
+    VSC_ASSERT_ALLOC(self);
 
-    vsc_buffer_init(buffer);
+    vsc_buffer_init(self);
 
-    buffer->bytes = (byte *)(buffer) + sizeof(vsc_buffer_t);
-    buffer->capacity = capacity;
-    buffer->self_dealloc_cb = vsc_dealloc;
-    buffer->is_owner = true;
+    self->bytes = (byte *)(self) + sizeof(vsc_buffer_t);
+    self->capacity = capacity;
+    self->self_dealloc_cb = vsc_dealloc;
+    self->is_owner = true;
 
-    return buffer;
+    return self;
 }
 
 //
@@ -256,52 +256,52 @@ vsc_buffer_new_with_data(vsc_data_t data) {
 
     VSC_ASSERT_PTR(vsc_data_is_valid(data));
 
-    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(data.len);
-    memcpy(buffer->bytes, data.bytes, data.len);
-    buffer->len = data.len;
-    buffer->is_owner = true;
+    vsc_buffer_t *self = vsc_buffer_new_with_capacity(data.len);
+    memcpy(self->bytes, data.bytes, data.len);
+    self->len = data.len;
+    self->is_owner = true;
 
-    return buffer;
+    return self;
 }
 
 //
 //  Returns true if buffer has no data written.
 //
 VSC_PUBLIC bool
-vsc_buffer_is_empty(const vsc_buffer_t *buffer) {
+vsc_buffer_is_empty(const vsc_buffer_t *self) {
 
-    VSC_ASSERT_PTR(buffer);
-    VSC_ASSERT(vsc_buffer_is_valid(buffer));
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT(vsc_buffer_is_valid(self));
 
-    return 0 == buffer->len;
+    return 0 == self->len;
 }
 
 //
 //  Returns true if buffer written data is located at the buffer ending.
 //
 VSC_PUBLIC bool
-vsc_buffer_is_reverse(const vsc_buffer_t *buffer) {
+vsc_buffer_is_reverse(const vsc_buffer_t *self) {
 
-    VSC_ASSERT_PTR(buffer);
-    return buffer->is_reverse;
+    VSC_ASSERT_PTR(self);
+    return self->is_reverse;
 }
 
 //
 //  Return true if buffers are equal.
 //
 VSC_PUBLIC bool
-vsc_buffer_equal(const vsc_buffer_t *buffer, const vsc_buffer_t *rhs) {
+vsc_buffer_equal(const vsc_buffer_t *self, const vsc_buffer_t *rhs) {
 
-    VSC_ASSERT_PTR(buffer);
+    VSC_ASSERT_PTR(self);
     VSC_ASSERT_PTR(rhs);
-    VSC_ASSERT(vsc_buffer_is_valid(buffer));
+    VSC_ASSERT(vsc_buffer_is_valid(self));
     VSC_ASSERT(vsc_buffer_is_valid(rhs));
 
-    if (buffer->len != rhs->len) {
+    if (self->len != rhs->len) {
         return false;
     }
 
-    bool is_equal = vsc_data_equal(vsc_buffer_data(buffer), vsc_buffer_data(rhs));
+    bool is_equal = vsc_data_equal(vsc_buffer_data(self), vsc_buffer_data(rhs));
     return is_equal;
 }
 
@@ -312,18 +312,18 @@ vsc_buffer_equal(const vsc_buffer_t *buffer, const vsc_buffer_t *rhs) {
 //  Postcondition: inner buffer is allocated.
 //
 VSC_PUBLIC void
-vsc_buffer_alloc(vsc_buffer_t *buffer, size_t capacity) {
+vsc_buffer_alloc(vsc_buffer_t *self, size_t capacity) {
 
-    VSC_ASSERT_PTR(buffer);
+    VSC_ASSERT_PTR(self);
     VSC_ASSERT(capacity > 0);
-    VSC_ASSERT(NULL == buffer->bytes);
+    VSC_ASSERT(NULL == self->bytes);
 
-    buffer->bytes = (byte *)vsc_alloc(capacity);
-    VSC_ASSERT_ALLOC(buffer->bytes);
+    self->bytes = (byte *)vsc_alloc(capacity);
+    VSC_ASSERT_ALLOC(self->bytes);
 
-    buffer->capacity = capacity;
-    buffer->len = 0;
-    buffer->bytes_dealloc_cb = vsc_dealloc;
+    self->capacity = capacity;
+    self->len = 0;
+    self->bytes_dealloc_cb = vsc_dealloc;
 }
 
 //
@@ -333,18 +333,18 @@ vsc_buffer_alloc(vsc_buffer_t *buffer, size_t capacity) {
 //  Precondition: buffer does not hold any bytes.
 //
 VSC_PUBLIC void
-vsc_buffer_use(vsc_buffer_t *buffer, byte *bytes, size_t bytes_len) {
+vsc_buffer_use(vsc_buffer_t *self, byte *bytes, size_t bytes_len) {
 
-    VSC_ASSERT_PTR(buffer);
+    VSC_ASSERT_PTR(self);
     VSC_ASSERT_PTR(bytes);
     VSC_ASSERT(bytes_len > 0);
-    VSC_ASSERT(NULL == buffer->bytes);
+    VSC_ASSERT(NULL == self->bytes);
 
-    buffer->bytes = bytes;
-    buffer->capacity = bytes_len;
-    buffer->len = 0;
-    buffer->bytes_dealloc_cb = NULL;
-    buffer->is_owner = false;
+    self->bytes = bytes;
+    self->capacity = bytes_len;
+    self->len = 0;
+    self->bytes_dealloc_cb = NULL;
+    self->is_owner = false;
 }
 
 //
@@ -354,19 +354,19 @@ vsc_buffer_use(vsc_buffer_t *buffer, byte *bytes, size_t bytes_len) {
 //  Precondition: buffer does not hold any bytes.
 //
 VSC_PUBLIC void
-vsc_buffer_take(vsc_buffer_t *buffer, byte *bytes, size_t bytes_len, vsc_dealloc_fn dealloc_cb) {
+vsc_buffer_take(vsc_buffer_t *self, byte *bytes, size_t bytes_len, vsc_dealloc_fn dealloc_cb) {
 
-    VSC_ASSERT_PTR(buffer);
+    VSC_ASSERT_PTR(self);
     VSC_ASSERT_PTR(bytes);
     VSC_ASSERT(bytes_len > 0);
     VSC_ASSERT_PTR(dealloc_cb);
-    VSC_ASSERT(NULL == buffer->bytes);
+    VSC_ASSERT(NULL == self->bytes);
 
-    buffer->bytes = bytes;
-    buffer->capacity = bytes_len;
-    buffer->len = 0;
-    buffer->bytes_dealloc_cb = dealloc_cb;
-    buffer->is_owner = true;
+    self->bytes = bytes;
+    self->capacity = bytes_len;
+    self->len = 0;
+    self->bytes_dealloc_cb = dealloc_cb;
+    self->is_owner = true;
 }
 
 //
@@ -374,11 +374,11 @@ vsc_buffer_take(vsc_buffer_t *buffer, byte *bytes, size_t bytes_len, vsc_dealloc
 //  in a secure manner during destruction.
 //
 VSC_PUBLIC void
-vsc_buffer_make_secure(vsc_buffer_t *buffer) {
+vsc_buffer_make_secure(vsc_buffer_t *self) {
 
-    VSC_ASSERT_PTR(buffer);
+    VSC_ASSERT_PTR(self);
 
-    buffer->is_secure = true;
+    self->is_secure = true;
 }
 
 //
@@ -391,73 +391,73 @@ vsc_buffer_make_secure(vsc_buffer_t *buffer) {
 //  will be moved to the appropriate place.
 //
 VSC_PUBLIC void
-vsc_buffer_switch_reverse_mode(vsc_buffer_t *buffer, bool is_reverse) {
+vsc_buffer_switch_reverse_mode(vsc_buffer_t *self, bool is_reverse) {
 
-    VSC_ASSERT_PTR(buffer);
+    VSC_ASSERT_PTR(self);
 
-    if (buffer->is_reverse == is_reverse) {
+    if (self->is_reverse == is_reverse) {
         return;
     }
 
-    if (buffer->is_reverse) {
+    if (self->is_reverse) {
         // Was reverse, so data from the end should be moved to the begin.
-        memmove(buffer->bytes, buffer->bytes + buffer->capacity - buffer->len, buffer->len);
+        memmove(self->bytes, self->bytes + self->capacity - self->len, self->len);
     } else {
         // Was straight, so data from the begin should be moved to the end.
-        memmove(buffer->bytes + buffer->capacity - buffer->len, buffer->bytes, buffer->len);
+        memmove(self->bytes + self->capacity - self->len, self->bytes, self->len);
     }
 
-    buffer->is_reverse = is_reverse;
+    self->is_reverse = is_reverse;
 }
 
 //
 //  Returns true if buffer full.
 //
 VSC_PUBLIC bool
-vsc_buffer_is_full(const vsc_buffer_t *buffer) {
+vsc_buffer_is_full(const vsc_buffer_t *self) {
 
-    VSC_ASSERT_PTR(buffer);
-    VSC_ASSERT(vsc_buffer_is_valid(buffer));
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT(vsc_buffer_is_valid(self));
 
-    return buffer->len == buffer->capacity;
+    return self->len == self->capacity;
 }
 
 //
 //  Returns true if buffer is configured and has valid internal states.
 //
 VSC_PUBLIC bool
-vsc_buffer_is_valid(const vsc_buffer_t *buffer) {
+vsc_buffer_is_valid(const vsc_buffer_t *self) {
 
-    VSC_ASSERT_PTR(buffer);
+    VSC_ASSERT_PTR(self);
 
-    return (buffer->bytes != NULL) && (buffer->len <= buffer->capacity);
+    return (self->bytes != NULL) && (self->len <= self->capacity);
 }
 
 //
 //  Returns underlying buffer bytes.
 //
 VSC_PUBLIC const byte *
-vsc_buffer_bytes(const vsc_buffer_t *buffer) {
+vsc_buffer_bytes(const vsc_buffer_t *self) {
 
-    VSC_ASSERT_PTR(buffer);
-    VSC_ASSERT(vsc_buffer_is_valid(buffer));
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT(vsc_buffer_is_valid(self));
 
-    return buffer->bytes;
+    return self->bytes;
 }
 
 //
 //  Returns underlying buffer bytes as object.
 //
 VSC_PUBLIC vsc_data_t
-vsc_buffer_data(const vsc_buffer_t *buffer) {
+vsc_buffer_data(const vsc_buffer_t *self) {
 
-    VSC_ASSERT_PTR(buffer);
-    VSC_ASSERT(vsc_buffer_is_valid(buffer));
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT(vsc_buffer_is_valid(self));
 
-    if (buffer->is_reverse) {
-        return vsc_data(buffer->bytes + buffer->capacity - buffer->len, buffer->len);
+    if (self->is_reverse) {
+        return vsc_data(self->bytes + self->capacity - self->len, self->len);
     } else {
-        return vsc_data(buffer->bytes, buffer->len);
+        return vsc_data(self->bytes, self->len);
     }
 }
 
@@ -465,63 +465,63 @@ vsc_buffer_data(const vsc_buffer_t *buffer) {
 //  Returns buffer capacity.
 //
 VSC_PUBLIC size_t
-vsc_buffer_capacity(const vsc_buffer_t *buffer) {
+vsc_buffer_capacity(const vsc_buffer_t *self) {
 
-    VSC_ASSERT_PTR(buffer);
-    VSC_ASSERT(vsc_buffer_is_valid(buffer));
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT(vsc_buffer_is_valid(self));
 
-    return buffer->capacity;
+    return self->capacity;
 }
 
 //
 //  Returns buffer length - length of bytes actually used.
 //
 VSC_PUBLIC size_t
-vsc_buffer_len(const vsc_buffer_t *buffer) {
+vsc_buffer_len(const vsc_buffer_t *self) {
 
-    VSC_ASSERT_PTR(buffer);
-    VSC_ASSERT(vsc_buffer_is_valid(buffer));
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT(vsc_buffer_is_valid(self));
 
-    return buffer->len;
+    return self->len;
 }
 
 //
 //  Returns length of the bytes that are not in use yet.
 //
 VSC_PUBLIC size_t
-vsc_buffer_unused_len(const vsc_buffer_t *buffer) {
+vsc_buffer_unused_len(const vsc_buffer_t *self) {
 
-    VSC_ASSERT_PTR(buffer);
-    VSC_ASSERT(vsc_buffer_is_valid(buffer));
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT(vsc_buffer_is_valid(self));
 
-    return (size_t)(buffer->capacity - buffer->len);
+    return (size_t)(self->capacity - self->len);
 }
 
 //
 //  Returns writable pointer to the buffer first element.
 //
 VSC_PUBLIC byte *
-vsc_buffer_begin(vsc_buffer_t *buffer) {
+vsc_buffer_begin(vsc_buffer_t *self) {
 
-    VSC_ASSERT_PTR(buffer);
-    VSC_ASSERT(vsc_buffer_is_valid(buffer));
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT(vsc_buffer_is_valid(self));
 
-    return buffer->bytes;
+    return self->bytes;
 }
 
 //
 //  Returns pointer to the first unused byte in the buffer.
 //
 VSC_PUBLIC byte *
-vsc_buffer_unused_bytes(vsc_buffer_t *buffer) {
+vsc_buffer_unused_bytes(vsc_buffer_t *self) {
 
-    VSC_ASSERT_PTR(buffer);
-    VSC_ASSERT(vsc_buffer_is_valid(buffer));
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT(vsc_buffer_is_valid(self));
 
-    if (buffer->is_reverse) {
-        return buffer->bytes;
+    if (self->is_reverse) {
+        return self->bytes;
     } else {
-        return buffer->bytes + buffer->len;
+        return self->bytes + self->len;
     }
 }
 
@@ -529,70 +529,70 @@ vsc_buffer_unused_bytes(vsc_buffer_t *buffer) {
 //  Increase used bytes by given length.
 //
 VSC_PUBLIC void
-vsc_buffer_inc_used(vsc_buffer_t *buffer, size_t len) {
+vsc_buffer_inc_used(vsc_buffer_t *self, size_t len) {
 
-    VSC_ASSERT_PTR(buffer);
-    VSC_ASSERT(len <= vsc_buffer_unused_len(buffer));
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT(len <= vsc_buffer_unused_len(self));
 
-    buffer->len += len;
+    self->len += len;
 }
 
 //
 //  Decrease used bytes by given length.
 //
 VSC_PUBLIC void
-vsc_buffer_dec_used(vsc_buffer_t *buffer, size_t len) {
+vsc_buffer_dec_used(vsc_buffer_t *self, size_t len) {
 
-    VSC_ASSERT_PTR(buffer);
-    VSC_ASSERT(len <= buffer->len);
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT(len <= self->len);
 
-    buffer->len -= len;
+    self->len -= len;
 }
 
 //
 //  Copy null-terminated string to the buffer.
 //
 VSC_PUBLIC void
-vsc_buffer_write_str(vsc_buffer_t *buffer, const char *str) {
+vsc_buffer_write_str(vsc_buffer_t *self, const char *str) {
 
-    VSC_ASSERT_PTR(buffer);
-    VSC_ASSERT(vsc_buffer_is_valid(buffer));
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT(vsc_buffer_is_valid(self));
     VSC_ASSERT_PTR(str);
 
     size_t str_len = strlen(str);
-    VSC_ASSERT(str_len <= vsc_buffer_unused_len(buffer));
+    VSC_ASSERT(str_len <= vsc_buffer_unused_len(self));
 
-    size_t write_len = str_len > vsc_buffer_unused_len(buffer) ? vsc_buffer_unused_len(buffer) : str_len;
+    size_t write_len = str_len > vsc_buffer_unused_len(self) ? vsc_buffer_unused_len(self) : str_len;
 
-    if (buffer->is_reverse) {
-        memcpy(vsc_buffer_unused_bytes(buffer) - write_len + 1, (const byte *)str, write_len);
+    if (self->is_reverse) {
+        memcpy(vsc_buffer_unused_bytes(self) - write_len + 1, (const byte *)str, write_len);
     } else {
-        memcpy(vsc_buffer_unused_bytes(buffer), (const byte *)str, write_len);
+        memcpy(vsc_buffer_unused_bytes(self), (const byte *)str, write_len);
     }
 
-    buffer->len += write_len;
+    self->len += write_len;
 }
 
 //
 //  Copy data to the buffer.
 //
 VSC_PUBLIC void
-vsc_buffer_write_data(vsc_buffer_t *buffer, vsc_data_t data) {
+vsc_buffer_write_data(vsc_buffer_t *self, vsc_data_t data) {
 
-    VSC_ASSERT_PTR(buffer);
-    VSC_ASSERT(vsc_buffer_is_valid(buffer));
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT(vsc_buffer_is_valid(self));
     VSC_ASSERT(vsc_data_is_valid(data));
-    VSC_ASSERT(data.len <= vsc_buffer_unused_len(buffer));
+    VSC_ASSERT(data.len <= vsc_buffer_unused_len(self));
 
-    size_t write_len = data.len > vsc_buffer_unused_len(buffer) ? vsc_buffer_unused_len(buffer) : data.len;
+    size_t write_len = data.len > vsc_buffer_unused_len(self) ? vsc_buffer_unused_len(self) : data.len;
 
-    if (buffer->is_reverse) {
-        memcpy(vsc_buffer_unused_bytes(buffer) - write_len + 1, data.bytes, write_len);
+    if (self->is_reverse) {
+        memcpy(vsc_buffer_unused_bytes(self) - write_len + 1, data.bytes, write_len);
     } else {
-        memcpy(vsc_buffer_unused_bytes(buffer), data.bytes, write_len);
+        memcpy(vsc_buffer_unused_bytes(self), data.bytes, write_len);
     }
 
-    buffer->len += write_len;
+    self->len += write_len;
 }
 
 //
@@ -600,13 +600,13 @@ vsc_buffer_write_data(vsc_buffer_t *buffer, vsc_data_t data) {
 //  After reset inner buffer can be re-used.
 //
 VSC_PUBLIC void
-vsc_buffer_reset(vsc_buffer_t *buffer) {
+vsc_buffer_reset(vsc_buffer_t *self) {
 
-    VSC_ASSERT_PTR(buffer);
-    VSC_ASSERT(vsc_buffer_is_valid(buffer));
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT(vsc_buffer_is_valid(self));
 
-    buffer->len = 0;
-    buffer->is_reverse = false;
+    self->len = 0;
+    self->is_reverse = false;
 }
 
 //
@@ -614,13 +614,13 @@ vsc_buffer_reset(vsc_buffer_t *buffer) {
 //  And reset it to the initial state.
 //
 VSC_PUBLIC void
-vsc_buffer_erase(vsc_buffer_t *buffer) {
+vsc_buffer_erase(vsc_buffer_t *self) {
 
-    VSC_ASSERT_PTR(buffer);
-    VSC_ASSERT(vsc_buffer_is_valid(buffer));
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT(vsc_buffer_is_valid(self));
 
-    buffer->len = 0;
+    self->len = 0;
 
-    vsc_erase(buffer->bytes, buffer->capacity);
-    vsc_buffer_reset(buffer);
+    vsc_erase(self->bytes, self->capacity);
+    vsc_buffer_reset(self);
 }

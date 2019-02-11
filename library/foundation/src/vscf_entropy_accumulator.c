@@ -82,11 +82,11 @@
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_entropy_accumulator_init_ctx(vscf_entropy_accumulator_t *entropy_accumulator) {
+vscf_entropy_accumulator_init_ctx(vscf_entropy_accumulator_t *self) {
 
-    VSCF_ASSERT_PTR(entropy_accumulator);
+    VSCF_ASSERT_PTR(self);
 
-    mbedtls_entropy_init(&entropy_accumulator->ctx);
+    mbedtls_entropy_init(&self->ctx);
 }
 
 //
@@ -95,14 +95,14 @@ vscf_entropy_accumulator_init_ctx(vscf_entropy_accumulator_t *entropy_accumulato
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_entropy_accumulator_cleanup_ctx(vscf_entropy_accumulator_t *entropy_accumulator) {
+vscf_entropy_accumulator_cleanup_ctx(vscf_entropy_accumulator_t *self) {
 
-    VSCF_ASSERT_PTR(entropy_accumulator);
+    VSCF_ASSERT_PTR(self);
 
-    mbedtls_entropy_free(&entropy_accumulator->ctx);
+    mbedtls_entropy_free(&self->ctx);
 
-    while (entropy_accumulator->source_count > 0) {
-        vscf_impl_destroy(&entropy_accumulator->sources[--entropy_accumulator->source_count]);
+    while (self->source_count > 0) {
+        vscf_impl_destroy(&self->sources[--self->source_count]);
     }
 }
 
@@ -112,19 +112,18 @@ vscf_entropy_accumulator_cleanup_ctx(vscf_entropy_accumulator_t *entropy_accumul
 //  from the source during accumulation.
 //
 VSCF_PUBLIC void
-vscf_entropy_accumulator_add_source(
-        vscf_entropy_accumulator_t *entropy_accumulator, vscf_impl_t *source, size_t threshold) {
+vscf_entropy_accumulator_add_source(vscf_entropy_accumulator_t *self, vscf_impl_t *source, size_t threshold) {
 
-    VSCF_ASSERT_PTR(entropy_accumulator);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(source);
     VSCF_ASSERT(vscf_entropy_source_is_implemented(source));
     VSCF_ASSERT(threshold > 0);
-    VSCF_ASSERT(entropy_accumulator->source_count < vscf_entropy_accumulator_SOURCES_MAX);
+    VSCF_ASSERT(self->source_count < vscf_entropy_accumulator_SOURCES_MAX);
 
-    entropy_accumulator->sources[entropy_accumulator->source_count++] = vscf_impl_shallow_copy(source);
+    self->sources[self->source_count++] = vscf_impl_shallow_copy(source);
 
-    int status = mbedtls_entropy_add_source(&entropy_accumulator->ctx, vscf_mbedtls_bridge_entropy_poll, source,
-            threshold, vscf_entropy_source_is_strong(source));
+    int status = mbedtls_entropy_add_source(
+            &self->ctx, vscf_mbedtls_bridge_entropy_poll, source, threshold, vscf_entropy_source_is_strong(source));
 
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
 }
@@ -133,25 +132,25 @@ vscf_entropy_accumulator_add_source(
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_t *entropy_accumulator) {
+vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_t *self) {
 
-    VSCF_ASSERT_PTR(entropy_accumulator);
+    VSCF_ASSERT_PTR(self);
     bool has_strong = 0;
 
 #if defined(MBEDTLS_PLATFORM_ENTROPY)
-    mbedtls_entropy_add_source(&entropy_accumulator->ctx, mbedtls_platform_entropy_poll, NULL,
-            MBEDTLS_ENTROPY_MIN_PLATFORM, MBEDTLS_ENTROPY_SOURCE_STRONG);
+    mbedtls_entropy_add_source(&self->ctx, mbedtls_platform_entropy_poll, NULL, MBEDTLS_ENTROPY_MIN_PLATFORM,
+            MBEDTLS_ENTROPY_SOURCE_STRONG);
     has_strong = true;
 #endif
 
 #if defined(MBEDTLS_TIMING_C)
-    mbedtls_entropy_add_source(&entropy_accumulator->ctx, mbedtls_hardclock_poll, NULL, MBEDTLS_ENTROPY_MIN_HARDCLOCK,
-            MBEDTLS_ENTROPY_SOURCE_WEAK);
+    mbedtls_entropy_add_source(
+            &self->ctx, mbedtls_hardclock_poll, NULL, MBEDTLS_ENTROPY_MIN_HARDCLOCK, MBEDTLS_ENTROPY_SOURCE_WEAK);
 #endif
 
 #if defined(MBEDTLS_HAVEGE_C)
-    mbedtls_entropy_add_source(&entropy_accumulator->ctx, mbedtls_havege_poll, &entropy_accumulator->ctx.havege_data,
-            MBEDTLS_ENTROPY_MIN_HAVEGE, MBEDTLS_ENTROPY_SOURCE_STRONG);
+    mbedtls_entropy_add_source(&self->ctx, mbedtls_havege_poll, &self->ctx.havege_data, MBEDTLS_ENTROPY_MIN_HAVEGE,
+            MBEDTLS_ENTROPY_SOURCE_STRONG);
     has_strong = true;
 #endif
 
@@ -163,9 +162,9 @@ vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_t *entropy_accu
 //  Defines that implemented source is strong.
 //
 VSCF_PUBLIC bool
-vscf_entropy_accumulator_is_strong(vscf_entropy_accumulator_t *entropy_accumulator) {
+vscf_entropy_accumulator_is_strong(vscf_entropy_accumulator_t *self) {
 
-    VSCF_ASSERT_PTR(entropy_accumulator);
+    VSCF_ASSERT_PTR(self);
 
     return true;
 }
@@ -174,16 +173,16 @@ vscf_entropy_accumulator_is_strong(vscf_entropy_accumulator_t *entropy_accumulat
 //  Gather entropy of the requested length.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_entropy_accumulator_gather(vscf_entropy_accumulator_t *entropy_accumulator, size_t len, vsc_buffer_t *out) {
+vscf_entropy_accumulator_gather(vscf_entropy_accumulator_t *self, size_t len, vsc_buffer_t *out) {
 
-    VSCF_ASSERT_PTR(entropy_accumulator);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(len > 0);
     VSCF_ASSERT(len <= MBEDTLS_ENTROPY_BLOCK_SIZE);
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= len);
 
-    int status = mbedtls_entropy_func(&entropy_accumulator->ctx, vsc_buffer_unused_bytes(out), len);
+    int status = mbedtls_entropy_func(&self->ctx, vsc_buffer_unused_bytes(out), len);
 
     switch (status) {
     case 0:

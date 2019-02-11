@@ -80,11 +80,11 @@
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_salted_kdf_alg_info_init_ctx(vscf_salted_kdf_alg_info_t *salted_kdf_alg_info) {
+vscf_salted_kdf_alg_info_init_ctx(vscf_salted_kdf_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(salted_kdf_alg_info);
+    VSCF_ASSERT_PTR(self);
 
-    salted_kdf_alg_info->alg_id = vscf_alg_id_NONE;
+    self->alg_id = vscf_alg_id_NONE;
 }
 
 //
@@ -93,13 +93,13 @@ vscf_salted_kdf_alg_info_init_ctx(vscf_salted_kdf_alg_info_t *salted_kdf_alg_inf
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_salted_kdf_alg_info_cleanup_ctx(vscf_salted_kdf_alg_info_t *salted_kdf_alg_info) {
+vscf_salted_kdf_alg_info_cleanup_ctx(vscf_salted_kdf_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(salted_kdf_alg_info);
+    VSCF_ASSERT_PTR(self);
 
-    salted_kdf_alg_info->alg_id = vscf_alg_id_NONE;
-    vscf_impl_destroy(&salted_kdf_alg_info->hash_alg_info);
-    vsc_buffer_destroy(&salted_kdf_alg_info->salt);
+    self->alg_id = vscf_alg_id_NONE;
+    vscf_impl_destroy(&self->hash_alg_info);
+    vsc_buffer_destroy(&self->salt);
 }
 
 //
@@ -115,39 +115,39 @@ vscf_salted_kdf_alg_info_new_with_members(
     VSCF_ASSERT_PTR(*hash_alg_info_ref);
     VSCF_ASSERT(vsc_data_is_valid(salt));
 
-    vscf_salted_kdf_alg_info_t *salted_kdf_alg_info = vscf_salted_kdf_alg_info_new();
+    vscf_salted_kdf_alg_info_t *self = vscf_salted_kdf_alg_info_new();
 
-    salted_kdf_alg_info->alg_id = alg_id;
-    salted_kdf_alg_info->hash_alg_info = *hash_alg_info_ref;
+    self->alg_id = alg_id;
+    self->hash_alg_info = *hash_alg_info_ref;
     *hash_alg_info_ref = NULL;
-    salted_kdf_alg_info->salt = vsc_buffer_new_with_data(salt);
-    salted_kdf_alg_info->iteration_count = iteration_count;
+    self->salt = vsc_buffer_new_with_data(salt);
+    self->iteration_count = iteration_count;
 
-    return salted_kdf_alg_info;
+    return self;
 }
 
 //
 //  Return hash algorithm information.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_salted_kdf_alg_info_hash_alg_info(const vscf_salted_kdf_alg_info_t *salted_kdf_alg_info) {
+vscf_salted_kdf_alg_info_hash_alg_info(const vscf_salted_kdf_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(salted_kdf_alg_info);
-    VSCF_ASSERT_PTR(salted_kdf_alg_info->hash_alg_info);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->hash_alg_info);
 
-    return salted_kdf_alg_info->hash_alg_info;
+    return self->hash_alg_info;
 }
 
 //
 //  Return KDF salt.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_salted_kdf_alg_info_salt(const vscf_salted_kdf_alg_info_t *salted_kdf_alg_info) {
+vscf_salted_kdf_alg_info_salt(const vscf_salted_kdf_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(salted_kdf_alg_info);
-    VSCF_ASSERT_PTR(salted_kdf_alg_info->salt);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->salt);
 
-    return vsc_buffer_data(salted_kdf_alg_info->salt);
+    return vsc_buffer_data(self->salt);
 }
 
 //
@@ -155,20 +155,20 @@ vscf_salted_kdf_alg_info_salt(const vscf_salted_kdf_alg_info_t *salted_kdf_alg_i
 //  Note, can be 0 if KDF does not need the iteration count.
 //
 VSCF_PUBLIC size_t
-vscf_salted_kdf_alg_info_iteration_count(const vscf_salted_kdf_alg_info_t *salted_kdf_alg_info) {
+vscf_salted_kdf_alg_info_iteration_count(const vscf_salted_kdf_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(salted_kdf_alg_info);
+    VSCF_ASSERT_PTR(self);
 
-    return salted_kdf_alg_info->iteration_count;
+    return self->iteration_count;
 }
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_salted_kdf_alg_info_alg_id(const vscf_salted_kdf_alg_info_t *salted_kdf_alg_info) {
+vscf_salted_kdf_alg_info_alg_id(const vscf_salted_kdf_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(salted_kdf_alg_info);
+    VSCF_ASSERT_PTR(self);
 
-    return salted_kdf_alg_info->alg_id;
+    return self->alg_id;
 }

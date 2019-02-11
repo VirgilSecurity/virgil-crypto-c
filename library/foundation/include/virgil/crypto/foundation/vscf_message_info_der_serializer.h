@@ -99,20 +99,20 @@ vscf_message_info_der_serializer_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_message_info_der_serializer_impl(vscf_message_info_der_serializer_t *message_info_der_serializer);
+vscf_message_info_der_serializer_impl(vscf_message_info_der_serializer_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_message_info_der_serializer_init(vscf_message_info_der_serializer_t *message_info_der_serializer);
+vscf_message_info_der_serializer_init(vscf_message_info_der_serializer_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_message_info_der_serializer_init()'.
 //
 VSCF_PUBLIC void
-vscf_message_info_der_serializer_cleanup(vscf_message_info_der_serializer_t *message_info_der_serializer);
+vscf_message_info_der_serializer_cleanup(vscf_message_info_der_serializer_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -126,7 +126,7 @@ vscf_message_info_der_serializer_new(void);
 //  This is a reverse action of the function 'vscf_message_info_der_serializer_new()'.
 //
 VSCF_PUBLIC void
-vscf_message_info_der_serializer_delete(vscf_message_info_der_serializer_t *message_info_der_serializer);
+vscf_message_info_der_serializer_delete(vscf_message_info_der_serializer_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -134,83 +134,79 @@ vscf_message_info_der_serializer_delete(vscf_message_info_der_serializer_t *mess
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_message_info_der_serializer_destroy(vscf_message_info_der_serializer_t **message_info_der_serializer_ref);
+vscf_message_info_der_serializer_destroy(vscf_message_info_der_serializer_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_message_info_der_serializer_t *
-vscf_message_info_der_serializer_shallow_copy(vscf_message_info_der_serializer_t *message_info_der_serializer);
+vscf_message_info_der_serializer_shallow_copy(vscf_message_info_der_serializer_t *self);
 
 //
 //  Setup dependency to the interface 'asn1 reader' with shared ownership.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_message_info_der_serializer_use_asn1_reader(vscf_message_info_der_serializer_t *message_info_der_serializer,
-        vscf_impl_t *asn1_reader);
+vscf_message_info_der_serializer_use_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader);
 
 //
 //  Setup dependency to the interface 'asn1 reader' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_message_info_der_serializer_take_asn1_reader(vscf_message_info_der_serializer_t *message_info_der_serializer,
-        vscf_impl_t *asn1_reader);
+vscf_message_info_der_serializer_take_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader);
 
 //
 //  Release dependency to the interface 'asn1 reader'.
 //
 VSCF_PUBLIC void
-vscf_message_info_der_serializer_release_asn1_reader(vscf_message_info_der_serializer_t *message_info_der_serializer);
+vscf_message_info_der_serializer_release_asn1_reader(vscf_message_info_der_serializer_t *self);
 
 //
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_message_info_der_serializer_use_asn1_writer(vscf_message_info_der_serializer_t *message_info_der_serializer,
-        vscf_impl_t *asn1_writer);
+vscf_message_info_der_serializer_use_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
 
 //
 //  Setup dependency to the interface 'asn1 writer' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_message_info_der_serializer_take_asn1_writer(vscf_message_info_der_serializer_t *message_info_der_serializer,
-        vscf_impl_t *asn1_writer);
+vscf_message_info_der_serializer_take_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
 
 //
 //  Release dependency to the interface 'asn1 writer'.
 //
 VSCF_PUBLIC void
-vscf_message_info_der_serializer_release_asn1_writer(vscf_message_info_der_serializer_t *message_info_der_serializer);
+vscf_message_info_der_serializer_release_asn1_writer(vscf_message_info_der_serializer_t *self);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_message_info_der_serializer_setup_defaults(vscf_message_info_der_serializer_t *message_info_der_serializer);
+vscf_message_info_der_serializer_setup_defaults(vscf_message_info_der_serializer_t *self);
 
 //
 //  Return buffer size enough to hold serialized message info.
 //
 VSCF_PUBLIC size_t
-vscf_message_info_der_serializer_serialized_len(vscf_message_info_der_serializer_t *message_info_der_serializer,
+vscf_message_info_der_serializer_serialized_len(vscf_message_info_der_serializer_t *self,
         const vscf_message_info_t *message_info);
 
 //
 //  Serialize class "message info".
 //
 VSCF_PUBLIC void
-vscf_message_info_der_serializer_serialize(vscf_message_info_der_serializer_t *message_info_der_serializer,
+vscf_message_info_der_serializer_serialize(vscf_message_info_der_serializer_t *self,
         const vscf_message_info_t *message_info, vsc_buffer_t *out);
 
 //
 //  Deserialize class "message info".
 //
 VSCF_PUBLIC vscf_message_info_t *
-vscf_message_info_der_serializer_deserialize(vscf_message_info_der_serializer_t *message_info_der_serializer,
-        vsc_data_t data, vscf_error_ctx_t *error);
+vscf_message_info_der_serializer_deserialize(vscf_message_info_der_serializer_t *self, vsc_data_t data,
+        vscf_error_ctx_t *error);
 
 
 // --------------------------------------------------------------------------

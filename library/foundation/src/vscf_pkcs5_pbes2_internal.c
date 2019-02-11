@@ -163,16 +163,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_init(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
+vscf_pkcs5_pbes2_init(vscf_pkcs5_pbes2_t *self) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbes2);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(pkcs5_pbes2, sizeof(vscf_pkcs5_pbes2_t));
+    vscf_zeroize(self, sizeof(vscf_pkcs5_pbes2_t));
 
-    pkcs5_pbes2->info = &info;
-    pkcs5_pbes2->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_pkcs5_pbes2_init_ctx(pkcs5_pbes2);
+    vscf_pkcs5_pbes2_init_ctx(self);
 }
 
 //
@@ -180,26 +180,26 @@ vscf_pkcs5_pbes2_init(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
 //  This is a reverse action of the function 'vscf_pkcs5_pbes2_init()'.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_cleanup(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
+vscf_pkcs5_pbes2_cleanup(vscf_pkcs5_pbes2_t *self) {
 
-    if (pkcs5_pbes2 == NULL || pkcs5_pbes2->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (pkcs5_pbes2->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--pkcs5_pbes2->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_pkcs5_pbes2_release_kdf(pkcs5_pbes2);
-    vscf_pkcs5_pbes2_release_cipher(pkcs5_pbes2);
+    vscf_pkcs5_pbes2_release_kdf(self);
+    vscf_pkcs5_pbes2_release_cipher(self);
 
-    vscf_pkcs5_pbes2_cleanup_ctx(pkcs5_pbes2);
+    vscf_pkcs5_pbes2_cleanup_ctx(self);
 
-    vscf_zeroize(pkcs5_pbes2, sizeof(vscf_pkcs5_pbes2_t));
+    vscf_zeroize(self, sizeof(vscf_pkcs5_pbes2_t));
 }
 
 //
@@ -209,12 +209,12 @@ vscf_pkcs5_pbes2_cleanup(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
 VSCF_PUBLIC vscf_pkcs5_pbes2_t *
 vscf_pkcs5_pbes2_new(void) {
 
-    vscf_pkcs5_pbes2_t *pkcs5_pbes2 = (vscf_pkcs5_pbes2_t *) vscf_alloc(sizeof (vscf_pkcs5_pbes2_t));
-    VSCF_ASSERT_ALLOC(pkcs5_pbes2);
+    vscf_pkcs5_pbes2_t *self = (vscf_pkcs5_pbes2_t *) vscf_alloc(sizeof (vscf_pkcs5_pbes2_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_pkcs5_pbes2_init(pkcs5_pbes2);
+    vscf_pkcs5_pbes2_init(self);
 
-    return pkcs5_pbes2;
+    return self;
 }
 
 //
@@ -222,12 +222,12 @@ vscf_pkcs5_pbes2_new(void) {
 //  This is a reverse action of the function 'vscf_pkcs5_pbes2_new()'.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_delete(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
+vscf_pkcs5_pbes2_delete(vscf_pkcs5_pbes2_t *self) {
 
-    vscf_pkcs5_pbes2_cleanup(pkcs5_pbes2);
+    vscf_pkcs5_pbes2_cleanup(self);
 
-    if (pkcs5_pbes2 && (pkcs5_pbes2->refcnt == 0)) {
-        vscf_dealloc(pkcs5_pbes2);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -237,14 +237,14 @@ vscf_pkcs5_pbes2_delete(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_destroy(vscf_pkcs5_pbes2_t **pkcs5_pbes2_ref) {
+vscf_pkcs5_pbes2_destroy(vscf_pkcs5_pbes2_t **self_ref) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbes2_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_pkcs5_pbes2_t *pkcs5_pbes2 = *pkcs5_pbes2_ref;
-    *pkcs5_pbes2_ref = NULL;
+    vscf_pkcs5_pbes2_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_pkcs5_pbes2_delete(pkcs5_pbes2);
+    vscf_pkcs5_pbes2_delete(self);
 }
 
 //
@@ -252,10 +252,10 @@ vscf_pkcs5_pbes2_destroy(vscf_pkcs5_pbes2_t **pkcs5_pbes2_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_pkcs5_pbes2_t *
-vscf_pkcs5_pbes2_shallow_copy(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
+vscf_pkcs5_pbes2_shallow_copy(vscf_pkcs5_pbes2_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_pkcs5_pbes2_t *)vscf_impl_shallow_copy((vscf_impl_t *)pkcs5_pbes2);
+    return (vscf_pkcs5_pbes2_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -271,25 +271,25 @@ vscf_pkcs5_pbes2_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_pkcs5_pbes2_impl(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
+vscf_pkcs5_pbes2_impl(vscf_pkcs5_pbes2_t *self) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbes2);
-    return (vscf_impl_t *)(pkcs5_pbes2);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 //
 //  Setup dependency to the interface 'salted kdf' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_use_kdf(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vscf_impl_t *kdf) {
+vscf_pkcs5_pbes2_use_kdf(vscf_pkcs5_pbes2_t *self, vscf_impl_t *kdf) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbes2);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(kdf);
-    VSCF_ASSERT_PTR(pkcs5_pbes2->kdf == NULL);
+    VSCF_ASSERT_PTR(self->kdf == NULL);
 
     VSCF_ASSERT(vscf_salted_kdf_is_implemented(kdf));
 
-    pkcs5_pbes2->kdf = vscf_impl_shallow_copy(kdf);
+    self->kdf = vscf_impl_shallow_copy(kdf);
 }
 
 //
@@ -297,41 +297,41 @@ vscf_pkcs5_pbes2_use_kdf(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vscf_impl_t *kdf) {
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_take_kdf(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vscf_impl_t *kdf) {
+vscf_pkcs5_pbes2_take_kdf(vscf_pkcs5_pbes2_t *self, vscf_impl_t *kdf) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbes2);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(kdf);
-    VSCF_ASSERT_PTR(pkcs5_pbes2->kdf == NULL);
+    VSCF_ASSERT_PTR(self->kdf == NULL);
 
     VSCF_ASSERT(vscf_salted_kdf_is_implemented(kdf));
 
-    pkcs5_pbes2->kdf = kdf;
+    self->kdf = kdf;
 }
 
 //
 //  Release dependency to the interface 'salted kdf'.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_release_kdf(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
+vscf_pkcs5_pbes2_release_kdf(vscf_pkcs5_pbes2_t *self) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbes2);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&pkcs5_pbes2->kdf);
+    vscf_impl_destroy(&self->kdf);
 }
 
 //
 //  Setup dependency to the interface 'cipher' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_use_cipher(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vscf_impl_t *cipher) {
+vscf_pkcs5_pbes2_use_cipher(vscf_pkcs5_pbes2_t *self, vscf_impl_t *cipher) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbes2);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(cipher);
-    VSCF_ASSERT_PTR(pkcs5_pbes2->cipher == NULL);
+    VSCF_ASSERT_PTR(self->cipher == NULL);
 
     VSCF_ASSERT(vscf_cipher_is_implemented(cipher));
 
-    pkcs5_pbes2->cipher = vscf_impl_shallow_copy(cipher);
+    self->cipher = vscf_impl_shallow_copy(cipher);
 }
 
 //
@@ -339,26 +339,26 @@ vscf_pkcs5_pbes2_use_cipher(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vscf_impl_t *cipher
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_take_cipher(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vscf_impl_t *cipher) {
+vscf_pkcs5_pbes2_take_cipher(vscf_pkcs5_pbes2_t *self, vscf_impl_t *cipher) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbes2);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(cipher);
-    VSCF_ASSERT_PTR(pkcs5_pbes2->cipher == NULL);
+    VSCF_ASSERT_PTR(self->cipher == NULL);
 
     VSCF_ASSERT(vscf_cipher_is_implemented(cipher));
 
-    pkcs5_pbes2->cipher = cipher;
+    self->cipher = cipher;
 }
 
 //
 //  Release dependency to the interface 'cipher'.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_release_cipher(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
+vscf_pkcs5_pbes2_release_cipher(vscf_pkcs5_pbes2_t *self) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbes2);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&pkcs5_pbes2->cipher);
+    vscf_impl_destroy(&self->cipher);
 }
 
 static const vscf_api_t *

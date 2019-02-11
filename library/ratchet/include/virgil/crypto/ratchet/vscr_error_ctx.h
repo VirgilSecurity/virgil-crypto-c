@@ -104,19 +104,19 @@ vscr_error_ctx_ctx_size(void);
 //  Reset context to the "no error" state.
 //
 VSCR_PUBLIC void
-vscr_error_ctx_reset(vscr_error_ctx_t *error_ctx);
+vscr_error_ctx_reset(vscr_error_ctx_t *self);
 
 //
 //  Update context with given error.
 //
 VSCR_PRIVATE void
-vscr_error_ctx_update(vscr_error_ctx_t *error_ctx, vscr_error_t error);
+vscr_error_ctx_update(vscr_error_ctx_t *self, vscr_error_t error);
 
 //
 //  Reset context to the "no error" state.
 //
 VSCR_PUBLIC vscr_error_t
-vscr_error_ctx_error(const vscr_error_ctx_t *error_ctx);
+vscr_error_ctx_error(const vscr_error_ctx_t *self);
 
 
 // --------------------------------------------------------------------------
