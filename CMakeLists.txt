@@ -251,9 +251,9 @@ if(CLOC_EXECUTABLE)
 
     add_custom_target(cloc-ratchet
             COMMAND ${CLOC_EXECUTABLE}
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia"
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia/private"
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/src"
+                "${CMAKE_CURRENT_LIST_DIR}/library/ratchet/include/virgil/crypto/ratchet"
+                "${CMAKE_CURRENT_LIST_DIR}/library/ratchet/include/virgil/crypto/ratchet/private"
+                "${CMAKE_CURRENT_LIST_DIR}/library/ratchet/src"
             COMMENT "Calculate lines of the 'ratchet' library..."
             )
 
