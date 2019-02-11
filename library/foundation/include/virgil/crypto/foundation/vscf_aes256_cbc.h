@@ -121,20 +121,20 @@ vscf_aes256_cbc_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_aes256_cbc_impl(vscf_aes256_cbc_t *aes256_cbc);
+vscf_aes256_cbc_impl(vscf_aes256_cbc_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_aes256_cbc_init(vscf_aes256_cbc_t *aes256_cbc);
+vscf_aes256_cbc_init(vscf_aes256_cbc_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_aes256_cbc_init()'.
 //
 VSCF_PUBLIC void
-vscf_aes256_cbc_cleanup(vscf_aes256_cbc_t *aes256_cbc);
+vscf_aes256_cbc_cleanup(vscf_aes256_cbc_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -148,7 +148,7 @@ vscf_aes256_cbc_new(void);
 //  This is a reverse action of the function 'vscf_aes256_cbc_new()'.
 //
 VSCF_PUBLIC void
-vscf_aes256_cbc_delete(vscf_aes256_cbc_t *aes256_cbc);
+vscf_aes256_cbc_delete(vscf_aes256_cbc_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -156,14 +156,14 @@ vscf_aes256_cbc_delete(vscf_aes256_cbc_t *aes256_cbc);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_aes256_cbc_destroy(vscf_aes256_cbc_t **aes256_cbc_ref);
+vscf_aes256_cbc_destroy(vscf_aes256_cbc_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_aes256_cbc_t *
-vscf_aes256_cbc_shallow_copy(vscf_aes256_cbc_t *aes256_cbc);
+vscf_aes256_cbc_shallow_copy(vscf_aes256_cbc_t *self);
 
 //
 //  Returns instance of the implemented interface 'cipher info'.
@@ -175,73 +175,73 @@ vscf_aes256_cbc_cipher_info_api(void);
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_aes256_cbc_alg_id(const vscf_aes256_cbc_t *aes256_cbc);
+vscf_aes256_cbc_alg_id(const vscf_aes256_cbc_t *self);
 
 //
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_aes256_cbc_produce_alg_info(const vscf_aes256_cbc_t *aes256_cbc);
+vscf_aes256_cbc_produce_alg_info(const vscf_aes256_cbc_t *self);
 
 //
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_aes256_cbc_restore_alg_info(vscf_aes256_cbc_t *aes256_cbc, const vscf_impl_t *alg_info);
+vscf_aes256_cbc_restore_alg_info(vscf_aes256_cbc_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Encrypt given data.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_aes256_cbc_encrypt(vscf_aes256_cbc_t *aes256_cbc, vsc_data_t data, vsc_buffer_t *out);
+vscf_aes256_cbc_encrypt(vscf_aes256_cbc_t *self, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Calculate required buffer length to hold the encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_aes256_cbc_encrypted_len(vscf_aes256_cbc_t *aes256_cbc, size_t data_len);
+vscf_aes256_cbc_encrypted_len(vscf_aes256_cbc_t *self, size_t data_len);
 
 //
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_aes256_cbc_decrypt(vscf_aes256_cbc_t *aes256_cbc, vsc_data_t data, vsc_buffer_t *out);
+vscf_aes256_cbc_decrypt(vscf_aes256_cbc_t *self, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Calculate required buffer length to hold the decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_aes256_cbc_decrypted_len(vscf_aes256_cbc_t *aes256_cbc, size_t data_len);
+vscf_aes256_cbc_decrypted_len(vscf_aes256_cbc_t *self, size_t data_len);
 
 //
 //  Setup IV or nonce.
 //
 VSCF_PUBLIC void
-vscf_aes256_cbc_set_nonce(vscf_aes256_cbc_t *aes256_cbc, vsc_data_t nonce);
+vscf_aes256_cbc_set_nonce(vscf_aes256_cbc_t *self, vsc_data_t nonce);
 
 //
 //  Set cipher encryption / decryption key.
 //
 VSCF_PUBLIC void
-vscf_aes256_cbc_set_key(vscf_aes256_cbc_t *aes256_cbc, vsc_data_t key);
+vscf_aes256_cbc_set_key(vscf_aes256_cbc_t *self, vsc_data_t key);
 
 //
 //  Start sequential encryption.
 //
 VSCF_PUBLIC void
-vscf_aes256_cbc_start_encryption(vscf_aes256_cbc_t *aes256_cbc);
+vscf_aes256_cbc_start_encryption(vscf_aes256_cbc_t *self);
 
 //
 //  Start sequential decryption.
 //
 VSCF_PUBLIC void
-vscf_aes256_cbc_start_decryption(vscf_aes256_cbc_t *aes256_cbc);
+vscf_aes256_cbc_start_decryption(vscf_aes256_cbc_t *self);
 
 //
 //  Process encryption or decryption of the given data chunk.
 //
 VSCF_PUBLIC void
-vscf_aes256_cbc_update(vscf_aes256_cbc_t *aes256_cbc, vsc_data_t data, vsc_buffer_t *out);
+vscf_aes256_cbc_update(vscf_aes256_cbc_t *self, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Return buffer length required to hold an output of the methods
@@ -249,7 +249,7 @@ vscf_aes256_cbc_update(vscf_aes256_cbc_t *aes256_cbc, vsc_data_t data, vsc_buffe
 //  Pass zero length to define buffer length of the method "finish".
 //
 VSCF_PUBLIC size_t
-vscf_aes256_cbc_out_len(vscf_aes256_cbc_t *aes256_cbc, size_t data_len);
+vscf_aes256_cbc_out_len(vscf_aes256_cbc_t *self, size_t data_len);
 
 //
 //  Return buffer length required to hold an output of the methods
@@ -257,7 +257,7 @@ vscf_aes256_cbc_out_len(vscf_aes256_cbc_t *aes256_cbc, size_t data_len);
 //  Pass zero length to define buffer length of the method "finish".
 //
 VSCF_PUBLIC size_t
-vscf_aes256_cbc_encrypted_out_len(vscf_aes256_cbc_t *aes256_cbc, size_t data_len);
+vscf_aes256_cbc_encrypted_out_len(vscf_aes256_cbc_t *self, size_t data_len);
 
 //
 //  Return buffer length required to hold an output of the methods
@@ -265,13 +265,13 @@ vscf_aes256_cbc_encrypted_out_len(vscf_aes256_cbc_t *aes256_cbc, size_t data_len
 //  Pass zero length to define buffer length of the method "finish".
 //
 VSCF_PUBLIC size_t
-vscf_aes256_cbc_decrypted_out_len(vscf_aes256_cbc_t *aes256_cbc, size_t data_len);
+vscf_aes256_cbc_decrypted_out_len(vscf_aes256_cbc_t *self, size_t data_len);
 
 //
 //  Accomplish encryption or decryption process.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_aes256_cbc_finish(vscf_aes256_cbc_t *aes256_cbc, vsc_buffer_t *out);
+vscf_aes256_cbc_finish(vscf_aes256_cbc_t *self, vsc_buffer_t *out);
 
 
 // --------------------------------------------------------------------------

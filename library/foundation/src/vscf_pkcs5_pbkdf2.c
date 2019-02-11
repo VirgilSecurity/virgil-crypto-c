@@ -87,9 +87,9 @@
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_pkcs5_pbkdf2_init_ctx(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
+vscf_pkcs5_pbkdf2_init_ctx(vscf_pkcs5_pbkdf2_t *self) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2);
+    VSCF_ASSERT_PTR(self);
 }
 
 //
@@ -98,25 +98,25 @@ vscf_pkcs5_pbkdf2_init_ctx(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_pkcs5_pbkdf2_cleanup_ctx(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
+vscf_pkcs5_pbkdf2_cleanup_ctx(vscf_pkcs5_pbkdf2_t *self) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2);
-    vsc_buffer_destroy(&pkcs5_pbkdf2->salt);
+    VSCF_ASSERT_PTR(self);
+    vsc_buffer_destroy(&self->salt);
 }
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_pkcs5_pbkdf2_setup_defaults(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
+vscf_pkcs5_pbkdf2_setup_defaults(vscf_pkcs5_pbkdf2_t *self) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2);
+    VSCF_ASSERT_PTR(self);
 
-    if (NULL == pkcs5_pbkdf2->hmac) {
+    if (NULL == self->hmac) {
         vscf_impl_t *hash = vscf_sha384_impl(vscf_sha384_new());
         vscf_hmac_t *hmac = vscf_hmac_new();
         vscf_hmac_take_hash(hmac, hash);
-        pkcs5_pbkdf2->hmac = vscf_hmac_impl(hmac);
+        self->hmac = vscf_hmac_impl(hmac);
     }
 
     return vscf_SUCCESS;
@@ -126,9 +126,9 @@ vscf_pkcs5_pbkdf2_setup_defaults(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_pkcs5_pbkdf2_alg_id(const vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
+vscf_pkcs5_pbkdf2_alg_id(const vscf_pkcs5_pbkdf2_t *self) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2);
+    VSCF_ASSERT_PTR(self);
 
     return vscf_alg_id_PKCS5_PBKDF2;
 }
@@ -137,16 +137,15 @@ vscf_pkcs5_pbkdf2_alg_id(const vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_pkcs5_pbkdf2_produce_alg_info(const vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
+vscf_pkcs5_pbkdf2_produce_alg_info(const vscf_pkcs5_pbkdf2_t *self) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2);
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2->hmac);
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2->salt);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->hmac);
+    VSCF_ASSERT_PTR(self->salt);
 
-    vscf_impl_t *hmac_alg_info = vscf_alg_produce_alg_info(pkcs5_pbkdf2->hmac);
-    vscf_impl_t *pbkdf2_alg_info =
-            vscf_salted_kdf_alg_info_impl(vscf_salted_kdf_alg_info_new_with_members(vscf_alg_id_PKCS5_PBKDF2,
-                    &hmac_alg_info, vsc_buffer_data(pkcs5_pbkdf2->salt), pkcs5_pbkdf2->iteration_count));
+    vscf_impl_t *hmac_alg_info = vscf_alg_produce_alg_info(self->hmac);
+    vscf_impl_t *pbkdf2_alg_info = vscf_salted_kdf_alg_info_impl(vscf_salted_kdf_alg_info_new_with_members(
+            vscf_alg_id_PKCS5_PBKDF2, &hmac_alg_info, vsc_buffer_data(self->salt), self->iteration_count));
 
     return pbkdf2_alg_info;
 }
@@ -155,9 +154,9 @@ vscf_pkcs5_pbkdf2_produce_alg_info(const vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2) {
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_pkcs5_pbkdf2_restore_alg_info(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, const vscf_impl_t *alg_info) {
+vscf_pkcs5_pbkdf2_restore_alg_info(vscf_pkcs5_pbkdf2_t *self, const vscf_impl_t *alg_info) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
     VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_PKCS5_PBKDF2);
 
@@ -166,9 +165,9 @@ vscf_pkcs5_pbkdf2_restore_alg_info(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, const vscf
     vscf_impl_t *hmac = vscf_alg_factory_create_hash_alg(vscf_salted_kdf_alg_info_hash_alg_info(salted_kdf_alg_info));
     VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_HMAC);
 
-    vscf_pkcs5_pbkdf2_release_hmac(pkcs5_pbkdf2);
-    vscf_pkcs5_pbkdf2_take_hmac(pkcs5_pbkdf2, hmac);
-    vscf_pkcs5_pbkdf2_reset(pkcs5_pbkdf2, vscf_salted_kdf_alg_info_salt(salted_kdf_alg_info),
+    vscf_pkcs5_pbkdf2_release_hmac(self);
+    vscf_pkcs5_pbkdf2_take_hmac(self, hmac);
+    vscf_pkcs5_pbkdf2_reset(self, vscf_salted_kdf_alg_info_salt(salted_kdf_alg_info),
             vscf_salted_kdf_alg_info_iteration_count(salted_kdf_alg_info));
 
     return vscf_SUCCESS;
@@ -178,17 +177,17 @@ vscf_pkcs5_pbkdf2_restore_alg_info(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, const vscf
 //  Derive key of the requested length from the given data.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_derive(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vsc_data_t data, size_t key_len, vsc_buffer_t *key) {
+vscf_pkcs5_pbkdf2_derive(vscf_pkcs5_pbkdf2_t *self, vsc_data_t data, size_t key_len, vsc_buffer_t *key) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(key);
     VSCF_ASSERT_PTR(vsc_buffer_is_valid(key));
     VSCF_ASSERT(vsc_buffer_unused_len(key) >= key_len);
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2->hmac);
+    VSCF_ASSERT_PTR(self->hmac);
 
     size_t key_len_left = key_len;
-    size_t hash_len = vscf_mac_digest_len(pkcs5_pbkdf2->hmac);
+    size_t hash_len = vscf_mac_digest_len(self->hmac);
     size_t hash_count = VSCF_CEIL(key_len, hash_len);
     byte counter_string[4] = {0x0};
 
@@ -210,12 +209,12 @@ vscf_pkcs5_pbkdf2_derive(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vsc_data_t data, siz
         //  Calculate U_1, that will be accumulator.
         //
         vsc_buffer_reset(u_1);
-        vscf_mac_start(pkcs5_pbkdf2->hmac, data);
-        if (pkcs5_pbkdf2->salt) {
-            vscf_mac_update(pkcs5_pbkdf2->hmac, vsc_buffer_data(pkcs5_pbkdf2->salt));
+        vscf_mac_start(self->hmac, data);
+        if (self->salt) {
+            vscf_mac_update(self->hmac, vsc_buffer_data(self->salt));
         }
-        vscf_mac_update(pkcs5_pbkdf2->hmac, vsc_data(counter_string, 4));
-        vscf_mac_finish(pkcs5_pbkdf2->hmac, u_1);
+        vscf_mac_update(self->hmac, vsc_data(counter_string, 4));
+        vscf_mac_finish(self->hmac, u_1);
         vsc_data_t u_1_data = vsc_buffer_data(u_1);
         byte *u_1_bytes = vsc_buffer_begin(u_1);
 
@@ -224,12 +223,12 @@ vscf_pkcs5_pbkdf2_derive(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vsc_data_t data, siz
         //
         vsc_buffer_reset(u_2);
         vsc_buffer_write_data(u_2, u_1_data);
-        for (size_t iteration = 1; iteration < pkcs5_pbkdf2->iteration_count; ++iteration) {
+        for (size_t iteration = 1; iteration < self->iteration_count; ++iteration) {
             vsc_data_t u_2_data = vsc_buffer_data(u_2);
-            vscf_mac_start(pkcs5_pbkdf2->hmac, data);
-            vscf_mac_update(pkcs5_pbkdf2->hmac, u_2_data);
+            vscf_mac_start(self->hmac, data);
+            vscf_mac_update(self->hmac, u_2_data);
             vsc_buffer_reset(u_2);
-            vscf_mac_finish(pkcs5_pbkdf2->hmac, u_2);
+            vscf_mac_finish(self->hmac, u_2);
 
             //
             //  Calculate U_1 xor U_2.
@@ -261,16 +260,16 @@ vscf_pkcs5_pbkdf2_derive(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vsc_data_t data, siz
 //  Prepare algorithm to derive new key.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_reset(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vsc_data_t salt, size_t iteration_count) {
+vscf_pkcs5_pbkdf2_reset(vscf_pkcs5_pbkdf2_t *self, vsc_data_t salt, size_t iteration_count) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(salt));
 
-    vsc_buffer_destroy(&pkcs5_pbkdf2->salt);
+    vsc_buffer_destroy(&self->salt);
     if (!vsc_data_is_empty(salt)) {
-        pkcs5_pbkdf2->salt = vsc_buffer_new_with_data(salt);
+        self->salt = vsc_buffer_new_with_data(salt);
     }
-    pkcs5_pbkdf2->iteration_count = iteration_count;
+    self->iteration_count = iteration_count;
 }
 
 //
@@ -278,8 +277,8 @@ vscf_pkcs5_pbkdf2_reset(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vsc_data_t salt, size
 //  Can be empty.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_set_info(vscf_pkcs5_pbkdf2_t *pkcs5_pbkdf2, vsc_data_t info) {
+vscf_pkcs5_pbkdf2_set_info(vscf_pkcs5_pbkdf2_t *self, vsc_data_t info) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbkdf2);
+    VSCF_ASSERT_PTR(self);
     VSCF_UNUSED(info);
 }

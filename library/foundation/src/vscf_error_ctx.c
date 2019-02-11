@@ -88,22 +88,22 @@ vscf_error_ctx_ctx_size(void) {
 //  Reset context to the "no error" state.
 //
 VSCF_PUBLIC void
-vscf_error_ctx_reset(vscf_error_ctx_t *error_ctx) {
+vscf_error_ctx_reset(vscf_error_ctx_t *self) {
 
-    VSCF_ASSERT_PTR(error_ctx);
-    error_ctx->error = vscf_SUCCESS;
+    VSCF_ASSERT_PTR(self);
+    self->error = vscf_SUCCESS;
 }
 
 //
 //  Update context with given error.
 //
 VSCF_PRIVATE void
-vscf_error_ctx_update(vscf_error_ctx_t *error_ctx, vscf_error_t error) {
+vscf_error_ctx_update(vscf_error_ctx_t *self, vscf_error_t error) {
 
-    VSCF_ASSERT_PTR(error_ctx);
+    VSCF_ASSERT_PTR(self);
 
     if (error != vscf_SUCCESS) {
-        error_ctx->error = error;
+        self->error = error;
     }
 }
 
@@ -111,8 +111,8 @@ vscf_error_ctx_update(vscf_error_ctx_t *error_ctx, vscf_error_t error) {
 //  Reset context to the "no error" state.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_error_ctx_error(const vscf_error_ctx_t *error_ctx) {
+vscf_error_ctx_error(const vscf_error_ctx_t *self) {
 
-    VSCF_ASSERT_PTR(error_ctx);
-    return error_ctx->error;
+    VSCF_ASSERT_PTR(self);
+    return self->error;
 }

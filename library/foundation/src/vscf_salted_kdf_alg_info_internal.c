@@ -111,16 +111,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_salted_kdf_alg_info_init(vscf_salted_kdf_alg_info_t *salted_kdf_alg_info) {
+vscf_salted_kdf_alg_info_init(vscf_salted_kdf_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(salted_kdf_alg_info);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(salted_kdf_alg_info, sizeof(vscf_salted_kdf_alg_info_t));
+    vscf_zeroize(self, sizeof(vscf_salted_kdf_alg_info_t));
 
-    salted_kdf_alg_info->info = &info;
-    salted_kdf_alg_info->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_salted_kdf_alg_info_init_ctx(salted_kdf_alg_info);
+    vscf_salted_kdf_alg_info_init_ctx(self);
 }
 
 //
@@ -128,23 +128,23 @@ vscf_salted_kdf_alg_info_init(vscf_salted_kdf_alg_info_t *salted_kdf_alg_info) {
 //  This is a reverse action of the function 'vscf_salted_kdf_alg_info_init()'.
 //
 VSCF_PUBLIC void
-vscf_salted_kdf_alg_info_cleanup(vscf_salted_kdf_alg_info_t *salted_kdf_alg_info) {
+vscf_salted_kdf_alg_info_cleanup(vscf_salted_kdf_alg_info_t *self) {
 
-    if (salted_kdf_alg_info == NULL || salted_kdf_alg_info->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (salted_kdf_alg_info->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--salted_kdf_alg_info->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_salted_kdf_alg_info_cleanup_ctx(salted_kdf_alg_info);
+    vscf_salted_kdf_alg_info_cleanup_ctx(self);
 
-    vscf_zeroize(salted_kdf_alg_info, sizeof(vscf_salted_kdf_alg_info_t));
+    vscf_zeroize(self, sizeof(vscf_salted_kdf_alg_info_t));
 }
 
 //
@@ -154,12 +154,12 @@ vscf_salted_kdf_alg_info_cleanup(vscf_salted_kdf_alg_info_t *salted_kdf_alg_info
 VSCF_PUBLIC vscf_salted_kdf_alg_info_t *
 vscf_salted_kdf_alg_info_new(void) {
 
-    vscf_salted_kdf_alg_info_t *salted_kdf_alg_info = (vscf_salted_kdf_alg_info_t *) vscf_alloc(sizeof (vscf_salted_kdf_alg_info_t));
-    VSCF_ASSERT_ALLOC(salted_kdf_alg_info);
+    vscf_salted_kdf_alg_info_t *self = (vscf_salted_kdf_alg_info_t *) vscf_alloc(sizeof (vscf_salted_kdf_alg_info_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_salted_kdf_alg_info_init(salted_kdf_alg_info);
+    vscf_salted_kdf_alg_info_init(self);
 
-    return salted_kdf_alg_info;
+    return self;
 }
 
 //
@@ -167,12 +167,12 @@ vscf_salted_kdf_alg_info_new(void) {
 //  This is a reverse action of the function 'vscf_salted_kdf_alg_info_new()'.
 //
 VSCF_PUBLIC void
-vscf_salted_kdf_alg_info_delete(vscf_salted_kdf_alg_info_t *salted_kdf_alg_info) {
+vscf_salted_kdf_alg_info_delete(vscf_salted_kdf_alg_info_t *self) {
 
-    vscf_salted_kdf_alg_info_cleanup(salted_kdf_alg_info);
+    vscf_salted_kdf_alg_info_cleanup(self);
 
-    if (salted_kdf_alg_info && (salted_kdf_alg_info->refcnt == 0)) {
-        vscf_dealloc(salted_kdf_alg_info);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -182,14 +182,14 @@ vscf_salted_kdf_alg_info_delete(vscf_salted_kdf_alg_info_t *salted_kdf_alg_info)
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_salted_kdf_alg_info_destroy(vscf_salted_kdf_alg_info_t **salted_kdf_alg_info_ref) {
+vscf_salted_kdf_alg_info_destroy(vscf_salted_kdf_alg_info_t **self_ref) {
 
-    VSCF_ASSERT_PTR(salted_kdf_alg_info_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_salted_kdf_alg_info_t *salted_kdf_alg_info = *salted_kdf_alg_info_ref;
-    *salted_kdf_alg_info_ref = NULL;
+    vscf_salted_kdf_alg_info_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_salted_kdf_alg_info_delete(salted_kdf_alg_info);
+    vscf_salted_kdf_alg_info_delete(self);
 }
 
 //
@@ -197,10 +197,10 @@ vscf_salted_kdf_alg_info_destroy(vscf_salted_kdf_alg_info_t **salted_kdf_alg_inf
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_salted_kdf_alg_info_t *
-vscf_salted_kdf_alg_info_shallow_copy(vscf_salted_kdf_alg_info_t *salted_kdf_alg_info) {
+vscf_salted_kdf_alg_info_shallow_copy(vscf_salted_kdf_alg_info_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_salted_kdf_alg_info_t *)vscf_impl_shallow_copy((vscf_impl_t *)salted_kdf_alg_info);
+    return (vscf_salted_kdf_alg_info_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -216,10 +216,10 @@ vscf_salted_kdf_alg_info_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_salted_kdf_alg_info_impl(vscf_salted_kdf_alg_info_t *salted_kdf_alg_info) {
+vscf_salted_kdf_alg_info_impl(vscf_salted_kdf_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(salted_kdf_alg_info);
-    return (vscf_impl_t *)(salted_kdf_alg_info);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 static const vscf_api_t *

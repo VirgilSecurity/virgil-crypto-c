@@ -156,16 +156,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_sha256_init(vscf_sha256_t *sha256) {
+vscf_sha256_init(vscf_sha256_t *self) {
 
-    VSCF_ASSERT_PTR(sha256);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(sha256, sizeof(vscf_sha256_t));
+    vscf_zeroize(self, sizeof(vscf_sha256_t));
 
-    sha256->info = &info;
-    sha256->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_sha256_init_ctx(sha256);
+    vscf_sha256_init_ctx(self);
 }
 
 //
@@ -173,23 +173,23 @@ vscf_sha256_init(vscf_sha256_t *sha256) {
 //  This is a reverse action of the function 'vscf_sha256_init()'.
 //
 VSCF_PUBLIC void
-vscf_sha256_cleanup(vscf_sha256_t *sha256) {
+vscf_sha256_cleanup(vscf_sha256_t *self) {
 
-    if (sha256 == NULL || sha256->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (sha256->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--sha256->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_sha256_cleanup_ctx(sha256);
+    vscf_sha256_cleanup_ctx(self);
 
-    vscf_zeroize(sha256, sizeof(vscf_sha256_t));
+    vscf_zeroize(self, sizeof(vscf_sha256_t));
 }
 
 //
@@ -199,12 +199,12 @@ vscf_sha256_cleanup(vscf_sha256_t *sha256) {
 VSCF_PUBLIC vscf_sha256_t *
 vscf_sha256_new(void) {
 
-    vscf_sha256_t *sha256 = (vscf_sha256_t *) vscf_alloc(sizeof (vscf_sha256_t));
-    VSCF_ASSERT_ALLOC(sha256);
+    vscf_sha256_t *self = (vscf_sha256_t *) vscf_alloc(sizeof (vscf_sha256_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_sha256_init(sha256);
+    vscf_sha256_init(self);
 
-    return sha256;
+    return self;
 }
 
 //
@@ -212,12 +212,12 @@ vscf_sha256_new(void) {
 //  This is a reverse action of the function 'vscf_sha256_new()'.
 //
 VSCF_PUBLIC void
-vscf_sha256_delete(vscf_sha256_t *sha256) {
+vscf_sha256_delete(vscf_sha256_t *self) {
 
-    vscf_sha256_cleanup(sha256);
+    vscf_sha256_cleanup(self);
 
-    if (sha256 && (sha256->refcnt == 0)) {
-        vscf_dealloc(sha256);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -227,14 +227,14 @@ vscf_sha256_delete(vscf_sha256_t *sha256) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_sha256_destroy(vscf_sha256_t **sha256_ref) {
+vscf_sha256_destroy(vscf_sha256_t **self_ref) {
 
-    VSCF_ASSERT_PTR(sha256_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_sha256_t *sha256 = *sha256_ref;
-    *sha256_ref = NULL;
+    vscf_sha256_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_sha256_delete(sha256);
+    vscf_sha256_delete(self);
 }
 
 //
@@ -242,10 +242,10 @@ vscf_sha256_destroy(vscf_sha256_t **sha256_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_sha256_t *
-vscf_sha256_shallow_copy(vscf_sha256_t *sha256) {
+vscf_sha256_shallow_copy(vscf_sha256_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_sha256_t *)vscf_impl_shallow_copy((vscf_impl_t *)sha256);
+    return (vscf_sha256_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -261,10 +261,10 @@ vscf_sha256_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_sha256_impl(vscf_sha256_t *sha256) {
+vscf_sha256_impl(vscf_sha256_t *self) {
 
-    VSCF_ASSERT_PTR(sha256);
-    return (vscf_impl_t *)(sha256);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 static const vscf_api_t *

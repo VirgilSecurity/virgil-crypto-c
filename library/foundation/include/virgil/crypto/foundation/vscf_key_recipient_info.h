@@ -94,13 +94,13 @@ vscf_key_recipient_info_ctx_size(void);
 //  Perform initialization of pre-allocated context.
 //
 VSCF_PUBLIC void
-vscf_key_recipient_info_init(vscf_key_recipient_info_t *key_recipient_info);
+vscf_key_recipient_info_init(vscf_key_recipient_info_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCF_PUBLIC void
-vscf_key_recipient_info_cleanup(vscf_key_recipient_info_t *key_recipient_info);
+vscf_key_recipient_info_cleanup(vscf_key_recipient_info_t *self);
 
 //
 //  Allocate context and perform it's initialization.
@@ -120,39 +120,39 @@ vscf_key_recipient_info_new_with_members(vsc_data_t recipient_id, vscf_impl_t **
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCF_PUBLIC void
-vscf_key_recipient_info_delete(vscf_key_recipient_info_t *key_recipient_info);
+vscf_key_recipient_info_delete(vscf_key_recipient_info_t *self);
 
 //
 //  Delete given context and nullifies reference.
 //  This is a reverse action of the function 'vscf_key_recipient_info_new ()'.
 //
 VSCF_PUBLIC void
-vscf_key_recipient_info_destroy(vscf_key_recipient_info_t **key_recipient_info_ref);
+vscf_key_recipient_info_destroy(vscf_key_recipient_info_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCF_PUBLIC vscf_key_recipient_info_t *
-vscf_key_recipient_info_shallow_copy(vscf_key_recipient_info_t *key_recipient_info);
+vscf_key_recipient_info_shallow_copy(vscf_key_recipient_info_t *self);
 
 //
 //  Return recipient identifier.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_key_recipient_info_recipient_id(const vscf_key_recipient_info_t *key_recipient_info);
+vscf_key_recipient_info_recipient_id(const vscf_key_recipient_info_t *self);
 
 //
 //  Return algorithm information that was used for encryption
 //  a data encryption key.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_key_recipient_info_key_encryption_algorithm(const vscf_key_recipient_info_t *key_recipient_info);
+vscf_key_recipient_info_key_encryption_algorithm(const vscf_key_recipient_info_t *self);
 
 //
 //  Return an encrypted data encryption key.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_key_recipient_info_encrypted_key(const vscf_key_recipient_info_t *key_recipient_info);
+vscf_key_recipient_info_encrypted_key(const vscf_key_recipient_info_t *self);
 
 
 // --------------------------------------------------------------------------

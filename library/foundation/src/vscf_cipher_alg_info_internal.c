@@ -111,16 +111,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_cipher_alg_info_init(vscf_cipher_alg_info_t *cipher_alg_info) {
+vscf_cipher_alg_info_init(vscf_cipher_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(cipher_alg_info);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(cipher_alg_info, sizeof(vscf_cipher_alg_info_t));
+    vscf_zeroize(self, sizeof(vscf_cipher_alg_info_t));
 
-    cipher_alg_info->info = &info;
-    cipher_alg_info->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_cipher_alg_info_init_ctx(cipher_alg_info);
+    vscf_cipher_alg_info_init_ctx(self);
 }
 
 //
@@ -128,23 +128,23 @@ vscf_cipher_alg_info_init(vscf_cipher_alg_info_t *cipher_alg_info) {
 //  This is a reverse action of the function 'vscf_cipher_alg_info_init()'.
 //
 VSCF_PUBLIC void
-vscf_cipher_alg_info_cleanup(vscf_cipher_alg_info_t *cipher_alg_info) {
+vscf_cipher_alg_info_cleanup(vscf_cipher_alg_info_t *self) {
 
-    if (cipher_alg_info == NULL || cipher_alg_info->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (cipher_alg_info->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--cipher_alg_info->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_cipher_alg_info_cleanup_ctx(cipher_alg_info);
+    vscf_cipher_alg_info_cleanup_ctx(self);
 
-    vscf_zeroize(cipher_alg_info, sizeof(vscf_cipher_alg_info_t));
+    vscf_zeroize(self, sizeof(vscf_cipher_alg_info_t));
 }
 
 //
@@ -154,12 +154,12 @@ vscf_cipher_alg_info_cleanup(vscf_cipher_alg_info_t *cipher_alg_info) {
 VSCF_PUBLIC vscf_cipher_alg_info_t *
 vscf_cipher_alg_info_new(void) {
 
-    vscf_cipher_alg_info_t *cipher_alg_info = (vscf_cipher_alg_info_t *) vscf_alloc(sizeof (vscf_cipher_alg_info_t));
-    VSCF_ASSERT_ALLOC(cipher_alg_info);
+    vscf_cipher_alg_info_t *self = (vscf_cipher_alg_info_t *) vscf_alloc(sizeof (vscf_cipher_alg_info_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_cipher_alg_info_init(cipher_alg_info);
+    vscf_cipher_alg_info_init(self);
 
-    return cipher_alg_info;
+    return self;
 }
 
 //
@@ -167,12 +167,12 @@ vscf_cipher_alg_info_new(void) {
 //  This is a reverse action of the function 'vscf_cipher_alg_info_new()'.
 //
 VSCF_PUBLIC void
-vscf_cipher_alg_info_delete(vscf_cipher_alg_info_t *cipher_alg_info) {
+vscf_cipher_alg_info_delete(vscf_cipher_alg_info_t *self) {
 
-    vscf_cipher_alg_info_cleanup(cipher_alg_info);
+    vscf_cipher_alg_info_cleanup(self);
 
-    if (cipher_alg_info && (cipher_alg_info->refcnt == 0)) {
-        vscf_dealloc(cipher_alg_info);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -182,14 +182,14 @@ vscf_cipher_alg_info_delete(vscf_cipher_alg_info_t *cipher_alg_info) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_cipher_alg_info_destroy(vscf_cipher_alg_info_t **cipher_alg_info_ref) {
+vscf_cipher_alg_info_destroy(vscf_cipher_alg_info_t **self_ref) {
 
-    VSCF_ASSERT_PTR(cipher_alg_info_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_cipher_alg_info_t *cipher_alg_info = *cipher_alg_info_ref;
-    *cipher_alg_info_ref = NULL;
+    vscf_cipher_alg_info_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_cipher_alg_info_delete(cipher_alg_info);
+    vscf_cipher_alg_info_delete(self);
 }
 
 //
@@ -197,10 +197,10 @@ vscf_cipher_alg_info_destroy(vscf_cipher_alg_info_t **cipher_alg_info_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_cipher_alg_info_t *
-vscf_cipher_alg_info_shallow_copy(vscf_cipher_alg_info_t *cipher_alg_info) {
+vscf_cipher_alg_info_shallow_copy(vscf_cipher_alg_info_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_cipher_alg_info_t *)vscf_impl_shallow_copy((vscf_impl_t *)cipher_alg_info);
+    return (vscf_cipher_alg_info_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -216,10 +216,10 @@ vscf_cipher_alg_info_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_cipher_alg_info_impl(vscf_cipher_alg_info_t *cipher_alg_info) {
+vscf_cipher_alg_info_impl(vscf_cipher_alg_info_t *self) {
 
-    VSCF_ASSERT_PTR(cipher_alg_info);
-    return (vscf_impl_t *)(cipher_alg_info);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 static const vscf_api_t *

@@ -119,7 +119,7 @@ struct vscr_ratchet_session_t {
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_session_init_ctx(vscr_ratchet_session_t *ratchet_session);
+vscr_ratchet_session_init_ctx(vscr_ratchet_session_t *self);
 
 //
 //  Release all inner resources.
@@ -127,7 +127,7 @@ vscr_ratchet_session_init_ctx(vscr_ratchet_session_t *ratchet_session);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *ratchet_session);
+vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *self);
 
 //
 //  Return size of 'vscr_ratchet_session_t'.
@@ -142,37 +142,37 @@ vscr_ratchet_session_ctx_size(void) {
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_init(vscr_ratchet_session_t *ratchet_session) {
+vscr_ratchet_session_init(vscr_ratchet_session_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_session);
+    VSCR_ASSERT_PTR(self);
 
-    vscr_zeroize(ratchet_session, sizeof(vscr_ratchet_session_t));
+    vscr_zeroize(self, sizeof(vscr_ratchet_session_t));
 
-    ratchet_session->refcnt = 1;
+    self->refcnt = 1;
 
-    vscr_ratchet_session_init_ctx(ratchet_session);
+    vscr_ratchet_session_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_cleanup(vscr_ratchet_session_t *ratchet_session) {
+vscr_ratchet_session_cleanup(vscr_ratchet_session_t *self) {
 
-    if (ratchet_session == NULL) {
+    if (self == NULL) {
         return;
     }
 
-    if (ratchet_session->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--ratchet_session->refcnt == 0) {
-        vscr_ratchet_session_cleanup_ctx(ratchet_session);
+    if (--self->refcnt == 0) {
+        vscr_ratchet_session_cleanup_ctx(self);
 
-        vscr_ratchet_session_release_rng(ratchet_session);
+        vscr_ratchet_session_release_rng(self);
 
-        vscr_zeroize(ratchet_session, sizeof(vscr_ratchet_session_t));
+        vscr_zeroize(self, sizeof(vscr_ratchet_session_t));
     }
 }
 
@@ -182,14 +182,14 @@ vscr_ratchet_session_cleanup(vscr_ratchet_session_t *ratchet_session) {
 VSCR_PUBLIC vscr_ratchet_session_t *
 vscr_ratchet_session_new(void) {
 
-    vscr_ratchet_session_t *ratchet_session = (vscr_ratchet_session_t *) vscr_alloc(sizeof (vscr_ratchet_session_t));
-    VSCR_ASSERT_ALLOC(ratchet_session);
+    vscr_ratchet_session_t *self = (vscr_ratchet_session_t *) vscr_alloc(sizeof (vscr_ratchet_session_t));
+    VSCR_ASSERT_ALLOC(self);
 
-    vscr_ratchet_session_init(ratchet_session);
+    vscr_ratchet_session_init(self);
 
-    ratchet_session->self_dealloc_cb = vscr_dealloc;
+    self->self_dealloc_cb = vscr_dealloc;
 
-    return ratchet_session;
+    return self;
 }
 
 //
@@ -197,18 +197,18 @@ vscr_ratchet_session_new(void) {
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_delete(vscr_ratchet_session_t *ratchet_session) {
+vscr_ratchet_session_delete(vscr_ratchet_session_t *self) {
 
-    if (ratchet_session == NULL) {
+    if (self == NULL) {
         return;
     }
 
-    vscr_dealloc_fn self_dealloc_cb = ratchet_session->self_dealloc_cb;
+    vscr_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscr_ratchet_session_cleanup(ratchet_session);
+    vscr_ratchet_session_cleanup(self);
 
-    if (ratchet_session->refcnt == 0 && self_dealloc_cb != NULL) {
-        self_dealloc_cb(ratchet_session);
+    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+        self_dealloc_cb(self);
     }
 }
 
@@ -217,42 +217,42 @@ vscr_ratchet_session_delete(vscr_ratchet_session_t *ratchet_session) {
 //  This is a reverse action of the function 'vscr_ratchet_session_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_destroy(vscr_ratchet_session_t **ratchet_session_ref) {
+vscr_ratchet_session_destroy(vscr_ratchet_session_t **self_ref) {
 
-    VSCR_ASSERT_PTR(ratchet_session_ref);
+    VSCR_ASSERT_PTR(self_ref);
 
-    vscr_ratchet_session_t *ratchet_session = *ratchet_session_ref;
-    *ratchet_session_ref = NULL;
+    vscr_ratchet_session_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscr_ratchet_session_delete(ratchet_session);
+    vscr_ratchet_session_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCR_PUBLIC vscr_ratchet_session_t *
-vscr_ratchet_session_shallow_copy(vscr_ratchet_session_t *ratchet_session) {
+vscr_ratchet_session_shallow_copy(vscr_ratchet_session_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_session);
+    VSCR_ASSERT_PTR(self);
 
-    ++ratchet_session->refcnt;
+    ++self->refcnt;
 
-    return ratchet_session;
+    return self;
 }
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_use_rng(vscr_ratchet_session_t *ratchet_session, vscf_impl_t *rng) {
+vscr_ratchet_session_use_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) {
 
-    VSCR_ASSERT_PTR(ratchet_session);
+    VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(rng);
-    VSCR_ASSERT_PTR(ratchet_session->rng == NULL);
+    VSCR_ASSERT_PTR(self->rng == NULL);
 
     VSCR_ASSERT(vscf_random_is_implemented(rng));
 
-    ratchet_session->rng = vscf_impl_shallow_copy(rng);
+    self->rng = vscf_impl_shallow_copy(rng);
 }
 
 //
@@ -260,26 +260,26 @@ vscr_ratchet_session_use_rng(vscr_ratchet_session_t *ratchet_session, vscf_impl_
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_take_rng(vscr_ratchet_session_t *ratchet_session, vscf_impl_t *rng) {
+vscr_ratchet_session_take_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) {
 
-    VSCR_ASSERT_PTR(ratchet_session);
+    VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(rng);
-    VSCR_ASSERT_PTR(ratchet_session->rng == NULL);
+    VSCR_ASSERT_PTR(self->rng == NULL);
 
     VSCR_ASSERT(vscf_random_is_implemented(rng));
 
-    ratchet_session->rng = rng;
+    self->rng = rng;
 }
 
 //
 //  Release dependency to the interface 'random'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_release_rng(vscr_ratchet_session_t *ratchet_session) {
+vscr_ratchet_session_release_rng(vscr_ratchet_session_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_session);
+    VSCR_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&ratchet_session->rng);
+    vscf_impl_destroy(&self->rng);
 }
 
 
@@ -296,13 +296,13 @@ vscr_ratchet_session_release_rng(vscr_ratchet_session_t *ratchet_session) {
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_session_init_ctx(vscr_ratchet_session_t *ratchet_session) {
+vscr_ratchet_session_init_ctx(vscr_ratchet_session_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_session);
-    ratchet_session->received_first_response = false;
-    ratchet_session->is_initiator = false;
-    ratchet_session->ratchet = vscr_ratchet_new();
-    ratchet_session->key_utils = vscr_ratchet_key_utils_new();
+    VSCR_ASSERT_PTR(self);
+    self->received_first_response = false;
+    self->is_initiator = false;
+    self->ratchet = vscr_ratchet_new();
+    self->key_utils = vscr_ratchet_key_utils_new();
 }
 
 //
@@ -311,12 +311,12 @@ vscr_ratchet_session_init_ctx(vscr_ratchet_session_t *ratchet_session) {
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *ratchet_session) {
+vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_session);
+    VSCR_ASSERT_PTR(self);
 
-    vscr_ratchet_destroy(&ratchet_session->ratchet);
-    vscr_ratchet_key_utils_destroy(&ratchet_session->key_utils);
+    vscr_ratchet_destroy(&self->ratchet);
+    vscr_ratchet_key_utils_destroy(&self->key_utils);
 }
 
 //
@@ -326,30 +326,30 @@ vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *ratchet_session) {
 //      - Symmetric cipher: AES256-GCM
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_setup_defaults(vscr_ratchet_session_t *ratchet_session) {
+vscr_ratchet_session_setup_defaults(vscr_ratchet_session_t *self) {
 
-    VSCR_ASSERT_PTR(ratchet_session);
-    VSCR_ASSERT(ratchet_session->rng == NULL);
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(self->rng == NULL);
 
     vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
     vscf_ctr_drbg_setup_defaults(rng);
-    vscr_ratchet_session_take_rng(ratchet_session, vscf_ctr_drbg_impl(rng));
+    vscr_ratchet_session_take_rng(self, vscf_ctr_drbg_impl(rng));
 
-    vscr_ratchet_setup_defaults(ratchet_session->ratchet);
+    vscr_ratchet_setup_defaults(self->ratchet);
 }
 
 //
 //  Initiates session
 //
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_t sender_identity_private_key,
+vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, vsc_data_t sender_identity_private_key,
         vsc_data_t receiver_identity_public_key, vsc_data_t receiver_long_term_public_key,
         vsc_data_t receiver_one_time_public_key) {
 
-    VSCR_ASSERT_PTR(ratchet_session);
-    VSCR_ASSERT_PTR(ratchet_session->rng);
-    VSCR_ASSERT_PTR(ratchet_session->ratchet);
-    VSCR_ASSERT_PTR(ratchet_session->key_utils);
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(self->rng);
+    VSCR_ASSERT_PTR(self->ratchet);
+    VSCR_ASSERT_PTR(self->key_utils);
 
     vscr_error_t status = vscr_SUCCESS;
 
@@ -357,7 +357,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_
     vscr_error_ctx_reset(&error_ctx);
 
     vsc_buffer_t *sender_identity_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
-            ratchet_session->key_utils, sender_identity_private_key, &error_ctx);
+            self->key_utils, sender_identity_private_key, &error_ctx);
 
     if (error_ctx.error != vscr_SUCCESS) {
         status = error_ctx.error;
@@ -365,7 +365,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_
     }
 
     vsc_buffer_t *receiver_identity_public_key_raw = vscr_ratchet_key_utils_extract_ratchet_public_key(
-            ratchet_session->key_utils, receiver_identity_public_key, &error_ctx);
+            self->key_utils, receiver_identity_public_key, &error_ctx);
 
     if (error_ctx.error != vscr_SUCCESS) {
         status = error_ctx.error;
@@ -373,7 +373,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_
     }
 
     vsc_buffer_t *receiver_long_term_public_key_raw = vscr_ratchet_key_utils_extract_ratchet_public_key(
-            ratchet_session->key_utils, receiver_long_term_public_key, &error_ctx);
+            self->key_utils, receiver_long_term_public_key, &error_ctx);
 
     if (error_ctx.error != vscr_SUCCESS) {
         status = error_ctx.error;
@@ -386,7 +386,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_
 
     if (receiver_one_time_public_key.len != 0) {
         receiver_one_time_public_key_raw = vscr_ratchet_key_utils_extract_ratchet_public_key(
-                ratchet_session->key_utils, receiver_one_time_public_key, &error_ctx);
+                self->key_utils, receiver_one_time_public_key, &error_ctx);
 
         if (error_ctx.error != vscr_SUCCESS) {
             status = error_ctx.error;
@@ -403,8 +403,8 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_
     vsc_buffer_init(&ephemeral_private_key_buf);
     vsc_buffer_use(&ephemeral_private_key_buf, ephemeral_private_key, sizeof(ephemeral_private_key));
 
-    vscf_error_t f_status = vscf_random(
-            ratchet_session->rng, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH, &ephemeral_private_key_buf);
+    vscf_error_t f_status =
+            vscf_random(self->rng, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH, &ephemeral_private_key_buf);
     vsc_buffer_delete(&ephemeral_private_key_buf);
 
     if (f_status != vscf_SUCCESS) {
@@ -416,8 +416,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_
     vsc_buffer_init(&ratchet_private_key_buf);
     vsc_buffer_use(&ratchet_private_key_buf, ratchet_private_key, sizeof(ratchet_private_key));
 
-    f_status =
-            vscf_random(ratchet_session->rng, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH, &ratchet_private_key_buf);
+    f_status = vscf_random(self->rng, vscr_ratchet_common_hidden_RATCHET_KEY_LENGTH, &ratchet_private_key_buf);
     vsc_buffer_delete(&ratchet_private_key_buf);
 
     if (f_status != vscf_SUCCESS) {
@@ -461,36 +460,35 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *ratchet_session, vsc_data_
             goto curve_err;
         }
 
-        ratchet_session->receiver_has_one_time_public_key = true;
-        memcpy(ratchet_session->receiver_one_time_public_key, vsc_buffer_bytes(receiver_one_time_public_key_raw),
+        self->receiver_has_one_time_public_key = true;
+        memcpy(self->receiver_one_time_public_key, vsc_buffer_bytes(receiver_one_time_public_key_raw),
                 vsc_buffer_len(receiver_one_time_public_key_raw));
     } else {
-        ratchet_session->receiver_has_one_time_public_key = false;
+        self->receiver_has_one_time_public_key = false;
     }
 
-    curve_status = curve25519_get_pubkey(
-            ratchet_session->sender_identity_public_key, vsc_buffer_bytes(sender_identity_private_key_raw));
+    curve_status =
+            curve25519_get_pubkey(self->sender_identity_public_key, vsc_buffer_bytes(sender_identity_private_key_raw));
 
     if (curve_status != 0) {
         status = vscr_error_CURVE25519;
         goto curve_err;
     }
 
-    curve_status = curve25519_get_pubkey(ratchet_session->sender_ephemeral_public_key, ephemeral_private_key);
+    curve_status = curve25519_get_pubkey(self->sender_ephemeral_public_key, ephemeral_private_key);
 
     if (curve_status != 0) {
         status = vscr_error_CURVE25519;
         goto curve_err;
     }
 
-    memcpy(ratchet_session->receiver_long_term_public_key, vsc_buffer_bytes(receiver_long_term_public_key_raw),
+    memcpy(self->receiver_long_term_public_key, vsc_buffer_bytes(receiver_long_term_public_key_raw),
             vsc_buffer_len(receiver_long_term_public_key_raw));
 
-    status = vscr_ratchet_initiate(ratchet_session->ratchet,
-            vsc_data(shared_secret, shared_secret_count * ED25519_DH_LEN),
+    status = vscr_ratchet_initiate(self->ratchet, vsc_data(shared_secret, shared_secret_count * ED25519_DH_LEN),
             vsc_data(ratchet_private_key, sizeof(ratchet_private_key)));
 
-    ratchet_session->is_initiator = true;
+    self->is_initiator = true;
 
 curve_err:
     vscr_zeroize(shared_secret, sizeof(shared_secret));
@@ -518,13 +516,13 @@ key_err1:
 //  Responds to session initiation
 //
 VSCR_PUBLIC vscr_error_t
-vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t sender_identity_public_key,
+vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vsc_data_t sender_identity_public_key,
         vsc_data_t receiver_identity_private_key, vsc_data_t receiver_long_term_private_key,
         vsc_data_t receiver_one_time_private_key, const vscr_ratchet_message_t *message) {
 
-    VSCR_ASSERT_PTR(ratchet_session->rng);
-    VSCR_ASSERT_PTR(ratchet_session->ratchet);
-    VSCR_ASSERT_PTR(ratchet_session->key_utils);
+    VSCR_ASSERT_PTR(self->rng);
+    VSCR_ASSERT_PTR(self->ratchet);
+    VSCR_ASSERT_PTR(self->key_utils);
 
     vscr_error_t status = vscr_SUCCESS;
 
@@ -536,8 +534,8 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
     vscr_error_ctx_t error_ctx;
     vscr_error_ctx_reset(&error_ctx);
 
-    vsc_buffer_t *sender_identity_public_key_raw = vscr_ratchet_key_utils_extract_ratchet_public_key(
-            ratchet_session->key_utils, sender_identity_public_key, &error_ctx);
+    vsc_buffer_t *sender_identity_public_key_raw =
+            vscr_ratchet_key_utils_extract_ratchet_public_key(self->key_utils, sender_identity_public_key, &error_ctx);
 
     if (error_ctx.error != vscr_SUCCESS) {
         status = error_ctx.error;
@@ -551,7 +549,7 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
     }
 
     vsc_buffer_t *receiver_identity_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
-            ratchet_session->key_utils, receiver_identity_private_key, &error_ctx);
+            self->key_utils, receiver_identity_private_key, &error_ctx);
 
     if (error_ctx.error != vscr_SUCCESS) {
         status = error_ctx.error;
@@ -559,7 +557,7 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
     }
 
     vsc_buffer_t *receiver_long_term_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
-            ratchet_session->key_utils, receiver_long_term_private_key, &error_ctx);
+            self->key_utils, receiver_long_term_private_key, &error_ctx);
 
     if (error_ctx.error != vscr_SUCCESS) {
         status = error_ctx.error;
@@ -571,7 +569,7 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
     size_t shared_secret_count = 3;
     if (receiver_one_time_private_key.len != 0) {
         receiver_one_time_private_key_raw = vscr_ratchet_key_utils_extract_ratchet_private_key(
-                ratchet_session->key_utils, receiver_one_time_private_key, &error_ctx);
+                self->key_utils, receiver_one_time_private_key, &error_ctx);
 
         if (error_ctx.error != vscr_SUCCESS) {
             status = error_ctx.error;
@@ -621,36 +619,35 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *ratchet_session, vsc_data_t
             goto curve_err;
         }
 
-        ratchet_session->receiver_has_one_time_public_key = true;
+        self->receiver_has_one_time_public_key = true;
         curve_status = curve25519_get_pubkey(
-                ratchet_session->receiver_one_time_public_key, vsc_buffer_bytes(receiver_one_time_private_key_raw));
+                self->receiver_one_time_public_key, vsc_buffer_bytes(receiver_one_time_private_key_raw));
 
         if (curve_status != 0) {
             status = vscr_error_CURVE25519;
             goto curve_err;
         }
     } else {
-        ratchet_session->receiver_has_one_time_public_key = false;
+        self->receiver_has_one_time_public_key = false;
     }
 
-    memcpy(ratchet_session->sender_identity_public_key, vsc_buffer_bytes(sender_identity_public_key_raw),
+    memcpy(self->sender_identity_public_key, vsc_buffer_bytes(sender_identity_public_key_raw),
             vsc_buffer_len(sender_identity_public_key_raw));
-    memcpy(ratchet_session->sender_ephemeral_public_key, message->message_pb.prekey_message.sender_ephemeral_key,
+    memcpy(self->sender_ephemeral_public_key, message->message_pb.prekey_message.sender_ephemeral_key,
             sizeof(message->message_pb.prekey_message.sender_ephemeral_key));
 
     curve_status = curve25519_get_pubkey(
-            ratchet_session->receiver_long_term_public_key, vsc_buffer_bytes(receiver_long_term_private_key_raw));
+            self->receiver_long_term_public_key, vsc_buffer_bytes(receiver_long_term_private_key_raw));
 
     if (curve_status != 0) {
         status = vscr_error_CURVE25519;
         goto curve_err;
     }
 
-    status = vscr_ratchet_respond(ratchet_session->ratchet,
-            vsc_data(shared_secret, shared_secret_count * ED25519_DH_LEN),
+    status = vscr_ratchet_respond(self->ratchet, vsc_data(shared_secret, shared_secret_count * ED25519_DH_LEN),
             &message->message_pb.prekey_message.regular_message);
 
-    ratchet_session->is_initiator = false;
+    self->is_initiator = false;
 
 curve_err:
     vscr_zeroize(shared_secret, sizeof(shared_secret));
@@ -675,38 +672,37 @@ msg_type_err:
 //  Returns flag that indicates is this session was initiated or responded
 //
 VSCR_PUBLIC bool
-vscr_ratchet_session_is_initiator(vscr_ratchet_session_t *ratchet_session) {
+vscr_ratchet_session_is_initiator(vscr_ratchet_session_t *self) {
 
-    return ratchet_session->is_initiator;
+    return self->is_initiator;
 }
 
 //
 //  Returns true if at least 1 response was successfully decrypted, false - otherwise
 //
 VSCR_PUBLIC bool
-vscr_ratchet_session_received_first_response(vscr_ratchet_session_t *ratchet_session) {
+vscr_ratchet_session_received_first_response(vscr_ratchet_session_t *self) {
 
-    return ratchet_session->received_first_response;
+    return self->received_first_response;
 }
 
 //
 //  Returns true if receiver had one time public key
 //
 VSCR_PUBLIC bool
-vscr_ratchet_session_receiver_has_one_time_public_key(vscr_ratchet_session_t *ratchet_session) {
+vscr_ratchet_session_receiver_has_one_time_public_key(vscr_ratchet_session_t *self) {
 
-    return ratchet_session->receiver_has_one_time_public_key;
+    return self->receiver_has_one_time_public_key;
 }
 
 //
 //  Encrypts data
 //
 VSCR_PUBLIC vscr_ratchet_message_t *
-vscr_ratchet_session_encrypt(
-        vscr_ratchet_session_t *ratchet_session, vsc_data_t plain_text, vscr_error_ctx_t *err_ctx) {
+vscr_ratchet_session_encrypt(vscr_ratchet_session_t *self, vsc_data_t plain_text, vscr_error_ctx_t *err_ctx) {
 
-    VSCR_ASSERT_PTR(ratchet_session->rng);
-    VSCR_ASSERT_PTR(ratchet_session->ratchet);
+    VSCR_ASSERT_PTR(self->rng);
+    VSCR_ASSERT_PTR(self->ratchet);
 
     vscr_ratchet_message_t *ratchet_message = NULL;
 
@@ -715,7 +711,7 @@ vscr_ratchet_session_encrypt(
         goto err;
     }
 
-    if (!ratchet_session->is_initiator && !ratchet_session->received_first_response) {
+    if (!self->is_initiator && !self->received_first_response) {
         VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, vscr_error_CAN_T_ENCRYPT_YET);
         goto err;
     }
@@ -724,7 +720,7 @@ vscr_ratchet_session_encrypt(
     ratchet_message->message_pb.version = vscr_ratchet_common_hidden_RATCHET_MESSAGE_VERSION;
     RegularMessage *regular_message;
 
-    if (ratchet_session->received_first_response || !ratchet_session->is_initiator) {
+    if (self->received_first_response || !self->is_initiator) {
         ratchet_message->message_pb.has_regular_message = true;
         regular_message = &ratchet_message->message_pb.regular_message;
     } else {
@@ -734,28 +730,28 @@ vscr_ratchet_session_encrypt(
 
         prekey_message->version = vscr_ratchet_common_hidden_RATCHET_PROTOCOL_VERSION;
 
-        memcpy(prekey_message->sender_identity_key, ratchet_session->sender_identity_public_key,
-                sizeof(ratchet_session->sender_identity_public_key));
+        memcpy(prekey_message->sender_identity_key, self->sender_identity_public_key,
+                sizeof(self->sender_identity_public_key));
 
-        memcpy(prekey_message->sender_ephemeral_key, ratchet_session->sender_ephemeral_public_key,
-                sizeof(ratchet_session->sender_ephemeral_public_key));
+        memcpy(prekey_message->sender_ephemeral_key, self->sender_ephemeral_public_key,
+                sizeof(self->sender_ephemeral_public_key));
 
-        memcpy(prekey_message->receiver_long_term_key, ratchet_session->receiver_long_term_public_key,
-                sizeof(ratchet_session->receiver_long_term_public_key));
+        memcpy(prekey_message->receiver_long_term_key, self->receiver_long_term_public_key,
+                sizeof(self->receiver_long_term_public_key));
 
-        if (ratchet_session->receiver_has_one_time_public_key) {
+        if (self->receiver_has_one_time_public_key) {
             prekey_message->has_receiver_one_time_key = true;
-            memcpy(prekey_message->receiver_one_time_key, ratchet_session->receiver_one_time_public_key,
-                    sizeof(ratchet_session->receiver_one_time_public_key));
+            memcpy(prekey_message->receiver_one_time_key, self->receiver_one_time_public_key,
+                    sizeof(self->receiver_one_time_public_key));
         } else {
             prekey_message->has_receiver_one_time_key = false;
         }
     }
 
     regular_message->cipher_text.arg =
-            vsc_buffer_new_with_capacity(vscr_ratchet_encrypt_len(ratchet_session->ratchet, plain_text.len));
+            vsc_buffer_new_with_capacity(vscr_ratchet_encrypt_len(self->ratchet, plain_text.len));
 
-    vscr_error_t result = vscr_ratchet_encrypt(ratchet_session->ratchet, plain_text, regular_message);
+    vscr_error_t result = vscr_ratchet_encrypt(self->ratchet, plain_text, regular_message);
 
     if (result != vscr_SUCCESS) {
         VSCR_ERROR_CTX_SAFE_UPDATE(err_ctx, result);
@@ -773,9 +769,9 @@ err:
 //  Calculates size of buffer sufficient to store decrypted message
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session, const vscr_ratchet_message_t *message) {
+vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *self, const vscr_ratchet_message_t *message) {
 
-    VSCR_UNUSED(ratchet_session);
+    VSCR_UNUSED(self);
     VSCR_ASSERT_PTR(message);
 
     size_t cipher_text_len = 0;
@@ -788,7 +784,7 @@ vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session, const 
 
     VSCR_ASSERT(cipher_text_len <= vscr_ratchet_common_MAX_CIPHER_TEXT_LEN);
 
-    return vscr_ratchet_decrypt_len(ratchet_session->ratchet, cipher_text_len);
+    return vscr_ratchet_decrypt_len(self->ratchet, cipher_text_len);
 }
 
 //
@@ -796,10 +792,10 @@ vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *ratchet_session, const 
 //
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_session_decrypt(
-        vscr_ratchet_session_t *ratchet_session, const vscr_ratchet_message_t *message, vsc_buffer_t *plain_text) {
+        vscr_ratchet_session_t *self, const vscr_ratchet_message_t *message, vsc_buffer_t *plain_text) {
 
-    VSCR_ASSERT_PTR(ratchet_session->rng);
-    VSCR_ASSERT_PTR(ratchet_session->ratchet);
+    VSCR_ASSERT_PTR(self->rng);
+    VSCR_ASSERT_PTR(self->ratchet);
 
     VSCR_ASSERT_PTR(message);
     VSCR_ASSERT_PTR(plain_text);
@@ -809,19 +805,19 @@ vscr_ratchet_session_decrypt(
     if (message->message_pb.has_regular_message) {
         regular_message = &message->message_pb.regular_message;
     } else if (message->message_pb.has_prekey_message) {
-        if (ratchet_session->is_initiator) {
+        if (self->is_initiator) {
             return vscr_error_BAD_MESSAGE_TYPE;
         }
 
         regular_message = &message->message_pb.prekey_message.regular_message;
     }
 
-    VSCR_ASSERT(vsc_buffer_unused_len(plain_text) >= vscr_ratchet_session_decrypt_len(ratchet_session, message));
+    VSCR_ASSERT(vsc_buffer_unused_len(plain_text) >= vscr_ratchet_session_decrypt_len(self, message));
 
-    vscr_error_t result = vscr_ratchet_decrypt(ratchet_session->ratchet, regular_message, plain_text);
+    vscr_error_t result = vscr_ratchet_decrypt(self->ratchet, regular_message, plain_text);
 
     if (result == vscr_SUCCESS)
-        ratchet_session->received_first_response = true;
+        self->received_first_response = true;
 
     return result;
 }
@@ -830,9 +826,9 @@ vscr_ratchet_session_decrypt(
 //  Calculates size of buffer sufficient to store session
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *ratchet_session) {
+vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *self) {
 
-    VSCR_UNUSED(ratchet_session);
+    VSCR_UNUSED(self);
 
     return Session_size;
 }
@@ -841,32 +837,31 @@ vscr_ratchet_session_serialize_len(vscr_ratchet_session_t *ratchet_session) {
 //  Serializes session to buffer
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_serialize(vscr_ratchet_session_t *ratchet_session, vsc_buffer_t *output) {
+vscr_ratchet_session_serialize(vscr_ratchet_session_t *self, vsc_buffer_t *output) {
 
-    VSCR_ASSERT_PTR(ratchet_session);
-    VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_session_serialize_len(ratchet_session));
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(vsc_buffer_unused_len(output) >= vscr_ratchet_session_serialize_len(self));
 
     Session session_pb = Session_init_zero;
 
-    session_pb.received_first_response = ratchet_session->received_first_response;
-    session_pb.is_initiator = ratchet_session->is_initiator;
+    session_pb.received_first_response = self->received_first_response;
+    session_pb.is_initiator = self->is_initiator;
 
-    memcpy(session_pb.sender_identity_key, ratchet_session->sender_identity_public_key,
-            sizeof(ratchet_session->sender_identity_public_key));
-    memcpy(session_pb.sender_ephemeral_key, ratchet_session->sender_ephemeral_public_key,
-            sizeof(ratchet_session->sender_ephemeral_public_key));
-    memcpy(session_pb.receiver_long_term_key, ratchet_session->receiver_long_term_public_key,
-            sizeof(ratchet_session->receiver_long_term_public_key));
+    memcpy(session_pb.sender_identity_key, self->sender_identity_public_key, sizeof(self->sender_identity_public_key));
+    memcpy(session_pb.sender_ephemeral_key, self->sender_ephemeral_public_key,
+            sizeof(self->sender_ephemeral_public_key));
+    memcpy(session_pb.receiver_long_term_key, self->receiver_long_term_public_key,
+            sizeof(self->receiver_long_term_public_key));
 
-    if (ratchet_session->receiver_has_one_time_public_key) {
+    if (self->receiver_has_one_time_public_key) {
         session_pb.has_receiver_one_time_key = true;
-        memcpy(session_pb.receiver_one_time_key, ratchet_session->receiver_one_time_public_key,
-                sizeof(ratchet_session->receiver_one_time_public_key));
+        memcpy(session_pb.receiver_one_time_key, self->receiver_one_time_public_key,
+                sizeof(self->receiver_one_time_public_key));
     } else {
         session_pb.has_receiver_one_time_key = false;
     }
 
-    vscr_ratchet_serialize(ratchet_session->ratchet, &session_pb.ratchet);
+    vscr_ratchet_serialize(self->ratchet, &session_pb.ratchet);
 
     pb_ostream_t ostream = pb_ostream_from_buffer(vsc_buffer_unused_bytes(output), vsc_buffer_capacity(output));
 

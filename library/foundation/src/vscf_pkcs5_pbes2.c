@@ -88,9 +88,9 @@
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_pkcs5_pbes2_init_ctx(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
+vscf_pkcs5_pbes2_init_ctx(vscf_pkcs5_pbes2_t *self) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbes2);
+    VSCF_ASSERT_PTR(self);
 }
 
 //
@@ -99,33 +99,33 @@ vscf_pkcs5_pbes2_init_ctx(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_pkcs5_pbes2_cleanup_ctx(vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
+vscf_pkcs5_pbes2_cleanup_ctx(vscf_pkcs5_pbes2_t *self) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbes2);
+    VSCF_ASSERT_PTR(self);
 
-    vsc_buffer_destroy(&pkcs5_pbes2->password);
+    vsc_buffer_destroy(&self->password);
 }
 
 //
 //  Configure cipher with a new password.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbes2_reset(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vsc_data_t pwd) {
+vscf_pkcs5_pbes2_reset(vscf_pkcs5_pbes2_t *self, vsc_data_t pwd) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbes2);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(pwd));
 
-    vsc_buffer_destroy(&pkcs5_pbes2->password);
-    pkcs5_pbes2->password = vsc_buffer_new_with_data(pwd);
+    vsc_buffer_destroy(&self->password);
+    self->password = vsc_buffer_new_with_data(pwd);
 }
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_pkcs5_pbes2_alg_id(const vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
+vscf_pkcs5_pbes2_alg_id(const vscf_pkcs5_pbes2_t *self) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbes2);
+    VSCF_ASSERT_PTR(self);
 
     return vscf_alg_id_PKCS5_PBES2;
 }
@@ -134,14 +134,14 @@ vscf_pkcs5_pbes2_alg_id(const vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_pkcs5_pbes2_produce_alg_info(const vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
+vscf_pkcs5_pbes2_produce_alg_info(const vscf_pkcs5_pbes2_t *self) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbes2);
-    VSCF_ASSERT_PTR(pkcs5_pbes2->kdf);
-    VSCF_ASSERT_PTR(pkcs5_pbes2->cipher);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->kdf);
+    VSCF_ASSERT_PTR(self->cipher);
 
-    vscf_impl_t *kdf_alg_info = vscf_alg_produce_alg_info(pkcs5_pbes2->kdf);
-    vscf_impl_t *cipher_alg_info = vscf_alg_produce_alg_info(pkcs5_pbes2->cipher);
+    vscf_impl_t *kdf_alg_info = vscf_alg_produce_alg_info(self->kdf);
+    vscf_impl_t *cipher_alg_info = vscf_alg_produce_alg_info(self->cipher);
 
     vscf_impl_t *pbes2_alg_info = vscf_pbe_alg_info_impl(
             vscf_pbe_alg_info_new_with_members(vscf_alg_id_PKCS5_PBES2, &kdf_alg_info, &cipher_alg_info));
@@ -153,9 +153,9 @@ vscf_pkcs5_pbes2_produce_alg_info(const vscf_pkcs5_pbes2_t *pkcs5_pbes2) {
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_pkcs5_pbes2_restore_alg_info(vscf_pkcs5_pbes2_t *pkcs5_pbes2, const vscf_impl_t *alg_info) {
+vscf_pkcs5_pbes2_restore_alg_info(vscf_pkcs5_pbes2_t *self, const vscf_impl_t *alg_info) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbes2);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
     VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_PKCS5_PBES2);
 
@@ -164,11 +164,11 @@ vscf_pkcs5_pbes2_restore_alg_info(vscf_pkcs5_pbes2_t *pkcs5_pbes2, const vscf_im
     vscf_impl_t *kdf = vscf_alg_factory_create_kdf_alg(vscf_pbe_alg_info_kdf_alg_info(pbe_alg_info));
     vscf_impl_t *cipher = vscf_alg_factory_create_cipher_alg(vscf_pbe_alg_info_cipher_alg_info(pbe_alg_info));
 
-    vscf_pkcs5_pbes2_release_kdf(pkcs5_pbes2);
-    vscf_pkcs5_pbes2_release_cipher(pkcs5_pbes2);
+    vscf_pkcs5_pbes2_release_kdf(self);
+    vscf_pkcs5_pbes2_release_cipher(self);
 
-    vscf_pkcs5_pbes2_take_kdf(pkcs5_pbes2, kdf);
-    vscf_pkcs5_pbes2_take_cipher(pkcs5_pbes2, cipher);
+    vscf_pkcs5_pbes2_take_kdf(self, kdf);
+    vscf_pkcs5_pbes2_take_cipher(self, cipher);
 
     return vscf_SUCCESS;
 }
@@ -177,27 +177,27 @@ vscf_pkcs5_pbes2_restore_alg_info(vscf_pkcs5_pbes2_t *pkcs5_pbes2, const vscf_im
 //  Encrypt given data.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_pkcs5_pbes2_encrypt(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vsc_data_t data, vsc_buffer_t *out) {
+vscf_pkcs5_pbes2_encrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbes2);
-    VSCF_ASSERT_PTR(pkcs5_pbes2->cipher);
-    VSCF_ASSERT_PTR(pkcs5_pbes2->kdf);
-    VSCF_ASSERT_PTR(pkcs5_pbes2->password);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->cipher);
+    VSCF_ASSERT_PTR(self->kdf);
+    VSCF_ASSERT_PTR(self->password);
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_pkcs5_pbes2_encrypted_len(pkcs5_pbes2, data.len));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_pkcs5_pbes2_encrypted_len(self, data.len));
 
-    size_t key_len = vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(pkcs5_pbes2->cipher)));
+    size_t key_len = vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->cipher)));
     vsc_buffer_t *key = vsc_buffer_new_with_capacity(key_len);
     vsc_buffer_make_secure(key);
 
-    vscf_kdf_derive(pkcs5_pbes2->kdf, vsc_buffer_data(pkcs5_pbes2->password), key_len, key);
+    vscf_kdf_derive(self->kdf, vsc_buffer_data(self->password), key_len, key);
 
-    vscf_cipher_set_key(pkcs5_pbes2->cipher, vsc_buffer_data(key));
-    vscf_cipher_start_encryption(pkcs5_pbes2->cipher);
-    vscf_cipher_update(pkcs5_pbes2->cipher, data, out);
-    vscf_cipher_finish(pkcs5_pbes2->cipher, out);
+    vscf_cipher_set_key(self->cipher, vsc_buffer_data(key));
+    vscf_cipher_start_encryption(self->cipher);
+    vscf_cipher_update(self->cipher, data, out);
+    vscf_cipher_finish(self->cipher, out);
 
     vsc_buffer_destroy(&key);
 
@@ -208,13 +208,12 @@ vscf_pkcs5_pbes2_encrypt(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vsc_data_t data, vsc_b
 //  Calculate required buffer length to hold the encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs5_pbes2_encrypted_len(vscf_pkcs5_pbes2_t *pkcs5_pbes2, size_t data_len) {
+vscf_pkcs5_pbes2_encrypted_len(vscf_pkcs5_pbes2_t *self, size_t data_len) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbes2);
-    VSCF_ASSERT_PTR(pkcs5_pbes2->cipher);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->cipher);
 
-    size_t len = vscf_cipher_encrypted_out_len(pkcs5_pbes2->cipher, data_len) +
-                 vscf_cipher_encrypted_out_len(pkcs5_pbes2->cipher, 0);
+    size_t len = vscf_cipher_encrypted_out_len(self->cipher, data_len) + vscf_cipher_encrypted_out_len(self->cipher, 0);
     return len;
 }
 
@@ -222,27 +221,27 @@ vscf_pkcs5_pbes2_encrypted_len(vscf_pkcs5_pbes2_t *pkcs5_pbes2, size_t data_len)
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_pkcs5_pbes2_decrypt(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vsc_data_t data, vsc_buffer_t *out) {
+vscf_pkcs5_pbes2_decrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbes2);
-    VSCF_ASSERT_PTR(pkcs5_pbes2->cipher);
-    VSCF_ASSERT_PTR(pkcs5_pbes2->kdf);
-    VSCF_ASSERT_PTR(pkcs5_pbes2->password);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->cipher);
+    VSCF_ASSERT_PTR(self->kdf);
+    VSCF_ASSERT_PTR(self->password);
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_pkcs5_pbes2_decrypted_len(pkcs5_pbes2, data.len));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_pkcs5_pbes2_decrypted_len(self, data.len));
 
-    size_t key_len = vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(pkcs5_pbes2->cipher)));
+    size_t key_len = vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->cipher)));
     vsc_buffer_t *key = vsc_buffer_new_with_capacity(key_len);
     vsc_buffer_make_secure(key);
 
-    vscf_kdf_derive(pkcs5_pbes2->kdf, vsc_buffer_data(pkcs5_pbes2->password), key_len, key);
+    vscf_kdf_derive(self->kdf, vsc_buffer_data(self->password), key_len, key);
 
-    vscf_cipher_set_key(pkcs5_pbes2->cipher, vsc_buffer_data(key));
-    vscf_cipher_start_decryption(pkcs5_pbes2->cipher);
-    vscf_cipher_update(pkcs5_pbes2->cipher, data, out);
-    vscf_cipher_finish(pkcs5_pbes2->cipher, out);
+    vscf_cipher_set_key(self->cipher, vsc_buffer_data(key));
+    vscf_cipher_start_decryption(self->cipher);
+    vscf_cipher_update(self->cipher, data, out);
+    vscf_cipher_finish(self->cipher, out);
 
     vsc_buffer_destroy(&key);
 
@@ -253,12 +252,11 @@ vscf_pkcs5_pbes2_decrypt(vscf_pkcs5_pbes2_t *pkcs5_pbes2, vsc_data_t data, vsc_b
 //  Calculate required buffer length to hold the decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs5_pbes2_decrypted_len(vscf_pkcs5_pbes2_t *pkcs5_pbes2, size_t data_len) {
+vscf_pkcs5_pbes2_decrypted_len(vscf_pkcs5_pbes2_t *self, size_t data_len) {
 
-    VSCF_ASSERT_PTR(pkcs5_pbes2);
-    VSCF_ASSERT_PTR(pkcs5_pbes2->cipher);
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->cipher);
 
-    size_t len = vscf_cipher_decrypted_out_len(pkcs5_pbes2->cipher, data_len) +
-                 vscf_cipher_decrypted_out_len(pkcs5_pbes2->cipher, 0);
+    size_t len = vscf_cipher_decrypted_out_len(self->cipher, data_len) + vscf_cipher_decrypted_out_len(self->cipher, 0);
     return len;
 }

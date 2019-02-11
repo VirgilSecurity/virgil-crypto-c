@@ -98,20 +98,20 @@ vscf_hkdf_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_hkdf_impl(vscf_hkdf_t *hkdf);
+vscf_hkdf_impl(vscf_hkdf_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_hkdf_init(vscf_hkdf_t *hkdf);
+vscf_hkdf_init(vscf_hkdf_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_hkdf_init()'.
 //
 VSCF_PUBLIC void
-vscf_hkdf_cleanup(vscf_hkdf_t *hkdf);
+vscf_hkdf_cleanup(vscf_hkdf_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -125,7 +125,7 @@ vscf_hkdf_new(void);
 //  This is a reverse action of the function 'vscf_hkdf_new()'.
 //
 VSCF_PUBLIC void
-vscf_hkdf_delete(vscf_hkdf_t *hkdf);
+vscf_hkdf_delete(vscf_hkdf_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -133,70 +133,70 @@ vscf_hkdf_delete(vscf_hkdf_t *hkdf);
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_hkdf_destroy(vscf_hkdf_t **hkdf_ref);
+vscf_hkdf_destroy(vscf_hkdf_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_hkdf_t *
-vscf_hkdf_shallow_copy(vscf_hkdf_t *hkdf);
+vscf_hkdf_shallow_copy(vscf_hkdf_t *self);
 
 //
 //  Setup dependency to the interface 'hash' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_hkdf_use_hash(vscf_hkdf_t *hkdf, vscf_impl_t *hash);
+vscf_hkdf_use_hash(vscf_hkdf_t *self, vscf_impl_t *hash);
 
 //
 //  Setup dependency to the interface 'hash' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_hkdf_take_hash(vscf_hkdf_t *hkdf, vscf_impl_t *hash);
+vscf_hkdf_take_hash(vscf_hkdf_t *self, vscf_impl_t *hash);
 
 //
 //  Release dependency to the interface 'hash'.
 //
 VSCF_PUBLIC void
-vscf_hkdf_release_hash(vscf_hkdf_t *hkdf);
+vscf_hkdf_release_hash(vscf_hkdf_t *self);
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_hkdf_alg_id(const vscf_hkdf_t *hkdf);
+vscf_hkdf_alg_id(const vscf_hkdf_t *self);
 
 //
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_hkdf_produce_alg_info(const vscf_hkdf_t *hkdf);
+vscf_hkdf_produce_alg_info(const vscf_hkdf_t *self);
 
 //
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_hkdf_restore_alg_info(vscf_hkdf_t *hkdf, const vscf_impl_t *alg_info);
+vscf_hkdf_restore_alg_info(vscf_hkdf_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Derive key of the requested length from the given data.
 //
 VSCF_PUBLIC void
-vscf_hkdf_derive(vscf_hkdf_t *hkdf, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
+vscf_hkdf_derive(vscf_hkdf_t *self, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
 
 //
 //  Prepare algorithm to derive new key.
 //
 VSCF_PUBLIC void
-vscf_hkdf_reset(vscf_hkdf_t *hkdf, vsc_data_t salt, size_t iteration_count);
+vscf_hkdf_reset(vscf_hkdf_t *self, vsc_data_t salt, size_t iteration_count);
 
 //
 //  Setup application specific information (optional).
 //  Can be empty.
 //
 VSCF_PUBLIC void
-vscf_hkdf_set_info(vscf_hkdf_t *hkdf, vsc_data_t info);
+vscf_hkdf_set_info(vscf_hkdf_t *self, vsc_data_t info);
 
 
 // --------------------------------------------------------------------------

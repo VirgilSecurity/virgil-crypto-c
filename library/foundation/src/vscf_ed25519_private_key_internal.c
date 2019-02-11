@@ -255,16 +255,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_ed25519_private_key_init(vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_init(vscf_ed25519_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(ed25519_private_key, sizeof(vscf_ed25519_private_key_t));
+    vscf_zeroize(self, sizeof(vscf_ed25519_private_key_t));
 
-    ed25519_private_key->info = &info;
-    ed25519_private_key->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_ed25519_private_key_init_ctx(ed25519_private_key);
+    vscf_ed25519_private_key_init_ctx(self);
 }
 
 //
@@ -272,25 +272,25 @@ vscf_ed25519_private_key_init(vscf_ed25519_private_key_t *ed25519_private_key) {
 //  This is a reverse action of the function 'vscf_ed25519_private_key_init()'.
 //
 VSCF_PUBLIC void
-vscf_ed25519_private_key_cleanup(vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_cleanup(vscf_ed25519_private_key_t *self) {
 
-    if (ed25519_private_key == NULL || ed25519_private_key->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (ed25519_private_key->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--ed25519_private_key->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_ed25519_private_key_release_random(ed25519_private_key);
+    vscf_ed25519_private_key_release_random(self);
 
-    vscf_ed25519_private_key_cleanup_ctx(ed25519_private_key);
+    vscf_ed25519_private_key_cleanup_ctx(self);
 
-    vscf_zeroize(ed25519_private_key, sizeof(vscf_ed25519_private_key_t));
+    vscf_zeroize(self, sizeof(vscf_ed25519_private_key_t));
 }
 
 //
@@ -300,12 +300,12 @@ vscf_ed25519_private_key_cleanup(vscf_ed25519_private_key_t *ed25519_private_key
 VSCF_PUBLIC vscf_ed25519_private_key_t *
 vscf_ed25519_private_key_new(void) {
 
-    vscf_ed25519_private_key_t *ed25519_private_key = (vscf_ed25519_private_key_t *) vscf_alloc(sizeof (vscf_ed25519_private_key_t));
-    VSCF_ASSERT_ALLOC(ed25519_private_key);
+    vscf_ed25519_private_key_t *self = (vscf_ed25519_private_key_t *) vscf_alloc(sizeof (vscf_ed25519_private_key_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_ed25519_private_key_init(ed25519_private_key);
+    vscf_ed25519_private_key_init(self);
 
-    return ed25519_private_key;
+    return self;
 }
 
 //
@@ -313,12 +313,12 @@ vscf_ed25519_private_key_new(void) {
 //  This is a reverse action of the function 'vscf_ed25519_private_key_new()'.
 //
 VSCF_PUBLIC void
-vscf_ed25519_private_key_delete(vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_delete(vscf_ed25519_private_key_t *self) {
 
-    vscf_ed25519_private_key_cleanup(ed25519_private_key);
+    vscf_ed25519_private_key_cleanup(self);
 
-    if (ed25519_private_key && (ed25519_private_key->refcnt == 0)) {
-        vscf_dealloc(ed25519_private_key);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -328,14 +328,14 @@ vscf_ed25519_private_key_delete(vscf_ed25519_private_key_t *ed25519_private_key)
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_ed25519_private_key_destroy(vscf_ed25519_private_key_t **ed25519_private_key_ref) {
+vscf_ed25519_private_key_destroy(vscf_ed25519_private_key_t **self_ref) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_ed25519_private_key_t *ed25519_private_key = *ed25519_private_key_ref;
-    *ed25519_private_key_ref = NULL;
+    vscf_ed25519_private_key_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_ed25519_private_key_delete(ed25519_private_key);
+    vscf_ed25519_private_key_delete(self);
 }
 
 //
@@ -343,10 +343,10 @@ vscf_ed25519_private_key_destroy(vscf_ed25519_private_key_t **ed25519_private_ke
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_ed25519_private_key_t *
-vscf_ed25519_private_key_shallow_copy(vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_shallow_copy(vscf_ed25519_private_key_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_ed25519_private_key_t *)vscf_impl_shallow_copy((vscf_impl_t *)ed25519_private_key);
+    return (vscf_ed25519_private_key_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -362,25 +362,25 @@ vscf_ed25519_private_key_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ed25519_private_key_impl(vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_impl(vscf_ed25519_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
-    return (vscf_impl_t *)(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_ed25519_private_key_use_random(vscf_ed25519_private_key_t *ed25519_private_key, vscf_impl_t *random) {
+vscf_ed25519_private_key_use_random(vscf_ed25519_private_key_t *self, vscf_impl_t *random) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(ed25519_private_key->random == NULL);
+    VSCF_ASSERT_PTR(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
-    ed25519_private_key->random = vscf_impl_shallow_copy(random);
+    self->random = vscf_impl_shallow_copy(random);
 }
 
 //
@@ -388,26 +388,26 @@ vscf_ed25519_private_key_use_random(vscf_ed25519_private_key_t *ed25519_private_
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_ed25519_private_key_take_random(vscf_ed25519_private_key_t *ed25519_private_key, vscf_impl_t *random) {
+vscf_ed25519_private_key_take_random(vscf_ed25519_private_key_t *self, vscf_impl_t *random) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT_PTR(ed25519_private_key->random == NULL);
+    VSCF_ASSERT_PTR(self->random == NULL);
 
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
-    ed25519_private_key->random = random;
+    self->random = random;
 }
 
 //
 //  Release dependency to the interface 'random'.
 //
 VSCF_PUBLIC void
-vscf_ed25519_private_key_release_random(vscf_ed25519_private_key_t *ed25519_private_key) {
+vscf_ed25519_private_key_release_random(vscf_ed25519_private_key_t *self) {
 
-    VSCF_ASSERT_PTR(ed25519_private_key);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&ed25519_private_key->random);
+    vscf_impl_destroy(&self->random);
 }
 
 static const vscf_api_t *

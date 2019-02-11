@@ -87,13 +87,13 @@ vscf_password_recipient_info_list_ctx_size(void);
 //  Perform initialization of pre-allocated context.
 //
 VSCF_PUBLIC void
-vscf_password_recipient_info_list_init(vscf_password_recipient_info_list_t *password_recipient_info_list);
+vscf_password_recipient_info_list_init(vscf_password_recipient_info_list_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCF_PUBLIC void
-vscf_password_recipient_info_list_cleanup(vscf_password_recipient_info_list_t *password_recipient_info_list);
+vscf_password_recipient_info_list_cleanup(vscf_password_recipient_info_list_t *self);
 
 //
 //  Allocate context and perform it's initialization.
@@ -106,64 +106,64 @@ vscf_password_recipient_info_list_new(void);
 //  It is safe to call this method even if context was allocated by the caller.
 //
 VSCF_PUBLIC void
-vscf_password_recipient_info_list_delete(vscf_password_recipient_info_list_t *password_recipient_info_list);
+vscf_password_recipient_info_list_delete(vscf_password_recipient_info_list_t *self);
 
 //
 //  Delete given context and nullifies reference.
 //  This is a reverse action of the function 'vscf_password_recipient_info_list_new ()'.
 //
 VSCF_PUBLIC void
-vscf_password_recipient_info_list_destroy(vscf_password_recipient_info_list_t **password_recipient_info_list_ref);
+vscf_password_recipient_info_list_destroy(vscf_password_recipient_info_list_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
 VSCF_PUBLIC vscf_password_recipient_info_list_t *
-vscf_password_recipient_info_list_shallow_copy(vscf_password_recipient_info_list_t *password_recipient_info_list);
+vscf_password_recipient_info_list_shallow_copy(vscf_password_recipient_info_list_t *self);
 
 //
 //  Add new item to the list.
 //  Note, ownership is transfered.
 //
 VSCF_PUBLIC void
-vscf_password_recipient_info_list_add(vscf_password_recipient_info_list_t *password_recipient_info_list,
+vscf_password_recipient_info_list_add(vscf_password_recipient_info_list_t *self,
         vscf_password_recipient_info_t **password_recipient_info_ref);
 
 //
 //  Return true if given list has item.
 //
 VSCF_PUBLIC bool
-vscf_password_recipient_info_list_has_item(const vscf_password_recipient_info_list_t *password_recipient_info_list);
+vscf_password_recipient_info_list_has_item(const vscf_password_recipient_info_list_t *self);
 
 //
 //  Return list item.
 //
 VSCF_PUBLIC const vscf_password_recipient_info_t *
-vscf_password_recipient_info_list_item(const vscf_password_recipient_info_list_t *password_recipient_info_list);
+vscf_password_recipient_info_list_item(const vscf_password_recipient_info_list_t *self);
 
 //
 //  Return true if list has next item.
 //
 VSCF_PUBLIC bool
-vscf_password_recipient_info_list_has_next(const vscf_password_recipient_info_list_t *password_recipient_info_list);
+vscf_password_recipient_info_list_has_next(const vscf_password_recipient_info_list_t *self);
 
 //
 //  Return next list node if exists, or NULL otherwise.
 //
 VSCF_PUBLIC vscf_password_recipient_info_list_t *
-vscf_password_recipient_info_list_next(const vscf_password_recipient_info_list_t *password_recipient_info_list);
+vscf_password_recipient_info_list_next(const vscf_password_recipient_info_list_t *self);
 
 //
 //  Return true if list has previous item.
 //
 VSCF_PUBLIC bool
-vscf_password_recipient_info_list_has_prev(const vscf_password_recipient_info_list_t *password_recipient_info_list);
+vscf_password_recipient_info_list_has_prev(const vscf_password_recipient_info_list_t *self);
 
 //
 //  Return previous list node if exists, or NULL otherwise.
 //
 VSCF_PUBLIC vscf_password_recipient_info_list_t *
-vscf_password_recipient_info_list_prev(const vscf_password_recipient_info_list_t *password_recipient_info_list);
+vscf_password_recipient_info_list_prev(const vscf_password_recipient_info_list_t *self);
 
 
 // --------------------------------------------------------------------------

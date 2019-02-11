@@ -78,7 +78,7 @@ extern "C" {
 //  Note, that context is already zeroed.
 //
 VSCF_PRIVATE void
-vscf_cipher_alg_info_init_ctx(vscf_cipher_alg_info_t *cipher_alg_info);
+vscf_cipher_alg_info_init_ctx(vscf_cipher_alg_info_t *self);
 
 //
 //  Release resources of the implementation specific context.
@@ -86,7 +86,7 @@ vscf_cipher_alg_info_init_ctx(vscf_cipher_alg_info_t *cipher_alg_info);
 //  Note, that context will be zeroed automatically next this method.
 //
 VSCF_PRIVATE void
-vscf_cipher_alg_info_cleanup_ctx(vscf_cipher_alg_info_t *cipher_alg_info);
+vscf_cipher_alg_info_cleanup_ctx(vscf_cipher_alg_info_t *self);
 
 
 // --------------------------------------------------------------------------

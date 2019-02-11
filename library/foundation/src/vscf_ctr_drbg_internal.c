@@ -78,13 +78,13 @@
 //  This method is called when interface 'entropy source' was setup.
 //
 VSCF_PRIVATE vscf_error_t
-vscf_ctr_drbg_did_setup_entropy_source(vscf_ctr_drbg_t *ctr_drbg);
+vscf_ctr_drbg_did_setup_entropy_source(vscf_ctr_drbg_t *self);
 
 //
 //  This method is called when interface 'entropy source' was released.
 //
 VSCF_PRIVATE void
-vscf_ctr_drbg_did_release_entropy_source(vscf_ctr_drbg_t *ctr_drbg);
+vscf_ctr_drbg_did_release_entropy_source(vscf_ctr_drbg_t *self);
 
 static const vscf_api_t *
 vscf_ctr_drbg_find_api(vscf_api_tag_t api_tag);
@@ -146,16 +146,16 @@ static const vscf_impl_info_t info = {
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_ctr_drbg_init(vscf_ctr_drbg_t *ctr_drbg) {
+vscf_ctr_drbg_init(vscf_ctr_drbg_t *self) {
 
-    VSCF_ASSERT_PTR(ctr_drbg);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(ctr_drbg, sizeof(vscf_ctr_drbg_t));
+    vscf_zeroize(self, sizeof(vscf_ctr_drbg_t));
 
-    ctr_drbg->info = &info;
-    ctr_drbg->refcnt = 1;
+    self->info = &info;
+    self->refcnt = 1;
 
-    vscf_ctr_drbg_init_ctx(ctr_drbg);
+    vscf_ctr_drbg_init_ctx(self);
 }
 
 //
@@ -163,25 +163,25 @@ vscf_ctr_drbg_init(vscf_ctr_drbg_t *ctr_drbg) {
 //  This is a reverse action of the function 'vscf_ctr_drbg_init()'.
 //
 VSCF_PUBLIC void
-vscf_ctr_drbg_cleanup(vscf_ctr_drbg_t *ctr_drbg) {
+vscf_ctr_drbg_cleanup(vscf_ctr_drbg_t *self) {
 
-    if (ctr_drbg == NULL || ctr_drbg->info == NULL) {
+    if (self == NULL || self->info == NULL) {
         return;
     }
 
-    if (ctr_drbg->refcnt == 0) {
+    if (self->refcnt == 0) {
         return;
     }
 
-    if (--ctr_drbg->refcnt > 0) {
+    if (--self->refcnt > 0) {
         return;
     }
 
-    vscf_ctr_drbg_release_entropy_source(ctr_drbg);
+    vscf_ctr_drbg_release_entropy_source(self);
 
-    vscf_ctr_drbg_cleanup_ctx(ctr_drbg);
+    vscf_ctr_drbg_cleanup_ctx(self);
 
-    vscf_zeroize(ctr_drbg, sizeof(vscf_ctr_drbg_t));
+    vscf_zeroize(self, sizeof(vscf_ctr_drbg_t));
 }
 
 //
@@ -191,12 +191,12 @@ vscf_ctr_drbg_cleanup(vscf_ctr_drbg_t *ctr_drbg) {
 VSCF_PUBLIC vscf_ctr_drbg_t *
 vscf_ctr_drbg_new(void) {
 
-    vscf_ctr_drbg_t *ctr_drbg = (vscf_ctr_drbg_t *) vscf_alloc(sizeof (vscf_ctr_drbg_t));
-    VSCF_ASSERT_ALLOC(ctr_drbg);
+    vscf_ctr_drbg_t *self = (vscf_ctr_drbg_t *) vscf_alloc(sizeof (vscf_ctr_drbg_t));
+    VSCF_ASSERT_ALLOC(self);
 
-    vscf_ctr_drbg_init(ctr_drbg);
+    vscf_ctr_drbg_init(self);
 
-    return ctr_drbg;
+    return self;
 }
 
 //
@@ -204,12 +204,12 @@ vscf_ctr_drbg_new(void) {
 //  This is a reverse action of the function 'vscf_ctr_drbg_new()'.
 //
 VSCF_PUBLIC void
-vscf_ctr_drbg_delete(vscf_ctr_drbg_t *ctr_drbg) {
+vscf_ctr_drbg_delete(vscf_ctr_drbg_t *self) {
 
-    vscf_ctr_drbg_cleanup(ctr_drbg);
+    vscf_ctr_drbg_cleanup(self);
 
-    if (ctr_drbg && (ctr_drbg->refcnt == 0)) {
-        vscf_dealloc(ctr_drbg);
+    if (self && (self->refcnt == 0)) {
+        vscf_dealloc(self);
     }
 }
 
@@ -219,14 +219,14 @@ vscf_ctr_drbg_delete(vscf_ctr_drbg_t *ctr_drbg) {
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_ctr_drbg_destroy(vscf_ctr_drbg_t **ctr_drbg_ref) {
+vscf_ctr_drbg_destroy(vscf_ctr_drbg_t **self_ref) {
 
-    VSCF_ASSERT_PTR(ctr_drbg_ref);
+    VSCF_ASSERT_PTR(self_ref);
 
-    vscf_ctr_drbg_t *ctr_drbg = *ctr_drbg_ref;
-    *ctr_drbg_ref = NULL;
+    vscf_ctr_drbg_t *self = *self_ref;
+    *self_ref = NULL;
 
-    vscf_ctr_drbg_delete(ctr_drbg);
+    vscf_ctr_drbg_delete(self);
 }
 
 //
@@ -234,10 +234,10 @@ vscf_ctr_drbg_destroy(vscf_ctr_drbg_t **ctr_drbg_ref) {
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_ctr_drbg_t *
-vscf_ctr_drbg_shallow_copy(vscf_ctr_drbg_t *ctr_drbg) {
+vscf_ctr_drbg_shallow_copy(vscf_ctr_drbg_t *self) {
 
     // Proxy to the parent implementation.
-    return (vscf_ctr_drbg_t *)vscf_impl_shallow_copy((vscf_impl_t *)ctr_drbg);
+    return (vscf_ctr_drbg_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
 }
 
 //
@@ -253,27 +253,27 @@ vscf_ctr_drbg_impl_size(void) {
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ctr_drbg_impl(vscf_ctr_drbg_t *ctr_drbg) {
+vscf_ctr_drbg_impl(vscf_ctr_drbg_t *self) {
 
-    VSCF_ASSERT_PTR(ctr_drbg);
-    return (vscf_impl_t *)(ctr_drbg);
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
 }
 
 //
 //  Setup dependency to the interface 'entropy source' with shared ownership.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ctr_drbg_use_entropy_source(vscf_ctr_drbg_t *ctr_drbg, vscf_impl_t *entropy_source) {
+vscf_ctr_drbg_use_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_source) {
 
-    VSCF_ASSERT_PTR(ctr_drbg);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(entropy_source);
-    VSCF_ASSERT_PTR(ctr_drbg->entropy_source == NULL);
+    VSCF_ASSERT_PTR(self->entropy_source == NULL);
 
     VSCF_ASSERT(vscf_entropy_source_is_implemented(entropy_source));
 
-    ctr_drbg->entropy_source = vscf_impl_shallow_copy(entropy_source);
+    self->entropy_source = vscf_impl_shallow_copy(entropy_source);
 
-    return vscf_ctr_drbg_did_setup_entropy_source(ctr_drbg);
+    return vscf_ctr_drbg_did_setup_entropy_source(self);
 }
 
 //
@@ -281,30 +281,30 @@ vscf_ctr_drbg_use_entropy_source(vscf_ctr_drbg_t *ctr_drbg, vscf_impl_t *entropy
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_ctr_drbg_take_entropy_source(vscf_ctr_drbg_t *ctr_drbg, vscf_impl_t *entropy_source) {
+vscf_ctr_drbg_take_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_source) {
 
-    VSCF_ASSERT_PTR(ctr_drbg);
+    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(entropy_source);
-    VSCF_ASSERT_PTR(ctr_drbg->entropy_source == NULL);
+    VSCF_ASSERT_PTR(self->entropy_source == NULL);
 
     VSCF_ASSERT(vscf_entropy_source_is_implemented(entropy_source));
 
-    ctr_drbg->entropy_source = entropy_source;
+    self->entropy_source = entropy_source;
 
-    return vscf_ctr_drbg_did_setup_entropy_source(ctr_drbg);
+    return vscf_ctr_drbg_did_setup_entropy_source(self);
 }
 
 //
 //  Release dependency to the interface 'entropy source'.
 //
 VSCF_PUBLIC void
-vscf_ctr_drbg_release_entropy_source(vscf_ctr_drbg_t *ctr_drbg) {
+vscf_ctr_drbg_release_entropy_source(vscf_ctr_drbg_t *self) {
 
-    VSCF_ASSERT_PTR(ctr_drbg);
+    VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&ctr_drbg->entropy_source);
+    vscf_impl_destroy(&self->entropy_source);
 
-    vscf_ctr_drbg_did_release_entropy_source(ctr_drbg);
+    vscf_ctr_drbg_did_release_entropy_source(self);
 }
 
 static const vscf_api_t *

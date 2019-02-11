@@ -102,20 +102,20 @@ vscf_entropy_accumulator_impl_size(void);
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_entropy_accumulator_impl(vscf_entropy_accumulator_t *entropy_accumulator);
+vscf_entropy_accumulator_impl(vscf_entropy_accumulator_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_entropy_accumulator_init(vscf_entropy_accumulator_t *entropy_accumulator);
+vscf_entropy_accumulator_init(vscf_entropy_accumulator_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
 //  This is a reverse action of the function 'vscf_entropy_accumulator_init()'.
 //
 VSCF_PUBLIC void
-vscf_entropy_accumulator_cleanup(vscf_entropy_accumulator_t *entropy_accumulator);
+vscf_entropy_accumulator_cleanup(vscf_entropy_accumulator_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -129,7 +129,7 @@ vscf_entropy_accumulator_new(void);
 //  This is a reverse action of the function 'vscf_entropy_accumulator_new()'.
 //
 VSCF_PUBLIC void
-vscf_entropy_accumulator_delete(vscf_entropy_accumulator_t *entropy_accumulator);
+vscf_entropy_accumulator_delete(vscf_entropy_accumulator_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -137,14 +137,14 @@ vscf_entropy_accumulator_delete(vscf_entropy_accumulator_t *entropy_accumulator)
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_entropy_accumulator_destroy(vscf_entropy_accumulator_t **entropy_accumulator_ref);
+vscf_entropy_accumulator_destroy(vscf_entropy_accumulator_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_entropy_accumulator_t *
-vscf_entropy_accumulator_shallow_copy(vscf_entropy_accumulator_t *entropy_accumulator);
+vscf_entropy_accumulator_shallow_copy(vscf_entropy_accumulator_t *self);
 
 //
 //  Add given entropy source to the accumulator.
@@ -152,26 +152,25 @@ vscf_entropy_accumulator_shallow_copy(vscf_entropy_accumulator_t *entropy_accumu
 //  from the source during accumulation.
 //
 VSCF_PUBLIC void
-vscf_entropy_accumulator_add_source(vscf_entropy_accumulator_t *entropy_accumulator, vscf_impl_t *source,
-        size_t threshold);
+vscf_entropy_accumulator_add_source(vscf_entropy_accumulator_t *self, vscf_impl_t *source, size_t threshold);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_t *entropy_accumulator);
+vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_t *self);
 
 //
 //  Defines that implemented source is strong.
 //
 VSCF_PUBLIC bool
-vscf_entropy_accumulator_is_strong(vscf_entropy_accumulator_t *entropy_accumulator);
+vscf_entropy_accumulator_is_strong(vscf_entropy_accumulator_t *self);
 
 //
 //  Gather entropy of the requested length.
 //
 VSCF_PUBLIC vscf_error_t
-vscf_entropy_accumulator_gather(vscf_entropy_accumulator_t *entropy_accumulator, size_t len, vsc_buffer_t *out);
+vscf_entropy_accumulator_gather(vscf_entropy_accumulator_t *self, size_t len, vsc_buffer_t *out);
 
 
 // --------------------------------------------------------------------------
