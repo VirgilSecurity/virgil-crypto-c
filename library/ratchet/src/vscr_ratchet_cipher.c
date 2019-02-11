@@ -327,6 +327,7 @@ VSCR_PUBLIC vscr_error_t
 vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_data_t plain_text, vsc_buffer_t *buffer) {
 
     VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(self->aes256_gcm);
 
     VSCR_ASSERT(vsc_buffer_unused_len(buffer) >= vscr_ratchet_cipher_encrypt_len(self, plain_text.len));
 
@@ -344,7 +345,8 @@ vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_dat
 VSCR_PUBLIC vscr_error_t
 vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, vsc_data_t key, vsc_data_t cipher_text, vsc_buffer_t *buffer) {
 
-    VSCR_UNUSED(self);
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(self->aes256_gcm);
 
     VSCR_ASSERT(vsc_buffer_unused_len(buffer) >= vscr_ratchet_cipher_decrypt_len(self, cipher_text.len));
 

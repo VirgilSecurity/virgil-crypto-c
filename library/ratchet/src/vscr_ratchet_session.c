@@ -771,7 +771,8 @@ err:
 VSCR_PUBLIC size_t
 vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *self, const vscr_ratchet_message_t *message) {
 
-    VSCR_UNUSED(self);
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(self->ratchet);
     VSCR_ASSERT_PTR(message);
 
     size_t cipher_text_len = 0;
